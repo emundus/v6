@@ -666,25 +666,8 @@ class EmundusModelFiles extends JModelLegacy
 						if (!$joined) {
 							$element_joins = $h_files->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', $table_to_join);
 
-							foreach($element_joins as $element_join) {
-								if (!in_array($element_join['table_join'], $already_joined_tables)) {
-									$join_from_table_alias = $element_join['join_from_table'];
-									if (in_array($element_join['join_from_table'], $already_joined_tables)) {
-										$found_alias = array_search($element_join['join_from_table'], $already_joined_tables);
-
-										if (!is_numeric($found_alias)) {
-											$join_from_table_alias = $found_alias;
-										}
-									}
-
-									if (!empty($element_join['params']) && $element_join['params']['type'] === 'repeatElement') {
-										$leftJoin .= ' LEFT JOIN ' . $dbo->quoteName($element_join['table_join']) . ' ON ' . $dbo->quoteName($element_join['table_join'] . '.parent_id') . ' = ' . $dbo->quoteName($join_from_table_alias. '.id');
-									} else {
-										$leftJoin .= ' LEFT JOIN ' . $dbo->quoteName($element_join['table_join']) . ' ON ' . $dbo->quoteName($element_join['table_join'] . '.' . $element_join['table_join_key']) . ' = ' . $dbo->quoteName($join_from_table_alias. '.' . $element_join['table_key']);
-									}
-
-									$already_joined_tables[] = $element_join['table_join'];
-								}
+							if (!empty($element_joins)) {
+								$leftJoin .= $h_files->writeJoins($element_joins, $already_joined_tables);
 							}
 						}
 					}

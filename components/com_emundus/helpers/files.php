@@ -3531,6 +3531,58 @@ class EmundusHelperFiles
 		return $joins;
 	}
 
+	/**
+	 * @param $found_joins the joins found by findJoinsBetweenTablesRecursively, ordered from the searched table to the base table
+	 * @param $already_joined_tables referenced array
+	 * @return string
+	 */
+	public function writeJoins($found_joins, &$already_joined_tables) {
+		$left_joins = '';
+
+		if (!empty($found_joins)) {
+			$dbo = JFactory::getDbo();
+			foreach($found_joins as $element_join) {
+				if (!in_array($element_join['table_join'], $already_joined_tables)) {
+					$join_from_table_alias = $element_join['join_from_table'];
+
+					if (in_array($element_join['join_from_table'], $already_joined_tables)) {
+						$found_alias = array_search($element_join['join_from_table'], $already_joined_tables);
+
+						if (!is_numeric($found_alias)) {
+							$join_from_table_alias = $found_alias;
+						}
+					}
+
+					if (!empty($element_join['params']) && $element_join['params']['type'] === 'repeatElement') {
+						$left_joins .= ' LEFT JOIN ' . $dbo->quoteName($element_join['table_join']) . ' ON ' . $dbo->quoteName($element_join['table_join'] . '.parent_id') . ' = ' . $dbo->quoteName($join_from_table_alias. '.id');
+					} else {
+						$left_joins .= ' LEFT JOIN ' . $dbo->quoteName($element_join['table_join']) . ' ON ' . $dbo->quoteName($element_join['table_join'] . '.' . $element_join['table_join_key']) . ' = ' . $dbo->quoteName($join_from_table_alias. '.' . $element_join['table_key']);
+					}
+
+					$already_joined_tables[] = $element_join['table_join'];
+				} else if (!in_array($element_join['join_from_table'], $already_joined_tables)) {
+					$table_join_alias = $element_join['table_join'];
+
+					if (in_array($element_join['table_join'], $already_joined_tables)) {
+						$found_alias = array_search($element_join['table_join'], $already_joined_tables);
+
+						if (!is_numeric($found_alias)) {
+							$table_join_alias = $found_alias;
+						}
+					}
+
+					if (!empty($element_join['params']) && $element_join['params']['type'] === 'repeatElement') {
+						$left_joins .= ' LEFT JOIN ' . $dbo->quoteName($element_join['join_from_table']) . ' ON ' . $dbo->quoteName($element_join['join_from_table'] . '.parent_id') . ' = ' . $dbo->quoteName($table_join_alias. '.id');
+					} else {
+						$left_joins .= ' LEFT JOIN ' . $dbo->quoteName($element_join['join_from_table']) . ' ON ' . $dbo->quoteName($element_join['join_from_table'] . '.' . $element_join['table_key']) . ' = ' . $dbo->quoteName($table_join_alias. '.' . $element_join['table_join_key']);
+					}
+				}
+			}
+		}
+
+		return $left_joins;
+	}
+
 	private function writeQueryWithOperator($element, $values, $operator, $type = 'select', $fabrik_element_data = null) {
 		$query = '1=1';
 
@@ -3668,14 +3720,8 @@ class EmundusHelperFiles
 				if (!empty($joins)) {
 					$subquery = ' SELECT DISTINCT jos_emundus_campaign_candidature.id FROM jos_emundus_campaign_candidature ';
 
-					foreach($joins as $join) {
-						if (!empty($join['params']) && $join['params']['type'] == 'repeatElement') {
-							// Nous sommes dans une jointure fabrik sur parent_table.id <-> child_table.parent_id et fabrik mets le nom de l'élément a la place de l'id
-							$subquery .= ' LEFT JOIN ' . $join['table_join'] . ' ON ' . $join['table_join'] . '.' . $join['table_join_key'] . ' = ' . $join['join_from_table'] . '.id';
-						} else {
-							$subquery .= ' LEFT JOIN ' . $join['table_join'] . ' ON ' . $join['table_join'] . '.' . $join['table_join_key'] . ' = ' . $join['join_from_table'] . '.' . $join['table_key'];
-						}
-					}
+					$already_joined_tables = [];
+					$subquery .= $this->writeJoins($element_joins, $already_joined_tables);
 
 					$subquery .= ' WHERE ' . $element . ' IN (' . $values . ')';
 				}

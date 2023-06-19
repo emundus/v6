@@ -3,6 +3,7 @@
 		<div class="em-flex-row em-flex-space-between">
 			<p class="recap-label">{{ filter.label }}</p>
 			<div>
+				<span @mouseenter="resetHover = true" @mouseleave="resetHover = false" class="material-icons-outlined em-pointer reset-filter-btn" :class="{'em-blue-400-color': resetHover}" @click="resetFilter" :alt="translate('MOD_EMUNDUS_FILTERS_RESET')">refresh</span>
 				<span v-if="!filter.default" class="material-icons-outlined em-red-500-color em-pointer" @click="$.emit('remove-filter')">close</span>
 				<span v-if="opened === false" class="material-icons-outlined em-pointer" @click="opened = !opened">keyboard_arrow_down</span>
 				<span v-else class="material-icons-outlined em-pointer" @click="opened = !opened">keyboard_arrow_up</span>
@@ -50,10 +51,17 @@ export default {
 				{ value: '!=', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_NOT')},
 				{ value: 'LIKE', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_CONTAINS')},
 				{ value: 'NOT LIKE', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_DOES_NOT_CONTAIN')}
-			]
+			],
+			resetHover: false
 		}
 	},
 
+	methods: {
+		resetFilter() {
+			this.filter.operator = '=';
+			this.filter.value = '';
+		}
+	},
 	computed: {
 		selectedOperatorLabel() {
 			const selectedOperator =  this.operators.find((operator) => { return operator.value === this.filter.operator });
