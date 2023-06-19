@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="quickicon" method="upgrade">
 	<name>HikaShop Quick Icon</name>
-	<creationDate>25 septembre 2022</creationDate>
-	<version>4.6.2</version>
+	<creationDate>31 mai 2023</creationDate>
+	<version>4.7.3</version>
 	<author>Obsidev</author>
 	<authorEmail>jerome@obsidev.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>Copyright (c) 2011-2022 Obsidev S.A.R.L. All rights reserved.</copyright>
+	<copyright>Copyright (c) 2011-2023 Obsidev S.A.R.L. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-3.0.html GNU/GPL</license>
 	<description>HikaShop Quick Icon</description>
 	<files>

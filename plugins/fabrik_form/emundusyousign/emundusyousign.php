@@ -170,10 +170,21 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 			// Files_requests uses fnum field but in the case of expert invitations there can be multiple fnums.
 			// This means we hace to use the expert invite procedure for getting the array of fnums by keyid and picked files.
 			$files_picked = $jinput->get('jos_emundus_files_request___your_files');
+
 			$query->clear()
-				->select($db->quoteName('fnum'))
-				->from($db->quoteName('#__emundus_files_request'))
-				->where($db->quoteName('keyid').' LIKE '.$db->quote($key_id));
+				->select('id')
+				->from('#__emundus_files_request')
+				->where('keyid = '.$db->quote($key_id));
+			$db->setQuery($query);
+			$files_request_ids = $db->loadColumn();
+
+			$query->clear()
+				->select('DISTINCT ' . $db->quoteName('efr.fnum'))
+				->from($db->quoteName('#__emundus_files_request', 'efr'))
+				->leftJoin($db->quoteName('#__emundus_files_request_1614_repeat', 'efr1614') . ' ON ' . $db->quoteName('efr1614.fnum_expertise').' = '.$db->quoteName('efr.fnum'))
+				->where($db->quoteName('efr.keyid').' LIKE '.$db->quote($key_id))
+				->andWhere('efr1614.parent_id IN ('.implode(',', $files_request_ids).')')
+				->andWhere('efr1614.status_expertise = 1');
 			$db->setQuery($query);
 			$fnums = $db->loadColumn();
 
@@ -185,8 +196,6 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 
 			// Signular fnum is used for getting meta information such as campaign ID and such.
 			$fnum = $fnums[0];
-
-
 		} else {
 			$fnums = [$fnum];
 		}
@@ -335,14 +344,31 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 
                 if (!empty($signatureRequest->id)) {
                     $signatureRequestId = $signatureRequest->id;
+	                $default_fnum_infos = $m_files->getFnumsInfos([$fnum])[$fnum];
 
-                    $query->clear()
-                        ->update('#__emundus_files_request')
-                        ->set('keyid = ' . $db->quote($signatureRequest->id))
-                        ->set('filename = ' . $db->quote($fileNamePath))
-                        ->where('keyid = ' . $db->quote($key_id));
-                    $db->setQuery($query);
-                    $db->execute();
+					foreach($fnums as $current_fnum) {
+						if ($default_fnum_infos['fnum'] === $current_fnum) {
+							$file_path_by_fnum = $fileNamePath;
+						} else {
+							$current_fnum_infos = $m_files->getFnumsInfos([$current_fnum])[$current_fnum];
+							$file_path_by_fnum = str_replace('/' . $default_fnum_infos['applicant_id'] . '/', '/' . $current_fnum_infos['applicant_id'] . '/', $fileNamePath);
+
+							$copied = copy($fileNamePath, $file_path_by_fnum);
+
+							if (!$copied) {
+								JLog::add('failed to copy file from ' . $fileNamePath . ' to ' . $file_path_by_fnum, JLog::ERROR, 'com_emundus.yousign');
+							}
+						}
+
+						$query->clear()
+							->update('#__emundus_files_request')
+							->set('keyid = ' . $db->quote($signatureRequest->id))
+							->set('filename = ' . $db->quote($file_path_by_fnum))
+							->where('keyid = ' . $db->quote($key_id))
+							->where('fnum = ' . $db->quote($current_fnum));
+						$db->setQuery($query);
+						$db->execute();
+					}
 
                     $file_pointer = fopen($fileNamePath, 'r');
                     if ($file_pointer) {

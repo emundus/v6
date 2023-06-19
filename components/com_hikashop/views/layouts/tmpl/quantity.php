@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -18,7 +18,7 @@ $this->last_quantity_field_id = $id;
 $extra_data_attribute = '';
 if(!isset($this->config))
 	$this->config = hikashop_config();
-
+$refresh_task = $this->params->get('refresh_task', 'apply');
 
 if(isset($this->row) && isset($this->row->product_min_per_order)) {
 	$min_quantity = ($this->row->product_min_per_order || empty($this->row->parent_product)) ? $this->row->product_min_per_order : $this->row->parent_product->product_min_per_order;
@@ -79,10 +79,17 @@ if($this->config->get('synchronized_add_to_cart', 0) && !$in_cart) {
 	if($min_quantity == 1)
 		$min_quantity = 0;
 	$cartClass->syncInit();
-	$extra_classes = 'no-chzn';
+	if(in_array($quantityLayout, array('show_select','show_select_price')))
+		$extra_classes = 'no-chzn';
 ?>
 	<input id="<?php echo $id; ?>_synch" class="synchronized_add_to_cart" data-id="<?php echo $id; ?>" data-product-id="<?php echo $this->row->product_id; ?>"  data-cart-product-id="<?php echo @$cartProductData->cart_product_id; ?>" type="hidden" name="synched_cart_quantity" value="<?php echo $this->row->synched_cart_quantity; ?>"/>
 <?php
+}
+if(HIKASHOP_J40) {
+	if(in_array($quantityLayout, array('show_select','show_select_price')))
+		$extra_classes.=' '.HK_FORM_SELECT_CLASS;
+	else
+		$extra_classes.=' '.HK_FORM_CONTROL_CLASS;
 }
 
 switch($quantityLayout) {
@@ -98,7 +105,7 @@ switch($quantityLayout) {
 	case 'show_regrouped':
 ?>
 		<div id="<?php echo $id; ?>_area" class="input-append hikashop_product_quantity_div hikashop_product_quantity_input_div_regrouped">
-			<input id="<?php echo $id; ?>" type="text" value="<?php echo $current_quantity; ?>" onfocus="this.select()" class="hikashop_product_quantity_field" name="<?php echo $quantity_fieldname; ?>" data-hk-qty-old="<?php echo $current_quantity; ?>" data-hk-qty-min="<?php echo $min_quantity; ?>" data-hk-qty-max="<?php echo $max_quantity; ?>"<?php echo $extra_data_attribute; ?> onchange="<?php echo $script; ?>" <?php echo $extra_data; ?> />
+			<input id="<?php echo $id; ?>" type="text" value="<?php echo $current_quantity; ?>" onfocus="this.select()" class="hikashop_product_quantity_field <?php echo $extra_classes; ?>" name="<?php echo $quantity_fieldname; ?>" data-hk-qty-old="<?php echo $current_quantity; ?>" data-hk-qty-min="<?php echo $min_quantity; ?>" data-hk-qty-max="<?php echo $max_quantity; ?>"<?php echo $extra_data_attribute; ?> onchange="<?php echo $script; ?>" <?php echo $extra_data; ?> />
 			<div class="add-on hikashop_product_quantity_div hikashop_product_quantity_change_div_regrouped">
 				<div class="hikashop_product_quantity_change_div_plus_regrouped">
 					<a class="hikashop_product_quantity_field_change_plus hikashop_product_quantity_field_change" href="#" data-hk-qty-mod="1" onclick="<?php echo $increment_script; ?>">+</a>
@@ -112,11 +119,17 @@ switch($quantityLayout) {
 		break;
 
 	case 'show_select':
+		$increment = $min_quantity;
 		if(empty($max_quantity))
-			$max_quantity = (int)$min_quantity * $this->config->get('quantity_select_max_default_value', 15);
+			$max_quantity = (int)$increment * $this->config->get('quantity_select_max_default_value', 15);
+		else
+			$increment = min($increment, $max_quantity, $max_quantity-$min_quantity);
+		if($min_quantity == $max_quantity)
+			$r = array($min_quantity);
+		else
+			$r = range($min_quantity, $max_quantity, $increment);
 ?>
 		<div id="<?php echo $id; ?>_area" class="hikashop_product_quantity_div hikashop_product_quantity_input_div_select"><?php
-			$r = range($min_quantity, $max_quantity, $min_quantity);
 			if(!in_array($current_quantity, $r))
 				$r[] = $current_quantity;
 			if(!in_array($max_quantity, $r))
@@ -131,6 +144,7 @@ switch($quantityLayout) {
 		break;
 
 	case 'show_select_price':
+		$increment = $min_quantity;
 		if(!$max_quantity)
 			$max_quantity = (int)$min_quantity * $this->config->get('quantity_select_max_default_value', 15);
 ?>
@@ -141,7 +155,8 @@ switch($quantityLayout) {
 					$values[$price_min_qty] = $price_min_qty;
 				}
 				if(empty($values)) {
-					$r = range($min_quantity, $max_quantity, $min_quantity);
+					$increment = min($increment, $max_quantity);
+					$r = range($min_quantity, $max_quantity, $increment);
 					if(!in_array($max_quantity, $r))
 						$r[] = $max_quantity;
 					$values = array_combine($r, $r);
@@ -152,7 +167,7 @@ switch($quantityLayout) {
 						$current_quantity = $min_quantity;
 				}
 				ksort($values);
-				echo JHTML::_('select.genericlist', $values, '', 'onchange="var el = document.getElementById(\''.$id.'\'); el.value = this.value; el.onchange();"', 'value', 'text', $current_quantity);
+				echo JHTML::_('select.genericlist', $values, '', 'class="'.$extra_classes.'" onchange="var el = document.getElementById(\''.$id.'\'); el.value = this.value; el.onchange();"', 'value', 'text', $current_quantity);
 			?>
 			<input id="<?php echo $id; ?>" type="hidden" value="<?php echo $current_quantity; ?>" class="hikashop_product_quantity_field <?php echo $extra_classes; ?>" name="<?php echo $quantity_fieldname; ?>" data-hk-qty-old="<?php echo $current_quantity; ?>" data-hk-qty-min="<?php echo $min_quantity; ?>" data-hk-qty-max="<?php echo $max_quantity; ?>"<?php echo $extra_data_attribute; ?> onchange="<?php echo $script; ?>" <?php echo $extra_data; ?> />
 		</div>
@@ -161,7 +176,7 @@ switch($quantityLayout) {
 
 	case 'show_simple':
 ?>
-		<input id="<?php echo $id; ?>" type="text" value="<?php echo $current_quantity; ?>" class="hikashop_product_quantity_field" name="<?php echo $quantity_fieldname; ?>" data-hk-qty-old="<?php echo $current_quantity; ?>" data-hk-qty-min="<?php echo $min_quantity; ?>" data-hk-qty-max="<?php echo $max_quantity; ?>"<?php echo $extra_data_attribute; ?> onchange="<?php echo $script; ?>" <?php echo $extra_data; ?> />
+		<input id="<?php echo $id; ?>" type="text" value="<?php echo $current_quantity; ?>" class="hikashop_product_quantity_field <?php echo $extra_classes; ?>" name="<?php echo $quantity_fieldname; ?>" data-hk-qty-old="<?php echo $current_quantity; ?>" data-hk-qty-min="<?php echo $min_quantity; ?>" data-hk-qty-max="<?php echo $max_quantity; ?>"<?php echo $extra_data_attribute; ?> onchange="<?php echo $script; ?>" <?php echo $extra_data; ?> />
 <?php
 		break;
 
@@ -176,7 +191,7 @@ switch($quantityLayout) {
 			<span class="add-on">
 				<a class="hikashop_product_quantity_field_change_minus hikashop_product_quantity_field_change" href="#" data-hk-qty-mod="-1" onclick="<?php echo $increment_script; ?>">&ndash;</a>
 			</span>
-			<input id="<?php echo $id; ?>" type="text" value="<?php echo $current_quantity; ?>" onfocus="this.select()" class="hikashop_product_quantity_field" name="<?php echo $quantity_fieldname; ?>" data-hk-qty-old="<?php echo $current_quantity; ?>" data-hk-qty-min="<?php echo $min_quantity; ?>" data-hk-qty-max="<?php echo $max_quantity; ?>"<?php echo $extra_data_attribute; ?> onchange="<?php echo $script; ?>" <?php echo $extra_data; ?> />
+			<input id="<?php echo $id; ?>" type="text" value="<?php echo $current_quantity; ?>" onfocus="this.select()" class="hikashop_product_quantity_field <?php echo $extra_classes; ?>" name="<?php echo $quantity_fieldname; ?>" data-hk-qty-old="<?php echo $current_quantity; ?>" data-hk-qty-min="<?php echo $min_quantity; ?>" data-hk-qty-max="<?php echo $max_quantity; ?>"<?php echo $extra_data_attribute; ?> onchange="<?php echo $script; ?>" <?php echo $extra_data; ?> />
 			<span class="add-on">
 				<a class="hikashop_product_quantity_field_change_plus hikashop_product_quantity_field_change" href="#" data-hk-qty-mod="1" onclick="<?php echo $increment_script; ?>">+</a>
 			</span>
@@ -187,7 +202,7 @@ switch($quantityLayout) {
 	case 'show_simplified':
 ?>
 		<div id="<?php echo $id; ?>_area" class="hikashop_product_quantity_div hikashop_product_quantity_input_div_simplified">
-			<input id="<?php echo $id; ?>" type="text" value="<?php echo $current_quantity; ?>" onfocus="this.select()" class="hikashop_product_quantity_field" name="<?php echo $quantity_fieldname; ?>" data-hk-qty-old="<?php echo $current_quantity; ?>" data-hk-qty-min="<?php echo $min_quantity; ?>" data-hk-qty-max="<?php echo $max_quantity; ?>"<?php echo $extra_data_attribute; ?> onchange="<?php echo $script; ?>" <?php echo $extra_data; ?> />
+			<input id="<?php echo $id; ?>" type="text" value="<?php echo $current_quantity; ?>" onfocus="this.select()" class="hikashop_product_quantity_field <?php echo $extra_classes; ?>" name="<?php echo $quantity_fieldname; ?>" data-hk-qty-old="<?php echo $current_quantity; ?>" data-hk-qty-min="<?php echo $min_quantity; ?>" data-hk-qty-max="<?php echo $max_quantity; ?>"<?php echo $extra_data_attribute; ?> onchange="<?php echo $script; ?>" <?php echo $extra_data; ?> />
 		</div>
 <?php
 		break;
@@ -196,7 +211,7 @@ switch($quantityLayout) {
 		$html5_data = ((int)$max_quantity > 0) ? 'max="'.(int)$max_quantity.'"' : '';
 ?>
 		<div id="<?php echo $id; ?>_area" class="hikashop_product_quantity_div hikashop_product_quantity_input_div_simplified">
-			<input id="<?php echo $id; ?>" type="number" min="<?php echo $min_quantity; ?>" value="<?php echo $current_quantity; ?>" class="hikashop_product_quantity_field" name="<?php echo $quantity_fieldname; ?>" data-hk-qty-old="<?php echo $current_quantity; ?>" data-hk-qty-min="<?php echo $min_quantity; ?>" data-hk-qty-max="<?php echo $max_quantity; ?>"<?php echo $extra_data_attribute; ?> onchange="<?php echo $script; ?>" <?php echo $extra_data; ?> />
+			<input id="<?php echo $id; ?>" type="number" min="<?php echo $min_quantity; ?>" value="<?php echo $current_quantity; ?>" class="hikashop_product_quantity_field <?php echo $extra_classes; ?>" name="<?php echo $quantity_fieldname; ?>" data-hk-qty-old="<?php echo $current_quantity; ?>" data-hk-qty-min="<?php echo $min_quantity; ?>" data-hk-qty-max="<?php echo $max_quantity; ?>"<?php echo $extra_data_attribute; ?> onchange="<?php echo $script; ?>" <?php echo $extra_data; ?> />
 		</div>
 <?php
 		break;
@@ -206,7 +221,7 @@ switch($quantityLayout) {
 		<table class="hikashop_product_quantity_table">
 			<tr>
 				<td rowspan="2">
-					<input id="<?php echo $id; ?>" type="text" value="<?php echo $current_quantity; ?>" onfocus="this.select()" class="hikashop_product_quantity_field" name="<?php echo $quantity_fieldname; ?>" data-hk-qty-old="<?php echo $current_quantity; ?>" data-hk-qty-min="<?php echo $min_quantity; ?>" data-hk-qty-max="<?php echo $max_quantity; ?>"<?php echo $extra_data_attribute; ?> onchange="<?php echo $script; ?>" <?php echo $extra_data; ?> />
+					<input id="<?php echo $id; ?>" type="text" value="<?php echo $current_quantity; ?>" onfocus="this.select()" class="hikashop_product_quantity_field <?php echo $extra_classes; ?>" name="<?php echo $quantity_fieldname; ?>" data-hk-qty-old="<?php echo $current_quantity; ?>" data-hk-qty-min="<?php echo $min_quantity; ?>" data-hk-qty-max="<?php echo $max_quantity; ?>"<?php echo $extra_data_attribute; ?> onchange="<?php echo $script; ?>" <?php echo $extra_data; ?> />
 				</td>
 				<td>
 					<a class="hikashop_product_quantity_field_change_plus hikashop_product_quantity_field_change" href="#" data-hk-qty-mod="1" onclick="<?php echo $increment_script; ?>">+</a>
@@ -226,7 +241,7 @@ switch($quantityLayout) {
 ?>
 		<div id="<?php echo $id; ?>_area" class="hikashop_product_quantity_input_div_default_main">
 			<div class="hikashop_product_quantity_div hikashop_product_quantity_input_div_default">
-				<input id="<?php echo $id; ?>" type="text" value="<?php echo $current_quantity; ?>" onfocus="this.select()" class="hikashop_product_quantity_field" name="<?php echo $quantity_fieldname; ?>" data-hk-qty-old="<?php echo $current_quantity; ?>" data-hk-qty-min="<?php echo $min_quantity; ?>" data-hk-qty-max="<?php echo $max_quantity; ?>"<?php echo $extra_data_attribute; ?> onchange="<?php echo $script; ?>" <?php echo $extra_data; ?> />
+				<input id="<?php echo $id; ?>" type="text" value="<?php echo $current_quantity; ?>" onfocus="this.select()" class="hikashop_product_quantity_field <?php echo $extra_classes; ?>" name="<?php echo $quantity_fieldname; ?>" data-hk-qty-old="<?php echo $current_quantity; ?>" data-hk-qty-min="<?php echo $min_quantity; ?>" data-hk-qty-max="<?php echo $max_quantity; ?>"<?php echo $extra_data_attribute; ?> onchange="<?php echo $script; ?>" <?php echo $extra_data; ?> />
 			</div>
 			<div class="hikashop_product_quantity_div hikashop_product_quantity_change_div_default">
 				<div class="hikashop_product_quantity_change_div_plus_default">
@@ -244,7 +259,7 @@ switch($quantityLayout) {
 if($in_cart && !in_array($quantityLayout, array('show_none','show_select','show_select_price'))) {
 ?>
 		<div class="hikashop_cart_product_quantity_refresh">
-			<a class="hikashop_no_print" href="#" onclick="var input = document.getElementById('<?php echo $id; ?>'); if(input.value == <?php echo (int)$current_quantity; ?> || (input.form.onsubmit && !input.form.onsubmit())) return; if(input.form.task){ input.form.task.value = 'apply'; } input.form.submit();" title="<?php echo JText::_('HIKA_REFRESH'); ?>">
+			<a class="hikashop_no_print" href="#" onclick="var input = document.getElementById('<?php echo $id; ?>'); if(input.value == <?php echo (int)$current_quantity; ?> || (input.form.onsubmit && !input.form.onsubmit())) return; if(input.form.task){ input.form.task.value = '<?php echo $refresh_task; ?>'; } input.form.submit();" title="<?php echo JText::_('HIKA_REFRESH'); ?>">
 				<i class="fa fa-sync"></i>
 			</a>
 		</div>

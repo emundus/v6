@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -200,7 +200,7 @@ class plgSystemHikashopgeolocation extends JPlugin
 
 		$geoClass = hikashop_get('class.geolocation');
 		$this->geolocation = $geoClass->getIPLocation(hikashop_getIP());
-		if(empty($this->geolocation))
+		if(empty($this->geolocation) || empty($this->geolocation->countryCode))
 			return $zone;
 
 		$geolocation_country_code = $this->geolocation->countryCode;
@@ -217,7 +217,7 @@ class plgSystemHikashopgeolocation extends JPlugin
 					$countries[]=$zone;
 				}
 			}
-			if(!empty($states)){
+			if(!empty($states)) {
 				if(empty($countries)){
 					$zone = $states[0]->zone_id;
 				}else{
@@ -241,8 +241,10 @@ class plgSystemHikashopgeolocation extends JPlugin
 						}
 					}
 				}
-			}else{
+			} elseif(!empty($countries[0])) {
 				$zone = $countries[0]->zone_id;
+			} else {
+				hikashop_writeToLog('No zone found for the country code '.$geolocation_country_code);
 			}
 		}
 		if(empty($zone)){

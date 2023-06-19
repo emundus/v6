@@ -357,7 +357,14 @@ function pdf_admission($user_id, $fnum = null, $output = true, $name = null, $op
     			</script>';
 	$htmldata .= '</body></html>';
 
-	$filename = EMUNDUS_PATH_ABS . @$item->user_id . DS . $fnum . $file_lbl . '.pdf';
+	if(empty($name))
+	{
+		$filename = EMUNDUS_PATH_ABS . @$item->user_id . DS . $fnum . $file_lbl . '.pdf';
+	}
+	else
+	{
+		$filename = $name;
+	}
 
 	/** DOMPDF */
 	$options = new Options();

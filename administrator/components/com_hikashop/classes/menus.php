@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -39,6 +39,36 @@ class hikashopMenusClass extends hikashopClass {
 					$obj->hikashop_params['selectparentlisting'] = $v;
 			}
 			$obj->hikashop_params['content_type'] = 'category';
+		} else {
+			$type = '';
+			if(@$obj->link == 'index.php?option=com_hikashop&view=category&layout=listing')
+				$type = 'category';
+			elseif(@$obj->link == 'index.php?option=com_hikashop&view=product&layout=listing')
+				$type = 'product';
+			elseif(hikaInput::get()->getString('ctrl', 'category') == 'category')
+				$type = 'category';
+			else
+				$type = 'product';
+			try {
+				if(!empty($obj->id)) {
+					$app = JFactory::getApplication();
+					$menus	= $app->getMenu();
+					$menu	= $menus->getItem($obj->id);
+					if(!empty($menu)) {
+						if(HIKASHOP_J30)
+							$menuParams = $menu->getParams();
+						else
+							$menuParams = $menu->params;
+						if(!empty($menuParams)) {
+							$p = $menuParams->get('hk_'.$type,false);
+							if(!empty($p->selectparentlisting))
+								$obj->hikashop_params['selectparentlisting'] = $p->selectparentlisting;
+						}
+					}
+				}
+			} catch(Exception $e) {
+
+			}
 		}
 
 		if(empty($obj->hikashop_params)){
@@ -220,6 +250,23 @@ class hikashopMenusClass extends hikashopClass {
 			return hikashop_completeLink('checkout' . $extra . '&Itemid=' . $Itemid, false, $redirect);
 
 		return hikashop_completeLink('checkout' . $extra, false, $redirect);
+	}
+
+
+	function getWishlistURL($redirect = false, $extra = '') {
+		global $Itemid;
+		$menu_id = (int)$this->loadAMenuItemId('','',$Itemid);
+		if(!empty($menu_id))
+			return hikashop_completeLink('cart&task=listing&cart_type=wishlist' . $extra . '&Itemid=' . $menu_id, false, $redirect);
+
+		$menu_id = (int)$this->loadAMenuItemId('','');
+		if(!empty($menu_id))
+			return hikashop_completeLink('cart&task=listing&cart_type=wishlist' . $extra . '&Itemid=' . $menu_id, false, $redirect);
+
+		if(!empty($Itemid))
+			return hikashop_completeLink('cart&task=listing&cart_type=wishlist' . $extra . '&Itemid=' . $Itemid, false, $redirect);
+
+		return hikashop_completeLink('cart&task=listing&cart_type=wishlist' . $extra, false, $redirect);
 	}
 
 	function getPublicMenuItemId($id = 0) {

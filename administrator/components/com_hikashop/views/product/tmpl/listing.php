@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -66,6 +66,9 @@ defined('_JEXEC') or die('Restricted access');
 						</div>
 						<div style="clear:both"></div>
 				</div>
+<?php 
+	echo $this->loadHkLayout('columns', array()); 
+?>
 				<table id="hikashop_product_listing" class="adminlist table table-striped table-hover" cellpadding="1">
 					<thead>
 						<tr>
@@ -86,6 +89,18 @@ defined('_JEXEC') or die('Restricted access');
 							?></th>
 							<th class="title"><?php
 								echo JHTML::_('grid.sort', JText::_('PRODUCT_QUANTITY'), 'b.product_quantity', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value );
+							?></th>
+							<th class="title default"  data-alias="length"><?php
+								echo JHTML::_('grid.sort', JText::_('PRODUCT_LENGTH'), 'b.product_length', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value );
+							?></th>
+								<th class="title default"  data-alias="width"><?php
+								echo JHTML::_('grid.sort', JText::_('PRODUCT_WIDTH'), 'b.product_width', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value );
+							?></th>
+							<th class="title default" data-alias="height"><?php
+								echo JHTML::_('grid.sort', JText::_('PRODUCT_HEIGHT'), 'b.product_height', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value );
+							?></th>
+							<th class="title default" data-alias="weight"><?php
+								echo JHTML::_('grid.sort', JText::_('PRODUCT_WEIGHT'), 'b.product_weight', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value );
 							?></th>
 <?php
 	$count_extrafields = 9;
@@ -179,6 +194,18 @@ defined('_JEXEC') or die('Restricted access');
 							?></td>
 							<td><?php
 								echo ($row->product_quantity==-1?JText::_('UNLIMITED'):$row->product_quantity);
+							?></td>
+							<td><?php
+								echo rtrim(rtrim($row->product_length,'0'),',.').' '.JText::_($row->product_dimension_unit);
+							?></td>
+							<td><?php
+								echo rtrim(rtrim($row->product_width,'0'),',.').' '.JText::_($row->product_dimension_unit);
+							?></td>
+							<td><?php
+								echo rtrim(rtrim($row->product_height,'0'),',.').' '.JText::_($row->product_dimension_unit);
+							?></td>
+							<td><?php
+								echo rtrim(rtrim($row->product_weight,'0'),',.').' '. JText::_($row->product_weight_unit);
 							?></td>
 <?php
 		if(!empty($this->fields)){

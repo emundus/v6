@@ -835,11 +835,7 @@ class EmundusModelEvaluation extends JModelList {
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
 					LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
 					LEFT JOIN #__users as u on u.id = jecc.applicant_id
-                    LEFT JOIN (
-					  SELECT GROUP_CONCAT(id_tag SEPARATOR ", ") id_tag, fnum
-					  FROM jos_emundus_tag_assoc
-					  GROUP BY fnum
-					) eta ON jecc.fnum = eta.fnum ' ;
+					LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum LIKE jecc.fnum ';
         $q = $this->_buildWhere($lastTab);
 
         if (EmundusHelperAccess::isCoordinator($current_user->id)
@@ -1794,6 +1790,7 @@ class EmundusModelEvaluation extends JModelList {
         $replace_document = $eMConfig->get('export_replace_doc', 0);
 	    $generated_doc_name = $eMConfig->get('generated_doc_name', "");
 	    $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
+	    $escape_ampersand = $eMConfig->get('generate_letter_escape_ampersand', 0);
 	    $whitespace_textarea = $eMConfig->get('generate_letter_whitespace_textarea', 0);
 
         $tmp_path = JPATH_SITE.DS.'tmp'.DS;
@@ -1828,7 +1825,7 @@ class EmundusModelEvaluation extends JModelList {
 
 	        $post = [
 		        'TRAINING_CODE' => $fnumInfo[$fnum]['campaign_code'],
-		        'TRAINING_PROGRAMME' => $fnumInfo[$fnum]['campaign_label'],
+		        'TRAINING_PROGRAMME' => $fnumInfo[$fnum]['training_programme'],
 		        'CAMPAIGN_LABEL' => $fnumInfo[$fnum]['campaign_label'],
 		        'CAMPAIGN_YEAR' => $fnumInfo[$fnum]['campaign_year'],
 		        'USER_NAME' => $fnumInfo[$fnum]['applicant_name'],
@@ -1928,21 +1925,46 @@ class EmundusModelEvaluation extends JModelList {
                         if (isset($fnumInfo)) {
                             $tags = $_mEmail->setTags($fnumInfo[$fnum]['applicant_id'], $post, $fnum, '', $letter->title.$letter->body.$letter->footer);
 
+	                        $pdf_margins = $eMConfig->get('generate_letter_pdf_margins', '5,20,5');
+	                        $display_header = $eMConfig->get('generate_letter_display_header', 1);
+	                        $display_footer = $eMConfig->get('generate_letter_display_footer', 1);
+	                        $use_default_font = $eMConfig->get('generate_letter_use_default_font', 0);
+	                        $font = $eMConfig->get('generate_letter_font', 'helvetica');
+	                        $font_size = $eMConfig->get('generate_letter_font_size', 10);
+
                             require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'MYPDF.php');
                             $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
                             $pdf->SetCreator(PDF_CREATOR);
                             $pdf->SetAuthor($user->name);
                             $pdf->SetTitle($letter->title);
-                            $pdf->SetMargins(5, 20, 5);
-                            $pdf->footer = $letter->footer;
-                            preg_match('#src="(.*?)"#i', $letter->header, $tab);
-                            $pdf->logo = JPATH_SITE . DS . @$tab[1];
-                            preg_match('#src="(.*?)"#i', $letter->footer, $tab);
-                            $pdf->logo_footer = JPATH_SITE . DS . @$tab[1];
-                            $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
-                            $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-                            $pdf->setFontSubsetting(true);
-                            $pdf->SetFont('freeserif', '', 10);
+
+							$pdf_margins = explode(',', $pdf_margins);
+                            $pdf->SetMargins($pdf_margins[0], $pdf_margins[1], $pdf_margins[2]);
+
+							if($display_header == 1)
+							{
+								preg_match('#src="(.*?)"#i', $letter->header, $tab);
+								$pdf->logo = JPATH_SITE . DS . @$tab[1];
+							}
+
+	                        $pdf->footer = $letter->footer;
+							if($display_footer == 1)
+							{
+								preg_match('#src="(.*?)"#i', $letter->footer, $tab);
+								$pdf->logo_footer = JPATH_SITE . DS . @$tab[1];
+								$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+							} else {
+								$pdf->SetAutoPageBreak(false, 0);
+							}
+
+							if($use_default_font == 1)
+							{
+								$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+								$pdf->setFontSubsetting(true);
+								$pdf->SetFont('freeserif', '', $font_size);
+							} else {
+								$pdf->SetFont($font, '', $font_size);
+							}
 
                             $htmldata = $_mEmail->setTagsFabrik($letter->body, array($fnum));
                             $htmldata = preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $htmldata))));
@@ -1976,7 +1998,10 @@ class EmundusModelEvaluation extends JModelList {
 
 		                    try {
 			                    $phpWord = new \PhpOffice\PhpWord\PhpWord();
-			                    \PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(true);
+								if ($escape_ampersand)
+								{
+									\PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(true);
+								}
 			                    $preprocess = $phpWord->loadTemplate($letter_file);
 			                    $tags       = $preprocess->getVariables();
 
@@ -3256,6 +3281,29 @@ class EmundusModelEvaluation extends JModelList {
         } catch (Exception $e) {
             JLog::add('Problem to get row by fnum '.$fnum.' in table '.$table_name.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             return 0;
+        }
+    }
+    public function getEvaluationReasons($eid){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $tables = $db->setQuery('SHOW TABLES')->loadColumn();
+
+            if(in_array('jos_emundus_evaluations_repeat_reason',$tables)) {
+                $query->select('esr.reason')
+                    ->from($db->quoteName('#__emundus_evaluations', 'ee'))
+                    ->leftJoin($db->quoteName('#__emundus_evaluations_repeat_reason', 'eerr') . ' ON ' . $db->quoteName('ee.id') . ' = ' . $db->quoteName('eerr.parent_id'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_reasons', 'est') . ' ON ' . $db->quoteName('esr.id') . ' = ' . $db->quoteName('eerr.reason'))
+                    ->where($db->quoteName('ee.id') . ' = ' . $db->quote($eid));
+                $db->setQuery($query);
+                return $db->loadColumn();
+            } else {
+                return [];
+            }
+        } catch (Exception $e) {
+            JLog::add('Cannot get reasons for evaluation | '.$eid.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return [];
         }
     }
 }

@@ -22,5 +22,9 @@
   {
     "title": "COM_EMUNDUS_FORM_BUILDER_FORMATS_VIDEO",
     "value": "mp4"
+  },
+  {
+    "title": "Zip",
+    "value": "zip"
   }
 ]

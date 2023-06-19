@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -477,9 +477,11 @@ function checkAllBox(id, type){
 		$data['password'] = $rate->shipping_params->password;
 		$data['destCity'] = $null->shipping_address->address_city;
 		$data['destZip'] = $null->shipping_address->address_post_code;
-		if(empty($null->shipping_address->address_country->zone_code_2))
-			$null->shipping_address->address_country->zone_code_2 = 'US';
-		$data['destCountry'] = $null->shipping_address->address_country->zone_code_2;
+		$data['destCountry'] = 'US';
+		if(!empty($warehouse->country_ID))
+			$data['destCountry'] = $warehouse->country_ID;
+		if(!empty($null->shipping_address->address_country->zone_code_2))
+			$data['destCountry'] = $null->shipping_address->address_country->zone_code_2;
 		$data['destStatecode'] = @$null->shipping_address->address_state->zone_code_3;
 		$data['city'] = $warehouse->city;
 		$data['zip'] = $warehouse->zip;
