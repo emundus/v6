@@ -125,3 +125,24 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
 	<?php
 	endif; ?>
 </div>
+
+
+<script>
+    if(screen.width < 768) {
+
+        const filterIntro = document.querySelector('.em-filter-intro');
+        const filterBody = document.querySelector('.em-filter-body');
+
+        filterIntro.classList.add('close-filter');
+        filterBody.style.display === "none";
+
+        filterIntro.addEventListener('click', function(){
+            if (filterBody.style.display === "none") {
+                filterBody.style.display = "block";
+            } else {
+
+                filterBody.style.display = "none";
+            }
+        });
+    }
+</script>
