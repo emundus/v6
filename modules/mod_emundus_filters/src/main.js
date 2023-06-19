@@ -13,6 +13,7 @@ if (modFilters) {
         moduleId: parseInt(modFilters.getAttribute('data-module-id')),
         defaultAppliedFilters: appliedFilters,
         filters: filters,
+        defaultQuickSearchFilters: JSON.parse(atob(modFilters.getAttribute('data-quick-search-filters'))),
     }).use(Vuex).mixin(translate);
 
     app.mount('#em-filters-vue');

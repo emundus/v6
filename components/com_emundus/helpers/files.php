@@ -3140,8 +3140,8 @@ class EmundusHelperFiles
 
 		$session = JFactory::getSession();
 	    $session_filters = $session->get('em-applied-filters');
-		$global_search_filters = $session->get('em-global-search-filters');
-		if (!empty($session_filters) || !empty($global_search_filters)) {
+		$quick_search_filters = $session->get('em-quick-search-filters');
+		if (!empty($session_filters) || !empty($quick_search_filters)) {
 			if (empty($already_joined)) {
 				$already_joined = [
 					'jecc' => 'jos_emundus_campaign_candidature',
@@ -3155,24 +3155,29 @@ class EmundusHelperFiles
 			}
 			$db = JFactory::getDbo();
 
-			foreach ($global_search_filters as $filter) {
-				if ($filter['scope'] === 'everywhere') {
-					$scopes = ['jecc.applicant_id', 'jecc.fnum', 'u.username', 'eu.firstname', 'eu.lastname', 'u.email', 'u.username'];
-					$orConditions = ' AND (';
+			if (!empty($quick_search_filters)) {
+				$quick_search_where = ' AND (';
+				foreach ($quick_search_filters as $index => $filter) {
+					if ($filter['scope'] === 'everywhere') {
+						$scopes = ['jecc.applicant_id', 'jecc.fnum', 'u.username', 'eu.firstname', 'eu.lastname', 'u.email', 'u.username'];
 
-					foreach ($scopes as $index => $scope) {
-						if ($index > 0) {
-							$orConditions .= ' OR ';
+						foreach ($scopes as $scope_index => $scope) {
+							if ($index > 0 || $scope_index > 0) {
+								$quick_search_where .= ' OR ';
+							}
+
+							$quick_search_where .= $this->writeQueryWithOperator($scope, $filter['value'], 'LIKE');
 						}
-
-						$orConditions .= $this->writeQueryWithOperator($scope, $filter['value'], 'LIKE');
+					} else {
+						if ($index > 0) {
+							$quick_search_where .= ' OR ';
+						}
+						$quick_search_where .= $this->writeQueryWithOperator($filter['scope'], $filter['value'], '=');
 					}
-
-					$orConditions .= ')';
-					$where['q'] .= $orConditions;
-				} else {
-					$where['q'] .= ' AND ' . $this->writeQueryWithOperator($filter['scope'], $filter['value'], '=');
 				}
+
+				$quick_search_where .= ')';
+				$where['q'] .= $quick_search_where;
 			}
 
 			foreach ($session_filters as $filter) {

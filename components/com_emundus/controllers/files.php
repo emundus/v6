@@ -128,11 +128,14 @@ class EmundusControllerFiles extends JControllerLegacy
 		if (EmundusHelperAccess::asAccessAction(1, 'r', JFactory::getUser()->id)) {
 			$jinput = JFactory::getApplication()->input;
 			$filters = $jinput->getString('filters', '');
+			$quick_search_filters = $jinput->getString('search_filters', '');
 
 			if (!empty($filters)) {
 				$filters = json_decode($filters, true);
+				$quick_search_filters = json_decode($quick_search_filters, true);
 				$session = JFactory::getSession();
 				$session->set('em-applied-filters', $filters);
+				$session->set('em-quick-search-filters', $quick_search_filters);
 
 				$filter_fabrik_element_ids = [];
 				foreach ($filters as $filter) {

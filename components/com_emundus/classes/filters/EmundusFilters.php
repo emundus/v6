@@ -6,6 +6,7 @@ class EmundusFilters
 	protected $default_element = 0;
 	protected $filters = [];
 	protected $applied_filters = [];
+	protected $quick_search_filters = [];
 
 	public function __construct($config = array())
 	{
@@ -25,6 +26,10 @@ class EmundusFilters
 		$session_filters = JFactory::getSession()->get('em-applied-filters', null);
 		if (!empty($session_filters)) {
 			$this->setAppliedFilters($session_filters);
+		}
+		$quick_search_filters = JFactory::getSession()->get('em-quick-search-filters', null);
+		if (!empty($quick_search_filters)) {
+			$this->setQuickSearchFilters($quick_search_filters);
 		}
 	}
 
@@ -150,9 +155,13 @@ class EmundusFilters
 		return $this->applied_filters;
 	}
 
-	public function applyFilters()
+	protected function setQuickSearchFilters($quick_search_filters)
 	{
+		$this->quick_search_filters = $quick_search_filters;
+	}
 
+	public function getQuickSearchFilters() {
+		return $this->quick_search_filters;
 	}
 
 	protected function getFabrikElementValues($element)

@@ -18,7 +18,6 @@ if (!empty($user) && EmundusHelperAccess::asAccessAction(1, 'r', $user->id)) {
 				$app->enqueueMessage($e->getMessage());
 				$app->redirect('/');
 			}
-
 		} else {
 			$fabrik_element_id = $params->get('element_id', 0);
 			if (!empty($fabrik_element_id)) {
@@ -43,6 +42,7 @@ if (!empty($user) && EmundusHelperAccess::asAccessAction(1, 'r', $user->id)) {
 
 			$filters = $m_filters->getFilters();
 			$applied_filters = $m_filters->getAppliedFilters();
+			$quick_search_filters = $m_filters->getQuickSearchFilters();
 
 			require JModuleHelper::getLayoutPath('mod_emundus_filters', $layout);
 		}

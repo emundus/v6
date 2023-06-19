@@ -26,6 +26,10 @@ class EmundusFiltersFiles extends EmundusFilters
 			$this->checkFiltersAvailability();
 			$this->checkFiltersValuesAvailability();
 		}
+		$quick_search_filters = JFactory::getSession()->get('em-quick-search-filters', null);
+		if (!empty($quick_search_filters)) {
+			$this->setQuickSearchFilters($quick_search_filters);
+		}
 	}
 
 	private function setProfiles()

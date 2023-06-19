@@ -3,11 +3,14 @@ import {FetchClient} from './fetchClient.js';
 const client = new FetchClient('files');
 
 export default {
-    async applyFilters(filters) {
+    async applyFilters(filters, search_filters) {
         let applied = false;
 
         if (filters) {
-            client.post('applyfilters', {filters:  JSON.stringify(filters)}).then(data => {
+            client.post('applyfilters', {
+                filters:  JSON.stringify(filters),
+                search_filters: JSON.stringify(search_filters)
+            }).then(data => {
                if (data.status) {
                    applied = true;
                    window.location.reload();

@@ -49,6 +49,7 @@
 			       type="text"
 			       :placeholder="translate('MOD_EMUNDUS_FILTERS_FILTER_SEARCH')"
 			       v-model="search"
+			       @keyup="onSearchChange"
 			>
 			<div class="values-selection em-mt-8 em-mb-8">
 				<div class="em-flex-row">
@@ -97,23 +98,43 @@ export default {
 	methods: {
 		onClickSpecificValue(newValue) {
 			// If all is selected, remove 'all' from selected values
-			if ( this.filter.value.includes('all')) {
+			if (this.filter.value.includes('all')) {
 				 this.filter.value =  this.filter.value.filter((value) => { return value !== 'all' });
 
-				if (!this.filter.value.includes(newValue)) {
+				 // check that newvalue exists
+				const exists = this.filter.values.find((value) => { return value.value === newValue });
+				if (exists && !this.filter.value.includes(newValue)) {
 					 this.filter.value.push(newValue);
 				}
 			}
 		},
 		onClickAll() {
-			if ( this.filter.value.includes('all')) {
-				 this.filter.value = [];
+			if (this.filter.value.includes('all')) {
+				this.filter.value = this.filter.value.filter((value) => {
+					return !this.searchedValues.find((searchedValue) => { return searchedValue.value === value });
+				});
+				this.filter.value =  this.filter.value.filter((value) => { return value !== 'all' });
 			} else {
 				let allValues = this.searchedValues.map((value) => { return value.value });
 				allValues.push('all');
-				this.filter.value = allValues;
+				allValues.forEach((value) => {
+					if (!this.filter.value.includes(value)) {
+						 this.filter.value.push(value);
+					}
+				});
 			}
 		},
+		allValuesAreSelected() {
+			return this.filter.values.every((value) => {
+				return this.filter.value.includes(value.value);
+			});
+		},
+		onSearchChange() {
+			if(!this.allValuesAreSelected()) {
+				// If all is not selected, remove 'all' from selected values
+				this.filter.value =  this.filter.value.filter((value) => { return value !== 'all'});
+			}
+		}
 	},
 	computed: {
 		selectedOperatorLabel() {

@@ -7,23 +7,23 @@
 			  <div id="global-search-values" ref="globalSearchValues" class="em-border-radius-8 em-border-neutral-400 em-flex-row em-flex-wrap em-white-bg" @click="onEnterGlobalSearchDiv">
 				  <div v-if="globalSearch.length > 0" class="em-flex-row em-flex-wrap">
 					  <div v-for="value in globalSearch" :value="value.value" class="global-search-tag em-flex-row em-box-shadow em-border-radius-8 em-border-neutral-400 em-w-auto em-mt-4 em-mb-4 em-ml-4 em-mr-4">
-						  <span style="white-space: nowrap">{{ value.scope }} : {{ value.value }}</span>
+						  <span style="white-space: nowrap">{{ translatedScope(value.scope) }} : {{ value.value }}</span>
 						  <span class="material-icons-outlined em-pointer" @click="removeGlobalSearchValue(value.value)">clear</span>
 					  </div>
 				  </div>
 				  <input id="current-global-search" ref="globalSearchInput" class="em-border-radius-8" v-model="currentGlobalSearch" type="text" @keyup.enter="onGlobalSearchChange('everywhere')" :placeholder="globalSearchPlaceholder">
 			  </div>
 			  <ul id="select-scopes" class="em-w-100 em-w-100 em-border-radius-8 em-white-bg em-border-neutral-400 em-box-shadow" :class="{'hidden': currentGlobalSearch.length < 1}">
-				  <li v-for="option in globalSearchScopes" :key="option.value" @click="onGlobalSearchChange(option.value)" class="em-pointer">{{ translate(option.label) }}</li>
+				  <li v-for="option in globalSearchScopes" :key="option.value" @click="onGlobalSearchChange(option.value)" class="em-pointer">{{ currentGlobalSearch }}  {{ translate(option.label) }}</li>
 			  </ul>
 		  </div>
 		  <div id="save-filters-inputs-btns">
-			  <button v-if="showSaveFilter" id="save-filters" class="em-secondary-button label label-darkblue em-mt-8 em-mb-8" @click="onClickSaveFilter">{{ translate('MOD_EMUNDUS_FILTERS_SAVE_FILTERS') }}</button>
+			  <button id="save-filters" class="em-secondary-button label label-darkblue em-mt-8 em-mb-8" @click="onClickSaveFilter">{{ translate('MOD_EMUNDUS_FILTERS_SAVE_FILTERS') }}</button>
 			  <div class="em-flex-row em-flex-space-between" :class="{'hidden': !openSaveFilter}">
 				  <input id="new-filter-name" type="text" class="em-flex-row" v-model="newFilterName" :placeholder="translate('MOD_EMUNDUS_FILTERS_SAVE_FILTER_NAME')">
 				  <span class="material-icons-outlined" :class="{'em-pointer em-dark-blue-500-color': newFilterName.length > 0}" @click="saveFilters">save</span>
 			  </div>
-			  <div id="registered-filters-wrapper" class="em-mt-8">
+			  <div v-if="registeredFilters.length > 0" id="registered-filters-wrapper" class="em-mt-8">
 				  <label for="registered-filters">{{ translate('MOD_EMUNDUS_FILTERS_SAVED_FILTERS') }}</label>
 				  <div class="em-flex-row em-flex-space-between">
 					  <select id="registered-filters" class="em-w-100" v-model="selectedRegisteredFilter" @change="onSelectRegisteredFilter">
@@ -74,6 +74,10 @@ export default {
 			type: Array,
 			default: () => []
 		},
+		defaultQuickSearchFilters: {
+			type: Array,
+			default: () => []
+		},
 		filters: {
 			type: Array,
 			default: () => []
@@ -94,31 +98,31 @@ export default {
 			globalSearchScopes: [
 				{
 					value: 'everywhere',
-					label: 'MOD_EMUNDUS_FILTERS_ALL'
+					label: 'MOD_EMUNDUS_FILTERS_SCOPE_ALL'
 				},
 				{
 					value: 'eu.firstname',
-					label: 'MOD_EMUNDUS_FILTERS_FIRSTNAME'
+					label: 'MOD_EMUNDUS_FILTERS_SCOPE_FIRSTNAME'
 				},
 				{
 					value: 'eu.lastname',
-					label: 'MOD_EMUNDUS_FILTERS_LASTNAME'
+					label: 'MOD_EMUNDUS_FILTERS_SCOPE_LASTNAME'
 				},
 				{
 					value: 'u.username',
-					label: 'MOD_EMUNDUS_FILTERS_USERNAME'
+					label: 'MOD_EMUNDUS_FILTERS_SCOPE_USERNAME'
 				},
 				{
 					value: 'u.email',
-					label: 'MOD_EMUNDUS_FILTERS_EMAIL'
+					label: 'MOD_EMUNDUS_FILTERS_SCOPE_EMAIL'
 				},
 				{
 					value: 'jecc.applicant_id',
-					label: 'MOD_EMUNDUS_FILTERS_ID'
+					label: 'MOD_EMUNDUS_FILTERS_SCOPE_ID'
 				},
 				{
 					value: 'jecc.fnum',
-					label: 'MOD_EMUNDUS_FILTERS_FNUM'
+					label: 'MOD_EMUNDUS_FILTERS_SCOPE_FNUM'
 				},
 			],
 		}
@@ -136,6 +140,8 @@ export default {
 
 			return filter;
 		});
+
+		this.globalSearch = this.defaultQuickSearchFilters;
 	},
 	methods: {
 		onSelectNewFilter(filterId) {
@@ -159,11 +165,11 @@ export default {
 			return added;
 		},
 		applyFilters() {
-			filtersService.applyFilters(this.appliedFilters);
+			filtersService.applyFilters(this.appliedFilters, this.globalSearch);
 		},
 		clearFilters() {
 			sessionStorage.removeItem('emundus-current-filter');
-			filtersService.applyFilters([]);
+			filtersService.applyFilters([], []);
 		},
 		saveFilters() {
 			let saved = false;
@@ -253,6 +259,11 @@ export default {
 		onEnterGlobalSearchDiv() {
 			this.$refs.globalSearchValues.scrollTop = this.$refs.globalSearchValues.scrollHeight;
 			this.$refs.globalSearchInput.focus();
+		},
+		translatedScope(scope) {
+			const foundScope = this.globalSearchScopes.find((s) => s.value === scope);
+
+			return foundScope ? this.translate(foundScope.label) : scope;
 		}
 	},
 	computed: {

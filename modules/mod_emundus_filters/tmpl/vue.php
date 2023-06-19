@@ -27,12 +27,22 @@ JText::script('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_INFERIOR_TO');
 JText::script('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_INFERIOR_OR_EQUAL_TO');
 JText::script('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_BETWEEN');
 JText::script('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_NOT_BETWEEN');
+JText::script('MOD_EMUNDUS_FILTERS_SCOPE_ALL');
+JText::script('MOD_EMUNDUS_FILTERS_SCOPE_FIRSTNAME');
+JText::script('MOD_EMUNDUS_FILTERS_SCOPE_LASTNAME');
+JText::script('MOD_EMUNDUS_FILTERS_SCOPE_USERNAME');
+JText::script('MOD_EMUNDUS_FILTERS_SCOPE_EMAIL');
+JText::script('MOD_EMUNDUS_FILTERS_SCOPE_FNUM');
+JText::script('MOD_EMUNDUS_FILTERS_SCOPE_ID');
+JText::script('MOD_EMUNDUS_FILTERS_GLOBAL_SEARCH_PLACEHOLDER');
+
 ?>
 <div
         id="em-filters-vue"
         data-module-id="<?= $module->id ?>"
         data-applied-filters='<?= base64_encode(json_encode($applied_filters)) ?>'
         data-filters='<?= base64_encode(json_encode($filters)) ?>'
+        data-quick-search-filters='<?= base64_encode(json_encode($quick_search_filters)) ?>'
 ></div>
 
 <script src="media/mod_emundus_filters/app.js"></script>
