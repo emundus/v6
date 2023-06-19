@@ -134,7 +134,6 @@ class EmundusControllerFiles extends JControllerLegacy
 				$session = JFactory::getSession();
 				$session->set('em-applied-filters', $filters);
 
-
 				$filter_fabrik_element_ids = [];
 				foreach ($filters as $filter) {
 					if (is_numeric($filter['id']) && !in_array($filter['id'], $filter_fabrik_element_ids)) {

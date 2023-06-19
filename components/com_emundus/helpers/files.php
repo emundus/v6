@@ -3140,7 +3140,8 @@ class EmundusHelperFiles
 
 		$session = JFactory::getSession();
 	    $session_filters = $session->get('em-applied-filters');
-		if (!empty($session_filters)) {
+		$global_search_filters = $session->get('em-global-search-filters');
+		if (!empty($session_filters) || !empty($global_search_filters)) {
 			if (empty($already_joined)) {
 				$already_joined = [
 					'jecc' => 'jos_emundus_campaign_candidature',
@@ -3153,6 +3154,26 @@ class EmundusHelperFiles
 				];
 			}
 			$db = JFactory::getDbo();
+
+			foreach ($global_search_filters as $filter) {
+				if ($filter['scope'] === 'everywhere') {
+					$scopes = ['jecc.applicant_id', 'jecc.fnum', 'u.username', 'eu.firstname', 'eu.lastname', 'u.email', 'u.username'];
+					$orConditions = ' AND (';
+
+					foreach ($scopes as $index => $scope) {
+						if ($index > 0) {
+							$orConditions .= ' OR ';
+						}
+
+						$orConditions .= $this->writeQueryWithOperator($scope, $filter['value'], 'LIKE');
+					}
+
+					$orConditions .= ')';
+					$where['q'] .= $orConditions;
+				} else {
+					$where['q'] .= ' AND ' . $this->writeQueryWithOperator($filter['scope'], $filter['value'], '=');
+				}
+			}
 
 			foreach ($session_filters as $filter) {
 				if (!in_array('all', $filter['value']) && !empty($filter['value'])) {

@@ -2,19 +2,36 @@
   <div id="emundus-filters" class="em-w-100">
 	  <section id="filters-top-actions" class="em-mb-16">
 		  <span id="clear-filters" class="material-icons-outlined em-pointer" @click="clearFilters" :alt="translate('MOD_EMUNDUS_FILTERS_CLEAR_FILTERS')">filter_list_off</span>
-		  <button id="save-filters" class="em-secondary-button label label-darkblue em-mt-8 em-mb-8" @click="onClickSaveFilter">{{ translate('MOD_EMUNDUS_FILTERS_SAVE_FILTERS') }}</button>
-		  <div class="em-flex-row em-flex-space-between" :class="{'hidden': !openSaveFilter}">
-			  <input id="new-filter-name" type="text" class="em-flex-row" v-model="newFilterName" :placeholder="translate('MOD_EMUNDUS_FILTERS_SAVE_FILTER_NAME')">
-			  <span class="material-icons-outlined" :class="{'em-pointer em-dark-blue-500-color': newFilterName.length > 0}" @click="saveFilters">save</span>
+
+		  <div id="global-search-wrapper" style="position: relative;">
+			  <div id="global-search-values" ref="globalSearchValues" class="em-border-radius-8 em-border-neutral-400 em-flex-row em-flex-wrap em-white-bg" @click="onEnterGlobalSearchDiv">
+				  <div v-if="globalSearch.length > 0" class="em-flex-row em-flex-wrap">
+					  <div v-for="value in globalSearch" :value="value.value" class="global-search-tag em-flex-row em-box-shadow em-border-radius-8 em-border-neutral-400 em-w-auto em-mt-4 em-mb-4 em-ml-4 em-mr-4">
+						  <span style="white-space: nowrap">{{ value.scope }} : {{ value.value }}</span>
+						  <span class="material-icons-outlined em-pointer" @click="removeGlobalSearchValue(value.value)">clear</span>
+					  </div>
+				  </div>
+				  <input id="current-global-search" ref="globalSearchInput" class="em-border-radius-8" v-model="currentGlobalSearch" type="text" @keyup.enter="onGlobalSearchChange('everywhere')" :placeholder="globalSearchPlaceholder">
+			  </div>
+			  <ul id="select-scopes" class="em-w-100 em-w-100 em-border-radius-8 em-white-bg em-border-neutral-400 em-box-shadow" :class="{'hidden': currentGlobalSearch.length < 1}">
+				  <li v-for="option in globalSearchScopes" :key="option.value" @click="onGlobalSearchChange(option.value)" class="em-pointer">{{ translate(option.label) }}</li>
+			  </ul>
 		  </div>
-		  <div id="registered-filters-wrapper" class="em-mt-8">
-			  <label for="registered-filters">{{ translate('MOD_EMUNDUS_FILTERS_SAVED_FILTERS') }}</label>
-			  <div class="em-flex-row em-flex-space-between">
-				  <select id="registered-filters" class="em-w-100" v-model="selectedRegisteredFilter" @change="onSelectRegisteredFilter">
-						<option value="0">{{ translate('MOD_EMUNDUS_FILTERS_PLEASE_SELECT') }}</option>
-					  <option v-for="registeredFilter in registeredFilters" :key="registeredFilter.id" :value="registeredFilter.id">{{ registeredFilter.name }}</option>
-				  </select>
-				  <span v-if="selectedRegisteredFilter > 0" class="material-icons-outlined em-red-500-color em-pointer" @click="deleteRegisteredFilter">delete</span>
+		  <div id="save-filters-inputs-btns">
+			  <button v-if="showSaveFilter" id="save-filters" class="em-secondary-button label label-darkblue em-mt-8 em-mb-8" @click="onClickSaveFilter">{{ translate('MOD_EMUNDUS_FILTERS_SAVE_FILTERS') }}</button>
+			  <div class="em-flex-row em-flex-space-between" :class="{'hidden': !openSaveFilter}">
+				  <input id="new-filter-name" type="text" class="em-flex-row" v-model="newFilterName" :placeholder="translate('MOD_EMUNDUS_FILTERS_SAVE_FILTER_NAME')">
+				  <span class="material-icons-outlined" :class="{'em-pointer em-dark-blue-500-color': newFilterName.length > 0}" @click="saveFilters">save</span>
+			  </div>
+			  <div id="registered-filters-wrapper" class="em-mt-8">
+				  <label for="registered-filters">{{ translate('MOD_EMUNDUS_FILTERS_SAVED_FILTERS') }}</label>
+				  <div class="em-flex-row em-flex-space-between">
+					  <select id="registered-filters" class="em-w-100" v-model="selectedRegisteredFilter" @change="onSelectRegisteredFilter">
+						  <option value="0">{{ translate('MOD_EMUNDUS_FILTERS_PLEASE_SELECT') }}</option>
+						  <option v-for="registeredFilter in registeredFilters" :key="registeredFilter.id" :value="registeredFilter.id">{{ registeredFilter.name }}</option>
+					  </select>
+					  <span v-if="selectedRegisteredFilter > 0" class="material-icons-outlined em-red-500-color em-pointer" @click="deleteRegisteredFilter">delete</span>
+				  </div>
 			  </div>
 		  </div>
 	  </section>
@@ -69,7 +86,41 @@ export default {
 			openSaveFilter: false,
 			newFilterName: '',
 			registeredFilters: [],
-			selectedRegisteredFilter: 0
+			selectedRegisteredFilter: 0,
+			showSaveFilter: false,
+			currentGlobalSearch: '',
+			globalSearch: [],
+			currentGlobalSearchScope: 'everywhere',
+			globalSearchScopes: [
+				{
+					value: 'everywhere',
+					label: 'MOD_EMUNDUS_FILTERS_ALL'
+				},
+				{
+					value: 'eu.firstname',
+					label: 'MOD_EMUNDUS_FILTERS_FIRSTNAME'
+				},
+				{
+					value: 'eu.lastname',
+					label: 'MOD_EMUNDUS_FILTERS_LASTNAME'
+				},
+				{
+					value: 'u.username',
+					label: 'MOD_EMUNDUS_FILTERS_USERNAME'
+				},
+				{
+					value: 'u.email',
+					label: 'MOD_EMUNDUS_FILTERS_EMAIL'
+				},
+				{
+					value: 'jecc.applicant_id',
+					label: 'MOD_EMUNDUS_FILTERS_ID'
+				},
+				{
+					value: 'jecc.fnum',
+					label: 'MOD_EMUNDUS_FILTERS_FNUM'
+				},
+			],
 		}
 	},
 	mounted() {
@@ -181,6 +232,27 @@ export default {
 		},
 		onRemoveFilter(filter) {
 			this.appliedFilters = this.appliedFilters.filter((appliedFilter) => appliedFilter.uid !== filter.uid);
+		},
+		onGlobalSearchChange(scope = 'everywhere') {
+			if (this.currentGlobalSearch.length > 0) {
+				// if the current search is already in the list, no need to add it again
+				const foundSearch = this.globalSearch.find((search) => search.value === this.currentGlobalSearch);
+
+				if (!foundSearch) {
+					this.globalSearch.push({value: this.currentGlobalSearch, scope: scope});
+				}
+			}
+
+			this.currentGlobalSearch = '';
+			// scroll to top of the div
+			this.$refs.globalSearchValues.scrollTop = 0;
+		},
+		removeGlobalSearchValue(value) {
+			this.globalSearch = this.globalSearch.filter((search) => search.value !== value);
+		},
+		onEnterGlobalSearchDiv() {
+			this.$refs.globalSearchValues.scrollTop = this.$refs.globalSearchValues.scrollHeight;
+			this.$refs.globalSearchInput.focus();
 		}
 	},
 	computed: {
@@ -189,6 +261,40 @@ export default {
 				return filter.available;
 			});
 		},
+		globalSearchPlaceholder() {
+			return this.globalSearch.length < 1 ? this.translate('MOD_EMUNDUS_FILTERS_GLOBAL_SEARCH_PLACEHOLDER') : '';
+		}
 	}
 }
 </script>
+
+<style>
+#select-scopes:not(.hidden) {
+	position: absolute;
+	top: 42px;
+	z-index:2;
+	list-style-type: none;
+	margin: 0;
+	padding: 8px;
+}
+
+#select-scopes li {
+	padding: 8px;
+}
+
+#global-search-values {
+	height: 42px;
+	overflow-y: auto;
+}
+
+#current-global-search {
+	border: none;
+	border-radius: 0;
+	box-shadow: none;
+	outline: 0;
+}
+
+.global-search-tag {
+	padding: 4px;
+}
+</style>
