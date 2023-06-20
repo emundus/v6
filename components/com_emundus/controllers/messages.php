@@ -268,6 +268,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 	    // Check tags unpublished
 	    $unpublished_tags = $m_emails->checkUnpublishedTags($mail_from.$mail_from_name.$mail_subject.$mail_message);
 
+	    $html = '';
 		if(!empty($unpublished_tags)) {
 			$html = '<div style="color: #c91212"><p style="color: #c91212">' .JText::_('COM_EMUNDUS_EMAIL_WARNING_UNPUBLISHED_TAGS').'</p><ul>';
 			foreach ($unpublished_tags as $unpublished_tag) {
@@ -278,8 +279,6 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 	    if ($nb_recipients > 1) {
 		    $html .= '<h2>'.JText::sprintf('COM_EMUNDUS_EMAIL_ABOUT_TO_SEND', $nb_recipients).'</h2>';
-	    } else {
-		    $html = '';
 	    }
 
 
@@ -872,17 +871,30 @@ class EmundusControllerMessages extends JControllerLegacy {
 		$sent = [];
 		$failed = [];
 
-		// Loading the message template is not used for getting the message text as that can be modified on the frontend by the user before sending.
-		$template = $m_messages->getEmail($template_id);
+		if(!empty($template_id))
+		{
+			// Loading the message template is not used for getting the message text as that can be modified on the frontend by the user before sending.
+			$template = $m_messages->getEmail($template_id);
+		} else {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
 
-        require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
-        $h_emails = new EmundusHelperEmails();
+			$query->clear()
+				->select($db->quoteName('Template'))
+				->from($db->quoteName('#__emundus_email_templates'))
+				->where($db->quoteName('id').' = 1');
+			$db->setQuery($query);
+			$template = $db->loadObject();
+		}
+
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
+		$h_emails = new EmundusHelperEmails();
 		foreach ($users as $user) {
-            $can_send_mail = $h_emails->assertCanSendMailToUser($user->id);
-            if (!$can_send_mail) {
-	            $failed[] = $user->email;
-                continue;
-            }
+			$can_send_mail = $h_emails->assertCanSendMailToUser($user->id);
+			if (!$can_send_mail) {
+				$failed[] = $user->email;
+				continue;
+			}
 
 			$toAttach = [];
 			$post = [
@@ -896,7 +908,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 			// Tags are replaced with their corresponding values using the PHP preg_replace function.
 			$subject = preg_replace($tags['patterns'], $tags['replacements'], $mail_subject);
 			$body = $mail_message;
-			if ($template->id) {
+			if (!empty($template->Template)) {
 				$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
 			}
 			$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
@@ -908,7 +920,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 			/*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
 				$mail_from_address = $mail_from;
 			} else {*/
-            $mail_from_address = $mail_from_sys;
+			$mail_from_address = $mail_from_sys;
 			//}
 
 			// Set sender
@@ -962,11 +974,11 @@ class EmundusControllerMessages extends JControllerLegacy {
 					'user_id_to' => $user->id,
 					'subject' => $subject,
 					'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $user->email . '</i><br>' . $body . $files,
-					'type' => !empty($template)?$template->type:''
+					'type' => !empty($template->type)?$template->type:''
 				];
 				$m_emails->logEmail($log);
 				// Log the email in the eMundus logging system.
-                $logsParams = array('created' => [$subject]);
+				$logsParams = array('created' => [$subject]);
 				EmundusModelLogs::log($current_user->id, $user->id, '', 9, 'c', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 			}
 

@@ -84,14 +84,15 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
             if (empty($formModel->getRowId())) {
 
                 $rowid = $formModel->data["rowid"];
-                $file_to_duplicate_data = $this->checkData($rowid);
+                $listModel =  $formModel->getListModel();
+                $table = $listModel->getTable()->db_table_name;
+
+                $file_to_duplicate_data = $this->checkData($rowid,$table);
 
                 if (empty($file_to_duplicate_data)) {
                     return;
                 }
-                
-                $listModel =  $formModel->getListModel();
-                $table = $listModel->getTable()->db_table_name;
+
                 $table_elements = $formModel->getElementOptions(false, 'name', false, false, array(), '', true);
                 $table_elements = json_encode($table_elements);
                 $groups = json_encode($formModel->getFormGroups(true));
@@ -141,8 +142,8 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
             }
         }
     }
-    
-    
+
+
     public function onAjax_duplicate() {
 
         $jinput = $this->app->input;
@@ -187,9 +188,9 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
                 }
 
                 // get data and update current form
-                
+
                 $data = array();
-                
+
                 if (count($groups) > 0) {
                     foreach ($groups as $group) {
 
@@ -219,7 +220,7 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
                                 $query = 'SELECT '.implode(',', $d['element_name']).' FROM '.$d['table'].' WHERE parent_id='.$parent_id;
                                 $db->setQuery( $query );
                                 $stored = $db->loadAssocList();
-                                
+
                                 if (!empty($stored)) {
 
                                     foreach ($stored as $values) {
@@ -261,26 +262,53 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
         return json_encode($data);
     }
 
-    private function checkData(string $fnum) : string {
+    private function checkData(string $fnum, string $db_table_name) : string {
         $user = JFactory::getSession()->get('emundusUser');
 
         $fnum = $fnum ?: $user->fnum;
 
         if (!empty($fnum)) {
-            $program_code = $user->fnums[$fnum]->training;
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-            $program_files = array_filter($user->fnums, function($file) use ($fnum, $program_code) {
-                return ($file->fnum != $fnum && $file->training === $program_code);
-            });
+            $query->select('COUNT('.$db->quoteName('id').')')
+                ->from($db->quoteName($db_table_name))
+                ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
+            $db->setQuery($query);
+            $already_filled = $db->loadResult();
 
-            if (!empty($program_files)) {
-                return key(array_slice($program_files, -1));
+            if ($already_filled == 0) {
+                $program_code = $user->fnums[$fnum]->training;
+
+                $user_fnums = $user->fnums;
+                $fnums_training = [];
+                foreach($user_fnums as $user_fnum) {
+                    if ($user_fnum->fnum !== $fnum && $user_fnum->training === $program_code) {
+                        $query->clear()
+                            ->select('COUNT('.$db->quoteName('id').')')
+                            ->from($db->quoteName($db_table_name))
+                            ->where($db->quoteName('fnum').' LIKE '.$db->quote($user_fnum->fnum));
+                        $db->setQuery($query);
+                        $filled = $db->loadResult();
+
+                        if ($filled > 0) {
+                            $fnums_training[] = $user_fnum->fnum;
+                        }
+                    }
+                }
+
+                $file_to_duplicate = max($fnums_training);
+
+                if ($file_to_duplicate) {
+                    return $file_to_duplicate;
+                } else {
+                    return '';
+                }
             } else {
                 return '';
             }
         } else {
             return '';
         }
-
     }
 }

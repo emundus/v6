@@ -130,6 +130,8 @@ class EmundusViewForm extends FabrikViewFormBase
                 $returnObject->plugintop = $this->plugintop;
             endif;
 
+			$db_table = $form->getTable();
+
             $Groups = new stdClass();
 
             foreach ($getGroup as $group) :
@@ -200,7 +202,33 @@ class EmundusViewForm extends FabrikViewFormBase
                     if($o_element->plugin != 'emundusreferent') {
                         //if($o_element->plugin != 'calc') {
                         $el_parmas = json_decode($o_element->params);
-                        $content_element = $element->preRender('0', '1', 'bootstrap');
+						if($o_element->plugin != 'calc') {
+							$content_element = $element->preRender('0', '1', '_emundus');
+						} else {
+							// We build the calc element because we don't want to execute the preRender function
+							$content_element = new stdClass();
+							$content_element->startRow = 0;
+							$content_element->endRow = 0;
+							$content_element->error = '';
+							$content_element->plugin = 'calc';
+							$content_element->hidden = !($o_element->hidden == "0");
+							$content_element->id = $db_table->db_table_name.'___'.$o_element->name;
+							$content_element->className = 'fb_el_'.$db_table->db_table_name.'___'.$o_element->name;
+							$content_element->element = '<span class="fabrikinput fabrikElementReadOnly em-w-100 em-bg-neutral-200" style="display:inline-block;background-color: #B2B7C7; border: unset" name="'.$content_element->id.'" id="'.$content_element->id.'"></span>';
+							$content_element->label_raw = $o_element->label;
+							$content_element->label = '<label for="'.$content_element->id.'" class="fabrikLabel control-label" >'.$o_element->label.'</label>';
+							$content_element->errorTag = '<span class="fabrikErrorMessage"></span>';
+							$content_element->element_ro = '';
+							$content_element->value = '';
+							$content_element->containerClass = 'fabrikElementContainer plg-calc fb_el_'.$content_element->id;
+							$content_element->element_raw = '';
+							$content_element->dataEmpty = false;
+							$content_element->labels = 1;
+							$content_element->dlabels = 1;
+							$content_element->tipAbove = '';
+							$content_element->tipBelow = '';
+							$content_element->tipSide = '';
+						}
                         ${"element" . $o_element->id} = new stdClass();
 
                         $labelsAbove = $content_element->labels;

@@ -216,6 +216,27 @@ class EmundusUnittestHelperSamples
 		return $campaign_id;
 	}
 
+	public function createSampleAttachment() {
+		$sample_id = 0;
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$rand_id = rand();
+
+		$query->insert('#__emundus_setup_attachments')
+			->columns(['lbl', 'value', 'description', 'allowed_types'])
+			->values($db->quote('_test_unitaire_' . $rand_id) . ',' . $db->quote('Test unitaire ' . $rand_id) . ',' . $db->quote('Document pour les tests unitaire') . ',' .$db->quote('pdf'));
+
+		$db->setQuery($query);
+		$inserted = $db->execute();
+		if ($inserted) {
+			$sample_id = $db->insertid();
+		}
+
+		return $sample_id;
+	}
+
 	public function createSampleUpload($fnum, $campaign_id, $user_id = 95, $attachment_id = 1) {
 		$inserted = false;
 

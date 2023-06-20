@@ -396,6 +396,12 @@ class EmundusControllerApplication extends JControllerLegacy
                                 $menu['notifications'] = $messenger->getNotificationsByFnum($fnum);
                             }
                         }
+                        if($action[0] == 10){
+                            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+                            $m_files = new EmundusModelFiles;
+                            $notifications_comments = sizeof($m_files->getCommentsByFnum([$fnum]));
+                            $menu['notifications'] = $notifications_comments;
+                        }
 
                         $menu_application[] = $menu;
                         if ((intval($menu['rgt']) - intval($menu['lft'])) == 1) {

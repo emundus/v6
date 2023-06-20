@@ -96,10 +96,9 @@ class EmundusModelApplication extends JModelList
 
     public function getUserCampaigns($id, $cid = null)
     {
+        $query = $this->_db->getQuery(true);
         if ($cid === null) {
-            $query = $this->_db->getQuery(true);
-            $query->clear()
-                ->select('esc.*,ecc.date_submitted,ecc.submitted,ecc.id as campaign_candidature_id,efg.result_sent,efg.date_result_sent,efg.final_grade,ecc.fnum,ess.class,ess.step,ess.value as step_value')
+            $query->select('esc.*,ecc.date_submitted,ecc.submitted,ecc.id as campaign_candidature_id,efg.result_sent,efg.date_result_sent,efg.final_grade,ecc.fnum,ess.class,ess.step,ess.value as step_value')
                 ->from($this->_db->quoteName('#__emundus_users','eu'))
                 ->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature','ecc').' ON '.$this->_db->quoteName('ecc.applicant_id').' = '.$this->_db->quoteName('eu.user_id'))
                 ->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$this->_db->quoteName('ecc.campaign_id').' = '.$this->_db->quoteName('esc.id'))
@@ -112,13 +111,15 @@ class EmundusModelApplication extends JModelList
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
         } else {
-            $query = 'SELECT esc.*, ecc.date_submitted, ecc.submitted, ecc.id as campaign_candidature_id, efg.result_sent, efg.date_result_sent, efg.final_grade, ecc.fnum, ess.class, ess.step, ess.value as step_value
-            FROM #__emundus_users eu
-            LEFT JOIN #__emundus_campaign_candidature ecc ON ecc.applicant_id=eu.user_id
-            LEFT JOIN #__emundus_setup_campaigns esc ON ecc.campaign_id=esc.id
-            LEFT JOIN #__emundus_final_grade efg ON efg.campaign_id=esc.id AND efg.student_id=eu.user_id
-            LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status
-            WHERE eu.user_id="' . $id . '" and ecc.published = 1 and esc.id = ' . $cid;
+            $query->select('esc.*,ecc.date_submitted,ecc.submitted,ecc.id as campaign_candidature_id,efg.result_sent,efg.date_result_sent,efg.final_grade,ecc.fnum,ess.class,ess.step,ess.value as step_value')
+                ->from($this->_db->quoteName('#__emundus_users','eu'))
+                ->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature','ecc').' ON '.$this->_db->quoteName('ecc.applicant_id').' = '.$this->_db->quoteName('eu.user_id'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$this->_db->quoteName('ecc.campaign_id').' = '.$this->_db->quoteName('esc.id'))
+                ->leftJoin($this->_db->quoteName('#__emundus_final_grade','efg').' ON '.$this->_db->quoteName('efg.campaign_id').' = '.$this->_db->quoteName('esc.id').' AND '.$this->_db->quoteName('efg.student_id').' = '.$this->_db->quoteName('eu.user_id'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_status','ess').' ON '.$this->_db->quoteName('ess.step').' = '.$this->_db->quoteName('ecc.status'))
+                ->where($this->_db->quoteName('eu.user_id').' = '.$this->_db->quote($id))
+                ->andWhere($this->_db->quoteName('ecc.published').' = '.$this->_db->quote(1))
+                ->andWhere($this->_db->quoteName('esc.id').' = '.$this->_db->quote($cid));
 
             $this->_db->setQuery($query);
             return $this->_db->loadObject();
@@ -540,6 +541,7 @@ class EmundusModelApplication extends JModelList
 				$upload_id = $this->_db->insertid();
 			} catch (RuntimeException $e) {
 				JFactory::getApplication()->enqueueMessage($e->getMessage());
+				JLog::add('Error in model/application at query: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
 			}
 		}
 
@@ -3229,13 +3231,21 @@ class EmundusModelApplication extends JModelList
 
     public function getAttachmentsByFnum($fnum, $ids=null, $attachment_id=null) {
         try {
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'profile.php');
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+
+            $m_profiles = new EmundusModelProfile;
+            $m_files = new EmundusModelFiles;
+            $fnumInfos = $m_files->getFnumInfos($fnum);
+
+            $profiles_by_campaign = $m_profiles->getProfilesIDByCampaign([$fnumInfos['id']]);
 
             // TODO : Group attachments by profile and adding profile column in jos_emundus_uploads
             $query = "SELECT DISTINCT eu.*, sa.value 
                         FROM #__emundus_uploads as eu
                         LEFT JOIN #__emundus_setup_attachments as sa ON sa.id = eu.attachment_id
                         LEFT JOIN #__emundus_setup_attachment_profiles as sap ON sap.id  = (
-                        SELECT id FROM #__emundus_setup_attachment_profiles sap2 WHERE sap2.attachment_id = sa.id ORDER BY sap2.profile_id ASC LIMIT 1
+                        SELECT id FROM #__emundus_setup_attachment_profiles sap2 WHERE sap2.attachment_id = sa.id and sap2.profile_id IN (".implode(',',$profiles_by_campaign).")
                         )
                         WHERE fnum like ".$this->_db->quote($fnum);
 
@@ -3251,7 +3261,7 @@ class EmundusModelApplication extends JModelList
                 $query .= " AND eu.id in ($ids)";
             }
 
-            $query .= " ORDER BY sap.mandatory DESC,sap.ordering,sa.value ASC";
+            $query .= " ORDER BY sap.mandatory DESC,sap.ordering";
 
             $this->_db->setQuery($query);
             $docs = $this->_db->loadObjectList();

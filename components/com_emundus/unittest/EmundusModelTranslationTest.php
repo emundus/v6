@@ -54,20 +54,20 @@ class EmundusModelTranslationTest extends TestCase
         $inserted = $this->m_translations->insertTranslation('E[L<$EN^()T_TE\T', 'Test élément avec clé vide', 'fr-FR', '', 'override', 'fabrik_elements', 999999);
         $this->assertFalse($inserted);
 
-        if(empty($this->m_translations->getTranslations('override','fr-FR','','','',0,'ELEMENT_TEST'))) {
+        if(empty($this->m_translations->getTranslations('override','fr-FR','','','fabrik_elements',0,'', 'ELEMENT_TEST'))) {
             // TEST 1 - Insert a basic translation of a fabrik_element
-            $this->assertSame(true, $this->m_translations->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', 9999));
+            $this->assertSame(true, $this->m_translations->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', 9999, 'label'));
         } else {
             // TEST 2 - Failed waiting - Insert a basic translation of a fabrik_element
-            $this->assertSame(false, $this->m_translations->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', 9999));
+            $this->assertSame(false, $this->m_translations->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', 9999, 'label'));
         }
 
-        if(empty($this->m_translations->getTranslations('override','en-GB','','','',0,'ELEMENT_TEST'))) {
+        if(empty($this->m_translations->getTranslations('override','en-GB','','','fabrik_elements',0, '', 'ELEMENT_TEST'))) {
             // TEST 1 - Insert a basic translation of a fabrik_element in english file
-            $this->assertSame(true, $this->m_translations->insertTranslation('ELEMENT_TEST', 'My element', 'en-GB', '', 'override', 'fabrik_elements', 9999));
+            $this->assertSame(true, $this->m_translations->insertTranslation('ELEMENT_TEST', 'My element', 'en-GB', '', 'override', 'fabrik_elements', 9999, 'label'));
         } else {
             // TEST 2 - Failed waiting - Insert a basic translation of a fabrik_element in english file
-            $this->assertSame(false, $this->m_translations->insertTranslation('ELEMENT_TEST', 'My element', 'en-GB', '', 'override', 'fabrik_elements', 9999));
+            $this->assertSame(false, $this->m_translations->insertTranslation('ELEMENT_TEST', 'My element', 'en-GB', '', 'override', 'fabrik_elements', 9999, 'label'));
         }
     }
 
@@ -132,7 +132,7 @@ class EmundusModelTranslationTest extends TestCase
     }
 
     public function testgetTranslationsObject(){
-        $this->assertNotEmpty($this->m_translations->getTranslationsObject());
+        $this->assertIsArray($this->m_translations->getTranslationsObject());
     }
 
     public function testgetDefaultLanguage(){

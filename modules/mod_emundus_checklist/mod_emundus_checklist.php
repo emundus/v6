@@ -55,6 +55,8 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $show_send = $params->get('showsend', 1);
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
+    $id_applicants = $eMConfig->get('id_applicants', '0');
+    $exceptions = explode(',',$id_applicants);
     $applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
     $application_fee = $eMConfig->get('application_fee', 0);
 
