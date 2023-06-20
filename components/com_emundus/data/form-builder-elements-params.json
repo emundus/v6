@@ -449,7 +449,7 @@
   ],
   "currency": [
     {
-      "label": "COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_OPTIONS",
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_ALL_OPTIONS",
       "name": "all_currencies_options",
       "type": "subform",
       "min": 1,
@@ -463,8 +463,8 @@
         {
           "name": "iso3",
           "type": "sql",
-          "label":"PLG_ELEMENT_CURRENCY_CURRENCY",
-          "value_field": "renderBack",
+          "label":"COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_CURRENCY",
+          "value_field": "label",
           "key_field": "iso3",
 
           "plugin_name": "currency",

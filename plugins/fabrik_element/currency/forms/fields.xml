@@ -37,10 +37,10 @@
 						   type="sql"
 						   label="PLG_ELEMENT_CURRENCY_CURRENCY"
 						   query="SELECT *,
-				   CONCAT(name, ' (', symbol, ' ', iso3,')') as renderBack
+				   CONCAT(name, ' (', symbol, ' ', iso3,')') as label
 				   FROM data_currency
 					WHERE published = 1"
-						   value_field="renderBack"
+						   value_field="label"
 						   key_field="iso3"
 					/>
 

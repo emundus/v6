@@ -3076,28 +3076,27 @@ class EmundusModelFormbuilder extends JModelList {
         }
     }
 
-    function getXMLFormsFieldsFromPlugin($plugin_name)
+    function getQueryFromXmlPlugin($plugin_name, $field_name)
     {
-        $path = JPATH_ROOT . "/plugins/fabrik_element/". $plugin_name . "/forms/fields.xml";
-        $file = false;
 
-        if (file_exists($path))
+        if (!empty($plugin_name)) // we get the plugin's name
         {
-            $file = new DOMDocument();
-            $file->load($path);
+            $path = JPATH_ROOT . "/plugins/fabrik_element/" . $plugin_name . "/forms/fields.xml";
+
+            if (file_exists($path)) {
+                $xmlFile = new DOMDocument();
+                $xmlFile->load($path);
+            }
         }
-        return $file;
-    }
 
-    function getQueryFromField_Name($xmlFile, $field_name)
-    {
         $query = null;
-
-        foreach($xmlFile->getElementsByTagName('field') as $field)
+        if (!empty($xmlFile))
         {
-            if ($field->getAttribute('name') === $field_name)
+            foreach ($xmlFile->getElementsByTagName('field') as $field)
             {
-                $query = $field->getAttribute('query');
+                if ($field->getAttribute('name') === $field_name) {
+                    $query = $field->getAttribute('query');
+                }
             }
         }
         return $query;
