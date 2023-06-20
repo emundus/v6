@@ -19,25 +19,40 @@ class MYPDF extends TCPDF {
 
 	//Page header
 	public function Header() {
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$logo_width = $eMConfig->get('generate_letter_logo_width', 25);
+		$font = $eMConfig->get('generate_letter_font', 'helvetica');
+
 		// Logo
 		if (is_file($this->logo))
-			$this->Image($this->logo, 2, 2, 25, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+			$this->Image($this->logo, 2, 2, $logo_width, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
 		// Set font
-		$this->SetFont('helvetica', 'B', 16);
+		$this->SetFont($font, 'B', 16);
 		// Title
 		$this->Cell(0, 15, '', 0, false, 'C', 0, '', 0, false, 'M', 'M');
 	}
 
 	// Page footer
 	public function Footer() {
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$display_page_number = $eMConfig->get('generate_letter_display_pages_number', 1);
+		$font = $eMConfig->get('generate_letter_font', 'helvetica');
+
 		// Position at 15 mm from bottom
 		$this->SetY(-15);
+
 		// Set font
-		$this->SetFont('helvetica', 'I', 8);
+		$this->SetFont($font, 'I', 8);
+
 		// Page number
-		$this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+		if($display_page_number == 1)
+		{
+			$this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+		}
+
 		// footer
 		$this->writeHTMLCell($w=0, $h=0, $x='', $y=250, $this->footer, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
+
 		//logo
 		if (is_file($this->logo_footer))
 			$this->Image($this->logo_footer, 150, 280, 40, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);

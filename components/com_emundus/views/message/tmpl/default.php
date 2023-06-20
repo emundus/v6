@@ -124,7 +124,7 @@ if ($allowed_attachments !== true) {
                     <?php else : ?>
                         <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_SELECT_TEMPLATE'); ?> </option>
                         <?php foreach ($message_templates as $message_template) : ?>
-                            <option value="<?= $message_template->id; ?>"> <?= $message_template->subject; ?></option>
+                            <option value="<?= $message_template->id; ?>" <?php if($this->data['template'] == $message_template->id) : ?>selected<?php endif;?>> <?= $message_template->subject; ?></option>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </select>
@@ -475,6 +475,7 @@ if ($allowed_attachments !== true) {
                 const editorContent = "<?php echo $this->body ?>";
                 let delta = editor.clipboard.convert(editorContent);
                 editor.setContents(delta);
+                $('#mail_body').val(editor.root.innerHTML);
 
                 editor.on('editor-change', (eventName, ...args) => {
                     if (eventName === 'text-change') {

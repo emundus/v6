@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -24,12 +24,12 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter
 	protected $state_field = 'product_published';
 	protected $item = null;
 	public function __construct(&$subject, $config) {
-		parent::__construct($subject, $config);
-		if(isset($this->params))
-			return;
+		if(!isset($this->params)) {
+			$plugin = JPluginHelper::getPlugin('finder', 'hikashop');
+			$this->params = new JRegistry(@$plugin->params);
+		}
 
-		$plugin = JPluginHelper::getPlugin('finder', 'hikashop');
-		$this->params = new JRegistry(@$plugin->params);
+		parent::__construct($subject, $config);
 	}
 
 	public function onFinderCategoryChangeState($extension, $pks, $value)
@@ -160,6 +160,11 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter
 		}
 		$productClass = hikashop_get('class.product');
 		$item = $productClass->get($id);
+		if($item->product_type == 'variant') {
+			$parent = $productClass->get($item->product_parent_id);
+			if($parent)
+				$item->alias = $parent->alias;
+		}
 		return 'index.php?option=' . $extension . '&ctrl=' . $view . '&task=show&cid=' . $id ."&name=".$item->alias. $extra;
 	}
 
@@ -168,6 +173,7 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter
 		$category = (bool)$this->params->get('index_per_category');
 		$db = JFactory::getDbo();
 		$query = $query instanceof JDatabaseQuery ? $query : $db->getQuery(true)
+			->select('a.*')
 			->select('a.product_id AS id, a.product_name AS title, a.product_alias AS alias, "" AS link, a.product_description AS summary')
 			->select('a.product_keywords AS metakey, a.product_meta_description AS metadesc, "" AS metadata, a.product_access AS access')
 			->select('"" AS created_by_alias, a.product_modified AS modified, "" AS modified_by')

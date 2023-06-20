@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -74,6 +74,7 @@ if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
 	if(empty($this->colors)) {
 		$classes .= ' table-striped table-hover';
 	}
+	echo $this->loadHkLayout('columns', array()); 
 ?>
 	<table id="hikashop_order_listing" class="<?php echo $classes; ?>" cellpadding="1">
 		<thead>
@@ -92,6 +93,18 @@ if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
 				<th class="hikashop_order_customer_title title">
 					<?php echo JHTML::_('grid.sort', JText::_('CUSTOMER'), 'c.name', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value ); ?>
 				</th>
+				<th class="hikashop_order_total_number_of_products_title title default" data-alias="number_of_products">
+					<?php echo JText::_('NUMBER_OF_PRODUCTS'); ?>
+				</th>
+				<th class="hikashop_order_billing_address_title title default" data-alias="billing_address">
+					<?php echo JText::_('HIKASHOP_BILLING_ADDRESS'); ?>
+				</th>
+				<th class="hikashop_order_shipping_address_title title default" data-alias="shipping_address">
+					<?php echo JText::_('HIKASHOP_SHIPPING_ADDRESS'); ?>
+				</th>
+				<th class="hikashop_order_shipping_title title default" data-alias="shipping">
+					<?php echo JHTML::_('grid.sort', JText::_('HIKASHOP_SHIPPING_METHOD'), 'b.order_shipping_method', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value ); ?>
+				</th>
 				<th class="hikashop_order_payment_title title">
 					<?php echo JHTML::_('grid.sort', JText::_('PAYMENT_METHOD'), 'b.order_payment_method', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value ); ?>
 				</th>
@@ -104,10 +117,24 @@ if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
 				<th class="hikashop_order_status_title title">
 					<?php echo JHTML::_('grid.sort',   JText::_('ORDER_STATUS'), 'b.order_status', $this->pageInfo->filter->order->dir, $this->pageInfo->filter->order->value ); ?>
 				</th>
+				<th class="hikashop_order_coupon_code_title title default" data-alias="coupon_code">
+					<?php echo JHTML::_('grid.sort',   JText::_('HIKASHOP_COUPON'), 'b.order_discount_code', $this->pageInfo->filter->order->dir, $this->pageInfo->filter->order->value ); ?>
+				</th>
+				<th class="hikashop_order_coupon_price_title title default" data-alias="coupon_price">
+					<?php echo JHTML::_('grid.sort',   JText::_('COUPON_VALUE'), 'b.order_discount_price', $this->pageInfo->filter->order->dir, $this->pageInfo->filter->order->value ); ?>
+				</th>
 				<th class="hikashop_order_total_title title">
 					<?php echo JHTML::_('grid.sort',   JText::_('HIKASHOP_TOTAL'), 'b.order_full_price', $this->pageInfo->filter->order->dir, $this->pageInfo->filter->order->value ); ?>
 				</th>
-				<?php $count_fields=0;
+				<?php
+				$count_fields=0;
+				if(!empty($this->rates)){
+					foreach($this->rates as $rate){
+						$count_fields++;
+						echo '<th class="hikashop_order_'.$rate->tax_namekey.'_title title default" data-alias="'.$rate->tax_namekey.'">'.hikashop_translate($rate->tax_namekey).'</th>';
+					}
+				}
+
 				if(hikashop_level(2) && !empty($this->fields)){
 					foreach($this->fields as $field){
 						$count_fields++;
@@ -191,6 +218,56 @@ if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
 						}
 						?>
 					</td>
+					<td class="hikashop_order_total_number_of_products_value">
+						<?php 
+							$products = '<ul>';
+							if(!empty($row->products)) {
+								foreach($row->products as $p) {
+									if(empty($p->order_product_quantity) || !empty($p->order_product_option_parent_id))
+										continue;
+									$products .= '<li>'.$p->order_product_name.' (x'.$p->order_product_quantity.')</li>';
+								}
+							}
+							$products .= '</ul>';
+							echo hikashop_hktooltip($products, '', (int)$row->total_number_of_products);
+						?>
+					</td>
+					<td class="hikashop_order_billing_address_value">
+<?php
+					if(!empty($row->billing_address)){
+						if(empty($row->override_billing_address)) {
+							$addressClass = hikashop_get('class.address');
+							echo $addressClass->displayAddress($row->fields, $row->billing_address, 'order');
+						} else {
+							echo $row->override_billing_address;
+						}
+					}
+?>
+					</td>
+					<td class="hikashop_order_shipping_address_value">
+<?php
+					if(!empty($row->order_shipping_id) && !empty($row->shipping_address)){
+						if(empty($row->override_shipping_address)) {
+							$addressClass = hikashop_get('class.address');
+							echo $addressClass->displayAddress($row->fields, $row->shipping_address, 'order');
+						} else {
+							echo $row->override_shipping_address;
+						}
+					}
+?>
+					</td>
+					<td class="hikashop_order_shipping_value">
+						<?php
+						if(!empty($row->order_shipping_method)){
+							$shippings_data = $this->shippingClass->getAllShippingNames($row);
+							if(!empty($shippings_data)) {
+								if(count($shippings_data)>1)
+									echo '<ul><li>'.implode('</li><li>', $shippings_data).'</li></ul>';
+								else
+									echo implode('', $shippings_data);
+							}
+						} ?>
+					</td>
 					<td class="hikashop_order_payment_value">
 						<?php if(!empty($row->order_payment_method)){
 							if(!empty($this->payments[$row->order_payment_id])){
@@ -219,10 +296,30 @@ if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
 						}
 						?>
 					</td>
+					<td class="hikashop_order_coupon_code_value">
+						<?php echo $row->order_discount_code;?>
+					</td>
+					<td class="hikashop_order_coupon_price_value">
+						<?php echo $this->currencyHelper->format($row->order_discount_price,$row->order_currency_id);?>
+					</td>
 					<td class="hikashop_order_total_value">
 						<?php echo $this->currencyHelper->format($row->order_full_price,$row->order_currency_id);?>
 					</td>
 <?php
+					if(!empty($this->rates)){
+						foreach($this->rates as $rate){
+							echo '<td>';
+							if(!empty($row->order_tax_info)) {
+								if(is_string($row->order_tax_info))
+									$row->order_tax_info = hikashop_unserialize($row->order_tax_info);
+								foreach($row->order_tax_info as $tax) {
+									if($tax->tax_namekey == $rate->tax_namekey)
+										echo $this->currencyHelper->format($tax->tax_amount,$row->order_currency_id);
+								}
+							}
+							echo '</td>';
+						}
+					}
 					if(hikashop_level(2) && !empty($this->fields)){
 						foreach($this->fields as $field){
 							$namekey = $field->field_namekey;

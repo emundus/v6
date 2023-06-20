@@ -58,11 +58,11 @@ class EmundusModelFormbuilder extends JModelList {
         return $key;
     }
 
-    public function updateTranslation($key, $values, $reference_table = '', $reference_id = 0){
+    public function updateTranslation($key, $values, $reference_table = '', $reference_id = 0,$reference_field = ''){
         $languages = JLanguageHelper::getLanguages();
         foreach ($languages as $language) {
             if (isset($values[$language->sef])) {
-                $key = $this->m_translations->updateTranslation($key, $values[$language->sef], $language->lang_code,'override', $reference_table, $reference_id);
+                $key = $this->m_translations->updateTranslation($key, $values[$language->sef], $language->lang_code,'override', $reference_table, $reference_id, $reference_field);
             }
         }
         return $key;
@@ -2002,7 +2002,7 @@ class EmundusModelFormbuilder extends JModelList {
                 $new_intro = $params['intro'];
                 $intro_tag = trim($stripped_intro);
 
-                $new_key = $this->updateTranslation($intro_tag, [$lang => $new_intro]);
+                $new_key = $this->updateTranslation($intro_tag, [$lang => $new_intro], 'fabrik_groups',$group_id, 'intro');
                 if ($new_key) {
                     $updated = true;
                 }
@@ -2010,7 +2010,7 @@ class EmundusModelFormbuilder extends JModelList {
             } elseif (empty(trim($stripped_intro))) {
                 $form_id = $this->getFormId($group_id);
                 $new_tag = 'FORM_' .$form_id . '_GROUP_' . $group_id . '_INTRO';
-                $new_key = $this->translate($new_tag, [$lang => $params['intro']], 'fabrik_forms', $form_id,'intro');
+                $new_key = $this->translate($new_tag, [$lang => $params['intro']], 'fabrik_groups', $group_id,'intro');
                 $params['intro'] = $new_key;
             }
         }
@@ -2022,7 +2022,7 @@ class EmundusModelFormbuilder extends JModelList {
                 $new_outro = $params['outro'];
                 $outro_tag = trim($stripped_outro);
 
-                $new_key = $this->updateTranslation($outro_tag, [$lang => $new_outro]);
+                $new_key = $this->updateTranslation($outro_tag, [$lang => $new_outro], 'fabrik_groups',$group_id, 'intro');
                 if ($new_key) {
                     $updated = true;
                 }
@@ -2030,7 +2030,7 @@ class EmundusModelFormbuilder extends JModelList {
             } elseif (empty(trim($stripped_outro))) {
                 $form_id = $this->getFormId($group_id);
                 $new_tag = 'FORM_' .$form_id . '_GROUP_' . $group_id . '_OUTRO';
-                $new_key = $this->translate($new_tag, [$lang => $params['outro']], 'fabrik_forms', $form_id,'outro');
+                $new_key = $this->translate($new_tag, [$lang => $params['outro']], 'fabrik_groups', $group_id,'outro');
                 $params['outro'] = $new_key;
             }
         }
@@ -3763,11 +3763,19 @@ class EmundusModelFormbuilder extends JModelList {
                                 $inserted = $db->execute();
                             } catch (Exception $e) {
                                 $inserted = false;
-                                JLog::add('Failed to create new form model ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                                JLog::add('Failed to create new form model ' . $e->getMessage(), JLog::ERROR, 'com_emundus.formbuilder');
                             }
+                        } else {
+	                        JLog::add('Failed to copy groups in new form model  (new form : ' . $new_form_id . ', form model : ' . $form_id_to_copy . ')', JLog::WARNING, 'com_emundus.formbuilder');
                         }
+                    } else {
+	                    JLog::add('Failed to copy List for new form model (new form : ' . $new_form_id . ', list to copy : ' . $list_to_copy . ')', JLog::WARNING, 'com_emundus.formbuilder');
                     }
+                } else {
+	                JLog::add('Failed to get List from form model (form model : ' . $form_id_to_copy  . ')', JLog::WARNING, 'com_emundus.formbuilder');
                 }
+            } else {
+	            JLog::add('Failed to copy Form for new form model (new form : ' . $new_form_id . ', form model : ' . $form_id_to_copy . ')', JLog::WARNING, 'com_emundus.formbuilder');
             }
         }
 

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -70,8 +70,8 @@ class hikashopConfigClass extends hikashopClass{
 			$configObject = get_object_vars($configObject);
 
 		JPluginHelper::importPlugin('hikashop');
-		JPluginHelper::importPlugin('hikashoppayment');
 		JPluginHelper::importPlugin('hikashopshipping');
+		JPluginHelper::importPlugin('hikashoppayment');
 		$app = JFactory::getApplication();
 		$do = true;
 		$app->triggerEvent('onBeforeConfigSave', array(&$configObject, &$do) );
@@ -80,6 +80,9 @@ class hikashopConfigClass extends hikashopClass{
 
 		jimport('joomla.filter.filterinput');
 		$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
+
+
+		$this->checkAreaFields($configObject);
 
 		foreach($configObject as $namekey => $value){
 			if($namekey == 'configClassInit')
@@ -144,6 +147,86 @@ class hikashopConfigClass extends hikashopClass{
 		if($result)
 			$app->triggerEvent('onAfterConfigSave', array(&$params) );
 		return $result;
+	}
+
+	function checkAreaFields(&$configObject) {
+		$forms = array('product');
+		foreach($forms as $table) {
+			$config_fieldsnamekey = $table .'_areas_fields';
+			if (empty($configObject[$config_fieldsnamekey]))
+				continue;
+
+			$areas = json_decode($configObject[$config_fieldsnamekey]);
+			if (empty($areas))
+				continue;
+
+			$this->database->setQuery("SELECT field_namekey FROM #__hikashop_field WHERE field_table = '" . $table . "'");
+			$columns = $this->database->loadColumn();
+			if (empty($columns))
+				continue;
+
+			$matches = [];
+			foreach($areas as $area) {
+				$matches = array_merge($matches, array_intersect($area->fields, $columns));
+				if (count($columns) == count($matches)) {
+					return;
+				}
+			}
+
+			$missing = array_diff($columns, $matches);
+
+			$this->database->setQuery("SELECT config_value FROM #__hikashop_config WHERE config_namekey = '" . $config_fieldsnamekey . "'");
+			$fieldsconfig = $this->database->loadResult();
+			if (empty($fieldsconfig)) {
+				return;
+			}
+
+			$fieldsconfig = json_decode($fieldsconfig);
+			if (empty($fieldsconfig)) {
+				return;
+			}
+
+			$found = false;
+			foreach($fieldsconfig as $fieldconfig) {
+				$fields = array_intersect($fieldconfig->fields, $missing);
+				if (empty($fields))
+					continue;
+
+				foreach($areas as &$area) {
+					if ($fieldconfig->name != $area->name)
+						continue;
+
+					foreach($fields as $field) {
+						$key = array_search($field, $fieldconfig->fields);
+
+						if (empty($key)) {
+							$area->fields[] = array_merge([$field], $area->fields);
+						} else if ($key >= count($area->fields)) {
+							$area->fields[] = $field;
+						} else {
+							$area->fields = array_merge(
+								array_slice($area->fields, 0, $key),
+								[$field],
+								array_slice($area->fields, $key)
+							);
+						}
+
+						$found = true;
+						$missing = array_diff($missing, [$field]);
+						if (empty($missing))
+							break 2;
+					}
+				}
+				unset($area);
+
+				if (empty($missing))
+					break;
+			}
+
+			if ($found) {
+				$configObject[$config_fieldsnamekey] = json_encode($areas);
+			}
+		}
 	}
 
 	function reset() {

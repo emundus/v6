@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -23,7 +23,7 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 	public $extraFields = array();
 	public $requiredFields = array();
 	public $validMessages = array();
-	public $triggerView = array('hikashop','hikashoppayment','hikashopshipping');
+	public $triggerView = array('hikashop','hikashopshipping','hikashoppayment');
 
 	public $config = null;
 	public $fieldClass = null;
@@ -159,8 +159,8 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 		$this->workflow = $checkoutHelper->checkout_workflow;
 
 		JPluginHelper::importPlugin('hikashop');
-		JPluginHelper::importPlugin('hikashoppayment');
 		JPluginHelper::importPlugin('hikashopshipping');
+		JPluginHelper::importPlugin('hikashoppayment');
 		$app = JFactory::getApplication();
 
 		$this->checkout_data = array();
@@ -226,8 +226,8 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 		if(empty($content['params']))
 			$content['params'] = array();
 		JPluginHelper::importPlugin('hikashop');
-		JPluginHelper::importPlugin('hikashoppayment');
 		JPluginHelper::importPlugin('hikashopshipping');
+		JPluginHelper::importPlugin('hikashoppayment');
 		$app = JFactory::getApplication();
 
 		$ctrl = hikashop_get('helper.checkout-' . $block_task);
@@ -485,8 +485,8 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 			$order = $orderClass->loadFullOrder($order_id, false, true);
 		}
 
-		JPluginHelper::importPlugin('hikashoppayment');
 		JPluginHelper::importPlugin('hikashopshipping');
+		JPluginHelper::importPlugin('hikashoppayment');
 		$this->assignRef('order', $order);
 		$this->_orderURL($order);
 

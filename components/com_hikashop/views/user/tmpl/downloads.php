@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -16,10 +16,12 @@ $css_button = $this->config->get('css_button','hikabtn');
 	<?php echo $this->toolbarHelper->process($this->toolbar, $this->title); ?>
 
 <form action="<?php echo hikashop_completeLink('user&task=downloads'.$url_itemid); ?>" method="POST" name="adminForm" id="adminForm">
-	<div class="hikashop_search_block">
-		<input type="text" name="search" id="hikashop_search" value="<?php echo $this->escape($this->pageInfo->search);?>" placeholder="<?php echo JText::_('HIKA_SEARCH'); ?>" class="inputbox" onchange="document.adminForm.submit();" />
-		<button class="hikabtn hikabtn-primary" onclick="this.form.submit();"><?php echo JText::_('GO'); ?></button>
-		<button class="hikabtn hikabtn-primary" onclick="document.getElementById('hikashop_search').value='';this.form.submit();"><?php echo JText::_( 'RESET' ); ?></button>
+	<div class="hikashop_search_block <?php echo HK_GROUP_CLASS; ?>">
+		<input type="text" name="search" id="hikashop_search" value="<?php echo $this->escape($this->pageInfo->search);?>" placeholder="<?php echo JText::_('HIKA_SEARCH'); ?>" class="<?php echo HK_FORM_CONTROL_CLASS; ?>" onchange="document.adminForm.submit();" />
+		<button class="<?php echo HK_CSS_BUTTON; ?> <?php echo HK_CSS_BUTTON_PRIMARY; ?>" onclick="this.form.submit();"><?php echo JText::_('GO'); ?></button>
+	<?php if(!empty($this->pageInfo->search)) { ?>
+		<button class="<?php echo HK_CSS_BUTTON; ?> <?php echo HK_CSS_BUTTON_PRIMARY; ?>" onclick="document.getElementById('hikashop_search').value='';this.form.submit();"><?php echo JText::_( 'RESET' ); ?></button>
+	<?php } ?>
 	</div>
 	<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
 	<input type="hidden" name="task" value="downloads" />
@@ -195,9 +197,11 @@ $css_button = $this->config->get('css_button','hikabtn');
 				<td data-title="<?php echo JText::_('DOWNLOAD_NUMBER_LIMIT'); ?>" >
 <?php
 		$downloadLimit = JText::_('UNLIMITED');
-		if($limit == -1 && $limitNotReached && $periodNotReached) {
-			$downloadLimit = JText::_('UNLIMITED');
-		} elseif($limitNotReached && $periodNotReached) {
+		if(!$periodNotReached) {
+			$downloadLimit = JText::_('TOO_LATE_NO_DOWNLOAD');
+		} elseif(!$limitNotReached) {
+			$downloadLimit = JText::_('MAX_REACHED_NO_DOWNLOAD');
+		}elseif($limit>0){
 			if(in_array(substr($downloadFile->file_path, 0, 1), array('@', '#')) && (int)$downloadFile->file_quantity > 1) {
 				$downloadLimit = '';
 				for($i = 1; $i <= (int)$downloadFile->file_quantity; $i++) {
@@ -210,10 +214,6 @@ $css_button = $this->config->get('css_button','hikabtn');
 			} else {
 				$downloadLimit = JText::sprintf('X_DOWNLOADS_LEFT',$limit-$downloadFile->download_total);
 			}
-		} elseif(!$periodNotReached) {
-			$downloadLimit = JText::_('TOO_LATE_NO_DOWNLOAD');
-		} elseif(!$limitNotReached) {
-			$downloadLimit = JText::_('MAX_REACHED_NO_DOWNLOAD');
 		}
 		echo $downloadLimit;
 ?>

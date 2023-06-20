@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -379,7 +379,23 @@ class plgHikashopGoogle_products extends JPlugin {
 				}else{
 					$xml .= "\t".'<g:link><![CDATA[ '.$siteAddress.'index.php?option=com_hikashop&ctrl=product&task=show&cid='.$product->product_id.'&name='.$product->alias.$itemID.' ]]></g:link>'."\n";
 				}
-				$xml .= "\t".'<g:price>'.$price.' '.$currency->currency_code.'</g:price>'."\n";
+				if(!empty($product->discount)) {
+					$xml .= "\t".'<g:sale_price>'.$price.' '.$currency->currency_code.'</g:sale_price>'."\n";
+
+					$price_name = 'price_value_without_discount';
+					if(!empty($plugin->params['taxed_price'])){
+						$price_name = 'price_value_without_discount_with_tax';
+					}
+					if(empty($product->product_min_per_order)){
+						$price = round($product->prices[0]->$price_name, 2);
+					}
+					else{
+						$price = round($product->prices[0]->$price_name, 2)*$product->product_min_per_order;
+					}
+					$xml .= "\t".'<g:price>'.$price.' '.$currency->currency_code.'</g:price>'."\n";
+				} else {
+					$xml .= "\t".'<g:price>'.$price.' '.$currency->currency_code.'</g:price>'."\n";
+				}
 				if(@$plugin->params['preview'] == 'meta') {
 						$xml .= "\t".'<g:description><![CDATA[ '.mb_substr(strip_tags($product->product_meta_description),0,5000).' ]]></g:description>'."\n";
 				} elseif(!empty($product->product_description)){

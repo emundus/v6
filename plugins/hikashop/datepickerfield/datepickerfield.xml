@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="hikashop" method="upgrade">
 	<name>HikaShop: Date Picker Custom Field</name>
-	<creationDate>25 septembre 2022</creationDate>
-	<version>4.6.2</version>
+	<creationDate>31 mai 2023</creationDate>
+	<version>4.7.3</version>
 	<author>Obsidev</author>
 	<authorEmail>dev@obsidev.com</authorEmail>
 	<authorUrl>http://www.obsidev.com</authorUrl>
-	<copyright>Copyright (C) 2012-2022 OBSIDEV SARL - All rights reserved.</copyright>
+	<copyright>Copyright (C) 2012-2023 OBSIDEV SARL - All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>HikaShop: Date Picker Custom Field</description>
 	<files>

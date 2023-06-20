@@ -868,7 +868,6 @@ class EmundusController extends JControllerLegacy {
             return false;
         }
 
-
         $query = '';
         $nb = 0;
 
@@ -1124,7 +1123,11 @@ class EmundusController extends JControllerLegacy {
                         $can_be_deleted = @$post['can_be_deleted_'.$attachments]!=''?$post['can_be_deleted_'.$attachments]:JRequest::getVar('can_be_deleted', 1, 'POST', 'none',0);
                         $can_be_viewed = @$post['can_be_viewed_'.$attachments]!=''?$post['can_be_viewed_'.$attachments]:JRequest::getVar('can_be_viewed', 1, 'POST', 'none',0);
 
-                        $query .= '('.$user->id.', '.$attachments.', \''.$paths.'\', '.$db->Quote($descriptions).', '.$can_be_deleted.', '.$can_be_viewed.', '.$fnumInfos['id'].', '.$db->Quote($fnum).', '.$pageCount.', '.$db->quote($local_filename).'),';
+                        $now = new DateTime();
+                        $now->setTimezone(new DateTimeZone('UTC'));
+                        $now = $now->format('Y-m-d H:i:s');
+
+                        $query .= '('.$user->id.', '.$attachments.', \''.$paths.'\', '.$db->Quote($descriptions).', '.$can_be_deleted.', '.$can_be_viewed.', '.$fnumInfos['id'].', '.$db->Quote($fnum).', '.$pageCount.', '.$db->quote($local_filename).', '.$db->quote($now).', '.$db->quote($now).', '.$db->quote($file['size']).'),';
                         $nb++;
                     } else {
                         $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> Cannot move file : '.$file['tmp_name'].' to '.$chemin.$user->id.DS.$paths;
@@ -1286,7 +1289,7 @@ class EmundusController extends JControllerLegacy {
         unlink($file['tmp_name']);
 
         if (!empty($query)) {
-            $query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum, pdf_pages_count, local_filename)
+            $query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum, pdf_pages_count, local_filename, timedate, modified, size)
                         VALUES '.substr($query,0,-1);
 
             try {
@@ -1716,18 +1719,28 @@ class EmundusController extends JControllerLegacy {
     }
 
     function sendmail_expert() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            die(JError::raiseWarning( 500, JText::_( 'ACCESS_DENIED' ) ));
-        }
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-        $sid    = JRequest::getVar('sid', null, 'GET', 'INT',0);
-        $fnum   = JRequest::getVar('fnum', null, 'GET');
+        $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
-        $m_emails = $this->getModel('emails');
-        $email = $m_emails->sendmail('expert', $fnum);
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+			$jinput = JFactory::getApplication()->input;
+			$itemid = $jinput->getInt('Itemid', null);
+			$sid    = $jinput->getInt('sid', null);
+			$fnum   = $jinput->getString('fnum', null);
 
-        exit();
 
+			if (!empty($fnum)) {
+				$m_emails = new EmundusModelEmails();
+				$email = $m_emails->sendMail('expert', $fnum);
+
+				$response['status'] = true;
+				$response['msg'] = JText::_('SUCCESS');
+			} else {
+				$response['msg'] = JText::_('MISSING_PARAMS');
+			}
+		}
+
+        echo json_encode($response);
+		exit;
     }
 
     /*

@@ -2,9 +2,9 @@
 <extension version="2.5" type="plugin" group="search" method="upgrade">
 	<name>Search - Hikashop Products</name>
 	<author>Hikari Software</author>
-	<creationDate>25 septembre 2022</creationDate>
-	<version>4.6.2</version>
-	<copyright>(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<creationDate>31 mai 2023</creationDate>
+	<version>4.7.3</version>
+	<copyright>(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<authorEmail>enquiry@hikashop.com</authorEmail>
 	<authorUrl>www.hikashop.com</authorUrl>
@@ -14,7 +14,7 @@
 	</files>
 	<params addpath="/components/com_hikashop/params">
 		<param name="search_limit" type="text" size="5" default="50" label="SEARCH_LIMIT" description="HIKA_SEARCH_LIMIT"/>
-		<param name="item_id" type="text" size="5" default="" label="ITEMID" description="HIKA_ITEMID"/>
+		<param name="item_id" type="menuitem" size="5" default="" label="ITEMID" description="HIKA_ITEMID"/>
 		<param name="full_path" type="radio" default="1" label="FULL_BREADCRUMB_PATH" description="HIKA_FULL_BREADCRUMB_PATH">
 			<option value="0">HIKASHOP_NO</option>
 			<option value="1">HIKASHOP_YES</option>
@@ -45,7 +45,7 @@
 					description="HIKA_SEARCH_LIMIT" />
 				<field
 					name="item_id"
-					type="text"
+					type="menuitem"
 					label="ITEMID"
 					size="5"
 					default=""

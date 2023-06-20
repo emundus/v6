@@ -68,6 +68,7 @@ administrator/templates/isis/images/joomla.png
 administrator/templates/isis/images/logo.png
 plugins/fabrik_form/php/emundus-csv_import_ehesp.php
 components/com_fabrik/views/details/tmpl/celsa/*
+plugins/fabrik_form/email/tmpl/*
 
 ### macOS ###
 *.DS_Store

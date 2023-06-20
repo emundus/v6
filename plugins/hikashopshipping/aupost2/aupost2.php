@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -132,8 +132,6 @@ class plgHikashopshippingAupost2 extends hikashopShippingPlugin {
 	}
 
 	function onShippingDisplay(&$order,&$dbrates,&$usable_rates,&$messages) {
-		if(!hikashop_loadUser())
-			return false;
 
 		if($this->loadShippingCache($order, $usable_rates, $messages))
 			return true;
@@ -223,8 +221,15 @@ class plgHikashopshippingAupost2 extends hikashopShippingPlugin {
 		$weightClass=hikashop_get('helper.weight');
 		$volumeClass=hikashop_get('helper.volume');
 		$limit = array();
+		if(!empty($order->shipping_address_full->shipping_address->address_country_code_2)) {
+			$country = $order->shipping_address_full->shipping_address->address_country_code_2;
+		} elseif(!empty($order->shipping_address_full->shipping_address->address_country->zone_code_2)) {
+			$country = $order->shipping_address_full->shipping_address->address_country->zone_code_2;
+		} else {
+			$country='AU';
+		}
 		$domestic = 1;
-		if(@$order->shipping_address_full->shipping_address->address_country->zone_code_2 == 'AU') {
+		if($country == 'AU') {
 			$limit['w'] = 22;
 			$limit['volume'] = 250000;
 			$limit['x'] = 105;
@@ -294,12 +299,8 @@ class plgHikashopshippingAupost2 extends hikashopShippingPlugin {
 		}
 
 		foreach($parcels as $parcel) {
-			$parcel->country_code = @$order->shipping_address_full->shipping_address->address_country->zone_code_2;
+			$parcel->country_code = $country;
 			$service_types = array();
-
-			if(empty($parcel->country_code))
-				$parcel->country_code='AU';
-
 			if($domestic) {
 				$parcel->from_postcode = substr(trim(@$rate->shipping_params->post_code),0,4);
 				$parcel->to_postcode = substr(trim($order->shipping_address->address_post_code),0,4);

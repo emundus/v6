@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="module" version="2.5" method="upgrade">
+<extension type="module" version="2.5" method="upgrade" client="site">
 	<name>Hikashop Filtering Module</name>
-	<creationDate>25 septembre 2022</creationDate>
-	<version>4.6.2</version>
+	<creationDate>31 mai 2023</creationDate>
+	<version>4.7.3</version>
 	<author>Hikari Software</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<copyright>(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>Content display for Hikashop</description>
 	<files>
@@ -15,65 +15,65 @@
 		<folder>tmpl</folder>
 	</files>
 	<params addpath="/components/com_hikashop/params">
-		<param name="moduleclass_sfx" type="text" default="" label="Module Class Suffix" description="PARAMMODULECLASSSUFFIX" />
-		<param name="show_filter_button" type="radio" default="1" label="Show filter button" description="Show or not the filter button">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
+		<param name="moduleclass_sfx" type="text" default="" label="PARAMMODULECLASSSUFFIX" description="PARAMMODULECLASSSUFFIX" />
+		<param name="show_filter_button" type="radio" default="1" label="SHOW_FILTER_BUTTON" description="SHOW_FILTER_BUTTON_DESC">
+			<option value="0">HIKASHOP_NO</option>
+			<option value="1">HIKASHOP_YES</option>
 		</param>
-		<param name="display_fieldset" type="radio" default="0" label="Display in a fieldset" description="Display in a fieldset">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
+		<param name="display_fieldset" type="radio" default="0" label="DISPLAY_FIELDSET" description="DISPLAY_FIELDSET_DESC">
+			<option value="0">HIKASHOP_NO</option>
+			<option value="1">HIKASHOP_YES</option>
 		</param>
-		<param name="filter_column_number" type="text" default="1" label="Number of columns" description="Number of columns" />
-		<param name="filter_limit" type="text" default="" label="Maximum number of filters" description="Maximum number of filters displayed in the module" />
-		<param name="filter_height" type="text" default="" label="Filters height" description="The height of each filter (in pixel)" />
-		<param name="filter_button_position" type="radio" default="right" label="Filter button position" description="Filter button position">
-			<option value="left">Left</option>
-			<option value="right">Right</option>
-			<option value="inside">Inside</option>
+		<param name="filter_column_number" type="text" default="1" label="NUMBER_OF_COLUMNS" description="NUMBER_OF_COLUMNS_DESC" />
+		<param name="filter_limit" type="text" default="" label="LIMIT" description="LIMIT_DESC" />
+		<param name="filter_height" type="text" default="" label="HEIGHT" description="FILTER_HEIGHT_DESC" />
+		<param name="filter_button_position" type="radio" default="right" label="FILTER_BUTTON_POSITION" description="FILTER_BUTTON_POSITION_DESC">
+			<option value="left">HIKA_LEFT</option>
+			<option value="right">HIKA_RIGHT</option>
+			<option value="inside">HIKA_INSIDE</option>
 		</param>
-		<param name="filters" type="filters" default="" label="Filters" description="Select the filters you want to be displayed in that module" />
-		<param name="itemid" type="text" default="2985" label="Menu" description="The id of the hikashop products listing menu where to redirect" />
-		<param name="force_redirect" type="radio" default="1" label="Force redirect" description="Force the redirection to the menu specified above when the filters of the module are used">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
+		<param name="filters" type="filters" default="" label="FILTERS" description="FILTERS_SELECTION_DESC" />
+		<param name="itemid" type="text" default="2985" label="MENU" description="FILTER_MODULE_MENU_DESC" />
+		<param name="force_redirect" type="radio" default="1" label="FORCE_REDIRECT" description="FORCE_REDIRECT_DESC">
+			<option value="0">HIKASHOP_NO</option>
+			<option value="1">HIKASHOP_YES</option>
 		</param>
-		<param name="display_on_product_page" type="radio" default="1" label="Display on the product page" description="">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
+		<param name="display_on_product_page" type="radio" default="1" label="PRODUCT_PAGE" description="PRODUCT_PAGE_DESC">
+			<option value="0">HIKASHOP_NO</option>
+			<option value="1">HIKASHOP_YES</option>
 		</param>
-		<param name="display_on_product_listing_page" type="radio" default="1" label="Display on the product listing page" description="">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
+		<param name="display_on_product_listing_page" type="radio" default="1" label="PRODUCT_LISTING_PAGE" description="PRODUCT_LISTING_PAGE_DESC">
+			<option value="0">HIKASHOP_NO</option>
+			<option value="1">HIKASHOP_YES</option>
 		</param>
-		<param name="display_on_product_compare_page" type="radio" default="1" label="Display on the product compare page" description="">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
+		<param name="display_on_product_compare_page" type="radio" default="1" label="PRODUCT_COMPARE_PAGE" description="PRODUCT_COMPARE_PAGE_DESC">
+			<option value="0">HIKASHOP_NO</option>
+			<option value="1">HIKASHOP_YES</option>
 		</param>
-		<param name="display_on_category_listing_page" type="radio" default="1" label="Display on the category listing page" description="">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
+		<param name="display_on_category_listing_page" type="radio" default="1" label="CATEGORY_LISTING_PAGE" description="CATEGORY_LISTING_PAGE_DESC">
+			<option value="0">HIKASHOP_NO</option>
+			<option value="1">HIKASHOP_YES</option>
 		</param>
-		<param name="display_on_checkout_page" type="radio" default="1" label="Display on the checkout page" description="">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
+		<param name="display_on_checkout_page" type="radio" default="1" label="CHECKOUT_PAGE" description="CHECKOUT_PAGE_DESC">
+			<option value="0">HIKASHOP_NO</option>
+			<option value="1">HIKASHOP_YES</option>
 		</param>
-		<param name="display_on_contact_page" type="radio" default="1" label="Display on the contact page" description="">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
+		<param name="display_on_contact_page" type="radio" default="1" label="COM_HIKASHOP_CONTACT_VIEW_DEFAULT_TITLE" description="CONTACT_PAGE_DESC">
+			<option value="0">HIKASHOP_NO</option>
+			<option value="1">HIKASHOP_YES</option>
 		</param>
-		<param name="display_on_waitlist_page" type="radio" default="1" label="Display on the waitlist page" description="">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
+		<param name="display_on_waitlist_page" type="radio" default="1" label="COM_HIKASHOP_WAITLIST_VIEW_DEFAULT_TITLE" description="WAITLIST_PAGE_DESC">
+			<option value="0">HIKASHOP_NO</option>
+			<option value="1">HIKASHOP_YES</option>
 		</param>
-		<param name="filter_collapsable" type="radio" default="1" label="Collapsable filters" description="">
-			<option value="0">No</option>
-			<option value="1">Mobile devices</option>
-			<option value="always">Always</option>
+		<param name="filter_collapsable" type="radio" default="1" label="COLLAPSABLE_FILTERS" description="COLLAPSABLE_FILTERS_DESC">
+			<option value="0">HIKASHOP_NO</option>
+			<option value="1">MOBILE_DEVICES</option>
+			<option value="always">HIKA_ALWAYS</option>
 		</param>
-		<param name="scroll_to_top" type="radio" default="0" label="Scroll to top after filtering" description="">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
+		<param name="scroll_to_top" type="radio" default="0" label="SCROLL_TO_TOP_AFTER_FILTERING" description="SCROLL_TO_TOP_AFTER_FILTERING_DESC">
+			<option value="0">HIKASHOP_NO</option>
+			<option value="1">HIKASHOP_YES</option>
 		</param>
 	</params>
 	<config>
@@ -82,66 +82,65 @@
 				<field
 					name="moduleclass_sfx"
 					type="text"
-					label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
-					description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC" />
-				<field name="show_filter_button" type="radio" default="1" label="Show filter button" description="Show or not the filter button" class="btn-group btn-group-yesno">
-					<option value="0">No</option>
-					<option value="1">Yes</option>
+					label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL" />
+				<field name="show_filter_button" type="radio" default="1" label="SHOW_FILTER_BUTTON" description="SHOW_FILTER_BUTTON_DESC" class="btn-group btn-group-yesno">
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
 				</field>
-				<field name="display_fieldset" type="radio" default="0" label="Display in a fieldset" description="Display in a fieldset" class="btn-group btn-group-yesno">
-					<option value="0">No</option>
-					<option value="1">Yes</option>
+				<field name="display_fieldset" type="radio" default="0" label="DISPLAY_FIELDSET" description="DISPLAY_FIELDSET_DESC" class="btn-group btn-group-yesno">
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
 				</field>
-				<field name="filter_column_number" type="text" default="1" label="Number of columns" description="Number of columns" />
-				<field name="filter_limit" type="text" default="" label="Maximum number of filters" description="Maximum number of filters displayed in the module" />
-				<field name="filter_height" type="text" default="" label="Filters height" description="The height of each filter (in pixel)" />
-				<field name="filter_button_position" type="radio" default="right" label="Filter button position" description="Filter button position">
-					<option value="left">Left</option>
-					<option value="right">Right</option>
-					<option value="inside">Inside</option>
+				<field name="filter_column_number" type="text" default="1" label="NUMBER_OF_COLUMNS" description="NUMBER_OF_COLUMNS_DESC" />
+				<field name="filter_limit" type="text" default="" label="LIMIT" description="LIMIT_DESC" />
+				<field name="filter_height" type="text" default="" label="HEIGHT" description="FILTER_HEIGHT_DESC" />
+				<field name="filter_button_position" type="radio" default="right" label="FILTER_BUTTON_POSITION" description="FILTER_BUTTON_POSITION_DESC">
+					<option value="left">HIKA_LEFT</option>
+					<option value="right">HIKA_RIGHT</option>
+					<option value="inside">HIKA_INSIDE</option>
 				</field>
-				<field name="filters" type="filters" default="" label="Filters" description="Select the filters you want to be displayed in that module" />
-				<field name="itemid" type="text" default="2985" label="Menu" description="The id of the hikashop products listing menu where to redirect" />
-				<field name="force_redirect" type="radio" default="1" label="Force redirect" description="Force the redirection to the menu specified above when the filters of the module are used" class="btn-group btn-group-yesno">
-					<option value="0">No</option>
-					<option value="1">Yes</option>
+				<field name="filters" type="filters" default="" label="FILTERS" description="FILTERS_SELECTION_DESC" />
+				<field name="itemid" type="text" default="2985" label="MENU" description="FILTER_MODULE_MENU_DESC" />
+				<field name="force_redirect" type="radio" default="1" label="FORCE_REDIRECT" description="FORCE_REDIRECT_DESC" class="btn-group btn-group-yesno">
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
 				</field>
-				<field name="display_on_product_page" type="radio" default="1" label="Display on the product page" description="" class="btn-group btn-group-yesno">
-					<option value="0">No</option>
-					<option value="1">Yes</option>
+				<field name="display_on_product_page" type="radio" default="1" label="PRODUCT_PAGE" description="PRODUCT_PAGE_DESC" class="btn-group btn-group-yesno">
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
 				</field>
-				<field name="display_on_product_listing_page" type="radio" default="1" label="Display on the product listing page" description="" class="btn-group btn-group-yesno">
-					<option value="0">No</option>
-					<option value="1">Yes</option>
+				<field name="display_on_product_listing_page" type="radio" default="1" label="PRODUCT_LISTING_PAGE" description="PRODUCT_LISTING_PAGE_DESC" class="btn-group btn-group-yesno">
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
 				</field>
-				<field name="display_on_product_compare_page" type="radio" default="1" label="Display on the product compare page" description="" class="btn-group btn-group-yesno">
-					<option value="0">No</option>
-					<option value="1">Yes</option>
+				<field name="display_on_product_compare_page" type="radio" default="1" label="PRODUCT_COMPARE_PAGE" description="PRODUCT_COMPARE_PAGE_DESC" class="btn-group btn-group-yesno">
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
 				</field>
-				<field name="display_on_category_listing_page" type="radio" default="1" label="Display on the category listing page" description="" class="btn-group btn-group-yesno">
-					<option value="0">No</option>
-					<option value="1">Yes</option>
+				<field name="display_on_category_listing_page" type="radio" default="1" label="CATEGORY_LISTING_PAGE" description="CATEGORY_LISTING_PAGE_DESC" class="btn-group btn-group-yesno">
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
 				</field>
-				<field name="display_on_checkout_page" type="radio" default="1" label="Display on the checkout page" description="" class="btn-group btn-group-yesno">
-					<option value="0">No</option>
-					<option value="1">Yes</option>
+				<field name="display_on_checkout_page" type="radio" default="1" label="CHECKOUT_PAGE" description="CHECKOUT_PAGE_DESC" class="btn-group btn-group-yesno">
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
 				</field>
-				<field name="display_on_contact_page" type="radio" default="1" label="Display on the contact page" description="" class="btn-group btn-group-yesno">
-					<option value="0">No</option>
-					<option value="1">Yes</option>
+				<field name="display_on_contact_page" type="radio" default="1" label="COM_HIKASHOP_CONTACT_VIEW_DEFAULT_TITLE" description="CONTACT_PAGE_DESC" class="btn-group btn-group-yesno">
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
 				</field>
-				<field name="display_on_waitlist_page" type="radio" default="1" label="Display on the waitlist page" description="" class="btn-group btn-group-yesno">
-					<option value="0">No</option>
-					<option value="1">Yes</option>
+				<field name="display_on_waitlist_page" type="radio" default="1" label="COM_HIKASHOP_WAITLIST_VIEW_DEFAULT_TITLE" description="WAITLIST_PAGE_DESC" class="btn-group btn-group-yesno">
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
 				</field>
-				<field name="filter_collapsable" type="radio" default="1" label="Collapsable filters" description="">
-					<option value="0">No</option>
-					<option value="1">Mobile devices</option>
-					<option value="always">Always</option>
+				<field name="filter_collapsable" type="radio" default="1" label="COLLAPSABLE_FILTERS" description="COLLAPSABLE_FILTERS_DESC">
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">MOBILE_DEVICES</option>
+					<option value="always">HIKA_ALWAYS</option>
 				</field>
-				<field name="scroll_to_top" type="radio" default="0" label="Scroll to top after filtering" description="" class="btn-group btn-group-yesno">
-					<option value="0">No</option>
-					<option value="1">Yes</option>
+				<field name="scroll_to_top" type="radio" default="0" label="SCROLL_TO_TOP_AFTER_FILTERING" description="SCROLL_TO_TOP_AFTER_FILTERING_DESC" class="btn-group btn-group-yesno">
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
 				</field>
 			</fieldset>
 		</fields>

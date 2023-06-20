@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -87,34 +87,34 @@ class hikashopShippingPlugin extends hikashopPlugin {
 
 			$rate->shipping_price = $currencyClass->round($rate->shipping_price, $currencyClass->getRounding($rate->shipping_currency_id, true));
 
-			if(!empty($rate->shipping_params->shipping_min_price) && bccomp((float)hikashop_toFloat($rate->shipping_params->shipping_min_price), (float)$price, 5) == 1)
+			if(!empty($rate->shipping_params->shipping_min_price) && bccomp(sprintf('%F',$rate->shipping_params->shipping_min_price), sprintf('%F',$price), 5) == 1)
 				$rate->errors['min_price'] = (hikashop_toFloat($rate->shipping_params->shipping_min_price) - $price);
 
-			if(!empty($rate->shipping_params->shipping_max_price) && bccomp((float)hikashop_toFloat($rate->shipping_params->shipping_max_price), (float)$price, 5) == -1)
+			if(!empty($rate->shipping_params->shipping_max_price) && bccomp(sprintf('%F',$rate->shipping_params->shipping_max_price), sprintf('%F',$price), 5) == -1)
 				$rate->errors['max_price'] = ($price - hikashop_toFloat($rate->shipping_params->shipping_max_price));
 
-			if(!empty($rate->shipping_params->shipping_max_volume) && bccomp((float)@$rate->shipping_params->shipping_max_volume, 0, 3)) {
+			if(!empty($rate->shipping_params->shipping_max_volume) && bccomp(sprintf('%F',@$rate->shipping_params->shipping_max_volume), 0, 3)) {
 				$rate->shipping_params->shipping_max_volume_orig = $rate->shipping_params->shipping_max_volume;
 				$rate->shipping_params->shipping_max_volume = $this->volumeHelper->convert($rate->shipping_params->shipping_max_volume, @$rate->shipping_params->shipping_size_unit);
 				if(bccomp(sprintf('%.10F',$rate->shipping_params->shipping_max_volume), sprintf('%.10F',$shipping_prices->volume), 10) == -1)
 					$rate->errors['max_volume'] = ($rate->shipping_params->shipping_max_volume - $shipping_prices->volume);
 			}
 
-			if(!empty($rate->shipping_params->shipping_min_volume) && bccomp((float)@$rate->shipping_params->shipping_min_volume, 0, 3)) {
+			if(!empty($rate->shipping_params->shipping_min_volume) && bccomp(sprintf('%F',@$rate->shipping_params->shipping_min_volume), 0, 3)) {
 				$rate->shipping_params->shipping_min_volume_orig = $rate->shipping_params->shipping_min_volume;
 				$rate->shipping_params->shipping_min_volume = $this->volumeHelper->convert($rate->shipping_params->shipping_min_volume, @$rate->shipping_params->shipping_size_unit);
 				if(bccomp(sprintf('%.10F',$rate->shipping_params->shipping_min_volume), sprintf('%.10F',$shipping_prices->volume), 10) == 1)
 					$rate->errors['min_volume'] = ($shipping_prices->volume - $rate->shipping_params->shipping_min_volume);
 			}
 
-			if(!empty($rate->shipping_params->shipping_max_weight) && bccomp((float)@$rate->shipping_params->shipping_max_weight, 0, 3)) {
+			if(!empty($rate->shipping_params->shipping_max_weight) && bccomp(sprintf('%F',@$rate->shipping_params->shipping_max_weight), 0, 3)) {
 				$rate->shipping_params->shipping_max_weight_orig = $rate->shipping_params->shipping_max_weight;
 				$rate->shipping_params->shipping_max_weight = $this->weightHelper->convert($rate->shipping_params->shipping_max_weight, @$rate->shipping_params->shipping_weight_unit);
 				if(bccomp(sprintf('%.3F',$rate->shipping_params->shipping_max_weight), sprintf('%.3F',$shipping_prices->weight), 3) == -1)
 					$rate->errors['max_weight'] = ($rate->shipping_params->shipping_max_weight - $shipping_prices->weight);
 			}
 
-			if(!empty($rate->shipping_params->shipping_min_weight) && bccomp((float)@$rate->shipping_params->shipping_min_weight,0,3)){
+			if(!empty($rate->shipping_params->shipping_min_weight) && bccomp(sprintf('%F',@$rate->shipping_params->shipping_min_weight),0,3)){
 				$rate->shipping_params->shipping_min_weight_orig = $rate->shipping_params->shipping_min_weight;
 				$rate->shipping_params->shipping_min_weight = (float)$this->weightHelper->convert($rate->shipping_params->shipping_min_weight, @$rate->shipping_params->shipping_weight_unit);
 				if(bccomp(sprintf('%.3F',$rate->shipping_params->shipping_min_weight), sprintf('%.3F',$shipping_prices->weight), 3) == 1)

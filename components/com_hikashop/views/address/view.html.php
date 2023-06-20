@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -93,6 +93,7 @@ class addressViewAddress extends HikaShopView {
 
 		global $Itemid;
 		$this->Itemid = $Itemid;
+		$this->url_itemid=(!empty($this->Itemid)?'&Itemid='.$this->Itemid:'');
 
 		$app = JFactory::getApplication();
 		$menus	= $app->getMenu();
@@ -116,6 +117,16 @@ class addressViewAddress extends HikaShopView {
 			if(empty($title))
 				$title = $menu->title;
 			hikashop_setPageTitle($title);
+
+			$robots = $params->get('robots');
+			if (!$robots) {
+				$jconfig = JFactory::getConfig();
+				$robots = $jconfig->get('robots', '');
+			}
+			if($robots) {
+				$doc = JFactory::getDocument();
+				$doc->setMetadata('robots', $robots);
+			}
 		} else {
 			if($show_page_heading)
 				$this->title = JText::_('ADDRESSES');
@@ -401,7 +412,7 @@ class addressViewAddress extends HikaShopView {
 		$this->toolbar['back'] = array(
 			'icon' => 'back',
 			'name' => JText::_('HIKA_BACK'),
-			'url' => hikashop_completeLink('address&task=listing'),
+			'url' => hikashop_completeLink('address&task=listing'.$url_itemid),
 			'fa' => array('html' => '<i class="fas fa-arrow-circle-left"></i>')
 		);
 	}
