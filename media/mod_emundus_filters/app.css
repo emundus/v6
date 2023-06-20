@@ -1,0 +1,32 @@
+
+.values-selection[data-v-2064eced] {
+	max-height: 180px;
+	overflow-y: auto;
+}
+
+
+#select-scopes:not(.hidden) {
+	position: absolute;
+	top: 42px;
+	z-index:2;
+	list-style-type: none;
+	margin: 0;
+	padding: 8px;
+}
+#select-scopes li {
+	padding: 8px;
+}
+#global-search-values {
+	height: 42px;
+	overflow-y: auto;
+}
+#current-global-search {
+	border: none;
+	border-radius: 0;
+	box-shadow: none;
+	outline: 0;
+}
+.global-search-tag {
+	padding: 4px;
+}
+
