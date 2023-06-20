@@ -53,6 +53,7 @@ class EmundusViewFiles extends JViewLegacy
 	protected array $code;
 	protected array $fnum_assoc;
 	protected string $filters;
+	protected bool $use_module_for_filters;
 
 	protected array $docs;
 	protected array $prgs;
@@ -83,6 +84,7 @@ class EmundusViewFiles extends JViewLegacy
 		$params = JComponentHelper::getParams('com_emundus');
 		$default_actions = $params->get('default_actions', 0);
 		$hide_default_actions = $params->get('hide_default_actions', 0);
+		$this->use_module_for_filters = boolval($params->get('use_module_for_filters', 0));
 
 		$this->itemId = $app->input->getInt('Itemid', null);
 		$this->cfnum = $app->input->getString('cfnum', null);
@@ -150,24 +152,25 @@ class EmundusViewFiles extends JViewLegacy
 				}
 				break;
 
-			/*case 'filters':
-				$m_user = new EmundusModelUsers();
+			case 'filters':
+				if ($this->use_module_for_filters) {
+					$m_user = new EmundusModelUsers();
 
-				$m_files->code = $m_user->getUserGroupsProgrammeAssoc($current_user->id);
+					$m_files->code = $m_user->getUserGroupsProgrammeAssoc($current_user->id);
 
-				// get all fnums manually associated to user
-				$groups = $m_user->getUserGroups($current_user->id, 'Column');
-				$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
-				$fnum_assoc = $m_user->getApplicantsAssoc($current_user->id);
-				$m_files->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
+					// get all fnums manually associated to user
+					$groups = $m_user->getUserGroups($current_user->id, 'Column');
+					$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
+					$fnum_assoc = $m_user->getApplicantsAssoc($current_user->id);
+					$m_files->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
 
-				$this->code = $m_files->code;
-				$this->fnum_assoc = $m_files->fnum_assoc;
+					$this->code = $m_files->code;
+					$this->fnum_assoc = $m_files->fnum_assoc;
 
-				$filters = $h_files->resetFilter();
-				$this->filters = $filters;
+					$filters = $h_files->resetFilter();
+					$this->filters = $filters;
+				}
 				break;
-			*/
 			case 'docs':
 				$fnumsObj = $app->input->getString('fnums', "");
 				$fnumsObj = json_decode(stripslashes($fnumsObj), false, 512, JSON_BIGINT_AS_STRING);

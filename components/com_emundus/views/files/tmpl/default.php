@@ -27,11 +27,24 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 					<div>
 						<h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_FILTERS')?></h3> &ensp;&ensp;
 					</div>
+                    <div class="buttons" style="float:right; margin-top:0px">
+                        <label for="clear-search">
+                            <img src="<?= JURI::base() ;?>media/com_emundus/images/icones/clear-filters.png" style="width: 25px;filter: invert(1);"/>
+                        </label>
+
+                        <input type="button" style="display: none" id="clear-search" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN');?>"/>
+                    </div>
 				</div>
 
 				<div class="panel-body em-containerFilter-body">
-					<?php echo JHtml::_('content.prepare', '{loadposition emundus_filters}'); ?>
-				</div>
+					<?php
+                    if (!$this->use_module_for_filters) {
+						echo @$this->filters;
+					} else {
+						echo JHtml::_('content.prepare', '{loadposition emundus_filters}');
+                    }
+                    ?>
+                </div>
 			</div>
 
 			<div class="panel panel-info em-hide" id="em-appli-menu">
