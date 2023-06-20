@@ -3977,6 +3977,8 @@ class EmundusHelperFiles
 					} else {
 						$left_joins .= ' LEFT JOIN ' . $dbo->quoteName($element_join['join_from_table']) . ' ON ' . $dbo->quoteName($element_join['join_from_table'] . '.' . $element_join['table_key']) . ' = ' . $dbo->quoteName($table_join_alias. '.' . $element_join['table_join_key']);
 					}
+
+					$already_joined_tables[] = $element_join['join_from_table'];
 				}
 			}
 		}

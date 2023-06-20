@@ -719,7 +719,7 @@ class EmundusModelFiles extends JModelLegacy
         $query .=  $this->_buildContentOrderBy();
 
 		try {
-	        $dbo->setQuery($query);
+			$dbo->setQuery($query);
 	        $this->_applicants = $dbo->loadAssocList();
 
             if ($limit > 0) {
