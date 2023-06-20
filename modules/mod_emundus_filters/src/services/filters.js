@@ -3,7 +3,7 @@ import {FetchClient} from './fetchClient.js';
 const client = new FetchClient('files');
 
 export default {
-    async applyFilters(filters, search_filters) {
+    async applyFilters(filters, search_filters, successEvent) {
         let applied = false;
 
         if (filters) {
@@ -13,7 +13,8 @@ export default {
             }).then(data => {
                if (data.status) {
                    applied = true;
-                   window.location.reload();
+
+                   window.dispatchEvent(successEvent);
                }
             });
         }

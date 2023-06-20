@@ -6783,3 +6783,7 @@ function createScrollbarForElement(element, id) {
     };
     element.parentNode.insertBefore(new_scrollbar, element);
 }
+
+window.addEventListener('emundus-apply-filters-success', () => {
+    reloadData(document.getElementById('view').getAttribute('value'));
+});

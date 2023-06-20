@@ -85,6 +85,7 @@ export default {
 	},
 	data() {
 		return {
+			applySuccessEvent: null,
 			appliedFilters: [],
 			openFilterOptions: false,
 			openSaveFilter: false,
@@ -128,6 +129,8 @@ export default {
 		}
 	},
 	mounted() {
+		this.applySuccessEvent = new Event('emundus-apply-filters-success');
+
 		this.getRegisteredFilters();
 		this.selectedRegisteredFilter = sessionStorage.getItem('emundus-current-filter') || 0;
 		this.appliedFilters = this.defaultAppliedFilters.map((filter) => {
@@ -165,11 +168,11 @@ export default {
 			return added;
 		},
 		applyFilters() {
-			filtersService.applyFilters(this.appliedFilters, this.globalSearch);
+			filtersService.applyFilters(this.appliedFilters, this.globalSearch, this.applySuccessEvent);
 		},
 		clearFilters() {
 			sessionStorage.removeItem('emundus-current-filter');
-			filtersService.applyFilters([], []);
+			filtersService.applyFilters([], [], this.applySuccessEvent);
 		},
 		saveFilters() {
 			let saved = false;
