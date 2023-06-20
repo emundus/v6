@@ -145,6 +145,7 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
             padding: 3px;
             transform: rotate(-45deg);
             -webkit-transform: rotate(-45deg);
+            content: '';
         }
 
         .em-filter-intro:not(.em-filter-intro__close) h4::after {
