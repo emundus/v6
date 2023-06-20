@@ -88,6 +88,7 @@ export default {
 	data() {
 		return {
 			applySuccessEvent: null,
+			startApplyFilters: null,
 			appliedFilters: [],
 			openFilterOptions: false,
 			openSaveFilter: false,
@@ -132,6 +133,7 @@ export default {
 	},
 	mounted() {
 		this.applySuccessEvent = new Event('emundus-apply-filters-success');
+		this.startApplyFilters = new Event('emundus-start-apply-filters');
 
 		this.getRegisteredFilters();
 		this.selectedRegisteredFilter = sessionStorage.getItem('emundus-current-filter') || 0;
@@ -170,6 +172,7 @@ export default {
 			return added;
 		},
 		applyFilters() {
+			window.dispatchEvent(this.startApplyFilters);
 			filtersService.applyFilters(this.appliedFilters, this.globalSearch, this.applySuccessEvent);
 		},
 		clearFilters() {
