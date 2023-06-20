@@ -3725,7 +3725,7 @@ class EmundusHelperFiles
 								$where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.published', $filter['value'], $filter['operator']);
 								break;
 							case 'tags':
-								$where['q'] .= ' AND (' . $this->writeQueryWithOperator('eta.id_tag', $filter['value'], $filter['operator']) . ' OR eta.id_tag IS NULL)';
+								$where['q'] .= ' AND ( ' . $this->writeQueryWithOperator('eta.id_tag', $filter['value'], $filter['operator']) . ' )';
 								break;
 							default:
 								break;
@@ -4124,7 +4124,7 @@ class EmundusHelperFiles
 					$subquery = ' SELECT DISTINCT jos_emundus_campaign_candidature.id FROM jos_emundus_campaign_candidature ';
 
 					$already_joined_tables = [];
-					$subquery .= $this->writeJoins($element_joins, $already_joined_tables);
+					$subquery .= $this->writeJoins($joins, $already_joined_tables);
 
 					$subquery .= ' WHERE ' . $element . ' IN (' . $values . ')';
 				}
