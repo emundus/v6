@@ -1,7 +1,7 @@
 <template>
   <div id="emundus-filters" class="em-w-100">
 	  <section id="filters-top-actions" class="em-mb-16">
-		  <span id="clear-filters" class="material-icons-outlined em-pointer" @click="clearFilters" :alt="translate('MOD_EMUNDUS_FILTERS_CLEAR_FILTERS')">filter_list_off</span>
+		  <span id="clear-filters" class="material-icons-outlined em-pointer hidden" @click="clearFilters" :alt="translate('MOD_EMUNDUS_FILTERS_CLEAR_FILTERS')">filter_list_off</span>
 
 		  <div id="global-search-wrapper" style="position: relative;">
 			  <div id="global-search-values" ref="globalSearchValues" class="em-border-radius-8 em-border-neutral-400 em-flex-row em-flex-wrap em-white-bg" @click="onEnterGlobalSearchDiv">

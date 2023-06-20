@@ -67,6 +67,11 @@ class EmundusViewFiles extends JViewLegacy
 		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'users.php');
 		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'evaluation.php');
 
+		$menu = JFactory::getApplication()->getMenu();
+		$current_menu = $menu->getActive();
+		$menu_params = $menu->getParams(@$current_menu->id);
+		$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
+
 		parent::__construct($config);
 	}
 
@@ -84,7 +89,6 @@ class EmundusViewFiles extends JViewLegacy
 		$params = JComponentHelper::getParams('com_emundus');
 		$default_actions = $params->get('default_actions', 0);
 		$hide_default_actions = $params->get('hide_default_actions', 0);
-		$this->use_module_for_filters = boolval($params->get('use_module_for_filters', 0));
 
 		$this->itemId = $app->input->getInt('Itemid', null);
 		$this->cfnum = $app->input->getString('cfnum', null);
@@ -153,9 +157,8 @@ class EmundusViewFiles extends JViewLegacy
 				break;
 
 			case 'filters':
-				if ($this->use_module_for_filters) {
+				if (!$this->use_module_for_filters) {
 					$m_user = new EmundusModelUsers();
-
 					$m_files->code = $m_user->getUserGroupsProgrammeAssoc($current_user->id);
 
 					// get all fnums manually associated to user

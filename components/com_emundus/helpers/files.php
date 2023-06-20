@@ -3131,11 +3131,412 @@ class EmundusHelperFiles
         }
     }
 
+
+	/**
+	 * @param array $tableAlias
+	 * @return array
+	 */
+	public function _buildWhere($tableAlias = array(), $caller = 'files', $caller_params = array()) {
+		$session = JFactory::getSession();
+		$params = $session->get('filt_params'); // came from search box
+		$filt_menu = $session->get('filt_menu'); // came from menu filter (see EmundusHelperFiles::resetFilter)
+
+		$db = JFactory::getDBO();
+
+		if (!is_numeric(@$params['published']) || is_null(@$params['published'])) {
+			$params['published'] = 1;
+		}
+
+		$query = array('q' => '', 'join' => '');
+		if (!empty($params)) {
+			foreach ($params as $key => $value) {
+
+				switch ($key) {
+					case 'elements':
+						if (!empty($value)) {
+							$index = 0;
+							foreach ($value as $k => $v) {
+								$tab = explode('.', $k);
+
+								if (isset($v['select'])) {
+									$adv_select = $v['select'];
+								}
+
+								if (isset($v['value'])) {
+									$v = $v['value'];
+								}
+
+								if (count($tab)>1 && !empty($v)) {
+
+									if ($tab[0] == 'jos_emundus_training') {
+
+										// Do not do LIKE %% search on elements that come from a <select>, we should get the exact value.
+										if (isset($adv_select) && $adv_select) {
+											$query['q'] .= ' AND search_'.$tab[0].'.id like "'.$v.'"';
+										} else {
+											$query['q'] .= ' AND search_'.$tab[0].'.id like "%'.$v.'%"';
+										}
+
+									} else {
+										$query['q'] .= ' AND ';
+										// Check if it is a join table
+										$sql = 'SELECT join_from_table, table_key, table_join_key FROM #__fabrik_joins WHERE table_join like '.$db->Quote($tab[0]);
+										$db->setQuery($sql);
+										$join_from_table = $db->loadObject();
+
+										if (!empty($join_from_table->join_from_table)) {
+											$table = $join_from_table->join_from_table;
+											$table_join = $tab[0];
+
+											// Do not do LIKE %% search on elements that come from a <select>, we should get the exact value.
+											if (isset($adv_select) && $adv_select) {
+												$query['q'] .= $table_join.'.'.$tab[1].' like "' . $v . '"';
+											} else {
+												$query['q'] .= $table_join.'.'.$tab[1].' like "%' . $v . '%"';
+											}
+
+											/*if (!isset($query[$table])) {
+												$query[$table] = true;
+												if (!array_key_exists($table, $tableAlias) && !in_array($table, $tableAlias)) {
+													$query['join'] .= ' left join '.$table.' on ' .$table.'.fnum like jecc.fnum ';
+												}
+											}*/
+
+											if (!isset($query[$table_join])) {
+												$query[$table_join] = true;
+												try {
+
+													if (!array_key_exists($table_join, $tableAlias) && !in_array($table_join, $tableAlias)) {
+														$query['join'] .= ' left join '. $table_join .' on ' . $table . '.id=' . $table_join . '.parent_id';
+													}
+												} catch(Exception $e) {
+													if (!array_key_exists($table_join, $tableAlias) && !in_array($table_join, $tableAlias)) {
+														$query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like jecc.fnum ';
+													}
+												}
+											}
+
+											$query['join'] .= ' left join ' . $table . ' as ' . $table . '_' . $index . ' on ' . $table . '_' . $index  . '.' . $join_from_table->table_key .' like ' . $table_join . '.' . $join_from_table->table_join_key;
+										} else {
+
+											$sql = 'SELECT plugin FROM #__fabrik_elements WHERE name like '.$db->Quote($tab[1]);
+											$db->setQuery($sql);
+											$res = $db->loadResult();
+											if ($res == "radiobutton" || $res == "dropdown" || $res == "databasejoin" || (isset($adv_select) && $adv_select)) {
+												$query['q'] .= $tab[0].'.'.$tab[1].' like "' . $v . '"';
+											} else {
+												$query['q'] .= $tab[0].'.'.$tab[1].' like "%' . $v . '%"';
+											}
+
+											if (!isset($query[$tab[0]])) {
+												$query[$tab[0]] = true;
+												if (!array_key_exists($tab[0], $tableAlias) && !in_array($tab[0], $tableAlias)) {
+													$query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like jecc.fnum ';
+												}
+											}
+										}
+									}
+								}
+
+								$index++;
+							}
+						}
+						break;
+
+					case 'elements_other':
+						if (!empty($value)) {
+							foreach ($value as $k => $v) {
+								if (!empty($v)) {
+									$tab = explode('.', $k);
+									if (count($tab) > 1) {
+										if ($tab[0] == 'jos_emundus_training') {
+											$query['q'] .= ' AND ';
+											$query['q'] .= ' search_'.$tab[0].'.id like "%' . $v . '%"';
+										} else {
+											$query['q'] .= ' AND ';
+											$query['q'] .= $tab[0].'.'.$tab[1].' like "%' . $v . '%"';
+
+											if (!isset($query[$tab[0]])) {
+												$query[$tab[0]] = true;
+												if (!array_key_exists($tab[0], $tableAlias)) {
+													$query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like jecc.fnum ';
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+						break;
+
+					case 's':
+						if (!empty($value)) {
+							$q = $this->_buildSearch($value, $tableAlias, $caller_params);
+							foreach ($q['q'] as $v) {
+								$query['q'] .= $v;
+							}
+
+							foreach ($q['join'] as $u) {
+								$query['join'] .= $u;
+							}
+
+							if (isset($q['users'])) {
+								$query['users'] = true;
+							}
+							if (isset($q['em_user'])) {
+								$query['em_user'] = true;
+							}
+						}
+						break;
+
+					case 'admission':
+						if (!empty($value)) {
+
+							$query['q'] .= ' and ad.admission like "%' . $value . '%"';
+							if (!isset($query['admission'])) {
+
+								$query['admission'] = true;
+								if (!array_key_exists('jos_emundus_admission', $tableAlias))
+									$query['join'] .=' left join #__emundus_admission as ad on ad.fnum like c.fnum ';
+
+							}
+						}
+						break;
+
+					case 'finalgrade':
+						if (!empty($value)) {
+							$query['q'] .= ' and fg.final_grade like "%' . $value . '%"';
+							if (!isset($query['final_g'])) {
+								$query['final_g'] = true;
+								if (!array_key_exists('jos_emundus_final_grade', $tableAlias)) {
+									$query['join'] .= ' left join #__emundus_final_grade as fg on fg.fnum like jecc.fnum ';
+								}
+							}
+						}
+						break;
+
+					case 'schoolyear':
+						if (!empty($value)) {
+							if (($value[0] == "%") || empty($value[0])) {
+								$query['q'] .= '';
+							} else {
+								$query['q'] .= ' and esc.year IN ("' . implode('","', $value) . '") ';
+							}
+						}
+						break;
+
+					case 'programme':
+						if (!empty($value)) {
+							if ($value[0] == "%" || empty($value[0])) {
+								$query['q'] .= ' ';
+							} else {
+								$query['q'] .= ' and sp.code IN ("' . implode('","', $value) . '") ';
+							}
+						}
+						break;
+
+					case 'campaign':
+						if ($value) {
+							$query['q'] .= ' AND esc.published=1 ';
+
+							if ($value[0] == "%" || empty($value[0])) {
+								$query['q'] .= ' ';
+							} else {
+								$query['q'] .= ' AND esc.id IN (' . implode(',', $value) . ') ';
+							}
+						}
+						break;
+
+					case 'groups':
+						if (!empty($value)) {
+							$query['q'] .= ' and  (ge.group_id=' . $db->Quote($value) . ' OR ge.user_id IN (select user_id FROM #__emundus_groups WHERE group_id=' .$db->Quote($value) . ')) ';
+
+							if (!isset($query['group_eval'])) {
+								$query['group_eval'] = true;
+								if (!array_key_exists('jos_emundus_groups_eval', $tableAlias)) {
+									$query['join'] .= ' left join #__emundus_groups_eval as ge on ge.applicant_id = jecc.applicant_id and ge.campaign_id = jecc.campaign_id ';
+								}
+							}
+						}
+						break;
+
+					case 'group_assoc':
+						if (!empty($value)) {
+							$query['join'] .= ' 
+	                            LEFT JOIN #__emundus_group_assoc as ga on ga.fnum = jecc.fnum 
+	                            LEFT JOIN #__emundus_setup_groups_repeat_course as grc on grc.course LIKE esc.training 
+	                            LEFT JOIN #__emundus_setup_groups as sg on grc.parent_id = sg.id ';
+							$query['q'] .= ' and (ga.group_id IN ('.implode(',', $value).') OR sg.id IN ('.implode(',', $value).')) ';
+
+						}
+						break;
+
+					case 'user':
+						if (!empty($value)) {
+							$query['q'] .= ' and (ge.user_id=' . $db->Quote($value) .
+								' OR ge.group_id IN (select e.group_id FROM #__emundus_groups e WHERE e.user_id=' .
+								$db->Quote($value) . '))';
+							if (!isset($query['group_eval'])) {
+								$query['group_eval'] = true;
+								if (!array_key_exists('jos_emundus_groups_eval', $tableAlias)) {
+									$query['join'] .= ' left join #__emundus_groups_eval as ge on ge.applicant_id = jecc.applicant_id and ge.campaign_id = jecc.campaign_id ';
+								}
+							}
+						}
+						break;
+
+					case 'missing_doc':
+						if (!empty($value)) {
+							$query['q'] .=' and (' . $value . ' NOT IN (SELECT attachment_id FROM #__emundus_uploads eup WHERE #__emundus_uploads.user_id = u.id)) ';
+							if (!array_key_exists('jos_emundus_uploads', $tableAlias)) {
+								$query['join'] = ' left join #__emundus_uploads on #__emundus_uploads.user_id = jecc.applicant_id ';
+							}
+						}
+						break;
+
+					case 'complete':
+						if (!empty($value)) {
+							if ($value == 1) {
+								$query['q'] .= 'and #__users.id IN (SELECT user FROM #__emundus_declaration ed WHERE #__emundus_declaration.user = #__users.id) ';
+							} else {
+								$query['q'] .= 'and #__users.id NOT IN (SELECT user FROM #__emundus_declaration ed WHERE #__emundus_declaration.user = #__users.id) ';
+							}
+						}
+						break;
+
+					case 'validate':
+						if (!empty($value)) {
+							if ($value == 1) {
+								$query['q'] .= ' and #__emundus_declaration.validated = 1 ';
+							} else {
+								$query['q'] .= ' and #__emundus_declaration.validated = 0 ';
+							}
+						}
+						break;
+
+					case 'status':
+						if ($value) {
+							$filt_menu_defined = (isset($filt_menu['status'][0]) && $filt_menu['status'][0] != '' && $filt_menu['status'] != "%" );
+
+							// session filter is empty
+							if ($value[0] == "%" || !isset($value[0]) || $value[0] == '') {
+								if (!$filt_menu_defined) {
+									$query['q'] .= ' ';
+								} else {
+									$query['q'] .= ' and jecc.status IN (' . implode(',', $filt_menu['status']) . ') ';
+								}
+
+							} else {
+
+								// Check if session filter exist in menu filter, if at least one session filter not in menu filter, reset to menu filter
+								$diff = array();
+								if (is_array($value) && $filt_menu_defined) {
+									$diff = array_diff($value, $filt_menu['status']);
+								}
+
+								if (count($diff) == 0) {
+									$query['q'] .= ' and jecc.status IN (' . implode(',', $value) . ') ';
+								} else {
+									$query['q'] .= ' and jecc.status IN (' . implode(',', $filt_menu['status']) . ') ';
+								}
+							}
+						}
+						break;
+
+					case 'tag':
+						if ($value) {
+							if ($value[0] == "%" || !isset($value[0]) || $value[0] === '') {
+								$query['q'] .= ' ';
+							} else {
+
+								if (isset($filt_menu['tag'][0]) && $filt_menu['tag'][0] != '' && $filt_menu['tag'] != "%") {
+									// This allows hiding of files by tag.
+									$filt_menu_not = array_filter($filt_menu['tag'], function($e) {
+										return strpos($e, '!') === 0;
+									});
+								}
+
+								// This allows hiding of files by tag.
+								$not_in = array_filter($value, function($e) {
+									return strpos($e, '!') === 0;
+								});
+
+								if (is_array($not_in) && !empty($filt_menu_not)) {
+									$not_in = array_unique(array_merge($not_in, $filt_menu_not));
+								}
+
+								if (!empty($not_in)) {
+									$value = array_diff($value, $not_in);
+									$not_in = array_map(function($v) {
+										return ltrim($v, '!');
+									}, $not_in);
+									$query['q'] .= ' and jecc.fnum NOT IN (SELECT cc.fnum FROM jos_emundus_campaign_candidature AS cc LEFT JOIN jos_emundus_tag_assoc as ta ON ta.fnum = cc.fnum WHERE ta.id_tag IN (' . implode(',', $not_in) . ')) ';
+								}
+
+								if (!empty($value)) {
+									$query['q'] .= ' and eta.id_tag IN ('.implode(',', $value).') ';
+								}
+							}
+						}
+						break;
+
+					case 'published':
+						if ($value == "-1") {
+							$query['q'] .= ' and jecc.published=-1 ';
+						} elseif ($value == 0) {
+							$query['q'] .= ' and jecc.published=0 ';
+						} else {
+							$query['q'] .= ' and jecc.published=1 ';
+						}
+						break;
+					default:
+						break;
+				}
+			}
+		}
+
+		// force menu filter
+		if ((is_array($filt_menu['status']) && count($filt_menu['status']) > 0) && isset($filt_menu['status'][0]) && !empty($filt_menu['status'][0]) && $filt_menu['status'][0] != "%") {
+			$query['q'] .= ' AND jecc.status IN ("' . implode('","', $filt_menu['status']) . '") ';
+		}
+
+		if (isset($filt_menu['programme'][0]) && $filt_menu['programme'][0] == "%"){
+			$sql_code = '1=1';
+			$and = ' AND ';
+		} elseif (isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
+			// ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT
+			$sql_code = ' sp.code IN ("'.implode('","', $caller_params['code']).'") ';
+			$and = ' OR ';
+		} else {
+			if ($filt_menu['programme'][0] != "" && count($filt_menu['programme']) > 0) {
+				$sql_code = ' sp.code in ("'.implode('","', $filt_menu['programme']).'") ';
+				$and = ' AND ';
+			}
+		}
+
+		$sql_fnum = '';
+		if (count($caller_params['fnum_assoc']) > 0) {
+			$sql_fnum = $and.' jecc.fnum IN ("'.implode('","', $caller_params['fnum_assoc']).'") ';
+		}
+
+		if (!empty($sql_code) || !empty($sql_fnum) ) {
+			$query['q'] .= ' AND (' . $sql_code . ' ' . $sql_fnum . ') ';
+			$query['q'] .= ' AND esc.published > 0';
+		}
+		// WARNING!
+		else if (!empty($params['programme']) && ($params['programme'][0] == "%" || empty($params['programme'][0])) || empty(array_intersect($params['programme'], array_filter($caller_params['code'])))) {
+			$query['q'] .= ' AND 1=2 ';
+		}
+		return $query;
+	}
+
     /**
-     * @param array $tableAlias
-     * @return array
+     * @param array $already_joined
+     * @param string $caller
+     * @param array $caller_params
+     * @return array containing 'q' the where clause and 'join' the join clause
      */
-    public function _buildWhere($already_joined = array(), $caller = 'files', $caller_params = array()) {
+    public function _moduleBuildWhere($already_joined = array(), $caller = 'files', $caller_params = array()) {
 		$where = ['q' => '', 'join' => ''];
 
 		$session = JFactory::getSession();

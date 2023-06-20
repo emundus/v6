@@ -55,6 +55,8 @@ class EmundusModelFiles extends JModelLegacy
 
     public $code;
 
+	public $use_module_filters = false;
+
     /**
      * Constructor
      *
@@ -75,6 +77,7 @@ class EmundusModelFiles extends JModelLegacy
 
         $Itemid = @JFactory::getApplication()->input->getInt('Itemid', $current_menu->id);
         $menu_params = $menu->getParams($Itemid);
+		$this->use_module_filters = boolval($menu_params->get('em_use_module_for_filters', false));
 
         $h_files = new EmundusHelperFiles;
         $m_users = new EmundusModelUsers;
@@ -566,10 +569,18 @@ class EmundusModelFiles extends JModelLegacy
      */
     private function _buildWhere($already_joined_tables = array()) {
         $h_files = new EmundusHelperFiles();
-        return $h_files->_buildWhere($already_joined_tables, 'files', array(
-            'fnum_assoc' => $this->fnum_assoc,
-            'code' => $this->code
-        ));
+
+		if ($this->use_module_filters) {
+			return $h_files->_moduleBuildWhere($already_joined_tables, 'files', array(
+				'fnum_assoc' => $this->fnum_assoc,
+				'code' => $this->code
+			));
+		} else {
+			return $h_files->_buildWhere($already_joined_tables, 'files', array(
+				'fnum_assoc' => $this->fnum_assoc,
+				'code' => $this->code
+			));
+		}
     }
 
     /**

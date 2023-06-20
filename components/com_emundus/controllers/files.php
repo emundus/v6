@@ -4041,4 +4041,24 @@ class EmundusControllerFiles extends JControllerLegacy
         }
         exit;
     }
+
+	public function checkmenufilterparams()
+	{
+		$response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
+		$user_id = JFactory::getUser()->id;
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($user_id)) {
+			$itemId = JFactory::getApplication()->input->getInt('Itemid', 0);
+			$menu = JFactory::getApplication()->getMenu();
+			$menu_params = $menu->getParams($itemId);
+
+			$response['use_module_filters'] = boolval($menu_params->get('em_use_module_for_filters', false));
+			$response['status'] = true;
+			$response['code'] = 200;
+			$response['msg'] = JText::_('SUCCESS');
+		}
+
+		echo json_encode($response);
+		exit;
+	}
 }
