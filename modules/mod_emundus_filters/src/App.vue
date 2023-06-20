@@ -18,7 +18,9 @@
 			  </ul>
 		  </div>
 		  <div id="save-filters-inputs-btns">
-			  <button id="save-filters" class="em-secondary-button label label-darkblue em-mt-8 em-mb-8" @click="onClickSaveFilter">{{ translate('MOD_EMUNDUS_FILTERS_SAVE_FILTERS') }}</button>
+			  <button id="save-filters" class="em-secondary-button label label-darkblue em-mt-8 em-mb-8" style="font-weight: normal !important;" @click="onClickSaveFilter">
+				  {{ translate('MOD_EMUNDUS_FILTERS_SAVE_FILTERS') }}
+			  </button>
 			  <div class="em-flex-row em-flex-space-between" :class="{'hidden': !openSaveFilter}">
 				  <input id="new-filter-name" type="text" class="em-flex-row" v-model="newFilterName" :placeholder="translate('MOD_EMUNDUS_FILTERS_SAVE_FILTER_NAME')">
 				  <span class="material-icons-outlined" :class="{'em-pointer em-dark-blue-500-color': newFilterName.length > 0}" @click="saveFilters">save</span>
@@ -172,6 +174,24 @@ export default {
 		},
 		clearFilters() {
 			sessionStorage.removeItem('emundus-current-filter');
+			this.globalSearch = [];
+			// reset applied filters values
+			this.appliedFilters = this.appliedFilters.map((filter) => {
+				if (filter.type === 'select') {
+					// TODO: too specific to the published filter, should create a default_value field.
+					if (filter.uid === 'published') {
+						filter.value = [1];
+					} else {
+						filter.value = [];
+					}
+				} else if (filter.type === 'date' || filter.type === 'time') {
+					filter.value = ['', ''];
+				} else {
+					filter.value = '';
+				}
+
+				return filter;
+			});
 			filtersService.applyFilters([], [], this.applySuccessEvent);
 		},
 		saveFilters() {
