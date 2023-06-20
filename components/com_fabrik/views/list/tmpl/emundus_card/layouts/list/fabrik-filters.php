@@ -134,19 +134,22 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
             display: none;
         }
 
-        .em-filter-intro__close .clearFilters {
+        a.clearFilters {
             display: none;
         }
 
         .em-filter-intro.em-filter-intro__close h4::after {
-            content: '>';
-            position: relative;
-            left: 209px;
+            border: solid black;
+            border-width: 0 3px 3px 0;
+            display: inline-block;
+            padding: 3px;
             transform: rotate(-45deg);
+            -webkit-transform: rotate(-45deg);
         }
 
         .em-filter-intro:not(.em-filter-intro__close) h4::after {
             transform: rotate(45deg);
+            -webkit-transform: rotate(45deg);
         }
     }
 
