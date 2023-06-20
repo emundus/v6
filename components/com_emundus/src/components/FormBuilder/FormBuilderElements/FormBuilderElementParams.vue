@@ -34,11 +34,11 @@
       </div>
 
       <!-- SUBFORM -->
-      <div v-else-if="param.type === 'subform'">
-        <button @click="addRow(param.name)" :key="param.id + '-addButton' ">Add</button>
+      <div v-else-if="param.type === 'subform'" class="mainSubFormDiv">
+        <button @click="addRow(param.name)" :key="param.id + '-addButton' " class="addButton">{{translate('COM_EMUNDUS_ADD')}}</button>
         <div v-for="(element_sub_parameters, element_sub_name) in element.params[param.name]" :key="element.id + '-' + param.name" class="subform">
           <FormBuilderElementParams :key="element_sub_name" :element="{params:element_sub_parameters}" :databases="null" :params="param.subparams"/>
-          <button @click="deleteRow(param.name, element_sub_name)" :key="element_sub_name+ '-deleteButton'">Delete</button>
+          <button @click="deleteRow(param.name, element_sub_name)" :key="element_sub_name+ '-deleteButton'" class="deleteButton">{{translate('COM_EMUNDUS_THESIS_DELETE')}}</button>
         </div>
       </div>
 
@@ -245,6 +245,27 @@ export default {
 }
 </script>
 
-<style scoped lang="css">
+<style scoped lang="scss">
+
+.mainSubFormDiv
+{
+  .subform
+  {
+    background-color : #fafafa;
+    border: 1px solid #f2f2f3;
+    margin: 2em 0 2em 0;
+    align-items: center;
+    &>*
+    {
+      margin: auto;
+      width: 90%;
+    }
+    .deleteButton
+    {
+      width: max-content;
+
+    }
+  }
+}
 
 </style>
