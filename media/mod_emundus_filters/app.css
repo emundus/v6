@@ -11,6 +11,15 @@
 	top: 4px;
 	right: 4px;
 }
+span.label[data-v-2064eced] {
+	font-weight: normal !important;
+	display: flex !important;
+	width: -moz-fit-content;
+	width: fit-content;
+}
+.recap[data-v-2064eced] {
+	overflow: hidden;
+}
 
 
 .default-filter-card[data-v-565be899] {
@@ -20,6 +29,15 @@
 	position: absolute;
 	top: 4px;
 	right: 4px;
+}
+span.label[data-v-565be899] {
+	font-weight: normal !important;
+	display: flex !important;
+	width: -moz-fit-content;
+	width: fit-content;
+}
+.recap[data-v-565be899] {
+	overflow: hidden;
 }
 
 
