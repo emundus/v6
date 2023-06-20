@@ -81,6 +81,7 @@ export default {
     reloadOptions: 0,
     reloadOptionsCascade: 0,
 
+    idElement: 0,
     loading: false,
   }),
   created() {
@@ -164,8 +165,8 @@ export default {
       const subformObject = this.getSubObject(paramName);
 
       const new_object = this.prepareNewSubObject(subformObject.subparams);
-      const length = Object.keys(this.element.params[paramName]).length;
-      const element_name = paramName+length;
+      const element_name = paramName+this.idElement;
+      this.idElement++;
 
       this.$set(this.element.params[paramName], element_name, new_object);
     },

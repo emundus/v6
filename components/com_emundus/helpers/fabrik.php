@@ -603,7 +603,7 @@ class EmundusHelperFabrik {
             $object = (object) [
                 'iso3' => 'EUR',
                 'minimal_value' => '0.00',
-                'maximal_value' => '0.00',
+                'maximal_value' => '10000.00',
                 'thousand_separator' => ' ',
                 'decimal_separator' => ',',
                 'decimal_numbers' => '2'
