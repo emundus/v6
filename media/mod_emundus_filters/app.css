@@ -3,6 +3,24 @@
 	max-height: 180px;
 	overflow-y: auto;
 }
+.multi-select-filter-card[data-v-2064eced] {
+	position: relative;
+}
+.multi-select-filter-card  .toggle-open-close[data-v-2064eced] {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+}
+
+
+.default-filter-card[data-v-565be899] {
+	position: relative;
+}
+.default-filter-card  .toggle-open-close[data-v-565be899] {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+}
 
 
 #select-scopes:not(.hidden) {
