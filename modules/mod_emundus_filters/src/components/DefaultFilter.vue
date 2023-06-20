@@ -8,7 +8,7 @@
 			</div>
 		</div>
 		<div class="default-filter-card em-border-radius-8 em-border-neutral-400 em-box-shadow em-white-bg em-p-8">
-			<section v-if="!opened" class="recap">
+			<section v-if="!opened" class="recap" @click="opened = !opened">
 				<div v-if="filter.value" class="em-flex-row em-mt-4">
 					<span class="recap-operator label label-darkblue em-mr-4"> {{ selectedOperatorLabel }}</span>
 					<span class="recap-value"> {{ filter.value }}</span>

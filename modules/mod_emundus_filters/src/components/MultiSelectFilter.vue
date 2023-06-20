@@ -8,7 +8,7 @@
 			</div>
 		</div>
 		<div class="multi-select-filter-card em-border-radius-8 em-border-neutral-400 em-box-shadow em-white-bg em-p-8">
-			<section v-if="!opened" class="recap">
+			<section v-if="!opened" class="recap" @click="opened = !opened">
 				<div v-if="filter.value && filter.value.length > 0 && !filter.value.includes('all')" class="em-flex-column-start em-mt-4">
 					<span class="recap-operator label label-darkblue"> {{ selectedOperatorLabel }}</span>
 					<div class="recap-value em-flex-row em-flex-wrap em-mt-8 em-flex-gap-8">
