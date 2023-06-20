@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -22,6 +22,7 @@ defined('_JEXEC') or die('Restricted access');
 <table id="hikashop_characteristic_values_listing" class="adminlist table table-striped table-hover" cellpadding="1" width="100%">
 	<thead>
 		<tr>
+			<th class="title titletoggle"></th>
 			<th class="title titletoggle"><?php
 				echo JText::_('HIKA_EDIT');
 			?></th>
@@ -47,6 +48,7 @@ defined('_JEXEC') or die('Restricted access');
 	</thead>
 	<tbody id="characteristic_listing">
 <?php
+	hikashop_loadJslib('jquery');
 	if(!empty($this->element->values)){
 		$k = 0;
 		for($i = 0,$a = count($this->element->values);$i<$a;$i++){
@@ -54,6 +56,7 @@ defined('_JEXEC') or die('Restricted access');
 			$id=rand();
 ?>
 		<tr id="characteristic_<?php echo $row->characteristic_id.'_'.$id;?>">
+			<td class="column_move"><img src="../media/com_hikashop/images/move.png" alt=""></td>
 			<td><?php
 				echo $this->popup->display(
 					'<i class="fas fa-pen"></i>',
@@ -103,3 +106,25 @@ defined('_JEXEC') or die('Restricted access');
 ?>
 	</tbody>
 </table>
+<script type="text/javascript">
+	hkjQuery("tbody#characteristic_listing").sortable({
+		axis: "y", cursor: "move", opacity: 0.8,
+		helper: function(e, ui) {
+			ui.children().each(function() {
+				hkjQuery(this).width(hkjQuery(this).width());
+			});
+			return ui;
+		},
+		stop: function(event, ui) {
+			recalculateOrdering("tbody#characteristic_listing");
+			window.hikashop.cleanTableRows('hikashop_characteristic_values_listing');
+		}
+	});
+	function recalculateOrdering(selector) {
+		var table = document.querySelector(selector);
+		var orderingInputs = table.querySelectorAll('input:not([type="hidden"])');
+		for(var i = 0; i < orderingInputs.length; i++) {
+			orderingInputs[i].value = i + 1;
+		}
+	}
+</script>

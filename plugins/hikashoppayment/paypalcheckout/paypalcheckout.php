@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -24,13 +24,56 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 	var $pluginConfig = array(
 		'client_id' => array('Client ID', 'input'),
 		'client_secret' => array('Client secret', 'input'),
-		'brand_name' => array('merchant name', 'input'),
+		'brand_name' => array('Merchant name', 'input'),
 		'capture' => array('INSTANTCAPTURE', 'boolean','1'),
 		'landing_page' => array('Landing page', 'list', array(
-			'LOGIN' =>'Login page',
-			'BILLING' => 'Credit card page',
-			'NO_PREFERENCE' => 'No preference',
-		)),
+				'LOGIN' =>'Login page',
+				'BILLING' => 'Credit card page',
+				'NO_PREFERENCE' => 'No preference',
+			),
+		),
+		'disable_funding' => array(
+			'Disable Funding',
+			'checkbox',
+			array(
+				'card' =>'Credit or debit cards',
+				'credit' => 'PayPal Credit (US, UK)',
+				'paylater' => 'Pay Later (US, UK), Pay in 4 (AU), 4X PayPal (France), Paga en 3 plazos (Spain), Paga in 3 rate (Italy), Später Bezahlen (Germany)',
+				'venmo' => 'Venmo',
+				'bancontact' => 'Bancontact',
+				'blik' => 'BLIK',
+				'eps' => 'eps',
+				'giropay' => 'giropay',
+				'ideal' => 'iDEAL',
+				'mercadopago' => 'Mercado Pago',
+				'mybank' => 'MyBank',
+				'p24' => 'Przelewy24',
+				'sepa' => 'SEPA-Lastschrift',
+				'sofort' => 'Sofort',
+			),
+			'tooltip' => 'Select the payment methods you would like to NOT be available to your customers.',
+		),
+		'funding' => array(
+			'Enable Funding',
+			'checkbox',
+			array(
+				'card' =>'Credit or debit cards',
+				'credit' => 'PayPal Credit (US, UK)',
+				'paylater' => 'Pay Later (US, UK), Pay in 4 (AU), 4X PayPal (France), Paga en 3 plazos (Spain), Paga in 3 rate (Italy), Später Bezahlen (Germany)',
+				'venmo' => 'Venmo',
+				'bancontact' => 'Bancontact',
+				'blik' => 'BLIK',
+				'eps' => 'eps',
+				'giropay' => 'giropay',
+				'ideal' => 'iDEAL',
+				'mercadopago' => 'Mercado Pago',
+				'mybank' => 'MyBank',
+				'p24' => 'Przelewy24',
+				'sepa' => 'SEPA-Lastschrift',
+				'sofort' => 'Sofort',
+			),
+			'tooltip' => 'Select the payment methods you would like to be available to your customers. Note that even if selected, they will only appear based on your eligibility and the eligibility of your customer to these payment methods.',
+		),
 		'debug' => array('DEBUG', 'boolean', 0),
 		'sandbox' => array('HIKA_SANDBOX', 'boolean', 0),
 		'cancel_url' => array('CANCEL_URL', 'input'),
@@ -57,6 +100,18 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 
 	}
 
+	public function onPaymentConfiguration(&$element) {
+		parent::onPaymentConfiguration($element);
+
+		$config = hikashop_config();
+		$round_calculations = $config->get('round_calculations');
+		if(empty($round_calculations)){
+			$app = JFactory::getApplication();
+			$app->enqueueMessage('The "Round prices during calculations" setting is deactivated in the HikaShop configuration. This can sometimes lead to rounding differences between the total calculated by PayPal and the total calculated by HikaShop, resulting in an "AMOUNT_MISMATCH" error at the end of the checkout with this payment method.');
+		}
+
+	}
+
 	public function onPaymentNotification(&$statuses) {
 		$order_id = hikaInput::get()->getInt('order_id');
 		$paypal_id = hikaInput::get()->getString('paypal_id');
@@ -79,22 +134,33 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 			hikashop_writeToLog($paypal_id);
 		}
 
-		require __DIR__ . '/vendor/autoload.php';
+		try {
 
-		if($this->payment_params->sandbox) {
-			$env = new PayPalCheckoutSdk\Core\SandboxEnvironment($this->payment_params->client_id, $this->payment_params->client_secret);
-		} else {
-			$env = new PayPalCheckoutSdk\Core\ProductionEnvironment($this->payment_params->client_id, $this->payment_params->client_secret);
+			require __DIR__ . '/vendor/autoload.php';
+
+			if($this->payment_params->sandbox) {
+				$env = new PayPalCheckoutSdk\Core\SandboxEnvironment($this->payment_params->client_id, $this->payment_params->client_secret);
+			} else {
+				$env = new PayPalCheckoutSdk\Core\ProductionEnvironment($this->payment_params->client_id, $this->payment_params->client_secret);
+			}
+
+			$client = new PayPalCheckoutSdk\Core\PayPalHttpClient($env);
+			$response = $client->execute(new PayPalCheckoutSdk\Orders\OrdersGetRequest($paypal_id));
+
+			$ok = $this->checkResponse($response, $dbOrder);
+		} catch(Exception $e) {
+			hikashop_writeToLog($e->getMessage());
 		}
 
-		$client = new PayPalCheckoutSdk\Core\PayPalHttpClient($env);
-        $response = $client->execute(new PayPalCheckoutSdk\Orders\OrdersGetRequest($paypal_id));
 
-		$ok = $this->checkResponse($response, $dbOrder);
-
-		if($ok) {
-			$this->modifyOrder($order_id, $this->payment_params->verified_status, true, true);
+		if(!empty($ok)) {
+			$history = new stdClass();
+			$history->notified = 1;
+			$history->amount = @$ok->amount->value.@$ok->amount->currency_code;
+			$history->data = 'PayPal transaction id:'.$paypal_id;
+			$this->modifyOrder($order_id, $this->payment_params->verified_status, $history, true);
 		} else {
+			hikashop_writeToLog($paypal_id);
 			hikashop_writeToLog($response);
 			$this->modifyOrder($order_id, $this->payment_params->invalid_status, true, true);
 		}
@@ -126,17 +192,19 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 			return false;
 		}
 
-		return true;
+		return $purchaseUnit;
 	}
 
 	public function getPaymentDefaultValues(&$element) {
 		$element->payment_name='PayPal Checkout';
 		$element->payment_description='You can pay with PayPal Checkout using this payment method';
-		$element->payment_images='paypal';
+		$element->payment_images='PayPal';
 
+		$element->payment_params->instant_capture = 1;
 		$element->payment_params->landing_page='NO_PREFERENCE';
 		$element->payment_params->invalid_status='cancelled';
 		$element->payment_params->verified_status='confirmed';
+		$element->payment_params->funding = 'paylater';
 	}
 
 	private function getOrderData(&$order) {
@@ -155,11 +223,12 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 		}
 		$orderData->application_context = new stdClass();
 		if(!empty($this->payment_params->brand_name))
-			$orderData->application_context->brand_name = $this->payment_params->brand_name;
+			$orderData->application_context->brand_name = mb_substr($this->payment_params->brand_name, 0, 127);
 		$orderData->application_context->cancel_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=order&task=cancel_order&order_id='.$order->order_id . $this->url_itemid;
 		if(!empty($this->payment_params->landing_page)) {
 			$orderData->application_context->landing_page = $this->payment_params->landing_page;
 		}
+
 		$orderData->payer = new stdClass();
 		$orderData->payer->email_address = $this->user->user_email;
 		if(!empty($order->cart->billing_address->address_firstname) && !empty($order->cart->billing_address->address_lastname)) {
@@ -190,7 +259,7 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 		}
 		$purchaseUnit = new stdClass();
 		$purchaseUnit->invoice_id = $order->order_id;
-		$purchaseUnit->description = JText::_('ORDER_NUMBER').' '.$order->order_number;
+		$purchaseUnit->description = mb_substr(JText::_('ORDER_NUMBER').' '.$order->order_number,0,127);
 		$purchaseUnit->items = [];
 		$config = hikashop_config();
 		$group = $config->get('group_options',0);
@@ -201,9 +270,9 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 			if(empty($product->order_product_quantity)) continue;
 
 			$item = new stdClass();
-			$item->name = $product->order_product_name;
+			$item->name = mb_substr(strip_tags($product->order_product_name),0,127);
 			$item->quantity = $product->order_product_quantity;
-			$item->sku = $product->order_product_code;
+			$item->sku = mb_substr($product->order_product_code,0,127);
 			$item->unit_amount = new stdClass();
 			$item->unit_amount->value = number_format(round($product->order_product_price, (int)$this->currency->currency_locale['int_frac_digits']), $rounding, '.', '');
 			$item->unit_amount->currency_code = $this->currency->currency_code;
@@ -218,9 +287,9 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 			foreach($order->cart->additional as $product) {
 				if(empty($product->order_product_price) || $product->order_product_price == 0) continue;
 				$item = new stdClass();
-				$item->name = JText::_(strip_tags($product->order_product_name));
+				$item->name =  mb_substr($JText::_(strip_tags($product->order_product_name)),0,127);
 				$item->quantity = 1;
-				$item->sku = $product->order_product_code;
+				$item->sku = mb_substr($product->order_product_code,0,127);
 				$item->unit_amount = new stdClass();
 				$item->unit_amount->value = number_format(round($product->order_product_price, (int)$this->currency->currency_locale['int_frac_digits']), $rounding, '.', '');
 				$item->unit_amount->currency_code = $this->currency->currency_code;
@@ -234,7 +303,7 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 		}
 		if(!empty($order->order_payment_price) && bccomp(sprintf('%F',$order->order_payment_price), 0, 5)) {
 			$item = new stdClass();
-			$item->name = JText::_('HIKASHOP_PAYMENT');
+			$item->name = mb_substr(JText::_('HIKASHOP_PAYMENT'),0,127);
 			$item->quantity = 1;
 			$item->sku = 'payment_fee';
 			$item->unit_amount = new stdClass();
@@ -305,6 +374,19 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 			'integration-date' => '2022-07-11',
 			'currency' => $this->currency->currency_code,
 		];
+		if(!empty($this->payment_params->disable_funding)) {
+			if(!is_string($this->payment_params->disable_funding)) {
+				$this->payment_params->disable_funding = implode(',', $this->payment_params->disable_funding);
+			}
+			$this->params['disable-funding'] = $this->payment_params->disable_funding;
+		}
+		if(!empty($this->payment_params->funding)) {
+			if(!is_string($this->payment_params->funding)) {
+				$this->payment_params->funding = implode(',', $this->payment_params->funding);
+			}
+			$this->params['enable-funding'] = $this->payment_params->funding;
+		}
+
 		if(!empty($this->payment_params->capture)) {
 			$this->params['intent'] = 'capture';
 		} else {

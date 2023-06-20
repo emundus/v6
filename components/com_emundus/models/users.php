@@ -2510,6 +2510,47 @@ class EmundusModelUsers extends JModelList {
         }
     }
 
+    public function saveUser($user,$uid){
+	    $saved = false;
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $columns = array();
+
+        $formid = $this->getProfileForm();
+        $groups = $this->getProfileGroups($formid);
+        $ids_groups = array_map(function($group){
+            return $group->id;
+        },$groups);
+        $elements = $this->getProfileElements($ids_groups);
+
+        $user_keys = array_keys(get_object_vars($user));
+        foreach ($elements as $element) {
+            if(in_array($element->name,$user_keys) && $element->name != 'id'){
+                $columns[] = $element->name;
+            }
+        }
+
+        try {
+            $query->update($db->quoteName('#__emundus_users'));
+            foreach ($columns as $column) {
+                $query->set($db->quoteName($column) . ' = ' . $db->quote($user->{$column}));
+            }
+            $query->where($db->quoteName('user_id') . ' = ' . $db->quote($uid));
+            $db->setQuery($query);
+	        $saved = $db->execute();
+	        if ($saved) {
+		        JPluginHelper::importPlugin('emundus');
+				\Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterSaveUserProfile', ['user' => $uid, 'data' => $user, 'columns' => $columns]]);
+		    }
+
+        } catch (Exception $e) {
+            JLog::add(' com_emundus/models/users.php | Cannot update user '.$uid.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+        }
+
+		return $saved;
+    }
+
     public function getProfileAttachments($user_id,$fnum = null){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);

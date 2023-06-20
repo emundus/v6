@@ -3523,9 +3523,9 @@ class EmundusHelperFiles
             $query['q'] .= ' AND esc.published > 0';
         }
 		// WARNING!
-		/*else if (!empty($params['programme']) && ($params['programme'][0] == "%" || empty($params['programme'][0])) || empty(array_intersect($params['programme'], array_filter($caller_params['code'])))) {
+		else if (!empty($params['programme']) && ($params['programme'][0] == "%" || empty($params['programme'][0])) || empty(array_intersect($params['programme'], array_filter($caller_params['code'])))) {
             $query['q'] .= ' AND 1=2 ';
-        }*/
+        }
         return $query;
     }
 

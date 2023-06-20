@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -19,7 +19,8 @@ class OrderController extends hikashopController {
 		'additional',
 		'general',
 		'history',
-		'user'
+		'user',
+		'guest'
 	);
 
 	var $popupSubtasks = array(
@@ -33,7 +34,7 @@ class OrderController extends hikashopController {
 			'changestatus','product','product_select','product_add','product_delete','address','state',
 			'mail','partner','discount','fields','changeplugin','neworder','user','form','batch',
 
-			'product_create','customer_set','customer_save'
+			'product_create','customer_set','customer_save', 'add_guest'
 		));
 		$this->display = array_merge($this->display, array(
 			'invoice','address','export','download','remove_history_data', 'findList'
@@ -41,9 +42,17 @@ class OrderController extends hikashopController {
 		$this->modify = array_merge($this->modify, array(
 			'savechangestatus','saveproduct','saveproduct_delete','copy',
 			'saveaddress','savemail','savechangeplugin','savediscount',
-			'savepartner','savefields','saveuser','deleteentry','product_remove'
+			'savepartner','savefields','saveuser','deleteentry','product_remove',
 		));
 	}
+
+
+	function add_guest(){
+		hikaInput::get()->set('layout', 'add_guest');
+		return parent::display();
+	}
+
+
 	function form(){
 		$this->neworder();
 	}

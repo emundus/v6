@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -33,6 +33,9 @@ class hikashopPopupHelper {
 		$popupMode = $config->get('popup_mode', 'inherit');
 		if(empty($popupMode) || $popupMode == 'inherit')
 			$popupMode = HIKASHOP_J30 ? 'bootstrap' : 'mootools';
+
+		if(HIKASHOP_J40)
+			$popupMode ='vex';
 
 		if(!empty($params_width) && is_array($params_width)) {
 			$params = $params_width;
@@ -329,8 +332,8 @@ window.localPage.createBox = function(el,href,options) {
 			if($shadowboxMode != 'shadowbox-embbeded') {
 				$doc->addStyleSheet('https://cdn.hikashop.com/shadowbox/shadowbox.css');
 				$doc->addScript('https://cdn.hikashop.com/shadowbox/shadowbox.js');
-				$doc->addScriptDeclaration("\r\n".'try{ Shadowbox.init(); }catch(e){ console.log("Shadowbox not loaded"); }'."\r\n");
 			}
+			$doc->addScriptDeclaration("\r\n".'try{ Shadowbox.init(); }catch(e){ console.log("Shadowbox not loaded"); }'."\r\n");
 			$doc->addScriptDeclaration("\r\n".'(function(){window.Oby.registerAjax("hkContentChanged",function(){Shadowbox.clearCache();Shadowbox.setup();});})();'."\r\n");
 			$init = true;
 		}

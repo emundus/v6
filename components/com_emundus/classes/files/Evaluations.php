@@ -52,7 +52,7 @@ class Evaluations extends Files
 			$left_joins = $this->buildLeftJoin($params,$read_status_allowed);
 			$wheres = $this->buildWhere($params);
 
-			parent::setFnums($this->buildQuery($select_all,[],$wheres,$read_access_file,0,0,'column'));
+			parent::setFnums($this->buildQuery($select_all,[],$wheres,$read_access_file,0,0,'column',$params));
 	        parent::setTotal(count($this->getFnums()));
 
 
@@ -80,7 +80,7 @@ class Evaluations extends Files
 
 
 			// Get count of differents groups
-	        $total_files_to_evaluate = $this->buildQuery($select_count,[],$wheres_to_evaluate,$read_access_file,0,0,'column');
+	        $total_files_to_evaluate = $this->buildQuery($select_count,[],$wheres_to_evaluate,$read_access_file,0,0,'column',$params);
 	        $to_evaluate = $this->getToEvaluate();
 			if(empty($to_evaluate)){
 				$to_evaluate['limit'] = 10;
@@ -89,7 +89,7 @@ class Evaluations extends Files
 	        $to_evaluate['total'] = sizeof($total_files_to_evaluate);
 			$this->setToEvaluate($to_evaluate);
 
-	        $total_files_evaluated = $this->buildQuery($select_count,[],$wheres_evaluated,$read_access_file,0,0,'column');
+	        $total_files_evaluated = $this->buildQuery($select_count,[],$wheres_evaluated,$read_access_file,0,0,'column',$params);
 	        $evaluated = $this->getEvaluated();
 	        if(empty($evaluated)){
 		        $evaluated['limit'] = 10;
@@ -98,7 +98,7 @@ class Evaluations extends Files
 	        $evaluated['total'] = sizeof($total_files_evaluated);
 	        $this->setEvaluated($evaluated);
 
-	        $total_files_all = $this->buildQuery($select_count,[],$wheres,$read_access_file,0,0,'column');
+	        $total_files_all = $this->buildQuery($select_count,[],$wheres,$read_access_file,0,0,'column',$params);
 	        $all = $this->getAll();
 	        if(empty($all)){
 		        $all['limit'] = 10;

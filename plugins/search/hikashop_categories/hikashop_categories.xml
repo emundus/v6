@@ -2,9 +2,9 @@
 <extension version="2.5" type="plugin" group="search" method="upgrade">
 	<name>Search - Hikashop Categories/Manufacturers</name>
 	<author>Hikari Software</author>
-	<creationDate>25 septembre 2022</creationDate>
-	<version>4.6.2</version>
-	<copyright>(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<creationDate>31 mai 2023</creationDate>
+	<version>4.7.3</version>
+	<copyright>(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<authorEmail>enquiry@hikashop.com</authorEmail>
 	<authorUrl>www.hikashop.com</authorUrl>
@@ -14,12 +14,12 @@
 	</files>
 	<params>
 		<param name="search_limit" type="text" size="5" default="50" label="SEARCH_LIMIT" description="HIKA_SEARCH_LIMIT"/>
-		<param name="item_id" type="text" size="5" default="" label="HIKA_ITEMID_FOR_CATEGORIES" description="ITEMID_FOR_CATEGORIES"/>
+		<param name="item_id" type="menuitem" size="5" default="" label="HIKA_ITEMID_FOR_CATEGORIES" description="ITEMID_FOR_CATEGORIES"/>
 		<param name="manufacturers" type="radio" default="1" label="MANUFACTURERS" description="SEARCH_MANUFACTURERS">
 			<option value="2">HIKASHOP_NO</option>
 			<option value="1">HIKASHOP_YES</option>
 		</param>
-		<param name="manu_item_id" type="text" size="5" default="" label="HIKA_ITEMID_FOR_MANUFACTURERS" description="ITEMID_FOR_MANUFACTURERS"/>
+		<param name="manu_item_id" type="menuitem" size="5" default="" label="HIKA_ITEMID_FOR_MANUFACTURERS" description="ITEMID_FOR_MANUFACTURERS"/>
 		<param name="new_page" type="radio" default="1" label="NEW_PAGE" description="HIKA_NEW_PAGE">
 			<option value="2">HIKASHOP_NO</option>
 			<option value="1">HIKASHOP_YES</option>
@@ -37,7 +37,7 @@
 					description="HIKA_SEARCH_LIMIT" />
 				<field
 					name="item_id"
-					type="text"
+					type="menuitem"
 					label="HIKA_ITEMID_FOR_CATEGORIES"
 					size="5"
 					default=""
@@ -48,7 +48,7 @@
 				</field>
 				<field
 					name="manu_item_id"
-					type="text"
+					type="menuitem"
 					label="HIKA_ITEMID_FOR_MANUFACTURERS"
 					size="5"
 					default=""

@@ -2371,32 +2371,32 @@ class EmundusHelperUpdate
         return $module;
     }
 
-	public static function updateEmundusParam($param,$value,$old_value_checking = null){
+	public static function updateExtensionParam($param,$value,$old_value_checking = null,$component = 'com_emundus'){
 		$updated = false;
-		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$config = JComponentHelper::getParams($component);
 
 		if(!empty($old_value_checking)){
-			$old_value = $eMConfig->get($param,'');
+			$old_value = $config->get($param,'');
 			if(empty($old_value) || $old_value == $old_value_checking){
-				$eMConfig->set($param, $value);
+				$config->set($param, $value);
 			}
 		} else{
-			$eMConfig->set($param, $value);
+			$config->set($param, $value);
 		}
 
-		$componentid = JComponentHelper::getComponent('com_emundus')->id;
+		$componentid = JComponentHelper::getComponent($component)->id;
 		$db = JFactory::getDBO();
 		$query = $db->getQuery(true);
 
 		try {
 			$query->update('#__extensions')
-				->set($db->quoteName('params') . ' = ' . $db->quote($eMConfig->toString()))
+				->set($db->quoteName('params') . ' = ' . $db->quote($config->toString()))
 				->where($db->quoteName('extension_id') . ' = ' . $db->quote($componentid));
 			$db->setQuery($query);
 			$updated = $db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('Failed to update emundus parameter '.$param.' with value ' .$value.': '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			JLog::add('Failed to update extension parameter '.$param.' with value ' .$value.': '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
 		}
 
 		return $updated;

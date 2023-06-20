@@ -776,7 +776,6 @@ class UpdateCli extends JApplicationCli
             exit();
         }
 
-
         # Prepare files for execution
         if (!empty($files)) {
             $files = str_replace('.sql', '', $files);
@@ -853,7 +852,7 @@ class UpdateCli extends JApplicationCli
                 try {
                     $db->execute();
                 } catch (\JDatabaseExceptionExecuting $e) {
-
+                    print($queryString);
                     Log::add("[FAIL] " . $element . " : " . $file . ".sql \n $e->getMessage() \n $this->db->getQuery()", Log::ERROR, 'error');
                     Log::add($e->getMessage(), Log::ERROR, 'error');
                     Log::add(str_replace(PHP_EOL, '', $queryString), Log::INFO, 'error');
