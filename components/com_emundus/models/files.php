@@ -55,6 +55,8 @@ class EmundusModelFiles extends JModelLegacy
 
     public $code;
 
+	public $use_module_filters = false;
+
     /**
      * Constructor
      *
@@ -75,6 +77,7 @@ class EmundusModelFiles extends JModelLegacy
 
         $Itemid = @JFactory::getApplication()->input->getInt('Itemid', $current_menu->id);
         $menu_params = $menu->getParams($Itemid);
+		$this->use_module_filters = boolval($menu_params->get('em_use_module_for_filters', false));
 
         $h_files = new EmundusHelperFiles;
         $m_users = new EmundusModelUsers;
@@ -127,7 +130,7 @@ class EmundusModelFiles extends JModelLegacy
         $col_other = $this->getState('elements_other');
 
         $this->elements_id = $menu_params->get('em_elements_id');
-        if ($session->has('adv_cols')) {
+		if ($session->has('adv_cols')) {
             $adv = $session->get('adv_cols');
             if (!empty($adv) && !is_null($adv)) {
                 $this->elements_id .= ','.implode(',', $adv);
@@ -142,6 +145,25 @@ class EmundusModelFiles extends JModelLegacy
         if (!empty($this->_elements)) {
             foreach ($this->_elements as $def_elmt) {
                 $group_params = json_decode($def_elmt->group_attribs);
+
+	            $already_joined_tables = [
+		            'jecc' => 'jos_emundus_campaign_candidature',
+		            'ss' => 'jos_emundus_setup_status',
+		            'esc' => 'jos_emundus_setup_campaigns',
+		            'sp' => 'jos_emundus_setup_programmes',
+		            'u' => 'jos_users',
+		            'eu' => 'jos_emundus_users',
+		            'eta' => 'jos_emundus_tag_assoc'
+	            ];
+				foreach ($already_joined_tables as $alias => $table) {
+					if ($def_elmt->tab_name === $table) {
+						$def_elmt->tab_name = $alias;
+					}
+
+					if ($def_elmt->join_from_table === $table) {
+						$def_elmt->join_from_table = $alias;
+					}
+				}
 
                 if ($def_elmt->element_plugin == 'date') {
                     if (@$group_params->repeat_group_button == 1) {
@@ -171,7 +193,7 @@ class EmundusModelFiles extends JModelLegacy
                                     where '.$attribs->join_db_name.'.'.$attribs->join_key_column.' IN
                                         ( select '.$def_elmt->table_join.'.' . $def_elmt->element_name.'
                                           from '.$def_elmt->table_join.'
-                                          where '.$def_elmt->table_join.'.parent_id='.$def_elmt->tab_name.'.id
+                                          where '.$def_elmt->table_join .'.' . $def_elmt->table_join_key .  '='.$def_elmt->join_from_table.'.id' . '
                                         )
                                     '.$publish_query.'
                                   ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
@@ -185,6 +207,14 @@ class EmundusModelFiles extends JModelLegacy
                                 WHERE '.$t.'.parent_id='.$def_elmt->tab_name.'.id
                                 '.$publish_query.'
                               ) AS `'.$t.'`';
+                        } else if( $attribs->database_join_display_type == 'multilist' ) {
+	                        $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
+	                        $query = '(
+                                select DISTINCT '.$column.'
+                                from '.$attribs->join_db_name.'
+                                where `'.$attribs->join_db_name.'`.`'.$attribs->join_key_column.'`=`' . $t . '`.`' . $def_elmt->element_name . '`
+                                '.$publish_query.'
+                            ) AS `'.$t.'`';
                         } else {
                             $query = '(
                                 select DISTINCT '.$column.'
@@ -192,7 +222,7 @@ class EmundusModelFiles extends JModelLegacy
                                 where `'.$attribs->join_db_name.'`.`'.$attribs->join_key_column.'`=`'.$def_elmt->tab_name . '`.`' . $def_elmt->element_name.'`
                                 '.$publish_query.'
                                 ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
-                        }
+						}
                     }
                     $this->_elements_default[] = $query;
                 } elseif ($def_elmt->element_plugin == 'cascadingdropdown') {
@@ -537,12 +567,20 @@ class EmundusModelFiles extends JModelLegacy
      * @param array $tableAlias
      * @return array
      */
-    private function _buildWhere($tableAlias = array()) {
+    private function _buildWhere($already_joined_tables = array()) {
         $h_files = new EmundusHelperFiles();
-        return $h_files->_buildWhere($tableAlias, 'files', array(
-            'fnum_assoc' => $this->fnum_assoc,
-            'code' => $this->code
-        ));
+
+		if ($this->use_module_filters) {
+			return $h_files->_moduleBuildWhere($already_joined_tables, 'files', array(
+				'fnum_assoc' => $this->fnum_assoc,
+				'code' => $this->code
+			));
+		} else {
+			return $h_files->_buildWhere($already_joined_tables, 'files', array(
+				'fnum_assoc' => $this->fnum_assoc,
+				'code' => $this->code
+			));
+		}
     }
 
     /**
@@ -566,6 +604,8 @@ class EmundusModelFiles extends JModelLegacy
      * @throws Exception
      */
     public function getAllUsers($limitStart = 0, $limit = 20) {
+		$user_files = [];
+
         $app = JFactory::getApplication();
         $current_menu = $app->getMenu()->getActive();
         if (!empty($current_menu)) {
@@ -579,32 +619,69 @@ class EmundusModelFiles extends JModelLegacy
         $query = 'select jecc.fnum, ss.step, ss.value as status, ss.class as status_class, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, jecc.applicant_id, jecc.campaign_id ';
 
         // prevent double left join on query
-        $lastTab = [
-            '#__emundus_campaign_candidature', 'jecc',
-            '#__emundus_setup_status', 'jos_emundus_setup_status',
-            '#__emundus_setup_programmes', 'jos_emundus_setup_programmes',
-            '#__emundus_setup_campaigns', 'jos_emundus_setup_campaigns',
-            '#__users', 'jos_users',
-            '#__emundus_users', 'jos_emundus_users',
-            '#__emundus_tag_assoc', 'jos_emundus_tag_assoc',
-        ];
+		$already_joined_tables = [
+			'jecc' => 'jos_emundus_campaign_candidature',
+			'ss' => 'jos_emundus_setup_status',
+			'esc' => 'jos_emundus_setup_campaigns',
+			'sp' => 'jos_emundus_setup_programmes',
+			'u' => 'jos_users',
+			'eu' => 'jos_emundus_users',
+			'eta' => 'jos_emundus_tag_assoc'
+		];
 
         if (in_array('overall', $em_other_columns)) {
-            $lastTab[] = ['#__emundus_evaluations', 'jos_emundus_evaluations'];
+	        $already_joined_tables['ee'] = 'jos_emundus_evaluations';
         }
 
         if (in_array('unread_messages', $em_other_columns)) {
-            $lastTab[] = ['#__messages', 'jos_messages','#__emundus_chatroom', 'jos_emundus_chatroom'];
+	        $already_joined_tables['ec'] = 'jos_emundus_chatroom';
+	        $already_joined_tables['m'] = 'jos_messages';
         }
 
         if (!empty($this->_elements)) {
-            $leftJoin = '';
-            $lastTab = !isset($lastTab) ? array() : $lastTab;
+	        $h_files = new EmundusHelperFiles();
+	        $leftJoin = '';
 
-            foreach ($this->_elements as $elt) {
-                if (!in_array($elt->tab_name, $lastTab)) {
-                    $leftJoin .= 'LEFT JOIN ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = jecc.fnum ';
-                    $lastTab[] = $elt->tab_name;
+	        foreach ($this->_elements as $elt) {
+				$table_to_join = !empty($elt->table_join) ? $elt->table_join : $elt->tab_name;
+				$already_join_alias = array_keys($already_joined_tables);
+
+                if (!(in_array($table_to_join, $already_joined_tables)) && !(in_array($table_to_join, $already_join_alias, true))) {
+	                if ($h_files->isTableLinkedToCampaignCandidature($table_to_join)) {
+						$leftJoin .= 'LEFT JOIN ' . $table_to_join .  ' ON '. $table_to_join .'.fnum = jecc.fnum ';
+						$already_joined_tables[] = $table_to_join;
+					} else {
+						$joined = false;
+						$query_find_join = $dbo->getQuery(true);
+						foreach ($already_joined_tables as $already_join_alias => $already_joined_table_name) {
+							$query_find_join->clear()
+								->select('*')
+								->from('#__fabrik_joins')
+								->where('table_join = ' . $dbo->quote($already_joined_table_name))
+								->andWhere('join_from_table = ' . $dbo->quote($table_to_join))
+								->andWhere('table_key = ' . $dbo->quote('id'))
+								->andWhere('list_id = ' . $dbo->quote($elt->table_list_id));
+
+							$dbo->setQuery($query_find_join);
+							$join_informations = $dbo->loadAssoc();
+
+							if (!empty($join_informations)) {
+								$already_joined_tables[] = $table_to_join;
+
+								$leftJoin .= ' LEFT JOIN ' . $dbo->quoteName($join_informations['join_from_table']) . ' ON ' . $dbo->quoteName($join_informations['join_from_table'] . '.' . $join_informations['table_key']) . ' = ' . $dbo->quoteName($already_join_alias . '.' . $join_informations['table_join_key']);
+								$joined = true;
+								break;
+							}
+						}
+
+						if (!$joined) {
+							$element_joins = $h_files->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', $table_to_join);
+
+							if (!empty($element_joins)) {
+								$leftJoin .= $h_files->writeJoins($element_joins, $already_joined_tables);
+							}
+						}
+					}
                 }
             }
         }
@@ -630,7 +707,7 @@ class EmundusModelFiles extends JModelLegacy
             LEFT JOIN #__messages as m on m.page = ec.id AND m.state = 0 AND m.page IS NOT NULL ';
         }
 
-        $q = $this->_buildWhere($lastTab);
+	    $q = $this->_buildWhere($already_joined_tables);
         if (!empty($leftJoin)) {
             $query .= $leftJoin;
         }
@@ -640,22 +717,23 @@ class EmundusModelFiles extends JModelLegacy
         $query .= ' GROUP BY jecc.fnum';
 
         $query .=  $this->_buildContentOrderBy();
-        $dbo->setQuery($query);
-        try {
-            $res = $dbo->loadAssocList();
-            $this->_applicants = $res;
+
+		try {
+	        $dbo->setQuery($query);
+	        $this->_applicants = $dbo->loadAssocList();
 
             if ($limit > 0) {
                 $query .= " limit $limitStart, $limit ";
             }
 
             $dbo->setQuery($query);
-            return $dbo->loadAssocList();
-
+	        $user_files = $dbo->loadAssocList();
         } catch(Exception $e) {
-            echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+			$app->enqueueMessage(JText::_('COM_EMUNDUS_GET_ALL_FILES_ERROR') . ' ' . $e->getMessage(), 'error');
+            JLog::add(JUri::getInstance().' :: USER ID : '. JFactory::getUser()->id.' ' . $e->getMessage() . ' -> '. $query, JLog::ERROR, 'com_emundus.error');
         }
+
+		return $user_files;
     }
 
 
@@ -4051,4 +4129,72 @@ class EmundusModelFiles extends JModelLegacy
 
         return $msg;
     }
+
+	public function saveFilters($user_id, $name, $filters, $item_id) {
+		$saved = false;
+
+		if (!empty($user_id) && !empty($name) && !empty($filters)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query->insert($db->quoteName('#__emundus_filters'))
+				->columns(['user', 'name', 'constraints', 'mode', 'item_id'])
+				->values($user_id . ', ' . $db->quote($name) . ', ' . $db->quote($filters) . ', ' . $db->quote('search') . ', ' . $item_id);
+
+			try {
+				$db->setQuery($query);
+				$saved = $db->execute();
+			} catch (Exception $e) {
+				JLog::add('Error saving filter: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $saved;
+	}
+
+	public function getSavedFilters($user_id, $item_id) {
+		$filters = array();
+
+		if (!empty($user_id)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query->select('id, name, constraints')
+				->from($db->quoteName('#__emundus_filters'))
+				->where('user = ' . $user_id)
+				->where('item_id = ' . $item_id)
+				->where('mode = ' . $db->quote('search'));
+
+			try {
+				$db->setQuery($query);
+				$filters = $db->loadAssocList();
+			} catch (Exception $e) {
+				JLog::add('Error getting saved filters: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $filters;
+	}
+
+	public function updateFilter($user_id, $filter_id, $filters, $item_id) {
+		$updated = false;
+
+		if (!empty($user_id) && !empty($filter_id) && !empty($filters)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query->update($db->quoteName('#__emundus_filters'))
+				->set('constraints = ' . $db->quote($filters))
+				->where('user = ' . $user_id)
+				->where('id = ' . $filter_id)
+				->where('item_id = ' . $item_id)
+				->where('mode = ' . $db->quote('search'));
+
+			try {
+				$db->setQuery($query);
+				$updated = $db->execute();
+			} catch (Exception $e) {
+				JLog::add('Error updating filter: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $updated;
+	}
 }

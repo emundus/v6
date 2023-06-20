@@ -12,13 +12,24 @@
  * details.
  */
 
+if ($this->use_module_for_filters === null) {
+	$menu = JFactory::getApplication()->getMenu();
+	$current_menu = $menu->getActive();
+	$menu_params = $menu->getParams(@$current_menu->id);
+	$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
+}
+
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
 ?>
 
 <div id="em_filters">
-<?php echo $this->filters; ?>
-</div>
+<?php
+    if (!$this->use_module_for_filters) {
+        echo @$this->filters;
 
+?>
+</div>
 <script>
     var data = {};
 
@@ -51,3 +62,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
         data = {};
     });
 </script>
+<?php
+} else {
+	echo JHtml::_('content.prepare', '{loadposition emundus_filters}');
+}
+?>

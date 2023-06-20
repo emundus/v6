@@ -122,6 +122,41 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
+	public function applyfilters() {
+		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asAccessAction(1, 'r', JFactory::getUser()->id)) {
+			$jinput = JFactory::getApplication()->input;
+			$filters = $jinput->getString('filters', '');
+			$quick_search_filters = $jinput->getString('search_filters', '');
+
+			if (!empty($filters)) {
+				$filters = json_decode($filters, true);
+				$quick_search_filters = json_decode($quick_search_filters, true);
+				$session = JFactory::getSession();
+				$session->set('em-applied-filters', $filters);
+				$session->set('em-quick-search-filters', $quick_search_filters);
+
+				$filter_fabrik_element_ids = [];
+				foreach ($filters as $filter) {
+					if (is_numeric($filter['id']) && !in_array($filter['id'], $filter_fabrik_element_ids)) {
+						$filter_fabrik_element_ids[] = $filter['id'];
+					}
+				}
+				$session->set('adv_cols', $filter_fabrik_element_ids);
+
+				$response = ['status' => true, 'msg' => JText::_('FILTERS_APPLIED')];
+			} else {
+				$response['msg'] = JText::_('MISSING_PARAMS');
+			}
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
+
+
     /**
      *
      */
@@ -259,63 +294,136 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    /**
-     *
-     */
     public function savefilters() {
-        $name = JRequest::getVar('name', null, 'POST', 'none',0);
-        $current_user = JFactory::getUser();
-        $user_id = $current_user->id;
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+	    $current_user = JFactory::getUser();
+	    $user_id = $current_user->id;
 
-        $session = JFactory::getSession();
-        $filt_params = $session->get('filt_params');
-        $adv_params = $session->get('adv_cols');
-        $constraints = array('filter'=>$filt_params, 'col'=>$adv_params);
+		if (EmundusHelperAccess::asPartnerAccessLevel($user_id)) {
+			$jinput = JFactory::getApplication()->input;
+			$name = $jinput->getString('name', null);
+			$itemid = $jinput->getInt('Itemid', 0);
 
-        $constraints = json_encode($constraints);
+			if (!empty($name) && !empty($itemid)) {
+				$session = JFactory::getSession();
+				$filt_params = $session->get('filt_params');
+				$adv_params = $session->get('adv_cols');
+				$constraints = array('filter'=>$filt_params, 'col'=>$adv_params);
+				$constraints = json_encode($constraints);
+				$time_date = (date('Y-m-d H:i:s'));
 
-        if (empty($itemid)) {
-            $itemid = JRequest::getVar('Itemid', null, 'POST', 'none', 0);
-        }
+				$query = "INSERT INTO #__emundus_filters (time_date,user,name,constraints,item_id) values('".$time_date."',".$user_id.",'".$name."',".$this->_db->quote($constraints).",".$itemid.")";
+				$this->_db->setQuery( $query );
+				try {
+					$this->_db->Query();
+					$query = 'select f.id, f.name from #__emundus_filters as f where f.time_date = "'.$time_date.'" and user = '.$user_id.' and name="'.$name.'" and item_id="'.$itemid.'"';
+					$this->_db->setQuery($query);
+					$result = $this->_db->loadObject();
 
-        $time_date = (date('Y-m-d H:i:s'));
+					echo json_encode((object)(array('status' => true, 'filter' => $result)));
+					exit;
 
-        $query = "INSERT INTO #__emundus_filters (time_date,user,name,constraints,item_id) values('".$time_date."',".$user_id.",'".$name."',".$this->_db->quote($constraints).",".$itemid.")";
-        $this->_db->setQuery( $query );
+				} catch (Exception $e) {
+					JLog::add('Error saving filter: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+				}
+			}
+		}
 
-        try {
-            $this->_db->Query();
-            $query = 'select f.id, f.name from #__emundus_filters as f where f.time_date = "'.$time_date.'" and user = '.$user_id.' and name="'.$name.'" and item_id="'.$itemid.'"';
-            $this->_db->setQuery($query);
-            $result = $this->_db->loadObject();
-            echo json_encode((object)(array('status' => true, 'filter' => $result)));
-            exit;
-
-        } catch (Exception $e) {
-            echo json_encode((object)(array('status' => false)));
-            exit;
-        }
+	    echo json_encode((object)(array('status' => false)));
+	    exit;
     }
+
+
+	/**
+	 *
+	 */
+	public function newsavefilters() {
+		$response = ['status' => false, 'msg' => 'MISSING_PARAMS'];
+
+		$jinput = JFactory::getApplication()->input;
+		$name = $jinput->getString('name', null);
+		$filters = $jinput->getString('filters', null);
+		$item_id = $jinput->getInt('item_id', 0);
+
+		if (!empty($name) && !empty($filters)) {
+			$user = JFactory::getUser();
+
+			$m_files = new EmundusModelFiles();
+			$saved = $m_files->saveFilters($user->id, $name, $filters, $item_id);
+
+			if ($saved) {
+				$response = ['status' => true, 'msg' => 'FILTER_SAVED'];
+			} else {
+				$response = ['status' => false, 'msg' => 'FILTER_NOT_SAVED'];
+			}
+		}
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function getsavedfilters() {
+		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+		$user = JFactory::getUser();
+
+		if (!empty($user->id)) {
+			$jinput = JFactory::getApplication()->input;
+			$item_id = $jinput->getInt('item_id', 0);
+
+			$m_files = new EmundusModelFiles();
+			$filters = $m_files->getSavedFilters($user->id, $item_id);
+
+			$response = ['status' => true, 'msg' => 'FILTERS_LOADED', 'data' => $filters];
+		}
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function updatefilter()
+	{
+		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+		$user = JFactory::getUser();
+
+		if (!empty($user->id)) {
+			$jinput = JFactory::getApplication()->input;
+			$item_id = $jinput->getInt('item_id', 0);
+			$filter_id = $jinput->getInt('id', 0);
+			$filters = $jinput->getString('filters', null);
+
+			if (!empty($filters) && !empty($filter_id)) {
+				$m_files = new EmundusModelFiles();
+				$updated = $m_files->updateFilter($user->id, $filter_id, $filters, $item_id);
+
+				$response = ['status' => $updated, 'msg' => 'FILTER_UPDATED'];
+			} else {
+				$response['msg'] = JText::_('MISSING_PARAMS');
+			}
+		}
+
+		echo json_encode($response);
+		exit;
+	}
 
     /**
      *
      */
     public function deletefilters() {
+	    $deleted = false;
         $jinput = JFactory::getApplication()->input;
         $filter_id = $jinput->getInt('id', null);
 
-        $query = "DELETE FROM #__emundus_filters WHERE id=".$filter_id;
-        $this->_db->setQuery($query);
-        $result = $this->_db->Query();
+		if (!empty($filter_id)) {
+			$query = $this->_db->getQuery(true);
+			$query->delete('#__emundus_filters')
+				->where('id = ' . $filter_id);
 
-        if ($result != 1) {
-            echo json_encode((object)(array('status' => false)));
-            exit;
-        } else {
-            echo json_encode((object)(array('status' => true)));
-            exit;
-        }
+			$this->_db->setQuery($query);
+			$result = $this->_db->execute();
+			$deleted = $result == 1;
+		}
+
+	    echo json_encode((object)(array('status' => $deleted)));
+	    exit;
     }
 
     /**
@@ -3971,4 +4079,24 @@ class EmundusControllerFiles extends JControllerLegacy
         }
         exit;
     }
+
+	public function checkmenufilterparams()
+	{
+		$response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
+		$user_id = JFactory::getUser()->id;
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($user_id)) {
+			$itemId = JFactory::getApplication()->input->getInt('Itemid', 0);
+			$menu = JFactory::getApplication()->getMenu();
+			$menu_params = $menu->getParams($itemId);
+
+			$response['use_module_filters'] = boolval($menu_params->get('em_use_module_for_filters', false));
+			$response['status'] = true;
+			$response['code'] = 200;
+			$response['msg'] = JText::_('SUCCESS');
+		}
+
+		echo json_encode($response);
+		exit;
+	}
 }

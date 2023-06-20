@@ -7,6 +7,7 @@
  */
 
 var loading;
+var moduleFilters = null;
 
 // to abort all AJAX query at once
 $.ajaxQ = (function(){
@@ -240,23 +241,68 @@ function addElement() {
 
 }
 
-function refreshFilter(view) {
-    view = (typeof view === 'undefined') ? 'files' : view;
-    $.ajax({
-        type: 'GET',
-        url: 'index.php?option=com_emundus&view='+view+'&layout=filters&format=raw&Itemid=' + itemId,
-        dataType: 'html',
-        success: function(data) {
-            let panelBody = $('#em-files-filters .panel-body');
-            panelBody.empty();
-            panelBody.append(data);
-            $('.chzn-select').chosen();
-            reloadData($('#view').val());
-        },
-        error: function(jqXHR) {
-            console.log(jqXHR.responseText);
+function usingModuleFilters()
+{
+    itemId = (typeof itemId === 'undefined') ? 0 : itemId;
+
+    if (itemId > 0) {
+        if (moduleFilters === null) {
+            fetch('index.php?option=com_emundus&controller=files&task=checkmenufilterparams&Itemid=' + itemId, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(function(response) {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    console.log('Network response was not ok.');
+                    moduleFilters = false;
+                    return moduleFilters;
+                }
+            }).then(function(data) {
+                if (data.status) {
+                    moduleFilters = data.use_module_filters;
+                } else {
+                    moduleFilters = false;
+                }
+
+                return moduleFilters;
+            }).catch(function(error) {
+                console.log('There has been a problem with your fetch operation: ' + error.message);
+                moduleFilters = false;
+                return moduleFilters;
+            });
         }
-    });
+    }
+
+    return moduleFilters;
+}
+usingModuleFilters();
+
+function refreshFilter(view) {
+    usingModuleFilters();
+
+    if (moduleFilters === false || moduleFilters === null) {
+        view = (typeof view === 'undefined') ? 'files' : view;
+        $.ajax({
+            type: 'GET',
+            url: 'index.php?option=com_emundus&view='+view+'&layout=filters&format=raw&Itemid=' + itemId,
+            dataType: 'html',
+            success: function(data) {
+                let panelBody = $('#em-files-filters .panel-body');
+                panelBody.empty();
+                panelBody.append(data);
+                $('.chzn-select').chosen();
+                reloadData($('#view').val());
+            },
+            error: function(jqXHR) {
+                console.log(jqXHR.responseText);
+            }
+        });
+    } else {
+        reloadData($('#view').val());
+    }
 }
 
 function tableOrder(order) {
@@ -4810,21 +4856,27 @@ $(document).ready(function() {
             var name = $(this).attr('id');
             switch (name) {
                 case 'clear-search':
-                    lastVal = {};
-                    addLoader();
-                    $.ajax({
-                        type: 'POST',
-                        url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=clear',
-                        dataType: 'json',
-                        success: function(result) {
-                            if (result.status) {
-                                refreshFilter();
+                    console.log(moduleFilters);
+
+                    if(moduleFilters) {
+                        document.querySelector('#emundus-filters #clear-filters').click();
+                    } else {
+                        lastVal = {};
+                        addLoader();
+                        $.ajax({
+                            type: 'POST',
+                            url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=clear',
+                            dataType: 'json',
+                            success: function(result) {
+                                if (result.status) {
+                                    refreshFilter();
+                                }
+                            },
+                            error: function(jqXHR) {
+                                console.log(jqXHR.responseText);
                             }
-                        },
-                        error: function(jqXHR) {
-                            console.log(jqXHR.responseText);
-                        }
-                    });
+                        });
+                    }
                     break;
 
                 case 'search':
@@ -4933,8 +4985,9 @@ $(document).ready(function() {
         }
     });
 
+    const handledIds = ['del-filter', 'em-close-file', 'em-mini-file', 'em-next-file', 'em-prev-file', 'em-see-files', 'em-delete-files', 'add-filter'];
     $(document).on('click', 'button', function(e) {
-        if (e.handle != true) {
+        if (e.handle != true && handledIds.indexOf(this.id) != -1) {
             e.handle = true;
             var id = this.id;
             var cfnum = '';
@@ -6730,3 +6783,7 @@ function createScrollbarForElement(element, id) {
     };
     element.parentNode.insertBefore(new_scrollbar, element);
 }
+
+window.addEventListener('emundus-apply-filters-success', () => {
+    reloadData(document.getElementById('view').getAttribute('value'));
+});

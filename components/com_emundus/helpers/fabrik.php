@@ -877,7 +877,7 @@ die("<script>
         try {
             $query->select('fl.db_table_name')
                 ->from($db->quoteName('#__fabrik_lists','fl'));
-            if($object == 'form'){
+            if ($object == 'form') {
                 $query->leftJoin($db->quoteName('#__fabrik_forms','ff').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ff.id'))
                     ->where($db->quoteName('ff.id') . ' = ' . $db->quote($id));
             } else {

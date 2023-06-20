@@ -53,6 +53,7 @@ class EmundusViewFiles extends JViewLegacy
 	protected array $code;
 	protected array $fnum_assoc;
 	protected string $filters;
+	protected bool $use_module_for_filters;
 
 	protected array $docs;
 	protected array $prgs;
@@ -65,6 +66,11 @@ class EmundusViewFiles extends JViewLegacy
 		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'export.php');
 		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'users.php');
 		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'evaluation.php');
+
+		$menu = JFactory::getApplication()->getMenu();
+		$current_menu = $menu->getActive();
+		$menu_params = $menu->getParams(@$current_menu->id);
+		$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
 
 		parent::__construct($config);
 	}
@@ -151,21 +157,22 @@ class EmundusViewFiles extends JViewLegacy
 				break;
 
 			case 'filters':
-				$m_user = new EmundusModelUsers();
+				if (!$this->use_module_for_filters) {
+					$m_user = new EmundusModelUsers();
+					$m_files->code = $m_user->getUserGroupsProgrammeAssoc($current_user->id);
 
-				$m_files->code = $m_user->getUserGroupsProgrammeAssoc($current_user->id);
+					// get all fnums manually associated to user
+					$groups = $m_user->getUserGroups($current_user->id, 'Column');
+					$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
+					$fnum_assoc = $m_user->getApplicantsAssoc($current_user->id);
+					$m_files->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
 
-				// get all fnums manually associated to user
-				$groups = $m_user->getUserGroups($current_user->id, 'Column');
-				$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
-				$fnum_assoc = $m_user->getApplicantsAssoc($current_user->id);
-				$m_files->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
+					$this->code = $m_files->code;
+					$this->fnum_assoc = $m_files->fnum_assoc;
 
-				$this->code = $m_files->code;
-				$this->fnum_assoc = $m_files->fnum_assoc;
-
-				$filters = $h_files->resetFilter();
-				$this->filters = $filters;
+					$filters = $h_files->resetFilter();
+					$this->filters = $filters;
+				}
 				break;
 
             case 'docs':
