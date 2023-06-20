@@ -9,15 +9,15 @@
 		</div>
 		<div class="multi-select-filter-card em-border-radius-8 em-border-neutral-400 em-box-shadow em-white-bg em-p-8">
 			<section v-if="!opened" class="recap" @click="opened = !opened">
-				<div v-if="filter.value && filter.value.length > 0 && !filter.value.includes('all')" class="em-flex-column-start em-mt-4">
+				<div v-if="filter.value && filter.value.length > 0 && !filter.value.includes('all')" class="em-flex-column-start">
 					<span class="recap-operator label label-darkblue"> {{ selectedOperatorLabel }}</span>
 					<div class="recap-value em-flex-row em-flex-wrap em-mt-8 em-flex-gap-8">
-						<div v-for="(value, index) in filter.value.slice(0, 2)" :key="value">
-							<span>{{ selectedValuesLabels[index] }}</span>
-							<span v-if="filter.value.length > 1 && index < filter.value.length - 1" class="em-ml-4 em-mr-4"> {{ selectedAndorOperatorLabel }} </span>
+						<div v-for="(value, index) in filter.value.slice(0, 2)" :key="value" class="em-flex-row em-flex-wrap em-flex-gap-8">
+							<span class="label label-default">{{ selectedValuesLabels[index] }}</span>
+							<span v-if="filter.value.length > 1 && index == 0" class="label label-darkblue"> {{ selectedAndorOperatorLabel }} </span>
 						</div>
 						<div v-if="filter.value.length > 2">
-							<span> + {{ (filter.value.length-2) }} {{ translate('MOD_EMUNDUS_FILTERS_MORE_VALUES') }}</span>
+							<span class="label label-default"> + {{ (filter.value.length-2) }} {{ translate('MOD_EMUNDUS_FILTERS_MORE_VALUES') }}</span>
 						</div>
 					</div>
 				</div>
@@ -192,5 +192,15 @@ export default {
 	position: absolute;
 	top: 4px;
 	right: 4px;
+}
+
+span.label {
+	font-weight: normal !important;
+	display: flex !important;
+	width: fit-content;
+}
+
+.recap {
+	overflow: hidden;
 }
 </style>
