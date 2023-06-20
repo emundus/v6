@@ -37,6 +37,7 @@ class EmundusModelEmailsTest extends TestCase
     {
         parent::__construct($name, $data, $dataName);
 	    $app = JFactory::getApplication();
+	    $this->h_sample = new EmundusUnittestHelperSamples;
 	    $username = 'test-expert-email-' . rand(0, 1000) . '@emundus.fr';
 	    $this->h_sample->createSampleUser(9, $username);
 	    $logged_in = $app->login([
@@ -46,9 +47,7 @@ class EmundusModelEmailsTest extends TestCase
 
 	    $m_profile = new EmundusModelProfile();
 	    $m_profile->initEmundusSession();
-
         $this->m_emails = new EmundusModelEmails;
-		$this->h_sample = new EmundusUnittestHelperSamples;
     }
 
 	public function testFoo()
