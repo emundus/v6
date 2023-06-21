@@ -97,4 +97,31 @@ class EmundusHelperFilesTest extends TestCase {
 		$joins_reversed = $this->h_files->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', 'jos_emundus_evaluations');
 		$this->assertSame($joins, $joins_reversed, 'Join between jos_emundus_evaluations and jos_emundus_campaign_candidature returns same join as join between jos_emundus_campaign_candidature and jos_emundus_evaluations');
 	}
+
+	public function testwriteJoins() {
+		$joins = $this->h_files->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', 'jos_emundus_setup_campaigns');
+		$already_joined = array();
+
+		$joins_as_string = $this->h_files->writeJoins([], $already_joined);
+		$this->assertEmpty($joins_as_string, 'Write joins with empty joins returns empty string');
+
+		$joins_as_string = $this->h_files->writeJoins($joins, $already_joined);
+		$this->assertNotEmpty($joins_as_string, 'Write joins with correct joins returns not empty string');
+		$this->assertSame(' LEFT JOIN `jos_emundus_setup_campaigns` ON `jos_emundus_setup_campaigns`.`id` = `jos_emundus_campaign_candidature`.`campaign_id`', $joins_as_string, 'Write joins with correct joins returns correct string');
+	}
+
+	public function testwriteQueryWithOperator()
+	{
+		$query_condition = $this->h_files->writeQueryWithOperator(null, null, null);
+		$this->assertSame('1=1', $query_condition, 'Write query with null operator returns 1=1 string');
+
+		$query_condition = $this->h_files->writeQueryWithOperator('ecc.fnum', '24343432323', '!=');
+		$this->assertSame('(ecc.fnum != \'24343432323\' OR ecc.fnum IS NULL ) ', $query_condition, 'Write query with != operator returns correct string');
+
+		$query_condition = $this->h_files->writeQueryWithOperator('ecc.fnum', '24343432323', '=');
+		$this->assertSame('ecc.fnum = \'24343432323\'', $query_condition, 'Write query with = operator returns correct string');
+
+		$query_condition = $this->h_files->writeQueryWithOperator('ecc.fnum', ['24343432323', '24334234234234'], '=');
+		$this->assertSame('ecc.fnum IN (\'24343432323\',\'24334234234234\')', $query_condition, 'Write query with = operator and array of values returns correct string with IN');
+	}
 }

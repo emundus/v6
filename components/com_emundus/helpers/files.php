@@ -3986,7 +3986,7 @@ class EmundusHelperFiles
 		return $left_joins;
 	}
 
-	private function writeQueryWithOperator($element, $values, $operator, $type = 'select', $fabrik_element_data = null) {
+	public function writeQueryWithOperator($element, $values, $operator, $type = 'select', $fabrik_element_data = null) {
 		$query = '1=1';
 
 		if (!empty($element) && !empty($values) && !empty($operator)) {
