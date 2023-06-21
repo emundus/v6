@@ -1,5 +1,5 @@
 <template>
-	<div class="multi-select-filter em-w-100 em-mb-16">
+	<div class="multi-select-filter em-w-100 em-mb-16" :id="'filter-id-' +  filter.uid" :ref="'filter-id-' +  filter.uid" @click="toggleOpened">
 		<div class="em-flex-row em-flex-space-between">
 			<p class="recap-label">{{ filter.label }}</p>
 			<div class="em-flex-row">
@@ -8,7 +8,7 @@
 			</div>
 		</div>
 		<div class="multi-select-filter-card em-border-radius-8 em-border-neutral-400 em-box-shadow em-white-bg em-p-8 em-mt-4">
-			<section v-if="!opened" class="recap" @click="opened = !opened">
+			<section class="recap" :class="{'hidden': opened}">
 				<div v-if="filter.value && filter.value.length > 0 && !filter.value.includes('all')" class="em-flex-column-start">
 					<span class="recap-operator label label-darkblue"> {{ selectedOperatorLabel }}</span>
 					<div class="recap-value em-flex-row em-flex-wrap em-mt-8 em-flex-gap-8">
@@ -21,9 +21,9 @@
 						</div>
 					</div>
 				</div>
-				<p v-else class="em-text-neutral-500"> {{ translate('MOD_EMUNDUS_FILTERS_PLEASE_SELECT') }}</p>
+				<p v-else class="em-text-neutral-500 em-pointer"> {{ translate('MOD_EMUNDUS_FILTERS_PLEASE_SELECT') }}</p>
 			</section>
-			<section v-else class="multi-select-filter-options">
+			<section class="multi-select-filter-options" :class="{'hidden': !opened}">
 				<div class="operators-selection em-flex-row em-flex-wrap em-flex-gap-8">
 					<div v-for="operator in operators" :key="filter.uid + '-' +operator.value" class="em-p-8 em-border-radius-8" :class="{'label-default': operator.value !== filter.operator, 'label-darkblue': operator.value === filter.operator}">
 						<input class="hidden label"
@@ -65,7 +65,7 @@
 					</div>
 				</div>
 			</section>
-			<span class="material-icons-outlined em-pointer toggle-open-close" @click="toggleOpened()">{{opened ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</span>
+			<span class="material-icons-outlined em-pointer toggle-open-close">{{opened ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</span>
 		</div>
 	</div>
 </template>
@@ -103,7 +103,6 @@ export default {
 		this.filter.operator = this.filter.operator === '=' ? 'IN' : this.filter.operator;
 		this.originalFilterValue = this.filter.value;
 		this.originalFilterOperator = this.filter.operator;
-		document.addEventListener('click', this.handleClickOutside);
 	},
 	beforeUnmount() {
 		document.removeEventListener('click', this.handleClickOutside);
@@ -112,12 +111,12 @@ export default {
 		onClickSpecificValue(newValue) {
 			// If all is selected, remove 'all' from selected values
 			if (this.filter.value.includes('all')) {
-				 this.filter.value =  this.filter.value.filter((value) => { return value !== 'all' });
+				this.filter.value =  this.filter.value.filter((value) => { return value !== 'all' });
 
-				 // check that newvalue exists
+				// check that newvalue exists
 				const exists = this.filter.values.find((value) => { return value.value === newValue });
 				if (exists && !this.filter.value.includes(newValue)) {
-					 this.filter.value.push(newValue);
+					this.filter.value.push(newValue);
 				}
 			}
 		},
@@ -132,7 +131,7 @@ export default {
 				allValues.push('all');
 				allValues.forEach((value) => {
 					if (!this.filter.value.includes(value)) {
-						 this.filter.value.push(value);
+						this.filter.value.push(value);
 					}
 				});
 			}
@@ -160,11 +159,17 @@ export default {
 				this.onCloseCard();
 			}
 		},
-		toggleOpened() {
-			this.opened = !this.opened;
+		toggleOpened(event = null) {
+			if (event.target.closest('.multi-select-filter-options')) {
+				return;
+			}
 
+			this.opened = !this.opened;
 			if (this.opened === false) {
+				document.removeEventListener('click', this.handleClickOutside);
 				this.onCloseCard();
+			} else {
+				document.addEventListener('click', this.handleClickOutside);
 			}
 		},
 		onCloseCard() {
@@ -180,10 +185,10 @@ export default {
 		handleClickOutside(event) {
 			if (this.opened) {
 				const clickedElement = event.target;
-				const componentElement = this.$el; // Élément racine de votre composant
+				const componentElement = this.$refs['filter-id-' + this.filter.uid]; // Élément racine
 
-				if (!componentElement.contains(clickedElement)) {
-					this.toggleOpened();
+				if (clickedElement && !componentElement.contains(clickedElement) && !clickedElement.closest('#' + componentElement.id)) {
+					this.toggleOpened(event);
 				}
 			}
 		}
@@ -200,7 +205,7 @@ export default {
 		selectedValuesLabels() {
 			let labels = [];
 
-			 this.filter.value.forEach((value) => {
+			this.filter.value.forEach((value) => {
 				const selectedValue = this.filter.values.find((filterValue) => { return filterValue.value === value })
 
 				if (selectedValue) {
