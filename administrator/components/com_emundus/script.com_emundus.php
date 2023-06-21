@@ -1966,7 +1966,7 @@ structure:
 			}
 
 			if (version_compare($cache_version, '1.37.0', '<=') || $firstrun) {
-				EmundusHelperUpdate::installExtension('Emundus - Filtres avancés.', 'mod_emundus_filters', '{"name":"Emundus - Filtres avancés.","type":"module","creationDate":"May 2022","author":"LEGENDRE J\u00e9r\u00e9my","copyright":"Copyright (C) 2022 eMundus. All rights reserved.","authorEmail":"jeremy.legendre@emundus.fr","authorUrl":"www.emundus.fr","version":"1.0.0","description":"","group":"","filename":"mod_emundus_filters"}');
+				EmundusHelperUpdate::installExtension('eMundus - Filtres avancés.', 'mod_emundus_filters', '{"name":"eMundus - Filtres avancés.","type":"module","creationDate":"May 2022","author":"LEGENDRE J\u00e9r\u00e9my","copyright":"Copyright (C) 2022 eMundus. All rights reserved.","authorEmail":"jeremy.legendre@emundus.fr","authorUrl":"www.emundus.fr","version":"1.0.0","description":"","group":"","filename":"mod_emundus_filters"}', 'module', 1, 'emundus');
 				EmundusHelperUpdate::enableEmundusPlugins('mod_emundus_filters');
 			}
 
