@@ -1,7 +1,4 @@
 
-const currency_hoverColor = allColor.getPropertyValue('--neutral-600');
-const currency_defaultColor = allColor.getPropertyValue('--neutral-400');
-const currency_focusColor = allColor.getPropertyValue('--blue-500');
 
 define(['jquery', 'fab/element'],
     function (jQuery, FbElement) {
