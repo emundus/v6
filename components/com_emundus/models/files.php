@@ -324,7 +324,6 @@ class EmundusModelFiles extends JModelLegacy
                         $this->_elements_default[] = $def_elmt->tab_name.'.'.$def_elmt->element_name.' AS '.$def_elmt->tab_name.'___'.$def_elmt->element_name;
                     }
                 }
-
             }
         }
         if (in_array('overall', $em_other_columns)) {
