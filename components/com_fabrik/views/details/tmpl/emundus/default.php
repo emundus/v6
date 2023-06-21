@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 $form  = $this->form;
 $model = $this->getModel();
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 
 if ($this->params->get('show_page_heading', 1)) : ?>
     <div class="componentheading<?php echo $this->params->get('pageclass_sfx') ?>">
@@ -25,6 +26,32 @@ endif;
 ?>
 
 <div id="fabrikDetailsContainer_<?php echo $form->id ?>">
+
+    <?php if ($form->db_table_name == 'jos_emundus_users' && !empty($model->data['jos_emundus_users___user_id_raw']) && !EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)) : ?>
+        <?php
+	    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+	    $m_user = new EmundusModelUsers;
+        $applicant = $m_user->getUserById($model->data['jos_emundus_users___user_id_raw'])[0];
+        ?>
+        <div class="em-flex-row em-mt-16">
+                <div class="em-flex-row em-small-flex-column em-small-align-items-start">
+                    <div class="em-profile-picture-big no-hover"
+					    <?php if(empty($applicant->profile_picture)) :?>
+                            style="background-image:url(<?php echo JURI::base() ?>/media/com_emundus/images/profile/default-profile.jpg)"
+					    <?php else : ?>
+                            style="background-image:url(<?php echo JURI::base() ?>/<?php echo $applicant->profile_picture ?>)"
+					    <?php endif; ?>
+                    >
+                    </div>
+                </div>
+                <div class="em-ml-24 ">
+                    <p class="em-font-weight-500">
+					    <?php echo $applicant->lastname . ' ' . $applicant->firstname; ?>
+                    </p>
+                </div>
+            </div>
+    <?php endif; ?>
+
 	<?php if ($this->params->get('show-title', 1)) : ?>
         <div class="page-header em-mb-12 em-flex-row em-flex-space-between">
             <h1><?php echo $form->label; ?></h1>
