@@ -136,6 +136,7 @@ class EmundusControllerFiles extends JControllerLegacy
 				$session = JFactory::getSession();
 				$session->set('em-applied-filters', $filters);
 				$session->set('em-quick-search-filters', $quick_search_filters);
+				$session->set('limitstart', 0);
 
 				$filter_fabrik_element_ids = [];
 				foreach ($filters as $filter) {

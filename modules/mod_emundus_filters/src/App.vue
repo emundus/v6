@@ -39,10 +39,10 @@
 	  </section>
 	  <section id="applied-filters">
 			<div v-for="appliedFilter in appliedFilters" :key="appliedFilter.uid">
-				<MultiSelect v-if="appliedFilter.type === 'select'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)"></MultiSelect>
-				<DateFilter v-else-if="appliedFilter.type === 'date'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)"></DateFilter>
+				<MultiSelect v-if="appliedFilter.type === 'select'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)" @filter-changed="onFilterChanged"></MultiSelect>
+				<DateFilter v-else-if="appliedFilter.type === 'date'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)" @filter-changed="onFilterChanged"></DateFilter>
 				<TimeFilter v-else-if="appliedFilter.type === 'time'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)"></TimeFilter>
-				<DefaultFilter v-else :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)"></DefaultFilter>
+				<DefaultFilter v-else :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)" @filter-changed="onFilterChanged"></DefaultFilter>
 			</div>
 	  </section>
 	  <div id="filters-selection-wrapper" class="em-w-100 em-mt-16 em-mb-16" :class="{'hidden': !openFilterOptions}">
@@ -51,7 +51,7 @@
 	  </div>
 	  <section id="filters-bottom-actions">
 		  <button id="em-add-filter" class="em-secondary-button em-white-bg em-mt-16" @click="openFilterOptions = !openFilterOptions">{{ translate('MOD_EMUNDUS_FILTERS_ADD_FILTER') }}</button>
-		  <button id="em-apply-filters" class="em-primary-button em-mt-16" @click="applyFilters">{{ translate('MOD_EMUNDUS_FILTERS_APPLY_FILTERS') }}</button>
+		  <button id="em-apply-filters" class="em-primary-button em-mt-16 hidden" @click="applyFilters">{{ translate('MOD_EMUNDUS_FILTERS_APPLY_FILTERS') }}</button>
 	  </section>
   </div>
 </template>
@@ -195,7 +195,7 @@ export default {
 
 				return filter;
 			});
-			filtersService.applyFilters([], [], this.applySuccessEvent);
+			this.applyFilters();
 		},
 		saveFilters() {
 			let saved = false;
@@ -264,6 +264,10 @@ export default {
 		},
 		onRemoveFilter(filter) {
 			this.appliedFilters = this.appliedFilters.filter((appliedFilter) => appliedFilter.uid !== filter.uid);
+			this.applyFilters();
+		},
+		onFilterChanged() {
+			this.applyFilters();
 		},
 		onGlobalSearchChange(scope = 'everywhere') {
 			if (this.currentGlobalSearch.length > 0) {
@@ -272,6 +276,7 @@ export default {
 
 				if (!foundSearch) {
 					this.globalSearch.push({value: this.currentGlobalSearch, scope: scope});
+					this.applyFilters();
 				}
 			}
 
@@ -281,6 +286,7 @@ export default {
 		},
 		removeGlobalSearchValue(value) {
 			this.globalSearch = this.globalSearch.filter((search) => search.value !== value);
+			this.applyFilters();
 		},
 		onEnterGlobalSearchDiv() {
 			this.$refs.globalSearchValues.scrollTop = this.$refs.globalSearchValues.scrollHeight;

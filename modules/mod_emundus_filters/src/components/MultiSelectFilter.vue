@@ -65,7 +65,7 @@
 					</div>
 				</div>
 			</section>
-			<span class="material-icons-outlined em-pointer toggle-open-close" @click="opened = !opened">{{opened ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</span>
+			<span class="material-icons-outlined em-pointer toggle-open-close" @click="toggleOpened()">{{opened ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</span>
 		</div>
 	</div>
 </template>
@@ -94,11 +94,19 @@ export default {
 				{ value: 'OR', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_OR')}
 			],
 			search: '',
-			resetHover: false
+			resetHover: false,
+			originalFilterValue: null,
+			originalFilterOperator: null,
 		}
 	},
 	mounted () {
 		this.filter.operator = this.filter.operator === '=' ? 'IN' : this.filter.operator;
+		this.originalFilterValue = this.filter.value;
+		this.originalFilterOperator = this.filter.operator;
+		document.addEventListener('click', this.handleClickOutside);
+	},
+	beforeUnmount() {
+		document.removeEventListener('click', this.handleClickOutside);
 	},
 	methods: {
 		onClickSpecificValue(newValue) {
@@ -145,6 +153,39 @@ export default {
 			this.filter.andorOperator = 'OR';
 			this.search = '';
 			this.filter.value = [];
+
+			if (this.opened) {
+				this.toggleOpened();
+			} else {
+				this.onCloseCard();
+			}
+		},
+		toggleOpened() {
+			this.opened = !this.opened;
+
+			if (this.opened === false) {
+				this.onCloseCard();
+			}
+		},
+		onCloseCard() {
+			const valueDifferences = this.filter.value.filter((x) => !this.originalFilterValue.includes(x)).concat(this.originalFilterValue.filter(x => !this.filter.value.includes(x)));
+			const operatorDifferences = this.filter.operator !== this.originalFilterOperator;
+
+			if (valueDifferences.length > 0 || operatorDifferences) {
+				this.originalFilterValue = this.filter.value;
+				this.originalFilterOperator = this.filter.operator;
+				this.$emit('filter-changed');
+			}
+		},
+		handleClickOutside(event) {
+			if (this.opened) {
+				const clickedElement = event.target;
+				const componentElement = this.$el; // Élément racine de votre composant
+
+				if (!componentElement.contains(clickedElement)) {
+					this.toggleOpened();
+				}
+			}
 		}
 	},
 	computed: {
