@@ -531,6 +531,16 @@
           "sysadmin_only": false
         },
         {
+          "label":"COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_REGEX",
+          "name": "regex",
+          "type": "text",
+
+          "placeholder": "",
+          "helptext": "",
+          "published": true,
+          "sysadmin_only": false
+        },
+        {
           "name": "decimal_numbers",
           "type": "number",
           "label": "COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_DECIMAL_NUMBERS",
