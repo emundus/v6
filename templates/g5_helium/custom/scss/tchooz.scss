@@ -88,7 +88,7 @@
   width: 100%;
   padding: 0 $p-16;
   border-radius: var(--em-border-radius);
-  border: solid 1px $neutral-300;
+  border: solid 1px var(--neutral-200);
   height: 40px;
   background: transparent;
   color: $night-blue;
@@ -1236,6 +1236,10 @@ input:focus + .em-slider {
 /*
   BORDERS
 */
+.em-border-unset{
+  border: unset !important;
+}
+
 .em-border-radius-4{
   border-radius: 4px;
 }
@@ -1243,6 +1247,11 @@ input:focus + .em-slider {
 .em-border-radius-5{
   border-radius: 5px;
 }
+
+.em-border-radius-6{
+  border-radius: 6px;
+}
+
 .em-border-radius-8{
   border-radius: 8px;
 }
