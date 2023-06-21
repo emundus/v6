@@ -1,5 +1,5 @@
 <template>
-	<div class="date-filter em-w-100 em-mb-16">
+	<div class="date-filter em-w-100 em-mb-16" :id="'filter-id-' +  filter.uid" :ref="'filter-id-' +  filter.uid" @click="toggleOpened">
 		<div class="em-flex-row em-flex-space-between">
 			<p class="recap-label">{{ filter.label }}</p>
 			<div>
@@ -8,7 +8,7 @@
 			</div>
 		</div>
 		<div class="date-filter-card em-border-radius-8 em-border-neutral-400 em-box-shadow em-white-bg em-p-8">
-			<section v-if="!opened" class="recap em-flex-row em-mt-8">
+			<section class="recap em-flex-row em-mt-8" :class="{'hidden': opened}">
 				<div v-if="filter.value[0]" class="em-flex-row em-flex-wrap em-flex-gap-8">
 					<span class="recap-operator label label-darkblue"> {{ selectedOperatorLabel }}</span>
 					<p class="recap-value em-flex-row em-flex-wrap em-flex-gap-8">
@@ -18,7 +18,7 @@
 				</div>
 				<p v-else class="em-text-neutral-500"> {{ translate('MOD_EMUNDUS_FILTERS_PLEASE_SELECT') }}</p>
 			</section>
-			<section v-else class="default-filter-options em-mt-8">
+			<section class="default-filter-options em-mt-8" :class="{'hidden': !opened}">
 				<div class="operators-selection em-flex-row em-flex-wrap em-flex-gap-8">
 					<div v-for="operator in operators" :key="filter.uid + '-' + operator.value" class="em-p-8 em-border-radius-8" :class="{'label-default': operator.value !== filter.operator, 'label-darkblue': operator.value === filter.operator}">
 						<input class="hidden label"
@@ -36,7 +36,7 @@
 					<input class="em-mt-8" type="date" :id="filter.uid + '-end_date'" v-model="filter.value[1]"/>
 				</div>
 			</section>
-			<span class="material-icons-outlined em-pointer toggle-open-close" @click="opened = !opened">{{opened ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</span>
+			<span class="material-icons-outlined em-pointer toggle-open-close">{{opened ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</span>
 		</div>
 	</div>
 </template>
@@ -91,11 +91,17 @@ export default {
 				this.onCloseCard();
 			}
 		},
-		toggleOpened() {
-			this.opened = !this.opened;
+		toggleOpened(event = null) {
+			if (event.target.closest('.default-filter-options')) {
+				return;
+			}
 
+			this.opened = !this.opened;
 			if (this.opened === false) {
+				document.removeEventListener('click', this.handleClickOutside);
 				this.onCloseCard();
+			} else {
+				document.addEventListener('click', this.handleClickOutside);
 			}
 		},
 		onCloseCard() {
@@ -111,10 +117,10 @@ export default {
 		handleClickOutside(event) {
 			if (this.opened) {
 				const clickedElement = event.target;
-				const componentElement = this.$el; // Élément racine de votre composant
+				const componentElement = this.$refs['filter-id-' + this.filter.uid]; // Élément racine
 
-				if (!componentElement.contains(clickedElement)) {
-					this.toggleOpened();
+				if (clickedElement && !componentElement.contains(clickedElement) && !clickedElement.closest('#' + componentElement.id)) {
+					this.toggleOpened(event);
 				}
 			}
 		}
