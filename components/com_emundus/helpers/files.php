@@ -3540,8 +3540,8 @@ class EmundusHelperFiles
 		$where = ['q' => '', 'join' => ''];
 
 		$session = JFactory::getSession();
-	    $session_filters = $session->get('em-applied-filters');
-		$quick_search_filters = $session->get('em-quick-search-filters');
+	    $session_filters = $session->get('em-applied-filters', []);
+		$quick_search_filters = $session->get('em-quick-search-filters', []);
 		if (!empty($session_filters) || !empty($quick_search_filters)) {
 			if (empty($already_joined)) {
 				$already_joined = [
