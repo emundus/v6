@@ -1822,13 +1822,6 @@ structure:
                         'null'    => 0,
                     ],
                     [
-                        'name'    => 'format',
-                        'type'    => 'char',
-                        'length'  => 10,
-                        'default' => '%i',
-                        'null'    => 0,
-                    ],
-                    [
                         'name'    => 'name',
                         'type'    => 'varchar',
                         'length'  => 255,

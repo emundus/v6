@@ -90,7 +90,6 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
             {
                 if ($allCurrencyOne->iso3 === $selectedCurrencyOne->iso3)
                 {
-                    //$valuesForSelect[$allCurrencyOne->iso3] = $allCurrencyOne->name . ' ' . $allCurrencyOne->symbol . ' (' . $allCurrencyOne->iso3 . ')';
                     $valuesForSelect[$allCurrencyOne->iso3] = $allCurrencyOne->name . ' (' . $allCurrencyOne->iso3 . ')';
                 }
             }
