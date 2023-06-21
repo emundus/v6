@@ -123,5 +123,81 @@ class EmundusHelperFilesTest extends TestCase {
 
 		$query_condition = $this->h_files->writeQueryWithOperator('ecc.fnum', ['24343432323', '24334234234234'], '=');
 		$this->assertSame('ecc.fnum IN (\'24343432323\',\'24334234234234\')', $query_condition, 'Write query with = operator and array of values returns correct string with IN');
+
+		$query_condition = $this->h_files->writeQueryWithOperator('ecc.fnum', ['24343432323', '24334234234234'], 'superior');
+		$this->assertSame('1=1', $query_condition, 'Write query with > operator and array of values returns 1=1 string, because > operator is not supported with type select');
+
+		$query_condition = $this->h_files->writeQueryWithOperator('ecc.created', ['2023-02-01', ''], 'superior', 'date');
+		$this->assertSame('ecc.created > \'2023-02-01\'', $query_condition, 'Write query with superior operator for date filter type works');
+
+		$query_condition = $this->h_files->writeQueryWithOperator('ecc.created', ['2023-02-01', '2023-02-09'], 'between', 'date');
+		$this->assertSame('ecc.created BETWEEN \'2023-02-01\' AND \'2023-02-09\'', $query_condition, 'Write query with between operator for date filter type works');
+
+		$query_condition = $this->h_files->writeQueryWithOperator('ecc.created', ['2023-02-01', ''], 'between', 'date');
+		$this->assertSame('ecc.created >= \'2023-02-01\'', $query_condition, 'Write query with between operator for date filter type works even if only "from" value is passed');
+	}
+
+	public function testgetFabrikElementData() {
+		$data = $this->h_files->getFabrikElementData(0);
+		$this->assertEmpty($data, 'Get fabrik element data with 0 id returns empty array');
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select('*')
+			->from('#__fabrik_elements')
+			->limit(1);
+
+		$db->setQuery($query);
+		$element = $db->loadAssoc();
+
+		$data = $this->h_files->getFabrikElementData($element['id']);
+		$this->assertNotEmpty($data, 'Get fabrik element data with correct id returns not empty array');
+		$this->assertSame($element['id'], $data['element_id'], 'Get fabrik element data with correct id returns correct id');
+
+		// make sure we knwo the name, the plugin, the group_id, the list_id
+		$this->assertNotEmpty($data['name'], 'Get fabrik element data with correct id returns not empty name');
+		$this->assertNotEmpty($data['plugin'], 'Get fabrik element data with correct id returns not empty plugin');
+		$this->assertNotEmpty($data['group_id'], 'Get fabrik element data with correct id returns not empty group_id');
+		$this->assertNotEmpty($data['list_id'], 'Get fabrik element data with correct id returns not empty list_id');
+	}
+
+	public function test_moduleBuildWhere()
+	{
+		$where = $this->h_files->_moduleBuildWhere([], 'files', []);
+		$this->assertNotEmpty($where, 'Build where with empty filters returns not empty string');
+
+		// $where must contain q and join entries
+		$this->assertArrayHasKey('q', $where, 'Build where with empty filters returns q entry');
+		$this->assertArrayHasKey('join', $where, 'Build where with empty filters returns join entry');
+
+		$session = JFactory::getSession();
+		$session->set('em-quick-search-filters', [
+			[
+				'scope' => 'everywhere',
+				'value' => 'test',
+			]
+		]);
+
+		$where = $this->h_files->_moduleBuildWhere([], 'files', []);
+		$this->assertNotEmpty($where['q'], 'Build where with filters returns not empty string');
+		$this->assertSame(' AND (jecc.applicant_id LIKE \'%test%\' OR jecc.fnum LIKE \'%test%\' OR u.username LIKE \'%test%\' OR eu.firstname LIKE \'%test%\' OR eu.lastname LIKE \'%test%\' OR u.email LIKE \'%test%\' OR u.username LIKE \'%test%\')', $where['q'], 'Build where with filters returns correct string');
+
+		$session->set('em-quick-search-filters', [
+			[
+				'scope' => '',
+				'value' => 'test',
+			]
+		]);
+		$where = $this->h_files->_moduleBuildWhere([], 'files', []);
+		$this->assertSame('', $where['q'], 'Build where with quick search filters with no scope returns empty string');
+
+		$session->set('em-quick-search-filters', [
+			[
+				'scope' => 'unhandled_scope',
+				'value' => 'test',
+			]
+		]);
+		$where = $this->h_files->_moduleBuildWhere([], 'files', []);
+		$this->assertSame('', $where['q'], 'Build where with quick search filters with unhandled scope returns empty string');
 	}
 }
