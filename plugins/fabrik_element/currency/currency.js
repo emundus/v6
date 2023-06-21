@@ -24,7 +24,6 @@ define(['jquery', 'fab/element'],
 
             this.initSelect();
             this.addMask();
-            this.initDivEvent();
         },
 
         cloned: function (c)
@@ -39,40 +38,6 @@ define(['jquery', 'fab/element'],
             this.addMask();
 
             this.parent(c);
-        },
-
-        initDivEvent: function()
-        {
-            /*this.element.addEventListener('mouseenter', this.mouseenterDivHandler.bind(this));
-            this.element.addEventListener('mouseleave', this.mouseleaveDivHandler.bind(this));
-            this.element.addEventListener('focusin', this.focusInDivHandler.bind(this));
-            this.element.addEventListener('focusout', this.focusOutDivHandler.bind(this));
-
-             */
-        },
-
-        mouseenterDivHandler: function()
-        {
-            this.HTMLInputElement.style.borderColor = currency_hoverColor;
-            this.HTMLSelectElement.style.borderColor = currency_hoverColor;
-        },
-
-        mouseleaveDivHandler: function()
-        {
-            this.HTMLInputElement.style.borderColor = currency_defaultColor;
-            this.HTMLSelectElement.style.borderColor = currency_defaultColor;
-        },
-
-        focusInDivHandler: function()
-        {
-            this.HTMLInputElement.style.borderColor = currency_focusColor;
-            this.HTMLSelectElement.style.borderColor = currency_focusColor;
-        },
-
-        focusOutDivHandler: function ()
-        {
-            this.HTMLInputElement.style.borderColor = currency_defaultColor;
-            this.HTMLSelectElement.style.borderColor = currency_defaultColor;
         },
 
         initSelect: function()
