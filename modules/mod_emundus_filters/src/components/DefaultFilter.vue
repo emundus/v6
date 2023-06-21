@@ -10,7 +10,7 @@
 		<div class="default-filter-card em-border-radius-8 em-border-neutral-400 em-box-shadow em-white-bg em-p-8 em-mt-4">
 			<section v-if="!opened" class="recap" @click="opened = !opened">
 				<div v-if="filter.value" class="em-flex-row em-flex-wrap em-flex-gap-8">
-					<span class="recap-operator label label-darkblue em-mr-4"> {{ selectedOperatorLabel }}</span>
+					<span class="recap-operator label label-darkblue"> {{ selectedOperatorLabel }}</span>
 					<span class="recap-value label label-default"> {{ filter.value }}</span>
 				</div>
 				<p v-else class="em-text-neutral-500"> {{ translate('MOD_EMUNDUS_FILTERS_PLEASE_SELECT') }}</p>
@@ -59,11 +59,52 @@ export default {
 			resetHover: false
 		}
 	},
+	mounted() {
+		this.originalFilterValue = this.filter.value;
+		this.originalFilterOperator = this.filter.operator;
+		document.addEventListener('click', this.handleClickOutside);
+	},
+	beforeUnmount() {
+		document.removeEventListener('click', this.handleClickOutside);
+	},
 
 	methods: {
 		resetFilter() {
 			this.filter.operator = '=';
 			this.filter.value = '';
+
+			if (this.opened) {
+				this.toggleOpened();
+			} else {
+				this.onCloseCard();
+			}
+		},
+		toggleOpened() {
+			this.opened = !this.opened;
+
+			if (this.opened === false ) {
+				this.onCloseCard();
+			}
+		},
+		onCloseCard() {
+			const valueDifferences = this.filter.value != this.originalFilterValue;
+			const operatorDifferences = this.filter.operator !== this.originalFilterOperator;
+
+			if (valueDifferences || operatorDifferences) {
+				this.originalFilterValue = this.filter.value;
+				this.originalFilterOperator = this.filter.operator;
+				this.$emit('filter-changed');
+			}
+		},
+		handleClickOutside(event) {
+			if (this.opened) {
+				const clickedElement = event.target;
+				const componentElement = this.$el; // Élément racine de votre composant
+
+				if (!componentElement.contains(clickedElement)) {
+					this.toggleOpened();
+				}
+			}
 		}
 	},
 	computed: {
