@@ -3558,27 +3558,35 @@ class EmundusHelperFiles
 
 			if (!empty($quick_search_filters)) {
 				$quick_search_where = ' AND (';
-				foreach ($quick_search_filters as $index => $filter) {
-					if ($filter['scope'] === 'everywhere') {
-						$scopes = ['jecc.applicant_id', 'jecc.fnum', 'u.username', 'eu.firstname', 'eu.lastname', 'u.email', 'u.username'];
 
-						foreach ($scopes as $scope_index => $scope) {
-							if ($index > 0 || $scope_index > 0) {
+				$at_least_one = false;
+
+				$scopes = ['jecc.applicant_id', 'jecc.fnum', 'u.username', 'eu.firstname', 'eu.lastname', 'u.email', 'u.username'];
+				foreach ($quick_search_filters as $index => $filter) {
+					if (!empty($filter['scope'])) {
+						if ($filter['scope'] === 'everywhere') {
+							$at_least_one = true;
+
+							foreach ($scopes as $scope_index => $scope) {
+								if ($index > 0 || $scope_index > 0) {
+									$quick_search_where .= ' OR ';
+								}
+
+								$quick_search_where .= $this->writeQueryWithOperator($scope, $filter['value'], 'LIKE');
+							}
+						} else if (in_array($filter['scope'], $scopes)) {
+							if ($index > 0) {
 								$quick_search_where .= ' OR ';
 							}
-
-							$quick_search_where .= $this->writeQueryWithOperator($scope, $filter['value'], 'LIKE');
+							$quick_search_where .= $this->writeQueryWithOperator($filter['scope'], $filter['value'], '=');
 						}
-					} else {
-						if ($index > 0) {
-							$quick_search_where .= ' OR ';
-						}
-						$quick_search_where .= $this->writeQueryWithOperator($filter['scope'], $filter['value'], '=');
 					}
 				}
 
-				$quick_search_where .= ')';
-				$where['q'] .= $quick_search_where;
+				if ($at_least_one) {
+					$quick_search_where .= ')';
+					$where['q'] .= $quick_search_where;
+				}
 			}
 
 			foreach ($session_filters as $filter) {
@@ -3738,7 +3746,7 @@ class EmundusHelperFiles
 		return $where;
     }
 
-	private function getFabrikElementData(int $element_id): array
+	public function getFabrikElementData(int $element_id): array
 	{
 		$data = [];
 
@@ -3986,7 +3994,7 @@ class EmundusHelperFiles
 		return $left_joins;
 	}
 
-	private function writeQueryWithOperator($element, $values, $operator, $type = 'select', $fabrik_element_data = null) {
+	public function writeQueryWithOperator($element, $values, $operator, $type = 'select', $fabrik_element_data = null) {
 		$query = '1=1';
 
 		if (!empty($element) && !empty($values) && !empty($operator)) {
