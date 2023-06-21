@@ -177,6 +177,7 @@ class EmundusHelperFilesTest extends TestCase {
 				'value' => 'test',
 			]
 		]);
+		$session->set('em-applied-filters', []);
 
 		$where = $this->h_files->_moduleBuildWhere([], 'files', []);
 		$this->assertNotEmpty($where['q'], 'Build where with filters returns not empty string');
