@@ -4,7 +4,7 @@
 			<p class="recap-label">{{ filter.label }}</p>
 			<div class="em-flex-row">
 				<span @mouseenter="resetHover = true" @mouseleave="resetHover = false" class="material-icons-outlined em-pointer reset-filter-btn" :class="{'em-blue-400-color': resetHover}" @click="resetFilter" :alt="translate('MOD_EMUNDUS_FILTERS_RESET')">refresh</span>
-				<span v-if="!filter.default" class="material-icons-outlined em-red-500-color em-pointer" @click="$.emit('remove-filter')">close</span>
+				<span v-if="!filter.default" class="material-icons-outlined em-red-500-color em-pointer remove-filter-btn" @click="$.emit('remove-filter')">close</span>
 			</div>
 		</div>
 		<div class="multi-select-filter-card em-border-radius-8 em-border-neutral-400 em-box-shadow em-white-bg em-p-8 em-mt-4">
@@ -147,20 +147,24 @@ export default {
 				this.filter.value =  this.filter.value.filter((value) => { return value !== 'all'});
 			}
 		},
-		resetFilter() {
+		resetFilter(event) {
 			this.filter.operator = 'IN';
 			this.filter.andorOperator = 'OR';
 			this.search = '';
 			this.filter.value = [];
 
 			if (this.opened) {
-				this.toggleOpened();
+				this.opened = false;
+				document.removeEventListener('click', this.handleClickOutside);
+				this.onCloseCard();
 			} else {
 				this.onCloseCard();
 			}
+
+			event.stopPropagation();
 		},
 		toggleOpened(event = null) {
-			if (event.target.closest('.multi-select-filter-options')) {
+			if (event && (event.target.closest('.multi-select-filter-options') || event.target.classList.contains('remove-filter-btn'))) {
 				return;
 			}
 
@@ -187,7 +191,7 @@ export default {
 				const clickedElement = event.target;
 				const componentElement = this.$refs['filter-id-' + this.filter.uid]; // Élément racine
 
-				if (clickedElement && !componentElement.contains(clickedElement) && !clickedElement.closest('#' + componentElement.id)) {
+				if (clickedElement && componentElement && !componentElement.contains(clickedElement) && !clickedElement.closest('#' + componentElement.id)) {
 					this.toggleOpened(event);
 				}
 			}
