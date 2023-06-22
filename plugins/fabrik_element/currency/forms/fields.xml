@@ -81,12 +81,6 @@
 						   default=","
 					/>
 
-					<field name="regex"
-						   type="text"
-						   label="PLG_ELEMENT_CURRENCY_REGEX"
-						   hint="/^\d{0,6}$/"
-					/>
-
 					<field name="decimal_numbers"
 						   type="number"
 						   label="PLG_ELEMENT_CURRENCY_DECIMAL_NUMBERS"

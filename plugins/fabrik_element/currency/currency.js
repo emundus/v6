@@ -116,27 +116,10 @@ define(['jquery', 'fab/element'],
                 this.mask.destroy();
             }
 
-            let regExpression = this.allSelectedCurrencies[this.idSelectedCurrency].regex;
-            // /^\d{0,6}$/ normal regex
-            // but to give to imask, need to create RegExp but will add /
-            // /\/^\d{0,6}$// after RegExp
-
-            if (regExpression)
-            {
-                regExpression = regExpression.replace('$/', '$');
-                if (regExpression[0] === '/')
-                {
-                    regExpression = regExpression.slice(1);
-                }
-            }
-            const regex = new RegExp(regExpression);
-
             this.mask = IMask(
                 this.HTMLInputElement,
                 {
-                    mask: regExpression ? regex : Number,
-                    // if regex, that will override everything
-
+                    mask: Number,
                     // other options are optional with defaults below
                     scale: this.allSelectedCurrencies[this.idSelectedCurrency].decimal_numbers,  // digits after point, 0 for integers
                     signed: false,  // disallow negative

@@ -211,8 +211,6 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 
         $decimalNumber = $this->selectedCurrencies[$this->idSelectedCurrency]->decimal_numbers;
 
-        // $regex = $this->getParams()->get('regex'); // pas sur de réussir
-
         $numberFormated = number_format($number, $decimalNumber, $decimal_separator, $thousands_separator);
         $currencyFormated = $currencyObject->symbol. ' ('. $iso3. ')';
 
