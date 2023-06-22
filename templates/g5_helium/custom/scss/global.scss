@@ -681,6 +681,10 @@ p,
   text-align: end;
 }
 
+#g-navigation {
+  z-index: initial;
+}
+
 #g-navigation #header-a .logo {
   width: auto;
   max-height: 40px;
