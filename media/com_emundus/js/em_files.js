@@ -458,8 +458,8 @@ function openFiles(fnum, page = 0, vue = false) {
                         var string = this, key;
                         for (key in hash) {
                             string = string.replace(new RegExp('\\{' + key + '\\}', 'gm'), hash[key]);
-                            return string;
                         }
+                        return string;
                     };
 
                     let menuListGroup = $('#em-appli-menu .list-group');
