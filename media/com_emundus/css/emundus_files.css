@@ -694,6 +694,12 @@ div#em-modal-form {
     width: 100%;
 }
 
+.files-board.users-page div#em-modal-actions,
+.files-board.users-page div#em-modal-form {
+    top: 44px;
+}
+
+
 div#em-modal-actions {
     overflow: hidden;
 }
