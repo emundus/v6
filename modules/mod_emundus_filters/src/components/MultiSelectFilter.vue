@@ -49,6 +49,7 @@
 				<hr/>
 				<input class="em-w-100 em-p-8 em-border-radius-8 em-border-neutral-400 em-box-shadow em-white-bg"
 				       :id="filter.uid + '-filter-search'"
+               :ref="filter.uid + '-search-input'"
 				       type="text"
 				       :placeholder="translate('MOD_EMUNDUS_FILTERS_FILTER_SEARCH')"
 				       v-model="search"
@@ -173,11 +174,14 @@ export default {
 				document.removeEventListener('click', this.handleClickOutside);
 				this.onCloseCard();
 			} else {
+        this.$nextTick(() => {
+          this.$refs[this.filter.uid + '-search-input'].focus();
+        });
 				document.addEventListener('click', this.handleClickOutside);
 			}
 		},
 		onCloseCard() {
-			const valueDifferences = this.filter.value.filter((x) => !this.originalFilterValue.includes(x)).concat(this.originalFilterValue.filter(x => !this.filter.value.includes(x)));
+			const valueDifferences = this.filter.value && Array.isArray(this.filter.value) ? this.filter.value.filter((x) => !this.originalFilterValue.includes(x)).concat(this.originalFilterValue.filter(x => !this.filter.value.includes(x))) : [];
 			const operatorDifferences = this.filter.operator !== this.originalFilterOperator;
 
 			if (valueDifferences.length > 0 || operatorDifferences) {

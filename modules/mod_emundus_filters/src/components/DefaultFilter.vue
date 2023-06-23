@@ -27,7 +27,7 @@
 					</div>
 				</div>
 				<hr/>
-				<input type="text" v-model="filter.value" @keyup.enter="onCloseCard">
+				<input :ref="filter.uid + '-value-input'" type="text" v-model="filter.value" @keyup.enter="onCloseCard">
 			</section>
 			<span class="material-icons-outlined em-pointer toggle-open-close">{{ opened ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</span>
 		</div>
@@ -93,6 +93,10 @@ export default {
 				document.removeEventListener('click', this.handleClickOutside);
 				this.onCloseCard();
 			} else {
+        // focus on -value-input
+        this.$nextTick(() => {
+          this.$refs[this.filter.uid + '-value-input'].focus();
+        });
 				document.addEventListener('click', this.handleClickOutside);
 			}
 		},
