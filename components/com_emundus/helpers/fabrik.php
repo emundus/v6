@@ -16,6 +16,10 @@
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
+require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+use libphonenumber\PhoneNumberUtil;
+use libphonenumber\PhoneNumberFormat;
+
 /**
  * Content Component Query Helper
  *
@@ -929,4 +933,37 @@ die("<script>
 
 		return $filters;
 	}
+
+    static function getFormatedPhoneNumberValue($value)
+    {
+        $iso2Test = '';
+        $formatedValue = $value;
+        $phoneNumberUtil = PhoneNumberUtil::getInstance();
+
+        if (preg_match('/^\w{2}/', $value))
+        {
+            $iso2Test = substr($value, 0, 2);
+            $value = substr($value, 2, strlen($value));
+        }
+
+        if (preg_match('/^\+\d+$/', $value))
+        {
+            try
+            {
+                $value = $phoneNumberUtil->parse($value);
+                $iso2 = $phoneNumberUtil->getRegionCodeForNumber($value);
+
+                if ($iso2 || $iso2 === $iso2Test)
+                {
+                    $formatedValue = $iso2 . $phoneNumberUtil->format($value, PhoneNumberFormat::E164);
+                }
+            }
+            catch (Exception $e)
+            {
+                // error we do nothing
+            }
+        }
+
+        return $formatedValue;
+    }
 }
