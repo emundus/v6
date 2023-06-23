@@ -934,36 +934,50 @@ die("<script>
 		return $filters;
 	}
 
-    static function getFormatedPhoneNumberValue($value)
+    /**
+     *
+     * @param $phone_number string The phone number to format
+     * @param $format int The format to use
+     * 0 => E164
+     * 1 => INTERNATIONAL
+     * 2 => NATIONAL
+     * 3 => RFC3966
+     * @return string The formatted phone number, if the phone number is not valid, empty string is returned
+     */
+    static function getFormattedPhoneNumberValue($phone_number, $format = PhoneNumberFormat::E164)
     {
-        $iso2Test = '';
-        $formatedValue = $value;
-        $phoneNumberUtil = PhoneNumberUtil::getInstance();
+        $formattedValue = '';
 
-        if (preg_match('/^\w{2}/', $value))
-        {
-            $iso2Test = substr($value, 0, 2);
-            $value = substr($value, 2, strlen($value));
-        }
+        if (!empty($phone_number)) {
+            $phone_number = trim($phone_number);
+            $phone_number = str_replace(' ', '', $phone_number);
 
-        if (preg_match('/^\+\d+$/', $value))
-        {
-            try
+            $iso2Test = '';
+            $phone_number_util = PhoneNumberUtil::getInstance();
+
+            if (preg_match('/^\w{2}/', $phone_number))
             {
-                $value = $phoneNumberUtil->parse($value);
-                $iso2 = $phoneNumberUtil->getRegionCodeForNumber($value);
+                $iso2Test = substr($phone_number, 0, 2);
+                $phone_number = substr($phone_number, 2);
+            }
 
-                if ($iso2 || $iso2 === $iso2Test)
+            if (preg_match('/^\+\d+$/', $phone_number))
+            {
+                try
                 {
-                    $formatedValue = $iso2 . $phoneNumberUtil->format($value, PhoneNumberFormat::E164);
+                    $phone_number = $phone_number_util->parse($phone_number);
+                    $iso2 = $phone_number_util->getRegionCodeForNumber($phone_number);
+
+                    if ($iso2 || $iso2 === $iso2Test)
+                    {
+                        $formattedValue = $iso2 . $phone_number_util->format($phone_number, $format);
+                    }
+                } catch (Exception $e) {
+                    JLog::add('EmundusHelperFabrik::getFormattedPhoneNumberValue Phone number lib returned an error for given phone number ' . $phone_number . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
                 }
             }
-            catch (Exception $e)
-            {
-                // error we do nothing
-            }
         }
 
-        return $formatedValue;
+        return $formattedValue;
     }
 }
