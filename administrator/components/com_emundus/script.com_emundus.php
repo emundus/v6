@@ -1884,6 +1884,12 @@ structure:
                 EmundusHelperUpdate::updateExtensionParam('gotenberg_url', 'https://gotenberg.microservices.tchooz.app', 'http://localhost:3000');
 			}
 
+            if (version_compare($cache_version, '1.36.6', '<=') || $firstrun){
+                EmundusHelperUpdate::addColumn('jos_emundus_personal_detail','profile','INT',11);
+                EmundusHelperUpdate::addColumn('jos_emundus_logs','ip_from','VARCHAR',26);
+                EmundusHelperUpdate::addColumn('jos_messages','page','VARCHAR',255);
+            }
+
 			// Insert new translations in overrides files
 			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
 
