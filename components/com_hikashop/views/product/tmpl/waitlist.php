@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -46,12 +46,12 @@ defined('_JEXEC') or die('Restricted access');
 				</td>
 				<td>
 					<?php
-					$attributes = 'value="'.$this->escape(@$this->element->name).'"';
+					$attributes = 'value="'.$this->escape((string)@$this->element->name).'"';
 					if(!empty($this->element->user_cms_id)) {
-						$attributes = 'value="" placeholder="'.$this->escape(@$this->element->name).'"';
+						$attributes = 'value="" placeholder="'.$this->escape((string)@$this->element->name).'"';
 					}
 					?>
-					<input type="text" name="data[register][name]" size="40" <?php echo $attributes;?> />
+					<input type="text" name="data[register][name]" class="<?php echo HK_FORM_CONTROL_CLASS; ?>" size="40" <?php echo $attributes;?> />
 				</td>
 			</tr>
 <!-- EO NAME -->
@@ -64,12 +64,12 @@ defined('_JEXEC') or die('Restricted access');
 				</td>
 				<td>
 					<?php
-					$attributes = 'value="'.$this->escape(@$this->element->email).'"';
+					$attributes = 'value="'.$this->escape((string)@$this->element->email).'"';
 					if(!empty($this->element->user_cms_id)) {
-						$attributes = 'value="" placeholder="'.$this->escape(@$this->element->email).'"';
+						$attributes = 'value="" placeholder="'.$this->escape((string)@$this->element->email).'"';
 					}
 					?>
-					<input type="text" name="data[register][email]" size="40" <?php echo $attributes;?> />
+					<input type="text" name="data[register][email]" class="<?php echo HK_FORM_CONTROL_CLASS; ?>" size="40" <?php echo $attributes;?> />
 				</td>
 			</tr>
 <!-- EO EMAIL -->

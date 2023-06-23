@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -14,10 +14,10 @@ defined('_JEXEC') or die('Restricted access');
 <form action="<?php echo hikashop_completeLink('order'); ?>" method="post" name="adminForm" id="adminForm">
 
 <div class="hk-row-fluid">
-	<div class="hkc-md-12 hikashop_search_zone">
-		<div class="hikashop_search_block">
-			<input type="text" name="search" id="hikashop_search" value="<?php echo $this->escape($this->pageInfo->search);?>" placeholder="<?php echo JText::_('HIKA_SEARCH'); ?>" class="inputbox" onchange="this.form.submit();" />
-			<button class="hikabtn hikabtn-primary" onclick="this.form.submit();"><?php echo JText::_('GO'); ?></button>
+	<div class="hkc-md-6">
+		<div class="hikashop_search_block <?php echo HK_GROUP_CLASS; ?>">
+			<input type="text" name="search" id="hikashop_search" value="<?php echo $this->escape($this->pageInfo->search);?>" placeholder="<?php echo JText::_('HIKA_SEARCH'); ?>" class="<?php echo HK_FORM_CONTROL_CLASS; ?>" onchange="this.form.submit();" />
+			<button class="<?php echo HK_CSS_BUTTON; ?> <?php echo HK_CSS_BUTTON_PRIMARY; ?>" onclick="this.form.submit();"><?php echo JText::_('GO'); ?></button>
 <?php
 	foreach($this->leftFilters as $name => $filterObj) {
 		if(is_string($filterObj))
@@ -26,6 +26,8 @@ defined('_JEXEC') or die('Restricted access');
 			echo $filterObj->displayFilter($name, $this->pageInfo->filter);
 	}
 ?>		</div>
+	</div>
+	<div class="hkc-md-6">
 		<div class="hikashop_order_sort"><?php
 	foreach($this->rightFilters as $name => $filterObj) {
 		if(is_string($filterObj))

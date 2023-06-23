@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -96,7 +96,7 @@ class hikashopPaymentClass extends hikashopClass {
 				$columns = array('payment_name', 'payment_description');
 				$translationHelper->checkTranslations($element, $columns);
 			}
-			if($reorder) {
+			if($reorder && !empty($element->payment_type)) {
 				$orderHelper = hikashop_get('helper.order');
 				$orderHelper->pkey = 'payment_id';
 				$orderHelper->table = 'payment';

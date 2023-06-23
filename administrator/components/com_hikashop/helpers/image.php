@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -381,9 +381,9 @@ class hikashopImageHelper {
 		}
 
 		if(function_exists('imagecopyresampled')) {
-			imagecopyresampled($ret['res'], $source['res'], $x, $y, 0, 0, $sx, $sy, $origin_width, $origin_height);
+			imagecopyresampled($ret['res'], $source['res'], (int)$x, (int)$y, 0, 0, (int)$sx, (int)$sy, (int)$origin_width, (int)$origin_height);
 		} else {
-			imagecopyresized($ret['res'], $source['res'], $x, $y, 0, 0, $sx, $sy, $origin_width, $origin_height);
+			imagecopyresized($ret['res'], $source['res'], (int)$x, (int)$y, 0, 0, (int)$sx, (int)$sy, (int)$origin_width, (int)$origin_height);
 		}
 
 		return $ret;
@@ -856,7 +856,7 @@ class hikashopImageHelper {
 			$options['background'] = $config->get('images_stripes_background', '');
 		}
 
-		if(!empty($options['background']) && is_string($options['background']) && strtolower($options['background']) != '#ffffff') {
+		if(!empty($options['background']) && is_string($options['background']) && strtolower($options['background']) != '#ffffff' && strtolower($options['background']) != 'none') {
 			$optString .= 'c'.trim(strtoupper($options['background']), '#');
 		}
 
@@ -1472,7 +1472,7 @@ window.hikashop.ready( function() {
 				$bgcolor = imagecolorallocatealpha($resource, $color[0], $color[1], $color[2], 0);
 				if($bgcolor === false || $bgcolor === -1)
 					$bgcolor = imagecolorallocate($resource, $color[0], $color[1], $color[2]);
-			} elseif( is_string($color) ) {
+			} elseif( is_string($color) && strtolower($color) != 'none' && strlen(ltrim($color, '#')) == 6) {
 				$rgb = str_split(ltrim($color, '#'), 2);
 				$bgcolor = imagecolorallocatealpha($resource, hexdec($rgb[0]), hexdec($rgb[1]), hexdec($rgb[2]), 0);
 				if($bgcolor === false || $bgcolor === -1)

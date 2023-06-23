@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -78,7 +78,10 @@ class CartController extends hikashopController {
 			$app->enqueueMessage(JText::_('HIKASHOP_SUCC_SAVED'), 'success');
 			global $Itemid;
 			$suffix = (!empty($Itemid) ? '&Itemid=' . $Itemid : '');
-			$app->redirect(hikashop_completeLink('cart&task=show&cart_id='.$result.$suffix));
+			if($cart_type == 'wishlist')
+				$app->redirect(hikashop_completeLink('cart&task=listing&cart_type='.$cart_type.$suffix));
+			else
+				$app->redirect(hikashop_completeLink('cart&task=show&cart_id='.$result.$suffix));
 		} else {
 			$app->enqueueMessage(JText::_( 'ERROR_SAVING' ), 'error');
 		}
@@ -746,11 +749,16 @@ window.hikashop.ready(function(){
 	public function remove() {
 		$app = JFactory::getApplication();
 		$cartClass = hikashop_get('class.cart');
+		global $Itemid;
+		$url_itemid = '';
+		if(!empty($Itemid)) {
+			$url_itemid = '&Itemid='.$Itemid;
+		}
 
 		$cart_type = '';
 		$cids = hikaInput::get()->get('cid', array(), 'array');
 		if(empty($cids)) {
-			$app->redirect( hikashop_completeLink('cart&task=listing', false, true) );
+			$app->redirect( hikashop_completeLink('cart&task=listing'.$url_itemid, false, true) );
 			return false;
 		}
 
@@ -772,7 +780,7 @@ window.hikashop.ready(function(){
 					$url = 'index.php?option=com_users&view=login';
 					$app->redirect(JRoute::_($url . $suffix . '&return='.urlencode(base64_encode(hikashop_currentUrl('', false))), false));
 				}
-				$app->redirect( hikashop_completeLink('cart&task=listing'.$cart_type, false, true) );
+				$app->redirect( hikashop_completeLink('cart&task=listing'.$cart_type.$url_itemid, false, true) );
 				return false;
 			}
 		} else {

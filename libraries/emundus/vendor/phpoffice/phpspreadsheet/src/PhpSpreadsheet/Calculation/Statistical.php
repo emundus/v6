@@ -15,8 +15,6 @@ use PhpOffice\PhpSpreadsheet\Calculation\Statistical\Variances;
 
 /**
  * @deprecated 1.18.0
- *
- * @codeCoverageIgnore
  */
 class Statistical
 {

@@ -1,16 +1,24 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 jimport('joomla.plugin.plugin');
 class plgSystemHikashopuser extends JPlugin {
-
+	public $hikashopRegistrationInProgress = false;
+	public $oldUser = null;
+	public $currency = null;
+	public $entries = null;
+	public $session = null;
+	public $cart = null;
+	public $wishlist = null;
+	public $checkout_fields = null;
+	public $checkout_fields_ok = null;
 	public function __construct(&$subject, $config) {
 		parent::__construct($subject, $config);
 
@@ -92,6 +100,11 @@ class plgSystemHikashopuser extends JPlugin {
 			return true;
 
 		if(@$_GET['option'] == 'com_plugins' && @$_GET['view'] == 'plugin' && (@$_GET['layout'] == 'edit' || @$_GET['task'] == 'edit')) {
+			$lang = JFactory::getLanguage();
+			$lang->load('com_hikashop', JPATH_SITE, null, true);
+		}
+
+		if(@$_GET['option'] == 'com_modules' && @$_GET['view'] == 'module' && (@$_GET['layout'] == 'edit' || @$_GET['task'] == 'edit')) {
 			$lang = JFactory::getLanguage();
 			$lang->load('com_hikashop', JPATH_SITE, null, true);
 		}
@@ -186,6 +199,7 @@ class plgSystemHikashopuser extends JPlugin {
 		return $this->onLoginUser($user, $options);
 	}
 
+
 	public function onBeforeStoreUser($user, $isnew) {
 		$this->oldUser = $user;
 		return true;
@@ -205,9 +219,16 @@ class plgSystemHikashopuser extends JPlugin {
 		$userClass->save($hikaUser, true);
 	}
 
+	public function onBeforeHikaUserRegistration(&$ret, $input_data, $mode) {
+		$this->hikashopRegistrationInProgress = true;
+	}
+
 	public function onAfterStoreUser($user, $isnew, $success, $msg) {
 		if($success === false || !is_array($user))
 			return false;
+
+		if($isnew && $this->hikashopRegistrationInProgress)
+			return true;
 
 		if(!defined('DS'))
 			define('DS', DIRECTORY_SEPARATOR);
@@ -447,6 +468,8 @@ class plgSystemHikashopuser extends JPlugin {
 	public function onAfterRoute() {
 		$app = JFactory::getApplication();
 
+		if(!defined('HIKASHOP_JOOMLA_LOADED'))
+			define('HIKASHOP_JOOMLA_LOADED', true);
 
 
 		if(version_compare(JVERSION,'3.0','>=')) {
@@ -521,6 +544,27 @@ class plgSystemHikashopuser extends JPlugin {
 		}
 	}
 
+	private function _fixJoomlaMetaTags() {
+		$view = hikaInput::get()->getCmd('view');
+		$layout = '';
+		if(!empty($view) && !hikaInput::get()->getCmd('ctrl')) {
+			hikaInput::get()->set('ctrl', $view);
+			$layout = hikaInput::get()->getCmd('layout');
+			if(!empty($layout)){
+				hikaInput::get()->set('task', $layout);
+			}
+		}
+		if(in_array((string)$view, array('product', 'category', '')) && in_array((string)$layout, array('show', 'listing', ''))) {
+			$app = JFactory::getApplication();
+			$body = $app->getBody();
+			if(strpos($body, 'hreflang')) {
+				$server = JURI::base();
+				$body = str_replace('<link href="'.rtrim($server,'/').$server, '<link href="'.$server, $body);
+				$app->setBody($body);
+			}
+		}
+	}
+
 	public function onAfterRender() {
 		$app = JFactory::getApplication();
 
@@ -540,6 +584,9 @@ class plgSystemHikashopuser extends JPlugin {
 			return true;
 		if(version_compare(JVERSION,'4.0','<') && $app->isAdmin())
 			return true;
+
+		if($option == 'com_hikashop')
+			$this->_fixJoomlaMetaTags();
 
 		if(
 			($option != 'com_user' || $view != 'user' || $task != 'edit') && 

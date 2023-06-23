@@ -88,17 +88,21 @@ class EmundusControllerEmail extends JControllerLegacy {
 	}
 
 	function sendmail_expert() {
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_em_user->id) && !EmundusHelperAccess::asAccessAction(18, 'c', $this->_user->id)) {
-			echo json_encode(['status' => false, 'sent' => null, 'failed' => true, 'message' => JText::_( 'ACCESS_DENIED')]);
-	        die(JText::_( 'ACCESS_DENIED'));
-        }
+		$response = ['status' => false, 'sent' => null, 'failed' => true, 'message' => JText::_( 'ACCESS_DENIED')];
 
-		$jinput = JFactory::getApplication()->input;
-        $fnums = $jinput->post->getString('fnums');
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_em_user->id) || EmundusHelperAccess::asAccessAction(18, 'c', $this->_user->id)) {
+			$jinput = JFactory::getApplication()->input;
+			$fnums = $jinput->post->getString('fnums');
 
-        $email = $this->m_emails->sendExpertMail((array) $fnums);
+			if (!empty($fnums)) {
+				$email = $this->m_emails->sendExpertMail((array) $fnums);
+				$response = ['status' => true, 'sent' => $email['sent'], 'failed' => $email['failed'], 'message' => $email['message']];
+			} else {
+				$response = ['status' => false, 'sent' => null, 'failed' => true, 'message' => JText::_( 'MISSING_PARAMS')];
+			}
+		}
 
-        echo json_encode(['status' => true, 'sent' => $email['sent'], 'failed' => $email['failed'], 'message' => $email['message']]);
+        echo json_encode($response);
         exit;
     }
 

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -110,7 +110,9 @@ defined('_JEXEC') or die('Restricted access');
 ?>
 			</th>
 <?php
+	$colspan = 2;
 	if(hikashop_level(2) && !empty($this->fields['product'])) {
+		$colspan += count($this->fields['product']);
 		foreach($this->fields['product'] as $field) {
 ?>
 			<th class="hikashop_cart_product_<?php echo $field->field_namekey; ?>"><?php echo $this->fieldClass->getFieldName($field); ?></th>
@@ -125,7 +127,7 @@ defined('_JEXEC') or die('Restricted access');
 	</thead>
 	<tfoot>
 		<tr>
-			<td colspan="<?php echo (2 + count($this->fields['product'])); ?>" style="text-align: right;"><?php echo JText::_('HIKASHOP_TOTAL'); ?></td>
+			<td colspan="<?php echo $colspan; ?>" style="text-align: right;"><?php echo JText::_('HIKASHOP_TOTAL'); ?></td>
 			<td><?php
 				echo (int)@$this->cart->quantity->total;
 			?></td>

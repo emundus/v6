@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -128,6 +128,9 @@ class hikashopSpreadsheetHelper {
 	function writeNumber($row, $col, $value, $lastOne) {
 		if( $this->format == 2 ) {
 			 if($row == 0){
+				while(isset($this->header[$value])) {
+					$value.=' ';
+				}
 				$this->header[$value] = 'number';
 			} else {
 				if(strpos($value, '.') && $this->decimal_separator != '.')
@@ -160,12 +163,15 @@ class hikashopSpreadsheetHelper {
 			$value = '';
 		}
 		if( $this->format == 2 ) {
-			if($row == 0)
+			if($row == 0) {
+				while(isset($this->header[$value])) {
+					$value.=' ';
+				}
 				$this->header[$value] = 'string';
-			else
+			} else {
 				$this->data[$row-1][$col] = $value;
-		} else
-		if( $this->format == 1 ) {
+			}
+		} elseif( $this->format == 1 ) {
 			$this->currLine = $row;
 			$len = strlen($value);
 			$this->buffer .= pack("ssssss", 0x204, 8 + $len, $row, $col, 0x0, $len);

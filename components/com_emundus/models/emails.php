@@ -105,12 +105,12 @@ class EmundusModelEmails extends JModelList {
      * @since version v6
      */
     public function getEmailTrigger($step, $code, $to_applicant = 0, $to_current_user = null, $student = null) {
-        if(empty($step) || empty($code)){
+        if(!isset($step) || empty($code)){
             return [];
         }
 
         $query = $this->_db->getQuery(true);
-        $query->select('eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id, et.Template, GROUP_CONCAT(ert.tags) as tags, GROUP_CONCAT(erca.candidate_attachment) as attachments, GROUP_CONCAT(erla.letter_attachment) as letter_attachment')
+        $query->select('eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id, et.Template, GROUP_CONCAT(ert.tags) as tags, GROUP_CONCAT(erca.candidate_attachment) as attachments, GROUP_CONCAT(err1.receivers) as cc, GROUP_CONCAT(err2.receivers) as bcc')
             ->from($this->_db->quoteName('#__emundus_setup_emails_trigger', 'eset'))
             ->leftJoin($this->_db->quoteName('#__emundus_setup_emails','ese').' ON '.$this->_db->quoteName('ese.id').' = '.$this->_db->quoteName('eset.email_id'))
             ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_programme_id','eserp').' ON '.$this->_db->quoteName('eserp.parent_id').' = '.$this->_db->quoteName('eset.id'))
@@ -122,6 +122,8 @@ class EmundusModelEmails extends JModelList {
             ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_tags','ert').' ON '.$this->_db->quoteName('ert.parent_id').' = '.$this->_db->quoteName('eset.email_id'))
             ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment','erca').' ON '.$this->_db->quoteName('erca.parent_id').' = '.$this->_db->quoteName('eset.email_id'))
             ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_letter_attachment','erla').' ON '.$this->_db->quoteName('erla.parent_id').' = '.$this->_db->quoteName('eset.email_id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers','err1').' ON '.$this->_db->quoteName('err1.parent_id').' = '.$this->_db->quoteName('eset.email_id').' AND '.$this->_db->quoteName('err1.type').' = '.$this->_db->quote('receiver_cc_email'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers','err2').' ON '.$this->_db->quoteName('err2.parent_id').' = '.$this->_db->quoteName('eset.email_id').' AND '.$this->_db->quoteName('err2.type').' = '.$this->_db->quote('receiver_bcc_email'))
             ->where($this->_db->quoteName('eset.step').' = '.$this->_db->quote($step))
             ->andWhere($this->_db->quoteName('eset.to_applicant').' IN ('.$to_applicant .')');
         if(!is_null($to_current_user)) {
@@ -173,6 +175,8 @@ class EmundusModelEmails extends JModelList {
 
                 $emails_tmpl[$trigger->id][$trigger->code]['to']['to_applicant'] = $trigger->to_applicant;
                 $emails_tmpl[$trigger->id][$trigger->code]['to']['to_current_user'] = $trigger->to_current_user;
+                $emails_tmpl[$trigger->id][$trigger->code]['to']['cc'] = $trigger->cc;
+                $emails_tmpl[$trigger->id][$trigger->code]['to']['bcc'] = $trigger->bcc;
             }
 
             // generate list of default recipient email + name
@@ -920,11 +924,15 @@ class EmundusModelEmails extends JModelList {
         $mail_type = $jinput->get('mail_type', null, 'CMD');
 
         if ($fnum != null) {
-            $student_id = (int)substr($fnum, -7);
-            $campaign_id = (int)substr($fnum, 14, 7);
+            require_once (JPATH_ROOT . '/components/com_emundus/models/files.php');
+            $m_files = new EmundusModelFiles();
+            $fnum_infos = $m_files->getFnumInfos($fnum);
+
+            $student_id = $fnum_infos['applicant_id'];
+            $campaign_id = $fnum_infos['campaign_id'];
         } else {
-            $student_id = $jinput->get('student_id', null, 'INT');
-            $campaign_id = $jinput->get('campaign_id', null, 'INT');
+            $student_id = $jinput->getInt('student_id', null);
+            $campaign_id = $jinput->getInt('campaign_id', null);
         }
 
         $student = JFactory::getUser($student_id);
@@ -962,11 +970,10 @@ class EmundusModelEmails extends JModelList {
             ];
             $this->logEmail($message);
 
-        } elseif ($type == "expert") {
+        } elseif ($type == 'expert') {
 
             require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-            include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
-
+            include_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
             $eMConfig   = JComponentHelper::getParams('com_emundus');
             $formid     = json_decode($eMConfig->get('expert_fabrikformid', '{"accepted":169, "refused":328}'));
             $documentid = $eMConfig->get('expert_document_id', '36');
@@ -978,11 +985,7 @@ class EmundusModelEmails extends JModelList {
             $mail_from      = $jinput->get('mail_from', null, 'STRING');
 			$mail_to		= $jinput->get('mail_to', null, 'STRING');
 			$mail_body 		= $jinput->get('mail_body', null, 'RAW');
-
-            $campaign = @EmundusHelperfilters::getCampaignByID($campaign_id);
-
             $tags = $this->setTags($this->_em_user->id, null, null, '', $mail_from_name.$mail_from.$mail_to);
-
             $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
             $mail_from      = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
             $mail_to = explode(',', $mail_to);
@@ -991,6 +994,7 @@ class EmundusModelEmails extends JModelList {
             //
             // Replacement
             //
+            $campaign = @EmundusHelperfilters::getCampaignByID($campaign_id);
             $post = [
                 'TRAINING_PROGRAMME'    => $campaign['label'],
                 'CAMPAIGN_START'        => $campaign['start_date'],
@@ -1017,6 +1021,7 @@ class EmundusModelEmails extends JModelList {
             $failed = array();
             $print_message = '';
 
+            $query = $this->_db->getQuery(true);
             foreach ($mail_to as $m_to) {
 
                 $key1 = md5($this->rand_string(20).time());
@@ -1024,10 +1029,17 @@ class EmundusModelEmails extends JModelList {
 
                 // 2. MAJ de la table emundus_files_request
                 $attachment_id = $documentid; // document avec clause de confidentialité
-                $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, campaign_id, email, fnum)
-                            VALUES (NOW(), '.$student_id.', "'.$key1.'", "'.$attachment_id.'", '.$campaign_id.', '.$this->_db->quote($m_to).', '.$this->_db->quote($fnum).')';
-                $this->_db->setQuery($query);
-                $this->_db->query();
+                $query->clear();
+                $query->insert('#__emundus_files_request')
+                    ->columns('time_date, student_id, keyid, attachment_id, campaign_id, email, fnum')
+                    ->values( $this->_db->quote(gmdate('Y-m-d H:i:s')) . ', '.$student_id.', "'.$key1.'", "'.$attachment_id.'", '.$campaign_id.', '.$this->_db->quote($m_to).', '.$this->_db->quote($fnum));
+
+                try {
+                    $this->_db->setQuery($query);
+                    $this->_db->query();
+                } catch (Exception $e) {
+                   JLog::add('Error trying to insert emundus files request (fnum ' . $fnum . ') : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                }
 
                 // 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
                 $link_accept = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid->accepted.'&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id;
@@ -1126,9 +1138,6 @@ class EmundusModelEmails extends JModelList {
 
                 $m_application = new EmundusModelApplication;
                 $m_application->addComment($row);
-
-                $key1 = "";
-
             }
 
             // delete attached files
@@ -1169,247 +1178,261 @@ class EmundusModelEmails extends JModelList {
      * @since version v6
      */
     public function sendExpertMail(array $fnums) : array {
-
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-
-        $h_filters = new EmundusHelperFilters();
-        $m_files = new EmundusModelFiles();
-
-        JLog::addLogger(['text_file' => 'com_emundus.inviteExpert.error.php'], JLog::ERROR, 'com_emundus');
-
-        $eMConfig = JComponentHelper::getParams('com_emundus');
-        $formid = json_decode($eMConfig->get('expert_fabrikformid', '{"accepted":169, "refused":328}'));
-        $documentid = $eMConfig->get('expert_document_id', '36');
-
-        $app = JFactory::getApplication();
-        $email_from_sys = $app->getCfg('mailfrom');
-        $jinput = $app->input;
-        $mail_subject = $jinput->post->getString('mail_subject');
-        $mail_from_name = $jinput->post->getString('mail_from_name');
-        $mail_from = $jinput->post->getRaw('mail_from');
-
-        // We are using the first fnum for things like setting tags and getting campaign info.
-        // This means that we should NOT PUT TAGS RELATING TO PERSONAL INFO IN THE EMAIL.
-        $example_fnum = $fnums[0];
-        $campaign_id = (int)substr($example_fnum, 14, 7);
-        $campaign = $h_filters->getCampaignByID($campaign_id);
-        $example_user_id = (int)substr($example_fnum, -7);
-        $example_user = JFactory::getUser($example_user_id);
-
-        $tags = $this->setTags($this->_em_user->id);
-
-        $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
-        $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
-
-        $mail_to = $jinput->post->getRaw('mail_to');
-
-        $mail_body = $this->setBody($example_user, $jinput->post->getRaw('mail_body'));
-
-        // Build an HTML list to stick in the email body.
-        $fnums_infos = $m_files->getFnumsInfos($fnums);
-        $fnums_html = '<ul>';
-        foreach ($fnums_infos as $fnum) {
-            $fnums_html .= '<li>'.$fnum['name'].' ('.$fnum['fnum'].')</li>';
-        }
-        $fnums_html .= '</ul>';
-
-        // Replacement
-        $post = [
-            'TRAINING_PROGRAMME'    => $campaign['label'],
-            'CAMPAIGN_START'        => $campaign['start_date'],
-            'CAMPAIGN_END'          => $campaign['end_date'],
-            'EVAL_DEADLINE'         => date("d/M/Y", mktime(0, 0, 0, date("m")+2, date("d"), date("Y"))),
-            'FNUMS'                 => $fnums_html
-        ];
-        $tags = $this->setTags($example_user_id, $post, $example_fnum);
-        $mail_body = preg_replace($tags['patterns'], $tags['replacements'], $mail_body);
-
-        // Tags from Fabrik ID
-        $element_ids = $this->getFabrikElementIDs($mail_body);
-        if (count(@$element_ids[0]) > 0) {
-            $element_values = $this->getFabrikElementValues($example_fnum, $element_ids[1]);
-        }
-
-        $mail_attachments = $jinput->post->getString('mail_attachments');
-        $delete_attachment = $jinput->post->getInt('delete_attachment');
-
-        if (!empty($mail_attachments)) {
-            $mail_attachments = explode(',', $mail_attachments);
-        }
-
-        $sent = array();
-        $failed = array();
+        $sent = [];
+        $failed = [];
         $print_message = '';
 
-        foreach ($mail_to as $m_to) {
+        if (!empty($fnums)) {
+            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
+            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
-            $key1 = md5($this->rand_string(20).time());
-            $m_to = trim($m_to);
+            $h_filters = new EmundusHelperFilters();
+            $m_files = new EmundusModelFiles();
 
-            // 2. MAJ de la table emundus_files_request
-            $attachment_id = $documentid; // document avec clause de confidentialité
+            JLog::addLogger(['text_file' => 'com_emundus.inviteExpert.error.php'], JLog::ALL, 'com_emundus');
 
-            // Build multiline insert, 1 key can accept for multiple files.
-            $query = $this->_db->getQuery(true);
-            $query->insert($this->_db->quoteName('#__emundus_files_request'))
-                ->columns($this->_db->quoteName(['time_date', 'student_id', 'keyid', 'attachment_id', 'campaign_id', 'email', 'fnum']));
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $formid = json_decode($eMConfig->get('expert_fabrikformid', '{"accepted":169, "refused":328}'));
+            $documentid = $eMConfig->get('expert_document_id', '36');
 
-            foreach ($fnums_infos as $fnum_info) {
-                $query->values('NOW(), '.$fnum_info['applicant_id'].', "'.$key1.'", "'.$attachment_id.'", '.$fnum_info['campaign_id'].', '.$this->_db->quote($m_to).', '.$this->_db->quote($fnum_info['fnum']));
-            }
+            $app = JFactory::getApplication();
+            $email_from_sys = $app->getCfg('mailfrom');
+            $jinput = $app->input;
+            $mail_subject = $jinput->post->getString('mail_subject');
+            $mail_from_name = $jinput->post->getString('mail_from_name');
+            $mail_from = $jinput->post->getRaw('mail_from');
 
-            $this->_db->setQuery($query);
-            try {
-                $this->_db->execute();
-            } catch (Exception $e) {
-                $failed[] = $m_to;
-                $print_message .= '<hr>Error inviting expert '.$m_to;
-                JLog::add('Error inserting file requests for expert invitations : '.$e->getMessage() . ' with query : ' . $query->__toString(), JLog::ERROR, 'com_emundus');
-                continue;
-            }
+            // We are using the first fnum for things like setting tags and getting campaign info.
+            // ! This means that we should NOT PUT TAGS RELATING TO PERSONAL INFO IN THE EMAIL.
+            $example_fnum = $fnums[0];
+            $campaign_id = (int)substr($example_fnum, 14, 7);
+            $campaign = $h_filters->getCampaignByID($campaign_id);
+            $example_user_id = (int)substr($example_fnum, -7);
+            $example_user = JFactory::getUser($example_user_id);
+            $tags = $this->setTags($this->_em_user->id);
 
-            $this->_db->setQuery('show tables');
-            $existingTables = $this->_db->loadColumn();
-            if (in_array('jos_emundus_files_request_1614_repeat', $existingTables)) {
-                $parent_id = 0;
-                $query = $this->_db->getQuery(true);
+            $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
+            $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
 
+            $mail_to = $jinput->post->getRaw('mail_to');
+
+            if (!empty($mail_to)) {
+                $mail_body = $this->setBody($example_user, $jinput->post->getRaw('mail_body'));
+
+                // Build an HTML list to stick in the email body.
+                $fnums_infos = $m_files->getFnumsInfos($fnums);
+                $fnums_html = '<ul>';
                 foreach ($fnums_infos as $fnum) {
-                    $query->clear()
-                        ->select($this->_db->quoteName(['id', 'fnum', 'student_id']))
-                        ->from($this->_db->quoteName('#__emundus_files_request'))
-                        ->where($this->_db->quoteName('email').' LIKE '.$this->_db->Quote($m_to) . ' AND ' . $this->_db->quoteName('fnum').' LIKE '.$this->_db->Quote($fnum['fnum']));
-                    $this->_db->setQuery($query);
-                    $files_request = $this->_db->loadObject();
+                    $fnums_html .= '<li>'.$fnum['name'].' ('.$fnum['fnum'].')</li>';
+                }
+                $fnums_html .= '</ul>';
 
-                    if(empty($parent_id)){
-                        $parent_id = $files_request->id;
+                // Replacement
+                $post = [
+                    'TRAINING_PROGRAMME'    => $campaign['label'],
+                    'CAMPAIGN_START'        => $campaign['start_date'],
+                    'CAMPAIGN_END'          => $campaign['end_date'],
+                    'EVAL_DEADLINE'         => date("d/M/Y", mktime(0, 0, 0, date("m")+2, date("d"), date("Y"))),
+                    'FNUMS'                 => $fnums_html
+                ];
+                $tags = $this->setTags($example_user_id, $post, $example_fnum);
+                $mail_body = preg_replace($tags['patterns'], $tags['replacements'], $mail_body);
+
+                // Tags from Fabrik ID
+                $element_ids = $this->getFabrikElementIDs($mail_body);
+                if (count(@$element_ids[0]) > 0) {
+                    $element_values = $this->getFabrikElementValues($example_fnum, $element_ids[1]);
+                }
+
+                $mail_attachments = $jinput->post->getString('mail_attachments');
+                $delete_attachment = $jinput->post->getInt('delete_attachment');
+
+                if (!empty($mail_attachments)) {
+                    $mail_attachments = explode(',', $mail_attachments);
+                }
+
+                $sent = array();
+                $failed = array();
+                $print_message = '';
+
+                foreach ($mail_to as $m_to) {
+                    $key1 = md5($this->rand_string(20).time());
+                    $m_to = trim($m_to);
+
+
+                    // 2. MAJ de la table emundus_files_request
+                    $attachment_id = $documentid; // document avec clause de confidentialité
+
+                    // Build multiline insert, 1 key can accept for multiple files.
+                    $query = $this->_db->getQuery(true);
+                    $query->insert($this->_db->quoteName('#__emundus_files_request'))
+                        ->columns($this->_db->quoteName(['time_date', 'student_id', 'keyid', 'attachment_id', 'campaign_id', 'email', 'fnum']));
+
+                    foreach ($fnums_infos as $fnum_info) {
+                        $query->values('NOW(), '.$fnum_info['applicant_id'].', "'.$key1.'", "'.$attachment_id.'", '.$fnum_info['campaign_id'].', '.$this->_db->quote($m_to).', '.$this->_db->quote($fnum_info['fnum']));
                     }
 
-                    $query->clear()
-                        ->select($this->_db->quoteName('name'))
-                        ->from($this->_db->quoteName('#__users'))
-                        ->where($this->_db->quoteName('id').' = ' . $files_request->student_id);
                     $this->_db->setQuery($query);
-                    $student_name = $this->_db->loadResult();
-
-                    $query->clear()
-                        ->insert($this->_db->quoteName('#__emundus_files_request_1614_repeat'))
-                        ->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($parent_id))
-                        ->set($this->_db->quoteName('nom_candidat_expertise') . ' = ' . $this->_db->quote($student_name))
-                        ->set($this->_db->quoteName('fnum_expertise') .'=' . $this->_db->quote($fnum['fnum']));
-                    $this->_db->setQuery($query);
-                    $this->_db->execute();
-                }
-            }
-
-            // 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
-            $student_id = ''; // TODO: student id was not defined before, don't knwo why
-            $link_accept = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid->accepted.'&keyid='.$key1.'&cid='.$campaign_id;
-            $link_refuse = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid->refused.'&keyid='.$key1.'&cid='.$campaign_id.'&usekey=keyid&rowid='.$key1;
-            $link_accept_noform = 'index.php?option=com_fabrik&c=form&view=form&keyid='.$key1.'&sid='.$fnum_info['applicant_id'].'&email='.$m_to.'&cid='.$campaign_id;
-            $link_refuse_noform = 'index.php?option=com_fabrik&c=form&view=form&keyid='.$key1.'&sid='.$fnum_info['applicant_id'].'&email='.$m_to.'&cid='.$campaign_id.'&usekey=keyid&rowid='.$key1;
-
-            $post = array(
-                'EXPERT_ACCEPT_LINK'    => JURI::base().$link_accept,
-                'EXPERT_REFUSE_LINK'    => JURI::base().$link_refuse,
-                'EXPERT_ACCEPT_LINK_RELATIVE'    => $link_accept,
-                'EXPERT_REFUSE_LINK_RELATIVE'    => $link_refuse,
-                'EXPERT_ACCEPT_LINK_NOFORM'    => JURI::base().$link_accept_noform,
-                'EXPERT_REFUSE_LINK_NOFORM'    => JURI::base().$link_refuse_noform,
-                'EXPERT_ACCEPT_LINK_RELATIVE_NOFORM'    => $link_accept_noform,
-                'EXPERT_REFUSE_LINK_RELATIVE_NOFORM'    => $link_refuse_noform
-            );
-
-            $tags = $this->setTags($example_user_id, $post, $example_fnum);
-
-            $body = preg_replace($tags['patterns'], $tags['replacements'], $mail_body);
-            $body = $this->setTagsFabrik($body, [$example_fnum]);
-
-            // If the email sender has the same domain as the system sender address.
-            if (!empty($mail_from) && substr(strrchr($mail_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
-                $mail_from_address = $mail_from;
-            } else {
-                $mail_from_address = $email_from_sys;
-            }
-
-            // Set sender
-            $sender = [
-                $mail_from_address,
-                $mail_from_name
-            ];
-
-            $mailer = JFactory::getMailer();
-            $mailer->setSender($sender);
-            $mailer->addReplyTo($mail_from, $mail_from_name);
-            $mailer->addRecipient($m_to);
-            $mailer->setSubject($mail_subject);
-            $mailer->isHTML(true);
-            $mailer->Encoding = 'base64';
-            $mailer->setBody($body);
-            if (is_array($mail_attachments) && count($mail_attachments) > 0) {
-                foreach ($mail_attachments as $attachment) {
-                    $mailer->addAttachment($attachment);
-                }
-            }
-
-            $send = $mailer->Send();
-            if ($send !== true) {
-                $failed[] = $m_to;
-                $print_message .= '<hr>Error sending email: ' . $send;
-            } else {
-                $sent[] = $m_to;
-
-                $query = $this->_db->getQuery(true);
-                $query->select($this->_db->quoteName('id'))
-                    ->from($this->_db->quoteName('#__users'))
-                    ->where($this->_db->quoteName('email').' LIKE '.$this->_db->Quote($m_to));
-                $this->_db->setQuery($query);
-
-                try {
-                    $user_id_to = $this->_db->loadResult();
-
-                    if ($user_id_to > 0) {
-                        $message = [
-                            'user_id_from'  => $this->_em_user->id,
-                            'user_id_to'    => $user_id_to,
-                            'subject'       => $mail_subject,
-                            'message'       => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$m_to.'</i><br>'.$body
-                        ];
-                        $this->logEmail($message);
+                    try {
+                        $this->_db->execute();
+                    } catch (Exception $e) {
+                        $failed[] = $m_to;
+                        $print_message .= '<hr>Error inviting expert '.$m_to;
+                        JLog::add('Error inserting file requests for expert invitations ' . $m_to . ' : '.$e->getMessage() . ' with query : ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+                        continue;
                     }
-                } catch (Exception $e) {
-                    JLog::add('Could not get user by email : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+
+                    $this->_db->setQuery('show tables');
+                    $existingTables = $this->_db->loadColumn();
+                    if (in_array('jos_emundus_files_request_1614_repeat', $existingTables)) {
+                        $parent_id = 0;
+
+                        foreach ($fnums_infos as $fnum) {
+                            try {
+                                $query->clear()
+                                    ->select($this->_db->quoteName(['id', 'fnum', 'student_id']))
+                                    ->from($this->_db->quoteName('#__emundus_files_request'))
+                                    ->where($this->_db->quoteName('email').' LIKE '.$this->_db->Quote($m_to) . ' AND ' . $this->_db->quoteName('fnum').' LIKE '.$this->_db->Quote($fnum['fnum']));
+                                $this->_db->setQuery($query);
+                                $files_request = $this->_db->loadObject();
+
+                                if(empty($parent_id)){
+                                    $parent_id = $files_request->id;
+                                }
+
+                                $query->clear()
+                                    ->select($this->_db->quoteName('name'))
+                                    ->from($this->_db->quoteName('#__users'))
+                                    ->where($this->_db->quoteName('id').' = ' . $files_request->student_id);
+                                $this->_db->setQuery($query);
+                                $student_name = $this->_db->loadResult();
+
+                                $query->clear()
+                                    ->insert($this->_db->quoteName('#__emundus_files_request_1614_repeat'))
+                                    ->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($parent_id))
+                                    ->set($this->_db->quoteName('nom_candidat_expertise') . ' = ' . $this->_db->quote($student_name))
+                                    ->set($this->_db->quoteName('fnum_expertise') .'=' . $this->_db->quote($fnum['fnum']));
+                                $this->_db->setQuery($query);
+                                $this->_db->execute();
+                            } catch (Exception $e) {
+                                $failed[] = $m_to . '  ' . $fnum['fnum'];
+                                $print_message .= '<hr>Error associating expert '.$m_to . ' to fnum ' . $fnum['fnum'];
+                                JLog::add('Error inserting file requests for expert invitations ' . $m_to . ' and fnum ' .  $fnum['fnum'] . ' : '.$e->getMessage() . ' with query : ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+                                continue;
+                            }
+                        }
+                    }
+
+                    // 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
+                    $link_accept = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid->accepted.'&keyid='.$key1.'&cid='.$campaign_id;
+                    $link_refuse = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid->refused.'&keyid='.$key1.'&cid='.$campaign_id.'&usekey=keyid&rowid='.$key1;
+                    $link_accept_noform = 'index.php?option=com_fabrik&c=form&view=form&keyid='.$key1.'&sid='.$fnum_info['applicant_id'].'&email='.$m_to.'&cid='.$campaign_id;
+                    $link_refuse_noform = 'index.php?option=com_fabrik&c=form&view=form&keyid='.$key1.'&sid='.$fnum_info['applicant_id'].'&email='.$m_to.'&cid='.$campaign_id.'&usekey=keyid&rowid='.$key1;
+
+                    $post = array(
+                        'EXPERT_ACCEPT_LINK'    => JURI::base().$link_accept,
+                        'EXPERT_REFUSE_LINK'    => JURI::base().$link_refuse,
+                        'EXPERT_ACCEPT_LINK_RELATIVE'    => $link_accept,
+                        'EXPERT_REFUSE_LINK_RELATIVE'    => $link_refuse,
+                        'EXPERT_ACCEPT_LINK_NOFORM'    => JURI::base().$link_accept_noform,
+                        'EXPERT_REFUSE_LINK_NOFORM'    => JURI::base().$link_refuse_noform,
+                        'EXPERT_ACCEPT_LINK_RELATIVE_NOFORM'    => $link_accept_noform,
+                        'EXPERT_REFUSE_LINK_RELATIVE_NOFORM'    => $link_refuse_noform
+                    );
+
+                    $tags = $this->setTags($example_user_id, $post, $example_fnum);
+
+                    $body = preg_replace($tags['patterns'], $tags['replacements'], $mail_body);
+                    $body = $this->setTagsFabrik($body, [$example_fnum]);
+
+                    // If the email sender has the same domain as the system sender address.
+                    if (!empty($mail_from) && substr(strrchr($mail_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
+                        $mail_from_address = $mail_from;
+                    } else {
+                        $mail_from_address = $email_from_sys;
+                    }
+
+                    // Set sender
+                    $sender = [
+                        $mail_from_address,
+                        $mail_from_name
+                    ];
+
+                    $mailer = JFactory::getMailer();
+                    $mailer->setSender($sender);
+                    $mailer->addReplyTo($mail_from, $mail_from_name);
+                    $mailer->addRecipient($m_to);
+                    $mailer->setSubject($mail_subject);
+                    $mailer->isHTML(true);
+                    $mailer->Encoding = 'base64';
+                    $mailer->setBody($body);
+                    if (is_array($mail_attachments) && count($mail_attachments) > 0) {
+                        foreach ($mail_attachments as $attachment) {
+                            $mailer->addAttachment($attachment);
+                        }
+                    }
+
+                    $send = $mailer->Send();
+                    if ($send !== true) {
+                        $failed[] = $m_to;
+                        $print_message .= '<hr>Error sending email: ' . $send;
+                    } else {
+                        $sent[] = $m_to;
+
+                        $query = $this->_db->getQuery(true);
+                        $query->select($this->_db->quoteName('id'))
+                            ->from($this->_db->quoteName('#__users'))
+                            ->where($this->_db->quoteName('email').' LIKE '.$this->_db->Quote($m_to));
+                        $this->_db->setQuery($query);
+
+                        try {
+                            $user_id_to = $this->_db->loadResult();
+
+                            if ($user_id_to > 0) {
+                                $message = [
+                                    'user_id_from'  => $this->_em_user->id,
+                                    'user_id_to'    => $user_id_to,
+                                    'subject'       => $mail_subject,
+                                    'message'       => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$m_to.'</i><br>'.$body
+                                ];
+                                $this->logEmail($message);
+                            }
+                        } catch (Exception $e) {
+                            JLog::add('Could not get user by email : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                        }
+
+                        $print_message .= '<hr>'.JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$m_to;
+                        $print_message .= '<hr>'.JText::_('COM_EMUNDUS_EMAILS_SUBJECT').' : '.$mail_subject;
+                        $print_message .= '<hr>'.$body;
+                    }
                 }
+                unset($key1);
 
-                $print_message .= '<hr>'.JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$m_to;
-                $print_message .= '<hr>'.JText::_('COM_EMUNDUS_EMAILS_SUBJECT').' : '.$mail_subject;
-                $print_message .= '<hr>'.$body;
-            }
-        }
-        unset($key1);
+                // delete attached files
+                if (is_array($mail_attachments) && count($mail_attachments) > 0 && $delete_attachment == 1) {
+                    foreach ($mail_attachments as $attachment) {
 
-        // delete attached files
-        if (is_array($mail_attachments) && count($mail_attachments) > 0 && $delete_attachment == 1) {
-            foreach ($mail_attachments as $attachment) {
+                        $filename = explode(DS, $attachment);
+                        // TODO: Make documents contain some sort of fnum information because deleting by raw filename seems a bit scary.
+                        $query = $this->_db->getQuery(true);
+                        $query->delete($this->_db->quoteName('#__emundus_uploads'))
+                            ->where($this->_db->quoteName('filename').' LIKE '.$this->_db->quote($filename[count($filename)-1]).' AND '.$this->_db->quoteName('user_id').' = '.$filename[count($filename)-2]);
+                        $this->_db->setQuery($query);
 
-                $filename = explode(DS, $attachment);
-                // TODO: Make documents contain some sort of fnum information because deleting by raw filename seems a bit scary.
-                $query = $this->_db->getQuery(true);
-                $query->delete($this->_db->quoteName('#__emundus_uploads'))
-                    ->where($this->_db->quoteName('filename').' LIKE '.$this->_db->quote($filename[count($filename)-1]).' AND '.$this->_db->quoteName('user_id').' = '.$filename[count($filename)-2]);
-                $this->_db->setQuery($query);
+                        try {
+                            $this->_db->execute();
+                        } catch (Exception $e) {
+                            JLog::add('Could not delete file : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                            continue;
+                        }
 
-                try {
-                    $this->_db->execute();
-                } catch (Exception $e) {
-                    JLog::add('Could not delete file : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-                    continue;
+                        @unlink(EMUNDUS_PATH_ABS.$filename[count($filename)-2].DS.$filename[count($filename)-1]);
+
+                    }
+                } else {
+                    JLog::add(JFactory::getUser()->id . ' Function sendExpertMail has been called but mail_to has been found empty. fnums => (' . json_encode($fnums) . ')', JLog::WARNING, 'com_emundus');
+                    $print_message = JText::_('NO_MAIL_TO_SEND');
                 }
-
-                @unlink(EMUNDUS_PATH_ABS.$filename[count($filename)-2].DS.$filename[count($filename)-1]);
-
             }
         }
 
@@ -2724,6 +2747,46 @@ class EmundusModelEmails extends JModelList {
         foreach($array_reduce as $value) { foreach((array)$value as $data) { $result[] = $data; } }
 
         return array_unique($result);
+    }
+    
+    public function checkUnpublishedTags($content)
+    {
+        $tags = [];
+
+        require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'helpers'.DS.'tags.php');
+        $h_tags = new EmundusHelperTags();
+
+        $db = JFactory::getDBO();
+
+        if (!empty($content))
+        {
+            $query = $db->getQuery(true);
+            $query->select('tag')
+                ->from($db->quoteName('#__emundus_setup_tags', 't'))
+                ->where($db->quoteName('t.published') . ' = 0');
+
+            $tags_content = $h_tags->getVariables($content, 'SQUARE');
+
+            if( !empty($tags_content) )
+            {
+                $tags_content = array_unique($tags_content);
+                $query->andWhere('t.tag IN ("' . implode('","', $tags_content) . '")');
+
+                try
+                {
+                    $db->setQuery($query);
+                    $tags = $db->loadColumn();
+                }
+                catch (Exception $e)
+                {
+                    JLog::add('Error checking unpublished tags model/emails/setTags at query : ' . $query->__toString(), JLog::ERROR, 'com_emundus.email');
+
+                    return array('patterns' => array(), 'replacements' => array());
+                }
+            }
+        }
+
+        return $tags;
     }
 }
 ?>
