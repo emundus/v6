@@ -35,10 +35,12 @@
 
       <!-- SUBFORM -->
       <div v-else-if="param.type === 'subform'" class="mainSubFormDiv">
-        <button @click="addRow(param.name)" :key="param.id + '-addButton' " class="addButton">{{translate('COM_EMUNDUS_ADD')}}</button>
         <div v-for="(element_sub_parameters, element_sub_name) in element.params[param.name]" :key="element.id + '-' + param.name" class="subform">
+          <div :key="element_sub_name + '-divSpans'" class="divSpans">
+            <span :key="element_sub_name + '-addButton'" class="material-icons em-pointer" @click="addRow(param.name)">add</span>
+            <span :key="element_sub_name + '-deleteButton'" class="material-icons em-pointer" @click="deleteRow(param.name, element_sub_name)">remove</span>
+          </div>
           <FormBuilderElementParams :key="element_sub_name" :element="{params:element_sub_parameters}" :databases="null" :params="param.subparams"/>
-          <button @click="deleteRow(param.name, element_sub_name)" :key="element_sub_name+ '-deleteButton'" class="deleteButton">{{translate('COM_EMUNDUS_THESIS_DELETE')}}</button>
         </div>
       </div>
 
@@ -261,10 +263,12 @@ export default {
       margin: auto;
       width: 90%;
     }
-    .deleteButton
-    {
-      width: max-content;
 
+    .divSpans
+    {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
     }
   }
 }
