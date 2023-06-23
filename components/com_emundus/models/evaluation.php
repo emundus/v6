@@ -91,13 +91,13 @@ class EmundusModelEvaluation extends JModelList {
         $hidden = 0;
         $elements_eval = $this->getEvaluationElements($show_in_list_summary, $hidden);
         if (is_array($elements_eval) && count($elements_eval)) {
-            $this->elements_id .= implode(',', $elements_eval);
+            $this->elements_id .= ',' . implode(',', $elements_eval);
         }
 
         if ($session->has('adv_cols')) {
             $adv = $session->get('adv_cols');
             if (!empty($adv) && !is_null($adv)) {
-                $this->elements_id .= ','.implode(',', $adv);
+                $this->elements_id .= ',' . implode(',', $adv);
             }
         }
         $this->elements_values = explode(',', $menu_params->get('em_elements_values'));
