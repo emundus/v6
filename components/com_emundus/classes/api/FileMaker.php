@@ -913,6 +913,8 @@ class FileMaker
             unset($tuple["db_table"]);
             unset($tuple["recordId_emundus_element_name"]);
             unset($tuple["id"]);
+            unset($tuple["id"]);
+
             return $tuple;
         }, $array);
 
@@ -1013,6 +1015,32 @@ class FileMaker
         } catch (Exception $e) {
             JLog::add("[FILEMAKER] Failed to get table joins params for repeat group  $group_id " . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker');
         }
+    }
+
+    public function retrieveDatabaseJoinElementValue($dbtable, $column_where, $needed)
+    {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('*')
+            ->from($db->quoteName($dbtable))
+            ->where($db->quoteName($column_where) . "=" . $db->quote($needed));
+        $db->setQuery($query);
+
+        try {
+            $result = $db->loadObject();
+
+            return $result;
+        } catch (Exception $e) {
+
+            JLog::add("[FILEMAKER CRON] Failed to get database join  Element Value in  $dbtable " . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
+            return 0;
+        }
+    }
+
+    public function formatCheckBoxValues ($string){
+        $formattedString = str_replace(['<li>',' - '], '', $string);
+
+        return str_replace('</li>', "\r", $formattedString);
     }
 
 

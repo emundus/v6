@@ -318,28 +318,64 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
         } else {
 
-            // here we update file status and portal data information
-            $query->clear()
-                ->update($db->quoteName('#__emundus_campaign_candidature'))
-                ->set($db->quoteName('uuidConnect') . ' = ' . $db->quote($fieldData->uuidConnect))
-                ->where($db->quoteName('uuid') . "=" . $fieldData->uuid);
-            $db->setQuery($query);
 
-            try {
+            if ($checkIfFileNotAlreadyExist->uuidConnect !== $fieldData->uuidConnect) {
 
-                $db->execute();
-                $this->insertFileDataToEmundusTables($checkIfFileNotAlreadyExist->fnum, $singleFieldData, $mapped_columns, $user_id);
-                $m_files->updateState($checkIfFileNotAlreadyExist->fnum, $this->getParams()->get('mail_trigger_state', 3));
-                $m_message->sendEmail($checkIfFileNotAlreadyExist->fnum, $this->getParams()->get('mail_template', 83));
-                $filemaker->logActionIntoEmundusFileMakerlog(0,$checkIfFileNotAlreadyExist->fnum,$fieldData->uuid,$fieldData->uuidConnect,3,NULL,1,"layouts/zWEB_FORMULAIRES/_find","");
+                $admin_step = $this->getParams()->get('admin_step');
+                $mail_trigger_state = $this->getParams()->get('mail_trigger_state');
 
+                switch ($admin_step) {
 
-            } catch (Exception $e) {
-                $fnum = '';
-                $inserted = false;
+                    case 'PRE':
+                        $query->clear()
+                            ->update($db->quoteName('#__emundus_campaign_candidature'))
+                            ->set($db->quoteName('uuidConnect') . ' = ' . $db->quote($fieldData->uuidConnect))
+                            ->where($db->quoteName('uuid') . "=" . $db->quote($fieldData->uuid));
+                        $db->setQuery($query);
 
-                JLog::add("[FILEMAKER CRON] Failed to update file status $fnum - $user_id" . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
+                        try {
+                            $db->execute();
+                            $m_files->updateState($checkIfFileNotAlreadyExist->fnum, $this->getParams()->get('mail_trigger_state'));
+
+                        } catch (Exception $e) {
+                            $fnum = '';
+                            $inserted = false;
+
+                            JLog::add("[FILEMAKER CRON] Failed to update file status $fnum - $user_id" . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
+                        }
+                        break;
+
+                    case 'POST':
+
+                        $query->clear()
+                            ->update($db->quoteName('#__emundus_campaign_candidature'))
+                            ->set($db->quoteName('uuidConnect') . ' = ' . $db->quote($fieldData->uuidConnect))
+                            ->where($db->quoteName('uuid') . "=" . $db->quote($fieldData->uuid));
+                        $db->setQuery($query);
+
+                        try {
+
+                            $db->execute();
+
+                            if ($checkIfFileNotAlreadyExist->status === 1) {
+                                $this->insertFileDataToEmundusTables($checkIfFileNotAlreadyExist->fnum, $singleFieldData, $mapped_columns, $user_id);
+                                $m_message->sendEmail($checkIfFileNotAlreadyExist->fnum, $this->getParams()->get('mail_template', 83));
+                                $filemaker->logActionIntoEmundusFileMakerlog(0, $checkIfFileNotAlreadyExist->fnum, $fieldData->uuid, $fieldData->uuidConnect, 3, NULL, 1, "layouts/zWEB_FORMULAIRES/_find", "");
+                            }
+
+                            $m_files->updateState($checkIfFileNotAlreadyExist->fnum, $this->getParams()->get('mail_trigger_state'));
+
+                        } catch (Exception $e) {
+                            $fnum = '';
+                            $inserted = false;
+
+                            JLog::add("[FILEMAKER CRON] Failed to update file status $fnum - $user_id" . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
+                        }
+                        break;
+                }
             }
+
+
         }
 
     }
@@ -380,6 +416,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                         $fileMakerAttr = new stdClass();
                         $fileMakerAttr->name = $element_row->file_maker_attribute_name;
                         $fileMakerAttr->plugin = $element_row->plugin;
+                        $fileMakerAttr->params = $element_row->params;
                         $fileMakerAttr->id = $element_row->id;
                         $elements_columns_assoc_filemaker_attribute_names[] = $fileMakerAttr;
 
@@ -402,6 +439,29 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                             $date = DateTime::createFromFormat('m-d-Y', $dateString);
                             $date !== false ? $date_value = $date->format('Y-m-d') : $date_value = $dateString;
                             $elements_columns_value[] = !empty($date_value) ? $db->quote($date_value) : 'NULL';
+                            break;
+                        case 'radiobutton':
+                            $params = json_decode($val->params);
+                            $option_sub_labels = array_map(function ($data) {
+
+                                return JText::_($data);
+                            }, $params->sub_options->sub_labels);
+
+
+                            $index = array_search($fieldData[$val->name], $option_sub_labels, false);
+
+                            if ($index !== false) {
+                                if ($fieldData[$val->name] == 0 || $fieldData[$val->name] == 1) {
+                                    $elements_columns_value[] = $fieldData[$val->name];
+
+                                } else {
+                                    $elements_columns_value[] = JText::_($params->sub_options->$params->sub_options->sub_values[$index]);
+                                }
+                            } /*elseif (!empty($params->dropdown_populate)) {
+                                $elt = $value;
+                            } elseif (isset($params->multiple) && $params->multiple == 1) {
+                                $elt = "<ul><li>" . implode("</li><li>", json_decode(@$value)) . "</li></ul>";
+                            }*/
                             break;
 
                         default :
@@ -493,7 +553,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
 
                                         $query->clear();
-                                        $query->select('jfe.name,jfe.group_id,jfe.id,jfe.plugin,zfe.file_maker_attribute_name')
+                                        $query->select('jfe.name,jfe.group_id,jfe.id,jfe.plugin,jfe.params,zfe.file_maker_attribute_name')
                                             ->from($db->quoteName('jos_fabrik_elements', 'jfe'))
                                             ->leftJoin($this->getParams()->get('attribute_mapping_table_beetween_filemaker_emundus') . ' AS zfe ON zfe.file_maker_assoc_emundus_element = jfe.id')
                                             ->where('jfe.group_id =  ' . $group->id)
@@ -516,6 +576,31 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                                                         $date = DateTime::createFromFormat('m-d-Y', $dateString);
                                                         $date !== false ? $date_value = $date->format('Y-m-d') : $date_value = $dateString;
                                                         $arr_key_cal[] = array("" . $val->name . "" => $db->quote($date_value));
+                                                        break;
+
+                                                    case 'radiobutton':
+                                                        $params = json_decode($val->params);
+                                                        $option_sub_labels = array_map(function ($data) {
+
+                                                            return JText::_($data);
+                                                        }, $params->sub_options->sub_labels);
+
+
+                                                        $index = array_search($fieldData[$key . "::" . $row_key], $option_sub_labels, false);
+
+                                                        if ($index !== false) {
+                                                            if ($fieldData[$key . "::" . $row_key] == 0 || $fieldData[$key . "::" . $row_key] == 1) {
+                                                                $arr_key_cal[] = array("" . $val->name . "" => $db->quote($fieldData[$key . "::" . $row_key]));
+
+                                                            } else {
+                                                                $arr_key_cal[] = array("" . $val->name . "" => $db->quote(JText::_($params->sub_options->$params->sub_options->sub_values[$index])));
+                                                                ;
+                                                            }
+                                                        } /*elseif (!empty($params->dropdown_populate)) {
+                                                            $elt = $value;
+                                                        } elseif (isset($params->multiple) && $params->multiple == 1) {
+                                                            $elt = "<ul><li>" . implode("</li><li>", json_decode(@$value)) . "</li></ul>";
+                                                        }*/
                                                         break;
 
                                                     default :
@@ -846,6 +931,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
      */
     public function process(&$data, &$listModel)
     {
+
 
         $mapped_columns = $this->retrieveMappingColumnsData();
 
