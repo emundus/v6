@@ -1221,11 +1221,8 @@ class EmundusModelsettings extends JModelList {
 					if ($h_cache->isEnabled()) {
 						$h_cache->set($cache_id, $lists);
 					}
-				} else {
-					error_log($query->__toString());
 				}
 			} catch (Exception $e) {
-				error_log($e->getMessage());
 				JLog::add('Error getting onboarding lists in model at query : '. $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 			}
 		} else {
