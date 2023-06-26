@@ -5490,10 +5490,6 @@ screen and (max-height: 769px) {
     row-gap: 8px;
   }
 
-  #g-navigation .g-container #header-c .moduletable .header-right a.btn.btn-danger:not(.btn-creer-compte) {
-    margin-bottom: 8px !important;
-  }
-
 }
 
 @media all and (min-width: 434px) and (max-width: 479px) {
@@ -5514,6 +5510,16 @@ screen and (max-height: 769px) {
 }
 
 @media all and (max-width: 479px) {
+
+  #g-navigation .g-container #header-c .moduletable .header-right {
+    flex-direction: column;
+    display: flex;
+
+    a.btn.btn-danger:not(.btn-creer-compte) {
+      margin-bottom: 8px !important;
+    }
+  }
+
 
   /* BIRTHDAY */
   .view-form:not(.com_emundus) .span12 form .fabrikGroup .row-fluid .fabrikElementContainer.control-group:not(.plg-display) .fabrikElement .fabrikSubElementContainer {
@@ -6430,6 +6436,7 @@ screen and (max-height: 769px) {
 }
 
 @media all and (max-width: 767px) {
+
   #g-navigation .g-container #header-c {
     justify-content: center;
   }
