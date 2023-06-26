@@ -863,8 +863,12 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 }
 
 .g-back-office-emundus-tableau .col-md-3.side-panel  {
-    overflow: auto;
     position: sticky;
+}
+
+.g-back-office-emundus-tableau .col-md-3.side-panel #em-files-filters {
+    overflow: auto;
+    background: #f8f8f8;
 }
 
 .g-back-office-emundus-tableau .col-md-9.main-panel {
