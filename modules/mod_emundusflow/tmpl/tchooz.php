@@ -17,7 +17,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
     }
     .mod_emundus_flow___print{
         height: 38px;
-        display: flex;
+        display: flex !important;
         align-items: center;
     }
     .btn-primary.mod_emundus_flow___print{
@@ -26,6 +26,12 @@ $now = $dateTime->format('Y-m-d H:i:s');
     .mod_emundus_flow___infos{
         flex-wrap: wrap;
         grid-gap: 24px;
+    }
+
+    .mod_emundus_flow___intro .btn.btn-primary {
+        font-size: 14px !important;
+        letter-spacing: normal !important;
+        line-height: normal !important;
     }
 
     .mod_emundus_flow___intro .em-h2{
