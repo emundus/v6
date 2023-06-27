@@ -1419,18 +1419,28 @@ body > .g-container {
     }
   }
 
-  form .dz-message {
-    height: 150px;
-    border: 1px dashed $neutral-500;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border-radius: 8px;
-    margin: 8px 0;
+  form {
+    .dz-preview {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-    span {
-      color: var(--neutral-800);
+    .dz-message {
+
+      height: 150px;
+      border: 1px dashed $neutral-500;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-radius: 8px;
+      margin: 8px 0;
+
+
+      span {
+        color: var(--neutral-800);
+      }
     }
   }
 
