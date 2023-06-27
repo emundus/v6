@@ -867,7 +867,6 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 }
 
 .g-back-office-emundus-tableau .col-md-3.side-panel #em-files-filters {
-    overflow: auto;
     background: #f8f8f8;
 }
 
@@ -1775,8 +1774,12 @@ thead th:hover {
     background-color: #f2dede !important;
 }
 
-.panel-info {
-    height: auto !important;
+.panel-body.em-containerFilter-body {
+    position: absolute;
+    overflow: auto;
+    width: 100%;
+    min-height: 79vh;
+    height: 79vh;
 }
 
 .em_attachs {
