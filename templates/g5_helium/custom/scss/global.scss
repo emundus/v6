@@ -5493,7 +5493,6 @@ screen and (max-height: 769px) {
 }
 
 @media all and (min-width: 434px) and (max-width: 479px) {
-
   .gantry #g-navigation,
   .gantry #g-navigation .g-container {
     height: auto !important;
@@ -5510,6 +5509,14 @@ screen and (max-height: 769px) {
 }
 
 @media all and (max-width: 479px) {
+
+  .view-checklist table form .dz-default.dz-message {
+    padding-right: 12px !important;
+  }
+
+  .view-form:not(.com_emundus) .span12 .page-header h1 {
+    hyphens: auto;
+  }
 
   #g-navigation .g-container #header-c .moduletable .header-right {
     flex-direction: column;
