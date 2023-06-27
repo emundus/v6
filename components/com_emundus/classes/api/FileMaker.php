@@ -620,8 +620,6 @@ class FileMaker
                         $mapping_data_row->groups[] = $group;
 
 
-
-
                         $mapping_data_row->join_from_table = $val->join_from_table;
                         $mapping_data_row->table_join = $val->table_join;
                         $mapping_data_row->table_join_key = $val->table_join_key;
@@ -680,7 +678,7 @@ class FileMaker
     }
 
 
-    public function preparePortalDataAndGenralLayoutBeforeSendToFileMaker($zweb_form_name, $mapped_columns, $fnum , $isPortalDataForm = true)
+    public function preparePortalDataAndGenralLayoutBeforeSendToFileMaker($zweb_form_name, $mapped_columns, $fnum, $isPortalDataForm = true)
     {
         //$file_maker_api = new FileMaker();
         try {
@@ -693,7 +691,6 @@ class FileMaker
 
 
         $zweb_forms_elements = $this->searchMappedElementsByFileMakerFormLabel($mapped_columns, $zweb_form_name);
-
 
 
         $m_application = new EmundusModelApplication();
@@ -711,7 +708,6 @@ class FileMaker
             $group_jointures_params = $this->retrieveJointureInformationOfRepeatGroup($zweb_forms_elements[0]->portal_data_emundus_group_id);
 
 
-
         }
 
 
@@ -723,7 +719,6 @@ class FileMaker
                 $matching_elements = array_values(array_filter($row->elements, function ($object) use ($searchValue) {
                     return $object->file_maker_attribute_name === $searchValue;
                 }));
-
 
 
                 if (!empty($matching_elements)) {
@@ -1001,7 +996,8 @@ class FileMaker
         }
     }
 
-    public function retrieveJointureInformationOfRepeatGroup($group_id){
+    public function retrieveJointureInformationOfRepeatGroup($group_id)
+    {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->clear();
@@ -1037,10 +1033,110 @@ class FileMaker
         }
     }
 
-    public function formatCheckBoxValues ($string){
-        $formattedString = str_replace(['<li>',' - '], '', $string);
+    public function formatCheckBoxValues($string)
+    {
+        $formattedString = str_replace(['<li>', ' - '], '', $string);
 
         return str_replace('</li>', "\r", $formattedString);
+    }
+
+    public function retrieveCountryReferentials(): void
+    {
+
+        $url = "layouts/zWEB_VALEURS_PAYS/_find";
+        $queryBody = ["query" => array([
+            "estActif" => 1,
+        ]),
+            "limit" => 500,
+        ];
+
+        $countries_list_response = $this->post($url, json_encode($queryBody));
+
+
+        if (!empty($countries_list_response->response)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            foreach (($countries_list_response->response)->data as $data) {
+                $query->clear();
+                $query->select('*')
+                    ->from($db->quoteName('data_country_institut_francais'))
+                    ->where($db->quoteName('uuid') . "=" . $db->quote(($data->fieldData)->uuid));
+                $db->setQuery($query);
+
+
+
+                try {
+                    $result = $db->loadObject();
+
+                    if(!empty($result)){
+                        $this->updateCountryReferentials($result->id,$data->fieldData);
+                    } else{
+
+                        $this->addCountryToReferential($data->fieldData);
+                    }
+
+                } catch (Exception $e) {
+
+                    JLog::add("[FILEMAKER CRON] Failed to check if already exist country in methode retrieveCountryReferentials   " . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
+
+                }
+
+
+            }
+
+        }
+
+    }
+
+    public function updateCountryReferentials($id, $data): void
+    {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query ->update($db->quoteName('data_country_institut_francais'))
+            ->set($db->quoteName('label_fr') . ' = ' . $db->quote($data->Libcog))
+            ->set($db->quoteName('label_en') . ' = ' . $db->quote(empty($data->LibcogAnglais) ? $data->Libcog : $data->LibcogAnglais))
+            ->set($db->quoteName('estActif') . ' = ' . $db->quote($data->EstActif))
+            ->set($db->quoteName('published') . ' = ' . $db->quote($data->EstActif))
+            ->where($db->quoteName('id') . "=" . $db->quote($id));
+
+        $db->setQuery($query);
+
+        try {
+
+            $db->execute();
+
+        } catch (Exception $e) {
+
+            JLog::add("[FILEMAKER CRON] Failed to update country in method updateCountryReferential  " . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
+
+        }
+    }
+
+    public function addCountryToReferential($data): void
+    {
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->clear();
+        $query->insert($db->quoteName('data_country_institut_francais'))
+            ->columns(['label_fr,label_en,uuid,estActif,published'])
+            ->values(implode(",", [$db->quote($data->Libcog), $db->quote(empty($data->LibcogAnglais) ? $data->Libcog : $data->LibcogAnglais), $db->quote($data->uuid), $db->quote($data->EstActif), $db->quote($data->EstActif)]));
+
+        $db->setQuery($query);
+
+        try {
+
+            $db->execute();
+
+
+        } catch (Exception $e) {
+
+            JLog::add("[FILEMAKER CRON] Failed to add country in method addCountryToReferential   " . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
+
+        }
     }
 
 

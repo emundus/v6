@@ -10,6 +10,7 @@ require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models'
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
 
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
+require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'fabrik.php');
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'users.php');
 
 
@@ -185,9 +186,9 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
             $fieldData = $file->fieldData;
 
 
-            if (!empty($fieldData->InterlocuteurIF) && !empty($fieldData->InterlocuteurIF_Email)) {
+            if (!empty($fieldData->{"zWEB_FORMULAIRES_PROGRAMMATIONS::web_emailContact"}) ) {
 
-                $user_id = $this->createUserIfNotExist($fieldData->InterlocuteurIF_Email, $fieldData->InterlocuteurIF);
+                $user_id = $this->createUserIfNotExist($fieldData->{"zWEB_FORMULAIRES_PROGRAMMATIONS::web_emailContact"}, "PORTEUR_PROJET_IF");
 
                 $this->createSingleFile($file, $user_id, $mappedColumns,$filemaker);
 
@@ -380,6 +381,48 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
     }
 
+    public function retrieveRecetteContributionIf($data) {
+        $dataContributionInstituFrancais = array_filter(($data)->{"zWEB_FORMULAIRES_RECETTES"}, function ($item) {
+            return !empty($item->{"zWEB_FORMULAIRES_RECETTES::EstContributionIF"});
+        });
+
+
+        $modifiedRecettes = array_map(function ($item) {
+            $newItem = (array) $item;
+            $intitule = $item->{"zWEB_FORMULAIRES_RECETTES::Intitule"};
+            $newKeyPrevisionel = str_replace([" ", ":", "-"], "", ucwords($intitule)) . "_Previsionnel";
+            $newItem[$newKeyPrevisionel] = $newItem["zWEB_FORMULAIRES_RECETTES::Montant_Previsionnel"];
+
+            $newKeyRealise = str_replace([" ", ":", "-"], "", ucwords($intitule)) . "_Realise";
+            $newItem[$newKeyRealise] = $newItem["zWEB_FORMULAIRES_RECETTES::Montant_Realise"];
+
+            $newKeyDetail = str_replace([" ", ":", "-"], "", ucwords($intitule)) . "_Detail";
+            $newItem[$newKeyDetail] = $newItem["zWEB_FORMULAIRES_RECETTES::Detail"];
+
+            $newKeyDetail = str_replace([" ", ":", "-"], "", ucwords($intitule)) . "_RecordId";
+            $newItem[$newKeyDetail] = $newItem["recordId"];
+
+            unset($newItem["zWEB_FORMULAIRES_RECETTES::Intitule"]);
+            unset($newItem["zWEB_FORMULAIRES_RECETTES::Ordre"]);
+            unset($newItem["zWEB_FORMULAIRES_RECETTES::Montant_Previsionnel"]);
+            unset($newItem["zWEB_FORMULAIRES_RECETTES::uuidPrgRecettes"]);
+            unset($newItem["zWEB_FORMULAIRES_RECETTES::Montant_Realise"]);
+            unset($newItem["zWEB_FORMULAIRES_RECETTES::Detail"]);
+            unset($newItem["zWEB_FORMULAIRES_RECETTES::EstContributionIF"]);
+
+            unset($newItem["recordId"]);
+            unset($newItem["modId"]);
+
+
+
+            return $newItem;
+        }, $dataContributionInstituFrancais);
+
+        $mergedRecettes = array_merge(...$modifiedRecettes);
+
+        return $mergedRecettes;
+    }
+
     public function insertFileDataToEmundusTables($fnum, $singleFieldData, $mapped_columns, $user_id)
     {
         $this->insertGlobalLayoutFormData($fnum, $singleFieldData, $mapped_columns, $user_id);
@@ -392,6 +435,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
+        $fabik_helper = new EmundusHelperFabrik();
 
 
         //Insertion of ZWEB_FORMULAIRE DATA;
@@ -424,7 +468,9 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                 }
 
 
-                $fieldData = (array)$singleFieldData->fieldData;
+                $recette_contribution_if = $this->retrieveRecetteContributionIf($singleFieldData->portalData);
+
+                $fieldData = array_merge((array)$singleFieldData->fieldData,$recette_contribution_if);
 
                 foreach ($elements_columns_assoc_filemaker_attribute_names as $val) {
                     switch ($val->plugin) {
@@ -440,7 +486,13 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                             $date !== false ? $date_value = $date->format('Y-m-d') : $date_value = $dateString;
                             $elements_columns_value[] = !empty($date_value) ? $db->quote($date_value) : 'NULL';
                             break;
-                        case 'radiobutton':
+                        case 'emundus_phonenumber':
+                            $formattedNumber = $fabik_helper->getFormattedPhoneNumberValue($fieldData[$val->name]);
+
+                            $elements_columns_value[] = !empty($formattedNumber) ? $db->quote($formattedNumber) : $db->quote($fieldData[$val->name]) ;
+                            break;
+
+                        /*case 'radiobutton':
                             $params = json_decode($val->params);
                             $option_sub_labels = array_map(function ($data) {
 
@@ -457,7 +509,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                                 } else {
                                     $elements_columns_value[] = JText::_($params->sub_options->$params->sub_options->sub_values[$index]);
                                 }
-                            } /*elseif (!empty($params->dropdown_populate)) {
+                            }*/ /*elseif (!empty($params->dropdown_populate)) {
                                 $elt = $value;
                             } elseif (isset($params->multiple) && $params->multiple == 1) {
                                 $elt = "<ul><li>" . implode("</li><li>", json_decode(@$value)) . "</li></ul>";
@@ -504,8 +556,17 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
     {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
+
+        $portalDataWithoutEstContribIfRecette = array_filter(($singleFieldData->portalData)->{"zWEB_FORMULAIRES_RECETTES"}, function ($item) {
+            return empty($item->{"zWEB_FORMULAIRES_RECETTES::EstContributionIF"});
+        });
+
+        ($singleFieldData->portalData)->{"zWEB_FORMULAIRES_RECETTES"} = $portalDataWithoutEstContribIfRecette;
+
+
         $portalData = (array)$singleFieldData->portalData;
         $portalData_Keys = array_keys($portalData);
+        $fabik_helper = new EmundusHelperFabrik();
 
         foreach ($portalData_Keys as $key) {
             if (!empty($portalData[$key])) {
@@ -577,8 +638,12 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                                                         $date !== false ? $date_value = $date->format('Y-m-d') : $date_value = $dateString;
                                                         $arr_key_cal[] = array("" . $val->name . "" => $db->quote($date_value));
                                                         break;
+                                                    case 'emundus_phonenumber':
+                                                        $formattedNumber = $fabik_helper->getFormattedPhoneNumberValue($fieldData[$key . "::" . $row_key]);
+                                                        $arr_key_cal[] = array("" . $val->name . "" => !empty($formattedNumber) ? $db->quote($formattedNumber) : $db->quote($fieldData[$key . "::" . $row_key]));
+                                                        break;
 
-                                                    case 'radiobutton':
+                                                    /*case 'radiobutton':
                                                         $params = json_decode($val->params);
                                                         $option_sub_labels = array_map(function ($data) {
 
@@ -596,7 +661,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                                                                 $arr_key_cal[] = array("" . $val->name . "" => $db->quote(JText::_($params->sub_options->$params->sub_options->sub_values[$index])));
                                                                 ;
                                                             }
-                                                        } /*elseif (!empty($params->dropdown_populate)) {
+                                                        }*/ /*elseif (!empty($params->dropdown_populate)) {
                                                             $elt = $value;
                                                         } elseif (isset($params->multiple) && $params->multiple == 1) {
                                                             $elt = "<ul><li>" . implode("</li><li>", json_decode(@$value)) . "</li></ul>";
