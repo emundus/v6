@@ -1885,11 +1885,31 @@ structure:
 			}
 
             if (version_compare($cache_version, '1.36.6', '<=') || $firstrun){
+                // Add missing columns from previous updates
                 EmundusHelperUpdate::addColumn('jos_emundus_personal_detail','profile','INT',11);
                 EmundusHelperUpdate::addColumn('jos_emundus_logs','ip_from','VARCHAR',26);
                 EmundusHelperUpdate::addColumn('jos_messages','page','INT',11);
                 EmundusHelperUpdate::alterColumn('jos_messages','page','INT',11);
                 EmundusHelperUpdate::addColumnIndex('jos_messages','page');
+
+                // Unpublish FAQ widget
+                $faq_params = array(
+                    'published' => 0,
+                );
+                EmundusHelperUpdate::updateWidget('FAQ', $faq_params);
+
+                // Get FAQ widget id
+                $query->clear()
+                    ->select($db->quoteName('id'))
+                    ->from($db->quoteName('#__emundus_widgets'))
+                    ->where($db->quoteName('name').' = '.$db->quote('FAQ'));
+                $db->setQuery($query);
+                $faq_widget_id = $db->loadResult();
+
+                // Delete all usage of FAQ widget
+                $query->clear()
+                    ->delete($db->quoteName('#__emundus_setup_dashbord_repeat_widgets'))
+                    ->where($db->quoteName('widget').' = '.$db->quote($faq_widget_id));
             }
 
 			// Insert new translations in overrides files
