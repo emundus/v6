@@ -1910,6 +1910,8 @@ structure:
                 $query->clear()
                     ->delete($db->quoteName('#__emundus_setup_dashbord_repeat_widgets'))
                     ->where($db->quoteName('widget').' = '.$db->quote($faq_widget_id));
+                $db->setQuery($query);
+                $db->execute();
             }
 
 			// Insert new translations in overrides files
