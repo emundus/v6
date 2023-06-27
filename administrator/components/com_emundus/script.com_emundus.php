@@ -1912,6 +1912,26 @@ structure:
                     ->where($db->quoteName('widget').' = '.$db->quote($faq_widget_id));
                 $db->setQuery($query);
                 $db->execute();
+
+                // Update jos_emundus_uploads lists to change param alter_existing_db_cols to default (addonly)
+                $query->clear()
+                    ->select($db->quoteName(array('id','params')))
+                    ->from($db->quoteName('#__fabrik_lists'))
+                    ->where($db->quoteName('db_table_name').' = '.$db->quote('jos_emundus_uploads'));
+                $db->setQuery($query);
+                $lists = $db->loadObjectList();
+
+                foreach ($lists as $list) {
+                    $params = json_decode($list->params);
+                    $params->alter_existing_db_cols = 0;
+                    $params = json_encode($params);
+                    $query->clear()
+                        ->update($db->quoteName('#__fabrik_lists'))
+                        ->set($db->quoteName('params').' = '.$db->quote($params))
+                        ->where($db->quoteName('id').' = '.$db->quote($list->id));
+                    $db->setQuery($query);
+                    $db->execute();
+                }
             }
 
 			// Insert new translations in overrides files
