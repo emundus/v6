@@ -589,8 +589,8 @@ class EmundusModelFiles extends JModelLegacy
     public function getUsers()
     {
         $session = JFactory::getSession();
-        $limitStart = $session->get('limitstart');
-        $limit = $session->get('limit');
+        $limitStart = $session->get('limitstart', 0);
+        $limit = $session->get('limit', 20);
 
         return $this->getAllUsers($limitStart, $limit);
     }

@@ -35,7 +35,7 @@ include_once(JPATH_SITE.'/components/com_emundus/models/programme.php');
  */
 class EmundusUnittestHelperSamples
 {
-    public function createSampleUser($profile = 9, $username = 'user.test@emundus.fr')
+    public function createSampleUser($profile = 9, $username = 'user.test@emundus.fr', $password = 'test1234')
     {
         $user_id = 0;
         $m_users = new EmundusModelUsers;
@@ -45,7 +45,7 @@ class EmundusUnittestHelperSamples
 
         $query->insert('#__users')
             ->columns('name, username, email, password')
-            ->values($db->quote('Test USER') . ', ' . $db->quote($username) .  ', ' . $db->quote($username) . ',' .  $db->quote(md5('test1234')));
+            ->values($db->quote('Test USER') . ', ' . $db->quote($username) .  ', ' . $db->quote($username) . ',' .  $db->quote(md5($password)));
 
         try {
             $db->setQuery($query);
