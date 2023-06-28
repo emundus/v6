@@ -3575,6 +3575,7 @@ class EmundusHelperFiles
 								$quick_search_where .= $this->writeQueryWithOperator($scope, $filter['value'], 'LIKE');
 							}
 						} else if (in_array($filter['scope'], $scopes)) {
+							$at_least_one = true;
 							if ($index > 0) {
 								$quick_search_where .= ' OR ';
 							}
@@ -3588,6 +3589,7 @@ class EmundusHelperFiles
 					$where['q'] .= $quick_search_where;
 				}
 			}
+
 
 			foreach ($session_filters as $filter) {
 				if (!in_array('all', $filter['value']) && !empty($filter['value'])) {
