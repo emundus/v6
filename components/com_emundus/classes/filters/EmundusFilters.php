@@ -195,6 +195,8 @@ class EmundusFilters
 							$select .= ', ' . $db->quoteName($params['join_val_column'], 'label');
 						}
 
+                        $select .= ', 0 as count';
+
 						$query->clear()
 							->select($select)
 							->from($params['join_db_name']);
@@ -215,7 +217,7 @@ class EmundusFilters
 							$db->setQuery($query);
 							$values = $db->loadAssocList();
 						} catch (Exception $e) {
-							var_dump($query->__toString());
+							//var_dump($query->__toString());
 							JLog::add('Failed to get filter values ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 						}
 					}
@@ -234,6 +236,7 @@ class EmundusFilters
 							}
 
 							$values[] = [
+                                'count' => 0,
 								'value' => $sub_opt,
 								'label' => $label
 							];
