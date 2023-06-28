@@ -979,6 +979,16 @@ class EmundusModelForm extends JModelList {
             if ($heading_menu['status'] !== true){
                 return false;
             }
+	        $header_menu_id = $heading_menu['id'];
+
+	        $alias = 'menu-profile'.$newprofile.'-heading-'.$header_menu_id;
+	        $query->clear()
+		        ->update($db->quoteName('#__menu'))
+		        ->set($db->quoteName('alias') . ' = ' . $db->quote($alias))
+		        ->set($db->quoteName('path') . ' = ' . $db->quote($alias))
+		        ->where($db->quoteName('id') . ' = ' . $db->quote($header_menu_id));
+	        $db->setQuery($query);
+	        $db->execute();
 
             // Create first page
             if ($first_page) {
@@ -1222,13 +1232,20 @@ class EmundusModelForm extends JModelList {
 				$db->setQuery($query);
 				$results[] = $db->execute();
 
-				$alias = str_replace("\xc2\xa0",' ',($label.'-'.$prid));
-				$alias = strtolower(str_replace($formbuilder->getSpecialCharacters(), '-',JLanguageTransliterate::utf8_latin_to_ascii(preg_replace('/\s+/', '-', $alias))));
+				$query->clear()
+					->select($db->quoteName('id'))
+					->from($db->quoteName('#__menu'))
+					->where($db->quoteName('menutype') . ' = ' . $db->quote('menu-profile'.$prid))
+					->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
+				$db->setQuery($query);
+				$heading_id = $db->loadResult();
 
+				$alias = 'menu-profile'.$prid . '-heading-'.$heading_id;
 				$query->clear()
 					->update($db->quoteName('#__menu'))
 					->set($db->quoteName('title') . ' = ' . $db->quote($label))
 					->set($db->quoteName('alias') . ' = ' . $db->quote($alias))
+					->set($db->quoteName('path') . ' = ' . $db->quote($alias))
 					->where($db->quoteName('menutype') . ' = ' . $db->quote('menu-profile'.$prid))
 					->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
 				$db->setQuery($query);
