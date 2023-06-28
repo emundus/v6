@@ -670,7 +670,7 @@ table#groups-table a:hover {
 /* MODALS */
 
 .g-back-office-emundus-tableau #em-modal-actions .modal-dialog, .g-back-office-emundus-tableau #em-modal-actions .modal-dialog.modal-lg{
-    width: fit-content !important;
+    width: 50% !important;
     min-width: 40%;
 }
 
