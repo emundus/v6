@@ -229,7 +229,11 @@ export default {
 		},
 		searchedValues() {
 			return this.filter.values.filter((value) => {
-				return value.label.toLowerCase().includes(this.search.toLowerCase());
+				if (value.label) {
+					return value.label.toLowerCase().includes(this.search.toLowerCase());
+				} else {
+					return false;
+				}
 			});
 		}
 	}
