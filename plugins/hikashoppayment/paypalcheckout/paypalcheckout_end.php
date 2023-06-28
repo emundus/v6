@@ -1,19 +1,28 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><script src="https://www.paypal.com/sdk/js?<?php echo http_build_query($this->params); ?>"></script>
+?><script src="https://www.paypal.com/sdk/js?<?php echo http_build_query($this->params); ?>" data-partner-attribution-id="<?php echo $this->bncode; ?>"></script>
 <div class="hikashop_paypalcheckout_end" id="hikashop_paypalcheckout_end">
 <div id="paypal-select-message"><?php echo JText::_('PLEASE_SELECT_A_PAYMENT_METHOD'); ?></div>
 <div id="paypal-button-container"></div>
 <script>
 paypal.Buttons(
 	{
+		style: {
+			layout: '<?php echo $this->payment_params->layout; ?>',
+			color: '<?php echo $this->payment_params->color; ?>',
+			shape: '<?php echo $this->payment_params->shape; ?>',
+			label: '<?php echo $this->payment_params->label; ?>',
+<?php if($this->payment_params->tagline) { ?>
+			tagline: '<?php echo $this->payment_params->tagline; ?>',
+<?php } ?>
+		},
 		createOrder: function(data, actions) {
 			return actions.order.create(<?php echo json_encode($this->orderData, JSON_PRETTY_PRINT); ?>);
 		},
@@ -23,6 +32,7 @@ paypal.Buttons(
 			});
 		},
 		onError: function (err) {
+			console.log(err);
 			var errormsg = "<?php echo JText::sprintf('PAYMENT_REQUEST_REFUSED_BY_PAYPAL_CANCEL_URL', $this->cancel_url); ?>";
 
 			var error = err.message.split("\n\n");
@@ -52,7 +62,7 @@ paypal.Buttons(
 <style>
 #paypal-button-container {
     text-align: center;
-	max-width: 55px;
+	max-width: 200px;
 	margin: auto;
 }
 div#paypal-select-message {

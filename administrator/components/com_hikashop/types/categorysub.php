@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -146,7 +146,7 @@ class hikashopCategorysubType {
 			$attribute = ' '.$form;
 			$form = $none;
 		} elseif(!$form) {
-			$attribute = ' onchange="document.adminForm.submit();"';
+			$attribute = ' onchange="this.form.task=\'\';document.adminForm.submit();"';
 		} else {
 			$attribute = '';
 		}

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -957,11 +957,11 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Total number of added levels through the "virtuemart_category_categories" table : ' . $total . '</p>';
 
 		$query = 'SELECT category_child_id FROM `'. $this->vmprefix .'virtuemart_category_categories` ' .
-				'WHERE category_parent_id IN ('."'".implode("','",$childs)."'".');';
+				'WHERE category_parent_id IN ('."'".implode("','",$childs)."'".') AND level < 1;';
 		$this->db->setQuery($query);
 		$childArray = $this->db->loadRowList();
 
-		if(empty($childArray))
+		if(empty($childArray) || $level > 100)
 			return;
 
 		$childs = array();

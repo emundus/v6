@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -21,8 +21,26 @@ window.Oby.registerAjax(<?php echo $events; ?>, function(params) {
 	if(params && params.resp && params.resp.module == <?php echo (int)$module_id; ?>) return;
 	if(params && params.type && params.type != '<?php echo $this->cart_type; ?>') return;
 	o.addClass(el, "hikashop_checkout_loading");
-	window.hikashop.xRequest("<?php echo hikashop_completeLink('product&task=cart&module_id='.$module_id . '&module_type='.$this->cart_type.$this->url_itemid, true, false, true); ?>", {update: el, mode:'POST', data:'return_url=<?php echo urlencode(base64_encode(hikashop_currentURL('return_url'))); ?>'}, function(xhr){
+	window.hikashop.xRequest("<?php echo hikashop_completeLink('product&task=cart&module_id='.$module_id . '&module_type='.$this->cart_type.$this->url_itemid, true, false, true); ?>", {update:false, mode:'POST', data:'return_url=<?php echo urlencode(base64_encode(hikashop_currentURL('return_url'))); ?>'}, function(xhr){
 		o.removeClass(el, "hikashop_checkout_loading");
+		var cartDropdown = document.querySelector('#hikashop_cart_<?php echo $module_id; ?> .hikashop_cart_dropdown_content');
+		if(cartDropdown) {
+			var dropdownType = 'click';
+			var dropdownLink = document.querySelector('#hikashop_cart_<?php echo $module_id; ?> .hikashop_small_cart_checkout_link')
+			if(dropdownLink) {
+				var hover = dropdownLink.getAttribute('onmousehover');
+				if(hover) {
+					dropdownType = 'hover';
+				}
+			}
+			window.hikashop.updateElem(el, xhr.responseText, true);
+			if(cartDropdown.toggleOpen) {
+				cartDropdown = document.querySelector('#hikashop_cart_<?php echo $module_id; ?> .hikashop_cart_dropdown_content');
+				window.hikashop.toggleOverlayBlock(cartDropdown, dropdownType);
+			}
+		} else {
+			window.hikashop.updateElem(el, xhr.responseText, true);
+		}
 	});
 });
 </script>
