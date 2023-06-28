@@ -1210,6 +1210,7 @@ class EmundusModelForm extends JModelList {
 		if (!empty($prid)) {
 			require_once (JPATH_SITE.'/components/com_emundus/models/formbuilder.php');
 			$formbuilder = new EmundusModelFormbuilder;
+
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
@@ -1221,10 +1222,13 @@ class EmundusModelForm extends JModelList {
 				$db->setQuery($query);
 				$results[] = $db->execute();
 
+				$alias = str_replace("\xc2\xa0",' ',($label.'-'.$prid));
+				$alias = strtolower(str_replace($formbuilder->getSpecialCharacters(), '-',JLanguageTransliterate::utf8_latin_to_ascii(preg_replace('/\s+/', '-', $alias))));
+
 				$query->clear()
 					->update($db->quoteName('#__menu'))
 					->set($db->quoteName('title') . ' = ' . $db->quote($label))
-					->set($db->quoteName('alias') . ' = ' . $db->quote(str_replace($formbuilder->getSpecialCharacters(), '-', strtolower($label).'-'.$prid)))
+					->set($db->quoteName('alias') . ' = ' . $db->quote($alias))
 					->where($db->quoteName('menutype') . ' = ' . $db->quote('menu-profile'.$prid))
 					->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
 				$db->setQuery($query);
