@@ -493,6 +493,27 @@ class FileMaker
 
     }
 
+    public function deleteAllLinkedData($uuidConnect, $fnum, $uuid, $status,$layout){
+        $url = "layouts/".$layout."/script/zWebFormulaire_Delete_AllLinkedData?script.param=" . $uuidConnect;
+
+        $res = $this->get($url);
+
+        if (!empty($res->response)) {
+            $response = $res->response;
+            $message = $response;
+            $action_status = 1;
+        } else {
+            $action_status = 0;
+            $message = $res;
+            $response = $message;
+        }
+
+        $this->logActionIntoEmundusFileMakerlog(-1, $fnum, $uuid, $uuidConnect, $status, NULL, $action_status, $url, $message);
+
+
+        return $response;
+    }
+
     public function executeFormValidationScriptOnFileMaker($uuidConnect, $fnum, $uuid, $status)
     {
         $url = "layouts/zWEB_FORMULAIRES/script/zWebFormulaire_Validation?script.param=" . $uuidConnect;
@@ -970,9 +991,9 @@ class FileMaker
     {
 
         $db = JFactory::getDbo();
-        $config = JFactory::getConfig();
-        $timezone = new DateTimeZone($config->get('offset'));
-        $now = JFactory::getDate()->setTimezone($timezone);
+        $now = new DateTime();
+        $now->setTimezone(new DateTimeZone('UTC'));
+        $now = $now->format('Y-m-d H:i:s');
         $values = [$db->quote($now), $db->quote($action_type), $db->quote($fnum), $db->quote($uuid), $db->quote($uuidConnect), $db->quote($status), $db->quote($params), $db->quote($action_status), $db->quote($endpoint_url), $db->quote(json_encode($response_message))];
 
 
@@ -1128,6 +1149,7 @@ class FileMaker
         $db->setQuery($query);
 
         try {
+
 
             $db->execute();
 
