@@ -101,6 +101,10 @@ export default {
 		}
 	},
 	mounted () {
+		if (this.filter.value === null || this.filter.value === undefined) {
+			this.filter.value = [];
+		}
+
 		this.filter.operator = this.filter.operator === '=' ? 'IN' : this.filter.operator;
 		this.originalFilterValue = this.filter.value;
 		this.originalFilterOperator = this.filter.operator;
