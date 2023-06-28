@@ -29,6 +29,7 @@ include_once(JPATH_BASE . 'includes/framework.php');
 include_once(JPATH_SITE . '/components/com_emundus/unittest/helpers/samples.php');
 include_once(JPATH_SITE . '/components/com_emundus/models/files.php');
 include_once(JPATH_SITE . '/components/com_emundus/helpers/users.php');
+include_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
 
 jimport('joomla.user.helper');
 jimport('joomla.application.application');
@@ -45,21 +46,27 @@ class EmundusModelFilesTest extends TestCase{
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-        $this->m_files = new EmundusModelFiles;
         $this->h_sample = new EmundusUnittestHelperSamples;
         $this->h_users = new EmundusHelperUsers;
 
         $app = JFactory::getApplication();
         $username = 'test-gestionnaire-' . rand(0, 1000) . '@emundus.fr';
-        $this->h_sample->createSampleUser(2, $username);
-        $logged_in = $app->login([
-            'username' => $username,
-            'password' => 'test1234'
-        ]);
+		$password = $this->h_users->generateStrongPassword();
+        $user_id = $this->h_sample->createSampleUser(2, $username, $password);
 
-        include_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
-        $m_profile = new EmundusModelProfile();
-        $m_profile->initEmundusSession();
+		if(!empty($user_id)) {
+			$logged_in = $app->login([
+				'username' => $username,
+				'password' => $password
+			]);
+
+			if ($logged_in) {
+				$m_profile = new EmundusModelProfile;
+				$m_profile->initEmundusSession();
+			}
+		}
+
+	    $this->m_files = new EmundusModelFiles();
     }
 
 	public function testFoo()
@@ -84,8 +91,6 @@ class EmundusModelFilesTest extends TestCase{
 
         $users = $this->m_files->getUsers();
         $this->assertNotEmpty($users, 'if a fnum exists, by default get users should return a value');
-
-
     }
 
     public function testgetAllTags()
@@ -112,8 +117,6 @@ class EmundusModelFilesTest extends TestCase{
         $this->assertTrue($tagged, 'tagFile returns true if a file and a tag are given');
     }
 
-    public function testUpdateState() {
-
-
-    }
+    /*public function testUpdateState() {
+    }*/
 }
