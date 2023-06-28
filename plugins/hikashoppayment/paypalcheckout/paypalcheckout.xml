@@ -12,6 +12,7 @@
 	<files>
 		<filename plugin="paypalcheckout">paypalcheckout.php</filename>
 		<filename>paypalcheckout_end.php</filename>
+		<filename>cacert.pem</filename>
 		<folder>vendor</folder>
 	</files>
 	<params addpath="/components/com_hikashop/params">

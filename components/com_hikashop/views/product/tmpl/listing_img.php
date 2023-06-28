@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,10 +11,15 @@ defined('_JEXEC') or die('Restricted access');
 $mainDivName = $this->params->get('main_div_name', '');
 $link = hikashop_contentLink('product&task=show&cid=' . (int)$this->row->product_id . '&name=' . $this->row->alias . $this->itemid . $this->category_pathway, $this->row);
 $this->haveLink = (int)$this->params->get('link_to_product_page', 1);
-
+$hk_main_classes = array('hikashop_listing_img');
+if(!empty($this->row->categories)) {
+	foreach($this->row->categories as $category) {
+		$hk_main_classes[] = 'hikashop_product_of_category_'.$category->category_id;
+	}
+}
 if(!empty($this->row->extraData->top)) { echo implode("\r\n",$this->row->extraData->top); }
 ?>
-<div class="hikashop_listing_img" id="div_<?php echo $mainDivName . '_' . $this->row->product_id; ?>">
+<div class="<?php echo implode(' ', $hk_main_classes); ?>" id="div_<?php echo $mainDivName . '_' . $this->row->product_id; ?>">
 	<meta itemprop="name" content="<?php echo $this->escape(strip_tags($this->row->product_name)); ?>"/>
 <!-- PRODUCT IMAGE -->
 	<div class="hikashop_product_image">

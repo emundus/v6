@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -498,79 +498,7 @@ class hikashopUserClass extends hikashopClass {
 					$registerData->name = array_shift($parts);
 				}
 			}
-
-			if($mode == 0 && empty($registerData->name)){
-				$status = false;
-				$messages['register_name'] = array(JText::sprintf('PLEASE_FILL_THE_FIELD', JText::_('HIKA_NAME')), 'error');
-			}
-
-			if(in_array($mode, array(1, 3))) {
-				$registerData->username = $registerData->email;
-			} elseif($mode == 0 && empty($registerData->username)) {
-				$status = false;
-				$messages['register_username'] = array(JText::sprintf('PLEASE_FILL_THE_FIELD', JText::_('HIKA_USERNAME')), 'error');
-			}
-
-			if($mode == 1) {
-				jimport('joomla.user.helper');
-				$registerData->password = JUserHelper::genRandomPassword();
-				$registerData->password2 = $registerData->password;
-			}
-
-			jimport('joomla.mail.helper');
-			$mailer = JFactory::getMailer();
-			if(empty($registerData->email) || (method_exists('JMailHelper', 'isEmailAddress') && !JMailHelper::isEmailAddress($registerData->email)) || !$mailer->validateAddress($registerData->email)){
-				$status = false;
-				$messages['register_email'] = array(JText::_('EMAIL_INVALID'), 'error');
-			}
-
-			if(in_array($mode, array(0, 3))) {
-				if(empty($registerData->password)) {
-					$status = false;
-					$messages['register_password'] = array(JText::_('JGLOBAL_AUTH_EMPTY_PASS_NOT_ALLOWED'), 'error');
-				} elseif($registerData->password != $registerData->password2) {
-					$status = false;
-					$messages['register_password'] = array(JText::_('JLIB_USER_ERROR_PASSWORD_NOT_MATCH'), 'error');
-					$messages['register_password2'] = '';
-				} else {
-					$minimumLength = (int)$params->get('minimum_length');
-					$minimumIntegers = (int)$params->get('minimum_integers');
-					$minimumSymbols = (int)$params->get('minimum_symbols');
-					$minimumUppercase = (int)$params->get('minimum_uppercase');
-					$minimumLowercase = (int)$params->get('minimum_lowercase');
-
-					if(!empty($minimumLength) && strlen((string)$registerData->password) < $minimumLength) {
-						$status = false;
-						$messages[] = array($this->error('too_short', $minimumLength), 'error');
-					}
-					if (strlen((string)$registerData->password) > 4096) {
-						$status = false;
-						$messages[] = array($this->error('too_long'), 'error');
-					}
-					$valueTrim = trim((string)$registerData->password);
-
-					if (strlen((string)$registerData->password) != strlen($valueTrim)) {
-						$status = false;
-						$messages[] = array($this->error('space'), 'error');
-					}
-
-					$checks = array(
-						'int' => array($minimumIntegers, '/[0-9]/'),
-						'symbol' => array($minimumSymbols, '[\W]'),
-						'uppercase' => array($minimumUppercase, '/[A-Z]/'),
-						'lowercase' => array($minimumLowercase, '/[a-z]/'),
-					);
-					foreach($checks as $k => $v) {
-						if(empty($v[0]))
-							continue;
-						$n = preg_match_all($v[1], $registerData->password, $m);
-						if($n >= $v[0])
-							continue;
-						$status = false;
-						$messages[] = array($this->error($k, $v[0]), 'error');
-					}
-				}
-			}
+			$this->_checkRegistration($registerData, $messages, $status, $params, $mode);
 		}
 
 		$data = array(
@@ -940,6 +868,119 @@ class hikashopUserClass extends hikashopClass {
 		return $ret;
 	}
 
+	private function _checkRegistration(&$registerData, &$messages, &$status, &$params, $mode) {
+
+		if($mode == 0 && empty($registerData->name)){
+			$status = false;
+			$messages['register_name'] = array(JText::sprintf('PLEASE_FILL_THE_FIELD', JText::_('HIKA_NAME')), 'error');
+		}
+
+		if(in_array($mode, array(1, 3))) {
+			$registerData->username = $registerData->email;
+		} elseif($mode == 0 && empty($registerData->username)) {
+			$status = false;
+			$messages['register_username'] = array(JText::sprintf('PLEASE_FILL_THE_FIELD', JText::_('HIKA_USERNAME')), 'error');
+		}
+
+		if($mode == 1) {
+			jimport('joomla.user.helper');
+			$registerData->password = JUserHelper::genRandomPassword();
+			$registerData->password2 = $registerData->password;
+		}
+
+		jimport('joomla.mail.helper');
+		$mailer = JFactory::getMailer();
+		if(empty($registerData->email) || (method_exists('JMailHelper', 'isEmailAddress') && !JMailHelper::isEmailAddress($registerData->email)) || !$mailer->validateAddress($registerData->email)){
+			$status = false;
+			$messages['register_email'] = array(JText::_('EMAIL_INVALID'), 'error');
+		}
+		if($mode != 2) {
+			$domains = $params->get('domains');
+			if ($domains) {
+				$emailDomain = explode('@', $registerData->email);
+				$emailDomain = $emailDomain[1];
+				$emailParts  = array_reverse(explode('.', $emailDomain));
+				$emailCount  = count($emailParts);
+				$allowed     = true;
+
+				foreach ($domains as $domain) {
+					$domainParts = array_reverse(explode('.', $domain->name));
+					$status      = 0;
+
+					if ($emailCount < count($domainParts)) {
+						continue;
+					}
+					foreach ($emailParts as $key => $emailPart) {
+						if (!isset($domainParts[$key]) || $domainParts[$key] == $emailPart || $domainParts[$key] == '*') {
+							$status++;
+						}
+					}
+
+					if ($status === $emailCount) {
+						if ($domain->rule == 0) {
+							$allowed = false;
+						} else {
+							$allowed = true;
+						}
+					}
+				}
+
+				if (!$allowed) {
+					$status = false;
+					$messages['register_email'] = array(JText::sprintf('JGLOBAL_EMAIL_DOMAIN_NOT_ALLOWED', $emailDomain), 'error');
+				}
+			}
+		}
+
+		if(in_array($mode, array(0, 3))) {
+			if(empty($registerData->password)) {
+				$status = false;
+				$messages['register_password'] = array(JText::_('JGLOBAL_AUTH_EMPTY_PASS_NOT_ALLOWED'), 'error');
+			} elseif($registerData->password != $registerData->password2) {
+				$status = false;
+				$messages['register_password'] = array(JText::_('JLIB_USER_ERROR_PASSWORD_NOT_MATCH'), 'error');
+				$messages['register_password2'] = '';
+			} else {
+				$minimumLength = (int)$params->get('minimum_length');
+				$minimumIntegers = (int)$params->get('minimum_integers');
+				$minimumSymbols = (int)$params->get('minimum_symbols');
+				$minimumUppercase = (int)$params->get('minimum_uppercase');
+				$minimumLowercase = (int)$params->get('minimum_lowercase');
+
+				if(!empty($minimumLength) && strlen((string)$registerData->password) < $minimumLength) {
+					$status = false;
+					$messages[] = array($this->error('too_short', $minimumLength), 'error');
+				}
+				if (strlen((string)$registerData->password) > 4096) {
+					$status = false;
+					$messages[] = array($this->error('too_long'), 'error');
+				}
+				$valueTrim = trim((string)$registerData->password);
+
+				if (strlen((string)$registerData->password) != strlen($valueTrim)) {
+					$status = false;
+					$messages[] = array($this->error('space'), 'error');
+				}
+
+				$checks = array(
+					'int' => array($minimumIntegers, '/[0-9]/'),
+					'symbol' => array($minimumSymbols, '[\W]'),
+					'uppercase' => array($minimumUppercase, '/[A-Z]/'),
+					'lowercase' => array($minimumLowercase, '/[a-z]/'),
+				);
+				foreach($checks as $k => $v) {
+					if(empty($v[0]))
+						continue;
+					$n = preg_match_all($v[1], $registerData->password, $m);
+					if($n >= $v[0])
+						continue;
+					$status = false;
+					$messages[] = array($this->error($k, $v[0]), 'error');
+				}
+			}
+		}
+	}
+
 	private function error($key, $var=null) {
 		$k = 'j3';
 		if(HIKASHOP_J40) {
@@ -1000,68 +1041,7 @@ class hikashopUserClass extends hikashopClass {
 
 		$registerData->email = $hikaUser->user_email;
 
-		if(empty($registerData->name)) {
-			$status = false;
-			$messages['register_name'] = array(JText::sprintf('PLEASE_FILL_THE_FIELD', JText::_('HIKA_NAME')), 'error');
-		}
-
-		if(empty($registerData->username)) {
-			$status = false;
-			$messages['register_username'] = array(JText::sprintf('PLEASE_FILL_THE_FIELD', JText::_('HIKA_USERNAME')), 'error');
-		}
-
-		jimport('joomla.mail.helper');
-		$mailer = JFactory::getMailer();
-		if(empty($registerData->email) || (method_exists('JMailHelper', 'isEmailAddress') && !JMailHelper::isEmailAddress($registerData->email)) || !$mailer->validateAddress($registerData->email)){
-			$status = false;
-			$messages['register_email'] = array(JText::_('EMAIL_INVALID'), 'error');
-		}
-
-		if(empty($registerData->password)) {
-			$status = false;
-			$messages['register_password'] = array(JText::_('JGLOBAL_AUTH_EMPTY_PASS_NOT_ALLOWED'), 'error');
-		} elseif($registerData->password != $registerData->password2) {
-			$status = false;
-			$messages['register_password'] = array(JText::_('JLIB_USER_ERROR_PASSWORD_NOT_MATCH'), 'error');
-			$messages['register_password2'] = '';
-		} else {
-			$minimumLength = (int)$params->get('minimum_length');
-			$minimumIntegers = (int)$params->get('minimum_integers');
-			$minimumSymbols = (int)$params->get('minimum_symbols');
-			$minimumUppercase = (int)$params->get('minimum_uppercase');
-			$minimumLowercase = (int)$params->get('minimum_lowercase');
-
-			if(!empty($minimumLength) && strlen((string)$registerData->password) < $minimumLength) {
-				$status = false;
-				$messages[] = array($this->error('too_short', $minimumLength), 'warning');
-			}
-			if (strlen((string)$registerData->password) > 4096) {
-				$status = false;
-				$messages[] = array($this->error('too_long'), 'error');
-			}
-			$valueTrim = trim((string)$registerData->password);
-
-			if (strlen((string)$registerData->password) != strlen($valueTrim)) {
-				$status = false;
-				$messages[] = array($this->error('space'), 'error');
-			}
-
-			$checks = array(
-				'int' => array($minimumIntegers, '/[0-9]/'),
-				'symbol' => array($minimumSymbols, '[\W]'),
-				'uppercase' => array($minimumUppercase, '/[A-Z]/'),
-				'lowercase' => array($minimumLowercase, '/[a-z]/'),
-			);
-			foreach($checks as $k => $v) {
-				if(empty($v[0]))
-					continue;
-				$n = preg_match_all($v[1], $registerData->password, $m);
-				if($n >= $v[0])
-					continue;
-				$status = false;
-				$messages[] = array($this->error($k, $v[0]), 'warning');
-			}
-		}
+		$this->_checkRegistration($registerData, $messages, $status, $params, 0);
 
 		$data = array();
 		$data['name'] = @$registerData->name;
