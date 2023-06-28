@@ -3500,17 +3500,18 @@ class EmundusHelperFiles
 			$query['q'] .= ' AND jecc.status IN ("' . implode('","', $filt_menu['status']) . '") ';
 		}
 
-		if (isset($filt_menu['programme']) && isset($filt_menu['programme'][0]) && $filt_menu['programme'][0] == "%") {
-			$sql_code = '1=1';
-			$and = ' AND ';
-		} elseif (!empty($filt_menu['programme'][0])) {
-			// ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT
-			$sql_code = ' sp.code IN ("'.implode('","', $caller_params['code']).'") ';
-			$and = ' OR ';
-		} else {
-			if ($filt_menu['programme'][0] != "" && count($filt_menu['programme']) > 0) {
-				$sql_code = ' sp.code in ("'.implode('","', $filt_menu['programme']).'") ';
-				$and = ' AND ';
+		$and = ' AND ';
+		if (isset($filt_menu['programme'])) {
+			if (isset($filt_menu['programme'][0]) && $filt_menu['programme'][0] == "%") {
+				$sql_code = '1=1';
+			} elseif (!empty($filt_menu['programme'][0])) {
+				// ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT
+				$sql_code = ' sp.code IN ("'.implode('","', $caller_params['code']).'") ';
+				$and = ' OR ';
+			} else {
+				if ($filt_menu['programme'][0] != "" && count($filt_menu['programme']) > 0) {
+					$sql_code = ' sp.code in ("'.implode('","', $filt_menu['programme']).'") ';
+				}
 			}
 		}
 
