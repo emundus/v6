@@ -132,6 +132,7 @@ class EmundusModelFilesTest extends TestCase{
     }
 
     public function testUpdateState() {
-
+        $updated = $this->m_files->updateState([], null);
+        $this->assertFalse($updated, 'updateState returns false if no file and no new state is given');
     }
 }

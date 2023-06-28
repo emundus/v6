@@ -2285,7 +2285,6 @@ class EmundusHelperFiles
             foreach ($items as $i => $item) {
                 if ($item->level == 1 && $item->level_diff == 0) {
                     unset($items[$i]);
-                    continue;
                 }
             }
 
@@ -3145,6 +3144,10 @@ class EmundusHelperFiles
 
 		if (!is_numeric(@$params['published']) || is_null(@$params['published'])) {
 			$params['published'] = 1;
+		}
+
+		if (!isset($params['programme'])) {
+			$params['programme'] = [];
 		}
 
 		$query = array('q' => '', 'join' => '');
