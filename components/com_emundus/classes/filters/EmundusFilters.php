@@ -55,9 +55,11 @@ class EmundusFilters
 
 		if (!empty($elements)) {
 			foreach($elements as $element) {
+                $label = strip_tags(JText::_($element['label']));
+
 				$filter = [
 					'id' => $element['id'],
-					'label' => JText::_($element['label']),
+					'label' => !empty($label) ? $label : 'ELEMENT ' .  $element['id'],
 					'type' => 'text',
 					'values' => [],
 					'group_label' => $element['element_form_label'],
