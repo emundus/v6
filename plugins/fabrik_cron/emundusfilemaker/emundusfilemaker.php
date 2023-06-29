@@ -187,7 +187,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
             if (!empty($fieldData->{"zWEB_FORMULAIRES_PROGRAMMATIONS::web_emailContact"})) {
 
-                $user_id = $this->createUserIfNotExist($fieldData->{"zWEB_FORMULAIRES_PROGRAMMATIONS::web_emailContact"}, "Nom et Prénom Porteur en attente connexion");
+                $user_id = $this->createUserIfNotExist($fieldData->{"zWEB_FORMULAIRES_PROGRAMMATIONS::web_emailContact"}, "Nom Prénom ");
 
                 $this->createSingleFile($file, $user_id, $mappedColumns, $filemaker);
 
