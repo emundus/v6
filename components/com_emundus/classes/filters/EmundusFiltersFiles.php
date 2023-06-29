@@ -239,9 +239,10 @@ class EmundusFiltersFiles extends EmundusFilters
 		}
 
 		if ($config['filter_years']) {
+            // TODO: get years from campaigns or teaching unity ? (or both ?)
 			$query->clear()
-				->select('DISTINCT schoolyear as value, schoolyear as label, 0 as count')
-				->from('#__emundus_setup_teaching_unity')
+				->select('DISTINCT year as value, year as label, 0 as count')
+				->from('#__emundus_setup_campaigns')
 				->where('published = 1');
 
 			$db->setQuery($query);
