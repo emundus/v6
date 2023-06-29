@@ -799,7 +799,7 @@ class EmundusModelEvaluation extends JModelList {
 
         $query = 'select jecc.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class, sp.code ';
 
-        $group_by = 'GROUP BY jecc.fnum ';
+        $group_by = 'GROUP BY jecc.id ';
 
         // prevent double left join on query
         $lastTab = array('#__emundus_setup_status', 'jos_emundus_setup_status',
@@ -817,7 +817,22 @@ class EmundusModelEvaluation extends JModelList {
 
 		    foreach ($this->_elements as $elt) {
 			    if (!in_array($elt->tab_name, $lastTab)) {
-				    $leftJoin .= 'LEFT JOIN ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = jecc.fnum ';
+				    $query_ccid = "SHOW COLUMNS FROM ".$elt->tab_name." LIKE 'ccid'";
+				    $ccid = $dbo->setQuery($query_ccid)->loadResult();
+
+				    if($elt->tab_name == 'jos_emundus_campaign_candidature')
+				    {
+					    $leftJoin .= 'LEFT JOIN ' . $elt->tab_name . ' ON ' . $elt->tab_name . '.id = jecc.id ';
+				    }
+				    elseif(empty($ccid))
+				    {
+					    $leftJoin .= 'LEFT JOIN ' . $elt->tab_name . ' ON ' . $elt->tab_name . '.fnum = jecc.fnum ';
+				    }
+				    else
+				    {
+					    $leftJoin .= 'LEFT JOIN ' . $elt->tab_name . ' ON ' . $elt->tab_name . '.ccid = jecc.id ';
+				    }
+
 				    $lastTab[] = $elt->tab_name;
 			    }
 		    }
@@ -835,15 +850,15 @@ class EmundusModelEvaluation extends JModelList {
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
 					LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
 					LEFT JOIN #__users as u on u.id = jecc.applicant_id
-					LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum LIKE jecc.fnum ';
+					LEFT JOIN #__emundus_tag_assoc as eta on eta.ccid = jecc.id ';
         $q = $this->_buildWhere($lastTab);
 
         if (EmundusHelperAccess::isCoordinator($current_user->id)
             || (EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && $evaluators_can_see_other_eval == 1)
             || EmundusHelperAccess::asAccessAction(5, 'r', $current_user->id)) {
-            $query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum ';
+            $query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.ccid = jecc.id ';
         } else {
-            $query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum AND (jos_emundus_evaluations.user='.$current_user->id.' OR jos_emundus_evaluations.user IS NULL)';
+            $query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.ccid = jecc.id AND (jos_emundus_evaluations.user='.$current_user->id.' OR jos_emundus_evaluations.user IS NULL)';
         }
 
         if (!empty($leftJoin)) {

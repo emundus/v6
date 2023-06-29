@@ -603,7 +603,22 @@ class EmundusModelFiles extends JModelLegacy
 
             foreach ($this->_elements as $elt) {
                 if (!in_array($elt->tab_name, $lastTab)) {
-                    $leftJoin .= 'LEFT JOIN ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = jecc.fnum ';
+					$query_ccid = "SHOW COLUMNS FROM ".$elt->tab_name." LIKE 'ccid'";
+					$ccid = $dbo->setQuery($query_ccid)->loadResult();
+					
+					if($elt->tab_name == 'jos_emundus_campaign_candidature')
+					{
+						$leftJoin .= 'LEFT JOIN ' . $elt->tab_name . ' ON ' . $elt->tab_name . '.id = jecc.id ';
+					}
+					elseif(empty($ccid))
+					{
+						$leftJoin .= 'LEFT JOIN ' . $elt->tab_name . ' ON ' . $elt->tab_name . '.fnum = jecc.fnum ';
+					} 
+					else
+					{
+						$leftJoin .= 'LEFT JOIN ' . $elt->tab_name . ' ON ' . $elt->tab_name . '.ccid = jecc.id ';
+					}
+					
                     $lastTab[] = $elt->tab_name;
                 }
             }
@@ -619,10 +634,10 @@ class EmundusModelFiles extends JModelLegacy
                     LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
                     LEFT JOIN #__users as u on u.id = jecc.applicant_id
                     LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
-                    LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
+                    LEFT JOIN #__emundus_tag_assoc as eta on eta.ccid=jecc.id ';
 
         if (in_array('overall', $em_other_columns)) {
-            $query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum = jecc.fnum ';
+            $query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.ccid = jecc.id ';
         }
 
         if (in_array('unread_messages', $em_other_columns)) {
@@ -637,10 +652,11 @@ class EmundusModelFiles extends JModelLegacy
         $query .= $q['join'];
         $query .= ' WHERE u.block=0 ' . $q['q'];
 
-        $query .= ' GROUP BY jecc.fnum';
+        $query .= ' GROUP BY jecc.id';
 
         $query .=  $this->_buildContentOrderBy();
         $dbo->setQuery($query);
+
         try {
             $res = $dbo->loadAssocList();
             $this->_applicants = $res;
@@ -1318,15 +1334,24 @@ class EmundusModelFiles extends JModelLegacy
                 }
 
                 $query_associated_tags = $db->getQuery(true);
-                $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id) VALUES ";
+	            $query_ccid = $db->getQuery(true);
+
+	            $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id,ccid) VALUES ";
 
                 $logger = array();
                 foreach ($fnums as $fnum) {
+	                $query_ccid->clear()
+		                ->select('id')
+		                ->from($db->quoteName('#__emundus_campaign_candidature'))
+		                ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+	                $db->setQuery($query_ccid);
+	                $ccid = $db->loadResult();
+
                     // Get tags already associated to this fnum by the current user
                     $query_associated_tags->clear()
                         ->select('id_tag')
                         ->from($db->quoteName('#__emundus_tag_assoc'))
-                        ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
+                        ->where($db->quoteName('ccid') . ' = ' . $db->quote($ccid))
                         ->andWhere($db->quoteName('user_id') . ' = ' . $db->quote($user));
                     $db->setQuery($query_associated_tags);
                     $tags_already_associated = $db->loadColumn();
@@ -1334,7 +1359,7 @@ class EmundusModelFiles extends JModelLegacy
                     // Insert valid tags
                     foreach ($tags as $tag) {
                         if (!in_array($tag, $tags_already_associated)) {
-                            $query .= '("' . $fnum . '", ' . $tag . ',' . $user . '),';
+                            $query .= '("' . $fnum . '", ' . $tag . ',' . $user .  ',' . $ccid . '),';
                             $query_log = 'SELECT label
                                 FROM #__emundus_setup_action_tag
                                 WHERE id =' . $tag;

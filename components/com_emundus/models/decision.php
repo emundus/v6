@@ -816,7 +816,22 @@ class EmundusModelDecision extends JModelList
 
 			foreach ($this->_elements as $elt) {
 				if (!in_array($elt->tab_name, $lastTab)) {
-					$leftJoin .= 'LEFT JOIN ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = jecc.fnum ';
+					$query_ccid = "SHOW COLUMNS FROM ".$elt->tab_name." LIKE 'ccid'";
+					$ccid = $dbo->setQuery($query_ccid)->loadResult();
+
+					if($elt->tab_name == 'jos_emundus_campaign_candidature')
+					{
+						$leftJoin .= 'LEFT JOIN ' . $elt->tab_name . ' ON ' . $elt->tab_name . '.id = jecc.id ';
+					}
+					elseif(empty($ccid))
+					{
+						$leftJoin .= 'LEFT JOIN ' . $elt->tab_name . ' ON ' . $elt->tab_name . '.fnum = jecc.fnum ';
+					}
+					else
+					{
+						$leftJoin .= 'LEFT JOIN ' . $elt->tab_name . ' ON ' . $elt->tab_name . '.ccid = jecc.id ';
+					}
+
 					$lastTab[] = $elt->tab_name;
 				}
 			}
@@ -830,14 +845,14 @@ class EmundusModelDecision extends JModelList
 		$query .= ' FROM #__emundus_campaign_candidature as jecc
 					LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
 					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
-					LEFT JOIN #__emundus_setup_programmes as sp on sp.code LIKE esc.training
+					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
 					LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
 					LEFT JOIN #__users as u on u.id = jecc.applicant_id
-					LEFT JOIN #__emundus_final_grade as jos_emundus_final_grade on jos_emundus_final_grade.fnum LIKE jecc.fnum
-					LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum LIKE jecc.fnum  ';
+					LEFT JOIN #__emundus_final_grade as jos_emundus_final_grade on jos_emundus_final_grade.ccid = jecc.id
+					LEFT JOIN #__emundus_tag_assoc as eta on eta.ccid = jecc.id  ';
 
 		if (in_array('overall', $em_other_columns)) {
-			$query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum LIKE jecc.fnum ';
+			$query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.ccid = jecc.id ';
 		}
 
 
@@ -853,7 +868,7 @@ class EmundusModelDecision extends JModelList
 			$query .= ' AND jecc.fnum like '.$dbo->Quote($current_fnum);
 		}
 
-		$query .= ' GROUP BY jecc.fnum';
+		$query .= ' GROUP BY jecc.id';
 		$query .= $this->_buildContentOrderBy();
 		$dbo->setQuery($query);
 
