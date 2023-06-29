@@ -204,22 +204,24 @@ class EmundusFilters
 							->from($params['join_db_name']);
 
 						if(!empty($params['database_join_where_sql'])) {
-							$params['database_join_where_sql'] = str_replace('{thistable}', $params['join_db_name'], $params['database_join_where_sql']);
-							$params['database_join_where_sql'] = str_replace('{shortlang}', $lang, $params['database_join_where_sql']);
-							$first_where_pos = stripos($params['database_join_where_sql'], 'WHERE');
+                            // TODO: I don't know yet how to handle complex database_join_where_sql using calculated fields
+                            if (strpos($params['database_join_where_sql'], '_raw}') === false) {
+                                $params['database_join_where_sql'] = str_replace('{thistable}', $params['join_db_name'], $params['database_join_where_sql']);
+                                $params['database_join_where_sql'] = str_replace('{shortlang}', $lang, $params['database_join_where_sql']);
+                                $first_where_pos = stripos($params['database_join_where_sql'], 'WHERE');
 
-							if ($first_where_pos !== false) {
-								$params['database_join_where_sql'] = substr($params['database_join_where_sql'], $first_where_pos + 5);
-							}
+                                if ($first_where_pos !== false) {
+                                    $params['database_join_where_sql'] = substr($params['database_join_where_sql'], $first_where_pos + 5);
+                                }
 
-							$query->where($params['database_join_where_sql']);
+                                $query->where($params['database_join_where_sql']);
+                            }
 						}
 
 						try {
 							$db->setQuery($query);
 							$values = $db->loadAssocList();
 						} catch (Exception $e) {
-							//var_dump($query->__toString());
 							JLog::add('Failed to get filter values ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 						}
 					}
