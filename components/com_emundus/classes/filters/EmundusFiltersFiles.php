@@ -189,8 +189,9 @@ class EmundusFiltersFiles extends EmundusFilters
 				'values' => $values,
 				'value' => ['all'],
 				'default' => true,
-				'available' => true
-			];
+				'available' => true,
+                'order' => $config['filter_status_order']
+            ];
 		}
 
 		if ($config['filter_campaign']) {
@@ -210,8 +211,9 @@ class EmundusFiltersFiles extends EmundusFilters
 				'values' => $campaigns,
 				'value' => ['all'],
 				'default' => true,
-				'available' => true
-			];
+				'available' => true,
+                'order' => $config['filter_campaigns_order']
+            ];
 		}
 
 		if ($config['filter_programs']) {
@@ -231,8 +233,9 @@ class EmundusFiltersFiles extends EmundusFilters
 				'values' => $programs,
 				'value' => ['all'],
 				'default' => true,
-				'available' => true
-			];
+				'available' => true,
+                'order' => $config['filter_programs_order']
+            ];
 		}
 
 		if ($config['filter_years']) {
@@ -252,8 +255,9 @@ class EmundusFiltersFiles extends EmundusFilters
 				'values' => $years,
 				'value' => ['all'],
 				'default' => true,
-				'available' => true
-			];
+				'available' => true,
+                'order' => $config['filter_years_order']
+            ];
 		}
 
 		if ($config['filter_tags']) {
@@ -272,8 +276,9 @@ class EmundusFiltersFiles extends EmundusFilters
 				'values' => $tags,
 				'value' => ['all'],
 				'default' => true,
-				'available' => true
-			];
+				'available' => true,
+                'order' => $config['filter_tags_order']
+            ];
 		}
 
 		if ($config['filter_published']) {
@@ -289,14 +294,15 @@ class EmundusFiltersFiles extends EmundusFilters
 				],
 				'value' => [1],
 				'default' => true,
-				'available' => true
+				'available' => true,
+                'order' => $config['filter_published_order']
 			];
 		}
 
 		if(!empty($config['more_filter_elements'])) {
 			$config['more_filter_elements'] = json_decode($config['more_filter_elements'], true);
 
-			foreach($config['more_filter_elements']['fabrik_element_id'] as $fabrik_element_id) {
+			foreach($config['more_filter_elements']['fabrik_element_id'] as $more_filter_index => $fabrik_element_id) {
 				if (!empty($fabrik_element_id)) {
 					$found = false;
 					$new_default_filter = [];
@@ -347,6 +353,7 @@ class EmundusFiltersFiles extends EmundusFilters
 					if (!empty($new_default_filter)) {
 						$this->filters[] = $new_default_filter;
 						$new_default_filter['uid'] = 'default-filter-' . $new_default_filter['id'];
+                        $new_default_filter['order'] = $config['more_filter_elements']['order'][$more_filter_index];
 						$this->applied_filters[] = $new_default_filter;
 
 						// add filter to adv cols
@@ -362,7 +369,12 @@ class EmundusFiltersFiles extends EmundusFilters
 				}
 			}
 		}
-	}
+
+        // sort applied filters array by array entry 'order'
+        usort($this->applied_filters, function($a, $b) {
+            return intval($a['order']) <=> intval($b['order']);
+        });
+    }
 	private function addSessionFilters($session_values)
 	{
 		foreach($session_values as $session_filter) {
