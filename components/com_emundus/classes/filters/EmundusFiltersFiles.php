@@ -27,9 +27,11 @@ class EmundusFiltersFiles extends EmundusFilters
 			$this->addSessionFilters($session_filters);
 			$this->checkFiltersAvailability();
 
-            /*$uids = array_map(function($filter) {return $filter['uid'];}, $this->applied_filters);
-			$this->setFiltersValuesAvailability($uids);*/
+            if ($this->config['count_filter_values']) {
+                $this->setFiltersValuesAvailability();
+            }
 		}
+
 		$quick_search_filters = JFactory::getSession()->get('em-quick-search-filters', null);
 		if (!empty($quick_search_filters)) {
 			$this->setQuickSearchFilters($quick_search_filters);
@@ -170,7 +172,7 @@ class EmundusFiltersFiles extends EmundusFilters
 		$query = $db->getQuery(true);
 
 		if ($config['filter_status']) {
-			$query->select('id, step, value')
+			$query->select('id, step, value, 0 as count')
 				->from('#__emundus_setup_status');
 
 			$db->setQuery($query);
@@ -499,11 +501,14 @@ class EmundusFiltersFiles extends EmundusFilters
 		return $element_ids;
 	}
 
-    // TODO: we must call this function when we apply a filter
-	private function setFiltersValuesAvailability($filters_uids) {
-		// between applied filters, keep only the values that are available between them
+	private function setFiltersValuesAvailability($filters_uids = []) {
+        if (empty($filters_uids)) {
+            $filters_uids = array_map(function($filter) {return $filter['uid'];}, $this->applied_filters);
+        }
+
+        // between applied filters, keep only the values that are available between them
 		//  for example, if I chose campaign 1, and all files on campaign 1 are on status 1, 2 and 3, i can't choose status 4
-		//  so i have to remove it from the available values
+		//  so I have to remove it from the available values
 		$available_values = [];
 
         if (!empty($filters_uids) && is_array($filters_uids)) {
@@ -524,6 +529,7 @@ class EmundusFiltersFiles extends EmundusFilters
                 }
 
                 if (!empty($filter)) {
+                    $leftJoins = '';
                     $already_joined = [
                         'jecc' => 'jos_emundus_campaign_candidature',
                         'ss' => 'jos_emundus_setup_status',
@@ -535,7 +541,7 @@ class EmundusFiltersFiles extends EmundusFilters
                     ];
 
                     $table_column_to_count = null;
-                    if (!is_numeric($filter['uid'])) {
+                    if (!is_numeric($filter['id'])) {
                         switch ($filter['uid']) {
                             case 'status':
                                 $table_column_to_count = 'jecc.status';
@@ -547,7 +553,7 @@ class EmundusFiltersFiles extends EmundusFilters
                                 $table_column_to_count = 'esc.training';
                                 break;
                             case 'tags':
-                                $table_column_to_count = 'eta.tag_id';
+                                $table_column_to_count = 'eta.id_tag';
                                 break;
                             case 'published':
                                 $table_column_to_count = 'jecc.published';
@@ -555,8 +561,32 @@ class EmundusFiltersFiles extends EmundusFilters
                         }
                     } else {
                         $fabrik_element_data = $helper_files->getFabrikElementData($filter['id']);
+
                         if (!empty($fabrik_element_data)) {
-                            $table_column_to_count = $fabrik_element_data['db_table_name'] . '.' . $fabrik_element_data['name'];
+                            if ($fabrik_element_data['group_params']['repeat_group_button'] == 1) {
+                                $join_informations = $helper_files->getJoinInformations($fabrik_element_data['element_id']);
+
+                                if (!empty($join_informations)) {
+                                    $fabrik_element_data['db_table_name'] = $join_informations['table_join'];
+                                }
+                            }
+
+                            $table_alias = $fabrik_element_data['db_table_name'];
+                            if (!in_array($fabrik_element_data['db_table_name'], $already_joined)) {
+                                $joins = $helper_files->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', $fabrik_element_data['db_table_name']);
+
+                                if (!empty($joins)) {
+                                    $leftJoins = $helper_files->writeJoins($joins, $already_joined);
+                                }
+                            } else {
+                                $key = array_search($fabrik_element_data['db_table_name'], $already_joined);
+
+                                if (!is_numeric($key)) {
+                                    $table_alias = $key;
+                                }
+                            }
+
+                            $table_column_to_count = $table_alias . '.' . $fabrik_element_data['name'];
                         }
                     }
 
@@ -572,8 +602,11 @@ class EmundusFiltersFiles extends EmundusFilters
                             LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
                             LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
 
-                        // todo, do not apply filter of current count column
-                        $whereConditions = $helper_files->_moduleBuildWhere($already_joined);
+                        if (!empty($leftJoins)) {
+                            $query .= $leftJoins;
+                        }
+
+                        $whereConditions = $helper_files->_moduleBuildWhere($already_joined, 'files', [], [$filter_uid]);
 
                         $query .= $whereConditions['join'];
                         $query .= ' WHERE u.block=0 ' . $whereConditions['q'];

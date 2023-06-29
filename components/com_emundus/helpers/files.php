@@ -3540,7 +3540,7 @@ class EmundusHelperFiles
      * @param array $caller_params
      * @return array containing 'q' the where clause and 'join' the join clause
      */
-    public function _moduleBuildWhere($already_joined = array(), $caller = 'files', $caller_params = array()) {
+    public function _moduleBuildWhere($already_joined = array(), $caller = 'files', $caller_params = [], $filters_to_exclude = []) {
 		$where = ['q' => '', 'join' => ''];
 
 		$session = JFactory::getSession();
@@ -3596,6 +3596,10 @@ class EmundusHelperFiles
 
 
 			foreach ($session_filters as $filter) {
+                if (in_array($filter['uid'], $filters_to_exclude)) {
+                    continue;
+                }
+
 				if (!in_array('all', $filter['value']) && !empty($filter['value'])) {
 					$filter_id = str_replace(['filter-', 'default-filter-'], '', $filter['id']);
 
@@ -3793,44 +3797,46 @@ class EmundusHelperFiles
 		return $data;
 	}
 
-	private function getJoinInformations($element_id, $group_id = 0, $list_id = 0): array
+	public function getJoinInformations($element_id, $group_id = 0, $list_id = 0): array
 	{
 		$data = [];
 
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
-		if (!empty($element_id)) {
-			$query->select('*')
-				->from('#__fabrik_joins')
-				->where('element_id = ' . $element_id);
+        if (!empty($element_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            if (!empty($element_id)) {
+                $query->select('*')
+                    ->from('#__fabrik_joins')
+                    ->where('element_id = ' . $element_id);
 
-			try {
-				$db->setQuery($query);
-				$data = $db->loadAssoc();
-			} catch(Exception $e) {
-				JLog::add('Failed to retreive join informations in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-			}
-		}
+                try {
+                    $db->setQuery($query);
+                    $data = $db->loadAssoc();
+                } catch(Exception $e) {
+                    JLog::add('Failed to retreive join informations in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                }
+            }
 
-		if ((empty($data) || empty($data['join_from_table']))  && !empty($group_id)) {
-			$query->clear()
-				->select('*')
-				->from('#__fabrik_joins')
-				->where('group_id = ' . $group_id);
+            if ((empty($data) || empty($data['join_from_table']))  && !empty($group_id)) {
+                $query->clear()
+                    ->select('*')
+                    ->from('#__fabrik_joins')
+                    ->where('group_id = ' . $group_id);
 
-			if (!empty($list_id)) {
-				$query->where('list_id = ' . $list_id);
-			}
+                if (!empty($list_id)) {
+                    $query->where('list_id = ' . $list_id);
+                }
 
-			try {
-				$db->setQuery($query);
-				$data = $db->loadAssoc();
-			} catch(Exception $e) {
-				JLog::add('Failed to retreive join informations in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-			}
-		}
+                try {
+                    $db->setQuery($query);
+                    $data = $db->loadAssoc();
+                } catch(Exception $e) {
+                    JLog::add('Failed to retreive join informations in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                }
+            }
+        }
 
-		return $data;
+		return $data ? $data : [];
 	}
 
 	private function findJoinBetweenTables($table_join, $join_from_table) {

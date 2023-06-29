@@ -60,10 +60,14 @@
 						<input :name="filter.uid + '-filter-value'" :id="filter.uid + '-filter-value-all'" type="checkbox" value="all" v-model="filter.value" @click="onClickAll">
 						<label :for="filter.uid + '-filter-value-all'" style="margin: 0">{{ translate('ALL') }}</label>
 					</div>
-					<div v-for="value in searchedValues" :key="value.value" class="em-flex-row" @click="onClickSpecificValue(value.value)">
+					<div v-for="value in searchedValues" :key="value.value" class="em-flex-row em-filter-value-checkbox em-mb-4" @click="onClickSpecificValue(value.value)"
+               :class="{
+                 'disabled': countFilterValues && value.hasOwnProperty('count') && value.count == 0,
+               }"
+          >
 						<input :name="filter.uid + '-filter-value'" :id="filter.uid + '-filter-value-'+ value.value" type="checkbox" :value="value.value" v-model="filter.value">
 						<label :for="filter.uid + '-filter-value-'+ value.value" style="margin: 0">
-              <span>{{ value.label }} </span> <span v-if="displayCount && value.hasOwnProperty('count')" class="em-gray-color"> ({{ value.count }})</span>
+              <span>{{ value.label }} </span> <span v-if="countFilterValues && value.hasOwnProperty('count')" class="em-gray-color"> ({{ value.count }})</span>
             </label>
 					</div>
 				</div>
@@ -85,7 +89,7 @@ export default {
 			type: Object,
 			required: true
 		},
-    displayCount: {
+    countFilterValues: {
       type: Boolean,
       default: false
     },
@@ -270,5 +274,10 @@ span.label {
 
 .recap {
 	overflow: hidden;
+}
+
+.em-filter-value-checkbox.disabled {
+  pointer-events: none;
+  opacity: 0.5;
 }
 </style>
