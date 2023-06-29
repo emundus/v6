@@ -10,7 +10,7 @@
 		<div class="multi-select-filter-card em-border-radius-8 em-border-neutral-400 em-box-shadow em-white-bg em-p-8 em-mt-4">
 			<section class="recap" :class="{'hidden': opened}">
 				<div v-if="filter.value && filter.value.length > 0 && !filter.value.includes('all')" class="em-flex-column-start">
-					<div class="recap-value em-flex-row em-flex-wrap em-mt-8 em-flex-gap-8">
+					<div class="recap-value em-flex-row em-flex-wrap em-flex-gap-8">
             <span class="recap-operator label label-darkblue"> {{ selectedOperatorLabel }}</span>
             <div v-for="(value, index) in filter.value.slice(0, 2)" :key="value" class="em-flex-row em-flex-wrap em-flex-gap-8">
 							<span class="label label-default">{{ selectedValuesLabels[index] }}</span>
