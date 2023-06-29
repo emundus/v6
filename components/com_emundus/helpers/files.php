@@ -3728,9 +3728,7 @@ class EmundusHelperFiles
 								$where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.campaign_id', $filter['value'], $filter['operator']);
 								break;
 							case 'years':
-								$where['join'] .= ' LEFT JOIN #__emundus_setup_teaching_unity AS estu ON estu.code = sp.code ';
-                                $already_joined['estu'] = 'jos_emundus_setup_teaching_unity';
-								$where['q'] .= ' AND ' . $this->writeQueryWithOperator('estu.schoolyear', $filter['value'], $filter['operator']);
+								$where['q'] .= ' AND ' . $this->writeQueryWithOperator('esc.year', $filter['value'], $filter['operator']);
 
 								break;
 							case 'programs':
