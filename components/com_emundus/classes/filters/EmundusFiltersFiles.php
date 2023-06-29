@@ -6,16 +6,18 @@ class EmundusFiltersFiles extends EmundusFilters
 	private $profiles = [];
 	private $user_campaigns = [];
 
+    private $config = [];
+
 	public function __construct($config = array())
 	{
 		JLog::addLogger(['text_file' => 'com_emundus.filters.php'], JLog::ALL, 'com_emundus.filters');
-
 		$this->user = JFactory::getUser();
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id) || !EmundusHelperAccess::asAccessAction(1, 'r', $this->user->id)) {
 			throw new Exception('Access denied', 403);
 		}
 
+        $this->config = $config;
 		$this->setDefaultFilters($config);
 		$this->setProfiles();
 		$this->setFilters();
@@ -91,6 +93,8 @@ class EmundusFiltersFiles extends EmundusFilters
 	{
 		$elements = [];
 		$profiles = $this->getProfiles();
+        $profile_form_ids = [];
+        $config_form_ids = [];
 
 		if (!empty($profiles)) {
 			$menus = [];
@@ -112,37 +116,54 @@ class EmundusFiltersFiles extends EmundusFilters
 			$form_links = $db->loadColumn();
 
 			if (!empty($form_links)) {
-				$form_ids = [];
 				foreach ($form_links as $link) {
-					$form_ids[] = (int) str_replace('index.php?option=com_fabrik&view=form&formid=', '', $link);
+                    $profile_form_ids[] = (int) str_replace('index.php?option=com_fabrik&view=form&formid=', '', $link);
 				}
-				$form_ids = array_unique($form_ids);
-
-				$query->clear()
-					->select('jfe.id, jfe.plugin, jfe.label, jfe.params, jffg.form_id as element_form_id, jff.label as element_form_label')
-					->from('jos_fabrik_elements as jfe')
-					->join('inner', 'jos_fabrik_formgroup as jffg ON jfe.group_id = jffg.group_id')
-					->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
-					->where('jffg.form_id IN (' . implode(',', $form_ids) . ')')
-					->andWhere('jfe.published = 1')
-					->andWhere('jfe.hidden = 0');
-
-				try {
-					$db->setQuery($query);
-					$elements = $db->loadAssocList();
-
-					foreach ($elements as $key => $element) {
-						$elements[$key]['label'] = JText::_($element['label']);
-						$elements[$key]['element_form_label'] = JText::_($element['element_form_label']);
-					}
-				} catch (Exception $e) {
-					JLog::add('Failed to get elements associated to profiles that current user can access : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
-				}
-			}
+            }
 		}
 
-		return $elements;
+        if (!empty($this->config) && !empty($this->config['more_fabrik_forms'])) {
+            $config_form_ids = $this->config['more_fabrik_forms'];
+        }
+
+        $form_ids = array_merge($profile_form_ids, $config_form_ids);
+
+		return $this->getElementsFromFabrikForms($form_ids);
 	}
+
+    private function getElementsFromFabrikForms($form_ids)
+    {
+        $elements = [];
+        $form_ids = array_unique($form_ids);
+
+        if (!empty($form_ids)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->clear()
+                ->select('jfe.id, jfe.plugin, jfe.label, jfe.params, jffg.form_id as element_form_id, jff.label as element_form_label')
+                ->from('jos_fabrik_elements as jfe')
+                ->join('inner', 'jos_fabrik_formgroup as jffg ON jfe.group_id = jffg.group_id')
+                ->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
+                ->where('jffg.form_id IN (' . implode(',', $form_ids) . ')')
+                ->andWhere('jfe.published = 1')
+                ->andWhere('jfe.hidden = 0');
+
+            try {
+                $db->setQuery($query);
+                $elements = $db->loadAssocList();
+
+                foreach ($elements as $key => $element) {
+                    $elements[$key]['label'] = JText::_($element['label']);
+                    $elements[$key]['element_form_label'] = JText::_($element['element_form_label']);
+                }
+            } catch (Exception $e) {
+                JLog::add('Failed to get elements associated to profiles that current user can access : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+            }
+        }
+
+        return $elements;
+    }
 
 	private function setDefaultFilters($config) {
 		$db = JFactory::getDbo();
@@ -403,6 +424,7 @@ class EmundusFiltersFiles extends EmundusFilters
                 if (!empty($filtered_profiles)) {
                     $element_ids_available = $this->getElementIdsAssociatedToProfile($filtered_profiles);
 
+                    // TODO: this should not be applied if element filter comes from config more_fabrik_forms
                     foreach($this->filters as $key => $filter) {
                         if (!in_array($filter['id'], $element_ids_available)) {
                             $this->filters[$key]['available'] = false;
