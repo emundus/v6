@@ -63,7 +63,7 @@
 					<div v-for="value in searchedValues" :key="value.value" class="em-flex-row" @click="onClickSpecificValue(value.value)">
 						<input :name="filter.uid + '-filter-value'" :id="filter.uid + '-filter-value-'+ value.value" type="checkbox" :value="value.value" v-model="filter.value">
 						<label :for="filter.uid + '-filter-value-'+ value.value" style="margin: 0">
-              <span>{{ value.label }} </span> <span v-if="value.hasOwnProperty('count')" class="em-gray-color"> ({{ value.count }})</span>
+              <span>{{ value.label }} </span> <span v-if="displayCount && value.hasOwnProperty('count')" class="em-gray-color"> ({{ value.count }})</span>
             </label>
 					</div>
 				</div>
@@ -85,6 +85,10 @@ export default {
 			type: Object,
 			required: true
 		},
+    displayCount: {
+      type: Boolean,
+      default: false
+    },
 	},
 	data() {
 		return {

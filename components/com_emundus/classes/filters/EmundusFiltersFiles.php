@@ -25,8 +25,8 @@ class EmundusFiltersFiles extends EmundusFilters
 			$this->addSessionFilters($session_filters);
 			$this->checkFiltersAvailability();
 
-            $uids = array_map(function($filter) {return $filter['uid'];}, $this->applied_filters);
-			$this->setFiltersValuesAvailability($uids);
+            /*$uids = array_map(function($filter) {return $filter['uid'];}, $this->applied_filters);
+			$this->setFiltersValuesAvailability($uids);*/
 		}
 		$quick_search_filters = JFactory::getSession()->get('em-quick-search-filters', null);
 		if (!empty($quick_search_filters)) {
