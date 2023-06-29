@@ -2285,7 +2285,6 @@ class EmundusHelperFiles
             foreach ($items as $i => $item) {
                 if ($item->level == 1 && $item->level_diff == 0) {
                     unset($items[$i]);
-                    continue;
                 }
             }
 
@@ -3147,6 +3146,10 @@ class EmundusHelperFiles
 			$params['published'] = 1;
 		}
 
+		if (!isset($params['programme'])) {
+			$params['programme'] = [];
+		}
+
 		$query = array('q' => '', 'join' => '');
 		if (!empty($params)) {
 			foreach ($params as $key => $value) {
@@ -3496,26 +3499,27 @@ class EmundusHelperFiles
 		}
 
 		// force menu filter
-		if ((is_array($filt_menu['status']) && count($filt_menu['status']) > 0) && !empty($filt_menu['status'][0]) && $filt_menu['status'][0] != "%") {
+		if (isset($filt_menu['status']) && is_array($filt_menu['status']) && !empty($filt_menu['status'][0]) && $filt_menu['status'][0] != "%") {
 			$query['q'] .= ' AND jecc.status IN ("' . implode('","', $filt_menu['status']) . '") ';
 		}
 
-		if (isset($filt_menu['programme'][0]) && $filt_menu['programme'][0] == "%"){
-			$sql_code = '1=1';
-			$and = ' AND ';
-		} elseif (!empty($filt_menu['programme'][0])) {
-			// ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT
-			$sql_code = ' sp.code IN ("'.implode('","', $caller_params['code']).'") ';
-			$and = ' OR ';
-		} else {
-			if ($filt_menu['programme'][0] != "" && count($filt_menu['programme']) > 0) {
-				$sql_code = ' sp.code in ("'.implode('","', $filt_menu['programme']).'") ';
-				$and = ' AND ';
+		$and = ' AND ';
+		if (isset($filt_menu['programme'])) {
+			if (isset($filt_menu['programme'][0]) && $filt_menu['programme'][0] == "%") {
+				$sql_code = '1=1';
+			} elseif (!empty($filt_menu['programme'][0])) {
+				// ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT
+				$sql_code = ' sp.code IN ("'.implode('","', $caller_params['code']).'") ';
+				$and = ' OR ';
+			} else {
+				if ($filt_menu['programme'][0] != "" && count($filt_menu['programme']) > 0) {
+					$sql_code = ' sp.code in ("'.implode('","', $filt_menu['programme']).'") ';
+				}
 			}
 		}
 
 		$sql_fnum = '';
-		if (count($caller_params['fnum_assoc']) > 0) {
+		if (!empty($caller_params['fnum_assoc'])) {
 			$sql_fnum = $and.' jecc.fnum IN ("'.implode('","', $caller_params['fnum_assoc']).'") ';
 		}
 

@@ -35,6 +35,12 @@ include_once(JPATH_SITE.'/components/com_emundus/models/programme.php');
  */
 class EmundusUnittestHelperSamples
 {
+
+	public function __construct()
+	{
+		define('EVALUATOR_RIGHTS', array ([ 'id' => '1', 'c' => 0, 'r' => 1, 'u' => 0, 'd' => 0, ], 1 => array ( 'id' => '4', 'c' => 1, 'r' => 1, 'u' => 0, 'd' => 0, ), 2 => array ( 'id' => '5', 'c' => 1, 'r' => 1, 'u' => 1, 'd' => 0, ), 3 => array ( 'id' => '29', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 4 => array ( 'id' => '32', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 5 => array ( 'id' => '34', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 6 => array ( 'id' => '28', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 7 => array ( 'id' => '13', 'c' => 0, 'r' => 1, 'u' => 0, 'd' => 0, ), 8 => array ( 'id' => '14', 'c' => 1, 'r' => 1, 'u' => 1, 'd' => 0, ), 9 => array ( 'id' => '10', 'c' => 1, 'r' => 1, 'u' => 1, 'd' => 0, ), 10 => array ( 'id' => '11', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 11 => array ( 'id' => '37', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 12 => array ( 'id' => '36', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 13 => array ( 'id' => '8', 'c' => 1, 'r' => 0, 'u' => 0, 'd' => 0, ), 14 => array ( 'id' => '6', 'c' => 1, 'r' => 0, 'u' => 0, 'd' => 0, ), 15 => array ( 'id' => '7', 'c' => 1, 'r' => 0, 'u' => 0, 'd' => 0, ), 16 => array ( 'id' => '27', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 17 => array ( 'id' => '31', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 18 => array ( 'id' => '35', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 19 => array ( 'id' => '18', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 20 => array ( 'id' => '9', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 21 => array ( 'id' => '16', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 22 => array ( 'id' => '15', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), ));
+	}
+
     public function createSampleUser($profile = 9, $username = 'user.test@emundus.fr', $password = 'test1234')
     {
         $user_id = 0;
@@ -181,10 +187,10 @@ class EmundusUnittestHelperSamples
         return $deleted;
     }
 
-	public function createSampleProgram()
+	public function createSampleProgram($label = 'Programme Test Unitaire')
 	{
 		$m_programme = new EmundusModelProgramme;
-		$program = $m_programme->addProgram(['label' => 'Programme Test Unitaire']);
+		$program = $m_programme->addProgram(['label' => $label]);
 		return $program;
 	}
 

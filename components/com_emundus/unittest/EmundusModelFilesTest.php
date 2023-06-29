@@ -42,6 +42,7 @@ class EmundusModelFilesTest extends TestCase{
     private $m_files;
     private $h_sample;
     private $h_users;
+	public $unit_test_coord_id;
 
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
@@ -52,9 +53,9 @@ class EmundusModelFilesTest extends TestCase{
         $app = JFactory::getApplication();
         $username = 'test-gestionnaire-' . rand(0, 1000) . '@emundus.fr';
 		$password = $this->h_users->generateStrongPassword();
-        $user_id = $this->h_sample->createSampleUser(2, $username, $password);
+        $this->unit_test_coord_id = $this->h_sample->createSampleUser(2, $username, $password);
 
-		if(!empty($user_id)) {
+		if(!empty($this->unit_test_coord_id)) {
 			$logged_in = $app->login([
 				'username' => $username,
 				'password' => $password
@@ -78,20 +79,33 @@ class EmundusModelFilesTest extends TestCase{
         $this->assertSame(false, $this->m_files->use_module_filters, 'By default, we do not use new module filters');
     }
 
-    public function testGetUsers()
+    public function testgetAllFnums()
     {
-        $users = $this->m_files->getUsers();
-        $this->assertIsArray($users, 'getusers returns an array');
+	    $fnums = $this->m_files->getAllFnums();
+        $this->assertIsArray($fnums, 'getusers returns an array');
 
-        $user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+        $user_id = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 1000) . '@emundus.test.fr');
         $program = $this->h_sample->createSampleProgram();
-        $campaign_id = $this->h_sample->createSampleCampaign($program);
+	    $campaign_id = $this->h_sample->createSampleCampaign($program);
         $fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
 
+	    $session = JFactory::getSession();
+	    $session->set('filt_params', ['programme' => [$program['programme_code']]]);
 
-        $users = $this->m_files->getUsers();
-        $this->assertNotEmpty($users, 'if a fnum exists, by default get users should return a value');
+	    $fnums = $this->m_files->getAllFnums();
+	    $this->assertNotEmpty($fnums, 'if a fnum exists, by default get users should return a value');
+		$this->assertTrue(in_array($fnum, $fnums), 'If a fnum is associated to me. I should see it.');
     }
+
+	public function testshareUsers() {
+		$user_id = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 1000) . '@emundus.test.fr');
+		$program = $this->h_sample->createSampleProgram('Test partage d\'utilisateurs');
+		$campaign_id = $this->h_sample->createSampleCampaign($program);
+		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+
+		$shared = $this->m_files->shareUsers([$this->unit_test_coord_id], EVALUATOR_RIGHTS, [$fnum]);
+		$this->assertTrue($shared, 'shareUsers returns true if the sharing is successful');
+	}
 
     public function testgetAllTags()
     {
@@ -117,6 +131,8 @@ class EmundusModelFilesTest extends TestCase{
         $this->assertTrue($tagged, 'tagFile returns true if a file and a tag are given');
     }
 
-    /*public function testUpdateState() {
-    }*/
+    public function testUpdateState() {
+        $updated = $this->m_files->updateState([], null);
+        $this->assertFalse($updated, 'updateState returns false if no file and no new state is given');
+    }
 }

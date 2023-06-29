@@ -167,6 +167,7 @@ export default {
 				this.appliedFilters.push(newFilter);
 				this.openFilterOptions = false;
 				added = true;
+        this.applyFilters();
 			}
 
 			return added;

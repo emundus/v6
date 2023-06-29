@@ -10,9 +10,9 @@
 		<div class="multi-select-filter-card em-border-radius-8 em-border-neutral-400 em-box-shadow em-white-bg em-p-8 em-mt-4">
 			<section class="recap" :class="{'hidden': opened}">
 				<div v-if="filter.value && filter.value.length > 0 && !filter.value.includes('all')" class="em-flex-column-start">
-					<span class="recap-operator label label-darkblue"> {{ selectedOperatorLabel }}</span>
 					<div class="recap-value em-flex-row em-flex-wrap em-mt-8 em-flex-gap-8">
-						<div v-for="(value, index) in filter.value.slice(0, 2)" :key="value" class="em-flex-row em-flex-wrap em-flex-gap-8">
+            <span class="recap-operator label label-darkblue"> {{ selectedOperatorLabel }}</span>
+            <div v-for="(value, index) in filter.value.slice(0, 2)" :key="value" class="em-flex-row em-flex-wrap em-flex-gap-8">
 							<span class="label label-default">{{ selectedValuesLabels[index] }}</span>
 							<span v-if="filter.value.length > 1 && index == 0" class="label label-darkblue"> {{ selectedAndorOperatorLabel }} </span>
 						</div>
@@ -62,7 +62,9 @@
 					</div>
 					<div v-for="value in searchedValues" :key="value.value" class="em-flex-row" @click="onClickSpecificValue(value.value)">
 						<input :name="filter.uid + '-filter-value'" :id="filter.uid + '-filter-value-'+ value.value" type="checkbox" :value="value.value" v-model="filter.value">
-						<label :for="filter.uid + '-filter-value-'+ value.value" style="margin: 0">{{ value.label }}</label>
+						<label :for="filter.uid + '-filter-value-'+ value.value" style="margin: 0">
+              <span>{{ value.label }} </span> <span v-if="displayCount && value.hasOwnProperty('count')" class="em-gray-color"> ({{ value.count }})</span>
+            </label>
 					</div>
 				</div>
 			</section>
@@ -83,6 +85,10 @@ export default {
 			type: Object,
 			required: true
 		},
+    displayCount: {
+      type: Boolean,
+      default: false
+    },
 	},
 	data() {
 		return {

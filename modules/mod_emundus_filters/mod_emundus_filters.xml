@@ -22,7 +22,7 @@
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
-                <field showon="filter_on_fnums:0" type="text" name="element_id" label="MOD_EM_FILTER_FABRIK_ELEMENT_ID" description="MOD_EM_FILTER_FABRIK_ELEMENT_ID_DESC" default="0"></field>
+                <field showon="filter_on_fnums:0" type="text" name="element_id" label="MOD_EM_FILTER_FABRIK_ELEMENT_ID" description="MOD_EM_FILTER_FABRIK_ELEMENT_ID_DESC" default="0"/>
                 <field showon="filter_on_fnums:0"
                        name="default_filter_element_ids"
                        type="subform"
@@ -35,10 +35,10 @@
                        layout="joomla.form.field.subform.repeatable-table"
                 >
                     <form>
-                        <field type="text" name="id" label="MOD_EM_FILTER_DEFAULT_ELEMENT_ID" description="MOD_EM_FILTER_DEFAULT_ELEMENT_ID_DESC" default="0"></field>
-                        <field type="text" name="join_table" label="MOD_EM_FILTER_DEFAULT_ELEMENT_JOIN_TABLE" default=""></field>
-                        <field type="text" name="join_column_from" label="MOD_EM_FILTER_DEFAULT_ELEMENT_JOIN_COLUMN_FROM" default=""></field>
-                        <field type="text" name="join_column_to" label="MOD_EM_FILTER_DEFAULT_ELEMENT_JOIN_COLUMN_TO" default=""></field>
+                        <field type="text" name="id" label="MOD_EM_FILTER_DEFAULT_ELEMENT_ID" description="MOD_EM_FILTER_DEFAULT_ELEMENT_ID_DESC" default="0"/>
+                        <field type="text" name="join_table" label="MOD_EM_FILTER_DEFAULT_ELEMENT_JOIN_TABLE" default=""/>
+                        <field type="text" name="join_column_from" label="MOD_EM_FILTER_DEFAULT_ELEMENT_JOIN_COLUMN_FROM" default=""/>
+                        <field type="text" name="join_column_to" label="MOD_EM_FILTER_DEFAULT_ELEMENT_JOIN_COLUMN_TO" default=""/>
                     </form>
                 </field>
 
@@ -79,8 +79,19 @@
                                type="text"
                                label="MOD_EM_FILTER_FABRIK_ELEMENT_ID"
                                description="MOD_EM_FILTER_FABRIK_ELEMENT_ID_DESC"
-                        ></field>
+                        />
+                        <field name="order" type="text" label="MOD_EM_FILTER_ORDER" description="MOD_EM_FILTER_ORDER_DESC" default="0"/>
                     </field>
+
+                    <field name="more_fabrik_forms"
+                           type="sql"
+                           label="MOD_EM_FILTER_MORE_FABRIK_FORMS"
+                           description="MOD_EM_FILTER_MORE_FABRIK_FORMS_DESC"
+                           query="SELECT id, CONCAT(label, ' (', id , ')') as label_concat FROM jos_fabrik_forms WHERE published = 1"
+                           key_field="id"
+                           value_field="label_concat"
+                           multiple="true"
+                    />
                 </fieldset>
             </fieldset>
             <fieldset name="advanced">

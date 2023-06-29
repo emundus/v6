@@ -6,16 +6,18 @@ class EmundusFiltersFiles extends EmundusFilters
 	private $profiles = [];
 	private $user_campaigns = [];
 
+    private $config = [];
+
 	public function __construct($config = array())
 	{
 		JLog::addLogger(['text_file' => 'com_emundus.filters.php'], JLog::ALL, 'com_emundus.filters');
-
 		$this->user = JFactory::getUser();
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id) || !EmundusHelperAccess::asAccessAction(1, 'r', $this->user->id)) {
 			throw new Exception('Access denied', 403);
 		}
 
+        $this->config = $config;
 		$this->setDefaultFilters($config);
 		$this->setProfiles();
 		$this->setFilters();
@@ -24,7 +26,9 @@ class EmundusFiltersFiles extends EmundusFilters
 		if (!empty($session_filters)) {
 			$this->addSessionFilters($session_filters);
 			$this->checkFiltersAvailability();
-			$this->checkFiltersValuesAvailability();
+
+            /*$uids = array_map(function($filter) {return $filter['uid'];}, $this->applied_filters);
+			$this->setFiltersValuesAvailability($uids);*/
 		}
 		$quick_search_filters = JFactory::getSession()->get('em-quick-search-filters', null);
 		if (!empty($quick_search_filters)) {
@@ -89,6 +93,8 @@ class EmundusFiltersFiles extends EmundusFilters
 	{
 		$elements = [];
 		$profiles = $this->getProfiles();
+        $profile_form_ids = [];
+        $config_form_ids = [];
 
 		if (!empty($profiles)) {
 			$menus = [];
@@ -110,37 +116,54 @@ class EmundusFiltersFiles extends EmundusFilters
 			$form_links = $db->loadColumn();
 
 			if (!empty($form_links)) {
-				$form_ids = [];
 				foreach ($form_links as $link) {
-					$form_ids[] = (int) str_replace('index.php?option=com_fabrik&view=form&formid=', '', $link);
+                    $profile_form_ids[] = (int) str_replace('index.php?option=com_fabrik&view=form&formid=', '', $link);
 				}
-				$form_ids = array_unique($form_ids);
-
-				$query->clear()
-					->select('jfe.id, jfe.plugin, jfe.label, jfe.params, jffg.form_id as element_form_id, jff.label as element_form_label')
-					->from('jos_fabrik_elements as jfe')
-					->join('inner', 'jos_fabrik_formgroup as jffg ON jfe.group_id = jffg.group_id')
-					->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
-					->where('jffg.form_id IN (' . implode(',', $form_ids) . ')')
-					->andWhere('jfe.published = 1')
-					->andWhere('jfe.hidden = 0');
-
-				try {
-					$db->setQuery($query);
-					$elements = $db->loadAssocList();
-
-					foreach ($elements as $key => $element) {
-						$elements[$key]['label'] = JText::_($element['label']);
-						$elements[$key]['element_form_label'] = JText::_($element['element_form_label']);
-					}
-				} catch (Exception $e) {
-					JLog::add('Failed to get elements associated to profiles that current user can access : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
-				}
-			}
+            }
 		}
 
-		return $elements;
+        if (!empty($this->config) && !empty($this->config['more_fabrik_forms'])) {
+            $config_form_ids = $this->config['more_fabrik_forms'];
+        }
+
+        $form_ids = array_merge($profile_form_ids, $config_form_ids);
+
+		return $this->getElementsFromFabrikForms($form_ids);
 	}
+
+    private function getElementsFromFabrikForms($form_ids)
+    {
+        $elements = [];
+        $form_ids = array_unique($form_ids);
+
+        if (!empty($form_ids)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->clear()
+                ->select('jfe.id, jfe.plugin, jfe.label, jfe.params, jffg.form_id as element_form_id, jff.label as element_form_label')
+                ->from('jos_fabrik_elements as jfe')
+                ->join('inner', 'jos_fabrik_formgroup as jffg ON jfe.group_id = jffg.group_id')
+                ->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
+                ->where('jffg.form_id IN (' . implode(',', $form_ids) . ')')
+                ->andWhere('jfe.published = 1')
+                ->andWhere('jfe.hidden = 0');
+
+            try {
+                $db->setQuery($query);
+                $elements = $db->loadAssocList();
+
+                foreach ($elements as $key => $element) {
+                    $elements[$key]['label'] = JText::_($element['label']);
+                    $elements[$key]['element_form_label'] = JText::_($element['element_form_label']);
+                }
+            } catch (Exception $e) {
+                JLog::add('Failed to get elements associated to profiles that current user can access : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+            }
+        }
+
+        return $elements;
+    }
 
 	private function setDefaultFilters($config) {
 		$db = JFactory::getDbo();
@@ -172,7 +195,7 @@ class EmundusFiltersFiles extends EmundusFilters
 
 		if ($config['filter_campaign']) {
 			$query->clear()
-				->select('id as value, label')
+				->select('id as value, label, 0 as count')
 				->from('#__emundus_setup_campaigns')
 				->where('published = 1');
 
@@ -193,7 +216,7 @@ class EmundusFiltersFiles extends EmundusFilters
 
 		if ($config['filter_programs']) {
 			$query->clear()
-				->select('id as value, label')
+				->select('id as value, label, 0 as count')
 				->from('#__emundus_setup_programmes')
 				->where('published = 1');
 
@@ -214,7 +237,7 @@ class EmundusFiltersFiles extends EmundusFilters
 
 		if ($config['filter_years']) {
 			$query->clear()
-				->select('DISTINCT schoolyear as value, schoolyear as label')
+				->select('DISTINCT schoolyear as value, schoolyear as label, 0 as count')
 				->from('#__emundus_setup_teaching_unity')
 				->where('published = 1');
 
@@ -235,7 +258,7 @@ class EmundusFiltersFiles extends EmundusFilters
 
 		if ($config['filter_tags']) {
 			$query->clear()
-				->select('id as value, label')
+				->select('id as value, label, 0 as count')
 				->from('#__emundus_setup_action_tag');
 
 			$db->setQuery($query);
@@ -260,9 +283,9 @@ class EmundusFiltersFiles extends EmundusFilters
 				'label' => JText::_('MOD_EMUNDUS_FILTERS_PUBLISHED_STATE'),
 				'type' => 'select',
 				'values' => [
-					['value' => 1, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_PUBLISHED')],
-					['value' => 0, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_ARCHIVED')],
-					['value' => -1, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_DELETED')]
+					['value' => 1, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_PUBLISHED'), 'count' => 0],
+					['value' => 0, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_ARCHIVED'), 'count' => 0],
+					['value' => -1, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_DELETED'), 'count' => 0]
 				],
 				'value' => [1],
 				'default' => true,
@@ -340,7 +363,6 @@ class EmundusFiltersFiles extends EmundusFilters
 			}
 		}
 	}
-
 	private function addSessionFilters($session_values)
 	{
 		foreach($session_values as $session_filter) {
@@ -373,44 +395,45 @@ class EmundusFiltersFiles extends EmundusFilters
 		}
 	}
 
-	private function checkFiltersAvailability() {
-		// get campaign filter by uid
-		$campaign_filter = null;
+    private function checkFiltersAvailability() {
+        // get campaign filter by uid
+        $campaign_filter = null;
 
-		foreach($this->applied_filters as $filter) {
-			if($filter['uid'] == 'campaigns') {
-				$campaign_filter = $filter;
-				break;
-			}
-		}
+        foreach($this->applied_filters as $filter) {
+            if($filter['uid'] == 'campaigns') {
+                $campaign_filter = $filter;
+                break;
+            }
+        }
 
-		if (!empty($campaign_filter) && !empty($campaign_filter['value'])) {
-			// if the operator is NOT IN or !=, we need to get fabrik elements associated to campaigns that are not in the filter
-			switch($campaign_filter['operator']) {
-				case 'NOT IN':
-				case '!=':
-					$campaign_availables = array_diff($this->user_campaigns, $campaign_filter['value']);
-					break;
-				default:
-					$campaign_availables = array_intersect($this->user_campaigns, $campaign_filter['value']);
-					break;
-			}
+        if (!empty($campaign_filter) && !empty($campaign_filter['value'])) {
+            // if the operator is NOT IN or !=, we need to get fabrik elements associated to campaigns that are not in the filter
+            switch($campaign_filter['operator']) {
+                case 'NOT IN':
+                case '!=':
+                    $campaign_availables = array_diff($this->user_campaigns, $campaign_filter['value']);
+                    break;
+                default:
+                    $campaign_availables = array_intersect($this->user_campaigns, $campaign_filter['value']);
+                    break;
+            }
 
-			if (!empty($campaign_availables)) {
-				$filtered_profiles = $this->getProfilesFromCampaignId($campaign_availables);
+            if (!empty($campaign_availables)) {
+                $filtered_profiles = $this->getProfilesFromCampaignId($campaign_availables);
 
-				if (!empty($filtered_profiles)) {
-					$element_ids_available = $this->getElementIdsAssociatedToProfile($filtered_profiles);
+                if (!empty($filtered_profiles)) {
+                    $element_ids_available = $this->getElementIdsAssociatedToProfile($filtered_profiles);
 
-					foreach($this->filters as $key => $filter) {
-						if (!in_array($filter['id'], $element_ids_available)) {
-							$this->filters[$key]['available'] = false;
-						}
-					}
-				}
-			}
-		}
-	}
+                    // TODO: this should not be applied if element filter comes from config more_fabrik_forms
+                    foreach($this->filters as $key => $filter) {
+                        if (!in_array($filter['id'], $element_ids_available)) {
+                            $this->filters[$key]['available'] = false;
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 	private function getElementIdsAssociatedToProfile($profile_ids)
 	{
@@ -463,10 +486,103 @@ class EmundusFiltersFiles extends EmundusFilters
 		return $element_ids;
 	}
 
-	private function checkFiltersValuesAvailability() {
+    // TODO: we must call this function when we apply a filter
+	private function setFiltersValuesAvailability($filters_uids) {
 		// between applied filters, keep only the values that are available between them
-		//  for example, if i chose campaign 1, and all files on campaign 1 are on status 1, 2 and 3, i can't choose status 4
+		//  for example, if I chose campaign 1, and all files on campaign 1 are on status 1, 2 and 3, i can't choose status 4
 		//  so i have to remove it from the available values
 		$available_values = [];
-	}
+
+        if (!empty($filters_uids) && is_array($filters_uids)) {
+            require_once JPATH_ROOT . '/components/com_emundus/helpers/files.php';
+            $helper_files = new EmundusHelperFiles();
+
+            foreach($filters_uids as $filter_uid) {
+                // check if filter is in applied filters
+                $filter = null;
+                $filter_key = null;
+
+                foreach($this->applied_filters as $applied_filter_key => $applied_filter) {
+                    if ($applied_filter['uid'] == $filter_uid) {
+                        $filter = $applied_filter;
+                        $filter_key = $applied_filter_key;
+                        break;
+                    }
+                }
+
+                if (!empty($filter)) {
+                    $already_joined = [
+                        'jecc' => 'jos_emundus_campaign_candidature',
+                        'ss' => 'jos_emundus_setup_status',
+                        'esc' => 'jos_emundus_setup_campaigns',
+                        'sp' => 'jos_emundus_setup_programmes',
+                        'u' => 'jos_users',
+                        'eu' => 'jos_emundus_users',
+                        'eta' => 'jos_emundus_tag_assoc'
+                    ];
+
+                    $table_column_to_count = null;
+                    if (!is_numeric($filter['uid'])) {
+                        switch ($filter['uid']) {
+                            case 'status':
+                                $table_column_to_count = 'jecc.status';
+                                break;
+                            case 'campaigns':
+                                $table_column_to_count = 'jecc.campaign_id';
+                                break;
+                            case 'programmes':
+                                $table_column_to_count = 'esc.training';
+                                break;
+                            case 'tags':
+                                $table_column_to_count = 'eta.tag_id';
+                                break;
+                            case 'published':
+                                $table_column_to_count = 'jecc.published';
+                                break;
+                        }
+                    } else {
+                        $fabrik_element_data = $helper_files->getFabrikElementData($filter['id']);
+                        if (!empty($fabrik_element_data)) {
+                            $table_column_to_count = $fabrik_element_data['db_table_name'] . '.' . $fabrik_element_data['name'];
+                        }
+                    }
+
+                    if (!empty($table_column_to_count)) {
+                        $db = JFactory::getDbo();
+
+                        $query = 'SELECT ' . $table_column_to_count . ' as count_value, COUNT(1) as count
+                            FROM #__emundus_campaign_candidature as jecc
+                            LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
+                            LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
+                            LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
+                            LEFT JOIN #__users as u on u.id = jecc.applicant_id
+                            LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
+                            LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
+
+                        // todo, do not apply filter of current count column
+                        $whereConditions = $helper_files->_moduleBuildWhere($already_joined);
+
+                        $query .= $whereConditions['join'];
+                        $query .= ' WHERE u.block=0 ' . $whereConditions['q'];
+                        $query .= ' GROUP BY ' . $table_column_to_count . ' ORDER BY ' . $table_column_to_count . ' ASC';
+
+                        try {
+                            $db->setQuery($query);
+                            $available_values = $db->loadAssocList();
+                        } catch (Exception $e) {
+                            JLog::add('Failed to get available values for filter ' . $filter['uid'] . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+                        }
+
+                        foreach($available_values as $a_value) {
+                            foreach($filter['values'] as $key => $value) {
+                                if ($value['value'] == $a_value['count_value']) {
+                                    $this->applied_filters[$filter_key]['values'][$key]['count'] = $a_value['count'];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
