@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="3.1" method="upgrade" group="hikashoppayment">
 	<name>Hikashop Be2Bill Payment Plugin</name>
-	<creationDate>31 mai 2023</creationDate>
-	<version>4.7.3</version>
+	<creationDate>26 juin 2023</creationDate>
+	<version>4.7.4</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>

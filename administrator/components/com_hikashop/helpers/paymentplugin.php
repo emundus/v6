@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -76,6 +76,33 @@ class hikashopPaymentPlugin extends hikashopPlugin {
 					$price = $order->full_total->prices[0]->price_value_without_payment;
 			}
 
+			if(isset($order->volume))
+				$volume = $order->volume;
+			elseif(isset($order->order_volume))
+				$volume = $order->order_volume;
+			else
+				$volume = 0;
+			if(isset($order->weight))
+				$weight = $order->weight;
+			elseif(isset($order->order_weight))
+				$weight = $order->order_weight;
+			else
+				$weight = 0;
+
+			if(isset($order->total_quantity))
+				$total_quantity = $order->total_quantity;
+			elseif(isset($order->products)) {
+				$total_quantity = 0;
+				$group = (int)$this->config->get('group_options', 0);
+				foreach($order->products as $p) {
+					if($group && $p->order_product_option_parent_id)
+						continue;
+					if($p->order_product_quantity > 0)
+						$total_quantity += $p->order_product_quantity;
+				}
+			} else
+				$total_quantity = 0;
+
 			if(!empty($method->payment_params->payment_min_price) && bccomp(sprintf('%F',$method->payment_params->payment_min_price), sprintf('%F',$price), 5) == 1) {
 				$method->errors['min_price'] = (hikashop_toFloat($method->payment_params->payment_min_price) - $price);
 				continue;
@@ -89,16 +116,16 @@ class hikashopPaymentPlugin extends hikashopPlugin {
 			if(!empty($method->payment_params->payment_max_volume) && bccomp(sprintf('%F',@$method->payment_params->payment_max_volume), 0, 3)) {
 				$method->payment_params->payment_max_volume_orig = $method->payment_params->payment_max_volume;
 				$method->payment_params->payment_max_volume = $volumeHelper->convert($method->payment_params->payment_max_volume, @$method->payment_params->payment_size_unit);
-				if(bccomp(sprintf('%.10F',$method->payment_params->payment_max_volume), sprintf('%.10F',$order->volume), 10) == -1){
-					$method->errors['max_volume'] = ($method->payment_params->payment_max_volume - $order->volume);
+				if(bccomp(sprintf('%.10F',$method->payment_params->payment_max_volume), sprintf('%.10F',$volume), 10) == -1){
+					$method->errors['max_volume'] = ($method->payment_params->payment_max_volume - $volume);
 					continue;
 				}
 			}
 			if(!empty($method->payment_params->payment_min_volume) && bccomp(sprintf('%F',@$method->payment_params->payment_min_volume), 0, 3)) {
 				$method->payment_params->payment_min_volume_orig = $method->payment_params->payment_min_volume;
 				$method->payment_params->payment_min_volume = $volumeHelper->convert($method->payment_params->payment_min_volume, @$method->payment_params->payment_size_unit);
-				if(bccomp(sprintf('%.10F',$method->payment_params->payment_min_volume), sprintf('%.10F',$order->volume), 10) == 1){
-					$method->errors['min_volume'] = ($order->volume - $method->payment_params->payment_min_volume);
+				if(bccomp(sprintf('%.10F',$method->payment_params->payment_min_volume), sprintf('%.10F',$volume), 10) == 1){
+					$method->errors['min_volume'] = ($volume - $method->payment_params->payment_min_volume);
 					continue;
 				}
 			}
@@ -106,29 +133,29 @@ class hikashopPaymentPlugin extends hikashopPlugin {
 			if(!empty($method->payment_params->payment_max_weight) && bccomp(sprintf('%F',@$method->payment_params->payment_max_weight), 0, 3)) {
 				$method->payment_params->payment_max_weight_orig = $method->payment_params->payment_max_weight;
 				$method->payment_params->payment_max_weight = $weightHelper->convert($method->payment_params->payment_max_weight, @$method->payment_params->payment_weight_unit);
-				if(bccomp(sprintf('%.5F',$method->payment_params->payment_max_weight), sprintf('%.5F',$order->weight), 5) == -1){
-					$method->errors['max_weight'] = ($method->payment_params->payment_max_weight - $order->weight);
+				if(bccomp(sprintf('%.5F',$method->payment_params->payment_max_weight), sprintf('%.5F',$weight), 5) == -1){
+					$method->errors['max_weight'] = ($method->payment_params->payment_max_weight - $weight);
 					continue;
 				}
 			}
 			if(!empty($method->payment_params->payment_min_weight) && bccomp(sprintf('%F',@$method->payment_params->payment_min_weight),0,3)){
 				$method->payment_params->payment_min_weight_orig = $method->payment_params->payment_min_weight;
 				$method->payment_params->payment_min_weight = $weightHelper->convert($method->payment_params->payment_min_weight, @$method->payment_params->payment_weight_unit);
-				if(bccomp(sprintf('%.5F',$method->payment_params->payment_min_weight), sprintf('%.5F',$order->weight), 5) == 1){
-					$method->errors['min_weight'] = ($order->weight - $method->payment_params->payment_min_weight);
+				if(bccomp(sprintf('%.5F',$method->payment_params->payment_min_weight), sprintf('%.5F',$weight), 5) == 1){
+					$method->errors['min_weight'] = ($weight - $method->payment_params->payment_min_weight);
 					continue;
 				}
 			}
 
 			if(!empty($method->payment_params->payment_max_quantity) && (int)$method->payment_params->payment_max_quantity) {
-				if((int)$method->payment_params->payment_max_quantity < (int)$order->total_quantity){
-					$method->errors['max_quantity'] = ($method->payment_params->payment_max_quantity - $order->total_quantity);
+				if((int)$method->payment_params->payment_max_quantity < (int)$total_quantity){
+					$method->errors['max_quantity'] = ($method->payment_params->payment_max_quantity - $total_quantity);
 					continue;
 				}
 			}
 			if(!empty($method->payment_params->payment_min_quantity) && (int)$method->payment_params->payment_min_quantity){
-				if((int)$method->payment_params->payment_min_quantity > (int)$order->total_quantity){
-					$method->errors['min_quantity'] = ($order->total_quantity - $method->payment_params->payment_min_quantity);
+				if((int)$method->payment_params->payment_min_quantity > (int)$total_quantity){
+					$method->errors['min_quantity'] = ($total_quantity - $method->payment_params->payment_min_quantity);
 					continue;
 				}
 			}

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -151,7 +151,7 @@ class plgSystemHikashopproductInsert extends JPlugin {
 			foreach($matches[0] as $k => $match) {
 
 				$show = ($matches[1][$k] == 'show');
-				$content = $matches[3][$k];
+				$content = hikashop_translate($matches[3][$k], null, true);
 				$attributes = trim($matches[2][$k]);
 				if(!empty($attributes)) {
 					$attributes = explode(' ', $attributes);
@@ -205,6 +205,12 @@ class plgSystemHikashopproductInsert extends JPlugin {
 								if(!empty($cart->$totalName->prices[0]->price_value_with_tax))
 									$total = $cart->$totalName->prices[0]->price_value_with_tax;
 								$key = substr($key, 0, 3);
+
+								$difference = abs($amount-$total);
+								$currencyClass = hikashop_get('class.currency');
+								$difference = $currencyClass->format($difference, hikashop_getCurrency());
+								$content = str_replace('{'.$key.'}', $difference, $content);
+
 								if(
 									($key == 'max' && $total > $amount) ||
 									($key == 'min' && $total < $amount)

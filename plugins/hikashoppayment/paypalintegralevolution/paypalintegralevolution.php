@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -334,7 +334,7 @@ class plgHikashoppaymentPaypalintegralevolution extends hikashopPaymentPlugin {
 	}
 
 	public function onPaymentConfiguration(&$element) {
-		$subtask = JRequest::getCmd('subtask', '');
+		$subtask = hikaInput::get()->getVar('subtask', '');
 		if ($subtask == 'ips') {
 			$ips = null;
 			echo implode(',', $this->_getIPList($ips));
