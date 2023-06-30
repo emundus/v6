@@ -1887,7 +1887,7 @@ structure:
             if (version_compare($cache_version, '1.36.6', '<=') || $firstrun){
                 EmundusHelperUpdate::addColumn('jos_emundus_personal_detail','profile','INT',11);
                 EmundusHelperUpdate::addColumn('jos_emundus_logs','ip_from','VARCHAR',26);
-                EmundusHelperUpdate::addColumn('jos_messages','page','VARCHAR',255);
+                EmundusHelperUpdate::addColumn('jos_messages','page','INT',11);
             }
 
 			// Insert new translations in overrides files
