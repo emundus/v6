@@ -14,6 +14,7 @@ if (modFilters) {
         defaultAppliedFilters: appliedFilters,
         filters: filters,
         defaultQuickSearchFilters: JSON.parse(atob(modFilters.getAttribute('data-quick-search-filters'))),
+        countFilterValues: modFilters.getAttribute('data-count-filter-values') === '1',
     }).use(Vuex).mixin(translate);
 
     app.mount('#em-filters-vue');

@@ -7,19 +7,26 @@ export default {
         let applied = false;
 
         if (filters) {
-            client.post('applyfilters', {
-                filters:  JSON.stringify(filters),
+            filters = JSON.parse(JSON.stringify(filters));
+            filters = filters.map(filter => {
+                delete filter.values;
+                return filter;
+            });
+
+            return client.post('applyfilters', {
+                filters: JSON.stringify(filters),
                 search_filters: JSON.stringify(search_filters)
             }).then(data => {
-               if (data.status) {
-                   applied = true;
+                if (data.status) {
+                    applied = true;
 
-                   window.dispatchEvent(successEvent);
-               }
+                    window.dispatchEvent(successEvent);
+                    return applied;
+                }
             });
+        } else {
+            return applied;
         }
-
-        return applied;
     },
     async saveFilters(filters, name, moduleId) {
         let saved = false;
@@ -59,7 +66,7 @@ export default {
             return updated;
         }
     },
-    deleteFilter(filterId) {
+    async deleteFilter(filterId) {
         let deleted = false;
 
         if (filterId) {
@@ -86,6 +93,21 @@ export default {
         }).catch(error => {
             console.log(error);
             return filters;
+        });
+    },
+    async countFiltersValues(moduleId) {
+        return client.post('setFiltersValuesAvailability', {
+            module_id: moduleId
+        }).then(data => {
+            if (data.status) {
+                return data;
+            }
+        }).catch((error) => {
+            console.log(error);
+            return {
+                status: false,
+                message: 'Error'
+            };
         });
     }
 };

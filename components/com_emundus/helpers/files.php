@@ -3540,7 +3540,7 @@ class EmundusHelperFiles
      * @param array $caller_params
      * @return array containing 'q' the where clause and 'join' the join clause
      */
-    public function _moduleBuildWhere($already_joined = array(), $caller = 'files', $caller_params = array()) {
+    public function _moduleBuildWhere($already_joined = array(), $caller = 'files', $caller_params = [], $filters_to_exclude = []) {
 		$where = ['q' => '', 'join' => ''];
 
 		$session = JFactory::getSession();
@@ -3596,7 +3596,11 @@ class EmundusHelperFiles
 
 
 			foreach ($session_filters as $filter) {
-				if (!in_array('all', $filter['value']) && !empty($filter['value'])) {
+                if (in_array($filter['uid'], $filters_to_exclude)) {
+                    continue;
+                }
+
+				if (!in_array('all', $filter['value']) && (!empty($filter['value']) || $filter['value'] == '0')) {
 					$filter_id = str_replace(['filter-', 'default-filter-'], '', $filter['id']);
 
 					if (is_numeric($filter_id)) {
@@ -3793,44 +3797,46 @@ class EmundusHelperFiles
 		return $data;
 	}
 
-	private function getJoinInformations($element_id, $group_id = 0, $list_id = 0): array
+	public function getJoinInformations($element_id, $group_id = 0, $list_id = 0): array
 	{
 		$data = [];
 
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
-		if (!empty($element_id)) {
-			$query->select('*')
-				->from('#__fabrik_joins')
-				->where('element_id = ' . $element_id);
+        if (!empty($element_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            if (!empty($element_id)) {
+                $query->select('*')
+                    ->from('#__fabrik_joins')
+                    ->where('element_id = ' . $element_id);
 
-			try {
-				$db->setQuery($query);
-				$data = $db->loadAssoc();
-			} catch(Exception $e) {
-				JLog::add('Failed to retreive join informations in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-			}
-		}
+                try {
+                    $db->setQuery($query);
+                    $data = $db->loadAssoc();
+                } catch(Exception $e) {
+                    JLog::add('Failed to retreive join informations in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                }
+            }
 
-		if ((empty($data) || empty($data['join_from_table']))  && !empty($group_id)) {
-			$query->clear()
-				->select('*')
-				->from('#__fabrik_joins')
-				->where('group_id = ' . $group_id);
+            if ((empty($data) || empty($data['join_from_table']))  && !empty($group_id)) {
+                $query->clear()
+                    ->select('*')
+                    ->from('#__fabrik_joins')
+                    ->where('group_id = ' . $group_id);
 
-			if (!empty($list_id)) {
-				$query->where('list_id = ' . $list_id);
-			}
+                if (!empty($list_id)) {
+                    $query->where('list_id = ' . $list_id);
+                }
 
-			try {
-				$db->setQuery($query);
-				$data = $db->loadAssoc();
-			} catch(Exception $e) {
-				JLog::add('Failed to retreive join informations in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-			}
-		}
+                try {
+                    $db->setQuery($query);
+                    $data = $db->loadAssoc();
+                } catch(Exception $e) {
+                    JLog::add('Failed to retreive join informations in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                }
+            }
+        }
 
-		return $data;
+		return $data ? $data : [];
 	}
 
 	private function findJoinBetweenTables($table_join, $join_from_table) {
@@ -4002,7 +4008,8 @@ class EmundusHelperFiles
 	public function writeQueryWithOperator($element, $values, $operator, $type = 'select', $fabrik_element_data = null) {
 		$query = '1=1';
 
-		if (!empty($element) && !empty($values) && !empty($operator)) {
+
+		if (!empty($element) && (!empty($values) || $values == '0') && !empty($operator)) {
 			$db = JFactory::getDbo();
 
 			if ($type === 'date' || $type === 'time') {
@@ -4156,6 +4163,125 @@ class EmundusHelperFiles
 
 		return $query;
 	}
+
+    /*
+     *
+     */
+    public function setFiltersValuesAvailability($applied_filters): array
+    {
+        $applied_filters = empty($applied_filters) ? [] : $applied_filters;
+
+        if (!empty($applied_filters)) {
+            foreach($applied_filters as $applied_filter_key => $applied_filter) {
+                if (!empty($applied_filter) && $applied_filter['type'] === 'select') {
+                    $available_values = [];
+                    $leftJoins = '';
+                    $already_joined = [
+                        'jecc' => 'jos_emundus_campaign_candidature',
+                        'ss' => 'jos_emundus_setup_status',
+                        'esc' => 'jos_emundus_setup_campaigns',
+                        'sp' => 'jos_emundus_setup_programmes',
+                        'u' => 'jos_users',
+                        'eu' => 'jos_emundus_users',
+                        'eta' => 'jos_emundus_tag_assoc'
+                    ];
+
+                    $table_column_to_count = null;
+                    if (!is_numeric($applied_filter['id'])) {
+                        switch ($applied_filter['uid']) {
+                            case 'status':
+                                $table_column_to_count = 'jecc.status';
+                                break;
+                            case 'campaigns':
+                                $table_column_to_count = 'jecc.campaign_id';
+                                break;
+                            case 'programmes':
+                                $table_column_to_count = 'esc.training';
+                                break;
+                            case 'tags':
+                                $table_column_to_count = 'eta.id_tag';
+                                break;
+                            case 'years':
+                                $table_column_to_count = 'esc.year';
+                                break;
+                            case 'published':
+                                $table_column_to_count = 'jecc.published';
+                                break;
+                        }
+                    } else {
+                        $fabrik_element_data = $this->getFabrikElementData($applied_filter['id']);
+
+                        if (!empty($fabrik_element_data)) {
+                            if ($fabrik_element_data['group_params']['repeat_group_button'] == 1) {
+                                $join_informations = $this->getJoinInformations($fabrik_element_data['element_id']);
+
+                                if (!empty($join_informations)) {
+                                    $fabrik_element_data['db_table_name'] = $join_informations['table_join'];
+                                }
+                            }
+
+                            $table_alias = $fabrik_element_data['db_table_name'];
+                            if (!in_array($fabrik_element_data['db_table_name'], $already_joined)) {
+                                $joins = $this->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', $fabrik_element_data['db_table_name']);
+
+                                if (!empty($joins)) {
+                                    $leftJoins = $this->writeJoins($joins, $already_joined);
+                                }
+                            } else {
+                                $key = array_search($fabrik_element_data['db_table_name'], $already_joined);
+
+                                if (!is_numeric($key)) {
+                                    $table_alias = $key;
+                                }
+                            }
+
+                            $table_column_to_count = $table_alias . '.' . $fabrik_element_data['name'];
+                        }
+                    }
+
+                    if (!empty($table_column_to_count)) {
+                        $db = JFactory::getDbo();
+
+                        $query = 'SELECT ' . $table_column_to_count . ' as count_value, COUNT(1) as count
+                            FROM #__emundus_campaign_candidature as jecc
+                            LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
+                            LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
+                            LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
+                            LEFT JOIN #__users as u on u.id = jecc.applicant_id
+                            LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
+                            LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
+
+                        if (!empty($leftJoins)) {
+                            $query .= $leftJoins;
+                        }
+
+                        $whereConditions = $this->_moduleBuildWhere($already_joined, 'files', [], [$applied_filter['uid']]);
+
+                        $query .= $whereConditions['join'];
+                        $query .= ' WHERE u.block=0 ' . $whereConditions['q'];
+                        $query .= ' GROUP BY ' . $table_column_to_count . ' ORDER BY ' . $table_column_to_count . ' ASC';
+
+                        try {
+                            $db->setQuery($query);
+                            $available_values = $db->loadAssocList('count_value');
+
+                            foreach($applied_filter['values'] as $key => $value) {
+                                if (isset($available_values[$value['value']])) {
+                                    $applied_filters[$applied_filter_key]['values'][$key]['count'] = $available_values[$value['value']]['count'];
+                                } else {
+                                    $applied_filters[$applied_filter_key]['values'][$key]['count'] = 0;
+                                }
+                            }
+                        } catch (Exception $e) {
+                            JLog::add('Failed to get available values for filter ' . $applied_filter['uid'] . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+                        }
+                    }
+                }
+            }
+        }
+
+        return $applied_filters;
+    }
 
     /**
      * @param       $str_array

@@ -39,7 +39,7 @@
 	  </section>
 	  <section id="applied-filters">
 			<div v-for="appliedFilter in appliedFilters" :key="appliedFilter.uid">
-				<MultiSelect v-if="appliedFilter.type === 'select'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)" @filter-changed="onFilterChanged"></MultiSelect>
+				<MultiSelect v-if="appliedFilter.type === 'select'" :filter="appliedFilter" :module-id="moduleId" :countFilterValues="countFilterValues" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)" @filter-changed="onFilterChanged"></MultiSelect>
 				<DateFilter v-else-if="appliedFilter.type === 'date'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)" @filter-changed="onFilterChanged"></DateFilter>
 				<TimeFilter v-else-if="appliedFilter.type === 'time'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)"></TimeFilter>
 				<DefaultFilter v-else :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)" @filter-changed="onFilterChanged"></DefaultFilter>
@@ -84,6 +84,10 @@ export default {
 			type: Array,
 			default: () => []
 		},
+    countFilterValues: {
+      type: Boolean,
+      default: false
+    },
 	},
 	data() {
 		return {
@@ -174,7 +178,15 @@ export default {
 		},
 		applyFilters() {
 			window.dispatchEvent(this.startApplyFilters);
-			filtersService.applyFilters(this.appliedFilters, this.globalSearch, this.applySuccessEvent);
+			filtersService.applyFilters(this.appliedFilters, this.globalSearch, this.applySuccessEvent).then((applied) => {
+        if (applied && this.countFilterValues) {
+          filtersService.countFiltersValues(this.moduleId).then((response) => {
+            if (response.status) {
+              this.appliedFilters = response.data;
+            }
+          });
+        }
+      });
 		},
 		clearFilters() {
 			sessionStorage.removeItem('emundus-current-filter');

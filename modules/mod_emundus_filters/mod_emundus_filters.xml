@@ -20,7 +20,7 @@
             <fieldset name="basic">
                 <field type="list" name="filter_on_fnums" label="MOD_EMUNDUS_FILTER_FILTER_ON_FNUM" default="1">
                     <option value="1">JYES</option>
-                    <option value="0">JNO</option>
+                    <!--<option value="0">JNO</option>-->
                 </field>
                 <field showon="filter_on_fnums:0" type="text" name="element_id" label="MOD_EM_FILTER_FABRIK_ELEMENT_ID" description="MOD_EM_FILTER_FABRIK_ELEMENT_ID_DESC" default="0"/>
                 <field showon="filter_on_fnums:0"
@@ -44,6 +44,7 @@
 
                 <!-- fields shown on fnum context -->
                 <fieldset showon="filter_on_fnum=1">
+                    <field type="checkbox" name="count_filter_values" label="MOD_EMUNDUS_FILTER_COUNT_FILTER_VALUES" description="MOD_EMUNDUS_FILTER_COUNT_FILTER_VALUES_DESC" default="0"/>
                     <field type="list" name="filter_status" label="FILTER_ON_STATUS">
                         <option value="0">JNO</option>
                         <option value="1">JYES</option>
