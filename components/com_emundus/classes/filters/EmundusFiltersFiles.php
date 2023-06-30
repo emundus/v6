@@ -33,6 +33,8 @@ class EmundusFiltersFiles extends EmundusFilters
 			$this->setQuickSearchFilters($quick_search_filters);
 		}
 
+        $this->saveFiltersAllValues();
+
         if ($this->config['count_filter_values']) {
             require_once JPATH_ROOT . '/components/com_emundus/helpers/files.php';
             $helper_files = new EmundusHelperFiles();
@@ -501,5 +503,22 @@ class EmundusFiltersFiles extends EmundusFilters
         }
 
         return $element_ids;
+    }
+
+    private function saveFiltersAllValues() {
+        $filters_all_values = [];
+
+        foreach($this->filters as $filter) {
+            $filters_all_values[$filter['id']] = $filter['values'];
+        }
+
+        foreach($this->applied_filters as $filter) {
+            if (!isset($filters_all_values[$filter['id']])) {
+                $filters_all_values[$filter['id']] = $filter['values'];
+            }
+        }
+
+        $session = JFactory::getSession();
+        $session->set('em-filters-all-values', $filters_all_values);
     }
 }

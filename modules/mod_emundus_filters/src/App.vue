@@ -183,7 +183,6 @@ export default {
           filtersService.countFiltersValues(this.moduleId).then((response) => {
             if (response.status) {
               this.appliedFilters = response.data;
-              console.log(this.appliedFilters);
             }
           });
         }

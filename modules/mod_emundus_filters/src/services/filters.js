@@ -7,9 +7,9 @@ export default {
         let applied = false;
 
         if (filters) {
-            // remove filters 'values' property, only interested in the value which is the selected option
+            filters = JSON.parse(JSON.stringify(filters));
             filters = filters.map(filter => {
-                //delete filter.values;
+                delete filter.values;
                 return filter;
             });
 

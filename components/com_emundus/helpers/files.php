@@ -3600,7 +3600,7 @@ class EmundusHelperFiles
                     continue;
                 }
 
-				if (!in_array('all', $filter['value']) && !empty($filter['value'])) {
+				if (!in_array('all', $filter['value']) && (!empty($filter['value']) || $filter['value'] == '0')) {
 					$filter_id = str_replace(['filter-', 'default-filter-'], '', $filter['id']);
 
 					if (is_numeric($filter_id)) {
@@ -4008,7 +4008,8 @@ class EmundusHelperFiles
 	public function writeQueryWithOperator($element, $values, $operator, $type = 'select', $fabrik_element_data = null) {
 		$query = '1=1';
 
-		if (!empty($element) && !empty($values) && !empty($operator)) {
+
+		if (!empty($element) && (!empty($values) || $values == '0') && !empty($operator)) {
 			$db = JFactory::getDbo();
 
 			if ($type === 'date' || $type === 'time') {
@@ -4199,6 +4200,9 @@ class EmundusHelperFiles
                                 break;
                             case 'tags':
                                 $table_column_to_count = 'eta.id_tag';
+                                break;
+                            case 'years':
+                                $table_column_to_count = 'esc.year';
                                 break;
                             case 'published':
                                 $table_column_to_count = 'jecc.published';

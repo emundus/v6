@@ -4127,18 +4127,18 @@ class EmundusControllerFiles extends JControllerLegacy
                     $applied_filters = $session->get('em-applied-filters', []);
 
                     if (!empty($applied_filters)) {
+                        $all_filters_values = $session->get('em-filters-all-values', []);
+                        foreach ($applied_filters as $key => $filter) {
+                            if (!empty($all_filters_values[$filter['id']])) {
+                                $applied_filters[$key]['values'] = $all_filters_values[$filter['id']];
+                            }
+                        }
+
                         require_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
                         $h_files = new EmundusHelperFiles();
                         $data = $h_files->setFiltersValuesAvailability($applied_filters);
 
-                        $session_filters = array_map(function($item) {
-                            return [
-                                'id' => $item['id'],
-                                'value' => $item['value'],
-                            ];
-                        }, $applied_filters);
-
-                        $response = ['status' => true, 'code' => 200, 'msg' => JText::_('SUCCESS'), 'data' => $data, 'session' => $session_filters];
+                        $response = ['status' => true, 'code' => 200, 'msg' => JText::_('SUCCESS'), 'data' => $data];
                     }
                 }
             }
