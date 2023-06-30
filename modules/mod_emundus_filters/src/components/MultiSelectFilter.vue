@@ -60,7 +60,7 @@
 						<input :name="filter.uid + '-filter-value'" :id="filter.uid + '-filter-value-all'" type="checkbox" value="all" v-model="filter.value" @click="onClickAll">
 						<label :for="filter.uid + '-filter-value-all'" style="margin: 0">{{ translate('ALL') }}</label>
 					</div>
-					<div v-for="value in searchedValues" :key="value.value" class="em-flex-row em-filter-value-checkbox em-mb-4" @click="onClickSpecificValue(value.value)"
+					<div v-for="value in searchedValues" :key="value.value" class="em-flex-row em-filter-value-checkbox em-mb-4" @click="onClickSpecificValue()"
                :class="{
                  'disabled hidden': countFilterValues && value.hasOwnProperty('count') && value.count == 0,
                }"
@@ -123,16 +123,9 @@ export default {
 		document.removeEventListener('click', this.handleClickOutside);
 	},
 	methods: {
-		onClickSpecificValue(newValue) {
-			// If all is selected, remove 'all' from selected values
+		onClickSpecificValue() {
 			if (this.filter.value.includes('all')) {
 				this.filter.value =  this.filter.value.filter((value) => { return value !== 'all' });
-
-				// check that newvalue exists
-				const exists = this.filter.values.find((value) => { return value.value === newValue });
-				if (exists && !this.filter.value.includes(newValue)) {
-					this.filter.value.push(newValue);
-				}
 			}
 		},
 		onClickAll() {
