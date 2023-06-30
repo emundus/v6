@@ -1,12 +1,15 @@
 <?php
 require_once(JPATH_ROOT . '/components/com_emundus/classes/filters/EmundusFilters.php');
+require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
 
 class EmundusFiltersFiles extends EmundusFilters
 {
 	private $profiles = [];
 	private $user_campaigns = [];
-
+	private $user_programs = [];
     private $config = [];
+
+	private $m_users = null;
 
 	public function __construct($config = array())
 	{
@@ -17,9 +20,13 @@ class EmundusFiltersFiles extends EmundusFilters
 			throw new Exception('Access denied', 403);
 		}
 
-        $this->config = $config;
-		$this->setDefaultFilters($config);
+		$this->m_users = new EmundusModelUsers();
+		$this->config = $config;
+		$this->user_campaigns = $this->m_users->getAllCampaignsAssociatedToUser($this->user->id);
+		$this->user_programs = $this->m_users->getUserGroupsProgrammeAssoc($this->user->id, 'jesp.id');
+
 		$this->setProfiles();
+		$this->setDefaultFilters($config);
 		$this->setFilters();
 
 		$session_filters = JFactory::getSession()->get('em-applied-filters', null);
@@ -44,7 +51,6 @@ class EmundusFiltersFiles extends EmundusFilters
 
 	private function setProfiles()
 	{
-		$this->user_campaigns = EmundusHelperAccess::getAllCampaignsAssociatedToUser($this->user->id);
 		if (!empty($this->user_campaigns)) {
 			$this->profiles = $this->getProfilesFromCampaignId($this->user_campaigns);
 		}
@@ -201,10 +207,12 @@ class EmundusFiltersFiles extends EmundusFilters
 		}
 
 		if ($config['filter_campaign']) {
+
 			$query->clear()
 				->select('id as value, label, 0 as count')
 				->from('#__emundus_setup_campaigns')
-				->where('published = 1');
+				->where('published = 1')
+				->andWhere('id IN (' . implode(',', $this->user_campaigns) . ')');
 
 			$db->setQuery($query);
 			$campaigns = $db->loadAssocList();
@@ -226,7 +234,8 @@ class EmundusFiltersFiles extends EmundusFilters
 			$query->clear()
 				->select('id as value, label, 0 as count')
 				->from('#__emundus_setup_programmes')
-				->where('published = 1');
+				->where('published = 1')
+				->andWhere('id IN (' . implode(',', $this->user_programs) . ')');
 
 			$db->setQuery($query);
 			$programs = $db->loadAssocList();
@@ -245,11 +254,11 @@ class EmundusFiltersFiles extends EmundusFilters
 		}
 
 		if ($config['filter_years']) {
-            // TODO: get years from campaigns or teaching unity ? (or both ?)
 			$query->clear()
 				->select('DISTINCT year as value, year as label, 0 as count')
 				->from('#__emundus_setup_campaigns')
-				->where('published = 1');
+				->where('published = 1')
+				->andWhere('id IN (' . implode(',', $this->user_campaigns) . ')');
 
 			$db->setQuery($query);
 			$years = $db->loadAssocList();
