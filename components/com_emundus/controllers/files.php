@@ -156,8 +156,6 @@ class EmundusControllerFiles extends JControllerLegacy
 		exit;
 	}
 
-
-
     /**
      *
      */
@@ -4100,4 +4098,53 @@ class EmundusControllerFiles extends JControllerLegacy
 		echo json_encode($response);
 		exit;
 	}
+
+    public function setFiltersValuesAvailability()
+    {
+        $response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
+        $user = JFactory::getUser();
+
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+            $response['msg'] = JText::_('MISSING_PARAMS');
+            $module_id = JFactory::getApplication()->input->getInt('module_id', 0);
+
+            if (!empty($module_id)) {
+                $response['msg'] = JText::_('NO_CALCULATION_FOR_THIS_MODULE');
+
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select('params')
+                    ->from('#__modules')
+                    ->where('id = ' . $db->quote($module_id));
+
+                $db->setQuery($query);
+                $module_params = $db->loadResult();
+                $module_params = json_decode($module_params, true);
+
+                if (!empty($module_params) && $module_params['count_filter_values'] == 1) {
+                    $session = JFactory::getSession();
+                    $applied_filters = $session->get('em-applied-filters', []);
+
+                    if (!empty($applied_filters)) {
+                        require_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
+                        $h_files = new EmundusHelperFiles();
+                        $data = $h_files->setFiltersValuesAvailability($applied_filters);
+
+                        $session_filters = array_map(function($item) {
+                            return [
+                                'id' => $item['id'],
+                                'value' => $item['value'],
+                            ];
+                        }, $applied_filters);
+
+                        $response = ['status' => true, 'code' => 200, 'msg' => JText::_('SUCCESS'), 'data' => $data, 'session' => $session_filters];
+                    }
+                }
+            }
+        }
+
+        echo json_encode($response);
+        exit;
+    }
 }

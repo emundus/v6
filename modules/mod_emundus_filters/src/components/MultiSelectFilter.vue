@@ -62,7 +62,7 @@
 					</div>
 					<div v-for="value in searchedValues" :key="value.value" class="em-flex-row em-filter-value-checkbox em-mb-4" @click="onClickSpecificValue(value.value)"
                :class="{
-                 'disabled': countFilterValues && value.hasOwnProperty('count') && value.count == 0,
+                 'disabled hidden': countFilterValues && value.hasOwnProperty('count') && value.count == 0,
                }"
           >
 						<input :name="filter.uid + '-filter-value'" :id="filter.uid + '-filter-value-'+ value.value" type="checkbox" :value="value.value" v-model="filter.value">

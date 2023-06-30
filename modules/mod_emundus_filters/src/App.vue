@@ -178,7 +178,16 @@ export default {
 		},
 		applyFilters() {
 			window.dispatchEvent(this.startApplyFilters);
-			filtersService.applyFilters(this.appliedFilters, this.globalSearch, this.applySuccessEvent);
+			filtersService.applyFilters(this.appliedFilters, this.globalSearch, this.applySuccessEvent).then((applied) => {
+        if (applied && this.countFilterValues) {
+          filtersService.countFiltersValues(this.moduleId).then((response) => {
+            if (response.status) {
+              this.appliedFilters = response.data;
+              console.log(this.appliedFilters);
+            }
+          });
+        }
+      });
 		},
 		clearFilters() {
 			sessionStorage.removeItem('emundus-current-filter');
