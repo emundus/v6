@@ -3522,8 +3522,8 @@ class EmundusModelFiles extends JModelLegacy
         try {
             $query->select('ecc.fnum, COUNT(m.message_id) as nb')
                 ->from($db->quoteName('#__emundus_campaign_candidature','ecc'))
-                ->leftJoin($db->quoteName('#__emundus_chatroom','ec').' ON '.$db->quoteName('ec.fnum').' LIKE '.$db->quoteName('ecc.fnum'))
-                ->leftJoin($db->quoteName('#__messages','m').' ON '.$db->quoteName('m.page').' = '.$db->quoteName('ec.id') . ' AND ' . $db->quoteName('m.state') . ' = ' . $db->quote(0))
+                ->leftJoin($db->quoteName('#__emundus_chatroom','ec').' ON '.$db->quoteName('ec.fnum').' = '.$db->quoteName('ecc.fnum'))
+                ->leftJoin($db->quoteName('#__messages','m').' ON '.$db->quoteName('m.page') . ' IS NOT NULL' . ' AND ' . $db->quoteName('m.page').' = '.$db->quoteName('ec.id') . ' AND ' . $db->quoteName('m.state') . ' = ' . $db->quote(0))
                 ->group('ecc.fnum');
 
             $db->setQuery($query);
