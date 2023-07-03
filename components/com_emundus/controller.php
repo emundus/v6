@@ -1612,25 +1612,14 @@ class EmundusController extends JControllerLegacy {
             }
         }
 
-        // Allow referents to access documents from a file using an existing keyid
-        $keyid = $jinput->get('keyid', null);
-        if (!empty($keyid)) {
-            $fnum =  $jinput->get->get('fnum', null);
-            if (!empty($fnum)) {
-                $query = 'SELECT id FROM #__emundus_files_request WHERE keyid LIKE ' . $db->quote($keyid) . ' AND fnum LIKE ' . $db->quote($fnum) . ' AND uploaded = ' . $db->quote(0);
-                $db->setQuery($query);
-                $fileRequest = $db->loadResult();
-            }
-        }
-
         // Check if the user is an applicant and it is his file.
         if (EmundusHelperAccess::isApplicant($current_user->id) && $current_user->id == $uid && !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
             if ($fileInfo->can_be_viewed != 1 && !empty($fileInfo)) {
                 die (JText::_('ACCESS_DENIED'));
             }
         }
-        // If the user is a referent on this file, has the rights to open attachments, or to create a PDF export (he needs to be able to open it, even if he can't access the documents).
-        elseif (!empty($fileInfo) && ((!EmundusHelperAccess::asAccessAction(4,'r', $current_user->id, $fileInfo->fnum) && !EmundusHelperAccess::asAccessAction(8,'c', $current_user->id, $fileInfo->fnum)) && empty($fileRequest))) {
+        // If the user has the rights to open attachments, or to create a PDF export (he needs to be able to open it, even if he can't access the documents).
+        elseif (!empty($fileInfo) && (!EmundusHelperAccess::asAccessAction(4,'r', $current_user->id, $fileInfo->fnum) && !EmundusHelperAccess::asAccessAction(8,'c', $current_user->id, $fileInfo->fnum))) {
             die (JText::_('ACCESS_DENIED'));
         } elseif (empty($fileInfo) && (!EmundusHelperAccess::asAccessAction(4,'r') && !EmundusHelperAccess::asAccessAction(8,'c'))) {
             die (JText::_('ACCESS_DENIED'));
