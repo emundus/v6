@@ -26,6 +26,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
     .mod_emundus_flow___infos{
         flex-wrap: wrap;
         grid-gap: 24px;
+        max-width: 75%;
     }
 
     .mod_emundus_flow___intro .btn.btn-primary {

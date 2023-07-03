@@ -136,7 +136,7 @@ describe('Attachments.vue', () => {
     });
   });
 
-  if('Local storage should be set with category value', () => {
+  it('Local storage should be set with category value', () => {
     expect(localStorage.getItem('vue-attachment-category')).toBe('2');
   });
 
@@ -146,7 +146,7 @@ describe('Attachments.vue', () => {
     expect(wrapper.vm.displayedAttachments.length).toBe(wrapper.vm.attachments.length);
   });
 
-  if('Local storage should be set with category value', () => {
+  it('Local storage should be set with category value', () => {
     expect(localStorage.getItem('vue-attachment-category')).toBe(null);
   });
 

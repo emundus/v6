@@ -1419,18 +1419,28 @@ body > .g-container {
     }
   }
 
-  form .dz-message {
-    height: 150px;
-    border: 1px dashed $neutral-500;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border-radius: 8px;
-    margin: 8px 0;
+  form {
+    .dz-preview {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-    span {
-      color: var(--neutral-800);
+    .dz-message {
+
+      height: 150px;
+      border: 1px dashed $neutral-500;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-radius: 8px;
+      margin: 8px 0;
+
+
+      span {
+        color: var(--neutral-800);
+      }
     }
   }
 
@@ -5493,7 +5503,6 @@ screen and (max-height: 769px) {
 }
 
 @media all and (min-width: 434px) and (max-width: 479px) {
-
   .gantry #g-navigation,
   .gantry #g-navigation .g-container {
     height: auto !important;
@@ -5510,6 +5519,14 @@ screen and (max-height: 769px) {
 }
 
 @media all and (max-width: 479px) {
+
+  .view-checklist table form .dz-default.dz-message {
+    padding-right: 12px !important;
+  }
+
+  .view-form:not(.com_emundus) .span12 .page-header h1 {
+    hyphens: auto;
+  }
 
   #g-navigation .g-container #header-c .moduletable .header-right {
     flex-direction: column;
