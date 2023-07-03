@@ -2,6 +2,7 @@
   <div id="emundus-filters" class="em-w-100">
 	  <section id="filters-top-actions" class="em-mb-16">
 		  <span id="clear-filters" class="material-icons-outlined em-pointer hidden" @click="clearFilters" :alt="translate('MOD_EMUNDUS_FILTERS_CLEAR_FILTERS')">filter_list_off</span>
+			<span id="save-filters" class="material-icons-outlined em-pointer hidden" @click="onClickSaveFilter" :alt="translate('MOD_EMUNDUS_FILTERS_SAVE_FILTERS')">save</span>
 
 		  <div id="global-search-wrapper" style="position: relative;">
 			  <div id="global-search-values" ref="globalSearchValues" class="em-border-radius-8 em-border-neutral-400 em-flex-row em-flex-wrap em-white-bg" @click="onEnterGlobalSearchDiv">
@@ -18,12 +19,9 @@
 			  </ul>
 		  </div>
 		  <div id="save-filters-inputs-btns">
-			  <button id="save-filters" class="em-secondary-button label label-darkblue em-mt-8 em-mb-8" style="font-weight: normal !important;" @click="onClickSaveFilter">
-				  {{ translate('MOD_EMUNDUS_FILTERS_SAVE_FILTERS') }}
-			  </button>
-			  <div class="em-flex-row em-flex-space-between" :class="{'hidden': !openSaveFilter}">
-				  <input id="new-filter-name" type="text" class="em-flex-row" v-model="newFilterName" :placeholder="translate('MOD_EMUNDUS_FILTERS_SAVE_FILTER_NAME')">
-				  <span class="material-icons-outlined" :class="{'em-pointer em-dark-blue-500-color': newFilterName.length > 0}" @click="saveFilters">save</span>
+			  <div id="save-filter-new-name" class="em-flex-row em-flex-space-between em-border-radius-8 em-white-bg em-box-shadow em-w-100 em-p-16" :class="{'hidden': !openSaveFilter}">
+				  <input id="new-filter-name" ref="new-filter-name" type="text" class="em-flex-row" v-model="newFilterName" :placeholder="translate('MOD_EMUNDUS_FILTERS_SAVE_FILTER_NAME')" minlength="2" @keyup.enter="saveFilters">
+				  <span class="material-icons-outlined em-pointer" :class="{'em-pointer em-dark-blue-500-color': newFilterName.length > 1}" @click="saveFilters">done</span>
 			  </div>
 			  <div v-if="registeredFilters.length > 0" id="registered-filters-wrapper" class="em-mt-8">
 				  <label for="registered-filters">{{ translate('MOD_EMUNDUS_FILTERS_SAVED_FILTERS') }}</label>
@@ -191,17 +189,21 @@ export default {
 			});
 			this.applyFilters();
 		},
-		saveFilters() {
+		saveFilters(e) {
+			if (e) {
+				e.preventDefault();
+				e.stopPropagation();
+			}
 			let saved = false;
 
 			if (this.newFilterName.length > 0) {
-				saved = filtersService.saveFilters(this.appliedFilters, this.newFilterName, this.moduleId);
+				filtersService.saveFilters(this.appliedFilters, this.newFilterName, this.moduleId).then((saved) => {
+					if (saved) {
+						this.getRegisteredFilters();
+					}
+				});
 				this.openSaveFilter = false;
 				this.newFilterName = '';
-
-				if (saved) {
-					this.getRegisteredFilters();
-				}
 			}
 
 			return saved;
@@ -253,7 +255,14 @@ export default {
 					this.updateFilter(foundFilter.id);
 				}
 			} else {
-				this.openSaveFilter = true;
+				this.openSaveFilter = !this.openSaveFilter;
+
+				if (this.openSaveFilter) {
+					// focus on the input new-filter-name
+					this.$nextTick(() => {
+						this.$refs['new-filter-name'].focus();
+					});
+				}
 			}
 		},
 		onRemoveFilter(filter) {
@@ -323,6 +332,10 @@ export default {
 </script>
 
 <style>
+#emundus-filters {
+	position: relative;
+}
+
 #select-scopes:not(.hidden) {
 	position: absolute;
 	top: 42px;
@@ -350,5 +363,10 @@ export default {
 
 .global-search-tag {
 	padding: 4px;
+}
+
+#save-filter-new-name {
+	position: absolute;
+	top: 0;
 }
 </style>
