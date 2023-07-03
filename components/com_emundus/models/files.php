@@ -1989,176 +1989,179 @@ class EmundusModelFiles extends JModelLegacy
             ];
             $lastTab = array();
 
-            foreach ($elements as $elt) {
-                $params_group = json_decode($elt->group_attribs);
+			if ($this->use_module_filters) {
 
-                try{
-                    $query_isjoin = 'select is_join from jos_fabrik_groups where id = '.$elt->group_id;
-                    $db->setQuery($query_isjoin);
-                    $is_join = $db->loadResult();
-                } catch(Exception $e){
-                    JLog::add('Error when get param is_join from group : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-                }
+			} else {
+				foreach ($elements as $elt) {
+					$params_group = json_decode($elt->group_attribs);
+
+					try{
+						$query_isjoin = 'select is_join from jos_fabrik_groups where id = '.$elt->group_id;
+						$db->setQuery($query_isjoin);
+						$is_join = $db->loadResult();
+					} catch(Exception $e){
+						JLog::add('Error when get param is_join from group : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+					}
 
 
-                if (!array_key_exists($elt->tab_name, $tableAlias)) {
+					if (!array_key_exists($elt->tab_name, $tableAlias)) {
 
-                    $tableAlias[$elt->tab_name] = $elt->tab_name;
+						$tableAlias[$elt->tab_name] = $elt->tab_name;
 
-                    if (!isset($lastTab)) {
-                        $lastTab = array();
-                    }
-                    if (!in_array($elt->tab_name, $lastTab)) {
-                        $leftJoin .= ' left join '.$elt->tab_name.' on '.$elt->tab_name.'.fnum = jos_emundus_campaign_candidature.fnum ';
-                    }
+						if (!isset($lastTab)) {
+							$lastTab = array();
+						}
+						if (!in_array($elt->tab_name, $lastTab)) {
+							$leftJoin .= ' left join '.$elt->tab_name.' on '.$elt->tab_name.'.fnum = jos_emundus_campaign_candidature.fnum ';
+						}
 
-                    $lastTab[] = $elt->tab_name;
-                }
+						$lastTab[] = $elt->tab_name;
+					}
 
-                if ($params_group->repeat_group_button == 1 || $is_join == 1) {
-                    $if = array();
-                    $endif = '';
+					if ($params_group->repeat_group_button == 1 || $is_join == 1) {
+						$if = array();
+						$endif = '';
 
-                    // Get the table repeat table name using this query
-                    $repeat_join_table_query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id=' . $elt->group_id . ' AND table_join_key like "parent_id"';
-                    try {
-                        $this->_db->setQuery($repeat_join_table_query);
-                        $repeat_join_table = $this->_db->loadResult();
-                    } catch (Exception $e) {
-                        JLog::add('Line ' . __LINE__ . ' - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
-                        throw $e;
-                    }
-                    if ($methode == 1) {
-                        if ($elt->element_plugin == 'databasejoin') {
-                            $element_attribs = json_decode($elt->element_attribs);
+						// Get the table repeat table name using this query
+						$repeat_join_table_query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id=' . $elt->group_id . ' AND table_join_key like "parent_id"';
+						try {
+							$this->_db->setQuery($repeat_join_table_query);
+							$repeat_join_table = $this->_db->loadResult();
+						} catch (Exception $e) {
+							JLog::add('Line ' . __LINE__ . ' - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+							throw $e;
+						}
+						if ($methode == 1) {
+							if ($elt->element_plugin == 'databasejoin') {
+								$element_attribs = json_decode($elt->element_attribs);
 
-                            if ($element_attribs->database_join_display_type == "checkbox") {
+								if ($element_attribs->database_join_display_type == "checkbox") {
 
-                                $t = $elt->table_join;
+									$t = $elt->table_join;
 
-                                $join_query = $db->getQuery(true);
+									$join_query = $db->getQuery(true);
 
-                                $join_query
-                                    ->select($db->quoteName('join_from_table'))
-                                    ->from($db->quoteName('#__fabrik_joins'))
-                                    ->where($db->quoteName('element_id') . ' = ' . $elt->id);
+									$join_query
+										->select($db->quoteName('join_from_table'))
+										->from($db->quoteName('#__fabrik_joins'))
+										->where($db->quoteName('element_id') . ' = ' . $elt->id);
 
-                                $db->setQuery($join_query);
+									$db->setQuery($join_query);
 
-                                try {
-                                    $join_table = $db->loadResult();
+									try {
+										$join_table = $db->loadResult();
 
-                                    $join_val_column = !empty($element_attribs->join_val_column_concat)
-                                        ? 'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')'
-                                        : 't.'.$element_attribs->join_val_column;
+										$join_val_column = !empty($element_attribs->join_val_column_concat)
+											? 'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')'
+											: 't.'.$element_attribs->join_val_column;
 
-                                    $sub_select = '(
+										$sub_select = '(
                                         SELECT ' . $t . '.parent_id AS pid, CONCAT("[\"",GROUP_CONCAT('.$join_val_column.' SEPARATOR ", \""), "\"]") AS vals
                                         FROM '.$t.'
                                         LEFT JOIN '.$element_attribs->join_db_name. ' AS  t ON ' .'t.'.$element_attribs->join_key_column.' = '.$t.'.'.$elt->element_name.'
                                         GROUP BY pid
                                   ) sub_select';
 
-                                    $select = '(SELECT GROUP_CONCAT(vals) FROM '. $sub_select. ' WHERE sub_select.pid = ' . $join_table . '.id)';
+										$select = '(SELECT GROUP_CONCAT(vals) FROM '. $sub_select. ' WHERE sub_select.pid = ' . $join_table . '.id)';
 
-                                } catch (Exception $e) {
-                                    $error = JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage().' :: '.preg_replace("/[\r\n]/", " ", $query);
-                                    JLog::add($error, JLog::ERROR, 'com_emundus');
-                                }
+									} catch (Exception $e) {
+										$error = JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage().' :: '.preg_replace("/[\r\n]/", " ", $query);
+										JLog::add($error, JLog::ERROR, 'com_emundus');
+									}
 
-                            } else {
+								} else {
 
-                                $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')':'t.'.$element_attribs->join_val_column;
+									$join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')':'t.'.$element_attribs->join_val_column;
 
-                                $select .= 'FROM '.$tableAlias[$elt->tab_name].'
+									$select .= 'FROM '.$tableAlias[$elt->tab_name].'
                                     LEFT JOIN '.$repeat_join_table.' ON '.$repeat_join_table.'.parent_id = '.$tableAlias[$elt->tab_name].'.id
                                     LEFT JOIN '.$element_attribs->join_db_name.' as t ON t.'.$element_attribs->join_key_column.' = '.$repeat_join_table.'.'.$elt->element_name.'
                                     WHERE '.$tableAlias[$elt->tab_name].'.fnum=jos_emundus_campaign_candidature.fnum)';
-                            }
+								}
 
-                            $query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
+								$query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
 
-                        } elseif ($elt->element_plugin == 'cascadingdropdown') {
-                            $element_attribs = json_decode($elt->element_attribs);
-                            $cascadingdropdown_id = $element_attribs->cascadingdropdown_id;
-                            $r1 = explode('___', $cascadingdropdown_id);
-                            $cascadingdropdown_label = $element_attribs->cascadingdropdown_label;
-                            $r2 = explode('___', $cascadingdropdown_label);
-                            $select = !empty($element_attribs->cascadingdropdown_label_concat)?"CONCAT(".$element_attribs->cascadingdropdown_label_concat.")":$r2[1];
-                            $from = $r2[0];
+							} elseif ($elt->element_plugin == 'cascadingdropdown') {
+								$element_attribs = json_decode($elt->element_attribs);
+								$cascadingdropdown_id = $element_attribs->cascadingdropdown_id;
+								$r1 = explode('___', $cascadingdropdown_id);
+								$cascadingdropdown_label = $element_attribs->cascadingdropdown_label;
+								$r2 = explode('___', $cascadingdropdown_label);
+								$select = !empty($element_attribs->cascadingdropdown_label_concat)?"CONCAT(".$element_attribs->cascadingdropdown_label_concat.")":$r2[1];
+								$from = $r2[0];
 
-                            // Checkboxes behave like repeat groups and therefore need to be handled a second level of depth.
-                            if ($element_attribs->cdd_display_type == 'checkbox') {
-                                $select = !empty($element_attribs->cascadingdropdown_label_concat)?" CONCAT(".$element_attribs->cascadingdropdown_label_concat.")":'GROUP_CONCAT('.$r2[1].')';
+								// Checkboxes behave like repeat groups and therefore need to be handled a second level of depth.
+								if ($element_attribs->cdd_display_type == 'checkbox') {
+									$select = !empty($element_attribs->cascadingdropdown_label_concat)?" CONCAT(".$element_attribs->cascadingdropdown_label_concat.")":'GROUP_CONCAT('.$r2[1].')';
 
-                                // Load the Fabrik join for the element to it's respective repeat_repeat table.
-                                $q = $db->getQuery(true);
-                                $q->select([$db->quoteName('join_from_table'), $db->quoteName('table_key'), $db->quoteName('table_join'), $db->quoteName('table_join_key')])
-                                    ->from($db->quoteName('#__fabrik_joins'))
-                                    ->where($db->quoteName('element_id').' = '.$elt->table_join.'.'.$elt->element_name);
-                                $db->setQuery($q);
-                                $f_join = $db->loadObject();
+									// Load the Fabrik join for the element to it's respective repeat_repeat table.
+									$q = $db->getQuery(true);
+									$q->select([$db->quoteName('join_from_table'), $db->quoteName('table_key'), $db->quoteName('table_join'), $db->quoteName('table_join_key')])
+										->from($db->quoteName('#__fabrik_joins'))
+										->where($db->quoteName('element_id').' = '.$elt->table_join.'.'.$elt->element_name);
+									$db->setQuery($q);
+									$f_join = $db->loadObject();
 
-                                $where = $r1[1].' IN (
+									$where = $r1[1].' IN (
                                 SELECT '.$db->quoteName($f_join->table_join.'.'.$f_join->table_key).'
                                 FROM '.$db->quoteName($f_join->table_join).' 
                                 WHERE '.$db->quoteName($f_join->table_join.'.'.$f_join->table_join_key).' = '.$elt->id.')';
-                            } else {
-                                $where = $r1[1].'='.$elt->table_join.'.'.$elt->element_name;
-                            }
+								} else {
+									$where = $r1[1].'='.$elt->table_join.'.'.$elt->element_name;
+								}
 
-                            $sub_query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
-                            $sub_query = preg_replace('#{thistable}#', $from, $sub_query);
-                            $sub_query  = preg_replace('#{shortlang}#', $locales, $sub_query);
+								$sub_query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
+								$sub_query = preg_replace('#{thistable}#', $from, $sub_query);
+								$sub_query  = preg_replace('#{shortlang}#', $locales, $sub_query);
 
-                            $query .= ', ('.$sub_query.') AS '. $elt->table_join.'___'.$elt->element_name;
-                        } elseif ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
-                            $select = $elt->table_join.'.'.$elt->element_name;
-                            $element_attribs = json_decode($elt->element_attribs);
-                            foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-                                if(empty($first_replace)) {
-                                    $select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
-                                } else {
-                                    $select .= ',REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
-                                }
-                            }
-                            $query .= ', '.$select.' AS '. $elt->table_join.'___'.$elt->element_name;
-                            if (!in_array($elt->table_join, $lastTab)) {
-                                $leftJoinMulti .= ' left join '.$elt->table_join.' on '.$elt->table_join.'.parent_id='.$elt->tab_name.'.id ';
-                            }
-                        } else {
-                            $query .= ', '.$elt->table_join.'.'.$elt->element_name.' AS '. $elt->table_join.'___'.$elt->element_name;
-                            if (!in_array($elt->table_join, $lastTab)) {
-                                $leftJoinMulti .= ' left join '.$elt->table_join.' on '.$elt->table_join.'.parent_id='.$elt->tab_name.'.id ';
-                            }
-                        }
-                        $lastTab[] = $elt->table_join;
-                    } else {
-                        if ($elt->element_plugin == 'databasejoin') {
+								$query .= ', ('.$sub_query.') AS '. $elt->table_join.'___'.$elt->element_name;
+							} elseif ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
+								$select = $elt->table_join.'.'.$elt->element_name;
+								$element_attribs = json_decode($elt->element_attribs);
+								foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+									if(empty($first_replace)) {
+										$select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+									} else {
+										$select .= ',REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+									}
+								}
+								$query .= ', '.$select.' AS '. $elt->table_join.'___'.$elt->element_name;
+								if (!in_array($elt->table_join, $lastTab)) {
+									$leftJoinMulti .= ' left join '.$elt->table_join.' on '.$elt->table_join.'.parent_id='.$elt->tab_name.'.id ';
+								}
+							} else {
+								$query .= ', '.$elt->table_join.'.'.$elt->element_name.' AS '. $elt->table_join.'___'.$elt->element_name;
+								if (!in_array($elt->table_join, $lastTab)) {
+									$leftJoinMulti .= ' left join '.$elt->table_join.' on '.$elt->table_join.'.parent_id='.$elt->tab_name.'.id ';
+								}
+							}
+							$lastTab[] = $elt->table_join;
+						} else {
+							if ($elt->element_plugin == 'databasejoin') {
 
-                            $element_attribs = json_decode($elt->element_attribs);
+								$element_attribs = json_decode($elt->element_attribs);
 
-                            if ($element_attribs->database_join_display_type == "checkbox") {
+								if ($element_attribs->database_join_display_type == "checkbox") {
 
-                                $t = $elt->table_join;
+									$t = $elt->table_join;
 
-                                $join_query = $db->getQuery(true);
+									$join_query = $db->getQuery(true);
 
-                                $join_query
-                                    ->select($db->quoteName('join_from_table'))
-                                    ->from($db->quoteName('#__fabrik_joins'))
-                                    ->where($db->quoteName('element_id') . ' = ' . $elt->id);
+									$join_query
+										->select($db->quoteName('join_from_table'))
+										->from($db->quoteName('#__fabrik_joins'))
+										->where($db->quoteName('element_id') . ' = ' . $elt->id);
 
-                                $db->setQuery($join_query);
+									$db->setQuery($join_query);
 
-                                try {
-                                    $join_table = $db->loadResult();
+									try {
+										$join_table = $db->loadResult();
 
-                                    $join_val_column = !empty($element_attribs->join_val_column_concat) ?
-                                        'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')':
-                                        't.'.$element_attribs->join_val_column;
+										$join_val_column = !empty($element_attribs->join_val_column_concat) ?
+											'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')':
+											't.'.$element_attribs->join_val_column;
 
-                                    $sub_select = '(
+										$sub_select = '(
                                     SELECT ' . $t . '.parent_id AS pid, ' . $elt->tab_name.'_'. $elt->group_id.'_repeat.parent_id AS pid2, CONCAT("[\"",GROUP_CONCAT('.$join_val_column.' SEPARATOR ", \""), "\"]") AS vals
                                     FROM '.$t.'
                                     LEFT JOIN '.$element_attribs->join_db_name. ' AS  t ON ' .'t.'.$element_attribs->join_key_column.' = '.$t.'.'.$elt->element_name.'
@@ -2167,207 +2170,208 @@ class EmundusModelFiles extends JModelLegacy
                                         GROUP BY pid
                                   ) sub_select';
 
-                                    $select = '(SELECT GROUP_CONCAT(vals) FROM '. $sub_select. ' WHERE pid2 = ' . $elt->tab_name . '.id)';
+										$select = '(SELECT GROUP_CONCAT(vals) FROM '. $sub_select. ' WHERE pid2 = ' . $elt->tab_name . '.id)';
 
-                                } catch (Exception $e) {
-                                    $error = JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage().' :: '.preg_replace("/[\r\n]/", " ", $query);
-                                    JLog::add($error, JLog::ERROR, 'com_emundus');
-                                }
+									} catch (Exception $e) {
+										$error = JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage().' :: '.preg_replace("/[\r\n]/", " ", $query);
+										JLog::add($error, JLog::ERROR, 'com_emundus');
+									}
 
-                            } else {
-                                $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')':'t.'.$element_attribs->join_val_column;
+								} else {
+									$join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')':'t.'.$element_attribs->join_val_column;
 
-                                if ($methode == 2) {
-                                    $select = '(SELECT GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ") ';
-                                } else {
-                                    $select = '(SELECT GROUP_CONCAT(DISTINCT('.$join_val_column.') SEPARATOR ", ") ';
-                                }
+									if ($methode == 2) {
+										$select = '(SELECT GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ") ';
+									} else {
+										$select = '(SELECT GROUP_CONCAT(DISTINCT('.$join_val_column.') SEPARATOR ", ") ';
+									}
 
-                                $select .= 'FROM '.$tableAlias[$elt->tab_name].'
+									$select .= 'FROM '.$tableAlias[$elt->tab_name].'
                                     LEFT JOIN '.$repeat_join_table.' ON '.$repeat_join_table.'.parent_id = '.$tableAlias[$elt->tab_name].'.id
                                     LEFT JOIN '.$element_attribs->join_db_name.' as t ON t.'.$element_attribs->join_key_column.' = '.$repeat_join_table.'.'.$elt->element_name.'
                                     WHERE '.$tableAlias[$elt->tab_name].'.fnum=jos_emundus_campaign_candidature.fnum)';
-                            }
+								}
 
-                            $query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
-                        }
-                        elseif ($elt->element_plugin == 'cascadingdropdown') {
+								$query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
+							}
+							elseif ($elt->element_plugin == 'cascadingdropdown') {
 
-                            $element_attribs = json_decode($elt->element_attribs);
-                            $from = explode('___', $element_attribs->cascadingdropdown_label)[0];
-                            $where = explode('___', $element_attribs->cascadingdropdown_id)[1].'='.$repeat_join_table.'.'.$elt->element_name;
-                            $join_val_column = !empty($element_attribs->cascadingdropdown_label_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->cascadingdropdown_label_concat)).')':'t.'.explode('___', $element_attribs->cascadingdropdown_label)[1];
+								$element_attribs = json_decode($elt->element_attribs);
+								$from = explode('___', $element_attribs->cascadingdropdown_label)[0];
+								$where = explode('___', $element_attribs->cascadingdropdown_id)[1].'='.$repeat_join_table.'.'.$elt->element_name;
+								$join_val_column = !empty($element_attribs->cascadingdropdown_label_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->cascadingdropdown_label_concat)).')':'t.'.explode('___', $element_attribs->cascadingdropdown_label)[1];
 
-                            $select = '(SELECT GROUP_CONCAT(DISTINCT('.$join_val_column.') SEPARATOR ", ")
+								$select = '(SELECT GROUP_CONCAT(DISTINCT('.$join_val_column.') SEPARATOR ", ")
                                 FROM '.$tableAlias[$elt->tab_name].'
                                 LEFT JOIN '.$repeat_join_table.' ON '.$repeat_join_table.'.parent_id = '.$tableAlias[$elt->tab_name].'.id
                                 LEFT JOIN '.$from.' as t ON t.'.$where.'
                                 WHERE '.$tableAlias[$elt->tab_name].'.fnum=jos_emundus_campaign_candidature.fnum)';
 
-                            $query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
-                        } elseif ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
-                            $select = 'REPLACE(`'.$elt->table_join . '`.`' . $elt->element_name.'`, "\t", "" )';
-                            if($raw != 1){
-                                $element_attribs = json_decode($elt->element_attribs);
-                                foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-                                    $if[] = 'IF(' . $select . '="' . $value . '","' . JText::_($element_attribs->sub_options->sub_labels[$key]) . '"';
-                                    $endif .= ')';
-                                }
-                                $select = implode(',', $if) . ',' . $select . $endif;
-                            }
-                            $select = '(SELECT GROUP_CONCAT(DISTINCT('.$select.') SEPARATOR ", ")
+								$query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
+							} elseif ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
+								$select = 'REPLACE(`'.$elt->table_join . '`.`' . $elt->element_name.'`, "\t", "" )';
+								if($raw != 1){
+									$element_attribs = json_decode($elt->element_attribs);
+									foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+										$if[] = 'IF(' . $select . '="' . $value . '","' . JText::_($element_attribs->sub_options->sub_labels[$key]) . '"';
+										$endif .= ')';
+									}
+									$select = implode(',', $if) . ',' . $select . $endif;
+								}
+								$select = '(SELECT GROUP_CONCAT(DISTINCT('.$select.') SEPARATOR ", ")
                                 FROM '.$tableAlias[$elt->tab_name].'
                                 LEFT JOIN '.$repeat_join_table.' ON '.$repeat_join_table.'.parent_id = '.$tableAlias[$elt->tab_name].'.id
                                 WHERE '.$tableAlias[$elt->tab_name].'.fnum=jos_emundus_campaign_candidature.fnum)';
-                            $query .= ', ' . $select . ' AS ' . $elt->tab_name . '___' . $elt->element_name;
-                        } elseif ($elt->element_plugin == 'yesno') {
-                            $select = 'REPLACE(`'.$elt->table_join . '`.`' . $elt->element_name.'`, "\t", "" )';
-                            if($raw != 1){
-                                $if[] = 'IF(' . $select . '="0","' . JText::_('JNO') . '"';
-                                $endif .= ')';
-                                $if[] = 'IF(' . $select . '="1","' . JText::_('JYES') . '"';
-                                $endif .= ')';
-                                $select = implode(',', $if) . ',' . $select . $endif;
-                                $query .= ', ( SELECT GROUP_CONCAT('.$select.' SEPARATOR ", ") ';
-                            }
+								$query .= ', ' . $select . ' AS ' . $elt->tab_name . '___' . $elt->element_name;
+							} elseif ($elt->element_plugin == 'yesno') {
+								$select = 'REPLACE(`'.$elt->table_join . '`.`' . $elt->element_name.'`, "\t", "" )';
+								if($raw != 1){
+									$if[] = 'IF(' . $select . '="0","' . JText::_('JNO') . '"';
+									$endif .= ')';
+									$if[] = 'IF(' . $select . '="1","' . JText::_('JYES') . '"';
+									$endif .= ')';
+									$select = implode(',', $if) . ',' . $select . $endif;
+									$query .= ', ( SELECT GROUP_CONCAT('.$select.' SEPARATOR ", ") ';
+								}
 
-                            $query .= ' FROM '.$elt->table_join.'
+								$query .= ' FROM '.$elt->table_join.'
                                         WHERE '.$elt->table_join.'.parent_id='.$tableAlias[$elt->tab_name].'.id
                                       ) AS '. $elt->table_join.'___'.$elt->element_name;
 
-                        } else {
+							} else {
 
-                            if ($methode == 2) {
-                                $query .= ', ( SELECT GROUP_CONCAT('.$elt->table_join.'.'.$elt->element_name.' SEPARATOR ", ") ';
-                            } else {
-                                $query .= ', ( SELECT GROUP_CONCAT(DISTINCT('.$elt->table_join.'.'.$elt->element_name.') SEPARATOR ", ") ';
-                            }
+								if ($methode == 2) {
+									$query .= ', ( SELECT GROUP_CONCAT('.$elt->table_join.'.'.$elt->element_name.' SEPARATOR ", ") ';
+								} else {
+									$query .= ', ( SELECT GROUP_CONCAT(DISTINCT('.$elt->table_join.'.'.$elt->element_name.') SEPARATOR ", ") ';
+								}
 
-                            $query .= ' FROM '.$elt->table_join.'
+								$query .= ' FROM '.$elt->table_join.'
                                         WHERE '.$elt->table_join.'.parent_id='.$tableAlias[$elt->tab_name].'.id
                                       ) AS '. $elt->table_join.'___'.$elt->element_name;
-                        }
-                    }
-                } else {
-                    $select = 'REPLACE(`'.$tableAlias[$elt->tab_name] . '`.`' . $elt->element_name.'`, "\t", "" )';
-                    $if = array();
-                    $endif = '';
+							}
+						}
+					} else {
+						$select = 'REPLACE(`'.$tableAlias[$elt->tab_name] . '`.`' . $elt->element_name.'`, "\t", "" )';
+						$if = array();
+						$endif = '';
 
 
-                    if ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton'|| $elt->element_plugin == 'checkbox') {
-                        if($raw == 1){
-                            $select = 'REPLACE(`'.$tableAlias[$elt->tab_name] . '`.`' . $elt->element_name.'`, "\t", "" )';
-                        }
-                        else{
-                            $element_attribs = json_decode($elt->element_attribs);
-                            if($elt->element_plugin == 'checkbox'){
-                                $if = '';
-                            }
-                            foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-                                if($elt->element_plugin == 'checkbox'){
-                                    if(empty($if)) {
-                                        $if = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
-                                    } else {
-                                        $if = 'REGEXP_REPLACE(' . $if . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
-                                    }
-                                } else {
-                                    $if[] = 'IF(' . $select . '="' . $value . '","' . $element_attribs->sub_options->sub_labels[$key] . '"';
-                                    $endif .= ')';
-                                }
+						if ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton'|| $elt->element_plugin == 'checkbox') {
+							if($raw == 1){
+								$select = 'REPLACE(`'.$tableAlias[$elt->tab_name] . '`.`' . $elt->element_name.'`, "\t", "" )';
+							}
+							else{
+								$element_attribs = json_decode($elt->element_attribs);
+								if($elt->element_plugin == 'checkbox'){
+									$if = '';
+								}
+								foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+									if($elt->element_plugin == 'checkbox'){
+										if(empty($if)) {
+											$if = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+										} else {
+											$if = 'REGEXP_REPLACE(' . $if . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+										}
+									} else {
+										$if[] = 'IF(' . $select . '="' . $value . '","' . $element_attribs->sub_options->sub_labels[$key] . '"';
+										$endif .= ')';
+									}
 
-                            }
-                            if(is_array($if)) {
-                                $select = implode(',', $if) . ',' . $select . $endif;
-                            } else {
-                                $select = $if;
-                            }
-                        }
-                    } elseif ($elt->element_plugin == 'yesno') {
-                        if ($raw != 1) {
-                            $if[] = 'IF(' . $select . '="0","' . JText::_('JNO') . '"';
-                            $endif .= ')';
-                            $if[] = 'IF(' . $select . '="1","' . JText::_('JYES') . '"';
-                            $endif .= ')';
-                            $select = implode(',', $if) . ',' . $select . $endif;
-                        }
-                    } elseif ($elt->element_plugin == 'databasejoin') {
+								}
+								if(is_array($if)) {
+									$select = implode(',', $if) . ',' . $select . $endif;
+								} else {
+									$select = $if;
+								}
+							}
+						} elseif ($elt->element_plugin == 'yesno') {
+							if ($raw != 1) {
+								$if[] = 'IF(' . $select . '="0","' . JText::_('JNO') . '"';
+								$endif .= ')';
+								$if[] = 'IF(' . $select . '="1","' . JText::_('JYES') . '"';
+								$endif .= ')';
+								$select = implode(',', $if) . ',' . $select . $endif;
+							}
+						} elseif ($elt->element_plugin == 'databasejoin') {
 
-                        $element_attribs = json_decode($elt->element_attribs);
+							$element_attribs = json_decode($elt->element_attribs);
 
-                        if ($element_attribs->database_join_display_type == "checkbox") {
-                            $select_check = $element_attribs->join_val_column;
-                            if (!empty($element_attribs->join_val_column_concat)) {
-                                $select_check = $element_attribs->join_val_column_concat;
-                                $select_check = preg_replace('#{thistable}#', 'jd', $select_check);
-                                $select_check = preg_replace('#{shortlang}#', $this->locales, $select_check);
-                            }
+							if ($element_attribs->database_join_display_type == "checkbox") {
+								$select_check = $element_attribs->join_val_column;
+								if (!empty($element_attribs->join_val_column_concat)) {
+									$select_check = $element_attribs->join_val_column_concat;
+									$select_check = preg_replace('#{thistable}#', 'jd', $select_check);
+									$select_check = preg_replace('#{shortlang}#', $this->locales, $select_check);
+								}
 
-                            $t = $tableAlias[$elt->tab_name] . '_repeat_' . $elt->element_name;
-                            if($raw == 1){
-                                $select = '(
+								$t = $tableAlias[$elt->tab_name] . '_repeat_' . $elt->element_name;
+								if($raw == 1){
+									$select = '(
                                     SELECT GROUP_CONCAT(' . $elt->element_name . ' SEPARATOR ", ")
                                     FROM ' . $t . ' AS t
                                     WHERE ' . $tableAlias[$elt->tab_name] . '.id = t.parent_id
                                     )';
-                            }else{
-                                $select = '(
+								}else{
+									$select = '(
                                     SELECT GROUP_CONCAT(' . $select_check . ' SEPARATOR ", ")
                                     FROM ' . $t . ' AS t
                                     LEFT JOIN ' . $element_attribs->join_db_name . ' AS jd ON jd.' . $element_attribs->join_key_column . ' = t.' . $elt->element_name . '
                                     WHERE ' . $tableAlias[$elt->tab_name] . '.id = t.parent_id
                                     )';
-                            }
-                        } else {
-                            if($raw == 1){
-                                $query .= ', '.$select.' AS '.$tableAlias[$elt->tab_name].'___'.$elt->element_name;
-                            }
-                            else {
-                                $join_val_column = !empty($element_attribs->join_val_column_concat) ? 'CONCAT(' . str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)) . ')' : 't.' . $element_attribs->join_val_column;
+								}
+							} else {
+								if($raw == 1){
+									$query .= ', '.$select.' AS '.$tableAlias[$elt->tab_name].'___'.$elt->element_name;
+								}
+								else {
+									$join_val_column = !empty($element_attribs->join_val_column_concat) ? 'CONCAT(' . str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)) . ')' : 't.' . $element_attribs->join_val_column;
 
-                                $select = '(SELECT GROUP_CONCAT(DISTINCT(' . $join_val_column . ') SEPARATOR ", ")
+									$select = '(SELECT GROUP_CONCAT(DISTINCT(' . $join_val_column . ') SEPARATOR ", ")
                                 FROM ' . $element_attribs->join_db_name . ' as t
                                 WHERE t.' . $element_attribs->join_key_column . '=' . $tableAlias[$elt->tab_name] . '.' . $elt->element_name . ')';
-                            }
-                        }
+								}
+							}
 
-                    } elseif ($elt->element_plugin == 'cascadingdropdown') {
+						} elseif ($elt->element_plugin == 'cascadingdropdown') {
 
-                        $element_attribs = json_decode($elt->element_attribs);
-                        $from = explode('___', $element_attribs->cascadingdropdown_label)[0];
-                        $where = explode('___', $element_attribs->cascadingdropdown_id)[1] . '=' . $elt->tab_name . '.' . $elt->element_name;
-                        $join_val_column = !empty($element_attribs->cascadingdropdown_label_concat) ? 'CONCAT(' . str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)) . ')' : 't.' . explode('___', $element_attribs->cascadingdropdown_label)[1];
+							$element_attribs = json_decode($elt->element_attribs);
+							$from = explode('___', $element_attribs->cascadingdropdown_label)[0];
+							$where = explode('___', $element_attribs->cascadingdropdown_id)[1] . '=' . $elt->tab_name . '.' . $elt->element_name;
+							$join_val_column = !empty($element_attribs->cascadingdropdown_label_concat) ? 'CONCAT(' . str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)) . ')' : 't.' . explode('___', $element_attribs->cascadingdropdown_label)[1];
 
-                        if($raw == 1){
-                            $select = '(SELECT '. $elt->element_name .'
+							if($raw == 1){
+								$select = '(SELECT '. $elt->element_name .'
                             FROM ' . $tableAlias[$elt->tab_name] . ' as t
                             WHERE t.fnum LIKE '.$db->quote($fnums['fnum']).')';
-                        }
-                        else{
-                            $select = '(SELECT GROUP_CONCAT(DISTINCT(' . $join_val_column . ') SEPARATOR ", ")
+							}
+							else{
+								$select = '(SELECT GROUP_CONCAT(DISTINCT(' . $join_val_column . ') SEPARATOR ", ")
                             FROM ' . $from . ' as t
                             WHERE t.' . $where . ')';
-                        }
-                    }
+							}
+						}
 
-                    $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name;
+						$query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name;
 
-                }
-            }
+					}
+				}
+			}
 
-            $query .= ' from #__emundus_campaign_candidature as jos_emundus_campaign_candidature
+	        $query .= ' from #__emundus_campaign_candidature as jos_emundus_campaign_candidature
                         left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id
                         left join #__emundus_users as eu on u.id = eu.user_id
                         left join #__emundus_setup_campaigns as esc on esc.id = jos_emundus_campaign_candidature.campaign_id
                         left join #__emundus_setup_programmes as sp on sp.code = esc.training';
 
-            if(!empty($defaultElement)){
-                $query .= ' LEFT JOIN #__emundus_tag_assoc as eta ON  eta.fnum = jos_emundus_campaign_candidature.fnum
+	        if(!empty($defaultElement)){
+		        $query .= ' LEFT JOIN #__emundus_tag_assoc as eta ON  eta.fnum = jos_emundus_campaign_candidature.fnum
                         LEFT JOIN #__emundus_setup_action_tag as esat ON esat.id= eta.id_tag
                         LEFT JOIN #__emundus_setup_status as ess ON ess.step = jos_emundus_campaign_candidature.status
                         LEFT JOIN #__emundus_declaration as ed ON ed.fnum = jos_emundus_campaign_candidature.fnum';
-            }
+	        }
 
-            $query .= $leftJoin. ' '. $leftJoinMulti;
+	        $query .= $leftJoin. ' '. $leftJoinMulti;
 
             $query .= 'where u.block=0 AND jos_emundus_campaign_candidature.fnum in ("'.implode('","', $fnums).'") ';
             if (preg_match("/emundus_evaluations/i", $query)) {
@@ -2391,7 +2395,6 @@ class EmundusModelFiles extends JModelLegacy
                         }
                     }
                 }
-
             }
 
             if ($pas != 0) {

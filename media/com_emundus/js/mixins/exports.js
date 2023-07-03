@@ -238,6 +238,8 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter) {
                                 }
                             });
                     }
+                } else {
+                    document.querySelector('#extractstep').replaceWith(result.msg);
                 }
             },
             error: function (jqXHR) {
