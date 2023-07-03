@@ -4856,8 +4856,6 @@ $(document).ready(function() {
             var name = $(this).attr('id');
             switch (name) {
                 case 'clear-search':
-                    console.log(moduleFilters);
-
                     if(moduleFilters) {
                         document.querySelector('#emundus-filters #clear-filters').click();
                     } else {
@@ -4884,42 +4882,46 @@ $(document).ready(function() {
                     break;
 
                 case 'save-filter':
-                    $.ajaxQ.abortAll();
-                    var filName = prompt(filterName);
-                    if (filName != null) {
-                        $.ajax({
-                            type: 'POST',
-                            url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=savefilters&Itemid=' + itemId,
-                            dataType: 'json',
-                            data: ({
-                                name: filName
-                            }),
-                            success: function(result) {
-
-                                if (result.status) {
-                                    document.getElementById('em_select_filter').style.display = 'block'
-                                    $('#select_filter').append('<option id="' + result.filter.id + '" selected="">' + result.filter.name + '<option>');
-                                    $("#select_filter").trigger("chosen:updated");
-                                    $('#saved-filter').show();
-                                    setTimeout(function(e) {
-                                        $('#saved-filter').hide();
-                                    }, 600);
-
-                                } else {
-                                    $('#error-filter').show();
-                                    setTimeout(function(e) {
-                                        $('#error-filter').hide();
-                                    }, 600);
-                                }
-
-                            },
-                            error: function(jqXHR) {
-                                console.log(jqXHR.responseText);
-                            }
-                        })
+                    if(moduleFilters) {
+                        document.querySelector('#emundus-filters #save-filters').click();
                     } else {
-                        alert(filterEmpty);
-                        filName = prompt(filterName, "name");
+                        $.ajaxQ.abortAll();
+                        var filName = prompt(filterName);
+                        if (filName != null) {
+                            $.ajax({
+                                type: 'POST',
+                                url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=savefilters&Itemid=' + itemId,
+                                dataType: 'json',
+                                data: ({
+                                    name: filName
+                                }),
+                                success: function (result) {
+
+                                    if (result.status) {
+                                        document.getElementById('em_select_filter').style.display = 'block'
+                                        $('#select_filter').append('<option id="' + result.filter.id + '" selected="">' + result.filter.name + '<option>');
+                                        $("#select_filter").trigger("chosen:updated");
+                                        $('#saved-filter').show();
+                                        setTimeout(function (e) {
+                                            $('#saved-filter').hide();
+                                        }, 600);
+
+                                    } else {
+                                        $('#error-filter').show();
+                                        setTimeout(function (e) {
+                                            $('#error-filter').hide();
+                                        }, 600);
+                                    }
+
+                                },
+                                error: function (jqXHR) {
+                                    console.log(jqXHR.responseText);
+                                }
+                            })
+                        } else {
+                            alert(filterEmpty);
+                            filName = prompt(filterName, "name");
+                        }
                     }
                     break;
 

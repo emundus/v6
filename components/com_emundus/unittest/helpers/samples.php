@@ -190,7 +190,7 @@ class EmundusUnittestHelperSamples
 	public function createSampleProgram($label = 'Programme Test Unitaire')
 	{
 		$m_programme = new EmundusModelProgramme;
-		$program = $m_programme->addProgram(['label' => $label]);
+		$program = $m_programme->addProgram(['label' => $label, 'published' => 1]);
 		return $program;
 	}
 

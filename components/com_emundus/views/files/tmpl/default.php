@@ -28,11 +28,22 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 						<h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_FILTERS')?></h3> &ensp;&ensp;
 					</div>
                     <div class="buttons" style="float:right; margin-top:0px">
-                        <label for="clear-search">
-                            <span class="material-icons-outlined em-pointer em-mt-4 em-color-white" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN');?>">filter_list_off</span>
-                        </label>
-
-                        <input type="button" style="display: none" id="clear-search" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN');?>"/>
+                        <div class="em-flex-row">
+                            <?php
+                                if ($this->use_module_for_filters) {
+                                    ?>
+                                    <label for="save-filter" class="em-mr-8" style="margin-bottom: 0;">
+                                        <span class="material-icons-outlined em-pointer em-color-white" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_SAVE_BTN');?>">save</span>
+                                    </label>
+                                    <input type="button" style="display: none" id="save-filter" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_SAVE_BTN');?>"/>
+	                                <?php
+                                }
+                            ?>
+                            <label for="clear-search">
+                                <span class="material-icons-outlined em-pointer em-color-white" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN');?>">filter_list_off</span>
+                            </label>
+                            <input type="button" style="display: none" id="clear-search" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN');?>"/>
+                        </div>
                     </div>
 				</div>
 

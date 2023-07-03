@@ -61,6 +61,9 @@ span.label[data-v-565be899] {
 }
 
 
+#emundus-filters {
+	position: relative;
+}
 #select-scopes:not(.hidden) {
 	position: absolute;
 	top: 42px;
@@ -84,5 +87,9 @@ span.label[data-v-565be899] {
 }
 .global-search-tag {
 	padding: 4px;
+}
+#save-filter-new-name {
+	position: absolute;
+	top: 0;
 }
 

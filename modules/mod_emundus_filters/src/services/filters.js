@@ -32,7 +32,7 @@ export default {
         let saved = false;
 
         if (filters && name.length > 0) {
-            client.post('newsavefilters', {
+            return client.post('newsavefilters', {
                 filters:  JSON.stringify(filters),
                 name: name,
                 item_id: moduleId
@@ -41,6 +41,9 @@ export default {
                    saved = true;
                }
 
+                return saved;
+            }).catch((error) => {
+                console.log(error);
                 return saved;
             });
         } else {

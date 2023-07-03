@@ -79,6 +79,16 @@ class EmundusModelFilesTest extends TestCase{
         $this->assertSame(false, $this->m_files->use_module_filters, 'By default, we do not use new module filters');
     }
 
+	public function testshareUsers() {
+		$user_id = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 1000) . '@emundus.test.fr');
+		$program = $this->h_sample->createSampleProgram('Test partage d\'utilisateurs');
+		$campaign_id = $this->h_sample->createSampleCampaign($program);
+		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+
+		$shared = $this->m_files->shareUsers([$this->unit_test_coord_id], EVALUATOR_RIGHTS, [$fnum]);
+		$this->assertTrue($shared, 'shareUsers returns true if the sharing is successful');
+	}
+
     public function testgetAllFnums()
     {
 	    $fnums = $this->m_files->getAllFnums();
@@ -96,16 +106,6 @@ class EmundusModelFilesTest extends TestCase{
 	    $this->assertNotEmpty($fnums, 'if a fnum exists, by default get users should return a value');
 		$this->assertTrue(in_array($fnum, $fnums), 'If a fnum is associated to me. I should see it.');
     }
-
-	public function testshareUsers() {
-		$user_id = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 1000) . '@emundus.test.fr');
-		$program = $this->h_sample->createSampleProgram('Test partage d\'utilisateurs');
-		$campaign_id = $this->h_sample->createSampleCampaign($program);
-		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
-
-		$shared = $this->m_files->shareUsers([$this->unit_test_coord_id], EVALUATOR_RIGHTS, [$fnum]);
-		$this->assertTrue($shared, 'shareUsers returns true if the sharing is successful');
-	}
 
     public function testgetAllTags()
     {

@@ -304,25 +304,4 @@ class EmundusHelperAccess {
 		$key   = new JCryptKey('simple', $secret, $secret);
 		return new JCrypt(new JCryptCipherSimple, $key);
 	}
-
-	public static function getAllCampaignsAssociatedToUser($user_id) {
-		$campaign_ids = [];
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query->select('DISTINCT jesc.id')
-			->from($db->quoteName('#__emundus_setup_campaigns', 'jesc'))
-			->innerJoin($db->quoteName('#__emundus_setup_groups_repeat_course', 'jesgrc').' ON '.$db->quoteName('jesc.training').' = '.$db->quoteName('jesgrc.course'))
-			->innerJoin($db->quoteName('#__emundus_groups', 'jeg').' ON '.$db->quoteName('jeg.group_id').' = '.$db->quoteName('jesgrc.parent_id'))
-			->where($db->quoteName('jeg.user_id').' = '.$user_id.' AND '.$db->quoteName('jesc.published').' = 1');
-
-		$db->setQuery($query);
-		try {
-			$campaign_ids = $db->loadColumn();
-		} catch (Exception $e) {
-			JLog::add('Error getting all profiles associated to user in model/access at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
-		}
-
-		return $campaign_ids;
-	}
 }
