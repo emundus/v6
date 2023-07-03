@@ -72,6 +72,17 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
         return $params->get($pname);
     }
 
+	public function onBeforeLoad() {
+		$app = JFactory::getApplication();
+		$current_url = JUri::getInstance()->toString();
+		$parse = parse_url($current_url);
+
+		if (strpos($current_url, 'redirect') !== false) {
+			$new_url = str_replace($parse['scheme'].'://'.$parse['host'],'', strstr($current_url, '&redirect=', true));
+			$app->redirect($new_url);
+		}
+	}
+
     /**
      * Main script.
      *
