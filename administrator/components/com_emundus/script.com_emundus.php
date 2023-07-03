@@ -1932,6 +1932,42 @@ structure:
                     $db->setQuery($query);
                     $db->execute();
                 }
+
+	            $query->clear()
+		            ->select('id')
+		            ->from($db->quoteName('#__menu'))
+		            ->where($db->quoteName('title').' LIKE '.$db->quote('Evaluation'))
+		            ->where($db->quoteName('menutype').' LIKE '.$db->quote('application'));
+	            $db->setQuery($query);
+	            $evaluation_application_menu = $db->loadResult();
+
+				if(!empty($evaluation_application_menu)){
+					$query->clear()
+						->select('id')
+						->from($db->quoteName('#__falang_content'))
+						->where($db->quoteName('reference_table').' LIKE '.$db->quote('menu'))
+						->where($db->quoteName('reference_field').' LIKE '.$db->quote('title'))
+						->where($db->quoteName('language_id').' = 2')
+						->where($db->quoteName('reference_id').' = '.$db->quote($evaluation_application_menu));
+					$db->setQuery($query);
+					$evaluation_application_menu_falang = $db->loadResult();
+
+					if(!empty($evaluation_application_menu_falang)){
+						$query->clear()
+							->update($db->quoteName('#__falang_content'))
+							->set($db->quoteName('value').' = '.$db->quote('Évaluation'))
+							->where($db->quoteName('id').' = '.$db->quote($evaluation_application_menu_falang));
+						$db->setQuery($query);
+						$db->execute();
+					} else {
+						$query->clear()
+							->insert($db->quoteName('#__falang_content'))
+							->columns($db->quoteName(array('reference_id','reference_table','reference_field','language_id','value','original_text','published')))
+							->values($db->quote($evaluation_application_menu).','.$db->quote('menu').','.$db->quote('title').',2,'.$db->quote('Évaluation').','.$db->quote('').',1');
+						$db->setQuery($query);
+						$db->execute();
+					}
+				}
             }
 
 			// Insert new translations in overrides files
