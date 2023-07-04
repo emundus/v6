@@ -21,7 +21,7 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 0 $p-16;
+  padding: 0 var(--p-16);
   border-radius: var(--em-border-radius);
   border: unset;
   height: 40px;
@@ -42,12 +42,12 @@
   }
 
   .material-icons {
-    color: $white;
+    color: var(--white);
   }
 }
 
 .em-primary-disabled{
-  background-color: $main-100;
+  background-color: var(--main-100);
 }
 
 .em-applicant-primary-button{
@@ -56,27 +56,27 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 0 $p-16;
+  padding: 0 var(--p-16);
   border-radius: var(--em-applicant-border-radius);
   border: unset;
   height: 40px;
   color: white;
-  background-color: $base-secondary-color;
+  background-color: var(--base-secondary-color);
   border: solid 1px transparent;
 
   &:hover {
     background-color: white;
-    color: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    color: var(--base-secondary-color);
+    border: 1px solid var(--base-secondary-color);
     text-decoration: none;
 
     .material-icons {
-      color: $base-secondary-color !important;
+      color: var(--base-secondary-color) !important;
     }
   }
 
   .material-icons {
-    color: $white;
+    color: var(--white);
   }
 }
 
@@ -86,12 +86,12 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 0 $p-16;
+  padding: 0 var(--p-16);
   border-radius: var(--em-border-radius);
-  border: solid 1px $neutral-300;
+  border: solid 1px var(--neutral-300);
   height: 40px;
   background: transparent;
-  color: $night-blue;
+  color: var(--night-blue);
   font-family: var(--font);
 }
 
@@ -101,12 +101,12 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 0 $p-16;
+  padding: 0 var(--p-16);
   border-radius: var(--em-applicant-border-radius);
-  border: solid 1px $neutral-300;
+  border: solid 1px var(--neutral-300);
   height: 40px;
   background: transparent;
-  color: $night-blue;
+  color: var(--night-blue);
 }
 
 .em-tertiary-button{
@@ -115,20 +115,20 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 0 $p-16;
+  padding: 0 var(--p-16);
   border-radius: var(--em-border-radius);
   border: unset;
   height: 40px;
   background: transparent;
-  color: $night-blue;
+  color: var(--night-blue);
 }
 
 .em-disabled-button {
-  background: $neutral-300;
-  border: 1px solid $neutral-300;
+  background: var(--neutral-300);
+  border: 1px solid var(--neutral-300);
   border-radius: var(--em-applicant-border-radius);
   padding: 8px 12px;
-  color: $neutral-600;
+  color: var(--neutral-600);
   cursor: unset;
 }
 
@@ -140,7 +140,7 @@
   border: 1px solid transparent;
   border-radius: var(--em-border-radius);
   padding: 6px 20px;
-  color: $neutral-900;
+  color: var(--neutral-900);
   font-family: var(--font);
 }
 
@@ -249,7 +249,7 @@ button[class ^= 'em-']{
 .em-editable-content{
   caret-color: var(--main-500);
   &:focus{
-    border: solid 1px $neutral-500;
+    border: solid 1px var(--neutral-500);
     border-radius: 5px;
   }
 }
@@ -382,7 +382,7 @@ button[class ^= 'em-']{
 }
 
 input:checked + .em-slider {
-  background-color: $em-green;
+  background-color: var(--em-green);
 
   &:before {
     -webkit-transform: translateX(32px);
@@ -656,12 +656,12 @@ input:focus + .em-slider {
 }
 .em-hover-blue-500{
   &:hover{
-    color: $blue-500;
+    color: var(--blue-500);
   }
 }
 .em-hover-background-neutral-300{
   &:hover{
-    background: $neutral-300;
+    background: var(--neutral-300);
   }
 }
 
@@ -792,61 +792,61 @@ input:focus + .em-slider {
   color: white;
 }
 .em-green-color{
-  color: $em-green;
+  color: var(--em-green);
 }
 .em-main-100-color{
-  color: $main-100;
+  color: var(--main-100);
 }
 .em-main-400-color{
-  color: $main-400;
+  color: var(--main-400);
 }
 .em-main-500-color{
   color: var(--main-500) !important;
 }
 .em-yellow-500-color{
-  color: $yellow-500;
+  color: var(--yellow-500);
 }
 .em-blue-color{
-  color: $em-blue;
+  color: var(--em-blue);
 }
 .em-blue-300-color{
-  color: $blue-300;
+  color: var(--blue-300);
 }
 .em-blue-400-color{
-  color: $blue-400;
+  color: var(--blue-400);
 }
 .em-blue-500-color{
-  color: $blue-500;
+  color: var(--blue-500);
 }
 .em-gray-color{
-  color: $grey;
+  color: var(--grey);
 }
 .em-neutral-300-color{
-  color: $neutral-300;
+  color: var(--neutral-300);
 }
 .em-neutral-700-color{
-  color: $neutral-700;
+  color: var(--neutral-700);
 }
 .em-neutral-800-color{
-  color: $neutral-800;
+  color: var(--neutral-800);
 }
 .em-text-neutral-600{
-  color: $neutral-600;
+  color: var(--neutral-600);
 }
 .em-text-neutral-500{
-  color: $neutral-500;
+  color: var(--neutral-500);
 }
 .em-text-neutral-300{
-  color: $neutral-300;
+  color: var(--neutral-300);
 }
 .em-text-neutral-900{
-  color: $neutral-900;
+  color: var(--neutral-900);
 }
 .em-text-neutral-800{
-  color: $neutral-800;
+  color: var(--neutral-800);
 }
 .em-red-500-color{
-  color: $red-500;
+  color: var(--red-500);
 }
 
 .em-applicant-text-color {
@@ -858,13 +858,13 @@ input:focus + .em-slider {
 }
 
 .em-green-bg{
-  background: $em-green;
+  background: var(--em-green);
 }
 .em-blue-bg{
-  background: $em-blue;
+  background: var(--em-blue);
 }
 .em-gray-bg{
-  background: $grey;
+  background: var(--grey);
 }
 .em-lightgray-bg{
   background: #F5F6F6;
@@ -882,13 +882,13 @@ input:focus + .em-slider {
   background: var(--main-500);
 }
 .em-bg-main-900{
-  background: $main-900;
+  background: var(--main-900);
 }
 .em-bg-neutral-100{
-  background: $neutral-100;
+  background: var(--neutral-100);
 }
 .em-bg-neutral-200{
-  background: $neutral-200;
+  background: var(--neutral-200);
 }
 .em-bg-transparent{
   background: transparent;
@@ -972,19 +972,19 @@ input:focus + .em-slider {
 }
 
 .em-pr-4{
-  padding-right: $p-4;
+  padding-right: var(--p-4);
 }
 .em-pl-4{
-  padding-left: $p-4;
+  padding-left: var(--p-4);
 }
 .em-pr-8{
-  padding-right: $p-8;
+  padding-right: var(--p-8);
 }
 .em-pr-16{
   padding-right: 16px;
 }
 .em-pl-8{
-  padding-left: $p-8;
+  padding-left: var(--p-8);
 }
 .em-pl-16{
   padding-left: 16px;
@@ -999,10 +999,10 @@ input:focus + .em-slider {
   margin-right: 12px;
 }
 .em-mr-16{
-  margin-right: $m-16;
+  margin-right: var(--m-16);
 }
 .em-mr-24{
-  margin-right: $m-24;
+  margin-right: var(--m-24);
 }
 .em-mr-32{
   margin-right: 32px;
@@ -1026,7 +1026,7 @@ input:focus + .em-slider {
   margin-left: 22px;
 }
 .em-ml-24{
-  margin-left: $m-24;
+  margin-left: var(--m-24);
 }
 .em-ml-28{
   margin-left: 28px;
@@ -1055,28 +1055,28 @@ input:focus + .em-slider {
   margin-top: 4px;
 }
 .em-mt-8{
-  margin-top: $m-8;
+  margin-top: var(--m-8);
 }
 .em-mt-12{
   margin-top: 12px;
 }
 .em-mt-16{
-  margin-top: $m-16;
+  margin-top: var(--m-16);
 }
 .em-mt-24{
-  margin-top: $m-24;
+  margin-top: var(--m-24);
 }
 .em-mt-32{
-  margin-top: $m-32;
+  margin-top: var(--m-32);
 }
 .em-mt-48{
-  margin-top: $m-48;
+  margin-top: var(--m-48);
 }
 .em-mt-64{
   margin-top: 64px;
 }
 .em-mt-80{
-  margin-top: $m-80;
+  margin-top: var(--m-80);
 }
 .em-mb-0-important{
   margin-bottom: 0 !important;
@@ -1085,19 +1085,19 @@ input:focus + .em-slider {
   margin-bottom: 4px;
 }
 .em-mb-8{
-  margin-bottom: $m-8;
+  margin-bottom: var(--m-8);
 }
 .em-mb-12{
   margin-bottom: 12px;
 }
 .em-mb-16{
-  margin-bottom: $m-16;
+  margin-bottom: var(--m-16);
 }
 .em-mb-24{
   margin-bottom: 24px;
 }
 .em-mb-32{
-  margin-bottom: $m-32;
+  margin-bottom: var(--m-32);
 }
 .em-mb-44{
   margin-bottom: 44px;
@@ -1106,7 +1106,7 @@ input:focus + .em-slider {
   margin-bottom: 64px;
 }
 .em-divider{
-  background: $neutral-300;
+  background: var(--neutral-300);
   margin-top: 16px;
   margin-bottom: 16px;
 }
@@ -1189,19 +1189,19 @@ input:focus + .em-slider {
   border-radius: 8px;
 }
 .em-border-neutral-400{
-  border: 1px solid $neutral-400;
+  border: 1px solid var(--neutral-400);
   box-sizing: border-box;
 }
 .em-border-neutral-300{
-  border: 1px solid $neutral-300;
+  border: 1px solid var(--neutral-300);
   box-sizing: border-box;
   border-radius: 4px;
 }
 .em-border-left-neutral-700{
-  border-left: solid 2px $neutral-700;
+  border-left: solid 2px var(--neutral-700);
 }
 .em-border-left-yellow-500{
-  border-left: solid 2px $yellow-500;
+  border-left: solid 2px var(--yellow-500);
 }
 .em-border-main-500 {
   border: 1px solid var(--main-500);
@@ -1215,20 +1215,20 @@ input:focus + .em-slider {
 }
 
 .em-border-bottom-main-500 {
-  border-bottom: solid 1px $main-500;
+  border-bottom: solid 1px var(--main-500);
 }
 
 .em-border-left-red-500{
-  border-left: solid 2px $red-500;
+  border-left: solid 2px var(--red-500);
 }
 .em-border-bottom-neutral-300{
-  border-bottom: solid 1px $neutral-300;
+  border-bottom: solid 1px var(--neutral-300);
 }
 .em-border-top-neutral-300{
-  border-top: solid 1px $neutral-300;
+  border-top: solid 1px var(--neutral-300);
 }
 .em-border-blue-400{
-  border: solid 1px $blue-400;
+  border: solid 1px var(--blue-400);
   box-sizing: border-box;
   border-radius: 4px;
 }
@@ -1285,7 +1285,7 @@ input:focus + .em-slider {
   font-weight: 600;
   font-size: 32px;
   line-height: 40px;
-  color: $night-blue;
+  color: var(--night-blue);
 }
 .em-h2{
   font-family: var(--font);
@@ -1293,7 +1293,7 @@ input:focus + .em-slider {
   font-weight: 600;
   font-size: 24px;
   line-height: 30px;
-  color: $night-blue;
+  color: var(--night-blue);
 }
 .em-h3{
   font-family: var(--font);
@@ -1301,7 +1301,7 @@ input:focus + .em-slider {
   font-weight: 600;
   font-size: 20px;
   line-height: 25px;
-  color: $night-blue;
+  color: var(--night-blue);
 }
 .em-h4{
   font-family: var(--font);
@@ -1309,7 +1309,7 @@ input:focus + .em-slider {
   font-weight: 600;
   font-size: 18px;
   line-height: 23px;
-  color: $night-blue;
+  color: var(--night-blue);
 }
 .em-h5{
   font-family: var(--font);
@@ -1317,7 +1317,7 @@ input:focus + .em-slider {
   font-weight: 600;
   font-size: 16px;
   line-height: 20px;
-  color: $night-blue;
+  color: var(--night-blue);
 }
 .em-h6{
   font-family: var(--font);
@@ -1325,7 +1325,7 @@ input:focus + .em-slider {
   font-weight: 600;
   font-size: 14px;
   line-height: 16px;
-  color: $night-blue;
+  color: var(--night-blue);
 }
 
 .em-applicant-default-font {
@@ -1423,12 +1423,12 @@ input:focus + .em-slider {
   border-color: var(--main-500) !important;
 }
 .em-not-available{
-  color: $red-500;
+  color: var(--red-500);
   align-items: center;
   display: flex;
 }
 .em-border-notavailable:focus {
-  border-color: $red-500 !important;
+  border-color: var(--red-500) !important;
 }
 
 .em-overflow-ellipsis {
@@ -1454,7 +1454,7 @@ input:focus + .em-slider {
   padding: 24px;
   height: auto;
   background: #fff;
-  border: 1px solid $neutral-200;
+  border: 1px solid var(--neutral-200);
 }
 
 .em-input-card{
@@ -1462,11 +1462,11 @@ input:focus + .em-slider {
   padding: 12px 16px;
   height: auto;
   background: #fff;
-  border: 1px solid $neutral-400;
+  border: 1px solid var(--neutral-400);
 }
 .em-input-card-selected{
-  background: $blue-100;
-  border: 1px solid $blue-400;
+  background: var(--blue-100);
+  border: 1px solid var(--blue-400);
   box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
 }
 
@@ -1483,7 +1483,7 @@ input:focus + .em-slider {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border: solid 1px $neutral-400;
+  border: solid 1px var(--neutral-400);
   padding: 10px;
   border-radius: 8px;
   img{
@@ -1495,11 +1495,11 @@ input:focus + .em-slider {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: $yellow-500;
+  background-color: var(--yellow-500);
 }
 
 .em-card-neutral-100{
-  background-color: $neutral-100;
+  background-color: var(--neutral-100);
   border-radius: 16px;
   padding: 32px;
   cursor: pointer;
@@ -1540,7 +1540,7 @@ button.em-swal-confirm-button{
   justify-content: center;
   align-items: center;
   width: auto !important;
-  padding: 0 $p-16 !important;
+  padding: 0 var(--p-16) !important;
   border-radius: var(--em-border-radius) !important;
   border: unset !important;
   height: 40px !important;
@@ -1556,12 +1556,12 @@ button.em-swal-cancel-button{
   justify-content: center;
   align-items: center;
   width: auto;
-  padding: 0 $p-16 !important;
+  padding: 0 var(--p-16) !important;
   border-radius: var(--em-border-radius) !important;
-  border: solid 1px $neutral-300 !important;
+  border: solid 1px var(--neutral-300) !important;
   height: 40px !important;
   background: transparent !important;
-  color: $night-blue !important;
+  color: var(--night-blue) !important;
   &:focus{
     box-shadow: unset !important;
   }
@@ -1572,12 +1572,12 @@ button.em-swal-delete-button{
   justify-content: center;
   align-items: center;
   width: auto !important;
-  padding: 0 $p-16 !important;
+  padding: 0 var(--p-16) !important;
   border-radius: var(--em-border-radius) !important;
   border: unset !important;
   height: 40px !important;
   color: white !important;
-  background-color: $red-500 !important;
+  background-color: var(--red-500) !important;
 }
 .swal2-actions:not(.em-flex-center){
   justify-content: space-between;
@@ -1612,7 +1612,7 @@ button.em-swal-delete-button{
   .em-modal-header{
     height: 50px;
     padding: 12px 24px;
-    box-shadow: inset 0px -1px 0px $neutral-300;
+    box-shadow: inset 0px -1px 0px var(--neutral-300);
     background-color: white;
     position: sticky;
     top: 0;
@@ -1629,11 +1629,11 @@ button.em-swal-delete-button{
     left: 0;
     top: 50px;
     .translation-menu-item:not(.em-modal-menu__current):hover{
-      background-color: $neutral-300;
+      background-color: var(--neutral-300);
     }
   }
   .em-modal-menu__current{
-    background-color: $neutral-400;
+    background-color: var(--neutral-400);
   }
   .em-modal-component{
     width: 100%;
@@ -1656,22 +1656,22 @@ button.em-swal-delete-button{
 .em-circle-blue-100{
   border-radius: 50%;
   padding: 12px;
-  background: $blue-100;
+  background: var(--blue-100);
 }
 .em-circle-blue-200{
   border-radius: 50%;
   padding: 12px;
-  background: $blue-200;
+  background: var(--blue-200);
 }
 .em-circle-main-100{
   border-radius: 50%;
   padding: 12px;
-  background: $main-100;
+  background: var(--main-100);
 }
 .em-circle-main-200{
   border-radius: 50%;
   padding: 12px;
-  background: $main-200;
+  background: var(--main-200);
   box-shadow: 0 1px 4px rgba(32, 35, 44, 0.05);
 }
 /** **/
@@ -1748,7 +1748,7 @@ button.em-swal-delete-button{
   }
 
   .em-mt-s-4{
-    margin-top: $m-8;
+    margin-top: var(--m-8);
   }
 
   .em-mb-16-xs{

@@ -162,7 +162,7 @@ input[type="color"],
 select:not(.profile-select),
 a.chzn-single,
 textarea {
-  background-color: $neutral-50 !important;
+  background-color: var(--neutral-50) !important;
   color: black;
   font-family: var(--font);
 }
@@ -1421,7 +1421,7 @@ body > .g-container {
 
   form .dz-message {
     height: 150px;
-    border: 1px dashed $neutral-500;
+    border: 1px dashed var(--neutral-500);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -2913,7 +2913,7 @@ p.readmore .btn,
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  padding: 0 $p-16;
+  padding: 0 var(--p-16);
   border-radius: var(--applicant-border-radius);
   border: 1px solid transparent;
   height: 40px;
@@ -3895,7 +3895,7 @@ ul.unstyled.em-linkForgot li a {
 
       &:focus {
         box-shadow: unset;
-        border: solid 1px $blue-400;
+        border: solid 1px var(--blue-400);
       }
     }
   }
@@ -3997,7 +3997,7 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
       &:hover,
       &:focus,
       &:active {
-        background: darken($main-500, 10%) none;
+        background: var(--main-600);
       }
     }
 
@@ -4005,7 +4005,7 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
       background-color: var(--main-500);
 
       &:hover {
-        background-color: darken($main-500, 10%);
+        background-color: var(--main-600);
       }
     }
   }
@@ -4022,7 +4022,7 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
   &:active,
   &:focus {
     color: var(--neutral-50);
-    background: darken($main-500, 10%) !important;
+    background: var(--main-600) !important;
   }
 }
 
@@ -5388,14 +5388,14 @@ button.swal2-cancel.goback-btn {
 }
 
 .hikashop_field_required_label {
-  color: $red-500;
+  color: var(--red-500);
 }
 
 .hikashop_checkout_cart {
   margin-left: -24px;
   margin-right: -24px;
   padding: 24px;
-  border-top: solid 1px $neutral-300;
+  border-top: solid 1px var(--neutral-300);
   margin-top: 32px;
 }
 
@@ -7792,7 +7792,7 @@ fieldset[disabled] .multiselect {
     bottom: 0;
     z-index: 999 !important;
     background: white;
-    border: solid 1px $neutral-300;
+    border: solid 1px var(--neutral-300);
   }
 
   .em-actions-none {

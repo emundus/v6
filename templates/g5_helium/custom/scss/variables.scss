@@ -217,125 +217,34 @@
   --applicant-border-radius: 8px; //for applicants side
   --em-border-radius: 8px; // for coordinators side
   --em-applicant-border-radius: 8px; // for applicants side but with the tchooz style
+
+  --spacing-2: 2rem;
+
+  // Padding
+  --p-4: 4px;
+  --p-8: 8px;
+  --p-16: 16px;
+  --p-24: 24px;
+  --p-32: 32px;
+  --p-40: 40px;
+  --p-48: 48px;
+  --p-56: 56px;
+  --p-64: 64px;
+  --p-72: 72px;
+  --p-80: 80px;
+
+  // Margin
+  --m-8: 8px;
+  --m-16: 16px;
+  --m-24: 24px;
+  --m-32: 32px;
+  --m-40: 40px;
+  --m-48: 48px;
+  --m-56: 56px;
+  --m-64: 64px;
+  --m-72: 72px;
+  --m-80: 80px;
 }
-
-//Colors
-$em-green: #12DB42;
-$em-blue: #16afe1;
-$em-blue: #5A5A72;
-
-$light-blue: #26CAEA;
-$dark-blue: #16AFE1;
-$light-green: #32EE5F;
-$dark-green: #12DB42;
-$light-yellow: #F0EE6D;
-
-$night-blue: #353544;
-$dark-grey: #5A5A72;
-$grey: #B0B0BF;
-$light-grey: #F4F4F6;
-$white: #FFFFFF;
-
-$neutral-50: #FFFFFF;
-$neutral-100: #FAFAFA;
-$neutral-200: #F3F3F3;
-$neutral-300: #EDEDED;
-$neutral-400: #E3E3E3;
-$neutral-500: #A4A4A4;
-$neutral-600: #727272;
-$neutral-700: #4B4B4B;
-$neutral-800: #2B2B2B;
-$neutral-900: #000000;
-
-$main-100: #DFF5E9;
-$main-200: #CCEDE1;
-$main-300: #87D4B8;
-$main-400: #34B385;
-$main-500: #20835F;
-$main-600: #106949;
-$main-700: #0D5946;
-$main-800: #00473D;
-$main-900: #00322B;
-
-$blue-100: #F0F6FD;
-$blue-200: #C8E1FE;
-$blue-300: #79B6FB;
-$blue-400: #007AFF;
-$blue-500: #1C6EF2;
-$blue-600: #0A53CC;
-$blue-700: #0738AB;
-$blue-800: #042A80;
-$blue-900: #011C5B;
-
-$red-100: #FFEEEE;
-$red-200: #FEDCDC;
-$red-300: #FBABAB;
-$red-400: #E76767;
-$red-500: #DB333E;
-$red-600: #C31924;
-$red-700: #9F0B15;
-$red-800: #7F050D;
-$red-900: #480005;
-
-$yellow-25: #FFFCF5;
-$yellow-50: #FFFAEB;
-$yellow-100: #FEF0C7;
-$yellow-200: #FEDF89;
-$yellow-300: #FEC84B;
-$yellow-400: #FDB022;
-$yellow-500: #F79009;
-$yellow-600: #DC6803;
-$yellow-700: #B54707;
-$yellow-800: #93370C;
-$yellow-900: #7A2E0E;
-
-$success-25: #F6FEF9;
-$success-50: #ECFDF3;
-$success-100: #D1FADF;
-$success-200: #A6F4C5;
-$success-300: #6BE9A6;
-$success-400: #31D583;
-$success-500: #12B669;
-$success-600: #039754;
-$success-700: #027A48;
-$success-800: #055F3A;
-$success-900: #054E31;
-
-// Padding
-$p-4: 4px;
-$p-8: 8px;
-$p-16: 16px;
-$p-24: 24px;
-$p-32: 32px;
-$p-40: 40px;
-$p-48: 48px;
-$p-56: 56px;
-$p-64: 64px;
-$p-72: 72px;
-$p-80: 80px;
-
-// Margin
-$m-8: 8px;
-$m-16: 16px;
-$m-24: 24px;
-$m-32: 32px;
-$m-40: 40px;
-$m-48: 48px;
-$m-56: 56px;
-$m-64: 64px;
-$m-72: 72px;
-$m-80: 80px;
-
-
-
-
-// Gradient
-$complete-gradient: linear-gradient(rgba(240,238,109,10), rgba(50,238,95,50), rgba(240,238,109,96));
-$simple-gradient: linear-gradient(rgba(240,238,109,5), rgba(240,238,109,120));
-
-
-// Font
-$font:'Inter', sans-serif;
 
 // Mixin - typo
 
@@ -807,7 +716,7 @@ $font:'Inter', sans-serif;
     /* INPUT */
     .fabrikinput:not(textarea):not([type='checkbox']) {
       @include input-default;
-      background-color: $neutral-50;
+      background-color: var(--neutral-50);
 
       &:hover {
         @include input-hover;
@@ -1142,7 +1051,7 @@ $font:'Inter', sans-serif;
     .row-fluid .plg-databasejoin.mode-checkbox {
       margin-top: 8px;
       min-height: auto;
-      
+
       &.span2 {
         margin-right: auto;
       }
