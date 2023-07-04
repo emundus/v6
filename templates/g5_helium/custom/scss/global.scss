@@ -1879,7 +1879,32 @@ body > .g-container {
   }
 }
 
+/* LISTES - TEMPLATE EMUNDUS CARD */
+
+.view-list .fabrik-switch-view-icon{
+  border: 1px solid $neutral-500;
+  color: $neutral-500;
+}
+.view-list .fabrik-switch-view-icon.active{
+  border: 1px solid $base-secondary-color;
+  color: $base-secondary-color;
+}
+
+.view-list .fabrikFilterContainer .fabrik_filter_submit.button {
+    background: $base-secondary-color;
+    border-color: $base-secondary-color;
+    border-radius: var(--applicant-border-radius);
+    color: var(--neutral-0);
+
+    &:hover, &:active, &:focus {
+      background: var(--neutral-0);
+      border-color: $base-secondary-color !important;
+      color: $base-secondary-color;
+    }
+}
+
 /* LISTES  */
+
 .view-list.com_fabrik .table tbody tr .modal .modal-footer a.btn {
   color: var(--neutral-0);
   text-transform: initial;
