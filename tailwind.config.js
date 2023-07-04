@@ -1,6 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./modules/**/*.{html,js,php}"],
+  content: [
+      "./modules/**/*.{html,js,php}",
+      "./components/com_emundus/**/*.{html,js,php,vue}",
+      "./components/com_fabrik/**/*.{html,js,php}",
+  ],
   theme: {
     extend: {
       colors: {
