@@ -859,19 +859,27 @@ class EmundusHelperFiles
         return $sub->sub_options;
     }
 
+	/**
+	 * @param $elements_id string of elements id separated by comma
+	 * @return array|false
+	 */
     public static function getElementsName($elements_id) {
-        if (!empty($elements_id) && !empty(ltrim($elements_id))) {
+		$elements = [];
 
+        if (!empty($elements_id) && !empty(ltrim($elements_id))) {
             $db = JFactory::getDBO();
-            $query = 'SELECT element.id, element.name AS element_name, element.label as element_label, element.params AS element_attribs, element.plugin as element_plugin, element.hidden as element_hidden, forme.id as form_id, forme.label as form_label, groupe.id as group_id, groupe.label as group_label, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.id as table_list_id, tab.created_by_alias AS created_by_alias, joins.join_from_table, joins.table_join, joins.table_key, joins.table_join_key
-                    FROM #__fabrik_elements element
-                    INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
-                    INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
-                    INNER JOIN #__fabrik_forms AS forme ON formgroup.form_id = forme.id
-                    INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
-                    LEFT JOIN #__fabrik_joins AS joins ON (tab.id = joins.list_id AND (groupe.id=joins.group_id OR element.id=joins.element_id))
-                    WHERE element.id IN ('.ltrim($elements_id, ',').')
-                    ORDER BY find_in_set(element.id, "' . ltrim($elements_id, ',') . '") ';
+
+	        $query = $db->getQuery(true);
+			$query->select('element.id, element.name AS element_name, element.label as element_label, element.params AS element_attribs, element.plugin as element_plugin, element.hidden as element_hidden, forme.id as form_id, forme.label as form_label, groupe.id as group_id, groupe.label as group_label, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.id as table_list_id, tab.created_by_alias AS created_by_alias, joins.join_from_table, joins.table_join, joins.table_key, joins.table_join_key')
+				->from('#__fabrik_elements AS element')
+				->join('INNER', '#__fabrik_groups AS groupe ON element.group_id = groupe.id')
+				->join('INNER', '#__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id')
+				->join('INNER', '#__fabrik_forms AS forme ON formgroup.form_id = forme.id')
+				->join('INNER', '#__fabrik_lists AS tab ON tab.form_id = formgroup.form_id')
+				->join('LEFT', '#__fabrik_joins AS joins ON (tab.id = joins.list_id AND (groupe.id=joins.group_id OR element.id=joins.element_id))')
+				->where('element.id IN ('.ltrim($elements_id, ',').')')
+				->order('find_in_set(element.id, "' . ltrim($elements_id, ',') . '")');
+
 			try {
                 $db->setQuery($query);
                 $res = $db->loadObjectList('id');
@@ -884,10 +892,10 @@ class EmundusHelperFiles
             foreach ($res as $kId => $r) {
                 $elementsIdTab[$kId] = $r;
             }
-            return $elementsIdTab;
-        } else {
-        	return array();
+	        $elements = $elementsIdTab;
         }
+
+		return $elements;
     }
 
     /*
@@ -3932,17 +3940,25 @@ class EmundusHelperFiles
 	}
 
 	/**
-	 * @param $found_joins the joins found by findJoinsBetweenTablesRecursively, ordered from the searched table to the base table
-	 * @param $already_joined_tables referenced array
+	 * @param $found_joins array the joins found by findJoinsBetweenTablesRecursively, ordered from the searched table to the base table
+	 * @param $already_joined_tables array referenced array
 	 * @return string
 	 */
-	public function writeJoins($found_joins, &$already_joined_tables) {
+	public function writeJoins($found_joins, &$already_joined_tables, $create_alias = false) {
 		$left_joins = '';
 
 		if (!empty($found_joins)) {
 			$dbo = JFactory::getDbo();
 			foreach($found_joins as $element_join) {
 				if (!in_array($element_join['table_join'], $already_joined_tables)) {
+					$table_join_alias = $element_join['table_join'];
+					if ($create_alias) {
+						$table_join_alias = 'table_join_' . sizeof($already_joined_tables);
+						$already_joined_tables[$table_join_alias] = $element_join['table_join'];
+					} else {
+						$already_joined_tables[] = $element_join['table_join'];
+					}
+
 					$join_from_table_alias = $element_join['join_from_table'];
 
 					if (in_array($element_join['join_from_table'], $already_joined_tables)) {
@@ -3954,14 +3970,28 @@ class EmundusHelperFiles
 					}
 
 					if (!empty($element_join['params']) && $element_join['params']['type'] === 'repeatElement') {
-						$left_joins .= ' LEFT JOIN ' . $dbo->quoteName($element_join['table_join']) . ' ON ' . $dbo->quoteName($element_join['table_join'] . '.parent_id') . ' = ' . $dbo->quoteName($join_from_table_alias. '.id');
+						if ($create_alias) {
+							$left_joins .= ' LEFT JOIN ' . $dbo->quoteName($element_join['table_join']) . ' AS ' . $dbo->quoteName($table_join_alias) . ' ON ' . $dbo->quoteName($table_join_alias . '.parent_id') . ' = ' . $dbo->quoteName($join_from_table_alias. '.id');
+						} else {
+							$left_joins .= ' LEFT JOIN ' . $dbo->quoteName($element_join['table_join']) . ' ON ' . $dbo->quoteName($element_join['table_join'] . '.parent_id') . ' = ' . $dbo->quoteName($join_from_table_alias . '.id');
+						}
 					} else {
-						$left_joins .= ' LEFT JOIN ' . $dbo->quoteName($element_join['table_join']) . ' ON ' . $dbo->quoteName($element_join['table_join'] . '.' . $element_join['table_join_key']) . ' = ' . $dbo->quoteName($join_from_table_alias. '.' . $element_join['table_key']);
+						if ($create_alias) {
+							$left_joins .= ' LEFT JOIN ' . $dbo->quoteName($element_join['table_join']) . ' AS ' . $dbo->quoteName($table_join_alias) . ' ON ' . $dbo->quoteName($table_join_alias . '.' . $element_join['table_join_key']) . ' = ' . $dbo->quoteName($join_from_table_alias. '.' . $element_join['table_key']);
+						} else {
+							$left_joins .= ' LEFT JOIN ' . $dbo->quoteName($element_join['table_join']) . ' ON ' . $dbo->quoteName($element_join['table_join'] . '.' . $element_join['table_join_key']) . ' = ' . $dbo->quoteName($join_from_table_alias. '.' . $element_join['table_key']);
+						}
 					}
-
-					$already_joined_tables[] = $element_join['table_join'];
 				} else if (!in_array($element_join['join_from_table'], $already_joined_tables)) {
 					$table_join_alias = $element_join['table_join'];
+					$join_from_table_alias = $element_join['join_from_table'];
+					if ($create_alias) {
+						$join_from_table_alias = 'table_join_' . sizeof($already_joined_tables);
+						$already_joined_tables[$join_from_table_alias] = $element_join['join_from_table'];
+					} else {
+						$already_joined_tables[] = $element_join['join_from_table'];
+					}
+
 
 					if (in_array($element_join['table_join'], $already_joined_tables)) {
 						$found_alias = array_search($element_join['table_join'], $already_joined_tables);
@@ -3972,12 +4002,19 @@ class EmundusHelperFiles
 					}
 
 					if (!empty($element_join['params']) && $element_join['params']['type'] === 'repeatElement') {
-						$left_joins .= ' LEFT JOIN ' . $dbo->quoteName($element_join['join_from_table']) . ' ON ' . $dbo->quoteName($element_join['join_from_table'] . '.parent_id') . ' = ' . $dbo->quoteName($table_join_alias. '.id');
-					} else {
-						$left_joins .= ' LEFT JOIN ' . $dbo->quoteName($element_join['join_from_table']) . ' ON ' . $dbo->quoteName($element_join['join_from_table'] . '.' . $element_join['table_key']) . ' = ' . $dbo->quoteName($table_join_alias. '.' . $element_join['table_join_key']);
-					}
+						if ($create_alias) {
+							$left_joins .= ' LEFT JOIN ' . $dbo->quoteName($element_join['join_from_table']) . ' AS ' . $join_from_table_alias . ' ON ' . $dbo->quoteName($join_from_table_alias . '.parent_id') . ' = ' . $dbo->quoteName($table_join_alias. '.id');
 
-					$already_joined_tables[] = $element_join['join_from_table'];
+						} else {
+							$left_joins .= ' LEFT JOIN ' . $dbo->quoteName($element_join['join_from_table']) . ' ON ' . $dbo->quoteName($element_join['join_from_table'] . '.parent_id') . ' = ' . $dbo->quoteName($table_join_alias. '.id');
+						}
+					} else {
+						if ($create_alias) {
+							$left_joins .= ' LEFT JOIN ' . $dbo->quoteName($element_join['join_from_table']) . ' AS ' . $join_from_table_alias . ' ON ' . $dbo->quoteName($join_from_table_alias. '.' . $element_join['table_key']) . ' = ' . $dbo->quoteName($table_join_alias. '.' . $element_join['table_join_key']);
+						} else {
+							$left_joins .= ' LEFT JOIN ' . $dbo->quoteName($element_join['join_from_table']) . ' ON ' . $dbo->quoteName($element_join['join_from_table'] . '.' . $element_join['table_key']) . ' = ' . $dbo->quoteName($table_join_alias. '.' . $element_join['table_join_key']);
+						}
+					}
 				}
 			}
 		}
