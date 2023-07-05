@@ -1884,6 +1884,41 @@ structure:
                 EmundusHelperUpdate::updateExtensionParam('gotenberg_url', 'https://gotenberg.microservices.tchooz.app', 'http://localhost:3000');
 			}
 
+			if (version_compare($cache_version, '1.37.0', '<=') || $firstrun){
+				// Setup our new layouts
+				$query->clear()
+					->update($db->quoteName('#__fabrik_forms'))
+					->set($db->quoteName('form_template') . ' = ' . $db->quote('emundus'))
+					->where($db->quoteName('form_template') . ' = ' . $db->quote('_emundus'));
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->update($db->quoteName('#__menu'))
+					->set($db->quoteName('params') . ' = JSON_REPLACE(params,"$.fabriklayout","emundus")')
+					->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_fabrik&view=form&formid=307'));
+				$db->setQuery($query);
+				$db->execute();
+
+				EmundusHelperUpdate::addYamlVariable('location', 'gantry-assets://custom/css/main.min.css', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css', true, true);
+				EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('name', 'Main', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css');
+
+				EmundusHelperUpdate::addYamlVariable('location', 'gantry-assets://custom/css/form.css', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css', true, true);
+				EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('name', 'Form', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css');
+
+				EmundusHelperUpdate::addYamlVariable('location', 'gantry-assets://custom/css/utilities.css', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css', true, true);
+				EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('name', 'Utilities', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css');
+			}
+
 			// Insert new translations in overrides files
 			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
 

@@ -166,7 +166,7 @@ input[type="color"],
 select:not(.profile-select),
 a.chzn-single,
 textarea {
-  background-color: var(--neutral-50) !important;
+  background-color: var(--neutral-50);
   color: black;
   font-family: var(--em-coordinator-font);
 }
@@ -658,24 +658,6 @@ p,
 #g-offcanvas a:hover {
   color: var(--neutral-50);
   text-decoration: none;
-}
-
-/* ESPACEMENTS SOUS LES TITRES  */
-
-.view-form #g-container-main,
-.emundus-form {
-  .page-header {
-    background: transparent;
-    margin: 32px 32px 0 32px;
-  }
-}
-
-.view-list #g-container-main,
-.view-details #g-container-main {
-  .page-header {
-    background: transparent;
-    margin: 32px 32px 0 0;
-  }
 }
 
 
@@ -5144,11 +5126,9 @@ button.swal2-cancel.goback-btn {
       box-shadow: 0 1px 1px rgba(5, 47, 55, 0.07), 0 2px 1px rgba(5, 47, 55, 0.06), 0 1px 3px rgba(5, 47, 55, 0.1);
 
       .em-form-intro {
-        margin: 8px 32px 0 32px;
-
         p {
           @include body-16;
-          color: var(--neutral-600);
+          color: var(--typo-text-1);
         }
       }
     }
@@ -5181,8 +5161,6 @@ button.swal2-cancel.goback-btn {
 
       /* GROUPE */
       .fabrikGroup {
-        padding: 32px 32px 24px 32px;
-        border-radius: 16px !important;
         background: white;
         font-family: var(--em-coordinator-font);
 
@@ -5263,10 +5241,9 @@ button.swal2-cancel.goback-btn {
         /* BLOC ELEMENT */
         .row-fluid .fabrikElementContainer.control-group {
           &:not(.plg-display) {
-            margin: 24px 0 0 0;
             flex-direction: column;
 
-            @include fabrik-elements;
+            //@include fabrik-elements;
 
           }
 

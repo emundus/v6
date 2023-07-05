@@ -133,4 +133,7 @@ components/com_eventbooking/fields.xml
 /plugins/system/samlredirect/
 /plugins/user/samllogout/
 
+## tailwind ##
+node_modules
+
 custom_variables.js

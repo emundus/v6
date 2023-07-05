@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
+      "./templates/g5_helium/html/**/*.{html,js,php}",
       "./modules/**/*.{html,js,php}",
       "./components/com_emundus/**/*.{html,js,php,vue}",
       "./components/com_fabrik/**/*.{html,js,php}",

@@ -1,6 +1,7 @@
 /** VARIABLES **/
 
 :root {
+  --primary-color: $base-primary-color;
   --attachment-width: 75%;
 
   --neutral-0: #FFFFFF;
@@ -202,6 +203,9 @@
   --light-grey-2: #F2F2F2;
   --light-grey-3: #CCCCCC;
 
+  --bg-2: #F8F8F8;
+  --bg-3: #C62222;
+
   /* FONT */
   --em-coordinator-font: 'Inter', sans-serif;
   --em-coordinator-font-title: 'Inter', sans-serif;
@@ -220,6 +224,8 @@
   --em-coordinator-text-color: #727272;
   --em-coordinator-title-color: #000000;
 
+  --typo-text-1: #000000;
+
   /* BACKGROUND */
   --em-defaut-bg: #fff;
   --em-applicant-bg--gantry: $base-background;
@@ -231,6 +237,8 @@
   --em-default-br: 8px;
   --em-applicant-br: 8px;
   --em-coordinator-br: 8px;
+
+  --after-border-height: 3px;
 
   --spacing-2: 2rem;
 
@@ -258,6 +266,22 @@
   --m-64: 64px;
   --m-72: 72px;
   --m-80: 80px;
+
+  // TYPO
+  --text-xxs: 10px;
+
+  // FABRIK
+  --fabrik-border-radius: 4px;
+  --fabrik-icon-order:1;
+  --fabrik-input-bg: #fff;
+  --fabrik-input-hover-background-color: #E1E7EF;
+  --fabrik-input-hover-border-color: #2E404F;
+  --fabrik-input-focus-color: #007BFF;
+  --fabrik-input-focus-width: 1px;
+  --fabrik-input-focus-radius: 2px;
+  --fabrik-input-focus-outline-offset: 2px;
+  --fabrik-input-focus-border-color: #A7A7A7;
+  --fabrik-input-focus-background-color: #FFFFFF;
 }
 
 // Mixin - typo
@@ -633,8 +657,8 @@
   }
 }
 
-@mixin fabrik-elements {
-  /* ERROR */
+/*@mixin fabrik-elements {
+  !* ERROR *!
   &.error {
 
     .fabrikElement input:not([type="radio"]),
@@ -644,7 +668,7 @@
     }
   }
 
-  /* SUCCESS */
+  !* SUCCESS *!
   &.success input:not([name*="captcha"]), &.has-success input:not([name*="captcha"]) {
     @include input-valid;
     color: var(--neutral-800) !important;
@@ -671,20 +695,20 @@
   }
 
 
-  /* LABEL */
+  !* LABEL *!
   .fabrikLabel {
     @include body-14-medium;
     color: var(--neutral-800);
     margin-bottom: 0 !important;
     padding-top: 0 !important;
 
-    /* ETOILE */
+    !* ETOILE *!
     .icon-star.small {
       @include star;
     }
   }
 
-  /* TEXTE D AIDE */
+  !* TEXTE D AIDE *!
   span.fabrikElementTip{
     @include body-14;
     color: var(--neutral-600);
@@ -704,13 +728,13 @@
   .fabrikElement {
     width: 100%;
 
-    /* INDICATIF */
+    !* INDICATIF *!
     .chzn-container-single a.chzn-single {
       @include input-default;
       padding: 3px 12px 0 12px;
     }
 
-    /* CAPCHA */
+    !* CAPCHA *!
 
     .captcha_input {
       input {
@@ -727,7 +751,7 @@
       }
     }
 
-    /* INPUT */
+    !* INPUT *!
     .fabrikinput:not(textarea):not([type='checkbox']) {
       @include input-default;
       background-color: var(--neutral-50);
@@ -783,7 +807,7 @@
       }
     }
 
-    /* TEXTAREA */
+    !* TEXTAREA *!
     textarea {
       margin-top: 12px !important;
       resize: vertical;
@@ -805,12 +829,12 @@
       }
     }
 
-    /* LIMITE */
+    !* LIMITE *!
     .label-info, .badge-info {
       background: var(--blue-500) !important;
     }
 
-    /* TINYMCE */
+    !* TINYMCE *!
     .mce-container-body .mce-resizehandle{
       display: none;
     }
@@ -819,7 +843,7 @@
       background: var(--neutral-600);
     }
 
-    /* SELECT */
+    !* SELECT *!
     select {
       @include select-default;
       color: var(--neutral-800) !important;
@@ -830,7 +854,7 @@
       }
     }
 
-    /* SELECTION MULTIPLE */
+    !* SELECTION MULTIPLE *!
 
     .chzn-container-multi.chzn-container {
       width: 100% !important;
@@ -880,7 +904,7 @@
       margin-top: 6px;
       color: var(--neutral-800);
 
-      /* YES/NO & RADIO GROUPES */
+      !* YES/NO & RADIO GROUPES *!
       fieldset.btn-radio {
         display: flex;
         grid-gap: 16px;
@@ -968,7 +992,7 @@
 
 
 
-      /* BIRTHDAY */
+      !* BIRTHDAY *!
       select.inputbox {
         @include multiple-select;
         @include body-16;
@@ -990,7 +1014,7 @@
       }
 
 
-      /* DATE */
+      !* DATE *!
       .input-append {
         display: flex;
         flex-direction: row;
@@ -1050,13 +1074,13 @@
     }
 
 
-    /* WYSIWYG */
+    !* WYSIWYG *!
     .js-editor-tinymce {
       margin-top: 12px;
     }
 
 
-    /* CHECKBOX - RADIO */
+    !* CHECKBOX - RADIO *!
     .fabrikSubElementContainer .row-fluid:first-child [class*="fabrikgrid_radio span12"]:first-child{
     margin-top: 0;
     }
@@ -1112,7 +1136,7 @@
       }
     }
 
-    /* CALC */
+    !* CALC *!
 
     span.fabrikElementReadOnly {
       @include body-16;
@@ -1124,5 +1148,5 @@
       }
     }
   }
-}
+}*/
 

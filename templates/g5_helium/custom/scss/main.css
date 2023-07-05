@@ -1,3 +1,14 @@
+@import "utilities.css";
+@import "form.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.after-em-border::after{
+    content: "";
+    width: 40px;
+    height: var(--after-border-height);
+    display: block;
+    margin-top: 8px;
+}

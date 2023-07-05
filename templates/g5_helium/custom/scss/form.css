@@ -1,0 +1,29 @@
+@layer components {
+    form.fabrikForm {
+        .fabrikLabel {
+            display: flex !important;
+            @apply text-lg
+        }
+
+        input {
+            color: var(--typo-text-1);
+            border-radius: var(--fabrik-border-radius);
+            @apply px-2.5 py-3;
+            background-color: var(--fabrik-input-bg);
+            transition: all 0.1s ease-out;
+            &:hover {
+                background-color: var(--fabrik-input-hover-background-color);
+                border-color: var(--fabrik-input-hover-border-color);
+                box-shadow: unset;
+            }
+            &:focus {
+                outline: var(--fabrik-input-focus-color) solid var(--fabrik-input-focus-width);
+                border-radius: var(--fabrik-input-focus-radius);
+                outline-offset: var(--fabrik-input-focus-outline-offset);
+                box-shadow: unset;
+                border-color: var(--fabrik-input-focus-border-color);
+                background-color: var(--fabrik-input-focus-background-color);
+            }
+        }
+     }
+}

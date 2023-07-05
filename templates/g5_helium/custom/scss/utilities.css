@@ -1,0 +1,7 @@
+.text-xxs {
+    font-size: var(--text-xxs);
+}
+
+.icon-order {
+    order: var(--fabrik-icon-order);
+}
