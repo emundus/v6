@@ -1712,13 +1712,13 @@ button.em-swal-delete-button{
 
 /** PROGRAMME **/
 .em-programme-tag{
-  border-radius: 8px;
+  border-radius: var(--em-default-br);
   padding: 5px 12px;
   width: fit-content;
   font-size: 12px;
   font-weight: 600;
   margin-bottom: 12px;
-  font-family: var(--em-applicant-font);
+  font-family: var(--em-default-font);
   height: fit-content;
   text-overflow: ellipsis;
   overflow: hidden;

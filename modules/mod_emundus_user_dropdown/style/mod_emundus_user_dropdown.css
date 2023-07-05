@@ -132,9 +132,9 @@ li>a:hover {
     letter-spacing: normal;
 }
 
-#g-navigation #header-c .header-right a.btn.btn-danger:not(btn-creer-compte) {
+#g-navigation #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte) {
     color: #fff;
-    border-radius: var(--em-default-br) !important;
+    border-radius: var(--em-applicant-br) !important;
     margin-bottom: 0 !important;
     line-height: normal;
     letter-spacing: normal;
