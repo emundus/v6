@@ -5,10 +5,15 @@
             @apply text-lg
         }
 
-        input {
+        input:not([type='radio']),select{
+            height: var(--fabrik-input-height);
+        }
+
+        input,select {
             color: var(--typo-text-1);
             border-radius: var(--fabrik-border-radius);
             @apply px-2.5 py-3;
+            @apply mb-0;
             background-color: var(--fabrik-input-bg);
             transition: all 0.1s ease-out;
             &:hover {
@@ -24,6 +29,29 @@
                 border-color: var(--fabrik-input-focus-border-color);
                 background-color: var(--fabrik-input-focus-background-color);
             }
+        }
+
+        .fabrikgrid_radio {
+            @apply flex;
+            @apply py-1;
+            @apply mb-1;
+            @apply items-center;
+            label{
+                @apply mb-0;
+            }
+        }
+
+        /** ERRORS **/
+        .control-group.error {
+            label{
+                color: var(--fabrik-input-error-label-color);
+            }
+            input{
+                border-color: var(--fabrik-input-error-border-color);
+            }
+        }
+        .fabrikErrorMessage {
+            @apply mt-1;
         }
      }
 }
