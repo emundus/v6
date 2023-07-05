@@ -29,6 +29,11 @@ $dteDiff  = $dteStart->diff($dteEnd);
 $j = $dteDiff->format("%a");
 $h = $dteDiff->format("%H");
 
+if (empty($currentCampaign)) {
+    $app->enqueueMessage(JText::_('MOD_EM_CAMPAIGN_NOT_ACCESSIBLE'));
+    $app->redirect('index.php');
+}
+
 $can_apply = 0;
 if(strtotime($now) < strtotime($currentCampaign->end_date)  && strtotime($now) > strtotime($currentCampaign->start_date)){
     $can_apply = 1;
