@@ -39,7 +39,7 @@ if ($user != null) {
         ?>
         <style>
             .gantry.homepage  #g-page-surround  {
-                background: var(--background-color);
+                background: var(--em-coordinator-bg);
             }
         </style>
 
@@ -110,7 +110,7 @@ if ($user != null) {
             width: 100%;
             color: #353544;
             background-color: var( --neutral-50);
-            font-family: var(--font);
+            font-family: var(--em-coordinator-font);
         }
         .select .profile-select:hover{
             background-color: white !important;

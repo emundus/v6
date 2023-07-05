@@ -19,8 +19,12 @@ div#frame.outline {
   border: 1px solid var(--neutral-300);
   box-shadow: 0 1px 1px rgba(5, 47, 55, 0.07), 0 2px 1px rgba(5, 47, 55, 0.06), 0 1px 3px rgba(5, 47, 55, 0.1);
 
-  p, h1, a {
-    font-family: var(--font);
+  p, a {
+    font-family: var(--em-coordinator-font);
+  }
+
+  h1 {
+    font-family: var(--em-coordinator-font-title);
   }
 
   input {
@@ -28,11 +32,11 @@ div#frame.outline {
   }
 
   .button {
-    border-radius: var(--em-border-radius);
+    border-radius: var(--em-coordinator-br);
     padding: 16px 12px;
     text-transform: initial;
     width: 100%;
-    font-family: var(--font);
+    font-family: var(--em-coordinator-font);
     background: $base-primary-color;
     border: 1px solid $base-primary-color;
     color: var(--neutral-50);
@@ -164,7 +168,7 @@ a.chzn-single,
 textarea {
   background-color: var(--neutral-50) !important;
   color: black;
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font);
 }
 
 
@@ -427,22 +431,22 @@ ul {
 }
 
 .files-board #users-table .btn.btn-danger.pull-right.em-del-access {
-  border-radius: var(--em-border-radius) !important;
+  border-radius: var(--em-coordinator-br) !important;
 }
 
 .files-board form.em-form-message .toggle-editor .btn-group a.btn, .modal-body form .em_email_block input.btn.btn-success[name="expert"] {
   background: var(--dark-grey) !important;
   background-color: var(--dark-grey) !important;
   border: 1px solid var(--dark-grey) !important;
-  border-radius: var(--em-border-radius) !important;
+  border-radius: var(--em-coordinator-br) !important;
   color: var(--neutral-50) !important;
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font);
 
   &:active, &:focus, &:hover {
     background: var(--grey) !important;
     background-color: var(--grey) !important;
     border: 1px solid var(--grey) !important;
-    border-radius: var(--em-border-radius) !important;
+    border-radius: var(--em-coordinator-br) !important;
     color: var(--neutral-50) !important;
   }
 }
@@ -850,14 +854,14 @@ footer#g-footer img {
 .view-profile.layout-edit #g-page-surround,
 .view-details #g-page-surround,
 .view-checklist.com_emundus #g-page-surround {
-  background: var(--em-applicant-background-color) !important;
+  background: var(--em-applicant-bg) !important;
 }
 
 .com_emundus:not(.view-programme):not(.view-checklist):not(.view-users) #g-page-surround,
 .files-board #g-page-surround,
 .g-back-office-emundus-tableau #g-page-surround,
 .view-list.com_fabrik #g-page-surround {
-  background: var(--background-color) !important;
+  background: var(--em-coordinator-bg) !important;
 }
 
 
@@ -977,7 +981,7 @@ body > .g-container {
         background: $base-secondary-color;
         border: 1px solid $base-secondary-color;
         color: var(--neutral-50);
-        border-radius: var(--applicant-border-radius) !important;
+        border-radius: var(--em-applicant-br) !important;
         height: auto;
 
         &:hover,
@@ -1082,7 +1086,7 @@ body > .g-container {
   }
 
   #g-page-surround {
-    background: var(--white-background-color);
+    background: var(--em-defaut-bg);
   }
 
   #g-navigation #header-c {
@@ -1103,7 +1107,7 @@ body > .g-container {
   border-color: $base-primary-color;
   text-transform: initial;
   margin-left: 0 !important;
-  font-family: var(--applicant-default-font);
+  font-family: var(--em-applicant-font);
 
   &:hover,
   &:active,
@@ -1383,7 +1387,7 @@ body > .g-container {
 #attachment_list_mand .em-fieldset-attachment p:not(.em-h5),
 #attachment_list_opt .em-fieldset-attachment p:not(.em-h5) {
   color: var(--neutral-800);
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font);
 }
 
 .view-checklist {
@@ -1550,8 +1554,8 @@ body > .g-container {
 
       button.btn, a.btn {
         text-transform: inherit;
-        border-radius: var(--em-border-radius) !important;
-        font-family: var(--font);
+        border-radius: var(--em-coordinator-br) !important;
+        font-family: var(--em-coordinator-font);
         letter-spacing: inherit;
       }
 
@@ -1847,7 +1851,7 @@ body > .g-container {
     margin-right: 0;
     border-radius: var(--applicant-border-radius) !important;
     padding: 8px 12px;
-    font-family: var(--applicant-default-font);
+    font-family: var(--em-applicant-font);
     font-weight: 500;
     line-height: normal;
     font-size: 14px;
@@ -1983,7 +1987,7 @@ body > .g-container {
 .fabrikFilterContainer .fabrik_actions .fabrik_filter_submit {
   background: grey;
   border: 1px solid grey;
-  border-radius: var(--em-border-radius);
+  border-radius: var(--em-coordinator-br);
   padding: 7px 20px;
 }
 
@@ -2073,7 +2077,7 @@ div.fabrikFilterContainer {
         align-items: center;
         width: 100%;
         padding: 0 16px;
-        border-radius: var(--em-border-radius);
+        border-radius: var(--em-coordinator-br);
         border: unset;
         height: 40px;
         color: var(--neutral-50);
@@ -2848,7 +2852,7 @@ p.readmore .btn,
     background: var(--main-500);
     border-color: var(--main-500);
     color: var(--neutral-50);
-    border-radius: var(--em-border-radius) !important;
+    border-radius: var(--em-coordinator-br) !important;
     &:hover, &:active, &:focus {
       background: var(--neutral-50);
       border-color: var(--main-500) !important;
@@ -2874,7 +2878,7 @@ p.readmore .btn,
   button.btn.btn-danger {
     background: transparent;
     border: 1px solid var(--dark-grey);
-    border-radius: var(--em-border-radius) !important;
+    border-radius: var(--em-coordinator-br) !important;
     color: var(--dark-grey);
     margin-right: 10px;
     font-weight: normal;
@@ -2893,7 +2897,7 @@ p.readmore .btn,
   a.btn-success {
     background: var(--dark-grey);
     border: 1px solid var(--dark-grey);
-    border-radius: var(--em-border-radius) !important;
+    border-radius: var(--em-coordinator-br) !important;
     color: var(--neutral-50);
     padding: 7px 30px;
 
@@ -3150,7 +3154,7 @@ button#back,
 
 .view-profile {
   #g-page-surround {
-    background: var(--em-applicant-background-color);
+    background: var(--em-applicant-bg);
   }
 
   #g-navigation .header-c .open > .dropdown-menu .chzn-single {
@@ -3435,7 +3439,7 @@ label[for='clear-search'] img:hover:focus {
 
   p {
     color: inherit;
-    font-family: var(--font);
+    font-family: var(--em-coordinator-font);
   }
 
   &:not(.em-alert-filter) {
@@ -3734,28 +3738,28 @@ ul.unstyled.em-linkForgot li a {
   }
 
   *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico) {
-    font-family: var(--font);
+    font-family: var(--em-coordinator-font);
   }
 }
 
 .files-board.com_emundus, .view-list.com_fabrik {
   *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico) {
-    font-family: var(--font);
+    font-family: var(--em-coordinator-font);
   }
 }
 
 .com_emundus.view-users.layout-edit .em-container-profile-view-pict h1.em-h1 {
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font-title);
 }
 
 .indicateurs-page *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico) {
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font);
 }
 
 .com_emundus.view-users .em-container-profile-view-form .fabrikGroup {
   legend {
     color: var(--neutral-800);
-    font-family: var(--font);
+    font-family: var(--em-coordinator-font-title);
   }
 
   input {
@@ -3775,7 +3779,7 @@ ul.unstyled.em-linkForgot li a {
   padding: 5px 30px;
   border: 1px solid var(--main-500);
   background: var(--main-500);
-  border-radius: var(--em-border-radius) !important;
+  border-radius: var(--em-coordinator-br) !important;
 
   &:hover, &:active, &:focus {
     border: 1px solid var(--main-500);
@@ -3788,7 +3792,7 @@ ul.unstyled.em-linkForgot li a {
   padding: 8px 12px;
   border: 1px solid var(--dark-grey);
   background: var(--dark-grey);
-  border-radius: var(--em-border-radius) !important;
+  border-radius: var(--em-coordinator-br) !important;
 
   &:hover, &:active, &:focus {
     border: 1px solid var(--grey);
@@ -3891,7 +3895,7 @@ ul.unstyled.em-linkForgot li a {
     padding: 8px 12px;
 
     input[type="text"] {
-      border-radius: calc(var(--em-border-radius) / 2);
+      border-radius: calc(var(--em-coordinator-br) / 2);
 
       &:focus {
         box-shadow: unset;
@@ -4122,7 +4126,7 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
   height: 36px;
   background-color: var(--night-blue);
   border: 1px solid var(--night-blue) !important;
-  border-radius: var(--em-border-radius) !important;
+  border-radius: var(--em-coordinator-br) !important;
   padding: 5px 30px !important;
 
   &:hover,
@@ -4270,7 +4274,7 @@ div#em-appli-block {
     .edit-comment-container button.edit-comment {
       background: var(--neutral-50);
       border: 1px solid var(--neutral-50);
-      border-radius: var(--em-border-radius) !important;
+      border-radius: var(--em-coordinator-br) !important;
 
       span {
         color: var(--night-blue);
@@ -4291,7 +4295,7 @@ div#em-appli-block {
   .em-container-tags-body button.btn-danger[title="Delete"] {
     background: var(--neutral-0);
     border: 1px solid var(--neutral-0);
-    border-radius: var(--em-border-radius) !important;
+    border-radius: var(--em-coordinator-brborder-radius) !important;
 
     span {
       color: var(--red-500);
@@ -4322,7 +4326,7 @@ div#em-appli-block {
     border: 1.5px solid var(--neutral-100);
     color: var(--neutral-100);
     padding: 8px 12px !important;
-    border-radius: var(--em-border-radius) !important;
+    border-radius: var(--em-coordinator-br) !important;
 
     &:hover, &:active, &:focus {
       background: var(--neutral-100) !important;
@@ -4427,7 +4431,7 @@ div#em-appli-block {
       border-color: var(--red-500);
       margin-right: 5px;
       color: var(--neutral-50);
-      border-radius: var(--em-border-radius) !important;
+      border-radius: var(--em-coordinator-br) !important;
 
       &:hover,
       &:active,
@@ -4442,7 +4446,7 @@ div#em-appli-block {
       background: var(--night-blue);
       border-color: var(--night-blue);
       color: var(--neutral-50);
-      border-radius: var(--em-border-radius) !important;
+      border-radius: var(--em-coordinator-br) !important;
 
       &:hover,
       &:active,
@@ -4465,7 +4469,7 @@ div#em-appli-block {
       border-color: var(--red-500);
       margin-right: 5px;
       color: var(--neutral-50);
-      border-radius: var(--em-border-radius) !important;
+      border-radius: var(--em-coordinator-br) !important;
 
       &:hover,
       &:active,
@@ -4481,7 +4485,7 @@ div#em-appli-block {
       border-color: var(--main-500);
       margin-right: 5px;
       color: var(--neutral-50);
-      border-radius: var(--em-border-radius) !important;
+      border-radius: var(--em-coordinator-br) !important;
 
       &:hover,
       &:active,
@@ -4497,7 +4501,7 @@ div#em-appli-block {
       border-color: var(--main-600);
       margin-right: 5px;
       color: var(--neutral-50);
-      border-radius: var(--em-border-radius) !important;
+      border-radius: var(--em-coordinator-br) !important;
 
       &:hover,
       &:active,
@@ -4514,7 +4518,7 @@ div#em-appli-block {
       border-color: var(--night-blue);
       margin-right: 5px;
       color: var(--neutral-50);
-      border-radius: var(--em-border-radius) !important;
+      border-radius: var(--em-coordinator-br) !important;
 
       &:hover,
       &:active,
@@ -4533,14 +4537,14 @@ div#em-appli-block {
   }
 
   form .filtertable input.fabrik_filter_submit {
-    border-radius: var(--em-border-radius);
+    border-radius: var(--em-coordinator-br);
     padding: 8px 12px;
     border: 1px solid var(--main-500);
     background: var(--night-blue);
     color: var(--neutral-50);
 
     &:active, &:focus, &:hover {
-      border-radius: var(--em-border-radius);
+      border-radius: var(--em-coordinator-br);
       padding: 8px 12px;
       border: 1px solid var(--main-500);
       background: transparent;
@@ -4563,8 +4567,8 @@ div#em-appli-block {
   .fabrik_filter_submit.button {
     background: var(--main-500);
     border-color: var(--main-500);
-    border-radius: var(--em-border-radius);
-    font-family: var(--font);
+    border-radius: var(--em-coordinator-br);
+    font-family: var(--em-coordinator-font);
 
     &:hover, &:active, &:focus {
       background: var(--neutral-50);
@@ -4688,7 +4692,7 @@ div#em-appli-block {
   .item-pageindicateurs-page {
     h1 {
       color: var(--neutral-900);
-      font-family: var(--font);
+      font-family: var(--em-coordinator-font-title);
     }
   }
 
@@ -4934,7 +4938,7 @@ div#em-appli-block {
           color: var(--neutral-50);
           border: 1px solid $base-secondary-color;
           padding: 8px 12px;
-          border-radius: var(--em-border-radius);
+          border-radius: var(--em-coordinator-br);
 
           &:hover,
           &:active,
@@ -4961,7 +4965,7 @@ div#em-appli-block {
 .swal2-title {
   color: var(--neutral-900);
   margin: 10px 0 20px 0;
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font-title);
 }
 .swal2-popup{
   border-radius: 16px !important;
@@ -4987,38 +4991,38 @@ button.swal2-styled.swal2-cancel{
 }
 
 button.swal2-confirm.save-btn.sauvegarder.save_continue {
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font);
   background: $base-primary-color !important;
   border: 1px solid $base-primary-color !important;
-  border-radius: var(--em-border-radius);
+  border-radius: var(--em-coordinator-br);
   color: var(--neutral-50) !important;
   font-weight: inherit;
 
   &:hover {
     background: darken($base-primary-color, 8%) !important;
     border: 1px solid darken($base-primary-color, 8%) !important;
-    border-radius: var(--em-border-radius);
+    border-radius: var(--em-coordinator-br);
     color: var(--neutral-50) !important;
   }
 }
 
 button.swal2-cancel.goback-btn {
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font);
   background: $base-secondary-color !important;
   border: 1px solid $base-secondary-color !important;
-  border-radius: var(--em-border-radius) !important;
+  border-radius: var(--em-coordinator-br) !important;
   color: var(--neutral-50) !important;
 
   &:hover {
     background: darken($base-primary-color, 8%) !important;
     border: 1px solid darken($base-primary-color, 8%) !important;
-    border-radius: var(--em-border-radius);
+    border-radius: var(--em-coordinator-br);
     color: var(--neutral-50) !important;
   }
 }
 
 .swal2-content {
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font);
 }
 
 /******************************* FORMULAIRES ***********************************/
@@ -5070,18 +5074,18 @@ button.swal2-cancel.goback-btn {
 .view-details {
   .span12 h1 {
     margin: 12px 0;
-    font-family: var(--font);
+    font-family: var(--em-coordinator-font-title);
     color: var(--neutral-900);
   }
 
   .span12 .fabrikGroup .legend {
-    font-family: var(--font);
+    font-family: var(--em-coordinator-font-title);
     color: var(--neutral-900);
   }
 
   .fabrikLabel {
     color: var(--neutral-700);
-    font-family: var(--font);
+    font-family: var(--em-coordinator-font);
   }
 }
 
@@ -5180,7 +5184,7 @@ button.swal2-cancel.goback-btn {
         padding: 32px 32px 24px 32px;
         border-radius: 16px !important;
         background: white;
-        font-family: var(--font);
+        font-family: var(--em-coordinator-font);
 
         /* LEGEND */
         .legend {
@@ -5283,7 +5287,7 @@ button.swal2-cancel.goback-btn {
 
         /* PROFIL */
         .em-profile-element .fabrikElement .multiselect__tags {
-          border-radius: var(--em-border-radius);
+          border-radius: var(--em-coordinator-br);
           background: var(--neutral-0);
 
           .multiselect__single {
@@ -5422,7 +5426,7 @@ button.swal2-cancel.goback-btn {
 .mod_emundus_checklist .active .mod_emundus_checklist___step_count {
   background: var(--blue-100);
   color: $base-primary-color;
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font);
   border: solid 1px var(--blue-500);
 
   .material-icons-outlined {
@@ -5432,7 +5436,7 @@ button.swal2-cancel.goback-btn {
 
 .mod_emundus_checklist .mod_emundus_checklist_need_missing:not(.active) .mod_emundus_checklist___step_count {
   color: #727272;
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font);
   background: transparent;
   border: solid 1px var(--red-500);
 
@@ -5766,13 +5770,13 @@ screen and (max-height: 769px) {
 
     .edit.item-page {
       .btn-toolbar .btn.btn-primary {
-        border-radius: var(--em-border-radius);
+        border-radius: var(--em-coordinator-br);
         text-transform: initial;
         padding: 8px 12px;
       }
 
       .btn[title="Basculer l'éditeur"] {
-        border-radius: var(--em-border-radius);
+        border-radius: var(--em-coordinator-br);
         text-transform: initial;
         padding: 8px 12px;
       }
@@ -6350,7 +6354,7 @@ screen and (max-height: 769px) {
     border: 1px solid var(--main-500);
     padding: 5px 30px !important;
     font-weight: 500 !important;
-    border-radius: var(--em-border-radius) !important;
+    border-radius: var(--em-coordinator-br) !important;
 
     &:active, &:focus, &:hover {
       background: transparent;
@@ -6941,7 +6945,7 @@ fieldset[disabled] .multiselect {
   display: flex;
   align-items: center;
   padding: 0 24px 0 12px;
-  border-radius: var(--em-border-radius);
+  border-radius: var(--em-coordinator-br);
   border: 1px solid var(--neutral-400);
   background: var(--neutral-0);
   font-size: 14px;
@@ -7293,7 +7297,7 @@ fieldset[disabled] .multiselect {
   }
 
   .loginguard-methods-list-method {
-    border-radius: var(--em-border-radius);
+    border-radius: var(--em-coordinator-br);
     padding: 1em;
 
     .loginguard-methods-list-method-header {

@@ -92,13 +92,13 @@ form#member-profile.well legend {
     color: var(--neutral-800);
     font-weight: 600;
     margin: 0 !important;
-    font-family: var(--font);
+    font-family: var(--em-applicant-font-title);
 }
 
 form#member-profile.form-validate.form-horizontal.well input {
     width: 100%;
     color: var(--neutral-600);
-    font-family: var(--font);
+    font-family: var(--em-applicant-font);
     height: 48px;
     border-radius: 8px;
     padding: 0 12px 0 12px;
@@ -107,7 +107,6 @@ form#member-profile.form-validate.form-horizontal.well input {
     margin-top: 6px;
     margin-bottom: 0;
     background-color: #fff;
-    width: 100%;
 }
 
 form#member-profile.form-validate.form-horizontal.well input:hover {
@@ -122,7 +121,7 @@ form#member-profile.form-validate.form-horizontal.well input:focus {
 }
 
 form#member-profile .control-group .control-label label {
-    font-family: var(--font);
+    font-family: var(--em-applicant-font);
     font-size: 14px;
     font-style: normal;
     font-weight: 500;
@@ -155,12 +154,12 @@ form#member-profile.form-validate.form-horizontal.well fieldset:nth-child(2) {
 form#member-profile.form-validate.form-horizontal.well label {
     font-size: 14px;
     color: var(--neutral-800);
-    font-family: var(--font);
+    font-family: var(--em-applicant-font);
 }
 
 form#member-profile.form-validate.form-horizontal.well span {
     color: var(--neutral-600);
-    font-family: var(--font);
+    font-family: var(--em-applicant-font);
     font-size: 12px;
 }
 

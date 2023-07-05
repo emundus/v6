@@ -140,7 +140,7 @@
 
 .ui.steps .step .description {
 	font-size: 12px;
-	font-family: var(--font);
+	font-family: var(--em-default-font);
 }
 
 .step i.arrow {
@@ -162,7 +162,7 @@
 
 .ui.bottom.attached.steps .step:first-child a {
 	color: var(--neutral-800);
-	font-family: var(--font);
+	font-family: var(--em-default-font);
 }
 
 .registration form > div {
@@ -187,7 +187,7 @@
 
 .view-form .attached p, .view-details .attached p, .view-checklist .attached p {
 	color: white;
-	font-family: var(--font);
+	font-family: var(--em-default-font);
 }
 @media all and (max-width: 767px) {
 	 .ui.attached.segment p {

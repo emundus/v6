@@ -1034,7 +1034,7 @@ a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
     border: 1px solid #4e5b6d;
     border-radius: 4px !important;
     padding: 10px 12px !important;
-   font-family:  var(--applicant-default-font);
+   font-family:  var(--em-applicant-font);
     font-weight: 500;
 }
 .span4 > .btn-group > button.save-btn:hover, .span4 > .btn-group > button.save:hover {

@@ -43,12 +43,12 @@
 }
 
 #g-navigation .header-c .open > #userDropdownMenu li.dropdown-header {
-    font-family: var(--font);
+    font-family: var(--em-default-font);
 }
 
 #userDropdownMenu h5  {
     color: #000;
-    font-family: var(--font);
+    font-family: var(--em-default-font-title);
 }
 
 
@@ -104,7 +104,7 @@ li>a:hover {
 }
 
 .view-reset #g-navigation .header-c header-right a.btn.btn-danger:not(btn-creer-compte) {
-    margin-right: 0px;
+    margin-right: 0;
 }
 
 .em-user-dropdown-button {
@@ -126,7 +126,7 @@ li>a:hover {
 
 #g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte, #g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription {
      color: #fff;
-     border-radius: var(--applicant-border-radius);
+     border-radius: var(--em-default-br);
      margin-bottom: 5px;
     line-height: normal;
     letter-spacing: normal;
@@ -134,7 +134,7 @@ li>a:hover {
 
 #g-navigation #header-c .header-right a.btn.btn-danger:not(btn-creer-compte) {
     color: #fff;
-    border-radius: var(--applicant-border-radius) !important;
+    border-radius: var(--em-default-br) !important;
     margin-bottom: 0 !important;
     line-height: normal;
     letter-spacing: normal;
@@ -151,7 +151,7 @@ li>a:hover {
 
 .logout-button-user{
     padding: 10px 24px !important;
-    border-radius: var(--applicant-border-radius);
+    border-radius: var(--em-default-br);
     text-align: center;
     background-color: #E5283B;
     color: white !important;
@@ -166,7 +166,7 @@ li>a:hover {
 #header-c #userDropdownMenu a.edit-button-user {
     text-shadow: none;
     text-transform: initial;
-    border-radius: var(--applicant-border-radius) !important;
+    border-radius: var(--em-default-br) !important;
     color: #fff;
     padding: 10px 24px;
     text-align: center;

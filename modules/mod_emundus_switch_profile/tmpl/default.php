@@ -58,7 +58,7 @@ if($just_logged && !$only_applicant) {
         display: flex;
         justify-content: center;
         align-items: center;
-        border-radius: var(--em-border-radius);
+        border-radius: var(--em-coordinator-br);
         flex-direction: column;
         cursor: pointer;
         color: var(--main-500);

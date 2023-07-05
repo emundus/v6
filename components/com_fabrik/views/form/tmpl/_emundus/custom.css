@@ -592,7 +592,7 @@ form#member-profile .form-horizontal .control-label {
 }
 
 .view-registration.view-form .page-header h1 {
-    font-family: var(--applicant-title-font) !important;
+    font-family: var(--em-applicant-font-title) !important;
     color: var(--em-applicant-title-color) !important;
 }
 
@@ -627,7 +627,7 @@ form#member-profile .form-horizontal .control-label {
 }
 
 .view-registration .view-registration.login.em-formRegistrationCenter h1.em-h1 {
-    font-family:  var(--applicant-title-font);
+    font-family:  var(--em-applicant-font-title);
 }
 
 
@@ -664,7 +664,7 @@ form#member-profile .form-horizontal .control-label {
 .view-form.em-formRegistrationCenter form.fabrikForm .fabrikActions.form-actions .row-fluid .span4 button {
     width: 100% !important;
     height: 48px !important;
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 
 
@@ -682,7 +682,7 @@ form#member-profile .form-horizontal .control-label {
     align-items: flex-end;
     flex-direction: row;
     width: 100%;
-    padding: 0px 20px 0px 48px;
+    padding: 0 20px 0 48px;
 }
 
 form.fabrikForm label {
@@ -695,11 +695,10 @@ button.register {
 
 .view-registration form.fabrikForm , .view-form .em-formRegistrationCenter form.fabrikForm {
     border: none;
-    border-radius: 0;
     background: #fff;
     box-shadow: none;
-    padding: 0px 64px 16px 64px;
-    margin-top: 0px !important;
+    padding: 0 64px 16px 64px;
+    margin-top: 0 !important;
     border-radius: 0 0 16px 16px;
     width: 100%;
 }
@@ -1130,7 +1129,7 @@ a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
     border: 1px solid #4e5b6d;
     border-radius: 4px !important;
     padding: 10px 12px !important;
-    font-family:  var(--applicant-default-font);
+    font-family:  var(--em-applicant-font);
     font-weight: 500;
 }
 .span4 > .btn-group > button.save-btn:hover, .span4 > .btn-group > button.save:hover {

@@ -17,7 +17,7 @@
 }
 
 .mod_emundus_campaign__intro *{
-  font-family: var(--applicant-default-font);
+  font-family: var(--em-applicant-font);
 }
 
 .mod_emundus_campaign__intro p{
@@ -39,7 +39,7 @@
     margin-bottom: 12px !important;
     color: var(--em-applicant-title-color);
     font-weight: 600;
-    font-family: var(--applicant-title-font) !important;
+    font-family: var(--em-applicant-font-title) !important;
 }
 
 .mod_emundus_campaign__content{
@@ -48,7 +48,7 @@
 }
 
 .mod_emundus_campaign__content .em-h3 {
-    font-family: var(--applicant-title-font);
+    font-family: var(--em-applicant-font-title);
     color: var(--em-applicant-title-color);
 }
 
@@ -141,7 +141,7 @@
     max-height: 100px;
     min-height: 60px;
     line-height: 160%;
-    font-family: var(--applicant-default-font);
+    font-family: var(--em-applicant-font);
     color: var(--em-applicant-text-color);
 }
 
@@ -184,7 +184,7 @@
 }
 
 .mod_emundus_campaign__header_filter span:not(.material-icons-outlined){
-    font-family: var(--applicant-default-font);
+    font-family: var(--em-applicant-font);
 }
 
 .mod_emundus_campaign__header_filter__values .btn.btn-primary {
@@ -204,12 +204,12 @@
 }
 
 .mod_emundus_campaign__grid .mod_emundus_campaign__details_content .btn.btn-primary {
-    border-radius: var(--em-applicant-border-radius) !important;
-    font-family: var(--applicant-default-font);
+    border-radius: var(--em-applicant-br) !important;
+    font-family: var(--em-applicant-font);
 }
 
 .mod_emundus_campaign__header_filter__values *:not(.material-icons-outlined) {
-    font-family: var(--applicant-default-font);
+    font-family: var(--em-applicant-font);
 }
 
 .mod_emundus_campaign__header_filter__values select {
@@ -256,7 +256,7 @@ a.em-blue-400-color:hover {
 
 .mod_emundus_campaign__date p,
 .mod_emundus_campaign__date span:not(.material-icons){
-    font-family: var(--applicant-default-font);
+    font-family: var(--em-applicant-font);
 }
 
 .mod_emundus_campaign__campaign_title {
@@ -269,7 +269,7 @@ a.em-blue-400-color:hover {
     display: -webkit-box;
     line-height: 140%;
     min-height: 46px;
-    font-family: var(--applicant-title-font) !important;
+    font-family: var(--em-applicant-font-title) !important;
 }
 /*
 .mod_emundus_campaign__date *{
@@ -284,11 +284,11 @@ a.em-blue-400-color:hover {
     font-size: 12px;
     font-weight: 600;
     margin-bottom: 12px;
-    font-family: var(--applicant-default-font);
+    font-family: var(--em-applicant-font);
 }
 
 .mod_emundus_campaign__programme_cat_title {
-    font-family: var(--applicant-title-font);
+    font-family: var(--em-applicant-font-title);
     font-style: normal;
     font-weight: 600;
     font-size: 20px;
@@ -318,7 +318,7 @@ a.em-blue-400-color:hover {
 .mod_emundus_campaign__tabs a.current-tab span {
     color: var(--neutral-900);
     font-weight: 500;
-    font-family: var(--applicant-default-font);
+    font-family: var(--em-applicant-font);
 }
 
 #faq h2 {
@@ -331,7 +331,7 @@ a.em-blue-400-color:hover {
 
 #faq * {
     color: var(--neutral-800);
-    font-family: var(--applicant-default-font);
+    font-family: var(--em-applicant-font);
 }
 
 #faq hr:last-of-type {
@@ -351,7 +351,7 @@ a.em-blue-400-color:hover {
 }
 
 .mod_emundus_campaign__details_content h4.em-h4 {
- font-family: var(--applicant-title-font);
+ font-family: var(--em-applicant-font-title);
  color: var(--em-applicant-title-color);
 }
 
@@ -422,7 +422,7 @@ a.em-blue-400-color:hover {
 .tchooz-single-campaign #campaign * {
     line-height: 160%;
     color: var(--em-applicant-text-color);
-    font-family: var(--applicant-default-font);
+    font-family: var(--em-applicant-font);
 }
 
 .mod_emundus_campaign__grid {

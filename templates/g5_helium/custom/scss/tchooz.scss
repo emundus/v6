@@ -22,13 +22,13 @@
   align-items: center;
   width: 100%;
   padding: 0 var(--p-16);
-  border-radius: var(--em-border-radius);
+  border-radius: var(--em-coordinator-br);
   border: unset;
   height: 40px;
   color: white;
   background-color: var(--main-500);
   border: solid 1px transparent;
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font);
 
   &:hover {
     background-color: white;
@@ -57,7 +57,7 @@
   align-items: center;
   width: 100%;
   padding: 0 var(--p-16);
-  border-radius: var(--em-applicant-border-radius);
+  border-radius: var(--em-applicant-br);
   border: unset;
   height: 40px;
   color: white;
@@ -87,12 +87,12 @@
   align-items: center;
   width: 100%;
   padding: 0 var(--p-16);
-  border-radius: var(--em-border-radius);
+  border-radius: var(--em-coordinator-br);
   border: solid 1px var(--neutral-300);
   height: 40px;
   background: transparent;
   color: var(--night-blue);
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font);
 }
 
 .em-applicant-secondary-button{
@@ -102,7 +102,7 @@
   align-items: center;
   width: 100%;
   padding: 0 var(--p-16);
-  border-radius: var(--em-applicant-border-radius);
+  border-radius: var(--em-applicant-br);
   border: solid 1px var(--neutral-300);
   height: 40px;
   background: transparent;
@@ -116,7 +116,7 @@
   align-items: center;
   width: 100%;
   padding: 0 var(--p-16);
-  border-radius: var(--em-border-radius);
+  border-radius: var(--em-coordinator-br);
   border: unset;
   height: 40px;
   background: transparent;
@@ -126,7 +126,7 @@
 .em-disabled-button {
   background: var(--neutral-300);
   border: 1px solid var(--neutral-300);
-  border-radius: var(--em-applicant-border-radius);
+  border-radius: var(--em-applicant-br);
   padding: 8px 12px;
   color: var(--neutral-600);
   cursor: unset;
@@ -138,10 +138,10 @@
   justify-content: center;
   background: transparent;
   border: 1px solid transparent;
-  border-radius: var(--em-border-radius);
+  border-radius: var(--em-coordinator-br);
   padding: 6px 20px;
   color: var(--neutral-900);
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font);
 }
 
 .em-back-button:focus{
@@ -1280,7 +1280,7 @@ input:focus + .em-slider {
   TITLES
 */
 .em-h1{
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font-title);
   font-style: normal;
   font-weight: 600;
   font-size: 32px;
@@ -1288,7 +1288,7 @@ input:focus + .em-slider {
   color: var(--night-blue);
 }
 .em-h2{
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font-title);
   font-style: normal;
   font-weight: 600;
   font-size: 24px;
@@ -1296,7 +1296,7 @@ input:focus + .em-slider {
   color: var(--night-blue);
 }
 .em-h3{
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font-title);
   font-style: normal;
   font-weight: 600;
   font-size: 20px;
@@ -1304,7 +1304,7 @@ input:focus + .em-slider {
   color: var(--night-blue);
 }
 .em-h4{
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font-title);
   font-style: normal;
   font-weight: 600;
   font-size: 18px;
@@ -1312,7 +1312,7 @@ input:focus + .em-slider {
   color: var(--night-blue);
 }
 .em-h5{
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font-title);
   font-style: normal;
   font-weight: 600;
   font-size: 16px;
@@ -1320,7 +1320,7 @@ input:focus + .em-slider {
   color: var(--night-blue);
 }
 .em-h6{
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font-title);
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
@@ -1329,16 +1329,16 @@ input:focus + .em-slider {
 }
 
 .em-applicant-default-font {
-  font-family: var(--font);
+  font-family: var(--em-applicant-font);
   text-transform: inherit;
 }
 
 .em-applicant-title-font {
-  font-family: var(--applicant-title-font);
+  font-family: var(--em-applicant-font-title);
 }
 
 .em-default-font {
-  font-family: var(--font);
+  font-family: var(--em-applicant-font);
 }
 
 .em-caption{
@@ -1396,11 +1396,11 @@ input:focus + .em-slider {
 }
 
 .em-border-radius {
-  font-family: var(--em-border-radius);
+  font-family: var(--em-coordinator-br);
 }
 
 .em-applicant-border-radius {
-  border-radius: var(--em-applicant-border-radius);
+  border-radius: var(--em-applicant-br);
 }
 
 @supports (background-clip: text) {
@@ -1450,7 +1450,7 @@ input:focus + .em-slider {
 
 .em-repeat-card{
   box-shadow: 0 1px 1px rgba(5, 47, 55, 0.07), 0 2px 1px rgba(5, 47, 55, 0.06), 0 1px 3px rgba(5, 47, 55, 0.1);
-  border-radius: calc(var(--em-border-radius)*2) !important;
+  border-radius: calc(var(--em-coordinator-br)*2) !important;
   padding: 24px;
   height: auto;
   background: #fff;
@@ -1458,7 +1458,7 @@ input:focus + .em-slider {
 }
 
 .em-input-card{
-  border-radius: var(--em-border-radius);
+  border-radius: var(--em-coordinator-br);
   padding: 12px 16px;
   height: auto;
   background: #fff;
@@ -1541,7 +1541,7 @@ button.em-swal-confirm-button{
   align-items: center;
   width: auto !important;
   padding: 0 var(--p-16) !important;
-  border-radius: var(--em-border-radius) !important;
+  border-radius: var(--em-coordinator-br) !important;
   border: unset !important;
   height: 40px !important;
   color: white !important;
@@ -1557,7 +1557,7 @@ button.em-swal-cancel-button{
   align-items: center;
   width: auto;
   padding: 0 var(--p-16) !important;
-  border-radius: var(--em-border-radius) !important;
+  border-radius: var(--em-coordinator-br) !important;
   border: solid 1px var(--neutral-300) !important;
   height: 40px !important;
   background: transparent !important;
@@ -1573,7 +1573,7 @@ button.em-swal-delete-button{
   align-items: center;
   width: auto !important;
   padding: 0 var(--p-16) !important;
-  border-radius: var(--em-border-radius) !important;
+  border-radius: var(--em-coordinator-br) !important;
   border: unset !important;
   height: 40px !important;
   color: white !important;
@@ -1718,7 +1718,7 @@ button.em-swal-delete-button{
   font-size: 12px;
   font-weight: 600;
   margin-bottom: 12px;
-  font-family: var(--applicant-default-font);
+  font-family: var(--em-applicant-font);
   height: fit-content;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -1735,7 +1735,7 @@ button.em-swal-delete-button{
   background-image: url('/images/emundus/searchbar/search.svg') !important;
   background-repeat: no-repeat !important;
   background-position: 96% 50% !important;
-  font-family: var(--applicant-default-font);
+  font-family: var(--em-applicant-font);
 }
 
 /**

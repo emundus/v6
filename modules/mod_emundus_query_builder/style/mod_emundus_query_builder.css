@@ -137,13 +137,13 @@
 	margin-right:1%;
 }
 .btnExport, .btnQueryBuilder:hover, .swal2-confirm:hover, .swal2-cancel {
-	border-radius: var(--em-border-radius);
+	border-radius: var(--em-coordinator-br);
 	background:transparent;
 	padding: 8px 12px;
 	white-space: normal;
 }
 .btnExport:hover, .btnQueryBuilder, .swal2-confirm, .swal2-cancel:hover {
-	border-radius: var(--em-border-radius);
+	border-radius: var(--em-coordinator-br);
 	color:white;
 	padding: 8px 12px;
 	white-space: normal;

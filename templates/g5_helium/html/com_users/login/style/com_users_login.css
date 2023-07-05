@@ -2,7 +2,7 @@
 button.btn-primary{
     background: #e03c32;
     border: 1px solid #e03c32;
-    border-radius: var(--em-applicant-border-radius) !important;
+    border-radius: var(--em-applicant-br) !important;
     padding: 8px 12px!important;
 }
 button.btn-primary:hover{
@@ -77,8 +77,8 @@ button.btn-primary:hover{
     text-transform: initial;
     height: 48px;
     width: 100%;
-    border-radius: var(--applicant-border-radius) !important;
-    font-family: var(--applicant-default-font);
+    border-radius: var(--em-applicant-br) !important;
+    font-family: var(--em-applicant-font);
 }
 
 .invalid {
@@ -86,14 +86,14 @@ button.btn-primary:hover{
     font-weight: 600;
 }
 .login .well label {
-    font-family: var(--font);
+    font-family: var(--em-applicant-font);
     font-size: 16px;
     font-style: normal;
     font-weight: 500;
     line-height: 19px;
     letter-spacing: 0.0015em;
     text-align: left;
-    margin-bottom: 0px;
+    margin-bottom: 0;
     color: #2B2B2B;
 }
 
@@ -129,7 +129,7 @@ ul.nav.nav-tabs.nav-stacked {
 .view-login .form-horizontal .control-label {
     width: 100%;
     text-align: left;
-    padding-top: 0px;
+    padding-top: 0;
 }
 .login .form-horizontal .control-label {
     width: 100%;
@@ -164,16 +164,15 @@ footer div{
     text-transform: capitalize;
     width: 100% !important;
     height: 48px;
-    margin-right: 0px !important;
-    margin-bottom: 0px;
-    font-family: var(--font);
+    margin-right: 0 !important;
+    margin-bottom: 0;
+    font-family: var(--em-applicant-font);
     font-weight: 500;
 }
 form.form-validate.form-horizontal.well .control-group .controls input {
     border-radius :4px;
     width: 100%;
     height: 48px;
-    border-radius: 4px;
     padding: 0 12px 0 12px;
     border: 1px solid #E3E3E3;
     box-shadow: none;
@@ -198,7 +197,7 @@ form.form-validate.form-horizontal.well .control-group .controls input:hover {
 
 h1.em-titre-connectez-vous {
     margin-bottom: 16px !important;
-    margin-top: 0px;
+    margin-top: 0;
     font-size: 32px;
     font-style: normal;
     font-weight: 600;
@@ -208,7 +207,7 @@ h1.em-titre-connectez-vous {
 }
 
 .page-header h1.em-h1 {
-    font-family: var(--applicant-title-font);
+    font-family: var(--em-applicant-font-title);
     color: var(--em-applicant-title-color);
 }
 
@@ -322,7 +321,7 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 @media all and (max-width: 479px) {
     .view-login #g-container-main div.login {
         width: 100%;
-        padding: 0px 24px 0 24px;
+        padding: 0 24px 0 24px;
     }
 }
 
@@ -331,13 +330,13 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     .view-login .login  {
          width: 100% !important;
         padding: 80px 24px 0 24px;
-        margin-top: 0px !important;
+        margin-top: 0 !important;
     }
 
     .view-login .login .page-header {
         width: 100% !important;
-        padding: 0px 12px;
-        margin-top: 0px;
+        padding: 0 12px;
+        margin-top: 0;
     }
 
     .view-login .form-horizontal fieldset .control-group {
@@ -360,8 +359,8 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 
     ul.nav.nav-tabs.nav-stacked li {
         text-align: center;
-        margin: 0px !important;
-        padding: 0px !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
 }
@@ -375,7 +374,7 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 
     #g-container-main div.em-formRegistrationCenter, #g-container-main div.login {
         width: 65%;
-        padding: 80px 24px 0px 24px !important;
+        padding: 80px 24px 0 24px !important;
     }
 
     ul.nav.nav-tabs.nav-stacked

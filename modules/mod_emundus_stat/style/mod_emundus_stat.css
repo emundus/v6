@@ -32,7 +32,7 @@
 
 
 .btnConsulter {
-	border-radius: var(--em-border-radius);
+	border-radius: var(--em-coordinator-br);
 	color:white;
 	font-size: 14px;
 	white-space: normal;

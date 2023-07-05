@@ -8,7 +8,7 @@
     margin-bottom: 16px !important;
     text-align: justify;
     background: #FFFFFF;
-    font-family: var(--applicant-default-font);
+    font-family: var(--em-applicant-font);
 }
 
 .view-reset #user-registration .controls,
@@ -43,7 +43,7 @@ form#user-registration.form-validate.form-horizontal.well,
 form#user-registration.form-validate.form-horizontal.well label,
 .reset-confirm .form-validate.form-horizontal.well label,
 .reset-complete .form-validate.form-horizontal.well  label {
-    font-family: var(--font);
+    font-family: var(--em-applicant-font);
     font-size: 16px;
     font-style: normal;
     font-weight: 500;
@@ -154,7 +154,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 .view-reset .reset-complete .page-header h1.em-h1{
     margin-top: 0px;
     text-align: center;
-    font-family: var(--applicant-title-font);
+    font-family: var(--em-applicant-font-title);
     color: var(--em-applicant-title-color);
 }
 

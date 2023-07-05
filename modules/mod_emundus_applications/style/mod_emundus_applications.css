@@ -152,7 +152,7 @@ button#back:hover, button#back:active, button#back:focus,
 a.btn.btn-success:not(.btn-xs) {
     width: 100%;
     text-align: center;
-    border-radius: var(--applicant-border-radius) !important;
+    border-radius: var(--em-applicant-br) !important;
 }
 
 /*** Progression bar percentage ***/

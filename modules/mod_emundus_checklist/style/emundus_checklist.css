@@ -35,7 +35,7 @@
     -webkit-box-orient: vertical;
     display: -webkit-box;
     color: black;
-    font-family: var(--font);
+    font-family: var(--em-applicant-font);
 }
 .mod_emundus_checklist___attachment_links{
     color: black;
@@ -71,7 +71,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: var(--font);
+    font-family: var(--em-applicant-font);
     color: var(--neutral-800);
 }
 

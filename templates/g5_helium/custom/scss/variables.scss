@@ -202,21 +202,35 @@
   --light-grey-2: #F2F2F2;
   --light-grey-3: #CCCCCC;
 
-  --font: 'Inter', sans-serif; // for coordinators side
-  --applicant-default-font: 'Inter', sans-serif; // for applicants side
-  --applicant-title-font: 'Inter', sans-serif; // for applicants side
+  /* FONT */
+  --em-coordinator-font: 'Inter', sans-serif;
+  --em-coordinator-font-title: 'Inter', sans-serif;
 
-  --em-applicant-text-color: #727272; // for applicants side
-  --em-applicant-title-color: #000000; // for applicants side
+  --em-applicant-font: 'Inter', sans-serif;
+  --em-applicant-font-title: 'Inter', sans-serif;
 
-  --white-background-color: #fff;
-  --applicant-background-color: $base-background; // for applicants side
-  --em-applicant-background-color: #f8f8f8; // for applicants side
-  --background-color: #f8f8f8;
+  --em-default-font: 'Inter', sans-serif;
+  --em-default-font-title: 'Inter', sans-serif;
 
-  --applicant-border-radius: 8px; //for applicants side
-  --em-border-radius: 8px; // for coordinators side
-  --em-applicant-border-radius: 8px; // for applicants side but with the tchooz style
+  /* FONT COLOR */
+
+  --em-applicant-text-color: #727272;
+  --em-applicant-title-color: #000000;
+
+  --em-coordinator-text-color: #727272;
+  --em-coordinator-title-color: #000000;
+
+  /* BACKGROUND */
+  --em-defaut-bg: #fff;
+  --em-applicant-bg--gantry: $base-background;
+  --em-applicant-bg: #f8f8f8;
+  --em-coordinator-bg: #f8f8f8;
+
+  /* BORDER RADIUS  */
+
+  --em-default-br: 8px;
+  --em-applicant-br: 8px;
+  --em-coordinator-br: 8px;
 
   --spacing-2: 2rem;
 
@@ -249,7 +263,7 @@
 // Mixin - typo
 
 @mixin headline-1 {
-  font-family: var(--font);
+  font-family: var(--em-default-font-title);
   font-style: normal;
   font-weight: 600;
   font-size: 32px;
@@ -259,7 +273,7 @@
 }
 
 @mixin headline-2 {
-  font-family: var(--font);
+  font-family: var(--em-default-font-title);
   font-style: normal;
   font-weight: 600;
   font-size: 24px;
@@ -269,7 +283,7 @@
 }
 
 @mixin headline-3 {
-  font-family: var(--font);
+  font-family: var(--em-default-font-title);
   font-style: normal;
   font-weight: 600;
   font-size: 20px;
@@ -279,7 +293,7 @@
 }
 
 @mixin headline-4 {
-  font-family: var(--font);
+  font-family: var(--em-default-font-title);
   font-style: normal;
   font-weight: 600;
   font-size: 18px;
@@ -289,7 +303,7 @@
 }
 
 @mixin headline-5 {
-  font-family: var(--font);
+  font-family: var(--em-default-font-title);
   font-style: normal;
   font-weight: 600;
   font-size: 16px;
@@ -299,7 +313,7 @@
 }
 
 @mixin headline-6 {
-  font-family: var(--font);
+  font-family: var(--em-default-font-title);
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
@@ -309,7 +323,7 @@
 }
 
 @mixin body-16 {
-  font-family: var(--font);
+  font-family: var(--em-default-font);
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
@@ -319,7 +333,7 @@
 }
 
 @mixin body-16-medium {
-  font-family: var(--font);
+  font-family: var(--em-default-font);
   font-size: 16px;
   font-style: normal;
   font-weight: 500 !important;
@@ -329,7 +343,7 @@
 }
 
 @mixin body-16-semibold {
-  font-family: var(--font);
+  font-family: var(--em-default-font);
   font-size: 16px;
   font-style: normal;
   font-weight: 600;
@@ -339,7 +353,7 @@
 }
 
 @mixin body-14 {
-  font-family: var(--font);
+  font-family: var(--em-default-font);
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
@@ -349,7 +363,7 @@
 }
 
 @mixin body-14-medium {
-  font-family: var(--font);
+  font-family: var(--em-default-font);
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
@@ -359,7 +373,7 @@
 }
 
 @mixin body-14-semibold {
-  font-family: var(--font);
+  font-family: var(--em-default-font);
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
@@ -369,7 +383,7 @@
 }
 
 @mixin caption {
-  font-family: var(--font);
+  font-family: var(--em-applicant-font);
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
@@ -379,7 +393,7 @@
 }
 
 @mixin overline {
-  font-family: var(--font);
+  font-family: var(--em-applicant-font);
   font-size: 10px;
   font-style: normal;
   font-weight: 400;
@@ -391,7 +405,7 @@
 // Mixin - form
 
 @mixin star {
-  font-family: var(--font);
+  font-family: var(--em-applicant-font);
   font-size: 5px;
   font-style: normal;
   font-weight: 400;
@@ -460,7 +474,7 @@
   background-repeat: no-repeat;
   height: 48px !important;
   padding: 0 32px 0 12px !important;
-  font-family: var(--font);
+  font-family: var(--em-applicant-font);
 }
 
 @mixin multiple-select {
@@ -875,7 +889,7 @@
           @include yes-no;
           border: 1px solid var(--main-500);
           background: var(--main-500);
-          border-radius: var(--em-border-radius) !important;
+          border-radius: var(--em-coordinator-br) !important;
           width: 100% !important;
           max-width: 250px;
           display: flex;
@@ -897,7 +911,7 @@
           @include yes-no;
           border: 1px solid var(--red-500);
           background: var(--red-500);
-          border-radius: var(--em-border-radius) !important;
+          border-radius: var(--em-coordinator-br) !important;
           width: 100% !important;
           max-width: 250px;
           display: flex;
@@ -919,7 +933,7 @@
           @include yes-no;
           border: 1px solid var(--neutral-400);
           background: transparent;
-          border-radius: var(--em-border-radius) !important;
+          border-radius: var(--em-coordinator-br) !important;
           margin-left: -2px;
           z-index: 0;
           width: 100% !important;
@@ -944,11 +958,11 @@
         }
 
          label.btn-default.btn:nth-child(1) {
-           border-radius: var(--em-border-radius) !important;
+           border-radius: var(--em-coordinator-br) !important;
          }
 
          label.btn-default.btn:nth-child(2) {
-           border-radius: var(--em-border-radius) !important;
+           border-radius: var(--em-coordinator-br) !important;
          }
       }
 
