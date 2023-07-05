@@ -132,3 +132,5 @@ components/com_eventbooking/fields.xml
 /plugins/authentication/miniorangesaml/
 /plugins/system/samlredirect/
 /plugins/user/samllogout/
+
+custom_variables.js
