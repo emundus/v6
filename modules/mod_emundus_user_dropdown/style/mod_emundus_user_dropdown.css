@@ -151,7 +151,7 @@ li>a:hover {
 
 .logout-button-user{
     padding: 10px 24px !important;
-    border-radius: var(--em-default-br);
+    border-radius: var(--em-applicant-br);
     text-align: center;
     background-color: #E5283B;
     color: white !important;
@@ -166,7 +166,7 @@ li>a:hover {
 #header-c #userDropdownMenu a.edit-button-user {
     text-shadow: none;
     text-transform: initial;
-    border-radius: var(--em-default-br) !important;
+    border-radius: var(--em-applicant-br) !important;
     color: #fff;
     padding: 10px 24px;
     text-align: center;
