@@ -2410,7 +2410,7 @@ class EmundusModelFiles extends JModelLegacy
 	}
 
 
-	public function getFnumArray2($fnums, $elements)
+	public function getFnumArray2($fnums, $elements, $debug = false)
 	{
 		$data = [];
 
@@ -2442,6 +2442,8 @@ class EmundusModelFiles extends JModelLegacy
 			$leftJoin .= ' LEFT JOIN #__users as u ON u.id = jecc.applicant_id ';
 
 			foreach($elements as $element) {
+				$is_repeat = false;
+
 				if (in_array($element->tab_name, $already_joined)) {
 					$element_table_alias = array_search($element->tab_name, $already_joined);
 				} else {
@@ -2453,6 +2455,19 @@ class EmundusModelFiles extends JModelLegacy
 					} else {
 						$joins = $h_files->findJoinsBetweenTablesRecursively($element->tab_name, 'jos_emundus_campaign_candidature');
 						$leftJoin .= $h_files->writeJoins($joins, $already_joined, true);
+					}
+				}
+
+				$groups_params = json_decode($element->group_attribs, true);
+				if ($groups_params['repeat_group_button'] == 1) {
+					$is_repeat = true;
+					$group_join_informations = $h_files->getJoinInformations(0, $element->group_id);
+
+					if (!in_array($group_join_informations['table_join'], $already_joined)) {
+						$child_element_table_alias = 'table_join_' . sizeof($already_joined);
+						$already_joined[$child_element_table_alias] = $group_join_informations['table_join'];
+
+						$leftJoin .= ' LEFT JOIN ' . $group_join_informations['table_join'] . ' as ' . $child_element_table_alias . ' ON ' . $child_element_table_alias . '.' . $group_join_informations['table_join_key'] . ' = ' . $element_table_alias . '.' . $group_join_informations['table_key'];
 					}
 				}
 
@@ -2473,47 +2488,126 @@ class EmundusModelFiles extends JModelLegacy
 						// ! DON'T ADD A BREAK HERE AND DON'T PUT ANYTHING BETWEEN THIS CASE AND DATABASEJOIN CASE ! //
 					case 'databasejoin':
 						$element_params = json_decode($element->element_attribs, true);
+						$is_multi = $element_params['database_join_display_type'] === 'checkbox' || $element_params['database_join_display_type'] === 'multilist';
 						$join_column = !empty($element_params['join_val_column_concat']) ? $element_params['join_val_column_concat'] : $element_params['join_val_column'];
 						$join_column = str_replace('{thistable}', $element_params['join_db_name'], $join_column);
 						$join_column = str_replace('{shortlang}', $current_lang, $join_column);
 						$join_column = str_replace('{my->id}', $current_user, $join_column);
 
-						$databasejoin_sub_query = '(SELECT ' . $join_column;
-						$databasejoin_sub_query .= ' FROM ' . $element_params['join_db_name'];
+						$databasejoin_sub_query = '';
 
-						// In case of checkbox or multilist, the values are stored in child table
-						if ($element_params['database_join_display_type'] === 'checkbox' || $element_params['database_join_display_type'] === 'multilist') {
+						if ($is_repeat && $is_multi) { // it is a special case, we are in a repeatable group, and the element itself has repeatable values
 							$join_informations = $h_files->getJoinInformations($element->id);
+
 							if (!empty($join_informations)) {
-								if (!in_array($already_joined, $join_informations['table_join'])) {
-									$child_table_alias = 'table_join_' . sizeof($already_joined);
-									$already_joined[$child_table_alias] = $join_informations['table_join'];
+								$value_join_table_alias = 'join_table_' . rand(0, 1000);
+								$child_table_alias = 'child_table_' . rand(0, 1000);
 
-									$leftJoin .= ' LEFT JOIN ' . $join_informations['table_join'] . ' as ' . $child_table_alias . ' ON ' . $child_table_alias . '.' . $join_informations['table_join_key'] . ' = ' . $element_table_alias . '.id';
-								} else {
-									$child_table_alias = array_search($join_informations['table_join'], $already_joined);
-								}
 
-								$databasejoin_sub_query = ' GROUP_CONCAT(' . $databasejoin_sub_query;
-								$databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_table_alias . '.' . $element->element_name . '))';
+								/**
+								 * SELECT jecc.fnum,
+								u.email,
+								esc.label,
+								sp.code,
+								esc.id                                                                                    as campaign_id,
+								GROUP_CONCAT(table_join_5.e_797_7973)                                                     AS jos_emundus_1001_01___e_797_7973,
+								GROUP_CONCAT(table_join_5.e_797_7974)                                                     AS jos_emundus_1001_01___e_797_7974,
+								GROUP_CONCAT(table_join_5.e_797_7980)                                                     AS jos_emundus_1001_01___e_797_7980,
+								GROUP_CONCAT(CASE table_join_5.e_797_7981
+								WHEN 0 THEN 'No'
+								WHEN 1 THEN 'Yes'
+								ELSE table_join_5.e_797_7981 END)                                        AS jos_emundus_1001_01___e_797_7981,
+								GROUP_CONCAT(DATE_FORMAT(table_join_5.e_797_7983, '%d/%m/%Y %H:%i:%s'))                   AS jos_emundus_1001_01___e_797_7983,
+								GROUP_CONCAT(DATE_FORMAT(table_join_5.e_797_7982, '%d/%m/%Y'))                            AS jos_emundus_1001_01___e_797_7982,
+								GROUP_CONCAT((SELECT DISTINCT data_nationality.label_fr
+								FROM data_nationality
+								WHERE data_nationality.id = table_join_5.e_797_7978) SEPARATOR
+								', ')                                                                        AS jos_emundus_1001_01___e_797_7978,
+								table_join_6.departements AS jos_emundus_1001_01___database_join_multi,
+								GROUP_CONCAT(CASE table_join_5.e_797_7976
+								WHEN '1' THEN 'SUBLABEL_803_8008_0'
+								WHEN '2'
+								THEN 'SUBLABEL_803_8008_1' END)                                      AS jos_emundus_1001_01___e_797_7976
+								FROM jos_emundus_campaign_candidature as jecc
+								LEFT JOIN jos_emundus_setup_campaigns as esc ON esc.id = jecc.campaign_id
+								LEFT JOIN jos_emundus_setup_programmes as sp ON sp.code = esc.training
+								LEFT JOIN jos_users as u ON u.id = jecc.applicant_id
+								LEFT JOIN jos_emundus_1001_01 as table_join_4 ON table_join_4.fnum = jecc.fnum
+								LEFT JOIN jos_emundus_1001_01_803_repeat as table_join_5 ON table_join_5.parent_id = table_join_4.id
+								LEFT JOIN (
+								SELECT GROUP_CONCAT(dd.departement_nom) as departements, tj.parent_id
+								FROM data_departements dd
+								LEFT JOIN jos_emundus_1001_01_803_repeat_repeat_database_join_multi as tj ON tj.database_join_multi = dd.departement_id
+								WHERE parent_id IS NOT NULL
+								) as table_join_6 ON table_join_6.parent_id = table_join_5.id
+								WHERE jecc.fnum IN ("2023070411433500000020000095")
+								GROUP BY jecc.fnum;
+								 */
+								$join_query = 'LEFT JOIN ( SELECT GROUP_CONCAT('.$value_join_table_alias . '.' . $join_column . '), ' . $child_table_alias . '.parent_id
+									FROM ' . $element_params['join_db_name'] . ' as ' . $value_join_table_alias . '
+									LEFT JOIN ' . $join_informations[''] .  '
+									WHERE ' . $child_table_alias . '.parent_id IS NOT NULL
+								';
 							}
-						} else {
-							$databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $element_table_alias . '.' . $element->element_name . ')';
+						}
+						else
+						{
+							if ($is_repeat)  {
+								$databasejoin_sub_query .= 'GROUP_CONCAT(';
+							}
+
+							$databasejoin_sub_query .= '(SELECT ' . $join_column;
+							$databasejoin_sub_query .= ' FROM ' . $element_params['join_db_name'];
+
+							// In case of checkbox or multilist, the values are stored in child table
+							if ($is_multi) {
+								$join_informations = $h_files->getJoinInformations($element->id);
+								if (!empty($join_informations)) {
+									if (!in_array($already_joined, $join_informations['table_join'])) {
+										$child_table_alias = 'table_join_' . sizeof($already_joined);
+										$already_joined[$child_table_alias] = $join_informations['table_join'];
+
+										$leftJoin .= ' LEFT JOIN ' . $join_informations['table_join'] . ' as ' . $child_table_alias . ' ON ' . $child_table_alias . '.' . $join_informations['table_join_key'] . ' = ' . $element_table_alias . '.id';
+									} else {
+										$child_table_alias = array_search($join_informations['table_join'], $already_joined);
+									}
+
+									$databasejoin_sub_query = ' GROUP_CONCAT(' . $databasejoin_sub_query;
+									$databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_table_alias . '.' . $element->element_name . '))';
+								}
+							} else {
+								if ($is_repeat) {
+									$databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_element_table_alias . '.' . $element->element_name . ')';
+								} else {
+									$databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $element_table_alias . '.' . $element->element_name . ')';
+								}
+							}
+
+							if ($is_repeat) {
+								$databasejoin_sub_query .= ' SEPARATOR \', \')';
+							}
+
+							$databasejoin_sub_query .= ' AS ' . $element->tab_name . '___' . $element->element_name;
 						}
 
-						$databasejoin_sub_query .= ' AS ' . $element->tab_name . '___' . $element->element_name;
 						$query .= ', ' . $databasejoin_sub_query;
 
 						break;
 					case 'radiobutton':
 						$element_params = json_decode($element->element_attribs, true);
-						$query .= ', CASE ' . $element_table_alias . '.' . $element->element_name . ' ';
+
+						if ($is_repeat) {
+							$query .= ', GROUP_CONCAT(CASE ' . $child_element_table_alias . '.' . $element->element_name . ' ';
+						} else {
+							$query .= ', (CASE ' . $element_table_alias . '.' . $element->element_name . ' ';
+						}
+
 						foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
 							$sub_label = JText::_($element_params['sub_options']['sub_labels'][$sub_key]);
 							$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
 							$query .= ' WHEN \'' . $sub_value . '\' THEN \'' . $sub_label . '\'';
 						}
-						$query .= ' END AS ' . $element->tab_name . '___' . $element->element_name;
+						$query .= ' END) AS ' . $element->tab_name . '___' . $element->element_name;
 
 						break;
 					case 'checkbox':
@@ -2577,16 +2671,32 @@ class EmundusModelFiles extends JModelLegacy
 						}
 						break;
 					case 'birthday':
-						$query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y\') AS ' . $element->tab_name . '___' . $element->element_name;
+						if ($is_repeat) {
+							$query .= ', GROUP_CONCAT(DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y\')) AS ' . $element->tab_name . '___' . $element->element_name;
+						} else {
+							$query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y\') AS ' . $element->tab_name . '___' . $element->element_name;
+						}
 						break;
 					case 'date':
-						$query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y %H:%i:%s\') AS ' . $element->tab_name . '___' . $element->element_name;
+						if ($is_repeat) {
+							$query .= ', GROUP_CONCAT(DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y %H:%i:%s\')) AS ' . $element->tab_name . '___' . $element->element_name;
+						} else {
+							$query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y %H:%i:%s\') AS ' . $element->tab_name . '___' . $element->element_name;
+						}
 						break;
 					case 'yesno':
-						$query .= ', CASE ' . $element_table_alias . '.' . $element->element_name . ' WHEN 0 THEN \'' . JText::_('JNO') . '\' WHEN 1 THEN \'' . JText::_('JYES') . '\' ELSE ' . $element_table_alias . '.' . $element->element_name . ' END AS ' . $element->tab_name . '___' . $element->element_name;
+						if ($is_repeat) {
+							$query .= ', GROUP_CONCAT(CASE ' . $child_element_table_alias . '.' . $element->element_name . ' WHEN 0 THEN \'' . JText::_('JNO') . '\' WHEN 1 THEN \'' . JText::_('JYES') . '\' ELSE ' . $child_element_table_alias . '.' . $element->element_name . ' END)' . ' AS ' . $element->tab_name . '___' . $element->element_name;
+						} else {
+							$query .= ', CASE ' . $element_table_alias . '.' . $element->element_name . ' WHEN 0 THEN \'' . JText::_('JNO') . '\' WHEN 1 THEN \'' . JText::_('JYES') . '\' ELSE ' . $element_table_alias . '.' . $element->element_name . ' END AS ' . $element->tab_name . '___' . $element->element_name;
+						}
 						break;
 					default:
-						$query .= ', ' . $element_table_alias . '.' . $element->element_name . ' AS ' . $element->tab_name . '___' . $element->element_name;
+						if ($is_repeat) {
+							$query .= ', GROUP_CONCAT(' . $child_element_table_alias . '.' . $element->element_name . ')' . ' AS ' . $element->tab_name . '___' . $element->element_name;
+						} else {
+							$query .= ', ' . $element_table_alias . '.' . $element->element_name . ' AS ' . $element->tab_name . '___' . $element->element_name;
+						}
 						break;
 				}
 			}
@@ -2596,7 +2706,10 @@ class EmundusModelFiles extends JModelLegacy
 			try {
 				$db = JFactory::getDbo();
 				$db->setQuery($query . $from . $leftJoin . $where);
-				//error_log($query . $from . $leftJoin . $where);
+
+				if ($debug) {
+					error_log($query . $from . $leftJoin . $where);
+				}
 
 				$data = $db->loadAssocList('fnum');
 			} catch(Exception $e) {

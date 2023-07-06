@@ -360,19 +360,180 @@ class EmundusModelFilesTest extends TestCase{
 		error_log(print_r($data, true));
 
 		// TODO: create a form with all type of elements and where the group is repeatable
-		// TODO: create a fnum and writes data in it
+		$repeat_form_id = 381;
+		$query->clear()
+			->select('jfe.id')
+			->from($db->quoteName('#__fabrik_elements', 'jfe'))
+			->leftJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON jffg.group_id = jfe.group_id')
+			->where('jffg.form_id = ' . $repeat_form_id)
+			->andWhere('jfe.hidden = 0');
 
-		// TODO: test for element field
-		// TODO: test for element textarea
-		// TODO: test for element display
-		// TODO: test for element yesno
-		// TODO: test for element calc
-		// TODO: test for element date
-		// TODO: test for element databasejoin
-		// TODO: test for element databasejoin with param multi-select
+		$db->setQuery($query);
+		$element_ids = $db->loadColumn();
+		$element_ids = implode(',', $element_ids);
+		$elements = $this->h_files->getElementsName($element_ids);
+		$this->assertNotEmpty($elements, 'getElementsName returns an array of elements for a form with repeatable group');
+
+		// TODO: create a fnum and writes data in it
+		$fnum = '2023070411433500000020000095';
+
+
+		$field_element = null;
+		foreach ($elements as $element) {
+			if ($element->element_plugin == 'field') {
+				$field_element = $element;
+				break;
+			}
+		}
+		if ($field_element) {
+			$data = $this->m_files->getFnumArray2([$fnum], [$field_element]);
+			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with field element');
+			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
+			$this->assertArrayHasKey($field_element->tab_name . '___' . $field_element->element_name, $data[$fnum], 'the data contains the field element');
+			$this->assertNotEmpty($data[$fnum][$field_element->tab_name . '___' . $field_element->element_name], 'the data contains the field element and is not empty');
+		}
+
+		$texarea_element = null;
+		foreach ($elements as $element) {
+			if ($element->element_plugin == 'textarea') {
+				$texarea_element = $element;
+				break;
+			}
+		}
+		if ($texarea_element) {
+			$data = $this->m_files->getFnumArray2([$fnum], [$texarea_element]);
+			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with texarea element');
+			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
+			$this->assertArrayHasKey($texarea_element->tab_name . '___' . $texarea_element->element_name, $data[$fnum], 'the data contains the textarea element');
+			$this->assertNotEmpty($data[$fnum][$texarea_element->tab_name . '___' . $texarea_element->element_name], 'the data contains the textarea element and is not empty');
+		}
+
+		$display_element = null;
+		foreach ($elements as $element) {
+			if ($element->element_plugin == 'display') {
+				$display_element = $element;
+				break;
+			}
+		}
+		if ($display_element) {
+			$data = $this->m_files->getFnumArray2([$fnum], [$display_element]);
+			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with display element');
+			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
+			$this->assertArrayHasKey($display_element->tab_name . '___' . $display_element->element_name, $data[$fnum], 'the data contains the display element');
+		}
+
+		$yesno_element = null;
+		foreach ($elements as $element) {
+			if ($element->element_plugin == 'yesno') {
+				$yesno_element = $element;
+				break;
+			}
+		}
+		if ($yesno_element) {
+			$data = $this->m_files->getFnumArray2([$fnum], [$yesno_element]);
+			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with yesno element');
+			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
+			$this->assertArrayHasKey($yesno_element->tab_name . '___' . $yesno_element->element_name, $data[$fnum], 'the data contains the yesno element');
+
+			$values = explode(',', $data[$fnum][$yesno_element->tab_name . '___' . $yesno_element->element_name]);
+			foreach ($values as $value) {
+				$this->assertContains($value, [JText::_('JNO'), JText::_('JYES')], 'the value is Yes or No translatation');
+			}
+		}
+
+		$date_element = null;
+		foreach ($elements as $element) {
+			if ($element->element_plugin == 'date') {
+				$date_element = $element;
+				break;
+			}
+		}
+		if ($date_element) {
+			$data = $this->m_files->getFnumArray2([$fnum], [$date_element]);
+			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with date element');
+			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
+			$this->assertArrayHasKey($date_element->tab_name . '___' . $date_element->element_name, $data[$fnum], 'the data contains the date element');
+
+			$dates = explode(',', $data[$fnum][$date_element->tab_name . '___' . $date_element->element_name]);
+			foreach ($dates as $date) {
+				$this->assertStringMatchesFormat('%d/%d/%d %d:%d:%d', $date, 'the date element contains a date in the correct format');
+			}
+		}
+
+		$birthday_element = null;
+		foreach ($elements as $element) {
+			if ($element->element_plugin === 'birthday') {
+				$birthday_element = $element;
+				break;
+			}
+		}
+		if ($birthday_element) {
+			$data = $this->m_files->getFnumArray2([$fnum], [$birthday_element]);
+			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with birthday element');
+			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
+			$this->assertArrayHasKey($birthday_element->tab_name . '___' . $birthday_element->element_name, $data[$fnum], 'the data contains the birthday element');
+
+			$dates = explode(',', $data[$fnum][$birthday_element->tab_name . '___' . $birthday_element->element_name]);
+			foreach ($dates as $date) {
+				$this->assertStringMatchesFormat('%d/%d/%d', $date, 'the date element contains a birthday in the correct format');
+			}
+		}
+
+		$databasejoin_element = null;
+		foreach ($elements as $element) {
+			if ($element->element_plugin === 'databasejoin') {
+				$element_attribs = json_decode($element->element_attribs);
+				if ($element_attribs->database_join_display_type === 'dropdown' || $element_attribs->database_join_display_type === 'radio') {
+					$databasejoin_element = $element;
+					break;
+				}
+			}
+		}
+		if ($databasejoin_element) {
+			$data = $this->m_files->getFnumArray2([$fnum], [$databasejoin_element]);
+			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with databasejoin element');
+			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
+			$this->assertArrayHasKey($databasejoin_element->tab_name . '___' . $databasejoin_element->element_name, $data[$fnum], 'the data contains the databasejoin element');
+		}
+
+		$databasejoin_multi_element = null;
+		foreach ($elements as $element) {
+			if ($element->element_plugin === 'databasejoin') {
+				$element_attribs = json_decode($element->element_attribs);
+				if ($element_attribs->database_join_display_type === 'checkbox' || $element_attribs->database_join_display_type === 'multilist') {
+					$databasejoin_multi_element = $element;
+					break;
+				}
+			}
+		}
+		if ($databasejoin_multi_element) {
+			$data = $this->m_files->getFnumArray2([$fnum], [$databasejoin_multi_element], true);
+			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with databasejoin multi element');
+			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
+			$this->assertArrayHasKey($databasejoin_multi_element->tab_name . '___' . $databasejoin_multi_element->element_name, $data[$fnum], 'the data contains the databasejoin multi element');
+		}
+
 		// TODO: test for element radiobutton
+		$radio_element = null;
+		foreach ($elements as $element) {
+			if ($element->element_plugin === 'radiobutton') {
+				$radio_element = $element;
+				break;
+			}
+		}
+		if ($radio_element) {
+			$data = $this->m_files->getFnumArray2([$fnum], [$radio_element]);
+			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with radiobutton element');
+			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
+			$this->assertArrayHasKey($radio_element->tab_name . '___' . $radio_element->element_name, $data[$fnum], 'the data contains the radiobutton element');
+		}
+
 		// TODO: test for element dropdown
 		// TODO: test for element cascadingdropdown
+
+		$data = $this->m_files->getFnumArray2([$fnum], [$field_element, $texarea_element, $display_element, $yesno_element, $date_element, $birthday_element, $databasejoin_element, $databasejoin_multi_element, $radio_element], true);
+		$this->assertNotEmpty($data, 'getFnumArray returns a not empty array of data with all elements and repeatable group');
+		error_log(print_r($data, true));
 
 		// TODO: create a form that is not directly linked to campaign candidature
 		

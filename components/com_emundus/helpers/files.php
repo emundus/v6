@@ -3860,9 +3860,28 @@ class EmundusHelperFiles
                     JLog::add('Failed to retreive join informations in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
                 }
             }
+        } else if (!empty($group_id)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('*')
+				->from('#__fabrik_joins')
+				->where('group_id = ' . $group_id)
+				->andWhere('element_id = 0');
+
+			if (!empty($list_id)) {
+				$query->where('list_id = ' . $list_id);
+			}
+
+			try {
+				$db->setQuery($query);
+				$data = $db->loadAssoc();
+			} catch(Exception $e) {
+				JLog::add('Failed to retreive join informations in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
         }
 
-		return $data ? $data : [];
+		return is_array($data) ? $data : [];
 	}
 
 	/**
