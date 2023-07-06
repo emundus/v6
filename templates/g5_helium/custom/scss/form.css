@@ -17,7 +17,7 @@
             background-color: var(--em-fabrik-input-bg);
             transition: all 0.1s ease-out;
             &:hover {
-                background-color: var(--em-fabrik-input-bgc--hover);
+                background-color: var(--em-fabrik-input-bg--hover);
                 border-color: var(--em-fabrik-input-bc--hover);
                 box-shadow: unset;
             }
@@ -27,7 +27,7 @@
                 outline-offset: var(--em-fabrik-input-outline-offset--focus);
                 box-shadow: unset;
                 border-color: var(--em-fabrik-input-bc--focus);
-                background-color: var(--em-fabrik-input-bgc--focus);
+                background-color: var(--em-fabrik-input-bg--focus);
             }
         }
 
