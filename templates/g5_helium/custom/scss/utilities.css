@@ -3,5 +3,5 @@
 }
 
 .icon-order {
-    order: var(--fabrik-icon-order);
+    order: var(--em-fabrik-icon-order);
 }

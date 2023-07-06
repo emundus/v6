@@ -4549,7 +4549,7 @@ div#em-appli-block {
   .fabrik_filter_submit.button {
     background: var(--main-500);
     border-color: var(--main-500);
-    border-radius: var(--em-coordinator-br);
+    border-radius: var(--em-coordinator-br) !important;
     font-family: var(--em-coordinator-font);
 
     &:hover, &:active, &:focus {
@@ -4950,7 +4950,7 @@ div#em-appli-block {
   font-family: var(--em-coordinator-font-title);
 }
 .swal2-popup{
-  border-radius: 16px !important;
+  border-radius: calc(var(--em-default-br)*2) !important;
 }
 
 button.swal2-styled.swal2-confirm{
