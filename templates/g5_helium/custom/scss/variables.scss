@@ -207,36 +207,35 @@
   --bg-3: #C62222;
 
   /* FONT */
-  --em-coordinator-font: 'Inter', sans-serif;
-  --em-coordinator-font-title: 'Inter', sans-serif;
+  --em-coordinator-font: $tchooz-family-text;
+  --em-coordinator-font-title: $tchooz-family-title;
 
-  --em-applicant-font: 'Inter', sans-serif;
-  --em-applicant-font-title: 'Inter', sans-serif;
+  --em-applicant-font: $base-family-text;
+  --em-applicant-font-title: $base-family-title;
 
   --em-default-font: 'Inter', sans-serif;
   --em-default-font-title: 'Inter', sans-serif;
 
   /* FONT COLOR */
 
-  --em-applicant-text-color: #727272;
-  --em-applicant-title-color: #000000;
+  --em-applicant-text-color: $base-title-color;
+  --em-applicant-title-color: $base-text-color;
 
-  --em-coordinator-text-color: #727272;
-  --em-coordinator-title-color: #000000;
+  --em-coordinator-title-color: $tchooz-title-color;
+  --em-coordinator-text-color: $tchooz-text-color;
 
   --typo-text-1: #000000;
 
   /* BACKGROUND */
   --em-defaut-bg: #fff;
-  --em-applicant-bg--gantry: $base-background;
-  --em-applicant-bg: #f8f8f8;
-  --em-coordinator-bg: #f8f8f8;
+  --em-applicant-bg: $base-background;
+  --em-coordinator-bg: $tchooz-background;
 
   /* BORDER RADIUS  */
 
   --em-default-br: 8px;
-  --em-applicant-br: 8px;
-  --em-coordinator-br: 8px;
+  --em-applicant-br: $base-border-radius;
+  --em-coordinator-br: $tchooz-border-radius;
 
   --after-border-height: 3px;
 

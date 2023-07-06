@@ -216,7 +216,7 @@ button#back:hover, button#back:active, button#back:focus,
     border-bottom: 1px solid #ccc;
     padding-bottom: 10px;
     color: #333;
-    font-family: var(--applicant-title-font);
+    font-family: var(--em-applicant-font-title);
 }
 
 #g-sidebar .platform-content {

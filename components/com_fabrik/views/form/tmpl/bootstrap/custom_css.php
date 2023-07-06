@@ -528,7 +528,7 @@ form#member-profile .form-horizontal .control-label {
 }
 
 .view-registration .view-registration.login.em-formRegistrationCenter h1.em-h1 {
-   font-family:  var(--applicant-title-font);
+   font-family:  var(--em-applicant-font-title);
 }
 
 

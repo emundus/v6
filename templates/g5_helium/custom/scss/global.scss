@@ -81,52 +81,52 @@ body {
 }
 
 h1 {
-  font-family: get-font-family($font-family-title);
+  font-family: $base-family-title;
   font-style: normal;
   font-weight: 600;
   font-size: 32px;
   line-height: 40px;
-  color: $accent-color-1;
+  color: $base-title-color;
 }
 h2{
-  font-family: get-font-family($font-family-title);
+  font-family: $base-family-title;
   font-style: normal;
   font-weight: 600;
   font-size: 24px;
   line-height: 30px;
-  color: $accent-color-1;
+  color: $base-title-color;
 }
 h3{
-  font-family: get-font-family($font-family-title);
+  font-family: $base-family-title;
   font-style: normal;
   font-weight: 600;
   font-size: 20px;
   line-height: 25px;
-  color: $accent-color-1;
+  color: $base-title-color;
 }
 h4{
-  font-family: get-font-family($font-family-title);
+  font-family: $base-family-title;
   font-style: normal;
   font-weight: 600;
   font-size: 18px;
   line-height: 23px;
-  color: $accent-color-1;
+  color: $base-title-color;
 }
 h5{
-  font-family: get-font-family($font-family-title);
+  font-family: $base-family-title;
   font-style: normal;
   font-weight: 600;
   font-size: 16px;
   line-height: 20px;
-  color: $accent-color-1;
+  color: $base-title-color;
 }
 h6{
-  font-family: get-font-family($font-family-title);
+  font-family:$base-family-title;
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
   line-height: 16px;
-  color: $accent-color-1;
+  color: $base-title-color;
 }
 
 .view-list, .g-back-office-emundus-tableau {
@@ -960,8 +960,8 @@ body > .g-container {
 
       &.btn-creer-compte,
       &.inscription {
-        background: $base-secondary-color;
-        border: 1px solid $base-secondary-color;
+        background: $base-primary-color;
+        border: 1px solid $base-primary-color;
         color: var(--neutral-50);
         border-radius: var(--em-applicant-br) !important;
         height: auto;
@@ -970,23 +970,23 @@ body > .g-container {
         &:active,
         &:focus {
           background: transparent;
-          color: $base-secondary-color;
-          border-color: $base-secondary-color !important;
+          color: $base-primary-color;
+          border-color: $base-primary-color !important;
         }
       }
 
       &:not(.btn-creer-compte) {
         background: transparent;
-        border: 1px solid $base-primary-color;
-        color: $base-primary-color;
+        border: 1px solid $base-secondary-color;
+        color: $base-secondary-color;
         height: auto;
 
         &:hover,
         &:active,
         &:focus {
-          background: $base-primary-color;
+          background: $base-secondary-color;
           color: var(--neutral-50);
-          border-color: $base-primary-color;
+          border-color: $base-secondary-color;
         }
       }
     }
@@ -1119,7 +1119,7 @@ body > .g-container {
   }
 
   .em-heading-registration h1 {
-    font-family: var(--applicant-title-font);
+    font-family: var(--em-applicant-font-title);
     font-style: normal;
     font-weight: 600;
     font-size: 32px;
@@ -1221,7 +1221,7 @@ body > .g-container {
 
 /* TEMPLATE TCHOOZ */
 .candidacy-files-list .em-light-selected-tab {
-  border-bottom: 1px solid $base-secondary-color;
+  border-bottom: 1px solid $base-primary-color;
 }
 .swal2-actions button.swal2-styled.swal2-cancel:not(.mod_emundus_application_swal_manage_tabs_cancel):not(.em-swal-cancel-button) {
   border: 1px solid rgb(220, 53, 69) !important;
@@ -1235,13 +1235,13 @@ body > .g-container {
 }
 
 .mod_emundus_application___buttons_switch_view_enable{
-  color: $base-secondary-color;
+  color: $base-primary-color;
 }
 .mod_emundus_application___buttons_enable{
-  border: 1px solid $base-secondary-color;
+  border: 1px solid $base-primary-color;
 }
 #tab_adding_link a span.material-icons-outlined{
-  color: $base-secondary-color;
+  color: $base-primary-color;
 }
 
 .mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-cancel {
@@ -3604,7 +3604,7 @@ ul.g-dropdown.g-dropdown-right.g-fade {
 
 h1.em-titre-connectez-vous {
   color: $accent-color-1;
-  font-family: var(--applicant-title-font);
+  font-family: var(--em-applicant-font-title);
 }
 
 ul.nav.nav-tabs.nav-stacked span {

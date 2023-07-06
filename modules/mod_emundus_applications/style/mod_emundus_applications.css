@@ -296,14 +296,14 @@ a.btn.btn-success:not(.btn-xs) {
 }
 
 .mod_emundus_applications___header h1.em-h1 {
- font-family: var(--applicant-title-font);
+ font-family: var(--em-applicant-font-title);
  color: var(--em-applicant-title-color);
 margin-top: 16px;
 }
 
 .mod_emundus_applications___header_desc h2 {
     margin-top: 24px;
-    font-family: var(--applicant-title-font);
+    font-family: var(--em-applicant-font-title);
     color: var(--em-applicant-title-color);
 }
 
@@ -362,7 +362,7 @@ margin-top: 16px;
     display: -webkit-box;
     line-height: 140%;
     min-height: 50px;
-    font-family: var(--applicant-title-font) !important;
+    font-family: var(--em-applicant-font-title) !important;
 }
 
 .mod_emundus_applications___title:hover,

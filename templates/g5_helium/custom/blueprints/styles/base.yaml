@@ -20,17 +20,28 @@ form:
       type: input.colorpicker
       label: Primary color
       default: "#1b1f3c"
+      description: Color of ...
     secondary-color:
       type: input.colorpicker
       label: Secondary color
       default: "#de6339"
+      description: Color of ...
     tertiary-color:
         type: input.colorpicker
         label: Tertiary color
-        default: "#de6339"
+        default: "#bd5631"
+        description: Color of ...
+    family-text:
+      type: input.fonts
+      label: Body Font
+      default: 'Inter, sans-serif'
+    family-title:
+      type: input.fonts
+      label: Title Font
+      default: 'Inter, sans-serif'
     border-radius:
       type: input.text
       label: Border radius
-      description: Set breakpoint size in rem, em, or px unit values
+      description: Set border-radius size in px unit values
       default: "8px"
-      pattern: '\d+(\.\d+){0,1}(rem|em|ex|ch|vw|vh|vmin|vmax|%|px|cm|mm|in|pt|pc)'
+      pattern: 'px'
