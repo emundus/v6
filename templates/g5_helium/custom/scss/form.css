@@ -1,8 +1,8 @@
 @layer components {
-    form.fabrikForm {
+        form.fabrikForm {
         .fabrikLabel {
             display: flex !important;
-            @apply text-lg
+            @apply text-lg;
         }
 
         input:not([type='radio']),select{
