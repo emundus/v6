@@ -80,7 +80,7 @@
 					</div>
 					<div class="view-type">
 					<span v-for="viewTypeOption in viewTypeOptions" :key="viewTypeOption.value"
-					      style="padding: 4px;border-radius: 4px;"
+					      style="padding: 4px;border-radius: var(--em-default-br);"
 					      class="material-icons-outlined em-pointer em-ml-8"
 					      :class="{
 								'active em-main-500-color em-border-main-500': viewTypeOption.value === viewType,

@@ -824,7 +824,7 @@ div#em-modal-actions #form-element{
 div#em-modal-actions #savePDFfilter, div#em-modal-actions #savefilter{
     margin-left: 0;
     margin-right: 1%;
-    border-radius: var(--em-border-radius);
+    border-radius: var(--em-coordinator-br);
     margin-top: 10px;
     background: #5a5a72;
     border: solid 1px #5a5a72;
@@ -2448,7 +2448,7 @@ div#em-assoc-files .panel > .panel-heading {
     text-shadow: none;
     color: #FFFFFF;
     padding: 0px 12px !important;
-    border-radius: var(--em-border-radius) !important;
+    border-radius: var(--em-coordinator-br) !important;
 }
 
 .g-back-office-emundus-tableau #em_select_filter #del-filter {

@@ -205,7 +205,7 @@ export default {
       cursor: pointer;
       border: 1px solid var(--main-500);
       background: var(--main-500);
-      border-radius: var(--em-border-radius) !important;
+      border-radius: var(--em-coordinator-br) !important;
       width: 100% !important;
       max-width: 250px;
       display: flex;
@@ -224,7 +224,7 @@ export default {
       cursor: pointer;
       border: 1px solid var(--red-500);
       background: var(--red-500);
-      border-radius: var(--em-border-radius) !important;
+      border-radius: var(--em-coordinator-br) !important;
       width: 100% !important;
       max-width: 250px;
       display: flex;

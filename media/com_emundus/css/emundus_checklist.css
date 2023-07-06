@@ -254,7 +254,7 @@ button#back:hover, button#back:active, button#back:focus,
 
 #g-sidebar .platform-content li:hover, #g-sidebar .platform-content li a  {
     color: var(--neutral-800);
-    font-family: var(--applicant-default-font);
+    font-family: var(--em-applicant-font);
 }
 
 

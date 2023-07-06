@@ -159,7 +159,7 @@ export default {
 <style scoped>
 .em-comment-option{
   position: absolute;
-  border-radius: var(--em-border-radius);
+  border-radius: var(--em-coordinator-br);
   padding: 12px 16px;
   height: auto;
   background: #fff;

@@ -298,7 +298,7 @@ legend {
 }
 
 .fabrikLabel, .em-label {
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font);
   font-size: 16px;
   font-style: normal;
   font-weight: 500 !important;
@@ -311,7 +311,7 @@ legend {
 }
 
 .em-help-text {
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font);
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
@@ -323,7 +323,7 @@ legend {
   margin-top: 12px;
 }
 .em-expires-text {
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font);
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
