@@ -271,21 +271,21 @@
   --text-xxs: 10px;
 
   // FABRIK
-  --fabrik-border-radius: 4px;
-  --fabrik-icon-order:1;
+  --fabrik-br: 4px;
+  --fabrik-icon-order:0;
 
   --fabrik-input-height: 48px;
   --fabrik-input-bg: #fff;
-  --fabrik-input-hover-background-color: #E1E7EF;
-  --fabrik-input-hover-border-color: #2E404F;
-  --fabrik-input-focus-color: #007BFF;
-  --fabrik-input-focus-width: 1px;
-  --fabrik-input-focus-radius: 2px;
-  --fabrik-input-focus-outline-offset: 2px;
-  --fabrik-input-focus-border-color: #A7A7A7;
-  --fabrik-input-focus-background-color: #FFFFFF;
-  --fabrik-input-error-label-color: #000000;
-  --fabrik-input-error-border-color: #C62222;
+  --fabrik-input-bgc--hover: #E1E7EF;
+  --fabrik-input-bc--hover: #2E404F;
+  --fabrik-input-color--focus: #007BFF;
+  --fabrik-input-width--focus: 1px;
+  --fabrik-input-br--focus: 2px;
+  --fabrik-input-outline-offset--focus: 2px;
+  --fabrik-input-bc--focus: #A7A7A7;
+  --fabrik-input-bgc--focus: #FFFFFF;
+  --fabrik-input-label-color--error: #000000;
+  --fabrik-input-bc--error: #C62222;
 }
 
 // Mixin - typo

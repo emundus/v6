@@ -11,23 +11,23 @@
 
         input,select {
             color: var(--typo-text-1);
-            border-radius: var(--fabrik-border-radius);
+            border-radius: var(--fabrik-br);
             @apply px-2.5 py-3;
             @apply mb-0;
             background-color: var(--fabrik-input-bg);
             transition: all 0.1s ease-out;
             &:hover {
-                background-color: var(--fabrik-input-hover-background-color);
-                border-color: var(--fabrik-input-hover-border-color);
+                background-color: var(--fabrik-input-bgc--hover);
+                border-color: var(--fabrik-input-bc--hover);
                 box-shadow: unset;
             }
             &:focus {
-                outline: var(--fabrik-input-focus-color) solid var(--fabrik-input-focus-width);
-                border-radius: var(--fabrik-input-focus-radius);
-                outline-offset: var(--fabrik-input-focus-outline-offset);
+                outline: var(--fabrik-input-color--focus) solid var(--fabrik-input-width--focus);
+                border-radius: var(--fabrik-input-br--focus);
+                outline-offset: var(--fabrik-input-outline-offset--focus);
                 box-shadow: unset;
-                border-color: var(--fabrik-input-focus-border-color);
-                background-color: var(--fabrik-input-focus-background-color);
+                border-color: var(--fabrik-input-bc--focus);
+                background-color: var(--fabrik-input-bgc--focus);
             }
         }
 
@@ -44,10 +44,10 @@
         /** ERRORS **/
         .control-group.error {
             label{
-                color: var(--fabrik-input-error-label-color);
+                color: var(--fabrik-input-label-color--error);
             }
             input{
-                border-color: var(--fabrik-input-error-border-color);
+                border-color: var(--fabrik-input-bc--error);
             }
         }
         .fabrikErrorMessage {
