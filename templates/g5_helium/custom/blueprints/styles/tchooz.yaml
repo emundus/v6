@@ -42,9 +42,3 @@ form:
       type: input.fonts
       label: Title Font
       default: 'Inter'
-    border-radius:
-      type: input.text
-      label: Border radius
-      description: Set border-radius size in px unit values
-      default: "8px"
-      pattern: 'px'

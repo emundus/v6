@@ -20,17 +20,16 @@ form:
       type: input.colorpicker
       label: Primary color
       default: "#1b1f3c"
-      description: Color of ...
+      description: Primary button color
     secondary-color:
       type: input.colorpicker
       label: Secondary color
       default: "#de6339"
-      description: Color of ...
+      description: Secondary button color
     tertiary-color:
         type: input.colorpicker
         label: Tertiary color
         default: "#bd5631"
-        description: Color of ...
     family-text:
       type: input.fonts
       label: Body Font
@@ -39,9 +38,3 @@ form:
       type: input.fonts
       label: Title Font
       default: 'Inter, sans-serif'
-    border-radius:
-      type: input.text
-      label: Border radius
-      description: Set border-radius size in px unit values
-      default: "8px"
-      pattern: 'px'
