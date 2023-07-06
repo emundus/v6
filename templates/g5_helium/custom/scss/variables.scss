@@ -222,7 +222,7 @@
   --em-coordinator-text-color: $tchooz-text-color;
 
   --em-default-title-color-1: $base-title-color;          //  titre
-  --em-default-title-color-1-600: var(--neutral-600);     //  titre disabled
+  --em-default-title-color-1-500: var(--neutral-500);     //  titre disabled
   --em-default-title-color-2: var(--neutral-0);           //  titre sur fond foncé
   --em-default-title-color-3: $base-primary-color;        //  titre en highlight
 
@@ -306,6 +306,127 @@
 }
 
 // Mixin - typo
+
+// Titles
+
+@mixin em-default-title-1 {
+  color: var(--em-default-title-color-1);
+  font-family: $base-family-title;
+  font-size: 24px;
+  font-style: normal;
+  line-height: 28.8px;
+}
+
+@mixin em-default-text-1-500 {
+  color: var(--em-default-title-color-1-500);
+  font-size: 24px;
+  font-style: normal;
+  line-height: 28.8px;
+}
+
+@mixin em-default-text-2 {
+  color: var(--em-default-title-color-2);
+  font-size: 24px;
+  font-style: normal;
+  line-height: 28.8px;
+}
+
+@mixin em-default-text-3 {
+  color: var(--em-default-title-color-3);
+  font-size: 24px;
+  font-style: normal;
+  line-height: 28.8px;
+}
+
+// Sub titles
+
+@mixin em-default-sub-title-1 {
+  color: var(--em-default-title-color-1);
+  font-family: $base-family-title;
+  font-size: 22px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 26.4px;
+}
+
+@mixin em-default-sub-title-2 {
+  color: var(--em-default-title-color-2);
+  font-family: $base-family-title;
+  font-size: 22px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 26.4px;
+}
+
+@mixin em-default-sub-title-3 {
+  color: var(--em-default-title-color-3);
+  font-family: $base-family-title;
+  font-size: 22px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 26.4px;
+}
+
+
+// Texts
+
+@mixin em-default-text-1 {
+  color: var(--em-default-text-color-1);
+  font-family: $base-family-text;
+  font-size: 18px;
+  font-style: normal;
+  line-height: 27px;
+}
+
+@mixin em-default-text-1-500 {
+  color: var(--em-default-text-color-1-500);
+  font-family: $base-family-text;
+  font-size: 15px;
+  font-style: normal;
+  line-height: 19px;
+}
+
+@mixin em-default-text-1-600 {
+  color: var(--em-default-text-color-1-600);
+  font-family: $base-family-text;
+  font-size: 16px;
+  font-style: normal;
+  line-height: 24px;
+}
+
+@mixin em-default-text-1-700 {
+  color: var(--em-default-text-color-1-700);
+  font-family: $base-family-text;
+  font-size: 12px;
+  font-style: normal;
+  line-height: 14.4px;
+}
+
+@mixin em-default-text-2 {
+  color: var(--em-default-text-color-2);
+  font-family: $base-family-text;
+  font-size: 15px;
+  font-style: normal;
+  line-height: 19px;
+}
+
+@mixin em-default-text-3 {
+  color: var(--em-default-text-color-3);
+  font-family: $base-family-text;
+  font-size: 15px;
+  font-style: normal;
+  line-height: 19px;
+}
+
+@mixin em-default-text-4 {
+  color: var(--em-default-text-color-4);
+  font-family: $base-family-text;
+  font-size: 15px;
+  font-style: normal;
+  line-height: 19px;
+}
+
+// à revoir :
 
 @mixin headline-1 {
   font-family: var(--em-default-font-title);
