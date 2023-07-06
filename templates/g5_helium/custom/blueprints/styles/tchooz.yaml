@@ -1,5 +1,5 @@
-name: Emundus Style
-description: Style for the Emundus theme
+name: Tchooz Style
+description: Style for the Tchooz theme
 type: core
 
 form:
@@ -13,21 +13,33 @@ form:
       label: Text color
       default: "#4B4B4B"
     title-color:
-        type: input.colorpicker
-        label: Title color
-        default: "#000000"
+      type: input.colorpicker
+      label: Text color
+      default: "#000000"
     primary-color:
       type: input.colorpicker
       label: Primary color
-      default: "#1b1f3c"
+      default: "#20835F"
     secondary-color:
       type: input.colorpicker
       label: Secondary color
-      default: "#de6339"
-    tertiary-color:
-        type: input.colorpicker
-        label: Tertiary color
-        default: "#de6339"
+      default: "#353544"
+    family-text:
+      type: input.fonts
+      label: Body Font
+      default: 'Inter, sans-serif'
+    family-title:
+      type: input.fonts
+      label: Title Font
+      default: 'Inter, sans-serif'
+    link-color:
+      type: input.colorpicker
+      label: Link color
+      default: "#20835F"
+    hover-color:
+      type: input.colorpicker
+      label: Hover color
+      default: "#15553E"
     border-radius:
       type: input.text
       label: Border radius
