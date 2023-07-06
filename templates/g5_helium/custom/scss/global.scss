@@ -5113,8 +5113,8 @@ button.swal2-cancel.goback-btn {
 
     /* TITRE FORMULAIRE */
     .page-header h1 {
-      @include headline-1;
-      color: var(--neutral-900);
+      @include em-default-title-1;
+      font-weight: 500;
     }
 
     /* INTRO FORMULAIRE */
@@ -5152,6 +5152,10 @@ button.swal2-cancel.goback-btn {
 
     /* FORMULAIRE */
     form, .em-form {
+
+      .fabrikGroup h2 {
+        @include em-default-sub-title-1;
+      }
 
       .fabrikMainError {
         width: 90%;
