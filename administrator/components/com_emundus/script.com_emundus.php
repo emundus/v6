@@ -1968,6 +1968,32 @@ structure:
 						$db->execute();
 					}
 				}
+
+				// Create redirection menu in Joomla administration
+				$query->clear()
+					->select('id')
+					->from($db->quoteName('#__menu'))
+					->where($db->quoteName('link').' LIKE '.$db->quote('index.php?option=com_redirect'));
+				$db->setQuery($query);
+				$redirect_menu = $db->loadResult();
+
+				if(empty($redirect_menu))
+				{
+					$query->clear()
+						->insert($db->quoteName('#__menu'))
+						->columns(array('menutype', 'title', 'alias', 'note', 'path', 'link', 'type', 'published', 'parent_id', 'level', 'component_id', 'checked_out', 'checked_out_time', 'browserNav', 'access', 'img', 'template_style_id', 'params', 'lft', 'rgt', 'home', 'language', 'client_id'))
+						->values($db->quote('main') . ',' . $db->quote('Redirection') . ',' . $db->quote('com-redirect') . ',' . $db->quote('') . ',' . $db->quote('com-redirect') . ',' . $db->quote('index.php?option=com_redirect') . ',' . $db->quote('component') . ',1,1,1,24,0,' . $db->quote(date('Y-m-d H:i:s')) . ',0,1,' . $db->quote('class:redirect') . ',0,' . $db->quote('{}') . ',363,368,0,' . $db->quote('') . ',1');
+					$db->setQuery($query);
+					$db->execute();
+				} else {
+					$query->clear()
+						->update($db->quoteName('#__menu'))
+						->set($db->quoteName('menutype').' = '.$db->quote('main'))
+						->where($db->quoteName('id').' = '.$db->quote($redirect_menu));
+					$db->setQuery($query);
+					$db->execute();
+				}
+				//
             }
 
 			// Insert new translations in overrides files
