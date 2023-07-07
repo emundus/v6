@@ -550,7 +550,7 @@ if ($allowed_attachments !== true) {
                     }
                 }
                 editor = new Quill('#editor', options);
-                const editorContent = "<?php echo $this->body ?>";
+                const editorContent = "<?php echo addslashes($this->body) ?>";
                 let delta = editor.clipboard.convert(editorContent);
                 editor.setContents(delta);
                 $('#mail_body').val(editor.root.innerHTML);
@@ -797,7 +797,7 @@ if ($allowed_attachments !== true) {
                 }
             })
         } else {
-            $("#mail_subject").text("");
+            $("#mail_subject").text("<?= JFactory::getConfig()->get('sitename'); ?>");
             $("#reply_to_from").text("");
             $("#mail_from_name").text("<?= JFactory::getConfig()->get('fromname'); ?>");
 
