@@ -2,7 +2,6 @@
 const plugin = require('tailwindcss/plugin')
 
 module.exports = {
-    prefix: 'em-',
     content: [
         "./templates/g5_helium/html/**/*.{html,js,php}",
         "./modules/**/*.{html,js,php}",
@@ -27,7 +26,7 @@ module.exports = {
     plugins: [
         plugin(function ({ addComponents, theme }) {
             addComponents({
-                '.default-title-1': {
+                '.em-default-title-1': {
                     color: 'var(--em-default-title-color-1)',
                     fontFamily: '$font-family-title',
                     fontSize: '24px',

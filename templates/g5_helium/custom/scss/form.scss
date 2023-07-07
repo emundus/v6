@@ -12,7 +12,7 @@
 
     .fabrikLabel {
       display: flex !important;
-      @apply em-text-lg;
+      @apply text-lg;
     }
 
     input:not([type='radio']), select {
@@ -22,8 +22,8 @@
     input, select {
       color: var(--typo-text-1);
       border-radius: $em-form-border-radius;
-      @apply em-px-2.5 em-py-3;
-      @apply em-mb-0;
+      @apply px-2.5 py-3;
+      @apply mb-0;
       background-color: $em-form-background-color;
       transition: all 0.1s ease-out;
 
@@ -44,14 +44,14 @@
     }
 
     .fabrikgrid_radio {
-      @apply em-flex;
-      @apply em-py-1;
-      @apply em-mb-1;
-      @apply em-items-center;
+      @apply flex;
+      @apply py-1;
+      @apply mb-1;
+      @apply items-center;
       label {
-        @apply em-mb-0;
-        @apply em-flex;
-        @apply em-items-center;
+        @apply mb-0;
+        @apply flex;
+        @apply items-center;
         padding: $em-form-radio-padding;
         border: $em-form-radio-border-width solid $em-form-radio-border-color;
         border-radius: $em-form-radio-border-radius;
@@ -85,7 +85,7 @@
     }
 
     .fabrikErrorMessage {
-      @apply em-mt-1;
+      @apply mt-1;
     }
   }
 }
