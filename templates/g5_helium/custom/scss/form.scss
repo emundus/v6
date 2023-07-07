@@ -1,33 +1,39 @@
 @layer components {
+
+    .emundus-form .page-header h1{
+        @apply em-default-title-1;
+    }
+
         form.fabrikForm {
+
         .fabrikLabel {
             display: flex !important;
             @apply text-lg;
         }
 
         input:not([type='radio']),select{
-            height: var(--em-fabrik-input-height);
+            height: $em-form-height;
         }
 
         input,select {
             color: var(--typo-text-1);
-            border-radius: var(--em-fabrik-br);
+            border-radius: $em-form-border-radius;
             @apply px-2.5 py-3;
             @apply mb-0;
-            background-color: var(--em-fabrik-input-bg);
+            background-color: $em-form-background-color;
             transition: all 0.1s ease-out;
             &:hover {
-                background-color: var(--em-fabrik-input-bg--hover);
-                border-color: var(--em-fabrik-input-bc--hover);
+                background-color: $em-form-background-color-hover;
+                border-color: $em-form-border-color-hover;
                 box-shadow: unset;
             }
             &:focus {
-                outline: var(--em-fabrik-input-color--focus) solid var(--em-fabrik-input-width--focus);
-                border-radius: var(--em-fabrik-input-br--focus);
-                outline-offset: var(--em-fabrik-input-outline-offset--focus);
+                outline: $em-form-outline-color-focus solid $em-form-outline-width-focus;
+                border-radius: $em-form-border-radius-focus;
+                outline-offset: $em-form-outline-offset-focus;
                 box-shadow: unset;
-                border-color: var(--em-fabrik-input-bc--focus);
-                background-color: var(--em-fabrik-input-bg--focus);
+                border-color: $em-form-border-color-focus;
+                background-color: $em-form-background-color-focus;
             }
         }
 
@@ -44,10 +50,10 @@
         /** ERRORS **/
         .control-group.error {
             label{
-                color: var(--em-fabrik-input-label-color--error);
+                color: $em-form-label-color-error;
             }
             input{
-                border-color: var(--em-fabrik-input-bc--error);
+                border-color: $em-form-border-color-error;
             }
         }
         .fabrikErrorMessage {

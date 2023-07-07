@@ -1,0 +1,22 @@
+name: Typography
+description: Link colors for the Helium theme
+type: core
+
+form:
+  fields:
+    regular:
+      type: input.colorpicker
+      label: Link Color
+      default: "#4db2b3"
+    hover:
+      type: input.colorpicker
+      label: Hover Color
+      default: "#424753"
+    coordinator-text-color:
+      type: input.colorpicker
+      label: Text Color for Coordinator
+      default: "#4B4B4B"
+    coordinator-title-color:
+      type: input.colorpicker
+      label: Title Color for Coordinator
+      default: "#000000"

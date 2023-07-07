@@ -1,0 +1,7 @@
+name: Spacing
+description: Style for the Emundus theme
+type: core
+
+form:
+  fields:
+

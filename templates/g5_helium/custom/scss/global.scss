@@ -81,7 +81,7 @@ body {
 }
 
 h1 {
-  font-family: $base-family-title;
+  font-family: $font-family-title;
   font-style: normal;
   font-weight: 600;
   font-size: 32px;
@@ -89,7 +89,7 @@ h1 {
   color: $base-title-color;
 }
 h2{
-  font-family: $base-family-title;
+  font-family: $font-family-title;
   font-style: normal;
   font-weight: 600;
   font-size: 24px;
@@ -97,7 +97,7 @@ h2{
   color: $base-title-color;
 }
 h3{
-  font-family: $base-family-title;
+  font-family: $font-family-title;
   font-style: normal;
   font-weight: 600;
   font-size: 20px;
@@ -105,7 +105,7 @@ h3{
   color: $base-title-color;
 }
 h4{
-  font-family: $base-family-title;
+  font-family: $font-family-title;
   font-style: normal;
   font-weight: 600;
   font-size: 18px;
@@ -113,7 +113,7 @@ h4{
   color: $base-title-color;
 }
 h5{
-  font-family: $base-family-title;
+  font-family: $font-family-title;
   font-style: normal;
   font-weight: 600;
   font-size: 16px;
@@ -121,7 +121,7 @@ h5{
   color: $base-title-color;
 }
 h6{
-  font-family:$base-family-title;
+  font-family:$font-family-title;
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
@@ -5110,12 +5110,6 @@ button.swal2-cancel.goback-btn {
 
   /* BLOC FORMULAIRE */
   .span12 {
-
-    /* TITRE FORMULAIRE */
-    .page-header h1 {
-      @include em-default-title-1;
-      font-weight: 500;
-    }
 
     /* INTRO FORMULAIRE */
     .emundus-form {

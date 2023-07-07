@@ -1,0 +1,14 @@
+name: Other variables
+description: Style for the Tchooz theme
+type: core
+
+form:
+  fields:
+    red-800:
+      type: input.colorpicker
+      label: Red 800
+      default: "#C62222"
+    neutral-500:
+      type: input.colorpicker
+      label: Neutral 500
+      default: "#CFCFCF"

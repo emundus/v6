@@ -1,0 +1,22 @@
+name: Font
+description: Style for the Tchooz theme
+type: core
+
+form:
+  fields:
+    family-text:
+      type: input.fonts
+      label: Body Font
+      default: 'Inter, sans-serif'
+    family-title:
+      type: input.fonts
+      label: Title Font
+      default: 'Inter, sans-serif'
+    coordinator-family-text:
+      type: input.fonts
+      label: Body Font for Coordinator
+      default: 'Inter, sans-serif'
+    coordinator-family-title:
+      type: input.fonts
+      label: Title Font for Coordinator
+      default: 'Inter, sans-serif'

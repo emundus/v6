@@ -1,0 +1,75 @@
+name: Forms
+description: Style for the Tchooz theme
+type: core
+
+form:
+  fields:
+    required-icon-order:
+      type: input.text
+      label: Required icon order
+      description: -1 for before, 1 for after
+      default: '-1'
+    label-color:
+      type: input.colorpicker
+      label: Label color
+      default: '#000000'
+    height:
+      type: input.text
+      label: Height of fields
+      default: '48px'
+    border-radius:
+      type: input.text
+      label: Border radius of fields
+      default: '4px'
+    background-color:
+      type: input.colorpicker
+      label: Background color of fields
+      default: '#FFFFFF'
+    border-radius-focus:
+      type: input.text
+      label: Border radius of fields when focused
+      default: '6px'
+    border-color-focus:
+      type: input.colorpicker
+      label: Border color of fields when focused
+      default: '#A7A7A7'
+    background-color-focus:
+      type: input.colorpicker
+      label: Background color of fields when focused
+      default: '#FFFFFF'
+    outline-width-focus:
+      type: input.text
+      label: Outline width of fields when focused
+      default: '1px'
+    outline-color-focus:
+      type: input.colorpicker
+      label: Outline color of fields when focused
+      default: '#007BFF'
+    outline-offset-focus:
+      type: input.text
+      label: Outline offset of fields when focused
+      default: '2px'
+    background-color-hover:
+      type: input.colorpicker
+      label: Background color of fields when hovered
+      default: '#E1E7EF'
+    border-color-hover:
+      type: input.colorpicker
+      label: Border color of fields when hovered
+      default: '#2E404F'
+    border-color-error:
+      type: input.colorpicker
+      label: Border color of fields when error
+      default: '#C62222'
+    label-color-error:
+      type: input.colorpicker
+      label: Label color of fields when error
+      default: '#000000'
+    after-border-height:
+      type: input.text
+      label: After border height
+      default: '3px'
+
+
+
+

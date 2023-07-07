@@ -207,19 +207,19 @@
   --bg-3: #C62222;
 
   /* FONT */
-  --em-coordinator-font: $tchooz-family-text;
-  --em-coordinator-font-title: $tchooz-family-title;
+  --em-coordinator-font: $font-coordinator-family-text;
+  --em-coordinator-font-title: $font-coordinator-family-title;
 
-  --em-applicant-font: $base-family-text;
-  --em-applicant-font-title: $base-family-title;
+  --em-applicant-font: $font-family-text;
+  --em-applicant-font-title: $font-family-title;
 
   --em-default-font: 'Inter', sans-serif;
   --em-default-font-title: 'Inter', sans-serif;
 
   /* FONT COLOR */
 
-  --em-coordinator-title-color: $tchooz-title-color;
-  --em-coordinator-text-color: $tchooz-text-color;
+  --em-coordinator-title-color: $link-coordinator-title-color;
+  --em-coordinator-text-color: $link-coordinator-text-color;
 
   --em-default-title-color-1: $base-title-color;          //  titre
   --em-default-title-color-1-500: var(--neutral-500);     //  titre disabled
@@ -247,8 +247,6 @@
   --em-applicant-br: 8px;
   --em-coordinator-br: 8px;
 
-  --after-border-height: 3px;
-
   --spacing-2: 2rem;
 
   // Padding
@@ -275,34 +273,6 @@
   --m-64: 64px;
   --m-72: 72px;
   --m-80: 80px;
-
-  // FABRIK
-
-  --em-fabrik-icon-order:0;
-
-  --em-fabrik-br: 4px;
-  --em-fabrik-input-br--focus: 2px;
-
-  --em-fabrik-input-bc--focus: #A7A7A7;
-  --em-fabrik-input-bg--focus: #FFFFFF;
-
-  --em-fabrik-input-height: 48px;
-
-  --em-fabrik-input-width--focus: 1px;
-
-  --em-fabrik-input-bg: #fff;
-  --em-fabrik-input-bg--hover: #E1E7EF;
-
-  --em-fabrik-input-bc--hover: #2E404F;
-  --em-fabrik-input-bc--error: #C62222;
-
-  --em-fabrik-input-color--focus: #007BFF;
-
-  --em-fabrik-input-outline-offset--focus: 2px;
-
-  --em-fabrik-input-label-color: #000000;
-  --em-fabrik-input-label-color--error: #000000;
-
 }
 
 // Mixin - typo
@@ -311,7 +281,7 @@
 
 @mixin em-default-title-1 {
   color: var(--em-default-title-color-1);
-  font-family: $base-family-title;
+  font-family: $font-family-title;
   font-size: 24px;
   font-style: normal;
   line-height: 28.8px;
@@ -342,7 +312,7 @@
 
 @mixin em-default-sub-title-1 {
   color: var(--em-default-title-color-1);
-  font-family: $base-family-title;
+  font-family: $font-family-title;
   font-size: 22px;
   font-style: normal;
   font-weight: 400;
@@ -351,7 +321,7 @@
 
 @mixin em-default-sub-title-2 {
   color: var(--em-default-title-color-2);
-  font-family: $base-family-title;
+  font-family: $font-family-title;
   font-size: 22px;
   font-style: normal;
   font-weight: 400;
@@ -360,7 +330,7 @@
 
 @mixin em-default-sub-title-3 {
   color: var(--em-default-title-color-3);
-  font-family: $base-family-title;
+  font-family: $font-family-title;
   font-size: 22px;
   font-style: normal;
   font-weight: 400;
@@ -372,7 +342,7 @@
 
 @mixin em-default-text-1 {
   color: var(--em-default-text-color-1);
-  font-family: $base-family-text;
+  font-family: $font-family-text;
   font-size: 18px;
   font-style: normal;
   line-height: 27px;
@@ -380,7 +350,7 @@
 
 @mixin em-default-text-1-500 {
   color: var(--em-default-text-color-1-500);
-  font-family: $base-family-text;
+  font-family: $font-family-text;
   font-size: 15px;
   font-style: normal;
   line-height: 19px;
@@ -388,7 +358,7 @@
 
 @mixin em-default-text-1-600 {
   color: var(--em-default-text-color-1-600);
-  font-family: $base-family-text;
+  font-family: $font-family-text;
   font-size: 16px;
   font-style: normal;
   line-height: 24px;
@@ -396,7 +366,7 @@
 
 @mixin em-default-text-1-700 {
   color: var(--em-default-text-color-1-700);
-  font-family: $base-family-text;
+  font-family: $font-family-text;
   font-size: 12px;
   font-style: normal;
   line-height: 14.4px;
@@ -404,7 +374,7 @@
 
 @mixin em-default-text-2 {
   color: var(--em-default-text-color-2);
-  font-family: $base-family-text;
+  font-family: $font-family-text;
   font-size: 15px;
   font-style: normal;
   line-height: 19px;
@@ -412,7 +382,7 @@
 
 @mixin em-default-text-3 {
   color: var(--em-default-text-color-3);
-  font-family: $base-family-text;
+  font-family: $font-family-text;
   font-size: 15px;
   font-style: normal;
   line-height: 19px;
@@ -420,7 +390,7 @@
 
 @mixin em-default-text-4 {
   color: var(--em-default-text-color-4);
-  font-family: $base-family-text;
+  font-family: $font-family-text;
   font-size: 15px;
   font-style: normal;
   line-height: 19px;

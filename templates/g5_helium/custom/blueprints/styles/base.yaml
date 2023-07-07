@@ -1,4 +1,4 @@
-name: Emundus Style
+name: Colors
 description: Style for the Emundus theme
 type: core
 
@@ -30,11 +30,3 @@ form:
         type: input.colorpicker
         label: Tertiary color
         default: "#bd5631"
-    family-text:
-      type: input.fonts
-      label: Body Font
-      default: 'Inter, sans-serif'
-    family-title:
-      type: input.fonts
-      label: Title Font
-      default: 'Inter, sans-serif'
