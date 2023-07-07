@@ -1,63 +1,91 @@
 @layer components {
 
-    .emundus-form .page-header h1{
-        @apply em-default-title-1;
+  .emundus-form .page-header h1 {
+    @apply em-default-title-1;
+  }
+
+  form.fabrikForm {
+
+    .row-fluid{
+      width: auto;
     }
 
-        form.fabrikForm {
+    .fabrikLabel {
+      display: flex !important;
+      @apply em-text-lg;
+    }
 
-        .fabrikLabel {
-            display: flex !important;
-            @apply text-lg;
-        }
+    input:not([type='radio']), select {
+      height: $em-form-height;
+    }
 
-        input:not([type='radio']),select{
-            height: $em-form-height;
-        }
+    input, select {
+      color: var(--typo-text-1);
+      border-radius: $em-form-border-radius;
+      @apply em-px-2.5 em-py-3;
+      @apply em-mb-0;
+      background-color: $em-form-background-color;
+      transition: all 0.1s ease-out;
 
-        input,select {
-            color: var(--typo-text-1);
-            border-radius: $em-form-border-radius;
-            @apply px-2.5 py-3;
-            @apply mb-0;
-            background-color: $em-form-background-color;
-            transition: all 0.1s ease-out;
-            &:hover {
-                background-color: $em-form-background-color-hover;
-                border-color: $em-form-border-color-hover;
-                box-shadow: unset;
-            }
-            &:focus {
-                outline: $em-form-outline-color-focus solid $em-form-outline-width-focus;
-                border-radius: $em-form-border-radius-focus;
-                outline-offset: $em-form-outline-offset-focus;
-                box-shadow: unset;
-                border-color: $em-form-border-color-focus;
-                background-color: $em-form-background-color-focus;
-            }
-        }
+      &:hover {
+        background-color: $em-form-background-color-hover;
+        border-color: $em-form-border-color-hover;
+        box-shadow: unset;
+      }
 
-        .fabrikgrid_radio {
-            @apply flex;
-            @apply py-1;
-            @apply mb-1;
-            @apply items-center;
-            label{
-                @apply mb-0;
-            }
-        }
+      &:focus {
+        outline: $em-form-outline-color-focus solid $em-form-outline-width-focus;
+        border-radius: $em-form-border-radius-focus;
+        outline-offset: $em-form-outline-offset-focus;
+        box-shadow: unset;
+        border-color: $em-form-border-color-focus;
+        background-color: $em-form-background-color-focus;
+      }
+    }
 
-        /** ERRORS **/
-        .control-group.error {
-            label{
-                color: $em-form-label-color-error;
-            }
-            input{
-                border-color: $em-form-border-color-error;
-            }
+    .fabrikgrid_radio {
+      @apply em-flex;
+      @apply em-py-1;
+      @apply em-mb-1;
+      @apply em-items-center;
+      label {
+        @apply em-mb-0;
+        @apply em-flex;
+        @apply em-items-center;
+        padding: $em-form-radio-padding;
+        border: $em-form-radio-border-width solid $em-form-radio-border-color;
+        border-radius: $em-form-radio-border-radius;
+        input {
+          accent-color: $em-form-radio-color-checked;
+          width: $em-form-radio-width;
+          height: $em-form-radio-height;
+          margin-right: $em-form-radio-margin-right;
+          margin-left: 0;
+          margin-top: 0;
         }
-        .fabrikErrorMessage {
-            @apply mt-1;
+        span{
+          word-wrap: break-word;
         }
-     }
+        &:has(input[type='radio']:checked) {
+          background-color: $em-form-radio-background-color-checked;
+          border-color: $em-form-radio-border-color-checked;
+        }
+      }
+    }
+
+    /** ERRORS **/
+    .control-group.error {
+      label {
+        color: $em-form-label-color-error;
+      }
+
+      input {
+        border-color: $em-form-border-color-error;
+      }
+    }
+
+    .fabrikErrorMessage {
+      @apply em-mt-1;
+    }
+  }
 }

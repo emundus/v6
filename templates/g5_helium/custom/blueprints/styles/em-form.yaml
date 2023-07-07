@@ -69,6 +69,46 @@ form:
       type: input.text
       label: After border height
       default: '3px'
+    radio-padding:
+      type: input.text
+      label: Radio padding
+      default: '0 0 0 0'
+    radio-border-width:
+      type: input.text
+      label: Radio border width
+      default: '1px'
+    radio-border-color:
+        type: input.colorpicker
+        label: Radio border color
+        default: '#A7A7A7'
+    radio-border-radius:
+        type: input.text
+        label: Radio border radius
+        default: '50%'
+    radio-width:
+        type: input.text
+        label: Radio width
+        default: '16px'
+    radio-height:
+        type: input.text
+        label: Radio height
+        default: '16px'
+    radio-margin-right:
+        type: input.text
+        label: Radio margin right
+        default: '8px'
+    radio-color-checked:
+        type: input.colorpicker
+        label: Radio color checked
+        default: '#007BFF'
+    radio-background-color-checked:
+        type: input.colorpicker
+        label: Radio background color checked
+        default: '#007BFF'
+    radio-border-color-checked:
+        type: input.colorpicker
+        label: Radio border color checked
+        default: '#007BFF'
 
 
 

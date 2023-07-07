@@ -519,7 +519,7 @@
 }
 
 @mixin caption {
-  font-family: var(--em-applicant-font);
+  font-family: $font-family-text;
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
@@ -529,7 +529,7 @@
 }
 
 @mixin overline {
-  font-family: var(--em-applicant-font);
+  font-family: $font-family-text;
   font-size: 10px;
   font-style: normal;
   font-weight: 400;
@@ -541,7 +541,7 @@
 // Mixin - form
 
 @mixin star {
-  font-family: var(--em-applicant-font);
+  font-family: $font-family-text;
   font-size: 5px;
   font-style: normal;
   font-weight: 400;
@@ -610,7 +610,7 @@
   background-repeat: no-repeat;
   height: 48px !important;
   padding: 0 32px 0 12px !important;
-  font-family: var(--em-applicant-font);
+  font-family: $font-family-text;
 }
 
 @mixin multiple-select {

@@ -1089,7 +1089,7 @@ body > .g-container {
   border-color: $base-primary-color;
   text-transform: initial;
   margin-left: 0 !important;
-  font-family: var(--em-applicant-font);
+  font-family: $font-family-text;
 
   &:hover,
   &:active,
@@ -1833,7 +1833,7 @@ body > .g-container {
     margin-right: 0;
     border-radius: var(--em-applicant-br) !important;
     padding: 8px 12px;
-    font-family: var(--em-applicant-font);
+    font-family: $font-family-text;
     font-weight: 500;
     line-height: normal;
     font-size: 14px;

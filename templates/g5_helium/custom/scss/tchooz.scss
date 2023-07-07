@@ -1328,7 +1328,7 @@ input:focus + .em-slider {
 }
 
 .em-applicant-default-font {
-  font-family: var(--em-applicant-font);
+  font-family: $font-family-text;
   text-transform: inherit;
 }
 
@@ -1337,7 +1337,7 @@ input:focus + .em-slider {
 }
 
 .em-default-font {
-  font-family: var(--em-applicant-font);
+  font-family: $font-family-text;
 }
 
 .em-caption{
@@ -1734,7 +1734,7 @@ button.em-swal-delete-button{
   background-image: url('/images/emundus/searchbar/search.svg') !important;
   background-repeat: no-repeat !important;
   background-position: 96% 50% !important;
-  font-family: var(--em-applicant-font);
+  font-family: $font-family-text;
 }
 
 /**

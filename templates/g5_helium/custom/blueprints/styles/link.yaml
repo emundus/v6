@@ -20,3 +20,7 @@ form:
       type: input.colorpicker
       label: Title Color for Coordinator
       default: "#000000"
+    xxs-size:
+      type: input.text
+      label: XXS Size
+      default: "10px"
