@@ -2489,7 +2489,7 @@ class EmundusModelFiles extends JModelLegacy
 					case 'databasejoin':
 						$element_params = json_decode($element->element_attribs, true);
 						$is_multi = $element_params['database_join_display_type'] === 'checkbox' || $element_params['database_join_display_type'] === 'multilist';
-						$join_column = !empty($element_params['join_val_column_concat']) ? $element_params['join_val_column_concat'] : $element_params['join_val_column'];
+						$join_column = !empty($element_params['join_val_column_concat']) ? 'CONCAT(' . $element_params['join_val_column_concat'] . ')' : $element_params['join_val_column'];
 						$join_column = str_replace('{thistable}', $element_params['join_db_name'], $join_column);
 						$join_column = str_replace('{shortlang}', $current_lang, $join_column);
 						$join_column = str_replace('{my->id}', $current_user, $join_column);
@@ -2500,54 +2500,18 @@ class EmundusModelFiles extends JModelLegacy
 							$join_informations = $h_files->getJoinInformations($element->id);
 
 							if (!empty($join_informations)) {
-								$value_join_table_alias = 'join_table_' . rand(0, 1000);
-								$child_table_alias = 'child_table_' . rand(0, 1000);
+								$group_repeat_table = $child_element_table_alias;
+								$multi_element_repeat_table = $join_informations['table_join'] . '_rand_' . rand(0, 1000);
+								$multi_element_repeat_table_alias_2 =  $join_informations['table_join'] . '_rand_' . rand(0, 1000);
 
-
-								/**
-								 * SELECT jecc.fnum,
-								u.email,
-								esc.label,
-								sp.code,
-								esc.id                                                                                    as campaign_id,
-								GROUP_CONCAT(table_join_5.e_797_7973)                                                     AS jos_emundus_1001_01___e_797_7973,
-								GROUP_CONCAT(table_join_5.e_797_7974)                                                     AS jos_emundus_1001_01___e_797_7974,
-								GROUP_CONCAT(table_join_5.e_797_7980)                                                     AS jos_emundus_1001_01___e_797_7980,
-								GROUP_CONCAT(CASE table_join_5.e_797_7981
-								WHEN 0 THEN 'No'
-								WHEN 1 THEN 'Yes'
-								ELSE table_join_5.e_797_7981 END)                                        AS jos_emundus_1001_01___e_797_7981,
-								GROUP_CONCAT(DATE_FORMAT(table_join_5.e_797_7983, '%d/%m/%Y %H:%i:%s'))                   AS jos_emundus_1001_01___e_797_7983,
-								GROUP_CONCAT(DATE_FORMAT(table_join_5.e_797_7982, '%d/%m/%Y'))                            AS jos_emundus_1001_01___e_797_7982,
-								GROUP_CONCAT((SELECT DISTINCT data_nationality.label_fr
-								FROM data_nationality
-								WHERE data_nationality.id = table_join_5.e_797_7978) SEPARATOR
-								', ')                                                                        AS jos_emundus_1001_01___e_797_7978,
-								table_join_6.departements AS jos_emundus_1001_01___database_join_multi,
-								GROUP_CONCAT(CASE table_join_5.e_797_7976
-								WHEN '1' THEN 'SUBLABEL_803_8008_0'
-								WHEN '2'
-								THEN 'SUBLABEL_803_8008_1' END)                                      AS jos_emundus_1001_01___e_797_7976
-								FROM jos_emundus_campaign_candidature as jecc
-								LEFT JOIN jos_emundus_setup_campaigns as esc ON esc.id = jecc.campaign_id
-								LEFT JOIN jos_emundus_setup_programmes as sp ON sp.code = esc.training
-								LEFT JOIN jos_users as u ON u.id = jecc.applicant_id
-								LEFT JOIN jos_emundus_1001_01 as table_join_4 ON table_join_4.fnum = jecc.fnum
-								LEFT JOIN jos_emundus_1001_01_803_repeat as table_join_5 ON table_join_5.parent_id = table_join_4.id
-								LEFT JOIN (
-								SELECT GROUP_CONCAT(dd.departement_nom) as departements, tj.parent_id
-								FROM data_departements dd
-								LEFT JOIN jos_emundus_1001_01_803_repeat_repeat_database_join_multi as tj ON tj.database_join_multi = dd.departement_id
-								WHERE parent_id IS NOT NULL
-								) as table_join_6 ON table_join_6.parent_id = table_join_5.id
-								WHERE jecc.fnum IN ("2023070411433500000020000095")
-								GROUP BY jecc.fnum;
-								 */
-								$join_query = 'LEFT JOIN ( SELECT GROUP_CONCAT('.$value_join_table_alias . '.' . $join_column . '), ' . $child_table_alias . '.parent_id
-									FROM ' . $element_params['join_db_name'] . ' as ' . $value_join_table_alias . '
-									LEFT JOIN ' . $join_informations[''] .  '
-									WHERE ' . $child_table_alias . '.parent_id IS NOT NULL
-								';
+								$leftJoin .= ' LEFT JOIN (
+									SELECT GROUP_CONCAT('. $join_column . ') AS value, ' . $multi_element_repeat_table . '.parent_id
+									FROM ' . $element_params['join_db_name'] . '
+									LEFT JOIN ' . $join_informations['table_join'] . ' AS ' . $multi_element_repeat_table.  ' ON ' . $multi_element_repeat_table . '.' . $element->element_name . ' = ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . '
+									WHERE ' . $multi_element_repeat_table . '.parent_id IS NOT NULL
+									GROUP BY ' . $multi_element_repeat_table . '.parent_id
+								) AS ' . $multi_element_repeat_table_alias_2 . ' ON ' . $multi_element_repeat_table_alias_2 . '.parent_id = ' . $group_repeat_table . '.id';
+								$databasejoin_sub_query = 'GROUP_CONCAT(' . $multi_element_repeat_table_alias_2 . '.value) AS ' . $element->tab_name . '___' . $element->element_name;
 							}
 						}
 						else
@@ -2638,17 +2602,27 @@ class EmundusModelFiles extends JModelLegacy
 						$element_params = json_decode($element->element_attribs, true);
 
 						if ($element_params['multiple'] === '0') {
-							$query .= ', CASE ' . $element_table_alias . '.' . $element->element_name . ' ';
+							if ($is_repeat) {
+								$query .= ', GROUP_CONCAT(CASE ' . $child_element_table_alias . '.' . $element->element_name . ' ';
+							} else {
+								$query .= ', (CASE ' . $element_table_alias . '.' . $element->element_name . ' ';
+							}
+
 							foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
 								$sub_label = JText::_($element_params['sub_options']['sub_labels'][$sub_key]);
 								$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
 								$query .= ' WHEN \'' . $sub_value . '\' THEN \'' . $sub_label . '\'';
 							}
-							$query .= ' END AS ' . $element->tab_name . '___' . $element->element_name;
+							$query .= ' END) AS ' . $element->tab_name . '___' . $element->element_name;
 						} else {
 							// value is saved as string '["value1", "value2"]' in the database
-							$query .= ', (';
-							$regexp_sub_query = $element_table_alias . '.' . $element->element_name . ' '; // default value if no sub_options
+							if ($is_repeat) {
+								$query .= ', GROUP_CONCAT(';
+								$regexp_sub_query = $child_element_table_alias . '.' . $element->element_name . ' '; // default value if no sub_options
+							} else {
+								$query .= ', (';
+								$regexp_sub_query = $element_table_alias . '.' . $element->element_name . ' '; // default value if no sub_options
+							}
 
 							if (!empty($element_params['sub_options']['sub_values'])) {
 								foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
@@ -2656,9 +2630,13 @@ class EmundusModelFiles extends JModelLegacy
 									$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
 
 									if ($sub_key === 0) {
-										$regexp_sub_query = 'regexp_replace(' . $element_table_alias . '.' . $element->element_name . ', \'"' . $sub_value . '"\', \'' . $sub_label . '\')';
+										if ($is_repeat) {
+											$regexp_sub_query = 'regexp_replace(' . $child_element_table_alias . '.' . $element->element_name . ', \'([^0-9]|^)' . $sub_value . '([^0-9]|$)\', \'' . $sub_label . '\')';
+										} else {
+											$regexp_sub_query = 'regexp_replace(' . $element_table_alias . '.' . $element->element_name . ', \'([^0-9]|^)' . $sub_value . '([^0-9]|$)\', \'' . $sub_label . '\')';
+										}
 									} else {
-										$regexp_sub_query = 'regexp_replace(' . $regexp_sub_query . ', \'"' . $sub_value . '"\', \'' . $sub_label . '\')';
+										$regexp_sub_query = 'regexp_replace(' . $regexp_sub_query . ', \'([^0-9]|^)' . $sub_value . '([^0-9]|$)\', \'' . $sub_label . '\')';
 									}
 								}
 

@@ -1458,6 +1458,7 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         $fnumsArray = $m_files->getFnumArray($fnums, $ordered_elements, $methode, $start, $limit, 0);
+	    //$fnumsArray = $m_files->getFnumArray2($fnums, $ordered_elements);
 
 		if ($fnumsArray !== false) {
 			// On met a jour la liste des fnums traités

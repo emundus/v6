@@ -355,9 +355,9 @@ class EmundusModelFilesTest extends TestCase{
 			$this->assertArrayHasKey($cascadingdropdown_element->tab_name . '___' . $cascadingdropdown_element->element_name, $data[$fnum], 'the data contains the cascadingdropdown element');
 		}
 
-		$data = $this->m_files->getFnumArray2([$fnum], [$birthday_element, $date_element, $yesno_element, $display_element, $texarea_element, $field_element, $databasejoin_element, $radio_element, $dropdown_element, $dropdown_multi_element, $databasejoin_multi_element, $cascadingdropdown_element]);
+		$first_form_elements = [$birthday_element, $date_element, $yesno_element, $display_element, $texarea_element, $field_element, $databasejoin_element, $radio_element, $dropdown_element, $dropdown_multi_element, $databasejoin_multi_element, $cascadingdropdown_element];
+		$data = $this->m_files->getFnumArray2([$fnum], $first_form_elements);
 		$this->assertNotEmpty($data, 'getFnumArray returns an not empty array of data with all elements');
-		error_log(print_r($data, true));
 
 		// TODO: create a form with all type of elements and where the group is repeatable
 		$repeat_form_id = 381;
@@ -507,13 +507,12 @@ class EmundusModelFilesTest extends TestCase{
 			}
 		}
 		if ($databasejoin_multi_element) {
-			$data = $this->m_files->getFnumArray2([$fnum], [$databasejoin_multi_element], true);
+			$data = $this->m_files->getFnumArray2([$fnum], [$databasejoin_multi_element]);
 			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with databasejoin multi element');
 			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
 			$this->assertArrayHasKey($databasejoin_multi_element->tab_name . '___' . $databasejoin_multi_element->element_name, $data[$fnum], 'the data contains the databasejoin multi element');
 		}
 
-		// TODO: test for element radiobutton
 		$radio_element = null;
 		foreach ($elements as $element) {
 			if ($element->element_plugin === 'radiobutton') {
@@ -528,14 +527,54 @@ class EmundusModelFilesTest extends TestCase{
 			$this->assertArrayHasKey($radio_element->tab_name . '___' . $radio_element->element_name, $data[$fnum], 'the data contains the radiobutton element');
 		}
 
-		// TODO: test for element dropdown
-		// TODO: test for element cascadingdropdown
+		$dropdown_element = null;
+		foreach ($elements as $element) {
+			if ($element->element_plugin === 'dropdown') {
+				$element_attribs = json_decode($element->element_attribs);
 
-		$data = $this->m_files->getFnumArray2([$fnum], [$field_element, $texarea_element, $display_element, $yesno_element, $date_element, $birthday_element, $databasejoin_element, $databasejoin_multi_element, $radio_element], true);
+				if ($element_attribs->multiple == 0) {
+					$dropdown_element = $element;
+					break;
+				}
+			}
+		}
+		if ($dropdown_element) {
+			$data = $this->m_files->getFnumArray2([$fnum], [$dropdown_element]);
+			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with dropdown element');
+			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
+			$this->assertArrayHasKey($dropdown_element->tab_name . '___' . $dropdown_element->element_name, $data[$fnum], 'the data contains the dropdown element');
+			$this->assertNotEmpty($data[$fnum][$dropdown_element->tab_name . '___' . $dropdown_element->element_name], 'dropdown in repeat context values returned');
+		}
+
+		$dropdown_multi_element = null;
+		foreach ($elements as $element) {
+			if ($element->element_plugin === 'dropdown') {
+				$element_attribs = json_decode($element->element_attribs);
+				if ($element_attribs->multiple == 1) {
+					$dropdown_multi_element = $element;
+					break;
+				}
+			}
+		}
+		if ($dropdown_multi_element) {
+			$data = $this->m_files->getFnumArray2([$fnum], [$dropdown_multi_element]);
+			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with dropdown multiselect element');
+			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
+			$this->assertArrayHasKey($dropdown_multi_element->tab_name . '___' . $dropdown_multi_element->element_name, $data[$fnum], 'the data contains the dropdown multiselect element');
+			$this->assertNotEmpty($data[$fnum][$dropdown_multi_element->tab_name . '___' . $dropdown_multi_element->element_name], 'the data contains the dropdown multiselect element');
+			$this->assertStringNotContainsString('[', $data[$fnum][$dropdown_multi_element->tab_name . '___' . $dropdown_multi_element->element_name], 'dropdown multiselect element, open bracket has been removed');
+			$this->assertStringNotContainsString(']', $data[$fnum][$dropdown_multi_element->tab_name . '___' . $dropdown_multi_element->element_name], 'dropdown multiselect element, close bracket has been removed');
+		}
+
+		$repeat_form_elements = [$field_element, $texarea_element, $display_element, $yesno_element, $date_element, $birthday_element, $databasejoin_element, $databasejoin_multi_element, $radio_element, $dropdown_element, $dropdown_multi_element];
+		$data = $this->m_files->getFnumArray2([$fnum], $repeat_form_elements);
 		$this->assertNotEmpty($data, 'getFnumArray returns a not empty array of data with all elements and repeatable group');
+
+		$elements_from_different_forms = array_merge($first_form_elements, $repeat_form_elements);
+		$data = $this->m_files->getFnumArray2([$fnum], $elements_from_different_forms, true);
+		$this->assertNotEmpty($data, 'getFnumArray returns a not empty array of data with all elements from different forms');
 		error_log(print_r($data, true));
 
 		// TODO: create a form that is not directly linked to campaign candidature
-		
 	}
 }
