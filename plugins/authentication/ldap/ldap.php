@@ -53,6 +53,8 @@ class PlgAuthenticationLdap extends JPlugin
 		// Load plugin params info
 		$ldap_email    = $this->params->get('ldap_email');
 		$ldap_fullname = $this->params->get('ldap_fullname');
+        $ldap_firstname = $this->params->get('ldap_firstname');
+        $ldap_lastname = $this->params->get('ldap_lastname');
 		$ldap_uid      = $this->params->get('ldap_uid');
 		$auth_method   = $this->params->get('auth_method');
 
@@ -160,14 +162,24 @@ class PlgAuthenticationLdap extends JPlugin
 				$response->email = $userdetails[0][$ldap_email][0];
 			}
 
-			if (isset($userdetails[0][$ldap_fullname][0]))
-			{
-				$response->fullname = $userdetails[0][$ldap_fullname][0];
-			}
-			else
-			{
-				$response->fullname = $credentials['username'];
-			}
+            if (isset($userdetails[0][$ldap_firstname][0]))
+            {
+                $response->firstname = $userdetails[0][$ldap_firstname][0];
+            }
+            if (isset($userdetails[0][$ldap_lastname][0]))
+            {
+                $response->lastname = $userdetails[0][$ldap_lastname][0];
+            }
+
+            if (isset($userdetails[0][$ldap_firstname][0]) && isset($userdetails[0][$ldap_lastname][0]))
+            {
+                $response->fullname = $userdetails[0][$ldap_firstname][0] . ' ' . $userdetails[0][$ldap_lastname][0];
+            }
+            else if ($userdetails[0][$ldap_fullname][0]) {
+                $response->fullname = $userdetails[0][$ldap_fullname][0];
+            } else {
+                $response->fullname = $credentials['username'];
+            }
 
 			// Were good - So say so.
 			$response->status        = JAuthentication::STATUS_SUCCESS;
