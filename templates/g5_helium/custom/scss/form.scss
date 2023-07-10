@@ -5,7 +5,9 @@
   }
 
   form.fabrikForm {
+    margin: 0;
 
+    /** GLOBAL **/
     .row-fluid{
       width: auto;
     }
@@ -13,9 +15,10 @@
     .fabrikLabel {
       display: flex !important;
       @apply text-lg;
+      margin-bottom: $em-form-label-margin-bottom;
     }
 
-    input:not([type='radio']), select {
+    input:not([type='radio']):not([type='checkbox']), select {
       height: $em-form-height;
     }
 
@@ -43,8 +46,8 @@
       }
     }
 
+    /** RADIO **/
     .fabrikgrid_radio {
-      @apply flex;
       @apply py-1;
       @apply mb-1;
       @apply items-center;
@@ -73,6 +76,32 @@
       }
     }
 
+    /** CHECKBOX **/
+    .plg-checkbox {
+      .fabrikElement {
+        .fabrikSubElementContainer {
+          border-top: solid $em-form-checkbox-border-width $em-form-checkbox-border-color;
+          padding: $em-form-checkbox-padding 0 0 0;
+          .row-fluid {
+            margin-top: 0;
+            margin-bottom: $em-form-checkbox-padding;
+            border-bottom: solid $em-form-checkbox-border-width $em-form-checkbox-border-color;
+            padding: 0 0 $em-form-checkbox-padding $em-form-checkbox-padding;
+            .fabrikgrid_checkbox {
+              label {
+                margin-bottom: 0;
+                input {
+                  accent-color: $em-form-checkbox-color-checked;
+                  transform: scale($em-form-checkbox-scale);
+                  margin-right: $em-form-checkbox-input-margin;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
     /** ERRORS **/
     .control-group.error {
       label {
@@ -81,6 +110,16 @@
 
       input {
         border-color: $em-form-border-color-error;
+      }
+    }
+    .fabrikError.plg-checkbox {
+      .fabrikElement {
+        .fabrikSubElementContainer {
+          border-color: $em-form-checkbox-border-color-error;
+          .row-fluid {
+            border-color: $em-form-checkbox-border-color-error;
+          }
+        }
       }
     }
 

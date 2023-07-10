@@ -83,6 +83,7 @@ endif;
             <fieldset class="mb-6 <?php echo $group->class; ?> <?php if ($group->columns > 1) {
 				echo 'fabrikGroupColumns-' . $group->columns . ' fabrikGroupColumns';
 			} ?>" id="group<?php echo $group->id; ?>" style="<?php echo $group->css; ?>">
+                <?php if(($group->showLegend && !empty($group->title)) || !empty($group->intro)) : ?>
                 <div class="mb-7">
                     <?php
                     if ($group->showLegend) :?>
@@ -96,6 +97,7 @@ endif;
                     endif;
                     ?>
                 </div>
+                <?php endif; ?>
                 <?php
 
 				/* Load the group template - this can be :

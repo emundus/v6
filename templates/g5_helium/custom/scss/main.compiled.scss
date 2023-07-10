@@ -560,6 +560,12 @@ video {
     line-height: 28.8px;
 }
 
+form.fabrikForm {
+    margin: 0;
+  }
+
+/** GLOBAL **/
+
 form.fabrikForm .row-fluid{
       width: auto;
     }
@@ -568,9 +574,10 @@ form.fabrikForm .fabrikLabel {
       display: flex !important;
       font-size: 1.125rem;
       line-height: 1.75rem;
+      margin-bottom: $em-form-label-margin-bottom;
     }
 
-form.fabrikForm input:not([type='radio']), form.fabrikForm select {
+form.fabrikForm input:not([type='radio']):not([type='checkbox']), form.fabrikForm select {
       height: $em-form-height;
     }
 
@@ -601,8 +608,9 @@ form.fabrikForm input:focus, form.fabrikForm select:focus {
         background-color: $em-form-background-color-focus;
       }
 
+/** RADIO **/
+
 form.fabrikForm .fabrikgrid_radio {
-    display: flex;
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
     margin-bottom: 0.25rem;
@@ -636,6 +644,30 @@ form.fabrikForm .fabrikgrid_radio label:has(input[type='radio']:checked) {
           border-color: $em-form-radio-border-color-checked;
         }
 
+/** CHECKBOX **/
+
+form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer {
+          border-top: solid $em-form-checkbox-border-width $em-form-checkbox-border-color;
+          padding: $em-form-checkbox-padding 0 0 0;
+        }
+
+form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-fluid {
+            margin-top: 0;
+            margin-bottom: $em-form-checkbox-padding;
+            border-bottom: solid $em-form-checkbox-border-width $em-form-checkbox-border-color;
+            padding: 0 0 $em-form-checkbox-padding $em-form-checkbox-padding;
+          }
+
+form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-fluid .fabrikgrid_checkbox label {
+                margin-bottom: 0;
+              }
+
+form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-fluid .fabrikgrid_checkbox label input {
+                  accent-color: $em-form-checkbox-color-checked;
+                  transform: scale($em-form-checkbox-scale);
+                  margin-right: $em-form-checkbox-input-margin;
+                }
+
 /** ERRORS **/
 
 form.fabrikForm .control-group.error label {
@@ -645,6 +677,14 @@ form.fabrikForm .control-group.error label {
 form.fabrikForm .control-group.error input {
         border-color: $em-form-border-color-error;
       }
+
+form.fabrikForm .fabrikError.plg-checkbox .fabrikElement .fabrikSubElementContainer {
+          border-color: $em-form-checkbox-border-color-error;
+        }
+
+form.fabrikForm .fabrikError.plg-checkbox .fabrikElement .fabrikSubElementContainer .row-fluid {
+            border-color: $em-form-checkbox-border-color-error;
+          }
 
 form.fabrikForm .fabrikErrorMessage {
     margin-top: 0.25rem;
@@ -688,6 +728,10 @@ form.fabrikForm .fabrikErrorMessage {
 
 .start-2 {
     inset-inline-start: var(--spacing-2);
+}
+
+.m-0 {
+    margin: 0px;
 }
 
 .mb-0 {
@@ -831,6 +875,10 @@ form.fabrikForm .fabrikErrorMessage {
     flex-wrap: wrap;
 }
 
+.justify-between {
+    justify-content: space-between;
+}
+
 .truncate {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -843,6 +891,10 @@ form.fabrikForm .fabrikErrorMessage {
 
 .border {
     border-width: 1px;
+}
+
+.p-0 {
+    padding: 0px;
 }
 
 .p-6 {

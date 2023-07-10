@@ -13,6 +13,10 @@ form:
       type: input.colorpicker
       label: Label color
       default: '#000000'
+    label-margin-bottom:
+      type: input.text
+      label: Label margin bottom
+      default: '8px'
     height:
       type: input.text
       label: Height of fields
@@ -109,6 +113,34 @@ form:
         type: input.colorpicker
         label: Radio border color checked
         default: '#007BFF'
+    checkbox-border-width:
+        type: input.text
+        label: Checkbox border width
+        default: '1px'
+    checkbox-border-color:
+        type: input.colorpicker
+        label: Checkbox border color
+        default: '#A7A7A7'
+    checkbox-padding:
+        type: input.text
+        label: Checkbox padding
+        default: '12px'
+    checkbox-scale:
+        type: input.text
+        label: Checkbox scale
+        default: '1.7'
+    checkbox-input-margin:
+        type: input.text
+        label: Checkbox input margin
+        default: '12px'
+    checkbox-color-checked:
+        type: input.colorpicker
+        label: Checkbox color checked
+        default: '#007BFF'
+    checkbox-border-color-error:
+        type: input.colorpicker
+        label: Checkbox border color error
+        default: '#C62222'
 
 
 
