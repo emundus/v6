@@ -161,7 +161,9 @@ class EmundusHelperEvents {
 
             $eMConfig = JComponentHelper::getParams('com_emundus');
             $copy_application_form = $eMConfig->get('copy_application_form', 0);
-            $copy_exclude_forms = $eMConfig->get('copy_exclude_forms', []);
+	        $copy_application_form_type   = $eMConfig->get('copy_application_form_type', 0);
+	        $copy_exclude_forms      = $eMConfig->get('copy_exclude_forms', []);
+	        $copy_include_forms      = $eMConfig->get('copy_include_forms', []);
             $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
             $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
 
@@ -352,7 +354,14 @@ class EmundusHelperEvents {
 
 			$profile_details = $m_users->getUserById(JFactory::getUser()->id)[0];
 
-            if ($copy_application_form == 1 && isset($user->fnum) && !in_array($formModel->getId(), $copy_exclude_forms) || !empty($fnum_linked)) {
+	        $check_forms = !in_array($formModel->getId(), $copy_exclude_forms);
+	        if($copy_application_form_type == 1)
+	        {
+		        $check_forms = in_array($formModel->getId(), $copy_include_forms);
+	        }
+
+
+	        if ($copy_application_form == 1 && isset($user->fnum) && ($check_forms || !empty($fnum_linked))) {
 
                 if (empty($formModel->getRowId())) {
                     $table = $listModel->getTable();
