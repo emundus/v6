@@ -31,6 +31,10 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 endif;
 ?>
 <div class="emundus-form p-6">
+    <div class="mb-0 fabrikMainError alert alert-error fabrikError<?php echo $active ?>">
+        <button class="close" data-dismiss="alert">×</button>
+		<?php echo $form->error; ?>
+    </div>
     <div class="mb-8">
         <?php if ($this->params->get('show-title', 1)) : ?>
             <div class="page-header mt-10">
@@ -49,11 +53,6 @@ endif;
 		<?php
 		echo $this->plugintop;
 		?>
-
-        <div class="fabrikMainError alert alert-error fabrikError<?php echo $active ?>">
-            <button class="close" data-dismiss="alert">×</button>
-			<?php echo $form->error; ?>
-        </div>
         
         <?php
         $buttons_tmpl = $this->loadTemplate('buttons');
