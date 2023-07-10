@@ -12,6 +12,10 @@
       width: auto;
     }
 
+    .fabrikElementContainer {
+      @apply mb-0;
+    }
+
     .fabrikLabel {
       display: flex !important;
       @apply text-lg;
@@ -97,6 +101,21 @@
                 }
               }
             }
+          }
+        }
+      }
+    }
+
+    /** PANEL **/
+    .plg-panel {
+      .fabrikElement {
+        .fabrikinput {
+          @apply flex;
+          @apply p-5;
+          @apply rounded;
+          .fabrikElementContent {
+            @apply ml-3;
+            line-height: 24px;
           }
         }
       }

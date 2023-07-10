@@ -570,6 +570,10 @@ form.fabrikForm .row-fluid{
       width: auto;
     }
 
+form.fabrikForm .fabrikElementContainer {
+    margin-bottom: 0px;
+}
+
 form.fabrikForm .fabrikLabel {
       display: flex !important;
       font-size: 1.125rem;
@@ -667,6 +671,19 @@ form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-flu
                   transform: scale($em-form-checkbox-scale);
                   margin-right: $em-form-checkbox-input-margin;
                 }
+
+/** PANEL **/
+
+form.fabrikForm .plg-panel .fabrikElement .fabrikinput {
+    display: flex;
+    padding: 1.25rem;
+    border-radius: 0.25rem;
+}
+
+form.fabrikForm .plg-panel .fabrikElement .fabrikinput .fabrikElementContent {
+    margin-left: 0.75rem;
+            line-height: 24px;
+}
 
 /** ERRORS **/
 

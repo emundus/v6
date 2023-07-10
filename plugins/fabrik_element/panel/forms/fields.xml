@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields>
+		<fieldset name="plg-element-panel" label="COM_FABRIK_OPTIONS">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_PANEL_HELP_SERVER" />
+
+			<field name="default"
+				type="fabrikeditor"
+				mode="php"
+				label="PLG_ELEMENT_PANEL_DEFAULT_LABEL" />
+
+			<field name="eval"
+				type="radio"
+				default="0"
+				class="btn-group"
+				label="PLG_ELEMENT_PANEL_EVAL_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+		</fieldset>
+	</fields>
+
+	<fields name="params">
+		<fieldset name="extra" label="COM_FABRIK_MORE">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_PANEL_HELP_SERVER" />
+
+			<field name="panel_showlabel"
+				type="radio"
+				default="1"
+				class="btn-group"
+				label="PLG_ELEMENT_PANEL_SHOW_LABEL_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+			<field name="panel_background"
+				   type="color"
+				   default="#EBEEFA"
+				   label="PLG_ELEMENT_PANEL_BACKGROUND">
+			</field>
+
+			<field name="panel_icon"
+				   type="text"
+				   default="info"
+				   label="PLG_ELEMENT_PANEL_ICON">
+			</field>
+
+			<field name="panel_icon_color"
+				   type="color"
+				   default="#525b85"
+				   label="PLG_ELEMENT_PANEL_ICON_COLOR">
+			</field>
+
+			<field name="panel_icon_type"
+				   type="text"
+				   default=""
+				   label="PLG_ELEMENT_PANEL_ICON_TYPE"
+				   description="PLG_ELEMENT_PANEL_ICON_TYPE_DESC">
+			</field>
+
+		</fieldset>
+	</fields>
+</form>
