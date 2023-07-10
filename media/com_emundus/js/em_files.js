@@ -5481,7 +5481,7 @@ $(document).ready(function() {
         tinymce.remove();
         var fnum = $(this).attr('id').split('candidat_')[1];
 
-        $('#em-modal-actions').modal({backdrop:false,keyboard:true},'toggle');
+        $('#em-modal-actions').modal({backdrop:true,keyboard:true},'toggle');
         $('.modal-title').empty();
         $('.modal-title').append($(this).children('a').text());
         $('.modal-body').empty();

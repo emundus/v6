@@ -1626,10 +1626,6 @@ a.btn-attach:active {
 
 @media all and (max-width: 479px) {
 
-    form.fabrikForm .row-fluid .control-group.plg-textarea label.fabrikTip {
-        display: initial !important;
-    }
-
     .em-submit-form-button{
         justify-self: center;
     }
@@ -1664,11 +1660,6 @@ a.btn-attach:active {
 }
 
 @media all and (min-width: 480px) and (max-width: 767px) {
-
-
-    form.fabrikForm .row-fluid .control-group.plg-textarea label.fabrikTip {
-        display: initial !important;
-    }
 
     .fabrikActions.form-actions .row-fluid .span4 {
         width: 98% !important;

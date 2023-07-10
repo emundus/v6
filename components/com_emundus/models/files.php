@@ -223,7 +223,8 @@ class EmundusModelFiles extends JModelLegacy
                     $query = preg_replace('#{my->id}#', $current_user->id, $query);
                     $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
                     $this->_elements_default[] = $query;
-                } elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'checkbox') {
+                }
+                elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'checkbox') {
                     if (@$group_params->repeat_group_button == 1) {
                         $element_attribs = json_decode($def_elmt->element_attribs);
                         $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
@@ -1316,12 +1317,8 @@ class EmundusModelFiles extends JModelLegacy
                     $user = JFactory::getUser()->id;
                 }
 
-                $now = new DateTime();
-                $now->setTimezone(new DateTimeZone('UTC'));
-                $now = $now->format('Y-m-d H:i:s');
-
                 $query_associated_tags = $db->getQuery(true);
-                $query ="insert into #__emundus_tag_assoc (fnum, id_tag, date_time, user_id) VALUES ";
+                $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id) VALUES ";
 
                 $logger = array();
                 foreach ($fnums as $fnum) {
@@ -1337,7 +1334,7 @@ class EmundusModelFiles extends JModelLegacy
                     // Insert valid tags
                     foreach ($tags as $tag) {
                         if (!in_array($tag, $tags_already_associated)) {
-                            $query .= '("' . $fnum . '", ' . $tag . ',"' . $now . '",' . $user . '),';
+                            $query .= '("' . $fnum . '", ' . $tag . ',' . $user . '),';
                             $query_log = 'SELECT label
                                 FROM #__emundus_setup_action_tag
                                 WHERE id =' . $tag;
