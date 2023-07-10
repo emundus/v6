@@ -50,6 +50,11 @@ class ValidatorJS {
         this.input.addEventListener('input', this.inputValidation.bind(this));
         this.input.addEventListener('focusout', this.handlerFocusOut.bind(this));
         this.input.addEventListener('focusin', this.handlerInputFocusIn.bind(this));
+
+        if (this.mustValidate)
+        {
+            this.inputValidation();
+        }
     }
 
     inputValidation(e)
@@ -96,15 +101,13 @@ class ValidatorJS {
 
         this.frontMessage('default'); // we consider its good everytime
 
-        if(this.input.value.length !== 0)
+        if(this.mustValidate) // mandatory so we validate everytime
         {
-            if(this.mustValidate) // mandatory so we validate everytime
-            {
-                this.inputValidation(props);
-            } else // not mandatory but valid only if numbers in it
-            {
-                this.inputValidation(props);
-            }
+            this.inputValidation(props);
+        }
+        else if(this.input.value.length !== 0) // not mandatory but valid only if numbers in it
+        {
+            this.inputValidation(props);
         }
     }
 
