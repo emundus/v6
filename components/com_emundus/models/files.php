@@ -2410,7 +2410,7 @@ class EmundusModelFiles extends JModelLegacy
 	}
 
 
-	public function getFnumArray2($fnums, $elements, $debug = false)
+	public function getFnumArray2($fnums, $elements)
 	{
 		$data = [];
 
@@ -2511,15 +2511,11 @@ class EmundusModelFiles extends JModelLegacy
 									WHERE ' . $multi_element_repeat_table . '.parent_id IS NOT NULL
 									GROUP BY ' . $multi_element_repeat_table . '.parent_id
 								) AS ' . $multi_element_repeat_table_alias_2 . ' ON ' . $multi_element_repeat_table_alias_2 . '.parent_id = ' . $group_repeat_table . '.id';
-								$databasejoin_sub_query = 'GROUP_CONCAT(' . $multi_element_repeat_table_alias_2 . '.value) AS ' . $element->tab_name . '___' . $element->element_name;
+								$databasejoin_sub_query = '(' . $multi_element_repeat_table_alias_2 . '.value) AS ' . $element->tab_name . '___' . $element->element_name;
 							}
 						}
 						else
 						{
-							if ($is_repeat)  {
-								$databasejoin_sub_query .= 'GROUP_CONCAT(';
-							}
-
 							$databasejoin_sub_query .= '(SELECT ' . $join_column;
 							$databasejoin_sub_query .= ' FROM ' . $element_params['join_db_name'];
 
@@ -2536,7 +2532,7 @@ class EmundusModelFiles extends JModelLegacy
 										$child_table_alias = array_search($join_informations['table_join'], $already_joined);
 									}
 
-									$databasejoin_sub_query = ' GROUP_CONCAT(' . $databasejoin_sub_query;
+									$databasejoin_sub_query = ' (' . $databasejoin_sub_query;
 									$databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_table_alias . '.' . $element->element_name . '))';
 								}
 							} else {
@@ -2545,10 +2541,6 @@ class EmundusModelFiles extends JModelLegacy
 								} else {
 									$databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $element_table_alias . '.' . $element->element_name . ')';
 								}
-							}
-
-							if ($is_repeat) {
-								$databasejoin_sub_query .= ' SEPARATOR \', \')';
 							}
 
 							$databasejoin_sub_query .= ' AS ' . $element->tab_name . '___' . $element->element_name;
@@ -2561,7 +2553,7 @@ class EmundusModelFiles extends JModelLegacy
 						$element_params = json_decode($element->element_attribs, true);
 
 						if ($is_repeat) {
-							$query .= ', GROUP_CONCAT(CASE ' . $child_element_table_alias . '.' . $element->element_name . ' ';
+							$query .= ', (CASE ' . $child_element_table_alias . '.' . $element->element_name . ' ';
 						} else {
 							$query .= ', (CASE ' . $element_table_alias . '.' . $element->element_name . ' ';
 						}
@@ -2603,7 +2595,7 @@ class EmundusModelFiles extends JModelLegacy
 
 						if ($element_params['multiple'] === '0') {
 							if ($is_repeat) {
-								$query .= ', GROUP_CONCAT(CASE ' . $child_element_table_alias . '.' . $element->element_name . ' ';
+								$query .= ', (CASE ' . $child_element_table_alias . '.' . $element->element_name . ' ';
 							} else {
 								$query .= ', (CASE ' . $element_table_alias . '.' . $element->element_name . ' ';
 							}
@@ -2616,11 +2608,11 @@ class EmundusModelFiles extends JModelLegacy
 							$query .= ' END) AS ' . $element->tab_name . '___' . $element->element_name;
 						} else {
 							// value is saved as string '["value1", "value2"]' in the database
+							$query .= ', (';
+
 							if ($is_repeat) {
-								$query .= ', GROUP_CONCAT(';
 								$regexp_sub_query = $child_element_table_alias . '.' . $element->element_name . ' '; // default value if no sub_options
 							} else {
-								$query .= ', (';
 								$regexp_sub_query = $element_table_alias . '.' . $element->element_name . ' '; // default value if no sub_options
 							}
 
@@ -2650,28 +2642,28 @@ class EmundusModelFiles extends JModelLegacy
 						break;
 					case 'birthday':
 						if ($is_repeat) {
-							$query .= ', GROUP_CONCAT(DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y\')) AS ' . $element->tab_name . '___' . $element->element_name;
+							$query .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y\') AS ' . $element->tab_name . '___' . $element->element_name;
 						} else {
 							$query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y\') AS ' . $element->tab_name . '___' . $element->element_name;
 						}
 						break;
 					case 'date':
 						if ($is_repeat) {
-							$query .= ', GROUP_CONCAT(DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y %H:%i:%s\')) AS ' . $element->tab_name . '___' . $element->element_name;
+							$query .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y %H:%i:%s\') AS ' . $element->tab_name . '___' . $element->element_name;
 						} else {
 							$query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y %H:%i:%s\') AS ' . $element->tab_name . '___' . $element->element_name;
 						}
 						break;
 					case 'yesno':
 						if ($is_repeat) {
-							$query .= ', GROUP_CONCAT(CASE ' . $child_element_table_alias . '.' . $element->element_name . ' WHEN 0 THEN \'' . JText::_('JNO') . '\' WHEN 1 THEN \'' . JText::_('JYES') . '\' ELSE ' . $child_element_table_alias . '.' . $element->element_name . ' END)' . ' AS ' . $element->tab_name . '___' . $element->element_name;
+							$query .= ', CASE ' . $child_element_table_alias . '.' . $element->element_name . ' WHEN 0 THEN \'' . JText::_('JNO') . '\' WHEN 1 THEN \'' . JText::_('JYES') . '\' ELSE ' . $child_element_table_alias . '.' . $element->element_name . ' END AS ' . $element->tab_name . '___' . $element->element_name;
 						} else {
 							$query .= ', CASE ' . $element_table_alias . '.' . $element->element_name . ' WHEN 0 THEN \'' . JText::_('JNO') . '\' WHEN 1 THEN \'' . JText::_('JYES') . '\' ELSE ' . $element_table_alias . '.' . $element->element_name . ' END AS ' . $element->tab_name . '___' . $element->element_name;
 						}
 						break;
 					default:
 						if ($is_repeat) {
-							$query .= ', GROUP_CONCAT(' . $child_element_table_alias . '.' . $element->element_name . ')' . ' AS ' . $element->tab_name . '___' . $element->element_name;
+							$query .= ', ' . $child_element_table_alias . '.' . $element->element_name . ' AS ' . $element->tab_name . '___' . $element->element_name;
 						} else {
 							$query .= ', ' . $element_table_alias . '.' . $element->element_name . ' AS ' . $element->tab_name . '___' . $element->element_name;
 						}
@@ -2685,14 +2677,40 @@ class EmundusModelFiles extends JModelLegacy
 				$db = JFactory::getDbo();
 				$db->setQuery($query . $from . $leftJoin . $where);
 
-				if ($debug) {
-					error_log($query . $from . $leftJoin . $where);
-				}
-
-				$data = $db->loadAssocList('fnum');
+				$data = $db->loadAssocList();
 			} catch(Exception $e) {
 				error_log($e->getMessage());
 				error_log($query . $from . $leftJoin . $where);
+			}
+
+			if (!empty($data)) {
+				$data_by_fnums = [];
+
+				foreach($data as $row) {
+					if (!isset($data_by_fnums[$row['fnum']])) {
+						$data_by_fnums[$row['fnum']] = $row;
+					} else {
+						foreach($row as $key => $value) {
+							if ((!is_array($data_by_fnums[$row['fnum']][$key]) && $row[$key] !== $data_by_fnums[$row['fnum']][$key]) || (is_array($data_by_fnums[$row['fnum']][$key]) && !in_array($row[$key], $data_by_fnums[$row['fnum']][$key]))) {
+								if (is_array($data_by_fnums[$row['fnum']][$key])) {
+									$data_by_fnums[$row['fnum']][$key][] = $row[$key];
+								} else {
+									$data_by_fnums[$row['fnum']][$key] = [$data_by_fnums[$row['fnum']][$key], $row[$key]];
+								}
+							}
+						}
+					}
+				}
+
+				$data = $data_by_fnums;
+
+				foreach ($data as $d_key => $row) {
+					foreach ($row as $r_key => $value) {
+						if (is_array($value)) {
+							$data[$d_key][$r_key] = implode(', ', $value);
+						}
+					}
+				}
 			}
 		}
 

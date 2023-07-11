@@ -437,7 +437,7 @@ class EmundusModelFilesTest extends TestCase{
 
 			$values = explode(',', $data[$fnum][$yesno_element->tab_name . '___' . $yesno_element->element_name]);
 			foreach ($values as $value) {
-				$this->assertContains($value, [JText::_('JNO'), JText::_('JYES')], 'the value is Yes or No translatation');
+				$this->assertContains(trim($value), [JText::_('JNO'), JText::_('JYES')], 'the value is Yes or No translatation');
 			}
 		}
 
@@ -475,7 +475,7 @@ class EmundusModelFilesTest extends TestCase{
 
 			$dates = explode(',', $data[$fnum][$birthday_element->tab_name . '___' . $birthday_element->element_name]);
 			foreach ($dates as $date) {
-				$this->assertStringMatchesFormat('%d/%d/%d', $date, 'the date element contains a birthday in the correct format');
+				$this->assertStringMatchesFormat('%d/%d/%d', trim($date), 'the date element contains a birthday in the correct format');
 			}
 		}
 
@@ -570,11 +570,19 @@ class EmundusModelFilesTest extends TestCase{
 		$data = $this->m_files->getFnumArray2([$fnum], $repeat_form_elements);
 		$this->assertNotEmpty($data, 'getFnumArray returns a not empty array of data with all elements and repeatable group');
 
+		// calculate time of execution
 		$elements_from_different_forms = array_merge($first_form_elements, $repeat_form_elements);
+		$start = microtime(true);
 		$data = $this->m_files->getFnumArray2([$fnum], $elements_from_different_forms, true);
+		$end = microtime(true);
 		$this->assertNotEmpty($data, 'getFnumArray returns a not empty array of data with all elements from different forms');
-		error_log(print_r($data, true));
+		$elapsed_new_function_time = $end - $start;
 
-		// TODO: create a form that is not directly linked to campaign candidature
+		$start = microtime(true);
+		$data = $this->m_files->getFnumArray([$fnum], $elements_from_different_forms);
+		$end = microtime(true);
+		$elapsed_old_function_time = $end - $start;
+
+		$this->assertGreaterThanOrEqual($elapsed_new_function_time, $elapsed_old_function_time, 'getFnumArray2 is faster than getFnumArray ' . $elapsed_new_function_time . ' vs ' . $elapsed_old_function_time);
 	}
 }
