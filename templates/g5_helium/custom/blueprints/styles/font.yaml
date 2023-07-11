@@ -7,16 +7,16 @@ form:
     family-text:
       type: input.fonts
       label: Body Font
-      default: 'Inter, sans-serif'
+      default: 'Inter'
     family-title:
       type: input.fonts
       label: Title Font
-      default: 'Inter, sans-serif'
+      default: 'Inter'
     coordinator-family-text:
       type: input.fonts
       label: Body Font for Coordinator
-      default: 'Inter, sans-serif'
+      default: 'Inter'
     coordinator-family-title:
       type: input.fonts
       label: Title Font for Coordinator
-      default: 'Inter, sans-serif'
+      default: 'Inter'
