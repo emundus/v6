@@ -223,8 +223,8 @@
 
   /* FONT COLOR */
 
-  --em-coordinator-title-color: #{$link-coordinator-title-color};
-  --em-coordinator-text-color: #{$link-coordinator-text-color};
+  --em-coordinator-title-color: #{$base-title-color-coordinator};
+  --em-coordinator-text-color: #{$base-text-color-coordinator};
 
   --em-default-title-color-1: #{$base-title-color};          //  titre
   --em-default-title-color-1-500: var(--neutral-500);     //  titre disabled
