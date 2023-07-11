@@ -71,7 +71,7 @@ button#back:hover, button#back:active, button#back:focus,
     /*******************Mes dossiers de candidature*****************/
 
 .main-page-file-info p {
-    padding-bottom: 10px;
+    padding-bottom: var(--p-8);
 }
 
 .select {
@@ -96,7 +96,7 @@ button#back:hover, button#back:active, button#back:focus,
 
 .navsearch-content .form-control {
     border-radius: 0 0 0 0 !important;
-    padding: 8px 12px;
+    padding: var(--p-8) var(--p-16);
     height: 33px !important;
 }
 
@@ -115,7 +115,7 @@ button#back:hover, button#back:active, button#back:focus,
 }
 
 .forget-mdp {
-    margin-top: 5px;
+    margin-top: var(--m-4);
     display: block;
 }
 
@@ -136,15 +136,15 @@ button#back:hover, button#back:active, button#back:focus,
 }
 
 .candidacy-files-list .col-xs-6:nth-child(2) a {
-    margin: 5px 0 !important;
+    margin: var(--m-4) 0 !important;
 }
 
 .homepage #g-main-mainbody #content-bottom-a .platform-content i.icon-print, .homepage #g-main-mainbody #content-bottom-a .platform-content i.icon-trash {
-    padding-left: 2px;
+    padding-left: var(--p-4);
 }
 
 .list-group .col-xs-6.col-md-4 a {
-    margin-bottom: 2px;
+    margin-bottom: var(--m-4);
 }
 
 a.btn.btn-success:not(.btn-xs) {
@@ -172,7 +172,7 @@ a.btn.btn-success:not(.btn-xs) {
 }
 @media all and (max-width: 479px) {
     .main-page-file-info a {
-        margin-bottom: 4px;
+        margin-bottom: var(--m-4);
     }
 
     .view-featured .candidacy-files-list .row {
@@ -198,7 +198,7 @@ a.btn.btn-success:not(.btn-xs) {
 
 @media all and (min-width: 480px) and (max-width: 767px) {
     .main-page-file-info a {
-        margin-bottom: 4px;
+        margin-bottom: var(--m-4);
     }
 
     .view-featured .candidacy-files-list .row {
@@ -235,7 +235,7 @@ a.btn.btn-success:not(.btn-xs) {
 
     .main-page-file-progress {
         width: 100%;
-        margin-top: 10px;
+        margin-top: var(--m-8);
     }
 }
 
@@ -248,7 +248,7 @@ a.btn.btn-success:not(.btn-xs) {
 
     .candidacy-files-list .main-page-file-progress {
         top: 40px;
-        padding-bottom: 40px;
+        padding-bottom: var(--p-40);
     }
 }
 
@@ -290,7 +290,7 @@ a.btn.btn-success:not(.btn-xs) {
 
 .mod_emundus_applications___footer a.btn.btn-success:not(.btn-xs){
     width: 40%;
-    margin-bottom: 24px;
+    margin-bottom: var(--m-24);
 }
 
 .mod_emundus_applications___header h1.em-h1 {
@@ -300,7 +300,7 @@ margin-top: var(--m-16);
 }
 
 .mod_emundus_applications___header_desc h2 {
-    margin-top: 24px;
+    margin-top: var(--m-24);
     font-family: var(--em-applicant-font-title);
     color: var(--em-default-title-color-1);
 }
@@ -316,7 +316,7 @@ margin-top: var(--m-16);
 .mod_emundus_applications___content{
     display: grid;
     align-items: flex-start;
-    padding: 0px;
+    padding: 0;
     gap: var(--p-32);
     grid-template-columns: repeat(2,1fr);
 }
@@ -333,7 +333,7 @@ margin-top: var(--m-16);
 .mod_emundus_applications___informations{
     display: grid;
     align-items: flex-start;
-    padding: 0px;
+    padding: 0;
     gap: var(--p-16);
     grid-template-columns: repeat(2,1fr);
 }
@@ -349,13 +349,13 @@ margin-top: var(--m-16);
 }
 .mod_emundus_applications___programme_tag{
     border-radius: var(--em-default-br);
-    padding: 5px 12px;
+    padding: var(--p-4) var(--p-16);
     width: fit-content;
     font-size: 12px;
     font-weight: 600;
 }
 .mod_emundus_applications___title{
-    margin-bottom: 8px !important;
+    margin-bottom: var(--m-8) !important;
     color: var(--em-default-title-color-1) !important;
     -webkit-line-clamp: 2;
     overflow: hidden;
@@ -373,18 +373,18 @@ margin-top: var(--m-16);
 }
 
 .mod_emundus_applications__actions{
-    margin-top: 8px;
+    margin-top: var(--m-8);
     flex-direction: column;
     box-shadow: 0px 12px 17px rgba(5, 47, 55, 0.07), 0px 5px 22px rgba(5, 47, 55, 0.06), 0px 7px 8px rgba(5, 47, 55, 0.1);
     border-radius: var(--em-default-br-cards);
-    padding: 12px;
+    padding: var(--p-16);
     position: absolute;
     background: var(--neutral-0);
     z-index: 9999;
     right: 30px;
 }
 .mod_emundus_applications__actions a:not(:last-child){
-    margin-bottom: 8px;
+    margin-bottom: var(--m-8);
 }
 
 .mod_emundus_applications__actions a:hover {
@@ -403,7 +403,7 @@ margin-top: var(--m-16);
     justify-content: space-between;
 }
 .mod_emundus_applications_badge{
-    margin-left: 8px;
+    margin-left: var(--m-8);
     background: var(--neutral-0);
     border: solid 1px var(--neutral-300);
     border-radius: 50px;
@@ -439,7 +439,7 @@ margin-top: var(--m-16);
 }
 .mod_emundus_application_swal_manage_tabs_header{
     align-items: start !important;
-    padding: 24px 16px 8px 16px !important;
+    padding: var(--p-24) var(--p-16) var(--p-8) var(--p-16) !important;
 }
 .mod_emundus_application_swal_manage_tabs_header h2{
     color: var(--neutral-900) !important;
@@ -456,13 +456,13 @@ margin-top: var(--m-16);
 .mod_emundus_application_swal_manage_tabs_popup #swal2-content ul{
     list-style-type: none;
     margin-left: 0;
-    margin-top: 4px;
+    margin-top: var(--m-4);
     margin-bottom: 0;
 }
 .mod_emundus_application_swal_manage_tabs_actions{
     border-top: solid 1px var(--neutral-300);
-    margin-top: 8px !important;
-    padding: 8px var(--p-16);
+    margin-top:var(--m-8) !important;
+    padding: var(--p-8) var(--p-16);
     display: flex !important;
     justify-content: end !important;
 }
@@ -473,7 +473,7 @@ margin-top: var(--m-16);
     font-size: 14px;
     margin: 0;
     width: 100%;
-    margin-top: 12px;
+    margin-top: var(--m-16);
     height: 48px;
     border-radius: var(--em-applicant-br);
 }
@@ -488,7 +488,7 @@ margin-top: var(--m-16);
 }
 #applications_list_view table thead tr th,#applications_list_view table tbody tr td{
     background: var(--transparent);
-    padding: 12px 8px 12px 8px;
+    padding: var(--p-16) var(--p-8) var(--p-16) var(--p-8);
 }
 #applications_list_view table tr {
     border-bottom: 1px solid var(--neutral-300);
@@ -516,23 +516,23 @@ margin-top: var(--m-16);
     justify-content: center;
     align-items: center;
     border-radius: var(--em-default-br);
-    padding: 6px var(--p-16);
+    padding: var(--p-8) var(--p-16);
     width: max-content;
 }
 
 .mod_emundus_application__header_sort__values{
-    margin-top: 8px;
+    margin-top: var(--m-8);
     flex-direction: column;
     box-shadow: 0px 12px 17px rgba(5, 47, 55, 0.07), 0px 5px 22px rgba(5, 47, 55, 0.06), 0px 7px 8px rgba(5, 47, 55, 0.1);
     border-radius: var(--em-default-br) !important;
-    padding: 24px;
+    padding: var(--p-24);
     position: absolute;
     background: var(--neutral-0);
     z-index: 10;
 }
 
 .mod_emundus_application__header_sort__values a:not(:last-child){
-    margin-bottom: 20px;
+    margin-bottom: var(--m-24);
 }
 
 .mod_emundus_application__header_sort__values a:hover {
