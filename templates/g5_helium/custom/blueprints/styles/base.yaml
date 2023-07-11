@@ -1,5 +1,5 @@
 name: Colors
-description: Style for the Emundus theme
+description: Colors
 type: core
 
 form:
@@ -16,6 +16,18 @@ form:
         type: input.colorpicker
         label: Title color
         default: "#000000"
+    background-coordinator:
+      type: input.colorpicker
+      label: Background color for Coordinator
+      default: "#f8f8f8"
+    text-color-coordinator:
+      type: input.colorpicker
+      label: Text color for Coordinator
+      default: "#4B4B4B"
+    title-color-coordinator:
+      type: input.colorpicker
+      label: Title color for Coordinator
+      default: "#000000"
     primary-color:
       type: input.colorpicker
       label: Primary color
