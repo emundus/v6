@@ -385,7 +385,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                     <!-- FILTERS BLOCK -->
                     <?php if ($mod_em_campaign_show_filters == 1  && !empty($mod_em_campaign_show_filters_list)) : ?>
                         <div class="mod_emundus_campaign__header_filter__values em-border-neutral-400 em-neutral-800-color" id="filters_block" style="display: none">
-                            <a class="em-mb-8 em-flex-row em-font-size-14 em-blue-400-color em-pointer" onclick="addFilter()" title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_ADD_FILTER') ?>">
+                            <a class="em-mb-8 em-flex-row em-font-size-14 em-pointer" onclick="addFilter()" title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_ADD_FILTER') ?>">
                                 <span class="material-icons-outlined em-font-size-14">add</span>
                                 <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_ADD_FILTER') ?>
                             </a>
@@ -399,7 +399,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                             <option value="programme" selected><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PROGRAMME') ?></option>
                                             <option value="category"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PROGRAMME_CATEGORY') ?></option>
                                         </select>
-                                        <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_IS') ?></span>
+                                        <span class="em-text-neutral-800"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_IS') ?></span>
                                         <div id="filters_options_<?php echo $i ?>">
                                             <select id="filter_value_<?php echo $i ?>">
                                                 <option value = 0></option>
@@ -424,7 +424,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                             <option value="programme"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PROGRAMME') ?></option>
                                             <option value="category" selected><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PROGRAMME_CATEGORY') ?></option>
                                         </select>
-                                        <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_IS') ?></span>
+                                        <span class="em-text-neutral-800"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_IS') ?></span>
                                         <div id="filters_options_<?php echo $i ?>">
                                             <select id="filter_value_<?php echo $i ?>">
                                                 <option value = 0></option>
@@ -810,7 +810,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         <?php endif; ?>
 
         html += '</select> ' +
-            '<span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_IS') ?></span> ' +
+            '<span class="em-text-neutral-800"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_IS') ?></span> ' +
             '<div id="filters_options_'+index+'"></div>' +
             '<div class="em-flex-row">' +
             '<span class="material-icons-outlined em-font-size-16 em-red-500-color em-pointer" onclick="deleteFilter('+index+')">delete</span>' +
