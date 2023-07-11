@@ -161,7 +161,7 @@ $current_tab = 0;
 		<?php foreach ($tabs as $tab) : ?>
             <div id="tab_link_<?php echo $tab['id'] ?>" onclick="updateTab(<?php echo $tab['id'] ?>)"
                  class="em-mr-16 em-flex-row em-light-tabs em-pointer <?php if ($current_tab == $tab['id']) : ?>em-light-selected-tab<?php endif; ?>">
-                <p class="em-font-size-14 em-text-neutral-600"
+                <p class="em-font-size-14"
                    style="white-space: nowrap"><?php echo JText::_($tab['name']) ?></p>
 				<?php if ($tab['id'] != 0) : ?>
                     <span class="mod_emundus_applications_badge"><?php echo $tab['no_files'] ?></span>
@@ -275,7 +275,7 @@ $current_tab = 0;
         <div class="mod_emundus_applications__list_content--default">
             <h2 class="em-text-neutral-900 em-h2 em-applicant-title-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE') ?></h2>
             <p class="em-text-neutral-900 em-default-font em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT') ?></p>
-            <p class="em-applicant-text-color em-default-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT_2') ?></p>
+            <p class="em-applicant--color em-default-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT_2') ?></p>
             <br/>
             <div class="em-flex-row-justify-end mod_emundus_campaign__buttons em-mt-32">
 				<?php if ($show_show_campaigns) : ?>
@@ -483,7 +483,7 @@ $current_tab = 0;
 													<?php endif; ?>
 													<?php if (!empty($file_tags_display)) : ?>
                                                         <div class="em-mt-16">
-                                                        <span class="em-tags-display em-applicant-text-color">
+                                                        <span class="em-tags-display em-text-neutral-900">
                                                             <?= $file_tags_display; ?>
                                                         </span>
                                                         </div>
@@ -512,7 +512,7 @@ $current_tab = 0;
                                                         <div class="mod_emundus_applications___date em-mt-8">
 															<?php if (!$displayInterval && !$closed) : ?>
                                                                 <span class="material-icons em-text-neutral-600 em-font-size-16 em-mr-8">schedule</span>
-                                                                <p class="em-applicant-text-color em-font-size-16 em-applicant-default-font"> <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_END_DATE'); ?><?php echo JFactory::getDate(new JDate($end_date, $site_offset))->format($date_format); ?></p>
+                                                                <p class="em-text-neutral-600 em-font-size-16 em-applicant-default-font"> <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_END_DATE'); ?><?php echo JFactory::getDate(new JDate($end_date, $site_offset))->format($date_format); ?></p>
 															<?php elseif ($displayInterval && !$closed) : ?>
                                                                 <span class="material-icons-outlined em-text-neutral-600 em-font-size-16 em-red-500-color em-mr-8">schedule</span>
                                                                 <p class="em-red-500-color"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_LAST_DAY'); ?>
@@ -535,17 +535,17 @@ $current_tab = 0;
 
                                                 <div class="mod_emundus_applications___informations">
                                                     <div>
-                                                        <label class="em-applicant-text-color em-applicant-default-font em-font-size-14"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_COMPLETED'); ?>
+                                                        <label class="em-text-neutral-600 em-applicant-default-font em-font-size-14"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_COMPLETED'); ?>
                                                             :</label>
-                                                        <p class="em-applicant-default-font"><?php echo(($progress['forms'][$application->fnum] + $progress['attachments'][$application->fnum]) / 2) ?>
+                                                        <p class="em-applicant-default-font em-text-neutral-900"><?php echo(($progress['forms'][$application->fnum] + $progress['attachments'][$application->fnum]) / 2) ?>
                                                             %</p>
                                                     </div>
 
 													<?php if (!empty($application->updated) || !empty($application->submitted_date)) : ?>
                                                         <div>
-                                                            <label class="em-applicant-text-color em-applicant-default-font em-font-size-14"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_LAST_UPDATE'); ?>
+                                                            <label class="em-text-neutral-600 em-applicant-default-font em-font-size-14"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_LAST_UPDATE'); ?>
                                                                 :</label>
-                                                            <p class="em-applicant-default-font">
+                                                            <p class="em-applicant-default-font em-text-neutral-900">
 																<?php if (empty($application->updated)) : ?>
 																	<?php echo JFactory::getDate(new JDate($application->submitted_date, $site_offset))->format('d/m/Y H:i'); ?>
 																<?php else : ?>
@@ -593,7 +593,7 @@ $current_tab = 0;
             <p class="em-text-neutral-900 em-h5 em-applicant-title-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE') ?></p>
             <br/>
             <p class="em-text-neutral-900 em-default-font em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT') ?></p>
-            <p class="em-applicant-text-color em-default-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT_2') ?></p>
+            <p class="em-text-neutral-900 em-default-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT_2') ?></p>
             <br/>
             <div class="em-flex-row-justify-end mod_emundus_campaign__buttons em-mt-32">
 				<?php if ($show_show_campaigns) : ?>
@@ -697,7 +697,7 @@ $current_tab = 0;
                                                 <td style="width: 23.75%;">
 													<?php if (!empty($application->updated) || !empty($application->submitted_date)) : ?>
                                                         <div>
-                                                            <p class="em-applicant-default-font em-font-size-14">
+                                                            <p class="em-applicant-default-font em-text-neutral-900 em-font-size-14">
 																<?php if (empty($application->updated)) : ?>
 																	<?php echo JFactory::getDate(new JDate($application->submitted_date, $site_offset))->format('d/m/Y H:i'); ?>
 																<?php else : ?>
@@ -708,7 +708,7 @@ $current_tab = 0;
 													<?php endif; ?>
                                                 </td>
                                                 <td style="width: 23.75%;">
-                                                    <p class="em-applicant-default-font em-font-size-14"><?php echo(($progress['forms'][$application->fnum] + $progress['attachments'][$application->fnum]) / 2) ?>
+                                                    <p class="em-applicant-default-font em-text-neutral-900 em-font-size-14"><?php echo(($progress['forms'][$application->fnum] + $progress['attachments'][$application->fnum]) / 2) ?>
                                                         %</p>
                                                 </td>
                                                 <td style="width: 23.75%;">

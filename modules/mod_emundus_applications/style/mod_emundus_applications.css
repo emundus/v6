@@ -296,7 +296,7 @@ a.btn.btn-success:not(.btn-xs) {
 .mod_emundus_applications___header h1.em-h1 {
  font-family: var(--em-applicant-font-title);
  color: var(--em-default-title-color-1);
-margin-top: 16px;
+margin-top: var(--m-16);
 }
 
 .mod_emundus_applications___header_desc h2 {
@@ -317,13 +317,13 @@ margin-top: 16px;
     display: grid;
     align-items: flex-start;
     padding: 0px;
-    gap: 32px;
+    gap: var(--p-32);
     grid-template-columns: repeat(2,1fr);
 }
 .mod_emundus_applications___content_app{
     box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
     border-radius: var(--em-default-br-cards) !important;
-    padding: 32px;
+    padding: var(--p-32);
     background: var(--neutral-0);
 }
 .mod_emundus_applications___date{
@@ -334,8 +334,12 @@ margin-top: 16px;
     display: grid;
     align-items: flex-start;
     padding: 0px;
-    gap: 16px;
+    gap: var(--p-16);
     grid-template-columns: repeat(2,1fr);
+}
+
+.mod_emundus_applications___content_app hr {
+    margin: var(--m-16) 0;
 }
 
 .mod_emundus_applications___circle{
@@ -391,7 +395,7 @@ margin-top: 16px;
 .mod_emundus_applications__list_content--default {
     box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
     border-radius: calc(var(--em-applicant-br)*2) !important;
-    padding: 32px;
+    padding: var(--p-32);
     background: var(--neutral-0);
 }
 
@@ -416,8 +420,15 @@ margin-top: 16px;
 }
 
 .em-light-tabs a {
-    color: var(--em-primary-color);
+    color: var(--neutral-700);
 }
+
+.em-light-tabs a:hover,
+.em-light-tabs a:active,
+.em-light-tabs a:focus{
+    color: var(--neutral-800);
+}
+
 .em-light-selected-tab p{
     color: var(--neutral-900);
 }
@@ -437,7 +448,7 @@ margin-top: 16px;
     margin-top: 0 !important;
 }
 .mod_emundus_application_swal_manage_tabs_popup .swal2-content{
-    padding: 0 16px 0 16px;
+    padding: 0 var(--p-16) 0 var(--p-16);
 }
 .mod_emundus_application_swal_manage_tabs_popup #swal2-content{
     display: flex !important;
@@ -451,7 +462,7 @@ margin-top: 16px;
 .mod_emundus_application_swal_manage_tabs_actions{
     border-top: solid 1px var(--neutral-300);
     margin-top: 8px !important;
-    padding: 8px 16px;
+    padding: 8px var(--p-16);
     display: flex !important;
     justify-content: end !important;
 }
@@ -505,7 +516,7 @@ margin-top: 16px;
     justify-content: center;
     align-items: center;
     border-radius: var(--em-default-br);
-    padding: 6px 16px;
+    padding: 6px var(--p-16);
     width: max-content;
 }
 
