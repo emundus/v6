@@ -210,7 +210,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                 <?php if($mod_em_campaign_show_camp_end_date && strtotime($now) > strtotime($campaign_pinned->end_date) ) :    //fini  ?>
                                     <div class="mod_emundus_campaign__date em-flex-row">
                                         <span class="material-icons em-text-neutral-600 em-font-size-16 em-mr-4">alarm_off</span>
-                                        <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_CLOSED'); ?></p>
+                                        <p class="em-text-neutral-600 em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_CLOSED'); ?></p>
                                     </div>
                                 <?php endif; ?>
 
@@ -577,7 +577,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                         <?php if($mod_em_campaign_show_camp_end_date && strtotime($now) > strtotime($result->end_date) ) :    //fini  ?>
                                             <div class="mod_emundus_campaign__date em-flex-row">
                                                 <span class="material-icons em-text-neutral-600 em-font-size-16 em-mr-4">alarm_off</span>
-                                                <p class="em-applicant-text-color em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_CLOSED'); ?></p>
+                                                <p class="em-text-neutral-600 em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_CLOSED'); ?></p>
                                             </div>
                                         <?php endif; ?>
 
