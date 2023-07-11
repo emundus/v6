@@ -984,7 +984,7 @@ body > .g-container {
         &:focus {
           background: $base-secondary-color;
           color: var(--neutral-50);
-          border-color: $base-secondary-color;
+          border-color: $base-secondary-color !important;
         }
       }
     }
