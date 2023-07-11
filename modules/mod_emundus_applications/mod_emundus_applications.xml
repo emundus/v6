@@ -133,6 +133,17 @@
 					   description="MOD_EMUNDUS_SHOW_STATUS_DESC"
 				/>
 
+				<field name="selected_campaigns"
+					   type="sql"
+					   label="MOD_EMUNDUS_SELECTED_CAMPAIGNS"
+					   description="MOD_EMUNDUS_SELECTED_CAMPAIGNS_DESC"
+					   query="SELECT id, CONCAT(label, ' ', year) as label FROM jos_emundus_setup_campaigns WHERE published = 1 ORDER BY label ASC"
+					   key_field="id"
+					   value_field="label"
+					   multiple="true"
+					   default="0"
+				/>
+
 				<field showon="layout:_:tchooz"
 					   name="mod_em_application_group"
 					   type="subform"

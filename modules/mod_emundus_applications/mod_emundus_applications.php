@@ -106,6 +106,8 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     } else {
 		$visible_status = [];
     }
+	$selected_campaigns = $params->get('selected_campaigns', []);
+
     $mod_em_applications_show_search = $params->get('mod_em_applications_show_search', 1);
     $mod_em_applications_show_sort = $params->get('mod_em_applications_show_sort', 0);
     $mod_em_applications_show_filters = $params->get('mod_em_applications_show_filters', 0);
@@ -135,7 +137,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
         $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by);
     } else {
         // We send the layout as a param because Hesam needs different information.
-        $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by);
+        $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by, $selected_campaigns);
 		$tabs = $m_application->getTabs(JFactory::getUser()->id);
     }
 
@@ -158,7 +160,6 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $m_email = new EmundusModelEmails();
     $m_files = new EmundusModelFiles();
     $m_campaign = new EmundusModelCampaign();
-
 
     $fnums = array_keys($applications);
 
