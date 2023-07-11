@@ -231,14 +231,26 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     }
 
     if (!empty($show_payment_status)) {
-
         foreach ($applications as $application => $val) {
             $order_status = modemundusApplicationsHelper::getHikashopOrder($applications[$application]);
             $applications[$application]->order_status = $order_status->orderstatus_namekey;
             $applications[$application]->order_color = $order_status->orderstatus_color;
         }
-
     }
+
+	if (empty($applications)) {
+		$override_default_content = JText::_($params->get('override_default_content', ''));
+
+		if (!empty($override_default_content)) {
+			try {
+				$post = array('APPLICANT_ID'   => $user->id, 'FNUM' => '');
+				$tags              = $m_email->setTags($user->id, $post, null, '', $override_default_content);
+				$override_default_content = preg_replace($tags['patterns'], $tags['replacements'], $override_default_content);
+			} catch (Exception $e) {
+				$override_default_content = JText::_($params->get('override_default_content', ''));
+			}
+		}
+	}
 
     $status = $m_files->getStatus();
 
