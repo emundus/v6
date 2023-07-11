@@ -64,7 +64,7 @@ if ($allowed_attachments !== true) {
         border-radius: 8px;
     }
     .cc-bcc-mails .items div[data-value]{
-        background: #D1E9FF;
+        background: #EBECF0;
         border: unset;
         border-radius: 4px !important;
         box-shadow: unset !important;
@@ -85,20 +85,20 @@ if ($allowed_attachments !== true) {
         border-radius: 4px;
         border: solid 2px transparent;
     }
-    div#mail_from_name:focus,div#mail_subject:focus {
+    div#mail_from_name:focus,div#mail_subject:focus,div#reply_to_from:focus {
         outline-color: #2E90FA;
     }
-    div#mail_from_name:hover,div#mail_subject:hover{
+    div#mail_from_name:hover,div#mail_subject:hover,div#reply_to_from:hover{
         border-radius: 4px;
         border: solid 2px #ccc;
     }
-    #cc-box-label,#bcc-box-label{
+    #cc-box-label,#bcc-box-label,#replyto-box-label{
         border-radius: 4px;
         width: fit-content;
         padding: 4px 6px;
         margin-left: -4px;
     }
-    #cc-box-label:hover,#bcc-box-label:hover {
+    #cc-box-label:hover,#bcc-box-label:hover,#replyto-box-label:hover {
         background: #e5e5e5;
     }
     #reply_to_from,#emailForm div#mail_subject{
@@ -169,13 +169,21 @@ if ($allowed_attachments !== true) {
                     <em class="em-font-size-14">&lt;<?= JFactory::getConfig()->get('mailfrom') ?>&gt;</em>
                 </div>
             </div>
+            <span class="em-font-size-12"><?= JText::_('COM_EMUNDUS_FROM_HELP_TEXT') ?></span>
+
         </div>
 
         <!-- REPLY TO -->
-        <div class="form-group em-form-sender em-mt-12">
-            <label class='em-mr-8' for="reply_to_from"><?= JText::_('COM_EMUNDUS_EMAILS_FROM_REPLY_TO'); ?> :</label>
-            <div id="reply_to_block" class="em-border-radius-8 em-mb-4 email-input-block em-cursor-text">
-                <div id="reply_to_from" class="em-p-4-6 em-cursor-text" contenteditable="true"></div>
+        <div id="replyto-box" class="form-group em-form-sender em-mt-12">
+            <div id="replyto-box-label" class="em-flex-row em-mb-4 em-pointer" onclick="openReplyTo()">
+                <label class="em-mb-0-important" for="reply_to_from"><?= JText::_('COM_EMUNDUS_EMAILS_FROM_REPLY_TO'); ?></label>
+                <span id="replyto-icon" class="material-icons-outlined">chevron_right</span>
+            </div>
+            <div id="reply_to_div" style="display: none">
+                <div id="reply_to_block" class="em-border-radius-8 em-mb-4 email-input-block em-cursor-text">
+                    <div id="reply_to_from" class="em-p-4-6 em-cursor-text" contenteditable="true"></div>
+                </div>
+                <span class="em-font-size-12"><?= JText::_('COM_EMUNDUS_EMAILS_REPLY_TO_HELP_TEXT') ?></span>
             </div>
         </div>
 
@@ -206,7 +214,7 @@ if ($allowed_attachments !== true) {
                 <span id="cc-icon" class="material-icons-outlined">chevron_right</span>
             </div>
             <input type="text" id="cc-mails" class="cc-bcc-mails">
-        </div><!-- /input-group -->
+        </div>
 
         <!-- Add current user to Bcc -->
         <div id="bcc-box" class="input-group form-inline col-md-12 em-mt-12">
@@ -231,7 +239,7 @@ if ($allowed_attachments !== true) {
 
             <!-- TIP -->
             <p class="em-text-neutral-600 em-mt-8">
-                <?= JText::_('COM_EMUNDUS_ONBOARD_VARIABLESTIP'); ?> /
+                <?= JText::_('COM_EMUNDUS_ONBOARD_VARIABLESTIP'); ?>
             </p>
         </div>
 
@@ -320,9 +328,6 @@ if ($allowed_attachments !== true) {
             <!-- Files to be attached will be added here. -->
         </ul>
     </div>
-
-    <a href="index.php?option=com_emundus&view=export_select_columns&format=html&layout=all_programs&Itemid=1173"
-       target="_blank"><?= JText::_('COM_EMUNDUS_SEE_TAGS'); ?></a>
 
     <input type="hidden" name="task" value=""/>
 </form>
@@ -448,7 +453,7 @@ if ($allowed_attachments !== true) {
 	    <?php endif; ?>
 
         <?php if(!empty($this->data['reply_to_from'])) : ?>
-            $("#reply_to_from").html("<strong><?= $this->data['reply_to_from'] ?></strong>");
+            $("#reply_to_from").html("<?= $this->data['reply_to_from'] ?>");
         <?php endif; ?>
     });
 
@@ -480,6 +485,18 @@ if ($allowed_attachments !== true) {
         } else {
             bcc.css('display', 'block');
             $('#bcc-icon').css('transform', 'rotate(90deg)');
+        }
+    }
+
+    function openReplyTo()
+    {
+        let replyto = $('#reply_to_div');
+        if(replyto.css('display') === 'block') {
+            replyto.css('display', 'none');
+            $('#replyto-icon').css('transform', 'rotate(0deg)');
+        } else {
+            replyto.css('display', 'block');
+            $('#replyto-icon').css('transform', 'rotate(90deg)');
         }
     }
 
@@ -740,10 +757,12 @@ if ($allowed_attachments !== true) {
 
                         $("#mail_subject").text(email.subject);
 
-                        $("#reply_to_from").html("<strong>" + email.emailfrom + "</strong>");
+                        $("#reply_to_from").html(email.emailfrom);
                         if(email.name !== '')
                         {
                             $("#mail_from_name").text(email.name);
+                        } else {
+                            $("#mail_from_name").text("<?= JFactory::getConfig()->get('fromname'); ?>");
                         }
 
 
