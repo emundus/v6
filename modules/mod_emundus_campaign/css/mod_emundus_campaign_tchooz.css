@@ -110,6 +110,7 @@
 
 .mod_emundus_campaign__programme_properties .em-programme-tag{
     margin-bottom: 0;
+    white-space: inherit;
 }
 
 .mod_emundus_campaign__campagne_properties img,
