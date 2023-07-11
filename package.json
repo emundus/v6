@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "postcss templates/g5_helium/custom/scss/main.scss -o templates/g5_helium/custom/scss/main.compiled.css",
-    "dev": "postcss templates/g5_helium/custom/scss/main.scss -w -o templates/g5_helium/custom/scss/main.compiled.scss"
+    "build": "postcss templates/g5_helium/custom/scss/main.css -o templates/g5_helium/custom/scss/main.compiled.css",
+    "dev": "postcss templates/g5_helium/custom/scss/main.css -w -o templates/g5_helium/custom/scss/main.compiled.css"
   },
   "repository": {
     "type": "git",

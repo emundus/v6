@@ -1,5 +1,5 @@
-@import "utilities.scss";
-@import "form.scss";
+@import "utilities.css";
+@import "form.css";
 
 @tailwind base;
 @tailwind components;
@@ -8,7 +8,7 @@
 .after-em-border::after{
     content: "";
     width: 40px;
-    height: $em-form-after-border-height;
+    height: var(--em-form-after-border-height);
     display: block;
     margin-top: 8px;
 }

@@ -1,0 +1,149 @@
+@layer components {
+
+  .emundus-form .page-header h1 {
+    @apply em-default-title-1;
+  }
+
+  form.fabrikForm {
+    margin: 0;
+
+    /** GLOBAL **/
+    .row-fluid{
+      width: auto;
+    }
+
+    .fabrikElementContainer {
+      @apply mb-0;
+    }
+
+    .fabrikLabel {
+      display: flex !important;
+      @apply text-lg;
+      margin-bottom: var(--em-form-label-margin-bottom);
+    }
+
+    input:not([type='radio']):not([type='checkbox']), select {
+      height: var(--em-form-height);
+    }
+
+    input, select {
+      color: var(--typo-text-1);
+      border-radius: var(--em-form-border-radius);
+      @apply px-2.5 py-3;
+      @apply mb-0;
+      background-color: var(--em-form-background-color);
+      transition: all 0.1s ease-out;
+
+      &:hover {
+        background-color: var(--em-form-background-color-hover);
+        border-color: var(--em-form-border-color-hover);
+        box-shadow: unset;
+      }
+
+      &:focus {
+        outline: var(--em-form-outline-color-focus) solid var(--em-form-outline-width-focus);
+        border-radius: var(--em-form-border-radius-focus);
+        outline-offset: var(--em-form-outline-offset-focus);
+        box-shadow: unset;
+        border-color: var(--em-form-border-color-focus);
+        background-color: var(--em-form-background-color-focus);
+      }
+    }
+
+    /** RADIO **/
+    .fabrikgrid_radio {
+      @apply py-1;
+      @apply mb-1;
+      @apply items-center;
+      label {
+        @apply mb-0;
+        @apply flex;
+        @apply items-center;
+        padding: var(--em-form-radio-padding);
+        border: var(--em-form-radio-border-width) solid var(--em-form-radio-border-color);
+        border-radius: var(--em-form-radio-border-radius);
+        input {
+          accent-color: var(--em-form-radio-color-checked);
+          width: var(--em-form-radio-width);
+          height: var(--em-form-radio-height);
+          margin-right: var(--em-form-radio-margin-right);
+          margin-left: 0;
+          margin-top: 0;
+        }
+        span{
+          word-wrap: break-word;
+        }
+        &:has(input[type='radio']:checked) {
+          background-color: var(--em-form-radio-background-color-checked);
+          border-color: var(--em-form-radio-border-color-checked);
+        }
+      }
+    }
+
+    /** CHECKBOX **/
+    .plg-checkbox {
+      .fabrikElement {
+        .fabrikSubElementContainer {
+          border-top: solid var(--em-form-checkbox-border-width) var(--em-form-checkbox-border-color);
+          padding: var(--em-form-checkbox-padding) 0 0 0;
+          .row-fluid {
+            margin-top: 0;
+            margin-bottom: var(--em-form-checkbox-padding);
+            border-bottom: solid var(--em-form-checkbox-border-width) var(--em-form-checkbox-border-color);
+            padding: 0 0 var(--em-form-checkbox-padding) var(--em-form-checkbox-padding);
+            .fabrikgrid_checkbox {
+              label {
+                margin-bottom: 0;
+                input {
+                  accent-color: var(--em-form-checkbox-color-checked);
+                  transform: scale(var(--em-form-checkbox-scale));
+                  margin-right: var(--em-form-checkbox-input-margin);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    /** PANEL **/
+    .plg-panel {
+      .fabrikElement {
+        .fabrikinput {
+          @apply flex;
+          @apply p-5;
+          @apply rounded;
+          .fabrikElementContent {
+            @apply ml-3;
+            line-height: 24px;
+          }
+        }
+      }
+    }
+
+    /** ERRORS **/
+    .control-group.error {
+      label {
+        color: var(--em-form-label-color-error);
+      }
+
+      input {
+        border-color: var(--em-form-border-color-error);
+      }
+    }
+    .fabrikError.plg-checkbox {
+      .fabrikElement {
+        .fabrikSubElementContainer {
+          border-color: var(--em-form-checkbox-border-color-error);
+          .row-fluid {
+            border-color: var(--em-form-checkbox-border-color-error);
+          }
+        }
+      }
+    }
+
+    .fabrikErrorMessage {
+      @apply mt-1;
+    }
+  }
+}

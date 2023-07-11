@@ -273,6 +273,45 @@
   --m-64: 64px;
   --m-72: 72px;
   --m-80: 80px;
+
+  /** FORM VARIABLES **/
+  --em-form-required-icon-order: #{$em-form-required-icon-order};
+  --em-form-label-color: #{$em-form-label-color};
+  --em-form-label-margin-bottom: #{$em-form-label-margin-bottom};
+  --em-form-height: #{$em-form-height};
+  --em-form-border-radius: #{$em-form-border-radius};
+  --em-form-background-color: #{$em-form-background-color};
+  --em-form-border-radius-focus: #{$em-form-border-radius-focus};
+  --em-form-border-color-focus: #{$em-form-border-color-focus};
+  --em-form-background-color-focus: #{$em-form-background-color-focus};
+  --em-form-outline-width-focus: #{$em-form-outline-width-focus};
+  --em-form-outline-color-focus: #{$em-form-outline-color-focus};
+  --em-form-outline-offset-focus: #{$em-form-outline-offset-focus};
+  --em-form-background-color-hover: #{$em-form-background-color-hover};
+  --em-form-border-color-hover: #{$em-form-border-color-hover};
+  --em-form-border-color-error: #{$em-form-border-color-error};
+  --em-form-label-color-error: #{$em-form-label-color-error};
+  --em-form-after-border-height: #{$em-form-after-border-height};
+  --em-form-radio-padding: #{$em-form-radio-padding};
+  --em-form-radio-border-width: #{$em-form-radio-border-width};
+  --em-form-radio-border-color: #{$em-form-radio-border-color};
+  --em-form-radio-border-radius: #{$em-form-radio-border-radius};
+  --em-form-radio-width: #{$em-form-radio-width};
+  --em-form-radio-height: #{$em-form-radio-height};
+  --em-form-radio-margin-right: #{$em-form-radio-margin-right};
+  --em-form-radio-color-checked: #{$em-form-radio-color-checked};
+  --em-form-radio-background-color-checked: #{$em-form-radio-background-color-checked};
+  --em-form-radio-border-color-checked: #{$em-form-radio-border-color-checked};
+  --em-form-checkbox-border-width: #{$em-form-checkbox-border-width};
+  --em-form-checkbox-border-color: #{$em-form-checkbox-border-color};
+  --em-form-checkbox-padding: #{$em-form-checkbox-padding};
+  --em-form-checkbox-scale: #{$em-form-checkbox-scale};
+  --em-form-checkbox-input-margin: #{$em-form-checkbox-input-margin};
+  --em-form-checkbox-color-checked: #{$em-form-checkbox-color-checked};
+  --em-form-checkbox-border-color-error: #{$em-form-checkbox-border-color-error};
+
+  /** UTILITIES **/
+  --link-xxs-size: #{$link-xxs-size};
 }
 
 // Mixin - typo

@@ -1900,7 +1900,7 @@ structure:
 				$db->setQuery($query);
 				$db->execute();
 
-				EmundusHelperUpdate::addYamlVariable('location', 'gantry-assets://custom/scss/main.compiled.scss', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css', true, true);
+				EmundusHelperUpdate::addYamlVariable('location', 'gantry-assets://custom/scss/main.compiled.css', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css', true, true);
 				EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css');
 				EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css');
 				EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css');

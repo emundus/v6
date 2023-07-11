@@ -1,9 +1,9 @@
 .text-xxs {
-    font-size: $link-xxs-size;
+    font-size: var(--link-xxs-size);
 }
 
 .icon-order {
-    order: $em-form-required-icon-order;
+    order: var(--em-form-required-icon-order);
 }
 
 /*
@@ -578,38 +578,38 @@ form.fabrikForm .fabrikLabel {
       display: flex !important;
       font-size: 1.125rem;
       line-height: 1.75rem;
-      margin-bottom: $em-form-label-margin-bottom;
+      margin-bottom: var(--em-form-label-margin-bottom);
     }
 
 form.fabrikForm input:not([type='radio']):not([type='checkbox']), form.fabrikForm select {
-      height: $em-form-height;
+      height: var(--em-form-height);
     }
 
 form.fabrikForm input, form.fabrikForm select {
       color: var(--typo-text-1);
-      border-radius: $em-form-border-radius;
+      border-radius: var(--em-form-border-radius);
       padding-left: 0.625rem;
       padding-right: 0.625rem;
       padding-top: 0.75rem;
       padding-bottom: 0.75rem;
       margin-bottom: 0px;
-      background-color: $em-form-background-color;
+      background-color: var(--em-form-background-color);
       transition: all 0.1s ease-out;
     }
 
 form.fabrikForm input:hover, form.fabrikForm select:hover {
-        background-color: $em-form-background-color-hover;
-        border-color: $em-form-border-color-hover;
+        background-color: var(--em-form-background-color-hover);
+        border-color: var(--em-form-border-color-hover);
         box-shadow: unset;
       }
 
 form.fabrikForm input:focus, form.fabrikForm select:focus {
-        outline: $em-form-outline-color-focus solid $em-form-outline-width-focus;
-        border-radius: $em-form-border-radius-focus;
-        outline-offset: $em-form-outline-offset-focus;
+        outline: var(--em-form-outline-color-focus) solid var(--em-form-outline-width-focus);
+        border-radius: var(--em-form-border-radius-focus);
+        outline-offset: var(--em-form-outline-offset-focus);
         box-shadow: unset;
-        border-color: $em-form-border-color-focus;
-        background-color: $em-form-background-color-focus;
+        border-color: var(--em-form-border-color-focus);
+        background-color: var(--em-form-background-color-focus);
       }
 
 /** RADIO **/
@@ -625,16 +625,16 @@ form.fabrikForm .fabrikgrid_radio label {
     margin-bottom: 0px;
     display: flex;
     align-items: center;
-        padding: $em-form-radio-padding;
-        border: $em-form-radio-border-width solid $em-form-radio-border-color;
-        border-radius: $em-form-radio-border-radius;
+        padding: var(--em-form-radio-padding);
+        border: var(--em-form-radio-border-width) solid var(--em-form-radio-border-color);
+        border-radius: var(--em-form-radio-border-radius);
 }
 
 form.fabrikForm .fabrikgrid_radio label input {
-          accent-color: $em-form-radio-color-checked;
-          width: $em-form-radio-width;
-          height: $em-form-radio-height;
-          margin-right: $em-form-radio-margin-right;
+          accent-color: var(--em-form-radio-color-checked);
+          width: var(--em-form-radio-width);
+          height: var(--em-form-radio-height);
+          margin-right: var(--em-form-radio-margin-right);
           margin-left: 0;
           margin-top: 0;
         }
@@ -644,22 +644,22 @@ form.fabrikForm .fabrikgrid_radio label span{
         }
 
 form.fabrikForm .fabrikgrid_radio label:has(input[type='radio']:checked) {
-          background-color: $em-form-radio-background-color-checked;
-          border-color: $em-form-radio-border-color-checked;
+          background-color: var(--em-form-radio-background-color-checked);
+          border-color: var(--em-form-radio-border-color-checked);
         }
 
 /** CHECKBOX **/
 
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer {
-          border-top: solid $em-form-checkbox-border-width $em-form-checkbox-border-color;
-          padding: $em-form-checkbox-padding 0 0 0;
+          border-top: solid var(--em-form-checkbox-border-width) var(--em-form-checkbox-border-color);
+          padding: var(--em-form-checkbox-padding) 0 0 0;
         }
 
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-fluid {
             margin-top: 0;
-            margin-bottom: $em-form-checkbox-padding;
-            border-bottom: solid $em-form-checkbox-border-width $em-form-checkbox-border-color;
-            padding: 0 0 $em-form-checkbox-padding $em-form-checkbox-padding;
+            margin-bottom: var(--em-form-checkbox-padding);
+            border-bottom: solid var(--em-form-checkbox-border-width) var(--em-form-checkbox-border-color);
+            padding: 0 0 var(--em-form-checkbox-padding) var(--em-form-checkbox-padding);
           }
 
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-fluid .fabrikgrid_checkbox label {
@@ -667,9 +667,9 @@ form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-flu
               }
 
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-fluid .fabrikgrid_checkbox label input {
-                  accent-color: $em-form-checkbox-color-checked;
-                  transform: scale($em-form-checkbox-scale);
-                  margin-right: $em-form-checkbox-input-margin;
+                  accent-color: var(--em-form-checkbox-color-checked);
+                  transform: scale(var(--em-form-checkbox-scale));
+                  margin-right: var(--em-form-checkbox-input-margin);
                 }
 
 /** PANEL **/
@@ -688,19 +688,19 @@ form.fabrikForm .plg-panel .fabrikElement .fabrikinput .fabrikElementContent {
 /** ERRORS **/
 
 form.fabrikForm .control-group.error label {
-        color: $em-form-label-color-error;
+        color: var(--em-form-label-color-error);
       }
 
 form.fabrikForm .control-group.error input {
-        border-color: $em-form-border-color-error;
+        border-color: var(--em-form-border-color-error);
       }
 
 form.fabrikForm .fabrikError.plg-checkbox .fabrikElement .fabrikSubElementContainer {
-          border-color: $em-form-checkbox-border-color-error;
+          border-color: var(--em-form-checkbox-border-color-error);
         }
 
 form.fabrikForm .fabrikError.plg-checkbox .fabrikElement .fabrikSubElementContainer .row-fluid {
-            border-color: $em-form-checkbox-border-color-error;
+            border-color: var(--em-form-checkbox-border-color-error);
           }
 
 form.fabrikForm .fabrikErrorMessage {
@@ -1028,7 +1028,7 @@ form.fabrikForm .fabrikErrorMessage {
 .after-em-border::after{
     content: "";
     width: 40px;
-    height: $em-form-after-border-height;
+    height: var(--em-form-after-border-height);
     display: block;
     margin-top: 8px;
 }

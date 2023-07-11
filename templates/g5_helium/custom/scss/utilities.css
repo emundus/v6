@@ -1,0 +1,7 @@
+.text-xxs {
+    font-size: var(--link-xxs-size);
+}
+
+.icon-order {
+    order: var(--em-form-required-icon-order);
+}
