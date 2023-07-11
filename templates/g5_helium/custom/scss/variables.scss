@@ -326,7 +326,7 @@
 
 @mixin em-default-title-1 {
   color: var(--em-default-title-color-1);
-  font-family: #{$font-family-title};
+  font-family: $font-family-title;
   font-size: 24px;
   font-style: normal;
   line-height: 28.8px;
@@ -357,7 +357,7 @@
 
 @mixin em-default-sub-title-1 {
   color: var(--em-default-title-color-1);
-  font-family: #{$font-family-title};
+  font-family: $font-family-title;
   font-size: 22px;
   font-style: normal;
   font-weight: 400;
@@ -366,7 +366,7 @@
 
 @mixin em-default-sub-title-2 {
   color: var(--em-default-title-color-2);
-  font-family: #{$font-family-title};
+  font-family: $font-family-title;
   font-size: 22px;
   font-style: normal;
   font-weight: 400;
@@ -375,7 +375,7 @@
 
 @mixin em-default-sub-title-3 {
   color: var(--em-default-title-color-3);
-  font-family: #{$font-family-title};
+  font-family: $font-family-title;
   font-size: 22px;
   font-style: normal;
   font-weight: 400;
@@ -387,7 +387,7 @@
 
 @mixin em-default-text-1 {
   color: var(--em-default-text-color-1);
-  font-family: #{$font-family-text};
+  font-family: $font-family-text;
   font-size: 18px;
   font-style: normal;
   line-height: 27px;
@@ -395,7 +395,7 @@
 
 @mixin em-default-text-1-500 {
   color: var(--em-default-text-color-1-500);
-  font-family: #{$font-family-text};
+  font-family: $font-family-text;
   font-size: 15px;
   font-style: normal;
   line-height: 19px;
@@ -403,7 +403,7 @@
 
 @mixin em-default-text-1-600 {
   color: var(--em-default-text-color-1-600);
-  font-family: #{$font-family-text};
+  font-family: $font-family-text;
   font-size: 16px;
   font-style: normal;
   line-height: 24px;
@@ -411,7 +411,7 @@
 
 @mixin em-default-text-1-700 {
   color: var(--em-default-text-color-1-700);
-  font-family: #{$font-family-text};
+  font-family: $font-family-text;
   font-size: 12px;
   font-style: normal;
   line-height: 14.4px;
@@ -419,7 +419,7 @@
 
 @mixin em-default-text-2 {
   color: var(--em-default-text-color-2);
-  font-family: #{$font-family-text};
+  font-family: $font-family-text;
   font-size: 15px;
   font-style: normal;
   line-height: 19px;
@@ -427,7 +427,7 @@
 
 @mixin em-default-text-3 {
   color: var(--em-default-text-color-3);
-  font-family: #{$font-family-text};
+  font-family: $font-family-text;
   font-size: 15px;
   font-style: normal;
   line-height: 19px;
@@ -435,7 +435,7 @@
 
 @mixin em-default-text-4 {
   color: var(--em-default-text-color-4);
-  font-family: #{$font-family-text};
+  font-family: $font-family-text;
   font-size: 15px;
   font-style: normal;
   line-height: 19px;
@@ -564,7 +564,7 @@
 }
 
 @mixin caption {
-  font-family: #{$font-family-text};
+  font-family: $font-family-text;
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
@@ -574,7 +574,7 @@
 }
 
 @mixin overline {
-  font-family: #{$font-family-text};
+  font-family: $font-family-text;
   font-size: 10px;
   font-style: normal;
   font-weight: 400;
@@ -586,7 +586,7 @@
 // Mixin - form
 
 @mixin star {
-  font-family: #{$font-family-text};
+  font-family: $font-family-text;
   font-size: 5px;
   font-style: normal;
   font-weight: 400;
@@ -655,7 +655,7 @@
   background-repeat: no-repeat;
   height: 48px !important;
   padding: 0 32px 0 12px !important;
-  font-family: #{$font-family-text};
+  font-family: $font-family-text;
 }
 
 @mixin multiple-select {
