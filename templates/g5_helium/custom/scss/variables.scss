@@ -4,6 +4,8 @@
   --primary-color: $base-primary-color;
   --attachment-width: 75%;
 
+  --transparent: transparent;
+
   --neutral-0: #FFFFFF;
   --neutral-25: #FEFEFE;
   --neutral-50: #FAFAFB;
@@ -243,9 +245,10 @@
 
   /* BORDER RADIUS  */
 
-  --em-default-br: 8px;
-  --em-applicant-br: 8px;
-  --em-coordinator-br: 8px;
+  --em-default-br: #{$em-border-radius-default};
+  --em-applicant-br: #{$em-border-radius-applicant};
+  --em-coordinator-br: #{$em-border-radius-coordinator};
+  --em-default-br-cards: #{$em-border-radius-cards};
 
   --spacing-2: 2rem;
 

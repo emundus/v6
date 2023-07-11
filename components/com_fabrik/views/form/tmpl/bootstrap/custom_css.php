@@ -503,7 +503,7 @@ form#member-profile .form-horizontal .control-label {
 .view-registration .login.em-formRegistrationCenter .em-heading-registration h1, 
 .view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) .em-heading-registration h1 {
     margin-top: 0px !important; 
-    color: var(--em-applicant-title-color);
+    color: var(--em-default-text-color-1);
     margin-bottom: 8px;
 }
 

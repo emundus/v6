@@ -155,7 +155,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     margin-top: 0px;
     text-align: center;
     font-family: var(--em-applicant-font-title);
-    color: var(--em-applicant-title-color);
+    color: var(--em-default-title-color-1);
 }
 
 

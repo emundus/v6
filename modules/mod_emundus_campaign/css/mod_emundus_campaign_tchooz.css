@@ -22,7 +22,7 @@
 
 .mod_emundus_campaign__intro p{
     line-height: 150%;
-    color: var(--em-applicant-text-color);
+    color: var(--em-default-text-color-1);
     font-size: 18px;
 }
 
@@ -37,7 +37,7 @@
 
 .mod_emundus_campaign__intro h1{
     margin-bottom: 12px !important;
-    color: var(--em-applicant-title-color);
+    color: var(--em-default-title-color-1);
     font-weight: 600;
     font-family: var(--em-applicant-font-title) !important;
 }
@@ -49,7 +49,7 @@
 
 .mod_emundus_campaign__content .em-h3 {
     font-family: var(--em-applicant-font-title);
-    color: var(--em-applicant-title-color);
+    color: var(--em-default-title-color-1);
 }
 
 .mod_emundus_campaign__header{
@@ -142,11 +142,11 @@
     min-height: 60px;
     line-height: 160%;
     font-family: var(--em-applicant-font);
-    color: var(--em-applicant-text-color);
+    color: var(--em-default-text-color-1);
 }
 
 .mod_emundus_campaign__list_content_resume p {
-    color: var(--em-applicant-text-color);
+    color: var(--em-default-text-color-1);
 }
 
 .mod_emundus_campaign__header_filter {
@@ -261,7 +261,7 @@ a.em-blue-400-color:hover {
 
 .mod_emundus_campaign__campaign_title {
     margin-bottom: 8px !important;
-    color: var(--em-applicant-title-color) !important;
+    color: var(--em-default-title-color-1) !important;
     -webkit-line-clamp: 2;
     overflow: hidden;
     -webkit-box-orient: vertical;
@@ -293,7 +293,7 @@ a.em-blue-400-color:hover {
     font-weight: 600;
     font-size: 20px;
     line-height: 25px;
-    color: var(--em-applicant-title-color);
+    color: var(--em-default-title-color-1);
 }
 
 .mod_emundus_campaign__tabs{
@@ -347,12 +347,12 @@ a.em-blue-400-color:hover {
     border-radius: 16px !important;
     padding: 32px;
     background: #fff;
-    color: var(--em-applicant-title-color);
+    color: var(--em-default-title-color-1);
 }
 
 .mod_emundus_campaign__details_content h4.em-h4 {
  font-family: var(--em-applicant-font-title);
- color: var(--em-applicant-title-color);
+ color: var(--em-default-title-color-1);
 }
 
 .mod_emundus_campaign__details_step_count{
@@ -421,7 +421,7 @@ a.em-blue-400-color:hover {
 
 .tchooz-single-campaign #campaign * {
     line-height: 160%;
-    color: var(--em-applicant-text-color);
+    color: var(--em-default-text-color-1);
     font-family: var(--em-applicant-font);
 }
 

@@ -56,7 +56,7 @@ button.btn-primary:hover{
 }
 
 #g-container-main div.em-formRegistrationCenter div:not(.page-header){
- color: var(--em-applicant-text-color);
+ color: var(--em-default-text-color-1);
 }
 
 
@@ -208,7 +208,7 @@ h1.em-titre-connectez-vous {
 
 .page-header h1.em-h1 {
     font-family: var(--em-applicant-font-title);
-    color: var(--em-applicant-title-color);
+    color: var(--em-default-title-color-1);
 }
 
 

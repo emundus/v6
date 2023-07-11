@@ -8,10 +8,8 @@ button.save-btn, .btn-success, button.save, button.save_continue, button.send, a
 }
 
 .btn-success:active:hover, .btn-warning:active:hover, .btn-danger:active:hover  {
-    background-color: transparent !important;
+    background-color: var(--transparent) !important;
 }
-
-
 
 button.save-btn:hover, button.save-btn:active, button.save-btn:focus,
 .btn-success:hover, .btn-success:focus, .btn-success:active,
@@ -36,7 +34,7 @@ a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
 .toggle-addoption.btn:hover, .toggle-addoption.btn:active, .toggle-addoption.btn:focus,
 .candidacy-files-list a#send:hover, .candidacy-files-list a#send:active, .candidacy-files-list a#send:focus,
 .choice-statut-btn:hover, .choice-statut-btn:active, .choice-statut-btn:focus {
-    background-color: transparent;
+    background-color: var(--transparent);
     outline: none;
 }
 
@@ -60,7 +58,7 @@ button#back:hover, button#back:active, button#back:focus,
 .fabrikUploadDelete .btn:hover, .fabrikUploadDelete .btn:active, .fabrikUploadDelete .btn:focus,
 #em_select_filter #del-filter:hover, #em_select_filter #del-filter:active, #em_select_filter #del-filter:focus,
 .btn-toolbar .btn-group:nth-child(2) .btn:hover, .btn-toolbar .btn-group:nth-child(2) .btn:active, .btn-toolbar .btn-group:nth-child(2) .btn:focus {
-    background-color: transparent;
+    background-color: var(--transparent);
     outline: none;
 }
 
@@ -104,7 +102,7 @@ button#back:hover, button#back:active, button#back:focus,
 
 .navsearch-content input[type="text"]:focus,
 .navsearch-content input[type="text"]:hover {
-    border-color: #d5d5d5;
+    border-color: var(--neutral-300);
     box-shadow: none;
 }
 
@@ -126,7 +124,7 @@ button#back:hover, button#back:active, button#back:focus,
 }
 
 .campaigntext.blue h4 a {
-    color: #292929;
+    color: var(--neutral-800);
 }
 
 .homepage .candidacy-files-list .icon-plus-sign {
@@ -157,10 +155,10 @@ a.btn.btn-success:not(.btn-xs) {
 
 /*** Progression bar percentage ***/
 .main-page-file-progress text.timer {
-    color: #000 !important;
+    color: var(--neutral-900) !important;
     font-size: 30px !important;
     font-weight: 600;
-    fill: #000 !important;
+    fill: var(--neutral-900) !important;
 }
 .g-block.size-100.content-bottom-a hr:last-child {
     display: none !important;
@@ -297,18 +295,18 @@ a.btn.btn-success:not(.btn-xs) {
 
 .mod_emundus_applications___header h1.em-h1 {
  font-family: var(--em-applicant-font-title);
- color: var(--em-applicant-title-color);
+ color: var(--em-default-title-color-1);
 margin-top: 16px;
 }
 
 .mod_emundus_applications___header_desc h2 {
     margin-top: 24px;
     font-family: var(--em-applicant-font-title);
-    color: var(--em-applicant-title-color);
+    color: var(--em-default-title-color-1);
 }
 
 .mod_emundus_applications___header_desc p{
-    color: #727272;
+    color: var(--neutral-600);
 }
 
 .mod_emundus_applications___header.mod_emundus_applications___tmp_tchooz a#add-application {
@@ -324,9 +322,9 @@ margin-top: 16px;
 }
 .mod_emundus_applications___content_app{
     box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
-    border-radius: 16px !important;
+    border-radius: var(--em-default-br-cards) !important;
     padding: 32px;
-    background: #fff;
+    background: var(--neutral-0);
 }
 .mod_emundus_applications___date{
     display: flex;
@@ -346,7 +344,7 @@ margin-top: 16px;
     border-radius: 50%;
 }
 .mod_emundus_applications___programme_tag{
-    border-radius: 8px;
+    border-radius: var(--em-default-br);
     padding: 5px 12px;
     width: fit-content;
     font-size: 12px;
@@ -354,7 +352,7 @@ margin-top: 16px;
 }
 .mod_emundus_applications___title{
     margin-bottom: 8px !important;
-    color: var(--em-applicant-title-color) !important;
+    color: var(--em-default-title-color-1) !important;
     -webkit-line-clamp: 2;
     overflow: hidden;
     -webkit-box-orient: vertical;
@@ -374,10 +372,10 @@ margin-top: 16px;
     margin-top: 8px;
     flex-direction: column;
     box-shadow: 0px 12px 17px rgba(5, 47, 55, 0.07), 0px 5px 22px rgba(5, 47, 55, 0.06), 0px 7px 8px rgba(5, 47, 55, 0.1);
-    border-radius: 12px;
+    border-radius: var(--em-default-br-cards);
     padding: 12px;
     position: absolute;
-    background: white;
+    background: var(--neutral-0);
     z-index: 9999;
     right: 30px;
 }
@@ -386,15 +384,15 @@ margin-top: 16px;
 }
 
 .mod_emundus_applications__actions a:hover {
-    color: #727272;
+    color: var(--neutral-600);
     text-decoration: none;
 }
 
 .mod_emundus_applications__list_content--default {
     box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
-    border-radius: 16px !important;
+    border-radius: calc(var(--em-applicant-br)*2) !important;
     padding: 32px;
-    background: #fff;
+    background: var(--neutral-0);
 }
 
 .mod_emundus_applications___content_text {
@@ -402,10 +400,10 @@ margin-top: 16px;
 }
 .mod_emundus_applications_badge{
     margin-left: 8px;
-    background: white;
-    border: solid 1px #ececec;
+    background: var(--neutral-0);
+    border: solid 1px var(--neutral-300);
     border-radius: 50px;
-    color: black;
+    color: var(--neutral-600) !important;
     display: flex;
     height: 25px;
     width: 25px;
@@ -417,7 +415,7 @@ margin-top: 16px;
     height: 50px;
 }
 .em-light-selected-tab p{
-    color: black;
+    color: var(--neutral-900);
 }
 
 .mod_emundus_application_swal_manage_tabs_popup{
@@ -429,7 +427,7 @@ margin-top: 16px;
     padding: 24px 16px 8px 16px !important;
 }
 .mod_emundus_application_swal_manage_tabs_header h2{
-    color: black !important;
+    color: var(--neutral-900) !important;
     flex-direction: column;
     align-items: start;
     margin-top: 0 !important;
@@ -447,7 +445,7 @@ margin-top: 16px;
     margin-bottom: 0;
 }
 .mod_emundus_application_swal_manage_tabs_actions{
-    border-top: solid 1px #ececec;
+    border-top: solid 1px var(--neutral-300);
     margin-top: 8px !important;
     padding: 8px 16px;
     display: flex !important;
@@ -462,10 +460,10 @@ margin-top: 16px;
     width: 100%;
     margin-top: 12px;
     height: 48px;
-    border-radius: 8px;
+    border-radius: var(--em-applicant-br);
 }
 .mod_emundus_application_swal_manage_tabs_popup .swal2-content .swal2-validation-message{
-    background: transparent;
+    background: var(--transparent);
     margin-left: -20px !important;
     justify-content: start;
 }
@@ -474,11 +472,11 @@ margin-top: 16px;
     border: unset;
 }
 #applications_list_view table thead tr th,#applications_list_view table tbody tr td{
-    background: transparent;
+    background: var(--transparent);
     padding: 12px 8px 12px 8px;
 }
 #applications_list_view table tr {
-    border-bottom: 1px solid #EDEDED;
+    border-bottom: 1px solid var(--neutral-300);
 }
 #applications_list_view .mod_emundus_applications___title{
     min-height: unset;
@@ -486,8 +484,8 @@ margin-top: 16px;
 }
 
 .mod_emundus_application___buttons_switch_view{
-    border: solid 1px #8F96A3;
-    border-radius: var(--em-default-br);
+    border: solid 1px var(--neutral-600);
+    border-radius: calc(var(--em-default-br)/2);
     display: flex;
     height: 38px;
     width: 38px;
@@ -495,14 +493,14 @@ margin-top: 16px;
     justify-content: center;
 }
 .mod_emundus_application___buttons_switch_view_disabled{
-    color: #8F96A3;
+    color: var(--neutral-600);
 }
 
 .mod_emundus_application__header_filter{
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 8px;
+    border-radius: var(--em-default-br);
     padding: 6px 16px;
     width: max-content;
 }
@@ -511,10 +509,11 @@ margin-top: 16px;
     margin-top: 8px;
     flex-direction: column;
     box-shadow: 0px 12px 17px rgba(5, 47, 55, 0.07), 0px 5px 22px rgba(5, 47, 55, 0.06), 0px 7px 8px rgba(5, 47, 55, 0.1);
-    border-radius: 8px;
+    border-radius: var(--em-default-br) !important;
     padding: 24px;
     position: absolute;
-    background: white;
+    background: var(--neutral-0);
+    z-index: 10;
 }
 
 .mod_emundus_application__header_sort__values a:not(:last-child){
@@ -522,7 +521,7 @@ margin-top: 16px;
 }
 
 .mod_emundus_application__header_sort__values a:hover {
-    color: #727272;
+    color: var(--neutral-600);
 }
 
 @media screen and (max-width: 767px) {

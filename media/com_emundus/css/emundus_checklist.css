@@ -298,7 +298,7 @@ button#back:hover, button#back:active, button#back:focus,
 
 #attachment_list_mand fieldset p,
 #attachment_list_opt fieldset p {
-    color: var(--em-applicant-text-color);
+    color: var(--em-default-text-color-1);
 }
 
 .view-checklist .table {
