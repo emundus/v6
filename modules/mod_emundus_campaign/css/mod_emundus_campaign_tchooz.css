@@ -15,6 +15,14 @@
     justify-content: space-between;
 }
 
+.mod_emundus_campaign__list_content_head a.btn {
+    line-height: normal;
+    letter-spacing: normal;
+    font-family: var(--em-applicant-font);
+    font-weight: 500;
+    font-size: 14px;
+}
+
 .mod_emundus_campaign__intro{
     width: 66%;
     max-width: 750px;
