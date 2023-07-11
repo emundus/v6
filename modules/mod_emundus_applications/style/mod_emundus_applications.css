@@ -414,6 +414,10 @@ margin-top: 16px;
 .em-light-tabs{
     height: 50px;
 }
+
+.em-light-tabs a {
+    color: var(--em-primary-color);
+}
 .em-light-selected-tab p{
     color: var(--neutral-900);
 }
