@@ -1,7 +1,10 @@
 /** VARIABLES **/
 
 :root {
-  --primary-color: $base-primary-color;
+  --em-primary-color: #{$base-primary-color};
+  --em-secondary-color: #{$base-secondary-color};
+  --em-tertiary-color: #{$base-tertiary-color};
+
   --attachment-width: 75%;
 
   --transparent: transparent;
@@ -209,39 +212,39 @@
   --bg-3: #C62222;
 
   /* FONT */
-  --em-coordinator-font: $font-coordinator-family-text;
-  --em-coordinator-font-title: $font-coordinator-family-title;
+  --em-coordinator-font: #{$font-coordinator-family-text};
+  --em-coordinator-font-title: #{$font-coordinator-family-title};
 
-  --em-applicant-font: $font-family-text;
-  --em-applicant-font-title: $font-family-title;
+  --em-applicant-font: #{$font-family-text};
+  --em-applicant-font-title: #{$font-family-title};
 
   --em-default-font: 'Inter', sans-serif;
   --em-default-font-title: 'Inter', sans-serif;
 
   /* FONT COLOR */
 
-  --em-coordinator-title-color: $link-coordinator-title-color;
-  --em-coordinator-text-color: $link-coordinator-text-color;
+  --em-coordinator-title-color: #{$link-coordinator-title-color};
+  --em-coordinator-text-color: #{$link-coordinator-text-color};
 
-  --em-default-title-color-1: $base-title-color;          //  titre
+  --em-default-title-color-1: #{$base-title-color};          //  titre
   --em-default-title-color-1-500: var(--neutral-500);     //  titre disabled
   --em-default-title-color-2: var(--neutral-0);           //  titre sur fond foncé
-  --em-default-title-color-3: $base-primary-color;        //  titre en highlight
+  --em-default-title-color-3: #{$base-primary-color};        //  titre en highlight
 
-  --em-default-text-color-1: $base-text-color;            // texte principal, input, label des boutons
+  --em-default-text-color-1: #{$base-text-color};            // texte principal, input, label des boutons
   --em-default-text-color-1-500: var(--neutral-500);      // pagination, label des boutons disabled
   --em-default-text-color-1-800: var(--neutral-600);      // texte tertiaire, texte moins important, annotation, label des radio disabled
   --em-default-text-color-1-700: var(--neutral-700);      // texte secondaire, texte pour les articles
   --em-default-text-color-2: var(--neutral-0);            // texte sur fond foncé, label des boutons sur fond concé
-  --em-default-text-color-3: $base-secondary-color;       // chiffres, étapes, liens hypertextes
-  --em-default-text-color-4: $base-tertiary-color;        // définitions
+  --em-default-text-color-3: #{$base-secondary-color};       // chiffres, étapes, liens hypertextes
+  --em-default-text-color-4: #{$base-tertiary-color};        // définitions
 
 
 
   /* BACKGROUND */
   --em-defaut-bg: #fff;
-  --em-applicant-bg: $base-background;
-  --em-coordinator-bg: $tchooz-background;
+  --em-applicant-bg: #{$base-background};
+  --em-coordinator-bg: #{$tchooz-background};
 
   /* BORDER RADIUS  */
 
@@ -323,7 +326,7 @@
 
 @mixin em-default-title-1 {
   color: var(--em-default-title-color-1);
-  font-family: $font-family-title;
+  font-family: #{$font-family-title};
   font-size: 24px;
   font-style: normal;
   line-height: 28.8px;
@@ -354,7 +357,7 @@
 
 @mixin em-default-sub-title-1 {
   color: var(--em-default-title-color-1);
-  font-family: $font-family-title;
+  font-family: #{$font-family-title};
   font-size: 22px;
   font-style: normal;
   font-weight: 400;
@@ -363,7 +366,7 @@
 
 @mixin em-default-sub-title-2 {
   color: var(--em-default-title-color-2);
-  font-family: $font-family-title;
+  font-family: #{$font-family-title};
   font-size: 22px;
   font-style: normal;
   font-weight: 400;
@@ -372,7 +375,7 @@
 
 @mixin em-default-sub-title-3 {
   color: var(--em-default-title-color-3);
-  font-family: $font-family-title;
+  font-family: #{$font-family-title};
   font-size: 22px;
   font-style: normal;
   font-weight: 400;
@@ -384,7 +387,7 @@
 
 @mixin em-default-text-1 {
   color: var(--em-default-text-color-1);
-  font-family: $font-family-text;
+  font-family: #{$font-family-text};
   font-size: 18px;
   font-style: normal;
   line-height: 27px;
@@ -392,7 +395,7 @@
 
 @mixin em-default-text-1-500 {
   color: var(--em-default-text-color-1-500);
-  font-family: $font-family-text;
+  font-family: #{$font-family-text};
   font-size: 15px;
   font-style: normal;
   line-height: 19px;
@@ -400,7 +403,7 @@
 
 @mixin em-default-text-1-600 {
   color: var(--em-default-text-color-1-600);
-  font-family: $font-family-text;
+  font-family: #{$font-family-text};
   font-size: 16px;
   font-style: normal;
   line-height: 24px;
@@ -408,7 +411,7 @@
 
 @mixin em-default-text-1-700 {
   color: var(--em-default-text-color-1-700);
-  font-family: $font-family-text;
+  font-family: #{$font-family-text};
   font-size: 12px;
   font-style: normal;
   line-height: 14.4px;
@@ -416,7 +419,7 @@
 
 @mixin em-default-text-2 {
   color: var(--em-default-text-color-2);
-  font-family: $font-family-text;
+  font-family: #{$font-family-text};
   font-size: 15px;
   font-style: normal;
   line-height: 19px;
@@ -424,7 +427,7 @@
 
 @mixin em-default-text-3 {
   color: var(--em-default-text-color-3);
-  font-family: $font-family-text;
+  font-family: #{$font-family-text};
   font-size: 15px;
   font-style: normal;
   line-height: 19px;
@@ -432,7 +435,7 @@
 
 @mixin em-default-text-4 {
   color: var(--em-default-text-color-4);
-  font-family: $font-family-text;
+  font-family: #{$font-family-text};
   font-size: 15px;
   font-style: normal;
   line-height: 19px;
@@ -561,7 +564,7 @@
 }
 
 @mixin caption {
-  font-family: $font-family-text;
+  font-family: #{$font-family-text};
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
@@ -571,7 +574,7 @@
 }
 
 @mixin overline {
-  font-family: $font-family-text;
+  font-family: #{$font-family-text};
   font-size: 10px;
   font-style: normal;
   font-weight: 400;
@@ -583,7 +586,7 @@
 // Mixin - form
 
 @mixin star {
-  font-family: $font-family-text;
+  font-family: #{$font-family-text};
   font-size: 5px;
   font-style: normal;
   font-weight: 400;
@@ -652,7 +655,7 @@
   background-repeat: no-repeat;
   height: 48px !important;
   padding: 0 32px 0 12px !important;
-  font-family: $font-family-text;
+  font-family: #{$font-family-text};
 }
 
 @mixin multiple-select {
