@@ -43,6 +43,13 @@
 					   description="MOD_EMUNDUS_APPLICATIONS_DESCRIPTION_DESC">
 				</field>
 
+				<field name="override_default_content"
+					   type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+					   default=""
+					   label="MOD_EMUNDUS_APPLICATIONS_OVERRIDE_EMPTY_APPLICATION"
+					   description="MOD_EMUNDUS_APPLICATIONS_OVERRIDE_EMPTY_APPLICATION_DESC">
+				</field>
+
 				<field name="show_add_application"
 					   type="radio"
 					   default="0"
