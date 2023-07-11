@@ -141,9 +141,7 @@ h6{
 }
 
 .view-login h1::after,
-.view-registration h1::after,
-.view-reset h1::after,
-.view-form.em-formRegistrationCenter h1::after {
+.view-reset h1::after {
   display: none !important;
 }
 
@@ -1101,10 +1099,6 @@ body > .g-container {
 }
 
 .view-registration {
-  .fb_el_jos_emundus_users___terms_and_conditions {
-    margin-top: 24px !important;
-  }
-
   .fabrikElementContainer .fabrikEmptyLabel {
     display: none !important;
   }
@@ -5555,7 +5549,6 @@ screen and (max-height: 769px) {
   /* FORMULAIRES  */
   .view-registration form.fabrikForm,
   .view-form .em-formRegistrationCenter form.fabrikForm {
-    padding: 0 24px 80px 24px;
     width: 100%;
   }
 

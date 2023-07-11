@@ -1905,6 +1905,23 @@ structure:
 				EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css');
 				EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css');
 				EmundusHelperUpdate::addYamlVariable('name', 'Main', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css');
+
+				$query->clear()
+					->select('params')
+					->from($db->quoteName('#__fabrik_forms'))
+					->where($db->quoteName('id') . ' = 307');
+				$db->setQuery($query);
+				$params = json_decode($db->loadResult(), true);
+
+				$params['labels_above'] = 1;
+				$params['labels_above_details'] = 1;
+
+				$query->clear()
+					->update($db->quoteName('#__fabrik_forms'))
+					->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+					->where($db->quoteName('id') . ' = 307');
+				$db->setQuery($query);
+				$db->execute();
 			}
 
 			// Insert new translations in overrides files

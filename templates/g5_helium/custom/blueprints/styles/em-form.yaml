@@ -80,7 +80,7 @@ form:
     radio-border-width:
       type: input.text
       label: Radio border width
-      default: '1px'
+      default: '0px'
     radio-border-color:
         type: input.colorpicker
         label: Radio border color
@@ -88,7 +88,7 @@ form:
     radio-border-radius:
         type: input.text
         label: Radio border radius
-        default: '50%'
+        default: '4px'
     radio-width:
         type: input.text
         label: Radio width
@@ -108,15 +108,15 @@ form:
     radio-background-color-checked:
         type: input.colorpicker
         label: Radio background color checked
-        default: '#007BFF'
+        default: 'transparent'
     radio-border-color-checked:
         type: input.colorpicker
         label: Radio border color checked
-        default: '#007BFF'
+        default: 'transparent'
     checkbox-border-width:
         type: input.text
         label: Checkbox border width
-        default: '1px'
+        default: '0px'
     checkbox-border-color:
         type: input.colorpicker
         label: Checkbox border color

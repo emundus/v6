@@ -13,6 +13,10 @@ include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile
 $m_profile = new EmundusModelProfile();
 
 $user = JFactory::getSession()->get('emundusUser');
+if(empty($user->firstname) && empty($user->lastname)) {
+	$m_profile->initEmundusSession();
+	$user = JFactory::getSession()->get('emundusUser');
+}
 $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 
 $specific_profiles = $params->get('for_specific_profiles', '');

@@ -4,6 +4,64 @@
     @apply em-default-title-1;
   }
 
+  /** REGISTRATION FORM **/
+  .view-registration.em-formRegistrationCenter {
+    @apply flex;
+    @apply flex-wrap;
+    margin-right: -10px;
+    margin-left: -10px;
+    .emundus-form {
+      @media all and (min-width: 768px) {
+        flex: 0 0 50%;
+        max-width: 50%;
+        margin: 16px auto;
+      }
+
+      .em-form-intro {
+        ul {
+          list-style-type: decimal;
+          li {
+            line-height: 24px;
+          }
+        }
+      }
+      #jos_emundus_users___password_check {
+        @apply mt-1;
+      }
+      .fb_el_jos_emundus_users___terms_and_conditions {
+        span.material-icons:first-child {
+          display: none;
+        }
+        .fabrikgrid_checkbox {
+          span {
+            @apply flex;
+            @apply ml-1;
+            order: 1;
+          }
+        }
+      }
+
+      .fb_el_jos_emundus_users___data_privacy_link {
+        .fabrikLabel {
+          display: block !important;
+        }
+      }
+
+      .fabrikActions .em-submit-form-button {
+        .btn-group {
+          @apply w-full;
+          .button.register {
+            @apply flex;
+            @apply w-full;
+            @apply justify-center;
+            @apply items-center;
+          }
+        }
+      }
+
+    }
+  }
+
   form.fabrikForm {
     margin: 0;
 
@@ -12,12 +70,12 @@
       width: auto;
     }
 
-    .fabrikElementContainer {
-      @apply mb-0;
+    .fabrikElementContainer:not(.fabrikHide) {
+      @apply mb-8;
     }
 
     .fabrikLabel {
-      display: flex !important;
+      @apply flex !important;
       @apply text-lg;
       margin-bottom: var(--em-form-label-margin-bottom);
     }
@@ -118,6 +176,13 @@
             line-height: 24px;
           }
         }
+      }
+    }
+
+    /** CAPTCHA **/
+    .plg-captcha {
+      .captcha_input {
+        @apply mt-1;
       }
     }
 

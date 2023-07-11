@@ -1,7 +1,13 @@
-.text-xxs {
-    font-size: var(--link-xxs-size);
-}
+@layer utilities {
+    a {
+        color: var(--link-regular);
+    }
 
-.icon-order {
-    order: var(--em-form-required-icon-order);
+    .text-xxs {
+        font-size: var(--link-xxs-size);
+    }
+
+    .icon-order {
+        order: var(--em-form-required-icon-order);
+    }
 }

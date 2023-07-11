@@ -12,10 +12,10 @@ module.exports = {
         extend: {
             colors: {
                 red: {
-                    800: '$em-tchooz-red-800',
+                    800: 'var(--red-800)',
                 },
                 neutral: {
-                    500: '$em-tchooz-neutral-500',
+                    500: 'var(--neutral-500)',
                 }
             },
             spacing: {
