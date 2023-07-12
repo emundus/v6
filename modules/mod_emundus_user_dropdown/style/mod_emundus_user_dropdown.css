@@ -116,28 +116,59 @@ li>a:hover {
     width: 30px;
 }
 
+#g-navigation #header-c .header-right {
+    display: flex;
+    gap: var(--p-8);
+}
+
 #g-navigation #header-c .header-right a.btn.btn-danger {
     font-weight: 500 !important;
     font-size: 14px !important;
     margin-bottom: 0 !important;
     text-shadow: none;
     padding: 10px 24px;
+    display: flex;
+    align-items: center;
 }
 
-#g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte, #g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription {
-     color: #fff;
+#g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte,
+#g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription {
      border-radius: var(--em-default-br);
      margin-bottom: 5px;
     line-height: normal;
     letter-spacing: normal;
+    color: var(--neutral-0);
+    background: var(--em-primary-color);
+    border: 1px solid var(--em-primary-color) !important;
+}
+
+#g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte:hover,
+#g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte:focus,
+#g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte:active,
+#g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription:hover,
+#g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription:focus,
+#g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription:active{
+    color: var(--em-primary-color);
+    background: var(--neutral-0);
+    border: 1px solid var(--em-primary-color);
 }
 
 #g-navigation #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte) {
-    color: #fff;
     border-radius: var(--em-applicant-br) !important;
     margin-bottom: 0 !important;
     line-height: normal;
     letter-spacing: normal;
+    color: var(--em-secondary-color);
+    background: var(--neutral-0);
+    border: 1px solid var(--em-secondary-color);
+}
+
+#g-navigation #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte):hover,
+#g-navigation #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte):focus
+#g-navigation #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte):active {
+    color: var(--neutral-0);
+    background: var(--em-secondary-color);
+    border: 1px solid var(--em-secondary-color) !important;
 }
 
 #g-navigation #header-c .header-right a:not(.btn):hover {

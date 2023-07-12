@@ -941,46 +941,6 @@ body > .g-container {
   color: $base-text-color !important;
 }
 
-/* BURGER MENU - DECONNECTE */
-
-#g-page-surround .g-offcanvas-toggle {
-  top: 1.8rem;
-}
-
-.burger span {
-  border-radius: 1px;
-  height: 5px;
-  width: 32px;
-  background: $base-primary-color;
-  position: absolute;
-  display: block;
-  content: '';
-  transition: stroke-dasharray 400ms, stroke-dashoffset 400ms;
-  top: 0;
-
-  &::after {
-    border-radius: 1px;
-    height: 5px;
-    width: 32px;
-    background: $base-primary-color;
-    position: absolute;
-    display: block;
-    content: '';
-    top: 20px;
-  }
-
-  &::before {
-    border-radius: 1px;
-    height: 5px;
-    width: 32px;
-    background: $base-primary-color;
-    position: absolute;
-    display: block;
-    content: '';
-    top: 10px;
-  }
-}
-
 /*  FORMULAIRE INSCRIPTION - COULEUR DU BTN */
 .view-registration, .view-login, .view-reset, .view-form.em-formRegistrationCenter {
   #g-navigation .g-container {
