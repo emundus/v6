@@ -81,6 +81,7 @@
     .fabrikLabel {
       display: inline-block !important;
       @apply text-lg;
+      @apply w-full;
     }
 
     .fabrikElementTip {

@@ -600,6 +600,7 @@ form.fabrikForm .fabrikLabel {
       display: inline-block !important;
       font-size: 1.125rem;
       line-height: 1.75rem;
+      width: 100%;
     }
 form.fabrikForm .fabrikElementTip {
       color: var(--em-form-tip-color);
