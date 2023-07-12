@@ -123,6 +123,8 @@ class PlgFabrik_ElementPanel extends PlgFabrik_Element
 		$layout = $this->getLayout('form');
 		$displayData = new stdClass;
 		$displayData->id = $this->getHTMLId($repeatCounter);
+		$displayData->accordion = $params->get('accordion', '');
+		$displayData->title = $params->get('title', '');
 		$displayData->icon = $params->get('panel_icon', '');
 		$displayData->backgroundColor = $params->get('panel_background', '');
 		$displayData->iconColor = $params->get('panel_icon_color', '');
