@@ -119,9 +119,9 @@ button#back:hover, button#back:active, button#back:focus,
 
 .mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-cancel {
     background: transparent;
-    border: 1px solid var(--em-primary-color);
+    border: 1px solid var(--em-secondary-color);
     border-radius: var(--em-applicant-br);
-    color: var(--em-primary-color);
+    color: var(--em-secondary-color);
     padding: var(--p-8) var(--p-12);
     font-weight: inherit;
 }
@@ -129,8 +129,8 @@ button#back:hover, button#back:active, button#back:focus,
 .mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-cancel:hover,
 .mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-cancel:active,
 .mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-cancel:focus{
-    background: var(--em-primary-color);
-    border: 1px solid var(--em-primary-color);
+    background: var(--em-secondary-color);
+    border: 1px solid var(--em-secondary-color);
     color: var(--neutral-0);
 }
 
