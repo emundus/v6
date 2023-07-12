@@ -239,6 +239,9 @@
 
     .fabrikErrorMessage {
       @apply mt-1;
+      color: var(--em-form-element-color-error);
+      font-weight: 700;
+      padding-left: 0;
     }
   }
 }

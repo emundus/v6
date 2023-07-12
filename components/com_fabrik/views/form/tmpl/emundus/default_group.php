@@ -23,7 +23,7 @@ foreach ($this->elements as $element) :
 
 	// Don't display hidden element's as otherwise they wreck multi-column layouts
 	if (trim($element->error) !== '') :
-		$element->error = $this->errorIcon . ' ' . $element->error;
+		$element->error = $element->error;
 		$element->containerClass .= ' error';
 		$this->class .= ' help-inline text-danger';
 	endif;
