@@ -2410,7 +2410,7 @@ class EmundusModelFiles extends JModelLegacy
 	}
 
 
-	public function getFnumArray2($fnums, $elements)
+	public function getFnumArray2($fnums, $elements, $start = 0, $limit = 0)
 	{
 		$data = [];
 
@@ -2672,6 +2672,10 @@ class EmundusModelFiles extends JModelLegacy
 			}
 
 			$where = ' WHERE jecc.fnum IN ("' . implode('","', $fnums) . '") ';
+
+            if (!empty($limit)) {
+                $where .= ' LIMIT ' . $limit . ' OFFSET ' . $start;
+            }
 
 			try {
 				$db = JFactory::getDbo();
