@@ -1728,7 +1728,7 @@ button.em-swal-delete-button{
 .em-searchbar label input[type="text"].form-control{
   margin-bottom: 0 !important;
   height: 40px;
-  border-radius: 8px;
+  border-radius: var(--em-applicant-br);
   width: 300px;
   padding: 8px 16px;
   background-image: url('/images/emundus/searchbar/search.svg') !important;
