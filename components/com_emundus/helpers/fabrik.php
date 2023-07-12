@@ -571,6 +571,7 @@ die("<script>
             $params['textarea-truncate'] = '0';
             $params['textarea-hover'] = '1';
             $params['textarea_hover_location'] = 'top';
+            $params['bootstrap_class'] = 'input-xxlarge';
         }
 
         if($plugin == 'dropdown' || $plugin == 'checkbox' || $plugin == 'radiobutton'){
