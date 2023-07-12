@@ -150,6 +150,16 @@
 					   default="0"
 				/>
 
+				<field name="selected_campaigns_exclusion"
+					   type="list"
+					   label="MOD_EMUNDUS_SELECTED_CAMPAIGNS_EXCLUSION"
+					   description="MOD_EMUNDUS_SELECTED_CAMPAIGNS_EXCLUSION_DESC"
+					   default="0"
+				>
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+
 				<field showon="layout:_:tchooz"
 					   name="mod_em_application_group"
 					   type="subform"
