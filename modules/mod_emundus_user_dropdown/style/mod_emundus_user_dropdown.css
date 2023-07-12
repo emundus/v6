@@ -103,7 +103,7 @@ li>a:hover {
     line-height: 1.15;
 }
 
-.view-reset #g-navigation .header-c header-right a.btn.btn-danger:not(btn-creer-compte) {
+.view-reset #g-navigation .header-c .header-right a.btn.btn-danger:not(.btn-creer-compte) {
     margin-right: 0;
 }
 
@@ -144,9 +144,76 @@ li>a:hover {
     text-decoration: underline;
 }
 
+
+a.forgotten_password_header {
+    font-size: 14px;
+    color: var(--link-regular);
+    float: right;
+}
+
+a.forgotten_password_header:hover {
+    color: var(--link-hover);
+}
+
+
+a.btn.btn-danger .btn-creer-compte,
+a.btn.btn-danger .inscription {
+    background: var(--em-primary-color);
+    border: 1px solid var(--em-primary-color);
+    color: var(--neutral-50);
+    border-radius: var(--em-applicant-br) !important;
+    height: auto;
+}
+
+a.btn.btn-danger .btn-creer-compte:hover,
+a.btn.btn-danger .btn-creer-compte:active,
+a.btn.btn-danger .btn-creer-compte:focus,
+a.btn.btn-danger .inscription:hover,
+a.btn.btn-danger .inscription:focus,
+a.btn.btn-danger .inscription:active{
+    background: var(--transparent);
+    color: var(--em-primary-color);
+    border-color: var(--em-primary-color) !important;
+}
+
+a.btn.btn-danger :not(.btn-creer-compte) {
+    background: var(--transparent);
+    border: 1px solid var(--em-secondary-color);
+    color: var(--em-secondary-color);
+    height: auto;
+}
+
+a.btn.btn-danger :not(.btn-creer-compte):hover {
+     background: var(--em-secondary-color);
+     color: var(--neutral-50);
+     border-color: var(--em-secondary-color) !important;
+ }
+
+
+#userDropdownIcon {
+    background: transparent;
+    font-size: 1.5em;
+    width: 30px !important;
+    height: 30px !important;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    border: unset !important;
+}
+
+#userDropdownMenu li > a:hover,
+#userDropdownMenu.active > a {
+    background: var(--em-primary-color);
+    color: var(--neutral-50);
+}
+
+#userDropdownMenu hr {
+    margin: var(--m-16) 0;
+}
+
 /* CORRECTION  */
 .login .btn, .logout .btn, .registration .btn, .profile-edit .btn, .remind .btn, .reset .btn {
-    margin-right: 0px !important;
+    margin-right: 0 !important;
 }
 
 .logout-button-user{
@@ -154,7 +221,7 @@ li>a:hover {
     border-radius: var(--em-applicant-br);
     text-align: center;
     background-color: #E5283B;
-    color: white !important;
+    color: var(--neutral-0) !important;
     margin-top: 10px;
 }
 .logout-button-user:hover{
