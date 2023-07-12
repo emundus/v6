@@ -476,7 +476,7 @@ die("<script>
             $params['databasejoin_where_ajax'] = '0';
             $params['database_join_filter_where_sql'] = '';
             $params['database_join_show_please_select'] = '1';
-            $params['database_join_noselectionvalue'] = '';
+            $params['database_join_noselectionvalue'] = '0';
             $params['database_join_noselectionlabel'] = '';
             $params['placeholder'] = '';
             $params['databasejoin_popupform'] = '0';

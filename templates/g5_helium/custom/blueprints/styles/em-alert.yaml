@@ -1,0 +1,26 @@
+name: Alerts
+description: Alerts
+type: core
+
+form:
+  fields:
+    error-background-color:
+      type: input.colorpicker
+      label: Alert error background color
+      default: "#fae9e9"
+    error-color:
+      type: input.colorpicker
+      label: Alert error text color
+      default: "#520105"
+    error-icon-color:
+      type: input.colorpicker
+      label: Alert error icon color
+      default: "#A60E15"
+    error-border-width:
+      type: input.text
+      label: Alert error border width
+      default: "1px"
+    error-border-color:
+      type: input.colorpicker
+      label: Alert error border color
+      default: "rgba(255, 255, 255, 0)"

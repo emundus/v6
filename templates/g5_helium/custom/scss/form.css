@@ -1,7 +1,23 @@
 @layer components {
 
-  .emundus-form .page-header h1 {
-    @apply em-default-title-1;
+  .emundus-form {
+    .page-header h1 {
+      @apply em-default-title-1;
+    }
+
+    .fabrikMainError {
+      @apply flex;
+      @apply items-center;
+      @apply p-5;
+      @apply text-lg;
+      border: solid var(--em-alert-error-border-width) var(--em-alert-error-border-color);
+      background-color: var(--em-alert-error-background-color);
+      color: var(--em-alert-error-color);
+      .material-icons {
+        @apply mr-3;
+        color: var(--em-alert-error-icon-color);
+      }
+    }
   }
 
   /** REGISTRATION FORM **/
@@ -93,7 +109,7 @@
       height: var(--em-form-height);
     }
 
-    input:not([type='file']), select {
+    input:not([type='file']), select, textarea {
       color: var(--typo-text-1);
       border-radius: var(--em-form-border-radius);
       @apply px-2.5 py-3;

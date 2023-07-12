@@ -3279,17 +3279,6 @@ label[for='clear-search'] img:hover:focus {
     color: inherit;
     font-family: var(--em-coordinator-font);
   }
-
-  &:not(.em-alert-filter) {
-    /* background-color: var(--neutral-50);
-     border-color: #4E5B6D;*/
-    padding: 0.938rem;
-    display: inline-flex;
-    width: 100%;
-    align-items: center;
-    flex-direction: row-reverse;
-    justify-content: space-between;
-  }
 }
 
 #chargement .alert {

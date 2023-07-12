@@ -116,11 +116,11 @@ form:
     radio-background-color-checked:
         type: input.colorpicker
         label: Radio background color checked
-        default: 'transparent'
+        default: 'rgba(255, 255, 255, 0)'
     radio-border-color-checked:
         type: input.colorpicker
         label: Radio border color checked
-        default: 'transparent'
+        default: 'rgba(255, 255, 255, 0)'
     checkbox-border-width:
         type: input.text
         label: Checkbox border width

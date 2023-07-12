@@ -32,7 +32,7 @@ endif;
 ?>
 <div class="emundus-form p-6">
     <div class="mb-0 fabrikMainError alert alert-error fabrikError<?php echo $active ?>">
-        <button class="close" data-dismiss="alert">×</button>
+        <span class="material-icons">cancel</span>
 		<?php echo $form->error; ?>
     </div>
     <div class="mb-8">

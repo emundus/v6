@@ -211,6 +211,13 @@
   --bg-2: #F8F8F8;
   --bg-3: #C62222;
 
+  /* ALERTS */
+  --em-alert-error-background-color: #{$em-alert-error-background-color};
+  --em-alert-error-color: #{$em-alert-error-color};
+  --em-alert-error-icon-color: #{$em-alert-error-icon-color};
+  --em-alert-error-border-width: #{$em-alert-error-border-width};
+  --em-alert-error-border-color: #{$em-alert-error-border-color};
+
   /* FONT */
   --em-coordinator-font: #{$font-coordinator-family-text};
   --em-coordinator-font-title: #{$font-coordinator-family-title};
