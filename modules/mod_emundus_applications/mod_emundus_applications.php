@@ -137,7 +137,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
         $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by);
     } else {
         // We send the layout as a param because Hesam needs different information.
-        $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by, $selected_campaigns);
+        $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by, $params);
 		$tabs = $m_application->getTabs(JFactory::getUser()->id);
     }
 

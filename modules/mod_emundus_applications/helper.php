@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 class modemundusApplicationsHelper {
 
 	// get users sorted by activation date
-	static function getApplications($layout, $order_by, $campaigns = []) {
+	static function getApplications($layout, $order_by, $params = null) {
 		$applications = [];
 		$user = JFactory::getUser();
 		$db	= JFactory::getDbo();
@@ -64,9 +64,19 @@ class modemundusApplicationsHelper {
 
 		$query->where('ecc.applicant_id ='.$user->id);
 
-		if (!empty($campaigns)) {
-			$query->andWhere('ecc.campaign_id IN (' . implode(', ', $campaigns) . ')');
-		}
+		if (!empty($params)) {
+            $selected_campaigns = $params->get('selected_campaigns', []);
+
+            if (!empty($selected_campaigns)) {
+                $exclusion = $params->get('selected_campaigns_exclusion', false);
+
+                if ($exclusion) {
+                    $query->andWhere('ecc.campaign_id NOT IN (' . implode(', ', $selected_campaigns) . ')');
+                } else {
+                    $query->andWhere('ecc.campaign_id IN (' . implode(', ', $selected_campaigns) . ')');
+                }
+            }
+        }
 
 		$order_by_session = JFactory::getSession()->get('applications_order_by');
 		switch ($order_by_session) {
