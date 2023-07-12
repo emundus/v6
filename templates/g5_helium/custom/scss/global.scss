@@ -3413,36 +3413,6 @@ label[for='clear-search'] img:hover:focus {
   }
 }
 
-/* MODULE EMUNDUS FLOW */
-.view-form .ui.attached.segment,
-.view-checklist .ui.attached.segment,
-.view-details .ui.attached.segment {
-  background: $base-secondary-color;
-  border: $base-secondary-color;
-  color: var(--neutral-50);
-}
-
-.view-form .platform-content .ui.tablet.attached .step i,
-.view-form .platform-content .ui.tablet.attached .description {
-  color: $base-primary-color;
-}
-
-.view-form .platform-content .ui.tablet.attached .step i.arrow.left,
-.view-details .platform-content .ui.tablet.attached .step i.arrow.left {
-  color: $base-secondary-color;
-}
-
-.ui.yellow.segment:not(.inverted) {
-  border-top: 2px solid $base-primary-color;
-}
-
-.step.completed i.icon.file.text.outline::before,
-.step.completed i.icon.attach::before,
-.step.completed i.icon.add.to.cart::before,
-.step.completed i.icon.time::before {
-  color: #21ba45;
-}
-
 /* 3 Cercles Accueil Coordinateur */
 .element_home_emundus a {
   color: $base-secondary-color;
