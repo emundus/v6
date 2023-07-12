@@ -239,8 +239,6 @@
   --em-default-text-color-3: #{$base-secondary-color};       // chiffres, étapes, liens hypertextes
   --em-default-text-color-4: #{$base-tertiary-color};        // définitions
 
-
-
   /* BACKGROUND */
   --em-defaut-bg: #fff;
   --em-applicant-bg: #{$base-background};
@@ -287,6 +285,7 @@
   --em-form-label-margin-bottom: #{$em-form-label-margin-bottom};
   --em-form-height: #{$em-form-height};
   --em-form-border-radius: #{$em-form-border-radius};
+  --em-form-border-radius-block: #{$em-form-border-radius-block};
   --em-form-background-color: #{$em-form-background-color};
   --em-form-border-radius-focus: #{$em-form-border-radius-focus};
   --em-form-border-color-focus: #{$em-form-border-color-focus};

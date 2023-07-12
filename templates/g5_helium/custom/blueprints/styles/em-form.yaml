@@ -9,6 +9,10 @@ form:
       label: Required icon order
       description: -1 for before, 1 for after
       default: '-1'
+    border-radius-block:
+      type: input.text
+      label: Border radius of blocks
+      default: '16px'
     label-color:
       type: input.colorpicker
       label: Label color
