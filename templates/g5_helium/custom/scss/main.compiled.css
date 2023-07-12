@@ -597,9 +597,15 @@ form.fabrikForm .fabrikElementContainer:not(.fabrikHide) {
   margin-bottom: 2rem;
 }
 form.fabrikForm .fabrikLabel {
-  font-size: 1.125rem;
-  line-height: 1.75rem;
-}
+      display: inline-block !important;
+      font-size: 1.125rem;
+      line-height: 1.75rem;
+    }
+form.fabrikForm .fabrikElementTip {
+      color: var(--em-form-tip-color);
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+    }
 form.fabrikForm input:not([type='radio']):not([type='checkbox']):not([type='file']), form.fabrikForm select {
       height: var(--em-form-height);
     }
