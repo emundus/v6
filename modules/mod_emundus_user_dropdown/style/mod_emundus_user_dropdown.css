@@ -25,7 +25,7 @@
     animation: increase-width 0.3s;
     animation-fill-mode: forwards;
     transition: all 0.3s ease-in-out;
-    padding: 70px 30px 30px 30px;
+    padding: var(--p-72) var(--p-32) var(--p-32) var(--p-32);
 }
 #g-navigation:not(.g-flushed) .header-c .open > .dropdown-menu {
     right: 0;
@@ -42,12 +42,8 @@
     transition: all 0.3s ease-in-out;
 }
 
-#g-navigation .header-c .open > #userDropdownMenu li.dropdown-header {
-    font-family: var(--em-default-font);
-}
-
 #userDropdownMenu h5  {
-    color: #000;
+    color: var(--neutral-900);
     font-family: var(--em-default-font-title);
 }
 
@@ -59,9 +55,9 @@
     margin: 0 !important;
 }
 #userDropdownIcon {
-    background-color: #29d4ff;
-    border: 2px solid #29d4ff;
-    color: #ffffff;
+    background-color: var(--blue-500);
+    border: 2px solid var(--blue-500);
+    color: var(--neutral-0);
     margin:0;
     box-shadow: none !important;
     cursor: pointer;
@@ -70,8 +66,13 @@
 #userDropdownIcon.active,
 #userDropdownIcon:hover:active {
     background-color:transparent;
-    color: #29d4ff;
+    color: var(--blue-700);
 }
+
+#g-navigation .header-c .open > #userDropdownMenu li.dropdown-header {
+    font-family: var(--em-default-font);
+}
+
 
 #userDropdownMenu li.dropdown-header {
     width: 190px;
@@ -83,11 +84,14 @@
     white-space: break-spaces;
 }
 
+#userDropdownMenu li.dropdown-header {
+    color: var(--neutral-600) !important;
+}
 
 #userDropdownMenu li>a:hover,
 #userDropdownMenu .active>a {
     background: #29d4ff;
-    color: #ffffff;
+    color: var(--neutral-0);
 }
 
 li>a:hover {
@@ -126,7 +130,7 @@ li>a:hover {
     font-size: 14px !important;
     margin-bottom: 0 !important;
     text-shadow: none;
-    padding: 10px 24px;
+    padding: var(--p-8) var(--p-24);
     display: flex;
     align-items: center;
 }
@@ -134,7 +138,7 @@ li>a:hover {
 #g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte,
 #g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription {
     border-radius: var(--em-applicant-br);
-    margin-bottom: 5px;
+    margin-bottom: var(--m-4);
     line-height: normal;
     letter-spacing: normal;
     color: var(--neutral-0);
@@ -164,7 +168,7 @@ li>a:hover {
 }
 
 #g-navigation #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte):hover,
-#g-navigation #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte):focus
+#g-navigation #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte):focus,
 #g-navigation #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte):active {
     color: var(--neutral-0);
     background: var(--em-secondary-color);
@@ -248,25 +252,25 @@ a.btn.btn-danger :not(.btn-creer-compte):hover {
 }
 
 .logout-button-user{
-    padding: 10px 24px !important;
+    padding: var(--p-8) var(--p-24) !important;
     border-radius: var(--em-applicant-br);
     text-align: center;
-    background-color: #E5283B;
+    background-color: var(--red-500);
     color: var(--neutral-0) !important;
-    margin-top: 10px;
+    margin-top: var(--m-8);
 }
 .logout-button-user:hover{
-    background: #c60a0a !important;
+    background: var(--red-700) !important;
 }
 .logout-button-user:focus{
-    background: #c60a0a !important;
+    background: var(--red-700) !important;
 }
 #header-c #userDropdownMenu a.edit-button-user {
     text-shadow: none;
     text-transform: initial;
     border-radius: var(--em-applicant-br) !important;
-    color: #fff;
-    padding: 10px 24px;
+    color: var(--neutral-0);
+    padding: var(--p-8) var(--p-24);
     text-align: center;
 }
 
@@ -279,7 +283,7 @@ a.btn.btn-danger :not(.btn-creer-compte):hover {
 @media all and (max-width: 767px) {
     .header-right {
         text-align: center !important;
-        margin-top: 10px;
+        margin-top: var(--m-8);
         margin-bottom: -70px;
     }
 
