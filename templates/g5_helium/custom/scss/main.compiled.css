@@ -599,10 +599,10 @@ form.fabrikForm .fabrikLabel {
   line-height: 1.75rem;
       margin-bottom: var(--em-form-label-margin-bottom);
 }
-form.fabrikForm input:not([type='radio']):not([type='checkbox']), form.fabrikForm select {
+form.fabrikForm input:not([type='radio']):not([type='checkbox']):not([type='file']), form.fabrikForm select {
       height: var(--em-form-height);
     }
-form.fabrikForm input, form.fabrikForm select {
+form.fabrikForm input:not([type='file']), form.fabrikForm select {
       color: var(--typo-text-1);
       border-radius: var(--em-form-border-radius);
       padding-left: 0.625rem;
@@ -613,12 +613,12 @@ form.fabrikForm input, form.fabrikForm select {
       background-color: var(--em-form-background-color);
       transition: all 0.1s ease-out;
     }
-form.fabrikForm input:hover, form.fabrikForm select:hover {
+form.fabrikForm input:not([type='file']):hover, form.fabrikForm select:hover {
         background-color: var(--em-form-background-color-hover);
         border-color: var(--em-form-border-color-hover);
         box-shadow: unset;
       }
-form.fabrikForm input:focus, form.fabrikForm select:focus {
+form.fabrikForm input:not([type='file']):focus, form.fabrikForm select:focus {
         outline: var(--em-form-outline-color-focus) solid var(--em-form-outline-width-focus);
         border-radius: var(--em-form-border-radius-focus);
         outline-offset: var(--em-form-outline-offset-focus);
@@ -689,6 +689,10 @@ form.fabrikForm .plg-panel .fabrikElement .fabrikinput .fabrikElementContent {
 form.fabrikForm .plg-captcha .captcha_input {
   margin-top: 0.25rem;
 }
+/** FILE **/
+form.fabrikForm input[type='file'] {
+      height: auto;
+    }
 /** ERRORS **/
 form.fabrikForm .control-group.error label {
         color: var(--em-form-label-color-error);
