@@ -62,19 +62,12 @@ if ($user != null) {
             left: auto;
         }
 
-        #userDropdownIcon {
-            background-color: #<?= $primary_color; ?>;
-            border: solid 1px white;
-            color: #<?= $secondary_color; ?>;
-        }
-
         #userDropdownIcon:hover,
         #userDropdownIcon.active {
             border: 1px solid;
             box-shadow: inset 0 0 20px rgba(255, 255, 255, .5), 0 0 20px rgba(255, 255, 255, .2);
             outline-color: rgba(255, 255, 255, 0);
             outline-offset: 15px;
-            background-color: #<?= $secondary_color; ?>;
             color: #fff;
         }
 
