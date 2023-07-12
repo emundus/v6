@@ -62,13 +62,94 @@ button#back:hover, button#back:active, button#back:focus,
     outline: none;
 }
 
-    /* Accueil Dossiers */
+/* Accueil Dossiers */
+
 .main-page-application-title {
     font-size: 20px;
     width:55%;
 }
 
-    /*******************Mes dossiers de candidature*****************/
+/*******************Mes dossiers de candidature*****************/
+
+.candidacy-files-list a#send {
+    background: var(--em-primary-color);
+    border: 1px solid var(--em-primary-color);
+    text-shadow: none;
+    text-transform: initial;
+    padding: var(--p-8) var(--p-12);
+}
+
+.candidacy-files-list a#send:hover,
+.candidacy-files-list a#send:active,
+.candidacy-files-list a#send:focus{
+    background-color: transparent;
+    color: var(--em-primary-color);
+    border: 1px solid var(--em-primary-color) !important;
+}
+
+.list-group.candidacy-files-list .row .ui.yellow.segment:not(.inverted) {
+    border-top: 2px solid var(--em-primary-color) !important;
+}
+
+.candidacy-files-list .em-light-selected-tab {
+    border-bottom: 1px solid var(--em-primary-color);
+}
+.swal2-actions button.swal2-styled.swal2-cancel:not(.mod_emundus_application_swal_manage_tabs_cancel):not(.em-swal-cancel-button) {
+    border: 1px solid var(--red-500) !important;
+    color: var(--neutral-0) !important;
+}
+
+.swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:hover,
+.swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:active,
+.swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:focus{
+    border: none !important;
+}
+
+.mod_emundus_application___buttons_switch_view_enable{
+    color: var(--em-primary-color);
+}
+
+.mod_emundus_application___buttons_enable{
+    border: 1px solid var(--em-primary-color);
+}
+
+#tab_adding_link a span.material-icons-outlined{
+    color: var(--em-primary-color);
+}
+
+.mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-cancel {
+    background: transparent;
+    border: 1px solid var(--em-primary-color);
+    border-radius: var(--em-applicant-br);
+    color: var(--em-primary-color);
+    padding: var(--p-8) var(--p-12);
+    font-weight: inherit;
+}
+
+.mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-cancel:hover,
+.mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-cancel:active,
+.mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-cancel:focus{
+    background: var(--em-primary-color);
+    border: 1px solid var(--em-primary-color);
+    color: var(--neutral-0);
+}
+
+.mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-confirm {
+    background: var(--em-primary-color);
+    border: 1px solid var(--em-primary-color);
+    border-radius: var(--em-applicant-br);
+    color: var(--neutral-0);
+    padding: var(--p-8) var(--p-12);
+    font-weight: inherit;
+}
+
+.mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-confirm:hover,
+.mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-confirm:active,
+.mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-confirm:focus {
+    background: var(--transparent);
+    border: 1px solid var(--em-primary-color);
+    color: var(--em-primary-color);
+}
 
 .main-page-file-info p {
     padding-bottom: var(--p-8);
@@ -96,7 +177,7 @@ button#back:hover, button#back:active, button#back:focus,
 
 .navsearch-content .form-control {
     border-radius: 0 0 0 0 !important;
-    padding: var(--p-8) var(--p-16);
+    padding: var(--p-8) var(--p-12);
     height: 33px !important;
 }
 
@@ -169,6 +250,7 @@ a.btn.btn-success:not(.btn-xs) {
 
 .view-featured .candidacy-files-list .row {
    position: relative;
+    height: 100%;
 }
 @media all and (max-width: 479px) {
     .main-page-file-info a {
@@ -462,7 +544,7 @@ margin-top: var(--m-16);
 .mod_emundus_application_swal_manage_tabs_actions{
     border-top: solid 1px var(--neutral-300);
     margin-top:var(--m-8) !important;
-    padding: var(--p-8) var(--p-16);
+    padding: var(--p-8) var(--p-12);
     display: flex !important;
     justify-content: end !important;
 }
@@ -515,7 +597,7 @@ margin-top: var(--m-16);
     justify-content: center;
     align-items: center;
     border-radius: var(--em-default-br);
-    padding: var(--p-8) var(--p-16);
+    padding: var(--p-8) var(--p-12);
     width: max-content;
 }
 
