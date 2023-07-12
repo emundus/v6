@@ -70,14 +70,16 @@
       width: auto;
     }
 
+    .fabrikElement {
+      margin-top: var(--em-form-label-margin-bottom);
+    }
+
     .fabrikElementContainer:not(.fabrikHide) {
       @apply mb-8;
     }
 
     .fabrikLabel {
-      @apply flex !important;
       @apply text-lg;
-      margin-bottom: var(--em-form-label-margin-bottom);
     }
 
     input:not([type='radio']):not([type='checkbox']):not([type='file']), select {

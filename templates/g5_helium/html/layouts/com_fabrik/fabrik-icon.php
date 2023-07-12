@@ -28,5 +28,7 @@ if($icons[0] == 'star')
 }
 ?>
 <?php if($icons[0] != 'question-sign'): ?>
-    <span class="material-icons text-xxs icon-order text-red-500"><?php echo str_replace('icon-','',$icons[0]);?></span>
+    <span class="material-icons text-xxs icon-order text-red-500 mr-0" <?php if($icons[0] == 'emergency') : ?>style="top: -5px;position: relative" <?php endif; ?>>
+        <?php echo str_replace('icon-','',$icons[0]);?>
+    </span>
 <?php endif; ?>
