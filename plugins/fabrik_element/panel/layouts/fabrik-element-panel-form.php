@@ -23,7 +23,7 @@ $d             = $displayData;
 		    <?php if (!empty($d->title) && $d->accordion == 0) : ?>
                 <h3><?php echo $d->title ?></h3>
 		    <?php endif; ?>
-            <div class="mt-2">
+            <div <?php if (!empty($d->title)) : ?>class="mt-2"<?php endif; ?>>
 		        <?php echo $d->value;?>
             </div>
         </div>
