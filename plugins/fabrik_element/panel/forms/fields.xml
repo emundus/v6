@@ -6,19 +6,19 @@
 			<field type="helplink"
 				url="PLG_ELEMENT_PANEL_HELP_SERVER" />
 
+			<field name="eval"
+				   type="radio"
+				   default="1"
+				   class="btn-group"
+				   label="PLG_ELEMENT_PANEL_EVAL_LABEL">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
 			<field name="default"
 				type="fabrikeditor"
 				mode="php"
 				label="PLG_ELEMENT_PANEL_DEFAULT_LABEL" />
-
-			<field name="eval"
-				type="radio"
-				default="0"
-				class="btn-group"
-				label="PLG_ELEMENT_PANEL_EVAL_LABEL">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-			</field>
 
 		</fieldset>
 	</fields>
@@ -29,14 +29,18 @@
 			<field type="helplink"
 				url="PLG_ELEMENT_PANEL_HELP_SERVER" />
 
-			<field name="panel_showlabel"
-				type="radio"
-				default="1"
-				class="btn-group"
-				label="PLG_ELEMENT_PANEL_SHOW_LABEL_LABEL">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
+			<field name="accordion"
+				   type="radio"
+				   default="0"
+				   class="btn-group"
+				   label="PLG_ELEMENT_PANEL_ACCORDION_LABEL">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
 			</field>
+
+			<field name="title"
+				   type="text"
+				   label="PLG_ELEMENT_PANEL_ACCORDION_TITLE_LABEL" />
 
 			<field name="panel_background"
 				   type="color"

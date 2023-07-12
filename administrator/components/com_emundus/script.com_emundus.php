@@ -1922,6 +1922,8 @@ structure:
 					->where($db->quoteName('id') . ' = 307');
 				$db->setQuery($query);
 				$db->execute();
+
+				EmundusHelperUpdate::installExtension('plg_fabrik_element_panel', 'panel', '{"name":"plg_fabrik_element_panel","type":"plugin","creationDate":"July 2023","author":"eMundus","copyright":"Copyright (C) 2005-2023 Media A-Team, Inc. - All rights reserved.","authorEmail":"dev@emundus.io","authorUrl":"www.emundus.fr","version":"3.10","description":"PLG_ELEMENT_PANEL_DESCRIPTION","group":"","filename":"panel"}', 'plugin', 1, 'fabrik_element');
 			}
 
 			// Insert new translations in overrides files

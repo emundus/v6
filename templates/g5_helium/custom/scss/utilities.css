@@ -10,4 +10,8 @@
     .icon-order {
         order: var(--em-form-required-icon-order);
     }
+
+    .collapse{
+        visibility: inherit;
+    }
 }
