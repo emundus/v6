@@ -133,8 +133,8 @@ li>a:hover {
 
 #g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte,
 #g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription {
-     border-radius: var(--em-default-br);
-     margin-bottom: 5px;
+    border-radius: var(--em-applicant-br);
+    margin-bottom: 5px;
     line-height: normal;
     letter-spacing: normal;
     color: var(--neutral-0);
