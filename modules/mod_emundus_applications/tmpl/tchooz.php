@@ -446,27 +446,8 @@ $current_tab = 0;
 																<?php endif; ?>
 
 																<?php
-																foreach ($custom_actions as $custom_action_key => $custom_action) {
-                                                                    if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)) {
-                                                                        if ($custom_action->mod_em_application_custom_action_type == 2) {
-	                                                                        ?>
-                                                                            <span id="actions_button_custom_<?= $custom_action_key; ?>" class="em-text-neutral-900 em-pointer em-custom-action-launch-action" data-text="<?= $custom_action->mod_em_application_custom_action_new_status_message; ?>" data-fnum="<?=  $application->fnum ?>"><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></span>
-	                                                                        <?php
-                                                                        } else if (!empty($custom_action->mod_em_application_custom_action_link)) {
-                                                                            ?>
-                                                                            <a id="actions_button_custom_<?= $custom_action_key; ?>_card_tab<?php echo $key ?>"
-                                                                               class="em-text-neutral-900 em-pointer em-flex-row"
-                                                                               href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?>>
-                                                                                <?php if ($custom_action->mod_em_application_custom_action_icon): ?>
-                                                                                    <span class="material-icons-outlined em-font-size-16 em-mr-8"><?php echo $custom_action->mod_em_application_custom_action_icon ?></span>
-                                                                                <?php endif; ?>
-                                                                                <?= JText::_($custom_action->mod_em_application_custom_action_label) ?>
-                                                                            </a>
-                                                                            <?php
-                                                                        }
-																	}
-																}
-																?>
+                                                                    modemundusApplicationsHelper::displayCustomActions($application, $custom_actions, $key);
+                                                                ?>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -810,26 +791,7 @@ $current_tab = 0;
 															<?php endif; ?>
 
 															<?php
-															foreach ($custom_actions as $custom_action_key => $custom_action) {
-																if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)) {
-																	if ($custom_action->mod_em_application_custom_action_type == 2) {
-																		?>
-                                                                        <span id="actions_button_custom_<?= $custom_action_key; ?>" class="em-text-neutral-900 em-pointer em-custom-action-launch-action" data-text="<?= $custom_action->mod_em_application_custom_action_new_status_message; ?>"><?= JText::_($custom_action->mod_em_application_custom_action_label) ?></span>
-																		<?php
-																	} else if (!empty($custom_action->mod_em_application_custom_action_link)) {
-																		?>
-                                                                        <a id="actions_button_custom_<?= $custom_action_key; ?>_card_tab<?php echo $key ?>"
-                                                                           class="em-text-neutral-900 em-pointer em-flex-row"
-                                                                           href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?>>
-																			<?php if ($custom_action->mod_em_application_custom_action_icon): ?>
-                                                                                <span class="material-icons-outlined em-font-size-16 em-mr-8"><?php echo $custom_action->mod_em_application_custom_action_icon ?></span>
-																			<?php endif; ?>
-																			<?= JText::_($custom_action->mod_em_application_custom_action_label) ?>
-                                                                        </a>
-																		<?php
-																	}
-																}
-															}
+                                                            modemundusApplicationsHelper::displayCustomActions($application, $custom_actions, $key);
 															?>
                                                         </div>
                                                     </div>
