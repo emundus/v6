@@ -222,7 +222,6 @@
   --em-default-font-title: 'Inter', sans-serif;
 
   /* FONT COLOR */
-
   --em-coordinator-title-color: #{$base-title-color-coordinator};
   --em-coordinator-text-color: #{$base-text-color-coordinator};
 
@@ -245,7 +244,6 @@
   --em-coordinator-bg: #{$base-background-coordinator};
 
   /* BORDER RADIUS  */
-
   --em-default-br: #{$em-border-radius-default};
   --em-applicant-br: #{$em-border-radius-applicant};
   --em-coordinator-br: #{$em-border-radius-coordinator};
@@ -285,6 +283,7 @@
   --em-form-label-color: #{$em-form-label-color};
   --em-form-label-margin-bottom: #{$em-form-label-margin-bottom};
   --em-form-height: #{$em-form-height};
+  --em-form-tip-color: #{$em-form-tip-color};
   --em-form-border-radius: #{$em-form-border-radius};
   --em-form-border-radius-block: #{$em-form-border-radius-block};
   --em-form-background-color: #{$em-form-background-color};

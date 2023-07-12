@@ -79,7 +79,13 @@
     }
 
     .fabrikLabel {
+      display: inline-block !important;
       @apply text-lg;
+    }
+
+    .fabrikElementTip {
+      color: var(--em-form-tip-color);
+      @apply text-sm;
     }
 
     input:not([type='radio']):not([type='checkbox']):not([type='file']), select {

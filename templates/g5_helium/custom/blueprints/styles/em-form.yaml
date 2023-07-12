@@ -25,6 +25,10 @@ form:
       type: input.text
       label: Height of fields
       default: '48px'
+    tip-color:
+      type: input.colorpicker
+      label: Tip color
+      default: '#5C5C5C'
     border-radius:
       type: input.text
       label: Border radius of fields
