@@ -2523,7 +2523,7 @@ class EmundusModelFiles extends JModelLegacy
 							if ($is_multi) {
 								$join_informations = $h_files->getJoinInformations($element->id);
 								if (!empty($join_informations)) {
-									if (!in_array($already_joined, $join_informations['table_join'])) {
+									if (!in_array($join_informations['table_join'], $already_joined)) {
 										$child_table_alias = 'table_join_' . sizeof($already_joined);
 										$already_joined[$child_table_alias] = $join_informations['table_join'];
 
