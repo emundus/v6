@@ -176,6 +176,17 @@ class EmundusModelFilesTest extends TestCase{
 
         $db->setQuery($query);
         $db->execute();
+        $insert_id = $db->insertid();
+
+        if (!empty($insert_id)) {
+            $query->clear()
+                ->insert('jos_emundus_unit_test_form_repeat_dbjoin_multi')
+                ->columns(['parent_id', 'dbjoin_multi'])
+                ->values($insert_id . ', "17"');
+
+            $db->setQuery($query);
+            $db->execute();
+        }
 
 		$field_element = null;
 		foreach ($elements as $element) {
@@ -300,6 +311,7 @@ class EmundusModelFilesTest extends TestCase{
 			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with databasejoin multi element');
 			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
 			$this->assertArrayHasKey($databasejoin_multi_element->tab_name . '___' . $databasejoin_multi_element->element_name, $data[$fnum], 'the data contains the databasejoin multi element');
+            $this->assertStringContainsString('Charente-Maritime', $data[$fnum][$databasejoin_multi_element->tab_name . '___' . $databasejoin_multi_element->element_name], 'the databasejoin multi element contains the correct value');
 		}
 
 		$radio_element = null;
