@@ -20,8 +20,8 @@
 		  </div>
 		  <div id="save-filters-inputs-btns">
 			  <div id="save-filter-new-name" class="em-flex-row em-flex-space-between em-border-radius-8 em-white-bg em-box-shadow em-w-100 em-p-16" :class="{'hidden': !openSaveFilter}">
-				  <input id="new-filter-name" ref="new-filter-name" type="text" class="em-flex-row" v-model="newFilterName" :placeholder="translate('MOD_EMUNDUS_FILTERS_SAVE_FILTER_NAME')" minlength="2" @keyup.enter="saveFilters">
-				  <span class="material-icons-outlined em-pointer" :class="{'em-pointer em-dark-blue-500-color': newFilterName.length > 1}" @click="saveFilters">done</span>
+				  <input id="new-filter-name" ref="new-filter-name" type="text" class="em-flex-row" v-model="newFilterName" :placeholder="translate('MOD_EMUNDUS_FILTERS_SAVE_FILTER_NAME')" minlength="2" @keyup.enter="saveFilters" @focusout="onFocusOutNewFilter">
+				  <span id="save-new-filter" class="material-icons-outlined em-pointer" :class="{'em-pointer em-dark-blue-500-color': newFilterName.length > 1}" @click="saveFilters">done</span>
 			  </div>
 			  <div v-if="registeredFilters.length > 0" id="registered-filters-wrapper" class="em-mt-8">
 				  <label for="registered-filters">{{ translate('MOD_EMUNDUS_FILTERS_SAVED_FILTERS') }}</label>
@@ -132,7 +132,11 @@ export default {
 		});
 		this.globalSearch = this.defaultQuickSearchFilters;
 		this.mapSearchScopesToAppliedFilters();
-	},
+
+    window.addEventListener('refresh-emundus-module-filters', () => {
+      this.applyFilters();
+    });
+  },
 	methods: {
 		onSelectNewFilter(filterId) {
 			let added = false;
@@ -188,6 +192,10 @@ export default {
 				return filter;
 			});
 			this.applyFilters();
+		},
+		onFocusOutNewFilter(e) {
+			this.saveFilters(e);
+			this.openSaveFilter = false;
 		},
 		saveFilters(e) {
 			if (e) {

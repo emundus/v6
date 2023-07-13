@@ -970,7 +970,12 @@ class EmundusModelFormbuilder extends JModelList {
             $languages = JLanguageHelper::getLanguages();
             foreach ($languages as $language) {
                 $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
-                $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+
+                if (file_exists($path_to_files[$language->sef])) {
+                    $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+                } else {
+                    $Content_Folder[$language->sef] = '';
+                }
             }
 
             try {
