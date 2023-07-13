@@ -6798,5 +6798,7 @@ window.addEventListener('emundus-apply-filters-success', () => {
     let view = document.getElementById('view');
     if (view) {
         reloadData(view.getAttribute('value'), false);
+    } else {
+        removeLoader();
     }
 });
