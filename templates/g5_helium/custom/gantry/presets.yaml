@@ -29,6 +29,21 @@ emundus:
       error-icon-color: '#a60e15'
       error-border-width: 0px
       error-border-color: 'rgba(255, 255, 255, 0)'
+      warning-background-color: '#fff6de'
+      warning-color: '#563a04'
+      warning-icon-color: '#b38405'
+      warning-border-width: 1px
+      warning-border-color: 'rgba(255, 255, 255, 0)'
+      info-background-color: '#ebeefa'
+      info-color: '#232b4f'
+      info-icon-color: '#525b85'
+      info-border-width: 1px
+      info-border-color: 'rgba(255, 255, 255, 0)'
+      success-background-color: '#eaf3e8'
+      success-color: '#02300c'
+      success-icon-color: '#2d871d'
+      success-border-width: 1px
+      success-border-color: 'rgba(255, 255, 255, 0)'
     em-border-radius:
       default: 8px
       applicant: 8px
@@ -161,6 +176,21 @@ maif:
       error-icon-color: '#a60e15'
       error-border-width: 0px
       error-border-color: 'rgba(255, 255, 255, 0)'
+      warning-background-color: '#fff6de'
+      warning-color: '#563a04'
+      warning-icon-color: '#b38405'
+      warning-border-width: 1px
+      warning-border-color: 'rgba(255, 255, 255, 0)'
+      info-background-color: '#ebeefa'
+      info-color: '#232b4f'
+      info-icon-color: '#525b85'
+      info-border-width: 1px
+      info-border-color: 'rgba(255, 255, 255, 0)'
+      success-background-color: '#eaf3e8'
+      success-color: '#02300c'
+      success-icon-color: '#2d871d'
+      success-border-width: 1px
+      success-border-color: 'rgba(255, 255, 255, 0)'
     em-border-radius:
       default: 4px
       applicant: 4px
