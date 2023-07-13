@@ -2416,7 +2416,7 @@ class EmundusModelFiles extends JModelLegacy
 
 		if (!empty($fnums) && !empty($elements)) {
 			$h_files = new EmundusHelperFiles;
-			$current_lang = substr(JFactory::getLanguage()->getTag());
+			$current_lang = substr(JFactory::getLanguage()->getTag(), 0,  2);
 			if (empty($current_lang)) {
 				$current_lang = 'fr';
 			}
