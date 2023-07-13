@@ -625,7 +625,7 @@ form.fabrikForm input:not([type='radio']):not([type='checkbox']):not([type='file
       height: var(--em-form-height);
     }
 form.fabrikForm input:not([type='file']), form.fabrikForm select, form.fabrikForm textarea {
-      color: var(--typo-text-1);
+      color: var(--em-default-text-color-1);
       border-radius: var(--em-form-border-radius);
       padding-left: 0.625rem;
       padding-right: 0.625rem;
@@ -635,12 +635,12 @@ form.fabrikForm input:not([type='file']), form.fabrikForm select, form.fabrikFor
       background-color: var(--em-form-background-color);
       transition: all 0.1s ease-out;
     }
-form.fabrikForm input:not([type='file']):hover, form.fabrikForm select:hover, form.fabrikForm textarea:hover {
+form.fabrikForm input:not([type='file']):hover:not([type='radio']):not([type='checkbox']), form.fabrikForm select:hover:not([type='radio']):not([type='checkbox']), form.fabrikForm textarea:hover:not([type='radio']):not([type='checkbox']) {
         background-color: var(--em-form-background-color-hover);
         border-color: var(--em-form-border-color-hover);
         box-shadow: unset;
       }
-form.fabrikForm input:not([type='file']):focus, form.fabrikForm select:focus, form.fabrikForm textarea:focus {
+form.fabrikForm input:not([type='file']):focus:not([type='radio']):not([type='checkbox']), form.fabrikForm select:focus:not([type='radio']):not([type='checkbox']), form.fabrikForm textarea:focus:not([type='radio']):not([type='checkbox']) {
         outline: var(--em-form-outline-color-focus) solid var(--em-form-outline-width-focus);
         border-radius: var(--em-form-border-radius-focus);
         outline-offset: var(--em-form-outline-offset-focus);
@@ -712,9 +712,25 @@ form.fabrikForm .plg-captcha .captcha_input {
   margin-top: 0.25rem;
 }
 /** FILE **/
-form.fabrikForm input[type='file'] {
-      height: auto;
-    }
+form.fabrikForm .plg-fileupload .fabrikSubElementContainer {
+        display: flex;
+        flex-direction: column-reverse;
+        padding: var(--em-form-fileupload-padding);
+        background-color: var(--em-form-fileupload-background-color);
+      }
+form.fabrikForm .plg-fileupload .fabrikSubElementContainer input[type='file'] {
+          height: auto;
+        }
+form.fabrikForm .plg-fileupload .fabrikSubElementContainer input[type='file']:hover {
+            border: unset;
+          }
+form.fabrikForm .plg-fileupload .fabrikUploadDelete {
+        display: flex;
+        gap: 4px;
+        flex-direction: row-reverse;
+        width: -moz-max-content;
+        width: max-content;
+      }
 /** ERRORS **/
 form.fabrikForm .control-group.error label {
         color: var(--em-form-label-color-error);
@@ -1018,9 +1034,6 @@ a {
     }
 .text-xxs {
         font-size: var(--link-xxs-size);
-    }
-.icon-order {
-        order: var(--em-form-required-icon-order);
     }
 .collapse{
         visibility: inherit;

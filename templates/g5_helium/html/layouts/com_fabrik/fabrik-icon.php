@@ -19,16 +19,18 @@ if (isset($d->nameOnly) && $d->nameOnly)
 
 $props = isset($d->properties) ? $d->properties : '';
 
-$d->icon = str_replace('icon-', '', $d->icon);
+$icon = str_replace('icon-', '', $d->icon);
 
-$icons = explode(' ',$d->icon);
-if($icons[0] == 'star')
+$icon = explode(' ',$icon);
+if($icon[0] == 'star')
 {
-    $icons[0] = 'emergency';
+	$icon[0] = 'emergency';
 }
 ?>
-<?php if($icons[0] != 'question-sign'): ?>
-    <span class="material-icons text-xxs icon-order text-red-500 mr-0" <?php if($icons[0] == 'emergency') : ?>style="top: -5px;position: relative" <?php endif; ?>>
-        <?php echo str_replace('icon-','',$icons[0]);?>
+<?php if($icon[0] == 'emergency'): ?>
+    <span class="material-icons text-xxs text-red-500 mr-0" style="top: -5px;position: relative">
+        <?php echo str_replace('icon-','',$icon[0]);?>
     </span>
+<?php else : ?>
+    <i data-isicon="true" class="<?php echo $d->icon;?>" <?php echo $props;?>></i>
 <?php endif; ?>

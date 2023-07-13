@@ -66,6 +66,11 @@
 			<option value="1">JYES</option>
 		</field>
 
+		<field name="required_icon_position" label="COM_EMUNDUS_REQUIRED_POSITION_ICON" type="list" default="1" description="">
+			<option value="0">COM_EMUNDUS_REQUIRED_POSITION_ICON_BEFORE</option>
+			<option value="1">COM_EMUNDUS_REQUIRED_POSITION_ICON_AFTER</option>
+		</field>
+
 		<field
 				name="spacer0"
 				type="spacer"

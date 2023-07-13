@@ -110,20 +110,20 @@
     }
 
     input:not([type='file']), select, textarea {
-      color: var(--typo-text-1);
+      color: var(--em-default-text-color-1);
       border-radius: var(--em-form-border-radius);
       @apply px-2.5 py-3;
       @apply mb-0;
       background-color: var(--em-form-background-color);
       transition: all 0.1s ease-out;
 
-      &:hover {
+      &:hover:not([type='radio']):not([type='checkbox']) {
         background-color: var(--em-form-background-color-hover);
         border-color: var(--em-form-border-color-hover);
         box-shadow: unset;
       }
 
-      &:focus {
+      &:focus:not([type='radio']):not([type='checkbox']) {
         outline: var(--em-form-outline-color-focus) solid var(--em-form-outline-width-focus);
         border-radius: var(--em-form-border-radius-focus);
         outline-offset: var(--em-form-outline-offset-focus);
@@ -212,8 +212,27 @@
     }
 
     /** FILE **/
-    input[type='file'] {
-      height: auto;
+    .plg-fileupload {
+      .fabrikSubElementContainer {
+        display: flex;
+        flex-direction: column-reverse;
+        padding: var(--em-form-fileupload-padding);
+        background-color: var(--em-form-fileupload-background-color);
+        input[type='file'] {
+          height: auto;
+
+          &:hover {
+            border: unset;
+          }
+        }
+      }
+
+      .fabrikUploadDelete {
+        display: flex;
+        gap: 4px;
+        flex-direction: row-reverse;
+        width: max-content;
+      }
     }
 
     /** ERRORS **/

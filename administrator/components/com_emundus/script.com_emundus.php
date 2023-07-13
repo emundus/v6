@@ -1907,19 +1907,14 @@ structure:
 				EmundusHelperUpdate::addYamlVariable('name', 'Main', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css');
 
 				$query->clear()
-					->select('params')
-					->from($db->quoteName('#__fabrik_forms'))
-					->where($db->quoteName('id') . ' = 307');
+					->update($db->quoteName('#__fabrik_forms'))
+					->set($db->quoteName('params') . ' = JSON_REPLACE(params,"$.labels_above","1")');
 				$db->setQuery($query);
-				$params = json_decode($db->loadResult(), true);
-
-				$params['labels_above'] = 1;
-				$params['labels_above_details'] = 1;
+				$db->execute();
 
 				$query->clear()
 					->update($db->quoteName('#__fabrik_forms'))
-					->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-					->where($db->quoteName('id') . ' = 307');
+					->set($db->quoteName('params') . ' = JSON_REPLACE(params,"$.labels_above_details","1")');
 				$db->setQuery($query);
 				$db->execute();
 

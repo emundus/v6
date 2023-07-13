@@ -1,12 +1,22 @@
 <?php
 defined('JPATH_BASE') or die;
 
+$eMConfig = JComponentHelper::getParams('com_emundus');
+$required_position_icon = $eMConfig->get('required_icon_position', 1);
+
 $d = $displayData;
 $labelText = FText::_($d->label);
 $labelText = $labelText == '' ? $d->hasLabel = false : $labelText;
 $l = $d->j3 ? '' : $labelText;
-$l .= $d->icons;
+if($required_position_icon == 0)
+{
+	$l .= $d->icons;
+}
 $l .= $d->j3 ? $labelText : '';
+if($required_position_icon == 1)
+{
+	$l .= $d->icons;
+}
 
 if ($d->view == 'form' && !($d->canUse || $d->canView))
 {
