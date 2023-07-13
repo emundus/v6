@@ -132,7 +132,11 @@ export default {
 		});
 		this.globalSearch = this.defaultQuickSearchFilters;
 		this.mapSearchScopesToAppliedFilters();
-	},
+
+    window.addEventListener('refresh-emundus-module-filters', () => {
+      this.applyFilters();
+    });
+  },
 	methods: {
 		onSelectNewFilter(filterId) {
 			let added = false;
