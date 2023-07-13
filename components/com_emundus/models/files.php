@@ -1223,7 +1223,7 @@ class EmundusModelFiles extends JModelLegacy
 	        }
 
         } catch (Exception $e) {
-            $error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+            $error = JUri::getInstance().' :: USER ID : '. JFactory::getUser()->id . ' -> ' . $e->getMessage();
             JLog::add($error, JLog::ERROR, 'com_emundus');
             return false;
         }
