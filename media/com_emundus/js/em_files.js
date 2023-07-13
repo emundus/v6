@@ -8,6 +8,7 @@
 
 var loading;
 var moduleFilters = null;
+var refreshModuleFiltersEvent = new Event('refresh-emundus-module-filters');
 
 // to abort all AJAX query at once
 $.ajaxQ = (function(){
@@ -100,39 +101,35 @@ function clearchosen(target){
     $(target)[0].sumo.unSelectAll();
 }
 
-function reloadData(view, refreshFilters = true) {
+function reloadData(view) {
     view = (typeof view === 'undefined') ? 'files' : view;
 
-    if (refreshFilters && moduleFilters) {
-        window.dispatchEvent(new Event('refresh-emundus-module-filters'));
-    } else {
-        addLoader();
+    addLoader();
 
-        $.ajax({
-            type: 'GET',
-            url: 'index.php?option=com_emundus&view='+view+'&layout=data&format=raw&Itemid=' + itemId + '&cfnum=' + cfnum,
-            async: false,
-            dataType: 'html',
-            success: function(data) {
-                removeLoader();
+    $.ajax({
+        type: 'GET',
+        url: 'index.php?option=com_emundus&view='+view+'&layout=data&format=raw&Itemid=' + itemId + '&cfnum=' + cfnum,
+        async: false,
+        dataType: 'html',
+        success: function(data) {
+            removeLoader();
 
-                let col9 = $('.col-md-9 .panel.panel-default');
-                if(col9.length > 0) {
-                    col9.remove();
-                    $('.col-md-9').append(data);
-                }
-
-                let col12 = $('.col-md-12 .panel.panel-default');
-                if(col12.length > 0) {
-                    col12.remove();
-                    $('.col-md-12').append(data);
-                }
-            },
-            error: function(jqXHR) {
-                console.log(jqXHR.responseText);
+            let col9 = $('.col-md-9 .panel.panel-default');
+            if(col9.length > 0) {
+                col9.remove();
+                $('.col-md-9').append(data);
             }
-        });
-    }
+
+            let col12 = $('.col-md-12 .panel.panel-default');
+            if(col12.length > 0) {
+                col12.remove();
+                $('.col-md-12').append(data);
+            }
+        },
+        error: function(jqXHR) {
+            console.log(jqXHR.responseText);
+        }
+    });
 }
 
 function reloadActions(view, fnum, onCheck, async, display = 'none') {
@@ -1267,8 +1264,11 @@ function runAction(action, url = '', option = '') {
                             timer: 1500
                         });
 
-                        reloadData();
+                        if (moduleFilters) {
+                            window.dispatchEvent(refreshModuleFiltersEvent);
+                        }
 
+                        reloadData();
                         reloadActions($('#view').val(), undefined, false);
                         $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
                         $('body').removeClass('modal-open');
@@ -6795,10 +6795,5 @@ window.addEventListener('emundus-start-apply-filters', () => {
 });
 
 window.addEventListener('emundus-apply-filters-success', () => {
-    let view = document.getElementById('view');
-    if (view) {
-        reloadData(view.getAttribute('value'), false);
-    } else {
-        removeLoader();
-    }
+     reloadData(document.getElementById('view').getAttribute('value'), false);
 });
