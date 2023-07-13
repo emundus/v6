@@ -47,7 +47,7 @@ class EmundusFiltersFiles extends EmundusFilters
             $helper_files = new EmundusHelperFiles();
             $this->applied_filters = $helper_files->setFiltersValuesAvailability($this->applied_filters);
         }
-	}
+    }
 
 	private function setProfiles()
 	{
