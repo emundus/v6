@@ -4,11 +4,6 @@ type: core
 
 form:
   fields:
-    required-icon-order:
-      type: input.text
-      label: Required icon order
-      description: -1 for before, 1 for after
-      default: '-1'
     border-radius-block:
       type: input.text
       label: Border radius of blocks
@@ -153,6 +148,14 @@ form:
         type: input.colorpicker
         label: Checkbox border color error
         default: '#C62222'
+    fileupload-padding:
+        type: input.text
+        label: Fileupload padding
+        default: '12px 8px'
+    fileupload-background-color:
+        type: input.colorpicker
+        label: Fileupload background color
+        default: '#F0F0F0'
 
 
 

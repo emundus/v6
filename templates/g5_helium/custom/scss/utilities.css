@@ -29,10 +29,6 @@
         font-size: var(--link-xxs-size);
     }
 
-    .icon-order {
-        order: var(--em-form-required-icon-order);
-    }
-
     .collapse{
         visibility: inherit;
     }

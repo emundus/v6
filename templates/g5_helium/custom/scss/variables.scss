@@ -286,7 +286,6 @@
   --m-80: 80px;
 
   /** FORM VARIABLES **/
-  --em-form-required-icon-order: #{$em-form-required-icon-order};
   --em-form-label-color: #{$em-form-label-color};
   --em-form-label-margin-bottom: #{$em-form-label-margin-bottom};
   --em-form-height: #{$em-form-height};
@@ -323,6 +322,8 @@
   --em-form-checkbox-input-margin: #{$em-form-checkbox-input-margin};
   --em-form-checkbox-color-checked: #{$em-form-checkbox-color-checked};
   --em-form-checkbox-border-color-error: #{$em-form-checkbox-border-color-error};
+  --em-form-fileupload-padding: #{$em-form-fileupload-padding};
+  --em-form-fileupload-background-color: #{$em-form-fileupload-background-color};
 
   /** UTILITIES **/
   --link-xxs-size: #{$link-xxs-size};
