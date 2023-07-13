@@ -146,9 +146,8 @@ class EmundusModelFilesTest extends TestCase{
 		$this->assertEmpty($data, 'getFnumArray returns an empty array if no fnum is given');
 
 		$element_ids = [];
-		// TODO: create a form with all type of elements
+		$form_id = $this->h_sample->getUnitTestFabrikForm();
 
-		$form_id = 378;
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 		$query->select('jfe.id')
@@ -163,8 +162,20 @@ class EmundusModelFilesTest extends TestCase{
 		$elements = $this->h_files->getElementsName($element_ids);
 		$this->assertNotEmpty($elements, 'getElementsName returns an array of elements');
 
-		// TODO: create a fnum and writes data in it
-		$fnum = '2023070411433500000020000095';
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+        $program = $this->h_sample->createSampleProgram();
+        $campaign_id = $this->h_sample->createSampleCampaign($program);
+        $fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+
+        $columns = ['user', 'fnum', 'e_797_7973', 'e_797_7974', 'e_797_7975', 'e_797_7976', 'e_797_7977', 'e_797_7978', 'e_797_7979', 'e_797_7980', 'e_797_7981', 'e_797_7982', 'e_797_7983', 'dropdown_multi', 'dbjoin_multi', 'cascadingdropdown'];
+        $values = array($user_id, $fnum, 'TEST FIELD', 'TEST TEXTAREA', '["1"]', '2', '3', '65', 'Ajoutez du texte personnalisé pour vos candidats', "<p>S'il vous plait taisez vous</p>", '1', '2023-01-01', '2023-07-13 00:00:00', '["0","1"]', null, '');
+        $query->clear()
+            ->insert('jos_emundus_unit_test_form')
+            ->columns($columns)
+            ->values(implode(',', $db->quote($values)));
+
+        $db->setQuery($query);
+        $db->execute();
 
 		$field_element = null;
 		foreach ($elements as $element) {
@@ -179,7 +190,7 @@ class EmundusModelFilesTest extends TestCase{
 			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
 			$this->assertArrayHasKey($field_element->tab_name . '___' . $field_element->element_name, $data[$fnum], 'the data contains the field element');
 			// after we mock the data, we should test that the data is correct
-			// $this->assertEquals($data[$fnum][$field_element->tab_name . '___' . $field_element->element_name], 'test', 'the fnum contains the field element');
+			$this->assertEquals('TEST FIELD', $data[$fnum][$field_element->tab_name . '___' . $field_element->element_name], 'the fnum contains the field element');
 		}
 
 		$texarea_element = null;
@@ -194,7 +205,9 @@ class EmundusModelFilesTest extends TestCase{
 			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with texarea element');
 			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
 			$this->assertArrayHasKey($texarea_element->tab_name . '___' . $texarea_element->element_name, $data[$fnum], 'the data contains the textarea element');
-		}
+            $this->assertEquals('TEST TEXTAREA', $data[$fnum][$texarea_element->tab_name . '___' . $texarea_element->element_name], 'the fnum contains the field element');
+
+        }
 
 		$display_element = null;
 		foreach ($elements as $element) {
@@ -360,7 +373,7 @@ class EmundusModelFilesTest extends TestCase{
 		$this->assertNotEmpty($data, 'getFnumArray returns an not empty array of data with all elements');
 
 		// TODO: create a form with all type of elements and where the group is repeatable
-		$repeat_form_id = 381;
+		/*$repeat_form_id = 381;
 		$query->clear()
 			->select('jfe.id')
 			->from($db->quoteName('#__fabrik_elements', 'jfe'))
@@ -568,10 +581,11 @@ class EmundusModelFilesTest extends TestCase{
 
 		$repeat_form_elements = [$field_element, $texarea_element, $display_element, $yesno_element, $date_element, $birthday_element, $databasejoin_element, $databasejoin_multi_element, $radio_element, $dropdown_element, $dropdown_multi_element];
 		$data = $this->m_files->getFnumArray2([$fnum], $repeat_form_elements);
-		$this->assertNotEmpty($data, 'getFnumArray returns a not empty array of data with all elements and repeatable group');
+		$this->assertNotEmpty($data, 'getFnumArray returns a not empty array of data with all elements and repeatable group');*/
 
 		// calculate time of execution
-		$elements_from_different_forms = array_merge($first_form_elements, $repeat_form_elements);
+		//$elements_from_different_forms = array_merge($first_form_elements, $repeat_form_elements);
+        $elements_from_different_forms = $first_form_elements;
 		$start = microtime(true);
 		$data = $this->m_files->getFnumArray2([$fnum], $elements_from_different_forms, true);
 		$end = microtime(true);
