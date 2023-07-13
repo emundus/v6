@@ -2,8 +2,8 @@ emundus:
   image: 'gantry-admin://images/preset1.png'
   description: Thème par défaut
   colors:
-    - '#2e404f'
-    - '#c62222'
+    - '#1b1f3c'
+    - '#de6339'
   styles:
     base:
       background: '#f8f8f8'
