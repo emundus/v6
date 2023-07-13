@@ -10,12 +10,21 @@
     <div>
       <form @submit.prevent="submit">
         <div>
-          <span class="em-red-500-color em-mb-8">{{translations.RequiredFieldsIndicate}}</span>
           <div class="em-mb-16">
-            <h1 class="em-h1">{{ translations.Informations }}</h1>
+            <h1 class="em-h1">{{ translate('COM_EMUNDUS_ONBOARD_ADD_EMAIL') }}</h1>
+            <span class="em-red-500-color em-mb-8">{{translations.RequiredFieldsIndicate}}</span>
           </div>
 
           <div>
+            <div class="form-group">
+              <label>{{ translations.emailCategory }}</label>
+              <autocomplete
+                  @searched="onSearchCategory"
+                  :items="this.categories"
+                  :year="this.form.category"
+              />
+            </div>
+
             <div class="em-mb-16">
               <label>{{translations.emailName}} <span style="color: #E5283B">*</span></label>
               <input
@@ -56,7 +65,7 @@
 
         <div>
           <div class="em-flex-row em-mb-16">
-            <h3 class="em-h3 em-pointer" @click="displayAdvanced">{{ translations.Advanced }}</h3>
+            <h3 class="em-h3 em-pointer em-mb-0-important" @click="displayAdvanced">{{ translations.Advanced }}</h3>
             <button :title="translations.Advanced" type="button" class="em-transparent-button em-flex-column" @click="displayAdvanced" v-show="!displayAdvancedParameters">
               <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
             </button>
@@ -80,15 +89,7 @@
                   type="text"
                   class="em-w-100"
                   v-model="form.emailfrom"
-              />
-            </div>
-
-            <div class="form-group">
-              <label>{{ translations.emailCategory }}</label>
-              <autocomplete
-                  @searched="onSearchCategory"
-                  :items="this.categories"
-                  :year="this.form.category"
+                  placeholder="reply-to@tchooz.io"
               />
             </div>
 
