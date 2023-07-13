@@ -343,7 +343,7 @@
         }
     }
 
-    .alert.alert-warning {
+    .alert.alert-warning,.alert.alert-notice {
         border: solid var(--em-alert-warning-border-width) var(--em-alert-warning-border-color);
         background-color: var(--em-alert-warning-background-color);
         color: var(--em-alert-warning-color);
