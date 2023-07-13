@@ -29,10 +29,27 @@ module.exports = {
             addComponents({
                 '.em-default-title-1': {
                     color: 'var(--em-default-title-color-1)',
-                    fontFamily: '$font-family-title',
+                    fontFamily: 'var(--em-applicant-font-title)',
                     fontSize: '24px',
                     fontStyle: 'normal',
                     lineHeight: '28.8px',
+                    fontWeight: 500,
+                },
+                '.em-default-title-2': {
+                    color: 'var(--em-default-title-color-1)',
+                    fontFamily: 'var(--em-applicant-font-title)',
+                    fontSize: '22px',
+                    fontStyle: 'normal',
+                    lineHeight: '26.4px',
+                    fontWeight: 400,
+                },
+                '.em-default-title-3': {
+                    color: 'var(--em-default-title-color-1)',
+                    fontFamily: 'var(--em-applicant-font-title)',
+                    fontSize: '20px',
+                    fontStyle: 'normal',
+                    lineHeight: '24.2px',
+                    fontWeight: 400,
                 }
             })
         })

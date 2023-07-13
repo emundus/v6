@@ -1,23 +1,23 @@
 <template>
-  <div class="campaigns__add-campaign em-w-100">
+  <div class="campaigns__add-campaign w-5/6">
     <div v-if="typeof campaignId == 'undefined' || campaignId == 0">
-      <div class="em-flex-row em-mt-16 em-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
+      <div class="flex items-center mt-4 cursor-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
         <span class="material-icons-outlined">arrow_back</span>
-        <p class="em-ml-8">{{ translate('BACK') }}</p>
+        <p class="ml-2">{{ translate('BACK') }}</p>
       </div>
 
-      <h1 class="em-h1 em-mt-16">{{ translate('COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN') }}</h1>
-      <p class="em-mt-16">{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC') }}</p>
+      <h1 class="mt-4">{{ translate('COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN') }}</h1>
+      <p class="mt-4">{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC') }}</p>
 
-      <hr>
+      <hr class="mt-1.5 mb-1.5">
     </div>
 
     <div>
-      <form @submit.prevent="submit" v-if="ready" class="fabrikForm">
+      <form @submit.prevent="submit" v-if="ready" class="emundus-form fabrikForm">
         <div>
-          <div class="em-red-500-color em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</div>
+          <div class="em-red-500-color mb-2">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</div>
 
-          <div class="em-mb-16">
+          <div class="mb-4">
             <label for="campLabel">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME') }} <span class="em-red-500-color">*</span></label>
             <input
                 id="campLabel"
@@ -25,15 +25,15 @@
                 v-model="form.label[actualLanguage]"
                 required
                 :class="{ 'is-invalid': errors.label }"
-                class="form-control fabrikinput em-w-100"
+                class="form-control fabrikinput w-full"
                 @focusout="onFormChange()"
             />
-            <span v-if="errors.label" class="em-red-500-color em-mb-8">
+            <span v-if="errors.label" class="em-red-500-color mb-2">
               <span class="em-red-500-color">{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME') }}</span>
             </span>
           </div>
 
-          <div class="em-grid-2 em-mb-16">
+          <div class="grid grid-cols-2 mb-4 gap-1.5">
             <div>
               <div>
                 <label for="startDate">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE') }} <span class="em-red-500-color">*</span></label>
@@ -41,7 +41,7 @@
                     v-model="form.start_date"
                     id="startDate"
                     type="datetime"
-                    class="em-w-100"
+                    class="w-full"
                     format=""
                     :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE')"
                     :input-id="'start_date'"
@@ -57,7 +57,7 @@
                     v-model="form.end_date"
                     id="endDate"
                     type="datetime"
-                    class="em-w-100"
+                    class="w-full"
                     format=""
                     :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE') + ' *'"
                     :input-id="'end_date'"
@@ -69,7 +69,7 @@
             </div>
           </div>
 
-          <div class="em-mb-16">
+          <div class="mb-4">
             <label for="year">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR') }} <span class="em-red-500-color">*</span></label>
             <autocomplete
                 :id="'year'"
@@ -80,7 +80,7 @@
             />
           </div>
 
-          <div class="em-mb-16 em-flex-row">
+          <div class="mb-4 flex items-center">
             <div class="em-toggle">
               <input type="checkbox"
                      true-value="1"
@@ -94,18 +94,18 @@
               <strong class="b em-toggle-switch"></strong>
               <strong class="b em-toggle-track"></strong>
             </div>
-            <span for="published" class="em-ml-8">{{ translate('COM_EMUNDUS_ONBOARD_FILTER_PUBLISH') }}</span>
+            <span for="published" class="ml-2">{{ translate('COM_EMUNDUS_ONBOARD_FILTER_PUBLISH') }}</span>
           </div>
         </div>
 
         <hr/>
 
-        <div class="em-mb-16">
-          <div class="em-mb-16">
-            <h3 class="em-h3">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION') }}</h3>
+        <div class="mb-4">
+          <div class="mb-4">
+            <h3>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION') }}</h3>
           </div>
 
-          <div class="em-mb-16">
+          <div class="mb-4">
             <label style="top: 5em">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME') }} <span class="em-red-500-color">*</span></label>
             <editor-quill
                 style="height: 25em"
@@ -121,8 +121,8 @@
             </editor-quill>
           </div>
 
-          <label class="em-mt-16">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
-          <div class="em-mb-16" v-if="typeof form.description != 'undefined'">
+          <label class="mt-4">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
+          <div class="mb-4" v-if="typeof form.description != 'undefined'">
             <editor-quill
                 style="height: 25em"
                 :text="form.description"
@@ -136,18 +136,18 @@
           </div>
         </div>
 
-        <hr class="em-mt-64"/>
+        <hr class="mt-16"/>
 
-        <div class="em-mt-32">
-          <div class="em-mb-16">
+        <div class="mt-8">
+          <div class="mb-4">
             <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM') }}</h2>
           </div>
-          <div class="em-mb-16">{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC') }}<span class="em-red-500-color">*</span></div>
+          <div class="mb-4">{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC') }}<span class="em-red-500-color">*</span></div>
 
-          <div class="em-flex-row em-mb-16">
+          <div class="flex items-center mb-4">
             <select
                 id="select_prog"
-                class="form-control fabrikinput em-w-100"
+                class="form-control fabrikinput w-full"
                 v-model="form.training"
                 v-on:change="setCategory"
                 :disabled="this.programs.length <= 0"
@@ -161,7 +161,7 @@
                 {{ item.label && item.label[actualLanguage] !== null && typeof item.label[actualLanguage] != 'undefined' ? item.label[actualLanguage] : item.label }}
               </option>
             </select>
-            <button v-if="coordinatorAccess != 0" :title="translate('COM_EMUNDUS_ONBOARD_ADDPROGRAM')" type="button" id="add-program" class="em-ml-8 em-transparent-button" @click="displayProgram">
+            <button v-if="coordinatorAccess != 0" :title="translate('COM_EMUNDUS_ONBOARD_ADDPROGRAM')" type="button" id="add-program" class="ml-2 em-transparent-button" @click="displayProgram">
               <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
             </button>
           </div>
@@ -169,27 +169,27 @@
           <transition name="slide-fade">
             <div v-if="isHiddenProgram">
               <div>
-                <div class="em-mb-16">
+                <div class="mb-4">
                   <label for="prog_label">{{ translate('COM_EMUNDUS_ONBOARD_PROGNAME') }} <span class="em-red-500-color">*</span></label>
                   <input
                       type="text"
                       id="prog_label"
-                      class="form-control fabrikinput em-w-100"
+                      class="form-control fabrikinput w-full"
                       placeholder=" "
                       v-model="programForm.label"
                       :class="{ 'is-invalid': errors.progLabel }"
                   />
                 </div>
-                <p v-if="errors.progLabel" class="em-red-500-color em-mb-8">
+                <p v-if="errors.progLabel" class="em-red-500-color mb-2">
                   <span class="em-red-500-color">{{ translate('COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL') }}</span>
                 </p>
 
-                <div class="em-mb-16" style="display: none">
+                <div class="mb-4" style="display: none">
                   <label for="prog_color">{{ translate('COM_EMUNDUS_ONBOARD_PROGCOLOR') }}</label>
-                  <div class="em-flex-row">
+                  <div class="flex">
                     <div v-for="(color,index) in colors">
-                      <div class="em-color-round em-pointer em-flex-row em-flex-center"
-                           :class="index != 0 ? 'em-ml-8' : ''"
+                      <div class="em-color-round cursor-pointer flex justify-center"
+                           :class="index != 0 ? 'ml-2' : ''"
                            :style="selectedColor == color.text ? 'background-color:' + color.text + ';border: 2px solid ' + color.background : 'background-color:' + color.text"
                            @click="programForm.color = color.text;selectedColor = color.text">
                         <span v-if="selectedColor == color.text" class="material-icons-outlined" style="font-weight: bold;color: black;filter: invert(1)">done</span>
@@ -202,9 +202,9 @@
           </transition>
         </div>
 
-        <hr/>
+        <hr class="mt-1.5 mb-1.5"/>
 
-        <div class="em-flex-row em-flex-space-between em-float-right">
+        <div class="flex justify-between float-right">
           <button
               type="button"
               class="em-primary-button em-w-auto"

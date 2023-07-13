@@ -15,40 +15,6 @@
 }
 
 /* BUTTONS */
-.em-primary-button{
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  padding: 0 var(--p-16);
-  border-radius: var(--em-coordinator-br);
-  border: unset;
-  height: 40px;
-  color: white;
-  background-color: var(--main-500);
-  border: solid 1px transparent;
-  font-family: var(--em-coordinator-font);
-
-  &:hover {
-    background-color: white;
-    color: var(--main-500);
-    border: 1px solid var(--main-500);
-    text-decoration: none;
-
-    .material-icons {
-      color: var(--main-500) !important;
-    }
-  }
-
-  .material-icons {
-    color: var(--white);
-  }
-}
-
-.em-primary-disabled{
-  background-color: var(--main-100);
-}
 
 .em-applicant-primary-button{
   display: flex;
@@ -733,9 +699,7 @@ input:focus + .em-slider {
   max-width: 1200px;
 }
 
-.em-w-auto{
-  width: auto;
-}
+
 
 .em-w-75rem{
   width: 75rem;

@@ -14,6 +14,7 @@ if($just_logged && !$only_applicant) {
 <style>
     .em-switch-profile-img{
         text-align: center;
+        justify-content: center;
     }
     .em-switch-profile-img img{
         width: 10vw;

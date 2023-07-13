@@ -1,4 +1,5 @@
 @import "utilities.css";
+@import "components.css";
 @import "form.css";
 
 @tailwind base;

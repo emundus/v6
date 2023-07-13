@@ -193,14 +193,14 @@ export default {
 
 <style>
 .ql-toolbar {
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
+  border-top-left-radius: var(--em-form-border-radius);
+  border-top-right-radius: var(--em-form-border-radius);
   background-color: white;
 }
 
 .ql-container {
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: var(--em-form-border-radius);
+  border-bottom-right-radius: var(--em-form-border-radius);
   background-color: white;
   height: 90%;
 }

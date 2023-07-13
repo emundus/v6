@@ -1,5 +1,6 @@
 @layer components {
 
+  /** APPLICANT **/
   .emundus-form {
     .page-header h1 {
       @apply em-default-title-1;
@@ -105,6 +106,7 @@
       @apply text-sm;
     }
 
+    /** INPUT **/
     input:not([type='radio']):not([type='checkbox']):not([type='file']), select {
       height: var(--em-form-height);
     }
@@ -264,6 +266,38 @@
     }
   }
 
+  /** BACKEND/VUE FORMS **/
+  .com_emundus {
+    /** INPUT **/
+    input:not([type='radio']):not([type='checkbox']):not([type='file']), select {
+      height: var(--em-form-coordinator-form-height);
+    }
+
+    input:not([type='file']), select, textarea {
+      color: var(--em-default-text-color-1);
+      border-radius: var(--em-coordinator-br);
+      @apply px-1.5 py-2;
+      @apply mb-0;
+      background-color: var(--em-form-background-color);
+      transition: all 0.1s ease-out;
+
+      &:hover:not([type='radio']):not([type='checkbox']) {
+        background-color: var(--em-form-background-color-hover);
+        border-color: var(--em-form-border-color-hover);
+        box-shadow: unset;
+      }
+
+      &:focus:not([type='radio']):not([type='checkbox']) {
+        outline: var(--em-form-outline-color-focus) solid var(--em-form-outline-width-focus);
+        border-radius: var(--em-form-border-radius-focus);
+        outline-offset: var(--em-form-outline-offset-focus);
+        box-shadow: unset;
+        border-color: var(--em-form-border-color-focus);
+        background-color: var(--em-form-background-color-focus);
+      }
+    }
+  }
+
   input[type="text"],
   input[type="password"],
   input[type="datetime"],
@@ -329,7 +363,7 @@
     width: 100%;
   }
 
-.fabrik_element___emundus_file_upload_parent input[type=file] {
+  .fabrik_element___emundus_file_upload_parent input[type=file] {
     left: 0;
     top: 0;
     opacity: 0;
@@ -354,12 +388,11 @@
   }
 
   .fabrik_element___emundus_file_upload_parent .btn-upload p {
-      margin-top: 0 !important;
-      color: var(--neutral-900) !important;
-    }
+    margin-top: 0 !important;
+    color: var(--neutral-900) !important;
+  }
 
   .fabrik_element___emundus_file_upload_parent .em-deleteFile {
     margin-left: 10px;
   }
-
 }

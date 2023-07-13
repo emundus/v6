@@ -1,4 +1,41 @@
 @layer utilities {
+    h1 {
+        @apply em-default-title-1;
+    }
+
+    h2 {
+        @apply em-default-title-2;
+    }
+
+    h3 {
+        @apply em-default-title-3;
+    }
+
+    h4{
+        font-family: var(--em-default-font);
+        font-style: normal;
+        font-weight: 600;
+        font-size: 18px;
+        line-height: 23px;
+        color: var(--em-default-title-color-1);
+    }
+    h5{
+        font-family: var(--em-default-font);
+        font-style: normal;
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 20px;
+        color: var(--em-default-title-color-1);
+    }
+    h6{
+        font-family: var(--em-default-font);
+        font-style: normal;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 16px;
+        color: var(--em-default-title-color-1);
+    }
+
     a {
         color: var(--link-regular);
     }
@@ -31,56 +68,6 @@
 
     .collapse{
         visibility: inherit;
-    }
-
-
-    h1 {
-        font-family: var(--em-default-font);
-        font-style: normal;
-        font-weight: 600;
-        font-size: 32px;
-        line-height: 40px;
-        color: var(--em-default-title-color-1);
-    }
-    h2{
-        font-family: var(--em-default-font);
-        font-style: normal;
-        font-weight: 600;
-        font-size: 24px;
-        line-height: 30px;
-        color: var(--em-default-title-color-1);
-    }
-    h3{
-        font-family: var(--em-default-font);
-        font-style: normal;
-        font-weight: 600;
-        font-size: 20px;
-        line-height: 25px;
-        color: var(--em-default-title-color-1);
-    }
-    h4{
-        font-family: var(--em-default-font);
-        font-style: normal;
-        font-weight: 600;
-        font-size: 18px;
-        line-height: 23px;
-        color: var(--em-default-title-color-1);
-    }
-    h5{
-        font-family: var(--em-default-font);
-        font-style: normal;
-        font-weight: 600;
-        font-size: 16px;
-        line-height: 20px;
-        color: var(--em-default-title-color-1);
-    }
-    h6{
-        font-family: var(--em-default-font);
-        font-style: normal;
-        font-weight: 600;
-        font-size: 14px;
-        line-height: 16px;
-        color: var(--em-default-title-color-1);
     }
 
     .col-xs-1,
@@ -436,4 +423,8 @@
         color: #b94a48;
     }
 
+
+    .em-w-auto{
+        width: auto;
+    }
 }

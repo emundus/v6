@@ -13,9 +13,26 @@
 defined('_JEXEC') or die('Restricted access');
 
 $form = $this->form;
+$countActions = 0;
+if ( $form->gobackButton || $form->resetButton || $form->deleteButton || $form->clearMultipageSessionButton) {
+    $countActions++;
+}
+if ( $form->submitButton || $form->applyButton || $form->copyButton ) {
+    $countActions++;
+}
+if ($form->customButtons) {
+    $countActions++;
+}
+if ( $form->prevButton || $form->nextButton ) {
+    $countActions++;
+}
 if ($this->hasActions) : ?>
 <div class="fabrikActions form-actions p-0 m-0">
-	<div <?php if ($form->id != 307) : ?>class="flex justify-between"<?php endif; ?>>
+	<div
+        <?php if ($form->id != 307) : ?>
+            class="flex <?php if($countActions > 1) : ?>justify-between<?php else : ?>justify-end<?php endif; ?>"
+        <?php endif; ?>
+    >
         <?php if ( $form->gobackButton || $form->resetButton || $form->deleteButton || $form->clearMultipageSessionButton): ?>
         <div>
             <div class="btn-group">

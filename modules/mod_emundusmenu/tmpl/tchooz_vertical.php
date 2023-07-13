@@ -306,7 +306,7 @@ defined('_JEXEC') or die;
             endforeach;
 
             if(sizeof($tchooz_list) > 0) :
-                echo '<hr id="menu_separator">';
+                echo '<hr id="menu_separator" class="mb-4 mt-4">';
             endif;
         endif;
 

@@ -1,44 +1,44 @@
 <template>
-	<div id="onboarding_list" class="em-w-100">
-		<skeleton v-if="loading.lists" height="40px" width="100%" class="em-mb-16 em-mt-16 em-border-radius-8"></skeleton>
-		<div v-else class="head em-flex-row em-flex-space-between em-mb-16 em-mt-16">
-			<h2 style="margin:0;">{{ translate(currentList.title) }}</h2>
-			<a v-if="addAction" id="add-action-btn" class="em-primary-button em-w-auto em-pointer" @click="onClickAction(addAction)">{{ translate(addAction.label) }}</a>
+	<div id="onboarding_list" class="w-full">
+		<skeleton v-if="loading.lists" height="40px" width="100%" class="mb-4 mt-4 rounded-lg"></skeleton>
+		<div v-else class="head flex justify-between mb-4 mt-4">
+			<h2>{{ translate(currentList.title) }}</h2>
+			<a v-if="addAction" id="add-action-btn" class="em-primary-button em-w-auto cursor-pointer" @click="onClickAction(addAction)">{{ translate(addAction.label) }}</a>
 		</div>
-		<hr class="em-w-100">
+		<hr class="w-full mt-1.5 mb-1.5">
 
 		<div v-if="loading.tabs" id="tabs-loading">
-			<div class="em-flex-row em-flex-space-between">
-				<skeleton height="40px" width="20%" class="em-mb-16 em-border-radius-8"></skeleton>
-				<skeleton height="40px" width="5%" class="em-mb-16 em-border-radius-8"></skeleton>
+			<div class="flex justify-between">
+				<skeleton height="40px" width="20%" class="mb-4 rounded-lg"></skeleton>
+				<skeleton height="40px" width="5%" class="mb-4 rounded-lg"></skeleton>
 			</div>
 			<div :class="{'skeleton-grid': viewType === 'blocs','em-flex-column': viewType === 'list'}" style="flex-wrap: wrap">
-				<skeleton v-for="i in 9" :key="i" class="em-border-radius-8 skeleton-item"></skeleton>
+				<skeleton v-for="i in 9" :key="i" class="rounded-lg skeleton-item"></skeleton>
 			</div>
 		</div>
-		<div v-else class="list">
-			<section id="pagination-wrapper" class="em-flex-row em-flex-space-between">
-				<select name="numberOfItemsToDisplay" v-model="numberOfItemsToDisplay" @change="getListItems()" class='em-mt-16 em-mb-16 em-default-input'>
+		<div v-else class="list mt-4">
+			<section id="pagination-wrapper" class="flex justify-between items-center">
+				<select name="numberOfItemsToDisplay" v-model="numberOfItemsToDisplay" @change="getListItems()">
 					<option value='10'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 10</option>
 					<option value='25'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 25</option>
 					<option value='50'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 50</option>
 					<option value='all'>{{ translate('ALL') }}</option>
 				</select>
-				<div v-if="typeof currentTab.pagination !== undefined && currentTab.pagination && currentTab.pagination.total > 1" id="pagination" class="em-text-align-center">
-					<ul class="em-flex-row" style="list-style-type:none;">
+				<div v-if="typeof currentTab.pagination !== undefined && currentTab.pagination && currentTab.pagination.total > 1" id="pagination" class="text-center">
+					<ul class="flex list-none">
 						<span :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === 1}"
-					      class="material-icons-outlined em-pointer em-mr-8"
+					      class="material-icons-outlined cursor-pointer mr-2"
 					      @click="getListItems(currentTab.pagination.current - 1, selectedListTab)">
 							chevron_left
 						</span>
 						<li v-for="i in currentTab.pagination.total" :key="i"
-						    class="em-pointer em-square-button"
+						    class="cursor-pointer em-square-button"
 						    :class="{'active': i === currentTab.pagination.current}"
 						    @click="getListItems(i, selectedListTab)">
 							{{ i }}
 						</li>
 						<span :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === currentTab.pagination.total}"
-						      class="material-icons-outlined em-pointer em-ml-8"
+						      class="material-icons-outlined cursor-pointer ml-2"
 						      @click="getListItems(currentTab.pagination.current + 1, selectedListTab)">
 							chevron_right
 						</span>
@@ -46,9 +46,9 @@
 				</div>
 			</section>
 			<nav v-if="currentList.tabs.length > 1" id="list-nav">
-				<ul style="list-style-type: none;margin-left:0;" class="em-flex-row">
+				<ul style="list-style-type: none;margin-left:0;" class="flex">
 					<li v-for="tab in currentList.tabs" :key="tab.key"
-					    class="em-pointer em-p-8 em-font-weight-400 em-p-16"
+					    class="cursor-pointer font-normal p-4"
 					    :class="{
 								'em-border-bottom-main-500 em-neutral-900-color ': selectedListTab === tab.key,
 							  'em-neutral-700-color em-border-bottom-neutral-300': selectedListTab !== tab.key
@@ -59,29 +59,29 @@
 					</li>
 				</ul>
 			</nav>
-			<section id="actions" class="em-flex-row em-flex-space-between em-mt-16 em-mb-16">
+			<section id="actions" class="flex justify-between mt-4 mb-4">
 				<section id="tab-actions">
-					<select v-for="filter in filters[selectedListTab]" :key="selectedListTab + '-' + filter.key" v-model="filter.value" @change="onChangeFilter(filter)" class="em-default-input em-mr-8">
+					<select v-for="filter in filters[selectedListTab]" :key="selectedListTab + '-' + filter.key" v-model="filter.value" @change="onChangeFilter(filter)" class="mr-2">
 						<option v-for="option in filter.options" :key="option.value" :value="option.value">{{ translate(option.label) }}</option>
 					</select>
 				</section>
 
-				<section id="default-actions" class="em-flex-row">
-					<div class="em-flex-row em-flex-row-center">
+				<section id="default-actions" class="flex">
+					<div class="flex items-center">
 						<input name="search" type="text" v-model="searches[selectedListTab].search"
 						       :placeholder="translate('COM_EMUNDUS_ONBOARD_SEARCH')"
-						       class="em-border-radius-8 em-default-input"
+						       class="rounded-lg"
 						       :class="{'em-disabled-events': items[this.selectedListTab].length < 1 && searches[selectedListTab].search === ''}" style="margin: 0;"
 						       :disabled="items[this.selectedListTab].length < 1 && searches[selectedListTab].search === ''"
 						       @change="searchItems" @keyup="searchItems">
-						<span class="material-icons-outlined em-mr-8 em-pointer" style="margin-left: -32px" @click="searchItems">
+						<span class="material-icons-outlined mr-2 cursor-pointer" style="margin-left: -32px" @click="searchItems">
 							search
 						</span>
 					</div>
-					<div class="view-type">
+					<div class="view-type flex items-center">
 					<span v-for="viewTypeOption in viewTypeOptions" :key="viewTypeOption.value"
-					      style="padding: 4px;border-radius: var(--em-default-br);"
-					      class="material-icons-outlined em-pointer em-ml-8"
+					      style="padding: 4px;border-radius: var(--em-coordinator-br);"
+					      class="material-icons-outlined ml-2 cursor-pointer"
 					      :class="{
 								'active em-main-500-color em-border-main-500': viewTypeOption.value === viewType,
 								'em-neutral-300-color em-border-neutral-300': viewTypeOption.value !== viewType
@@ -94,10 +94,10 @@
 
 			<div v-if="loading.items"
 			     id="items-loading"
-			     :class="{'skeleton-grid': viewType === 'blocs','em-flex-column em-mb-16': viewType === 'list'}"
+			     :class="{'skeleton-grid': viewType === 'blocs','em-flex-column mb-4': viewType === 'list'}"
 			     style="flex-wrap: wrap"
 			>
-				<skeleton v-for="i in 9" :key="i" class="em-border-radius-8 skeleton-item"></skeleton>
+				<skeleton v-for="i in 9" :key="i" class="rounded-lg skeleton-item"></skeleton>
 			</div>
 			<div v-else>
 				<div v-if="displayedItems.length > 0" id="list-items">
@@ -114,26 +114,26 @@
 							    class="em-border-bottom-neutral-300"
 							    :class="{'em-card-neutral-100 em-card-shadow em-p-24' : viewType === 'blocs'}"
 							>
-								<td class="em-pointer" @click="onClickAction(editAction, item.id)">
-									<span :class="{'em-font-weight-600 em-mb-16':  viewType === 'blocs'}">{{ item.label[params.shortlang] }}</span>
+								<td class="cursor-pointer" @click="onClickAction(editAction, item.id)">
+									<span :class="{'em-font-weight-600 mb-4':  viewType === 'blocs'}">{{ item.label[params.shortlang] }}</span>
 								</td>
 								<td class="columns" v-for="column in item.additional_columns" :key="column.key" v-if="column.display === viewType || column.display === 'all'">
-									<div v-if="column.type === 'tags'" class="em-flex-row em-flex-wrap" :class="column.classes">
-										<span v-for="tag in column.values" :key="tag.key" class="em-mr-8" :class="tag.classes">{{ tag.value }}</span>
+									<div v-if="column.type === 'tags'" class="flex flex-wrap" :class="column.classes">
+										<span v-for="tag in column.values" :key="tag.key" class="mr-2 h-max" :class="tag.classes">{{ tag.value }}</span>
 									</div>
-									<span v-else class="em-mt-8 em-mb-8" :class="column.classes">
+									<span v-else class="mt-2 mb-2" :class="column.classes">
 										{{ column.value }}
 									</span>
 								</td>
 								<div>
-									<hr v-if="viewType === 'blocs'" class="em-w-100">
+									<hr v-if="viewType === 'blocs'" class="w-full mt-1.5 mb-1.5">
 									<td class="actions">
-										<a v-if="viewType === 'blocs' && editAction" @click="onClickAction(editAction, item.id)" class="em-primary-button em-font-size-14 em-pointer em-w-auto">
+										<a v-if="viewType === 'blocs' && editAction" @click="onClickAction(editAction, item.id)" class="em-primary-button text-sm cursor-pointer em-w-auto">
 											{{ translate(editAction.label) }}
 										</a>
-										<div class="em-flex-row">
-											<span v-if="previewAction" class="material-icons-outlined em-pointer" @click="onClickPreview(item)">visibility</span>
-											<span v-for="action in iconActions" :key="action.name" class="em-pointer"
+										<div class="flex">
+											<span v-if="previewAction" class="material-icons-outlined cursor-pointer" @click="onClickPreview(item)">visibility</span>
+											<span v-for="action in iconActions" :key="action.name" class="cursor-pointer"
 											      :class="{
 															'material-icons-outlined': action.iconOutlined,
 															'material-icons': !action.iconOutlined,
@@ -151,7 +151,7 @@
 														    :key="action.name"
 														    :class="{'hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))}"
 														    @click="onClickAction(action, item.id)"
-														    class="em-pointer em-p-8 em-font-weight-600"
+														    class="cursor-pointer p-2 font-semibold"
 														>
 															{{ translate(action.label) }}
 														</li>
