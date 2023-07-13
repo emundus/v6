@@ -620,6 +620,38 @@ margin-top: var(--m-16);
     color: var(--neutral-600);
 }
 
+.homepage #g-main-mainbody #content-bottom-a .platform-content .btn.btn-info {
+    background: var(--em-secondary-color);
+    border-color: var(--em-secondary-color);
+}
+
+.homepage #g-main-mainbody #content-bottom-a .platform-content .btn.btn-info:hover,
+.homepage #g-main-mainbody #content-bottom-a .platform-content .btn.btn-info:active,
+.homepage #g-main-mainbody #content-bottom-a .platform-content .btn.btn-info:focus {
+    background-color: transparent;
+    color: var(--em-secondary-color);
+    border-color: var(--em-secondary-color);
+}
+
+
+.platform-content a.btn[title="Envoyer le dossier"] {
+    background: var(--em-secondary-color);
+    border: 1px solid var(--em-secondary-color);
+    color: var(--neutral-50);
+}
+
+.platform-content a.btn[title="Envoyer le dossier"]:hover,
+.platform-content a.btn[title="Envoyer le dossier"]:active,
+.platform-content a.btn[title="Envoyer le dossier"]:focus {
+    background: transparent;
+    border: 1px solid var(--em-secondary-color);
+    color: var(--em-secondary-color);
+}
+
+circle.circle {
+    stroke: var(--em-secondary-color);
+}
+
 @media screen and (max-width: 767px) {
     .mod_emundus_applications___header #add-application {
         width: 100% !important;

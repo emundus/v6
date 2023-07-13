@@ -35,7 +35,7 @@ form#member-profile.well {
     margin-top: 50px;
     margin-bottom: 50px;
     padding: 32px 32px 24px 32px;
-    border-radius: 16px !important;
+    border-radius: var(--em-form-border-radius-block) !important;
     width: 84%;
     margin-left: auto;
     margin-right: auto;

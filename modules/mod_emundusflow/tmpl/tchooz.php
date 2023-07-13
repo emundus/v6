@@ -15,6 +15,25 @@ $now = $dateTime->format('Y-m-d H:i:s');
         width: 8px;
         border-radius: 50%;
     }
+
+    .mod_emundus_flow___print .material-icons-outlined{
+        color: var(--em-primary-color);
+    }
+
+    .btn.btn-primary.mod_emundus_flow___print:hover,
+    .btn.btn-primary.mod_emundus_flow___print:active,
+    .btn.btn-primary.mod_emundus_flow___print:focus{
+        color: var(--neutral-0) !important;
+        background: var(--em-primary-color) !important;
+        border: 1px solid var(--em-primary-color) !important;
+    }
+
+    .btn.btn-primary.mod_emundus_flow___print:hover .material-icons-outlined,
+    .btn.btn-primary.mod_emundus_flow___print:active .material-icons-outlined
+    .btn.btn-primary.mod_emundus_flow___print:focus  .material-icons-outlined {
+       color: var(--neutral-0) !important;
+    }
+
     .mod_emundus_flow___print{
         height: 38px;
         display: flex;
@@ -23,6 +42,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
     .btn-primary.mod_emundus_flow___print{
         background: transparent;
     }
+
     .mod_emundus_flow___infos{
         flex-wrap: wrap;
         grid-gap: 24px;
