@@ -3,6 +3,28 @@
         color: var(--link-regular);
     }
 
+    a:hover {
+        color: var(--link-hover);
+    }
+
+    a,
+    p,
+    ul,
+    li,
+    label,
+    input,
+    span,
+    div,
+    legend {
+        font-weight: 400;
+        font-style: normal;
+        line-height: normal;
+    }
+
+    .hidden {
+        display: none;
+    }
+
     .text-xxs {
         font-size: var(--link-xxs-size);
     }
@@ -10,4 +32,408 @@
     .collapse{
         visibility: inherit;
     }
+
+
+    h1 {
+        font-family: var(--em-default-font);
+        font-style: normal;
+        font-weight: 600;
+        font-size: 32px;
+        line-height: 40px;
+        color: var(--em-default-title-color-1);
+    }
+    h2{
+        font-family: var(--em-default-font);
+        font-style: normal;
+        font-weight: 600;
+        font-size: 24px;
+        line-height: 30px;
+        color: var(--em-default-title-color-1);
+    }
+    h3{
+        font-family: var(--em-default-font);
+        font-style: normal;
+        font-weight: 600;
+        font-size: 20px;
+        line-height: 25px;
+        color: var(--em-default-title-color-1);
+    }
+    h4{
+        font-family: var(--em-default-font);
+        font-style: normal;
+        font-weight: 600;
+        font-size: 18px;
+        line-height: 23px;
+        color: var(--em-default-title-color-1);
+    }
+    h5{
+        font-family: var(--em-default-font);
+        font-style: normal;
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 20px;
+        color: var(--em-default-title-color-1);
+    }
+    h6{
+        font-family: var(--em-default-font);
+        font-style: normal;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 16px;
+        color: var(--em-default-title-color-1);
+    }
+
+    .col-xs-1,
+    .col-sm-1,
+    .col-md-1,
+    .col-lg-1,
+    .col-xs-2,
+    .col-sm-2,
+    .col-md-2,
+    .col-lg-2,
+    .col-xs-3,
+    .col-sm-3,
+    .col-md-3,
+    .col-lg-3,
+    .col-xs-4,
+    .col-sm-4,
+    .col-md-4,
+    .col-lg-4,
+    .col-xs-5,
+    .col-sm-5,
+    .col-md-5,
+    .col-lg-5,
+    .col-xs-6,
+    .col-sm-6,
+    .col-md-6,
+    .col-lg-6,
+    .col-xs-7,
+    .col-sm-7,
+    .col-md-7,
+    .col-lg-7,
+    .col-xs-8,
+    .col-sm-8,
+    .col-md-8,
+    .col-lg-8,
+    .col-xs-9,
+    .col-sm-9,
+    .col-lg-9,
+    .col-xs-10,
+    .col-sm-10,
+    .col-md-10,
+    .col-lg-10,
+    .col-xs-11,
+    .col-sm-11,
+    .col-md-11,
+    .col-lg-11,
+    .col-xs-12,
+    .col-sm-12,
+    .col-md-12,
+    .col-lg-12 {
+        position: relative;
+        min-height: 0;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .row {
+        margin: 0;
+    }
+
+    hr {
+        margin: 16px 0;
+    }
+
+    ul {
+        list-style: initial;
+    }
+
+    legend {
+        margin: 10px 0 20px 0;
+    }
+
+    .platform-content, .moduletable {
+        padding: 0;
+        margin: 0;
+    }
+
+    *:focus {
+        outline: 5px auto -webkit-focus-ring-color;
+    }
+
+    /* MODALES */
+    .modal {
+        position: relative;
+        background-color: var(--neutral-50);
+        margin: 0;
+        width: 100%;
+        left: 0;
+        top: 0;
+        border: none;
+        box-shadow: none;
+    }
+
+    .contentpane.modal .span12 .emundus-form {
+        margin-top: 0 !important;
+    }
+
+    .modal-header {
+        background: var(--neutral-50);
+        padding: 10px 20px;
+        border-bottom: 1px solid #eee;
+        min-height: 90px;
+        border-top-left-radius: 6px;
+        border-top-right-radius: 6px;
+    }
+
+    .modal-body   a {
+            color: var(--dark-grey) !important;
+    }
+
+    .contentpane.modal h1,
+    .contentpane.modal h2,
+    .contentpane.modal h3,
+    .contentpane.modal h4,
+    .contentpane.modal h5,
+    .contentpane.modal h6 {
+        color: var(--night-blue) !important;
+    }
+
+    .contentpane.modal form legend {
+        color: var(--night-blue) !important;
+    }
+
+    .modal-dialog .modal-body h1,
+    .modal-dialog .modal-body h2,
+    .modal-dialog .modal-body h3,
+    .modal-dialog .modal-body h4,
+    .modal-dialog .modal-body h5,
+    .modal-dialog .modal-body h6 {
+        color: var(--night-blue) !important;
+    }
+
+    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs {
+        background: var(--red-500) !important;
+        background-color: var(--red-500) !important;
+        border: 1px solid var(--red-500) !important;
+        color: var(--neutral-50) !important;
+    }
+
+    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs .material-icons {
+        color: var(--neutral-50);
+    }
+
+    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:active,
+    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:focus,
+    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:hover {
+        background: transparent !important;
+        background-color: transparent !important;
+        border: 1px solid var(--red-500) !important;
+        color: var(--red-500) !important;
+    }
+
+    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:active .material-icons,
+    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:focus .material-icons,
+    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:hover .material-icons {
+          color: var(--red-500);
+    }
+
+    /* SWEET ALERT */
+
+    .gantry.g-back-office-emundus-tableau .swal2-popup iframe {
+        padding-top: 30px;
+    }
+
+    .swal2-icon.swal2-question {
+        border-color: var(--em-primary-color) !important;
+        color: var(--em-primary-color) !important;
+        margin: 10px !important;
+    }
+
+    .swal2-icon.swal2-question::before {
+         height: 105% !important;
+    }
+
+    .swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:active,
+    .swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:focus,
+    .swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:hover{
+        border: none !important;
+    }
+
+    .swal2-title {
+        color: var(--neutral-900);
+        margin: 10px 0 20px 0;
+        font-family: var(--em-coordinator-font-title);
+    }
+
+    .swal2-popup{
+        border-radius: calc(var(--em-default-br)*2) !important;
+    }
+
+    button.swal2-styled.swal2-confirm{
+        background: var(--blue-500);
+        border-radius: 8px;
+        padding: 11px 20px;
+        color: white;
+    }
+    button.swal2-styled.swal2-cancel{
+        background: #FFFFFF;
+        border: 1px solid var(--blue-500);
+        border-radius: 8px;
+        color: var(--blue-500);
+        padding: 11px 20px;
+    }
+
+    button.swal2-styled.swal2-cancel:hover,
+    button.swal2-styled.swal2-cancel:active,
+    button.swal2-styled.swal2-cancel:focus {
+        background: var(--blue-500);
+        color: #FFFFFF;
+        background-image: none !important;
+    }
+
+    button.swal2-confirm.save-btn.sauvegarder.save_continue {
+        font-family: var(--em-coordinator-font);
+        background: var(--em-primary-color) !important;
+        border: 1px solid var(--em-primary-color) !important;
+        border-radius: var(--em-coordinator-br);
+        color: var(--neutral-50) !important;
+        font-weight: inherit;
+    }
+
+    button.swal2-confirm.save-btn.sauvegarder.save_continue:hover,
+    button.swal2-confirm.save-btn.sauvegarder.save_continue:active,
+    button.swal2-confirm.save-btn.sauvegarder.save_continue:focus {
+         background: var(--em-primary-color) !important;
+         border: 1px solid var(--em-primary-color) !important;
+         border-radius: var(--em-coordinator-br);
+         color: var(--neutral-50) !important;
+
+    }
+
+    button.swal2-cancel.goback-btn {
+        font-family: var(--em-coordinator-font);
+        background: var(--em-secondary-color) !important;
+        border: 1px solid var(--em-secondary-color) !important;
+        border-radius: var(--em-coordinator-br) !important;
+        color: var(--neutral-50) !important;
+    }
+
+    button.swal2-cancel.goback-btn:hover ,
+    button.swal2-cancel.goback-btn:active,
+    button.swal2-cancel.goback-btn:focus{
+         background: var(--em-primary-color)!important;
+         border: 1px solid var(--em-primary-color) !important;
+         border-radius: var(--em-coordinator-br);
+         color: var(--neutral-50) !important;
+    }
+
+    .swal2-content {
+        font-family: var(--em-coordinator-font);
+    }
+
+    /* ALERTES */
+
+    #system-message .alert.alert-message h1 {
+        margin: 0;
+    }
+
+    #system-message .alert.alert-message h1 ::after {
+     display: none;
+    }
+
+    #system-message {
+        position: relative;
+        width: 80%;
+        left: 10%;
+        z-index: 10;
+    }
+
+    /* ALERT */
+
+    #system-message-container #system-message,
+    .com_users #system-message-container .alert.alert-error.alert-danger {
+        margin: 20px;
+    }
+
+    .messenger__notifications_counter {
+        background: red;
+        padding: 10px;
+        border-radius: 50%;
+        width: 20px;
+        height: 21px;
+        color: var(--neutral-50);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 16px;
+    }
+
+    .alert .close,
+    .alert  .alert-link,
+    .alert.alert-link:hover {
+        font-size: xx-large;
+        opacity: 1;
+        top: unset;
+        left: unset;
+        width: auto;
+        display: block;
+        position: relative;
+        float: right;
+        right: unset;
+        background: transparent;
+    }
+
+    .alert  h4 {
+        font-weight: 500;
+    }
+
+    .alert p {
+        color: inherit;
+        font-family: var(--em-coordinator-font);
+    }
+
+    #chargement .alert:not(.em-alert-filter) {
+         margin: 0 0 10px 0 !important;
+     }
+
+    .alert a {
+        font-size: 20px !important;
+    }
+
+    .alert a:hover {
+         font-size: 20px;
+     }
+
+    .has-error .help-block,
+    .has-error .control-label,
+    .has-error .radio,
+    .has-error  .checkbox,
+    .has-error .radio-inline,
+    .has-error .checkbox-inline {
+        color: #b94a48;
+    }
+
+    .has-error .form-control {
+        border-color: #b94a48;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    }
+
+    .has-error  .form-control:focus {
+         border-color: #953b39;
+         -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392;
+         box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392;
+     }
+
+    .has-error .input-group-addon {
+        color: #b94a48;
+        border-color: #b94a48;
+        background-color: #f2dede;
+    }
+
+    .has-error .form-control-feedback {
+        color: #b94a48;
+    }
+
 }

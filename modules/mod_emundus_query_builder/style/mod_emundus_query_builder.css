@@ -211,6 +211,118 @@
 	color: #ccc;
 }
 
+.indicateurs-page #g-container-main {
+	padding-left: 5% !important;
+}
+
+
+.btn a {
+	color: var(--neutral-50);
+}
+
+.btn a:hover,
+.btn a:focus,
+.btn a:active {
+	 color: var(--em-secondary-color);
+ }
+
+
+.item-pageindicateurs-page h1 {
+	color: var(--neutral-900);
+	font-family: var(--em-coordinator-font-title);
+}
+
+.etiquette label {
+	color: var(--night-blue);
+}
+
+.etiquette p {
+	color: var(--night-blue);
+}
+
+#validation {
+	background: var(--main-500);
+	border: 1px solid var(--main-500);
+}
+
+#validation:hover,
+#validation:focus,
+#validation:active {
+	background: transparent;
+	border: 1px solid var(--main-500);
+	color: var(--main-500);
+}
+
+.btnQueryBuilder,
+.swal2-confirm {
+	background: var(--main-500);
+	border: 1px solid var(--main-500);
+}
+
+.btnConsulter {
+	background: var(--main-500);
+	border: 1px solid var(--main-500);
+}
+
+.btnConsulter:hover {
+	color: var(--main-500);
+	border: 1px solid var(--main-500);
+	background: transparent;
+}
+
+.btnQueryBuilder:hover,
+.swal2-confirm:hover {
+	color: var(--main-500);
+	border: 1px solid var(--main-500);
+	background: transparent;
+}
+
+.btnExport,
+.swal2-cancel {
+	color: var(--night-blue);
+	border: 1px solid var(--night-blue);
+	background: transparent;
+}
+
+.btnExport:hover,
+.swal2-cancel:hover {
+	color: var(--neutral-50);
+	border: 1px solid var(--night-blue);
+	background: var(--night-blue);
+}
+
+.g-content h1::after,
+.swal2-title::after {
+	background: var(--night-blue) !important;
+}
+
+.swal2-progress-step,
+.swal2-progress-steps .swal2-progress-step-line,
+.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step {
+	background: var(--night-blue);
+}
+
+.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step ~ .swal2-progress-step-line {
+	border-top: 1px solid var(--night-blue);
+	border-bottom: 1px solid var(--night-blue);
+}
+
+.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step ~ .swal2-progress-step {
+	color: var(--night-blue);
+	border: 1px solid var(--night-blue);
+}
+
+.input .modif,
+.input .delete {
+	color: var(--night-blue);
+	border: unset;
+}
+
+.btnConsulter:hover a {
+	color: var(--main-500);
+}
+
+
 @media (max-width: 600px) {
 	.queryBuilder {
 		text-align:left;
