@@ -2557,19 +2557,27 @@ class EmundusModelFiles extends JModelLegacy
 						break;
 					case 'radiobutton':
 						$element_params = json_decode($element->element_attribs, true);
+						if (!empty($element_params['sub_options'])) {
+							if ($is_repeat) {
+								$query .= ', (CASE ' . $child_element_table_alias . '.' . $element->element_name . ' ';
+							} else {
+								$query .= ', (CASE ' . $element_table_alias . '.' . $element->element_name . ' ';
+							}
 
-						if ($is_repeat) {
-							$query .= ', (CASE ' . $child_element_table_alias . '.' . $element->element_name . ' ';
+							foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
+								$sub_label = JText::_($element_params['sub_options']['sub_labels'][$sub_key]);
+								$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
+								$query .= ' WHEN \'' . $sub_value . '\' THEN \'' . $sub_label . '\'';
+							}
+
+							$query .= ' END) AS ' . $element->tab_name . '___' . $element->element_name;
 						} else {
-							$query .= ', (CASE ' . $element_table_alias . '.' . $element->element_name . ' ';
+							if ($is_repeat) {
+								$query .= ', ' . $child_element_table_alias . '.' . $element->element_name . ' AS ' . $element->tab_name . '___' . $element->element_name;
+							} else {
+								$query .= ', ' . $element_table_alias . '.' . $element->element_name . ' AS ' . $element->tab_name . '___' . $element->element_name;
+							}
 						}
-
-						foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
-							$sub_label = JText::_($element_params['sub_options']['sub_labels'][$sub_key]);
-							$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
-							$query .= ' WHEN \'' . $sub_value . '\' THEN \'' . $sub_label . '\'';
-						}
-						$query .= ' END) AS ' . $element->tab_name . '___' . $element->element_name;
 
 						break;
 					case 'checkbox':
@@ -2577,10 +2585,12 @@ class EmundusModelFiles extends JModelLegacy
 						$query .= ', (';
 						$regexp_sub_query = $element_table_alias . '.' . $element->element_name . ' '; // default value if no sub_options
 
+						$element_params = json_decode($element->element_attribs, true);
 						if (!empty($element_params['sub_options']['sub_values'])) {
 							foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
 								$sub_label = JText::_($element_params['sub_options']['sub_labels'][$sub_key]);
 								$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
+								$sub_label = str_replace("'", "''", $sub_label); // escape sub label single quotes for SQL query
 
 								if ($sub_key === 0) {
 									$regexp_sub_query = 'regexp_replace(' . $element_table_alias . '.' . $element->element_name . ', \'"' . $sub_value . '"\', \'' . $sub_label . '\')';
@@ -2686,6 +2696,7 @@ class EmundusModelFiles extends JModelLegacy
 			try {
 				$db = JFactory::getDbo();
 				$db->setQuery($query . $from . $leftJoin . $where);
+				var_dump($query . $from . $leftJoin . $where);exit;
 
 				$data = $db->loadAssocList();
 			} catch(Exception $e) {
