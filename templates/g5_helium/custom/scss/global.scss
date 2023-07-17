@@ -1282,6 +1282,7 @@ footer#g-footer > .g-container {
     border-color: var(--main-500);
     border-radius: var(--em-coordinator-br) !important;
     font-family: var(--em-coordinator-font);
+    font-weight: 500;
 
     &:hover, &:active, &:focus {
       background: var(--neutral-50);
@@ -1664,7 +1665,22 @@ div.fabrikFilterContainer {
 
       input, select {
         width: auto;
-        height: 40px;
+      }
+
+      select.fabrik_filter {
+        padding: 0 var(--p-8);
+      }
+
+      a.chzn-single {
+        color: var(--em-default-text-color-1);
+        border-radius: var(--em-form-border-radius);
+        padding: 0 var(--p-8);
+        height: 48px;
+        font-size: 16px;
+        margin: 0;
+        border: 1px solid #e0e0e5;
+        background-color: var(--em-form-background-color);
+        transition: all 0.1s ease-out;
       }
 
       .fabrik_filter_submit {
@@ -3103,6 +3119,8 @@ ul.unstyled.em-linkForgot li a {
 
 /************************ GESTIONNAIRE - COORDINATOR *********************/
 
+
+
 .com_emundus_vue .fabrikElementContainer.control-group span.material-icons {
   font-family: 'Material Icons', sans-serif !important;
   font-size: 24px !important;
@@ -4064,7 +4082,7 @@ div#em-appli-block {
   display: none;
 }
 
-/* VIEW FORM - FORMS */
+/* VIEW FORM - FORMULAIRE */
 
 .view-form:not(.com_emundus),
 .view-form.view-registration,

@@ -1172,6 +1172,11 @@ div#em-synthesis .panel-heading h3 {
     color: #353544;
 }
 
+
+.col-md-9.main-panel div#em-appli-block .panel.panel-default.widget .panel-body ul.list-group {
+    padding: 13px 0 0 13px;
+}
+
 .col-md-9.main-panel div#em-appli-block .em-decision-form-content textarea {
     color: #353544;
 }
