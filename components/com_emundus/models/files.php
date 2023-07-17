@@ -2447,14 +2447,20 @@ class EmundusModelFiles extends JModelLegacy
 				if (in_array($element->tab_name, $already_joined)) {
 					$element_table_alias = array_search($element->tab_name, $already_joined);
 				} else {
-					$element_table_alias = 'table_join_' . sizeof($already_joined);
-					$already_joined[$element_table_alias] = $element->tab_name;
-
 					if ($h_files->isTableLinkedToCampaignCandidature($element->tab_name)) {
+						$element_table_alias = 'table_join_' . sizeof($already_joined);
+						$already_joined[$element_table_alias] = $element->tab_name;
+
 						$leftJoin .= ' LEFT JOIN ' . $element->tab_name . ' as ' . $element_table_alias . ' ON ' . $element_table_alias . '.fnum = jecc.fnum ';
 					} else {
 						$joins = $h_files->findJoinsBetweenTablesRecursively($element->tab_name, 'jos_emundus_campaign_candidature');
-						$leftJoin .= $h_files->writeJoins($joins, $already_joined, true);
+
+						if (!empty($joins)) {
+							$leftJoin .= $h_files->writeJoins($joins, $already_joined, true);
+							$element_table_alias = array_search($element->tab_name, $already_joined);
+						} else {
+							continue; // If the element is not linked to the campaign candidature, we won't be able to get the data
+						}
 					}
 				}
 
@@ -2551,19 +2557,27 @@ class EmundusModelFiles extends JModelLegacy
 						break;
 					case 'radiobutton':
 						$element_params = json_decode($element->element_attribs, true);
+						if (!empty($element_params['sub_options'])) {
+							if ($is_repeat) {
+								$query .= ', (CASE ' . $child_element_table_alias . '.' . $element->element_name . ' ';
+							} else {
+								$query .= ', (CASE ' . $element_table_alias . '.' . $element->element_name . ' ';
+							}
 
-						if ($is_repeat) {
-							$query .= ', (CASE ' . $child_element_table_alias . '.' . $element->element_name . ' ';
+							foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
+								$sub_label = JText::_($element_params['sub_options']['sub_labels'][$sub_key]);
+								$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
+								$query .= ' WHEN \'' . $sub_value . '\' THEN \'' . $sub_label . '\'';
+							}
+
+							$query .= ' END) AS ' . $element->tab_name . '___' . $element->element_name;
 						} else {
-							$query .= ', (CASE ' . $element_table_alias . '.' . $element->element_name . ' ';
+							if ($is_repeat) {
+								$query .= ', ' . $child_element_table_alias . '.' . $element->element_name . ' AS ' . $element->tab_name . '___' . $element->element_name;
+							} else {
+								$query .= ', ' . $element_table_alias . '.' . $element->element_name . ' AS ' . $element->tab_name . '___' . $element->element_name;
+							}
 						}
-
-						foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
-							$sub_label = JText::_($element_params['sub_options']['sub_labels'][$sub_key]);
-							$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
-							$query .= ' WHEN \'' . $sub_value . '\' THEN \'' . $sub_label . '\'';
-						}
-						$query .= ' END) AS ' . $element->tab_name . '___' . $element->element_name;
 
 						break;
 					case 'checkbox':
@@ -2571,10 +2585,12 @@ class EmundusModelFiles extends JModelLegacy
 						$query .= ', (';
 						$regexp_sub_query = $element_table_alias . '.' . $element->element_name . ' '; // default value if no sub_options
 
+						$element_params = json_decode($element->element_attribs, true);
 						if (!empty($element_params['sub_options']['sub_values'])) {
 							foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
 								$sub_label = JText::_($element_params['sub_options']['sub_labels'][$sub_key]);
 								$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
+								$sub_label = str_replace("'", "''", $sub_label); // escape sub label single quotes for SQL query
 
 								if ($sub_key === 0) {
 									$regexp_sub_query = 'regexp_replace(' . $element_table_alias . '.' . $element->element_name . ', \'"' . $sub_value . '"\', \'' . $sub_label . '\')';
@@ -2683,8 +2699,7 @@ class EmundusModelFiles extends JModelLegacy
 
 				$data = $db->loadAssocList();
 			} catch(Exception $e) {
-				error_log($e->getMessage());
-				error_log($query . $from . $leftJoin . $where);
+				JLog::add('Error trying to generate data for xlsx export ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
 			}
 
 			if (!empty($data)) {
