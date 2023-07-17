@@ -53,46 +53,55 @@ class Glpi extends Api
 		$this->auth['session_token'] = $this->getSessionToken();
 	}
 
-	public function getSessionToken(): string
+	private function getSessionToken(): string
 	{
-		$auth = $this->getAuth();
+		$glpi_session_token = JFactory::getSession()->get('glpi_session_token', '');
 
-		$this->headers = array(
-			'App-Token' => $auth['app_token'],
-			'Authorization' => 'user_token '.$auth['user_token'],
-		);
+		if(empty($glpi_session_token))
+		{
+			$auth = $this->getAuth();
 
-		$response = $this->get('');
+			$this->headers = array(
+				'App-Token'     => $auth['app_token'],
+				'Authorization' => 'user_token ' . $auth['user_token'],
+			);
 
-		if($response['status'] == 200) {
-			return $response['data']['session_token'];
-		} else {
-			return '';
+			$response = $this->get('initSession');
+
+			if ($response['status'] == 200)
+			{
+				JFactory::getSession()->set('glpi_session_token', $response['data']->session_token);
+
+				$glpi_session_token = $response['data']->session_token;
+			}
 		}
+
+		return $glpi_session_token;
 	}
 
-	public function get($url, $params = array())
+	public function get($url, $params = array(), $retry = true)
 	{
 		$response = ['status' => 200, 'message' => '', 'data' => ''];
 
 		try
 		{
 			$url_params = http_build_query($params);
-			$url = !empty($url_params) ? $url . '?' . $url_params : $url;
-			if(!empty($url))
-			{
-				$url = $this->baseUrl.'/'.$url;
-			} else {
-				$url = $this->baseUrl;
-			}
+			$complete_url = !empty($url_params) ? $url . '?' . $url_params : $url;
 
-			$request = $this->client->get($url, ['headers' => $this->getHeaders()]);
+			$request = $this->client->get($this->baseUrl.'/'.$complete_url, ['headers' => $this->getHeaders()]);
 			$response['status'] = $request->getStatusCode();
 			$response['data'] = json_decode($request->getBody());
+
+			if($response['status'] == 401 && $retry)
+			{
+				JFactory::getSession()->clear('glpi_session_token');
+				$this->setAuth();
+				$this->setHeaders();
+				$this->get($url, $params, false);
+			}
 		}
 		catch (\Exception $e)
 		{
-			//TODO: Manage if session token is expired
 			JLog::add('[GET] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.api');
 			$response['status'] = $e->getCode();
 			$response['message'] = $e->getMessage();

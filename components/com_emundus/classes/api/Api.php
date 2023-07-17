@@ -122,15 +122,9 @@ class Api
 		try
 		{
 			$url_params = http_build_query($params);
-			$url = !empty($url_params) ? $url . '?' . $url_params : $url;
-			if(!empty($url))
-			{
-				$url = $this->baseUrl.'/'.$url;
-			} else {
-				$url = $this->baseUrl;
-			}
+			$complete_url = !empty($url_params) ? $url . '?' . $url_params : $url;
 
-			$request = $this->client->get($url, ['headers' => $this->getHeaders()]);
+			$request = $this->client->get($this->baseUrl.'/'.$complete_url, ['headers' => $this->getHeaders()]);
 			$response['status'] = $request->getStatusCode();
 			$response['data'] = json_decode($request->getBody());
 		}
