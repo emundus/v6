@@ -1919,6 +1919,40 @@ structure:
 				$db->execute();
 
 				EmundusHelperUpdate::installExtension('plg_fabrik_element_panel', 'panel', '{"name":"plg_fabrik_element_panel","type":"plugin","creationDate":"July 2023","author":"eMundus","copyright":"Copyright (C) 2005-2023 Media A-Team, Inc. - All rights reserved.","authorEmail":"dev@emundus.io","authorUrl":"www.emundus.fr","version":"3.10","description":"PLG_ELEMENT_PANEL_DESCRIPTION","group":"","filename":"panel"}', 'plugin', 1, 'fabrik_element');
+
+				EmundusHelperUpdate::installExtension('plg_fabrik_element_currency', 'currency', '{"name":"plg_fabrik_element_currency","type":"plugin","creationDate":"Mai 2023","author":"eMundus - Thibaud Grignon","copyright":"Copyright (C) 2005-2021 Media A-Team, Inc. - All rights reserved.","authorEmail":"dev@emundus.io","authorUrl":"www.emundus.fr","version":"3.10","description":"PLG_ELEMENT_FIELD_DESCRIPTION","group":"","filename":"currency"}', 'plugin', 1, 'fabrik_element');
+				$columns      = [
+					[
+						'name'    => 'symbol',
+						'type'    => 'varchar',
+						'length'  => 255,
+						'null'    => 0,
+					],
+					[
+						'name'    => 'iso3',
+						'type'    => 'varchar',
+						'length'  => 3,
+						'null'    => 0,
+					],
+					[
+						'name'    => 'name',
+						'type'    => 'varchar',
+						'length'  => 255,
+						'null'    => 0,
+					],
+					[
+						'name'    => 'published',
+						'type'    => 'tinyint',
+						'length'  => 1,
+						'default' => 1,
+						'null'    => 0,
+					]
+				];
+				$data_currency = EmundusHelperUpdate::createTable('data_currency', $columns);
+
+				if($data_currency['status']){
+					EmundusHelperUpdate::executeSQlFile('insert_data_currency');
+				}
 			}
 
 			// Insert new translations in overrides files

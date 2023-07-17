@@ -3063,6 +3063,46 @@ class EmundusModelFormbuilder extends JModelList {
         }
     }
 
+    function getDataFromQuery($query)
+    {
+        $db = $this->getDbo();
+        $db->setQuery($query);
+
+        try {
+            return $db->loadObjectList();
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus/models/formbuilder | Error at getting data from query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function getQueryFromXmlPlugin($plugin_name, $field_name)
+    {
+
+        if (!empty($plugin_name)) // we get the plugin's name
+        {
+            $path = JPATH_ROOT . "/plugins/fabrik_element/" . $plugin_name . "/forms/fields.xml";
+
+            if (file_exists($path)) {
+                $xmlFile = new DOMDocument();
+                $xmlFile->load($path);
+            }
+        }
+
+        $query = null;
+        if (!empty($xmlFile))
+        {
+            foreach ($xmlFile->getElementsByTagName('field') as $field)
+            {
+                if ($field->getAttribute('name') === $field_name) {
+                    $query = $field->getAttribute('query');
+                }
+            }
+        }
+        return $query;
+    }
+
+
     function enableRepeatGroup($gid){
         $saved = false;
         $db = $this->getDbo();

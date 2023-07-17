@@ -792,6 +792,42 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         exit;
     }
 
+    public function getDataForSqlField()
+    {
+        $user = JFactory::getUser();
+
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+        {
+            $result = 0;
+            $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        }
+
+        if (empty($response)) // no error
+        {
+            $jinput = JFactory::getApplication()->input;
+            $plugin_name = $jinput->getString('plugin_name');
+            $field_name = $jinput->getString('field_name');
+
+            $response = array('status' => 0, 'msg' => 'Missing plugin or field parameters'); // we consider there's an error at beginning
+
+            if (!empty($plugin_name) && !empty($field_name)) // we get plugin's name
+            {
+                $query = $this->m_formbuilder->getQueryFromXmlPlugin($plugin_name, $field_name);
+
+                $response = array('status' => 0, 'msg' => 'Missing query parameter'); // we consider there's an error at beginning
+
+                if (!empty($query)) // we get the query
+                {
+                    $sqlFieldData = $this->m_formbuilder->getDataFromQuery($query);
+                    $response = array('status' => 1, 'msg' => 'worked', 'data' => $sqlFieldData);
+                }
+            }
+        }
+
+        echo json_encode((object)$response);
+        exit;
+    }
+
     public function enablegrouprepeat() {
         $user = JFactory::getUser();
 
