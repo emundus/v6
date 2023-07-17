@@ -1670,6 +1670,18 @@ div.fabrikFilterContainer {
         padding: 0 var(--p-8);
       }
 
+      a.chzn-single {
+        color: var(--em-default-text-color-1);
+        border-radius: var(--em-form-border-radius);
+        padding: 0 var(--p-8);
+        height: 48px;
+        font-size: 16px;
+        margin: 0;
+        border: 1px solid #e0e0e5;
+        background-color: var(--em-form-background-color);
+        transition: all 0.1s ease-out;
+      }
+
       .fabrik_filter_submit {
         display: flex;
         flex-direction: row;
