@@ -1664,7 +1664,10 @@ div.fabrikFilterContainer {
 
       input, select {
         width: auto;
-        height: 40px;
+      }
+
+      select.fabrik_filter {
+        padding: 0 var(--p-8);
       }
 
       .fabrik_filter_submit {
@@ -3102,6 +3105,8 @@ ul.unstyled.em-linkForgot li a {
 
 
 /************************ GESTIONNAIRE - COORDINATOR *********************/
+
+
 
 .com_emundus_vue .fabrikElementContainer.control-group span.material-icons {
   font-family: 'Material Icons', sans-serif !important;
