@@ -2567,6 +2567,8 @@ class EmundusModelFiles extends JModelLegacy
 							foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
 								$sub_label = JText::_($element_params['sub_options']['sub_labels'][$sub_key]);
 								$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
+								$sub_label = str_replace("'", "''", $sub_label); // escape sub label single quotes for SQL query
+
 								$query .= ' WHEN \'' . $sub_value . '\' THEN \'' . $sub_label . '\'';
 							}
 
@@ -2619,6 +2621,8 @@ class EmundusModelFiles extends JModelLegacy
 							foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
 								$sub_label = JText::_($element_params['sub_options']['sub_labels'][$sub_key]);
 								$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
+								$sub_label = str_replace("'", "''", $sub_label); // escape sub label single quotes for SQL query
+
 								$query .= ' WHEN \'' . $sub_value . '\' THEN \'' . $sub_label . '\'';
 							}
 							$query .= ' END) AS ' . $element->tab_name . '___' . $element->element_name;
@@ -2636,6 +2640,7 @@ class EmundusModelFiles extends JModelLegacy
 								foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
 									$sub_label = JText::_($element_params['sub_options']['sub_labels'][$sub_key]);
 									$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
+									$sub_label = str_replace("'", "''", $sub_label); // escape sub label single quotes for SQL query
 
 									if ($sub_key === 0) {
 										if ($is_repeat) {
