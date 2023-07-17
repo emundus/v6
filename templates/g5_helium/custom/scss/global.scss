@@ -1282,6 +1282,7 @@ footer#g-footer > .g-container {
     border-color: var(--main-500);
     border-radius: var(--em-coordinator-br) !important;
     font-family: var(--em-coordinator-font);
+    font-weight: 500;
 
     &:hover, &:active, &:focus {
       background: var(--neutral-50);
