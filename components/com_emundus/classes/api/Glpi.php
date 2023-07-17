@@ -87,8 +87,14 @@ class Glpi extends Api
 		{
 			$url_params = http_build_query($params);
 			$complete_url = !empty($url_params) ? $url . '?' . $url_params : $url;
+			if(!empty($complete_url))
+			{
+				$complete_url = $this->baseUrl.'/'.$complete_url;
+			} else {
+				$complete_url = $this->baseUrl;
+			}
 
-			$request = $this->client->get($this->baseUrl.'/'.$complete_url, ['headers' => $this->getHeaders()]);
+			$request = $this->client->get($complete_url, ['headers' => $this->getHeaders()]);
 			$response['status'] = $request->getStatusCode();
 			$response['data'] = json_decode($request->getBody());
 
@@ -108,5 +114,64 @@ class Glpi extends Api
 		}
 
 		return $response;
+	}
+
+	/**
+	 * @param $table
+	 *
+	 *
+	 * @desc List the searchoptions of provided itemtype. To use with Search items.
+	 */
+	public function listSearchOptions($table): array
+	{
+		return $this->get('listSearchOptions/'.$table);
+	}
+
+	/**
+	 * @param $table
+	 * @param $criterias
+	 * @param $forcedisplay
+	 * @param $range
+	 *
+	 * @return array
+	 *
+	 * @desc  Expose the GLPI searchEngine and combine criteria to retrieve a list of elements of specified itemtype. > Note: you can use 'AllAssets' itemtype to retrieve a combination of all asset's types.
+	 */
+	public function search($table, $criterias = [], $forcedisplay = [], $range = '0-100'): array
+	{
+		return $this->get('search/'.$table,
+			[
+				'criteria' => $criterias,
+				'forcedisplay' => $forcedisplay,
+				'range' => $range
+			]
+		);
+	}
+
+	/**
+	 * @param $table
+	 * @param $data
+	 *
+	 * @return array
+	 *
+	 * @desc Add an object (or multiple objects) into GLPI.
+	 */
+	public function addItem($table, $data): array
+	{
+		return $this->post($table, $data);
+	}
+
+	/**
+	 * @param $table
+	 * @param $id
+	 * @param $force_purge
+	 *
+	 * @return array
+	 *
+	 * @desc Delete an object existing in GLPI.
+	 */
+	public function deleteItem($table, $id, $force_purge = false): array
+	{
+		return $this->delete($table.'/'.$id.'?force_purge='.$force_purge);
 	}
 }
