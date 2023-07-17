@@ -2696,7 +2696,6 @@ class EmundusModelFiles extends JModelLegacy
 			try {
 				$db = JFactory::getDbo();
 				$db->setQuery($query . $from . $leftJoin . $where);
-				var_dump($query . $from . $leftJoin . $where);exit;
 
 				$data = $db->loadAssocList();
 			} catch(Exception $e) {
