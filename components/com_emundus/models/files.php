@@ -2447,14 +2447,20 @@ class EmundusModelFiles extends JModelLegacy
 				if (in_array($element->tab_name, $already_joined)) {
 					$element_table_alias = array_search($element->tab_name, $already_joined);
 				} else {
-					$element_table_alias = 'table_join_' . sizeof($already_joined);
-					$already_joined[$element_table_alias] = $element->tab_name;
-
 					if ($h_files->isTableLinkedToCampaignCandidature($element->tab_name)) {
+						$element_table_alias = 'table_join_' . sizeof($already_joined);
+						$already_joined[$element_table_alias] = $element->tab_name;
+
 						$leftJoin .= ' LEFT JOIN ' . $element->tab_name . ' as ' . $element_table_alias . ' ON ' . $element_table_alias . '.fnum = jecc.fnum ';
 					} else {
 						$joins = $h_files->findJoinsBetweenTablesRecursively($element->tab_name, 'jos_emundus_campaign_candidature');
-						$leftJoin .= $h_files->writeJoins($joins, $already_joined, true);
+
+						if (!empty($joins)) {
+							$leftJoin .= $h_files->writeJoins($joins, $already_joined, true);
+							$element_table_alias = array_search($element->tab_name, $already_joined);
+						} else {
+							continue; // If the element is not linked to the campaign candidature, we won't be able to get the data
+						}
 					}
 				}
 
@@ -2683,8 +2689,7 @@ class EmundusModelFiles extends JModelLegacy
 
 				$data = $db->loadAssocList();
 			} catch(Exception $e) {
-				error_log($e->getMessage());
-				error_log($query . $from . $leftJoin . $where);
+				JLog::add('Error trying to generate data for xlsx export ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
 			}
 
 			if (!empty($data)) {
