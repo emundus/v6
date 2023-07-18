@@ -38,6 +38,7 @@ templates/LaScala/*
 /image/logo.png
 /images/custom/logo.png
 /images/custom/logo_custom.png
+/images/emundus/custom/*
 #_bdd/*
 components/com_emundus.*
 components/com_emundus/*.bak

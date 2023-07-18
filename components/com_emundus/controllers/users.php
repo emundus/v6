@@ -1413,7 +1413,7 @@ class EmundusControllerUsers extends JControllerLegacy {
     {
         $currentUser = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($currentUser->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($currentUser->id)) {
             return false;
         }
 

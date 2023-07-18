@@ -979,6 +979,16 @@ class EmundusModelForm extends JModelList {
             if ($heading_menu['status'] !== true){
                 return false;
             }
+	        $header_menu_id = $heading_menu['id'];
+
+	        $alias = 'menu-profile'.$newprofile.'-heading-'.$header_menu_id;
+	        $query->clear()
+		        ->update($db->quoteName('#__menu'))
+		        ->set($db->quoteName('alias') . ' = ' . $db->quote($alias))
+		        ->set($db->quoteName('path') . ' = ' . $db->quote($alias))
+		        ->where($db->quoteName('id') . ' = ' . $db->quote($header_menu_id));
+	        $db->setQuery($query);
+	        $db->execute();
 
             // Create first page
             if ($first_page) {
@@ -1210,6 +1220,7 @@ class EmundusModelForm extends JModelList {
 		if (!empty($prid)) {
 			require_once (JPATH_SITE.'/components/com_emundus/models/formbuilder.php');
 			$formbuilder = new EmundusModelFormbuilder;
+
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
@@ -1222,9 +1233,19 @@ class EmundusModelForm extends JModelList {
 				$results[] = $db->execute();
 
 				$query->clear()
+					->select($db->quoteName('id'))
+					->from($db->quoteName('#__menu'))
+					->where($db->quoteName('menutype') . ' = ' . $db->quote('menu-profile'.$prid))
+					->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
+				$db->setQuery($query);
+				$heading_id = $db->loadResult();
+
+				$alias = 'menu-profile'.$prid . '-heading-'.$heading_id;
+				$query->clear()
 					->update($db->quoteName('#__menu'))
 					->set($db->quoteName('title') . ' = ' . $db->quote($label))
-					->set($db->quoteName('alias') . ' = ' . $db->quote(str_replace($formbuilder->getSpecialCharacters(), '-', strtolower($label).'-'.$prid)))
+					->set($db->quoteName('alias') . ' = ' . $db->quote($alias))
+					->set($db->quoteName('path') . ' = ' . $db->quote($alias))
 					->where($db->quoteName('menutype') . ' = ' . $db->quote('menu-profile'.$prid))
 					->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
 				$db->setQuery($query);
