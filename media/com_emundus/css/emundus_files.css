@@ -1552,27 +1552,6 @@ thead th:hover {
 /*
 *   Modal pour les actions fait main pour eviter les conflits bootstrap
 */
-
-.label {
-    display: inline !important;
-    padding: 6px 10px !important;
-    font-size: 100% !important;
-    font-weight: bold !important;
-    line-height: 1 !important;
-    color: #ffffff !important;
-    text-align: center !important;
-    white-space: nowrap !important;
-    vertical-align: baseline !important;
-    border-radius: .25em !important;
-}
-
-.label[href]:hover,
-.label[href]:focus {
-    color: #ffffff !important;
-    text-decoration: none !important;
-    cursor: pointer !important;
-}
-
 .em-hide {
     display: none;
 }
@@ -1788,7 +1767,6 @@ thead th:hover {
 }
 
 .em-cell>.label {
-    display: inline-block !important;
     margin: 2px 1px !important;
 }
 

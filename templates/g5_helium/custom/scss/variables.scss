@@ -270,6 +270,7 @@
   --em-applicant-br: #{$em-border-radius-applicant};
   --em-coordinator-br: #{$em-border-radius-coordinator};
   --em-default-br-cards: #{$em-border-radius-cards};
+  --em-status-br: #{$em-border-radius-status};
 
   --spacing-2: 8px;
 
@@ -378,6 +379,30 @@
   --link-xxs-size: #{$link-xxs-size};
   --link-regular: #{$link-regular};
   --link-hover: #{$link-hover};
+
+  /** STATUS,TAGS **/
+  --em-red-1: #{$accent-red-1};
+  --em-red-2: #{$accent-red-2};
+  --em-pink-1: #{$accent-pink-1};
+  --em-pink-2: #{$accent-pink-2};
+  --em-purple-1: #{$accent-purple-1};
+  --em-purple-2: #{$accent-purple-2};
+  --em-light-blue-1: #{$accent-light-blue-1};
+  --em-light-blue-2: #{$accent-light-blue-2};
+  --em-blue-1: #{$accent-blue-1};
+  --em-blue-2: #{$accent-blue-2};
+  --em-blue-3: #{$accent-blue-3};
+  --em-green-1: #{$accent-green-1};
+  --em-green-2: #{$accent-green-2};
+  --em-yellow-1: #{$accent-yellow-1};
+  --em-yellow-2: #{$accent-yellow-2};
+  --em-orange-1: #{$accent-orange-1};
+  --em-orange-2: #{$accent-orange-2};
+  --em-beige: #{$accent-beige};
+  --em-brown: #{$accent-brown};
+  --em-grey-1: #{$accent-grey-1};
+  --em-grey-2: #{$accent-grey-2};
+  --em-black: #{$accent-black};
 }
 
 // Mixin - typo

@@ -25,3 +25,7 @@ form:
       type: input.text
       label: Border radius for Coordinator cards
       default: '16px'
+    status:
+      type: input.text
+      label: Border radius for Status, tags, groups
+      default: '8px'

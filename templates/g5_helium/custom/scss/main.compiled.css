@@ -1991,6 +1991,274 @@ button.swal2-cancel.goback-btn:hover ,
 .em-w-auto{
         width: auto;
     }
+/* STATUTS ET ETIQUETTES */
+.em-cell > .label, .em-status{
+        display: inline-block;
+        border-radius: var(--em-status-br);
+        font-size: 14px;
+        font-weight: 400;
+        box-shadow: 0 1px 4px rgba(32, 35, 44, 0.05);
+        padding: 6px 10px;
+    }
+.em-cell .circle {
+        flex-basis: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 8px;
+        flex-grow: 0;
+        margin-top: 6px;
+        flex-shrink: 0;
+    }
+.sticker {
+        border: solid 1px;
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
+        padding: 4px 8px;
+        margin: 4px 0;
+        font-size: 14px;
+    }
+.label.label-default, .label .label-null, .label .label-, .circle.label-default, .circle .label-null, .circle .label-, .sticker.label-default, .sticker .label-null, .sticker .label- {
+            background-color: var(--em-grey-1) !important;
+            color: #282828;
+            text-shadow: none;
+        }
+.label .label-text-default, .label .label-text-null, .circle .label-text-default, .circle .label-text-null, .sticker .label-text-default, .sticker .label-text-null {
+            color: var(--em-grey-1) !important;
+        }
+.label.label-default-500, .label .label-null-500, .label .label-500, .circle.label-default-500, .circle .label-null-500, .circle .label-500, .sticker.label-default-500, .sticker .label-null-500, .sticker .label-500 {
+            background-color: var(--em-grey-1) !important;
+        }
+.label.label-red-1, .circle.label-red-1, .sticker.label-red-1 {
+            background-color: var(--em-red-1);
+            text-shadow: none;
+        }
+.label .label-text-red-1, .circle .label-text-red-1, .sticker .label-text-red-1 {
+            color: var(--em-red-1);
+        }
+.label.label-border-red-1, .circle.label-border-red-1, .sticker.label-border-red-1 {
+            border-color: var(--em-red-1);
+        }
+.label.label-red-2, .circle.label-red-2, .sticker.label-red-2 {
+            background-color: var(--em-red-2);
+            text-shadow: none;
+        }
+.label .label-text-red-2, .circle .label-text-red-2, .sticker .label-text-red-2 {
+            color: var(--em-red-2);
+        }
+.label.label-border-red-2, .circle.label-border-red-2, .sticker.label-border-red-2 {
+            border-color: var(--em-red-2);
+        }
+.label.label-pink-1, .circle.label-pink-1, .sticker.label-pink-1 {
+            background-color: var(--em-pink-1);
+            color: black;
+            text-shadow: none;
+        }
+.label .label-text-pink-1, .circle .label-text-pink-1, .sticker .label-text-pink-1 {
+            color: var(--em-pink-1);
+        }
+.label.label-border-pink-1, .circle.label-border-pink-1, .sticker.label-border-pink-1 {
+            border-color: var(--em-pink-1);
+        }
+.label.label-pink-2, .circle.label-pink-2, .sticker.label-pink-2 {
+            background-color: var(--em-pink-2);
+            text-shadow: none;
+        }
+.label .label-text-pink-2, .circle .label-text-pink-2, .sticker .label-text-pink-2 {
+            color: var(--em-pink-2);
+        }
+.label.label-border-pink-2, .circle.label-border-pink-2, .sticker.label-border-pink-2 {
+            border-color: var(--em-pink-2);
+        }
+.label.label-purple-1, .circle.label-purple-1, .sticker.label-purple-1 {
+            background-color: var(--em-purple-1);
+            color: black;
+            text-shadow: none;
+        }
+.label .label-text-purple-1, .circle .label-text-purple-1, .sticker .label-text-purple-1 {
+            color: var(--em-purple-1);
+        }
+.label.label-border-purple-1, .circle.label-border-purple-1, .sticker.label-border-purple-1 {
+            border-color: var(--em-purple-1);
+        }
+.label.label-purple-2, .circle.label-purple-2, .sticker.label-purple-2 {
+            background-color: var(--em-purple-2);
+            text-shadow: none;
+        }
+.label .label-text-purple-2, .circle .label-text-purple-2, .sticker .label-text-purple-2 {
+            color: var(--em-purple-2);
+        }
+.label.label-border-purple-2, .circle.label-border-purple-2, .sticker.label-border-purple-2 {
+            border-color: var(--em-purple-2);
+        }
+.label.label-light-blue-1, .circle.label-light-blue-1, .sticker.label-light-blue-1 {
+            background-color: var(--em-light-blue-1);
+            color: black;
+            text-shadow: none;
+        }
+.label .label-text-light-blue-1, .circle .label-text-light-blue-1, .sticker .label-text-light-blue-1 {
+            color: var(--em-light-blue-1);
+        }
+.label.label-border-light-blue-1, .circle.label-border-light-blue-1, .sticker.label-border-light-blue-1 {
+            border-color: var(--em-light-blue-1);
+        }
+.label.label-light-blue-2, .circle.label-light-blue-2, .sticker.label-light-blue-2 {
+            background-color: var(--em-light-blue-2);
+            text-shadow: none;
+        }
+.label .label-text-light-blue-2, .circle .label-text-light-blue-2, .sticker .label-text-light-blue-2 {
+            color: var(--em-light-blue-2);
+        }
+.label.label-border-light-blue-2, .circle.label-border-light-blue-2, .sticker.label-border-light-blue-2 {
+            border-color: var(--em-light-blue-2);
+        }
+.label.label-blue-1, .circle.label-blue-1, .sticker.label-blue-1 {
+            background-color: var(--em-blue-1);
+            color: black;
+            text-shadow: none;
+        }
+.label .label-text-blue-1, .circle .label-text-blue-1, .sticker .label-text-blue-1 {
+            color: var(--em-blue-1);
+        }
+.label.label-border-blue-1, .circle.label-border-blue-1, .sticker.label-border-blue-1 {
+            border-color: var(--em-blue-1);
+        }
+.label.label-blue-2, .circle.label-blue-2, .sticker.label-blue-2 {
+            background-color: var(--em-blue-2);
+            text-shadow: none;
+        }
+.label .label-text-blue-2, .circle .label-text-blue-2, .sticker .label-text-blue-2 {
+            color: var(--em-blue-2);
+        }
+.label.label-border-blue-2, .circle.label-border-blue-2, .sticker.label-border-blue-2 {
+            border-color: var(--em-blue-2);
+        }
+.label.label-blue-3, .circle.label-blue-3, .sticker.label-blue-3 {
+            background-color: var(--em-blue-3);
+            text-shadow: none;
+        }
+.label .label-text-blue-3, .circle .label-text-blue-3, .sticker .label-text-blue-3 {
+            color: var(--em-blue-3);
+        }
+.label.label-border-blue-3, .circle.label-border-blue-3, .sticker.label-border-blue-3 {
+            border-color: var(--em-blue-3);
+        }
+.label.label-green-1, .circle.label-green-1, .sticker.label-green-1 {
+            background-color: var(--em-green-1);
+            color: black;
+            text-shadow: none;
+        }
+.label .label-text-green-1, .circle .label-text-green-1, .sticker .label-text-green-1 {
+            color: var(--em-green-1);
+        }
+.label.label-border-green-1, .circle.label-border-green-1, .sticker.label-border-green-1 {
+            border-color: var(--em-green-1);
+        }
+.label.label-green-2, .circle.label-green-2, .sticker.label-green-2 {
+            background-color: var(--em-green-2);
+            text-shadow: none;
+        }
+.label .label-text-green-2, .circle .label-text-green-2, .sticker .label-text-green-2 {
+            color: var(--em-green-2);
+        }
+.label.label-border-green-2, .circle.label-border-green-2, .sticker.label-border-green-2 {
+            border-color: var(--em-green-2);
+        }
+.label.label-yellow-1, .circle.label-yellow-1, .sticker.label-yellow-1 {
+            background-color: var(--em-yellow-1);
+            color: black;
+            text-shadow: none;
+        }
+.label .label-text-yellow-1,.circle .label-text-yellow-1,.sticker .label-text-yellow-1{
+            color: var(--em-yellow-1);
+        }
+.label.label-border-yellow-1, .circle.label-border-yellow-1, .sticker.label-border-yellow-1 {
+            border-color: var(--em-yellow-1);
+        }
+.label.label-yellow-2, .circle.label-yellow-2, .sticker.label-yellow-2 {
+            background-color: var(--em-yellow-2);
+            color: black;
+            text-shadow: none;
+        }
+.label .label-text-yellow-2,.circle .label-text-yellow-2,.sticker .label-text-yellow-2{
+            color: var(--em-yellow-2);
+        }
+.label.label-border-yellow-2, .circle.label-border-yellow-2, .sticker.label-border-yellow-2 {
+            border-color: var(--em-yellow-2);
+        }
+.label.label-orange-1, .circle.label-orange-1, .sticker.label-orange-1 {
+            background-color: var(--em-orange-1);
+            color: black;
+            text-shadow: none;
+        }
+.label .label-text-orange-1,.circle .label-text-orange-1,.sticker .label-text-orange-1{
+            color: var(--em-orange-1);
+        }
+.label.label-border-orange-1, .circle.label-border-orange-1, .sticker.label-border-orange-1 {
+            border-color: var(--em-orange-1);
+        }
+.label.label-orange-2, .circle.label-orange-2, .sticker.label-orange-2 {
+            background-color: var(--em-orange-2);
+            text-shadow: none;
+        }
+.label .label-text-orange-2,.circle .label-text-orange-2,.sticker .label-text-orange-2{
+            color: var(--em-orange-2);
+        }
+.label.label-border-orange-2, .circle.label-border-orange-2, .sticker.label-border-orange-2 {
+            border-color: var(--em-orange-2);
+        }
+.label.label-beige, .circle.label-beige, .sticker.label-beige {
+            background-color: var(--em-beige);
+            color: black;
+            text-shadow: none;
+        }
+.label .label-text-beige,.circle .label-text-beige,.sticker .label-text-beige{
+            color: var(--em-beige);
+        }
+.label.label-border-beige, .circle.label-border-beige, .sticker.label-border-beige {
+            border-color: var(--em-beige);
+        }
+.label.label-brown, .circle.label-brown, .sticker.label-brown {
+            background-color: var(--em-brown);
+            text-shadow: none;
+        }
+.label .label-text-brown,.circle .label-text-brown,.sticker .label-text-brown{
+            color: var(--em-brown);
+        }
+.label.label-border-brown, .circle.label-border-brown, .sticker.label-border-brown {
+            border-color: var(--em-brown);
+        }
+.label.label-grey-1, .circle.label-grey-1, .sticker.label-grey-1 {
+            background-color: var(--em-grey-1);
+            text-shadow: none;
+        }
+.label .label-text-grey-1,.circle .label-text-grey-1,.sticker .label-text-grey-1{
+            color: var(--em-grey-1);
+        }
+.label.label-border-grey-1, .circle.label-border-grey-1, .sticker.label-border-grey-1 {
+            border-color: var(--em-grey-1);
+        }
+.label.label-grey-2, .circle.label-grey-2, .sticker.label-grey-2 {
+            background-color: var(--em-grey-2);
+            text-shadow: none;
+        }
+.label .label-text-grey-2,.circle .label-text-grey-2,.sticker .label-text-grey-2{
+            color: var(--em-grey-2);
+        }
+.label.label-border-grey-2, .circle.label-border-grey-2, .sticker.label-border-grey-2 {
+            border-color: var(--em-grey-2);
+        }
+.label.label-black, .circle.label-black, .sticker.label-black {
+            background-color: var(--em-black);
+            text-shadow: none;
+        }
+.label .label-text-black,.circle .label-text-black,.sticker .label-text-black{
+            color: var(--em-black);
+        }
+.label.label-border-black, .circle.label-border-black, .sticker.label-border-black {
+            border-color: var(--em-black);
+        }
 .\[_errors\:protected\] {
   _errors: protected;
 }
