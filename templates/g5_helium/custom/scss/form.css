@@ -149,7 +149,7 @@
 
     label.btn-default.btn.btn-success.active:hover {
       background-color: var(--em-form-radio-background-color-checked);
-      border-color: var(--em-form-radio-border-color-checked);
+      border-color: var(--em-form-radio-border-color-checked) !important;
     }
 
     label.btn-default.btn.btn-success.active:hover span {
@@ -194,9 +194,7 @@
 
     label.btn-default.btn.btn-danger.active:hover {
       background-color: var(--em-form-radio-background-color-checked);
-      border-color: var(--em-form-radio-border-color-checked);
-      color: var(--neutral-900);
-      line-height: 24px;
+      border-color: var(--em-form-radio-border-color-checked)!important;
     }
 
     label.btn-default.btn.btn-danger.active:hover span {
@@ -239,7 +237,7 @@
 
     label.btn-default.btn:not(.active):hover {
       background-color: var(--em-form-radio-background-color-checked);
-      border-color: var(--em-form-radio-border-color-checked);
+      border-color: var(--em-form-radio-border-color-checked) !important;
     }
 
     label.btn-default.btn:not(.active):hover span {
