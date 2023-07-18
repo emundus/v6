@@ -398,7 +398,17 @@ class EmundusModelFormbuilder extends JModelList {
                     'msg' => 'UNABLE_TO_INSERT_NEW_MENU'
                 );
             }
-            $newmenuid = $result['id'];
+	        $newmenuid = $result['id'];
+
+			$alias = 'menu-profile'.$prid.'-form-'.$newmenuid;
+	        $query->clear()
+		        ->update($db->quoteName('#__menu'))
+		        ->set($db->quoteName('alias') . ' = ' . $db->quote($alias))
+		        ->set($db->quoteName('path') . ' = ' . $db->quote($menu_parent->path . '/' . $alias))
+		        ->where($db->quoteName('id') . ' = ' . $db->quote($newmenuid));
+	        $db->setQuery($query);
+	        $db->execute();
+
 
             // Create hidden group
             $group = $this->createGroup(array('fr' => 'Hidden group', 'en' => 'Hidden group',), $formid, -1);
@@ -806,6 +816,17 @@ class EmundusModelFormbuilder extends JModelList {
                     'msg' => 'UNABLE_TO_INSERT_NEW_MENU'
                 );
             }
+	        $submittion_menu_id = $result['id'];
+
+	        $alias = 'menu-profile'.$prid.'-submission-'.$submittion_menu_id;
+	        $query->clear()
+		        ->update($db->quoteName('#__menu'))
+		        ->set($db->quoteName('alias') . ' = ' . $db->quote($alias))
+		        ->set($db->quoteName('path') . ' = ' . $db->quote($alias))
+		        ->where($db->quoteName('id') . ' = ' . $db->quote($submittion_menu_id));
+	        $db->setQuery($query);
+	        $db->execute();
+
             //
 
             // Create hidden group
@@ -2784,6 +2805,13 @@ class EmundusModelFormbuilder extends JModelList {
 									$newmenuid = $result['id'];
 
 									if (!empty($newmenuid)) {
+										$query->clear()
+											->update($db->quoteName('#__menu'))
+											->set($db->quoteName('alias') . ' = ' . $db->quote('menu-profile'.$profile->id.'-form-'.$newmenuid))
+											->where($db->quoteName('id') . ' = ' . $db->quote($newmenuid));
+										$db->setQuery($query);
+										$db->execute();
+
 										require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
 										$falang = new EmundusModelFalang;
 										$falang->insertFalang($label, $newmenuid,'menu','title');

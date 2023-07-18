@@ -1683,6 +1683,10 @@ form .fabrikGroupColumns.fabrikGroup .row-fluid {
          justify-content: flex-end;
     }
 
+    form.fabrikForm .row-fluid .control-group.plg-textarea label.fabrikTip {
+        display: initial !important;
+    }
+
     .em-submit-form-button{
         justify-self: center;
     }
@@ -1721,6 +1725,11 @@ form .fabrikGroupColumns.fabrikGroup .row-fluid {
     .fabrikGroup .repeatGroupTable .fabrikSubGroupElements  .fabrikGroupRepeater  {
         display: flex;
         justify-content: flex-end;
+    }
+
+
+    form.fabrikForm .row-fluid .control-group.plg-textarea label.fabrikTip {
+        display: initial !important;
     }
 
     .fabrikActions.form-actions .row-fluid .span4 {

@@ -253,6 +253,11 @@ a.btn.btn-success:not(.btn-xs) {
     height: 100%;
 }
 @media all and (max-width: 479px) {
+
+    #applications_list_view div[id*="group_application_tab"] {
+        overflow-x: scroll;
+    }
+
     .main-page-file-info a {
         margin-bottom: var(--m-4);
     }
@@ -279,6 +284,11 @@ a.btn.btn-success:not(.btn-xs) {
 }
 
 @media all and (min-width: 480px) and (max-width: 767px) {
+
+    #applications_list_view div[id*="group_application_tab"] {
+        overflow-x: scroll;
+    }
+
     .main-page-file-info a {
         margin-bottom: var(--m-4);
     }
@@ -453,6 +463,11 @@ margin-top: var(--m-16);
 .mod_emundus_applications___title:focus {
     text-decoration: none;
 }
+.mod_emundus_applications__container{
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
+}
 
 .mod_emundus_applications__actions{
     margin-top: var(--m-8);
@@ -463,7 +478,7 @@ margin-top: var(--m-16);
     position: absolute;
     background: var(--neutral-0);
     z-index: 9999;
-    right: 30px;
+    margin-top: 34px;
 }
 .mod_emundus_applications__actions a:not(:last-child){
     margin-bottom: var(--m-8);

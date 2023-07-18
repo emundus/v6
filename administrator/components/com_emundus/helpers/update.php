@@ -1489,7 +1489,13 @@ class EmundusHelperUpdate
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
 
-            $alias = $params['alias'] ?: $params['menutype'] . '-' . str_replace(' ','-',strtolower($params['title']));
+			if(empty($params['alias']))
+			{
+				$alias = str_replace("\xc2\xa0", ' ', ($params['menutype'] . '-' . $params['title']));
+				$alias = strtolower(JLanguageTransliterate::utf8_latin_to_ascii(preg_replace('/\s+/', '-', $alias)));
+			} else {
+				$alias = $params['alias'];
+			}
 
             $query->clear()
                 ->select('id')
@@ -1977,6 +1983,49 @@ class EmundusHelperUpdate
             } catch (Exception $e) {
                 $result['message'] = 'ADDING COLUMN : Error : ' . $e->getMessage();
             }
+        }
+
+        return $result;
+    }
+
+    public static function alterColumn($table, $name, $type = 'VARCHAR', $length = null, $null = 1, $default = null){
+        $result = ['status' => false, 'message' => ''];
+
+        if (empty($table)) {
+            $result['message'] = 'ALTER COLUMN : Please refer a database table.';
+            return $result;
+        }
+
+        if (empty($name)) {
+            $result['message'] = 'ALTER COLUMN : Please refer a column name.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $db->setQuery('SHOW COLUMNS FROM ' . $table . ' WHERE ' . $db->quoteName('Field') . ' = ' . $db->quote($name));
+        $column_existing = $db->loadResult();
+
+        if (!empty($column_existing)) {
+            $null_query = $null == 0 ? 'NOT NULL' : 'NULL';
+
+            try {
+                $query = 'ALTER TABLE ' . $table . ' MODIFY ' . $db->quoteName($name) . ' ' . $type;
+                if(!empty($length)) {
+                    $query .= ' (' . $length . ')';
+                }
+
+                if ($default !== null) {
+                    $query .= ' DEFAULT ' . $db->quote($default);
+                }
+
+                $query .= ' ' . $null_query;
+                $db->setQuery($query);
+                $result['status'] = $db->execute();
+            } catch (Exception $e) {
+                $result['message'] = 'ADDING COLUMN : Error : ' . $e->getMessage();
+            }
+        } else {
+            $result['message'] = 'ALTER COLUMN : Column not found.';
         }
 
         return $result;

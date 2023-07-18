@@ -1935,7 +1935,7 @@ class EmundusModelCampaign extends JModelList {
             }
 
 	        if (!empty($params['file']) && $params['has_sample']) {
-				$allowed_ext = array('jpg', 'jpeg', 'png', 'doc', 'docx', 'pdf');
+				$allowed_ext = array('jpg', 'jpeg', 'png', 'doc', 'docx', 'pdf', 'xls','xlsx');
 				$ext = strtolower(pathinfo($params['file']['name'], PATHINFO_EXTENSION));
 				if (in_array($ext, $allowed_ext)) {
 					$filename = $params['file']['name'];
