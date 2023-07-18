@@ -2618,4 +2618,68 @@ class EmundusHelperUpdate
 
 		return $result;
 	}
+
+	public static function updateNewColors() {
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$colors = [
+			'lightpurple' => 'purple-1',
+			'purple' => 'purple-2',
+			'darkpurple' => 'purple-2',
+			'lightblue' => 'lightblue-1',
+			'blue' => 'blue-2',
+			'darkblue' => 'blue-3',
+			'lightgreen' => 'green-1',
+			'green' => 'green-2',
+			'darkgreen' => 'green-2',
+			'lightyellow' => 'yellow-1',
+			'yellow' => 'yellow-2',
+			'darkyellow' => 'yellow-2',
+			'lightorange' => 'orange-1',
+			'orange' => 'orange-2',
+			'darkorange' => 'orange-2',
+			'lightred' => 'red-1',
+			'red' => 'red-2',
+			'darkred' => 'red-2',
+			'lightpink' => 'pink-1',
+			'pink' => 'pink-2',
+			'darkpink' => 'pink-2',
+		];
+
+		foreach ($colors as $key => $color) {
+			$query->clear()
+				->update('#__falang_content')
+				->set($db->quoteName('value') . ' = ' . $db->quote($color))
+				->where(array(
+					$db->quoteName('value') . ' = ' . $db->quote($key),
+					$db->quoteName('reference_table') . ' = ' . $db->quote('emundus_setup_status'),
+					$db->quoteName('reference_field') . ' = ' . $db->quote('class'),
+					$db->quoteName('language_id') . ' = 2'
+				));
+			$db->setQuery($query);
+			$db->execute();
+
+			$query->clear()
+				->update($db->quoteName('#__emundus_setup_status'))
+				->set($db->quoteName('class') . ' = ' . $db->quote($color))
+				->where($db->quoteName('class') . ' = ' . $db->quote($key));
+			$db->setQuery($query);
+			$db->execute();
+
+			$query->clear()
+				->update($db->quoteName('#__emundus_setup_action_tag'))
+				->set($db->quoteName('class') . ' = ' . $db->quote('label-'.$color))
+				->where($db->quoteName('class') . ' = ' . $db->quote('label-'.$key));
+			$db->setQuery($query);
+			$db->execute();
+
+			$query->clear()
+				->update($db->quoteName('#__emundus_setup_groups'))
+				->set($db->quoteName('class') . ' = ' . $db->quote('label-'.$color))
+				->where($db->quoteName('class') . ' = ' . $db->quote('label-'.$key));
+			$db->setQuery($query);
+			$db->execute();
+		}
+	}
 }

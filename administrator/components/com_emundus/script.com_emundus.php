@@ -2065,6 +2065,9 @@ structure:
 				if($data_currency['status']){
 					EmundusHelperUpdate::executeSQlFile('insert_data_currency');
 				}
+
+				/* UPDATE COLORS */
+				EmundusHelperUpdate::updateNewColors();
 			}
 
 			// Insert new translations in overrides files
