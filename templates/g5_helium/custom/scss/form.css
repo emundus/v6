@@ -121,6 +121,148 @@
       }
     }
 
+    /* YES / NO */
+
+    .plg-yesno .fabrikSubElementContainer .btn-group {
+      display: flex;
+      gap: 20px;
+    }
+
+    label.btn-default.btn.btn-success.active {
+      padding: var(--p-12);
+      box-shadow: none;
+      cursor: pointer;
+      background-color: var(--em-form-radio-background-color-checked);
+      border: var(--em-form-radio-border-width) solid var(--em-form-radio-border-color);
+      color: var(--neutral-900);
+      border-radius: var(--em-applicant-br) !important;
+      width: 50% !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 48px;
+      font-size: 16px;
+      font-style: normal;
+      line-height: 24px;
+      letter-spacing: 0.0015em;
+    }
+
+    label.btn-default.btn.btn-success.active:hover {
+      background-color: var(--em-form-radio-background-color-checked);
+      border-color: var(--em-form-radio-border-color-checked);
+    }
+
+    label.btn-default.btn.btn-success.active:hover span {
+      font-family: var(--em-default-font);
+      font-size: 16px;
+      font-style: normal;
+      line-height: 24px;
+      letter-spacing: 0.0015em;
+      color: var(--neutral-900);
+      word-wrap: break-word;
+    }
+
+    label.btn-default.btn.btn-success.active span {
+      font-family: var(--em-default-font);
+      font-size: 16px;
+      font-style: normal;
+      line-height: 24px;
+      letter-spacing: 0.0015em;
+      color: var(--neutral-900);
+      word-wrap: break-word;
+    }
+
+    label.btn-default.btn.btn-danger.active {
+      height: 48px;
+      padding: var(--p-12);
+      box-shadow: none;
+      cursor: pointer;
+      background-color: var(--em-form-radio-background-color-checked);
+      border-color: var(--em-form-radio-border-color-checked);
+      color: var(--neutral-900);
+      border-radius: var(--em-applicant-br) !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-style: normal;
+      line-height: 24px;
+      letter-spacing: 0.0015em;
+      width: 50% !important;
+    }
+
+
+    label.btn-default.btn.btn-danger.active:hover {
+      background-color: var(--em-form-radio-background-color-checked);
+      border-color: var(--em-form-radio-border-color-checked);
+      color: var(--neutral-900);
+      line-height: 24px;
+    }
+
+    label.btn-default.btn.btn-danger.active:hover span {
+      font-family: var(--em-default-font);
+      font-size: 16px;
+      font-style: normal;
+      line-height: 24px;
+      letter-spacing: 0.0015em;
+      color: var(--neutral-900);
+      word-wrap: break-word;
+    }
+
+    label.btn-default.btn.btn-danger.active span {
+      font-family: var(--em-default-font);
+      font-size: 16px;
+      font-style: normal;
+      line-height: 24px;
+      letter-spacing: 0.0015em;
+      color: var(--neutral-900);
+      word-wrap: break-word;
+    }
+
+    label.btn-default.btn:not(.active) {
+      height: 48px;
+      padding: var(--p-12);
+      box-shadow: none;
+      cursor: pointer;
+      border: var(--em-form-radio-border-width) solid var(--em-form-radio-border-color);
+      background: var(--neutral-0);
+      color: var(--neutral-900);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      line-height: 24px;
+      font-style: normal;
+      letter-spacing: 0.0015em;
+      width: 50% !important;
+    }
+
+    label.btn-default.btn:not(.active):hover {
+      background-color: var(--em-form-radio-background-color-checked);
+      border-color: var(--em-form-radio-border-color-checked);
+    }
+
+    label.btn-default.btn:not(.active):hover span {
+      font-family: var(--em-default-font);
+      font-size: 16px;
+      font-style: normal;
+      line-height: 24px;
+      letter-spacing: 0.0015em;
+      color: var(--neutral-900);
+      word-wrap: break-word;
+    }
+
+    label.btn-default.btn:not(.active) span {
+      font-family: var(--em-default-font);
+      font-size: 16px;
+      font-style: normal;
+      line-height: 24px;
+      letter-spacing: 0.0015em;
+      color: var(--neutral-900);
+      word-wrap: break-word;
+    }
+
+
     /** RADIO **/
     .fabrikgrid_radio {
       @apply py-1;
