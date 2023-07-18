@@ -25,6 +25,16 @@
 			<field type="helplink"
 				url="PLG_ELEMENT_FIELD_HELP_SERVER" />
 
+			<field name="display_iso3"
+				   type="radio"
+				   default="0"
+				   class="btn-group"
+				   description="PLG_ELEMENT_FIELD_DISPLAY_ISO3_DESC"
+				   label="PLG_ELEMENT_FIELD_DISPLAY_ISO3_LABEL">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
 			<field name="all_currencies_options"
 				   type="subform"
 				   multiple="true"

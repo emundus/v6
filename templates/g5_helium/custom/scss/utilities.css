@@ -320,6 +320,10 @@
     }
 
     /* ALERTES */
+    #system-message-container {
+        padding: 20px;
+    }
+
     #system-message .alert,.fabrikMainError {
         @apply flex;
         @apply p-5;

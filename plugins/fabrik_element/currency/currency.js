@@ -44,6 +44,7 @@ define(['jquery', 'fab/element'],
                 this.HTMLSelectElement.setAttribute('tabindex', -1)
                 this.HTMLSelectElement.style.pointerEvents = 'none';
                 this.HTMLSelectElement.style.backgroundImage = 'none';
+                this.HTMLSelectElement.style.textAlign = 'end';
 
                 this.changeElement(this.HTMLSelectElement.options[0]);
             }
@@ -82,8 +83,12 @@ define(['jquery', 'fab/element'],
             const select = this.HTMLSelectElement;
             const val = select.value;
             const symbol = this.getSymbolFromIso3(val);
-
-            element.textContent = symbol + ' ('+val+')';
+            const displayiso3 = document.getElementById('currency_displayiso3_'+this.element.id).value;
+            if(displayiso3 == 1) {
+                element.textContent = symbol + ' (' + val + ')';
+            } else {
+                element.textContent = symbol;
+            }
         },
 
         getNewInputValue: function(oldInput, oldIdSelectedCurrency, newIdSelectedCurrency)

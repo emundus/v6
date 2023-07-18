@@ -90,7 +90,7 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
             {
                 if ($allCurrencyOne->iso3 === $selectedCurrencyOne->iso3)
                 {
-                    $valuesForSelect[$allCurrencyOne->iso3] = $allCurrencyOne->name . ' (' . $allCurrencyOne->iso3 . ')';
+					$valuesForSelect[$allCurrencyOne->iso3] = $allCurrencyOne->name . ' (' . $allCurrencyOne->iso3 . ')';
                 }
             }
         }
@@ -115,6 +115,7 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 		$layout = $this->getLayout('form');
 		$layoutData = new stdClass;
 		$layoutData->attributes = $bits;
+		$layoutData->displayiso3 = $this->getParams()->get('display_iso3',0);
 
 		return $layout->render($layoutData);
 	}
