@@ -139,10 +139,10 @@ $now = $dateTime->format('Y-m-d H:i:s');
         <?php endif; ?>
 
         <?php if($show_status == 1) : ?>
-        <div class="em-flex-row">
+        <div class="flex items-center">
             <p class="em-text-neutral-600"><?= JText::_('MOD_EMUNDUS_FLOW_STATUS'); ?></p>
-            <div class="mod_emundus_flow___status_<?= $current_application->class; ?> em-flex-row">
-                <span class="mod_emundus_flow___circle em-mr-8 em-ml-6 label-<?= $current_application->class; ?>-500"></span>
+            <div class="mod_emundus_flow___status_<?= $current_application->class; ?> flex">
+                <span class="circle em-mr-8 em-ml-6 label-<?= $current_application->class; ?>"></span>
                 <span><?= $current_application->value ?></span>
             </div>
         </div>

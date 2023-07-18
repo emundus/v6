@@ -9,6 +9,11 @@ module.exports = {
         "./components/com_emundus/**/*.{html,js,php,vue}",
         "./components/com_fabrik/**/*.{html,js,php}",
     ],
+    safelist: [
+        {
+            pattern: /label-/
+        },
+    ],
     theme: {
         extend: {
             colors: {

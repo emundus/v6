@@ -1390,7 +1390,7 @@ td:first-child>.em-cell {
 
 .em-cell-scroll > .em-cell {
     max-height: 85px;
-    max-width: 300px;
+    width: max-content;
     overflow-x: hidden;
     overflow-y: scroll;
     -ms-overflow-style: none;
