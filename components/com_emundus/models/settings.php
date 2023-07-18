@@ -26,28 +26,28 @@ class EmundusModelsettings extends JModelList {
      */
     function getColorClasses(){
         return array(
-            'lightpurple' => '#D444F1',
-            'purple' => '#7959F8',
+            'lightpurple' => '#FBE8FF',
+            'purple' => '#EBE9FE',
             'darkpurple' => '#663399',
-            'lightblue' => '#0BA4EB',
-            'blue' => '#2E90FA',
-            'darkblue' => '#2970FE',
-            'lightgreen' => '#15B79E',
-            'green' => '#238C69',
-            'darkgreen' => '#20835F',
-            'lightyellow' => '#5D5B00',
-            'yellow' => '#EAA907',
-            'darkyellow' => '#F79009',
-            'lightorange' => '#C87E00',
-            'orange' => '#EF681F',
-            'darkorange' => '#FF4305',
+            'lightblue' => '#E0F2FE',
+            'blue' => '#D1E9FF',
+            'darkblue' => '#D1E0FF',
+            'lightgreen' => '#CCFBEF',
+            'green' => '#C4F0E1',
+            'darkgreen' => '#BEDBD0',
+            'lightyellow' => '#FFFD7E',
+            'yellow' => '#FDF7C3',
+            'darkyellow' => '#FEF0C7',
+            'lightorange' => '#FFEDCF',
+            'orange' => '#FCEAD7',
+            'darkorange' => '#FFE5D5',
             'lightred' => '#EC644B',
-            'red' => '#DB333E',
-            'darkred' => '#DB333E',
-            'lightpink' => '#B04748',
-            'pink' => '#EE46BC',
-            'darkpink' => '#F53D68',
-            'default' => '#5E6580',
+            'red' => '#FEE4E2',
+            'darkred' => '#FEE4E2',
+            'lightpink' => '#ffeaea',
+            'pink' => '#FCE7F6',
+            'darkpink' => '#FFE4E8',
+            'default' => '#EBECF0',
         );
     }
 
@@ -287,15 +287,12 @@ class EmundusModelsettings extends JModelList {
 
         $lang_to = $m_translations->getDefaultLanguage()->lang_code;
 
-        $classes = $this->getColorClasses();
         $results = [];
 
         try {
-            $class = array_search($color, $classes);
-
             $query->clear()
                 ->update('#__falang_content')
-                ->set($db->quoteName('value') . ' = ' . $db->quote($class))
+                ->set($db->quoteName('value') . ' = ' . $db->quote($color))
                 ->where(array(
                     $db->quoteName('reference_id') . ' = ' . $db->quote($status),
                     $db->quoteName('reference_table') . ' = ' . $db->quote('emundus_setup_status'),
@@ -310,7 +307,7 @@ class EmundusModelsettings extends JModelList {
             $query->clear()
                 ->update('#__emundus_setup_status')
                 ->set($db->quoteName('value') . ' = ' . $db->quote($label))
-                ->set($db->quoteName('class') . ' = ' . $db->quote($class))
+                ->set($db->quoteName('class') . ' = ' . $db->quote($color))
                 ->where($db->quoteName('step') . ' = ' . $db->quote($status));
             $db->setQuery($query);
             $db->execute();
@@ -387,16 +384,11 @@ class EmundusModelsettings extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $classes = $this->getColorClasses();
-
         try {
-            $class = array_search($color, $classes);
-			$class = !empty($class) ? $class : 'default';
-
             $query->clear()
                 ->update('#__emundus_setup_action_tag')
                 ->set($db->quoteName('label') . ' = ' . $db->quote($label))
-                ->set($db->quoteName('class') . ' = ' . $db->quote('label-' . $class))
+                ->set($db->quoteName('class') . ' = ' . $db->quote('label-' . $color))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($tag));
             $db->setQuery($query);
             return $db->execute();

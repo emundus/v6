@@ -56,9 +56,10 @@ switch ($applicant_can_renew) {
 					AND end_date >= ' . $db->quote($now) .
 					'AND start_date <= ' . $db->quote($now) .
 					'AND id NOT IN (
-						select campaign_id
-						from #__emundus_campaign_candidature
-						where applicant_id='. $user->id.'
+						SELECT campaign_id
+						FROM #__emundus_campaign_candidature
+						WHERE applicant_id=' . $user->id .
+                        'AND published <> -1
 					)';
 
         try {

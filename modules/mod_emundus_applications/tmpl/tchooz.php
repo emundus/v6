@@ -357,15 +357,15 @@ $current_tab = 0;
 															}
 															?>
 															<?php if (empty($visible_status)) : ?>
-                                                                <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row"
+                                                                <div class="mod_emundus_applications___status_<?= $application->class; ?> flex"
                                                                      id="application_status_<?php echo $application->fnum ?>">
-                                                                    <span class="mod_emundus_applications___circle em-mr-8 label-<?= $application->class; ?>-500"></span>
+                                                                    <span class="circle em-mr-8 label-<?= $application->class; ?>"></span>
                                                                     <span class="mod_emundus_applications___status_label em-neutral-800-color em-applicant-default-font em-font-size-14"><?= $application->value; ?></span>
                                                                 </div>
 															<?php elseif (in_array($application->status, $visible_status)) : ?>
-                                                                <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row"
+                                                                <div class="mod_emundus_applications___status_<?= $application->class; ?> flex"
                                                                      id="application_status_<?php echo $application->fnum ?>">
-                                                                    <span class="mod_emundus_applications___circle em-mr-8 label-<?= $application->class; ?>-500"></span>
+                                                                    <span class="circle em-mr-8 label-<?= $application->class; ?>"></span>
                                                                     <span class="mod_emundus_applications___status_label em-font-size-14"><?= $application->value; ?></span>
                                                                 </div>
 															<?php endif; ?>
@@ -375,7 +375,7 @@ $current_tab = 0;
                                                                       style="background-color: <?= $application->order_color; ?>"><?= JText::_(strtoupper($application->order_status)); ?></span>
 															<?php endif; ?>
                                                         </div>
-                                                        <div>
+                                                        <div class="mod_emundus_applications__container">
                                                             <span class="material-icons em-text-neutral-600 em-font-weight-600"
                                                                   id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
                                                                   >more_vert</span>
@@ -739,7 +739,7 @@ $current_tab = 0;
                                                     </div>
                                                 </td>
                                                 <td style="width: 5%;">
-                                                    <div>
+                                                    <div class="mod_emundus_applications__container">
                                                             <span class="material-icons em-text-neutral-600 em-font-weight-600"
                                                                   id="actions_button_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>"
                                                                   >more_vert</span>

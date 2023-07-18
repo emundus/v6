@@ -670,7 +670,7 @@ table#groups-table a:hover {
 /* MODALS */
 
 .g-back-office-emundus-tableau #em-modal-actions .modal-dialog, .g-back-office-emundus-tableau #em-modal-actions .modal-dialog.modal-lg{
-    width: fit-content !important;
+    width: 50% !important;
     min-width: 40%;
 }
 
@@ -693,6 +693,12 @@ div#em-modal-form {
     margin-left: 0;
     width: 100%;
 }
+
+.files-board.users-page div#em-modal-actions,
+.files-board.users-page div#em-modal-form {
+    top: 44px;
+}
+
 
 div#em-modal-actions {
     overflow: hidden;
@@ -856,10 +862,12 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
     margin-right: 8px !important;
 }
 
-.g-back-office-emundus-tableau .col-md-3.side-panel {
-    padding: 0;
+.g-back-office-emundus-tableau .col-md-3.side-panel  {
     position: sticky;
-    overflow: auto;
+}
+
+.g-back-office-emundus-tableau .col-md-3.side-panel #em-files-filters {
+    background: #f8f8f8;
 }
 
 .g-back-office-emundus-tableau .col-md-9.main-panel {
@@ -1382,7 +1390,7 @@ td:first-child>.em-cell {
 
 .em-cell-scroll > .em-cell {
     max-height: 85px;
-    max-width: 300px;
+    width: max-content;
     overflow-x: hidden;
     overflow-y: scroll;
     -ms-overflow-style: none;
@@ -1750,8 +1758,12 @@ thead th:hover {
     background-color: #f2dede !important;
 }
 
-.panel-info {
-    height: auto !important;
+.panel-body.em-containerFilter-body {
+    position: absolute;
+    overflow: auto;
+    width: 100%;
+    min-height: 79vh;
+    height: 79vh;
 }
 
 .em_attachs {
@@ -2638,20 +2650,8 @@ a.copy-0:focus {
     align-items: center;
 }
 
-@media all and  (max-height: 959px) {
-    .g-back-office-emundus-tableau .col-md-3.side-panel{
-        height: 83vh;
-    }
-}
-
 @media all and (min-width: 768px) and (max-width: 959px) {
-    .g-back-office-emundus-tableau.files-board .panel-body,
-    .g-back-office-emundus-tableau .col-md-3.side-panel{
-        height: auto;
-    }
-    .g-back-office-emundus-tableau.files-board .col-md-3.side-panel {
-        position: inherit;
-    }
+
     .g-back-office-emundus-tableau.files-board #g-main-mainbody .platform-content {
         padding: 0 !important;
     }

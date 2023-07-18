@@ -1489,7 +1489,13 @@ class EmundusHelperUpdate
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
 
-            $alias = $params['alias'] ?: $params['menutype'] . '-' . str_replace(' ','-',strtolower($params['title']));
+			if(empty($params['alias']))
+			{
+				$alias = str_replace("\xc2\xa0", ' ', ($params['menutype'] . '-' . $params['title']));
+				$alias = strtolower(JLanguageTransliterate::utf8_latin_to_ascii(preg_replace('/\s+/', '-', $alias)));
+			} else {
+				$alias = $params['alias'];
+			}
 
             $query->clear()
                 ->select('id')
@@ -1977,6 +1983,49 @@ class EmundusHelperUpdate
             } catch (Exception $e) {
                 $result['message'] = 'ADDING COLUMN : Error : ' . $e->getMessage();
             }
+        }
+
+        return $result;
+    }
+
+    public static function alterColumn($table, $name, $type = 'VARCHAR', $length = null, $null = 1, $default = null){
+        $result = ['status' => false, 'message' => ''];
+
+        if (empty($table)) {
+            $result['message'] = 'ALTER COLUMN : Please refer a database table.';
+            return $result;
+        }
+
+        if (empty($name)) {
+            $result['message'] = 'ALTER COLUMN : Please refer a column name.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $db->setQuery('SHOW COLUMNS FROM ' . $table . ' WHERE ' . $db->quoteName('Field') . ' = ' . $db->quote($name));
+        $column_existing = $db->loadResult();
+
+        if (!empty($column_existing)) {
+            $null_query = $null == 0 ? 'NOT NULL' : 'NULL';
+
+            try {
+                $query = 'ALTER TABLE ' . $table . ' MODIFY ' . $db->quoteName($name) . ' ' . $type;
+                if(!empty($length)) {
+                    $query .= ' (' . $length . ')';
+                }
+
+                if ($default !== null) {
+                    $query .= ' DEFAULT ' . $db->quote($default);
+                }
+
+                $query .= ' ' . $null_query;
+                $db->setQuery($query);
+                $result['status'] = $db->execute();
+            } catch (Exception $e) {
+                $result['message'] = 'ADDING COLUMN : Error : ' . $e->getMessage();
+            }
+        } else {
+            $result['message'] = 'ALTER COLUMN : Column not found.';
         }
 
         return $result;
@@ -2568,5 +2617,69 @@ class EmundusHelperUpdate
 		}
 
 		return $result;
+	}
+
+	public static function updateNewColors() {
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$colors = [
+			'lightpurple' => 'purple-1',
+			'purple' => 'purple-2',
+			'darkpurple' => 'purple-2',
+			'lightblue' => 'lightblue-1',
+			'blue' => 'blue-2',
+			'darkblue' => 'blue-3',
+			'lightgreen' => 'green-1',
+			'green' => 'green-2',
+			'darkgreen' => 'green-2',
+			'lightyellow' => 'yellow-1',
+			'yellow' => 'yellow-2',
+			'darkyellow' => 'yellow-2',
+			'lightorange' => 'orange-1',
+			'orange' => 'orange-2',
+			'darkorange' => 'orange-2',
+			'lightred' => 'red-1',
+			'red' => 'red-2',
+			'darkred' => 'red-2',
+			'lightpink' => 'pink-1',
+			'pink' => 'pink-2',
+			'darkpink' => 'pink-2',
+		];
+
+		foreach ($colors as $key => $color) {
+			$query->clear()
+				->update('#__falang_content')
+				->set($db->quoteName('value') . ' = ' . $db->quote($color))
+				->where(array(
+					$db->quoteName('value') . ' = ' . $db->quote($key),
+					$db->quoteName('reference_table') . ' = ' . $db->quote('emundus_setup_status'),
+					$db->quoteName('reference_field') . ' = ' . $db->quote('class'),
+					$db->quoteName('language_id') . ' = 2'
+				));
+			$db->setQuery($query);
+			$db->execute();
+
+			$query->clear()
+				->update($db->quoteName('#__emundus_setup_status'))
+				->set($db->quoteName('class') . ' = ' . $db->quote($color))
+				->where($db->quoteName('class') . ' = ' . $db->quote($key));
+			$db->setQuery($query);
+			$db->execute();
+
+			$query->clear()
+				->update($db->quoteName('#__emundus_setup_action_tag'))
+				->set($db->quoteName('class') . ' = ' . $db->quote('label-'.$color))
+				->where($db->quoteName('class') . ' = ' . $db->quote('label-'.$key));
+			$db->setQuery($query);
+			$db->execute();
+
+			$query->clear()
+				->update($db->quoteName('#__emundus_setup_groups'))
+				->set($db->quoteName('class') . ' = ' . $db->quote('label-'.$color))
+				->where($db->quoteName('class') . ' = ' . $db->quote('label-'.$key));
+			$db->setQuery($query);
+			$db->execute();
+		}
 	}
 }
