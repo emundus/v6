@@ -222,6 +222,13 @@ if ($user != null) {
                 <hr style="width: 100%">
                 <li><a class="edit-button-user" href="<?= $link_edit_profile ?>" style="margin-bottom: 20px;margin-top: 0"><?=JText::_('COM_USERS_PROFILE_DEFAULT_LABEL') ?></a></li>
             <?php endif; ?>
+            <?php if (!empty($custom_actions)) {
+                foreach($custom_actions as $custom_action) {
+                    ?>
+                    <li><a class="edit-button-user em-pointer" href="<?= $custom_action->link; ?>"><?= $custom_action->title; ?></a></li>
+                    <?php
+                }
+            } ?>
         </ul>
     </div>
 
