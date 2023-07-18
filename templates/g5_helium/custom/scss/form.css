@@ -162,6 +162,16 @@
       word-wrap: break-word;
     }
 
+    label.btn-default.btn.btn-success.active span {
+      font-family: var(--em-default-font);
+      font-size: 16px;
+      font-style: normal;
+      line-height: 24px;
+      letter-spacing: 0.0015em;
+      color: var(--neutral-900);
+      word-wrap: break-word;
+    }
+
     label.btn-default.btn.btn-danger.active {
       height: 48px;
       padding: var(--p-12);
@@ -199,6 +209,16 @@
       word-wrap: break-word;
     }
 
+    label.btn-default.btn.btn-danger.active span {
+      font-family: var(--em-default-font);
+      font-size: 16px;
+      font-style: normal;
+      line-height: 24px;
+      letter-spacing: 0.0015em;
+      color: var(--neutral-900);
+      word-wrap: break-word;
+    }
+
     label.btn-default.btn:not(.active) {
       height: 48px;
       padding: var(--p-12);
@@ -223,6 +243,16 @@
     }
 
     label.btn-default.btn:not(.active):hover span {
+      font-family: var(--em-default-font);
+      font-size: 16px;
+      font-style: normal;
+      line-height: 24px;
+      letter-spacing: 0.0015em;
+      color: var(--neutral-900);
+      word-wrap: break-word;
+    }
+
+    label.btn-default.btn:not(.active) span {
       font-family: var(--em-default-font);
       font-size: 16px;
       font-style: normal;
