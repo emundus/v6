@@ -692,21 +692,21 @@ form.fabrikForm input:not([type='file']):focus:not([type='radio']):not([type='ch
 /* YES / NO */
 form.fabrikForm .plg-yesno .fabrikSubElementContainer .btn-group {
       display: flex;
-      gap: 20px;
+      gap: var(--em-form-yesno-gap);
     }
 form.fabrikForm label.btn-default.btn.btn-success.active {
       padding: var(--p-12);
       box-shadow: none;
       cursor: pointer;
-      background-color: var(--em-form-radio-background-color-checked);
-      border: var(--em-form-radio-border-width) solid var(--em-form-radio-border-color);
+      background-color: var(--em-form-yesno-background-color-yes);
+      border: var(--em-form-yesno-border-width) solid var(--em-form-yesno-border-color-yes);
       color: var(--neutral-900);
       border-radius: var(--em-applicant-br) !important;
-      width: 50% !important;
+      width: var(--em-form-yesno-width) !important;
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 48px;
+      height: var(--em-form-yesno-height);
       font-size: 16px;
       font-style: normal;
       line-height: 24px;
@@ -716,27 +716,27 @@ form.fabrikForm label.btn-default.btn.btn-success.\!active {
       padding: var(--p-12) !important;
       box-shadow: none !important;
       cursor: pointer !important;
-      background-color: var(--em-form-radio-background-color-checked) !important;
-      border: var(--em-form-radio-border-width) solid var(--em-form-radio-border-color) !important;
+      background-color: var(--em-form-yesno-background-color-yes) !important;
+      border: var(--em-form-yesno-border-width) solid var(--em-form-yesno-border-color-yes) !important;
       color: var(--neutral-900) !important;
       border-radius: var(--em-applicant-br) !important;
-      width: 50% !important;
+      width: var(--em-form-yesno-width) !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
-      height: 48px !important;
+      height: var(--em-form-yesno-height) !important;
       font-size: 16px !important;
       font-style: normal !important;
       line-height: 24px !important;
       letter-spacing: 0.0015em !important;
     }
 form.fabrikForm label.btn-default.btn.btn-success.active:hover {
-      background-color: var(--em-form-radio-background-color-checked);
-      border-color: var(--em-form-radio-border-color-checked);
+      background-color: var(--em-form-yesno-background-color-yes-hover);
+      border-color: var(--em-form-yesno-border-color-yes-hover) !important;
     }
 form.fabrikForm label.btn-default.btn.btn-success.\!active:hover {
-      background-color: var(--em-form-radio-background-color-checked) !important;
-      border-color: var(--em-form-radio-border-color-checked) !important;
+      background-color: var(--em-form-yesno-background-color-yes-hover) !important;
+      border-color: var(--em-form-yesno-border-color-yes-hover) !important;
     }
 form.fabrikForm label.btn-default.btn.btn-success.active:hover span {
       font-family: var(--em-default-font);
@@ -744,7 +744,7 @@ form.fabrikForm label.btn-default.btn.btn-success.active:hover span {
       font-style: normal;
       line-height: 24px;
       letter-spacing: 0.0015em;
-      color: var(--neutral-900);
+      color: var(--em-form-yesno-color-yes-hover);
       word-wrap: break-word;
     }
 form.fabrikForm label.btn-default.btn.btn-success.\!active:hover span {
@@ -753,7 +753,7 @@ form.fabrikForm label.btn-default.btn.btn-success.\!active:hover span {
       font-style: normal !important;
       line-height: 24px !important;
       letter-spacing: 0.0015em !important;
-      color: var(--neutral-900) !important;
+      color: var(--em-form-yesno-color-yes-hover) !important;
       word-wrap: break-word !important;
     }
 form.fabrikForm label.btn-default.btn.btn-success.active span {
@@ -762,7 +762,7 @@ form.fabrikForm label.btn-default.btn.btn-success.active span {
       font-style: normal;
       line-height: 24px;
       letter-spacing: 0.0015em;
-      color: var(--neutral-900);
+      color: var(--em-form-yesno-color-yes);
       word-wrap: break-word;
     }
 form.fabrikForm label.btn-default.btn.btn-success.\!active span {
@@ -771,17 +771,17 @@ form.fabrikForm label.btn-default.btn.btn-success.\!active span {
       font-style: normal !important;
       line-height: 24px !important;
       letter-spacing: 0.0015em !important;
-      color: var(--neutral-900) !important;
+      color: var(--em-form-yesno-color-yes) !important;
       word-wrap: break-word !important;
     }
 form.fabrikForm label.btn-default.btn.btn-danger.active {
-      height: 48px;
+      height: var(--em-form-yesno-height);
       padding: var(--p-12);
       box-shadow: none;
       cursor: pointer;
-      background-color: var(--em-form-radio-background-color-checked);
-      border-color: var(--em-form-radio-border-color-checked);
-      color: var(--neutral-900);
+      background-color: var(--em-form-yesno-background-color-no);
+      border-color: var(--em-form-yesno-border-color-no);
+      color: var(--em-form-yesno-color-no);
       border-radius: var(--em-applicant-br) !important;
       display: flex;
       align-items: center;
@@ -790,16 +790,16 @@ form.fabrikForm label.btn-default.btn.btn-danger.active {
       font-style: normal;
       line-height: 24px;
       letter-spacing: 0.0015em;
-      width: 50% !important;
+      width: var(--em-form-yesno-width) !important;
     }
 form.fabrikForm label.btn-default.btn.btn-danger.\!active {
-      height: 48px !important;
+      height: var(--em-form-yesno-height) !important;
       padding: var(--p-12) !important;
       box-shadow: none !important;
       cursor: pointer !important;
-      background-color: var(--em-form-radio-background-color-checked) !important;
-      border-color: var(--em-form-radio-border-color-checked) !important;
-      color: var(--neutral-900) !important;
+      background-color: var(--em-form-yesno-background-color-no) !important;
+      border-color: var(--em-form-yesno-border-color-no) !important;
+      color: var(--em-form-yesno-color-no) !important;
       border-radius: var(--em-applicant-br) !important;
       display: flex !important;
       align-items: center !important;
@@ -808,19 +808,15 @@ form.fabrikForm label.btn-default.btn.btn-danger.\!active {
       font-style: normal !important;
       line-height: 24px !important;
       letter-spacing: 0.0015em !important;
-      width: 50% !important;
+      width: var(--em-form-yesno-width) !important;
     }
 form.fabrikForm label.btn-default.btn.btn-danger.active:hover {
-      background-color: var(--em-form-radio-background-color-checked);
-      border-color: var(--em-form-radio-border-color-checked);
-      color: var(--neutral-900);
-      line-height: 24px;
+      background-color: var(--em-form-yesno-background-color-no-hover);
+      border-color: var(--em-form-yesno-border-color-no-hover)!important;
     }
 form.fabrikForm label.btn-default.btn.btn-danger.\!active:hover {
-      background-color: var(--em-form-radio-background-color-checked) !important;
-      border-color: var(--em-form-radio-border-color-checked) !important;
-      color: var(--neutral-900) !important;
-      line-height: 24px !important;
+      background-color: var(--em-form-yesno-background-color-no-hover) !important;
+      border-color: var(--em-form-yesno-border-color-no-hover)!important;
     }
 form.fabrikForm label.btn-default.btn.btn-danger.active:hover span {
       font-family: var(--em-default-font);
@@ -828,7 +824,7 @@ form.fabrikForm label.btn-default.btn.btn-danger.active:hover span {
       font-style: normal;
       line-height: 24px;
       letter-spacing: 0.0015em;
-      color: var(--neutral-900);
+      color: var(--em-form-yesno-color-no-hover);
       word-wrap: break-word;
     }
 form.fabrikForm label.btn-default.btn.btn-danger.\!active:hover span {
@@ -837,7 +833,7 @@ form.fabrikForm label.btn-default.btn.btn-danger.\!active:hover span {
       font-style: normal !important;
       line-height: 24px !important;
       letter-spacing: 0.0015em !important;
-      color: var(--neutral-900) !important;
+      color: var(--em-form-yesno-color-no-hover) !important;
       word-wrap: break-word !important;
     }
 form.fabrikForm label.btn-default.btn.btn-danger.active span {
@@ -846,7 +842,7 @@ form.fabrikForm label.btn-default.btn.btn-danger.active span {
       font-style: normal;
       line-height: 24px;
       letter-spacing: 0.0015em;
-      color: var(--neutral-900);
+      color: var(--em-form-yesno-color-no);
       word-wrap: break-word;
     }
 form.fabrikForm label.btn-default.btn.btn-danger.\!active span {
@@ -855,17 +851,17 @@ form.fabrikForm label.btn-default.btn.btn-danger.\!active span {
       font-style: normal !important;
       line-height: 24px !important;
       letter-spacing: 0.0015em !important;
-      color: var(--neutral-900) !important;
+      color: var(--em-form-yesno-color-no) !important;
       word-wrap: break-word !important;
     }
 form.fabrikForm label.btn-default.btn:not(.active) {
-      height: 48px;
+      height: var(--em-form-yesno-height);
       padding: var(--p-12);
       box-shadow: none;
       cursor: pointer;
-      border: var(--em-form-radio-border-width) solid var(--em-form-radio-border-color);
-      background: var(--neutral-0);
-      color: var(--neutral-900);
+      border: var(--em-form-yesno-border-width) solid var(--em-form-yesno-border-color-not-active);
+      background: var(--em-form-yesno-background-color-not-active);
+      color: var(--em-form-yesno-color-not-active);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -873,11 +869,11 @@ form.fabrikForm label.btn-default.btn:not(.active) {
       line-height: 24px;
       font-style: normal;
       letter-spacing: 0.0015em;
-      width: 50% !important;
+      width: var(--em-form-yesno-width) !important;
     }
 form.fabrikForm label.btn-default.btn:not(.active):hover {
-      background-color: var(--em-form-radio-background-color-checked);
-      border-color: var(--em-form-radio-border-color-checked);
+      background-color: var(--em-form-yesno-background-color-not-active-hover);
+      border-color: var(--em-form-yesno-border-color-not-active-hover) !important;
     }
 form.fabrikForm label.btn-default.btn:not(.active):hover span {
       font-family: var(--em-default-font);
@@ -885,7 +881,7 @@ form.fabrikForm label.btn-default.btn:not(.active):hover span {
       font-style: normal;
       line-height: 24px;
       letter-spacing: 0.0015em;
-      color: var(--neutral-900);
+      color: var(--em-form-yesno-color-not-active-hover);
       word-wrap: break-word;
     }
 form.fabrikForm label.btn-default.btn:not(.active) span {
@@ -894,7 +890,7 @@ form.fabrikForm label.btn-default.btn:not(.active) span {
       font-style: normal;
       line-height: 24px;
       letter-spacing: 0.0015em;
-      color: var(--neutral-900);
+      color: var(--em-form-yesno-color-not-active);
       word-wrap: break-word;
     }
 /** SELECT **/

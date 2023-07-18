@@ -332,6 +332,37 @@
   --em-form-radio-color-checked: #{$em-form-radio-color-checked};
   --em-form-radio-background-color-checked: #{$em-form-radio-background-color-checked};
   --em-form-radio-border-color-checked: #{$em-form-radio-border-color-checked};
+
+  --em-form-yesno-border-width: #{$em-form-yesno-border-width};
+  --em-form-yesno-border-radius: #{$em-form-yesno-border-radius};
+  --em-form-yesno-width: #{$em-form-yesno-width};
+  --em-form-yesno-height: #{$em-form-yesno-height};
+  --em-form-yesno-gap: #{$em-form-yesno-gap};
+
+  --em-form-yesno-color-yes: #{$em-form-yesno-color-yes};
+  --em-form-yesno-background-color-yes: #{$em-form-yesno-background-color-yes};
+  --em-form-yesno-border-color-yes: #{$em-form-yesno-border-color-yes};
+
+  --em-form-yesno-color-yes-hover: #{$em-form-yesno-color-yes-hover};
+  --em-form-yesno-background-color-yes-hover: #{$em-form-yesno-background-color-yes-hover};
+  --em-form-yesno-border-color-yes-hover: #{$em-form-yesno-border-color-yes-hover};
+
+  --em-form-yesno-color-no: #{$em-form-yesno-color-no};
+  --em-form-yesno-background-color-no: #{$em-form-yesno-background-color-no};
+  --em-form-yesno-border-color-no: #{$em-form-yesno-border-color-no};
+
+  --em-form-yesno-color-no-hover: #{$em-form-yesno-color-no-hover};
+  --em-form-yesno-background-color-no-hover: #{$em-form-yesno-background-color-no-hover};
+  --em-form-yesno-border-color-no-hover: #{$em-form-yesno-border-color-no-hover};
+
+  --em-form-yesno-color-not-active: #{$em-form-yesno-color-not-active};
+  --em-form-yesno-background-color-not-active: #{$em-form-yesno-background-color-not-active};
+  --em-form-yesno-border-color-not-active: #{$em-form-yesno-border-color-not-active};
+
+  --em-form-yesno-color-not-active-hover: #{$em-form-yesno-color-not-active-hover};
+  --em-form-yesno-background-color-not-active-hover: #{$em-form-yesno-background-color-not-active-hover};
+  --em-form-yesno-border-color-not-active-hover: #{$em-form-yesno-border-color-not-active-hover};
+
   --em-form-checkbox-border-width: #{$em-form-checkbox-border-width};
   --em-form-checkbox-border-color: #{$em-form-checkbox-border-color};
   --em-form-checkbox-padding: #{$em-form-checkbox-padding};

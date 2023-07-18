@@ -128,6 +128,98 @@ form:
         type: input.colorpicker
         label: Radio border color checked
         default: 'rgba(255, 255, 255, 0)'
+    yesno-border-width:
+      type: input.text
+      label: Yes/No border width
+      default: '1px'
+    yesno-border-radius:
+      type: input.text
+      label: Yes/No border radius
+      default: '4px'
+    yesno-width:
+      type: input.text
+      label: Yes/No width
+      default: '50%'
+    yesno-height:
+      type: input.text
+      label: Yes/No height
+      default: '48px'
+    yesno-gap:
+      type: input.text
+      label: Yes/No gap between buttons
+      default: '20px'
+    yesno-color-not-active:
+      type: input.colorpicker
+      label: Yes/No color not active
+      default: '#000000'
+    yesno-background-color-not-active:
+      type: input.colorpicker
+      label: Yes/No background color not active
+      default: '#ffffff'
+    yesno-border-color-not-active:
+      type: input.colorpicker
+      label: Yes/No border color not active
+      default: '#8990A9'
+    yesno-color-not-active-hover:
+      type: input.colorpicker
+      label: Yes/No color not active hover
+      default: '#ffffff'
+    yesno-background-color-not-active-hover:
+      type: input.colorpicker
+      label: Yes/No background color not active hover
+      default: '#8990A9'
+    yesno-border-color-not-active-hover:
+      type: input.colorpicker
+      label: Yes/No border color not active hover
+      default: '#8990A9'
+    yesno-color-yes:
+      type: input.colorpicker
+      label: Yes/No color for the "yes"
+      default: '#ffffff'
+    yesno-background-color-yes:
+      type: input.colorpicker
+      label: Yes/No background color for the "yes"
+      default: '#238C69'
+    yesno-border-color-yes:
+      type: input.colorpicker
+      label: Yes/No border color for the "yes"
+      default: '#238C69'
+    yesno-color-yes-hover:
+      type: input.colorpicker
+      label: Yes/No color for the "yes" hover
+      default: '#238C69'
+    yesno-background-color-yes-hover:
+      type: input.colorpicker
+      label: Yes/No background color for the "yes" hover
+      default: '#ffffff'
+    yesno-border-color-yes-hover:
+      type: input.colorpicker
+      label: Yes/No border color for the "yes" hover
+      default: '#238C69'
+    yesno-color-no:
+      type: input.colorpicker
+      label: Yes/No color for the "no"
+      default: '#ffffff'
+    yesno-background-color-no:
+      type: input.colorpicker
+      label: Yes/No background color for the "no"
+      default: '#F04437'
+    yesno-border-color-no:
+      type: input.colorpicker
+      label: Yes/No border color for the "no"
+      default: '#F04437'
+    yesno-color-no-hover:
+      type: input.colorpicker
+      label: Yes/No color for the "no" hover
+      default: '#F04437'
+    yesno-background-color-no-hover:
+      type: input.colorpicker
+      label: Yes/No background color for the "no" hover
+      default: '#ffffff'
+    yesno-border-color-no-hover:
+      type: input.colorpicker
+      label: Yes/No border color for the "no" hover
+      default: '#F04437'
     checkbox-border-width:
         type: input.text
         label: Checkbox border width
