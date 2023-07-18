@@ -144,7 +144,6 @@
     }
 
     /* YES / NO */
-
     .plg-yesno .fabrikSubElementContainer .btn-group {
       display: flex;
       gap: var(--em-form-yesno-gap);
@@ -292,6 +291,10 @@
       background-image: url(/images/emundus/arrow.svg);
       background-size: 8px;
       background-repeat: no-repeat;
+      @apply pr-4;
+      &.input-small {
+        background-position-x: 92%;
+      }
     }
 
     /** RADIO **/

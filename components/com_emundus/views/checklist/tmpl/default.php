@@ -569,12 +569,12 @@ if (!empty($this->custom_title)) :?>
 
                 $div .= '</tr>';
                 } else {
-                    $div .= '
+                    /*$div .= '
                 <tr class="em-no-more-files">
                     <td>
                     <span class="em-red-500-color">'. JText::_('COM_EMUNDUS_ATTACHMENTS_NO_MORE').'</span>
                     </td>
-                </tr>';
+                </tr>';*/
 
                 $div .= '</tbody>';
                 }

@@ -903,7 +903,11 @@ form.fabrikForm select {
       background-image: url(/images/emundus/arrow.svg);
       background-size: 8px;
       background-repeat: no-repeat;
+      padding-right: 1rem;
     }
+form.fabrikForm select.input-small {
+        background-position-x: 92%;
+      }
 /** RADIO **/
 form.fabrikForm .fabrikgrid_radio {
   padding-top: 0.25rem;
