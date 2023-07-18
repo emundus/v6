@@ -301,6 +301,20 @@
   --m-72: 72px;
   --m-80: 80px;
 
+  /** BOX SHADOW **/
+  --em-box-shadow-x-1: #{$em-box-shadow-x-1};
+  --em-box-shadow-y-1: #{$em-box-shadow-y-1};
+  --em-box-shadow-blur-1: #{$em-box-shadow-blur-1};
+  --em-box-shadow-color-1: #{$em-box-shadow-color-1};
+  --em-box-shadow-x-2: #{$em-box-shadow-x-2};
+  --em-box-shadow-y-2: #{$em-box-shadow-y-2};
+  --em-box-shadow-blur-2: #{$em-box-shadow-blur-2};
+  --em-box-shadow-color-2: #{$em-box-shadow-color-2};
+  --em-box-shadow-x-3: #{$em-box-shadow-x-3};
+  --em-box-shadow-y-3: #{$em-box-shadow-y-3};
+  --em-box-shadow-blur-3: #{$em-box-shadow-blur-3};
+  --em-box-shadow-color-3: #{$em-box-shadow-color-3};
+
   /** FORM VARIABLES **/
   --em-form-label-color: #{$em-form-label-color};
   --em-form-label-margin-bottom: #{$em-form-label-margin-bottom};
