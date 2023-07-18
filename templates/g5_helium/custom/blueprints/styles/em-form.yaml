@@ -20,6 +20,10 @@ form:
       type: input.text
       label: Height of fields
       default: '48px'
+    font-size:
+      type: input.text
+      label: Font size of fields
+      default: '12px'
     tip-color:
       type: input.colorpicker
       label: Tip color
@@ -28,6 +32,10 @@ form:
       type: input.text
       label: Border radius of fields
       default: '4px'
+    border-color:
+      type: input.colorpicker
+      label: Border color of fields
+      default: '#e0e0e5'
     background-color:
       type: input.colorpicker
       label: Background color of fields

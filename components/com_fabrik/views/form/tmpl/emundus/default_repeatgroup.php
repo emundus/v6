@@ -24,7 +24,7 @@ foreach ($group->subgroups as $subgroup) :
 		<div data-role="group-repeat-intro">
 			<?php echo $w->parseMessageForPlaceHolder($group->repeatIntro, $introData);?>
 		</div>
-		<div class="fabrikSubGroupElements em-repeat-card em-mb-24 em-mt-32">
+		<div class="fabrikSubGroupElements em-repeat-card mb-4 mt-7">
             <?php if ($group->canDeleteRepeat) : ?>
                 <div class="fabrikGroupRepeater pull-right">
                     <?php echo $this->removeRepeatGroupButton; ?>

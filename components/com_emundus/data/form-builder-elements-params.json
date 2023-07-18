@@ -446,5 +446,106 @@
       "published": true,
       "sysadmin_only": false
     }
+  ],
+  "currency": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_ALL_OPTIONS",
+      "name": "all_currencies_options",
+      "type": "subform",
+      "min": 1,
+
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false,
+
+      "subparams": [
+        {
+          "name": "iso3",
+          "type": "sql",
+          "label":"COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_CURRENCY",
+          "value_field": "label",
+          "key_field": "iso3",
+
+          "plugin_name": "currency",
+          "placeholder": "",
+          "helptext": "",
+          "published": true,
+          "sysadmin_only": false
+        },
+        {
+          "name": "minimal_value",
+          "type": "number",
+          "label": "COM_EMUNDUS_ONBOARD_MIN_RESOLUTION_PLACEHOLDER",
+          "required": true,
+          "min": 0.00,
+          "max": 99999999.98,
+          "default": 0.00,
+          "step": 1,
+
+          "placeholder": "",
+          "helptext": "",
+          "published": true,
+          "sysadmin_only": false
+        },
+        {
+          "name": "maximal_value",
+          "type": "number",
+          "label": "COM_EMUNDUS_ONBOARD_MAX_RESOLUTION_PLACEHOLDER",
+          "required": true,
+          "min": 0.00,
+          "max": 99999999.99,
+          "default": 10000.00,
+          "step": 1,
+
+          "placeholder": "",
+          "helptext": "",
+          "published": true,
+          "sysadmin_only": false
+        },
+        {
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_THOUSAND_SEPARATOR",
+          "name": "thousand_separator",
+          "type": "text",
+          "maxlength": 1,
+          "size": 3,
+          "default": " ",
+
+          "placeholder": "",
+          "helptext": "",
+          "published": true,
+          "sysadmin_only": false
+        },
+        {
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_DECIMAL_SEPARATOR",
+          "name": "decimal_separator",
+          "type": "text",
+          "required": true,
+          "maxlength": 1,
+          "size": 1,
+          "default": ",",
+
+          "placeholder": "",
+          "helptext": "",
+          "published": true,
+          "sysadmin_only": false
+        },
+        {
+          "name": "decimal_numbers",
+          "type": "number",
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_DECIMAL_NUMBERS",
+          "filter": "number",
+          "required": 1,
+          "max": 10,
+          "min": 0,
+          "default": 2,
+
+          "placeholder": "",
+          "helptext": "",
+          "published": true,
+          "sysadmin_only": false
+        }
+      ]
+    }
   ]
 }
