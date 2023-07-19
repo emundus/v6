@@ -1996,6 +1996,10 @@ structure:
 				//
             }
 
+			if (version_compare($cache_version, '1.37.0', '<=') || $firstrun){
+				EmundusHelperUpdate::manageCcid();
+			}
+
 			// Insert new translations in overrides files
 			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
 

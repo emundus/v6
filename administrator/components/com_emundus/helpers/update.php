@@ -2618,4 +2618,66 @@ class EmundusHelperUpdate
 
 		return $result;
 	}
+
+	public static function manageCcid()
+	{
+		$result = ['status' => false, 'message' => ''];
+		$db = JFactory::getDbo();
+
+		$query = 'SELECT DISTINCT TABLE_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE COLUMN_NAME LIKE '.$db->quote('fnum').';';
+		$db->setQuery($query);
+		$tables = $db->loadColumn();
+
+		if (($key = array_search('jos_emundus_campaign_candidature', $tables)) !== false) {
+			unset($tables[$key]);
+		}
+
+		foreach ($tables as $table)
+		{
+			if($table != 'jos_emundus_campaign_candidature')
+			{
+				$query = 'SHOW COLUMNS FROM '.$db->quoteName($table).' LIKE '.$db->quote('ccid').';';
+				$db->setQuery($query);
+				$ccid_column = $db->loadObject();
+
+				if (empty($ccid_column->Field))
+				{
+					$query = 'ALTER TABLE ' . $db->quoteName($table) . ' ADD ' . $db->quoteName('ccid') . ' INT NOT NULL;';
+					$db->setQuery($query);
+					$db->execute();
+
+					$query = 'CREATE INDEX ' . $db->quoteName($table . '_ccid_index') . ' ON ' . $db->quoteName($table) . ' (ccid);';
+					$db->setQuery($query);
+					$db->execute();
+
+					$query = 'UPDATE ' . $db->quoteName($table) . ' INNER JOIN jos_emundus_campaign_candidature jecc on ' . $db->quoteName($table) . '.fnum = jecc.fnum SET ccid = jecc.id;';
+					$db->setQuery($query);
+					$db->execute();
+				}
+			}
+		}
+
+		$query = 'SELECT TABLE_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_SCHEMA IS NOT NULL and COLUMN_NAME = '.$db->quote('ccid').';';
+		$db->setQuery($query);
+		$tables_with_fk = $db->loadColumn();
+
+		$tables_without_fk = array_diff($tables, $tables_with_fk);
+
+		foreach ($tables_without_fk as $table)
+		{
+			$query = 'SET FOREIGN_KEY_CHECKS = 0;';
+			$db->setQuery($query);
+			$db->execute();
+
+			$query = 'ALTER TABLE ' . $db->quoteName($table) . ' ADD CONSTRAINT ' . $db->quoteName($table . '_cc_fk') . ' FOREIGN KEY (ccid) REFERENCES jos_emundus_campaign_candidature (id) ON UPDATE CASCADE ON DELETE CASCADE;';
+			$db->setQuery($query);
+			$db->execute();
+
+			$query = 'SET FOREIGN_KEY_CHECKS = 1;';
+			$db->setQuery($query);
+			$db->execute();
+		}
+
+		return $result;
+	}
 }

@@ -57,7 +57,7 @@ class EmundusHelperEvents {
                 if ($submittion_page_id === $params['formModel']->id) {
                     $this->isApplicationCompleted($params);
                 }
-            }
+			}
 
             return true;
         } catch (Exception $e) {
@@ -86,6 +86,11 @@ class EmundusHelperEvents {
                 $forms_to_log = $eMConfig->get('log_forms_update_forms', []);
                 $this->logUpdateForms($params, $forms_to_log);
 			}
+
+	        $db_table_name = $params['formModel']->getListModel()->getTable()->db_table_name;
+			$fnum = $params['formModel']->formData[$db_table_name.'___fnum'];
+
+	        $params['formModel']->updateFormData($db_table_name.'___ccid',$this->getIdByFnum($fnum));
 
             return true;
         } catch (Exception $e) {
@@ -1330,5 +1335,27 @@ class EmundusHelperEvents {
 		}
 
 		return $result;
+	}
+
+	public function getIdByFnum($fnum)
+	{
+		$candidature_id = 0;
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try
+		{
+			$query->select('id')
+				->from($db->quoteName('#__emundus_campaign_candidature'))
+				->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+			$db->setQuery($query);
+			$candidature_id = $db->loadResult();
+		}
+		catch (Exception $e)
+		{
+			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+		}
+
+		return $candidature_id;
 	}
 }
