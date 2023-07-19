@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -11,6 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 class hikashopCategorysubType {
 	var $type = 'tax';
 	var $value = '';
+	var $noneText = 'HIKA_NONE';
 	var $multiple = false;
 
 	function load($form = true) {
@@ -75,9 +76,9 @@ class hikashopCategorysubType {
 		$this->values = array();
 		if($form) {
 			if(in_array($this->type,array('status','tax'))){
-				$this->values[] = JHTML::_('select.option', '', JText::_('HIKA_NONE') );
+				$this->values[] = JHTML::_('select.option', '', JText::_($this->noneText) );
 			}else{
-				$this->values[] = JHTML::_('select.option', 0, JText::_('HIKA_NONE') );
+				$this->values[] = JHTML::_('select.option', 0, JText::_($this->noneText) );
 			}
 		} else {
 			if($this->type=='status'){
@@ -209,7 +210,7 @@ window.hikashop.ready(function(){ window.hikashop.noChzn(); });
 			array(
 				'delete' => $delete,
 				'root' => $root,
-				'default_text' => '<em>'.JText::_('HIKA_NONE').'</em>',
+				'default_text' => '<em>'.JText::_($this->noneText).'</em>',
 			)
 		);
 	}
@@ -231,7 +232,7 @@ window.hikashop.ready(function(){ window.hikashop.noChzn(); });
 				'delete' => true,
 				'root' => $root,
 				'sort' => true,
-				'default_text' => '<em>'.JText::_('HIKA_NONE').'</em>',
+				'default_text' => '<em>'.JText::_($this->noneText).'</em>',
 			)
 		);
 	}

@@ -52,9 +52,6 @@ foreach ($this->elements as $element) :
 		<td class="fabrikGroupRepeater">
 			<div class="pull-right">
 			<?php
-			if ($group->canAddRepeat) :
-				echo $this->addRepeatGroupButtonRow;
-			endif;
 			if ($group->canDeleteRepeat) :
 				echo $this->removeRepeatGroupButtonRow;
 			endif;

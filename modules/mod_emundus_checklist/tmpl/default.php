@@ -32,7 +32,7 @@ if($show_preliminary_documents && !empty($preliminary_documents)): ?>
 <div class="mod_emundus_checklist em-mb-24">
     <div class="em-flex-row em-flex-space-between em-pointer mod_emundus_checklist_expand" >
         <div class="em-flex-row">
-            <p class="em-h6"><?php echo JText::_($preliminary_documents_title) ?></p>
+            <h4 class="em-h4"><?php echo JText::_($preliminary_documents_title) ?></h4>
         </div>
         <span id="mod_emundus_checklist___expand_icon" class="material-icons-outlined" style="transform: rotate(-90deg);">expand_more</span>
     </div>
@@ -66,11 +66,12 @@ if($show_preliminary_documents && !empty($preliminary_documents)): ?>
             <div>
                 <?php foreach ($forms as $index => $form) : ?>
                     <?php
-                    $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE user = '.$user->id. ' AND fnum like '.$db->Quote($user->fnum);
+                    $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE fnum like '.$db->Quote($user->fnum);
                     $db->setQuery( $query );
                     $cpt = $db->loadResult();
                     $class = $cpt==0?'need_missing':'need_ok';
                     $step = $index+1;
+                    $form_title = explode(' - ',$form->title)[1] ?: $form->title;
                     ?>
                     <div id="mlf<?php echo $form->id; ?>"
                          class="<?php if($form->id == $menuid) echo 'active'?> mod_emundus_checklist_<?php echo $class; ?> mod_emundus_checklist___form_item">
@@ -84,7 +85,7 @@ if($show_preliminary_documents && !empty($preliminary_documents)): ?>
                                     <span class="material-icons-outlined">done</span>
                                 <?php endif; ?>
                             </div>
-                            <a href="<?php echo $form->link ?>"><?php echo JText::_($form->title); ?></a>
+                            <a href="<?php echo $form->link ?>"><?php echo JText::_($form_title); ?></a>
                         </div>
                         <?php if ($index != (sizeof($forms) - 1) || ($show_mandatory_documents == 1 && !empty($mandatory_documents)) || ($show_optional_documents == 1 && !empty($optional_documents)) || !empty($checkout_url)) : ?>
                             <div class="mod_emundus_checklist___border_item"></div>
@@ -189,7 +190,7 @@ $details_view = array_search('view=details',$url);
 <div class="mod_emundus_checklist___buttons">
     <?php if ($show_send && $details_view === false && $is_confirm_url === false) :?>
         <a class="btn btn-success btn-xs em-w-100"
-            <?php if (((int)($attachments_progress) >= 100 && (int)($forms_progress) >= 100 && in_array($application->status, $status_for_send) && (!$is_dead_line_passed || ($is_dead_line_passed && $can_edit_after_deadline))) || in_array($user->id, $applicants)) :?>
+            <?php if ((int)($attachments_progress) >= 100 && (int)($forms_progress) >= 100 && ((in_array($application->status, $status_for_send) && (!$is_dead_line_passed || ($is_dead_line_passed && $can_edit_after_deadline))) || in_array($user->id, $exceptions))) :?>
                 href="<?php echo $confirm_form_url; ?>" style="opacity: 1"
             <?php else: ?>
                 style="opacity: 0.6; cursor: not-allowed"

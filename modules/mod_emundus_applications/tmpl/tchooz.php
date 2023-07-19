@@ -375,10 +375,10 @@ $current_tab = 0;
                                                                       style="background-color: <?= $application->order_color; ?>"><?= JText::_(strtoupper($application->order_status)); ?></span>
 															<?php endif; ?>
                                                         </div>
-                                                        <div>
+                                                        <div class="mod_emundus_applications__container">
                                                             <span class="material-icons em-text-neutral-600 em-font-weight-600"
                                                                   id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
-                                                                  style="font-size: 16px">more_vert</span>
+                                                                  >more_vert</span>
 
                                                             <!-- ACTIONS BLOCK -->
                                                             <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color"
@@ -450,9 +450,9 @@ $current_tab = 0;
                                                                             <a id="actions_button_custom_<?= $custom_action_key; ?>_card_tab<?php echo $key ?>"
                                                                                class="em-text-neutral-900 em-pointer em-flex-row"
                                                                                href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?>>
-                                                                                <? if ($custom_action->mod_em_application_custom_action_icon): ?>
+                                                                                <?php if ($custom_action->mod_em_application_custom_action_icon): ?>
                                                                                     <span class="material-icons-outlined em-font-size-16 em-mr-8"><?php echo $custom_action->mod_em_application_custom_action_icon ?></span>
-                                                                                <? endif; ?>
+                                                                                <?php endif; ?>
                                                                                 <?= JText::_($custom_action->mod_em_application_custom_action_label) ?>
                                                                             </a>
                                                                             <?php
@@ -739,10 +739,10 @@ $current_tab = 0;
                                                     </div>
                                                 </td>
                                                 <td style="width: 5%;">
-                                                    <div>
+                                                    <div class="mod_emundus_applications__container">
                                                             <span class="material-icons em-text-neutral-600 em-font-weight-600"
                                                                   id="actions_button_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>"
-                                                                  style="font-size: 16px">more_vert</span>
+                                                                  >more_vert</span>
 
                                                         <!-- ACTIONS BLOCK -->
                                                         <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color"
@@ -814,9 +814,9 @@ $current_tab = 0;
                                                                         <a id="actions_button_custom_<?= $custom_action_key; ?>_card_tab<?php echo $key ?>"
                                                                            class="em-text-neutral-900 em-pointer em-flex-row"
                                                                            href="<?= str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link) ?>" <?= $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '' ?>>
-																			<? if ($custom_action->mod_em_application_custom_action_icon): ?>
+																			<?php if ($custom_action->mod_em_application_custom_action_icon): ?>
                                                                                 <span class="material-icons-outlined em-font-size-16 em-mr-8"><?php echo $custom_action->mod_em_application_custom_action_icon ?></span>
-																			<? endif; ?>
+																			<?php endif; ?>
 																			<?= JText::_($custom_action->mod_em_application_custom_action_label) ?>
                                                                         </a>
 																		<?php

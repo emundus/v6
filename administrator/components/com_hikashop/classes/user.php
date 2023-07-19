@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -139,7 +139,16 @@ class hikashopUserClass extends hikashopClass {
 		if(!$do)
 			return false;
 
-		$element->user_id = parent::save($element);
+		try{
+			$element->user_id = parent::save($element);
+		}catch(Exception $e) {
+			$msg = $e->getMessage();
+			if($e->getCode() == 1062) {
+				$msg = JText::_('USER_WITH_SAME_EMAIL_ADDRESS_ALREADY_EXISTS');
+			}
+			$app->enqueueMessage($msg, 'error');
+			return false;
+		}
 
 		if(empty($element->user_id))
 			return $element->user_id;
@@ -1288,7 +1297,12 @@ class hikashopUserClass extends hikashopClass {
 
 			$lang = JFactory::getLanguage();
 			$locale = strtolower(substr($lang->get('tag'), 0, 2));
-			$app->redirect(hikashop_completeLink('checkout&task=activate_page&lang='.$locale,false,true));
+
+			global $Itemid;
+			$url_itemid = '';
+			if(!empty($Itemid))
+				$url_itemid = '&Itemid=' . $Itemid;
+			$app->redirect(hikashop_completeLink('checkout&task=activate_page&lang='.$locale.$url_itemid,false,true));
 		}
 
 		if($simplified != 2 && $redirect && isset($ret['userActivation']) && $ret['userActivation'] == 0) {

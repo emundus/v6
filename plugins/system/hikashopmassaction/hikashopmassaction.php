@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -203,7 +203,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 					}
 					$operators->extra = 'onchange="countresults(\''.$table->table.'\',\''.$key.'\')"';
 					$output .= $operators->display('filter['.$table->table.']['.$key.']['.$column.'][operator]',$value->data['operator'], "chzn-done not-processed");
-					$output .= ' <input class="inputbox" type="text" name="filter['.$table->table.']['.$key.']['.$column.'][value]" size="50" value="'.htmlspecialchars($value->data['value'], ENT_COMPAT, 'UTF-8').'" onchange="countresults(\''.$table->table.'\',\''.$key.'\')" />';
+					$output .= ' <input class="inputbox" type="text" name="filter['.$table->table.']['.$key.']['.$column.'][value]" size="50" value="'.htmlspecialchars((string)$value->data['value'], ENT_COMPAT, 'UTF-8').'" onchange="countresults(\''.$table->table.'\',\''.$key.'\')" />';
 
 					$filters_html[$value->name] = $massactionClass->initDefaultDiv($value, $key, $type, $table->table, $loadedData, $output);
 				}
@@ -428,7 +428,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 			foreach($loadedData->massaction_actions as $key => &$value) {
 				if($value->name != 'mysqlQuery' || ($table->table != $loadedData->massaction_table && is_int($key)))
 					continue;
-				$output = ' <textarea name="action['.$table->table.']['.$key.'][mysqlQuery][query]" rows="15" cols="100">'. htmlspecialchars(@$value->data['query'], ENT_COMPAT, 'UTF-8').'</textarea>';
+				$output = ' <textarea name="action['.$table->table.']['.$key.'][mysqlQuery][query]" rows="15" cols="100">'. htmlspecialchars((string)@$value->data['query'], ENT_COMPAT, 'UTF-8').'</textarea>';
 				$actions_html[$value->name] =  $massactionClass->initDefaultDiv($value, $key, $type, $table->table, $loadedData, $output);
 			}
 
@@ -441,7 +441,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 			foreach($loadedData->massaction_actions as $key => &$value) {
 				if($value->name != 'phpCode' || ($table->table != $loadedData->massaction_table && is_int($key)))
 					continue;
-				$output = ' <textarea name="action['.$table->table.']['.$key.'][phpCode][code]" rows="15" cols="100">'. htmlspecialchars(@$value->data['code'], ENT_COMPAT, 'UTF-8').'</textarea>';
+				$output = ' <textarea name="action['.$table->table.']['.$key.'][phpCode][code]" rows="15" cols="100">'. htmlspecialchars((string)@$value->data['code'], ENT_COMPAT, 'UTF-8').'</textarea>';
 				$actions_html[$value->name] =  $massactionClass->initDefaultDiv($value, $key, $type, $table->table, $loadedData, $output);
 			}
 
@@ -815,7 +815,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 				$output .= ' = <select class="custom-select chzn-done not-processed" onchange="if(this.value == \'operation\'){document.getElementById(\'updateValues_message\').style.display = \'inline\';}" name="action['.$table->table.']['.$key.'][updateValues][operation]">
 														'.$options.'
 													 </select>';
-				$output .= ' <input class="inputbox" type="text" name="action['.$table->table.']['.$key.'][updateValues][value]" size="50" value="'. htmlspecialchars($value->data['value'], ENT_COMPAT, 'UTF-8').'"  />';
+				$output .= ' <input class="inputbox" type="text" name="action['.$table->table.']['.$key.'][updateValues][value]" size="50" value="'. htmlspecialchars((string)$value->data['value'], ENT_COMPAT, 'UTF-8').'"  />';
 
 				$actions_html[$value->name] = $massactionClass->initDefaultDiv($value, $key, $type, $table->table, $loadedData, $output);
 			}

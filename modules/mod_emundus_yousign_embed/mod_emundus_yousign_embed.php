@@ -20,10 +20,10 @@ $yousignSession = JFactory::getSession()->get('YousignSession');
 
 // Do not redirect the user if the param is not 'true'.
 if (empty($yousignSession) && !empty($user_params->get('yousign_signer_id'))) {
-    $yousignSession = new stdClass();
-    $yousignSession->iframe_url = $user_params->get('yousign_url');
+    $yousignSession = [];
+    $yousignSession['iframe_url'] = $user_params->get('yousign_url');
 }
 
-if (!empty($yousignSession->iframe_url)) {
+if (!empty($yousignSession['iframe_url'])) {
     require JModuleHelper::getLayoutPath('mod_emundus_yousign_embed', 'default');
 }

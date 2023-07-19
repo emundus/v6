@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -134,15 +134,14 @@ if(!empty($this->filters)){
 	<div class="hikashop_checkout_loading_spinner"></div>
 <?php
 	}
-	$datas = array();
-	$canBeUsed = array();
-	if(isset($this->listingQuery)){
-		$html=array();
-		$datas=$this->filterClass->getProductList($this, $filters);
-	}
 
-	foreach($filters as $key => $filter){
-		$html[$key]=$this->filterClass->displayFilter($filter, $this->params->get('main_div_name'), $this, $datas);
+	$canBeUsed = array();
+	$html = array();
+	foreach($filters as $key => $filter) {
+		if(isset($this->listingQuery)) {
+			$this->filterClass->getProductList($this, $filters, $key);
+		}
+		$html[$key]=$this->filterClass->displayFilter($filter, $this->params->get('main_div_name'), $this);
 		$canBeUsed[$key] = $this->filterClass->canBeUsed();
 	}
 

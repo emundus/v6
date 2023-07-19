@@ -142,6 +142,52 @@
     font-size: 1.5rem;
 }
 
+/* REPEAT */
+.view-form.applicant-form .span12 form .fabrikGroup table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.view-form.applicant-form .span12 form .fabrikGroup table .fabrikSubGroup td  {
+    background: #fff !important;
+    margin-top: -1px;
+}
+
+.view-form.applicant-form .span12 form .fabrikGroup table th:last-of-type,
+.view-form.applicant-form .span12 form .fabrikGroup table td:last-of-type {
+    width: 64px;
+}
+
+.view-form.applicant-form .span12 form .fabrikGroup table .fabrikSubGroup .fabrikGroupRepeater .pull-right {
+    display: flex;
+    align-items: center;
+    height: 48px;
+    margin-top: 6px;
+}
+
+.view-form.applicant-form .span12 form .fabrikGroup table .fabrikSubGroup .fabrikGroupRepeater .pull-right .deleteGroup {
+    display: flex;
+}
+
+
+.view-form.applicant-form .span12 form .fabrikGroup table .fabrikSubGroup .fabrikGroupRepeater .pull-right .addGroup {
+    margin-right: 0;
+}
+
+.view-form.applicant-form .span12 form .fabrikGroup table .fabrikSubGroup .fabrikGroupRepeater .pull-right .addGroup i {
+    color: #1C6EF2 !important;
+}
+
+.view-form.applicant-form .span12 form .fabrikGroup table .fabrikSubGroupElements td select {
+    border-radius: 8px;
+    border: 1px solid var(--neutral-400);
+    box-shadow: none;
+    margin-top: 6px;
+    margin-bottom: 0;
+    width: 100%;
+    background-position-x: 92% !important;
+}
+
 #form_308_5 .form-horizontal {
     padding: 0;
     margin-top: 20px;
@@ -1567,6 +1613,14 @@ a.btn-attach:active {
     color: #2B2B2B;
 }
 
+/* COLUMNS */
+
+form .fabrikGroupColumns.fabrikGroup .row-fluid {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    column-gap: 8px;
+}
 
 /*** MEDIA QUERY SECTION ***/
 
@@ -1625,6 +1679,14 @@ a.btn-attach:active {
 }
 
 @media all and (max-width: 479px) {
+     .fabrikGroup .repeatGroupTable .fabrikSubGroupElements  .fabrikGroupRepeater  {
+         display: flex;
+         justify-content: flex-end;
+    }
+
+    form.fabrikForm .row-fluid .control-group.plg-textarea label.fabrikTip {
+        display: initial !important;
+    }
 
     .em-submit-form-button{
         justify-self: center;
@@ -1660,6 +1722,16 @@ a.btn-attach:active {
 }
 
 @media all and (min-width: 480px) and (max-width: 767px) {
+
+    .fabrikGroup .repeatGroupTable .fabrikSubGroupElements  .fabrikGroupRepeater  {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+
+    form.fabrikForm .row-fluid .control-group.plg-textarea label.fabrikTip {
+        display: initial !important;
+    }
 
     .fabrikActions.form-actions .row-fluid .span4 {
         width: 98% !important;
@@ -1821,7 +1893,7 @@ a.btn-attach:active {
 
     /* INSCRIPTION */
     .view-form .em-formRegistrationCenter {
-        width: 65% !important;
+        width: 90% !important;
     }
 
     .view-registration form.fabrikForm  {
@@ -1860,9 +1932,32 @@ a.btn-attach:active {
         text-align: left !important;
         margin-bottom: 10px;
     }
+
+    .view-form.applicant-form  .fabrikGroup .repeatGroupTable {
+        display: block !important;
+    }
+
+    .view-form.applicant-form  .fabrikGroup .repeatGroupTable th:last-of-type,
+    .view-form.applicant-form  .fabrikGroup .repeatGroupTable  td:last-of-type {
+        width: 100% !important;
+    }
+
+    .view-form.applicant-form  .fabrikGroup .repeatGroupTable tbody tr .fabrikElement input {
+        width: 100%;
+    }
+
+    .view-form.applicant-form  .fabrikGroup .repeatGroupTable .fabrikSubGroupElements  td .fabrikElement  select {
+        background-position-x: 98% !important;
+    }
 }
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
+
+    .fabrikGroup .repeatGroupTable .fabrikSubGroupElements .fabrikGroupRepeater  {
+        display: flex;
+        justify-content: flex-end;
+    }
+
     .view-form .fabrikActions.form-actions .span4 {
         width: 34%;
     }

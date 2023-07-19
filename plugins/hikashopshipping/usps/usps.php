@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -15,6 +15,10 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin {
 	var $pluginConfig = array(
 		'usps_user_id' => array('USPS WebTools User ID', 'input'),
 		'post_code' => array('POST_CODE', 'input'),
+		'environment' => array('ENVIRONNEMENT', 'list', array(
+			'production' => 'Production',
+			'test' => 'Test'
+		)),
 		'services' => array('SHIPPING_SERVICES', 'checkbox',array(
 			'PRIORITY' => 'Priority Mail',
 			'MEDIA' => 'Media Mail',
@@ -517,13 +521,18 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin {
 
 		$ctrl = hikaInput::get()->getString('ctrl','');
 		if(!empty($rate->shipping_params->debug) && $ctrl == 'checkout')
-			echo '<!--' . "\r\n" . 'USPS DEBUG' . "\r\n" . $request . "\r\n" . '-->';
+			hikashop_writeToLog('USPS DEBUG' . "\r\n" . $request);
 
+		if(empty($rate->shipping_params->environment))
+			$rate->shipping_params->environment = 'production';
 		$responseError = false;
-		$response_xml = $this->doUSPS($request, !$isInternational);
+		$response_xml = $this->doUSPS($request, !$isInternational, $rate->shipping_params->environment);
 
 		if(!$response_xml)
 			return false;
+
+		if(!empty($rate->shipping_params->debug) && $ctrl == 'checkout')
+			hikashop_writeToLog($response_xml);
 
 		if($response_xml->Number) {
 			if(!empty($rate->shipping_params->debug) && $ctrl == 'checkout')
@@ -578,9 +587,14 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin {
 
 			$usps_rates = array();
 			foreach($usps_rate_arr as $k => $v) {
+				$usps_rate = $v['Rate'];
+				if(!empty($v['CommercialRate']))
+					$usps_rate = $v['CommercialRate'];	
+				if(!empty($v['CommercialPlusRate']))
+					$usps_rate = $v['CommercialPlusRate'];
 				$usps_rates[] = array(
 					'Service' => html_entity_decode($v['MailService']),
-					'Rate' => $v['Rate']
+					'Rate' => $usps_rate
 				);
 			}
 
@@ -706,13 +720,19 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin {
 		return true;
 	}
 
-	function doUSPS($XMLRequest, $domesticShipment) {
+	function doUSPS($XMLRequest, $domesticShipment, $environment='production') {
 		$apiName = 'RateV4';
 
 		if($domesticShipment == false)
 			$apiName = 'IntlRateV2';
 
-		$url = 'https://production.shippingapis.com/ShippingAPI.dll?API=' . $apiName . '&XML=' . urlencode($XMLRequest);
+		$domain = 'secure.shippingapis.com';
+
+		if($environment == 'test') {
+			$domain = 'stg-secure.shippingapis.com';
+		}
+
+		$url = 'https://'.$domain.'/ShippingAPI.dll?API=' . $apiName . '&XML=' . urlencode($XMLRequest);
 
 		$session = curl_init();
 		curl_setopt($session, CURLOPT_FRESH_CONNECT,  true);

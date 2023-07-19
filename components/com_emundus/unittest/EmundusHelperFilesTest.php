@@ -48,8 +48,25 @@ class EmundusHelperFilesTest extends TestCase {
 	public function testCreateFnum() {
 		$this->assertSame('', $this->h_files->createFnum(0, 0, false), 'Create fnum with wrong campaign_id and user_id returns empty');
 		$this->assertSame('', $this->h_files->createFnum(0, 95, false), 'Create fnum with wrong campaign_id returns empty');
-		$this->assertSame('', $this->h_files->createFnum(1, 0, false), 'Create fnum with wrong user_id returns empty');
+
+		if (JFactory::getUser()->id) {
+			$this->assertNotEmpty($this->h_files->createFnum(1, 0, false), 'Create fnum with empty user_id  will use current user_id and returns not empty');
+		} else {
+			$this->assertSame('', $this->h_files->createFnum(1, 0, false), 'Create fnum with nio user id connected or given returns empty');
+		}
 		$this->assertNotEmpty($this->h_files->createFnum(1, 95, false), 'Create fnum with correct campaign_id and user_id returns not empty');
 		$this->assertNotEmpty($this->h_files->createFnum(1, 95), 'Create fnum with correct campaign_id and user_id and redirect to true returns not empty');
+	}
+
+	/**
+	 * @test
+	 * @covers EmundusHelperFiles::getExportExcelFilter
+	 */
+	public function testGetExportExcelFilter() {
+		$this->assertFalse($this->h_files->getExportExcelFilter(0), 'Get export excel filter with wrong user id returns false');
+
+		$coord_filters = $this->h_files->getExportExcelFilter(95);
+		$this->assertNotFalse($coord_filters, 'Get export excel filter with correct user id returns not false');
+		$this->assertSame('array', gettype($coord_filters), 'Get export excel filter with correct user id returns an array even if empty');
 	}
 }

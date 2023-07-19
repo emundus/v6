@@ -26,28 +26,28 @@ class EmundusModelsettings extends JModelList {
      */
     function getColorClasses(){
         return array(
-            'lightpurple' => '#D444F1',
-            'purple' => '#7959F8',
+            'lightpurple' => '#FBE8FF',
+            'purple' => '#EBE9FE',
             'darkpurple' => '#663399',
-            'lightblue' => '#0BA4EB',
-            'blue' => '#2E90FA',
-            'darkblue' => '#2970FE',
-            'lightgreen' => '#15B79E',
-            'green' => '#238C69',
-            'darkgreen' => '#20835F',
-            'lightyellow' => '#5D5B00',
-            'yellow' => '#EAA907',
-            'darkyellow' => '#F79009',
-            'lightorange' => '#C87E00',
-            'orange' => '#EF681F',
-            'darkorange' => '#FF4305',
+            'lightblue' => '#E0F2FE',
+            'blue' => '#D1E9FF',
+            'darkblue' => '#D1E0FF',
+            'lightgreen' => '#CCFBEF',
+            'green' => '#C4F0E1',
+            'darkgreen' => '#BEDBD0',
+            'lightyellow' => '#FFFD7E',
+            'yellow' => '#FDF7C3',
+            'darkyellow' => '#FEF0C7',
+            'lightorange' => '#FFEDCF',
+            'orange' => '#FCEAD7',
+            'darkorange' => '#FFE5D5',
             'lightred' => '#EC644B',
-            'red' => '#DB333E',
-            'darkred' => '#DB333E',
-            'lightpink' => '#B04748',
-            'pink' => '#EE46BC',
-            'darkpink' => '#F53D68',
-            'default' => '#5E6580',
+            'red' => '#FEE4E2',
+            'darkred' => '#FEE4E2',
+            'lightpink' => '#ffeaea',
+            'pink' => '#FCE7F6',
+            'darkpink' => '#FFE4E8',
+            'default' => '#EBECF0',
         );
     }
 
@@ -1094,86 +1094,6 @@ class EmundusModelsettings extends JModelList {
         }
     }
 
-    function addDocumentToForm($file,$filename,$dir,$pid){
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
-
-        $user = JFactory::getUser();
-        $form_module = null;
-
-        $html = '<li class="col-md-6 em-print-button" id="' . explode('.',$file)[0] . '" style="margin-bottom: 10px"><a id="print" style="border-radius: 4px;text-decoration: unset" href="' . $dir . $file . '" download=""><i class="fas fa-arrow-circle-down"></i>' . $filename . '</a></li>';
-
-        try {
-            $query->select('*')
-                ->from($db->quoteName('#__modules'))
-                ->where($db->quoteName('note') . '!=' .  $db->quote(''));
-            $db->setQuery($query);
-            $modules = $db->loadObjectList();
-            foreach ($modules as $module){
-                if(json_decode($module->note,true)['pid'] == $pid){
-                    $form_module = $module;
-                    break;
-                }
-            }
-
-            if($form_module == null) {
-                $content = '<ul style="width: 100%">' . $html . '</ul>';
-                $query->clear()
-                    ->insert($db->quoteName('#__modules'));
-                $query->set($db->quoteName('asset_id') . ' = ' . $db->quote(0))
-                    ->set($db->quoteName('title') . ' = ' . $db->quote('Documents à télécharger'))
-                    ->set($db->quoteName('note') . ' = ' . $db->quote('{"pid":"' . $pid . '"}'))
-                    ->set($db->quoteName('content') . ' = ' . $db->quote($content))
-                    ->set($db->quoteName('position') . ' = ' . $db->quote('sidebar-a'))
-                    ->set($db->quoteName('ordering') . ' = ' . $db->quote(1))
-                    ->set($db->quoteName('checked_out') . ' = ' . $db->quote($user->id))
-                    ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                    ->set($db->quoteName('publish_up') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                    ->set($db->quoteName('publish_down') . ' = ' . $db->quote('2099-30-12 00:00:00'))
-                    ->set($db->quoteName('published') . ' = ' . $db->quote(1))
-                    ->set($db->quoteName('module') . ' = ' . $db->quote('mod_custom'))
-                    ->set($db->quoteName('access') . ' = ' . $db->quote(1))
-                    ->set($db->quoteName('language') . ' = ' . $db->quote('*'));
-                $db->setQuery($query);
-                $db->execute();
-
-                $moduleid = $db->insertid();
-
-                $query->clear()
-                    ->select('m.id')
-                    ->from($db->quoteName('#__menu','m'))
-                    ->leftJoin($db->quoteName('#__emundus_setup_profiles','sp').' ON '.$db->quoteName('sp.menutype').' = '.$db->quoteName('m.menutype'))
-                    ->where($db->quoteName('sp.id') . ' = ' . $db->quote($pid));
-                $db->setQuery($query);
-                $mids = $db->loadObjectList();
-
-                foreach ($mids as $mid){
-                    $query->clear()
-                        ->insert($db->quoteName('#__modules_menu'));
-                    $query->set($db->quoteName('moduleid') . ' = ' . $db->quote($moduleid))
-                        ->set($db->quoteName('menuid') . ' = ' . $db->quote($mid->id));
-                    $db->setQuery($query);
-                    $db->execute();
-                }
-
-                return true;
-
-            } else {
-                $content_to_complete = explode('</ul>',$form_module->content);
-                $new_content = $content_to_complete[0] . $html . '</ul>';
-                $query->clear()
-                    ->update($db->quoteName('#__modules'))
-                    ->set($db->quoteName('content') . ' = ' . $db->quote($new_content))
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($form_module->id));
-                $db->setQuery($query);
-                return $db->execute();
-            }
-        }  catch (Exception $e) {
-            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-            return false;
-        }
-    }
-
 	function getBannerModule(){
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -1256,6 +1176,25 @@ class EmundusModelsettings extends JModelList {
 					}
 
 					foreach($lists as $lk => $list) {
+						if ($lk === 'campaigns') {
+							$eMConfig = JComponentHelper::getParams('com_emundus');
+							$allow_pinned_campaign = $eMConfig->get('allow_pinned_campaign', 0);
+
+							if (!$allow_pinned_campaign) {
+								foreach($list['tabs'] as $tk => $tab) {
+									if ($tab['key'] === 'campaign') {
+										foreach ($tab['actions'] as $ak => $action) {
+											if ($action['name'] === 'pin' || $action['name'] === 'unpin') {
+												unset($tab['actions'][$ak]);
+											}
+										}
+										$list['tabs'][$tk] = $tab;
+										break;
+									}
+								}
+							}
+						}
+
 						$list['title'] = JText::_($list['title']);
 
 						foreach($list['tabs'] as $tk => $tab) {
@@ -1263,6 +1202,9 @@ class EmundusModelsettings extends JModelList {
 
 							foreach($tab['actions'] as $ak => $action) {
 								$action['label'] = JText::_($action['label']);
+								if(!empty($action['confirm'])) {
+									$action['confirm'] = JText::_($action['confirm']);
+								}
 								$tab['actions'][$ak] = $action;
 							}
 

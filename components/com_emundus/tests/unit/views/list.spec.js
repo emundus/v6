@@ -25,7 +25,7 @@ describe('List view', () => {
         expect(wrapper.find('#onboarding_list').exists()).toBeTruthy();
     });
 
-    it ('Current displayed tab should be equald to selected list tab in navigation', () => {
+    it ('Current displayed tab should be equal to selected list tab in navigation', () => {
         expect(wrapper.vm.currentTab.key).toBe(wrapper.vm.selectedListTab);
     });
 
@@ -69,6 +69,15 @@ describe('List view', () => {
     it ('on click action should return false if no action is defined', () => {
         expect(wrapper.vm.onClickAction(null)).toBeFalsy();
         expect(wrapper.vm.onClickAction(['test'])).toBeFalsy();
+    });
+
+    it('select a tab that does not exist should return false', () => {
+        expect(wrapper.vm.onSelectTab('test')).toBeFalsy();
+    });
+
+    it('select a tab that exists should return true and store it in session storage', () => {
+        expect(wrapper.vm.onSelectTab('form_models')).toBeTruthy();
+        expect(sessionStorage.getItem('tchooz_selected_tab/' + document.location.hostname)).toBe('form_models');
     });
 });
 

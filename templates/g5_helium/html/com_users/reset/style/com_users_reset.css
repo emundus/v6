@@ -149,24 +149,6 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     display:none;
 }
 
-#user-registration .required::before,
-.view-reset .required::before,
-.reset-complete .required::before
-{
-    content: "";
-    font-family: FontAwesome;
-    font-size: 5px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 19px;
-    letter-spacing: 0;
-    text-align: left;
-    position: relative;
-    top: -5px;
-    margin-right: 5px;
-    color: #e5283B;
-}
-
 .view-reset .reset .page-header h1.em-h1,
 .view-reset .reset-confirm .page-header h1.em-h1,
 .view-reset .reset-complete .page-header h1.em-h1{

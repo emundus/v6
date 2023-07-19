@@ -55,6 +55,10 @@ class LanguageBaseToOverrideFile extends JApplicationCli {
                 $override_file = JPATH_BASE . '/language/overrides/' . $language . '.override.ini';
                 if (file_exists($override_file)) {
                     $files[] = $override_file;
+                } else {
+	                $fp = fopen($override_file, "w");
+	                fclose($fp);
+	                $files[] = $override_file;
                 }
             }
 

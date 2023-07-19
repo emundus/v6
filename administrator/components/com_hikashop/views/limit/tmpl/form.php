@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -25,13 +25,13 @@ defined('_JEXEC') or die('Restricted access');
 							<td>
 								<?php
 								$values = array();
-								$values[] = JHTML::_('select.option', 'cart', JText::_('Cart'));
-								$values[] = JHTML::_('select.option', 'daily', JText::_('Daily'));
-								$values[] = JHTML::_('select.option', 'weekly', JText::_('Weekly'));
-								$values[] = JHTML::_('select.option', 'monthly', JText::_('Monthly'));
-								$values[] = JHTML::_('select.option', 'quarterly', JText::_('Quarterly'));
-								$values[] = JHTML::_('select.option', 'yearly', JText::_('Yearly'));
-								$values[] = JHTML::_('select.option', 'forever', JText::_('Forever'));
+								$values[] = JHTML::_('select.option', 'cart', JText::_('HIKASHOP_CART'));
+								$values[] = JHTML::_('select.option', 'daily', JText::_('HIKASHOP_DAILY'));
+								$values[] = JHTML::_('select.option', 'weekly', JText::_('HIKASHOP_WEEKLY'));
+								$values[] = JHTML::_('select.option', 'monthly', JText::_('HIKASHOP_MONTHLY'));
+								$values[] = JHTML::_('select.option', 'quarterly', JText::_('HIKASHOP_QUARTERLY'));
+								$values[] = JHTML::_('select.option', 'yearly', JText::_('HIKASHOP_YEARLY'));
+								$values[] = JHTML::_('select.option', 'forever', JText::_('HIKASHOP_FOREVER'));
 								echo JHTML::_('select.genericlist', $values, "data[limit][limit_periodicity]" , 'class="custom-select" size="1"', 'value', 'text', @$this->element->limit_periodicity );
 								?>
 							</td>

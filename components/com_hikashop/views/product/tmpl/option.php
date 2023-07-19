@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -20,6 +20,7 @@ $this->params->set('from_module', 1);
 
 $i = 0;
 $js_product_data = array();
+$js_product_prices = array();
 
 $price_name = 'price_value';
 if($this->params->get('price_with_tax'))
@@ -58,21 +59,27 @@ foreach($this->element->options as $optionElement) {
 			$ok = null;
 			$positive = 1;
 			$unit_price = false;
+			$js_product_data[(int)$optionElement->product_id] = array();
+			$js_product_prices[(int)$optionElement->product_id] = array();
 			foreach($optionElement->prices as $k => $price){
+				$js_product_data[(int)$optionElement->product_id][(int)$price->price_min_quantity] = (float)str_replace(',','.',$price->$price_name);
+				$js_product_prices[(int)$optionElement->product_id][(int)$price->price_min_quantity] = ($price->$price_name>0?'+ ':'').$this->currencyHelper->format($price->$price_name,$price->price_currency_id);
 				if($unit_price)
 					continue;
 				if($price->price_min_quantity <= 1)
 					$unit_price = true;
 
 				if($price->price_value < 0) $positive=false;
-				if(!$unit_price && (($positive && $price->price_value > $ok->price_value) || (!$positive && $price->price_value < $ok->price_value)))
+				if(!$unit_price && (!$ok || ($positive && $price->price_value > $ok->price_value) || (!$positive && $price->price_value < $ok->price_value)))
 					continue;
 				$ok = $price;
 			}
 			$price = $ok->$price_name;
 			$text .= ' ( '.($positive?'+ ':'').$this->currencyHelper->format($price, $ok->price_currency_id).' )';
 
-			$js_product_data[(int)$optionElement->product_id] = (float)str_replace(',','.',$price);
+			$js_product_data[(int)$optionElement->product_id][-1] = (float)str_replace(',','.',$price);
+			$js_product_prices[(int)$optionElement->product_id][-1] = ($ok->$price_name>0?'+ ':'').$this->currencyHelper->format($ok->$price_name,$ok->price_currency_id);
+
 		}
 		$option_values[] = JHTML::_('select.option', $optionElement->product_id, $text);
 	} else {
@@ -100,19 +107,25 @@ foreach($this->element->options as $optionElement) {
 			} else {
 				$text = $variant->product_name;
 			}
+			if($selectionMethod == 'generic')
+				$text = strip_tags($text);
 			$this->row =& $variant;
 
 			if(!empty($variant->prices) && $this->params->get('show_price')) {
 				$ok = null;
 				$positive = 1;
 				$unit_price = false;
+				$js_product_data[(int)$variant->product_id] = array();
+				$js_product_prices[(int)$variant->product_id] = array();
 				foreach($variant->prices as $k => $price) {
+					$js_product_data[(int)$variant->product_id][(int)$price->price_min_quantity] = (float)str_replace(',','.',$price->$price_name);
+					$js_product_prices[(int)$variant->product_id][(int)$price->price_min_quantity] = ($price->$price_name>0?'+ ':'').$this->currencyHelper->format($price->$price_name, $price->price_currency_id);
 					if($unit_price)
 						continue;
 					if($price->price_min_quantity <= 1)
 						$unit_price = true;
 					if($price->price_value < 0) $positive=false;
-					if(!$unit_price && (($positive && $price->price_value > $ok->price_value) || (!$positive && $price->price_value < $ok->price_value)))
+					if(!$unit_price && (!$ok || ($positive && $price->price_value > $ok->price_value) || (!$positive && $price->price_value < $ok->price_value)))
 						continue;
 					$ok = $price;
 				}
@@ -120,7 +133,8 @@ foreach($this->element->options as $optionElement) {
 				$price = $ok->$price_name;
 				$text .= ' ( '.($positive?'+ ':'').$this->currencyHelper->format($price, $ok->price_currency_id).' )';
 
-				$js_product_data[(int)$variant->product_id] = (float)str_replace(',','.',$price);
+				$js_product_data[(int)$variant->product_id][-1] = (float)str_replace(',','.',$price);
+				$js_product_prices[(int)$variant->product_id][-1] = ($price>0?'+ ':'').$this->currencyHelper->format($price, $ok->price_currency_id);
 			}
 
 			if(!empty($defaultValue) && !empty($variant->characteristics) && is_array($variant->characteristics)) {
@@ -142,7 +156,11 @@ foreach($this->element->options as $optionElement) {
 		continue;
 
 	$select = ($selectionMethod == 'check') ? 'radio' : $selectionMethod;
-	$html = JHTML::_('select.'.$select.'list', $option_values, $map, 'class="custom-select" size="1" data-product-option="'.$i.'" onchange="hikaProductOptions.change();"', 'value', 'text', (int)$value, $id);
+	$attribs = 'size="1" data-product-option="'.$i.'" onchange="hikaProductOptions.change();"';
+	if($selectionMethod == 'generic') {
+		$attribs.=' class="'.HK_FORM_SELECT_CLASS.'" ';
+	}
+	$html = JHTML::_('select.'.$select.'list', $option_values, $map, $attribs, 'value', 'text', (int)$value, $id);
 	if($selectionMethod == 'check')
 		$html = str_replace('type="radio"', 'type="checkbox"', $html);
 
@@ -207,28 +225,27 @@ foreach($this->element->options as $optionElement) {
 global $Itemid;
 $url_itemid = !empty($Itemid) ? ('&Itemid=' . $Itemid) : '';
 
+$quantity_mul = '';
 if($this->show_option_quantity) {
-	$quantity_mul = 'var main_mul = 1,
-			qty_main_div = d.getElementById("hikashop_product_quantity_main");
-		if(qty_main_div) {
-			var qty_main = qty_main_div.querySelector("[name=\"quantity\"]");
-			if(qty_main)
-				main_mul = parseInt(qty_main.value);
-			if(isNaN(main_mul) || main_mul <= 0)
-				main_mul = 1;
-		}
-';
-} else {
-	$quantity_mul = 'var main_mul = 1;';
+	$quantity_mul = 'main_mul = main_qty;';
 }
-
 $js = '
 var hikaProductOptions = {
 	values: '.json_encode($js_product_data).',
+	prices: '.json_encode($js_product_prices).',
 	total: '.$i.',
 	change: function() {
-		var d = document, w = window, o = w.Oby, t = this;
-		var el = null, total_opt_price = 0.0, mul = 1;
+		var d = document, w = window, o = w.Oby, t = this, el = null,
+			total_opt_price = 0.0, mul = 1, main_mul = 1, main_qty = 1,
+			qty_main_div = d.getElementById("hikashop_product_quantity_main");
+
+		if(qty_main_div) {
+			var qty_main = qty_main_div.querySelector("[name=\"quantity\"]");
+			if(qty_main)
+				main_qty = parseInt(qty_main.value);
+			if(isNaN(main_mul) || main_mul <= 0)
+			main_qty = 1;
+		}
 		for(var i = 0; i < t.total; i++) {
 			mul = 1;
 			el = d.getElementById("hikashop_product_option_qty_"+i);
@@ -243,8 +260,22 @@ var hikaProductOptions = {
 			}
 			el = d.querySelector("select[data-product-option=\""+i+"\"]");
 			if(el) {
-				if(t.values[el.value])
-					total_opt_price += t.values[el.value] * mul;
+				var min_price = 0;
+				var min_qty_found = -2;
+				if(t.values[el.value]) {
+					for(const min_qty in t.values[el.value]) {
+						if(min_qty <= main_qty && (min_price === 0 || min_price >= t.values[el.value][min_qty])) {
+							min_price = t.values[el.value][min_qty];
+							min_qty_found = min_qty;
+						}
+					}
+				}
+				if(min_qty_found>-2) {
+					var option = el.parentNode.querySelector("select[data-product-option=\""+i+"\"] option[value=\""+el.value+"\"]");
+					if(option)
+						option.innerHTML = option.innerHTML.replace(/\( .+? \)/i,"( "+t.prices[el.value][min_qty_found]+" )");
+				}
+				total_opt_price += min_price * mul;
 				continue;
 			}
 			if(!el && !d.querySelectorAll)
@@ -255,10 +286,32 @@ var hikaProductOptions = {
 			for(var j = els.length - 1; j >= 0; j--) {
 				if(!els[j].checked)
 					continue;
-				if(t.values[els[j].value])
-					total_opt_price += t.values[els[j].value] * mul;
+				var min_price = 0;
+				var min_qty_found = -2;
+				if(t.values[els[j].value]) {
+					for(const min_qty in t.values[els[j].value]) {
+						if(min_qty <= main_qty && (min_price === 0 || min_price >= t.values[els[j].value][min_qty])) {
+							min_price = t.values[els[j].value][min_qty];
+							min_qty_found = min_qty;
+						}
+					}
+				}
+				if(min_qty_found>-2) {
+					var label = els[j].parentNode;
+					if(label.nodeName != "LABEL")
+						label = label.querySelector("label");
+					if(label) {
+						label.innerHTML = label.innerHTML.replace(/\( .+? \)/i,"( "+t.prices[els[j].value][min_qty_found]+" )");
+						var radio = label.querySelector("input");
+						if(radio)
+							radio.checked = true;
+					}
+
+				}
+				total_opt_price += min_price * mul;
 			}
 		}
+
 		'.$quantity_mul.'
 		var arr = d.getElementsByName("hikashop_price_product");
 		for(var i = arr.length - 1; i >= 0; i--) {
@@ -311,11 +364,8 @@ var hikaProductOptions = {
 };
 window.hikaProductOptions = hikaProductOptions;
 window.hikashop.ready( function() { hikaProductOptions.change(); });
+window.Oby.registerAjax("quantity.checked", function(params){ hikaProductOptions.change(); });
 ';
-
-if($this->show_option_quantity) {
-	$js .= 'window.Oby.registerAjax("quantity.checked", function(params){ hikaProductOptions.change(); });';
-}
 
 $doc = JFactory::getDocument();
 $doc->addScriptDeclaration("\n<!--\n".$js."\n//-->\n");

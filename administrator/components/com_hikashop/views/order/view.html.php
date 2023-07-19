@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -262,6 +262,12 @@ class OrderViewOrder extends hikashopView{
 			$newPayments[$payment->payment_type] = $payment; //backward compat for old order listing views overrides
 		}
 
+		$orderClass = hikashop_get('class.order');
+		$orderClass->loadProducts($rows);
+		foreach($rows as $k => $row) {
+			$orderClass->loadAddresses($rows[$k], 'backend');
+		}
+
 		$this->assignRef('payments', $newPayments);
 		$this->assignRef('rows', $rows);
 		$this->assignRef('pageInfo', $pageInfo);
@@ -277,6 +283,15 @@ class OrderViewOrder extends hikashopView{
 
 		$popupHelper = hikashop_get('helper.popup');
 		$this->assignRef('popupHelper', $popupHelper);
+
+		$shippingClass = hikashop_get('class.shipping');
+		$this->assignRef('shippingClass',$shippingClass);
+
+		$ratesType = hikashop_get('type.rates');
+		$ratesType->load(false);
+		$rates = $ratesType->results;
+		$this->assignRef('rates',$rates);
+
 		$extrafields = array();
 		$app->triggerEvent('onAfterOrderListing', array(&$this->rows, &$extrafields, $pageInfo));
 		$this->assignRef('extrafields',$extrafields);
@@ -368,8 +383,8 @@ class OrderViewOrder extends hikashopView{
 		$this->assignRef('currencyHelper',$currencyClass);
 
 		JPluginHelper::importPlugin( 'hikashop' );
-		JPluginHelper::importPlugin( 'hikashoppayment' );
 		JPluginHelper::importPlugin( 'hikashopshipping' );
+		JPluginHelper::importPlugin( 'hikashoppayment' );
 		$app = JFactory::getApplication();
 		$app->triggerEvent( 'onHistoryDisplay', array( & $order->history) );
 
@@ -801,7 +816,11 @@ class OrderViewOrder extends hikashopView{
 		if(JText::_($store)!=$store){
 			$store = JText::_($store);
 		}
-		$image_address_path = hikashop_cleanURL(trim((string)$config->get('image_address_path')));
+
+		$image_address_path = trim((string)$config->get('image_address_path'));
+		if (!empty($image_address_path))
+			$image_address_path = hikashop_cleanURL($image_address_path);
+
 		$img_style_css = strip_tags(trim((string)$config->get('img_style_css')));
 
 		$this->assignRef('image_address_path',$image_address_path);
@@ -946,6 +965,20 @@ class OrderViewOrder extends hikashopView{
 			$editor->content = $product->mail->body;
 			$this->assignRef('editor',$editor);
 		}
+	}
+
+	function show_guest() {
+		$task = hikaInput::get()->getCmd('task', '');
+		if($task == 'save') {
+			$html = '<html><body><script type="text/javascript">'."\r\n".
+				'window.parent.hikashop.submitFct();'."\r\n".
+				'</script></body></html>';
+			die($html);
+		}
+	}
+
+	function add_guest() {
+		$this->order_id = hikaInput::get()->getInt('order_id');
 	}
 
 	function address(){

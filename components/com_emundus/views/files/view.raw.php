@@ -168,29 +168,44 @@ class EmundusViewFiles extends JViewLegacy
 				$this->filters = $filters;
 				break;
 
-			case 'docs':
-				$fnumsObj = $app->input->getString('fnums', "");
-				$fnumsObj = json_decode(stripslashes($fnumsObj), false, 512, JSON_BIGINT_AS_STRING);
-				$fnums = array();
-				foreach ($fnumsObj as $fObj) {
-					if (EmundusHelperAccess::asAccessAction(27, 'c', JFactory::getUser()->id, $fObj->fnum)) {
-						$fnums[] = $fObj->fnum;
-					}
-				}
-				if (!empty($fnums)) {
-					$prgs = $m_files->getProgByFnums($fnums);
-					$docs = $m_files->getDocsByProg(key($prgs));
-				} else {
-					echo JText::_('ACCESS_DENIED');
-					exit();
-				}
+            case 'docs':
+                $fnumsObj = $app->input->getString('fnums', "");
 
-				$this->docs = $docs;
-				$this->prgs = $prgs;
+                if (!empty($fnumsObj)) {
+                    $fnums = array();
+	                if ($fnumsObj == 'all') {
+		                $fnums = $m_files->getAllFnums();
+	                }
+					else
+	                {
+		                $fnumsObj = json_decode(stripslashes($fnumsObj), false, 512, JSON_BIGINT_AS_STRING);
 
-				$fnums_array = implode(',', $fnums);
-				$this->fnums = $fnums_array;
-				break;
+		                foreach ($fnumsObj as $fObj)
+		                {
+			                if (EmundusHelperAccess::asAccessAction(27, 'c', JFactory::getUser()->id, $fObj->fnum))
+			                {
+				                $fnums[] = $fObj->fnum;
+			                }
+		                }
+	                }
+                    if (!empty($fnums)) {
+                        $prgs = $m_files->getProgByFnums($fnums);
+                        $docs = $m_files->getDocsByProg(key($prgs));
+                    } else {
+                        echo JText::_('ACCESS_DENIED');
+                        exit();
+                    }
+
+                    $this->assignRef('docs', $docs);
+                    $this->assignRef('prgs', $prgs);
+                    $fnums_array = implode(',', $fnums);
+                    $this->assignRef('fnums', $fnums_array);
+                } else {
+                    echo JText::_('COM_EMUNDUS_ONBOARD_NOFILES');
+                    exit();
+                }
+
+                break;
 
 			// Get list of application files
 			default:

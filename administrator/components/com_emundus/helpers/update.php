@@ -451,20 +451,32 @@ class EmundusHelperUpdate
      *
      * @since version 1.33.0
      */
-    public static function updateYamlVariable($key1,$value,$file,$key2 = null) {
+    public static function updateYamlVariable($key1,$value,$file,$key2 = null,$full_content = null) {
         $yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents($file));
 
-        if(!empty($key2) && isset($yaml[$key1])){
-            if(isset($yaml[$key1][$key2])) {
-                $yaml[$key1][$key2] = $value;
-            }
-        } elseif (isset($yaml[$key1])){
-            $yaml[$key1] = $value;
-        } else {
-            echo ("Key " . $key1 . ' not found in file ' . $file);
-        }
+		if(!empty($full_content)){
+			$content_yaml = \Symfony\Component\Yaml\Yaml::parse($full_content);
+			$yaml = $content_yaml;
+		} else
+		{
+			if (!empty($key2) && isset($yaml[$key1]))
+			{
+				if(isset($yaml[$key1][$key2]))
+				{
+					$yaml[$key1][$key2] = $value;
+				}
+			}
+			elseif (isset($yaml[$key1]))
+			{
+				$yaml[$key1] = $value;
+			}
+			else
+			{
+				echo("Key " . $key1 . ' not found in file ' . $file);
+			}
+		}
 
-        $new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml);
+        $new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml,4,2);
 
         file_put_contents($file, $new_yaml);
     }
@@ -1477,7 +1489,13 @@ class EmundusHelperUpdate
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
 
-            $alias = $params['alias'] ?: $params['menutype'] . '-' . str_replace(' ','-',strtolower($params['title']));
+			if(empty($params['alias']))
+			{
+				$alias = str_replace("\xc2\xa0", ' ', ($params['menutype'] . '-' . $params['title']));
+				$alias = strtolower(JLanguageTransliterate::utf8_latin_to_ascii(preg_replace('/\s+/', '-', $alias)));
+			} else {
+				$alias = $params['alias'];
+			}
 
             $query->clear()
                 ->select('id')
@@ -1522,7 +1540,7 @@ class EmundusHelperUpdate
                     'img' => $params['img'] ?: ''
                 );
 
-                if ($parent_id <= 0) {
+                if ($parent_id <= 0 || empty($parent_id)) {
                     $parent_id = 1;
                 }
 
@@ -1970,6 +1988,49 @@ class EmundusHelperUpdate
         return $result;
     }
 
+    public static function alterColumn($table, $name, $type = 'VARCHAR', $length = null, $null = 1, $default = null){
+        $result = ['status' => false, 'message' => ''];
+
+        if (empty($table)) {
+            $result['message'] = 'ALTER COLUMN : Please refer a database table.';
+            return $result;
+        }
+
+        if (empty($name)) {
+            $result['message'] = 'ALTER COLUMN : Please refer a column name.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $db->setQuery('SHOW COLUMNS FROM ' . $table . ' WHERE ' . $db->quoteName('Field') . ' = ' . $db->quote($name));
+        $column_existing = $db->loadResult();
+
+        if (!empty($column_existing)) {
+            $null_query = $null == 0 ? 'NOT NULL' : 'NULL';
+
+            try {
+                $query = 'ALTER TABLE ' . $table . ' MODIFY ' . $db->quoteName($name) . ' ' . $type;
+                if(!empty($length)) {
+                    $query .= ' (' . $length . ')';
+                }
+
+                if ($default !== null) {
+                    $query .= ' DEFAULT ' . $db->quote($default);
+                }
+
+                $query .= ' ' . $null_query;
+                $db->setQuery($query);
+                $result['status'] = $db->execute();
+            } catch (Exception $e) {
+                $result['message'] = 'ADDING COLUMN : Error : ' . $e->getMessage();
+            }
+        } else {
+            $result['message'] = 'ALTER COLUMN : Column not found.';
+        }
+
+        return $result;
+    }
+
     public static function addColumnIndex($table,$column){
         $result = ['status' => false, 'message' => ''];
 
@@ -2355,32 +2416,32 @@ class EmundusHelperUpdate
         return $module;
     }
 
-	public static function updateEmundusParam($param,$value,$old_value_checking = null){
+	public static function updateExtensionParam($param,$value,$old_value_checking = null,$component = 'com_emundus'){
 		$updated = false;
-		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$config = JComponentHelper::getParams($component);
 
 		if(!empty($old_value_checking)){
-			$old_value = $eMConfig->get($param,'');
+			$old_value = $config->get($param,'');
 			if(empty($old_value) || $old_value == $old_value_checking){
-				$eMConfig->set($param, $value);
+				$config->set($param, $value);
 			}
 		} else{
-			$eMConfig->set($param, $value);
+			$config->set($param, $value);
 		}
 
-		$componentid = JComponentHelper::getComponent('com_emundus')->id;
+		$componentid = JComponentHelper::getComponent($component)->id;
 		$db = JFactory::getDBO();
 		$query = $db->getQuery(true);
 
 		try {
 			$query->update('#__extensions')
-				->set($db->quoteName('params') . ' = ' . $db->quote($eMConfig->toString()))
+				->set($db->quoteName('params') . ' = ' . $db->quote($config->toString()))
 				->where($db->quoteName('extension_id') . ' = ' . $db->quote($componentid));
 			$db->setQuery($query);
 			$updated = $db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('Failed to update emundus parameter '.$param.' with value ' .$value.': '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			JLog::add('Failed to update extension parameter '.$param.' with value ' .$value.': '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
 		}
 
 		return $updated;
@@ -2527,6 +2588,32 @@ class EmundusHelperUpdate
 			}
 		} catch (Exception $e) {
 			$result['message'] = 'ADDING TABLE : Error : ' . $e->getMessage();
+		}
+
+		return $result;
+	}
+
+	public static function executeSQlFile($file){
+		$result = ['status' => false, 'message' => ''];
+		$db = JFactory::getDbo();
+
+		try
+		{
+			$queries = $db->splitSql(file_get_contents(JPATH_ROOT . '/administrator/components/com_emundus/sql/updates/mysql/'.$file.'.sql'));
+
+			foreach ($queries as $query){
+				if(!empty($query)){
+					$db->setQuery($query);
+					$db->execute();
+				}
+			}
+
+			$result['status'] = true;
+		}
+		catch (Exception $e)
+		{
+			$result['message'] = 'UPDATE FLAGS : Error : ' . $e->getMessage();
+
 		}
 
 		return $result;

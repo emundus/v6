@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -83,7 +83,7 @@ class hikashopCheckout_workflowType {
 
 			if(is_array($v['params'])) {
 				foreach($v['params'] as &$p) {
-					if(is_array($p))
+					if(is_array($p) && !empty($p['name']))
 						$p['name'] = JText::_($p['name']);
 				}
 			}
@@ -270,7 +270,7 @@ class hikashopCheckout_workflowType {
 	}
 
 	protected function escape($value) {
-		return htmlentities($value, ENT_QUOTES, 'UTF-8');
+		return htmlentities((string)$value, ENT_QUOTES, 'UTF-8');
 	}
 
 	protected function initJS($id, $checkoutlist, $templates = array()) {
@@ -308,8 +308,12 @@ window.checkoutWorflowUrls = '.json_encode($urls).';
 			return '<span class="checkout_content_block_text">'.JText::_($structure).'</span>';
 
 		$ret = '
-<dl>';
+<dl class="checkout_content_block_column">';
 		foreach($structure as $k => $s) {
+			if($s['type'] == 'separator') {
+				$ret .= '</dl><dl class="checkout_content_block_column checkout_content_block_second_col">';
+				continue;
+			}
 			$attributes = (!empty($s['tooltip'])) ? ' '.trim($this->docTip($s['tooltip'])) : '';
 			$showon = (!empty($s['showon'])) ? ' data-showon-key="'.$this->escape(@$s['showon']['key']).'" data-showon-values="'.$this->escape(implode(',', @$s['showon']['values'])).'"' : '';
 

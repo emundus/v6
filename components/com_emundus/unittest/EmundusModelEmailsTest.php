@@ -26,20 +26,29 @@ jimport('joomla.plugin.helper');
 // set global config --> initialize Joomla Application with default param 'site'
 JFactory::getApplication('site');
 
-// set false ini_get('session.use_cookies') and set false headers_sent
-!ini_get('session.use_cookies') && !headers_sent($file, $line);
-
-// activate session
-session_start();
-
 class EmundusModelEmailsTest extends TestCase
 {
     private $m_emails;
+
+	private $h_sample;
 
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
         $this->m_emails = new EmundusModelEmails;
+		$this->h_sample = new EmundusUnittestHelperSamples;
+
+	    $app = JFactory::getApplication();
+	    $username = 'test-expert-email-' . rand(0, 1000) . '@emundus.fr';
+	    $this->h_sample->createSampleUser(9, $username);
+	    $logged_in = $app->login([
+		    'username' => $username,
+		    'password' => 'test1234'
+	    ]);
+
+	    include_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
+	    $m_profile = new EmundusModelProfile();
+	    $m_profile->initEmundusSession();
     }
 
 	public function testFoo()
@@ -111,5 +120,49 @@ class EmundusModelEmailsTest extends TestCase
 
 		$email = $this->m_emails->getEmailById($created);
 		$this->assertNull($email, 'L\'email a bien été supprimé, on ne le retrouve plus en base');
+	}
+
+	public function testsendExpertMail()
+	{
+		$response = $this->m_emails->sendExpertMail([]);
+		$this->assertEmpty($response['sent'], 'L\'envoi de l\'email a échoué, car il manque des paramètres');
+
+		$params = [
+			'mail_from' => '',
+			'mail_from_name' => '',
+			'mail_to' => [],
+			'mail_subject' => '',
+			'mail_body' => '',
+			'fnums' => []
+		];
+
+		$app = JFactory::getApplication();
+		$jinput = $app->input;
+
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$program = $this->h_sample->createSampleProgram();
+		$campaign_id = $this->h_sample->createSampleCampaign($program);
+		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+
+		$response = $this->m_emails->sendExpertMail([$fnum]);
+		$this->assertEmpty($response['sent'], 'L\'envoi de l\'email a échoué, car il manque des paramètres');
+
+		$params['mail_to'] = ['userunittest' . rand(0, 1000) . '@emundus.test.fr'];
+		$jinput->post->set('mail_to', $params['mail_to']);
+
+		$response = $this->m_emails->sendExpertMail([$fnum]);
+		$this->assertContains($params['mail_to'][0], $response['failed'], 'L\'envoi de l\'email n\'a pas fonctionné, car il y n\'y a pas de message.');
+
+		$params['mail_subject'] = 'Test de l\'envoi d\'email';
+		$jinput->post->set('mail_subject', $params['mail_subject']);
+		$params['mail_body'] = '<p>Test de l\'envoi d\'email</p>';
+		$jinput->post->set('mail_body', $params['mail_body']);
+
+		/*
+		 * @todo : test de l'envoi de l'email
+		 * it can not be tested because of the mail function, not available in the test environment
+		 * $response = $this->m_emails->sendExpertMail([$fnum]);
+		 * $this->assertContains($params['mail_to'][0], $response['sent'], 'L\'envoi de l\'email expert a fonctionné.');
+		 */
 	}
 }

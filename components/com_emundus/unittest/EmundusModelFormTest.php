@@ -63,6 +63,8 @@ class EmundusModelFormTest extends TestCase
 		$this->assertFalse($copy, 'Copy attachments fails because new profile does not exist');
 
 		$fake_new_profile = $this->h_sample->duplicateSampleProfile($base_profile);
+		$this->assertNotEmpty($fake_new_profile, 'Fake new profile created');
+		$this->assertNotSame($fake_new_profile, 64567657, 'Fake new profile is not the same as the fake id');
 		$copy = $this->m_form->copyAttachmentsToNewProfile($base_profile, $fake_new_profile);
 		$this->assertTrue($copy, 'Copy attachments succeeds');
 	}

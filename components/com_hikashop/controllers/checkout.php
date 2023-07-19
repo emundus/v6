@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -218,6 +218,10 @@ class checkoutController extends checkoutLegacyController {
 
 		$check = $this->checkWorkflowEmptyStep($step);
 		if($check !== true && $check !== false && $check > 0 && $check != $step) {
+			if((int)$check + 1 == count($this->workflow['steps'])) {
+				$cart = $checkoutHelper->getCart();
+				$this->app->redirect(hikashop_completeLink('checkout&task=confirm'.$url_cart_param.'&Itemid='.$checkout_itemid, false, true));
+			}
 			$this->app->redirect(hikashop_completeLink('checkout&task=show&cid=' . ((int)$check + 1).$url_cart_param.'&Itemid='.$checkout_itemid, false, true));
 		}
 
@@ -326,7 +330,10 @@ class checkoutController extends checkoutLegacyController {
 				$old_messages = $session->get('application.queue', array());
 				$session->set('application.queue', array_merge($old_messages, $new_messages));
 
-				$checkoutHelper->addEvent('cart.empty', null);
+				$eventParams = null;
+				if(!empty($checkoutHelper->modifiedProduct))
+					$eventParams = array('src' => $content['params']['src'], 'product' => $checkoutHelper->modifiedProduct);
+				$checkoutHelper->addEvent('cart.empty', $eventParams);
 			}
 
 			$checkoutHelper->generateBlockEvents($cartMarkers, array(
@@ -453,8 +460,8 @@ class checkoutController extends checkoutLegacyController {
 
 	private function initDispatcher() {
 		JPluginHelper::importPlugin('hikashop');
-		JPluginHelper::importPlugin('hikashoppayment');
 		JPluginHelper::importPlugin('hikashopshipping');
+		JPluginHelper::importPlugin('hikashoppayment');
 	}
 
 	private function checkWorkflowSteps($step) {
