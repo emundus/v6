@@ -3798,20 +3798,6 @@ div#em-appli-block {
           margin-top: 8px;
         }
 
-        /* GROUPE REPEAT EN TABLEAU */
-
-        .repeatGroupTable {
-          margin-top: 48px;
-
-          .fabrikSubGroupElements td input {
-            @include input-default;
-          }
-
-          .fabrikSubGroupElements td select {
-            @include select-default;
-          }
-        }
-
         /** DATABASEJOIN - RADIO - CHECKBOX - AUTRES **/
 
         .row-fluid[data-role="fabrik-rowopts"] {
