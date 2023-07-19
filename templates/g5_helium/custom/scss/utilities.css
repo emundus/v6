@@ -465,7 +465,7 @@
     }
 
     /* STATUTS ET ETIQUETTES */
-    .em-cell > .label, .em-status {
+    .label {
         display: inline-block;
         border-radius: var(--em-status-br);
         font-size: 14px;

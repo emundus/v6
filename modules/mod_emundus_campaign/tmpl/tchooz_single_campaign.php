@@ -70,7 +70,7 @@ if($currentCampaign->apply_online == 0){
                 }
             }
             ?>
-            <p class="em-programme-tag" title="<?php echo $currentCampaign->programme ?>" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
+            <p class="em-programme-tag" title="<?php echo $currentCampaign->programme ?>" style="color: <?php echo $color ?>;">
                 <?php  echo $currentCampaign->programme; ?>
             </p>
         <?php endif; ?>

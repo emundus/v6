@@ -10,12 +10,6 @@ $now = $dateTime->format('Y-m-d H:i:s');
 ?>
 
 <style>
-    .mod_emundus_flow___circle{
-        height: 8px;
-        width: 8px;
-        border-radius: 50%;
-    }
-
     .mod_emundus_flow___print .material-icons-outlined{
         color: var(--em-primary-color);
     }
@@ -45,7 +39,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
 
     .mod_emundus_flow___infos{
         flex-wrap: wrap;
-        grid-gap: 24px;
+        grid-gap: 12px;
         max-width: 75%;
     }
 
@@ -88,9 +82,9 @@ $now = $dateTime->format('Y-m-d H:i:s');
 </style>
 
 <div style="padding: 0 20px">
-    <div class="em-flex-row em-flex-space-between  em-flex-row em-mt-8 mod_emundus_flow___intro">
-        <div class="em-flex-row">
-            <h2 class="em-h2 em-mb-0-important"><?php echo $campaign_name ?></h2>
+    <div class="flex justify-between mt-2 mod_emundus_flow___intro">
+        <div class="flex items-center">
+            <h2 class="em-mb-0-important"><?php echo $campaign_name ?></h2>
             <?php
             $color = '#1C6EF2';
             $background = '#C8E1FE';
@@ -110,10 +104,10 @@ $now = $dateTime->format('Y-m-d H:i:s');
             }
             ?>
         </div>
-        <div class="em-flex-row em-flex-row-justify-end">
+        <div class="flex items-center justify-end">
             <?php if ($show_back_button == 1) : ?>
             <a href="<?php echo $home_link ?>" title="<?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?>">
-                <button class="btn btn-primary em-mr-16" style="height: 41px"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
+                <button class="btn btn-primary mr-4" style="height: 41px"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
             </a>
             <?php endif; ?>
             <a href="/component/emundus/?task=pdf&amp;fnum=<?= $current_application->fnum ?>" target="_blank" title="<?php echo JText::_('PRINT') ?>">
@@ -124,26 +118,28 @@ $now = $dateTime->format('Y-m-d H:i:s');
         </div>
     </div>
     <?php if ($show_deadline == 1 || $show_status == 1) :?>
-    <div class="em-flex-row em-mt-8 mod_emundus_flow___infos">
+    <div class="flex flex-col mt-2 mod_emundus_flow___infos">
         <?php if ($show_deadline == 1) : ?>
-        <div class="em-flex-row">
+        <div class="flex items-center">
             <p class="em-text-neutral-600 em-font-size-16"> <?php echo JText::_('MOD_EMUNDUS_FLOW_END_DATE'); ?></p>
-            <span class="em-ml-6" style="white-space: nowrap"><?php echo JFactory::getDate(new JDate($deadline, $site_offset))->format('d/m/Y H:i'); ?></span>
+            <span class="ml-1.5" style="white-space: nowrap"><?php echo JFactory::getDate(new JDate($deadline, $site_offset))->format('d/m/Y H:i'); ?></span>
         </div>
         <?php endif; ?>
 
         <?php if ($show_programme==1) : ?>
-            <p class="em-programme-tag em-ml-16" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>;margin: unset">
+        <div class="flex items-center">
+            <p class="em-text-neutral-600 mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_PROGRAMME'); ?> : </p>
+            <p class="em-programme-tag" style="color: <?php echo $color ?>;margin: unset;padding: 0">
                 <?php  echo $current_application->prog_label; ?>
             </p>
+        </div>
         <?php endif; ?>
 
         <?php if($show_status == 1) : ?>
         <div class="flex items-center">
-            <p class="em-text-neutral-600"><?= JText::_('MOD_EMUNDUS_FLOW_STATUS'); ?></p>
+            <p class="em-text-neutral-600 mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_STATUS'); ?> : </p>
             <div class="mod_emundus_flow___status_<?= $current_application->class; ?> flex">
-                <span class="circle em-mr-8 em-ml-6 label-<?= $current_application->class; ?>"></span>
-                <span><?= $current_application->value ?></span>
+                <span class="label label-<?= $current_application->class; ?>"><?= $current_application->value ?></span>
             </div>
         </div>
         <?php endif; ?>

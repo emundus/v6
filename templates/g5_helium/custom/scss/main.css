@@ -6,6 +6,10 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+    font-family: var(--em-default-font);
+}
+
 .after-em-border::after{
     content: "";
     width: 40px;
