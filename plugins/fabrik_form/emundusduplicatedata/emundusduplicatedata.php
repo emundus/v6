@@ -134,7 +134,7 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
                 .catch(() => {
                   Swal.fire({
                     type: 'warning',
-                    title: '" . JText::_('ERROR_ON_DUPLCATION') . "'
+                    title: '" . JText::_('ERROR_ON_DUPLICATION') . "'
                     });
                 });
             </script>
@@ -146,6 +146,8 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
 
     public function onAjax_duplicate() {
 
+        jimport('joomla.log.log');
+        JLog::addLogger(['text_file' => 'com_emundus.duplicatedata.php'], JLog::ERROR, 'com_emundus');
         $jinput = $this->app->input;
         $fnum = $jinput->post->get('fnum');
         $file_to_duplicate_data = $jinput->post->get('file_to_duplicate_data');
@@ -182,8 +184,8 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
                     $id = $db->insertid();
 
                 } catch (Exception $e) {
-                    JLog::add('Duplicate data plugin, error at query : ' . $query, JLog::ERROR, 'com_emundus');
-                    $data = ['status' => 500, 'message' => JText::_('ERROR_ON_DUPLCATION')];
+                    JLog::add('Duplicate data plugin, error inserting values : ' . $e->getMessage() . ' on query : ' . $query, JLog::ERROR, 'com_emundus');
+                    $data = ['status' => 500, 'message' => JText::_('ERROR_ON_DUPLICATION')];
                     echo json_encode($data);
                 }
 
@@ -234,8 +236,8 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
 
                                             $db->execute();
                                         } catch (Exception $e) {
-                                            JLog::add('Duplicate data plugin, error at query : ' . $query, JLog::ERROR, 'com_emundus');
-                                            $data = ['status' => 500, 'message' => JText::_('ERROR_ON_DUPLCATION')];
+                                            JLog::add('Duplicate data plugin, error inserting repeat values : ' . $e->getMessage() . ' on query -> ' . $query, JLog::ERROR, 'com_emundus');
+                                            $data = ['status' => 500, 'message' => JText::_('ERROR_ON_DUPLICATION')];
                                             echo json_encode($data);
                                         }
                                     }
@@ -243,8 +245,8 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
                                 }
 
                             } catch (Exception $e) {
-                                JLog::add('Duplicate data plugin, error at query : ' . $query, JLog::ERROR, 'com_emundus');
-                                $data = ['status' => 500, 'message' => JText::_('ERROR_ON_DUPLCATION')];
+                                JLog::add('Duplicate data plugin, error selecting repeat values : ' . $e->getMessage() . ' on query -> ' . $query, JLog::ERROR, 'com_emundus');
+                                $data = ['status' => 500, 'message' => JText::_('ERROR_ON_DUPLICATION')];
                                 return json_encode($data);
                             }
                         }
@@ -255,8 +257,8 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
             $data = ['status' => 200];
             echo json_encode($data);
         } catch (Exception $e) {
-            JLog::add($e, JLog::ERROR, 'com_emundus');
-            $data = ['status' => 500, 'message' => JText::_('ERROR_ON_DUPLCATION')];
+            JLog::add('Duplicate data plugin, error : ' . $e->getMessage() . ' on query -> ' . $query, JLog::ERROR, 'com_emundus');
+            $data = ['status' => 500, 'message' => JText::_('ERROR_ON_DUPLICATION')];
             echo json_encode($data);
         }
         return json_encode($data);

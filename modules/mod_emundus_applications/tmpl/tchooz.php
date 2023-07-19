@@ -375,7 +375,7 @@ $current_tab = 0;
                                                                       style="background-color: <?= $application->order_color; ?>"><?= JText::_(strtoupper($application->order_status)); ?></span>
 															<?php endif; ?>
                                                         </div>
-                                                        <div>
+                                                        <div class="mod_emundus_applications__container">
                                                             <span class="material-icons em-text-neutral-600 em-font-weight-600"
                                                                   id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
                                                                   >more_vert</span>
@@ -744,7 +744,7 @@ $current_tab = 0;
                                                     </div>
                                                 </td>
                                                 <td style="width: 5%;">
-                                                    <div>
+                                                    <div class="mod_emundus_applications__container">
                                                             <span class="material-icons em-text-neutral-600 em-font-weight-600"
                                                                   id="actions_button_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>"
                                                                   >more_vert</span>

@@ -90,6 +90,8 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
     $current_application = $m_application->getApplication($user->fnum);
 
+    $campaign_name = $current_application->label;
+
     if($layout != '_:tchooz') {
         $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
         $paid = null;
