@@ -157,7 +157,7 @@ class Api
 
 		try
 		{
-			$request = $query_body_in_json !== null ? $this->client->post($url, ['body' => $query_body_in_json, 'headers' => $this->getHeaders()]) : $this->client->post($url, ['headers' => $this->getHeaders()]);
+			$request = $query_body_in_json !== null ? $this->client->post($this->baseUrl.'/'.$url, ['body' => $query_body_in_json, 'headers' => $this->getHeaders()]) : $this->client->post($url, ['headers' => $this->getHeaders()]);
 
 			$response['status']         = $request->getStatusCode();
 			$response['data']         = json_decode($request->getBody());
@@ -203,13 +203,15 @@ class Api
 		return $response;
 	}
 
-	public function delete($url)
+	public function delete($url, $params = array())
 	{
 		$response = ['status' => 200, 'message' => '', 'data' => ''];
 
 		try {
+			$url_params = http_build_query($params);
+			$url = !empty($url_params) ? $url . '?' . $url_params : $url;
 
-			$request = $this->client->delete($url);
+			$request = $this->client->delete($this->baseUrl.'/'.$url, ['headers' => $this->getHeaders()]);
 			$response['status'] = $request->getStatusCode();
 			$response['data'] = json_decode($request->getBody());
 		} catch (\Exception $e) {
