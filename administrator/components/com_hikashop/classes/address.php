@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -21,12 +21,59 @@ class hikashopAddressClass extends hikashopClass {
 		$type = 'both';
 
 		JPluginHelper::importPlugin('hikashop');
-		JPluginHelper::importPlugin('hikashoppayment');
 		JPluginHelper::importPlugin('hikashopshipping');
+		JPluginHelper::importPlugin('hikashoppayment');
 		$app = JFactory::getApplication();
 		$app->triggerEvent('onUserAddressesLoad', array( &$addresses, $user_id, $type) );
 
 		return $addresses;
+	}
+
+	function isAddressValid(&$addr, $options = array()) {
+		if(empty($addr->address_published))
+			return false;
+
+		if(!empty($options['user_id'])) {
+			if($addr->address_user_id != $options['user_id'])
+				return false;
+		}
+
+
+		$null = null;
+		$fieldClass = hikashop_get('class.field');
+		$field_type = $addr->address_type;
+		if(!empty($field_type))
+			$field_type .= '_address';
+
+		if(empty($addr->address_state) && !empty($addr->address_country)) {
+			$zoneClass = hikashop_get('class.zone');
+			$states = $zoneClass->getChildren($addr->address_country);
+			if(empty($states)) {
+				$addr->address_state = 'no_state_found';
+			} else {
+				$zones_pulished = $zoneClass->getZones($states, 'zone_published', 'zone_namekey', true);
+				if(empty($zones_pulished)) {
+					$addr->address_state = 'no_state_found';
+				} else {
+					$published = false;
+					foreach($zones_pulished as $zone_published) {
+						if($zone_published)
+							$published = true;
+					}
+					if(!$published) {
+						$addr->address_state = 'no_state_found';
+					}
+				}
+			}
+		}
+
+		$data = array($field_type => get_object_vars($addr));
+		$address = $fieldClass->getFilteredInput($field_type, $null, 'ret', $data, false, 'frontcomp');
+
+		if(empty($address)) {
+			return false;
+		}
+		return true;
 	}
 
 	function get($element, $default = null) {
@@ -42,18 +89,17 @@ class hikashopAddressClass extends hikashopClass {
 		$app = JFactory::getApplication();
 		if((int)$element < 0) {
 			$addresses = $app->getUserState(HIKASHOP_COMPONENT.'.addresses', array());
-			$i = -(int)$element;
+			$i = (int)$element;
 			if(isset($addresses[$i]))
-				return hikashop_copy($addresses[$i]);
-			return true;
+				$cachedElements[$element] = hikashop_copy($addresses[$i]);
+		} else {
+			if(!isset($cachedElements[$element]))
+				$cachedElements[$element] = parent::get($element, $default);
 		}
 
-		if(!isset($cachedElements[$element]))
-			$cachedElements[$element] = parent::get($element, $default);
-
 		JPluginHelper::importPlugin('hikashop');
-		JPluginHelper::importPlugin('hikashoppayment');
 		JPluginHelper::importPlugin('hikashopshipping');
+		JPluginHelper::importPlugin('hikashoppayment');
 		$app->triggerEvent('onUserAddressLoad', array( &$cachedElements[$element], $element) );
 
 		if(!is_object($cachedElements[$element]))
@@ -201,8 +247,8 @@ class hikashopAddressClass extends hikashopClass {
 
 
 		JPluginHelper::importPlugin('hikashop');
-		JPluginHelper::importPlugin('hikashoppayment');
 		JPluginHelper::importPlugin('hikashopshipping');
+		JPluginHelper::importPlugin('hikashoppayment');
 		$app->triggerEvent('onUserAddressesLoad', array( &$addresses[$user_id][$type], $user_id, $type) );
 
 		return $addresses[$user_id][$type];
@@ -321,7 +367,7 @@ class hikashopAddressClass extends hikashopClass {
 				if((!isset($addressData->address_published) || !empty($addressData->address_published)) && isset($addressData->address_type) && in_array($addressData->address_type, array('', 'both'))) {
 					$config = hikashop_config();
 					if($config->get('distinguish_new_addresses', 1) && !$config->get('checkout_legacy',0)) {
-						$addressData->address_type = 'billing';
+						$addressData->address_type = 'billing'; 
 						$duplicatedAddress = hikashop_copy($addressData);
 						$duplicatedAddress->address_type = 'shipping';
 						unset($duplicatedAddress->address_id);

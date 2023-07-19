@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -333,6 +333,17 @@ class ProductViewProduct extends hikashopView
 		$config =& hikashop_config();
 		$this->assignRef('config',$config);
 		$this->getPagination();
+	}
+
+	public function updatecart() {
+		$this->product_id = hikaInput::get()->getInt('cid');
+		$productClass = hikashop_get('class.product');
+		$this->product = $productClass->get($this->product_id);
+		$menusClass = hikashop_get('class.menus');
+		$id = $menusClass->loadAMenuItemId('','');
+		if(!empty($id))
+    		$id = '&Itemid='.$id;
+		$this->url = hikashop_completeLink('product&task=updatecart&quantity=1&cid='.$this->product_id.$id, false, false, false, true);
 	}
 
 	public function form_legacy() {
@@ -1559,8 +1570,13 @@ class ProductViewProduct extends hikashopView
 
 		$failed_product = hikaInput::get()->getVar('fail', null);
 
-		if(!empty($product_id))
+		if(!empty($product_id)) {
 			$product = $productClass->getRaw($product_id, true);
+			if(empty($product)) {
+				$app->enqueueMessage('Product with the id '.$product_id. ' does not exists.');
+				$app->redirect(hikashop_completeLink('product&task=listing', false, true));
+			}
+		}
 
 		if(!empty($product_id)) {
 			$task = 'edit';
@@ -1574,6 +1590,10 @@ class ProductViewProduct extends hikashopView
 					$product = $parentProduct;
 				} else {
 					unset($parentProduct);
+
+					$app->enqueueMessage('Product with the id '.$product->product_parent_id. ' does not exists.');
+					$app->redirect(hikashop_completeLink('product&task=listing', false, true));
+
 				}
 			}
 
@@ -1950,9 +1970,9 @@ class ProductViewProduct extends hikashopView
 			return 0;
 		ksort($a->sorting_value);
 		foreach($a->sorting_value as $k => $aSort){
-			if($a->sorting_value[$k] == $b->sorting_value[$k])
+			if(isset($b->sorting_value[$k]) && $a->sorting_value[$k] == $b->sorting_value[$k])
 				continue;
-			return ($a->sorting_value[$k] < $b->sorting_value[$k]) ? -1 : 1;
+			return (isset($b->sorting_value[$k]) && $a->sorting_value[$k] < $b->sorting_value[$k]) ? -1 : 1;
 		}
 		return 0;
 	}
@@ -2099,6 +2119,7 @@ class ProductViewProduct extends hikashopView
 
 		$categoryType = hikashop_get('type.categorysub');
 		$categoryType->type='tax';
+		$categoryType->noneText ='AS_PARENT_PRODUCT';
 		$categoryType->field='category_id';
 		$this->assignRef('categoryType',$categoryType);
 

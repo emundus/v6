@@ -6,9 +6,9 @@ require_once JPATH_CONFIGURATION . '/configuration.php';
 
 class com_emundusInstallerScript
 {
-    protected $manifest_cache;
-    protected $schema_version;
-    protected EmundusHelperUpdate $h_update;
+	protected $manifest_cache;
+	protected $schema_version;
+	protected EmundusHelperUpdate $h_update;
 
 	public function __construct()
 	{
@@ -29,9 +29,9 @@ class com_emundusInstallerScript
 		$db->setQuery($query);
 		$this->schema_version = $db->loadResult();
 
-        require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
-        $this->h_update = new EmundusHelperUpdate();
-    }
+		require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+		$this->h_update = new EmundusHelperUpdate();
+	}
 
 
 	/**
@@ -73,17 +73,20 @@ class com_emundusInstallerScript
 		$firstrun = false;
 		$regex    = '/^6\.[0-9]*/m';
 		preg_match_all($regex, $cache_version, $matches, PREG_SET_ORDER, 0);
-		if (!empty($matches)) {
+		if (!empty($matches))
+		{
 			$cache_version = (string) $parent->manifest->version;
 			$firstrun      = true;
 		}
 
-		if ($this->manifest_cache) {
+		if ($this->manifest_cache)
+		{
 			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
 			# First run condition
-			if (version_compare($cache_version, '1.33.0', '<') || $firstrun) {
+			if (version_compare($cache_version, '1.33.0', '<') || $firstrun)
+			{
 				# Delete emundus sql files in con_admin
 				#$this->deleteOldSqlFiles();
 
@@ -238,15 +241,18 @@ class com_emundusInstallerScript
 				EmundusHelperUpdate::addJoomlaMenu($datas);
 			}
 
-			if ((version_compare($cache_version, '1.33.28', '<') || $firstrun)) {
+			if ((version_compare($cache_version, '1.33.28', '<') || $firstrun))
+			{
 				EmundusHelperUpdate::installExtension('PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE', 'custom_event_handler', '{"name":"PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE","type":"plugin","creationDate":"18 August 2021","author":"James Dean","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"james@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"1.22.1","description":"PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE_DESC","group":"","filename":"custom_event_handler"}', 'plugin', 1, 'emundus');
 			}
 
-			if ((version_compare($cache_version, '1.33.32', '<') || $firstrun)) {
+			if ((version_compare($cache_version, '1.33.32', '<') || $firstrun))
+			{
 				EmundusHelperUpdate::disableEmundusPlugins('emundus_su');
 			}
 
-			if (version_compare($cache_version, '1.34.0', '<') || $firstrun) {
+			if (version_compare($cache_version, '1.34.0', '<') || $firstrun)
+			{
 				EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns', 'pinned', 'TINYINT', 1);
 				EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns', 'eval_start_date', 'DATETIME');
 				EmundusHelperUpdate::addColumn('jos_emundus_setup_programmes', 'color', 'VARCHAR', 10);
@@ -255,10 +261,12 @@ class com_emundusInstallerScript
 
 				// Add back button to login, register and reset view
 				$back_module = EmundusHelperUpdate::getModule(0, 'eMundus - Back button');
-				if (!empty($back_module) && !empty($back_module['id'])) {
+				if (!empty($back_module) && !empty($back_module['id']))
+				{
 					$moduleid = $back_module['id'];
 				}
-				else {
+				else
+				{
 					$datas    = [
 						'title'    => 'eMundus - Back button',
 						'note'     => 'Back button available on login and register views',
@@ -279,7 +287,8 @@ class com_emundusInstallerScript
 					$moduleid = EmundusHelperUpdate::addJoomlaModule($datas);
 				}
 
-				if (!empty($moduleid)) {
+				if (!empty($moduleid))
+				{
 					$query->clear()
 						->select('id')
 						->from($db->quoteName('#__menu'))
@@ -287,7 +296,8 @@ class com_emundusInstallerScript
 					$db->setQuery($query);
 					$menus = $db->loadColumn();
 
-					foreach ($menus as $menu) {
+					foreach ($menus as $menu)
+					{
 						$query->clear()
 							->select('moduleid')
 							->from($db->quoteName('#__modules_menu'))
@@ -296,7 +306,8 @@ class com_emundusInstallerScript
 						$db->setQuery($query);
 						$is_existing = $db->loadResult();
 
-						if (!$is_existing) {
+						if (!$is_existing)
+						{
 							$query->clear()
 								->insert($db->quoteName('#__modules_menu'))
 								->set($db->quoteName('moduleid') . ' = ' . $db->quote($moduleid['id']))
@@ -350,8 +361,10 @@ class com_emundusInstallerScript
 				$db->setQuery($query);
 				$campaign_elements = $db->loadColumn();
 
-				if (!empty($campaign_elements)) {
-					foreach ($campaign_elements as $campaign_element) {
+				if (!empty($campaign_elements))
+				{
+					foreach ($campaign_elements as $campaign_element)
+					{
 						EmundusHelperUpdate::genericUpdateParams('#__fabrik_elements', 'id', $campaign_element, ['validations'], [], null, true);
 					}
 				}
@@ -483,12 +496,14 @@ class com_emundusInstallerScript
 				$db->execute();
 			}
 
-			if (version_compare($cache_version, '1.34.4', '<') || $firstrun) {
+			if (version_compare($cache_version, '1.34.4', '<') || $firstrun)
+			{
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_MISSING_MANDATORY_FILE_UPLOAD', 'Veuillez remplir le champ obligatoire %s du formulaire %s');
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_MISSING_MANDATORY_FILE_UPLOAD', 'Please fill the mandatory field %s of form %s', 'override', null, null, null, 'en-GB');
 			}
 
-			if (version_compare($cache_version, '1.34.10', '<') || $firstrun) {
+			if (version_compare($cache_version, '1.34.10', '<') || $firstrun)
+			{
 				EmundusHelperUpdate::insertTranslationsTag('APPLICATION_CREATION_DATE', 'Dossier crée le');
 				EmundusHelperUpdate::insertTranslationsTag('APPLICATION_CREATION_DATE', 'File created on', 'override', null, null, null, 'en-GB');
 
@@ -499,11 +514,13 @@ class com_emundusInstallerScript
 				EmundusHelperUpdate::insertTranslationsTag('SEND_ON', 'Send on', 'override', null, null, null, 'en-GB');
 			}
 
-			if (version_compare($cache_version, '1.34.33', '<') || $firstrun) {
+			if (version_compare($cache_version, '1.34.33', '<') || $firstrun)
+			{
 				EmundusHelperUpdate::addColumn('jos_emundus_uploads', 'local_filename', 'VARCHAR', 255);
 			}
 
-			if (version_compare($cache_version, '1.34.36', '<') || $firstrun) {
+			if (version_compare($cache_version, '1.34.36', '<') || $firstrun)
+			{
 				$db    = JFactory::getDbo();
 				$query = $db->getQuery(true);
 
@@ -513,23 +530,32 @@ class com_emundusInstallerScript
 				$db->setQuery($query);
 				$forms_to_update = $db->loadObjectList();
 
-				foreach ($forms_to_update as $form) {
+				foreach ($forms_to_update as $form)
+				{
 					$params = json_decode($form->params);
-					if (isset($params->curl_code)) {
-						foreach ($params->curl_code as $key => $code) {
-							if (strpos($code, 'media/com_emundus/lib/chosen/chosen.min.css') !== false) {
-								if (is_object($params->curl_code)) {
+					if (isset($params->curl_code))
+					{
+						foreach ($params->curl_code as $key => $code)
+						{
+							if (strpos($code, 'media/com_emundus/lib/chosen/chosen.min.css') !== false)
+							{
+								if (is_object($params->curl_code))
+								{
 									$params->curl_code->{$key} = str_replace('media/com_emundus/lib/chosen/chosen.min.css', 'media/jui/css/chosen.css', $params->curl_code->{$key});
 								}
-								elseif (is_array($params->curl_code)) {
+								elseif (is_array($params->curl_code))
+								{
 									$params->curl_code[$key] = str_replace('media/com_emundus/lib/chosen/chosen.min.css', 'media/jui/css/chosen.css', $params->curl_code[$key]);
 								}
 							}
-							if (strpos($code, 'media/com_emundus/lib/chosen/chosen.jquery.min.js') !== false) {
-								if (is_object($params->curl_code)) {
+							if (strpos($code, 'media/com_emundus/lib/chosen/chosen.jquery.min.js') !== false)
+							{
+								if (is_object($params->curl_code))
+								{
 									$params->curl_code->{$key} = str_replace('media/com_emundus/lib/chosen/chosen.jquery.min.js', 'media/jui/js/chosen.jquery.min.js', $params->curl_code->{$key});
 								}
-								elseif (is_array($params->curl_code)) {
+								elseif (is_array($params->curl_code))
+								{
 									$params->curl_code[$key] = str_replace('media/com_emundus/lib/chosen/chosen.jquery.min.js', 'media/jui/js/chosen.jquery.min.js', $params->curl_code[$key]);
 								}
 							}
@@ -546,7 +572,8 @@ class com_emundusInstallerScript
 				}
 			}
 
-			if (version_compare($cache_version, '1.34.49', '<') || $firstrun) {
+			if (version_compare($cache_version, '1.34.49', '<') || $firstrun)
+			{
 				EmundusHelperUpdate::addCustomEvents([
 					['label' => 'onHikashopAfterCheckoutStep', 'category' => 'Hikashop', 'published' => 1],
 					['label' => 'onHikashopAfterCartProductsLoad', 'category' => 'Hikashop', 'published' => 1],
@@ -554,7 +581,8 @@ class com_emundusInstallerScript
 				]);
 			}
 
-			if (version_compare($cache_version, '1.34.56', '<') || $firstrun) {
+			if (version_compare($cache_version, '1.34.56', '<') || $firstrun)
+			{
 				$db    = JFactory::getDbo();
 				$query = $db->getQuery(true);
 
@@ -565,7 +593,8 @@ class com_emundusInstallerScript
 				$db->setQuery($query);
 				$moduleid = $db->loadResult();
 
-				if (!empty($moduleid)) {
+				if (!empty($moduleid))
+				{
 					$query->clear()
 						->delete($db->quoteName('#__modules_menu'))
 						->where($db->quoteName('moduleid') . ' = ' . $moduleid);
@@ -587,7 +616,8 @@ class com_emundusInstallerScript
 				$db->execute();
 			}
 
-			if (version_compare($cache_version, '1.34.64', '<') || $firstrun) {
+			if (version_compare($cache_version, '1.34.64', '<') || $firstrun)
+			{
 				$db    = JFactory::getDbo();
 				$query = $db->getQuery(true);
 
@@ -633,8 +663,10 @@ if (password_value.match(regex) != null) {
 				$db->setQuery($query);
 				$password_inputs = $db->loadColumn();
 
-				if (!empty($password_inputs)) {
-					foreach ($password_inputs as $password) {
+				if (!empty($password_inputs))
+				{
+					foreach ($password_inputs as $password)
+					{
 						$password_jsaction['element_id'] = $password;
 						$query->clear()
 							->select($db->quoteName('id'))
@@ -645,11 +677,13 @@ if (password_value.match(regex) != null) {
 						$db->setQuery($query);
 						$password_onchange = $db->loadResult();
 
-						if (!empty($password_onchange)) {
+						if (!empty($password_onchange))
+						{
 							$password_jsaction['action_id'] = $password_onchange;
 							EmundusHelperUpdate::updateJsAction($password_jsaction);
 						}
-						else {
+						else
+						{
 							EmundusHelperUpdate::addJsAction($password_jsaction);
 						}
 					}
@@ -662,7 +696,8 @@ if (password_value.match(regex) != null) {
 				//
 			}
 
-			if (version_compare($cache_version, '1.35.0', '<=') || $firstrun) {
+			if (version_compare($cache_version, '1.35.0', '<=') || $firstrun)
+			{
 				EmundusHelperUpdate::updateYamlVariable('offcanvas', '16rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'width');
 				EmundusHelperUpdate::updateYamlVariable('breakpoints', '75rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'large-desktop-container');
 				EmundusHelperUpdate::updateYamlVariable('breakpoints', '60rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'desktop-container');
@@ -676,7 +711,7 @@ if (password_value.match(regex) != null) {
 					['label' => 'onWebhookCallbackProcess', 'category' => 'Webhook', 'published' => 1]
 				]);
 
-				EmundusHelperUpdate::updateEmundusParam('gotenberg_url', 'https://gotenberg.microservices.tchooz.app', 'https://docs.emundus.app');
+				EmundusHelperUpdate::updateExtensionParam('gotenberg_url', 'https://gotenberg.microservices.tchooz.app', 'https://docs.emundus.app');
 
 				// Install new flow module on old default layouts
 				$db    = JFactory::getDbo();
@@ -690,10 +725,12 @@ if (password_value.match(regex) != null) {
 				$db->setQuery($query);
 				$modules = $db->loadObjectList();
 
-				foreach ($modules as $module) {
+				foreach ($modules as $module)
+				{
 					$params = json_decode($module->params);
 
-					if (isset($params->layout) && $params->layout == '_:default') {
+					if (isset($params->layout) && $params->layout == '_:default')
+					{
 						$params->layout = '_:tchooz';
 						$query->clear()
 							->update($db->quoteName('#__modules'))
@@ -711,10 +748,12 @@ if (password_value.match(regex) != null) {
 						$db->setQuery($query);
 						$module_translations = $db->loadObjectList();
 
-						foreach ($module_translations as $module_translation) {
+						foreach ($module_translations as $module_translation)
+						{
 							$translation_params = json_decode($module_translation->value);
 
-							if (isset($translation_params->layout) && $translation_params->layout == '_:default') {
+							if (isset($translation_params->layout) && $translation_params->layout == '_:default')
+							{
 								$translation_params->layout = '_:tchooz';
 
 								$query->clear()
@@ -740,7 +779,8 @@ if (password_value.match(regex) != null) {
 				$db->setQuery($query);
 				$fabrik_extension = $db->loadResult();
 
-				if (!empty($fabrik_extension)) {
+				if (!empty($fabrik_extension))
+				{
 					$fabrik_params                    = json_decode($fabrik_extension, true);
 					$fabrik_params['disable_caching'] = "1";
 
@@ -775,7 +815,7 @@ if (password_value.match(regex) != null) {
 				$db->setQuery($query);
 				$db->execute();
 
-				EmundusHelperUpdate::updateEmundusParam('export_application_pdf_title_color', '#000000', '#ee1c25');
+				EmundusHelperUpdate::updateExtensionParam('export_application_pdf_title_color', '#000000', '#ee1c25');
 
 				$old_values = [
 					'fr-FR' => 'Table - Paramétrage des groupes',
@@ -933,12 +973,15 @@ if (password_value.match(regex) != null) {
 				$db->setQuery($query);
 				$fabrik_lists = $db->loadObjectList();
 
-				if (!empty($fabrik_lists)) {
-					foreach ($fabrik_lists as $list) {
+				if (!empty($fabrik_lists))
+				{
+					foreach ($fabrik_lists as $list)
+					{
 						$params                    = json_decode($list->params, true);
 						$params['advanced-filter'] = "0";
 
-						if ($params['show-table-filters'] != "0") {
+						if ($params['show-table-filters'] != "0")
+						{
 							$params['show-table-filters'] = "1";
 						}
 
@@ -955,7 +998,8 @@ if (password_value.match(regex) != null) {
 				EmundusHelperUpdate::enableEmundusPlugins('emundus', 'authentication');
 			}
 
-			if (version_compare($cache_version, '1.35.5', '<=') || $firstrun) {
+			if (version_compare($cache_version, '1.35.5', '<=') || $firstrun)
+			{
 				$db    = JFactory::getDbo();
 				$query = $db->getQuery(true);
 
@@ -965,7 +1009,8 @@ if (password_value.match(regex) != null) {
 				$db->setQuery($query);
 				$waiting_room_params = $db->loadResult();
 
-				if (!empty($waiting_room_params)) {
+				if (!empty($waiting_room_params))
+				{
 					$strings_allowed_to_add = [
 						'paybox_',
 						'stripeconnect_',
@@ -975,23 +1020,28 @@ if (password_value.match(regex) != null) {
 					$strings                = [];
 
 					$params = json_decode($waiting_room_params, true);
-					if (empty($params['strings_allowed'])) {
+					if (empty($params['strings_allowed']))
+					{
 						$params['strings_allowed'] = [];
 					}
 
 					// We get values from the database.
-					foreach ($params['strings_allowed'] as $string) {
+					foreach ($params['strings_allowed'] as $string)
+					{
 						$strings[] = $string['string_allowed_text'];
 					}
 
-					foreach ($strings_allowed_to_add as $string_allowed_to_add) {
-						if (!in_array($string_allowed_to_add, $strings)) {
+					foreach ($strings_allowed_to_add as $string_allowed_to_add)
+					{
+						if (!in_array($string_allowed_to_add, $strings))
+						{
 							$strings[] = $string_allowed_to_add;
 						}
 					}
 
 					$params['strings_allowed'] = [];
-					foreach ($strings as $key => $string) {
+					foreach ($strings as $key => $string)
+					{
 						$params['strings_allowed']['strings_allowed' . $key] = [
 							'string_allowed_text' => $string
 						];
@@ -1007,12 +1057,13 @@ if (password_value.match(regex) != null) {
 				}
 			}
 
-            if (version_compare($cache_version, '1.35.9', '<=') || $firstrun) {
-                EmundusHelperUpdate::addColumn('jos_messages', 'email_cc', 'TEXT');
-                EmundusHelperUpdate::addColumn('jos_emundus_logs', 'timestamp', 'TIMESTAMP', null, 0);
+			if (version_compare($cache_version, '1.35.9', '<=') || $firstrun)
+			{
+				EmundusHelperUpdate::addColumn('jos_messages', 'email_cc', 'TEXT');
+				EmundusHelperUpdate::addColumn('jos_emundus_logs', 'timestamp', 'TIMESTAMP', null, 0);
 
-                $dashboard_files_by_status_params = array(
-                    'eval' => 'php|$db = JFactory::getDbo();
+				$dashboard_files_by_status_params = array(
+					'eval' => 'php|$db = JFactory::getDbo();
 $query = $db->getQuery(true);
 
 try {
@@ -1084,10 +1135,10 @@ try {
 } catch (Exception $e) {
 	return array(\'dataset\' => \'\');
 }'
-                );
+				);
 
-                $dashboard_users_by_month_params = array(
-                    'eval' => 'php|$db = JFactory::getDbo();
+				$dashboard_users_by_month_params = array(
+					'eval' => 'php|$db = JFactory::getDbo();
 $query = $db->getQuery(true);
 $offset = JFactory::getApplication()->get(\'offset\', \'UTC\');
 $now = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone(\'UTC\'));
@@ -1150,10 +1201,10 @@ try {
 } catch (Exception $e) {
 	return array(\'users\' => \'\', \'days\' => \'\', \'total\' => 0);
 }'
-                );
+				);
 
-                $dashboard_files_associated_by_status_params = array(
-                    'eval' => 'php|$db = JFactory::getDbo();
+				$dashboard_files_associated_by_status_params = array(
+					'eval' => 'php|$db = JFactory::getDbo();
 $query = $db->getQuery(true);
 
 $user_id = JFactory::getUser()->id;
@@ -1255,10 +1306,10 @@ try {
 } catch (Exception $e) {
 	return array(\'dataset\' => \'\');
 }'
-                );
+				);
 
-                $dashboard_files_by_tag_params = array(
-                    'eval' => 'php|$db = JFactory::getDbo();
+				$dashboard_files_by_tag_params = array(
+					'eval' => 'php|$db = JFactory::getDbo();
 $query = $db->getQuery(true);
 
 try {
@@ -1298,19 +1349,20 @@ try {
 } catch (Exception $e) {
 	return array(\'dataset\' => \'\');
 }'
-                );
+				);
 
-                EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS',$dashboard_files_by_status_params);
-                EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_USERS_BY_MONTH',$dashboard_users_by_month_params);
-                EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_FILES_ASSOCIATED_BY_STATUS',$dashboard_files_associated_by_status_params);
-                EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_FILES_BY_TAG',$dashboard_files_by_tag_params);
+				EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS', $dashboard_files_by_status_params);
+				EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_USERS_BY_MONTH', $dashboard_users_by_month_params);
+				EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_FILES_ASSOCIATED_BY_STATUS', $dashboard_files_associated_by_status_params);
+				EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_FILES_BY_TAG', $dashboard_files_by_tag_params);
 
-                EmundusHelperUpdate::addColumnIndex('jos_messages', 'page');
+				EmundusHelperUpdate::addColumnIndex('jos_messages', 'page');
 
-                EmundusHelperUpdate::addCustomEvents([['label' => 'onAfterMoveApplication', 'category' => 'Campaign']]);
-            }
+				EmundusHelperUpdate::addCustomEvents([['label' => 'onAfterMoveApplication', 'category' => 'Campaign']]);
+			}
 
-			if (version_compare($cache_version, '1.36.0', '<') || $firstrun) {
+			if (version_compare($cache_version, '1.36.0', '<=') || $firstrun)
+			{
 				EmundusHelperUpdate::addCustomEvents([
 					['label' => 'onBeforeEmundusRedirectToHikashopCart', 'category' => 'Hikashop'],
 					['label' => 'onBeforeApplicantEnterApplication', 'category' => 'Files'],
@@ -1318,12 +1370,12 @@ try {
 				]);
 
 				// Campaign candidature tabs
-				$columns = [
+				$columns      = [
 					[
-						'name' => 'name',
-						'type' => 'VARCHAR',
+						'name'   => 'name',
+						'type'   => 'VARCHAR',
 						'length' => 255,
-						'null' => 0,
+						'null'   => 0,
 					],
 					[
 						'name' => 'applicant_id',
@@ -1331,152 +1383,159 @@ try {
 						'null' => 0,
 					],
 					[
-						'name' => 'ordering',
-						'type' => 'INT',
+						'name'    => 'ordering',
+						'type'    => 'INT',
 						'default' => 1,
-						'null' => 1,
+						'null'    => 1,
 					]
 				];
 				$foreign_keys = [
 					[
-						'name' => 'jos_emundus_users_fk_applicant_id',
-						'from_column' => 'applicant_id',
-						'ref_table' => 'jos_emundus_users',
-						'ref_column' => 'user_id',
+						'name'           => 'jos_emundus_users_fk_applicant_id',
+						'from_column'    => 'applicant_id',
+						'ref_table'      => 'jos_emundus_users',
+						'ref_column'     => 'user_id',
 						'update_cascade' => true,
 						'delete_cascade' => true,
 					]
 				];
-				EmundusHelperUpdate::createTable('jos_emundus_campaign_candidature_tabs',$columns,$foreign_keys,'Storage tab for filing');
+				EmundusHelperUpdate::createTable('jos_emundus_campaign_candidature_tabs', $columns, $foreign_keys, 'Storage tab for filing');
 
-				$columns = [
+				$columns      = [
 					[
 						'name' => 'date_time',
 						'type' => 'datetime',
 						'null' => 1,
 					],
 					[
-						'name' => 'fnum_from',
-						'type' => 'VARCHAR',
+						'name'   => 'fnum_from',
+						'type'   => 'VARCHAR',
 						'length' => 255,
-						'null' => 0,
+						'null'   => 0,
 					],
 					[
-						'name' => 'fnum_to',
-						'type' => 'VARCHAR',
+						'name'   => 'fnum_to',
+						'type'   => 'VARCHAR',
 						'length' => 255,
-						'null' => 0,
+						'null'   => 0,
 					],
 					[
-						'name' => 'published',
-						'type' => 'TINYINT',
+						'name'    => 'published',
+						'type'    => 'TINYINT',
 						'default' => 1,
-						'null' => 0,
+						'null'    => 0,
 					]
 				];
 				$foreign_keys = [];
-				EmundusHelperUpdate::createTable('jos_emundus_campaign_candidature_links',$columns,$foreign_keys,'Links between two fnums');
+				EmundusHelperUpdate::createTable('jos_emundus_campaign_candidature_links', $columns, $foreign_keys, 'Links between two fnums');
 
-				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','tab','INT',10);
-				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','name','VARCHAR',255);
-				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','updated','DATETIME');
-				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','updated_by','INT',10);
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature', 'tab', 'INT', 10);
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature', 'name', 'VARCHAR', 255);
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature', 'updated', 'DATETIME');
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature', 'updated_by', 'INT', 10);
 
-                //////////////////////////////////////////////////////////////////////////////////////
-                // Add campaign workflows documents;
-                //////////////////////////////////////////////////////////////////////////////////////
-                $query->clear()
-                    ->select('jffg.group_id, jffg.form_id, jfl.id AS list_id')
-                    ->from('#__fabrik_formgroup AS jffg')
-                    ->leftJoin('#__fabrik_lists AS jfl ON jfl.form_id = jffg.form_id')
-                    ->where('jfl.db_table_name = ' . $db->quote('jos_emundus_campaign_workflow'));
+				//////////////////////////////////////////////////////////////////////////////////////
+				// Add campaign workflows documents;
+				//////////////////////////////////////////////////////////////////////////////////////
+				$query->clear()
+					->select('jffg.group_id, jffg.form_id, jfl.id AS list_id')
+					->from('#__fabrik_formgroup AS jffg')
+					->leftJoin('#__fabrik_lists AS jfl ON jfl.form_id = jffg.form_id')
+					->where('jfl.db_table_name = ' . $db->quote('jos_emundus_campaign_workflow'));
 
-                $db->setQuery($query);
-                $sql_result = $db->loadAssoc();
-                $group_id = $sql_result['group_id'];
-                $form_id = $sql_result['form_id'];
-                $list_id = $sql_result['list_id'];
+				$db->setQuery($query);
+				$sql_result = $db->loadAssoc();
+				$group_id   = $sql_result['group_id'];
+				$form_id    = $sql_result['form_id'];
+				$list_id    = $sql_result['list_id'];
 
-				EmundusHelperUpdate::addColumn('jos_emundus_campaign_workflow','display_preliminary_documents','TINYINT', 1, 1, 0);
-                $query->clear()
-                    ->select('id')
-                    ->from($db->quoteName('#__fabrik_elements'))
-                    ->where('name = ' . $db->quote('display_preliminary_documents'))
-                    ->andWhere('plugin = ' . $db->quote('yesno'));
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_workflow', 'display_preliminary_documents', 'TINYINT', 1, 1, 0);
+				$query->clear()
+					->select('id')
+					->from($db->quoteName('#__fabrik_elements'))
+					->where('name = ' . $db->quote('display_preliminary_documents'))
+					->andWhere('plugin = ' . $db->quote('yesno'));
 
-                $db->setQuery($query);
-                $element_id = $db->loadResult();
+				$db->setQuery($query);
+				$element_id = $db->loadResult();
 
-                if (empty($element_id)) {
-                    if (!empty($group_id)) {
-                        $values = ['display_preliminary_documents',$group_id,'yesno','Afficher les documents à télécharger ?', '0','0000-00-00 00:00:00','2023-03-29 07:47:05','62','sysadmin','0000-00-00 00:00:00','0','0','0','0','0','0','10','0',"",'1','1','0','0','0','1','0','0','{"yesno_default":"0","yesno_icon_yes":"","yesno_icon_no":"","options_per_row":"4","toggle_others":"0","toggle_where":"","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"1","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"1","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"1","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"1","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","validations":[]}'];
-                        $query->clear()
-                            ->insert($db->quoteName('#__fabrik_elements'))
-                            ->columns(['name','group_id','plugin','label','checked_out','checked_out_time','created','created_by','created_by_alias','modified','modified_by','width','height','`default`','hidden','eval','ordering','show_in_list_summary','filter_type','filter_exact_match','published','link_to_detail','primary_key','auto_increment','access','use_in_page_title','parent_id','params'])
-                            ->values(implode(',', $db->quote($values)));
+				if (empty($element_id))
+				{
+					if (!empty($group_id))
+					{
+						$values = ['display_preliminary_documents', $group_id, 'yesno', 'Afficher les documents à télécharger ?', '0', '0000-00-00 00:00:00', '2023-03-29 07:47:05', '62', 'sysadmin', '0000-00-00 00:00:00', '0', '0', '0', '0', '0', '0', '10', '0', "", '1', '1', '0', '0', '0', '1', '0', '0', '{"yesno_default":"0","yesno_icon_yes":"","yesno_icon_no":"","options_per_row":"4","toggle_others":"0","toggle_where":"","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"1","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"1","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"1","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"1","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","validations":[]}'];
+						$query->clear()
+							->insert($db->quoteName('#__fabrik_elements'))
+							->columns(['name', 'group_id', 'plugin', 'label', 'checked_out', 'checked_out_time', 'created', 'created_by', 'created_by_alias', 'modified', 'modified_by', 'width', 'height', '`default`', 'hidden', 'eval', 'ordering', 'show_in_list_summary', 'filter_type', 'filter_exact_match', 'published', 'link_to_detail', 'primary_key', 'auto_increment', 'access', 'use_in_page_title', 'parent_id', 'params'])
+							->values(implode(',', $db->quote($values)));
 
-                        $db->setQuery($query);
-                        $inserted = $db->execute();
+						$db->setQuery($query);
+						$inserted = $db->execute();
 
-                        if ($inserted) {
-                            $display_preliminary_documents_id = $db->insertid();
-                            EmundusHelperUpdate::addJsAction([
-                                'element_id' => $display_preliminary_documents_id,
-                                'action' => 'load',
-                                'code' => 'const value=this.get(&#039;value&#039;);const fab=this.form.elements;let {jos_emundus_campaign_workflow___specific_documents,jos_emundus_campaign_workflow_repeat_documents___id_0}=fab;if(value!=&#039;0&#039;){showFabrikElt(jos_emundus_campaign_workflow___specific_documents);}else{document.querySelector(&#039;#jos_emundus_campaign_workflow___specific_documents_input_0&#039;).click();hideFabrikElt(jos_emundus_campaign_workflow___specific_documents);  hideFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0, true);}'
-                            ]);
-                            EmundusHelperUpdate::addJsAction([
-                                'element_id' => $display_preliminary_documents_id,
-                                'action' => 'change',
-                                'code' => 'const value=this.get(&#039;value&#039;);const fab=this.form.elements;let{jos_emundus_campaign_workflow___specific_documents,jos_emundus_campaign_workflow_repeat_documents___id_0}=fab;if(value!=&#039;0&#039;){showFabrikElt(jos_emundus_campaign_workflow___specific_documents)}else{document.querySelector(&#039;#jos_emundus_campaign_workflow___specific_documents_input_0&#039;).click();hideFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0);hideFabrikElt(jos_emundus_campaign_workflow___specific_documents,true)}'
-                            ]);
-                        }
-                    }
-                }
+						if ($inserted)
+						{
+							$display_preliminary_documents_id = $db->insertid();
+							EmundusHelperUpdate::addJsAction([
+								'element_id' => $display_preliminary_documents_id,
+								'action'     => 'load',
+								'code'       => 'const value=this.get(&#039;value&#039;);const fab=this.form.elements;let {jos_emundus_campaign_workflow___specific_documents,jos_emundus_campaign_workflow_repeat_documents___id_0}=fab;if(value!=&#039;0&#039;){showFabrikElt(jos_emundus_campaign_workflow___specific_documents);}else{document.querySelector(&#039;#jos_emundus_campaign_workflow___specific_documents_input_0&#039;).click();hideFabrikElt(jos_emundus_campaign_workflow___specific_documents);  hideFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0, true);}'
+							]);
+							EmundusHelperUpdate::addJsAction([
+								'element_id' => $display_preliminary_documents_id,
+								'action'     => 'change',
+								'code'       => 'const value=this.get(&#039;value&#039;);const fab=this.form.elements;let{jos_emundus_campaign_workflow___specific_documents,jos_emundus_campaign_workflow_repeat_documents___id_0}=fab;if(value!=&#039;0&#039;){showFabrikElt(jos_emundus_campaign_workflow___specific_documents)}else{document.querySelector(&#039;#jos_emundus_campaign_workflow___specific_documents_input_0&#039;).click();hideFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0);hideFabrikElt(jos_emundus_campaign_workflow___specific_documents,true)}'
+							]);
+						}
+					}
+				}
 
 				EmundusHelperUpdate::addColumn('jos_emundus_campaign_workflow', 'specific_documents', 'TINYINT', 1, 1, 0);
-                $query->clear()
-                    ->select('id')
-                    ->from($db->quoteName('#__fabrik_elements'))
-                    ->where('name = ' . $db->quote('specific_documents'))
-                    ->andWhere('plugin = ' . $db->quote('yesno'));
+				$query->clear()
+					->select('id')
+					->from($db->quoteName('#__fabrik_elements'))
+					->where('name = ' . $db->quote('specific_documents'))
+					->andWhere('plugin = ' . $db->quote('yesno'));
 
-                $db->setQuery($query);
-                $element_id = $db->loadResult();
+				$db->setQuery($query);
+				$element_id = $db->loadResult();
 
-                if (empty($element_id)) {
-                    if (!empty($group_id)) {
-                        $values = ['specific_documents',$group_id,'yesno','Afficher des documents  spécifique ?', '0','0000-00-00 00:00:00','2023-03-29 07:47:05','62','sysadmin','0000-00-00 00:00:00','0','0','0','0','0','0','10','0',"",'1','1','0','0','0','1','0','0','{"yesno_default":"0","yesno_icon_yes":"","yesno_icon_no":"","options_per_row":"4","toggle_others":"0","toggle_where":"","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"1","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"1","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"1","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"1","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","validations":[]}'];
-                        $query->clear()
-                            ->insert($db->quoteName('#__fabrik_elements'))
-                            ->columns(['name','group_id','plugin','label','checked_out','checked_out_time','created','created_by','created_by_alias','modified','modified_by','width','height','`default`','hidden','eval','ordering','show_in_list_summary','filter_type','filter_exact_match','published','link_to_detail','primary_key','auto_increment','access','use_in_page_title','parent_id','params'])
-                            ->values(implode(',', $db->quote($values)));
+				if (empty($element_id))
+				{
+					if (!empty($group_id))
+					{
+						$values = ['specific_documents', $group_id, 'yesno', 'Afficher des documents  spécifique ?', '0', '0000-00-00 00:00:00', '2023-03-29 07:47:05', '62', 'sysadmin', '0000-00-00 00:00:00', '0', '0', '0', '0', '0', '0', '10', '0', "", '1', '1', '0', '0', '0', '1', '0', '0', '{"yesno_default":"0","yesno_icon_yes":"","yesno_icon_no":"","options_per_row":"4","toggle_others":"0","toggle_where":"","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"1","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"1","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"1","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"1","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","validations":[]}'];
+						$query->clear()
+							->insert($db->quoteName('#__fabrik_elements'))
+							->columns(['name', 'group_id', 'plugin', 'label', 'checked_out', 'checked_out_time', 'created', 'created_by', 'created_by_alias', 'modified', 'modified_by', 'width', 'height', '`default`', 'hidden', 'eval', 'ordering', 'show_in_list_summary', 'filter_type', 'filter_exact_match', 'published', 'link_to_detail', 'primary_key', 'auto_increment', 'access', 'use_in_page_title', 'parent_id', 'params'])
+							->values(implode(',', $db->quote($values)));
 
-                        $db->setQuery($query);
-                        $inserted = $db->execute();
+						$db->setQuery($query);
+						$inserted = $db->execute();
 
-                        if ($inserted) {
-                            $specific_documents_id = $db->insertid();
-                            EmundusHelperUpdate::addJsAction([
-                                'element_id' => $specific_documents_id,
-                                'action' => 'load',
-                                'code' => 'const value=this.get(&#039;value&#039;);const fab=this.form.elements;let{jos_emundus_campaign_workflow_repeat_documents___id_0}=fab;if(value!= &#039;0&#039;){showFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0)}else{hideFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0, true)}'
-                            ]);
-                            EmundusHelperUpdate::addJsAction([
-                                'element_id' => $specific_documents_id,
-                                'action' => 'change',
-                                'code' => 'const value=this.get(&#039;value&#039;);const fab=this.form.elements;let{jos_emundus_campaign_workflow_repeat_documents___id_0}=fab;if(value!= &#039;0&#039;){showFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0)}else{hideFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0, true)}'
-                            ]);
-                        }
-                    }
-                }
+						if ($inserted)
+						{
+							$specific_documents_id = $db->insertid();
+							EmundusHelperUpdate::addJsAction([
+								'element_id' => $specific_documents_id,
+								'action'     => 'load',
+								'code'       => 'const value=this.get(&#039;value&#039;);const fab=this.form.elements;let{jos_emundus_campaign_workflow_repeat_documents___id_0}=fab;if(value!= &#039;0&#039;){showFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0)}else{hideFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0, true)}'
+							]);
+							EmundusHelperUpdate::addJsAction([
+								'element_id' => $specific_documents_id,
+								'action'     => 'change',
+								'code'       => 'const value=this.get(&#039;value&#039;);const fab=this.form.elements;let{jos_emundus_campaign_workflow_repeat_documents___id_0}=fab;if(value!= &#039;0&#039;){showFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0)}else{hideFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0, true)}'
+							]);
+						}
+					}
+				}
 
 				$result = EmundusHelperUpdate::createTable('jos_emundus_campaign_workflow_repeat_documents', [
 					['name' => 'parent_id', 'type' => 'int'],
 					['name' => 'href', 'type' => 'text'],
 					['name' => 'title', 'type' => 'VARCHAR', 'length' => 255]
 				]);
-				if ($result['status']) {
+				if ($result['status'])
+				{
 					$sql = "create index fb_parent_fk_parent_id_INDEX on jos_emundus_campaign_workflow_repeat_documents (parent_id)";
 					$db->setQuery($sql);
 					$db->execute();
@@ -1484,24 +1543,26 @@ try {
 					$values = ['Documents à télécharger', '', 'Documents à télécharger', 1, '2023-04-19 08:36:17', 62, 'sysadmin', '0000-00-00 00:00:00', 0, 0, '0000-00-00 00:00:00', 1, 0, '{"split_page":"0","list_view_and_query":"1","access":"1","intro":"","outro":"","repeat_group_button":1,"repeat_template":"repeatgroup","repeat_max":"","repeat_min":"","repeat_num_element":"","repeat_sortable":"0","repeat_order_element":"","repeat_error_message":"","repeat_no_data_message":"","repeat_intro":"","repeat_add_access":"1","repeat_delete_access":"1","repeat_delete_access_user":"","repeat_copy_element_values":"0","group_columns":"1","group_column_widths":"","repeat_group_show_first":"1","random":"0","labels_above":"-1","labels_above_details":"-1"}'];
 					$query->clear()
 						->insert($db->quoteName('#__fabrik_groups'))
-						->columns(['name','css','label','published','created','created_by','created_by_alias','modified','modified_by','checked_out','checked_out_time','is_join','private','params'])
+						->columns(['name', 'css', 'label', 'published', 'created', 'created_by', 'created_by_alias', 'modified', 'modified_by', 'checked_out', 'checked_out_time', 'is_join', 'private', 'params'])
 						->values(implode(',', $db->quote($values)));
 
 					$db->setQuery($query);
 					$inserted = $db->execute();
 
-					if ($inserted) {
+					if ($inserted)
+					{
 						$new_group_id = $db->insertid();
 
-						$columns = array('name', 'group_id', 'plugin', 'label', 'checked_out', 'checked_out_time', 'created', 'created_by', 'created_by_alias', 'modified', 'modified_by', 'width', 'height', 'default', 'hidden', 'eval', 'ordering', 'show_in_list_summary', 'filter_type', 'filter_exact_match', 'published', 'link_to_detail', 'primary_key', 'auto_increment', 'access', 'use_in_page_title', 'parent_id', 'params');
+						$columns        = array('name', 'group_id', 'plugin', 'label', 'checked_out', 'checked_out_time', 'created', 'created_by', 'created_by_alias', 'modified', 'modified_by', 'width', 'height', 'default', 'hidden', 'eval', 'ordering', 'show_in_list_summary', 'filter_type', 'filter_exact_match', 'published', 'link_to_detail', 'primary_key', 'auto_increment', 'access', 'use_in_page_title', 'parent_id', 'params');
 						$element_values = [
 							['id', $new_group_id, 'internalid', 'id', 0, '0000-00-00 00:00:00', '2023-04-19 08:41:52', 62, 'sysadmin', '0000-00-00 00:00:00', 0, 3, 0, '', 1, 0, 1, 0, '', '', 1, 1, 1, 1, 1, 0, 0, '{"rollover":"","comment":"","sub_default_value":"","sub_default_label":"","element_before_label":1,"allow_frontend_addtocheckbox":0,"database_join_display_type":"dropdown","joinType":"simple","join_conn_id":-1,"date_table_format":"Y-m-d","date_form_format":"Y-m-d H:i:s","date_showtime":0,"date_time_format":"H:i","date_defaulttotoday":1,"date_firstday":0,"multiple":0,"allow_frontend_addtodropdown":0,"password":0,"maxlength":255,"text_format":"text","integer_length":6,"decimal_length":2,"guess_linktype":0,"disable":0,"readonly":0,"ul_max_file_size":16000,"ul_email_file":0,"ul_file_increment":0,"upload_allow_folderselect":1,"fu_fancy_upload":0,"upload_delete_image":1,"make_link":0,"fu_show_image_in_table":0,"image_library":"gd2","make_thumbnail":0,"imagepath":"\\/","selectImage_root_folder":"\\/","image_front_end_select":0,"show_image_in_table":0,"image_float":"none","link_target":"_self","radio_element_before_label":0,"options_per_row":4,"ck_options_per_row":4,"allow_frontend_addtoradio":0,"use_wysiwyg":0,"my_table_data":"id","update_on_edit":0,"view_access":1,"show_in_rss_feed":0,"show_label_in_rss_feed":0,"icon_folder":-1,"use_as_row_class":0,"filter_access":1,"full_words_only":0,"inc_in_adv_search":1,"sum_on":0,"sum_access":0,"avg_on":0,"avg_access":0,"median_on":0,"median_access":0,"count_on":0,"count_access":0}'],
 							['parent_id', $new_group_id, 'field', 'parent_id', 0, '0000-00-00 00:00:00', '2023-04-19 08:41:52', 62, 'sysadmin', '0000-00-00 00:00:00', 0, 0, 0, '', 1, 0, 2, 0, '', '', 1, 1, 0, 0, 1, 0, 0, '{"rollover":"","comment":"","sub_default_value":"","sub_default_label":"","element_before_label":1,"allow_frontend_addtocheckbox":0,"database_join_display_type":"dropdown","joinType":"simple","join_conn_id":-1,"date_table_format":"Y-m-d","date_form_format":"Y-m-d H:i:s","date_showtime":0,"date_time_format":"H:i","date_defaulttotoday":1,"date_firstday":0,"multiple":0,"allow_frontend_addtodropdown":0,"password":0,"maxlength":255,"text_format":"text","integer_length":6,"decimal_length":2,"guess_linktype":0,"disable":0,"readonly":0,"ul_max_file_size":16000,"ul_email_file":0,"ul_file_increment":0,"upload_allow_folderselect":1,"fu_fancy_upload":0,"upload_delete_image":1,"make_link":0,"fu_show_image_in_table":0,"image_library":"gd2","make_thumbnail":0,"imagepath":"\\/","selectImage_root_folder":"\\/","image_front_end_select":0,"show_image_in_table":0,"image_float":"none","link_target":"_self","radio_element_before_label":0,"options_per_row":4,"ck_options_per_row":4,"allow_frontend_addtoradio":0,"use_wysiwyg":0,"my_table_data":"id","update_on_edit":0,"view_access":1,"show_in_rss_feed":0,"show_label_in_rss_feed":0,"icon_folder":-1,"use_as_row_class":0,"filter_access":1,"full_words_only":0,"inc_in_adv_search":1,"sum_on":0,"sum_access":0,"avg_on":0,"avg_access":0,"median_on":0,"median_access":0,"count_on":0,"count_access":0}'],
-							['href', $new_group_id, 'fileupload', 'Document', 0, '0000-00-00 00:00:00', '2023-04-19 08:39:57', 62, 'sysadmin', '2023-04-19 09:11:13', 62, 0, 0, '', 0, 0, 3, 0, '', 1, 1, 0, 0, 0, 1, 0, 0, '{"ul_max_file_size":"10240","ul_device_capture":"0","ul_file_types":"pdf,jpg,png,jpeg,docx","ul_directory":"\/images\/emundus\/phases\/{jos_emundus_campaign_workflow___id}","ul_email_file":"0","random_filename":"0","length_random_filename":"","ul_file_increment":"1","upload_allow_folderselect":"0","upload_delete_image":"1","upload_use_wip":"0","allow_unsafe":"0","fu_clean_filename":"1","fu_rename_file_code":"","default_image":"","make_link":"1","fu_show_image_in_table":"1","fu_show_image":"0","fu_show_image_in_email":"1","image_library":"gd2","fu_main_max_width":"","fu_main_max_height":"","image_quality":"90","fu_title_element":"","fu_map_element":"","restrict_lightbox":"1","make_thumbnail":"0","fu_make_pdf_thumb":"0","thumb_dir":"images\/stories\/thumbs","thumb_prefix":"","thumb_suffix":"","thumb_max_width":"200","thumb_max_height":"100","fileupload_crop":"0","fileupload_crop_dir":"images\/stories\/crop","fileupload_crop_width":"200","fileupload_crop_height":"100","win_width":"400","win_height":"400","fileupload_storage_type":"filesystemstorage","fileupload_aws_accesskey":"","fileupload_aws_secretkey":"","fileupload_aws_location":"","fileupload_ssl":"0","fileupload_aws_encrypt":"0","fileupload_aws_bucketname":"","fileupload_s3_serverpath":"1","fileupload_amazon_acl":"2","fileupload_skip_check":"0","fileupload_amazon_auth_url":"60","ajax_upload":"0","ajax_show_widget":"1","ajax_runtime":"html5,html4","ajax_max":"4","ajax_dropbox_width":"400","ajax_dropbox_height":"200","ajax_chunk_size":"0","fu_use_download_script":"0","fu_open_in_browser":"0","fu_force_download_script":"0","fu_download_acl":"","fu_download_noaccess_image":"","fu_download_noaccess_url":"","fu_download_access_image":"","fu_download_hit_counter":"","fu_download_log":"0","fu_download_append":"0","ul_export_encode_csv":"relative","ul_export_encode_json":"relative","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"1","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"1","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"1","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"1","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","notempty-message":[""],"notempty-validation_condition":[""],"tip_text":[""],"icon":[""],"validations":{"plugin":["notempty"],"plugin_published":["1"],"validate_in":["both"],"validation_on":["both"],"validate_hidden":["1"],"must_validate":["0"],"show_icon":["1"]}}'],
-							['title', $new_group_id, 'field', 'Nom du document', 0, '0000-00-00 00:00:00', '2023-04-19 09:11:42', 62, 'sysadmin', '0000-00-00 00:00:00', 0, 0, 0, '', 0, 0, 12, 0, '', 1, 1, 0, 0, 0, 1, 0, 0, '{"placeholder":"","password":"0","maxlength":"255","disable":"0","readonly":"0","autocomplete":"1","speech":"0","advanced_behavior":"0","bootstrap_class":"input-medium","text_format":"text","integer_length":"11","decimal_length":"2","field_use_number_format":"0","field_thousand_sep":",","field_decimal_sep":".","text_format_string":"","field_format_string_blank":"1","text_input_mask":"","text_input_mask_autoclear":"0","text_input_mask_definitions":"","render_as_qrcode":"0","scan_qrcode":"0","guess_linktype":"0","link_target_options":"default","rel":"","link_title":"","link_attributes":"","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"1","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"1","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"1","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"1","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","notempty-message":[""],"notempty-validation_condition":[""],"tip_text":[""],"icon":[""],"validations":{"plugin":["notempty"],"plugin_published":["1"],"validate_in":["both"],"validation_on":["both"],"validate_hidden":["1"],"must_validate":["0"],"show_icon":["1"]}}']
+							['href', $new_group_id, 'fileupload', 'Document', 0, '0000-00-00 00:00:00', '2023-04-19 08:39:57', 62, 'sysadmin', '2023-04-19 09:11:13', 62, 0, 0, '', 0, 0, 3, 0, '', 1, 1, 0, 0, 0, 1, 0, 0, '{"ul_max_file_size":"10240","ul_device_capture":"0","ul_file_types":"pdf,jpg,png,jpeg,docx","ul_directory":"\/images\/emundus\/phases\/{jos_emundus_campaign_workflow___id}","ul_email_file":"0","random_filename":"0","length_random_filename":"","ul_file_increment":"1","upload_allow_folderselect":"0","upload_delete_image":"1","upload_use_wip":"0","allow_unsafe":"0","fu_clean_filename":"1","fu_rename_file_code":"","default_image":"","make_link":"1","fu_show_image_in_table":"1","fu_show_image":"0","fu_show_image_in_email":"1","image_library":"gd2","fu_main_max_width":"","fu_main_max_height":"","image_quality":"90","fu_title_element":"","fu_map_element":"","restrict_lightbox":"1","make_thumbnail":"0","fu_make_pdf_thumb":"0","thumb_dir":"images\/stories\/thumbs","thumb_prefix":"","thumb_suffix":"","thumb_max_width":"200","thumb_max_height":"100","fileupload_crop":"0","fileupload_crop_dir":"images\/stories\/crop","fileupload_crop_width":"200","fileupload_crop_height":"100","win_width":"400","win_height":"400","fileupload_storage_type":"filesystemstorage","fileupload_aws_accesskey":"","fileupload_aws_secretkey":"","fileupload_aws_location":"","fileupload_ssl":"0","fileupload_aws_encrypt":"0","fileupload_aws_bucketname":"","fileupload_s3_serverpath":"1","fileupload_amazon_acl":"2","fileupload_skip_check":"0","fileupload_amazon_auth_url":"60","ajax_upload":"0","ajax_show_widget":"1","ajax_runtime":"html5,html4","ajax_max":"4","ajax_dropbox_width":"400","ajax_dropbox_height":"200","ajax_chunk_size":"0","fu_use_download_script":"0","fu_open_in_browser":"0","fu_force_download_script":"0","fu_download_acl":"","fu_download_noaccess_image":"","fu_download_noaccess_url":"","fu_download_access_image":"","fu_download_hit_counter":"","fu_download_log":"0","fu_download_append":"0","ul_export_encode_csv":"relative","ul_export_encode_json":"relative","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"1","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"1","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"1","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"1","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","notempty-message":[""],"notempty-validation_condition":[""],"tip_text":[""],"icon":[""],"validations":{"plugin":["notempty"],"plugin_published":["1"],"validate_in":["both"],"validation_on":["both"],"validate_hidden":["0"],"must_validate":["0"],"show_icon":["1"]}}'],
+							['title', $new_group_id, 'field', 'Nom du document', 0, '0000-00-00 00:00:00', '2023-04-19 09:11:42', 62, 'sysadmin', '0000-00-00 00:00:00', 0, 0, 0, '', 0, 0, 12, 0, '', 1, 1, 0, 0, 0, 1, 0, 0, '{"placeholder":"","password":"0","maxlength":"255","disable":"0","readonly":"0","autocomplete":"1","speech":"0","advanced_behavior":"0","bootstrap_class":"input-medium","text_format":"text","integer_length":"11","decimal_length":"2","field_use_number_format":"0","field_thousand_sep":",","field_decimal_sep":".","text_format_string":"","field_format_string_blank":"1","text_input_mask":"","text_input_mask_autoclear":"0","text_input_mask_definitions":"","render_as_qrcode":"0","scan_qrcode":"0","guess_linktype":"0","link_target_options":"default","rel":"","link_title":"","link_attributes":"","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"1","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"1","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"1","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"1","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","notempty-message":[""],"notempty-validation_condition":[""],"tip_text":[""],"icon":[""],"validations":{"plugin":["notempty"],"plugin_published":["1"],"validate_in":["both"],"validation_on":["both"],"validate_hidden":["0"],"must_validate":["0"],"show_icon":["1"]}}']
 						];
 
-						foreach($element_values as $values) {
+						foreach ($element_values as $values)
+						{
 							$query->clear()
 								->insert($db->quoteName('#__fabrik_elements'))
 								->columns($db->quoteName($columns))
@@ -1520,7 +1581,8 @@ try {
 						$db->execute();
 
 						// add fabrik joins on list id of campaign workflows
-						if (!empty($list_id)) {
+						if (!empty($list_id))
+						{
 							$query->clear()
 								->insert($db->quoteName('#__fabrik_joins'))
 								->columns($db->quoteName(['list_id', 'element_id', 'join_from_table', 'table_join', 'table_key', 'table_join_key', 'join_type', 'group_id', 'params']))
@@ -1541,9 +1603,9 @@ try {
 					}
 				}
 
-                //////////////////////////////////////////////////////////////////////////////////////
-                // END add campaign workflows documents;
-                //////////////////////////////////////////////////////////////////////////////////////
+				//////////////////////////////////////////////////////////////////////////////////////
+				// END add campaign workflows documents;
+				//////////////////////////////////////////////////////////////////////////////////////
 
 				EmundusHelperUpdate::addColumn('jos_emundus_setup_attachment_profiles', 'has_sample', 'TINYINT', 1);
 				EmundusHelperUpdate::addColumn('jos_emundus_setup_attachment_profiles', 'sample_filepath', 'VARCHAR', 255);
@@ -1553,7 +1615,8 @@ try {
 				$db->setQuery($str_query);
 				$table_exists = $db->loadResult();
 
-				if (!$table_exists) {
+				if (!$table_exists)
+				{
 					// create it if it doesn't exist
 					$str_query = 'create table jos_emundus_setup_config
 					(
@@ -1570,14 +1633,367 @@ try {
 					$query->clear()
 						->insert($db->quoteName('#__emundus_setup_config'))
 						->columns($db->quoteName(['namekey', 'value', 'default']))
-						->values($db->quote('onboarding_lists') . ', ' . $db->quote('{"forms":{"title":"COM_EMUNDUS_ONBOARD_FORMS","tabs":[{"title":"COM_EMUNDUS_FORM_MY_FORMS","key":"form","controller":"form","getter":"getallform","actions":[{"action":"duplicateform","label":"COM_EMUNDUS_ONBOARD_ACTION_DUPLICATE","controller":"form","name":"duplicate"},{"action":"index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%","label":"COM_EMUNDUS_ONBOARD_MODIFY","controller":"form","type":"redirect","name":"edit"},{"action":"createform","controller":"form","label":"COM_EMUNDUS_ONBOARD_ADD_FORM","name":"add"}],"filters":[]},{"title":"COM_EMUNDUS_FORM_MY_EVAL_FORMS","key":"form_evaluations","controller":"form","getter":"getallgrilleEval","actions":[{"action":"createformeval","label":"COM_EMUNDUS_ONBOARD_ADD_EVAL_FORM","controller":"form","name":"add"},{"action":"/index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%&mode=eval","label":"COM_EMUNDUS_ONBOARD_MODIFY","controller":"form","type":"redirect","name":"edit"}],"filters":[]},{"title":"COM_EMUNDUS_FORM_PAGE_MODELS","key":"form_models","controller":"formbuilder","getter":"getallmodels","actions":[{"action":"deleteformmodelfromids","label":"COM_EMUNDUS_ACTIONS_DELETE","controller":"formbuilder","parameters":"&model_ids=%id%","name":"delete"},{"action":"/index.php?option=com_emundus&view=form&layout=formbuilder&prid=%form_id%&mode=models","label":"COM_EMUNDUS_ONBOARD_MODIFY","controller":"form","type":"redirect","name":"edit"}],"filters":[]}]},"campaigns":{"title":"COM_EMUNDUS_ONBOARD_CAMPAIGNS","tabs":[{"title":"COM_EMUNDUS_ONBOARD_CAMPAIGNS","key":"campaign","controller":"campaign","getter":"getallcampaign","actions":[{"action":"index.php?option=com_emundus&view=campaigns&layout=add","label":"COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN","controller":"campaign","name":"add","type":"redirect"},{"action":"duplicatecampaign","label":"COM_EMUNDUS_ONBOARD_ACTION_DUPLICATE","controller":"campaign","name":"duplicate"},{"action":"index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=%id%","label":"COM_EMUNDUS_ONBOARD_MODIFY","controller":"campaign","type":"redirect","name":"edit"},{"action":"deletecampaign","label":"COM_EMUNDUS_ONBOARD_ACTION_DELETE","controller":"campaign","name":"delete","showon":{"key":"nb_files","operator":"<","value":"1"}},{"action":"unpublishcampaign","label":"COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH","controller":"campaign","name":"unpublish","showon":{"key":"published","operator":"=","value":"1"}},{"action":"publishcampaign","label":"COM_EMUNDUS_ONBOARD_ACTION_PUBLISH","controller":"campaign","name":"publish","showon":{"key":"published","operator":"=","value":"0"}}],"filters":[{"label":"COM_EMUNDUS_ONBOARD_FILTER_ALL","getter":"","controller":"campaigns","key":"filter","values":[{"label":"COM_EMUNDUS_ONBOARD_FILTER_ALL","value":"all"},{"label":"COM_EMUNDUS_CAMPAIGN_YET_TO_COME","value":"yettocome"},{"label":"COM_EMUNDUS_ONBOARD_FILTER_OPEN","value":"ongoing"},{"label":"COM_EMUNDUS_ONBOARD_FILTER_CLOSE","value":"Terminated"},{"label":"COM_EMUNDUS_ONBOARD_FILTER_PUBLISH","value":"Publish"},{"label":"COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH","value":"Unpublish"}],"default":"Publish"},{"label":"COM_EMUNDUS_ONBOARD_ALL_PROGRAMS","getter":"getallprogramforfilter","controller":"programme","key":"program","values":null}]},{"title":"COM_EMUNDUS_ONBOARD_PROGRAMS","key":"programs","controller":"programme","getter":"getallprogram","actions":[{"action":"index.php?option=com_fabrik&view=form&formid=108","controller":"programme","label":"COM_EMUNDUS_ONBOARD_ADD_PROGRAM","name":"add","type":"redirect"},{"action":"index.php?option=com_fabrik&view=form&formid=108&rowid=%id%","label":"COM_EMUNDUS_ONBOARD_MODIFY","controller":"programme","type":"redirect","name":"edit"}],"filters":[{"label":"COM_EMUNDUS_ONBOARD_ALL_PROGRAM_CATEGORIES","getter":"getprogramcategories","controller":"programme","key":"recherche","values":null}]}]},"emails":{"title":"COM_EMUNDUS_ONBOARD_EMAILS","tabs":[{"controller":"email","getter":"getallemail","title":"COM_EMUNDUS_ONBOARD_EMAILS","key":"emails","actions":[{"action":"index.php?option=com_emundus&view=emails&layout=add","controller":"email","label":"COM_EMUNDUS_ONBOARD_ADD_EMAIL","name":"add","type":"redirect"},{"action":"index.php?option=com_emundus&view=emails&layout=add&eid=%id%","label":"COM_EMUNDUS_ONBOARD_MODIFY","controller":"email","type":"redirect","name":"edit"},{"action":"deleteemail","label":"COM_EMUNDUS_ACTIONS_DELETE","controller":"email","name":"delete","showon":{"key":"type","operator":"!=","value":"1"}},{"action":"preview","label":"COM_EMUNDUS_ONBOARD_VISUALIZE","controller":"email","name":"preview","icon":"preview","title":"subject","content":"message"}],"filters":[{"label":"COM_EMUNDUS_ONBOARD_ALL_PROGRAM_CATEGORIES","getter":"getemailcategories","controller":"email","key":"recherche","values":null}]}]}}') . ', ' . $db->quote(''));
+						->values($db->quote('onboarding_lists') . ', ' . $db->quote('{"forms":{"title":"COM_EMUNDUS_ONBOARD_FORMS","tabs":[{"title":"COM_EMUNDUS_FORM_MY_FORMS","key":"form","controller":"form","getter":"getallform","actions":[{"action":"duplicateform","label":"COM_EMUNDUS_ONBOARD_ACTION_DUPLICATE","controller":"form","name":"duplicate"},{"action":"index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%","label":"COM_EMUNDUS_ONBOARD_MODIFY","controller":"form","type":"redirect","name":"edit"},{"action":"createform","controller":"form","label":"COM_EMUNDUS_ONBOARD_ADD_FORM","name":"add"}],"filters":[]},{"title":"COM_EMUNDUS_FORM_MY_EVAL_FORMS","key":"form_evaluations","controller":"form","getter":"getallgrilleEval","actions":[{"action":"createformeval","label":"COM_EMUNDUS_ONBOARD_ADD_EVAL_FORM","controller":"form","name":"add"},{"action":"/index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%&mode=eval","label":"COM_EMUNDUS_ONBOARD_MODIFY","controller":"form","type":"redirect","name":"edit"}],"filters":[]},{"title":"COM_EMUNDUS_FORM_PAGE_MODELS","key":"form_models","controller":"formbuilder","getter":"getallmodels","actions":[{"action":"deleteformmodelfromids","label":"COM_EMUNDUS_ACTIONS_DELETE","controller":"formbuilder","parameters":"&model_ids=%id%","name":"delete"},{"action":"/index.php?option=com_emundus&view=form&layout=formbuilder&prid=%form_id%&mode=models","label":"COM_EMUNDUS_ONBOARD_MODIFY","controller":"form","type":"redirect","name":"edit"}],"filters":[]}]},"campaigns":{"title":"COM_EMUNDUS_ONBOARD_CAMPAIGNS","tabs":[{"title":"COM_EMUNDUS_ONBOARD_CAMPAIGNS","key":"campaign","controller":"campaign","getter":"getallcampaign","actions":[{"action":"index.php?option=com_emundus&view=campaigns&layout=add","label":"COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN","controller":"campaign","name":"add","type":"redirect"},{"action":"duplicatecampaign","label":"COM_EMUNDUS_ONBOARD_ACTION_DUPLICATE","controller":"campaign","name":"duplicate"},{"action":"index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=%id%","label":"COM_EMUNDUS_ONBOARD_MODIFY","controller":"campaign","type":"redirect","name":"edit"},{"action":"deletecampaign","label":"COM_EMUNDUS_ONBOARD_ACTION_DELETE","controller":"campaign","name":"delete","confirm":"COM_EMUNDUS_ONBOARD_CAMPDELETE","showon":{"key":"nb_files","operator":"<","value":"1"}},{"action":"unpublishcampaign","label":"COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH","controller":"campaign","name":"unpublish","showon":{"key":"published","operator":"=","value":"1"}},{"action":"publishcampaign","label":"COM_EMUNDUS_ONBOARD_ACTION_PUBLISH","controller":"campaign","name":"publish","showon":{"key":"published","operator":"=","value":"0"}},{"action":"pincampaign","label":"COM_EMUNDUS_ONBOARD_ACTION_PIN_CAMPAIGN","controller":"campaign","name":"pin","icon":"push_pin","iconOutlined":true,"showon":{"key":"pinned","operator":"!=","value":"1"}},{"action":"unpincampaign","label":"COM_EMUNDUS_ONBOARD_ACTION_UNPIN_CAMPAIGN","controller":"campaign","name":"unpin","icon":"push_pin","iconOutlined":false,"showon":{"key":"pinned","operator":"=","value":"1"}}],"filters":[{"label":"COM_EMUNDUS_ONBOARD_FILTER_ALL","getter":"","controller":"campaigns","key":"filter","values":[{"label":"COM_EMUNDUS_ONBOARD_FILTER_ALL","value":"all"},{"label":"COM_EMUNDUS_CAMPAIGN_YET_TO_COME","value":"yettocome"},{"label":"COM_EMUNDUS_ONBOARD_FILTER_OPEN","value":"ongoing"},{"label":"COM_EMUNDUS_ONBOARD_FILTER_CLOSE","value":"Terminated"},{"label":"COM_EMUNDUS_ONBOARD_FILTER_PUBLISH","value":"Publish"},{"label":"COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH","value":"Unpublish"}],"default":"Publish"},{"label":"COM_EMUNDUS_ONBOARD_ALL_PROGRAMS","getter":"getallprogramforfilter","controller":"programme","key":"program","values":null}]},{"title":"COM_EMUNDUS_ONBOARD_PROGRAMS","key":"programs","controller":"programme","getter":"getallprogram","actions":[{"action":"index.php?option=com_fabrik&view=form&formid=108","controller":"programme","label":"COM_EMUNDUS_ONBOARD_ADD_PROGRAM","name":"add","type":"redirect"},{"action":"index.php?option=com_fabrik&view=form&formid=108&rowid=%id%","label":"COM_EMUNDUS_ONBOARD_MODIFY","controller":"programme","type":"redirect","name":"edit"}],"filters":[{"label":"COM_EMUNDUS_ONBOARD_ALL_PROGRAM_CATEGORIES","getter":"getprogramcategories","controller":"programme","key":"recherche","values":null}]}]},"emails":{"title":"COM_EMUNDUS_ONBOARD_EMAILS","tabs":[{"controller":"email","getter":"getallemail","title":"COM_EMUNDUS_ONBOARD_EMAILS","key":"emails","actions":[{"action":"index.php?option=com_emundus&view=emails&layout=add","controller":"email","label":"COM_EMUNDUS_ONBOARD_ADD_EMAIL","name":"add","type":"redirect"},{"action":"index.php?option=com_emundus&view=emails&layout=add&eid=%id%","label":"COM_EMUNDUS_ONBOARD_MODIFY","controller":"email","type":"redirect","name":"edit"},{"action":"deleteemail","label":"COM_EMUNDUS_ACTIONS_DELETE","controller":"email","name":"delete","showon":{"key":"type","operator":"!=","value":"1"}},{"action":"preview","label":"COM_EMUNDUS_ONBOARD_VISUALIZE","controller":"email","name":"preview","icon":"preview","iconOutlined":true,"title":"subject","content":"message"}],"filters":[{"label":"COM_EMUNDUS_ONBOARD_ALL_PROGRAM_CATEGORIES","getter":"getemailcategories","controller":"email","key":"recherche","values":null}]}]}}') . ', ' . $db->quote(''));
 
 					$db->setQuery($query);
 					$db->execute();
 				}
 
-                EmundusHelperUpdate::addColumn('jos_emundus_users','token','VARCHAR',50);
-                EmundusHelperUpdate::addColumn('jos_emundus_users','anonym_user','TINYINT',1);
+				EmundusHelperUpdate::installExtension('plg_fabrik_element_emundusphonenumber', 'emundus_phonenumber', '{"name":"plg_fabrik_element_emundusphonenumber","type":"plugin","creationDate":"April 2023","author":"eMundus - Thibaud Grignon","copyright":"Copyright (C) 2005-2021 Media A-Team, Inc. - All rights reserved.","authorEmail":"rob@pollen-8.co.uk","authorUrl":"www.fabrikar.com","version":"3.10","description":"PLG_ELEMENT_FIELD_DESCRIPTION","group":"","filename":"emundus_phonenumber"}', 'plugin', 1, 'fabrik_element');
+
+				EmundusHelperUpdate::addColumn('jos_emundus_users', 'token', 'VARCHAR', 50);
+				EmundusHelperUpdate::addColumn('jos_emundus_users', 'anonym_user', 'TINYINT', 1);
+
+				$country_table = EmundusHelperUpdate::createTable('data_country', [
+					['name' => 'label_fr', 'type' => 'varchar', 'length' => 255],
+					['name' => 'label_en', 'type' => 'varchar', 'length' => 255],
+					['name' => 'iso2', 'type' => 'varchar', 'length' => 2],
+					['name' => 'iso3', 'type' => 'varchar', 'length' => 4],
+					['name' => 'country_nb', 'type' => 'varchar', 'length' => 4],
+					['name' => 'continent', 'type' => 'varchar', 'length' => 2],
+					['name' => 'continent_en', 'type' => 'varchar', 'length' => 255],
+					['name' => 'member', 'type' => 'tinyint', 'length' => 1]
+				]);
+
+				if($country_table['status']){
+					EmundusHelperUpdate::executeSQlFile('insert_data_country');
+				}
+
+				EmundusHelperUpdate::addColumn('data_country', 'flag', 'VARCHAR', 30);
+				EmundusHelperUpdate::addColumn('data_country', 'flag_img', 'VARCHAR', 30);
+				EmundusHelperUpdate::executeSQlFile('update_flags');
+				EmundusHelperUpdate::executeSQlFile('update_acl_ordering');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO', 'Email envoyé à');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO', 'Email sent to', 'override', null, null, null, 'en-GB');
+
+				$query->clear()
+					->select('id,path')
+					->from($db->quoteName('#__menu'))
+					->where($db->quoteName('path') . ' IN ("toutes-les-campagnes","mes-candidatures")')
+					->andWhere($db->quoteName('menutype') . ' LIKE ' . $db->quote('applicantmenu'));
+				$db->setQuery($query);
+				$applicant_menus = $db->loadObjectList();
+
+				foreach ($applicant_menus as $menu)
+				{
+					$text = 'All campaigns';
+					if ($menu->path == 'mes-candidatures')
+					{
+						$text = 'My applications';
+					}
+					$query->clear()
+						->select('id,value')
+						->from($db->quoteName('#__falang_content'))
+						->where($db->quoteName('reference_table') . ' LIKE ' . $db->quote('menu'))
+						->andWhere($db->quoteName('reference_field') . ' LIKE ' . $db->quote('title'))
+						->andWhere($db->quoteName('reference_id') . ' = ' . $menu->id);
+					$db->setQuery($query);
+					$translation = $db->loadObject();
+
+					if (empty($translation))
+					{
+						$query->clear()
+							->insert($db->quoteName('#__falang_content'))
+							->columns($db->quoteName('reference_table') . ',' . $db->quoteName('reference_field') . ',' . $db->quoteName('reference_id') . ',' . $db->quoteName('value') . ',' . $db->quoteName('language_id') . ',' . $db->quoteName('published'))
+							->values($db->quote('menu') . ',' . $db->quote('title') . ',' . $menu->id . ',' . $db->quote($text) . ',' . $db->quote(1) . ',' . $db->quote(1));
+					}
+					else
+					{
+						$query->clear()
+							->update($db->quoteName('#__falang_content'))
+							->set($db->quoteName('value') . ' = ' . $db->quote($text))
+							->set($db->quoteName('published') . ' = ' . $db->quote(1))
+							->where($db->quoteName('id') . ' = ' . $translation->id);
+					}
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				$query->clear()
+					->select($db->quoteName('params'))
+					->from($db->quoteName('#__fabrik_forms'))
+					->where($db->quoteName('id') . ' = ' . $db->quote(108));
+				$db->setQuery($query);
+				$program_form_params = $db->loadResult();
+
+				if (!empty($program_form_params))
+				{
+					$program_form_params = json_decode($program_form_params);
+					if (!in_array('onAfterProgramCreate', $program_form_params->plugin_description))
+					{
+						$program_form_params->plugin_state[]       = "1";
+						$program_form_params->only_process_curl[]  = "onAfterProcess";
+						$program_form_params->form_php_file[]      = "-1";
+						$program_form_params->curl_code[]          = 'JPluginHelper::importPlugin(\'emundus\', \'custom_event_handler\');
+\Joomla\CMS\Factory::getApplication()->triggerEvent(\'callEventHandler\', [\'onAfterProgramCreate\', [\'formModel\' => $this->getModel(), \'data\' => $this->getProcessData()]]);';
+						$program_form_params->plugins[]            = "php";
+						$program_form_params->plugin_locations[]   = "both";
+						$program_form_params->plugin_events[]      = "new";
+						$program_form_params->plugin_description[] = "onAfterProgramCreate";
+
+						$query->clear()
+							->update($db->quoteName('#__fabrik_forms'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($program_form_params)))
+							->where($db->quoteName('id') . ' = ' . $db->quote(108));
+						$db->setQuery($query);
+						$db->execute();
+					}
+				}
+
+				// update setup_program logo element code
+				$query->clear()
+					->select($db->quoteName('jfe.id'))
+					->from($db->quoteName('#__fabrik_elements', 'jfe'))
+					->innerJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $db->quoteName('jfe.group_id') . ' = ' . $db->quoteName('jffg.group_id'))
+					->innerJoin($db->quoteName('#__fabrik_lists', 'jfl') . ' ON ' . $db->quoteName('jfl.form_id') . ' = ' . $db->quoteName('jffg.form_id'))
+					->where('jfe.plugin = ' . $db->quote('fileupload'))
+					->andWhere('jfe.name = ' . $db->quote('logo'))
+					->andWhere('jfl.db_table_name = ' . $db->quote('jos_emundus_setup_programmes'))
+					->andWhere('jfl.label = ' . $db->quote('TABLE_SETUP_PROGRAMS'));
+
+				$db->setQuery($query);
+				$program_logo_element = $db->loadResult();
+
+				if (!empty($program_logo_element))
+				{
+					EmundusHelperUpdate::genericUpdateParams('#__fabrik_elements', 'id', $program_logo_element, ['fu_rename_file_code'], ['error_clear_last();
+					$new_name = $formModel->formData[\'jos_emundus_setup_programmes___code_raw\'];
+					$new_name = preg_replace(\'/[^A-Za-z0-9_\\-]/\', \'\', $new_name);
+					$new_name .= \'.\' . pathinfo($filename, PATHINFO_EXTENSION);
+					return $new_name;'], null, true);
+				}
+
+				$content_index_offline = "name: _offline
+timestamp: 1680776072
+version: 7
+preset:
+  image: 'gantry-admin://images/layouts/body-only.png'
+  name: _body_only
+  timestamp: 1530009501
+positions: {  }
+sections:
+  mainbar: Mainbar
+particles:
+  messages:
+    system-messages-6659: 'System Messages'
+  content:
+    system-content-5845: 'Page Content'
+inherit: {  }";
+
+				$content_layout_offline = "version: 2
+preset:
+  image: 'gantry-admin://images/layouts/body-only.png'
+  name: _body_only
+  timestamp: 1530009501
+layout:
+  /mainbar/:
+    -
+      - system-messages-6659
+    -
+      - system-content-5845
+structure:
+  mainbar:
+    type: section
+    subtype: main
+    attributes:
+      boxed: ''
+";
+
+				EmundusHelperUpdate::updateYamlVariable('', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_offline/index.yaml', '', $content_index_offline);
+				EmundusHelperUpdate::updateYamlVariable('', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_offline/layout.yaml', '', $content_layout_offline);
+			}
+
+			if (version_compare($cache_version, '1.36.2', '<=') || $firstrun){
+				$tags_to_publish = [
+					'APPLICANT_ID','USER_ID','APPLICANT_NAME','CURRENT_DATE','ID','NAME','EMAIL','USERNAME','SITE_URL','USER_NAME','USER_EMAIL','CAMPAIGN_LABEL','CAMPAIGN_YEAR','CAMPAIGN_START','CAMPAIGN_END','FNUM','PHOTO'
+				];
+				foreach ($tags_to_publish as $key => $tag)
+				{
+					$tags_to_publish[$key] = $db->quote($tag);
+				}
+				$query->clear()
+					->update($db->quoteName('#__emundus_setup_tags'))
+					->set($db->quoteName('published') . ' = ' . $db->quote(1))
+					->where($db->quoteName('tag') . ' IN (' . implode(',',$tags_to_publish) . ')');
+				$db->setQuery($query);
+				$db->execute();
+			}
+
+            if (version_compare($cache_version, '1.36.3', '<=') || $firstrun){
+                $query->clear()
+                    ->select('DISTINCT '.$db->quoteName('form_id'))
+                    ->from($db->quoteName('#__fabrik_lists'))
+                    ->where($db->quoteName('db_table_name').' = '.$db->quote('jos_emundus_uploads'));
+                $db->setQuery($query);
+                $forms = $db->loadColumn();
+
+                if (!empty($forms)) {
+                    $query->clear()
+                        ->select('DISTINCT '.$db->quoteName('group_id'))
+                        ->from($db->quoteName('#__fabrik_formgroup'))
+                        ->where($db->quoteName('form_id').' IN ('.implode(',',$forms).')');
+                    $db->setQuery($query);
+                    $groups = $db->loadColumn();
+
+                    if (!empty($groups)) {
+                        $params = array(
+                            'bootstrap_class' => 'input-medium',
+                            'date_showtime' => 1,
+                            'date_which_time_picker' => 'wicked',
+                            'date_show_seconds' => 1,
+                            'date_24hour' => 1,
+                            'bootstrap_time_class' => 'input-medium',
+                            'placeholder' => '',
+                            'date_store_as_local' => 0,
+                            'date_table_format' => 'Y-m-d H:i:s',
+                            'date_form_format' => 'Y-m-d H:i:s',
+                            'date_defaulttotoday' => 1,
+                            'date_alwaystoday' => 0,
+                            'date_firstday' => 0,
+                            'date_allow_typing_in_field' => 0,
+                            'date_csv_offset_tz' => 0,
+                            'date_advanced' => 0,
+                            'date_allow_func' => '',
+                            'date_allow_php_func' => '',
+                            'date_observe' => ''
+                        );
+                        foreach($groups as $group_id) {
+                            $datas = array(
+                                'name' => 'timedate',
+                                'group_id' => $group_id,
+                                'plugin' => 'date',
+                                'label' => 'Date d\'envoi du document',
+                                'hidden' => 1
+                            );
+                            EmundusHelperUpdate::addFabrikElement($datas, $params);
+                        }
+                    }
+                }
+
+				EmundusHelperUpdate::updateExtensionParam('fbConf_alter_existing_db_cols','addonly', null, 'com_fabrik');
+
+				if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/24/page/assets.yaml')){
+					unlink(JPATH_ROOT . '/templates/g5_helium/custom/config/24/page/assets.yaml');
+				}
+            }
+
+			if (version_compare($cache_version, '1.36.4', '<=') || $firstrun){
+				EmundusHelperUpdate::addColumn('jos_emundus_uploads','size','INT',11);
+
+                EmundusHelperUpdate::updateExtensionParam('gotenberg_url', 'https://gotenberg.microservices.tchooz.app', 'http://localhost:3000');
+			}
+
+            if (version_compare($cache_version, '1.36.6', '<=') || $firstrun){
+                // Add missing columns from previous updates
+                EmundusHelperUpdate::addColumn('jos_emundus_personal_detail','profile','INT',11);
+                EmundusHelperUpdate::addColumn('jos_emundus_logs','ip_from','VARCHAR',26);
+                EmundusHelperUpdate::addColumn('jos_messages','page','INT',11);
+                EmundusHelperUpdate::alterColumn('jos_messages','page','INT',11);
+                EmundusHelperUpdate::addColumnIndex('jos_messages','page');
+
+                // Unpublish FAQ widget
+                $faq_params = array(
+                    'published' => 0,
+                );
+                EmundusHelperUpdate::updateWidget('FAQ', $faq_params);
+
+                // Get FAQ widget id
+                $query->clear()
+                    ->select($db->quoteName('id'))
+                    ->from($db->quoteName('#__emundus_widgets'))
+                    ->where($db->quoteName('name').' = '.$db->quote('FAQ'));
+                $db->setQuery($query);
+                $faq_widget_id = $db->loadResult();
+
+                // Delete all usage of FAQ widget
+                $query->clear()
+                    ->delete($db->quoteName('#__emundus_setup_dashbord_repeat_widgets'))
+                    ->where($db->quoteName('widget').' = '.$db->quote($faq_widget_id));
+                $db->setQuery($query);
+                $db->execute();
+
+                // Update jos_emundus_uploads lists to change param alter_existing_db_cols to default (addonly)
+                $query->clear()
+                    ->select($db->quoteName(array('id','params')))
+                    ->from($db->quoteName('#__fabrik_lists'))
+                    ->where($db->quoteName('db_table_name').' = '.$db->quote('jos_emundus_uploads'));
+                $db->setQuery($query);
+                $lists = $db->loadObjectList();
+
+                foreach ($lists as $list) {
+                    $params = json_decode($list->params);
+                    $params->alter_existing_db_cols = 0;
+                    $params = json_encode($params);
+                    $query->clear()
+                        ->update($db->quoteName('#__fabrik_lists'))
+                        ->set($db->quoteName('params').' = '.$db->quote($params))
+                        ->where($db->quoteName('id').' = '.$db->quote($list->id));
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+
+	            $query->clear()
+		            ->select('id')
+		            ->from($db->quoteName('#__menu'))
+		            ->where($db->quoteName('title').' LIKE '.$db->quote('Evaluation'))
+		            ->where($db->quoteName('menutype').' LIKE '.$db->quote('application'));
+	            $db->setQuery($query);
+	            $evaluation_application_menu = $db->loadResult();
+
+				if(!empty($evaluation_application_menu)){
+					$query->clear()
+						->select('id')
+						->from($db->quoteName('#__falang_content'))
+						->where($db->quoteName('reference_table').' LIKE '.$db->quote('menu'))
+						->where($db->quoteName('reference_field').' LIKE '.$db->quote('title'))
+						->where($db->quoteName('language_id').' = 2')
+						->where($db->quoteName('reference_id').' = '.$db->quote($evaluation_application_menu));
+					$db->setQuery($query);
+					$evaluation_application_menu_falang = $db->loadResult();
+
+					if(!empty($evaluation_application_menu_falang)){
+						$query->clear()
+							->update($db->quoteName('#__falang_content'))
+							->set($db->quoteName('value').' = '.$db->quote('Évaluation'))
+							->where($db->quoteName('id').' = '.$db->quote($evaluation_application_menu_falang));
+						$db->setQuery($query);
+						$db->execute();
+					} else {
+						$query->clear()
+							->insert($db->quoteName('#__falang_content'))
+							->columns($db->quoteName(array('reference_id','reference_table','reference_field','language_id','value','original_text','published')))
+							->values($db->quote($evaluation_application_menu).','.$db->quote('menu').','.$db->quote('title').',2,'.$db->quote('Évaluation').','.$db->quote('').',1');
+						$db->setQuery($query);
+						$db->execute();
+					}
+				}
+
+				// Create redirection menu in Joomla administration
+				$query->clear()
+					->select('id')
+					->from($db->quoteName('#__menu'))
+					->where($db->quoteName('link').' LIKE '.$db->quote('index.php?option=com_redirect'));
+				$db->setQuery($query);
+				$redirect_menu = $db->loadResult();
+
+				if(empty($redirect_menu))
+				{
+					$query->clear()
+						->insert($db->quoteName('#__menu'))
+						->columns(array('menutype', 'title', 'alias', 'note', 'path', 'link', 'type', 'published', 'parent_id', 'level', 'component_id', 'checked_out', 'checked_out_time', 'browserNav', 'access', 'img', 'template_style_id', 'params', 'lft', 'rgt', 'home', 'language', 'client_id'))
+						->values($db->quote('main') . ',' . $db->quote('Redirection') . ',' . $db->quote('com-redirect') . ',' . $db->quote('') . ',' . $db->quote('com-redirect') . ',' . $db->quote('index.php?option=com_redirect') . ',' . $db->quote('component') . ',1,1,1,24,0,' . $db->quote(date('Y-m-d H:i:s')) . ',0,1,' . $db->quote('class:redirect') . ',0,' . $db->quote('{}') . ',363,368,0,' . $db->quote('') . ',1');
+					$db->setQuery($query);
+					$db->execute();
+				} else {
+					$query->clear()
+						->update($db->quoteName('#__menu'))
+						->set($db->quoteName('menutype').' = '.$db->quote('main'))
+						->where($db->quoteName('id').' = '.$db->quote($redirect_menu));
+					$db->setQuery($query);
+					$db->execute();
+				}
+				//
             }
 
 			// Insert new translations in overrides files
@@ -1604,27 +2020,30 @@ try {
 	 */
 	public function preflight($type, $parent)
 	{
-		if (version_compare(PHP_VERSION, '7.2.0', '<')) {
-			echo "\033[31mThis extension works with PHP 7.2.0 or newer.Please contact your web hosting provider to update your PHP version. \033[0m\n";
+		if (version_compare(PHP_VERSION, '7.4.0', '<'))
+		{
+			echo "\033[31mThis extension works with PHP 7.4.0 or newer. Please contact your web hosting provider to update your PHP version. \033[0m\n";
 			exit;
 		}
 
-		if ($this->schema_version != '3.10.9-2022-10-05-em') {
+		if ($this->schema_version != '3.10.9-2022-10-05-em')
+		{
 			echo "\033[31mYou have to run update-db.sh before CLI ! \033[0m\n";
 			exit;
 		}
 
-        if(version_compare(PHP_VERSION, '8.0.0', '>=')) {
-            $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
+		if (version_compare(PHP_VERSION, '8.0.0', '>='))
+		{
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
 
-            $query->clear()
-                ->update('#__extensions')
-                ->set($db->quoteName('enabled') . ' = 0')
-                ->where($db->quoteName('name') . ' LIKE ' . $db->quote('%dpcalendar%'));
-            $db->setQuery($query);
-            $db->execute();
-        }
+			$query->clear()
+				->update('#__extensions')
+				->set($db->quoteName('enabled') . ' = 0')
+				->where($db->quoteName('name') . ' LIKE ' . $db->quote('%dpcalendar%'));
+			$db->setQuery($query);
+			$db->execute();
+		}
 	}
 
 
@@ -1648,12 +2067,14 @@ try {
 		$db->setQuery($query);
 		$custom_data = $db->loadResult();
 
-		if (!empty($custom_data)) {
+		if (!empty($custom_data))
+		{
 			$custom_data = json_decode($custom_data, true);
 
 			$custom_data['sitename'] = $config->get('sitename');
 		}
-		else {
+		else
+		{
 			$custom_data = [
 				'sitename' => $config->get('sitename'),
 			];
@@ -1665,12 +2086,14 @@ try {
 			->where($db->quoteName('element') . ' LIKE ' . $db->quote('com_emundus'));
 		$db->setQuery($query);
 
-		if ($db->execute()) {
+		if ($db->execute())
+		{
 			echo "Application name updated";
 
 			return true;
 		}
-		else {
+		else
+		{
 			echo "Application name not updated";
 
 			return false;
@@ -1686,12 +2109,15 @@ try {
 	private function deleteOldSqlFiles()
 	{
 		$source = JPATH_ADMINISTRATOR . '/components/com_admin/sql/updates/mysql';
-		if ($files = scandir($source)) {
-			foreach ($files as $file) {
+		if ($files = scandir($source))
+		{
+			foreach ($files as $file)
+			{
 				if (strpos($file, 'em') !== false and is_file($file)) JFile::delete($file);
 			}
 		}
-		else {
+		else
+		{
 			echo("Can't scan SQL Files");
 		}
 	}

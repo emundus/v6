@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -209,7 +209,7 @@ defined('_JEXEC') or die('Restricted access');
 				$attributes = '';
 				if($img->external)
 					$attributes = ' width="'.$img->req_width.'" height="'.$img->req_height.'"';
-				echo '<img class="hikashop_product_checkout_cart_image" title="'.$this->escape(@$image->file_description).'" alt="'.$this->escape(@$image->file_name).'" src="'.$img->url.'"'.$attributes.'/>';
+				echo '<img class="hikashop_product_checkout_cart_image" title="'.$this->escape((string)@$image->file_description).'" alt="'.$this->escape((string)@$image->file_name).'" src="'.$img->url.'"'.$attributes.'/>';
 			}
 				?></div>
 <?php
@@ -368,6 +368,7 @@ defined('_JEXEC') or die('Restricted access');
 				'quantity_fieldname' => 'checkout[cart][item]['.$product->cart_product_id.']',
 				'onchange_script' => $onchange,
 				'onincrement_script' => $onincrement,
+				'refresh_task' => 'submitstep',
 			));
 
 			if(!empty($this->options['show_delete'])) {
@@ -501,20 +502,25 @@ defined('_JEXEC') or die('Restricted access');
 					continue;
 				if(empty($this->options['show_price']) && !empty($additional->price_value))
 					continue;
-?>
-		<tr id="hikashop_checkout_cart_additional_<?php echo str_replace(' ','_',$k); ?>_line" >
-			<td colspan="<?php echo $row_count - 2; ?>" class="hikashop_cart_empty_footer"></td>
-			<td id="hikashop_checkout_cart_additional_<?php echo str_replace(' ','_',$k); ?>_title" class="hikashop_cart_additional_title hikashop_cart_title"><?php
-				echo JText::_($additional->name);
+				$additionalDeleteButton = '';
 				if(empty($this->options['status']) && !empty($additional->deletable)) {
 					$attribs = '';
 					if(!empty($additional->deletable->title)) {
 						$attribs = ' title="'.$additional->deletable->title.'"';
 					}
-?>
-<a href="#removeAdditional" onclick="return window.checkout.removeAdditional(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>,'<?php echo $k ; ?>');" <?php echo $attribs; ?>><i class="fas fa-trash"></i></a>
-<?php
+					$icon = '<i class="fas fa-trash"></i>';
+					if(!empty($additional->deletable->icon)) {
+						$icon = $additional->deletable->icon;
+					}
+					$additionalDeleteButton = '<a href="#removeAdditional" onclick="return window.checkout.removeAdditional('.$this->step.','.$this->module_position.',\''.$k.'\');" '.$attribs.'>'.$icon.'</a>';
 				}
+?>
+		<tr id="hikashop_checkout_cart_additional_<?php echo str_replace(' ','_',$k); ?>_line" >
+			<td colspan="<?php echo $row_count - 2; ?>" class="hikashop_cart_empty_footer"></td>
+			<td id="hikashop_checkout_cart_additional_<?php echo str_replace(' ','_',$k); ?>_title" class="hikashop_cart_additional_title hikashop_cart_title"><?php
+				echo JText::_($additional->name);
+				if(empty($additional->deletable->position) || $additional->deletable->position == 'after_name')
+					echo $additionalDeleteButton;
 			?></td>
 			<td class="hikashop_cart_additional_value" data-title="<?php echo JText::_($additional->name); ?>">
 				<span class="hikashop_checkout_cart_additional">
@@ -528,6 +534,10 @@ defined('_JEXEC') or die('Restricted access');
 					echo $additional->value;
 ?>
 				</span>
+<?php
+				if(!empty($additional->deletable->position) && $additional->deletable->position == 'after_value')
+					echo $additionalDeleteButton;
+?>
 			</td>
 		</tr>
 <?php

@@ -11,6 +11,7 @@ namespace classes\api;
 
 use GuzzleHttp\Client as GuzzleClient;
 use JLog;
+use JComponentHelper;
 
 defined('_JEXEC') or die('Restricted access');
 class Api
@@ -113,6 +114,14 @@ class Api
 	{
 		return $this->auth;
 	}
+
+	public function setAuth(): void
+	{
+		$config = JComponentHelper::getParams('com_emundus');
+
+		$this->auth['bearer_token'] = $config->get('api_bearer_token', '');
+	}
+
 
 
 	public function get($url, $params = array())

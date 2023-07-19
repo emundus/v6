@@ -436,7 +436,7 @@ class Files
 		return $wheres;
 	}
 
-	public function buildQuery($select,$left_joins = [],$wheres = [],$access = '',$limit = 0,$offset = 0,$return = 'object'){
+	public function buildQuery($select,$left_joins = [],$wheres = [],$access = '',$limit = 0,$offset = 0,$return = 'object',$params = null){
 		$em_session = JFactory::getSession()->get('emundusUser');
 		$user = JFactory::getUser();
 
@@ -445,6 +445,10 @@ class Files
 		$query_users_associated = $db->getQuery(true);
 		$query_groups_associated = $db->getQuery(true);
 		$query_groups_program_associated = $db->getQuery(true);
+
+        if (isset($params->tags) && $params->tags !== '') {
+            $left_joins[] = $db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum');
+        }
 
 		try {
 			$groups_allowed = [];
@@ -921,21 +925,24 @@ class Files
 
 	public function getComment($cid): object
 	{
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
 		$comment = new \stdClass();
 
-		try {
-			$query->select('ec.reason,ec.comment_body,ec.date,concat(eu.lastname," ",eu.firstname) as user')
+		if (!empty($cid)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('ec.id, ec.reason, ec.comment_body,ec.date,concat(eu.lastname," ",eu.firstname) as user')
 				->from($db->quoteName('#__emundus_comments','ec'))
 				->leftJoin($db->quoteName('#__emundus_users','eu').' ON '.$db->quoteName('eu.user_id').' = '.$db->quoteName('ec.user_id'))
 				->where($db->quoteName('ec.id') . ' = ' . $db->quote($cid));
-			$db->setQuery($query);
-			$comment = $db->loadObject();
-		}
-		catch (Exception $e) {
-			JLog::add('Problem when get comment : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
+
+			try {
+				$db->setQuery($query);
+				$comment = $db->loadObject();
+			}
+			catch (Exception $e) {
+				JLog::add('Problem when get comment : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
+			}
 		}
 
 		return $comment;

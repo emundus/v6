@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div id="comments">
     <div class="em-flex-column em-flex-center em-mt-24">
-      <div v-for="comment in comments" class="em-input-card em-w-50 em-mb-16">
+      <div v-for="comment in comments" class="em-input-card em-w-50 em-mb-16" :key="comment.id">
         <div class="em-flex-row em-flex-space-between">
           <div>
             <p>{{comment.user}}</p>
@@ -10,13 +10,13 @@
           <div v-click-outside="hideOptions">
             <span class="material-icons-outlined em-pointer" @click="show_options = comment.id">more_vert</span>
             <div v-if="show_options === comment.id" class="em-comment-option">
-              <span class="em-pointer" v-if="$props.access.d || ($props.access.c && comment.user_id == $props.user)" @click="deleteComment(comment.id)">{{ translate('COM_EMUNDUS_FILES_COMMENT_DELETE') }}</span>
+              <span class="em-pointer comment-delete" v-if="$props.access.d || ($props.access.c && comment.user_id == $props.user)" @click="deleteComment(comment.id)">{{ translate('COM_EMUNDUS_FILES_COMMENT_DELETE') }}</span>
             </div>
           </div>
         </div>
 
         <hr/>
-        <div>
+        <div class="comment-content">
           <strong class="em-mb-8">{{comment.reason}}</strong>
           <p style="word-break: break-all;">{{comment.comment_body}}</p>
         </div>
@@ -57,7 +57,8 @@
 
 <script>
 import filesService from 'com_emundus/src/services/files';
-import mixins from "@/mixins/mixin";
+import mixins from '../../mixins/mixin';
+import errors from '../../mixins/errors';
 
 export default {
   name: "Comments",
@@ -71,11 +72,11 @@ export default {
       required: true,
     },
     access: {
-      type: Array,
+      type: Object,
       required: true,
     },
   },
-  mixins: [mixins],
+  mixins: [mixins, errors],
   data: () => ({
     comments: [],
     comment: {
@@ -96,21 +97,23 @@ export default {
       filesService.getComments(this.$props.fnum).then((response) => {
         if(response.status == 1){
           this.comments = response.data;
-          this.loading = false;
+	        this.loading = false;
         } else {
           this.displayError(
               'COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS',
               'COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS_DESC'
           );
+	        this.loading = false;
         }
       });
     },
 
     saveComment(){
       this.loading = true;
-      filesService.saveComment(this.$props.fnum,this.comment).then((response) => {
+      filesService.saveComment(this.$props.fnum, this.comment).then((response) => {
         if(response.status == 1){
           this.comments.push(response.data);
+	        this.comment = {reason: '', comment_body: ''};
           this.adding_comment = false;
           this.loading = false;
         } else {
@@ -118,23 +121,32 @@ export default {
               'COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS',
               'COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS_DESC'
           );
+	        this.loading = false;
         }
       });
     },
 
     deleteComment(cid){
-      this.loading = true;
-      filesService.deleteComment(cid).then((response) => {
-        if(response.status == 1){
-          this.comments.splice(this.comments.findIndex(v => v.id === cid), 1);
-          this.loading = false;
-        } else {
-          this.displayError(
-              'COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS',
-              'COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS_DESC'
-          );
-        }
-      });
+			let deleted = false;
+
+			if ((this.access.d || (this.access.c && comment.user_id == this.user)) && cid !== null && cid > 0) {
+				this.loading = true;
+				filesService.deleteComment(cid).then((response) => {
+					if(response.status == 1){
+						deleted = true;
+						this.comments.splice(this.comments.findIndex(v => v.id === cid), 1);
+						this.loading = false;
+					} else {
+						this.displayError(
+								'COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS',
+								'COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS_DESC'
+						);
+						this.loading = false;
+					}
+				});
+			}
+
+			return deleted;
     },
 
     hideOptions(){

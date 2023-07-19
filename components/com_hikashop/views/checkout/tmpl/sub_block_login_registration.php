@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -11,14 +11,17 @@ defined('_JEXEC') or die('Restricted access');
 <?php
 $labelcolumnclass = 'hkc-sm-4';
 $inputcolumnclass = 'hkc-sm-8';
-
+if(!empty($this->options['override_registration']) && !empty($this->options['registration_registration'])) {
+	echo hikashop_translate($this->options['text']);
+	$this->options['registration_registration'] = false;
+}
 if(!empty($this->options['registration_registration'])) {
 ?>
 <!-- NAME -->
 	<div class="hkform-group control-group hikashop_registration_name_line" id="hikashop_registration_name_line">
 		<label id="namemsg" for="register_name" class="<?php echo $labelcolumnclass;?> hkcontrol-label" title=""><?php echo JText::_('HIKA_USER_NAME'); ?>*</label>
 		<div class="<?php echo $inputcolumnclass;?>">
-			<input type="text" name="data[register][name]" id="register_name" value="<?php echo $this->escape($this->mainUser->get( 'name' ));?>" class="hkform-control" size="30" maxlength="50"/>
+			<input type="text" name="data[register][name]" id="register_name" value="<?php echo $this->escape($this->mainUser->get( 'name' ));?>" class="<?php echo HK_FORM_CONTROL_CLASS; ?>" size="30" maxlength="50"/>
 		</div>
 	</div>
 <!-- EO NAME -->
@@ -26,7 +29,7 @@ if(!empty($this->options['registration_registration'])) {
 	<div class="hkform-group control-group hikashop_registration_username_line" id="hikashop_registration_username_line">
 		<label id="usernamemsg" for="register_username" class="<?php echo $labelcolumnclass;?> hkcontrol-label" title=""><?php echo JText::_('HIKA_USERNAME'); ?>*</label>
 		<div class="<?php echo $inputcolumnclass;?>">
-			<input type="text" name="data[register][username]" id="register_username" value="<?php echo $this->escape($this->mainUser->get( 'username' ));?>" class="hkform-control validate-username" maxlength="25" size="30" />
+			<input type="text" name="data[register][username]" id="register_username" value="<?php echo $this->escape($this->mainUser->get( 'username' ));?>" class="<?php echo HK_FORM_CONTROL_CLASS; ?> validate-username" maxlength="25" size="30" />
 		</div>
 	</div>
 <!-- EO USERNAME -->
@@ -37,7 +40,7 @@ if(!empty($this->options['registration_registration'])) {
 	<div class="hkform-group control-group hikashop_registration_email_line">
 		<label id="emailmsg" for="register_email" class="<?php echo $labelcolumnclass;?> hkcontrol-label" title=""><?php echo JText::_('HIKA_EMAIL'); ?>*</label>
 		<div class="<?php echo $inputcolumnclass;?>">
-			<input<?php if($this->config->get('show_email_confirmation_field',0)){echo ' autocomplete="off"';} ?> type="text" name="data[register][email]" id="register_email" value="<?php echo $this->escape($this->mainUser->get( 'email' ));?>" class="hkform-control validate-email" maxlength="100" size="30" />
+			<input <?php if($this->config->get('show_email_confirmation_field',0)){echo ' autocomplete="off"';} ?> type="text" name="data[register][email]" id="register_email" value="<?php echo $this->escape($this->mainUser->get( 'email' ));?>" class="<?php echo HK_FORM_CONTROL_CLASS; ?> validate-email" maxlength="100" size="30" />
 		</div>
 	</div>
 <!-- EO EMAIL -->
@@ -48,7 +51,7 @@ if(!empty($this->options['registration_email_confirmation'])) {
 	<div class="hkform-group control-group hikashop_registration_email_confirm_line">
 		<label id="email_confirm_msg" for="register_email_confirm" class="<?php echo $labelcolumnclass;?> hkcontrol-label" title=""><?php echo JText::_('HIKA_EMAIL_CONFIRM'); ?>*</label>
 		<div class="<?php echo $inputcolumnclass;?>">
-			<input autocomplete="off" type="text" name="data[register][email_confirm]" id="register_email_confirm" value="<?php echo $this->escape($this->mainUser->get('email'));?>" class="hkform-control validate-email" maxlength="100" size="30" onchange="if(this.value!=document.getElementById('register_email').value){alert('<?php echo JText::_('THE_CONFIRMATION_EMAIL_DIFFERS_FROM_THE_EMAIL_YOUR_ENTERED',true); ?>'); this.value = '';}" />
+			<input autocomplete="off" type="text" name="data[register][email_confirm]" id="register_email_confirm" value="<?php echo $this->escape($this->mainUser->get('email'));?>" class="<?php echo HK_FORM_CONTROL_CLASS; ?> validate-email" maxlength="100" size="30" onchange="if(this.value!=document.getElementById('register_email').value){alert('<?php echo JText::_('THE_CONFIRMATION_EMAIL_DIFFERS_FROM_THE_EMAIL_YOUR_ENTERED',true); ?>'); this.value = '';}" />
 		</div>
 	</div>
 <?php
@@ -67,13 +70,73 @@ if(!empty($this->options['registration_registration']) || !empty($this->options[
 	<div class="hkform-group control-group hikashop_registration_password_line" id="hikashop_registration_password_line">
 		<label id="pwmsg" for="register_password" class="<?php echo $labelcolumnclass;?> hkcontrol-label" title=""><?php echo JText::_('HIKA_PASSWORD'); ?>*</label>
 		<div class="<?php echo $inputcolumnclass;?>">
-			<input autocomplete="off" type="password" name="data[register][password]" id="register_password" value="" class="hkform-control validate-password" size="30" >
+<?php
+	if(HIKASHOP_J40) {
+		$com_usersParams = \Joomla\CMS\Component\ComponentHelper::getParams('com_users');
+		$minLength    = (int) $com_usersParams->get('minimum_length', 12);
+		$minIntegers  = (int) $com_usersParams->get('minimum_integers', 0);
+		$minSymbols   = (int) $com_usersParams->get('minimum_symbols', 0);
+		$minUppercase = (int) $com_usersParams->get('minimum_uppercase', 0);
+		$minLowercase = (int) $com_usersParams->get('minimum_lowercase', 0);
+		$rules = $minLowercase > 0 || $minUppercase > 0 || $minSymbols > 0 || $minIntegers > 0 || $minLength > 0;
+		$layout = new JLayoutFile('joomla.form.field.password');
+		echo $layout->render(array(
+			'meter' => true,
+			'class' => 'validate-password',
+			'forcePassword' => true,
+			'lock' => false,
+			'rules' => $rules,
+			'hint' => '',
+			'readonly' => false,
+			'disabled' => false,
+			'required' => true,
+			'autofocus' => false,
+			'dataAttribute' => 'autocomplete="new-password"',
+			'name' => 'data[register][password]',
+			'id' => 'register_password',
+			'minLength' => $minLength,
+			'minIntegers' => $minIntegers,
+			'minSymbols' => $minSymbols,
+			'minUppercase' => $minUppercase,
+			'minLowercase' => $minLowercase,
+			'value' => '',
+		));
+	} else {
+?>
+			<input autocomplete="off" type="password" name="data[register][password]" id="register_password" value="" class="<?php echo HK_FORM_CONTROL_CLASS; ?> validate-password" size="30" >
+<?php 
+	}
+?>
 		</div>
 	</div>
 	<div class="hkform-group control-group hikashop_registration_password2_line" id="hikashop_registration_password2_line">
 		<label id="pw2msg" for="register_password2" class="<?php echo $labelcolumnclass;?> hkcontrol-label" title=""><?php echo JText::_('HIKA_VERIFY_PASSWORD'); ?>*</label>
 		<div class="<?php echo $inputcolumnclass;?>">
-			<input autocomplete="off" type="password" name="data[register][password2]" id="register_password2" value="" class="hkform-control validate-password" size="30" >
+<?php
+	if(HIKASHOP_J40) {
+		$layout = new JLayoutFile('joomla.form.field.password');
+		echo $layout->render(array(
+			'meter' => false,
+			'class' => 'validate-password',
+			'forcePassword' => true,
+			'lock' => false,
+			'rules' => false,
+			'hint' => '',
+			'readonly' => false,
+			'disabled' => false,
+			'required' => true,
+			'autofocus' => false,
+			'dataAttribute' => 'autocomplete="new-password"',
+			'name' => 'data[register][password2]',
+			'id' => 'register_password2',
+			'value' => '',
+		));
+	} else {
+?>
+			<input autocomplete="off" type="password" name="data[register][password2]" id="register_password2" value="" class="<?php echo HK_FORM_CONTROL_CLASS; ?> validate-password" size="30" >
+<?php 
+	}
+?>
 		</div>
 	</div>
 <?php
@@ -97,7 +160,7 @@ if(!empty($this->extraFields[$type])) {
 			@$this->$type->$fieldName,
 			'data['.$type.']['.$fieldName.']',
 			false,
-			' class="hkform-control" '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\''.$type . '_' . $this->step . '_' . $this->module_position.'\',0,\'hikashop_\');"',
+			' class="'.HK_FORM_CONTROL_CLASS.'" '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\''.$type . '_' . $this->step . '_' . $this->module_position.'\',0,\'hikashop_\');"',
 			false,
 			$this->extraFields[$type],
 			@$this->$type,
@@ -194,7 +257,7 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 				@$this->$type->$fieldName,
 				'data['.$type.']['.$fieldName.']',
 				false,
-				'class="hkform-control" '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\''.$type . '_' . $this->step . '_' . $this->module_position.'\',0,\'hikashop_\');"',
+				'class="'.HK_FORM_CONTROL_CLASS.'" '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\''.$type . '_' . $this->step . '_' . $this->module_position.'\',0,\'hikashop_\');"',
 				false,
 				$this->extraFields[$type],
 				@$this->$type,
@@ -260,7 +323,7 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 				@$this->$type->$fieldName,
 				'data['.$type.']['.$fieldName.']',
 				false,
-				'class="hkform-control" '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'address_shipping_' . $this->step . '_' . $this->module_position.'\',0,\'hikashop_\');"',
+				'class="'.HK_FORM_CONTROL_CLASS.'" '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'address_shipping_' . $this->step . '_' . $this->module_position.'\',0,\'hikashop_\');"',
 				false,
 				$this->extraFields[$type],
 				@$this->$type,
@@ -403,7 +466,7 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 window.hikashop.ready(function() {
 	if(!document.formvalidator)
 		return;
-	var container = document.getElementById('hikashop_checkout_login_<?php echo $this->step; ?>_<?php echo $this->module_position; ?>');
+	var container = document.getElementById('hikashop_checkout_form');
 	if(container)
 		document.formvalidator.attachToForm(container);
 });

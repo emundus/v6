@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -21,6 +21,9 @@ defined('_JEXEC') or die('Restricted access');
 	$colspan = 11;
 	$backend_listing_vote = hikaInput::get()->getVar('backend_listing_vote', 'both', 'default', 'string', 0);
 ?>
+<?php 
+	echo $this->loadHkLayout('columns', array()); 
+?>
 	<table id="hikashop_vote_listing" class="adminlist table table-striped table-hover" cellpadding="1">
 		<thead>
 			<tr>
@@ -33,7 +36,7 @@ defined('_JEXEC') or die('Restricted access');
 				<th class="title titlebox">
 					<?php echo JText::_('HIKA_EDIT'); ?>
 				</th>
-				<th class="title_title_product_id">
+				<th class="title title_product_id">
 					<?php echo JHTML::_('grid.sort', JText::_('HIKASHOP_ITEM'), 'a.vote_ref_id', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value ); ?>
 				</th>
 				<?php
@@ -42,35 +45,35 @@ defined('_JEXEC') or die('Restricted access');
 						$manyTypes = 1;
 					}
 					if($manyTypes){ ?>
-				<th class="title_title_type">
+				<th class="title title_type">
 					<?php  echo JHTML::_('grid.sort', JText::_('HIKA_TYPE'), 'a.vote_type', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value ); ?>
 				</th>
 				<?php } ?>
 				<?php if($this->pageInfo->enabled == 2 || $this->pageInfo->enabled == 3){?>
-				<th class="title_title_comment">
+				<th class="title title_comment">
 					<?php echo JHTML::_('grid.sort', JText::_('COMMENT'), 'a.vote_comment', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value ); ?>
 				</th>
 				<?php
 					}
 					if($this->pageInfo->enabled == 1 || $this->pageInfo->enabled == 3){
 				?>
-				<th class="title_title_vote">
+				<th class="title title_vote">
 					<?php echo JHTML::_('grid.sort', JText::_('RATING'), 'a.vote_rating', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value ); ?>
 				</th>
 				<?php } ?>
-				<th class="title_title_username">
+				<th class="title title_username">
 					<?php echo JHTML::_('grid.sort', JText::_('HIKA_USERNAME'), 'a.vote_pseudo', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value ); ?>
 				</th>
 <?php
 if($this->config->get('vote_ip', 1)) {
 	$colspan++;
 ?>
-				<th class="title_title_ip">
+				<th class="title title_ip">
 					<?php echo JHTML::_('grid.sort', JText::_('HIKA_IP'), 'a.vote_ip', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value ); ?>
 				</th>
 <?php
 } ?>
-				<th class="title_title_email">
+				<th class="title title_email">
 					<?php echo JHTML::_('grid.sort', JText::_('HIKA_EMAIL'), 'a.vote_email', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value ); ?>
 				</th>
 				<th class="title titledate">

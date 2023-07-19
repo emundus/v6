@@ -16,6 +16,10 @@
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
+require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+use libphonenumber\PhoneNumberUtil;
+use libphonenumber\PhoneNumberFormat;
+
 /**
  * Content Component Query Helper
  *
@@ -231,12 +235,56 @@ class EmundusHelperFabrik {
         if($init_plugins){
 			if ($type == 'eval') {
 				$plugins = [
+					'curl_code' => [
+						1 => '$student_id=JRequest::getVar(\'student_id\', null,\'get\');
+$student = isset($student_id) ? JUser::getInstance($student_id) : JUser::getInstance(\'{jos_emundus_evaluations___student_id}\');
+echo \'<h2>\'.$student->name.\'</h2>\';
+JHtml::script(JURI::base() . \'media/com_emundus/lib/jquery-1.10.2.min.js\');
+JHtml::script(JURI::base() . \'media/jui/js/chosen.jquery.min.js\' );
+JHtml::styleSheet(JURI::base() . \'media/jui/css/chosen.css\');
+JHTML::stylesheet(JURI::Base().\'media/com_fabrik/css/fabrik.css\');',
+						2 => 'echo \'<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>\';
+echo \'<script src="https://code.jquery.com/jquery-3.3.1.slim.js" integrity="sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=" crossorigin="anonymous"></script>\';
+echo \'<script>window.parent.ScrollToTop();</script>\';
+echo \'<style>.em-swal-title{
+  margin: 8px 8px 32px 8px !important;
+  font-family: "Maven Pro", sans-serif;
+}
+</style>\';
+die("<script>
+      $(document).ready(function () {
+          Swal.fire({
+  	         position: \'top\',
+             type: \'success\',
+             title: \'".JText::_(\'COM_EMUNDUS_EVALUATION_SAVED\')."\',
+          	 showConfirmButton: false,
+             timer: 2000,
+             customClass: {
+                   title: \'em-swal-title\'
+             },
+             onClose: () => { history.go(-1);}
+      	})
+	});
+</script>");'
+					],
+					'only_process_curl' => [
+						1 => 'onLoad',
+						2 => 'onAfterProcess'
+					],
+					'form_php_file' => [
+						1 => '-1',
+						2 => '-1'
+					],
+					'form_php_require_once' => [
+						1 => '0',
+						2 => '0'
+					],
 					'process-jplugins' => '2',
-					'plugins' => array('emundusisevaluatedbyme'),
-					'plugin_state' => array('1'),
-					'plugin_locations' => array('both'),
-					'plugin_events' => array('both'),
-					'plugin_description' => array('Is evaluated by me'),
+					'plugins' => array('emundusisevaluatedbyme', 'php', 'php'),
+					'plugin_state' => array('1', '1', '1'),
+					'plugin_locations' => array('both', 'both', 'both'),
+					'plugin_events' => array('both', 'both', 'both'),
+					'plugin_description' => array('Is evaluated by me', 'css', 'sweet'),
 				];
 			} else {
 				$plugins = [
@@ -777,49 +825,53 @@ class EmundusHelperFabrik {
     }
 
     static function addJsAction($eid,$action) {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $added = false;
 
-        try {
-            $query->select('count(id)')
-                ->from($db->quoteName('#__fabrik_jsactions'))
-                ->where($db->quoteName('element_id') . ' = ' . $db->quote($eid));
-            $db->setQuery($query);
-            $assignations = $db->loadResult();
+		if (!empty($eid) && !empty($action)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
 
-            if (empty($assignations)) {
-                $js = null;
-                $params = array(
-                    'js_e_event' => '',
-                    'js_e_trigger' => '',
-                    'js_e_condition' => '',
-                    'js_e_value' => '',
-                    'js_published' => '1',
-                );
-                if($action == 'nom'){
-                    $js = "this.set(this.get('value').toUpperCase());";
-                }
-                if($action == 'prenom'){
-                    $js = "const mySentence = this.get(&#039;value&#039;);const words = mySentence.split(&quot; &quot;);for (let i = 0; i &lt; words.length; i++) {words[i] = words[i][0].toUpperCase() + words[i].substr(1);};this.set(words.join(&quot; &quot;));";
-                }
+			try {
+				$query->select('count(id)')
+					->from($db->quoteName('#__fabrik_jsactions'))
+					->where($db->quoteName('element_id') . ' = ' . $db->quote($eid));
+				$db->setQuery($query);
+				$assignations = $db->loadResult();
 
-                if(!empty($js) && !empty($params)) {
-                    $query->clear()
-                        ->insert($db->quoteName('#__fabrik_jsactions'))
-                        ->set($db->quoteName('element_id') . ' = ' . $db->quote($eid))
-                        ->set($db->quoteName('action') . ' = ' . $db->quote('keyup'))
-                        ->set($db->quoteName('code') . ' = ' . $db->quote($js))
-                        ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
-                    $db->setQuery($query);
-                    return $db->execute();
-                }
-            }
+				if (empty($assignations)) {
+					$js = null;
+					$params = array(
+						'js_e_event' => '',
+						'js_e_trigger' => '',
+						'js_e_condition' => '',
+						'js_e_value' => '',
+						'js_published' => '1',
+					);
+					if($action == 'nom'){
+						$js = "this.set(this.get('value').toUpperCase());";
+					}
+					if($action == 'prenom'){
+						$js = "const mySentence = this.get(&#039;value&#039;);const words = mySentence.split(&quot; &quot;);for (let i = 0; i &lt; words.length; i++) {words[i] = words[i][0].toUpperCase() + words[i].substr(1);};this.set(words.join(&quot; &quot;));";
+					}
 
-            return true;
-        } catch (Exception $e) {
-            JLog::add('component/com_emundus/helpers/fabrik | Cannot create JS Action for element ' . $eid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
-        }
+					if(!empty($js) && !empty($params)) {
+						$query->clear()
+							->insert($db->quoteName('#__fabrik_jsactions'))
+							->set($db->quoteName('element_id') . ' = ' . $db->quote($eid))
+							->set($db->quoteName('action') . ' = ' . $db->quote('keyup'))
+							->set($db->quoteName('code') . ' = ' . $db->quote($js))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
+						$db->setQuery($query);
+						$added = $db->execute();
+					}
+				}
+			} catch (Exception $e) {
+				JLog::add('component/com_emundus/helpers/fabrik | Cannot create JS Action for element ' . $eid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+				$added = false;
+			}
+		}
+
+		return $added;
     }
 
     static function getTableFromFabrik($id, $object = 'list') {
@@ -842,5 +894,90 @@ class EmundusHelperFabrik {
             JLog::add('component/com_emundus/helpers/fabrik | Cannot get table from fabrik with type '. $object .' ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
+    }
+
+	static function createFilterList(&$filters,$eid,$value,$condition = '=',$join = 'AND',$hidden = 0,$raw = 0)
+	{
+		if(!in_array($eid,$filters['elementid'])){
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('fl.db_table_name,fe.name')
+				->from($db->quoteName('#__fabrik_elements','fe'))
+				->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
+				->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ffg.form_id'))
+				->where($db->quoteName('id') . ' = ' . $db->quote($eid));
+			$db->setQuery($query);
+			$element_details = $db->loadObject();
+
+			$filters['elementid'][] = $eid;
+			$filters['value'][] = $value;
+			$filters['condition'][] = $condition;
+			$filters['join'][] = $join;
+			$filters['no-filter-setup'][] = 0;
+			$filters['hidden'][] = $hidden;
+			$filters['key'][] = '`'.$element_details->db_table_name.'`.`'.$element_details->name.'`';
+			$filters['key2'][] = '';
+			$filters['search_type'][] = 'querystring';
+			$filters['match'][] = '1';
+			$filters['eval'][] = 3;
+			$filters['required'][] = '0';
+			$filters['access'][] = '1';
+			$filters['grouped_to_previous'][] = 0;
+			$filters['raw'][] = 0;
+			$filters['orig_condition'][] = '=';
+			$filters['sqlCond'][] = ' `'.$element_details->db_table_name.'`.`'.$element_details->name.'` = '.$value.' ';
+			$filters['origvalue'][] = $value;
+			$filters['filter'][] = $value;
+		}
+
+		return $filters;
+	}
+
+    /**
+     *
+     * @param $phone_number string The phone number to format
+     * @param $format int The format to use
+     * 0 => E164
+     * 1 => INTERNATIONAL
+     * 2 => NATIONAL
+     * 3 => RFC3966
+     * @return string The formatted phone number, if the phone number is not valid, empty string is returned
+     */
+    static function getFormattedPhoneNumberValue($phone_number, $format = PhoneNumberFormat::E164)
+    {
+        $formattedValue = '';
+
+        if (!empty($phone_number)) {
+            $phone_number = trim($phone_number);
+            $phone_number = str_replace(' ', '', $phone_number);
+
+            $iso2Test = '';
+            $phone_number_util = PhoneNumberUtil::getInstance();
+
+            if (preg_match('/^\w{2}/', $phone_number))
+            {
+                $iso2Test = substr($phone_number, 0, 2);
+                $phone_number = substr($phone_number, 2);
+            }
+
+            if (preg_match('/^\+\d+$/', $phone_number))
+            {
+                try
+                {
+                    $phone_number = $phone_number_util->parse($phone_number);
+                    $iso2 = $phone_number_util->getRegionCodeForNumber($phone_number);
+
+                    if ($iso2 || $iso2 === $iso2Test)
+                    {
+                        $formattedValue = $iso2 . $phone_number_util->format($phone_number, $format);
+                    }
+                } catch (Exception $e) {
+                    JLog::add('EmundusHelperFabrik::getFormattedPhoneNumberValue Phone number lib returned an error for given phone number ' . $phone_number . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                }
+            }
+        }
+
+        return $formattedValue;
     }
 }

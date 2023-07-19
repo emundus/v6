@@ -2527,6 +2527,7 @@ INSERT IGNORE INTO `#__hikashop_zone_link` (`zone_parent_namekey`, `zone_child_n
 ('country_Panama_164', 'state_Ember__4577'),
 ('country_Panama_164', 'state_Kuna_Yala_2834'),
 ('country_Panama_164', 'state_ng_be_bugl__4578'),
+('country_Panama_164', 'state_Naso_Tjr_Di_4591'),
 ('country_Papua_New_Guinea_165', 'state_Chimbu_2835'),
 ('country_Papua_New_Guinea_165', 'state_Central_2836'),
 ('country_Papua_New_Guinea_165', 'state_East_New_Britain_2837'),

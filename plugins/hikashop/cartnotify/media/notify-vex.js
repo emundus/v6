@@ -5,16 +5,17 @@ window.Oby.registerAjax(["cart.updated","wishlist.updated"],function(params){
 		img_url = p.img_url,
 		title = cart ? p.title : p.wishlist_title,
 		text = cart ? p.text : p.wishlist_text,
-		class_name = "info";
+		class_name = "info", success = true;
 	if(params.notify === false)
 		return;
 	if(params.resp.ret == 0) {
 		class_name = "warning";
 		title = cart ? p.err_title : p.err_wishlist_title;
 		text = cart ? p.err_text : p.err_wishlist_text;
-
+		success = false;
 		if(!cart && params.resp.err_wishlist_guest && p.err_wishlist_guest) {
 			p.redirect_url = p.err_wishlist_guest;
+			success = true;
 		}
 	}else if(params.product_id == 'list' && !params.resp.product_name){
 		title = cart ? p.list_title : p.list_wishlist_title;
@@ -46,7 +47,7 @@ window.Oby.registerAjax(["cart.updated","wishlist.updated"],function(params){
 	}
 	vex.dialog.alert(vex_params);
 
-	if(p.redirect_url) {
+	if(success && p.redirect_url) {
 		if(!p.redirect_delay)
 			p.redirect_delay = 4000;
 		setTimeout(function(){ window.location = p.redirect_url; }, p.redirect_delay);

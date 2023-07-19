@@ -73,6 +73,51 @@ if (!empty($this->items)) :
 <?php
 endif;
 ?>
+<div class="modal fade" id="em-modal-actions" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-actions" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <table style="width: 95%">
+                    <tr>
+                        <td>
+                            <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('COM_EMUNDUS_FORM_TITLE');?></h4>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <table>
+                    <tr>
+                        <td style="text-align: right;" id="can-val">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('COM_EMUNDUS_ACTIONS_CANCEL')?></button>
+                            <button style="margin-left:5px;" type="button" class="btn btn-success"><?php echo JText::_('COM_EMUNDUS_OK');?></button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="em-modal-form" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-actions" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('COM_EMUNDUS_LOADING');?></h4>
+            </div>
+            <div class="modal-body">
+                <img alt="Loading..." src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('COM_EMUNDUS_ACTIONS_CANCEL')?></button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     //$('#countCheckedCheckbox').html('');
 

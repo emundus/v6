@@ -33,62 +33,66 @@ $.ajaxQ = (function(){
 })();
 
 function search() {
-    addLoader();
-    var quick = [];
+    const controller = $('#view').val();
 
-    $('#quick div[data-value]').each(function () {
-        quick.push($(this).attr('data-value')) ;
-    });
+    if (controller !== null && typeof controller !== 'undefined') {
+        addLoader();
+        var quick = [];
 
-    var inputs = [{
-        name: 's',
-        value: quick,
-        adv_fil: false
-    }];
-
-    $('[id^=em-adv-fil-]').each(function(){
-        inputs.push({
-            name: $(this).attr('name'),
-            value: $(this).val(),
-            adv_fil: true,
-            select: this.nodeName.toLowerCase() === 'select'
+        $('#quick div[data-value]').each(function () {
+            quick.push($(this).attr('data-value')) ;
         });
-    });
 
-    $('.em_filters_filedset .testSelAll').each(function () {
-        inputs.push({
-            name: $(this).attr('name'),
-            value: $(this).val(),
+        var inputs = [{
+            name: 's',
+            value: quick,
             adv_fil: false
-        });
-    });
+        }];
 
-    $('.em_filters_filedset .search_test').each(function () {
-        inputs.push({
-            name: $(this).attr('name'),
-            value: $(this).val(),
-            adv_fil: false
+        $('[id^=em-adv-fil-]').each(function(){
+            inputs.push({
+                name: $(this).attr('name'),
+                value: $(this).val(),
+                adv_fil: true,
+                select: this.nodeName.toLowerCase() === 'select'
+            });
         });
-    });
 
-    $.ajax({
-        type: 'POST',
-        dataType: 'json',
-        url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=setfilters',
-        data: ({
-            val: JSON.stringify(($.extend({}, inputs))),
-            multi: false,
-            elements: true
-        }),
-        success: function(result) {
-            if (result.status) {
-                refreshFilter($('#view').val());
+        $('.em_filters_filedset .testSelAll').each(function () {
+            inputs.push({
+                name: $(this).attr('name'),
+                value: $(this).val(),
+                adv_fil: false
+            });
+        });
+
+        $('.em_filters_filedset .search_test').each(function () {
+            inputs.push({
+                name: $(this).attr('name'),
+                value: $(this).val(),
+                adv_fil: false
+            });
+        });
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: 'index.php?option=com_emundus&controller='+controller+'&task=setfilters',
+            data: ({
+                val: JSON.stringify(($.extend({}, inputs))),
+                multi: false,
+                elements: true
+            }),
+            success: function(result) {
+                if (result.status) {
+                    refreshFilter(controller);
+                }
+            },
+            error: function(jqXHR) {
+                console.log(jqXHR.responseText);
             }
-        },
-        error: function(jqXHR) {
-            console.log(jqXHR.responseText);
-        }
-    });
+        });
+    }
 }
 
 function clearchosen(target){
@@ -548,7 +552,9 @@ function getUserCheck() {
     } else {
         var i = 0;
 
-        if($('.em-check:checked').length == 0) {
+        let checkedEm = $('.em-check:checked');
+
+        if(checkedEm.length == 0) {
             var hash = $(location).attr('hash');
             var fnum = hash.replace('#', '');
             fnum = fnum.replace('|open', '');
@@ -561,7 +567,7 @@ function getUserCheck() {
         }
 
         var myJSONObject = '{';
-        $('.em-check:checked').each(function(){
+        checkedEm.each(function(){
             i = i + 1;
             myJSONObject += '"'+i+'"'+':"'+$(this).attr('id').split('_')[0]+'",';
         });
@@ -1450,8 +1456,6 @@ async function setProfiles(json) {
                     checkElement('#felts'+prf.id).then((selector) => {
                         $('#' + selector.id).show();        // show felts
                         $('#loadingimg-campaign').remove();
-                        $('#showelements_' + prf.id).attr('class', 'btn-xs btn btn-elements-success');
-                        $('#showelements_' + prf.id + '> span').attr('class', 'glyphicon glyphicon-minus');
 
                         // uncheck all checkbox of each felts
                         if($('#form-exists input:checked').length > 0) {
@@ -1493,13 +1497,6 @@ async function setDocuments(json) {
         /// show #aelts
         $('#' + selector.id).show();
 
-        /// set button css (+ vs -)
-
-        $('#aelts').find('.btn-info').attr('class', 'btn-xs btn btn-elements-success');
-
-        ///btn-xs btn btn-elements-success
-        $('#aelts').find('.glyphicon-plus').attr('class', 'glyphicon glyphicon-minus');
-
         /// check to selected elements
         attachments.forEach((doc) => {
             $('[id="' + doc + '"]').prop('checked', true);
@@ -1508,12 +1505,16 @@ async function setDocuments(json) {
 }
 
 const checkElement = async selector => {
-    while ( document.querySelector(selector) === null) {
+    while (document.querySelector(selector) === null && document.querySelector('.em-export')) {
         await new Promise( resolve =>  requestAnimationFrame(resolve) )
     }
+
+    if (!document.querySelector('.em-export')) {
+        return false;
+    }
+
     return document.querySelector(selector);
 };
-
 
 $(document).ready(function() {
     $('#check').removeClass('em-check-all-all');
@@ -1656,9 +1657,7 @@ $(document).ready(function() {
              * 28 : Update publication of file (publish, archive or trash)
              * 31 : Trombinoscope (Letter for a group of files)
              * 35 : Fast PDF export
-             * [FAST EMAILS]
-             * 15 : Send email to group
-             * 16 : Send email to evaluators
+             * 18 : Send email to experts
              */
 
             // IFRAME
@@ -2592,6 +2591,9 @@ $(document).ready(function() {
                                 '<label for="em-ex-overall" class="em-mb-0-important">'+Joomla.JText._('COM_EMUNDUS_EVALUATIONS_OVERALL')+'</label></div>' +
                                 '</div></div></div>')
 
+                            // TODO: fix upper-case options
+                            // '<div class="em-flex-row em-mb-4"><input class="em-ex-check0" type="checkbox" value="upper-case" name="upper-case" id="upper-case" style="max-height: 20px;"/>' +
+                            // '<label for="upper-case" class="em-mb-0-important">'+Joomla.JText._('COM_EMUNDUS_TO_UPPER_CASE')+'</label></div>' +
                             $('#data').append( '<div id="methode" class="em-grid-2 em-mt-16">'+
                                 '<div><p>' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_OPTION')+ '</p>' +
                                 '<div id="exp" class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16">'+
@@ -2607,8 +2609,6 @@ $(document).ready(function() {
                                 '<label for="form-title" class="em-mb-0-important">'+Joomla.JText._('COM_EMUNDUS_FORM_TITLE')+'</label></div>' +
                                 '<div class="em-flex-row em-mb-4"><input class="em-ex-check0" type="checkbox" value="form-group" name="form-group" id="form-group" style="max-height: 20px;"/>' +
                                 '<label for="form-group" class="em-mb-0-important">'+Joomla.JText._('COM_EMUNDUS_FORM_GROUP')+'</label></div>' +
-                                '<div class="em-flex-row em-mb-4"><input class="em-ex-check0" type="checkbox" value="upper-case" name="upper-case" id="upper-case" style="max-height: 20px;"/>' +
-                                '<label for="upper-case" class="em-mb-0-important">'+Joomla.JText._('COM_EMUNDUS_TO_UPPER_CASE')+'</label></div>' +
                                 '</div>'+
                                 '</div>'+
                                 '</div></div>' );
@@ -2928,19 +2928,25 @@ $(document).ready(function() {
                                 dataType:'json',
                                 success: function (result) {
                                     if (result.status) {
+                                        result.filter.forEach(filter => {
+                                            if (!isNaN(parseInt(filter.id))) {
+                                                $('#filt_save').append('<option value="' + filter.id + '">' + filter.name + '</option>');
+                                            }
+                                        });
 
-                                        for (var d in result.filter) {
-                                            if (isNaN(parseInt(d)))
-                                                break;
-                                            $('#filt_save').append('<option value="' + result.filter[d].id + '">' + result.filter[d].name + '</option>');
-                                            $('#filt_save').chosen({width: "100%"});
+                                        $('#filt_save').chosen({width: "100%"});
+                                    } else {
+                                        const errorFilterElement = document.getElementById('err-filter');
+
+                                        if (errorFilterElement) {
+                                            errorFilterElement.style.display = 'block';
+
+                                            setTimeout(function() {
+                                                errorFilterElement.style.display = 'none';
+                                            }, 2000);
                                         }
 
-                                    } else {
-                                        $('#err-filter').show();
-                                        setTimeout(function() {
-                                            $('#err-filter').hide();
-                                        }, 600);
+                                        console.warn('Error: failed to get export excel filters of current user');
                                     }
                                 },
                                 error: function(jqXHR) {
@@ -3433,13 +3439,13 @@ $(document).ready(function() {
             // Export PDF;
             case 8 :
                 title = 'COM_EMUNDUS_EXPORTS_CREATE_PDF';
-                html = '<div id="data" class="em-mt-32"></div>';
                 swal_container_class = 'em-export'
                 swal_popup_class = 'em-w-100 em-h-100'
                 swal_actions_class = 'em-actions-fixed'
                 swal_confirm_button = 'COM_EMUNDUS_EXPORTS_EXPORT';
 
-                html += '<div>' +
+                html = '<div id="data" class="em-mt-32"></div>' +
+                    '<div>' +
                     '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8"> ' +
                     '<select class="modal-chzn-select" id="filt_save_pdf" name="filt_save_pdf" >'+
                     '<option value="0">'+Joomla.JText._('COM_EMUNDUS_FILTERS_PLEASE_SELECT_FILTER')+'</option>' +
@@ -3577,23 +3583,27 @@ $(document).ready(function() {
                                 url: 'index.php?option=com_emundus&controller=files&task=getAllExportPdfFilter',
                                 dataType: 'json',
                                 success: function(result) {
-                                    removeLoader();
                                     if(result.status) {
-                                        if(result.filter !== null || result.filter !== undefined) {
+                                        if(result.filter !== null && typeof result.filter !== 'undefined') {
                                             var models = result.filter;
+                                            const filterSavePdf = $('#filt_save_pdf');
+
                                             models.forEach(model => {
-                                                //add some logical conditions here
-                                                $('#filt_save_pdf').append('<option value="' + model.id + '">' + model.name + '</option>');
-                                                $('#filt_save_pdf').trigger("chosen:updated");
+                                                filterSavePdf.append('<option value="' + model.id + '">' + model.name + '</option>');
                                             });
+
+                                            filterSavePdf.chosen('destroy').chosen({width: "100%"});
+                                            filterSavePdf.trigger('chosen:updated');
+                                            filterSavePdf.trigger('change');
                                         }
                                     }
+
+                                    removeLoader();
                                 }, error: function(jqXHR) {
                                     console.log(jqXHR.responseText);
+                                    removeLoader();
                                 }
-                            })
-
-
+                            });
 
                             $('#em-export-prg').append(result.html);
                             $('#em-export-prg').chosen('destroy').chosen({width: "100%"});
@@ -3732,13 +3742,10 @@ $(document).ready(function() {
                                                                 success: function (returnData) {
                                                                     // build profile(s)
                                                                     var profiles = returnData.fabrik_data.profiles;
-
-                                                                    profiles.forEach(prf => {
-                                                                        checkElement('#felts'+prf.id).then((selector) => {
+                                                                    profiles.forEach((profile) => {
+                                                                        checkElement('#felts'+profile.id).then((selector) => {
                                                                             $('#' + selector.id).show();        // show felts
-                                                                            $('#loadingimg-campaign').remove();
-                                                                            $('#showelements_' + prf.id).attr('class', 'btn-xs btn btn-elements-success');
-                                                                            $('#showelements_' + prf.id + '> span').attr('class', 'glyphicon glyphicon-minus');
+                                                                           removeLoader();
 
                                                                             // uncheck all checkbox of each felts
                                                                             if($('#form-exists input:checked').length > 0) {
@@ -3774,27 +3781,37 @@ $(document).ready(function() {
                                                             /// show #aelts
                                                             $('#' + selector.id).show();
 
-                                                            let aelts = $('#aelts');
-                                                            /// set button css (+ vs -)
-                                                            aelts.find('.btn-info').attr('class', 'btn-xs btn btn-elements-success');
-
-                                                            ///btn-xs btn btn-elements-success
-                                                            aelts.find('.glyphicon-plus').attr('class', 'glyphicon glyphicon-minus');
-
                                                             /// check to selected elements
-                                                            attachments.forEach((doc) => {
-                                                                $('[id="' + doc + '"]').prop('checked', true);
-                                                            })
-                                                        })
+                                                            attachments.forEach((attachmentToCheck) => {
+                                                                $('[id="' + attachmentToCheck + '"]').prop('checked', true);
+                                                            });
+                                                        });
 
+                                                        if (json.pdffilter.assessment === '1') {
+                                                            document.getElementById('em-ex-assessment').checked = true;
+                                                        } else {
+                                                            document.getElementById('em-ex-assessment').checked = false;
+                                                        }
+
+                                                        if (json.pdffilter.decision === '1') {
+                                                            document.getElementById('em-ex-decision').checked = true;
+                                                        } else {
+                                                            document.getElementById('em-ex-assessment').checked = false;
+                                                        }
+
+                                                        if (json.pdffilter.admission === '1') {
+                                                            document.getElementById('em-ex-admission').checked = true;
+                                                        } else {
+                                                            document.getElementById('em-ex-assessment').checked = false;
+                                                        }
                                                     } else {
                                                         $('#loadingimg-campaign').remove();
                                                         $('#filt_save_pdf_chosen').append('<div id="model-err-pdf" style="color: red">' + Joomla.JText._('COM_EMUNDUS_MODEL_ERR') + '</div>');
                                                     }
                                                 }
-
                                                 /// case 2 :: many programs
-                                                if($("#em-export-prg option").length > 2) {
+                                                else if($("#em-export-prg option").length > 2)
+                                                {
                                                     if ($("#em-export-prg option[value='" + progCode + "']").length > 0 === true) {
                                                         setModel(json);      /// if prog is found --> keep going
                                                     } else {
@@ -4690,6 +4707,30 @@ $(document).ready(function() {
                 })
 
                 break;
+            case 18:
+                fnums = getUserCheckArray();
+
+                swal_popup_class = 'em-w-auto';
+                title = 'COM_EMUNDUS_ACCESS_MAIL_EXPERT';
+                html = '<div id="data" class="em-mt-32 em-w-100"><div id="email-loader" class="em-loader" style="margin: auto;"></div></div>';
+
+                $.ajax({
+                    type:'POST',
+                    url:url,
+                    data: {
+                        fnums: fnums
+                    },
+                    success: function(result) {
+                        $('#data').append(result);
+                        document.querySelector('.em-swal-confirm-button').style.opacity = '0';
+                        $('#email-loader').remove();
+                        $('#data').removeClass('em-loader');
+                    },
+                    error: function (jqXHR) {
+                        console.log(jqXHR.responseText);
+                    }
+                });
+                break;
 
             default:
                 break;
@@ -5248,7 +5289,7 @@ $(document).ready(function() {
         }
     });
 
-    $(document).on('keyup', 'input:text', function(e) {
+    $(document).on('keyup', '#em_filters input:text, #filters input:text', function(e) {
         if ($(this).closest('.modal').length === 0 && $(this).closest('#em-message').length === 0 && e.keyCode == 13 ) {
             search();
         }
@@ -5440,7 +5481,7 @@ $(document).ready(function() {
         tinymce.remove();
         var fnum = $(this).attr('id').split('candidat_')[1];
 
-        $('#em-modal-actions').modal({backdrop:true,keyboard:true},'toggle');
+        $('#em-modal-actions').modal({backdrop:false,keyboard:true},'toggle');
         $('.modal-title').empty();
         $('.modal-title').append($(this).children('a').text());
         $('.modal-body').empty();
@@ -6347,6 +6388,7 @@ async function sendMailQueue(fnums) {
     const steps = [1, 2];
     let currentStep;
     let body = '';
+    let data = {};
 
     for (currentStep = 0; currentStep < 2;) {
         let title = '';
@@ -6370,6 +6412,7 @@ async function sendMailQueue(fnums) {
                     data: {
                         fnums: fnums,
                         body: body,
+                        data: data
                     },
                     success: function(result) {
                         $('#data').append(result);
@@ -6394,7 +6437,7 @@ async function sendMailQueue(fnums) {
                 body = $('#mail_body').val();
 
                 // Get all form elements.
-                var data = {
+                data = {
                     recipients      : $('#fnums').val(),
                     template        : $('#message_template :selected').val(),
                     mail_from_name  : $('#mail_from_name').text(),

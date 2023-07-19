@@ -648,7 +648,7 @@ class EmundusModelProgramme extends JModelList {
 
                     // Link group with programme
                     $columns = array('parent_id', 'course');
-                    $values = array($group_id, $db->quote($programme->code));
+                    $values = array($db->quote($group_id), $db->quote($programme->code));
 
                     $query->clear()
                         ->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))

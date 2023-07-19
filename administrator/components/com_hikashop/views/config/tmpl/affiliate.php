@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -52,6 +52,20 @@ $mainCurr = $this->currencyClass->getCurrencies($this->main_currency_id, $curr);
 		<td class="hk_tbl_key"<?php echo $this->docTip('partner_flat_fee');?>><?php echo JText::_('PARTNER_ORDER_FLAT_FEE'); ?></td>
 		<td>
 			<input class="inputbox" size="5" type="text" name="config[partner_flat_fee]" value="<?php echo $this->config->get('partner_flat_fee'); ?>" /> <?php echo $mainCurr[$this->main_currency_id]->currency_symbol.' '.$mainCurr[$this->main_currency_id]->currency_code;?>
+		</td>
+	</tr>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('provide_points_instead_of_fees');?>><?php echo JText::_('PROVIDE_POINTS_INSTEAD_OF_FEES'); ?></td>
+		<td>
+		<?php 
+		$plugin = hikashop_import('hikashop', 'userpoints');
+		$ids = array();
+		$plugin->listPlugins($plugin->name, $ids, false, false);
+		if(count($ids)) {
+			echo JHTML::_('hikaselect.booleanlist', "config[provide_points_instead_of_fees]" , '', $this->config->get('provide_points_instead_of_fees',0));
+		} else {
+			echo JText::_('FIRST_CONFIGURE_USER_POINTS_PLUGIN');
+		} ?>
 		</td>
 	</tr>
 	<tr>

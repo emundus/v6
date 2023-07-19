@@ -651,7 +651,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		}
 
 		$users = array_filter($users, function ($user) {
-		    return $user !== 'em-check-all';
+		    return $user !== 'em-check-all' && is_numeric($user);
 		});
 
         $users = $m_users->getNonApplicantId($users);
@@ -712,6 +712,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 			if ($e_user->id == $newuser['id']) {
 				$e_user->firstname = $newuser['firstname'];
 				$e_user->lastname = $newuser['lastname'];
+				$e_user->email = $newuser['email'];
 				JFactory::getSession()->set('emundusUser', $e_user);
 			}
 		} else {
@@ -796,8 +797,7 @@ class EmundusControllerUsers extends JControllerLegacy {
         $users = $user->getUsersById($id); // get user from uid
         foreach ($users as $selectUser) {
 
-            //$passwd = JUserHelper::genRandomPassword(8); //generate a random password
-            $passwd = $user->randomPassword(8); //generate a random password
+			$passwd = $user->randomPassword(8); //generate a random password
             $passwd_md5 = JUserHelper::hashPassword($passwd); // hash the random password
 
             $m_users = new EmundusModelUsers();
@@ -812,9 +812,7 @@ class EmundusControllerUsers extends JControllerLegacy {
                 exit;
             } else {
                 $c_messages = new EmundusControllerMessages();
-                $lbl = 'regenerate_password';
-
-                $c_messages->sendEmailNoFnum($selectUser->email, $lbl, $post, $id);
+                $c_messages->sendEmailNoFnum($selectUser->email, 'regenerate_password', $post, $id, [], null, false);
 
                 if ($c_messages != true) {
                     $msg = JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT');
@@ -1415,7 +1413,7 @@ class EmundusControllerUsers extends JControllerLegacy {
     {
         $currentUser = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($currentUser->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($currentUser->id)) {
             return false;
         }
 

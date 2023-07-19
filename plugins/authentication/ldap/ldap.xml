@@ -145,11 +145,29 @@
 				/>
 
 				<field
-					name="ldap_fullname"
+						name="ldap_fullname"
+						type="text"
+						label="PLG_LDAP_FIELD_FULLNAME_LABEL"
+						description="PLG_LDAP_FIELD_FULLNAME_DESC"
+						default="lastName"
+						size="20"
+				/>
+
+				<field
+					name="ldap_firstname"
 					type="text"
-					label="PLG_LDAP_FIELD_FULLNAME_LABEL"
-					description="PLG_LDAP_FIELD_FULLNAME_DESC"
-					default="fullName"
+					label="PLG_LDAP_FIELD_FIRSTNAME_LABEL"
+					description="PLG_LDAP_FIELD_FIRSTNAME_DESC"
+					default="firstName"
+					size="20"
+				/>
+
+				<field
+					name="ldap_lastname"
+					type="text"
+					label="PLG_LDAP_FIELD_LASTNAME_LABEL"
+					description="PLG_LDAP_FIELD_LASTNAME_DESC"
+					default="lastName"
 					size="20"
 				/>
 

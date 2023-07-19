@@ -223,8 +223,7 @@ class EmundusModelFiles extends JModelLegacy
                     $query = preg_replace('#{my->id}#', $current_user->id, $query);
                     $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
                     $this->_elements_default[] = $query;
-                }
-                elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'checkbox') {
+                } elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'checkbox') {
                     if (@$group_params->repeat_group_button == 1) {
                         $element_attribs = json_decode($def_elmt->element_attribs);
                         $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
@@ -1317,8 +1316,12 @@ class EmundusModelFiles extends JModelLegacy
                     $user = JFactory::getUser()->id;
                 }
 
+                $now = new DateTime();
+                $now->setTimezone(new DateTimeZone('UTC'));
+                $now = $now->format('Y-m-d H:i:s');
+
                 $query_associated_tags = $db->getQuery(true);
-                $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id) VALUES ";
+                $query ="insert into #__emundus_tag_assoc (fnum, id_tag, date_time, user_id) VALUES ";
 
                 $logger = array();
                 foreach ($fnums as $fnum) {
@@ -1334,7 +1337,7 @@ class EmundusModelFiles extends JModelLegacy
                     // Insert valid tags
                     foreach ($tags as $tag) {
                         if (!in_array($tag, $tags_already_associated)) {
-                            $query .= '("' . $fnum . '", ' . $tag . ',' . $user . '),';
+                            $query .= '("' . $fnum . '", ' . $tag . ',"' . $now . '",' . $user . '),';
                             $query_log = 'SELECT label
                                 FROM #__emundus_setup_action_tag
                                 WHERE id =' . $tag;
@@ -3849,6 +3852,29 @@ class EmundusModelFiles extends JModelLegacy
                                 }
                             }
 
+                            // Add cc defined in email template
+                            if (!empty($trigger['to']['cc'])) {
+                                $template_cc_emails = explode(',',$trigger['to']['cc']);
+                                foreach($template_cc_emails as $key => $cc_email) {
+                                    if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $cc_email) === 1) {
+                                        $cc[] = $cc_email;
+                                    }
+                                }
+                            }
+                            $cc = array_unique($cc);
+
+                            // Add bcc defined in email template
+                            $bcc = [];
+                            if (!empty($trigger['to']['bcc'])) {
+                                $template_bcc_emails = explode(',',$trigger['to']['bcc']);
+                                foreach($template_bcc_emails as $key => $bcc_email) {
+                                    if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $bcc_email) === 1) {
+                                        $bcc[] = $bcc_email;
+                                    }
+                                }
+                            }
+	                        $bcc = array_unique($bcc);
+
                             $mailer = JFactory::getMailer();
 
                             $post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['label'], 'CAMPAIGN_END' => JHTML::_('date', $file['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null));
@@ -3870,11 +3896,7 @@ class EmundusModelFiles extends JModelLegacy
                             $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
                             $body = $m_email->setTagsFabrik($body, array($file['fnum']));
 
-                            // If the email sender has the same domain as the system sender address.
-                            if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
-                                $mail_from_address = $from;
-                            else
-                                $mail_from_address = $email_from_sys;
+                            $mail_from_address = $email_from_sys;
 
                             // Set sender
                             $sender = [
@@ -3895,7 +3917,15 @@ class EmundusModelFiles extends JModelLegacy
                                 $mailer->addCc($cc);
                             }
 
-                            $send = $mailer->Send();
+                            if (!empty($bcc)) {
+                                $mailer->addBcc($bcc);
+                            }
+
+                            try {
+                                $send = $mailer->Send();
+                            } catch (Exception $e) {
+                                JLog::add('eMundus Triggers - PHP Mailer send failed ' . $e->getMessage(), JLog::ERROR, 'com_emundus.email');
+                            }
 
                             if ($send !== true) {
                                 $msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT').' : '.$to.' '.$send.'</div>';

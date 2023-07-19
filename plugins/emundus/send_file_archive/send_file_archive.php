@@ -84,13 +84,17 @@ class plgEmundusSend_file_archive extends JPlugin {
 			return false;
 		}
 
-		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'files.php');
-		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
+		require_once(JPATH_BASE.'/components/com_emundus/controllers/files.php');
+		require_once(JPATH_BASE.'/components/com_emundus/controllers/messages.php');
 		$c_files = new EmundusControllerFiles();
 		$c_messages = new EmundusControllerMessages();
 
-		$zip_name = $c_files->export_zip([$fnum], 1, 1, 1, 1, 1, null, null, null, true);
-		$file = JPATH_BASE.DS.'tmp'.DS.$zip_name;
+        $zip_attachments = $this->params->get('zip_attachments',1);
+        $zip_evaluation = $this->params->get('zip_evaluation',0);
+        $zip_decision = $this->params->get('zip_decision',0);
+
+		$zip_name = $c_files->export_zip([$fnum], 1, $zip_attachments, $zip_evaluation, $zip_decision, 0, null, null, null, true);
+		$file = JPATH_BASE.'/tmp/'.$zip_name;
 
 		$c_messages->sendEmail($fnum, $email, null, $file);
 		return true;

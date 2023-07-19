@@ -152,10 +152,10 @@ class ModEmunduspanelHelper
         $extension = $db->loadObject();
         $event_handler->id = $extension->extension_id;
 
-        $params = json_decode(json_decode($extension->params)->event_handlers);
+        $params = json_decode($extension->params);
 
-        foreach ($params->code as $event){
-            if(!empty($event)){
+        foreach ($params->event_handlers as $event) {
+	        if(!empty($event) && $event->published == 1) {
                 $event_handler->enabled += 1;
             }
         }

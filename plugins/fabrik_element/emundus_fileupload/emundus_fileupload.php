@@ -42,6 +42,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $jinput = JFactory::getApplication()->input;
 
         $current_user = JFactory::getSession()->get('emundusUser');
+        $user = (int)$current_user->id;
 
         if (JFactory::getUser()->guest) {
             echo json_encode(['status' => 'false']);
@@ -51,7 +52,6 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $fnum = $jinput->post->get('fnum');
         $name = $jinput->post->get('elementId');
 
-        $user = (int)substr($fnum, -7);
         $db = JFactory::getDBO();
 
         $attachId = $jinput->post->get('attachId');
@@ -119,7 +119,10 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
                     $sizeMax = ($postSize >= $iniSize) ? $iniSize : $postSize;
 
                     if (!empty($fileName)) {
-                        $insert[] = $user . ' , ' . $db->quote($fnum) . ' , ' . $cid . ' , ' . $attachId . ' , ' . $db->quote($fileName) . ' , ' . '1' . ' , ' . '1' . ' , ' . $db->quote($file['name']);
+                        $now = new DateTime();
+                        $now->setTimezone(new DateTimeZone('UTC'));
+                        $now = $now->format('Y-m-d H:i:s');
+                        $insert[] = $db->quote($now) . ' , ' . $db->quote($user) . ' , ' . $db->quote($fnum) . ' , ' . $db->quote($cid) . ' , ' . $db->quote($attachId) . ' , ' . $db->quote($fileName) . ' , ' . $db->quote(1) . ' , ' . $db->quote(1) . ' , ' . $db->quote($now) . ' , ' . $db->quote($file['name']);
                     }
 
 
@@ -239,13 +242,13 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $jinput = $this->app->input;
 
         $current_user = JFactory::getSession()->get('emundusUser');
+        $user = (int)$current_user->id;
         if (JFactory::getUser()->guest) {
             echo json_encode(['status' => 'false']);
             return false;
         }
 
         $fnum = $jinput->post->get('fnum');
-        $user = (int)substr($fnum, -7);
 
         $attachId = $jinput->post->get('attachId');
         $cid = $this->getCampaignId($fnum);
@@ -290,7 +293,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
             $fileName = $jinput->post->get('filename');
             $attachId = $jinput->post->get('attachId');
             $fnum = $jinput->post->get('fnum');
-            $user = (int)substr($fnum, -7);
+            $user = (int)$current_user->id;
             $cid = $this->getCampaignId($fnum);
             $uploadResult = $this->getUploads($attachId, $user, $cid, $fnum);
 
@@ -326,8 +329,10 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
     public function dataConsideredEmptyForValidation($data, $repeatCounter) {
         $jinput = JFactory::getApplication()->input;
 
+        $current_user = JFactory::getSession()->get('emundusUser');
+        $user = (int)$current_user->id;
+
         $fnum = $jinput->post->get($this->getTableName().'___fnum');
-        $user = (int)substr($fnum, -7);
 
         $attachId = $this->getAttachId();
         $cid = $this->getCampaignId($fnum);
@@ -753,11 +758,10 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
      */
     public function insertFile($values) {
         if (!empty($values)) {
-
-
             $db = JFactory::getDBO();
             $query = $db->getQuery(true);
-            $columns = array('user_id', 'fnum', 'campaign_id', 'attachment_id', 'filename', 'can_be_deleted', 'can_be_viewed','local_filename');
+
+            $columns = array('timedate', 'user_id', 'fnum', 'campaign_id', 'attachment_id', 'filename', 'can_be_deleted', 'can_be_viewed','modified','local_filename');
 
             $query->insert($db->quoteName('#__emundus_uploads'))
                 ->columns($db->quoteName($columns))
@@ -785,9 +789,20 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
+        $current_user = JFactory::getSession()->get('emundusUser');
+        $user = (int)$current_user->id;
+
+        $now = new DateTime();
+        $now->setTimezone(new DateTimeZone('UTC'));
+        $now = $now->format('Y-m-d H:i:s');
+
         $query->update($db->quoteName('#__emundus_uploads'))
-            ->set($db->quoteName('filename') . " = " . $db->quote($fileName))
-            ->where($db->quoteName('campaign_id') . ' = ' . $cid . " AND " . $db->quoteName('attachment_id') . " = " . $attachId . " AND " . $db->quoteName('fnum') . " LIKE " . $db->quote($fnum));
+            ->set($db->quoteName('filename') . ' = ' . $db->quote($fileName))
+            ->set($db->quoteName('modified') . ' = ' . $db->quote($now))
+            ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
+            ->where($db->quoteName('campaign_id') . ' = ' . $db->quote($cid))
+            ->andWhere($db->quoteName('attachment_id') . ' = ' . $db->quote($attachId))
+            ->andWhere($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
         $db->setQuery($query);
 
         try {

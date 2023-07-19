@@ -69,8 +69,10 @@ class EmundusModelApplicationTest extends TestCase
 		$attachments = $this->m_application->getUserAttachmentsByFnum($fnum);
 		$this->assertEmpty($attachments);
 
-		$this->h_sample->createSampleUpload($fnum, $campaign_id, $user_id);
-		$this->h_sample->createSampleUpload($fnum, $campaign_id, $user_id,2);
+		$first_attachment_id = $this->h_sample->createSampleAttachment();
+		$second_attachment_id = $this->h_sample->createSampleAttachment();
+		$this->h_sample->createSampleUpload($fnum, $campaign_id, $user_id, $first_attachment_id);
+		$this->h_sample->createSampleUpload($fnum, $campaign_id, $user_id, $second_attachment_id);
 		$attachments = $this->m_application->getUserAttachmentsByFnum($fnum);
 		$this->assertNotEmpty($attachments);
 		$this->assertSame(count($attachments), 2);
@@ -99,10 +101,11 @@ class EmundusModelApplicationTest extends TestCase
 		$program = $this->h_sample->createSampleProgram();
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
 		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+		$attachment_id = $this->h_sample->createSampleAttachment();
 
 		$data = [];
 		$data['key'] = ['fnum', 'user_id', 'campaign_id', 'attachment_id', 'filename', 'local_filename', 'timedate', 'can_be_deleted', 'can_be_viewed'];
-		$data['value'] = [$fnum, $user_id, $campaign_id, 1, 'test.pdf', 'test.pdf', date('Y-m-d H:i:s'), 1, 1];
+		$data['value'] = [$fnum, $user_id, $campaign_id, $attachment_id, 'test.pdf', 'test.pdf', date('Y-m-d H:i:s'), 1, 1];
 
 		$upload = $this->m_application->uploadAttachment($data);
 		$this->assertGreaterThan(0, $upload);

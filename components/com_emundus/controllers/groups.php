@@ -431,13 +431,13 @@ class EmundusControllerGroups extends JControllerLegacy {
 	}
 
 	public function addgroups() {
-        $user = JFactory::getUser();
+		$tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
+
+		$user = JFactory::getUser();
         $data = JRequest::getVar('data', null, 'POST', 'none',0);
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id) ) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			require_once (JPATH_COMPONENT . '/models/groups.php');
 	        $m_groups = new EmundusModelGroups();
             $result = $m_groups->addGroupsByProgrammes($data);
 

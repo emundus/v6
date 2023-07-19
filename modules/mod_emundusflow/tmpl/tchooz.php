@@ -17,7 +17,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
     }
     .mod_emundus_flow___print{
         height: 38px;
-        display: flex;
+        display: flex !important;
         align-items: center;
     }
     .btn-primary.mod_emundus_flow___print{
@@ -26,14 +26,33 @@ $now = $dateTime->format('Y-m-d H:i:s');
     .mod_emundus_flow___infos{
         flex-wrap: wrap;
         grid-gap: 24px;
+        max-width: 75%;
     }
+
+    .mod_emundus_flow___intro .btn.btn-primary {
+        font-size: 14px !important;
+        letter-spacing: normal !important;
+        line-height: normal !important;
+    }
+
     .mod_emundus_flow___intro .em-h2{
-        max-width: 73%;
         display: -webkit-box;
         overflow: hidden;
-        -webkit-line-clamp: 1;
+        -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
     }
+
+    .mod_emundus_flow___intro {
+        display: grid;
+        align-items: flex-start;
+        gap: 32px;
+        grid-template-columns: 67% 30%;
+    }
+
+    .em-programme-tag {
+        overflow: visible;
+    }
+
     @media all and (max-width: 767px) {
         .mod_emundus_flow___infos{
             grid-gap: 0;
@@ -42,7 +61,8 @@ $now = $dateTime->format('Y-m-d H:i:s');
            flex-direction: column;
             justify-content: flex-start;
             align-items: flex-start;
-            row-gap: 8px;
+            row-gap: 8px !important;
+            display: flex !important;
         }
         .mod_emundus_flow___infos div:first-child{
             margin-bottom: 6px;
@@ -53,7 +73,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
 <div class="em-mt-48" style="padding: 0 20px">
     <div class="em-flex-row em-flex-space-between  em-flex-row em-mt-8 mod_emundus_flow___intro">
         <div class="em-flex-row">
-            <h2 class="em-h2 em-mb-0-important"><?php echo JText::_($user->campaign_name) ?></h2>
+            <h2 class="em-h2 em-mb-0-important"><?php echo $campaign_name ?></h2>
             <?php
             $color = '#1C6EF2';
             $background = '#C8E1FE';
@@ -72,19 +92,14 @@ $now = $dateTime->format('Y-m-d H:i:s');
                 }
             }
             ?>
-            <?php if ($show_programme==1) : ?>
-            <p class="em-programme-tag em-ml-16" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
-                <?php  echo $current_application->prog_label; ?>
-            </p>
-            <?php endif; ?>
         </div>
-        <div class="em-flex-row">
+        <div class="em-flex-row em-flex-row-justify-end">
             <?php if ($show_back_button == 1) : ?>
             <a href="<?php echo $home_link ?>" title="<?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?>">
                 <button class="btn btn-primary em-mr-16" style="height: 41px"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
             </a>
             <?php endif; ?>
-            <a href="/component/emundus/?task=pdf&amp;fnum=<?= $current_application->fnum ?>" target="_blank" title="Imprimer">
+            <a href="/component/emundus/?task=pdf&amp;fnum=<?= $current_application->fnum ?>" target="_blank" title="<?php echo JText::_('PRINT') ?>">
                 <button class="btn btn-primary mod_emundus_flow___print">
                     <span class="material-icons-outlined" style="font-size: 16px">print</span>
                 </button>
@@ -98,6 +113,12 @@ $now = $dateTime->format('Y-m-d H:i:s');
             <p class="em-text-neutral-600 em-font-size-16"> <?php echo JText::_('MOD_EMUNDUS_FLOW_END_DATE'); ?></p>
             <span class="em-ml-6" style="white-space: nowrap"><?php echo JFactory::getDate(new JDate($deadline, $site_offset))->format('d/m/Y H:i'); ?></span>
         </div>
+        <?php endif; ?>
+
+        <?php if ($show_programme==1) : ?>
+            <p class="em-programme-tag em-ml-16" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>;margin: unset">
+                <?php  echo $current_application->prog_label; ?>
+            </p>
         <?php endif; ?>
 
         <?php if($show_status == 1) : ?>

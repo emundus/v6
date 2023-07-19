@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -137,7 +137,9 @@ if(invalid_field)
 		<div class="hkc-lg-8">
 <?php
 		}
-		if(empty($this->options['current_login']) && !empty($this->options['registration'])) {
+		if(!empty($this->options['override_registration']) && empty($this->options['registration_guest'])) {
+			echo hikashop_translate($this->options['text']);
+		}elseif(empty($this->options['current_login']) && !empty($this->options['registration'])) {
 ?>
 			<div id="hikashop_checkout_registration">
 				<h2>
@@ -334,7 +336,9 @@ function displayRegistration(el) {
 ?>
 		<div class="hkc-lg-8">
 <?php
-		if(empty($this->options['current_login']) && !empty($this->options['registration'])) {
+		if(!empty($this->options['override_registration'])) {
+			echo hikashop_translate($this->options['text']);
+		}elseif(empty($this->options['current_login']) && !empty($this->options['registration'])) {
 ?>
 			<div id="hikashop_checkout_registration">
 				<h2 id="hika_registration_type">

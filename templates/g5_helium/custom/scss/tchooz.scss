@@ -486,6 +486,13 @@ input:focus + .em-slider {
 }
 
 /* UTILITIES */
+.unselectable{
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 .em-flex-column{
   display: flex;
   flex-direction: column;
@@ -567,7 +574,7 @@ input:focus + .em-slider {
 
 .em-grid-2{
   display: grid;
-  grid-gap: 24px;
+  grid-gap: 16px;
   grid-template-columns: repeat(2, 1fr);
 }
 
@@ -1070,6 +1077,9 @@ input:focus + .em-slider {
 }
 .em-mt-80{
   margin-top: $m-80;
+}
+.em-mb-0{
+  margin-bottom: 0;
 }
 .em-mb-0-important{
   margin-bottom: 0 !important;
@@ -1716,7 +1726,10 @@ button.em-swal-delete-button{
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  max-width: 250px;
+}
+
+.mod_emundus_campaign__list .em-programme-tag{
+  white-space: initial;
 }
 
 /** SEARCHBAR **/

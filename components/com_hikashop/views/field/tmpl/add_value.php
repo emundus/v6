@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -27,12 +27,12 @@ if(empty($this->field->field_options['allow_add'])) {
     <div style="clear:both;"></div>
     <dl class="hika_options">
         <dt><?php echo JText::_('FIELD_VALUE')?></dt>
-        <dd><input type="text" name="value_title" value=""/></dd>
+        <dd><input type="text" name="value_title" value="" class="<?php echo HK_FORM_CONTROL_CLASS; ?>"/></dd>
         <dt><?php echo JText::_('FIELD_TITLE')?></dt>
-        <dd><input type="text" name="value_value" value=""/></dd>
+        <dd><input type="text" name="value_value" value="" class="<?php echo HK_FORM_CONTROL_CLASS; ?>"/></dd>
         <dt><?php echo JText::_('FIELD_DISABLED')?></dt>
         <dd>
-            <select name="values_disabled" class="custom-select no-chzn inputbox">
+            <select name="values_disabled" class="<?php echo HK_FORM_SELECT_CLASS; ?> no-chzn">
                 <option selected value="0"><?php echo JText::_('HIKASHOP_NO'); ?></option>
                 <option value="1"><?php echo JText::_('HIKASHOP_YES'); ?></option>
             </select>

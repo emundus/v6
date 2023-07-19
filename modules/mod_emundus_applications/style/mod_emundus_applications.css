@@ -168,7 +168,16 @@ a.btn.btn-success:not(.btn-xs) {
 .main-page-file-progress .svg-container{
     width: 100px;
 }
+
+.view-featured .candidacy-files-list .row {
+   position: relative;
+}
 @media all and (max-width: 479px) {
+
+    #applications_list_view div[id*="group_application_tab"] {
+        overflow-x: scroll;
+    }
+
     .main-page-file-info a {
         margin-bottom: 4px;
     }
@@ -195,6 +204,11 @@ a.btn.btn-success:not(.btn-xs) {
 }
 
 @media all and (min-width: 480px) and (max-width: 767px) {
+
+    #applications_list_view div[id*="group_application_tab"] {
+        overflow-x: scroll;
+    }
+
     .main-page-file-info a {
         margin-bottom: 4px;
     }
@@ -322,7 +336,6 @@ margin-top: 16px;
     box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
     border-radius: 16px !important;
     padding: 32px;
-    height: -webkit-fill-available;
     background: #fff;
 }
 .mod_emundus_applications___date{
@@ -366,9 +379,13 @@ margin-top: 16px;
 .mod_emundus_applications___title:focus {
     text-decoration: none;
 }
+.mod_emundus_applications__container{
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
+}
 
 .mod_emundus_applications__actions{
-    margin-top: 8px;
     flex-direction: column;
     box-shadow: 0px 12px 17px rgba(5, 47, 55, 0.07), 0px 5px 22px rgba(5, 47, 55, 0.06), 0px 7px 8px rgba(5, 47, 55, 0.1);
     border-radius: 12px;
@@ -376,6 +393,7 @@ margin-top: 16px;
     position: absolute;
     background: white;
     z-index: 9999;
+    margin-top: 34px;
 }
 .mod_emundus_applications__actions a:not(:last-child){
     margin-bottom: 8px;
@@ -549,6 +567,10 @@ margin-top: 16px;
 
     .mod_emundus_applications___content_text {
         justify-content: flex-start;
+    }
+
+    .mod_emundus_application_swal_manage_tabs_popup{
+        min-width: fit-content;
     }
 }
 

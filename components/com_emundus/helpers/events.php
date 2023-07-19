@@ -161,7 +161,9 @@ class EmundusHelperEvents {
 
             $eMConfig = JComponentHelper::getParams('com_emundus');
             $copy_application_form = $eMConfig->get('copy_application_form', 0);
-            $copy_exclude_forms = $eMConfig->get('copy_exclude_forms', []);
+	        $copy_application_form_type   = $eMConfig->get('copy_application_form_type', 0);
+	        $copy_exclude_forms      = $eMConfig->get('copy_exclude_forms', []);
+	        $copy_include_forms      = $eMConfig->get('copy_include_forms', []);
             $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
             $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
 
@@ -352,7 +354,14 @@ class EmundusHelperEvents {
 
 			$profile_details = $m_users->getUserById(JFactory::getUser()->id)[0];
 
-            if ($copy_application_form == 1 && isset($user->fnum) && !in_array($formModel->getId(), $copy_exclude_forms) || !empty($fnum_linked)) {
+	        $check_forms = !in_array($formModel->getId(), $copy_exclude_forms);
+	        if($copy_application_form_type == 1)
+	        {
+		        $check_forms = in_array($formModel->getId(), $copy_include_forms);
+	        }
+
+
+	        if ($copy_application_form == 1 && isset($user->fnum) && ($check_forms || !empty($fnum_linked))) {
 
                 if (empty($formModel->getRowId())) {
                     $table = $listModel->getTable();
@@ -1095,6 +1104,43 @@ class EmundusHelperEvents {
 
         return true;
     }
+	
+	function onAfterProgramCreate($params) : bool{
+		jimport('joomla.log.log');
+		JLog::addLogger(array('text_file' => 'com_emundus.helper_events.php'), JLog::ALL, array('com_emundus.helper_events'));
+
+		try
+		{
+			$code = $params['data']['jos_emundus_setup_programmes___code_raw'];
+
+			if(!empty($code))
+			{
+				$db    = JFactory::getDbo();
+				$query = $db->getQuery(true);
+
+				$eMConfig            = JComponentHelper::getParams('com_emundus');
+				$all_rights_group_id = $eMConfig->get('all_rights_group', 1);
+
+				$columns = array('parent_id', 'course');
+				$values  = array($db->quote($all_rights_group_id), $db->quote($code));
+
+				$query->clear()
+					->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
+					->columns($db->quoteName($columns))
+					->values(implode(',', $values));
+				$db->setQuery($query);
+				$db->execute();
+			}
+
+			return true;
+		}
+		catch (Exception $e)
+		{
+			JLog::add('Error when run event onAfterProgramCreate | ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			return false;
+		}
+
+	}
 
     private function logUpdateForms($params, $forms_to_log = []) : bool
     {

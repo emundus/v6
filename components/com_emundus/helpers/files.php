@@ -2338,8 +2338,8 @@ class EmundusHelperFiles
 
             if ($eval['jos_emundus_evaluations___user'] > 0 && ($eval['jos_emundus_evaluations___user'] == JFactory::getUser()->id || EmundusHelperAccess::asAccessAction(5,'r'))) {
                 $str = '<br><hr>';
-                $str .= '<em>'.JText::_('COM_EMUNDUS_EVALUATION_EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.$fnumInfo['name'].'</em>';
-                $str .= '<h1>'.JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR').': '.JFactory::getUser($eval['jos_emundus_evaluations___user'])->name.'</h1>';
+                $str .= '<p><em style="font-size: 14px">'.JText::_('COM_EMUNDUS_EVALUATION_EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.$fnumInfo['name'].'</em></p>';
+                $str .= '<h2>'.JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR').': '.JFactory::getUser($eval['jos_emundus_evaluations___user'])->name.'</h2>';
                 $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
 
                 foreach ($elements as $element) {
@@ -2758,19 +2758,19 @@ class EmundusHelperFiles
      * @return Bool True if table found, else false.
      */
     public function tableExists($table_name) {
+		$exists = false;
 
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+		if (!empty($table_name)) {
+			$db = JFactory::getDbo();
 
-        // The strategy is simple: if there's an error, the table probably doesn't exist.
-        $query->select($db->quoteName('id'))->from($db->quoteName($table_name))->setLimit('1');
+			try {
+				$exists = $db->setQuery('SHOW TABLE STATUS WHERE Name LIKE ' . $db->quote($table_name))->loadResult();
+			} catch (Exception $e) {
+				$exists = false;
+			}
+		}
 
-        try {
-            $db->setQuery($query);
-            return !empty($db->loadResult());
-        } catch (Exception $e) {
-            return false;
-        }
+		return $exists;
     }
 
     public function saveExcelFilter($user_id, $name, $constraints, $time_date, $itemid) {
@@ -2864,22 +2864,34 @@ class EmundusHelperFiles
         }
     }
 
+	/**
+	 * if empty $user_id, then it will return false
+	 * if not empty $user_id, then it will return all the filters of the user, empty array if no filters
+	 * @param $user_id
+	 * @return array|false|mixed
+	 */
     public function getExportExcelFilter($user_id) {
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
+	    $filters = false;
 
-        try {
-        	$query->select('*')
-		        ->from($db->quoteName('#__emundus_filters'))
-		        ->where($db->quoteName('user').' = '.$user_id.' AND constraints LIKE '.$db->quote('%excelfilter%'));
-            $db->setQuery($query);
-            return $db->loadObjectList();
+		if (!empty($user_id)) {
+			$db = JFactory::getDBO();
+			$query = $db->getQuery(true);
 
-        } catch (Exception $e) {
-            echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-            return false;
-        }
+			try {
+				$query->select('*')
+					->from($db->quoteName('#__emundus_filters'))
+					->where($db->quoteName('user').' = '.$user_id.' AND constraints LIKE '.$db->quote('%excelfilter%'));
+				$db->setQuery($query);
+
+				$filters = $db->loadObjectList();
+			} catch (Exception $e) {
+				echo $e->getMessage();
+				JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+				$filters = false;
+			}
+		}
+
+	    return $filters;
     }
 
     //// get profile from elements IDs
@@ -2997,7 +3009,7 @@ class EmundusHelperFiles
                 /// four one --> get menutype (distinct) menutype
                 $query = "SELECT DISTINCT #__menu.menutype 
                             FROM #__menu 
-                            WHERE SUBSTRING_INDEX(SUBSTRING(#__menu.link, LOCATE('formid=',jos_menu.link)+7, 3), '&', 1) IN ($_formList)";
+                            WHERE SUBSTRING_INDEX(SUBSTRING(#__menu.link, LOCATE('formid=',jos_menu.link)+7, 4), '&', 1) IN ($_formList)";
                 $db->setQuery($query);
                 $_menus = $db->loadObjectList();
 
@@ -3509,7 +3521,9 @@ class EmundusHelperFiles
         if (!empty($sql_code) || !empty($sql_fnum) ) {
             $query['q'] .= ' AND (' . $sql_code . ' ' . $sql_fnum . ') ';
             $query['q'] .= ' AND esc.published > 0';
-        } else if (!empty($params['programme']) && ($params['programme'][0] == "%" || empty($params['programme'][0])) || empty(array_intersect($params['programme'], array_filter($caller_params['code'])))) {
+        }
+		// WARNING!
+		else if (!empty($params['programme']) && ($params['programme'][0] == "%" || empty($params['programme'][0])) || empty(array_intersect($params['programme'], array_filter($caller_params['code'])))) {
             $query['q'] .= ' AND 1=2 ';
         }
         return $query;

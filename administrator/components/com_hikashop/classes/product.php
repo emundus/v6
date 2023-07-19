@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -756,13 +756,20 @@ class hikashopProductClass extends hikashopClass{
 
 	private function _saveAreas($type, $parent = '') {
 		$config = hikashop_config();
+		$configData = array('form_custom' => hikaInput::get()->getInt('config_form_custom', 1));
+		$config->save($configData);
+
 		if(!hikashop_isAllowed($config->get('acl_product_customize','all')))
 			return true;
 
 		$inputs = array('order', 'fields');
 		$config = hikashop_config();
 		$configData = array();
-		$reset = hikaInput::get()->getInt($type.'_reset_custom', 0);
+		$reset_name = $type.'_reset_custom';
+		if($type == 'variant') {
+			$reset_name = 'product_reset_custom';
+		}
+		$reset = hikaInput::get()->getInt($reset_name, 0);
 		foreach($inputs as $input) {
 			if($reset) {
 				$configData['product_areas_'.$input] = '';
@@ -1355,8 +1362,10 @@ class hikashopProductClass extends hikashopClass{
 
 		if($product->product_type == 'variant' && (int)$product->product_parent_id > 0) {
 			$product->parent = $this->get($product->product_parent_id);
-			$product->parent->images = array();
-			$sql_product = 'IN ('.(int)$product_id.','.(int)$product->product_parent_id.')';
+			if(!empty($product->parent)) {
+				$product->parent->images = array();
+				$sql_product = 'IN ('.(int)$product_id.','.(int)$product->product_parent_id.')';
+			}
 		}
 
 		$query = 'SELECT * FROM '.hikashop_table('file') .

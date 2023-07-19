@@ -38,6 +38,7 @@ templates/LaScala/*
 /image/logo.png
 /images/custom/logo.png
 /images/custom/logo_custom.png
+/images/emundus/custom/*
 #_bdd/*
 components/com_emundus.*
 components/com_emundus/*.bak
@@ -68,6 +69,7 @@ administrator/templates/isis/images/joomla.png
 administrator/templates/isis/images/logo.png
 plugins/fabrik_form/php/emundus-csv_import_ehesp.php
 components/com_fabrik/views/details/tmpl/celsa/*
+plugins/fabrik_form/email/tmpl/*
 
 ### macOS ###
 *.DS_Store
