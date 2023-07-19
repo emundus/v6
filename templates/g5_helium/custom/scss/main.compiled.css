@@ -732,15 +732,6 @@ form.fabrikForm .fabrikGroup table .fabrikSubGroup .fabrikGroupRepeater .pull-ri
       height: var(--em-form-height);
       margin-top: var(--m-8);
     }
-form.fabrikForm .fabrikGroup table .fabrikSubGroup .fabrikGroupRepeater .pull-right .deleteGroup {
-      display: flex;
-    }
-form.fabrikForm .fabrikGroup table .fabrikSubGroup .fabrikGroupRepeater .pull-right .addGroup {
-      margin-right: 0;
-    }
-form.fabrikForm .fabrikGroup table .fabrikSubGroup .fabrikGroupRepeater .pull-right .addGroup i {
-      color: var(--em-form-success-color) !important;
-    }
 form.fabrikForm .fabrikGroup table .fabrikSubGroupElements td select {
       border-radius: var(--em-form-border-radius);
       border: 1px solid var(--em-form-border-color);

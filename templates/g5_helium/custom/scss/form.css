@@ -191,19 +191,6 @@
       margin-top: var(--m-8);
     }
 
-    .fabrikGroup table .fabrikSubGroup .fabrikGroupRepeater .pull-right .deleteGroup {
-      display: flex;
-    }
-
-
-    .fabrikGroup table .fabrikSubGroup .fabrikGroupRepeater .pull-right .addGroup {
-      margin-right: 0;
-    }
-
-    .fabrikGroup table .fabrikSubGroup .fabrikGroupRepeater .pull-right .addGroup i {
-      color: var(--em-form-success-color) !important;
-    }
-
     .fabrikGroup table .fabrikSubGroupElements td select {
       border-radius: var(--em-form-border-radius);
       border: 1px solid var(--em-form-border-color);
