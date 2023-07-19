@@ -4,6 +4,14 @@ type: core
 
 form:
   fields:
+    success-color:
+      type: input.colorpicker
+      label: Success color
+      default: '#20835F'
+    error-color:
+      type: input.colorpicker
+      label: Error/Close color
+      default: '#F04437'
     border-radius-block:
       type: input.text
       label: Border radius of blocks

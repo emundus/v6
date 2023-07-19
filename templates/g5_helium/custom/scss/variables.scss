@@ -316,6 +316,10 @@
   --em-box-shadow-color-3: #{$em-box-shadow-color-3};
 
   /** FORM VARIABLES **/
+
+  --em-form-error-color: #{$em-form-error-color};
+  --em-form-success-color: #{$em-form-success-color};
+
   --em-form-label-color: #{$em-form-label-color};
   --em-form-label-margin-bottom: #{$em-form-label-margin-bottom};
   --em-form-height: #{$em-form-height};

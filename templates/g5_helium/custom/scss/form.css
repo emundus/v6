@@ -885,4 +885,50 @@
   .chzn-container-multi:not(.chzn-container-active) .chzn-drop {
     display: none;
   }
+
+  /* REPEAT */
+  .view-form.applicant-form .span12 form .fabrikGroup table {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  .view-form.applicant-form .span12 form .fabrikGroup table .fabrikSubGroup td  {
+    background: var(--neutral-0) !important;
+    margin-top: -1px;
+  }
+
+  .view-form.applicant-form .span12 form .fabrikGroup table th:last-of-type,
+  .view-form.applicant-form .span12 form .fabrikGroup table td:last-of-type {
+    width: 64px;
+  }
+
+  .view-form.applicant-form .span12 form .fabrikGroup table .fabrikSubGroup .fabrikGroupRepeater .pull-right {
+    display: flex;
+    align-items: center;
+    height: var(--em-form-height);
+    margin-top: var(--m-8);
+  }
+
+  .view-form.applicant-form .span12 form .fabrikGroup table .fabrikSubGroup .fabrikGroupRepeater .pull-right .deleteGroup {
+    display: flex;
+  }
+
+
+  .view-form.applicant-form .span12 form .fabrikGroup table .fabrikSubGroup .fabrikGroupRepeater .pull-right .addGroup {
+    margin-right: 0;
+  }
+
+  .view-form.applicant-form .span12 form .fabrikGroup table .fabrikSubGroup .fabrikGroupRepeater .pull-right .addGroup i {
+    color: var(--em-form-success-color) !important;
+  }
+
+  .view-form.applicant-form .span12 form .fabrikGroup table .fabrikSubGroupElements td select {
+    border-radius: var(--em-form-border-radius);
+    border: 1px solid var(--em-form-border-color);
+    box-shadow: none;
+    margin-top: var(--m-8);
+    margin-bottom: 0;
+    width: 100%;
+    background-position-x: 92% !important;
+  }
 }
