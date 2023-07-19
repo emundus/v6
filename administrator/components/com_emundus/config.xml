@@ -426,6 +426,8 @@
 			<option value="1">JYES</option>
 		</field>
 
+		<field name="api_bearer_token" type="text" label="COM_EMUNDUS_API_BEARER_TOKEN"/>
+
 		<field
 				name="integration_gotenberg"
 				type="note"
