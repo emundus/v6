@@ -76,8 +76,23 @@
         padding-top: 0;
       }
     }
-    .popover {
+    .popover:not(.clockpicker-popover) {
       display: none !important;
+    }
+    .clockpicker-popover {
+      font-family: var(--em-default-font);
+      .arrow {
+        display: none;
+      }
+      .popover-content {
+        background-color: white;
+      }
+      .clockpicker-button {
+        background: white;
+        color: black;
+        border-top: solid 1px #ebebeb;
+        border-radius: 0 !important;
+      }
     }
   }
 
@@ -146,23 +161,40 @@
     /* CALENDAR - DATE */
 
     .plg-date {
+      .fabrikElement {
+        .fabrikSubElementContainer {
+          display: flex;
+          .input-append {
+            position: relative;
+            display: flex;
+            width: fit-content;
+            min-width: 20%;
+          }
 
-      input.fabrikinput.inputbox {
-        border-top: 1px solid var(--em-form-border-color);
-        border-bottom: 1px solid var(--em-form-border-color);
-        border-right: none;
-        border-left: 1px solid var(--em-form-border-color);
-      }
-      .fabrikElement button.calendarbutton {
-        background: var(--em-form-background-color);
-        height: var(--em-form-height) !important;
-        border-radius: var(--em-form-border-radius) !important;
-        border-top: 1px solid var(--em-form-border-color);
-        border-bottom: 1px solid var(--em-form-border-color);
-        border-left: none;
-        border-right: 1px solid var(--em-form-border-color);
-        color: var(  --em-form-label-color);
+          button.calendarbutton, button.timeButton {
+            display: inline-flex;
+            align-items: center;
+            height: var(--em-form-height) !important;
+            color: var(  --em-form-label-color);
+            position: absolute;
+            right: 15px;
+            border: unset;
+            z-index: 10;
+            background: transparent;
+            padding: 6px;
+            &:focus {
+              outline: unset;
+            }
+            &:active {
+              box-shadow: unset;
+            }
 
+            .material-icons-outlined {
+              font-size: 16px;
+              color: var(--neutral-600);
+            }
+          }
+        }
       }
     }
 

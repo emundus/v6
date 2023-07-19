@@ -626,9 +626,24 @@ video {
         padding-top: 0
     }
       }
-.com_fabrik .popover {
+.com_fabrik .popover:not(.clockpicker-popover) {
       display: none !important;
     }
+.com_fabrik .clockpicker-popover {
+      font-family: var(--em-default-font);
+    }
+.com_fabrik .clockpicker-popover .arrow {
+        display: none;
+      }
+.com_fabrik .clockpicker-popover .popover-content {
+        background-color: white;
+      }
+.com_fabrik .clockpicker-popover .clockpicker-button {
+        background: white;
+        color: black;
+        border-top: solid 1px #ebebeb;
+        border-radius: 0 !important;
+      }
 form.fabrikForm {
     margin: 0;
   }
@@ -690,23 +705,38 @@ form.fabrikForm input:not([type='file']):focus:not([type='radio']):not([type='ch
         background-color: var(--em-form-background-color-focus);
       }
 /* CALENDAR - DATE */
-form.fabrikForm .plg-date input.fabrikinput.inputbox {
-        border-top: 1px solid var(--em-form-border-color);
-        border-bottom: 1px solid var(--em-form-border-color);
-        border-right: none;
-        border-left: 1px solid var(--em-form-border-color);
-      }
-form.fabrikForm .plg-date .fabrikElement button.calendarbutton {
-        background: var(--em-form-background-color);
-        height: var(--em-form-height) !important;
-        border-radius: var(--em-form-border-radius) !important;
-        border-top: 1px solid var(--em-form-border-color);
-        border-bottom: 1px solid var(--em-form-border-color);
-        border-left: none;
-        border-right: 1px solid var(--em-form-border-color);
-        color: var(  --em-form-label-color);
-
-      }
+form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer {
+          display: flex;
+        }
+form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer .input-append {
+            position: relative;
+            display: flex;
+            width: -moz-fit-content;
+            width: fit-content;
+            min-width: 20%;
+          }
+form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton {
+            display: inline-flex;
+            align-items: center;
+            height: var(--em-form-height) !important;
+            color: var(  --em-form-label-color);
+            position: absolute;
+            right: 15px;
+            border: unset;
+            z-index: 10;
+            background: transparent;
+            padding: 6px;
+          }
+form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton:focus, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton:focus {
+              outline: unset;
+            }
+form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton:active, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton:active {
+              box-shadow: unset;
+            }
+form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton .material-icons-outlined, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton .material-icons-outlined {
+              font-size: 16px;
+              color: var(--neutral-600);
+            }
 /* YES / NO */
 form.fabrikForm .plg-yesno .fabrikSubElementContainer .btn-group {
       display: flex;
