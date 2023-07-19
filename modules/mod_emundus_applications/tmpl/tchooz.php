@@ -359,14 +359,12 @@ $current_tab = 0;
 															<?php if (empty($visible_status)) : ?>
                                                                 <div class="mod_emundus_applications___status_<?= $application->class; ?> flex"
                                                                      id="application_status_<?php echo $application->fnum ?>">
-                                                                    <span class="circle em-mr-8 label-<?= $application->class; ?>"></span>
-                                                                    <span class="mod_emundus_applications___status_label em-neutral-800-color em-applicant-default-font em-font-size-14"><?= $application->value; ?></span>
+                                                                    <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
                                                                 </div>
 															<?php elseif (in_array($application->status, $visible_status)) : ?>
                                                                 <div class="mod_emundus_applications___status_<?= $application->class; ?> flex"
                                                                      id="application_status_<?php echo $application->fnum ?>">
-                                                                    <span class="circle em-mr-8 label-<?= $application->class; ?>"></span>
-                                                                    <span class="mod_emundus_applications___status_label em-font-size-14"><?= $application->value; ?></span>
+                                                                    <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
                                                                 </div>
 															<?php endif; ?>
 															<?php if (!empty($application->order_status)): ?>
@@ -721,14 +719,12 @@ $current_tab = 0;
 														<?php if (empty($visible_status)) : ?>
                                                             <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row"
                                                                  id="application_status_<?php echo $application->fnum ?>">
-                                                                <span class="mod_emundus_applications___circle em-mr-8 label-<?= $application->class; ?>-500"></span>
-                                                                <span class="mod_emundus_applications___status_label em-neutral-800-color em-applicant-default-font em-font-size-14"><?= $application->value; ?></span>
+                                                                <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
                                                             </div>
 														<?php elseif (in_array($application->status, $visible_status)) : ?>
                                                             <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row"
                                                                  id="application_status_<?php echo $application->fnum ?>">
-                                                                <span class="mod_emundus_applications___circle em-mr-8 label-<?= $application->class; ?>-500"></span>
-                                                                <span class="mod_emundus_applications___status_label em-font-size-14"><?= $application->value; ?></span>
+                                                                <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
                                                             </div>
 														<?php endif; ?>
 														<?php if (!empty($application->order_status)): ?>

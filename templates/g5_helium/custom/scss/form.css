@@ -5,7 +5,6 @@
     .page-header h1 {
       @apply em-default-title-1;
     }
-
     @media all and (max-width: 480px) {
       margin-top: unset !important;
     }
@@ -17,7 +16,6 @@
     @apply flex-wrap;
     margin-right: -10px;
     margin-left: -10px;
-
     .emundus-form {
       @media all and (min-width: 768px) {
         flex: 0 0 50%;
@@ -28,22 +26,18 @@
       .em-form-intro {
         ul {
           list-style-type: decimal;
-
           li {
             line-height: 24px;
           }
         }
       }
-
       #jos_emundus_users___password_check {
         @apply mt-1;
       }
-
       .fb_el_jos_emundus_users___terms_and_conditions {
         span.material-icons:first-child {
           display: none;
         }
-
         .fabrikgrid_checkbox {
           span {
             @apply flex;
@@ -62,7 +56,6 @@
       .fabrikActions .em-submit-form-button {
         .btn-group {
           @apply w-full;
-
           .button.register {
             @apply flex;
             @apply w-full;
@@ -83,9 +76,23 @@
         padding-top: 0;
       }
     }
-
-    .popover {
+    .popover:not(.clockpicker-popover) {
       display: none !important;
+    }
+    .clockpicker-popover {
+      font-family: var(--em-default-font);
+      .arrow {
+        display: none;
+      }
+      .popover-content {
+        background-color: white;
+      }
+      .clockpicker-button {
+        background: white;
+        color: black;
+        border-top: solid 1px #ebebeb;
+        border-radius: 0 !important;
+      }
     }
   }
 
@@ -93,8 +100,7 @@
     margin: 0;
 
     /** GLOBAL **/
-
-    .row-fluid {
+    .row-fluid{
       width: auto;
     }
 
@@ -110,7 +116,6 @@
       display: inline-block !important;
       @apply text-lg;
       @apply w-full;
-
       &.fabrikTip {
         cursor: text;
       }
@@ -122,7 +127,6 @@
     }
 
     /** INPUT **/
-
     input:not([type='radio']):not([type='checkbox']):not([type='file']), select {
       height: var(--em-form-height);
       font-size: var(--em-form-font-size);
@@ -157,30 +161,45 @@
     /* CALENDAR - DATE */
 
     .plg-date {
+      .fabrikElement {
+        .fabrikSubElementContainer {
+          display: flex;
+          .input-append {
+            position: relative;
+            display: flex;
+            width: fit-content;
+            min-width: 20%;
+          }
 
-      input.fabrikinput.inputbox {
-        border-top: 1px solid var(--em-form-border-color);
-        border-bottom: 1px solid var(--em-form-border-color);
-        border-right: none;
-        border-left: 1px solid var(--em-form-border-color);
-      }
+          button.calendarbutton, button.timeButton {
+            display: inline-flex;
+            align-items: center;
+            height: var(--em-form-height) !important;
+            color: var(  --em-form-label-color);
+            position: absolute;
+            right: 15px;
+            border: unset;
+            z-index: 10;
+            background: transparent;
+            padding: 6px;
+            &:focus {
+              outline: unset;
+            }
+            &:active {
+              box-shadow: unset;
+            }
 
-      .fabrikElement button.calendarbutton {
-        background: var(--em-form-background-color);
-        height: var(--em-form-height) !important;
-        border-radius: var(--em-form-border-radius) !important;
-        border-top: 1px solid var(--em-form-border-color);
-        border-bottom: 1px solid var(--em-form-border-color);
-        border-left: none;
-        border-right: 1px solid var(--em-form-border-color);
-        color: var(--em-form-label-color);
-
+            .material-icons-outlined {
+              font-size: 16px;
+              color: var(--neutral-600);
+            }
+          }
+        }
       }
     }
 
 
     /* YES / NO */
-
     .plg-yesno .fabrikSubElementContainer .btn-group {
       display: flex;
       gap: var(--em-form-yesno-gap);
@@ -257,7 +276,7 @@
 
     label.btn-default.btn.btn-danger.active:hover {
       background-color: var(--em-form-yesno-background-color-no-hover);
-      border-color: var(--em-form-yesno-border-color-no-hover) !important;
+      border-color: var(--em-form-yesno-border-color-no-hover)!important;
     }
 
     label.btn-default.btn.btn-danger.active:hover span {
@@ -325,7 +344,6 @@
 
 
     /** SELECT **/
-
     select {
       background-position-x: 98%;
       background-position-y: 54%;
@@ -335,19 +353,16 @@
       background-size: 8px;
       background-repeat: no-repeat;
       @apply pr-4;
-
       &.input-small {
         background-position-x: 92%;
       }
     }
 
     /** RADIO **/
-
     .fabrikgrid_radio {
       @apply py-1;
       @apply mb-1;
       @apply items-center;
-
       label {
         @apply mb-0;
         @apply flex;
@@ -355,7 +370,6 @@
         padding: var(--em-form-radio-padding);
         border: var(--em-form-radio-border-width) solid var(--em-form-radio-border-color);
         border-radius: var(--em-form-radio-border-radius);
-
         input {
           accent-color: var(--em-form-radio-color-checked);
           width: var(--em-form-radio-width);
@@ -364,11 +378,9 @@
           margin-left: 0;
           margin-top: 0;
         }
-
-        span {
+        span{
           word-wrap: break-word;
         }
-
         &:has(input[type='radio']:checked) {
           background-color: var(--em-form-radio-background-color-checked);
           border-color: var(--em-form-radio-border-color-checked);
@@ -377,23 +389,19 @@
     }
 
     /** CHECKBOX **/
-
     .plg-checkbox {
       .fabrikElement {
         .fabrikSubElementContainer {
           border-top: solid var(--em-form-checkbox-border-width) var(--em-form-checkbox-border-color);
           padding: var(--em-form-checkbox-padding) 0 0 0;
-
           .row-fluid {
             margin-top: 0;
             margin-bottom: var(--em-form-checkbox-padding);
             border-bottom: solid var(--em-form-checkbox-border-width) var(--em-form-checkbox-border-color);
             padding: 0 0 var(--em-form-checkbox-padding) var(--em-form-checkbox-padding);
-
             .fabrikgrid_checkbox {
               label {
                 margin-bottom: 0;
-
                 input {
                   accent-color: var(--em-form-checkbox-color-checked);
                   transform: scale(var(--em-form-checkbox-scale));
@@ -407,14 +415,12 @@
     }
 
     /** PANEL **/
-
     .plg-panel {
       .fabrikElement {
         .fabrikinput {
           @apply flex;
           @apply p-5;
           @apply rounded;
-
           .fabrikElementContent {
             @apply ml-3;
             line-height: 24px;
@@ -424,7 +430,6 @@
     }
 
     /** CAPTCHA **/
-
     .plg-captcha {
       .captcha_input {
         @apply mt-1;
@@ -432,14 +437,12 @@
     }
 
     /** FILE **/
-
     .plg-fileupload {
       .fabrikSubElementContainer {
         display: flex;
         flex-direction: column-reverse;
         padding: var(--em-form-fileupload-padding);
         background-color: var(--em-form-fileupload-background-color);
-
         input[type='file'] {
           height: auto;
           @apply w-full;
@@ -459,10 +462,8 @@
     }
 
     /** CURRENCY **/
-
     .currencyElement {
       position: relative;
-
       select, .chzn-container {
         position: absolute;
         right: 0;
@@ -470,25 +471,21 @@
         border-left: 0;
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
-
         .chzn-single {
           border-left: 0 !important;
           border-top-left-radius: 0 !important;
           border-bottom-left-radius: 0 !important;
           border-color: var(--em-form-border-color);
-
-          span {
+          span{
             font-size: 16px;
             margin-right: 16px;
           }
-
-          div {
+          div{
             height: auto;
             width: 8px;
             position: static;
             margin-right: 4px;
-
-            b {
+            b{
               border: solid black;
               border-width: 0 2px 2px 0;
               display: inline-block;
@@ -500,43 +497,37 @@
             }
           }
         }
-
         .chzn-drop {
           width: max-content;
           margin-top: 6px;
-
-          .chzn-search {
+          .chzn-search{
             padding: 4px;
-
             input {
               height: 35px;
               background: unset;
             }
           }
-
           .chzn-results {
             margin: 4px;
-
-            li {
+            li{
               font-size: 16px;
               word-spacing: 4px;
               margin-right: 4px;
             }
-
-            li.highlighted {
+            li.highlighted{
               background-color: #D1E9FF;
             }
           }
         }
       }
-
-      input:hover + select, input:hover + .chzn-container .chzn-single {
+      input:hover + select,input:hover + .chzn-container .chzn-single
+      {
         background-color: var(--em-form-background-color-hover);
         border-color: var(--em-form-border-color-hover);
         box-shadow: unset;
       }
-
-      input:focus + select, input:focus + .chzn-container .chzn-single {
+      input:focus + select,input:focus + .chzn-container .chzn-single
+      {
         border-radius: var(--em-form-border-radius-focus);
         border-color: var(--em-form-border-color-focus);
         background-color: var(--em-form-background-color-focus);
@@ -546,7 +537,6 @@
     }
 
     /** ERRORS **/
-
     .control-group.error {
       label {
         color: var(--em-form-label-color-error);
@@ -556,12 +546,10 @@
         border-color: var(--em-form-border-color-error);
       }
     }
-
     .fabrikError.plg-checkbox {
       .fabrikElement {
         .fabrikSubElementContainer {
           border-color: var(--em-form-checkbox-border-color-error);
-
           .row-fluid {
             border-color: var(--em-form-checkbox-border-color-error);
           }
@@ -577,7 +565,6 @@
     }
 
     /** REPEAT GROUP **/
-
     .fabrikGroupRepeater {
       @apply relative;
       bottom: 0;
@@ -588,12 +575,11 @@
       @apply justify-end;
 
       .addGroup {
-        padding-right: calc(var(--em-applicant-br) * 2);
+        padding-right: calc(var(--em-applicant-br)*2);
       }
     }
 
     /* GROUPE REPEAT */
-
     .fabrikGroupRepeater.pull-right.btn-group,
     .fabrikGroupRepeater .pull-right {
 
@@ -653,7 +639,6 @@
   /** BACKEND/VUE FORMS **/
   .com_emundus {
     /** INPUT **/
-
     input:not([type='radio']):not([type='checkbox']):not([type='file']), select {
       height: var(--em-form-coordinator-form-height);
     }
@@ -740,6 +725,7 @@
   }
 
   /* EMUNDUS FILEUPLOAD */
+
   .fabrik_element___emundus_file_upload_parent {
     display: inline-block;
     position: relative;

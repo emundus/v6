@@ -621,7 +621,7 @@ footer#g-footer > .g-container {
   border-color: $base-primary-color;
   text-transform: initial;
   margin-left: 0 !important;
-  font-family: $font-family-text;
+  font-family: var(--em-applicant-font);
 
   &:hover,
   &:active,
@@ -2009,7 +2009,6 @@ span.btn {
   padding: 8px 12px !important;
   color: var(--neutral-50);
   height: 40px;
-  font-family: get-font-family($font-family-default);
 
   &:hover,
   &:focus,
@@ -2092,7 +2091,6 @@ p.readmore .btn,
     color: $base-secondary-color;
     margin-right: 10px;
     font-weight: normal;
-    font-family: get-font-family($font-family-default);
 
     &:hover,
     &:active,
@@ -3729,7 +3727,6 @@ div#em-appli-block {
   /* BOUTONS */
   button.btn-primary {
     border-radius: var(--em-applicant-br) !important;
-    font-family: get-font-family($font-family-default);
   }
 
 
