@@ -689,6 +689,24 @@ form.fabrikForm input:not([type='file']):focus:not([type='radio']):not([type='ch
         border-color: var(--em-form-border-color-focus);
         background-color: var(--em-form-background-color-focus);
       }
+/* CALENDAR - DATE */
+form.fabrikForm .plg-date input.fabrikinput.inputbox {
+        border-top: 1px solid var(--em-form-border-color);
+        border-bottom: 1px solid var(--em-form-border-color);
+        border-right: none;
+        border-left: 1px solid var(--em-form-border-color);
+      }
+form.fabrikForm .plg-date .fabrikElement button.calendarbutton {
+        background: var(--em-form-background-color);
+        height: var(--em-form-height) !important;
+        border-radius: var(--em-form-border-radius) !important;
+        border-top: 1px solid var(--em-form-border-color);
+        border-bottom: 1px solid var(--em-form-border-color);
+        border-left: none;
+        border-right: 1px solid var(--em-form-border-color);
+        color: var(  --em-form-label-color);
+
+      }
 /* YES / NO */
 form.fabrikForm .plg-yesno .fabrikSubElementContainer .btn-group {
       display: flex;
@@ -1215,7 +1233,7 @@ input[type="text"],
       margin-bottom: 0;
       border-radius: 4px;
       border-color: var(--light-grey-3);
-      height: 40px;
+      height: var(--em-form-height);
       color: var(--night-blue);
     }
 .gantry input:focus {
@@ -1236,7 +1254,7 @@ input[type="text"],
     top: 0;
     opacity: 0;
     position: absolute;
-    font-size: 40px;
+    font-size: var(--em-form-height);
     cursor: pointer;
     padding: 30px 12px !important;
   }
