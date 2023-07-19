@@ -116,6 +116,9 @@
       display: inline-block !important;
       @apply text-lg;
       @apply w-full;
+      font-family: var(--em-applicant-font);
+      font-style: normal;
+      font-weight: 700;
       &.fabrikTip {
         cursor: text;
       }
@@ -123,7 +126,14 @@
 
     .fabrikElementTip {
       color: var(--em-form-tip-color);
-      @apply text-sm;
+      @apply text-base;
+      font-weight: 400;
+      font-family: var(--em-applicant-font);
+      font-style: normal;
+
+      i.icon-question-sign  {
+        display: none;
+      }
     }
 
     /** INPUT **/
@@ -781,6 +791,7 @@
       appearance: none;
       background-image: url(/images/emundus/arrow.svg);
       background: var(--em-form-background-color);
+      background-size: 8px;
       background-size: 8px;
       background-repeat: no-repeat;
       padding-right: 1.5rem !important;
