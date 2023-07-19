@@ -613,6 +613,14 @@
 			<field name="postgrest_api_bearer_token" type="text" label="COM_EMUNDUS_POSTGREST_BEARER_TOKEN"/>
 		</fieldset>
 
+		<field name="spacer13" type="spacer" hr="true"/>
+		<field name="glpi" type="note" label="COM_EMUNDUS_GLPI_API"/>
+		<fieldset label="COM_EMUNDUS_GLPI_API">
+			<field name="glpi_api_base_url" type="text" label="COM_EMUNDUS_GLPI_BASE_URL"/>
+			<field name="glpi_api_app_token" type="text" label="COM_EMUNDUS_GLPI_APP_TOKEN"/>
+			<field name="glpi_api_user_token" type="text" label="COM_EMUNDUS_GLPI_USER_TOKEN"/>
+		</fieldset>
+
 	</fieldset>
 	<fieldset
 			name="permissions"
