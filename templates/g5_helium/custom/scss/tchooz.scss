@@ -1411,7 +1411,7 @@ input:focus + .em-slider {
 **/
 .em-shadow-cards {
   height: 200px;
-  box-shadow: 0 4px 5px rgba(5, 47, 55, 0.07), 0 1px 10px rgba(5, 47, 55, 0.06), 0 2px 4px rgba(5, 47, 55, 0.1);
+  box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
   border-radius: 8px;
   padding: 24px 32px !important;
   margin: 24px;
@@ -1476,7 +1476,7 @@ input:focus + .em-slider {
 }
 
 .em-card-shadow {
-  box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+  box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
 }
 
 .em-card-white{
