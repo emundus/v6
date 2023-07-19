@@ -118,7 +118,7 @@
       @apply w-full;
       font-family: var(--em-applicant-font);
       font-style: normal;
-      font-weight: 700;
+      font-weight: 500;
       &.fabrikTip {
         cursor: text;
       }
