@@ -545,6 +545,9 @@ class EmundusHelperUpdate
                 ->from($db->quoteName('#__emundus_setup_languages'))
                 ->where($db->quoteName('tag') . ' LIKE ' . $db->quote($tag))
                 ->andWhere($db->quoteName('lang_code') . ' LIKE ' . $db->quote($lang));
+			if($type == 'override') {
+				$query->andWhere($db->quoteName('location') . ' LIKE ' . $db->quote($lang . '.override.ini'));
+			}
             $db->setQuery($query);
             $tag_existing = $db->loadResult();
 

@@ -1906,10 +1906,6 @@ structure:
 
                 EmundusHelperUpdate::updateExtensionParam('gotenberg_url', 'https://gotenberg.microservices.tchooz.app', 'http://localhost:3000');
 			}
-			
-			if (version_compare($cache_version, '1.37.0', '<=') || $firstrun){
-				EmundusHelperUpdate::updateProfileMenu();
-			}
 
             if (version_compare($cache_version, '1.36.6', '<=') || $firstrun){
                 // Add missing columns from previous updates
@@ -2022,6 +2018,22 @@ structure:
 				}
 				//
             }
+
+			if (version_compare($cache_version, '1.37.0', '<=') || $firstrun){
+				EmundusHelperUpdate::updateProfileMenu();
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ACCOUNT_PERSONAL_DETAILS', 'Informations personnelles', 'override', null, 'fabrik_groups', 'label');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ACCOUNT_PERSONAL_DETAILS', 'Personal details', 'override', null, 'fabrik_groups', 'label', 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_USERS_DEFAULT_LANGAGE', 'Langue de préférence', 'override', null, 'fabrik_elements', 'label');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_USERS_DEFAULT_LANGAGE', 'Preferred langage', 'override', null, 'fabrik_elements', 'label', 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_USERS_NATIONALITY', 'Nationalité', 'override', null, 'fabrik_elements', 'label');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_USERS_NATIONALITY', 'Nationality', 'override', null, 'fabrik_elements', 'label', 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ACCOUNT_INFORMATIONS', 'Informations de compte', 'override', null, 'fabrik_groups', 'label');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ACCOUNT_INFORMATIONS', 'Account informations', 'override', null, 'fabrik_groups', 'label', 'en-GB');
+			}
 
 			// Insert new translations in overrides files
 			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
