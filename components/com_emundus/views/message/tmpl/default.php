@@ -114,7 +114,7 @@ if ($allowed_attachments !== true) {
     <img class="em-sending-email-img" id="em-sending-email-img" src="media/com_emundus/images/sending-email.gif">
 </div>
 
-<form id="emailForm" class="em-form-message" name="emailForm" style="padding:0px 15px;">
+<form id="emailForm" class="em-form-message" name="emailForm">
     <div class="em_email_block" id="em_email_block">
 
         <div class="form-inline row">

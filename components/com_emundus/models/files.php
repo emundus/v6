@@ -2692,7 +2692,7 @@ class EmundusModelFiles extends JModelLegacy
 
             foreach ($res as $r) {
                 $assocTaggroup = '<div class="flex"><span class="circle '.$r['class'].'"></span>';
-                $assocTaggroup .= '<span class="label '.$r['class'].'">'.$r['label'].'</span></div>';
+                $assocTaggroup .= '<span id="'.$r['id'].'">'.$r['label'].'</span></div>';
                 if (isset($access[$r['fnum']])) {
                     $access[$r['fnum']] .= ''.$assocTaggroup;
                 } else {
@@ -2712,9 +2712,9 @@ class EmundusModelFiles extends JModelLegacy
             $res = $db->loadAssocList();
             foreach ($res as $r) {
                 if (isset($access[$r['fnum']])) {
-                    $access[$r['fnum']] .= '<span class="label '.$r['class'].'"><span class=\'glyphicon glyphicon-user\'></span> '.$r['uname'].'</span>';
+                    $access[$r['fnum']] .= '<div class="flex"><span class="circle '.$r['class'].'">'.$r['uname'].'</span></div>';
                 } else {
-                    $access[$r['fnum']] = '<span class="label '.$r['class'].'"><span class=\'glyphicon glyphicon-user\'></span> '.$r['uname'].'</span>';
+                    $access[$r['fnum']] = '<div class="flex"><span class="circle '.$r['class'].'">'.$r['uname'].'</span></div>';
                 }
             }
             return $access;

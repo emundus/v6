@@ -4489,7 +4489,7 @@ $(document).ready(function() {
                         title = 'COM_EMUNDUS_APPLICATION_VALIDATE_CHANGE_STATUT'
 
                         // Build HTML for SweetAlert
-                        html = '<div class="form-group em-flex-column em-flex-align-start"><label>'+result.state+'</label><select class="modal-chzn-select" data-placeholder="'+result.select_state+'" name="em-action-state" id="em-action-state" value="">';
+                        html = '<div class="em-flex-column em-flex-align-start"><label>'+result.state+'</label><select class="modal-chzn-select" data-placeholder="'+result.select_state+'" name="em-action-state" id="em-action-state" value="">';
 
                         for (var i in result.states) {
                             if (isNaN(parseInt(i)))
@@ -4634,7 +4634,7 @@ $(document).ready(function() {
                     success: function(result) {
                         title = 'COM_EMUNDUS_PUBLISH_UPDATE';
 
-                        html = '<div class="form-group em-flex-column em-flex-align-start"><label>'+result.state+'</label><select class="modal-chzn-select" data-placeholder="'+result.select_state+'" name="em-action-publish" id="em-action-publish" value="">';
+                        html = '<div class="em-flex-column em-flex-align-start"><label>'+result.state+'</label><select class="modal-chzn-select" data-placeholder="'+result.select_state+'" name="em-action-publish" id="em-action-publish" value="">';
 
                         for (var i in result.states) {
                             if(isNaN(parseInt(i)))

@@ -659,8 +659,7 @@ form.fabrikForm .fabrikElementContainer:not(.fabrikHide) {
 }
 form.fabrikForm .fabrikLabel {
       display: inline-block !important;
-      font-size: 1.125rem;
-      line-height: 1.75rem;
+      font-size: var(--em-form-label-size);
       width: 100%;
       font-family: var(--em-applicant-font);
       font-style: normal;
@@ -2021,6 +2020,48 @@ legend {
         color: var(--red-500);
     }
 /* SWEET ALERT */
+.swal2-container .swal2-popup {
+            padding: var(--em-alert-modal-padding);
+        }
+.swal2-container .swal2-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 1.25rem;
+}
+.swal2-container .swal2-header .swal2-title {
+  color: var(--em-default-title-color-1);
+  font-family: var(--em-applicant-font-title);
+  font-size: 20px;
+  font-style: normal;
+  line-height: 24.2px;
+  margin: 0px;
+  font-weight: 700;
+}
+.swal2-container .swal2-header .swal2-close {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+                color: black;
+                font-weight: 300;
+                font-size: 1.5rem;
+                line-height: 2rem;
+                right: 20px;
+                top: 20px;
+                width: 20px;
+                height: 20px;
+}
+.swal2-container .swal2-content {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+.swal2-container .swal2-actions {
+  margin-top: 2.5rem;
+}
+.swal2-container .swal2-actions button {
+  margin: 0px;
+}
 .gantry.g-back-office-emundus-tableau .swal2-popup iframe {
         padding-top: 30px;
     }

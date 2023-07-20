@@ -6253,6 +6253,8 @@ fieldset[disabled] .multiselect {
     z-index: 999 !important;
     background: white;
     border: solid 1px var(--neutral-300);
+    left: 0;
+    padding: 8px;
   }
 
   .em-actions-none {
@@ -6267,12 +6269,7 @@ fieldset[disabled] .multiselect {
 .em-modal-actions.em-export {
   padding: 0 !important;
 
-  .swal2-popup {
-    padding: 0;
-  }
-
   .swal2-content {
-    padding: 16px;
     margin-bottom: 64px;
   }
 }

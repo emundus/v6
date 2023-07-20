@@ -2627,7 +2627,7 @@ class EmundusHelperUpdate
 			'lightpurple' => 'purple-1',
 			'purple' => 'purple-2',
 			'darkpurple' => 'purple-2',
-			'lightblue' => 'lightblue-1',
+			'lightblue' => 'light-blue-1',
 			'blue' => 'blue-2',
 			'darkblue' => 'blue-3',
 			'lightgreen' => 'green-1',
