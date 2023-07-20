@@ -459,6 +459,12 @@ a.em-blue-400-color:hover {
 
 @media (max-width: 479px) {
 
+    .mod_emundus_campaign__header_filter__values {
+        margin-left: 0 !important;
+        min-width: 86vw;
+        max-width: 88vw;
+    }
+
     .mod_emundus_campaign__content [class*="size-"] {
         flex-basis: auto !important;
     }
