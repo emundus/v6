@@ -1,7 +1,7 @@
 
 const allColor =  getComputedStyle(document.querySelector(':root'));
-const errorColor = allColor.getPropertyValue("--red-600");
-const validColor = allColor.getPropertyValue("--secondary-main-400");
+const errorColor = allColor.getPropertyValue("--em-form-error-color");
+const validColor = allColor.getPropertyValue("--em-form-success-color");
 const defaultColor = allColor.getPropertyValue("--neutral-400");
 const unsupportedColor = allColor.getPropertyValue("--orange-400")
 
