@@ -133,6 +133,7 @@ li>a:hover {
     padding: var(--p-8) var(--p-24);
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 #g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte,
