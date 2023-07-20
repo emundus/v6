@@ -5091,6 +5091,11 @@ screen and (max-height: 769px) {
 }
 
 @media all and (max-width: 959px) {
+
+  .gantry:not(.files-board)  #g-container-main {
+    padding: 0 !important;
+  }
+
   section#g-navigation {
     width: auto !important;
   }
