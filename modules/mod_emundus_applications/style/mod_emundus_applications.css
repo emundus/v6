@@ -665,6 +665,11 @@ circle.circle {
 
 @media screen and (max-width: 767px) {
 
+    .moduletable.list-group.candidacy-files-list > div.em-flex-row.em-flex-space-between.em-mt-16 {
+        flex-wrap: wrap;
+        gap: 9px;
+    }
+
     .mod_emundus_applications___header .em-flex-row.em-flex-space-between {
        flex-direction: column;
         align-items: flex-start;
