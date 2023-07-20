@@ -467,6 +467,10 @@ a.em-blue-400-color:hover {
         grid-template-columns: repeat(1, 1fr);
     }
 
+    .mod_emundus_campaign__intro {
+        width: 100%;
+    }
+
     .mod_emundus_campaign__pinned_campaign {
         width: 100%;
     }
