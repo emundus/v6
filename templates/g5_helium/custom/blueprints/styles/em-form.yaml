@@ -24,6 +24,10 @@ form:
       type: input.text
       label: Label margin bottom
       default: '8px'
+    label-size:
+      type: input.text
+      label: Label font size
+      default: '14px'
     height:
       type: input.text
       label: Height of fields

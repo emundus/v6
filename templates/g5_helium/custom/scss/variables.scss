@@ -232,6 +232,7 @@
   --em-alert-success-icon-color: #{$em-alert-success-icon-color};
   --em-alert-success-border-width: #{$em-alert-success-border-width};
   --em-alert-success-border-color: #{$em-alert-success-border-color};
+  --em-alert-modal-padding: #{$em-alert-modal-padding};
 
   /* FONT */
   --em-coordinator-font: #{$font-coordinator-family-text};
@@ -322,6 +323,7 @@
 
   --em-form-label-color: #{$em-form-label-color};
   --em-form-label-margin-bottom: #{$em-form-label-margin-bottom};
+  --em-form-label-size: #{$em-form-label-size};
   --em-form-height: #{$em-form-height};
   --em-form-font-size: #{$em-form-font-size};
   --em-form-tip-color: #{$em-form-tip-color};

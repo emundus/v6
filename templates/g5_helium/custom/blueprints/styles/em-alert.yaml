@@ -84,3 +84,7 @@ form:
       type: input.colorpicker
       label: Alert success border color
       default: "rgba(255, 255, 255, 0)"
+    modal-padding:
+      type: input.text
+      label: Modal padding
+      default: "32px"

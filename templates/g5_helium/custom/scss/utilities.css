@@ -228,6 +228,44 @@
     }
 
     /* SWEET ALERT */
+    .swal2-container {
+        .swal2-popup {
+            padding: var(--em-alert-modal-padding);
+        }
+        .swal2-header {
+            @apply flex;
+            @apply flex-col;
+            @apply items-start;
+            @apply mb-5;
+            .swal2-title {
+                @apply em-default-title-3;
+                @apply m-0;
+                @apply font-bold;
+            }
+            .swal2-close {
+                @apply flex;
+                @apply flex-col;
+                @apply justify-center;
+                @apply items-center;
+                color: black;
+                @apply font-light;
+                @apply text-2xl;
+                right: 20px;
+                top: 20px;
+                width: 20px;
+                height: 20px;
+            }
+        }
+        .swal2-content {
+            @apply text-base;
+        }
+        .swal2-actions {
+            @apply mt-10;
+            button {
+                @apply m-0;
+            }
+        }
+    }
     .gantry.g-back-office-emundus-tableau .swal2-popup iframe {
         padding-top: 30px;
     }
@@ -458,7 +496,6 @@
     .has-error .form-control-feedback {
         color: #b94a48;
     }
-
 
     .em-w-auto {
         width: auto;

@@ -114,7 +114,7 @@
 
     .fabrikLabel {
       display: inline-block !important;
-      @apply text-lg;
+      font-size: var(--em-form-label-size);
       @apply w-full;
       font-family: var(--em-applicant-font);
       font-style: normal;
