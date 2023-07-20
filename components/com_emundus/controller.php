@@ -1127,7 +1127,7 @@ class EmundusController extends JControllerLegacy {
                         $now->setTimezone(new DateTimeZone('UTC'));
                         $now = $now->format('Y-m-d H:i:s');
 
-                        $query .= '('.$user->id.', '.$attachments.', \''.$paths.'\', '.$db->Quote($descriptions).', '.$can_be_deleted.', '.$can_be_viewed.', '.$fnumInfos['id'].', '.$db->Quote($fnum).', '.$pageCount.', '.$db->quote($local_filename).', '.$db->quote($now).', '.$db->quote($now).', '.$db->quote($file['size']).'),';
+                        $query .= '('.$user->id.', '.$attachments.', \''.$paths.'\', '.$db->Quote($descriptions).', '.$can_be_deleted.', '.$can_be_viewed.', '.$fnumInfos['id'].', '.$db->Quote($fnum).', '.$pageCount.', '.$db->quote($local_filename).', '.$db->quote($now).', '.$db->quote($now).', '.$db->quote($file['size']).', '.$db->quote($fnumInfos['ccid']).'),';
                         $nb++;
                     } else {
                         $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> Cannot move file : '.$file['tmp_name'].' to '.$chemin.$user->id.DS.$paths;
@@ -1289,7 +1289,7 @@ class EmundusController extends JControllerLegacy {
         unlink($file['tmp_name']);
 
         if (!empty($query)) {
-            $query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum, pdf_pages_count, local_filename, timedate, modified, size)
+            $query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum, pdf_pages_count, local_filename, timedate, modified, size, ccid)
                         VALUES '.substr($query,0,-1);
 
             try {

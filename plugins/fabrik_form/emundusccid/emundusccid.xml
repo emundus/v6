@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_form" method="upgrade" type="plugin" version="30">
+	<name>PLG_FABRIK_FORM_EMUNDUSCCID</name>
+	<author>eMundus</author>
+	<creationDate>July 2023</creationDate>
+	<copyright>Copyright (C) 2017-2023 eMundus.fr - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>dev@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>3.8.12</version>
+	<description>PLG_FABRIK_FORM_EMUNDUSCCID_DESCRIPTION</description>
+	<files>
+		<filename plugin="emundusccid">emundusccid.php</filename>
+		<filename>index.html</filename>
+		<folder>forms</folder>
+		<folder>language</folder>
+	</files>
+</extension>

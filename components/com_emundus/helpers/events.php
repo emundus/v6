@@ -87,10 +87,7 @@ class EmundusHelperEvents {
                 $this->logUpdateForms($params, $forms_to_log);
 			}
 
-	        $db_table_name = $params['formModel']->getListModel()->getTable()->db_table_name;
-			$fnum = $params['formModel']->formData[$db_table_name.'___fnum'];
-
-	        $params['formModel']->updateFormData($db_table_name.'___ccid',$this->getIdByFnum($fnum));
+			$this->updateCcidFormData($params['formModel']);
 
             return true;
         } catch (Exception $e) {
@@ -1337,25 +1334,16 @@ class EmundusHelperEvents {
 		return $result;
 	}
 
-	public function getIdByFnum($fnum)
-	{
-		$candidature_id = 0;
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+	public function updateCcidFormData($formModel): void {
+		require_once JPATH_SITE . '/components/com_emundus/helpers/application.php';
+		$h_application = new EmundusHelperApplication();
 
-		try
-		{
-			$query->select('id')
-				->from($db->quoteName('#__emundus_campaign_candidature'))
-				->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
-			$db->setQuery($query);
-			$candidature_id = $db->loadResult();
-		}
-		catch (Exception $e)
-		{
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
-		}
+		$db_table_name = $formModel->getListModel()->getTable()->db_table_name;
+		$fnum = $formModel->formData[$db_table_name.'___fnum'];
 
-		return $candidature_id;
+		if(!empty($fnum))
+		{
+			$formModel->updateFormData($db_table_name . '___ccid', $h_application::getCcidByFnum($fnum));
+		}
 	}
 }

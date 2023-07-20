@@ -446,9 +446,10 @@ class EmundusModelApplication extends JModelList
 
     public function addComment($row)
     {
-        // Log the comment in the eMundus logging system.
+		require_once JPATH_SITE . '/components/com_emundus/helpers/application.php';
+		$h_application = new EmundusHelperApplication();
+
         $logsStd = new stdClass();
-        // Log only the body if there is no title
         if (empty($row['reason'])) {
             $logsStd->element = '[' . JText::_('COM_EMUNDUS_COMMENT_NO_TITLE') . ']';
             $logsStd->details = $row['comment_body'];
@@ -457,13 +458,35 @@ class EmundusModelApplication extends JModelList
             $logsStd->details = $row['comment_body'];
         }
 
-        //$logsStd->details =  $row['comment_body'];
-
         $logsParams = array('created' => [$logsStd]);
         EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($row['fnum'], -7), $row['fnum'], 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
-        $query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body, fnum)
-                VALUES('.$row['applicant_id'].','.$row['user_id'].','.$this->_db->Quote($row['reason']).',"'.date("Y.m.d H:i:s").'",'.$this->_db->Quote($row['comment_body']).','.$this->_db->Quote(@$row['fnum']).')';
+	    $now = new DateTime();
+	    $now->setTimezone(new DateTimeZone('UTC'));
+	    $now = $now->format('Y-m-d H:i:s');
+
+		$query = $this->_db->getQuery(true);
+		$colums = array(
+			$this->_db->quoteName('applicant_id'),
+			$this->_db->quoteName('user_id'),
+			$this->_db->quoteName('reason'),
+			$this->_db->quoteName('date'),
+			$this->_db->quoteName('comment_body'),
+			$this->_db->quoteName('fnum'),
+			$this->_db->quoteName('ccid')
+		);
+		$values = array(
+			$row['applicant_id'],
+			$row['user_id'],
+			$this->_db->quote($row['reason']),
+			$this->_db->quote($now),
+			$this->_db->quote($row['comment_body']),
+			$this->_db->quote($row['fnum']),
+			$h_application::getCcidByFnum($row['fnum']));
+
+		$query->insert($this->_db->quoteName('#__emundus_comments'))
+			->columns($colums)
+			->values(implode(',', $values));
         $this->_db->setQuery($query);
 
         try {

@@ -1054,6 +1054,9 @@ class EmundusModelFiles extends JModelLegacy
      * @return bool|mixed
      */
     public function shareGroups($groups, $actions, $fnums) {
+		require_once JPATH_SITE . '/components/com_emundus/helpers/application.php';
+		$h_application = new EmundusHelperApplication();
+
         try {
             $db = $this->getDbo();
             $insert = [];
@@ -1062,7 +1065,7 @@ class EmundusModelFiles extends JModelLegacy
                 foreach($groups as $group) {
                     foreach ($actions as $action) {
                         $ac = (array) $action;
-                        $insert[] = $group.','.$ac['id'].','.$ac['c'].','.$ac['r'].','.$ac['u'].','.$ac['d'].','.$db->quote($fnum);
+                        $insert[] = $group.','.$ac['id'].','.$ac['c'].','.$ac['r'].','.$ac['u'].','.$ac['d'].','.$db->quote($fnum).','.$db->quote($h_application::getCcidByFnum($fnum));
                     }
                 }
             }
@@ -1075,7 +1078,7 @@ class EmundusModelFiles extends JModelLegacy
 
             $query->clear()
                 ->insert($db->quoteName('#__emundus_group_assoc'))
-                ->columns($db->quoteName(['group_id', 'action_id', 'c', 'r', 'u', 'd', 'fnum']))
+                ->columns($db->quoteName(['group_id', 'action_id', 'c', 'r', 'u', 'd', 'fnum', 'ccid']))
                 ->values($insert);
             $db->setQuery($query);
             $db->execute();
@@ -1095,6 +1098,9 @@ class EmundusModelFiles extends JModelLegacy
      * @return bool|string
      */
     public function shareUsers($users, $actions, $fnums) {
+	    require_once JPATH_SITE . '/components/com_emundus/helpers/application.php';
+	    $h_application = new EmundusHelperApplication();
+
         $error = null;
         try {
 
@@ -1105,7 +1111,7 @@ class EmundusModelFiles extends JModelLegacy
                 foreach($users as $user) {
                     foreach ($actions as $action) {
                         $ac = (array) $action;
-                        $insert[] = $user.','.$ac['id'].','.$ac['c'].','.$ac['r'].','.$ac['u'].','.$ac['d'].','.$db->quote($fnum);
+                        $insert[] = $user.','.$ac['id'].','.$ac['c'].','.$ac['r'].','.$ac['u'].','.$ac['d'].','.$db->quote($fnum).','.$db->quote($h_application::getCcidByFnum($fnum));
                     }
                 }
             }
@@ -1118,7 +1124,7 @@ class EmundusModelFiles extends JModelLegacy
 
             $query->clear()
                 ->insert($db->quoteName('#__emundus_users_assoc'))
-                ->columns($db->quoteName(['user_id', 'action_id', 'c', 'r', 'u', 'd', 'fnum']))
+                ->columns($db->quoteName(['user_id', 'action_id', 'c', 'r', 'u', 'd', 'fnum', 'ccid']))
                 ->values($insert);
             $db->setQuery($query);
             $db->execute();
@@ -1303,7 +1309,7 @@ class EmundusModelFiles extends JModelLegacy
      * @param $tag
      * @return bool
      */
-    public function tagFile($fnums, $tags, $user = null) {
+    public function tagFile($fnums, $tags, $user = null): bool {
         $tagged = false;
 
         if (!empty($fnums) && !empty($tags)) {
@@ -1321,15 +1327,20 @@ class EmundusModelFiles extends JModelLegacy
                 $now = $now->format('Y-m-d H:i:s');
 
                 $query_associated_tags = $db->getQuery(true);
-                $query ="insert into #__emundus_tag_assoc (fnum, id_tag, date_time, user_id) VALUES ";
+				$columns = array('fnum', 'id_tag', 'date_time', 'user_id', 'ccid');
+	            $values = array();
 
                 $logger = array();
                 foreach ($fnums as $fnum) {
+					require_once JPATH_SITE . '/components/com_emundus/helpers/application.php';
+					$h_application = new EmundusHelperApplication();
+					$ccid = $h_application::getCcidByFnum($fnum);
+
                     // Get tags already associated to this fnum by the current user
                     $query_associated_tags->clear()
                         ->select('id_tag')
                         ->from($db->quoteName('#__emundus_tag_assoc'))
-                        ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
+                        ->where($db->quoteName('ccid') . ' = ' . $db->quote($ccid))
                         ->andWhere($db->quoteName('user_id') . ' = ' . $db->quote($user));
                     $db->setQuery($query_associated_tags);
                     $tags_already_associated = $db->loadColumn();
@@ -1337,10 +1348,12 @@ class EmundusModelFiles extends JModelLegacy
                     // Insert valid tags
                     foreach ($tags as $tag) {
                         if (!in_array($tag, $tags_already_associated)) {
-                            $query .= '("' . $fnum . '", ' . $tag . ',"' . $now . '",' . $user . '),';
-                            $query_log = 'SELECT label
-                                FROM #__emundus_setup_action_tag
-                                WHERE id =' . $tag;
+	                        $values[] = $db->quote($fnum) . ',' . $tag . ',' . $db->quote($now) . ',' . $user . ',' . $ccid;
+
+							$query_log = $db->getQuery(true);
+							$query_log->select('label')
+								->from($db->quoteName('#__emundus_setup_action_tag'))
+								->where($db->quoteName('id') . ' = ' . $tag);
                             $db->setQuery($query_log);
                             $log_tag = $db->loadResult();
 
@@ -1356,7 +1369,10 @@ class EmundusModelFiles extends JModelLegacy
                     }
                 }
 
-                $query = substr_replace($query, ';', -1);
+				$query = $db->getQuery(true);
+				$query->insert($db->quoteName('#__emundus_tag_assoc'))
+					->columns($columns)
+					->values($values);
                 $db->setQuery($query);
                 $tagged = $db->execute();
             } catch (Exception $e) {
@@ -1683,14 +1699,18 @@ class EmundusModelFiles extends JModelLegacy
      * @return bool|mixed
      */
     public static function getFnumInfos($fnum) {
+	    $fnumInfos = [];
+
         try {
             $db = JFactory::getDBO();
-            $query = 'select u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, ss.value, ss.class, c.*, cc.campaign_id
-                        from #__emundus_campaign_candidature as cc
-                        left join #__emundus_setup_campaigns as c on c.id = cc.campaign_id 
-                        left join #__users as u on u.id = cc.applicant_id
-                        left join #__emundus_setup_status as ss on ss.step = cc.status
-                        where cc.fnum like '.$db->Quote($fnum);
+			$query = $db->getQuery(true);
+
+			$query->select('u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, ss.value, ss.class, c.*, cc.campaign_id,cc.id as ccid')
+				->from('#__emundus_campaign_candidature as cc')
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns','c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('cc.campaign_id'))
+				->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('u.id').' = '.$db->quoteName('cc.applicant_id'))
+				->leftJoin($db->quoteName('#__emundus_setup_status','ss').' ON '.$db->quoteName('ss.step').' = '.$db->quoteName('cc.status'))
+				->where($db->quoteName('cc.fnum').' = '.$db->quote($fnum));
             $db->setQuery($query);
             $fnumInfos = $db->loadAssoc();
 
@@ -1699,14 +1719,12 @@ class EmundusModelFiles extends JModelLegacy
                 $fnumInfos['name'] = $fnum;
                 $fnumInfos['email'] = $fnum;
             }
-
-            return $fnumInfos;
-
         } catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-            return false;
         }
+
+	    return $fnumInfos;
     }
 
     /**

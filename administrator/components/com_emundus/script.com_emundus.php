@@ -1998,6 +1998,74 @@ structure:
 
 			if (version_compare($cache_version, '1.37.0', '<=') || $firstrun){
 				EmundusHelperUpdate::manageCcid();
+
+				EmundusHelperUpdate::installExtension('PLG_FABRIK_FORM_EMUNDUSATTACHMENT', 'emundusattachment', '{"name":"PLG_FABRIK_FORM_EMUNDUSATTACHMENT","type":"plugin","creationDate":"July 2023","author":"eMundus","copyright":"Copyright (C) 2017-2023 eMundus.fr - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"3.8.12","description":"PLG_FABRIK_FORM_EMUNDUSATTACHMENT_DESCRIPTION","group":"","filename":"emundusattachment"}', 'plugin', 1, 'fabrik_form');
+				EmundusHelperUpdate::installExtension('PLG_FABRIK_FORM_EMUNDUSCCID', 'emundusccid', '{"name":"PLG_FABRIK_FORM_EMUNDUSCCID","type":"plugin","creationDate":"July 2023","author":"eMundus","copyright":"Copyright (C) 2017-2023 eMundus.fr - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"3.8.12","description":"PLG_FABRIK_FORM_EMUNDUSCCID_DESCRIPTION","group":"","filename":"emundusccid"}', 'plugin', 1, 'fabrik_form');
+
+				$query->clear()
+					->select('params')
+					->from($db->quoteName('#__fabrik_forms'))
+					->where($db->quoteName('id') . ' = 67');
+				$db->setQuery($query);
+				$params = $db->loadResult();
+
+				if(!empty($params))
+				{
+					$params = json_decode($params, true);
+
+					$old_attachment_plugin = array_search('emundus-attachment.php', $params['form_php_file']);
+					if($old_attachment_plugin !== false) {
+						unset($params['form_php_file'][$old_attachment_plugin]);
+						unset($params['form_php_require_once'][$old_attachment_plugin]);
+						unset($params['only_process_curl'][$old_attachment_plugin]);
+						array_values($params['form_php_file']);
+						array_values($params['form_php_require_once']);
+						array_values($params['only_process_curl']);
+						$params['plugins'][$old_attachment_plugin] = 'emundusattachment';
+
+						$query->clear()
+							->update($db->quoteName('#__fabrik_forms'))
+							->set($db->quoteName('params').' = '.$db->quote(json_encode($params)))
+							->where($db->quoteName('id').' = 67');
+						$db->setQuery($query);
+						$db->execute();
+					}
+				}
+
+				$forms_to_update = [
+					$db->quote('jos_emundus_evaluations'),
+					$db->quote('jos_emundus_final_grade'),
+					$db->quote('jos_emundus_admission'),
+				];
+				$query->clear()
+					->select('ff.id,ff.params')
+					->from($db->quoteName('#__fabrik_forms','ff'))
+					->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ff.id'))
+					->where($db->quoteName('fl.db_table_name') . ' IN (' . implode(',',$forms_to_update) . ')');
+				$db->setQuery($query);
+				$forms = $db->loadObjectList();
+
+				foreach ($forms as $form)
+				{
+					$params = json_decode($form->params, true);
+
+					$ccid_plugin = array_search('emundusccid', $params['plugins']);
+					if($ccid_plugin === false)
+					{
+						$params['plugin_state'][] = 1;
+						$params['plugins'][] = 'emundusccid';
+						$params['plugin_locations'][] = 'both';
+						$params['plugin_events'][] = 'both';
+						$params['plugin_description'][] = 'ccid';
+
+						$query->clear()
+							->update($db->quoteName('#__fabrik_forms'))
+							->set($db->quoteName('params').' = '.$db->quote(json_encode($params)))
+							->where($db->quoteName('id').' = '.$db->quote($form->id));
+						$db->setQuery($query);
+						$db->execute();
+					}
+				}
 			}
 
 			// Insert new translations in overrides files
