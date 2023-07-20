@@ -348,10 +348,6 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
         width: 100%;
     }
 
-    .login form {
-        width: 90% !important;
-    }
-
     ul.nav.nav-tabs.nav-stacked {
         justify-content: center;
         flex-direction: column;

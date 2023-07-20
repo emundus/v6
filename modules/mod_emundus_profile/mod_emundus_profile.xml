@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="3.10.9" client="site" method="upgrade">
+	<name>MOD_EMUNDUS_PROFILE</name>
+    <author>Brice Hubinet</author>
+    <creationDate>April 2023</creationDate>
+    <copyright>Copyright (C) 2023 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>brice.hubinet@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>1.36.0</version>
+	<description>MOD_EMUNDUS_PROFILE_DESC</description>
+	<files>
+		<filename module="mod_emundus_profile">mod_emundus_profile.php</filename>
+		<folder>tmpl</folder>
+		<folder>language</folder>
+		<filename>helper.php</filename>
+		<filename>index.html</filename>
+		<filename>mod_emundus_profile.xml</filename>
+	</files>
+
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="show_profile_picture" type="radio" default="1" label="MOD_EMUNDUS_PROFILE_SHOW_PROFILE_PICTURE" description="MOD_EMUNDUS_PROFILE_SHOW_PROFILE_PICTURE_DESC" class="btn-group btn-group-yesno">
+					<option value="0">JNo</option>
+					<option value="1">JYes</option>
+				</field>
+				<field name="update_profile_picture" type="radio" default="1" label="MOD_EMUNDUS_PROFILE_UPDATE_PROFILE_PICTURE" description="MOD_EMUNDUS_PROFILE_UPDATE_PROFILE_PICTURE_DESC" class="btn-group btn-group-yesno">
+					<option value="0">JNo</option>
+					<option value="1">JYes</option>
+				</field>
+				<field name="show_name" type="radio" default="1" label="MOD_EMUNDUS_PROFILE_SHOW_NAME" description="MOD_EMUNDUS_PROFILE_SHOW_NAME_DESC" class="btn-group btn-group-yesno">
+					<option value="0">JNo</option>
+					<option value="1">JYes</option>
+				</field>
+				<field name="show_account_edit_button" type="radio" default="1" label="MOD_EMUNDUS_PROFILE_SHOW_ACCOUNT_EDIT" description="MOD_EMUNDUS_PROFILE_SHOW_ACCOUNT_EDIT_DESC" class="btn-group btn-group-yesno">
+					<option value="0">JNo</option>
+					<option value="1">JYes</option>
+				</field>
+				<field name="intro" type="text" default="" label="MOD_EMUNDUS_PROFILE_INTRO" description="MOD_EMUNDUS_PROFILE_INTRO_DESC" />
+			</fieldset>
+		</fields>
+	</config>
+</extension>

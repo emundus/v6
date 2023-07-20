@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -144,6 +144,12 @@ class hikashopCheckoutFieldsHelper extends hikashopCheckoutHelperInterface {
 	public function display(&$view, &$params) {
 		if(!hikashop_level(2))
 			return;
+
+		$jversion = preg_replace('#[^0-9\.]#i','', JVERSION);
+		if(version_compare($jversion, '3.4.0', '>='))
+			JHTML::_('behavior.formvalidator');
+		else
+			JHTML::_('behavior.formvalidation');
 
 		if(!isset($params['show_title']))
 			$params['show_title'] = true;

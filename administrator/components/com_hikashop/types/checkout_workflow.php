@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -371,6 +371,14 @@ window.checkoutWorflowUrls = '.json_encode($urls).';
 				if(!isset($s['values']))
 					break;
 				$ret .= JHTML::_('select.genericlist',  $s['values'], $name, 'class="inputbox no-chzn" data-checkout-param="'.$k.'" onchange="window.checkoutWorkflowEditor.onChange(this);"', 'value', 'text', $v);
+				break;
+			case 'groupedlist':
+				if(!isset($s['values']))
+					break;
+				if(!HIKASHOP_J40)
+					$ret .= JHTML::_('select.genericlist',  $s['values'], $name, 'class="inputbox no-chzn" data-checkout-param="'.$k.'" onchange="window.checkoutWorkflowEditor.onChange(this);"', 'value', 'text', $v);
+				else
+					$ret .= JHTML::_('select.groupedlist',  $s['values'], $name, array('list.attr'=>'class="custom-select" data-checkout-param="'.$k.'" onchange="window.checkoutWorkflowEditor.onChange(this);"', 'group.id' => 'id', 'list.select' => array($v)));
 				break;
 			case 'namebox':
 				if(!isset($s['namebox']))

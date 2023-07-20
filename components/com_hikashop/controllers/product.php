@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -63,7 +63,7 @@ class productController extends hikashopController {
 		if(!empty($formData['contact'])) {
 			foreach($formData['contact'] as $column => $value) {
 				hikashop_secureField($column);
-				$element->$column = strip_tags($value);
+				$element->$column = strip_tags((string)$value);
 			}
 		}
 		if(empty($formData['register'])) {
@@ -78,7 +78,7 @@ class productController extends hikashopController {
 				$element = new stdClass();
 				foreach($formData['contact'] as $column => $value) {
 					hikashop_secureField($column);
-					$element->$column = strip_tags($value);
+					$element->$column = strip_tags((string)$value);
 				}
 			}
 			hikaInput::get()->set('formData', $element);
@@ -119,7 +119,7 @@ class productController extends hikashopController {
 			$app->enqueueMessage(JText::_('PLEASE_FILL_ADDITIONAL_INFO'), 'error');
 			$send = false;
 		} elseif(!empty($element->altbody)) {
-			$element->altbody = strip_tags($element->altbody);
+			$element->altbody = strip_tags((string)$element->altbody);
 		}
 
 		if(!empty($element->consentcheck) && empty($element->consent)) {
@@ -150,7 +150,7 @@ class productController extends hikashopController {
 			}
 
 			if(!empty($product) && !empty($product->product_name)){
-				$subject = JText::sprintf('CONTACT_REQUEST_FOR_PRODUCT',strip_tags($product->product_name));
+				$subject = JText::sprintf('CONTACT_REQUEST_FOR_PRODUCT',strip_tags((string)$product->product_name));
 			}
 		}
 
@@ -211,7 +211,13 @@ class productController extends hikashopController {
 				if(!isset($productClass))
 					$productClass = hikashop_get('class.product');
 				$productClass->addAlias($product);
-				$app->redirect(hikashop_contentLink('product&task=show&cid='.$product->product_id.'&name='.$product->alias.$url_itemid, $product, false, true));
+
+				$redirect = $config->get('product_contact_redirect_to_product_page', 1);
+				if($redirect) {
+					$app->redirect(hikashop_contentLink('product&task=show&cid='.$product->product_id.'&name='.$product->alias.$url_itemid, $product, false, true));
+				} else {
+					$app->enqueueMessage(JText::sprintf('CLICK_HERE_TO_GO_BACK_TO_PRODUCT',hikashop_contentLink('product&task=show&cid='.$product->product_id.'&name='.$product->alias.$url_itemid, $product)));
+				}
 			}
 		}
 
@@ -230,7 +236,7 @@ class productController extends hikashopController {
 		$formData = hikaInput::get()->get('data', array(), 'array');
 		foreach($formData['register'] as $column => $value){
 			hikashop_secureField($column);
-			$element->$column = strip_tags($value);
+			$element->$column = strip_tags((string)$value);
 		}
 
 		$hkUser = hikashop_loadUser(true);
@@ -317,7 +323,7 @@ class productController extends hikashopController {
 
 				$subject = JText::_('WAITLIST_REQUEST');
 				if(!empty($product->product_name)) {
-					$subject = JText::sprintf('WAITLIST_REQUEST_FOR_PRODUCT', strip_tags($product->product_name));
+					$subject = JText::sprintf('WAITLIST_REQUEST_FOR_PRODUCT', strip_tags((string)$product->product_name));
 				}
 				$mailClass = hikashop_get('class.mail');
 				$infos = new stdClass();

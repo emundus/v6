@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -15,6 +15,11 @@ defined('_JEXEC') or die('Restricted access');
 <?php
 	$this->checkoutHelper->displayMessages('cart');
 ?>
+<!-- TOP EXTRA DATA -->
+<?php
+if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$this->module_position]->top)) { echo implode("\r\n", $this->extraData[$this->module_position]->top); }
+?>
+<!-- EO TOP EXTRA DATA -->
 <table class="table table-striped table-hover" width="100%">
 	<thead>
 		<tr>
@@ -644,6 +649,12 @@ defined('_JEXEC') or die('Restricted access');
 	<noscript>
 		<input id="hikashop_checkout_cart_quantity_button" class="btn button" type="submit" name="refresh" value="<?php echo JText::_('REFRESH_CART');?>"/>
 	</noscript>
+
+<!-- BOTTOM EXTRA DATA -->
+<?php
+if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$this->module_position]->top)) { echo implode("\r\n", $this->extraData[$this->module_position]->top); }
+?>
+<!-- EO BOTTOM EXTRA DATA -->
 <?php
 	}
 

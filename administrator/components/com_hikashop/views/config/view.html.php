@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -440,6 +440,12 @@ class configViewConfig extends hikashopView
 			if(empty($_SESSION['check_system_user'])) {
 				hikashop_display('The HikaShop user synchronization plugin has been either removed or disabled from the website. It is a critical part of HikaShop and should not be disabled if you\'re using HikaShop on your website.Please enable that plugin via the Joomla plugins manager and then logout/login from the backend.','error');
 			}
+		}
+
+		$db->setQuery("SELECT payment_id FROM `#__hikashop_payment` WHERE `payment_type` = 'paypal' AND `payment_published` = '1'");
+		$check_paypal = (int)$db->loadResult();
+		if(!empty($check_paypal) && $check_paypal > 0) {
+			hikashop_display(JText::_('YOUR_PAYPAL_PAYMENT_METHOD_IS_OBSOLETE_PLEASE_SWITCH_TO_PAYPAL_CHECKOUT'),'error');
 		}
 
 		$path = rtrim(JPATH_SITE,DS).DS.'plugins'.DS.'hikashop'.DS.'history'.DS.'history.php';
