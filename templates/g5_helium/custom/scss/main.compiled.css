@@ -739,6 +739,9 @@ form.fabrikForm #inputValue
       padding: 0;
       box-shadow: unset;
     }
+form.fabrikForm #inputValue:hover {
+        border-color: var(--em-form-border-color-hover) !important;
+      }
 form.fabrikForm .check
     {
       opacity: 0;
@@ -748,10 +751,11 @@ form.fabrikForm .fabrikEmundusPhoneNumber .chzn-container{
       width: auto !important;
     }
 form.fabrikForm .fabrikEmundusPhoneNumber .chzn-container .chzn-drop{
-      width: -moz-max-content;
-      width: max-content;
+      width: -moz-fit-content;
+      width: fit-content;
       border-radius: var(--em-form-border-radius);
       margin-top: var(--m-8);
+      min-width: 80vw !important;
     }
 form.fabrikForm .fabrikEmundusPhoneNumber .chzn-container .chzn-drop .chzn-search{
       padding: var(--p-4);
@@ -786,6 +790,9 @@ form.fabrikForm .fabrikEmundusPhoneNumber .chzn-container .chzn-single{
       padding-right: 1.5rem !important;
       box-shadow: unset;
     }
+form.fabrikForm .fabrikEmundusPhoneNumber .chzn-container .chzn-single:hover {
+        border-color: var(--em-form-border-color-hover);
+      }
 form.fabrikForm .fabrikEmundusPhoneNumber .chzn-container .chzn-single span{
       font-size: var(--em-form-font-size);
       margin-right: var(--m-16);
@@ -1491,6 +1498,9 @@ input[type="text"],
       flex-wrap: wrap;
       min-height: var(--em-form-height);
     }
+.chzn-container .chzn-single:hover, .chzn-container .chzn-choices:hover, .chzn-container.chzn-container-multi .chzn-single:hover, .chzn-container.chzn-container-multi .chzn-choices:hover, .chzn-container.chzn-container-multi.chzn-container-active .chzn-single:hover, .chzn-container.chzn-container-multi.chzn-container-active .chzn-choices:hover {
+        border-color: var(--em-form-border-color-hover) !important;
+      }
 .chzn-container .chzn-single.input-small, .chzn-container .chzn-choices.input-small, .chzn-container.chzn-container-multi .chzn-single.input-small, .chzn-container.chzn-container-multi .chzn-choices.input-small, .chzn-container.chzn-container-multi.chzn-container-active .chzn-single.input-small, .chzn-container.chzn-container-multi.chzn-container-active .chzn-choices.input-small {
         background-position-x: 92%;
       }
