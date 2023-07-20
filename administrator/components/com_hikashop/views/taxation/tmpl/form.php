@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -50,7 +50,7 @@ defined('_JEXEC') or die('Restricted access');
 			<td><?php
 				echo $this->nameboxType->display(
 					'data[taxation][zone_namekey]',
-					explode(',',@$this->element->zone_namekey),
+					explode(',',(string)@$this->element->zone_namekey),
 					hikashopNameboxType::NAMEBOX_MULTIPLE,
 					'zone',
 					array(
@@ -67,7 +67,7 @@ defined('_JEXEC') or die('Restricted access');
 					<?php echo JText::_( 'CUSTOMER_TYPE' ); ?>
 			</td>
 			<td>
-				<?php echo $this->taxType->display( "data[taxation][taxation_type][]" , explode(',',trim(@$this->element->taxation_type,',')), true, 'multiple="multiple" size="3"' ); ?>
+				<?php echo $this->taxType->display( "data[taxation][taxation_type][]" , explode(',',trim((string)@$this->element->taxation_type,',')), true, 'multiple="multiple" size="3"' ); ?>
 			</td>
 		</tr>
 		<tr>

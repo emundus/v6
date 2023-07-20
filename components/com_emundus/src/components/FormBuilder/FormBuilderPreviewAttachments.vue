@@ -10,12 +10,11 @@
 
 <script>
 import formService from '../../services/form';
-import Section from '../Users/Section';
 import Skeleton from '../Skeleton';
 
 export default {
 	name: "FormBuilderPreviewAttachments",
-	components: {Skeleton, Section},
+	components: {Skeleton},
 	props: {
 		document_id: {
 			type: Number,

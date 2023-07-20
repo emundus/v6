@@ -124,6 +124,7 @@ phpunit-job:
     - cp -pr media/com_emundus_vanilla/v6/language/overrides/* language/overrides/
     - cp -pr media/com_emundus_vanilla/v6/templates/g5_helium/* templates/g5_helium/
     - /scripts/entrypoint.sh
+    - cat configuration.php
   script:
     - libraries/emundus/phpunit.phar -c phpunit.xml --coverage-text --colors=never
   only:

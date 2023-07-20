@@ -111,6 +111,7 @@
 				<field name="order_applications" type="list" default="esc.end_date" label="MOD_EMUNDUS_ORDER_APPLICATIONS" description="MOD_EMUNDUS_ORDER_APPLICATIONS_DESC">
 					<option value="esc.end_date">CAMPAIGN_END_DATE</option>
 					<option value="ecc.date_time">REGISTER_DATE</option>
+					<option value="ecc.updated">LAST_MODIFICATION_DATE</option>
 				</field>
 
 				<field name="order_applications_asc_des" type="list" default="DESC" label="MOD_EMUNDUS_ORDER_APPLICATIONS_ASC_DES" description="MOD_EMUNDUS_ORDER_APPLICATIONS_ASC_DES_DESC">
@@ -227,8 +228,7 @@
 				</field>
 
 				<!-- PROGRESS CIRCLES -->
-				<field showon="layout!:_:tchooz"
-					   name="show_progress"
+				<field name="show_progress"
 					   type="radio"
 					   default="1"
 					   label="MOD_EMUNDUS_SHOW_PROGRESS"

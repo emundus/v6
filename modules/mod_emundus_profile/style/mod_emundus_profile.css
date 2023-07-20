@@ -1,0 +1,13 @@
+.em-container-profile-view-pict a.btn.manage-account-icon{
+    background: #FFFFFF;
+    border: 1px solid #E3E3E3;
+    box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+    display: flex;
+    align-items: center;
+    padding: 6px 8px !important;
+}
+
+.em-container-profile-view-pict a.btn.manage-account-icon span.material-icons-outlined{
+    color: #000000;
+    font-size: 20px;
+}

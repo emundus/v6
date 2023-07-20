@@ -37,7 +37,6 @@ endif;
     <h1><?= JText::_($title) ?></h1>
 </div>
 <?php endif; ?>
-
     <div class="em-form-intro">
 <?php
 echo $form->intro;

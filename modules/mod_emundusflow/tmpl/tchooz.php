@@ -132,6 +132,37 @@ $now = $dateTime->format('Y-m-d H:i:s');
         <?php endif; ?>
     </div>
     <?php endif; ?>
+
+
+    <?php
+
+        $m_email = new EmundusModelEmails();
+
+        $emundusUser = JFactory::getSession()->get('emundusUser');
+
+        $post = array(
+            'APPLICANT_ID'   => $user->id,
+            'DEADLINE'       => strftime("%A %d %B %Y %H:%M", strtotime($emundusUser->end_date)),
+            'CAMPAIGN_LABEL' => $emundusUser->label,
+            'CAMPAIGN_YEAR'  => $emundusUser->year,
+            'CAMPAIGN_START' => $emundusUser->start_date,
+            'CAMPAIGN_END'   => $emundusUser->end_date,
+            'CAMPAIGN_CODE'  => $emundusUser->training,
+            'FNUM'           => $emundusUser->fnum
+        );
+
+        $tags = $m_email->setTags($user->id, $post, $emundusUser->fnum, '', $file_tags);
+        $file_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $file_tags);
+        $file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($emundusUser->fnum));
+
+    ?>
+
+    <div class="em-mt-8">
+        <?php if (!empty($file_tags_display)) :
+            echo $file_tags_display;
+         endif; ?>
+    </div>
+
 </div>
 
 <script>

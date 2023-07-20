@@ -55,9 +55,6 @@ class EmundusViewAmetys extends JViewLegacy
 		//$document->addStyleSheet("media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
 		$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/components/daterangepicker/daterangepicker.min.css" );
 
-		$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
-		//$document->addScript("media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.js" );
-
 		// overide css
 		$menu = @JFactory::getApplication()->getMenu();
         $current_menu = $menu->getActive();

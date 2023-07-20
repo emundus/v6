@@ -51,6 +51,11 @@ if($just_logged && !$only_applicant) {
             width: 50vw;
         }
     }
+    @media (max-width: 768px) {
+        .em-switch-profile-swal-container .swal2-modal {
+            width: 95%;
+        }
+    }
     .em-switch-profile-card{
         height: 45px;
         text-align: center;

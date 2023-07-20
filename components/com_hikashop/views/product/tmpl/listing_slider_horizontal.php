@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -40,11 +40,17 @@ if($this->haveLink && !$this->params->get('add_to_cart') && !$this->params->get(
 	$htmlLink = ' onclick="window.location.href=\''.$link.'\'';
 	$cursor = "cursor:pointer;";
 }
+$hk_main_classes = array('hikashop_horizontal_slider');
+if(!empty($this->row->categories)) {
+	foreach($this->row->categories as $category) {
+		$hk_main_classes[] = 'hikashop_product_of_category_'.$category->category_id;
+	}
+}
 
 if(!empty($this->row->extraData->top)) { echo implode("\r\n",$this->row->extraData->top); }
 
 ?>
-<div class="hikashop_horizontal_slider" id="window_<?php echo $mainDivName; ?>_<?php echo $this->row->product_id;  ?>"<?php echo $htmlLink; ?>>
+<div class="<?php echo implode(' ', $hk_main_classes); ?>" id="window_<?php echo $mainDivName; ?>_<?php echo $this->row->product_id;  ?>"<?php echo $htmlLink; ?>>
  	<div class="hikashop_horizontal_slider_subdiv">
 		<table cellspacing="0" cellpadding="0">
 			<tr>
