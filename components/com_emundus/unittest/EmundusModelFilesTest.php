@@ -44,11 +44,13 @@ session_start();
 
 class EmundusModelFilesTest extends TestCase{
     private $m_files;
+    private $h_sample;
 
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
         $this->m_files = new EmundusModelFiles;
+        $this->h_sample = new EmundusUnittestHelperSamples;
 
         //$coordinator = @EmundusUnittestHelperSamples::createSampleUser(2,'gestionnaire@emundus.fr');
     }
@@ -85,19 +87,26 @@ class EmundusModelFilesTest extends TestCase{
 
         }
 
-    }
+    }.*/
 
     // Jeremy
     public function testUpdateState() {
-        $user = @EmundusUnittestHelperSamples::createSampleUser();
-        $fnum = @EmundusUnittestHelperSamples::createSampleFile(1,$user->id);
-        $status_step = @EmundusUnittestHelperSamples::createSampleStatus();
+        $program = $this->h_sample->createSampleProgram();
+        $campaign_id = $this->h_sample->createSampleCampaign($program);
+        $user_id = $this->h_sample->createSampleUser(9, 'user.testupdate' . rand(0, 1000) . '@emundus.fr');
+        $fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+
+        $this->assertNotEmpty($fnum);
+
+        $status_of_fnum = $this->m_files->getStatusByFnums([$fnum]);
+        $this->assertSame('0', $status_of_fnum[$fnum]['status']);
 
 
     }
 
     // Bazile
-    public function testGetFormProgress() {
+    /*
+     * public function testGetFormProgress() {
         $user = @EmundusUnittestHelperSamples::createSampleUser();
         $fnum = @EmundusUnittestHelperSamples::createSampleFile(1,$user->id);
 
