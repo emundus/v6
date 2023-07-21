@@ -104,11 +104,8 @@ class EmundusModelSettingsTest extends TestCase
 	public function testupdateTags() {
 		$tag = $this->m_settings->createTag();
 		$label = 'Nouvelle étiquette modifiée';
-		$colors = $this->m_settings->getColorClasses();
-		$color = current($colors);
-		$color_key = array_search($color, $colors);
 
-		$update = $this->m_settings->updateTags($tag->id, $label, $color);
+		$update = $this->m_settings->updateTags($tag->id, $label, 'lightblue');
 		$this->assertTrue($update, 'La modification d\'une étiquette fonctionne');
 
 		$tags = $this->m_settings->getTags();
@@ -118,7 +115,7 @@ class EmundusModelSettingsTest extends TestCase
 		$tag_found = current($tags_found);
 
 		$this->assertSame($label, $tag_found->label, 'Le titre de l\'étiquette a été modifié');
-		$this->assertSame('label-' . $color_key, $tag_found->class, 'Le titre de l\'étiquette a été modifié');
+		$this->assertSame('label-lightblue', $tag_found->class, 'Le titre de l\'étiquette a été modifié');
 	}
 
 	public function testdeleteTag() {
