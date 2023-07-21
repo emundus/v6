@@ -49,13 +49,6 @@ $now = $dateTime->format('Y-m-d H:i:s');
         line-height: normal !important;
     }
 
-    .mod_emundus_flow___intro .em-h2{
-        display: -webkit-box;
-        overflow: hidden;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-    }
-
     .mod_emundus_flow___intro {
         display: grid;
         align-items: flex-start;

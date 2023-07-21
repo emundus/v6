@@ -26,7 +26,7 @@ if(!empty($this->campaign)){
                 <a href="/" class="em-profile-picture em-mb-32" style="width: 50px;height: 50px;background-image: url('images/custom/favicon.png')">
                 </a>
             <?php endif; ?>
-            <h1 class="em-mb-8 em-h1">
+            <h1 class="em-mb-8">
                 <?php echo JText::_('JLOGIN'); ?>
             </h1>
             <p class="em-applicant-text-color em-applicant-default-font"><?php echo JText::_('JLOGIN_DESC'); ?></p>

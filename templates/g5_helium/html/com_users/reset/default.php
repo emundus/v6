@@ -23,7 +23,7 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_use
                 <a href="/" class="em-profile-picture em-mb-32" style="width: 50px;height: 50px;background-image: url('images/custom/favicon.png')">
                 </a>
             <?php endif; ?>
-            <h1 class="em-mb-8 em-h1">
+            <h1 class="em-mb-8">
                 <?php echo JText::_('COM_USERS_LOGIN_RESET'); ?>
             </h1>
 		</div>

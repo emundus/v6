@@ -126,8 +126,7 @@ li>a:hover {
 }
 
 #g-navigation #header-c .header-right a.btn.btn-danger {
-    font-weight: 500 !important;
-    font-size: 14px !important;
+    font-size: 15px !important;
     margin-bottom: 0 !important;
     text-shadow: none;
     padding: var(--p-8) var(--p-24);

@@ -19,8 +19,7 @@
     line-height: normal;
     letter-spacing: normal;
     font-family: var(--em-applicant-font);
-    font-weight: 500;
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .mod_emundus_campaign__intro{
@@ -47,19 +46,12 @@
     text-decoration: underline;
 }
 
-.mod_emundus_campaign__intro h1{
-    margin-bottom: var(--m-16) !important;
-    color: var(--em-default-title-color-1);
-    font-weight: 600;
-    font-family: var(--em-applicant-font-title) !important;
-}
-
 .mod_emundus_campaign__content{
     margin-top: var(--m-40);
     margin-bottom: var(--m-64);
 }
 
-.mod_emundus_campaign__content .em-h3 {
+.mod_emundus_campaign__content h3 {
     font-family: var(--em-applicant-font-title);
     color: var(--em-default-title-color-1);
 }
@@ -286,15 +278,7 @@ a.em-blue-400-color:hover {
 }
 
 .mod_emundus_campaign__campaign_title {
-    margin-bottom: var(--m-8) !important;
     color: var(--em-default-title-color-1) !important;
-    -webkit-line-clamp: 2;
-    overflow: hidden;
-    -webkit-box-orient: vertical;
-    max-height: 48px;
-    display: -webkit-box;
-    line-height: 140%;
-    min-height: 46px;
     font-family: var(--em-applicant-font-title) !important;
 }
 /*
@@ -376,7 +360,7 @@ a.em-blue-400-color:hover {
     color: var(--em-default-title-color-1);
 }
 
-.mod_emundus_campaign__details_content h4.em-h4 {
+.mod_emundus_campaign__details_content h4 {
  font-family: var(--em-applicant-font-title);
  color: var(--em-default-title-color-1);
 }

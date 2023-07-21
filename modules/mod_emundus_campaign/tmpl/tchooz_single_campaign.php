@@ -74,7 +74,7 @@ if($currentCampaign->apply_online == 0){
                 <?php  echo $currentCampaign->programme; ?>
             </p>
         <?php endif; ?>
-        <h1 class="em-h1 mod_emundus_campaign__campaign_title em-mt-16" style="max-height: unset"><?php echo $currentCampaign->label; ?></h1>
+        <h1 class="mod_emundus_campaign__campaign_title em-mt-16" style="max-height: unset"><?php echo $currentCampaign->label; ?></h1>
         <div class="em-grid-1 em-mt-8 em-mt-24">
             <?php if ($mod_em_campaign_show_camp_start_date && $currentCampaign->start_date != '0000-00-00 00:00:00') :?>
             <div class="em-flex-row" style="white-space: nowrap;">
@@ -166,7 +166,7 @@ if($currentCampaign->apply_online == 0){
         <!-- INFO BLOCK -->
         <?php if ($can_apply != 0 || $mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
         <div class="mod_emundus_campaign__details_content em-border-neutral-300 em-mb-24">
-            <h4 class="em-h4 em-mb-16"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_APPLY') ?></h4>
+            <h4 class="em-mb-16"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_APPLY') ?></h4>
             <?php if ($mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
             <div class="em-mt-24">
                 <?php $index = 1; ?>
@@ -201,7 +201,7 @@ if($currentCampaign->apply_online == 0){
         <!-- ATTACHMENTS BLOCK -->
         <?php if (!empty($files) && $mod_em_campaign_show_documents == 1) : ?>
         <div class="mod_emundus_campaign__details_content em-border-neutral-300 em-mb-24">
-            <h4 class="em-h4"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_DOWNLOADS') ?></h4>
+            <h4><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_DOWNLOADS') ?></h4>
             <div class="em-mt-24">
                 <?php foreach($files as $file) : ?>
                     <div class="em-flex-row em-mb-16 mod_emundus_campaign__details_file">
@@ -217,7 +217,7 @@ if($currentCampaign->apply_online == 0){
 
         <?php if (!empty($contact) && $mod_em_campaign_show_contact == 1) : ?>
         <div class="mod_emundus_campaign__details_content em-border-neutral-300">
-            <h4 class="em-h4"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_CONTACT') ?></h4>
+            <h4><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_CONTACT') ?></h4>
         </div>
         <?php endif; ?>
     </div>

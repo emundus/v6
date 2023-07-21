@@ -273,7 +273,7 @@ $current_tab = 0;
 	<?php if (sizeof($applications) == 0) : ?>
         <hr>
         <div class="mod_emundus_applications__list_content--default mt-2">
-            <h2 class="em-text-neutral-900 em-h2 em-applicant-title-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE') ?></h2>
+            <h2 class="em-text-neutral-900 em-applicant-title-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE') ?></h2>
             <p class="em-text-neutral-900 em-default-font em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT') ?></p>
             <p class="em-applicant--color em-default-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT_2') ?></p>
             <br/>
@@ -302,7 +302,7 @@ $current_tab = 0;
                          class="em-mb-44 <?php if ($key != $current_tab) : ?>em-display-none<?php endif; ?>">
 						<?php foreach ($sub_group['applications'] as $f_key => $files) : ?>
 							<?php if (!is_integer($f_key) || $order_by_session == 'years') : ?>
-                                <h3 class="em-h3 em-ml-8"><?php echo $f_key ?></h3>
+                                <h3 class="em-ml-8"><?php echo $f_key ?></h3>
                                 <hr/>
 							<?php endif; ?>
                             <div class="<?= $moduleclass_sfx ?> mod_emundus_applications___content em-mb-32">
@@ -463,13 +463,13 @@ $current_tab = 0;
                                                     </div>
 													<?php if (empty($application->name)) : ?>
                                                         <a href="<?= JRoute::_($first_page_url); ?>"
-                                                           class="em-h4 mod_emundus_applications___title"
+                                                           class="mod_emundus_applications___title"
                                                            id="application_title_<?php echo $application->fnum ?>">
                                                             <span><?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?></span>
                                                         </a>
 													<?php else : ?>
                                                         <a href="<?= JRoute::_($first_page_url); ?>"
-                                                           class="em-h4 mod_emundus_applications___title"
+                                                           class="mod_emundus_applications___title"
                                                            id="application_title_<?php echo $application->fnum ?>">
                                                             <span><?= $application->name; ?></span>
                                                         </a>
@@ -588,7 +588,7 @@ $current_tab = 0;
 	<?php if (sizeof($applications) == 0) : ?>
         <hr>
         <div class="mod_emundus_applications__list_content--default">
-            <p class="em-text-neutral-900 em-h5 em-applicant-title-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE') ?></p>
+            <p class="em-text-neutral-900 em-applicant-title-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE') ?></p>
             <br/>
             <p class="em-text-neutral-900 em-default-font em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT') ?></p>
             <p class="em-text-neutral-900 em-default-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT_2') ?></p>
@@ -633,7 +633,7 @@ $current_tab = 0;
 							<?php if (!is_integer($f_key) || $order_by_session == 'years') : ?>
                                 <div class="em-mt-12 em-flex-row em-white-bg em-applicant-border-radius em-p-6-12">
                                     <span class="material-icons-outlined em-mr-8">expand_more</span>
-                                    <h2 style="margin-top: 0" class="em-h6"><?php echo $f_key ?></h2>
+                                    <h2 style="margin-top: 0"><?php echo $f_key ?></h2>
                                 </div>
 							<?php endif; ?>
                             <table class="em-ml-12">

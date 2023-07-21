@@ -647,12 +647,7 @@ footer#g-footer > .g-container {
   }
 
   .em-heading-registration h1 {
-    font-family: var(--em-applicant-font-title);
-    font-style: normal;
-    font-weight: 600;
-    font-size: 32px;
-    line-height: 40px;
-    color: #353544;
+    margin-bottom: var(--m-8);
   }
 }
 
@@ -1100,9 +1095,9 @@ footer#g-footer > .g-container {
     border-radius: var(--em-applicant-br) !important;
     padding: 8px 12px;
     font-family: $font-family-text;
-    font-weight: 500;
     line-height: normal;
     font-size: 14px;
+    letter-spacing: normal;
   }
 
   button.btn.btn-primary.validate {
@@ -1492,7 +1487,7 @@ footer#g-footer > .g-container {
   h4,
   h5,
   h6 {
-    color: var(--night-blue) !important;
+    color: var(--em-coordinator-title-color) !important;
   }
 }
 
@@ -2078,7 +2073,8 @@ p.readmore .btn,
 .finder #search-form .btn {
   font-family: inherit;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 15px;
+  letter-spacing: normal;
 }
 
 .fabrikActions.form-actions .row-fluid {
@@ -3768,10 +3764,6 @@ div#em-appli-block {
 
     /* FORMULAIRE */
     form, .em-form {
-
-      .fabrikGroup h2 {
-        @include em-default-sub-title-1;
-      }
 
       .fabrikMainError {
         width: 90%;
