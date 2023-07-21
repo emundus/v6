@@ -1876,7 +1876,7 @@ class EmundusModelEvaluation extends JModelList {
 					$refreshQuery->delete($this->_db->quoteName('#__emundus_uploads'))
 						// TODO: We have to check another param if this attachment_id is used for an applicant upload
 						->where($this->_db->quoteName('attachment_id') . ' = ' . $attachInfo['id'])
-						->andWhere('DATE('.$db->quoteName('timedate').') = CURRENT_DATE() OR '.$db->quoteName('user_id').' <> '.$db->quote($fnumInfo[$fnum]['applicant_id']))
+						->andWhere('DATE('.$this->_db->quoteName('timedate').') = CURRENT_DATE() OR '.$this->_db->quoteName('user_id').' <> '.$this->_db->quote($fnumInfo[$fnum]['applicant_id']))
 						->andWhere($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
                     $this->_db->setQuery($refreshQuery);
                     $this->_db->execute();
