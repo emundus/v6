@@ -1099,35 +1099,40 @@ form.fabrikForm select.input-small {
         background-position-x: 92%;
       }
 /** RADIO **/
-form.fabrikForm .fabrikgrid_radio {
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer {
+        width: -moz-fit-content;
+        width: fit-content;
+        min-width: 40%;
+      }
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio {
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
   margin-bottom: 0.25rem;
   align-items: center;
 }
-form.fabrikForm .fabrikgrid_radio label {
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label {
   margin-bottom: 0px;
   display: flex;
   align-items: center;
-        padding: var(--em-form-radio-padding);
-        border: var(--em-form-radio-border-width) solid var(--em-form-radio-border-color);
-        border-radius: var(--em-form-radio-border-radius);
+            padding: var(--em-form-radio-padding);
+            border: var(--em-form-radio-border-width) solid var(--em-form-radio-border-color);
+            border-radius: var(--em-form-radio-border-radius);
 }
-form.fabrikForm .fabrikgrid_radio label input {
-          accent-color: var(--em-form-radio-color-checked);
-          width: var(--em-form-radio-width);
-          height: var(--em-form-radio-height);
-          margin-right: var(--em-form-radio-margin-right);
-          margin-left: 0;
-          margin-top: 0;
-        }
-form.fabrikForm .fabrikgrid_radio label span{
-          word-wrap: break-word;
-        }
-form.fabrikForm .fabrikgrid_radio label:has(input[type='radio']:checked) {
-          background-color: var(--em-form-radio-background-color-checked);
-          border-color: var(--em-form-radio-border-color-checked);
-        }
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label input {
+              accent-color: var(--em-form-radio-color-checked);
+              width: var(--em-form-radio-width);
+              height: var(--em-form-radio-height);
+              margin-right: var(--em-form-radio-margin-right);
+              margin-left: 0;
+              margin-top: 0;
+            }
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label span{
+              word-wrap: break-word;
+            }
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label:has(input[type='radio']:checked) {
+              background-color: var(--em-form-radio-background-color-checked);
+              border-color: var(--em-form-radio-border-color-checked);
+            }
 /** CHECKBOX **/
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer {
           border-top: solid var(--em-form-checkbox-border-width) var(--em-form-checkbox-border-color);

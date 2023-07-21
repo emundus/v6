@@ -1,5 +1,6 @@
 /.gitignore.*
 .idea
+!.idea/runConfigurations
 .scannerwork
 workspace.xml
 /cache/*
