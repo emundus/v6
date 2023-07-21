@@ -5039,7 +5039,7 @@ class EmundusModelApplication extends JModelList
         return $content;
     }
 
-	public function getValuesByElementAndFnum($fnum,$eid,$fid,$raw=1,$wheres = [], $format = true){
+	public function getValuesByElementAndFnum($fnum,$eid,$fid,$repeate_sperator = ",",$raw=1,$wheres = [], $format = true){
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
@@ -5124,7 +5124,7 @@ class EmundusModelApplication extends JModelList
                     }
                 }
 
-                $result = implode(',',$elt);
+                $result = implode($repeate_sperator,$elt);
 
             } else {
 

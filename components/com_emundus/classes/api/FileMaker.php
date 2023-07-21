@@ -22,6 +22,7 @@ use GuzzleHttp\Psr7\MultipartStream;
 use JComponentHelper;
 use JFactory;
 use JLog;
+use phpDocumentor\Reflection\Types\Boolean;
 use stdClass;
 
 defined('_JEXEC') or die('Restricted access');
@@ -58,6 +59,25 @@ class FileMaker
 
     private $maxAttempt = 0;
 
+    public function __construct()
+    {
+        JLog::addLogger(['text_file' => 'com_emundus.file_maker.php'], JLog::ALL, 'com_emundus.file_maker');
+
+        $this->setAuth();
+        $this->setHeaders();
+        $this->setBaseUrl();
+
+        $this->client = new GuzzleClient([
+            'base_uri' => $this->getBaseUrl(),
+            'verify' => false
+        ]);
+
+
+        if (empty($this->auth['bear_token'])) {
+            $this->loginApi();
+        }
+    }
+
     /**
      * @return int
      */
@@ -83,24 +103,7 @@ class FileMaker
     }
 
 
-    public function __construct()
-    {
-        JLog::addLogger(['text_file' => 'com_emundus.file_maker.php'], JLog::ALL, 'com_emundus.file_maker');
 
-        $this->setAuth();
-        $this->setHeaders();
-        $this->setBaseUrl();
-
-        $this->client = new GuzzleClient([
-            'base_uri' => $this->getBaseUrl(),
-            'verify' => false
-        ]);
-
-
-        if (empty($this->auth['bear_token'])) {
-            $this->loginApi();
-        }
-    }
 
     /**
      * @return string
@@ -114,7 +117,7 @@ class FileMaker
     public function setBaseUrl(): void
     {
         $config = JComponentHelper::getParams('com_emundus');
-        $this->baseUrl = $config->get('file_maker_api_base_url', 'https://10.0.0.100/fmi/data/v2/databases/IF_dataAPI');
+        $this->baseUrl = $config->get('file_maker_api_base_url');
     }
 
     /**
@@ -334,12 +337,14 @@ class FileMaker
     public function getRecords($recordId = null, $portal = array())
     {
         $url = 'layouts/zWEB_FORMULAIRES/records';
-        if ($recordId !== null && !empty($portal)) {
-            $url = $url . '/' . $recordId . $portal;
-        }
-        if ($recordId !== null) {
+        if ($recordId !== null ) {
             $url = $url . '/' . $recordId;
         }
+
+        if (!empty($portal)) {
+            $url = $url . '?portal=' . $portal;
+        }
+
         $records_response = $this->get($url);
 
         $records = $records_response->response;
@@ -348,10 +353,8 @@ class FileMaker
     }
 
 
-    private function loginApi(): void
+    private function loginApi(): Boolean
     {
-
-
         $this->setHeaders(true);
         $login_response = $this->post("sessions");
 
@@ -360,11 +363,10 @@ class FileMaker
             $session->set('file_maker_bear_token', $login_response->response->token);
             $this->setAuth();
             $this->setHeaders();
-
+            return true;
         } else {
-
             JLog::add('[FILE_MAKER_API_LOGIN] Failed to login due do  ' . json_encode($login_response->messages), JLog::ERROR, 'com_emundus.file_maker');
-
+            return false;
         }
 
 
@@ -538,7 +540,7 @@ class FileMaker
 
     public function uploadAllAssocAttachementsAssocToFile($fnum, $applicant_id, $recordId)
     {
-
+        $result = false;
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -558,38 +560,44 @@ class FileMaker
 
                     $response = $this->uploadAttachment($recordId, $file_path, $file->filename, $file->filemaker);
 
-
                 } catch (Exception $e) {
 
                     JLog::add("[FILEMAKER ] Filed to Upload Attachement to Filemaker " . $fnum . " " . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
-                    return 0;
+
                 }
             }
-            return "OK";
+            $result = true;
+
 
         } catch (Exception $e) {
 
             JLog::add("[FILEMAKER ] Failed Retrieve File Inofrmation such as step and uuid before post to api" . $fnum . " " . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
         }
 
+        return $result;
+
     }
 
     public function uploadAttachment($recordId, $filePath, $fileName, $filemakername)
     {
+        $response = '';
         if (!empty($fileName) && !empty($filePath)) {
 
             $url = "layouts/zWEB_FORMULAIRES/records/" . $recordId . "/containers/" . $filemakername . "/1";
 
             $upload_response = $this->upload($url, $filePath, $fileName);
 
-            return $upload_response->response;
+            $response = $upload_response->response;
         } else {
             throw new Exception('Filename and Filed Path can\'t be empty');
         }
+
+        return $response;
     }
 
     public function retrieveMappingColumnsData($step)
     {
+        $final_result = [];
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $mapping_data = array();
@@ -656,21 +664,24 @@ class FileMaker
 
             }
 
+            $final_result = $mapping_data;
 
-            return $mapping_data;
 
 
         } catch (\Exception $e) {
 
             JLog::add('[FABRIK CRON FILEMAKER retrieveMappingColumnsData] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
-            return [];
+
         }
+
+        return $final_result;
 
     }
 
 
     public function retrieveAssociatedElementsWithgroup($groups_id, $step)
     {
+        $associated_elements = [];
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $config = JComponentHelper::getParams('com_emundus');
@@ -687,14 +698,16 @@ class FileMaker
         $db->setQuery($query);
 
         try {
-            return $db->loadObjectList();
+            $associated_elements =  $db->loadObjectList();
 
         } catch (\Exception $e) {
 
             JLog::add('[FILEMAKER retrieveAssociatedElementsWithgroup] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
 
-            return [];
+
         }
+
+        return $associated_elements;
 
     }
 
@@ -746,8 +759,8 @@ class FileMaker
 
                     foreach ($matching_elements as $element_row) {
 
-                        $value = $m_application->getValuesByElementAndFnum($fnum, $element_row->id, $row->form_id, '');
-
+                        $repeat_separator = $isPortalDataForm === true ? "$$$" : ",";
+                        $value = $m_application->getValuesByElementAndFnum($fnum, $element_row->id, $row->form_id, $repeat_separator);
 
                         if ($isPortalDataForm === true) {
 
@@ -760,7 +773,7 @@ class FileMaker
                                 switch ($element_row->plugin) {
                                     case "date":
                                     case "birthday":
-                                        $values = explode(",", $value);
+                                        $values = explode($repeat_separator, $value);
                                         $reformatted = array_map(function ($date_value) {
                                             $dateString = str_replace('.', '-', $date_value);
                                             $date = DateTime::createFromFormat('d-m-Y', $dateString);
@@ -775,7 +788,13 @@ class FileMaker
                                         $temp_records_mapping[] = array("" . $zweb_form_name . "::" . $data->name . "" => $reformatted);
                                         break;
                                     default:
-                                        $temp_records_mapping[] = array("" . $data->name === "id" || $data->name === "recordId" ? $data->name : $zweb_form_name . "::" . $data->name . "" => explode(",", $value));
+                                        $values = explode($repeat_separator, $value);
+                                        if(strpos($data->name,"Montant") !== false){
+                                            $values = array_map(function($amount){
+                                                return str_replace(",",".",$amount);
+                                            },$values);
+                                        }
+                                        $temp_records_mapping[] = array("" . $data->name === "id" || $data->name === "recordId" ? $data->name : $zweb_form_name . "::" . $data->name . "" => $values);
                                         break;
 
                                 }
@@ -896,6 +915,9 @@ class FileMaker
 
             $record = array_combine($records_key, $record);
             $record["uuidFormulaires"] = $uuidFormulaires;
+
+
+
 
             $queryBody = array("fieldData" => $record);
             //if (!empty($emundus_id)) {
@@ -1151,7 +1173,7 @@ class FileMaker
         try {
 
 
-            $db->execute();
+             $db->execute();
 
 
         } catch (Exception $e) {
@@ -1159,6 +1181,8 @@ class FileMaker
             JLog::add("[FILEMAKER CRON] Failed to add country in method addCountryToReferential   " . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
 
         }
+
+
     }
 
 

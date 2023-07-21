@@ -319,11 +319,12 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
         } else {
 
+            $admin_step = $this->getParams()->get('admin_step');
+            $mail_trigger_state = $this->getParams()->get('mail_trigger_state');
 
             if ($checkIfFileNotAlreadyExist->uuidConnect !== $fieldData->uuidConnect) {
 
-                $admin_step = $this->getParams()->get('admin_step');
-                $mail_trigger_state = $this->getParams()->get('mail_trigger_state');
+
 
                 switch ($admin_step) {
 
@@ -376,7 +377,22 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                 }
             }
 
+            else {
+                switch ($admin_step) {
 
+                    case 'PRE':
+                        if(intval($checkIfFileNotAlreadyExist->status) === 3){
+                            $m_files->updateState($checkIfFileNotAlreadyExist->fnum, $this->getParams()->get('mail_trigger_state'));
+                        }
+                        break;
+
+                    case 'POST':
+                        if(intval($checkIfFileNotAlreadyExist->status) === 0){
+                            $m_files->updateState($checkIfFileNotAlreadyExist->fnum, $this->getParams()->get('mail_trigger_state'));
+                        }
+                        break;
+                }
+            }
         }
 
     }

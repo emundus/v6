@@ -473,9 +473,8 @@ class plgUserEmundus extends JPlugin
 
 
                 if (isset($user['fullname'])) {
-                    $firstname_and_last_name = explode(" ",$user['fullname']);
-                    $firstname = $firstname_and_last_name[0];
-                    $lastname = count($firstname_and_last_name) > 1 ? $firstname_and_last_name[1]: "";
+                    $firstname = $user['firstname'];
+                    $lastname = $user['lastname'];
                     $query->clear()
                         ->update('#__emundus_users');
 
@@ -489,6 +488,17 @@ class plgUserEmundus extends JPlugin
 
                     $db->setQuery($query);
                     $db->execute();
+
+                    $query->clear()
+                        ->update('jos_users');
+                    if (!empty($user['fullname'])) {
+                        $query->set($db->quoteName('name') . ' = ' . $db->quote($user['fullname']));
+                        $query->where($db->quoteName('id') . ' = ' . $db->quote($user_id));
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+
+
                 }
             }
             if ($user['type'] == 'externallogin') {
