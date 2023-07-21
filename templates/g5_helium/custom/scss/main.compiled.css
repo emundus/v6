@@ -663,7 +663,7 @@ form.fabrikForm .fabrikLabel {
       width: 100%;
       font-family: var(--em-applicant-font);
       font-style: normal;
-      font-weight: 500;
+      font-weight: var(--em-form-label-weight);
     }
 form.fabrikForm .fabrikLabel.fabrikTip {
         cursor: text;
