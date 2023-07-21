@@ -118,7 +118,7 @@
       @apply w-full;
       font-family: var(--em-applicant-font);
       font-style: normal;
-      font-weight: 500;
+      font-weight: var(--em-form-label-weight);
       &.fabrikTip {
         cursor: text;
       }
@@ -522,34 +522,41 @@
     }
 
     /** RADIO **/
-    .fabrikgrid_radio {
-      @apply py-1;
-      @apply mb-1;
-      @apply items-center;
-      label {
-        @apply mb-0;
-        @apply flex;
-        @apply items-center;
-        padding: var(--em-form-radio-padding);
-        border: var(--em-form-radio-border-width) solid var(--em-form-radio-border-color);
-        border-radius: var(--em-form-radio-border-radius);
-        input {
-          accent-color: var(--em-form-radio-color-checked);
-          width: var(--em-form-radio-width);
-          height: var(--em-form-radio-height);
-          margin-right: var(--em-form-radio-margin-right);
-          margin-left: 0;
-          margin-top: 0;
-        }
-        span{
-          word-wrap: break-word;
-        }
-        &:has(input[type='radio']:checked) {
-          background-color: var(--em-form-radio-background-color-checked);
-          border-color: var(--em-form-radio-border-color-checked);
+    .plg-radiobutton {
+      .fabrikSubElementContainer {
+        width: fit-content;
+        min-width: 40%;
+        .fabrikgrid_radio {
+          @apply py-1;
+          @apply mb-1;
+          @apply items-center;
+          label {
+            @apply mb-0;
+            @apply flex;
+            @apply items-center;
+            padding: var(--em-form-radio-padding);
+            border: var(--em-form-radio-border-width) solid var(--em-form-radio-border-color);
+            border-radius: var(--em-form-radio-border-radius);
+            input {
+              accent-color: var(--em-form-radio-color-checked);
+              width: var(--em-form-radio-width);
+              height: var(--em-form-radio-height);
+              margin-right: var(--em-form-radio-margin-right);
+              margin-left: 0;
+              margin-top: 0;
+            }
+            span{
+              word-wrap: break-word;
+            }
+            &:has(input[type='radio']:checked) {
+              background-color: var(--em-form-radio-background-color-checked);
+              border-color: var(--em-form-radio-border-color-checked);
+            }
+          }
         }
       }
     }
+
 
     /** CHECKBOX **/
     .plg-checkbox {
@@ -705,8 +712,9 @@
         color: var(--em-form-label-color-error);
       }
 
-      input {
+      input,textarea,select {
         border-color: var(--em-form-border-color-error);
+        color: var(--em-default-text-color-1);
       }
     }
     .fabrikError.plg-checkbox {

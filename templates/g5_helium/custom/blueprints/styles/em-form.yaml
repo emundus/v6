@@ -28,6 +28,10 @@ form:
       type: input.text
       label: Label font size
       default: '14px'
+    label-weight:
+      type: input.text
+      label: Label font weight
+      default: '500'
     height:
       type: input.text
       label: Height of fields
