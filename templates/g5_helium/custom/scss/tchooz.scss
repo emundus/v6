@@ -26,18 +26,18 @@
   border-radius: var(--em-applicant-br);
   border: unset;
   height: 40px;
-  color: white;
-  background-color: var(--base-secondary-color);
-  border: solid 1px transparent;
+  color: var(--neutral-0);
+  background-color: var(--em-primary-color) !important;
+  border: solid 1px var(--em-primary-color);
 
   &:hover {
-    background-color: white;
-    color: var(--base-secondary-color);
-    border: 1px solid var(--base-secondary-color);
+    background-color: var(--neutral-0) !important;
+    color: var(--em-primary-color);
+    border: 1px solid var(--em-primary-color);
     text-decoration: none;
 
     .material-icons {
-      color: var(--base-secondary-color) !important;
+      color: var(--em-primary-color) !important;
     }
   }
 
@@ -54,11 +54,17 @@
   width: 100%;
   padding: 0 var(--p-16);
   border-radius: var(--em-coordinator-br);
-  border: solid 1px var(--neutral-300);
+  border: solid 1px var(--em-secondary-color);
   height: 40px;
   background: transparent;
-  color: var(--night-blue);
+  color: var(--em-secondary-color);
   font-family: var(--em-coordinator-font);
+  &:hover {
+    background-color: var(--em-secondary-color) !important;
+    color: var(--neutral-0);
+    border: 1px solid var(--em-secondary-color);
+    text-decoration: none;
+  }
 }
 
 .em-applicant-secondary-button{
@@ -69,10 +75,17 @@
   width: 100%;
   padding: 0 var(--p-16);
   border-radius: var(--em-applicant-br);
-  border: solid 1px var(--neutral-300);
+  border: solid 1px var(--em-secondary-color);
   height: 40px;
   background: transparent;
-  color: var(--night-blue);
+  color: var(--em-secondary-color);
+
+  &:hover {
+    background-color: var(--em-secondary-color) !important;
+    color: var(--neutral-0);
+    border: 1px solid var(--em-secondary-color);
+    text-decoration: none;
+  }
 }
 
 .em-tertiary-button{
@@ -773,7 +786,7 @@ input:focus + .em-slider {
   color: var(--main-400);
 }
 .em-main-500-color{
-  color: var(--main-500) !important;
+  color: var(--em-primary-color-coordinator) !important;
 }
 .em-yellow-500-color{
   color: var(--yellow-500);
@@ -851,7 +864,7 @@ input:focus + .em-slider {
   background: var(--main-300);
 }
 .em-bg-main-500{
-  background: var(--main-500);
+  background: var(--em-primary-color-coordinator);
 }
 .em-bg-main-900{
   background: var(--main-900);
@@ -1182,18 +1195,22 @@ input:focus + .em-slider {
   border-left: solid 2px var(--yellow-500);
 }
 .em-border-main-500 {
-  border: 1px solid var(--main-500);
+  border: 1px solid var(--em-primary-color-coordinator);
 
   &.important {
-    border: 1px solid var(--main-500) !important;
+    border: 1px solid var(--em-primary-color-coordinator) !important;
   }
 }
 .em-border-left-main-500{
-  border-left: solid 2px var(--main-500);
+  border-left: solid 2px var(--em-primary-color-coordinator);
 }
 
 .em-border-bottom-main-500 {
-  border-bottom: solid 1px var(--main-500);
+  border-bottom: solid 1px var(--em-primary-color-coordinator);
+}
+
+.em-border-bottom-coordinator {
+  border-bottom: solid 1px var(--em-primary-color-coordinator);
 }
 
 .em-border-left-red-500{
@@ -1478,7 +1495,7 @@ input:focus + .em-slider {
 
 .em-card-neutral-100{
   background-color: var(--neutral-100);
-  border-radius: 16px;
+  border-radius: var(--em-coordinator-br);
   padding: 32px;
   cursor: pointer;
 }
@@ -1520,7 +1537,7 @@ button.em-swal-confirm-button{
   border: unset !important;
   height: 40px !important;
   color: white !important;
-  background-color: var(--main-500) !important;
+  background-color: var(--em-primary-color-coordinator) !important;
 }
 .swal2-actions.swal2-loading{
   border-radius: 25px !important;

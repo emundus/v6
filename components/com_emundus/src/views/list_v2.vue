@@ -50,7 +50,7 @@
 					<li v-for="tab in currentList.tabs" :key="tab.key"
 					    class="cursor-pointer font-normal p-4"
 					    :class="{
-								'em-border-bottom-main-500 em-neutral-900-color ': selectedListTab === tab.key,
+								'em-neutral-900-color em-border-bottom-coordinator': selectedListTab === tab.key,
 							  'em-neutral-700-color em-border-bottom-neutral-300': selectedListTab !== tab.key
 							}"
 					    @click="onSelectTab(tab.key)"
@@ -80,7 +80,7 @@
 					</div>
 					<div class="view-type flex items-center">
 					<span v-for="viewTypeOption in viewTypeOptions" :key="viewTypeOption.value"
-					      style="padding: 4px;border-radius: var(--em-coordinator-br);"
+					      style="padding: 4px;border-radius: var(--em-default-br);"
 					      class="material-icons-outlined ml-2 cursor-pointer"
 					      :class="{
 								'active em-main-500-color em-border-main-500': viewTypeOption.value === viewType,

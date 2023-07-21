@@ -495,7 +495,7 @@ div#em-appli-block button.btn.btn-default {
 }
 
 .em-personalInfo > a.em-link  {
-    color: var(--main-500);
+    color: var(--em-primary-color-coordinator);
 }
 
 .em-personalInfo > a {
@@ -1228,7 +1228,7 @@ div#em-assoc-files .panel.panel-default {
 
 div#em-assoc-files .panel.panel-primary.current-file{
     border-radius: 4px;
-    border: solid 2px #20835F;
+    border: solid 2px var(--em-primary-color-coordinator);
 }
 
 div#em-assoc-files .panel.panel-primary ul,
@@ -2237,11 +2237,11 @@ label[for="em-file_to_upload"]:hover {
 }
 
 .countCheckedCheckbox a.em-pointer{
-    color: var(--main-500);
+    color: var(--em-primary-color-coordinator);
 }
 
 .countCheckedCheckbox a.em-pointer:hover {
-    color: var(--main-600);
+    color: var(--em-tertiary-color-coordinator);
 }
 
 

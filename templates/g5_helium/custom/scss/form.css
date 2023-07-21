@@ -945,7 +945,6 @@
       background-image: url(/images/emundus/arrow.svg);
       background: var(--em-form-background-color);
       background-size: 8px;
-      background-size: 8px;
       background-repeat: no-repeat;
       padding-right: 1.5rem !important;
       box-shadow: unset;
@@ -1010,6 +1009,7 @@
         input[type="text"] {
           outline: none;
           height: 15px;
+          width: 17vw !important;
         }
       }
     }

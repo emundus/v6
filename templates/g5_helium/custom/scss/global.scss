@@ -1284,15 +1284,22 @@ footer#g-footer > .g-container {
 
   .fabrik_filter_submit.button {
     background: var(--main-500);
-    border-color: var(--main-500);
+    border: 1px solid var(--main-500);
     border-radius: var(--em-coordinator-br) !important;
     font-family: var(--em-coordinator-font);
     font-weight: 500;
+    letter-spacing: normal;
+    font-style: normal;
+    font-size: 15px !important;
+    height: var(--em-form-height) !important;
 
     &:hover, &:active, &:focus {
       background: var(--neutral-50);
-      border-color: var(--main-500) !important;
+      border: 1px solid var(--main-500) !important;
       color: var(--main-500);
+      letter-spacing: normal;
+      font-style: normal;
+      font-size: 15px !important;
     }
   }
 
@@ -1363,6 +1370,11 @@ footer#g-footer > .g-container {
       color: var(--night-blue);
     }
 
+    tbody {
+      border-color: var(--night-blue);
+      color: var(--night-blue);
+    }
+
     thead tr.fabrik___heading {
 
       th span a,
@@ -1396,6 +1408,10 @@ footer#g-footer > .g-container {
 .table-hover tbody tr {
   a {
     color: var(--night-blue);
+
+    span.icon-edit {
+      color: var(--em-primary-color-coordinator);
+    }
   }
 }
 
@@ -2662,7 +2678,7 @@ label[for='clear-search'] img:hover:focus {
 
     &:hover, &:focus, &:active {
       border: unset !important;
-      background: var(--main-200) !important;
+       background: var(--neutral-300) !important;
       color: var(--neutral-900) !important;
     }
   }
@@ -2897,26 +2913,18 @@ ul.unstyled.em-linkForgot li a {
   color: initial;
 }
 
+.com_emundus.view-campaigns,
+.com_emundus.layout-addnextcampaign,
+.com_emundus.view-emails,
+.com_emundus.view-form{
+  h1,h2,h3,h4,h5,h6 {
+    color: var(--em-coordinator-title-color);
+    font-family: var(--em-coordinator-font-title);
+  }
+}
+
 .com_emundus:not(.view-programme):not(.view-form):not(.view-users.layout-edit):not(.view-checklist):not(.files-board),
 .com_emundus.view-form .com_emundus_vue {
-
-  color: inherit;
-
-  h2,
-  p,
-  .em-w-custom form.fabrikForm label,
-  .em-w-custom form.fabrikForm input,
-  .em-w-custom form.fabrikForm input:focus,
-  .em-w-custom form.fabrikForm select,
-  .em-w-custom form.fabrikForm span:not(.em-red-500-color),
-  .em-w-custom form.fabrikForm div,
-  .em-w-custom form.fabrikForm textarea,
-  .em-w-custom .em-document-dropzone-card,
-  .em-w-custom .em-email-card,
-  ul li:not(.em-pointer),
-  select {
-    color: initial;
-  }
 
   *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico) {
     font-family: var(--em-coordinator-font);
@@ -2993,14 +3001,14 @@ ul.unstyled.em-linkForgot li a {
 
 .form.em-decision-form .btn.btn-success {
   padding: 8px 12px;
-  border: 1px solid var(--dark-grey);
-  background: var(--dark-grey);
+  border: 1px solid var(--em-primary-color-coordinator);
+  background: var(--em-primary-color-coordinator);
   border-radius: var(--em-coordinator-br) !important;
 
   &:hover, &:active, &:focus {
-    border: 1px solid var(--grey);
-    background: var(--grey);
-    color: var(--neutral-50);
+    border: 1px solid var(--em-primary-color-coordinator) !important;
+    background: var(--neutral-0);
+    color: var(--em-primary-color-coordinator);
   }
 }
 
