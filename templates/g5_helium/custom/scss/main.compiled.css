@@ -1266,8 +1266,9 @@ form.fabrikForm .currencyElement input:focus + select,form.fabrikForm .currencyE
 form.fabrikForm .control-group.error label {
         color: var(--em-form-label-color-error);
       }
-form.fabrikForm .control-group.error input {
+form.fabrikForm .control-group.error input,form.fabrikForm .control-group.error textarea,form.fabrikForm .control-group.error select {
         border-color: var(--em-form-border-color-error);
+        color: var(--em-default-text-color-1);
       }
 form.fabrikForm .fabrikError.plg-checkbox .fabrikElement .fabrikSubElementContainer {
           border-color: var(--em-form-checkbox-border-color-error);

@@ -712,8 +712,9 @@
         color: var(--em-form-label-color-error);
       }
 
-      input {
+      input,textarea,select {
         border-color: var(--em-form-border-color-error);
+        color: var(--em-default-text-color-1);
       }
     }
     .fabrikError.plg-checkbox {
