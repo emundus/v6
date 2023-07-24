@@ -680,7 +680,6 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
 JHTML::script('media/com_emundus_vue/chunk-vendors_emundus.js');
 
 JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
-JHTML::styleSheet('https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined');
 
 /** QUILL */
 JHTML::script('https://cdn.quilljs.com/1.3.6/quill.min.js');

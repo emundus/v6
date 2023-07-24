@@ -6,7 +6,6 @@ header('Content-Type: text/html; charset=utf-8');
 $user = JFactory::getUser();
 $lang = JFactory::getLanguage();
 $locallang = $lang->getTag();
-$document->addStyleSheet("https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined" );
 
 if ($locallang == "fr-FR") {
     setlocale(LC_TIME, 'fr', 'fr_FR', 'french', 'fra', 'fra_FRA', 'fr_FR.ISO_8859-1', 'fra_FRA.ISO_8859-1', 'fr_FR.utf8', 'fr_FR.utf-8', 'fra_FRA.utf8', 'fra_FRA.utf-8');
