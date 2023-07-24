@@ -88,11 +88,30 @@
 								size="5"
 						/>
 						<field
+								name="type"
+								type="list"
+								label="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_TYPE"
+								description="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_TYPE_DESC"
+								size="5"
+						>
+							<option value="link">Link</option>
+							<option value="button">Button</option>
+						</field>
+						<field
+								showon="type:link"
 								name="link"
 								type="text"
 								label="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_LINK"
 								description="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_LINK_DESC"
 								size="5"
+						/>
+						<field
+							showon="type:button"
+							name="onclick"
+							type="text"
+							label="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_ONCLICK"
+							description="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_ONCLICK_DESC"
+							size="5"
 						/>
 						<field
 								name="condition"

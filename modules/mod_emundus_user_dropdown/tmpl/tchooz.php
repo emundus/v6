@@ -224,9 +224,23 @@ if ($user != null) {
             <?php endif; ?>
             <?php if (!empty($custom_actions)) {
                 foreach($custom_actions as $custom_action) {
-                    ?>
-                    <li><a class="edit-button-user em-pointer" href="<?= $custom_action->link; ?>"><?= $custom_action->title; ?></a></li>
-                    <?php
+                    if (!empty($custom_action->link) || !empty($custom_action->onclick)) {
+                        ?>
+                        <li>
+                            <?
+                            switch($custom_action->type) {
+                                case 'button':
+                                    echo '<a type="button" onclick="'.$custom_action->onclick.'" class="edit-button-user em-pointer">'.JText::_($custom_action->title).'</a>';
+                                    break;
+	                            case 'link':
+                                default:
+		                            echo '<a href="'.$custom_action->link.'" target="_blank" class="edit-button-user em-pointer">'.JText::_($custom_action->title).'</a>';
+		                            break;
+                            }
+                            ?>
+                        </li>
+                        <?php
+                    }
                 }
             } ?>
         </ul>
@@ -374,3 +388,5 @@ if ($user != null) {
     </script>
 <?php }
 ?>
+
+<div class="em-page-loader" style="display: none"></div>

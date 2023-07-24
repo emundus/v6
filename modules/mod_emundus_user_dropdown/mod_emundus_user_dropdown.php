@@ -35,8 +35,9 @@ $link_forgotten_password = $params->get('link_forgotten_password', 'index.php?op
 $show_registration = $params->get('show_registration', '0');
 $link_edit_profile = JRoute::_('index.php?Itemid=' . $params->get('link_edit_profile', 2805));
 $custom_actions = $params->get('custom_actions', []);
-if (!empty($custom_actions)) {
-    foreach ($custom_actions as $key => $action) {
+
+if (!empty($custom_actions) && !empty($user->id)) {
+    foreach ($custom_actions as $action) {
         $pass = true;
 
         if (!empty($action->condition)) {
@@ -48,11 +49,11 @@ if (!empty($custom_actions)) {
         }
 
         if (!$pass) {
-            unset($custom_actions[$key]);
+	        unset($action);
             continue;
         }
 
-        if (strpos($action->link, '{fnum}') !== false) {
+        if (!empty($action->link) && strpos($action->link, '{fnum}') !== false) {
             $action->link = str_replace('{fnum}', $user->fnum, $action->link);
         }
     }
