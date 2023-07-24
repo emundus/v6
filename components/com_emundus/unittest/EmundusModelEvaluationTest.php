@@ -46,4 +46,18 @@ class EmundusModelEvaluationTest extends TestCase
 	{
 		$this->assertTrue(true);
 	}
+
+	public function testgetLettersByProgrammesStatusCampaigns()
+	{
+		$letters = $this->m_evaluation->getLettersByProgrammesStatusCampaigns();
+		$this->assertIsArray($letters, 'getLettersByProgrammesStatusCampaigns should return an array');
+		$this->assertEmpty($letters, 'Without parameters, getLettersByProgrammesStatusCampaigns should return an empty array');
+	}
+
+	public function testgetLetterTemplateForFnum()
+	{
+		$letters = $this->m_evaluation->getLetterTemplateForFnum('');
+		$this->assertIsArray($letters, 'getLetterTemplateForFnum should return an array');
+		$this->assertEmpty($letters, 'Without parameters, getLetterTemplateForFnum should return an empty array');
+	}
 }
