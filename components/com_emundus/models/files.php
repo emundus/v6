@@ -302,6 +302,9 @@ class EmundusModelFiles extends JModelLegacy
         if (in_array('unread_messages', $em_other_columns)) {
             $this->_elements_default[] = ' COUNT(`m`.`message_id`) AS `unread_messages` ';
         }
+        if (in_array('commentaire', $em_other_columns)) {
+            $this->_elements_default[] = ' COUNT(`ecom`.`id`) AS `commentaire` ';
+        }
         if (empty($col_elt)) {
             $col_elt = array();
         }
@@ -395,6 +398,9 @@ class EmundusModelFiles extends JModelLegacy
 
         if (in_array('overall', $em_other_columns)) {
             $can_be_ordering[] = 'overall';
+        }
+        if (in_array('commentaire', $em_other_columns)) {
+            $can_be_ordering[] = 'commentaire';
         }
 
         if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)) {
@@ -595,6 +601,9 @@ class EmundusModelFiles extends JModelLegacy
         if (in_array('unread_messages', $em_other_columns)) {
             $lastTab[] = ['#__messages', 'jos_messages','#__emundus_chatroom', 'jos_emundus_chatroom'];
         }
+        if (in_array('commentaire', $em_other_columns)) {
+            $lastTab[] = ['#__emundus_comments', 'jos_emundus_comments'];
+        }
 
         if (!empty($this->_elements)) {
             $leftJoin = '';
@@ -628,6 +637,10 @@ class EmundusModelFiles extends JModelLegacy
             $query.= ' LEFT JOIN #__emundus_chatroom as ec on ec.fnum = jecc.fnum
             LEFT JOIN #__messages as m on m.page = ec.id AND m.state = 0 AND m.page IS NOT NULL ';
         }
+        if (in_array('commentaire', $em_other_columns)) {
+            $query.= ' LEFT JOIN #__emundus_comments as ecom on ecom.fnum = jecc.fnum ';
+        }
+
 
         $q = $this->_buildWhere($lastTab);
         if (!empty($leftJoin)) {
@@ -639,6 +652,7 @@ class EmundusModelFiles extends JModelLegacy
         $query .= ' GROUP BY jecc.fnum';
 
         $query .=  $this->_buildContentOrderBy();
+
         $dbo->setQuery($query);
         try {
             $res = $dbo->loadAssocList();
