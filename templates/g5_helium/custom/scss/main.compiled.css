@@ -533,33 +533,32 @@ video {
   }
 }
 .em-primary-button {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    padding: 0 var(--p-16);
-    border-radius: var(--em-coordinator-br);
-    border: unset;
-    height: 40px;
-    color: var(--neutral-0);
-    background-color: var(--em-primary-color-coordinator);
-    border: solid 1px transparent;
-    font-family: var(--em-coordinator-font);
-}
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        padding: 0 var(--p-16);
+        border-radius: var(--em-coordinator-br);
+        border: unset;
+        height: 40px;
+        color: white;
+        background-color: var(--main-500);
+        border: solid 1px transparent;
+        font-family: var(--em-coordinator-font);
+    }
 .em-primary-button:hover {
-    background-color: white;
-    color: var(--em-primary-color-coordinator);
-    border: 1px solid var(--em-primary-color-coordinator);
-    text-decoration: none;
-}
+            background-color: white;
+            color: var(--main-500);
+            border: 1px solid var(--main-500);
+            text-decoration: none;
+        }
 .em-primary-button:hover .material-icons {
-    color: var(--em-primary-color-coordinator) !important;
-}
+                color: var(--main-500) !important;
+            }
 .em-primary-button .material-icons {
-    color: var(--neutral-0);
-}
-
+            color: var(--white);
+        }
 /** APPLICANT **/
 .emundus-form .page-header h1 {
   color: var(--em-default-title-color-1);
@@ -1349,7 +1348,7 @@ form.fabrikForm .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn.btn-s
     }
 .com_emundus input:not([type='file']), .com_emundus select, .com_emundus textarea {
       color: var(--em-default-text-color-1);
-      border-radius: var(--em-default-br);
+      border-radius: var(--em-coordinator-br);
       padding-left: 0.375rem;
       padding-right: 0.375rem;
       padding-top: var(--spacing-2);
@@ -1936,7 +1935,7 @@ h2 {
   font-size: 22px;
   font-style: normal;
   line-height: 26.4px;
-  font-weight: 500;
+  font-weight: 400;
 }
 h3 {
   color: var(--em-default-title-color-1);
@@ -1944,7 +1943,7 @@ h3 {
   font-size: 20px;
   font-style: normal;
   line-height: 24.2px;
-  font-weight: 500;
+  font-weight: 400;
 }
 h4 {
         font-family: var(--em-default-font);
@@ -2154,17 +2153,6 @@ legend {
   margin: 0px;
   font-weight: 700;
 }
-
-.com_emundus .swal2-container .swal2-header .swal2-title {
-    color: var(--em-coordinator-title-color);
-    font-family: var(--em-applicant-font-title);
-    font-size: 20px;
-    font-style: normal;
-    line-height: 24.2px;
-    margin: 0px;
-    font-weight: 700;
-}
-
 .swal2-container .swal2-header .swal2-close {
   display: flex;
   flex-direction: column;
