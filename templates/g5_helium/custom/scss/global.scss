@@ -3970,6 +3970,15 @@ ul.unstyled.em-linkForgot li a {
   display: none;
 }
 
+fieldset.em_filters_adv_filter .em_save_filter input#save-filter {
+  margin-bottom: 24px !important;
+}
+
+.com_emundus .em_filters_adv_filter #em_adv_filters #advanced-filters .chzn-container.chzn-container-single .chzn-drop {
+  top: auto !important;
+  bottom: 100% !important;
+}
+
 #em-files-filters #em_filters fieldset input#save-filter,
 fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
 #em_adv_filters .em_filters_adv_filter_addColumn button#add-filter {
