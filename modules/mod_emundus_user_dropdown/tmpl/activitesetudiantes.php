@@ -30,7 +30,7 @@ require JModuleHelper::getLayoutPath('mod_emundus_user_dropdown', 'tchooz');
         if (current_fnum) {
             let formData = new FormData();
             formData.append('fnums', current_fnum);
-            formData.append('ids_tmpl', [31]);
+            formData.append('ids_tmpl[]', 31);
             formData.append('cansee', 1);
             formData.append('showMode', 2);
             formData.append('mergeMode', 0);
