@@ -227,7 +227,7 @@ if ($user != null) {
                     if (!empty($custom_action->link) || !empty($custom_action->onclick)) {
                         ?>
                         <li>
-                            <?
+                            <?php
                             switch($custom_action->type) {
                                 case 'button':
                                     echo '<a type="button" onclick="'.$custom_action->onclick.'" class="edit-button-user em-pointer">'.JText::_($custom_action->title).'</a>';
