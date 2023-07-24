@@ -4113,10 +4113,14 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
 
 /* DOSSIER CANDIDAT */
 
+.com_emundus .em_filters_filedset > div:nth-child(+n+5) .optWrapper {
+  top: auto;
+  bottom: 100%;
+}
+
 .em-personalInfo > a {
   background-color: unset;
 }
-
 
 /* RECHERCHE */
 .gantry.files-page .selectize-control.multi .selectize-input [data-value],
