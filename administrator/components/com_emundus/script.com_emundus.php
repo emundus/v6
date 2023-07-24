@@ -1995,6 +1995,10 @@ structure:
 				}
 				//
             }
+            if (version_compare($cache_version, '1.36.7', '<=') || $firstrun){
+                EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_COMMENTAIRE', 'Comments', 'override', null, null, null, 'en-GB');
+                EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_COMMENTAIRE', 'Commentaires', 'override', null, null, null, 'fr-FR');
+            }
 
 			// Insert new translations in overrides files
 			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
