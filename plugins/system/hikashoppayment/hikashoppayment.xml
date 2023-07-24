@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="system" method="upgrade">
 	<name>HikaShop Payment Notification plugin</name>
-	<creationDate>31 mai 2023</creationDate>
-	<version>4.7.3</version>
+	<creationDate>26 juin 2023</creationDate>
+	<version>4.7.4</version>
 	<author>HikaShop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>

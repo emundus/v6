@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -22,7 +22,7 @@ if(!empty($this->editing_variant))
 				echo JText::_('RESTRICTIONS');
 			?></th>
 			<th style="width:60px;text-align:center">
-				<button href="#" class="hikabtn btn-primary" onclick="return window.productMgr.editPrice('<?php echo $form_key ?>', 0);" title="<?php echo JText::_('ADD'); ?>"><i class="fa fa-plus"></i></button>
+				<button href="#" class="btn btn-success" onclick="return window.productMgr.editPrice('<?php echo $form_key ?>', 0);" title="<?php echo JText::_('ADD'); ?>"><i class="fa fa-plus"></i> <?php echo JText::_('NEW_PRICE'); ?></button>
 			</th>
 		</tr>
 	</thead>

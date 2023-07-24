@@ -212,3 +212,39 @@ function numberOfDaysBetweenDates(date1,date2 = null) {
     const diffTime = Math.abs(date2 - date1);
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
+
+function submit(title = 'Dossier en cours d\'envoi...',timer = 3000) {
+    let fabrikForm = document.querySelector('form.fabrikForm');
+    if(fabrikForm)
+    {
+        fabrikForm.style.opacity = 0;
+    }
+    let fabrikHeader = document.querySelector('.page-header');
+    if(fabrikHeader)
+    {
+        fabrikHeader.style.opacity = 0;
+    }
+
+    let emundusForm = document.querySelector('.emundus-form');
+    if(emundusForm)
+    {
+        emundusForm.classList.add('skeleton');
+    }
+
+    Swal.fire({
+        type: 'success',
+        position: 'center',
+        title: title,
+        showCancelButton: false,
+        showConfirmButton: false,
+        customClass: {
+            title: 'em-swal-title',
+        },
+        timer: timer
+    }).then(() => {
+        if(fabrikForm)
+        {
+            fabrikForm.submit();
+        }
+    });
+}

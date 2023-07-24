@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="hikashop">
 	<name>Hikashop UserPoints Plugin</name>
-	<creationDate>31 mai 2023</creationDate>
-	<version>4.7.3</version>
+	<creationDate>26 juin 2023</creationDate>
+	<version>4.7.4</version>
 	<author>Obsidev</author>
 	<authorEmail>contact@obsidev.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
@@ -14,6 +14,7 @@
 		<filename>userpoints_checkout.php</filename>
 		<filename>userpoints_configuration.php</filename>
 		<filename>userpoints_aup_compat.php</filename>
+		<filename>userpoints_bup_compat.php</filename>
 	</files>
 	<params addpath="/components/com_hikashop/params">
 		<param name="pluginoptions" type="pluginoptions" default="plugin" label="HIKA_HIKASHOP" description="HIKASHOP_OPTIONS" />

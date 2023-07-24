@@ -56,7 +56,7 @@
 
         <div>
           <div class="em-flex-row em-mb-16">
-            <h3 class="em-h3 em-pointer" @click="displayAdvanced">{{ translations.Advanced }}</h3>
+            <h3 class="em-h3 em-pointer em-mb-0" @click="displayAdvanced">{{ translations.Advanced }}</h3>
             <button :title="translations.Advanced" type="button" class="em-transparent-button em-flex-column" @click="displayAdvanced" v-show="!displayAdvancedParameters">
               <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
             </button>

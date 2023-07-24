@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="1.5" method="upgrade" group="hikashop">
 	<name>HikaShop Shipping Manual - Price per product plugin</name>
-	<creationDate>31 mai 2023</creationDate>
-	<version>4.7.3</version>
+	<creationDate>26 juin 2023</creationDate>
+	<version>4.7.4</version>
 	<author>Obsidev</author>
 	<authorEmail>dev@obsidev.com</authorEmail>
 	<authorUrl>http://www.obsidev.com</authorUrl>

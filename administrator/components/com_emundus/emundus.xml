@@ -7,9 +7,10 @@
 	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
 	<authorEmail>dev@emundus.fr</authorEmail>
 	<authorUrl>www.emundus.fr</authorUrl>
-	<version>1.36.4</version>
+	<version>1.37.0</version>
 	<description>Online application component for Joomla!</description>
 	<scriptfile>script.com_emundus.php</scriptfile>
+	
 	<update>
 		<schemas>
 			<schemapath type="mysql">sql/updates/mysql</schemapath>
@@ -77,5 +78,11 @@
 			<language tag="en-GB">en-GB.com_emundus.ini</language>
 		</languages>
 	</administration>
+
+	<!-- START UPDATESERVERS
+	<updateservers>
+		<server type="collection" name="eMundus61">http://emundus.fr/update/emundus61/package_list.xml</server>
+	</updateservers>
+	-->
 
 </extension>

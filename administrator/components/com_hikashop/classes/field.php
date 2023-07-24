@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -2282,9 +2282,6 @@ class hikashopFieldText extends hikashopFieldItem {
 			return $status;
 
 		$status = false;
-		if (empty($this->report))
-			return $status;
-
 		$this->_displayError($field);
 
 		return $status;
@@ -2305,8 +2302,7 @@ class hikashopFieldText extends hikashopFieldItem {
 			$app->enqueueMessage($message, 'error');
 		} else {
 			$this->parent->messages[] = array(
-				$message,
-				'error'
+				$message
 			);
 		}
 
@@ -2324,9 +2320,13 @@ class hikashopFieldText extends hikashopFieldItem {
 			$size .= ' placeholder="'.JText::_($field->field_options['placeholder']).'"';
 		if(!empty($field->field_options['attribute']))
 			$size .= $field->field_options['attribute'];
+		if(!empty($field->field_options['regex'])) {
+			$size .= ' pattern="'.$field->field_options['regex'].'"';
+		}
 		if(is_null($value))
 			$value = '';
 		$js = '';
+		$html = '';
 		if(strlen(trim($value)) < 1) {
 			if(!empty($field->field_default))
 				$value = $field->field_default;
@@ -2336,10 +2336,33 @@ class hikashopFieldText extends hikashopFieldItem {
 				$this->excludeValue[$field->field_namekey] = $value;
 				$js = ' onfocus="if(this.value == \''.$jsvalue.'\') this.value = \'\';" onblur="if(this.value==\'\') this.value=\''.$jsvalue.'\';"';
 			}
+		} elseif(hikashop_isClient('site')) {
+			$html = '
+			<script>
+				window.hikashop.ready(function() {
+					if(document.formvalidator) {
+						var el = document.getElementById(\''.$this->prefix.@$field->field_namekey.$this->suffix.'\');
+						if(el) document.formvalidator.validate(el);
+					}
+				});
+			</script>';
 		}
 
-		if(!empty($field->field_required) && !empty($field->registration_page))
+		if (!empty($field->field_options['errormessage'])) {
+			$message = $this->trans($field->field_options['errormessage']);
+		} else {
+			$message = JText::sprintf('PLEASE_FILL_THE_FIELD', $this->trans($field->field_realname));
+		}
+		$size.= ' data-validation-text="'.str_replace('"', '&quot;', $message).'"';
+
+		if(empty($js) && hikashop_isClient('site')){
+			$js = ' onblur="if(document.formvalidator) document.formvalidator.validate(this);"';
+		}
+
+		if(!empty($field->field_required) && hikashop_isClient('site')) {
+			$this->class.=' required';
 			$size .= ' aria-required="true" required="required"';
+		}
 
 
 		if(strpos($options, 'class="') === false) {
@@ -2348,7 +2371,7 @@ class hikashopFieldText extends hikashopFieldItem {
 			$options = str_replace('class="', 'class="'.$this->class.' ', $options);
 		}
 
-		return '<input id="'.$this->prefix.@$field->field_namekey.$this->suffix.'"'.$size.$js.' '.$options.' type="'.$this->type.'" name="'.$map.'" value="'.$value.'" />';
+		return $html.'<input id="'.$this->prefix.@$field->field_namekey.$this->suffix.'"'.$size.$js.' '.$options.' type="'.$this->type.'" name="'.$map.'" value="'.$value.'" />';
 	}
 
 	function show(&$field, $value) {
@@ -2971,6 +2994,20 @@ class hikashopFieldTextarea extends hikashopFieldItem {
 			$value = addslashes($this->trans($field->field_realname));
 			$this->excludeValue[$field->field_namekey] = $value;
 			$js = 'onfocus="if(this.value == \''.$value.'\') this.value = \'\';" onblur="if(this.value==\'\') this.value=\''.$value.'\';"';
+		} elseif(hikashop_isClient('site')) {
+			$html = '
+			<script>
+				window.hikashop.ready(function() {
+					if(document.formvalidator) {
+						var el = document.getElementById(\''.$this->prefix.@$field->field_namekey.$this->suffix.'\');
+						if(el) document.formvalidator.validate(el);
+					}
+				});
+			</script>';
+		}
+
+		if(empty($js) && hikashop_isClient('site')){
+			$js = ' onblur="if(document.formvalidator) document.formvalidator.validate(this);"';
 		}
 		if(!empty($field->field_options['maxlength'])){
 			static $done = false;
@@ -2990,15 +3027,21 @@ class hikashopFieldTextarea extends hikashopFieldItem {
 			$js .= ' onKeyUp="hikashopTextCounter(this,\''.$this->prefix.@$field->field_namekey.$this->suffix.'_count'.'\','.(int)$field->field_options['maxlength'].');" onBlur="hikashopTextCounter(this,\''.$this->prefix.@$field->field_namekey.$this->suffix.'_count'.'\','.(int)$field->field_options['maxlength'].');" ';
 		}
 
+		$class ="inputbox";
+		if(!empty($field->field_required) && hikashop_isClient('site')) {
+			$class.=' required';
+			$options .= ' aria-required="true" required="required"';
+		}
+
 		$cols = empty($field->field_options['cols']) ? '' : 'cols="'.intval($field->field_options['cols']).'"';
 		$rows = empty($field->field_options['rows']) ? '' : 'rows="'.intval($field->field_options['rows']).'"';
 		$options .= empty($field->field_options['readonly']) ? '' : ' readonly="readonly"';
 		$options .= empty($field->field_options['placeholder']) ? '' : ' placeholder="'.JText::_($field->field_options['placeholder']).'"';
 		$options .= empty($field->field_options['attribute']) ? '' : $field->field_options['attribute'];
 		if(strpos($options, 'class="') === false) {
-			$options .= ' class="inputbox"';
+			$options .= ' class="'.$class.'"';
 		} else {
-			$options = str_replace('class="', 'class="inputbox ', $options);
+			$options = str_replace('class="', 'class="'.$class.' ', $options);
 		}
 		return '<textarea id="'.$this->prefix.@$field->field_namekey.$this->suffix.'" name="'.$map.'" '.$cols.' '.$rows.' '.$js.' '.$options.'>'.$value.'</textarea>'.$html;
 	}

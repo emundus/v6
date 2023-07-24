@@ -382,7 +382,7 @@ $current_tab = 0;
                                                                       style="background-color: <?= $application->order_color; ?>"><?= JText::_(strtoupper($application->order_status)); ?></span>
 															<?php endif; ?>
                                                         </div>
-                                                        <div>
+                                                        <div class="mod_emundus_applications__container">
                                                             <span class="material-icons em-text-neutral-600 em-font-weight-600"
                                                                   id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
                                                                   >more_vert</span>
@@ -455,22 +455,22 @@ $current_tab = 0;
                                                         <a href="<?= JRoute::_($first_page_url); ?>"
                                                            class="em-h4 mod_emundus_applications___title"
                                                            id="application_title_<?php echo $application->fnum ?>">
-                                                            <span><?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?></span>
+                                                            <h5><?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?></h5>
                                                         </a>
 													<?php else : ?>
                                                         <a href="<?= JRoute::_($first_page_url); ?>"
                                                            class="em-h4 mod_emundus_applications___title"
                                                            id="application_title_<?php echo $application->fnum ?>">
-                                                            <span><?= $application->name; ?></span>
+                                                            <h5><?= $application->name; ?></h5>
                                                         </a>
 													<?php endif; ?>
 													<?php if ($show_fnum) : ?>
-                                                        <div class="em-mb-8 em-font-size-14">
+                                                        <div class="em-mb-8 em-font-size-16">
                                                             <span class="em-applicant-default-font em-text-neutral-600">N°<?php echo $application->fnum ?></span>
                                                         </div>
 													<?php endif; ?>
 													<?php if (!empty($file_tags_display)) : ?>
-                                                        <div class="em-mt-16">
+                                                        <div class="em-mt-8">
                                                         <span class="em-tags-display em-applicant-text-color">
                                                             <?= $file_tags_display; ?>
                                                         </span>
@@ -522,12 +522,14 @@ $current_tab = 0;
                                                 <hr/>
 
                                                 <div class="mod_emundus_applications___informations">
-                                                    <div>
-                                                        <label class="em-applicant-text-color em-applicant-default-font em-font-size-14"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_COMPLETED'); ?>
-                                                            :</label>
-                                                        <p class="em-applicant-default-font"><?php echo(($progress['forms'][$application->fnum] + $progress['attachments'][$application->fnum]) / 2) ?>
-                                                            %</p>
-                                                    </div>
+	                                                <?php if($show_progress == 1) : ?>
+	                                                    <div>
+	                                                        <label class="em-applicant-text-color em-applicant-default-font em-font-size-14"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_COMPLETED'); ?>
+	                                                            :</label>
+	                                                        <p class="em-applicant-default-font"><?php echo(($progress['forms'][$application->fnum] + $progress['attachments'][$application->fnum]) / 2) ?>
+	                                                            %</p>
+	                                                    </div>
+													<?php endif; ?>
 
 													<?php if (!empty($application->updated) || !empty($application->submitted_date)) : ?>
                                                         <div>
@@ -582,7 +584,7 @@ $current_tab = 0;
                 echo $override_default_content;
             } else {
                 ?>
-                <p class="em-text-neutral-900 em-h5 em-applicant-title-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE') ?></p>
+                <p class="em-text-neutral-900 em-h2 em-applicant-title-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE') ?></p>
                 <br/>
                 <p class="em-text-neutral-900 em-default-font em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT') ?></p>
                 <p class="em-applicant-text-color em-default-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT_2') ?></p>
@@ -619,7 +621,9 @@ $current_tab = 0;
                                 <th></th>
                                 <th style="width: 23.75%;"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION_NAME') ?></th>
                                 <th style="width: 23.75%;"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_LAST_UPDATE') ?></th>
-                                <th style="width: 23.75%;"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_COMPLETED') ?></th>
+                              <?php if($show_progress == 1) : ?>
+                                     <th style="width: 23.75%;"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_COMPLETED') ?></th>
+                              <?php endif; ?>
                                 <th style="width: 23.75%;"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_STATUS') ?></th>
                                 <th style="width: 5%;"></th>
                             </tr>
@@ -701,10 +705,12 @@ $current_tab = 0;
                                                         </div>
 													<?php endif; ?>
                                                 </td>
-                                                <td style="width: 23.75%;">
-                                                    <p class="em-applicant-default-font em-font-size-14"><?php echo(($progress['forms'][$application->fnum] + $progress['attachments'][$application->fnum]) / 2) ?>
-                                                        %</p>
-                                                </td>
+												<?php if($show_progress == 1) : ?>
+	                                                <td style="width: 23.75%;">
+	                                                    <p class="em-applicant-default-font em-font-size-14"><?php echo(($progress['forms'][$application->fnum] + $progress['attachments'][$application->fnum]) / 2) ?>
+	                                                        %</p>
+	                                                </td>
+												<?php endif; ?>
                                                 <td style="width: 23.75%;">
                                                     <div>
 														<?php
@@ -733,7 +739,7 @@ $current_tab = 0;
                                                     </div>
                                                 </td>
                                                 <td style="width: 5%;">
-                                                    <div>
+                                                    <div class="mod_emundus_applications__container">
                                                             <span class="material-icons em-text-neutral-600 em-font-weight-600"
                                                                   id="actions_button_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>"
                                                                   >more_vert</span>
