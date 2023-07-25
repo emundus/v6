@@ -171,6 +171,7 @@ a.btn.btn-success:not(.btn-xs) {
 
 .view-featured .candidacy-files-list .row {
    position: relative;
+    height: 100%;
 }
 @media all and (max-width: 479px) {
 
