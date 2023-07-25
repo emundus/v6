@@ -120,7 +120,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
                     if (!empty($fileName)) {
                         $now = new DateTime();
-                        $now->setTimezone(new DateTimeZone('UTC'));
+                        $now = $now->setTimezone(new DateTimeZone('UTC'));
                         $now = $now->format('Y-m-d H:i:s');
                         $insert[] = $db->quote($now) . ' , ' . $db->quote($user) . ' , ' . $db->quote($fnum) . ' , ' . $db->quote($cid) . ' , ' . $db->quote($attachId) . ' , ' . $db->quote($fileName) . ' , ' . $db->quote(1) . ' , ' . $db->quote(1) . ' , ' . $db->quote($now) . ' , ' . $db->quote($file['name']);
                     }
@@ -793,7 +793,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $user = (int)$current_user->id;
 
         $now = new DateTime();
-        $now->setTimezone(new DateTimeZone('UTC'));
+        $now = $now->setTimezone(new DateTimeZone('UTC'));
         $now = $now->format('Y-m-d H:i:s');
 
         $query->update($db->quoteName('#__emundus_uploads'))

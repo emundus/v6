@@ -1455,19 +1455,14 @@ class EmundusModelEmails extends JModelList {
         // log email to admin user if user_id_from is empty
         $row['user_id_from'] = !empty($row['user_id_from']) ? $row['user_id_from'] : 62;
 
-        $offset = JFactory::getConfig()->get('offset', 'UTC');
-        try {
-            $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
-            $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
-            $now = $dateTime->format('Y-m-d H:i:s');
-        } catch (Exception $e) {
-            $now = 'NOW()';
-        }
+        $now = new DateTime();
+        $now = $now->setTimezone(new DateTimeZone('UTC'));
+        $now = $now->format('Y-m-d H:i:s');
 
         $query = $this->_db->getQuery(true);
 
-        $columns = ['user_id_from', 'user_id_to', 'subject', 'message' , 'date_time', 'email_cc'];
-        $values = [$row['user_id_from'], $row['user_id_to'], $this->_db->quote($row['subject']), $this->_db->quote($row['message']), $this->_db->quote($now), $this->_db->quote($row['email_cc'])];
+        $columns = ['user_id_from', 'user_id_to', 'date_time', 'subject', 'message', 'email_cc'];
+        $values = [$row['user_id_from'], $row['user_id_to'], $this->_db->quote($now), $this->_db->quote($row['subject']), $this->_db->quote($row['message']), $this->_db->quote($row['email_cc'])];
 
         // If we are logging the email type as well, this allows us to put them in separate folders.
         if (isset($row['type']) && !empty($row['type'])) {

@@ -102,7 +102,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 			$user->password = md5($password);
 		}
         $now = new DateTime();
-        $now->setTimezone(new DateTimeZone('UTC'));
+        $now = $now->setTimezone(new DateTimeZone('UTC'));
         $now = $now->format('Y-m-d H:i:s');
         $user->registerDate = $now;
         $user->lastvisitDate = null;

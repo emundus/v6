@@ -29,7 +29,23 @@ use Joomla\CMS\HTML\HTMLHelper;
 class EmundusHelperDate {
 
     /**
-     * Return date formatted
+     * Return actual date formatted in UTC timezone
+     *
+     * @return string
+     *
+     * @throws Exception
+     * @since version 1.36.7
+     */
+    static function saveDate() {
+        // TODO: test calls to this function, replace code using these lines by it
+        $now = new DateTime();
+        $now = $now->setTimezone(new DateTimeZone('UTC'));
+
+        return $now->format('Y-m-d H:i:s');
+    }
+
+    /**
+     * Return a saved date formatted to the current timezone
      * @param $date
      * @param $format
      * @param $local

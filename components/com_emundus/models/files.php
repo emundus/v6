@@ -1331,7 +1331,7 @@ class EmundusModelFiles extends JModelLegacy
                 }
 
                 $now = new DateTime();
-                $now->setTimezone(new DateTimeZone('UTC'));
+                $now = $now->setTimezone(new DateTimeZone('UTC'));
                 $now = $now->format('Y-m-d H:i:s');
 
                 $query_associated_tags = $db->getQuery(true);
