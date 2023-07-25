@@ -2618,4 +2618,77 @@ class EmundusHelperUpdate
 
 		return $result;
 	}
+
+	public static function createJoomlaArticle($data, $category_alias = null){
+		$result = ['status' => false, 'message' => ''];
+		$db = JFactory::getDbo();
+
+		try
+		{
+			$query = $db->getQuery(true);
+			$publish_up = new DateTime();
+			$publish_up->modify('-1 day');
+
+			$query->select('id')
+			       ->from($db->quoteName('#__content'))
+				   ->where('alias = ' . $db->quote($data['alias']));
+			$db->setQuery($query);
+			$article_id = $db->loadResult();
+
+			if(empty($article_id)) {
+
+				if(!empty($category_alias)){
+					$query->clear();
+					$query->select('id')->from($db->quoteName('#__categories'))->where('alias = ' . $db->quote($category_alias));
+					$db->setQuery($query);
+					$category_id = $db->loadResult();
+				}
+				else{
+					$category_id = 1;
+				}
+				$db_columns = array('title', 'alias', 'introtext', 'fulltext', 'state', 'catid', 'created', 'created_by', 'modified', 'modified_by', 'checked_out', 'checked_out_time', 'publish_up', 'publish_down', 'images', 'urls', 'attribs', 'version', 'metakey', 'metadesc', 'access', 'metadata', 'language');
+				foreach ($db_columns as $index => $column) {
+					$db_columns[$index] = $db->quoteName($column);
+				}
+				$values = array(
+					$db->quote($data['title']),
+					$db->quote($data['alias']),
+					$db->quote($data['introtext']),
+					$db->quote($data['fulltext']),
+					$db->quote($data['state']),
+					$db->quote($category_id),
+					$db->quote(date('Y-m-d H:i:s')),
+					$db->quote(62),
+					$db->quote(date('Y-m-d H:i:s')),
+					$db->quote(62),
+					$db->quote(0),
+					$db->quote(date('Y-m-d H:i:s')),
+					$db->quote($publish_up->format('Y-m-d H:i:s')),
+					$db->quote(date('Y-m-d H:i:s', strtotime('2099-12-31 23:59:59'))),
+					$db->quote('{}'),
+					$db->quote('{}'),
+					$db->quote($data['attribs']),
+					$db->quote(1),
+					$db->quote(''),
+					$db->quote(''),
+					$db->quote(1),
+					$db->quote(''),
+					$db->quote('*')
+				);
+
+				$query
+					->clear()
+					->insert($db->quoteName('jos_content'))
+					->columns($db_columns)
+					->values(implode(',', $values));
+				$db->setQuery($query);
+				$db->execute();
+			}
+		}
+		catch (Exception $e)
+		{
+			$result['message'] = 'UPDATE FLAGS : Error : ' . $e->getMessage();
+		}
+		return $result;
+	}
 }

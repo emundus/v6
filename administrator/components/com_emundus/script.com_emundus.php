@@ -1998,6 +1998,173 @@ structure:
             if (version_compare($cache_version, '1.36.7', '<=') || $firstrun){
                 EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_COMMENTAIRE', 'Comments', 'override', null, null, null, 'en-GB');
                 EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_COMMENTAIRE', 'Commentaires', 'override', null, null, null, 'fr-FR');
+	            $data=array(
+					'title'=>'Accessibilité',
+		            'alias'=>'accessibilite',
+		            'introtext'=>'<p><em>Déclaration RGAA version 4.1 (La version en vigueur du RGAA est la <strong>4.1</strong> et a été publiée le 18 février 2021)</em></p>
+					<p> </p>
+					<p> </p>
+					<h1><strong>Accessibilité</strong></h1>
+					<p> </p>
+					<p>L\'article 47 de la Loi N°2005-102 du 11 février 2005 établit que tous les services publics de communication en ligne de l\'État, des autorités locales et des institutions publiques doivent être accessibles à tous les utilisateurs.</p>
+					<p>De même, toutes les organisations publiques et privées entreprenant une activité d\'intérêt général sont tenues de se conformer au Référentiel Général d\'Accessibilité pour les Administrations (RGAA).</p>
+					<p> </p>
+					<p>Cette législation met en évidence l\'importance de rendre les services en ligne accessibles, indépendamment des capacités des utilisateurs. Les sites web, applications, etc. doivent respecter les principes d\'accessibilité, se conformer aux normes en vigueur et être compatibles avec les technologies d\'assistance utilisées par les personnes en situation de handicap.</p>
+					<p> </p>
+					<p><span class="fabric-text-color-mark" style="color: #ff0000;" data-text-custom-color="#ff5630">[NOM DE L’ENTITE]</span>, reconnait pleinement l\'impact de cette loi et s’engage à remplir ses obligations en matière d\'accessibilité numérique. <span class="fabric-text-color-mark" style="color: #ff0000;" data-text-custom-color="#ff5630">[NOM DE L’ENTITE] </span>est déterminé(e) à se conformer au RGAA et à offrir des services en ligne accessibles à tous les utilisateurs.</p>
+					<p> </p>
+					<p>Dans cette déclaration d\'accessibilité, <span class="fabric-text-color-mark" style="color: #ff0000;" data-text-custom-color="#ff5630">[NOM DE L’ENTITE]</span> souhaite présenter ses efforts continus pour rendre ses services en ligne accessibles à tous. <span class="fabric-text-color-mark" style="color: #ff0000;" data-text-custom-color="#ff5630">[NOM DE L’ENTITE] </span>met en place des mesures spécifiques pour se conformer à l\'article 47 de la Loi N°2005-102 du 11 février 2005, ainsi qu\'au RGAA, afin de garantir une expérience équitable pour chacun de ses utilisateurs, quelles que soient leurs capacités.</p>
+					<p> </p>
+					<p> </p>
+					<h2><strong>Schéma pluriannuel et plan annuel de </strong><span class="fabric-text-color-mark" style="color: #ff0000;" data-text-custom-color="#ff5630">[NOM DE L’ENTITE]</span></h2>
+					<p> </p>
+					<p><span class="fabric-text-color-mark" style="color: #ff0000;" data-text-custom-color="#ff5630">[NOM DE L’ENTITE]</span> s’engage dans un processus d’amélioration de l’accessibilité de l’ensemble de ses sites.</p>
+					<p> </p>
+					<p>Le schéma pluriannuel décrit les points importants sur lesquels <span class="fabric-text-color-mark" data-text-custom-color="#ff5630"><span style="color: #ff0000;">[NOM DE L’ENTITE]</span> </span>s’appuiera pour améliorer l’accessibilité numérique de l’ensemble de ses sites web et applications.</p>
+					<p> </p>
+					<ul>
+					<li><u>Consulter le schéma pluriannuel d’accessibilité 2023 – 2025</u> <span style="color: #ff0000;"><span class="fabric-text-color-mark" data-text-custom-color="#ff5630">(Les utilisateurs doivent avoir accès au schéma pluriannuel - [insérer un lien cliquable vers le schéma pluriannuel]) – Exemple de schéma pluriannuel : </span><a style="color: #ff0000;" href="https://www.numerique.gouv.fr/uploads/DINUM_SchemaPluriannuel_2020.pdf" target="_blank" rel="noopener noreferrer"><span class="fabric-text-color-mark" data-text-custom-color="#ff5630">https://www.numerique.gouv.fr/uploads/DINUM_SchemaPluriannuel_2020.pdf</span></a></span></li>
+					</ul>
+					<p> </p>
+					<p>Il s’accompagne d’un plan d’action annuel qui détaille les opérations programmées et mises en œuvre, ainsi que l’état de suivi de ces actions :</p>
+					<p> </p>
+					<ul>
+					<li> <u>Consulter plan annuel d’accessibilité 2023</u>  <span style="color: #ff0000;"><span class="fabric-text-color-mark" data-text-custom-color="#ff5630">(Les utilisateurs doivent avoir accès au plan annuel - [insérer un lien cliquable vers le plan annuel]) – Exemple de plan annuel : </span><a style="color: #ff0000;" href="https://www.numerique.gouv.fr/uploads/DINUM-plan-annuel-2021.pdf" target="_blank" rel="noopener noreferrer"><span class="fabric-text-color-mark" data-text-custom-color="#ff5630">https://www.numerique.gouv.fr/uploads/DINUM-plan-annuel-2021.pdf</span></a></span></li>
+					</ul>
+					<p> </p>
+					<p> </p>
+					<h2><strong>État de conformité</strong></h2>
+					<p> </p>
+					<p>Le site<span class="fabric-text-color-mark" style="color: #ff0000;" data-text-custom-color="#ff5630"> [URL SITE] </span>est <span style="color: #ff0000;"><strong><span class="fabric-text-color-mark" data-text-custom-color="#ff5630">non/partiellement/totalement</span></strong></span> conforme avec le référentiel général d’amélioration de l’accessibilité (RGAA), version 4.1.</p>
+					<p> </p>
+					<ul>
+					<li><span style="color: #ff0000;"><span class="fabric-text-color-mark" data-text-custom-color="#ff5630">[SI NON]</span> : <em><u>Exemple</u></em> <em>: Étant donné qu\'il n\'existe aucun résultat d\'audit permettant de mesurer l\'atteinte des critères, un audit de conformité sera planifié, et des travaux d\'amélioration seront entrepris à la suite d\'un premier diagnostic.</em></span></li>
+					<li><span style="color: #ff0000;"><span class="fabric-text-color-mark" data-text-custom-color="#ff5630">[SI PARTIELLEMENT]</span> : <em><u>Exemple</u></em> <em>: en raison des non-conformités et des dérogations énumérées ci-dessous.</em></span></li>
+					<li><span style="color: #ff0000;"><span class="fabric-text-color-mark" data-text-custom-color="#ff5630">[SI TOTALEMENT]</span><strong><span class="fabric-text-color-mark" data-text-custom-color="#ff5630"> </span></strong>: <em><u>Exemple</u></em> <em>: Voir section « Résultats des tests ».</em></span></li>
+					</ul>
+					<p> </p>
+					<p><strong><span style="color: #ff0000;"><span class="fabric-text-color-mark" data-text-custom-color="#ff5630">Quel que soit votre état de conformité par suite d’un audit ou un diagnostic, vous êtes tenu de remplir la partie suivante en fonction de votre situation.</span></span></strong></p>
+					<p> </p>
+					<p> </p>
+					<h2><strong>Résultats des tests</strong></h2>
+					<p> </p>
+					<p>L’audit de conformité finalisé le <span class="fabric-text-color-mark" style="color: #ff0000;" data-text-custom-color="#ff5630">[DATE DE L’AUDIT] </span>par la société <span class="fabric-text-color-mark" style="color: #ff0000;" data-text-custom-color="#ff5630">[NOM DE L’ENTITÉ QUI A RÉALISÉ L’AUDIT]</span> révèle que le site est conforme à<span class="fabric-text-color-mark" style="color: #ff0000;" data-text-custom-color="#ff5630"> [INDIQUER LE POURCENTAGE DE CONFORMITÉ]</span> au RGAA version 4.1.</p>
+					<p> </p>
+					<p> </p>
+					<h2><strong>Contenus non accessibles</strong></h2>
+					<p> </p>
+					<p>Malgré le travail de mise en accessibilité effectué, certains contenus, listés ci-dessous, ne peuvent être rendus à 100% accessibles pour les raisons suivantes :</p>
+					<p> </p>
+					<p><em><u>Exemples</u> :</em></p>
+					<p> </p>
+					<ul>
+					<li><em>Le bouton d’envoi du formulaire de déclaration contient un intitulé « Retour » au lieu de « Envoi ». Cette erreur sera corrigée avant le <span class="fabric-text-color-mark" style="color: #ff0000;" data-text-custom-color="#ff5630">[DATE DE LA CORRECTION]</span></em></li>
+					<li><em>La connexion au compte personnel contient une vérification que vous n’êtes pas un robot avec un captcha visuel. Il est possible d’effectuer sa démarche par téléphone ou au guichet pour les personnes empêchées d’accéder à leur compte…</em></li>
+					</ul>
+					<p> </p>
+					<p> </p>
+					<h2><strong>Dérogations pour charge disproportionnée</strong></h2>
+					<p> </p>
+					<p><em><u>Exemples</u> :</em></p>
+					<p> </p>
+					<ul>
+					<li><em>Certains termes anglais ne peuvent pas être signalés comme tels (par exemple « meetup ») à certains endroits comme les titres, car le code html est alors visible dans le title de la page. La correction de ce point nécessiterait des travaux correctifs importants pour un impact utilisateur ici assez faible.</em></li>
+					<li><em>Le CMS génère parfois automatiquement quelques balises paragraphes vides superflues. Après des essais infructueux, il a été conclu que corriger ce point ne pourrait être réalisé aisément pour un impact utilisateur très faible, le contenu restant accessible et compréhensible…</em></li>
+					</ul>
+					<p> </p>
+					<p> </p>
+					<h2><strong>Contenus non soumis à l’obligation d’accessibilité</strong></h2>
+					<p> </p>
+					<p><em><u>Exemples</u> :</em></p>
+					<p> </p>
+					<ul>
+					<li><em>Le fil d’actualité Twitter sur la page d’Accueil</em></li>
+					<li><em>Player vidéo (Youtube, Dailymotion)</em></li>
+					<li><em>Reproduction du manuscrit du Moyen-Âge</em></li>
+					</ul>
+					<p> </p>
+					<p> </p>
+					<h2><strong>Établissement de cette déclaration d’accessibilité</strong></h2>
+					<p> </p>
+					<p>Cette déclaration a été établie le <span class="fabric-text-color-mark" style="color: #ff0000;" data-text-custom-color="#ff5630">[DATE]</span>.</p>
+					<p> </p>
+					<p> </p>
+					<h2><strong>Technologies utilisées pour la réalisation du site</strong></h2>
+					<p> </p>
+					<ul>
+					<li>HTML5</li>
+					<li>CSS</li>
+					<li>JavaScript</li>
+					</ul>
+					<p> </p>
+					<p> </p>
+					<h2><strong>Environnement de test</strong></h2>
+					<p> </p>
+					<p>Les vérifications de restitution de contenus ont été réalisées sur la base de la combinaison fournie par la base de référence du RGAA, avec les versions suivantes :</p>
+					<p> </p>
+					<p><em><u>Exemples</u> :</em></p>
+					<p> </p>
+					<ul>
+					<li><em>Firefox et NVDA</em></li>
+					<li><em>Safari et VoiceOver</em></li>
+					<li><em>Chrome…</em></li>
+					</ul>
+					<p> </p>
+					<p> </p>
+					<h2><strong>Outils pour évaluer l’accessibilité</strong></h2>
+					<p> </p>
+					<p><em><u>Exemples</u> :</em></p>
+					<p> </p>
+					<ul>
+					<li><em>Color Contrast Analyzer</em></li>
+					<li><em>WCAG Contrat checker (Firefox)</em></li>
+					<li><em>Web Developer Toolbar pour Firefox</em></li>
+					<li><em>Web Developer Toolbar pour Chrome…</em></li>
+					</ul>
+					<p> </p>
+					<p> </p>
+					<h2><strong>Pages du site ayant fait l’objet de la vérification de conformité</strong></h2>
+					<p> </p>
+					<p><em><u>Exemples</u> :</em></p>
+					<p> </p>
+					<ul>
+					<li><em>page d’accueil <span class="fabric-text-color-mark" style="color: #ff0000;" data-text-custom-color="#ff5630">[url]</span></em></li>
+					<li><em>page contact <span class="fabric-text-color-mark" style="color: #ff0000;" data-text-custom-color="#ff5630">[url]</span></em></li>
+					<li><em>page mentions légales <span class="fabric-text-color-mark" style="color: #ff0000;" data-text-custom-color="#ff5630">[url]</span></em></li>
+					<li><em>page accessibilité <span class="fabric-text-color-mark" style="color: #ff0000;" data-text-custom-color="#ff5630">[url]</span></em></li>
+					<li><em>page plan du site<span class="fabric-text-color-mark" style="color: #ff0000;" data-text-custom-color="#ff5630"> [url]</span></em></li>
+					<li><em>page d’aide <span class="fabric-text-color-mark" style="color: #ff0000;" data-text-custom-color="#ff5630">[url]</span></em></li>
+					<li><em>...</em></li>
+					</ul>
+					<p> </p>
+					<p> </p>
+					<h2><strong>Retour d’information et contact</strong></h2>
+					<p> </p>
+					<p>Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable du site pour être orienté vers une alternative accessible ou obtenir le contenu sous une autre forme.</p>
+					<p> </p>
+					<ul>
+					<li>Envoyer un message <span style="color: #ff0000;">[<span class="fabric-text-color-mark" data-text-custom-color="#ff5630">URL D’UN FORMULAIRE EN LIGNE OU ADRESSE E-MAIL DU SERVICE CONCERNÉ]</span></span></li>
+					<li>Contacter <span class="fabric-text-color-mark" style="color: #ff0000;" data-text-custom-color="#ff5630">[NOM DE L’ENTITE OU DE LA PERSONNE RESPONSABLE DU SERVICE EN LIGNE ET COORDONNÉES]</span></li>
+					</ul>
+					<p> </p>
+					<p> </p>
+					<h2><strong>Voies de recours</strong></h2>
+					<p> </p>
+					<p>Si vous constatez un défaut d’accessibilité vous empêchant d’accéder à un contenu ou une fonctionnalité du site, que vous nous le signalez et que vous ne parvenez pas à obtenir une réponse de notre part, vous êtes en droit de faire parvenir vos doléances ou une demande de saisine au Défenseur des droits.</p>
+					<p> </p>
+					<p>Plusieurs moyens sont à votre disposition :</p>
+					<p> </p>
+					<ul>
+					<li><a href="https://formulaire.defenseurdesdroits.fr/code/afficher.php?ETAPE=accueil_2016" target="_blank" rel="noopener noreferrer">Écrire un message au Défenseur des droits</a></li>
+					<li><a href="https://www.defenseurdesdroits.fr/saisir/delegues" target="_blank" rel="noopener noreferrer">Contacter le délégué du Défenseur des droits dans votre région</a></li>
+					<li>Envoyer un courrier par la poste (gratuit, ne pas mettre de timbre) Défenseur des droits Libre réponse 71120 75342 Paris CEDEX 07.</li>
+					</ul>
+					<p> </p>',
+	                'fulltext'=>'',
+	                'state'=>'1',
+		            'attribs'=>'{"article_layout":"","show_title":"0","link_titles":"","show_intro":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"","link_author":"","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_icons":"","show_print_icon":"","show_email_icon":"","show_vote":"","show_hits":"","show_noauth":"","alternative_readmore":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}'
+				);
+	            EmundusHelperUpdate::createJoomlaArticle($data,'rgpd');
             }
 
 			// Insert new translations in overrides files
