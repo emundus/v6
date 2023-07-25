@@ -1699,12 +1699,13 @@ class EmundusModelFiles extends JModelLegacy
     public static function getFnumInfos($fnum) {
         try {
             $db = JFactory::getDBO();
-            $query = 'select u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, ss.value, ss.class, c.*, cc.campaign_id
-                        from #__emundus_campaign_candidature as cc
-                        left join #__emundus_setup_campaigns as c on c.id = cc.campaign_id 
-                        left join #__users as u on u.id = cc.applicant_id
-                        left join #__emundus_setup_status as ss on ss.step = cc.status
-                        where cc.fnum like '.$db->Quote($fnum);
+            $query = $db->getQuery(true);
+            $query->select('u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, cc.form_progress, cc.attachment_progress, ss.value, ss.class, c.*, cc.campaign_id')
+                ->from($db->quoteName('#__emundus_campaign_candidature','cc'))
+                ->leftJoin($db->quoteName('#__emundus_setup_campaigns','c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('cc.campaign_id'))
+                ->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('u.id').' = '.$db->quoteName('cc.applicant_id'))
+                ->leftJoin($db->quoteName('#__emundus_setup_status','ss').' ON '.$db->quoteName('ss.step').' = '.$db->quoteName('cc.status'))
+                ->where($db->quoteName('cc.fnum').' LIKE '.$db->quote($fnum));
             $db->setQuery($query);
             $fnumInfos = $db->loadAssoc();
 

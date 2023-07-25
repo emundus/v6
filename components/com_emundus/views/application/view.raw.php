@@ -79,10 +79,12 @@ class EmundusViewApplication extends JViewLegacy {
                         $m_email = new EmundusModelEmails();
                         $tag = array(
                             'FNUM' => $fnum,
-                            'CAMPAIGN_NAME' => $fnum,
-                            'APPLICATION_STATUS' => $fnum,
+                            'CAMPAIGN_NAME' => $fnumInfos['label'],
+                            'CAMPAIGN_LABEL' => $fnumInfos['label'],
+                            'APPLICATION_STATUS' => $fnumInfos['value'],
                             'APPLICATION_TAGS' => $fnum,
-                            'APPLICATION_PROGRESS' => $fnum
+                            'APPLICATION_PROGRESS' => $fnumInfos['form_progress'],
+                            'ATTACHMENT_PROGRESS' => $fnumInfos['attachment_progress']
                         );
 
                         $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum, '', $program->synthesis);
