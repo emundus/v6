@@ -122,20 +122,23 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
             }
 
 
-            return $mapping_data;
+
 
 
         } catch (\Exception $e) {
 
             JLog::add('[FABRIK CRON FILEMAKER retrieveMappingColumnsData] ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-            return [];
+
         }
+
+        return $mapping_data;
 
     }
 
 
     public function retrieveAssociatedElementsWithgroup($groups_id)
     {
+        $associatedElements = array();
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -150,33 +153,35 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
         $db->setQuery($query);
 
         try {
-            return $db->loadObjectList();
+
+            $associatedElements = $db->loadObjectList();
 
         } catch (\Exception $e) {
 
             JLog::add('[FABRIK CRON FILEMAKER retrieveAssociatedElementsWithgroup] ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
 
-            return [];
         }
-
+        return $associatedElements;
     }
 
 
     public function getRecords($limit, $offset, $adminStep)
     {
         $file_maker_api = new FileMaker();
+        $records = '';
         try {
             $records = $file_maker_api->findRecord($limit, $offset, $adminStep);
-            return $records;
         } catch (\Exception $e) {
             JLog::add('[FABRIK CRON FILEMAKER  GET RECORDS] ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-            return $e->getMessage();
+            $records = $e->getMessage();
         }
+
+        return $records;
 
 
     }
 
-    public function createFiles($filesData, $mappedColumns = [])
+    public function createFiles($filesData, $mappedColumns = []):void
     {
         $filemaker = new FileMaker();
         foreach ($filesData as $file) {
@@ -201,9 +206,10 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
     public function createUserIfNotExist($email, $name)
     {
+        $email = str_replace([' ','\r'], '', $email);
+
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-
 
         $query->select('*')
             ->from($db->quoteName('jos_users'))
@@ -216,60 +222,79 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
         if (!empty($user)) {
             return $user->id;
         } else {
+            $email = str_replace([' ','\r'], '', $email);
+            if (!empty($checkIfFileNotAlreadyExist)) {
+                $user_id = intval($checkIfFileNotAlreadyExist->applicant_id);
 
-            $profile = intval($this->getParams()->get('profile'));
+                $query->clear()
+                    ->update($db->quoteName('jos_users'))
+                    ->set($db->quoteName('email') . ' = ' . $db->quote($email))
+                    ->set($db->quoteName('username') . ' = ' . $db->quote($email))
+                    ->where($db->quoteName('id') . ' = ' . $user_id);
 
-            $m_users = new EmundusModelUsers;
-            $h_users = new EmundusHelperUsers;
-            $firstname_and_lastname = explode(" ", $name);
-            $user_id = 0;
-
-            $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
-
-            $password = md5($h_users->generateStrongPassword());
-            $acl_aro_groups = $m_users->getDefaultGroup($profile);
-
-            $query->insert('#__users')
-                ->columns('name, username, email, password')
-                ->values($db->quote($name) . ', ' . $db->quote($email) . ', ' . $db->quote($email) . ',' . $db->quote($password));
-
-            try {
                 $db->setQuery($query);
-                $db->execute();
-                $user_id = $db->insertid();
 
-                $query->clear();
-                $query->insert('jos_user_usergroup_map')
-                    ->columns('user_id,group_id ')
-                    ->values($db->quote($user_id) . ', ' . $db->quote($acl_aro_groups[0]));
-                $db->setQuery($query);
-                $db->execute();
-            } catch (Exception $e) {
-                JLog::add("Failed to insert jos_users" . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                try {
+                    $db->execute();
+                } catch (Exception $e) {
+
+                    JLog::add("Failed to update user jos_users" . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                }
+
+            } else {
+                $profile = intval($this->getParams()->get('profile'));
+
+                $m_users = new EmundusModelUsers;
+                $h_users = new EmundusHelperUsers;
+                $firstname_and_lastname = explode(" ", $name);
+                $user_id = 0;
+
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $password = md5($h_users->generateStrongPassword());
+                $acl_aro_groups = $m_users->getDefaultGroup($profile);
+
+                $query->insert('#__users')
+                    ->columns('name, username, email, password')
+                    ->values($db->quote($name) . ', ' . $db->quote($email) . ', ' . $db->quote($email) . ',' . $db->quote($password));
+
+                try {
+                    $db->setQuery($query);
+                    $db->execute();
+                    $user_id = $db->insertid();
+
+                    $query->clear();
+                    $query->insert('jos_user_usergroup_map')
+                        ->columns('user_id,group_id ')
+                        ->values($db->quote($user_id) . ', ' . $db->quote($acl_aro_groups[0]));
+                    $db->setQuery($query);
+                    $db->execute();
+                } catch (Exception $e) {
+                    JLog::add("Failed to insert jos_users" . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                }
+
+
+                if (!empty($user_id)) {
+                    $other_param['firstname'] = $firstname_and_lastname[0];
+                    $other_param['lastname'] = $firstname_and_lastname[1];
+                    $other_param['profile'] = $profile;
+                    $other_param['em_oprofiles'] = '';
+                    $other_param['univ_id'] = 0;
+                    $other_param['em_groups'] = '';
+                    $other_param['em_campaigns'] = [];
+                    $other_param['news'] = '';
+                    $m_users->addEmundusUser($user_id, $other_param);
+                }
+
+                return $user_id;
             }
-
-
-            if (!empty($user_id)) {
-                $other_param['firstname'] = $firstname_and_lastname[0];
-                $other_param['lastname'] = $firstname_and_lastname[1];
-                $other_param['profile'] = $profile;
-                $other_param['em_oprofiles'] = '';
-                $other_param['univ_id'] = 0;
-                $other_param['em_groups'] = '';
-                $other_param['em_campaigns'] = [];
-                $other_param['news'] = '';
-                $m_users->addEmundusUser($user_id, $other_param);
-            }
-
-            return $user_id;
-
         }
 
 
     }
 
-    public function createSingleFile($singleFieldData, $user_id, $mapped_columns, $filemaker)
+    public function createSingleFile($singleFieldData, $user_id, $mapped_columns, $filemaker):void
     {
         $fieldData = $singleFieldData->fieldData;
         $campaign_id = $this->getParams()->get('campaign_id');
@@ -439,14 +464,14 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
         return $mergedRecettes;
     }
 
-    public function insertFileDataToEmundusTables($fnum, $singleFieldData, $mapped_columns, $user_id)
+    public function insertFileDataToEmundusTables($fnum, $singleFieldData, $mapped_columns, $user_id):void
     {
         $this->insertGlobalLayoutFormData($fnum, $singleFieldData, $mapped_columns, $user_id);
         $this->insertPortalsDatasElements($singleFieldData, $mapped_columns, $fnum, $user_id);
 
     }
 
-    public function insertGlobalLayoutFormData($fnum, $singleFieldData, $mapped_columns, $user_id)
+    public function insertGlobalLayoutFormData($fnum, $singleFieldData, $mapped_columns, $user_id):void
     {
 
         $db = JFactory::getDbo();
@@ -589,7 +614,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
     }
 
-    public function insertPortalsDatasElements($singleFieldData, $mapped_columns, $fnum, $user_id)
+    public function insertPortalsDatasElements($singleFieldData, $mapped_columns, $fnum, $user_id):void
     {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -761,7 +786,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
     }
 
-    public function insertDataIntoRepeatGroupsTable($fnum, $group, $user_id)
+    public function insertDataIntoRepeatGroupsTable($fnum, $group, $user_id):void
     {
         $db = JFactory::getDbo();
 
@@ -819,6 +844,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
     public function retrieveDataBaseJoinElementJointureInformations($element, $needed)
     {
+        $result = 0;
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('table_join,params')
@@ -829,18 +855,21 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
             $result = $db->loadObject();
             $params = json_decode($result->params, true);
 
-            return $this->retrieveDatabaseJoinElementValue($result->table_join, $params["join-label"], $needed);
+            $result = $this->retrieveDatabaseJoinElementValue($result->table_join, $params["join-label"], $needed);
 
         } catch (Exception $e) {
 
             JLog::add("[FILEMAKER CRON] Failed to get table joins params for element id   $element " . $e->getMessage(), JLog::ERROR, 'com_emundus');
-            return 0;
+
         }
+
+        return $result;
 
     }
 
     public function retrieveDatabaseJoinElementValue($dbtable, $column_where, $needed)
     {
+        $result = 0;
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('*')
@@ -849,19 +878,20 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
         $db->setQuery($query);
 
         try {
-            $result = $db->loadObject();
+            $res = $db->loadObject();
+            $result = $res->id;
 
-            return $result->id;
         } catch (Exception $e) {
 
             JLog::add("[FILEMAKER CRON] Failed to get database join  Element Value in  $dbtable " . $e->getMessage(), JLog::ERROR, 'com_emundus');
-            return 0;
+
         }
+        return $result;
     }
 
     public function insertIntoATable($db_table_name, $elements_columns_name, $elements_columns_value, $fnum = 0, $user_id = 0)
     {
-
+        $insertedId = 0;
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->clear();
@@ -874,12 +904,14 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
         try {
 
             $db->execute();
-            return $db->insertid();
+            $insertedId = $db->insertid();
         } catch (Exception $e) {
 
             JLog::add("[FILEMAKER CRON] Failed to insert row in to table $db_table_name for fnum $fnum - $user_id" . $e->getMessage(), JLog::ERROR, 'com_emundus');
-            return 0;
+
         }
+
+        return $insertedId;
     }
 
     public function transformToAssociativeArray($array)
@@ -1012,7 +1044,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
         }
 
         $array = $this->transformToAssociativeArray($temp_records_mapping);
-        if ($isPortalDataForm == true) {
+        if ($isPortalDataForm === true) {
 
 
             $keys = array_keys($array);
@@ -1076,6 +1108,8 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                 $this->createFiles($find_records_response->data, $mapped_columns);
             }
         }
+
+        return true;
 
 
     }

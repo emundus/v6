@@ -496,6 +496,7 @@ class FileMaker
     }
 
     public function deleteAllLinkedData($uuidConnect, $fnum, $uuid, $status,$layout){
+
         $url = "layouts/".$layout."/script/zWebFormulaire_Delete_AllLinkedData?script.param=" . $uuidConnect;
 
         $res = $this->get($url);
@@ -1011,7 +1012,7 @@ class FileMaker
 
     public function logActionIntoEmundusFileMakerlog($action_type, $fnum, $uuid, $uuidConnect, $status, $params = "", $action_status, $endpoint_url, $response_message)
     {
-
+        $result = false;
         $db = JFactory::getDbo();
         $now = new DateTime();
         $now->setTimezone(new DateTimeZone('UTC'));
@@ -1029,7 +1030,7 @@ class FileMaker
 
         try {
 
-            $db->execute();
+            $result = $db->execute();
 
 
         } catch (Exception $e) {
@@ -1037,10 +1038,13 @@ class FileMaker
             JLog::add("[FILEMAKER] Failed to insert into emundus_filemaker_logs table " . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
 
         }
+
+        return $result;
     }
 
     public function retrieveJointureInformationOfRepeatGroup($group_id)
     {
+        $result = false;
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->clear();
@@ -1049,15 +1053,17 @@ class FileMaker
             ->where('group_id =  ' . $group_id);
         $db->setQuery($query);
         try {
-            return $db->loadObject();
+           $result = $db->loadObject();
 
         } catch (Exception $e) {
             JLog::add("[FILEMAKER] Failed to get table joins params for repeat group  $group_id " . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker');
         }
+        return $result;
     }
 
     public function retrieveDatabaseJoinElementValue($dbtable, $column_where, $needed)
     {
+        $result = 0;
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('*')
@@ -1068,12 +1074,12 @@ class FileMaker
         try {
             $result = $db->loadObject();
 
-            return $result;
         } catch (Exception $e) {
 
             JLog::add("[FILEMAKER CRON] Failed to get database join  Element Value in  $dbtable " . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
-            return 0;
+
         }
+        return $result;
     }
 
     public function formatCheckBoxValues($string)
@@ -1132,8 +1138,9 @@ class FileMaker
 
     }
 
-    public function updateCountryReferentials($id, $data): void
+    public function updateCountryReferentials($id, $data)
     {
+        $result = '';
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -1148,18 +1155,19 @@ class FileMaker
 
         try {
 
-            $db->execute();
+            $result = $db->execute();
 
         } catch (Exception $e) {
 
             JLog::add("[FILEMAKER CRON] Failed to update country in method updateCountryReferential  " . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
 
         }
+        return $result;
     }
 
-    public function addCountryToReferential($data): void
+    public function addCountryToReferential($data)
     {
-
+        $result = '';
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -1173,7 +1181,7 @@ class FileMaker
         try {
 
 
-             $db->execute();
+             $result = $db->execute();
 
 
         } catch (Exception $e) {
@@ -1181,6 +1189,8 @@ class FileMaker
             JLog::add("[FILEMAKER CRON] Failed to add country in method addCountryToReferential   " . $e->getMessage(), JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
 
         }
+
+        return $result;
 
 
     }
