@@ -1216,6 +1216,8 @@ class EmundusModelEmails extends JModelList {
 
             $mail_to = $jinput->post->getRaw('mail_to');
 
+            $mail_tmpl = $this->getEmail('confirm_post');
+
             if (!empty($mail_to)) {
                 $mail_body = $this->setBody($example_user, $jinput->post->getRaw('mail_body'));
 
@@ -1229,6 +1231,7 @@ class EmundusModelEmails extends JModelList {
 
                 // Replacement
                 $post = [
+                    'CAMPAIGN_LABEL'        => $campaign['label'],
                     'TRAINING_PROGRAMME'    => $campaign['label'],
                     'CAMPAIGN_START'        => $campaign['start_date'],
                     'CAMPAIGN_END'          => $campaign['end_date'],
@@ -1342,8 +1345,16 @@ class EmundusModelEmails extends JModelList {
 
                     $tags = $this->setTags($example_user_id, $post, $example_fnum);
 
-                    $body = preg_replace($tags['patterns'], $tags['replacements'], $mail_body);
-                    $body = $this->setTagsFabrik($body, [$example_fnum]);
+                    $message = $this->setTagsFabrik($mail_body, [$example_fnum]);
+                    $subject = $this->setTagsFabrik($mail_subject, [$example_fnum]);
+
+                    // Tags are replaced with their corresponding values using the PHP preg_replace function.
+                    $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
+                    $body = $message;
+                    if ($mail_tmpl) {
+                        $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $mail_tmpl->Template);
+                    }
+                    $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
                     // If the email sender has the same domain as the system sender address.
                     if (!empty($mail_from) && substr(strrchr($mail_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
