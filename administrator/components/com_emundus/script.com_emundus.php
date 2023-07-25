@@ -1995,6 +1995,7 @@ structure:
 				}
 				//
             }
+
             if (version_compare($cache_version, '1.36.7', '<=') || $firstrun){
                 EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_COMMENTAIRE', 'Comments', 'override', null, null, null, 'en-GB');
                 EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_COMMENTAIRE', 'Commentaires', 'override', null, null, null, 'fr-FR');
@@ -2164,7 +2165,54 @@ structure:
 	                'state'=>'1',
 		            'attribs'=>'{"article_layout":"","show_title":"0","link_titles":"","show_intro":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"","link_author":"","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_icons":"","show_print_icon":"","show_email_icon":"","show_vote":"","show_hits":"","show_noauth":"","alternative_readmore":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}'
 				);
-	            EmundusHelperUpdate::createJoomlaArticle($data,'rgpd');
+	            $accessibility_article = EmundusHelperUpdate::createJoomlaArticle($data,'rgpd');
+
+				if($accessibility_article['status']){
+					$query->select('params')
+						->from($db->quoteName('#__modules'))
+						->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_footer'));
+					$db->setQuery($query);
+					$params = $db->loadResult();
+
+					if (!empty($params))
+					{
+						$params = json_decode($params);
+						$alias = $params->mod_emundus_footer_accessibility_alias ?: 'accessibilite';
+
+						$query->clear()
+							->select('id')
+							->from($db->quoteName('#__menu'))
+							->where($db->quoteName('alias').' LIKE '.$db->quote($alias));
+						$db->setQuery($query);
+						$accessibility_menu = $db->loadResult();
+
+						if (!empty($accessibility_menu))
+						{
+							$query->clear()
+								->update($db->quoteName('#__menu'))
+								->set($db->quoteName('link').' = '.$db->quote('index.php?option=com_content&view=article&id='.$accessibility_article['id']))
+								->set($db->quoteName('params').' = JSON_REPLACE(params, "$.show_title", 0)')
+								->where($db->quoteName('id').' = '.$db->quote($accessibility_menu));
+							$db->setQuery($query);
+							$db->execute();
+						} else {
+							$datas = [
+								'menutype'     => 'topmenu',
+								'title'        => 'Accessibilité',
+								'alias'        => 'accessibilite',
+								'path'         => 'accessibilite',
+								'link'         => 'index.php?option=com_content&view=article&id='.$accessibility_article['id'],
+								'type'         => 'component',
+								'component_id' => 22,
+								'params'       => [
+									'show_title' => 0
+								]
+							];
+							EmundusHelperUpdate::addJoomlaMenu($datas);
+						}
+
+					}
+				}
             }
 
 			// Insert new translations in overrides files
