@@ -742,7 +742,9 @@ class FileMaker
             $metaDatas->fieldMetaData[] = $emundusIdMetaData;
             $group_jointures_params = $this->retrieveJointureInformationOfRepeatGroup($zweb_forms_elements[0]->portal_data_emundus_group_id);
 
-
+            if($group_jointures_params === false){
+                throw new Exception('Unable to get jointure information for group id '.$zweb_forms_elements[0]->portal_data_emundus_group_id);
+            }
         }
 
 
@@ -800,7 +802,7 @@ class FileMaker
 
                                 }
 
-                                $temp_records_mapping[] = array("db_table" => $group_jointures_params->table_join);
+                                $temp_records_mapping[] = array("db_table" =>  $group_jointures_params->table_join);
 
                             }
                         } else {
@@ -1140,7 +1142,7 @@ class FileMaker
 
     public function updateCountryReferentials($id, $data)
     {
-        $result = '';
+        $result = false;
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -1167,7 +1169,7 @@ class FileMaker
 
     public function addCountryToReferential($data)
     {
-        $result = '';
+        $result = false;
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 

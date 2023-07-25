@@ -173,7 +173,6 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
             $records = $file_maker_api->findRecord($limit, $offset, $adminStep);
         } catch (\Exception $e) {
             JLog::add('[FABRIK CRON FILEMAKER  GET RECORDS] ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-            $records = $e->getMessage();
         }
 
         return $records;
@@ -192,7 +191,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
             if (!empty($fieldData->{"zWEB_FORMULAIRES_PROGRAMMATIONS::web_emailContact"})) {
 
-                $user_id = $this->createUserIfNotExist($fieldData->{"zWEB_FORMULAIRES_PROGRAMMATIONS::web_emailContact"}, "Nom Prénom ");
+                $user_id = $this->createUserIfNotExist($fieldData->{"zWEB_FORMULAIRES_PROGRAMMATIONS::web_emailContact"}, "Nom Prénom ", $file);
 
                 $this->createSingleFile($file, $user_id, $mappedColumns, $filemaker);
 
@@ -204,10 +203,11 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
     }
 
 
-    public function createUserIfNotExist($email, $name)
+    public function createUserIfNotExist($email, $name, $singleFieldData)
     {
         $email = str_replace([' ','\r'], '', $email);
-
+        $fieldData = $singleFieldData->fieldData;
+        $check_if_file_not_already_exist = $this->checkIfFileNotAlreadyExist($fieldData->uuid);
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -223,8 +223,8 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
             return $user->id;
         } else {
             $email = str_replace([' ','\r'], '', $email);
-            if (!empty($checkIfFileNotAlreadyExist)) {
-                $user_id = intval($checkIfFileNotAlreadyExist->applicant_id);
+            if (!empty($check_if_file_not_already_exist)) {
+                $user_id = intval($check_if_file_not_already_exist->applicant_id);
 
                 $query->clear()
                     ->update($db->quoteName('jos_users'))
