@@ -3190,21 +3190,28 @@ class EmundusModelApplication extends JModelList
     public function getApplicationMenu() {
         $juser = JFactory::getUser();
 
+		$menus = [];
+
         try {
             $db = $this->getDbo();
+	        $query = $db->getQuery(true);
+
             $grUser = $juser->getAuthorisedViewLevels();
 
-            $query = 'SELECT m.id, m.title, m.link, m.lft, m.rgt, m.note
-                        FROM #__menu as m
-                        WHERE m.published=1 AND m.menutype = "application" and m.access in ('.implode(',', $grUser).')
-                        ORDER BY m.lft';
-
+			$query->select('id, title, link, lft, rgt, note')
+				->from($db->quoteName('#__menu'))
+				->where($db->quoteName('published') . ' = 1')
+				->where($db->quoteName('menutype') . ' = ' . $db->quote('application'))
+				->where($db->quoteName('access') . ' IN (' . implode(',', $grUser) . ')')
+				->order($db->quoteName('lft'));
             $db->setQuery($query);
-            return $db->loadAssocList();
+            $menus = $db->loadAssocList();
 
         } catch (Exception $e) {
-            return false;
+            JLog::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query->__toString(), JLog::ERROR, 'com_emundus');
         }
+
+		return $menus;
     }
 
     public function getProgramSynthesis($cid) {

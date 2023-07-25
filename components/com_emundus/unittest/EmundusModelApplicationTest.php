@@ -19,6 +19,7 @@ include_once(JPATH_BASE . 'includes/framework.php' );
 include_once(JPATH_SITE . '/components/com_emundus/unittest/helpers/samples.php');
 include_once(JPATH_SITE . '/components/com_emundus/models/application.php');
 include_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
+include_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
 
 jimport('joomla.user.helper');
 jimport( 'joomla.application.application' );
@@ -27,22 +28,29 @@ jimport('joomla.plugin.helper');
 // set global config --> initialize Joomla Application with default param 'site'
 JFactory::getApplication('site');
 
-// set false ini_get('session.use_cookies') and set false headers_sent
-!ini_get('session.use_cookies') && !headers_sent($file, $line);
-
-// activate session
 session_start();
 
 class EmundusModelApplicationTest extends TestCase
 {
+	private $app;
     private $m_application;
 	private $h_sample;
 
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
+
+		$this->app = JFactory::getApplication();
         $this->m_application = new EmundusModelApplication;
-		$this->h_sample = new EmundusUnittestHelperSamples;
+	    $this->h_sample = new EmundusUnittestHelperSamples;
+
+	    $username = 'test-application-' . rand(0, 1000) . '@emundus.fr';
+	    $this->h_sample->createSampleUser(9, $username, [2,7]);
+	    $this->app->login([
+		    'username' => $username,
+		    'password' => 'test1234'
+	    ]);
+
     }
 
     public function testGetApplicantInfos(){
@@ -235,4 +243,19 @@ class EmundusModelApplicationTest extends TestCase
 		$done = $this->m_application->applicantCustomAction('mod_em_application_custom_action1', $fnum);
 		$this->assertSame($done, false, 'Action should no longer work because file status has changed');
 	}
+
+	public function testgetApplicationMenu() {
+		$menus = $this->m_application->getApplicationMenu();
+		$this->assertNotEmpty($menus, 'A coordinator should have access to the application menu');
+
+		//$this->h_sample->addJGroup(7,JFactory::getUser()->id);
+
+		/*$user = JFactory::getUser();
+		$session = JFactory::getSession();
+		$session->set('user', new JUser($user->id));
+
+		$menus = $this->m_application->getApplicationMenu();
+		$this->assertNotEmpty($menus, 'A coordinator should have access to the application menu');*/
+	}
 }
+
