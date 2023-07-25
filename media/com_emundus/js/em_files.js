@@ -707,7 +707,7 @@ function setFiltersSumo(event){
 
         var id = event.currentTarget.id;
         const my_element = $('#' + id);
-
+        console.log(my_element);
         if (!id.includes('elements-')) {
             var multi = false;
             if (typeof my_element.attr('multiple') !== 'undefined') {
@@ -4789,6 +4789,9 @@ $(document).ready(function() {
         setFiltersSumo(event);
     });
     $(document).on('change', '#select_published', function(event) {
+        setFiltersSumo(event);
+    });
+    $(document).on('change', '#select_newsletter', function(event) {
         setFiltersSumo(event);
     });
 
