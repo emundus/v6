@@ -37,7 +37,7 @@ $link_edit_profile = JRoute::_('index.php?Itemid=' . $params->get('link_edit_pro
 $custom_actions = $params->get('custom_actions', []);
 
 if (!empty($custom_actions) && !empty($user->id)) {
-    foreach ($custom_actions as $action) {
+	foreach ($custom_actions as $key => $action) {
         $pass = true;
 
         if (!empty($action->condition)) {
@@ -49,7 +49,7 @@ if (!empty($custom_actions) && !empty($user->id)) {
         }
 
         if (!$pass) {
-	        unset($action);
+	        unset($custom_actions->$key);
             continue;
         }
 
