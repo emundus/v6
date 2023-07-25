@@ -316,9 +316,9 @@ class EmundusModelLogs extends JModelList {
             case ('c'):
                 $action_name = $action_category . '_CREATE';
                 foreach ($params->created as $value) {
-                    if(isset($value->details) and ($value->details) !== null) {
-                        $action_details .= '<span style="margin-bottom: 0.5rem"><b>' . $value->element . '</b></span>';
-                        $action_details .= '<div><span class="em-main-500-color" style="margin-bottom: 0.5rem">' . $value->details . '</span>';
+                    if(is_object($value)) {
+                        $action_details .= '<span style="margin-bottom: 0.5rem"><b>' . (!empty($value->element) ? $value->element : JText::_('UNKNOWN')) . '</b></span>';
+                        $action_details .= '<div class="em-flex-row"><span class="em-red-500-color">' . (!empty($value->details) ? $value->details : JText::_('UNKNOWN')) . '&nbsp</span>&nbsp';
                         $action_details .= '</div>';
                     } else {
                         $action_details .= '<p>' . $value . '</p>';
@@ -367,9 +367,9 @@ class EmundusModelLogs extends JModelList {
             case ('d'):
                 $action_name = $action_category . '_DELETE';
                 foreach ($params->deleted as $value) {
-                    if(isset($value->details) and ($value->details) !== null) {
-                        $action_details .= '<span style="margin-bottom: 0.5rem"><b>' . $value->element . '</b></span>';
-                        $action_details .= '<div class="em-flex-row"><span class="em-red-500-color">' . $value->details . '&nbsp</span>&nbsp';
+                    if(is_object($value)) {
+                        $action_details .= '<span style="margin-bottom: 0.5rem"><b>' . (!empty($value->element) ? $value->element : JText::_('UNKNOWN')) . '</b></span>';
+                        $action_details .= '<div class="em-flex-row"><span class="em-red-500-color">' . (!empty($value->details) ? $value->details : JText::_('UNKNOWN')) . '&nbsp</span>&nbsp';
                         $action_details .= '</div>';
                     } else {
                         $action_details .= '<p>' . $value . '</p>';
