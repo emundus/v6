@@ -1837,6 +1837,13 @@ class EmundusHelperFiles
             }
 
             $filters .= '>'.JText::_("JYES").'</option>
+                <option value="2"';
+
+            if (@$newsletter == 2) {
+                $filters .= ' selected';
+            }
+
+            $filters .= '>'.JText::_("JNO").'</option>
                         </select>
                     </div>
                 </div>';
@@ -3480,7 +3487,10 @@ class EmundusHelperFiles
                         break;
                         case 'newsletter' :
                             if ($value[0] == "1") {
-                                $query['q'] .= ' and eu.newsletter = 1 ';
+                                $query['q'] .= ' and eu.newsletter LIKE \'["1"]\' OR eu.newsletter = 1 ';
+                            }
+                            elseif ($value[0] == "2") {
+                                $query['q'] .= ' and eu.newsletter LIKE \'[""]\' OR eu.newsletter = \'\' ';
                             }
                             break;
 
