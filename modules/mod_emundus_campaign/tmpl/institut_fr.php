@@ -105,7 +105,16 @@ $site_offset = $config->get('offset');
                             <p>
                                 <?php echo $result->short_description;?>
                             </p>
-                            <?php if ($result->is_limited == 1) { echo '<p style="display:inline-block;padding:10px;border:1px solid red;border-radius:4px;font-weight:bold;color:red;">' . $files_sent . ' ' . JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_SENT_NUMBER') . ' ' . $file_limit . '</p>'; } ?>
+                            <?php
+                            if ($result->is_limited == 1) {
+                                if ($files_sent == 1) {
+                                    $files_sent_tag = 'MOD_EM_CAMPAIGN_CAMPAIGN_SENT_NUMBER_SINGULAR';
+                                } else {
+                                    $files_sent_tag = 'MOD_EM_CAMPAIGN_CAMPAIGN_SENT_NUMBER_PLURAL';
+                                }
+                                echo '<p style="display:inline-block;padding:10px;border:1px solid red;border-radius:4px;font-weight:bold;color:red;">' . $files_sent . ' ' . JText::_($files_sent_tag) . ' ' . $file_limit . '</p>';
+                            }
+                            ?>
                         </div>
                         <div class="right-side campaingapply <?php echo $mod_em_campaign_class; ?>">
                             <div class="campaingapplycontent">
