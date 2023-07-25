@@ -50,57 +50,63 @@
 /* COMPONENTS */
 import EditArticle from "./EditArticle";
 import EditFooter from "./EditFooter";
+import client from "@/services/axiosClient";
+import mixin from "@/mixins/mixin";
 
 export default {
   name: "contentTool",
   props: { },
   components: {EditFooter, EditArticle},
+  mixins: [mixin],
   data() {
     return {
       currentMenu: 1,
-      menus: [
-        {
-          type: "article",
-          id: 52,
-          alias: null,
-          title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_HOMEPAGE",
-          index: 1
-        },
-        {
-          type: "article",
-          alias: "mentions-legales",
-          title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_LEGAL_MENTION",
-          index: 2
-        },
-        {
-          type: "article",
-          alias: "politique-de-confidentialite-des-donnees",
-          title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_DATAS",
-          index: 3
-        },
-        {
-          type: "article",
-          alias: "gestion-de-vos-droits",
-          title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_RIGHTS",
-          index: 4
-        },
-        {
-          type: "article",
-          alias: "gestion-des-cookies",
-          title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_COOKIES",
-          index: 5
-        },
-        {
-          type: "footer",
-          title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_FOOTER",
-          index: 6
-        },
-      ],
+      menus: [],
 
       loading: false,
       saving: false,
       last_save: null,
     }
+  },
+  created() {
+    let index = 1;
+
+    client().get("index.php?option=com_emundus&controller=settings&task=gethomearticle").then(response => {
+      this.menus.push({
+        type: "article",
+        id: response.data.data,
+        title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_HOMEPAGE",
+        index: index
+      });
+
+      client().get("index.php?option=com_emundus&controller=settings&task=getrgpdarticles").then(response => {
+        response.data.data.forEach((article) => {
+          index++;
+          if(article.id) {
+            this.menus.push({
+              type: "article",
+              id: parseInt(article.id),
+              title: article.title,
+              index: index
+            });
+          } else {
+            this.menus.push({
+              type: "article",
+              alias: article.alias,
+              title: article.title,
+              index: index
+            });
+          }
+        });
+
+        index++;
+        this.menus.push({
+          type: "footer",
+          title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_FOOTER",
+          index: index
+        });
+      });
+    });
   },
   methods:{
     beforeClose(event) {
