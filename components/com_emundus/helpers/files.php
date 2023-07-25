@@ -3478,6 +3478,11 @@ class EmundusHelperFiles
                             }
                         }
                         break;
+                        case 'newsletter' :
+                            if ($value[0] == "1") {
+                                $query['q'] .= ' and eu.newsletter = 1 ';
+                            }
+                            break;
 
                     case 'published':
                         if ($value == "-1") {

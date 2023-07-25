@@ -50,8 +50,8 @@
 /* COMPONENTS */
 import EditArticle from "./EditArticle";
 import EditFooter from "./EditFooter";
-import client from "@/services/axiosClient";
-import mixin from "@/mixins/mixin";
+import client from "com_emundus/src/services/axiosClient";
+import mixin from "com_emundus/src/mixins/mixin";
 
 export default {
   name: "contentTool",
