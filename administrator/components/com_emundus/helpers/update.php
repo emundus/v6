@@ -2620,7 +2620,7 @@ class EmundusHelperUpdate
 	}
 
 	public static function createJoomlaArticle($data, $category_alias = null){
-		$result = ['status' => false, 'message' => ''];
+		$result = ['status' => false, 'message' => '', 'article_id' => 0];
 		$db = JFactory::getDbo();
 
 		try
@@ -2682,13 +2682,19 @@ class EmundusHelperUpdate
 					->columns($db_columns)
 					->values(implode(',', $values));
 				$db->setQuery($query);
-				$db->execute();
+				$result['status'] = $db->execute();
+
+				$result['id'] = $db->insertid();
+			} else {
+				$result['status'] = true;
+				$result['id'] = $article_id;
 			}
 		}
 		catch (Exception $e)
 		{
-			$result['message'] = 'UPDATE FLAGS : Error : ' . $e->getMessage();
+			$result['message'] = 'CREATE JOOMLA ARTICLE : Error : ' . $e->getMessage();
 		}
+
 		return $result;
 	}
 }
