@@ -606,6 +606,11 @@ p,
   margin-bottom: 16px;
 }
 
+.view-list.com_fabrik.gantry > ul.dropdown-menu[role="menu"] {
+  width: fit-content !important;
+  padding: 4px;
+}
+
 .gantry.view-list .dropdown-menu > li > a:hover,
 .gantry.view-list .dropdown-menu > li > a:focus,
 .gantry.view-list .dropdown-submenu:hover > a,
