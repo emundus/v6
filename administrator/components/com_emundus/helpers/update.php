@@ -2759,4 +2759,83 @@ class EmundusHelperUpdate
 
 		return $result;
 	}
+
+	/**
+	 * @param $format string (json, file)
+	 * @return void
+	 */
+	public static function scanPHP8Compability($format = 'json') {
+		$result = [];
+		$data = [];
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		// regarder le code des setup_tags
+		$query->select('CONCAT(id, " ", tag) as id, request as code')
+			->from($db->quoteName('#__emundus_setup_tags', 'est'))
+			->where('published = 1')
+			->andWhere('request LIKE ' . $db->quote('%php|%'));
+		$db->setQuery($query);
+		$setup_tags = $db->loadAssocList('id');
+
+		$data['setup_tags'] = [
+			'label' => 'Setup tags',
+			'codes' => $setup_tags
+		];
+
+		// regarder le code des event handler
+		$data['event_handler'] = [
+			'label' => 'Gestionnaire d\'évènement',
+			'codes' => []
+		];
+
+		// regarder le code fabrik
+		$data['fabrik'] = [
+			'label' => 'Codes Fabrik (plugins de formulaire, de listes, champs calculés, etc.)',
+			'codes' => []
+		];
+
+		foreach($data as $type) {
+			$result[$type['label']] = [];
+			foreach($type['codes'] as $id => $code) {
+				if(strpos('array_key_exists(', $code) !== false) {
+					if (!isset($result[$type['label']][$id])) $result[$type['label']][$id] = [];
+					$result[$type['label']][$id][] = 'Attention, La possibilité d\'utiliser array_key_exists() avec des objets a été supprimée. isset() ou property_exists() peuvent être utilisées à la place.';
+				}
+
+				if(strpos('@$', $code) !== false) {
+					if (!isset($result[$type['label']][$id])) $result[$type['label']][$id] = [];
+					$result[$type['label']][$id][] = 'Attention, L\'opérateur @ ne silence plus les erreurs fatales.';
+				}
+
+				// La prise en charge des accolades pour l'accès aux index a été supprimée.
+				// rechercher dans $code si il y a des accolades pour l'accès aux index
+
+
+				if (strpos('read_exif_data(', $code) !== false) {
+					if (!isset($result[$type['label']][$id])) $result[$type['label']][$id] = [];
+					$result[$type['label']][$id][] = 'Attention, read_exif_data() a été supprimée ; exif_read_data() doit être utilisée à la place.';
+				}
+
+				if (strpos('FILTER_FLAG_SCHEME_REQUIRED', $code) !== false || strpos('FILTER_FLAG_HOST_REQUIRED', $code) !== false) {
+					if (!isset($result[$type['label']][$id])) $result[$type['label']][$id] = [];
+					$result[$type['label']][$id][] = 'Attention, Les drapeaux FILTER_FLAG_SCHEME_REQUIRED et FILTER_FLAG_HOST_REQUIRED pour le filtre FILTER_VALIDATE_URL ont été supprimés. Le schéma et l\'hôte sont (et ont toujours été) nécessaires.';
+				}
+
+				// Les sources INPUT_REQUEST et INPUT_SESSION pour filter_input() etc. ont été supprimées. Elles n'ont jamais été mises en œuvre et leur utilisation a toujours généré un avertissement.
+				if (strpos('INPUT_REQUEST', $code) !== false || strpos('INPUT_SESSION', $code) !== false) {
+					if (!isset($result[$type['label']][$id])) $result[$type['label']][$id] = [];
+					$result[$type['label']][$id][] = 'Attention, Les sources INPUT_REQUEST et INPUT_SESSION pour filter_input() etc. ont été supprimées. Elles n\'ont jamais été mises en œuvre et leur utilisation a toujours généré un avertissement.';
+				}
+
+				if (strpos('implode(', $code) !== false) {
+					if (!isset($result[$type['label']][$id])) $result[$type['label']][$id] = [];
+					$result[$type['label']][$id][] = 'Attention, L\'appel à implode() avec des paramètres dans l\'ordre inverse ($pieces, $glue) n\'est plus supporté.';
+				}
+			}
+		}
+
+		return $result;
+	}
 }
