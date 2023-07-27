@@ -2346,9 +2346,6 @@ label[for="em-file_to_upload"]:hover {
 #emailForm #mail_from{
     min-width: 10% !important;
 }
-#emailForm #mail_subject{
-    min-width: 60% !important;
-}
 .em_email_block .em-form-attachments-candidateFile .input-group-btn > a,
 .em-form-attachments-setupLetters .input-group-btn > a{
     background: #bababa;
