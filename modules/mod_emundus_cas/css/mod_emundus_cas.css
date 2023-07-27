@@ -21,7 +21,7 @@
 }
 
 .container-module-cas .sous-container-module-cas form .controls input  {
-    width: 100%;
+    width: 100% !important;
 }
 
 .container-module-cas .sous-container-module-cas {
