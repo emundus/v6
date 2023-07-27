@@ -200,11 +200,6 @@ class EmundusModelLogs extends JModelList {
         $action = implode(',', $action);
         $crud = implode(',', $db->quote($crud));
 
-        if (empty($user_from)) {
-            JLog::add('Error in action [' . $action . ' - ' . $crud . '] user_from cannot be null in EmundusModelLogs::log', JLog::WARNING, 'com_emundus');
-            return false;
-        }
-
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $showTimeFormat = $eMConfig->get('log_show_timeformat', 0);
         $showTimeOrder = $eMConfig->get('log_show_timeorder', 'DESC');

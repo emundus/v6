@@ -1052,32 +1052,6 @@ class EmundusControllerUsers extends JControllerLegacy {
         exit;
     }
 
-    public function saveuser() {
-        $user = json_decode(file_get_contents('php://input'));
-
-        if (!empty($user)) {
-	        $current_user = JFactory::getUser();
-	        $m_users = new EmundusModelUsers();
-            $result = $m_users->saveUser($user, $current_user->id);
-
-			if ($result) {
-				$e_user = JFactory::getSession()->get('emundusUser');
-				if(isset($user->firstname)){
-					$e_user->firstname = $user->firstname;
-				}
-				if(isset($user->lastname)){
-					$e_user->lastname = $user->lastname;
-				}
-				JFactory::getSession()->set('emundusUser', $e_user);
-			}
-        } else {
-            $result = false;
-        }
-
-        echo json_encode(array('status' => $result));
-        exit;
-    }
-
     public function getprofileattachments(){
         $m_users = new EmundusModelUsers();
         $attachments = $m_users->getProfileAttachments(JFactory::getUser()->id);
@@ -1413,7 +1387,7 @@ class EmundusControllerUsers extends JControllerLegacy {
     {
         $currentUser = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($currentUser->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($currentUser->id)) {
             return false;
         }
 

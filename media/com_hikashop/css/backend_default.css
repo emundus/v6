@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.7.3
+ * @version    4.7.4
  * @author     hikashop.com
  * @copyright  (C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -3795,10 +3795,6 @@ div#hikashop_main_content.hika_j4 input[type="text"] {
 	min-height: 40px;
 }
 div#hikashop_main_content.hika_j4 input[type="text"] {padding-left:10px;}
-div#hikashop_main_content.hika_j4 div#hikashop_listing_filters_id select.custom-select {
-	width: 18%;
-}
-
 .hikashop_main_content.hika_j4  button.btn {
 	border: 1px solid #adb5bd;
 	margin: 0px;
@@ -3997,10 +3993,10 @@ ul.hika_columns_select.hkdropdown-menu label {width: 100%;}
 ul.hika_columns_select.hkdropdown-menu li {height: 25px;}
 
 .hika_columns_select span.hika_columns_name {
-    position: relative;
-    left: -15px;
+	position: relative;
+    left: -20px;
     padding: 0 0 0px 20px;
-	max-width: 170px;
+    max-width: 170px;
 }
 span.hika_columns_name {
     overflow: hidden;
@@ -4111,7 +4107,6 @@ div.hikashop_listing_filters.hidden-features {
 	opacity: 0;
 }
 div.hikashop_listing_filters.show-features {
-	height: 45px;
 	-webkit-transition: height 1s, opacity 1.2s;
 	transition: height 1s, opacity 1.2s;
 	opacity: 1;
@@ -4299,8 +4294,6 @@ div#hikashop_main_content.hika_j4  .hikashop_listing_filters_order.hikafilter_ex
 
 div#hikashop_main_content.hika_j4  .hikashop_listing_filters_order select#filter_status {height: 90px;}
 div#hikashop_main_content.hika_j4 table#hikashop_order_listing select.custom-select {width: 140px;}
-div#hikashop_main_content.hika_j4  #hikashop_listing_filters_id select#filter_status {width: 100%;}
-
 div#hikashop_main_content.hika_j4 .hikashop_listing_filters_column.colum2.hkc-md-3,
 div#hikashop_main_content.hika_j4 .hikashop_listing_filters_column.colum1.hkc-md-3,
 div#hikashop_main_content.hika_j4 .hikashop_listing_filters_column.colum_extra.hkc-md-3 {
@@ -4684,6 +4677,9 @@ div#hikashop_main_content.hika_j4 table#hikashop_orderstatus_listing td.order in
 	float:right;
 	width:100%;
 }
+div#hikashop_listing_filters_id * {
+    vertical-align: top;
+}
 
 .hikashop_main_content input.valid {
 
@@ -4696,10 +4692,32 @@ div#hikashop_main_content.hika_j4 table#hikashop_orderstatus_listing td.order in
 
 div#page-plugins input.hikashop_plg_checkbox + label {
     display: inline-block;
+	max-width: 450px;
 }
 div#page-plugins input.hikashop_plg_checkbox {
     height: 18px;
     margin: 3px 5px;
+	vertical-align: top;
+}
+@media only screen and (max-width: 992px) {
+	div#page-plugins input.hikashop_plg_checkbox + label {
+		max-width: 350px;
+	}
+}
+@media only screen and (max-width: 752px) {
+	div#page-plugins input.hikashop_plg_checkbox + label {
+		max-width: 310px;
+	}
+}
+@media only screen and (max-width: 700px) {
+	div#page-plugins input.hikashop_plg_checkbox + label {
+		max-width: 255px;
+	}
+}
+@media only screen and (max-width: 665px) {
+	div#page-plugins input.hikashop_plg_checkbox + label {
+		max-width: 215px;
+	}
 }
 
 

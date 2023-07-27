@@ -67,6 +67,9 @@ div#frame.outline {
 *:focus {
   outline: 5px auto -webkit-focus-ring-color;
 }
+details summary:focus{
+  outline: unset;
+}
 
 body {
   line-height: normal;
@@ -83,6 +86,7 @@ h1 {
   font-size: 32px;
   line-height: 40px;
   color: $accent-color-1;
+  margin: 0;
 }
 h2{
   font-family: get-font-family($font-family-title);
@@ -91,6 +95,7 @@ h2{
   font-size: 24px;
   line-height: 30px;
   color: $accent-color-1;
+  margin: 0;
 }
 h3{
   font-family: get-font-family($font-family-title);
@@ -99,6 +104,7 @@ h3{
   font-size: 20px;
   line-height: 25px;
   color: $accent-color-1;
+  margin: 0;
 }
 h4{
   font-family: get-font-family($font-family-title);
@@ -107,6 +113,9 @@ h4{
   font-size: 18px;
   line-height: 23px;
   color: $accent-color-1;
+  margin: 0;
+  font-weight: 600;
+  font-family: get-font-family($font-family-title);
 }
 h5{
   font-family: get-font-family($font-family-title);
@@ -115,6 +124,7 @@ h5{
   font-size: 16px;
   line-height: 20px;
   color: $accent-color-1;
+  margin: 0;
 }
 h6{
   font-family: get-font-family($font-family-title);
@@ -123,6 +133,7 @@ h6{
   font-size: 14px;
   line-height: 16px;
   color: $accent-color-1;
+  margin: 0;
 }
 
 .view-list, .g-back-office-emundus-tableau {
@@ -1411,18 +1422,28 @@ body > .g-container {
     }
   }
 
-  form .dz-message {
-    height: 150px;
-    border: 1px dashed $neutral-500;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border-radius: 8px;
-    margin: 8px 0;
+  form {
+    .dz-preview {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-    span {
-      color: var(--neutral-800);
+    .dz-message {
+
+      height: 150px;
+      border: 1px dashed $neutral-500;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-radius: 8px;
+      margin: 8px 0;
+
+
+      span {
+        color: var(--neutral-800);
+      }
     }
   }
 
@@ -1860,6 +1881,30 @@ body > .g-container {
   }
 }
 
+/* LISTES - TEMPLATE EMUNDUS CARD */
+
+.view-list .fabrik-switch-view-icon{
+  border: 1px solid $neutral-500;
+  color: $neutral-500;
+}
+.view-list .fabrik-switch-view-icon.active{
+  border: 1px solid $base-secondary-color;
+  color: $base-secondary-color;
+}
+
+.view-list .fabrikFilterContainer .fabrik_filter_submit.button {
+    background: $base-secondary-color;
+    border-color: $base-secondary-color;
+    border-radius: var(--applicant-border-radius);
+    color: var(--neutral-0);
+
+    &:hover, &:active, &:focus {
+      background: var(--neutral-0);
+      border-color: $base-secondary-color !important;
+      color: $base-secondary-color;
+    }
+}
+
 /* LISTES  */
 
 .view-list.com_fabrik .table tbody tr .modal .modal-footer a.btn {
@@ -1868,6 +1913,12 @@ body > .g-container {
 
   &:hover, &:focus, &:active {
     color: $base-primary-color;
+  }
+}
+
+.view-list{
+  .page-intro p{
+    color: $neutral-500;
   }
 }
 
@@ -2070,6 +2121,7 @@ div.fabrikFilterContainer {
         height: 40px;
         color: var(--neutral-50);
         background-color: var(--main-500);
+        transition: all 0.2s ease-in-out;
 
         &:hover {
           background-color: var(--neutral-50);
@@ -3902,7 +3954,7 @@ ul.unstyled.em-linkForgot li a {
   }
 
   .chzn-results li.highlighted {
-    background-color: var(--neutral-300);
+    background-color: var(--light-blue-100);
     background-image: unset !important;
     color: black;
   }
@@ -4557,6 +4609,7 @@ div#em-appli-block {
     border-color: var(--main-500);
     border-radius: var(--em-border-radius);
     font-family: var(--font);
+    transition: all 0.2s ease-in-out;
 
     &:hover, &:active, &:focus {
       background: var(--neutral-50);
@@ -4653,12 +4706,12 @@ div#em-appli-block {
 }
 
 .table-hover tbody tr:hover td {
-  background: #ECEFF3 !important;
+  background: $main-25 !important;
 }
 
 .table-hover tbody tr:nth-child(2n) > td,
 .table-hover tbody tr:nth-child(2n) > th {
-  background: #F3F3F3 !important;
+  background: transparent;
 }
 
 .table-hover tbody tr,
@@ -5027,7 +5080,12 @@ button.swal2-cancel.goback-btn {
 
 .chzn-container-single .chzn-single div b,
 .chzn-container-active.chzn-with-drop .chzn-single div b {
-  top: 13px;
+  background-position-x: 0;
+  background-position-y: 40%;
+  -webkit-appearance: none;
+  background-image: url(/images/emundus/arrow.svg);
+  background-size: 8px;
+  background-repeat: no-repeat;
 }
 
 .chzn-container-single.chzn-container[id*="indicatif_chzn"],
@@ -5136,7 +5194,7 @@ button.swal2-cancel.goback-btn {
 
         p {
           @include body-16;
-          color: var(--neutral-600);
+          color: var(--neutral-500);
         }
       }
     }
@@ -5482,14 +5540,9 @@ screen and (max-height: 769px) {
     row-gap: 8px;
   }
 
-  #g-navigation .g-container #header-c .moduletable .header-right a.btn.btn-danger:not(.btn-creer-compte) {
-    margin-bottom: 8px !important;
-  }
-
 }
 
 @media all and (min-width: 434px) and (max-width: 479px) {
-
   .gantry #g-navigation,
   .gantry #g-navigation .g-container {
     height: auto !important;
@@ -5506,6 +5559,24 @@ screen and (max-height: 769px) {
 }
 
 @media all and (max-width: 479px) {
+
+  .view-checklist table form .dz-default.dz-message {
+    padding-right: 12px !important;
+  }
+
+  .view-form:not(.com_emundus) .span12 .page-header h1 {
+    hyphens: auto;
+  }
+
+  #g-navigation .g-container #header-c .moduletable .header-right {
+    flex-direction: column;
+    display: flex;
+
+    a.btn.btn-danger:not(.btn-creer-compte) {
+      margin-bottom: 8px !important;
+    }
+  }
+
 
   /* BIRTHDAY */
   .view-form:not(.com_emundus) .span12 form .fabrikGroup .row-fluid .fabrikElementContainer.control-group:not(.plg-display) .fabrikElement .fabrikSubElementContainer {
@@ -6422,6 +6493,7 @@ screen and (max-height: 769px) {
 }
 
 @media all and (max-width: 767px) {
+
   #g-navigation .g-container #header-c {
     justify-content: center;
   }

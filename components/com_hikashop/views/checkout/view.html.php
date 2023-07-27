@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -275,6 +275,13 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 	public function displayBlock($layout, $pos, $options) {
 		$ctrl = hikashop_get('helper.checkout-' . $layout);
 
+		static $first = true;
+		if($first) {
+			foreach($this->triggerView as $group){
+				JPluginHelper::importPlugin($group);
+			}
+			$first = false;
+		}
 		$app = JFactory::getApplication();
 		$obj =& $this;
 		if(!empty($ctrl)) {

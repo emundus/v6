@@ -16,8 +16,9 @@ define('JPATH_BASE', dirname(__DIR__) . '/../../');
 
 include_once(JPATH_BASE . 'includes/defines.php');
 include_once(JPATH_BASE . 'includes/framework.php');
-include_once(JPATH_SITE . '/components/com_emundus/unittest/helpers/samples.php');
-include_once(JPATH_SITE . '/components/com_emundus/models/emails.php');
+include_once(JPATH_ROOT . '/components/com_emundus/unittest/helpers/samples.php');
+include_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
+include_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
 
 jimport('joomla.user.helper');
 jimport( 'joomla.application.application' );
@@ -35,10 +36,8 @@ class EmundusModelEmailsTest extends TestCase
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-        $this->m_emails = new EmundusModelEmails;
-		$this->h_sample = new EmundusUnittestHelperSamples;
-
 	    $app = JFactory::getApplication();
+	    $this->h_sample = new EmundusUnittestHelperSamples;
 	    $username = 'test-expert-email-' . rand(0, 1000) . '@emundus.fr';
 	    $this->h_sample->createSampleUser(9, $username);
 	    $logged_in = $app->login([
@@ -46,9 +45,9 @@ class EmundusModelEmailsTest extends TestCase
 		    'password' => 'test1234'
 	    ]);
 
-	    include_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
 	    $m_profile = new EmundusModelProfile();
 	    $m_profile->initEmundusSession();
+        $this->m_emails = new EmundusModelEmails;
     }
 
 	public function testFoo()

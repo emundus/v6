@@ -222,6 +222,27 @@ if ($user != null) {
                 <hr style="width: 100%">
                 <li><a class="edit-button-user" href="<?= $link_edit_profile ?>" style="margin-bottom: 20px;margin-top: 0"><?=JText::_('COM_USERS_PROFILE_DEFAULT_LABEL') ?></a></li>
             <?php endif; ?>
+            <?php if (!empty($custom_actions)) {
+                foreach($custom_actions as $custom_action) {
+                    if (!empty($custom_action->link) || !empty($custom_action->onclick)) {
+                        ?>
+                        <li>
+                            <?php
+                            switch($custom_action->type) {
+                                case 'button':
+                                    echo '<a type="button" onclick="'.$custom_action->onclick.'" class="edit-button-user em-pointer">'.JText::_($custom_action->title).'</a>';
+                                    break;
+	                            case 'link':
+                                default:
+		                            echo '<a href="'.$custom_action->link.'" target="_blank" class="edit-button-user em-pointer">'.JText::_($custom_action->title).'</a>';
+		                            break;
+                            }
+                            ?>
+                        </li>
+                        <?php
+                    }
+                }
+            } ?>
         </ul>
     </div>
 
@@ -367,3 +388,5 @@ if ($user != null) {
     </script>
 <?php }
 ?>
+
+<div class="em-page-loader" style="display: none"></div>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -42,6 +42,10 @@ class plgHikashopRates extends JPlugin
 
 		if(empty($plugin->params) || !is_array($plugin->params))
 			$plugin->params = array();
+
+		if(empty($plugin->params['source'])){
+			$plugin->params['source'] = 'ecb';
+		}
 		switch($plugin->params['source']) {
 			case 'yahoo':
 				$this->message = 'Yahoo Finance has been discontinued. Please reconfigure the HikaShop Currency Rates update plugin via the Joomla plugins manager.';

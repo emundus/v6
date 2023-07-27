@@ -17,7 +17,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
     }
     .mod_emundus_flow___print{
         height: 38px;
-        display: flex;
+        display: flex !important;
         align-items: center;
     }
     .btn-primary.mod_emundus_flow___print{
@@ -26,6 +26,13 @@ $now = $dateTime->format('Y-m-d H:i:s');
     .mod_emundus_flow___infos{
         flex-wrap: wrap;
         grid-gap: 24px;
+        max-width: 75%;
+    }
+
+    .mod_emundus_flow___intro .btn.btn-primary {
+        font-size: 14px !important;
+        letter-spacing: normal !important;
+        line-height: normal !important;
     }
 
     .mod_emundus_flow___intro .em-h2{
@@ -66,7 +73,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
 <div class="em-mt-48" style="padding: 0 20px">
     <div class="em-flex-row em-flex-space-between  em-flex-row em-mt-8 mod_emundus_flow___intro">
         <div class="em-flex-row">
-            <h2 class="em-h2 em-mb-0-important"><?php echo JText::_($user->campaign_name) ?></h2>
+            <h2 class="em-h2 em-mb-0-important"><?php echo $campaign_name ?></h2>
             <?php
             $color = '#1C6EF2';
             $background = '#C8E1FE';
@@ -92,7 +99,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
                 <button class="btn btn-primary em-mr-16" style="height: 41px"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
             </a>
             <?php endif; ?>
-            <a href="/component/emundus/?task=pdf&amp;fnum=<?= $current_application->fnum ?>" target="_blank" title="Imprimer">
+            <a href="/component/emundus/?task=pdf&amp;fnum=<?= $current_application->fnum ?>" target="_blank" title="<?php echo JText::_('PRINT') ?>">
                 <button class="btn btn-primary mod_emundus_flow___print">
                     <span class="material-icons-outlined" style="font-size: 16px">print</span>
                 </button>
@@ -125,6 +132,37 @@ $now = $dateTime->format('Y-m-d H:i:s');
         <?php endif; ?>
     </div>
     <?php endif; ?>
+
+
+    <?php
+
+        $m_email = new EmundusModelEmails();
+
+        $emundusUser = JFactory::getSession()->get('emundusUser');
+
+        $post = array(
+            'APPLICANT_ID'   => $user->id,
+            'DEADLINE'       => strftime("%A %d %B %Y %H:%M", strtotime($emundusUser->end_date)),
+            'CAMPAIGN_LABEL' => $emundusUser->label,
+            'CAMPAIGN_YEAR'  => $emundusUser->year,
+            'CAMPAIGN_START' => $emundusUser->start_date,
+            'CAMPAIGN_END'   => $emundusUser->end_date,
+            'CAMPAIGN_CODE'  => $emundusUser->training,
+            'FNUM'           => $emundusUser->fnum
+        );
+
+        $tags = $m_email->setTags($user->id, $post, $emundusUser->fnum, '', $file_tags);
+        $file_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $file_tags);
+        $file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($emundusUser->fnum));
+
+    ?>
+
+    <div class="em-mt-8">
+        <?php if (!empty($file_tags_display)) :
+            echo $file_tags_display;
+         endif; ?>
+    </div>
+
 </div>
 
 <script>

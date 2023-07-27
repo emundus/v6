@@ -1,0 +1,13 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Hugh
+ * Date: 12/6/2016
+ * Time: 4:42 PM
+ */
+
+defined('JPATH_BASE') or die;
+
+$d      = $displayData;
+
+echo FArrayHelper::getValue($d->data, 0, '');

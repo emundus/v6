@@ -21,7 +21,7 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 0 $p-16;
+  padding: 8px 20px;
   border-radius: var(--em-border-radius);
   border: unset;
   height: 40px;
@@ -88,7 +88,7 @@
   width: 100%;
   padding: 0 $p-16;
   border-radius: var(--em-border-radius);
-  border: solid 1px $neutral-300;
+  border: solid 1px var(--neutral-200);
   height: 40px;
   background: transparent;
   color: $night-blue;
@@ -130,6 +130,19 @@
   padding: 8px 12px;
   color: $neutral-600;
   cursor: unset;
+}
+
+.btn[disabled] {
+  border: 1px solid #e6e6e6;
+  color: #333333;
+  background-color: #e6e6e6;
+
+  &:hover, &:focus, &:active {
+    border: 1px solid #333333;
+    background: #333333;
+    color: #e6e6e6;
+    cursor: not-allowed;
+  }
 }
 
 .em-back-button {
@@ -602,6 +615,27 @@ input:focus + .em-slider {
   grid-template-columns: repeat(4, 1fr);
 }
 
+.em-grid-1{
+  display: grid;
+  grid-gap: 12px;
+  grid-template-columns: repeat(1, 1fr);
+}
+
+.em-grid-3-2-1{
+  display: grid;
+  grid-gap: 12px;
+  grid-template-columns:
+    repeat(auto-fill,
+            minmax(clamp(clamp(clamp(
+                    100%/(3 + 1) + 0.1%,
+                    unquote("(1200px - 100vw)")*1000,
+                    100%/(2 + 1) + 0.1%),
+            unquote("(800px - 100vw)")*1000,
+            100%/(1 + 1) + 0.1%),
+            unquote("(400px - 100vw)")*1000,
+            100%), 1fr));
+}
+
 .em-gap-4{
   gap: 4px;
 }
@@ -956,6 +990,14 @@ input:focus + .em-slider {
   padding: 32px;
 }
 
+.em-p-0-12{
+  padding: 0 12px;
+}
+
+.em-p-0-24{
+  padding: 0 24px;
+}
+
 .em-p-0-32{
   padding: 0 32px;
 }
@@ -1082,6 +1124,9 @@ input:focus + .em-slider {
 .em-mt-80{
   margin-top: $m-80;
 }
+.em-mb-0{
+  margin-bottom: 0;
+}
 .em-mb-0-important{
   margin-bottom: 0 !important;
 }
@@ -1182,6 +1227,10 @@ input:focus + .em-slider {
 /*
   BORDERS
 */
+.em-border-unset{
+  border: unset !important;
+}
+
 .em-border-radius-4{
   border-radius: 4px;
 }
@@ -1189,6 +1238,11 @@ input:focus + .em-slider {
 .em-border-radius-5{
   border-radius: 5px;
 }
+
+.em-border-radius-6{
+  border-radius: 6px;
+}
+
 .em-border-radius-8{
   border-radius: 8px;
 }
@@ -1461,6 +1515,14 @@ input:focus + .em-slider {
   border: 1px solid $neutral-200;
 }
 
+.em-repeat-card-no-padding{
+  box-shadow: 0 1px 1px rgba(5, 47, 55, 0.07), 0 2px 1px rgba(5, 47, 55, 0.06), 0 1px 3px rgba(5, 47, 55, 0.1);
+  border-radius: calc(var(--em-border-radius)*2) !important;
+  height: auto;
+  background: #fff;
+  border: 1px solid $neutral-200;
+}
+
 .em-input-card{
   border-radius: var(--em-border-radius);
   padding: 12px 16px;
@@ -1517,6 +1579,19 @@ input:focus + .em-slider {
   background-color: #fff;
   border-radius: 16px;
   padding: 32px;
+}
+
+/** LIST **/
+.em-list-pagination{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 12px;
+  background: #FFFFFF;
+  border: 1px solid #EBECF0;
+  box-shadow: 0px 1px 4px rgba(32, 35, 44, 0.05);
+  border-radius: 8px;
 }
 
 /** SKELETON **/
@@ -1727,6 +1802,10 @@ button.em-swal-delete-button{
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+}
+
+.mod_emundus_campaign__list .em-programme-tag{
+  white-space: initial;
 }
 
 /** SEARCHBAR **/

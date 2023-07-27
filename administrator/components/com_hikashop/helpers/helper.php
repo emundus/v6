@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -25,7 +25,7 @@ define('HIKASHOP_PHP5',version_compare(PHP_VERSION,'5.0.0', '>=') ? true : false
 define('HIKASHOP_PHP7',version_compare(PHP_VERSION,'7.0.0', '>=') ? true : false);
 define('HIKASHOP_PHP8',version_compare(PHP_VERSION,'8.0.0', '>=') ? true : false);
 
-define('HIKASHOP_VERSION', '4.7.3');
+define('HIKASHOP_VERSION', '4.7.4');
 
 $app = JFactory::getApplication();
 $app->triggerEvent('onBeforeHikashopLoad', array() );
@@ -1279,7 +1279,7 @@ if(!function_exists('hikashop_secureField')) {
 }
 
 if(!function_exists('hikashop_translate')) {
-	function hikashop_translate($name, $language_code = null) {
+	function hikashop_translate($name, $language_code = null, $latin_keys = true) {
 		if(is_null($name))
 			return '';
 
@@ -1289,7 +1289,7 @@ if(!function_exists('hikashop_translate')) {
 
 		$val = preg_replace('#[^A-Z_0-9]#','',strtoupper($name));
 		$config = hikashop_config();
-		if((empty($val) || $config->get('non_latin_translation_keys', 0)) && !empty($name)) {
+		if($latin_keys && (empty($val) || $config->get('non_latin_translation_keys', 0)) && !empty($name)) {
 			$val = 'T'.strtoupper(sha1($name));
 		} elseif(is_numeric($val)) {
 			$val = 'T'.$val;
@@ -1365,7 +1365,7 @@ if(!function_exists('hikashop_footer')) {
 			$link.='?partner_id='.$aff;
 		}
 		$text = '<!--  HikaShop Component powered by '.$link.' -->
-		<!-- version '.$config->get('level').' : '.$config->get('version').' [2305311516] -->';
+		<!-- version '.$config->get('level').' : '.$config->get('version').' [2306262337] -->';
 		if(!$config->get('show_footer',true)) return $text;
 		$text .= '<div class="hikashop_footer" style="text-align:center"><a href="'.$link.'" target="_blank" title="'.HIKASHOP_NAME.' : '.strip_tags($description).'">'.HIKASHOP_NAME.' ';
 		$app= JFactory::getApplication();
@@ -2397,6 +2397,10 @@ class hikashopController extends hikashopBridgeController {
 
 	function execute($task){
 		$task = (string)$task;
+		if (strpos($task, ':') !== false) {
+			$temp = explode(':', $task);
+			$task = $temp[1];
+		}
 		if(substr($task,0,12)=='triggerplug-'){
 			JPluginHelper::importPlugin( 'hikashop' );
 			JPluginHelper::importPlugin( 'hikashopshipping' );
@@ -2428,7 +2432,7 @@ class hikashopController extends hikashopBridgeController {
 		if(HIKASHOP_J30) {
 			if(empty($task))
 				$task = @$this->taskMap['__default'];
-			if(!empty($task) && !$this->authorize($task)){
+			if(!empty($task) && method_exists($this, $task) && !$this->authorize($task)){
 				$app = JFactory::getApplication();
 				$app->enqueueMessage(JText::_('JLIB_APPLICATION_ERROR_ACCESS_FORBIDDEN'), 'error');
 				return;

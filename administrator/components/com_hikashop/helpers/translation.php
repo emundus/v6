@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -625,7 +625,7 @@ class hikashopTranslationHelper {
 	}
 
 	function getKey($orig) {
-		$key = preg_replace('#[^A-Z_0-9]#','',strtoupper($orig));
+		$key = preg_replace('#[^A-Z_0-9]#','',strtoupper((string)$orig));
 		$config = hikashop_config();
 		if((empty($key) || $config->get('non_latin_translation_keys', 0)) && !empty($orig)) {
 			$key = 'T'.strtoupper(sha1($orig));

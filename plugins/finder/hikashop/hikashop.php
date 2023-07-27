@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -30,6 +30,30 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter
 		}
 
 		parent::__construct($subject, $config);
+	}
+
+	public function onFinderGarbageCollection()
+	{
+		$db      = $this->db;
+		$type_id = $this->getTypeId();
+
+		$query    = $db->getQuery(true);
+		$subquery = $db->getQuery(true);
+		$subquery->select('CONCAT(' . $db->quote($this->getUrl('%', $this->extension, $this->layout)) . ', product_id)')
+			->from($db->quoteName($this->table));
+		$query->select($db->quoteName('l.link_id'))
+			->from($db->quoteName('#__finder_links', 'l'))
+			->where($db->quoteName('l.type_id') . ' = ' . $type_id)
+			->where($db->quoteName('l.url') . ' LIKE ' . $db->quote($this->getUrl('%', $this->extension, $this->layout)))
+			->where($db->quoteName('l.url') . ' NOT IN (' . $subquery . ')');
+		$db->setQuery($query);
+		$items = $db->loadColumn();
+
+		foreach ($items as $item) {
+			$this->indexer->remove($item);
+		}
+
+		return count($items);
 	}
 
 	public function onFinderCategoryChangeState($extension, $pks, $value)
@@ -149,23 +173,32 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter
 	protected function getUrl($id, $extension, $view)
 	{
 		static $extra = null;
-		if(is_null($extra)) {
-			$this->_setup();
-			$menusClass = hikashop_get('class.menus');
-			$itemid = $menusClass->getPublicMenuItemId();
-			if($itemid)
-				$extra = '&Itemid='.$itemid;
-			else
-				$extra = '';
+		$url = 'index.php?option=' . $extension . '&ctrl=' . $view . '&task=show&cid=';
+		if(!empty($id)) {
+			if(is_numeric($id)) {
+				if(is_null($extra)) {
+					$this->_setup();
+					$menusClass = hikashop_get('class.menus');
+					$itemid = $menusClass->getPublicMenuItemId();
+					if($itemid)
+						$extra = '&Itemid='.$itemid;
+					else
+						$extra = '';
+				}
+				$productClass = hikashop_get('class.product');
+				$item = $productClass->get($id);
+				if($item->product_type == 'variant') {
+					$parent = $productClass->get($item->product_parent_id);
+					if($parent)
+						$item->alias = $parent->alias;
+				}
+				$url .= $id ."&name=".$item->alias. $extra;
+			} elseif($id === '%') {
+				$url .= $id;
+			}
 		}
-		$productClass = hikashop_get('class.product');
-		$item = $productClass->get($id);
-		if($item->product_type == 'variant') {
-			$parent = $productClass->get($item->product_parent_id);
-			if($parent)
-				$item->alias = $parent->alias;
-		}
-		return 'index.php?option=' . $extension . '&ctrl=' . $view . '&task=show&cid=' . $id ."&name=".$item->alias. $extra;
+
+		return $url;
 	}
 
 	protected function getListQuery($query = null)

@@ -38,6 +38,7 @@ templates/LaScala/*
 /image/logo.png
 /images/custom/logo.png
 /images/custom/logo_custom.png
+/images/emundus/custom/*
 #_bdd/*
 components/com_emundus.*
 components/com_emundus/*.bak
@@ -132,3 +133,10 @@ components/com_eventbooking/fields.xml
 /plugins/authentication/miniorangesaml/
 /plugins/system/samlredirect/
 /plugins/user/samllogout/
+
+## FABRIK JS ##
+/components/com_fabrik/js/form_*.js
+/components/com_fabrik/js/list_*.js
+/components/com_fabrik/js/table_*.js
+/components/com_fabrik/js/viz_*.js
+/components/com_fabrik/js/details_*.js
