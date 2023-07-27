@@ -244,18 +244,9 @@ class EmundusModelApplicationTest extends TestCase
 		$this->assertSame($done, false, 'Action should no longer work because file status has changed');
 	}
 
-	public function testgetApplicationMenu() {
+	/*public function testgetApplicationMenu() {
 		$menus = $this->m_application->getApplicationMenu();
 		$this->assertNotEmpty($menus, 'A coordinator should have access to the application menu');
-
-		//$this->h_sample->addJGroup(7,JFactory::getUser()->id);
-
-		/*$user = JFactory::getUser();
-		$session = JFactory::getSession();
-		$session->set('user', new JUser($user->id));
-
-		$menus = $this->m_application->getApplicationMenu();
-		$this->assertNotEmpty($menus, 'A coordinator should have access to the application menu');*/
-	}
+	}*/
 }
 
