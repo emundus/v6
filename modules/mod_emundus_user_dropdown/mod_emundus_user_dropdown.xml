@@ -71,6 +71,57 @@
 				</field>
 
 				<field name="switch_profile_redirect" type="text" default="index.php" size="5" label="COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_REDIRECT" description="COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_REDIRECT_DESC" />
+
+				<field
+						name="custom_actions"
+						type="subform"
+						label="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS"
+						description="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_DESC"
+						multiple="true"
+						layout="joomla.form.field.subform.repeatable-table">
+					<form>
+						<field
+								name="title"
+								type="text"
+								label="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_TITLE"
+								description="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_TITLE_DESC"
+								size="5"
+						/>
+						<field
+								name="type"
+								type="list"
+								label="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_TYPE"
+								description="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_TYPE_DESC"
+								size="5"
+						>
+							<option value="link">Link</option>
+							<option value="button">Button</option>
+						</field>
+						<field
+								showon="type:link"
+								name="link"
+								type="text"
+								label="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_LINK"
+								description="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_LINK_DESC"
+								size="5"
+						/>
+						<field
+							showon="type:button"
+							name="onclick"
+							type="text"
+							label="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_ONCLICK"
+							description="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_ONCLICK_DESC"
+							size="5"
+						/>
+						<field
+								name="condition"
+								type="textarea"
+								label="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_CONDITION"
+								description="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_CONDITION_DESC"
+								size="5"
+						/>
+					</form>
+				</field>
 			</fieldset>
 		</fields>
 	</config>
