@@ -83,7 +83,7 @@ body {
 .after-em-border::after{
     content: "";
     width: 40px;
-    height: var(--em-form-after-border-height);
+    height: var(--em-form-after-bh);
     display: block;
     margin-top: 8px;
 }

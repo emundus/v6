@@ -1693,13 +1693,13 @@ div.fabrikFilterContainer {
 
       a.chzn-single {
         color: var(--em-default-text-color-1);
-        border-radius: var(--em-form-border-radius);
+        border-radius: var(--em-form-br);
         padding: 0 var(--p-8);
         height: 48px;
         font-size: var(--em-applicant-font-size);
         margin: 0;
         border: 1px solid #e0e0e5;
-        background-color: var(--em-form-background-color);
+        background-color: var(--em-form-bc);
         transition: all 0.1s ease-out;
       }
 
@@ -3746,7 +3746,7 @@ div#em-appli-block {
     .emundus-form {
       margin-top: 48px;
       margin-bottom: 64px;
-      border-radius: var(--em-form-border-radius-block) !important;
+      border-radius: var(--em-form-br-block) !important;
       background: #FFFFFF;
       border: 1px solid #EDEDED;
       box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);

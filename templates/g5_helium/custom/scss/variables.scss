@@ -359,70 +359,70 @@
   --em-form-height: #{$em-form-height};
   --em-form-font-size: #{$em-form-font-size};
   --em-form-tip-color: #{$em-form-tip-color};
-  --em-form-border-radius: #{$em-form-border-radius};
-  --em-form-border-color: #{$em-form-border-color};
-  --em-form-border-radius-block: #{$em-form-border-radius-block};
-  --em-form-background-color: #{$em-form-background-color};
-  --em-form-border-radius-focus: #{$em-form-border-radius-focus};
-  --em-form-border-color-focus: #{$em-form-border-color-focus};
-  --em-form-background-color-focus: #{$em-form-background-color-focus};
+  --em-form-br: #{$em-form-border-radius};
+  --em-form-bc: #{$em-form-border-color};
+  --em-form-br-block: #{$em-form-border-radius-block};
+  --em-form-bc: #{$em-form-background-color};
+  --em-form-br-focus: #{$em-form-border-radius-focus};
+  --em-form-bc-focus: #{$em-form-border-color-focus};
+  --em-form-bc-focus: #{$em-form-background-color-focus};
   --em-form-outline-width-focus: #{$em-form-outline-width-focus};
   --em-form-outline-color-focus: #{$em-form-outline-color-focus};
   --em-form-outline-offset-focus: #{$em-form-outline-offset-focus};
-  --em-form-background-color-hover: #{$em-form-background-color-hover};
-  --em-form-border-color-hover: #{$em-form-border-color-hover};
-  --em-form-border-color-error: #{$em-form-border-color-error};
+  --em-form-bc-hover: #{$em-form-background-color-hover};
+  --em-form-bc-hover: #{$em-form-border-color-hover};
+  --em-form-bc-error: #{$em-form-border-color-error};
   --em-form-label-color-error: #{$em-form-label-color-error};
   --em-form-element-color-error: #{$em-form-element-color-error};
-  --em-form-after-border-height: #{$em-form-after-border-height};
+  --em-form-after-bh: #{$em-form-after-border-height};
   --em-form-radio-padding: #{$em-form-radio-padding};
-  --em-form-radio-border-width: #{$em-form-radio-border-width};
-  --em-form-radio-border-color: #{$em-form-radio-border-color};
-  --em-form-radio-border-radius: #{$em-form-radio-border-radius};
+  --em-form-radio-bw: #{$em-form-radio-border-width};
+  --em-form-radio-bc: #{$em-form-radio-border-color};
+  --em-form-radio-br: #{$em-form-radio-border-radius};
   --em-form-radio-width: #{$em-form-radio-width};
   --em-form-radio-height: #{$em-form-radio-height};
   --em-form-radio-margin-right: #{$em-form-radio-margin-right};
   --em-form-radio-color-checked: #{$em-form-radio-color-checked};
   --em-form-radio-background-color-checked: #{$em-form-radio-background-color-checked};
-  --em-form-radio-border-color-checked: #{$em-form-radio-border-color-checked};
+  --em-form-radio-bc-checked: #{$em-form-radio-border-color-checked};
 
-  --em-form-yesno-border-width: #{$em-form-yesno-border-width};
-  --em-form-yesno-border-radius: #{$em-form-yesno-border-radius};
+  --em-form-yesno-bw: #{$em-form-yesno-border-width};
+  --em-form-yesno-br: #{$em-form-yesno-border-radius};
   --em-form-yesno-width: #{$em-form-yesno-width};
   --em-form-yesno-height: #{$em-form-yesno-height};
   --em-form-yesno-gap: #{$em-form-yesno-gap};
 
   --em-form-yesno-color-yes: #{$em-form-yesno-color-yes};
   --em-form-yesno-background-color-yes: #{$em-form-yesno-background-color-yes};
-  --em-form-yesno-border-color-yes: #{$em-form-yesno-border-color-yes};
+  --em-form-yesno-bc-yes: #{$em-form-yesno-border-color-yes};
 
   --em-form-yesno-color-yes-hover: #{$em-form-yesno-color-yes-hover};
   --em-form-yesno-background-color-yes-hover: #{$em-form-yesno-background-color-yes-hover};
-  --em-form-yesno-border-color-yes-hover: #{$em-form-yesno-border-color-yes-hover};
+  --em-form-yesno-bc-yes-hover: #{$em-form-yesno-border-color-yes-hover};
 
   --em-form-yesno-color-no: #{$em-form-yesno-color-no};
   --em-form-yesno-background-color-no: #{$em-form-yesno-background-color-no};
-  --em-form-yesno-border-color-no: #{$em-form-yesno-border-color-no};
+  --em-form-yesno-bc-no: #{$em-form-yesno-border-color-no};
 
   --em-form-yesno-color-no-hover: #{$em-form-yesno-color-no-hover};
   --em-form-yesno-background-color-no-hover: #{$em-form-yesno-background-color-no-hover};
-  --em-form-yesno-border-color-no-hover: #{$em-form-yesno-border-color-no-hover};
+  --em-form-yesno-bc-no-hover: #{$em-form-yesno-border-color-no-hover};
 
   --em-form-yesno-color-not-active: #{$em-form-yesno-color-not-active};
   --em-form-yesno-background-color-not-active: #{$em-form-yesno-background-color-not-active};
-  --em-form-yesno-border-color-not-active: #{$em-form-yesno-border-color-not-active};
+  --em-form-yesno-bc-not-active: #{$em-form-yesno-border-color-not-active};
 
   --em-form-yesno-color-not-active-hover: #{$em-form-yesno-color-not-active-hover};
   --em-form-yesno-background-color-not-active-hover: #{$em-form-yesno-background-color-not-active-hover};
-  --em-form-yesno-border-color-not-active-hover: #{$em-form-yesno-border-color-not-active-hover};
+  --em-form-yesno-bc-not-active-hover: #{$em-form-yesno-border-color-not-active-hover};
 
-  --em-form-checkbox-border-width: #{$em-form-checkbox-border-width};
-  --em-form-checkbox-border-color: #{$em-form-checkbox-border-color};
+  --em-form-checkbox-bw: #{$em-form-checkbox-border-width};
+  --em-form-checkbox-bc: #{$em-form-checkbox-border-color};
   --em-form-checkbox-padding: #{$em-form-checkbox-padding};
   --em-form-checkbox-scale: #{$em-form-checkbox-scale};
   --em-form-checkbox-input-margin: #{$em-form-checkbox-input-margin};
   --em-form-checkbox-color-checked: #{$em-form-checkbox-color-checked};
-  --em-form-checkbox-border-color-error: #{$em-form-checkbox-border-color-error};
+  --em-form-checkbox-bc-error: #{$em-form-checkbox-border-color-error};
   --em-form-fileupload-padding: #{$em-form-fileupload-padding};
   --em-form-fileupload-background-color: #{$em-form-fileupload-background-color};
   --em-coordinator-form-height: #{$coordinator-form-height};

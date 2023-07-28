@@ -216,6 +216,7 @@
 .mod_emundus_campaign__grid .mod_emundus_campaign__details_content .btn.btn-primary {
     border-radius: var(--em-applicant-br) !important;
     font-family: var(--em-applicant-font);
+    font-size: var(--em-applicant-font-size);
 }
 
 .mod_emundus_campaign__header_filter__values a {

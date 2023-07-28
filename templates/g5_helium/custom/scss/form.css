@@ -145,26 +145,26 @@
 
     input:not([type='file']), select, textarea {
       color: var(--em-default-text-color-1);
-      border-radius: var(--em-form-border-radius);
+      border-radius: var(--em-form-br);
       @apply px-2.5 py-3;
       @apply mb-0;
-      background-color: var(--em-form-background-color);
-      border-color: var(--em-form-border-color);
+      background-color: var(--em-form-bc);
+      border-color: var(--em-form-bc);
       transition: all 0.1s ease-out;
 
       &:hover:not([type='radio']):not([type='checkbox']) {
-        background-color: var(--em-form-background-color-hover);
-        border-color: var(--em-form-border-color-hover);
+        background-color: var(--em-form-bc-hover);
+        border-color: var(--em-form-bc-hover);
         box-shadow: unset;
       }
 
       &:focus:not([type='radio']):not([type='checkbox']) {
         outline: var(--em-form-outline-color-focus) solid var(--em-form-outline-width-focus);
-        border-radius: var(--em-form-border-radius-focus);
+        border-radius: var(--em-form-br-focus);
         outline-offset: var(--em-form-outline-offset-focus);
         box-shadow: unset;
-        border-color: var(--em-form-border-color-focus);
-        background-color: var(--em-form-background-color-focus);
+        border-color: var(--em-form-bc-focus);
+        background-color: var(--em-form-bc-focus);
       }
     }
 
@@ -188,17 +188,17 @@
     #inputValue
     {
       height: var(--em-form-height) !important;
-      border-left: var(--em-form-border-radius);
+      border-left: var(--em-form-br);
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
-      border-top-right-radius: var(--em-form-border-radius);
-      border-bottom-right-radius: var(--em-form-border-radius);
-      border-color: var(--em-form-border-color);
+      border-top-right-radius: var(--em-form-br);
+      border-bottom-right-radius: var(--em-form-br);
+      border-color: var(--em-form-bc);
       padding: 0;
       box-shadow: unset;
 
       &:hover {
-        border-color: var(--em-form-border-color-hover) !important;
+        border-color: var(--em-form-bc-hover) !important;
       }
     }
 
@@ -214,7 +214,7 @@
 
     .fabrikEmundusPhoneNumber .chzn-container .chzn-drop{
       width: fit-content;
-      border-radius: var(--em-form-border-radius);
+      border-radius: var(--em-form-br);
       margin-top: var(--m-8);
       min-width: 80vw !important;
     }
@@ -244,19 +244,19 @@
       align-items: center;
       border-top-right-radius: 0 !important;
       border-bottom-right-radius: 0 !important;
-      border-top-left-radius: var(--em-form-border-radius) !important;
-      border-bottom-left-radius: var(--em-form-border-radius)  !important;
+      border-top-left-radius: var(--em-form-br) !important;
+      border-bottom-left-radius: var(--em-form-br)  !important;
       height: calc(var(--em-form-height) + 2px);
       background-position-x: 90% !important;
       background-position-y: 54% !important;
       background-image: url(/images/emundus/arrow.svg) !important;
-      background: var(--em-form-background-color);
+      background: var(--em-form-bc);
       background-size: 8px;
       background-repeat: no-repeat;
       padding-right: 1.5rem !important;
       box-shadow: unset;
       &:hover {
-        border-color: var(--em-form-border-color-hover);
+        border-color: var(--em-form-bc-hover);
       }
     }
 
@@ -311,8 +311,8 @@
     }
 
     .fabrikGroup table .fabrikSubGroupElements td select {
-      border-radius: var(--em-form-border-radius);
-      border: 1px solid var(--em-form-border-color);
+      border-radius: var(--em-form-br);
+      border: 1px solid var(--em-form-bc);
       box-shadow: none;
       margin-top: var(--m-8);
       margin-bottom: 0;
@@ -378,7 +378,7 @@
       box-shadow: none;
       cursor: pointer;
       background-color: var(--em-form-yesno-background-color-yes);
-      border: var(--em-form-yesno-border-width) solid var(--em-form-yesno-border-color-yes);
+      border: var(--em-form-yesno-bw) solid var(--em-form-yesno-bc-yes);
       color: var(--neutral-900);
       border-radius: var(--em-applicant-br) !important;
       width: var(--em-form-yesno-width) !important;
@@ -394,7 +394,7 @@
 
     label.btn-default.btn.btn-success.active:hover {
       background-color: var(--em-form-yesno-background-color-yes-hover);
-      border-color: var(--em-form-yesno-border-color-yes-hover) !important;
+      border-color: var(--em-form-yesno-bc-yes-hover) !important;
     }
 
     label.btn-default.btn.btn-success.active:hover span {
@@ -423,7 +423,7 @@
       box-shadow: none;
       cursor: pointer;
       background-color: var(--em-form-yesno-background-color-no);
-      border-color: var(--em-form-yesno-border-color-no);
+      border-color: var(--em-form-yesno-bc-no);
       color: var(--em-form-yesno-color-no);
       border-radius: var(--em-applicant-br) !important;
       display: flex;
@@ -439,7 +439,7 @@
 
     label.btn-default.btn.btn-danger.active:hover {
       background-color: var(--em-form-yesno-background-color-no-hover);
-      border-color: var(--em-form-yesno-border-color-no-hover)!important;
+      border-color: var(--em-form-yesno-bc-no-hover)!important;
     }
 
     label.btn-default.btn.btn-danger.active:hover span {
@@ -467,7 +467,7 @@
       padding: var(--p-12);
       box-shadow: none;
       cursor: pointer;
-      border: var(--em-form-yesno-border-width) solid var(--em-form-yesno-border-color-not-active);
+      border: var(--em-form-yesno-bw) solid var(--em-form-yesno-bc-not-active);
       background: var(--em-form-yesno-background-color-not-active);
       color: var(--em-form-yesno-color-not-active);
       display: flex;
@@ -482,7 +482,7 @@
 
     label.btn-default.btn:not(.active):hover {
       background-color: var(--em-form-yesno-background-color-not-active-hover);
-      border-color: var(--em-form-yesno-border-color-not-active-hover) !important;
+      border-color: var(--em-form-yesno-bc-not-active-hover) !important;
     }
 
     label.btn-default.btn:not(.active):hover span {
@@ -535,8 +535,8 @@
             @apply flex;
             @apply items-center;
             padding: var(--em-form-radio-padding);
-            border: var(--em-form-radio-border-width) solid var(--em-form-radio-border-color);
-            border-radius: var(--em-form-radio-border-radius);
+            border: var(--em-form-radio-bw) solid var(--em-form-radio-border-color);
+            border-radius: var(--em-form-radio-br);
             input {
               accent-color: var(--em-form-radio-color-checked);
               width: var(--em-form-radio-width);
@@ -562,12 +562,12 @@
     .plg-checkbox {
       .fabrikElement {
         .fabrikSubElementContainer {
-          border-top: solid var(--em-form-checkbox-border-width) var(--em-form-checkbox-border-color);
+          border-top: solid var(--em-form-checkbox-bw) var(--em-form-checkbox-bc);
           padding: var(--em-form-checkbox-padding) 0 0 0;
           .row-fluid {
             margin-top: 0;
             margin-bottom: var(--em-form-checkbox-padding);
-            border-bottom: solid var(--em-form-checkbox-border-width) var(--em-form-checkbox-border-color);
+            border-bottom: solid var(--em-form-checkbox-bw) var(--em-form-checkbox-bc);
             padding: 0 0 var(--em-form-checkbox-padding) var(--em-form-checkbox-padding);
             .fabrikgrid_checkbox {
               label {
@@ -645,7 +645,7 @@
           border-left: 0 !important;
           border-top-left-radius: 0 !important;
           border-bottom-left-radius: 0 !important;
-          border-color: var(--em-form-border-color);
+          border-color: var(--em-form-bc);
           span{
             font-size: 16px;
             margin-right: 16px;
@@ -692,15 +692,15 @@
       }
       input:hover + select,input:hover + .chzn-container .chzn-single
       {
-        background-color: var(--em-form-background-color-hover);
-        border-color: var(--em-form-border-color-hover);
+        background-color: var(--em-form-bc-hover);
+        border-color: var(--em-form-bc-hover);
         box-shadow: unset;
       }
       input:focus + select,input:focus + .chzn-container .chzn-single
       {
-        border-radius: var(--em-form-border-radius-focus);
-        border-color: var(--em-form-border-color-focus);
-        background-color: var(--em-form-background-color-focus);
+        border-radius: var(--em-form-br-focus);
+        border-color: var(--em-form-bc-focus);
+        background-color: var(--em-form-bc-focus);
         border-top-left-radius: unset;
         border-bottom-left-radius: unset;
       }
@@ -713,16 +713,16 @@
       }
 
       input,textarea,select {
-        border-color: var(--em-form-border-color-error);
+        border-color: var(--em-form-bc-error);
         color: var(--em-default-text-color-1);
       }
     }
     .fabrikError.plg-checkbox {
       .fabrikElement {
         .fabrikSubElementContainer {
-          border-color: var(--em-form-checkbox-border-color-error);
+          border-color: var(--em-form-checkbox-bc-error);
           .row-fluid {
-            border-color: var(--em-form-checkbox-border-color-error);
+            border-color: var(--em-form-checkbox-bc-error);
           }
         }
       }
@@ -819,22 +819,22 @@
       border-radius: var(--em-coordinator-br);
       @apply px-1.5 py-2;
       @apply mb-0;
-      background-color: var(--em-form-background-color);
+      background-color: var(--em-form-bc);
       transition: all 0.1s ease-out;
 
       &:hover:not([type='radio']):not([type='checkbox']) {
-        background-color: var(--em-form-background-color-hover);
-        border-color: var(--em-form-border-color-hover);
+        background-color: var(--em-form-bc-hover);
+        border-color: var(--em-form-bc-hover);
         box-shadow: unset;
       }
 
       &:focus:not([type='radio']):not([type='checkbox']) {
         outline: var(--em-form-outline-color-focus) solid var(--em-form-outline-width-focus);
-        border-radius: var(--em-form-border-radius-focus);
+        border-radius: var(--em-form-br-focus);
         outline-offset: var(--em-form-outline-offset-focus);
         box-shadow: unset;
-        border-color: var(--em-form-border-color-focus);
-        background-color: var(--em-form-background-color-focus);
+        border-color: var(--em-form-bc-focus);
+        background-color: var(--em-form-bc-focus);
       }
     }
   }
@@ -942,7 +942,7 @@
     width: auto;
 
     .chzn-drop {
-      border-radius: var(--em-form-border-radius);
+      border-radius: var(--em-form-br);
     }
 
     &.chzn-with-drop .chzn-single, &.chzn-with-drop .chzn-choices {
@@ -951,13 +951,13 @@
       -webkit-appearance: none;
       appearance: none;
       background-image: url(/images/emundus/arrow.svg);
-      background: var(--em-form-background-color);
+      background: var(--em-form-bc);
       background-size: 8px;
       background-repeat: no-repeat;
       padding-right: 1.5rem !important;
       box-shadow: unset;
-      border-color: var(--em-form-border-color) !important;
-      border-radius: var(--em-form-border-radius) !important;
+      border-color: var(--em-form-bc) !important;
+      border-radius: var(--em-form-br) !important;
       display: flex;
       align-items: center;
       justify-content: flex-start;
@@ -971,13 +971,13 @@
       -webkit-appearance: none;
       appearance: none;
       background-image: url(/images/emundus/arrow.svg) !important;
-      background: var(--em-form-background-color);
+      background: var(--em-form-bc);
       background-size: 8px;
       background-repeat: no-repeat;
       padding-right: 1.5rem !important;
       box-shadow: unset;
-      border-color: var(--em-form-border-color) !important;
-      border-radius: var(--em-form-border-radius) !important;
+      border-color: var(--em-form-bc) !important;
+      border-radius: var(--em-form-br) !important;
       display: flex;
       align-items: center;
       justify-content: flex-start;
@@ -986,7 +986,7 @@
       min-height: var(--em-form-height);
 
       &:hover {
-        border-color: var(--em-form-border-color-hover) !important;
+        border-color: var(--em-form-bc-hover) !important;
       }
 
       &.input-small {
@@ -1008,7 +1008,7 @@
       li.search-choice{
         padding: var(--p-4) var(--p-24) var(--p-4) var(--p-12) !important;
         background: var(--neutral-300);
-        border-radius: var(--em-form-border-radius);
+        border-radius: var(--em-form-br);
         border: none;
       }
 
@@ -1026,7 +1026,7 @@
       padding: 8px 12px;
 
       input[type="text"] {
-        border-radius: var(--em-form-border-radius-focus) !important;
+        border-radius: var(--em-form-br-focus) !important;
         height: 32px !important;
       }
     }

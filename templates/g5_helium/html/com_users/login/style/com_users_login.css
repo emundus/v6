@@ -169,11 +169,11 @@ footer div{
     font-weight: 500;
 }
 form.form-validate.form-horizontal.well .control-group .controls input {
-    border-radius: var(--em-form-border-radius);
+    border-radius: var(--em-form-br);
     width: 100%;
     height: var(--em-form-height);
     padding: 0 12px 0 12px;
-    border: 1px solid var(--em-form-border-color);
+    border: 1px solid var(--em-form-bc);
     box-shadow: none;
     margin-top: 12px;
 }

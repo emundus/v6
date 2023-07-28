@@ -10,7 +10,7 @@
 .mod_emundus_checklist{
     margin-left: 32px;
     box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
-    border-radius: var(--em-form-border-radius) !important;
+    border-radius: var(--em-form-br) !important;
     padding: 24px;
     background: #fff;
 }

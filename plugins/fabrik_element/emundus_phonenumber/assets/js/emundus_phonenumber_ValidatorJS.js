@@ -2,7 +2,7 @@
 const allColor =  getComputedStyle(document.querySelector(':root'));
 const errorColor = allColor.getPropertyValue("--em-form-error-color");
 const validColor = allColor.getPropertyValue("--em-form-success-color");
-const defaultColor = allColor.getPropertyValue("--em-form-border-color");
+const defaultColor = allColor.getPropertyValue("--em-form-bc");
 const unsupportedColor = allColor.getPropertyValue("--orange-400")
 
 class ValidatorJS {
