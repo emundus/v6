@@ -2926,6 +2926,11 @@ class EmundusHelperUpdate
 					$result[$type['label']][$id][] = 'ERREUR, gmmktime() requière désormais au moins un argument. Il y a ' . $count . ' occurence(s) dans le code. ';
 				}
 
+				$count = substr_count($code, 'parse_str(');
+				if ($count > 0) {
+					$result[$type['label']][$id][] = 'ERREUR, parse_str() le second paramètre result n\'est plus optionnel. Il y a ' . $count . ' occurence(s) dans le code. Vérifier que le code fonctionne toujours correctement.';
+				}
+
 				if (empty($result[$type['label']][$id])) {
 					unset($result[$type['label']][$id]);
 				}
