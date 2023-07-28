@@ -2835,7 +2835,8 @@ class EmundusHelperUpdate
 		$query->clear()
 			->select('CONCAT("Fabrik form ", id, " - ", label) AS id, params')
 			->from('#__fabrik_forms')
-			->where('published = 1');
+			->where('published = 1')
+			->andWhere('params LIKE ' . $db->quote('%php%'));
 		$db->setQuery($query);
 		$forms = $db->loadAssocList();
 
@@ -2853,6 +2854,30 @@ class EmundusHelperUpdate
 			}
 		}
 		$fabrik_codes = array_merge($codes, $fabrik_codes);
+
+		$query->clear()
+			->select('CONCAT("Fabrik list ", id, " - ", label) AS id, params')
+			->from('#__fabrik_lists')
+			->where('published = 1')
+			->andWhere('params LIKE ' . $db->quote('%"php"%'));
+		$db->setQuery($query);
+		$lists = $db->loadAssocList();
+		$lists = array_column($lists, 'params', 'id');
+
+		if (!empty($lists)) {
+			$codes = [];
+			foreach($lists as $id => $params) {
+				$params = json_decode($params, true);
+				foreach($params['plugins'] as $index => $plugin) {
+					if ($plugin === 'php') {
+						$displayed_index = $index + 1;
+
+						$codes[$id . ' plugin N°' . $displayed_index] = $params['table_php_code'][$index];
+					}
+				}
+			}
+			$fabrik_codes = array_merge($codes, $fabrik_codes);
+		}
 
 		$data['fabrik'] = [
 			'label' => 'Codes Fabrik (plugins de formulaire, de listes, champs calculés, etc.)',
