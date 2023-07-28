@@ -16,10 +16,12 @@ JHtml::_('bootstrap.tooltip');
 ?>
 <div class="container-module-cas">
     <div class="sous-container-module-cas">
-        <ul>
-            <li id="onglet-connexion" onclick="Connexion()"><?= JText::_('MOD_EM_CAS_SUBMENU1') ?></li>
-            <li id="onglet-inscription" class="couleurFoncee" onclick="Inscription()"><?= JText::_('MOD_EM_CAS_SUBMENU2') ?></li>
-        </ul>
+	    <?php if ($mod_emundus_cas_tab2_display == 1): ?>
+            <ul>
+                <li id="onglet-connexion" onclick="Connexion()"><?= JText::_('MOD_EM_CAS_SUBMENU1') ?></li>
+                <li id="onglet-inscription" class="couleurFoncee" onclick="Inscription()"><?= JText::_('MOD_EM_CAS_SUBMENU2') ?></li>
+            </ul>
+	    <?php endif; ?>
 
 
         <div id="connexion">
