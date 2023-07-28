@@ -42,7 +42,7 @@ if (in_array( 'suhosin', get_loaded_extensions()) ) {
 // Require the base controller
 require_once( JPATH_COMPONENT.DS.'controller.php' );
 
-$controllers = explode(',', 'panel,samples,webhook,modules,actions,fabrik');
+$controllers = explode(',', 'panel,samples,webhook,modules,actions,fabrik,scan');
 if (!JRequest::getWord('controller'))
 	JRequest::setVar( 'controller', $controllers[0] );
 

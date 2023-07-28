@@ -2777,7 +2777,8 @@ class EmundusHelperUpdate
 			->where('published = 1')
 			->andWhere('request LIKE ' . $db->quote('%php|%'));
 		$db->setQuery($query);
-		$setup_tags = $db->loadAssocList('id');
+		$setup_tags = $db->loadAssocList();
+		$setup_tags = array_column($setup_tags, 'code', 'id');
 
 		$data['setup_tags'] = [
 			'label' => 'Setup tags',
@@ -2799,39 +2800,47 @@ class EmundusHelperUpdate
 		foreach($data as $type) {
 			$result[$type['label']] = [];
 			foreach($type['codes'] as $id => $code) {
-				if(strpos('array_key_exists(', $code) !== false) {
-					if (!isset($result[$type['label']][$id])) $result[$type['label']][$id] = [];
-					$result[$type['label']][$id][] = 'Attention, La possibilité d\'utiliser array_key_exists() avec des objets a été supprimée. isset() ou property_exists() peuvent être utilisées à la place.';
+				$result[$type['label']][$id] = [];
+
+				$count = substr_count($code, 'array_key_exists(');
+				if ($count > 0) {
+					$result[$type['label']][$id][] = 'Attention, La possibilité d\'utiliser array_key_exists() avec des objets a été supprimée. isset() ou property_exists() peuvent être utilisées à la place. Il y a ' . $count . ' occurence(s) dans le code.';
 				}
 
-				if(strpos('@$', $code) !== false) {
-					if (!isset($result[$type['label']][$id])) $result[$type['label']][$id] = [];
-					$result[$type['label']][$id][] = 'Attention, L\'opérateur @ ne silence plus les erreurs fatales.';
+				$count = substr_count($code, 'in_array(');
+				if ($count > 0) {
+					$result[$type['label']][$id][] = 'Attention, si le second paramètre passé à in_array n\'est pas un tableau, une erreur sera lancée. Il y a ' . $count . ' occurence(s) dans le code.';
 				}
 
-				// La prise en charge des accolades pour l'accès aux index a été supprimée.
-				// rechercher dans $code si il y a des accolades pour l'accès aux index
-
-
-				if (strpos('read_exif_data(', $code) !== false) {
-					if (!isset($result[$type['label']][$id])) $result[$type['label']][$id] = [];
-					$result[$type['label']][$id][] = 'Attention, read_exif_data() a été supprimée ; exif_read_data() doit être utilisée à la place.';
+				$count = substr_count($code, '@$');
+				if ($count > 0) {
+					$result[$type['label']][$id][] = 'Attention, L\'opérateur @ ne silence plus les erreurs fatales. Il y a ' . $count . ' occurence(s) dans le code.';
 				}
 
-				if (strpos('FILTER_FLAG_SCHEME_REQUIRED', $code) !== false || strpos('FILTER_FLAG_HOST_REQUIRED', $code) !== false) {
-					if (!isset($result[$type['label']][$id])) $result[$type['label']][$id] = [];
-					$result[$type['label']][$id][] = 'Attention, Les drapeaux FILTER_FLAG_SCHEME_REQUIRED et FILTER_FLAG_HOST_REQUIRED pour le filtre FILTER_VALIDATE_URL ont été supprimés. Le schéma et l\'hôte sont (et ont toujours été) nécessaires.';
+				$count = substr_count($code, 'read_exif_data(');
+				if ($count > 0) {
+					$result[$type['label']][$id][] = 'Attention, read_exif_data() a été supprimée ; exif_read_data() doit être utilisée à la place. Il y a ' . $count . ' occurence(s) dans le code.';
 				}
 
-				// Les sources INPUT_REQUEST et INPUT_SESSION pour filter_input() etc. ont été supprimées. Elles n'ont jamais été mises en œuvre et leur utilisation a toujours généré un avertissement.
-				if (strpos('INPUT_REQUEST', $code) !== false || strpos('INPUT_SESSION', $code) !== false) {
-					if (!isset($result[$type['label']][$id])) $result[$type['label']][$id] = [];
-					$result[$type['label']][$id][] = 'Attention, Les sources INPUT_REQUEST et INPUT_SESSION pour filter_input() etc. ont été supprimées. Elles n\'ont jamais été mises en œuvre et leur utilisation a toujours généré un avertissement.';
+				$count_scheme = substr_count($code, 'FILTER_FLAG_SCHEME_REQUIRED');
+				$count_host = substr_count($code, 'FILTER_FLAG_HOST_REQUIRED');
+				if ($count_scheme > 0 || $count_host > 0) {
+					$result[$type['label']][$id][] = 'Attention, Les drapeaux FILTER_FLAG_SCHEME_REQUIRED et FILTER_FLAG_HOST_REQUIRED pour le filtre FILTER_VALIDATE_URL ont été supprimés. Le schéma et l\'hôte sont (et ont toujours été) nécessaires. Il y a ' . ($count_scheme + $count_host) . ' occurence(s) dans le code.';
 				}
 
-				if (strpos('implode(', $code) !== false) {
-					if (!isset($result[$type['label']][$id])) $result[$type['label']][$id] = [];
-					$result[$type['label']][$id][] = 'Attention, L\'appel à implode() avec des paramètres dans l\'ordre inverse ($pieces, $glue) n\'est plus supporté.';
+				$count_req = substr_count($code, 'INPUT_REQUEST');
+				$count_sess = substr_count($code, 'INPUT_SESSION');
+				if ($count_req > 0 || $count_sess > 0) {
+					$result[$type['label']][$id][] = 'Attention, Les sources INPUT_REQUEST et INPUT_SESSION pour filter_input() etc. ont été supprimées. Elles n\'ont jamais été mises en œuvre et leur utilisation a toujours généré un avertissement. Il y a ' . ($count_req + $count_sess) . ' occurence(s) dans le code.';
+				}
+
+				$count = substr_count($code, 'implode(');
+				if ($count > 0) {
+					$result[$type['label']][$id][] = 'Attention, L\'appel à implode() avec des paramètres dans l\'ordre inverse ($pieces, $glue) n\'est plus supporté. Il y a ' . $count . ' occurence(s) dans le code.';
+				}
+
+				if (empty($result[$type['label']][$id])) {
+					unset($result[$type['label']][$id]);
 				}
 			}
 		}
