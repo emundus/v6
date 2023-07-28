@@ -2906,6 +2906,26 @@ class EmundusHelperUpdate
 					$result[$type['label']][$id][] = 'Attention, explode() lancera désormais une ValueError quand le paramètre separator est donné une chaîne vide (""). Précédemment, explode() retournait false. Il y a ' . $count . ' occurence(s) dans le code.';
 				}
 
+				$count = substr_count($code, '#[');
+				if ($count > 0) {
+					$result[$type['label']][$id][] = 'Attention, #[ n\'est plus interprété comme le début d\'un commentaire, car cette syntaxe est désormais utilisée pour les attributs. Il y a ' . $count . ' occurence(s) dans le code.';
+				}
+
+				$pattern = '/\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*\s*\{\s*("[^"]+"|\'[^\']+\'|[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)\s*\}/';
+				if (preg_match($pattern, $code, $matches)) {
+					$result[$type['label']][$id][] = 'Attention, La prise en charge des accolades pour l\'accès aux index a été supprimée. Il y a ' . count($matches) . ' occurence(s) dans le code. ' . json_encode($matches);
+				}
+
+				$count = substr_count($code, 'mktime()');
+				if ($count > 0) {
+					$result[$type['label']][$id][] = 'ERREUR, mktime() requière désormais au moins un argument. Il y a ' . $count . ' occurence(s) dans le code. ';
+				}
+
+				$count = substr_count($code, 'gmmktime()');
+				if ($count > 0) {
+					$result[$type['label']][$id][] = 'ERREUR, gmmktime() requière désormais au moins un argument. Il y a ' . $count . ' occurence(s) dans le code. ';
+				}
+
 				if (empty($result[$type['label']][$id])) {
 					unset($result[$type['label']][$id]);
 				}
