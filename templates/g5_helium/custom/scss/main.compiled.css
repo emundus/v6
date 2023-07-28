@@ -1388,7 +1388,7 @@ input[type="text"],
   select:not(.profile-select),
   a.chzn-single,
   textarea {
-    background-color: var(--neutral-50);
+    background-color: var(--neutral-0);
     color: black;
     font-family: var(--em-default-font);
   }

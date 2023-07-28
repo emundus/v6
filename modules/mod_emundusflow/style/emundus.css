@@ -111,7 +111,7 @@
 .view-details .ui.attached.segment {
 	background:var(--em-secondary-color);
 	border: var(--em-secondary-color);
-	color: var(--neutral-50);
+	color: var(--neutral-0);
 }
 
 .view-form .platform-content .ui.tablet.attached .step i,

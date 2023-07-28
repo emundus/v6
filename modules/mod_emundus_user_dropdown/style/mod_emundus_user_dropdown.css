@@ -195,7 +195,7 @@ a.btn.btn-danger .btn-creer-compte,
 a.btn.btn-danger .inscription {
     background: var(--em-primary-color);
     border: 1px solid var(--em-primary-color);
-    color: var(--neutral-50);
+    color: var(--neutral-0);
     border-radius: var(--em-applicant-br) !important;
     height: auto;
 }
@@ -220,7 +220,7 @@ a.btn.btn-danger :not(.btn-creer-compte) {
 
 a.btn.btn-danger :not(.btn-creer-compte):hover {
      background: var(--em-secondary-color);
-     color: var(--neutral-50);
+     color: var(--neutral-0);
      border-color: var(--em-secondary-color) !important;
  }
 
@@ -239,7 +239,7 @@ a.btn.btn-danger :not(.btn-creer-compte):hover {
 #userDropdownMenu li > a:hover,
 #userDropdownMenu.active > a {
     background: var(--em-primary-color);
-    color: var(--neutral-50);
+    color: var(--neutral-0);
 }
 
 #userDropdownMenu hr {

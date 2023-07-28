@@ -159,7 +159,7 @@ body > .g-container {
 /* IFRAME */
 div#frame.outline {
   border-radius: 16px !important;
-  background: var(--neutral-50);
+  background: var(--neutral-0);
   border: 1px solid var(--neutral-300);
   box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
 
@@ -181,14 +181,14 @@ div#frame.outline {
     text-transform: initial;
     width: 100%;
     font-family: var(--em-coordinator-font);
-    background: $base-primary-color;
-    border: 1px solid $base-primary-color;
-    color: var(--neutral-50);
+    background: var(--em-primary-color);
+    border: 1px solid var(--em-primary-color);
+    color: var(--neutral-0);
 
     &:hover {
-      border: 1px solid $base-primary-color;
+      border: 1px solid var(--em-primary-color);
       background: transparent;
-      color: $base-primary-color;
+      color: var(--em-primary-color);
     }
   }
 }
@@ -240,32 +240,32 @@ div#frame.outline {
 
     .below-content {
       a.btn.btn-primary.btn-plein.btn-blue {
-        background-color: $base-secondary-color;
-        border-color: $base-secondary-color;
-        color: var(--neutral-50);
+        background-color: var(--em-secondary-color);
+        border-color: var(--em-secondary-color);
+        color: var(--neutral-0);
         height: auto;
 
         &:hover,
         &:active,
         &:focus {
           background-color: transparent;
-          color: $base-secondary-color;
-          border-color: $base-secondary-color;
+          color: var(--em-secondary-color);
+          border-color: var(--em-secondary-color);
         }
       }
 
       a.btn.btn-primary.btn-creux.btn-orange {
         background-color: transparent;
-        border-color: $base-primary-color;
-        color: $base-primary-color;
+        border-color: var(--em-primary-color);
+        color: var(--em-primary-color);
         height: auto;
 
         &:hover,
         &:active,
         &:focus {
-          background-color: $base-primary-color;
-          color: var(--neutral-50);
-          border-color: $base-primary-color;
+          background-color: var(--em-primary-color);
+          color: var(--neutral-0);
+          border-color: var(--em-primary-color);
         }
       }
     }
@@ -273,14 +273,14 @@ div#frame.outline {
 
   .rotate-me.blue,
   .rotate-me.orange {
-    background: $base-secondary-color;
-    border-color: $base-secondary-color;
+    background: var(--em-secondary-color);
+    border-color: var(--em-secondary-color);
   }
 
   #navfilter .navsearch .navsearch-content .input-group-btn button {
-    background-color: $base-secondary-color;
-    background: $base-secondary-color;
-    color: var(--neutral-50);
+    background-color: var(--em-secondary-color);
+    background: var(--em-secondary-color);
+    color: var(--neutral-0);
     margin-bottom: 0;
   }
 
@@ -289,11 +289,11 @@ div#frame.outline {
   }
 
   h3.g-title {
-    color: $base-primary-color;
+    color: var(--em-primary-color);
   }
 
   .campaigntext.blue h4 a {
-    color: $base-secondary-color;
+    color: var(--em-secondary-color);
   }
 }
 
@@ -337,7 +337,7 @@ div#frame.outline {
   /* DOCUMENTS PREALABLES */
   .em-infoComp li i {
     margin-left: 10px;
-    color: $base-primary-color;
+    color: var(--em-primary-color);
   }
 
   #g-sidebar {
@@ -364,34 +364,34 @@ div#frame.outline {
 
     .btn.btn-plein {
 
-      background-color: $base-secondary-color;
-      border-color: $base-secondary-color;
-      color: var(--neutral-50);
+      background-color: var(--em-secondary-color);
+      border-color: var(--em-secondary-color);
+      color: var(--neutral-0);
       font-size: var(--em-applicant-font-size) !important;
       border-radius: var(--em-applicant-br);
 
       &:hover,
       &:active,
       &:focus {
-        background-color: var(--neutral-50);
-        color: $base-secondary-color;
-        border-color: $base-secondary-color;
+        background-color: var(--neutral-0);
+        color: var(--em-secondary-color);
+        border-color: var(--em-secondary-color);
       }
     }
 
     .btn.btn-creux {
       background-color: transparent;
-      border-color: $base-primary-color;
-      color: $base-primary-color;
+      border-color: var(--em-primary-color);
+      color: var(--em-primary-color);
       font-size: var(--em-applicant-font-size) !important;
       border-radius: var(--em-applicant-br);
 
       &:hover,
       &:active,
       &:focus {
-        background-color: $base-primary-color;
-        color: var(--neutral-50);
-        border-color: $base-primary-color;
+        background-color: var(--em-primary-color);
+        color: var(--neutral-0);
+        border-color: var(--em-primary-color);
       }
     }
   }
@@ -541,7 +541,7 @@ footer#g-footer > .g-container {
     align-self: baseline;
 
     p {
-      color: $base-primary-color;
+      color: var(--em-primary-color);
     }
 
     .street {
@@ -552,7 +552,7 @@ footer#g-footer > .g-container {
 
 .credits-emundus {
   p {
-    color: $base-primary-color;
+    color: var(--em-primary-color);
     float: right;
   }
 }
@@ -616,9 +616,9 @@ footer#g-footer > .g-container {
 
 .view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn.btn-primary.save-btn.sauvegarder.button.register,
 .view-form .em-formRegistrationCenter .button.btn.btn-primary.save-btn.sauvegarder.button.register {
-  background-color: $base-primary-color;
-  color: var(--neutral-50);
-  border-color: $base-primary-color;
+  background-color: var(--em-primary-color);
+  color: var(--neutral-0);
+  border-color: var(--em-primary-color);
   text-transform: initial;
   margin-left: 0 !important;
   font-family: var(--em-applicant-font);
@@ -627,8 +627,8 @@ footer#g-footer > .g-container {
   &:active,
   &:focus {
     background-color: transparent;
-    color: $base-primary-color;
-    border-color: $base-primary-color;
+    color: var(--em-primary-color);
+    border-color: var(--em-primary-color);
   }
 }
 
@@ -643,7 +643,7 @@ footer#g-footer > .g-container {
   }
 
   .em-register-warning {
-    border: 1px solid $base-primary-color;
+    border: 1px solid var(--em-primary-color);
   }
 
   .em-heading-registration h1 {
@@ -697,26 +697,26 @@ footer#g-footer > .g-container {
   #attachment_list_mand,
   #attachment_list_opt {
     .em-added-files a.btn.btn-success.btn-xs {
-      background: $base-secondary-color;
-      border-color: $base-secondary-color;
+      background: var(--em-secondary-color);
+      border-color: var(--em-secondary-color);
 
       &:hover,
       &:active,
       &:focus {
-        background-color: var(--neutral-50);
-        color: $base-secondary-color;
-        border-color: $base-secondary-color;
+        background-color: var(--neutral-0);
+        color: var(--em-secondary-color);
+        border-color: var(--em-secondary-color);
       }
     }
 
     .em-added-files a.btn.btn-danger {
 
       &:hover span.material-icons {
-        color: $base-primary-color;
+        color: var(--em-primary-color);
       }
 
       span.material-icons {
-        color: var(--neutral-50);
+        color: var(--neutral-0);
       }
     }
   }
@@ -761,7 +761,7 @@ footer#g-footer > .g-container {
 /* DOCUMENTS OBLIGATOIRES */
 
 .need_missing.active a::before {
-  color: $base-primary-color;
+  color: var(--em-primary-color);
 }
 
 .view-list table .fabrik_groupheading {
@@ -983,7 +983,7 @@ footer#g-footer > .g-container {
 /** MODULE SINGLE CAMPAIGN **/
 
 .em-campaign-dropfiles ul a:focus {
-  color: $base-primary-color;
+  color: var(--em-primary-color);
 }
 
 .single-campaign-tabs {
@@ -1012,14 +1012,14 @@ footer#g-footer > .g-container {
   }
 
   .current-tab {
-    background: $base-primary-color;
+    background: var(--em-primary-color);
     opacity: 1;
-    color: var(--neutral-50);
-    border-color: $base-primary-color;
+    color: var(--neutral-0);
+    border-color: var(--em-primary-color);
 
     &:hover {
-      background: $base-primary-color;
-      color: var(--neutral-50);
+      background: var(--em-primary-color);
+      color: var(--neutral-0);
     }
   }
 }
@@ -1058,16 +1058,16 @@ footer#g-footer > .g-container {
 #navfilter {
 
   .navrowtabs #tabslist a {
-    color: $base-secondary-color;
+    color: var(--em-secondary-color);
   }
 
   .navorder a {
-    color: $base-secondary-color;
+    color: var(--em-secondary-color);
   }
 
   .navsearch .navsearch-content {
     .input-group-btn button {
-      background: $base-secondary-color;
+      background: var(--em-secondary-color);
 
       &:hover {
         background-color: darken($base-secondary-color, 10%);
@@ -1089,7 +1089,6 @@ footer#g-footer > .g-container {
 .com_users.view-reset {
   form#user-registration.form-validate.form-horizontal.well .control-group .controls button {
     width: 100%;
-    height: 50px;
     text-transform: unset;
     margin-right: 0;
     border-radius: var(--em-applicant-br) !important;
@@ -1101,16 +1100,16 @@ footer#g-footer > .g-container {
   }
 
   button.btn.btn-primary.validate {
-    background-color: $base-primary-color;
-    border-color: $base-primary-color;
-    color: var(--neutral-50);
+    background-color: var(--em-primary-color);
+    border-color: var(--em-primary-color);
+    color: var(--neutral-0);
 
     &:hover,
     &:active,
     &:focus {
       background-color: transparent;
-      color: $base-primary-color;
-      border-color: $base-primary-color;
+      color: var(--em-primary-color);
+      border-color: var(--em-primary-color);
     }
   }
 }
@@ -1149,13 +1148,13 @@ footer#g-footer > .g-container {
       background: var(--red-500);
       border-color: var(--red-500);
       margin-right: 5px;
-      color: var(--neutral-50);
+      color: var(--neutral-0);
       border-radius: var(--em-coordinator-br) !important;
 
       &:hover,
       &:active,
       &:focus {
-        background: var(--neutral-50);
+        background: var(--neutral-0);
         border-color: var(--red-500);
         color: var(--red-500);
       }
@@ -1164,13 +1163,13 @@ footer#g-footer > .g-container {
     a.listplugin.btn-default {
       background: var(--night-blue);
       border-color: var(--night-blue);
-      color: var(--neutral-50);
+      color: var(--neutral-0);
       border-radius: var(--em-coordinator-br) !important;
 
       &:hover,
       &:active,
       &:focus {
-        background: var(--neutral-50);
+        background: var(--neutral-0);
         border-color: var(--night-blue);
         color: var(--night-blue);
       }
@@ -1187,13 +1186,13 @@ footer#g-footer > .g-container {
       background: var(--red-500);
       border-color: var(--red-500);
       margin-right: 5px;
-      color: var(--neutral-50);
+      color: var(--neutral-0);
       border-radius: var(--em-coordinator-br) !important;
 
       &:hover,
       &:active,
       &:focus {
-        background: var(--neutral-50);
+        background: var(--neutral-0);
         border-color: var(--red-500);
         color: var(--red-500);
       }
@@ -1203,13 +1202,13 @@ footer#g-footer > .g-container {
       background: var(--main-500);
       border-color: var(--main-500);
       margin-right: 5px;
-      color: var(--neutral-50);
+      color: var(--neutral-0);
       border-radius: var(--em-coordinator-br) !important;
 
       &:hover,
       &:active,
       &:focus {
-        background: var(--neutral-50);
+        background: var(--neutral-0);
         border-color: var(--main-500);
         color: var(--main-500);
       }
@@ -1219,13 +1218,13 @@ footer#g-footer > .g-container {
       background: var(--main-600);
       border-color: var(--main-600);
       margin-right: 5px;
-      color: var(--neutral-50);
+      color: var(--neutral-0);
       border-radius: var(--em-coordinator-br) !important;
 
       &:hover,
       &:active,
       &:focus {
-        background: var(--neutral-50);
+        background: var(--neutral-0);
         border-color: var(--main-600);
         color: var(--main-600);
       }
@@ -1236,13 +1235,13 @@ footer#g-footer > .g-container {
       background: var(--night-blue);
       border-color: var(--night-blue);
       margin-right: 5px;
-      color: var(--neutral-50);
+      color: var(--neutral-0);
       border-radius: var(--em-coordinator-br) !important;
 
       &:hover,
       &:active,
       &:focus {
-        background: var(--neutral-50);
+        background: var(--neutral-0);
         border-color: var(--night-blue);
         color: var(--night-blue);
       }
@@ -1260,7 +1259,7 @@ footer#g-footer > .g-container {
     padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
     border: 1px solid var(--main-500);
     background: var(--night-blue);
-    color: var(--neutral-50);
+    color: var(--neutral-0);
 
     &:active, &:focus, &:hover {
       border-radius: var(--em-coordinator-br);
@@ -1294,7 +1293,7 @@ footer#g-footer > .g-container {
     height: var(--em-form-height) !important;
 
     &:hover, &:active, &:focus {
-      background: var(--neutral-50);
+      background: var(--neutral-0);
       border: 1px solid var(--main-500) !important;
       color: var(--main-500);
       letter-spacing: normal;
@@ -1348,10 +1347,10 @@ footer#g-footer > .g-container {
       color: var(--night-blue);
 
       &:hover, &:focus, &:active {
-        color: var(--neutral-50);
+        color: var(--neutral-0);
 
         i {
-          color: var(--neutral-50);
+          color: var(--neutral-0);
         }
       }
     }
@@ -1423,7 +1422,7 @@ footer#g-footer > .g-container {
 .view-list .table .fabrikFilterContainer .fabrikDateListFilterRange button.btn.calendarbutton {
   height: 40px;
   border-radius: 0 4px 4px 0 !important;
-  background: var(--neutral-50);
+  background: var(--neutral-0);
   color: var(--neutral-900);
   border: 1px solid #e0e0e5;
 
@@ -1486,7 +1485,7 @@ footer#g-footer > .g-container {
 }
 
 #g-offcanvas a:hover {
-  color: var(--neutral-50);
+  color: var(--neutral-0);
   text-decoration: none;
 }
 
@@ -1512,7 +1511,7 @@ footer#g-footer > .g-container {
   text-transform: initial;
 
   &:hover, &:focus, &:active {
-    color: $base-primary-color;
+    color: var(--em-primary-color);
   }
 }
 
@@ -1566,20 +1565,20 @@ footer#g-footer > .g-container {
 
 
 #sidebar-a .em-send-button a.btn.btn-success.btn-xs {
-  color: var(--neutral-50);
-  background: $base-primary-color;
-  border-color: $base-primary-color;
+  color: var(--neutral-0);
+  background: var(--em-primary-color);
+  border-color: var(--em-primary-color);
 
   &:hover, &:active, &:focus {
-    color: $base-primary-color;
+    color: var(--em-primary-color);
     background: transparent;
-    border-color: $base-primary-color;
+    border-color: var(--em-primary-color);
   }
 }
 
 .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.btn-danger.active, .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.active.btn-success {
   background-color: var(--dark-grey);
-  color: var(--neutral-50);
+  color: var(--neutral-0);
   border-color: var(--dark-grey);
 
   &:hover,
@@ -1593,12 +1592,12 @@ footer#g-footer > .g-container {
 
 
 .btn.calendarbutton {
-  background: var(--neutral-50);
+  background: var(--neutral-0);
 }
 
 .fabrikForm .controls .btn-danger:hover,
 #em-modal-actions .modal-content .modal-header .btn-danger:hover {
-  color: $base-primary-color;
+  color: var(--em-primary-color);
   background-color: transparent;
   border-color: darken($base-primary-color, 10%);
 }
@@ -1714,11 +1713,11 @@ div.fabrikFilterContainer {
         border-radius: var(--em-coordinator-br);
         border: unset;
         height: 40px;
-        color: var(--neutral-50);
+        color: var(--neutral-0);
         background-color: var(--main-500);
 
         &:hover {
-          background-color: var(--neutral-50);
+          background-color: var(--neutral-0);
           color: var(--main-500);
           border: 1px solid var(--main-500);
           text-decoration: none;
@@ -1771,13 +1770,13 @@ tr.fabrikFilterContainer {
 }
 
 .fabrikForm legend {
-  color: $base-primary-color;
+  color: var(--em-primary-color);
   font-weight: 700;
   display: contents;
 }
 
 .fabrikForm legend {
-  color: $base-primary-color;
+  color: var(--em-primary-color);
   font-weight: 700;
   display: contents;
 }
@@ -1788,26 +1787,26 @@ tr.fabrikFilterContainer {
 }
 
 .form-actions .row-fluid .span4 .btn-group .register {
-  color: $base-primary-color;
-  border: 1px solid $base-primary-color;
+  color: var(--em-primary-color);
+  border: 1px solid var(--em-primary-color);
 }
 
 .form-actions .row-fluid .span4 .btn-group .register:hover {
-  background-color: $base-primary-color;
-  border: 1px solid $base-primary-color;
+  background-color: var(--em-primary-color);
+  border: 1px solid var(--em-primary-color);
 }
 
 .view-checklist .form-horizontal .controls .em-deleteFile,
 .view-checklist .row-fluid .plg-emundus_fileupload .em-deleteFile {
-  color: $base-primary-color;
-  border: 1px solid $base-primary-color;
+  color: var(--em-primary-color);
+  border: 1px solid var(--em-primary-color);
 }
 
 .view-checklist .form-horizontal .controls .em-deleteFile,
 .view-checklist .row-fluid .plg-emundus_fileupload .em-deleteFile:hover {
-  background: $base-primary-color;
-  background-color: $base-primary-color;
-  border: 1px solid $base-primary-color;
+  background: var(--em-primary-color);
+  background-color: var(--em-primary-color);
+  border: 1px solid var(--em-primary-color);
 }
 
 .fabrikElement button.calendarbutton {
@@ -1909,16 +1908,16 @@ body.error-page .container-404 p {
 }
 
 .view-form p.select-program a {
-  border: 1px solid $base-secondary-color !important;
-  color: $base-secondary-color !important;
+  border: 1px solid var(--em-secondary-color) !important;
+  color: var(--em-secondary-color) !important;
   background: transparent !important;
 
   &:hover,
   &:focus,
   &:active {
-    border: 1px solid $base-secondary-color !important;
-    color: var(--neutral-50) !important;
-    background: $base-secondary-color !important;
+    border: 1px solid var(--em-secondary-color) !important;
+    color: var(--neutral-0) !important;
+    background: var(--em-secondary-color) !important;
   }
 }
 
@@ -1937,28 +1936,28 @@ body.error-page .container-404 p {
 /* PRINT AND SEND FILE */
 
 #sidebar-a .em-print-button a#print {
-  border: 1px solid $base-secondary-color;
-  color: var(--neutral-50);
-  background: $base-secondary-color;
+  border: 1px solid var(--em-secondary-color);
+  color: var(--neutral-0);
+  background: var(--em-secondary-color);
 
   &:hover,
   &:focus,
   &:active {
-    border: 1px solid $base-secondary-color;
-    color: $base-secondary-color;
+    border: 1px solid var(--em-secondary-color);
+    color: var(--em-secondary-color);
   }
 }
 
 .em-send-button a.btn.btn-success.btn-xs {
-  background: $base-secondary-color;
-  color: var(--neutral-50);
-  border: 1px solid $base-secondary-color;
+  background: var(--em-secondary-color);
+  color: var(--neutral-0);
+  border: 1px solid var(--em-secondary-color);
 
   &:hover,
   &:focus,
   &:active {
-    color: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    color: var(--em-secondary-color);
+    border: 1px solid var(--em-secondary-color);
     background: transparent;
   }
 }
@@ -1972,7 +1971,7 @@ body.error-page .container-404 p {
 
 .btn-elements-success {
   background-color: #5bb75b !important;
-  color: var(--neutral-50) !important;
+  color: var(--neutral-0) !important;
 }
 
 .btn {
@@ -1984,40 +1983,40 @@ body.error-page .container-404 p {
 }
 
 button.btn-primary {
-  background: $base-secondary-color;
-  border: 1px solid $base-secondary-color;
+  background: var(--em-secondary-color);
+  border: 1px solid var(--em-secondary-color);
   border-radius: var(--em-applicant-br) !important;
   padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
 
   &:hover {
     background-color: transparent;
-    color: $base-secondary-color;
+    color: var(--em-secondary-color);
   }
 }
 
 button.btn-secondary {
-  background: $base-secondary-color;
-  border: 1px solid $base-secondary-color;
+  background: var(--em-secondary-color);
+  border: 1px solid var(--em-secondary-color);
   border-radius: var(--em-applicant-br) !important;
   padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
 
   &:hover {
     background-color: transparent;
-    color: $base-secondary-color;
+    color: var(--em-secondary-color);
 
     span {
-      color: $base-secondary-color !important;
+      color: var(--em-secondary-color) !important;
     }
   }
 }
 
 a.btn,
 span.btn {
-  background: $base-primary-color;
-  border: 1px solid $base-primary-color;
+  background: var(--em-primary-color);
+  border: 1px solid var(--em-primary-color);
   border-radius: var(--em-applicant-br) !important;
   padding: var(--em-spacing-vertical) var(--em-spacing-horizontal) !important;
-  color: var(--neutral-50);
+  color: var(--neutral-0);
   line-height: normal !important;
   letter-spacing: normal;
 
@@ -2025,8 +2024,8 @@ span.btn {
   &:focus,
   &:active {
     background-color: transparent;
-    color: $base-primary-color;
-    border: 1px solid $base-primary-color;
+    color: var(--em-primary-color);
+    border: 1px solid var(--em-primary-color);
   }
 }
 
@@ -2034,19 +2033,19 @@ span.btn {
 a.btn-attach,
 .xclsform .panel-body button,
 button.close {
-  color: var(--neutral-50);
+  color: var(--neutral-0);
 }
 
 .modal-body #form-element button.btn.btn-info.btn-xs,
 .modal-body .panel-heading button.btn.btn-info.btn-xs {
   background: var(--dark-grey);
-  color: var(--neutral-50);
+  color: var(--neutral-0);
 }
 
 .modal-body #form-element button.btn-xs.btn.btn-elements-success,
 .modal-body .panel-heading button.btn-xs.btn.btn-elements-success {
   background-color: var(--grey) !important;
-  color: var(--neutral-50);
+  color: var(--neutral-0);
 }
 
 .modal-body .panel-body .panel-primary > .panel-heading {
@@ -2066,7 +2065,7 @@ button.close {
 .open > .dropdown-toggle.btn-warning.focus,
 .open > .dropdown-toggle.btn-warning:focus,
 .open > .dropdown-toggle.btn-warning:hover {
-  color: var(--neutral-50);
+  color: var(--neutral-0);
   background-color: #D5855A;
   border-color: #D5855A;
 }
@@ -2098,26 +2097,26 @@ p.readmore .btn,
   .span4.offset1 button.btn.goback-btn,
   .span4.offset1 button.btn[name="Goback"] {
     background: transparent;
-    border: 1px solid $base-secondary-color;
+    border: 1px solid var(--em-secondary-color);
     border-radius: var(--em-applicant-br) !important;
-    color: $base-secondary-color;
+    color: var(--em-secondary-color);
     margin-right: 10px;
     font-weight: normal;
 
     &:hover,
     &:active,
     :focus {
-      background: $base-secondary-color;
-      border: 1px solid $base-secondary-color;
-      color: var(--neutral-50);
+      background: var(--em-secondary-color);
+      border: 1px solid var(--em-secondary-color);
+      color: var(--neutral-0);
     }
   }
 
   .span12 button.btn[name="Goback"] {
     background: transparent;
-    border: 1px solid $base-secondary-color;
+    border: 1px solid var(--em-secondary-color);
     border-radius: var(--em-applicant-br) !important;
-    color: $base-secondary-color;
+    color: var(--em-secondary-color);
     margin-right: 10px;
     font-weight: normal;
     padding: 8px 35px;
@@ -2126,25 +2125,25 @@ p.readmore .btn,
     &:hover,
     &:active,
     :focus {
-      background: $base-secondary-color;
-      border: 1px solid $base-secondary-color;
-      color: var(--neutral-50);
+      background: var(--em-secondary-color);
+      border: 1px solid var(--em-secondary-color);
+      color: var(--neutral-0);
     }
   }
 
   .span4 button.btn.save-btn {
-    background: $base-primary-color;
-    border: 1px solid $base-primary-color;
+    background: var(--em-primary-color);
+    border: 1px solid var(--em-primary-color);
     border-radius: var(--em-applicant-br) !important;
-    color: var(--neutral-50);
+    color: var(--neutral-0);
     font-size: var(--em-applicant-font-size);
 
     &:hover,
     &:active,
     :focus {
       background: transparent;
-      border: 1px solid $base-primary-color;
-      color: $base-primary-color;
+      border: 1px solid var(--em-primary-color);
+      color: var(--em-primary-color);
     }
   }
 }
@@ -2156,10 +2155,10 @@ p.readmore .btn,
   button.btn-success {
     background: var(--main-500);
     border-color: var(--main-500);
-    color: var(--neutral-50);
+    color: var(--neutral-0);
     border-radius: var(--em-coordinator-br) !important;
     &:hover, &:active, &:focus {
-      background: var(--neutral-50);
+      background: var(--neutral-0);
       border-color: var(--main-500) !important;
       color: var(--main-500);
     }
@@ -2195,7 +2194,7 @@ p.readmore .btn,
     :focus {
       background: var(--dark-grey);
       border: 1px solid var(--dark-grey);
-      color: var(--neutral-50);
+      color: var(--neutral-0);
     }
   }
 
@@ -2204,7 +2203,7 @@ p.readmore .btn,
     background: var(--dark-grey);
     border: 1px solid var(--dark-grey);
     border-radius: var(--em-coordinator-br) !important;
-    color: var(--neutral-50);
+    color: var(--neutral-0);
     padding: 7px 30px;
 
     &:hover,
@@ -2212,7 +2211,7 @@ p.readmore .btn,
     :focus {
       background: var(--grey);
       border: 1px solid var(--grey);
-      color: var(--neutral-50);
+      color: var(--neutral-0);
     }
   }
 }
@@ -2235,30 +2234,30 @@ p.readmore .btn,
 }
 
 .em-front-primary-btn {
-  background-color: $base-primary-color;
-  border-color: $base-primary-color;
-  color: var(--neutral-50);
+  background-color: var(--em-primary-color);
+  border-color: var(--em-primary-color);
+  color: var(--neutral-0);
 
   &:hover:not(:disabled),
   &:active:not(:disabled),
   &:focus:not(:disabled) {
     background-color: transparent;
-    color: $base-primary-color;
-    border-color: $base-primary-color;
+    color: var(--em-primary-color);
+    border-color: var(--em-primary-color);
   }
 }
 
 .em-front-secondary-btn {
-  background-color: $base-secondary-color;
-  border-color: $base-secondary-color;
-  color: var(--neutral-50);
+  background-color: var(--em-secondary-color);
+  border-color: var(--em-secondary-color);
+  color: var(--neutral-0);
 
   &:hover:not(:disabled),
   &:active:not(:disabled),
   &:focus:not(:disabled) {
     background-color: transparent;
-    color: $base-secondary-color;
-    border-color: $base-secondary-color;
+    color: var(--em-secondary-color);
+    border-color: var(--em-secondary-color);
   }
 }
 
@@ -2284,8 +2283,8 @@ a#em-doc-zip,
 .btn.advanced-search-apply,
 .toggle-addoption.btn,
 .choice-statut-btn {
-  background: $base-primary-color;
-  border: 1px solid $base-primary-color;
+  background: var(--em-primary-color);
+  border: 1px solid var(--em-primary-color);
   text-shadow: none;
   text-transform: initial;
   padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
@@ -2352,36 +2351,36 @@ a#em-doc-zip:focus,
 .choice-statut-btn:active,
 .choice-statut-btn:focus {
   background-color: transparent;
-  color: $base-primary-color;
-  border: 1px solid $base-primary-color !important;
+  color: var(--em-primary-color);
+  border: 1px solid var(--em-primary-color) !important;
 }
 
 .span4.offset1 > .btn-group > button.button {
-  background: $base-primary-color;
-  border: 1px solid $base-primary-color;
+  background: var(--em-primary-color);
+  border: 1px solid var(--em-primary-color);
   border-radius: var(--em-applicant-br);
 
   &:hover,
   &:focus,
   &:active {
     background-color: transparent;
-    color: $base-primary-color;
+    color: var(--em-primary-color);
   }
 }
 
 .span4 > .btn-group > button.save-btn,
 .span4 > .btn-group > button.save {
-  background: $base-primary-color;
-  background-color: $base-primary-color;
-  border: 1px solid $base-primary-color;
+  background: var(--em-primary-color);
+  background-color: var(--em-primary-color);
+  border: 1px solid var(--em-primary-color);
   border-radius: var(--em-applicant-br) !important;
 
   &:hover,
   &:focus,
   &:active {
     background-color: transparent;
-    color: $base-primary-color;
-    border: 1px solid $base-primary-color;
+    color: var(--em-primary-color);
+    border: 1px solid var(--em-primary-color);
   }
 }
 
@@ -2401,10 +2400,10 @@ button#back,
 .fabrikUploadDelete .btn,
 .btn-toolbar .btn-group:nth-child(2) .btn {
   background: transparent;
-  border: 1px solid $base-secondary-color;
+  border: 1px solid var(--em-secondary-color);
   text-shadow: none;
   text-transform: none;
-  color: $base-secondary-color;
+  color: var(--em-secondary-color);
   border-radius: var(--em-applicant-br);
   padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
   font-weight: normal;
@@ -2414,15 +2413,15 @@ button#back,
 
   &:hover,
   &:focus {
-    background-color: $base-secondary-color;
-    color: var(--neutral-50);
+    background-color: var(--em-secondary-color);
+    color: var(--neutral-0);
     border-color: unset;
   }
 }
 
 #member-profile .controls button.btn.btn-primary.validate {
-  background: $base-primary-color;
-  border: 1px solid $base-primary-color;
+  background: var(--em-primary-color);
+  border: 1px solid var(--em-primary-color);
   text-shadow: none;
   text-transform: initial;
   border-radius: var(--em-applicant-br) !important;
@@ -2431,20 +2430,20 @@ button#back,
   &:focus,
   &:active {
     background-color: transparent;
-    color: $base-primary-color;
-    border: 1px solid $base-primary-color;
+    color: var(--em-primary-color);
+    border: 1px solid var(--em-primary-color);
   }
 }
 
 #header-c #userDropdownMenu a.edit-button-user {
-  background: $base-primary-color;
-  border: 1px solid $base-primary-color;
+  background: var(--em-primary-color);
+  border: 1px solid var(--em-primary-color);
 
   &:hover,
   &:focus,
   &:active {
-    color: $base-primary-color !important;
-    border: 1px solid $base-primary-color;
+    color: var(--em-primary-color) !important;
+    border: 1px solid var(--em-primary-color);
   }
 }
 
@@ -2476,7 +2475,7 @@ button#back,
   }
 
   span {
-    color: var(--neutral-50);
+    color: var(--neutral-0);
 
     &:hover,
     &:focus,
@@ -2576,12 +2575,12 @@ label[for='clear-search'] img:hover:focus {
 }
 
 .files-board .em-container-tags .em-container-tags-heading #add-tags {
-  color: var(--neutral-50);
+  color: var(--neutral-0);
   background: var(--dark-grey);
   border-color: var(--dark-grey);
 
   &:hover, &:active, &:focus {
-    color: var(--neutral-50);
+    color: var(--neutral-0);
     background: var(--grey);
     border-color: var(--grey);
   }
@@ -2618,13 +2617,13 @@ label[for='clear-search'] img:hover:focus {
   #em-prev-file.btn.btn-info.btn-xxl,
   #em-next-file.btn.btn-info.btn-xxl {
     background-color: transparent;
-    color: var(--neutral-50);
+    color: var(--neutral-0);
     border-color: transparent;
     display: flex !important;
     align-items: center !important;
 
     span {
-      color: var(--neutral-50);
+      color: var(--neutral-0);
       font-weight: bold;
     }
 
@@ -2649,19 +2648,19 @@ label[for='clear-search'] img:hover:focus {
 .btn-info:active,
 .btn-info.active,
 .open .dropdown-toggle.btn-info {
-  color: var(--neutral-50);
-  background-color: $base-secondary-color;
-  border-color: $base-secondary-color;
+  color: var(--neutral-0);
+  background-color: var(--em-secondary-color);
+  border-color: var(--em-secondary-color);
 }
 
 /* EM PANEL */
 
 .select select {
-  border: 1px solid $base-primary-color;
+  border: 1px solid var(--em-primary-color);
 }
 
 .step a[title="Retour à mes dossiers"]:hover, .step a[title="Retour à mes dossiers"]:focus, .step a[title="Retour à mes dossiers"]:active {
-  color: $base-secondary-color;
+  color: var(--em-secondary-color);
 }
 
 //test
@@ -2693,13 +2692,13 @@ label[for='clear-search'] img:hover:focus {
 
 /* 3 Cercles Accueil Coordinateur */
 .element_home_emundus a {
-  color: $base-secondary-color;
+  color: var(--em-secondary-color);
 
   &:hover,
   &:focus,
   &:active,
   &:focus-within {
-    color: $base-secondary-color;
+    color: var(--em-secondary-color);
   }
 }
 
@@ -2707,7 +2706,7 @@ i.inverted.bordered.blue.icon,
 i.inverted.circular.blue.icon,
 i.inverted.bordered.orange.icon,
 i.inverted.circular.orange.icon {
-  background: $base-secondary-color !important;
+  background: var(--em-secondary-color) !important;
   margin: 0 0 10px 0;
 
   &:hover,
@@ -2724,7 +2723,7 @@ ul.g-dropdown.g-dropdown-right.g-fade {
   &:focus,
   &:active,
   &:focus-within {
-    color: $base-primary-color;
+    color: var(--em-primary-color);
   }
 }
 
@@ -2734,7 +2733,7 @@ ul.g-dropdown.g-dropdown-right.g-fade {
 
 .g-main-nav .g-toplevel > li.active .g-menu-parent-indicator::after,
 .g-main-nav .g-toplevel > li:hover .g-menu-parent-indicator::after {
-  color: $base-primary-color;
+  color: var(--em-primary-color);
 }
 
 #header-b #em_user_menu {
@@ -2749,29 +2748,29 @@ ul.g-dropdown.g-dropdown-right.g-fade {
 /* DECONNEXION */
 
 .logout-button input.btn.btn-primary {
-  border: 1px solid $base-secondary-color;
-  background: $base-secondary-color;
-  color: var(--neutral-50);
+  border: 1px solid var(--em-secondary-color);
+  background: var(--em-secondary-color);
+  color: var(--neutral-0);
   padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
 }
 
 .logout-button input.btn.btn-primary:hover {
-  border: 1px solid $base-secondary-color;
-  background: var(--neutral-50);
-  color: $base-secondary-color;
+  border: 1px solid var(--em-secondary-color);
+  background: var(--neutral-0);
+  color: var(--em-secondary-color);
 }
 
 #g-container-main div.login .control-group .controls button.btn.btn-primary:hover {
-  border: 1px solid $base-primary-color;
-  background: $base-primary-color;
+  border: 1px solid var(--em-primary-color);
+  background: var(--em-primary-color);
   color: var(--neutral-0);
   padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
 }
 
 #g-container-main div.login .control-group .controls button.btn.btn-primary {
-  border: 1px solid $base-primary-color;
+  border: 1px solid var(--em-primary-color);
   background: var(--neutral-0);
-  color: $base-primary-color;
+  color: var(--em-primary-color);
 }
 
 /* CONNEXION */
@@ -2782,72 +2781,71 @@ h1.em-titre-connectez-vous {
 }
 
 ul.nav.nav-tabs.nav-stacked span {
-  color: $base-primary-color;
+  color: var(--em-primary-color);
 
   &:hover,
   &:focus,
   &:active,
   &:focus-within {
-    color: $base-primary-color;
+    color: var(--em-primary-color);
   }
 }
 
 
 ul.nav.nav-tabs.nav-stacked li a {
-  color: $base-secondary-color;
+  color: var(--em-secondary-color);
 
   &:hover,
   &:focus,
   &:active {
-    color: $base-secondary-color;
+    color: var(--em-secondary-color);
     text-decoration: underline;
   }
 }
 
 .view-login button.btn.btn-primary {
-  background-color: $base-secondary-color;
-  border-color: $base-secondary-color;
-  color: var(--neutral-50);
+  background-color: var(--em-secondary-color);
+  border-color: var(--em-secondary-color);
+  color: var(--neutral-0);
   text-transform: initial;
   width: 100%;
-  height: 48px;
   margin-bottom: 0;
 
   &:hover,
   &:active,
   &:focus {
     background-color: transparent;
-    color: $base-secondary-color;
-    border-color: $base-secondary-color;
+    color: var(--em-secondary-color);
+    border-color: var(--em-secondary-color);
   }
 }
 
 /* CONNEXION - CANDIDATER */
 
 ul.unstyled.em-linkForgot li a {
-  color: $base-secondary-color;
+  color: var(--em-secondary-color);
 
   &:hover,
   &:focus,
   &:active,
   &:focus-within {
-    color: $base-secondary-color;
+    color: var(--em-secondary-color);
     text-decoration: none;
   }
 }
 
 .em-formRegistrationCenter button.login-button {
-  background: $base-secondary-color;
-  border: 1px solid $base-secondary-color;
-  color: var(--neutral-50);
+  background: var(--em-secondary-color);
+  border: 1px solid var(--em-secondary-color);
+  color: var(--neutral-0);
   height: 50px;
 
   &:hover,
   &:active,
   &:focus {
     background: transparent;
-    border: 1px solid $base-secondary-color;
-    color: $base-secondary-color;
+    border: 1px solid var(--em-secondary-color);
+    color: var(--em-secondary-color);
   }
 }
 
@@ -2887,13 +2885,13 @@ ul.unstyled.em-linkForgot li a {
 }
 
 .trombi_download {
-  background-color: $base-secondary-color !important;
-  border: 1px solid $base-secondary-color !important;
+  background-color: var(--em-secondary-color) !important;
+  border: 1px solid var(--em-secondary-color) !important;
   text-shadow: none;
 
   &:hover {
     background-color: transparent !important;
-    color: $base-secondary-color !important;
+    color: var(--em-secondary-color) !important;
   }
 }
 
@@ -2902,7 +2900,7 @@ ul.unstyled.em-linkForgot li a {
 }
 
 .referents-sollicitation-page .calendarbutton {
-  background: var(--neutral-50);
+  background: var(--neutral-0);
   border-radius: 0 4px 4px 0 !important;
   border: 1px solid #e0e0e5;
   height: 41px;
@@ -2973,7 +2971,7 @@ ul.unstyled.em-linkForgot li a {
   background-color: var(--dark-grey) !important;
   border: 1px solid var(--dark-grey) !important;
   border-radius: var(--em-coordinator-br) !important;
-  color: var(--neutral-50) !important;
+  color: var(--neutral-0) !important;
   font-family: var(--em-coordinator-font);
 
   &:active, &:focus, &:hover {
@@ -2981,7 +2979,7 @@ ul.unstyled.em-linkForgot li a {
     background-color: var(--grey) !important;
     border: 1px solid var(--grey) !important;
     border-radius: var(--em-coordinator-br) !important;
-    color: var(--neutral-50) !important;
+    color: var(--neutral-0) !important;
   }
 }
 
@@ -3019,7 +3017,7 @@ ul.unstyled.em-linkForgot li a {
 /* SIDEBAR FILTRES */
 
 .view-form.fabrik-boards .form-horizontal .control-group .btn-group label.btn-default {
-  background: $base-primary-color;
+  background: var(--em-primary-color);
 }
 
 .g-back-office-emundus-tableau .panel-info > .panel-heading {
@@ -3060,7 +3058,7 @@ ul.unstyled.em-linkForgot li a {
   justify-content: space-between;
 
   span {
-    color: var(--neutral-50);
+    color: var(--neutral-0);
     margin-right: 8px;
 
     &:focus,
@@ -3096,7 +3094,7 @@ ul.unstyled.em-linkForgot li a {
 fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
 #em_adv_filters .em_filters_adv_filter_addColumn button#add-filter {
   margin-top: 10px;
-  background: var(--neutral-50);
+  background: var(--neutral-0);
   border: 1px solid var(--dark-grey) !important;
   width: 100%;
   color: var(--dark-grey);
@@ -3111,7 +3109,7 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
   &:active {
     background: var(--dark-grey);
     border-color: var(--dark-grey) !important;
-    color: var(--neutral-50) !important;
+    color: var(--neutral-0) !important;
   }
 }
 
@@ -3146,30 +3144,30 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
 .g-back-office-emundus-tableau .side-panel #em-files-filters .buttons input#clear-search,
 .g-back-office-emundus-tableau .side-panel #em-user-filters .buttons input#clear-search {
   background: transparent;
-  color: var(--neutral-50) !important;
+  color: var(--neutral-0) !important;
   border-color: transparent;
   font-size: 19px !important;
 
   &:hover,
   &:active,
   &:focus {
-    color: var(--neutral-50);
+    color: var(--neutral-0);
     background: var(--main-600) !important;
   }
 }
 
 #advanced-filters button.btn.btn-danger.btn-xs#suppr-filt {
-  background: $base-secondary-color;
-  border-color: $base-secondary-color;
-  color: var(--neutral-50);
+  background: var(--em-secondary-color);
+  border-color: var(--em-secondary-color);
+  color: var(--neutral-0);
   padding: 6px 10px !important;
 
   &:focus,
   &:hover,
   &:active {
-    background: var(--neutral-50);
-    border-color: $base-secondary-color;
-    color: $base-secondary-color;
+    background: var(--neutral-0);
+    border-color: var(--em-secondary-color);
+    color: var(--em-secondary-color);
   }
 
   span.fas.fa-trash {
@@ -3273,12 +3271,12 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
 #em-delete-files,
 .panel-body .content .btn-info,
 .panel-body .content .btn-sm {
-  background-color: $base-primary-color;
+  background-color: var(--em-primary-color);
   border: 1px solid darken($base-primary-color, 10%);
 
   &:hover {
     background-color: darken($base-primary-color, 10%);
-    color: var(--neutral-50);
+    color: var(--neutral-0);
     border: 1px solid darken($base-primary-color, 10%);
   }
 }
@@ -3303,7 +3301,7 @@ div#em-appli-block {
     padding: unset;
 
     span {
-      color: var(--neutral-50);
+      color: var(--neutral-0);
     }
 
     &:hover {
@@ -3399,8 +3397,8 @@ div#em-appli-block {
 
 
     .edit-comment-container button.edit-comment {
-      background: var(--neutral-50);
-      border: 1px solid var(--neutral-50);
+      background: var(--neutral-0);
+      border: 1px solid var(--neutral-0);
       border-radius: var(--em-coordinator-br) !important;
 
       span {
@@ -3464,7 +3462,7 @@ div#em-appli-block {
   }
 
   span.label.label-info {
-    background: var(--neutral-50) !important;
+    background: var(--neutral-0) !important;
     text-shadow: none;
     color: var(--night-blue) !important;
     margin-left: 10px;
@@ -3492,7 +3490,7 @@ div#em-appli-block {
 /* MENUS DEROULANTS LISTES */
 
 .open .dropdown-toggle.btn-danger {
-  color: var(--neutral-50) !important;
+  color: var(--neutral-0) !important;
   background-color: darken($base-primary-color, 10%) !important;
   border-color: darken($base-primary-color, 10%) !important;
 }
@@ -3500,7 +3498,7 @@ div#em-appli-block {
 .btn:hover .caret,
 .btn:focus .caret,
 .btn:hover .active {
-  border-top: 4px solid $base-secondary-color;
+  border-top: 4px solid var(--em-secondary-color);
 }
 
 /* SYNCHRO CONTACTS */
@@ -3513,14 +3511,14 @@ div#em-appli-block {
   &:hover {
     background: var(--night-blue);
     border: 1px solid var(--night-blue);
-    color: var(--neutral-50);
+    color: var(--neutral-0);
   }
 }
 
 .experts-synchro-page button.btn.btn-primary[ng-click="validAll()"] {
   background: var(--main-500);
   border: 1px solid var(--main-500);
-  color: var(--neutral-50);
+  color: var(--neutral-0);
 
   &:hover {
     background: transparent;
@@ -3534,7 +3532,7 @@ div#em-appli-block {
 .experts-page a.btn.btn-primary.btn-xs.pull-right[ng-click="showForm()"] {
   background: var(--main-500);
   border: 1px solid var(--main-500);
-  color: var(--neutral-50);
+  color: var(--neutral-0);
   margin-left: 10px;
 
   &:hover,
@@ -3542,14 +3540,14 @@ div#em-appli-block {
   &:focus {
     color: var(--main-500);
     border: 1px solid var(--main-500);
-    background: var(--neutral-50);
+    background: var(--neutral-0);
   }
 }
 
 .experts-page div.btn.btn-primary.btn-xs.pull-right[ng-click="addGroup()"] {
   background: var(--main-500);
   border: 1px solid var(--main-500);
-  color: var(--neutral-50);
+  color: var(--neutral-0);
   margin-left: 10px;
 
   &:hover,
@@ -3557,14 +3555,14 @@ div#em-appli-block {
   &:focus {
     color: var(--main-500);
     border: 1px solid var(--main-500);
-    background-color: var(--neutral-50);
+    background-color: var(--neutral-0);
   }
 }
 
 .experts-page .ct-view.contact .panel-heading div.btn.btn-default.btn.xs.pull-right:nth-child(3) {
   background: var(--night-blue);
   border: 1px solid var(--night-blue);
-  color: var(--neutral-50);
+  color: var(--neutral-0);
   margin-left: 10px;
 
   &:hover,
@@ -3572,14 +3570,14 @@ div#em-appli-block {
   &:focus {
     color: var(--night-blue);
     border: 1px solid var(--night-blue);
-    background: var(--neutral-50);
+    background: var(--neutral-0);
   }
 }
 
 .experts-page .panel-heading div.btn.btn-default.btn.xs.pull-right:first-of-type {
   background: var(--main-500);
   border: 1px solid var(--main-500);
-  color: var(--neutral-50);
+  color: var(--neutral-0);
   margin-left: 10px;
 
   &:hover,
@@ -3587,14 +3585,14 @@ div#em-appli-block {
   &:focus {
     color: var(--main-500);
     border: 1px solid var(--main-500);
-    background: var(--neutral-50);
+    background: var(--neutral-0);
   }
 }
 
 .experts-page a.btn.btn-primary.btn-xs.pull-right[ng-click="switchSearch()"] {
   background: var(--night-blue);
   border: 1px solid var(--night-blue);
-  color: var(--neutral-50);
+  color: var(--neutral-0);
   margin-left: 10px;
 
   &:hover,
@@ -3602,7 +3600,7 @@ div#em-appli-block {
   &:focus {
     color: var(--night-blue);
     border: 1px solid var(--night-blue);
-    background: var(--neutral-50);
+    background: var(--neutral-0);
   }
 }
 
@@ -3642,28 +3640,30 @@ div#em-appli-block {
       h2 {
         text-align: center;
         font-weight: bold;
-        color: $base-primary-color;
+        color: var(--em-primary-color);
         font-size: 80px;
         margin-bottom: 10px;
       }
 
       p {
         text-align: center;
+        font-size: var(--em-applicant-font-size);
 
         a {
-          background-color: $base-secondary-color;
-          color: var(--neutral-50);
-          border: 1px solid $base-secondary-color;
+          background-color: var(--em-secondary-color);
+          color: var(--neutral-0);
+          border: 1px solid var(--em-secondary-color);
           padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
-          border-radius: var(--em-coordinator-br);
+          border-radius: var(--em-applicant-br);
+          font-size: var(--em-applicant-font-size);
 
           &:hover,
           &:active,
           &:focus {
             background-color: transparent;
-            color: $base-secondary-color;
+            color: var(--em-secondary-color);
             text-decoration: none;
-            border: 1px solid $base-secondary-color;
+            border: 1px solid var(--em-secondary-color);
           }
         }
       }
@@ -3898,7 +3898,7 @@ div#em-appli-block {
           /* TABLEAU */
           td,
           th {
-            background: var(--neutral-50);
+            background: var(--neutral-0);
             @include body-16-medium;
             color: var(--neutral-800);
             margin-bottom: 0;
@@ -5228,7 +5228,7 @@ fieldset[disabled] .multiselect {
   top: 1px;
   width: 48px;
   height: 35px;
-  background: var(--neutral-50);
+  background: var(--neutral-0);
   display: block;
 }
 
@@ -5331,7 +5331,7 @@ fieldset[disabled] .multiselect {
   line-height: 20px !important;
   border: none !important;
   border-radius: 5px !important;
-  background-color: var(--neutral-50);
+  background-color: var(--neutral-0);
   -webkit-transition: border .1s ease;
   transition: border .1s ease !important;
   -webkit-box-sizing: border-box;
@@ -5418,7 +5418,7 @@ fieldset[disabled] .multiselect {
   padding: 4px 26px 4px 10px;
   border-radius: 5px;
   margin-right: 10px;
-  color: var(--neutral-50);
+  color: var(--neutral-0);
   line-height: 1;
   background: #b5b4b4;
   white-space: nowrap;
@@ -5523,7 +5523,7 @@ fieldset[disabled] .multiselect {
 .multiselect__content-wrapper {
   position: absolute;
   display: block;
-  background: var(--neutral-50);
+  background: var(--neutral-0);
   width: 100%;
   max-height: 240px;
   overflow: auto;
@@ -5589,13 +5589,13 @@ fieldset[disabled] .multiselect {
 
 .multiselect__option--highlight {
   background: #41b883;
-  color: var(--neutral-50);
+  color: var(--neutral-0);
 }
 
 .multiselect__option--highlight:after {
   content: attr(data-select);
   background: #41b883;
-  color: var(--neutral-50);
+  color: var(--neutral-0);
 }
 
 .multiselect__option--selected {
@@ -5623,13 +5623,13 @@ fieldset[disabled] .multiselect {
 
 .multiselect__option--selected.multiselect__option--highlight {
   background: #ff6a6a;
-  color: var(--neutral-50);
+  color: var(--neutral-0);
 }
 
 .multiselect__option--selected.multiselect__option--highlight:after {
   background: #ff6a6a;
   content: attr(data-deselect);
-  color: var(--neutral-50);
+  color: var(--neutral-0);
 }
 
 .multiselect--disabled .multiselect__current,
@@ -5652,7 +5652,7 @@ fieldset[disabled] .multiselect {
 
 .multiselect__option--group.multiselect__option--highlight {
   background: #35495e;
-  color: var(--neutral-50);
+  color: var(--neutral-0);
 }
 
 .multiselect__option--group.multiselect__option--highlight:after {
@@ -5665,13 +5665,13 @@ fieldset[disabled] .multiselect {
 
 .multiselect__option--group-selected.multiselect__option--highlight {
   background: #ff6a6a;
-  color: var(--neutral-50);
+  color: var(--neutral-0);
 }
 
 .multiselect__option--group-selected.multiselect__option--highlight:after {
   background: #ff6a6a;
   content: attr(data-deselect);
-  color: var(--neutral-50);
+  color: var(--neutral-0);
 }
 
 .multiselect-enter-active,
@@ -5800,7 +5800,7 @@ fieldset[disabled] .multiselect {
 
             #loginguard-methods-list-method-default-badge-small {
               background: unset;
-              color: $base-secondary-color;
+              color: var(--em-secondary-color);
             }
           }
 
@@ -5836,10 +5836,10 @@ fieldset[disabled] .multiselect {
       justify-content: space-between;
 
       .btn-primary {
-        background: $base-primary-color;
+        background: var(--em-primary-color);
 
         &:hover {
-          color: var(--neutral-50);
+          color: var(--neutral-0);
         }
       }
 
@@ -6446,7 +6446,7 @@ tbody .el-table__row:nth-child(odd){
         }
 
         a {
-          color: $base-primary-color;
+          color: var(--em-primary-color);
           padding: 15px 30px;
           width: auto;
           display: block;
@@ -6455,10 +6455,10 @@ tbody .el-table__row:nth-child(odd){
 
       li:not(.g-menu-item-type-particle):not(.g-menu-item-type-module).active {
         background: var(--neutral-100);
-        border-left: 6px solid $base-secondary-color;
+        border-left: 6px solid var(--em-secondary-color);
 
         a {
-          color: $base-primary-color;
+          color: var(--em-primary-color);
         }
       }
 
@@ -6466,7 +6466,7 @@ tbody .el-table__row:nth-child(odd){
         background: var(--light-grey-3);
 
         a {
-          color: var(--neutral-50);
+          color: var(--neutral-0);
         }
       }
     }
@@ -6480,7 +6480,7 @@ tbody .el-table__row:nth-child(odd){
   border-radius: 1px;
   height: 5px;
   width: 32px;
-  background: $base-primary-color;
+  background: var(--em-primary-color);
   position: absolute;
   display: block;
   content: '';
@@ -6491,7 +6491,7 @@ tbody .el-table__row:nth-child(odd){
     border-radius: 1px;
     height: 5px;
     width: 32px;
-    background: $base-primary-color;
+    background: var(--em-primary-color);
     position: absolute;
     display: block;
     content: '';
@@ -6502,7 +6502,7 @@ tbody .el-table__row:nth-child(odd){
     border-radius: 1px;
     height: 5px;
     width: 32px;
-    background: $base-primary-color;
+    background: var(--em-primary-color);
     position: absolute;
     display: block;
     content: '';
