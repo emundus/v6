@@ -789,7 +789,7 @@ input:focus + .em-slider {
   color: var(--em-coordinator-primary-color) !important;
 }
 .em-yellow-500-color{
-  color: var(--yellow-500);
+  color: var(--orange-500);
 }
 .em-yellow-600-color{
   color: var(--yellow-600);
@@ -1195,7 +1195,7 @@ input:focus + .em-slider {
   border-left: solid 2px var(--neutral-700);
 }
 .em-border-left-yellow-500{
-  border-left: solid 2px var(--yellow-500);
+  border-left: solid 2px var(--orange-500);
 }
 .em-border-main-500 {
   border: 1px solid var(--em-coordinator-primary-color);
@@ -1493,7 +1493,7 @@ input:focus + .em-slider {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: var(--yellow-500);
+  background-color: var(--orange-500);
 }
 
 .em-card-neutral-100{
