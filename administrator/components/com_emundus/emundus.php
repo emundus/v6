@@ -19,9 +19,9 @@ jimport('joomla.application.component.controller');
 jimport('joomla.filesystem.file');
 $version = new JVersion();
 $sversion = $version->getShortVersion();
-// TODO: Update this to PHP 7 once done
-if (version_compare( phpversion(), '5.0.0', '<')) {
-    echo 'Sorry you are using ' .  phpversion() . ". You need to have PHP5 installed to run eMundus\n";
+
+if (version_compare( phpversion(), '7.0.0', '<')) {
+    echo 'Sorry you are using ' .  phpversion() . ". You need to have PHP7 installed to run eMundus\n";
     return;
 }
 

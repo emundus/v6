@@ -2772,7 +2772,7 @@ class EmundusHelperUpdate
 		$query = $db->getQuery(true);
 
 		// regarder le code des setup_tags
-		$query->select('CONCAT(id, " ", tag) as id, request as code')
+		$query->select('CONCAT(id, " : [", tag, "]") as id, request as code')
 			->from($db->quoteName('#__emundus_setup_tags', 'est'))
 			->where('published = 1')
 			->andWhere('request LIKE ' . $db->quote('%php|%'));
@@ -2786,9 +2786,25 @@ class EmundusHelperUpdate
 		];
 
 		// regarder le code des event handler
+		$query->clear()
+			->select('params')
+			->from('#__extensions')
+			->where('type = ' . $db->quote('plugin'))
+			->andWhere('element = ' . $db->quote('custom_event_handler'));
+		$params = $db->setQuery($query)->loadResult();
+		$params = json_decode($params, true);
+		$events = [];
+
+		$key = 0;
+		foreach($params['event_handlers'] as $event) {
+			$key++;
+			if (!empty($event) && $event['published'] == 1) {
+				$events['Event n°' . $key . ' - ' . $event['event']] = $event['code'];
+			}
+		}
 		$data['event_handler'] = [
 			'label' => 'Gestionnaire d\'évènement',
-			'codes' => []
+			'codes' => $events
 		];
 
 		// regarder le code fabrik
