@@ -35,7 +35,7 @@ include_once(JPATH_SITE.'/components/com_emundus/models/programme.php');
  */
 class EmundusUnittestHelperSamples
 {
-    public function createSampleUser($profile = 9, $username = 'user.test@emundus.fr')
+    public function createSampleUser($profile = 9, $username = 'user.test@emundus.fr', $j_groups = [2])
     {
         $user_id = 0;
         $m_users = new EmundusModelUsers;
@@ -56,6 +56,21 @@ class EmundusUnittestHelperSamples
         }
 
         if (!empty($user_id)) {
+			if(!empty($j_groups)) {
+				foreach ($j_groups as $j_group) {
+					$query->clear()
+						->insert($db->quoteName('#__user_usergroup_map'))
+						->columns('user_id, group_id')
+						->values($user_id . ',' . $j_group);
+					try {
+						$db->setQuery($query);
+						$db->execute();
+					} catch (Exception $e) {
+						JLog::add("Failed to insert jos_user_usergroup_map" . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					}
+				}
+			}
+
             $other_param['firstname'] 		= 'Test';
             $other_param['lastname'] 		= 'USER';
             $other_param['profile'] 		= $profile;
@@ -359,5 +374,23 @@ class EmundusUnittestHelperSamples
 		}
 
 		return $newprofile;
+	}
+
+	public function addJGroup($j_group, $user_id) {
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try
+		{
+			$query->insert($db->quoteName('#__user_usergroup_map'))
+				->columns('user_id, group_id')
+				->values($user_id . ',' . $j_group);
+			$db->setQuery($query);
+			$db->execute();
+		}
+		catch (Exception $e)
+		{
+			JLog::add("Failed to insert jos_user_usergroup_map" . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
 	}
 }
