@@ -1,0 +1,67 @@
+name: Coordinator
+description: Coordinator
+type: core
+
+form:
+  fields:
+    background:
+      type: input.colorpicker
+      label: Background color
+      default: "#f8f8f8"
+    text-color:
+      type: input.colorpicker
+      label: Text color
+      default: "#4B4B4B"
+    title-color:
+      type: input.colorpicker
+      label: Title color
+      default: "#000000"
+    primary-color:
+      type: input.colorpicker
+      label: Primary color
+      default: "#238C69"
+    secondary-color:
+      type: input.colorpicker
+      label: Secondary color
+      default: "#353544"
+    tertiary-color:
+      type: input.colorpicker
+      label: Tertiary color
+      default: "#5A5A72"
+    border-color:
+      type: input.colorpicker
+      label: Border color
+      default: "#cccccc"
+    family-text:
+      type: input.fonts
+      label: Body Font
+      default: 'Inter'
+    family-title:
+      type: input.fonts
+      label: Title Font
+      default: 'Inter'
+    form-height:
+      type: input.text
+      label: Input height
+      default: '40px'
+    vertical:
+      type: input.text
+      label: Vertical padding
+      default: '8px'
+    horizontal:
+      type: input.text
+      label: Horizontal padding
+      default: '12px'
+    form-border-radius:
+      type: input.text
+      label: Input border radius
+      default: '4px'
+    border-radius:
+      type: input.text
+      label: Buttons border radius
+      default: '8px'
+    border-radius-cards:
+      type: input.text
+      label: Cards border radius
+      default: '16px'
+

@@ -30,27 +30,3 @@ form:
         type: input.colorpicker
         label: Tertiary color
         default: "#bd5631"
-    background-coordinator:
-      type: input.colorpicker
-      label: Background color for Coordinator
-      default: "#f8f8f8"
-    text-color-coordinator:
-      type: input.colorpicker
-      label: Text color for Coordinator
-      default: "#4B4B4B"
-    title-color-coordinator:
-      type: input.colorpicker
-      label: Title color for Coordinator
-      default: "#000000"
-    primary-color-coordinator:
-      type: input.colorpicker
-      label: Primary color for Coordinator
-      default: "#238C69"
-    secondary-color-coordinator:
-      type: input.colorpicker
-      label: Secondary color  for Coordinator
-      default: "#353544"
-    tertiary-color-coordinator:
-      type: input.colorpicker
-      label: Tertiary color for Coordinator
-      default: "#5A5A72"

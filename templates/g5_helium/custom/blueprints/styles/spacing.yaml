@@ -1,7 +1,14 @@
-name: Spacing
-description: Spacing
+name: Padding
+description: Padding
 type: core
 
 form:
   fields:
-
+    vertical:
+      type: input.text
+      label: Vertical padding for buttons
+      default: '8px'
+    horizontal:
+      type: input.text
+      label: Horizontal padding for buttons
+      default: '12px'

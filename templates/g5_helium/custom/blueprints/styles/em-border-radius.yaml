@@ -13,17 +13,9 @@ form:
       type: input.text
       label: Border radius for Applicant
       default: '8px'
-    coordinator:
-      type: input.text
-      label: Border radius for Coordinator
-      default: '8px'
     cards:
       type: input.text
       label: Border radius for Applicant cards
-      default: '16px'
-    coordinator-cards:
-      type: input.text
-      label: Border radius for Coordinator cards
       default: '16px'
     status:
       type: input.text
