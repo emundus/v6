@@ -1,6 +1,7 @@
 <?php
 require_once(JPATH_ROOT . '/components/com_emundus/classes/filters/EmundusFilters.php');
 require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
+require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 
 class EmundusFiltersFiles extends EmundusFilters
 {
@@ -9,8 +10,8 @@ class EmundusFiltersFiles extends EmundusFilters
 	private $user_programs = [];
     private $config = [];
 	private $m_users = null;
-
 	private $menu_params = null;
+	private $h_cache = null;
 
 	public function __construct($config = array())
 	{
@@ -21,6 +22,7 @@ class EmundusFiltersFiles extends EmundusFilters
 			throw new Exception('Access denied', 403);
 		}
 
+		$this->h_cache = new EmundusHelperCache();
 		$this->m_users = new EmundusModelUsers();
 		$this->config = $config;
 		$this->user_campaigns = $this->m_users->getAllCampaignsAssociatedToUser($this->user->id);
@@ -158,29 +160,58 @@ class EmundusFiltersFiles extends EmundusFilters
         $form_ids = array_unique($form_ids);
 
         if (!empty($form_ids)) {
-            $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
+	        if ($this->h_cache->isEnabled()) {
+		        foreach($form_ids as $key => $form_id) {
+					$cache_key = 'elements_from_form_' . $form_id;
+			        $cache_elements = $this->h_cache->get($cache_key);
 
-            $query->clear()
-                ->select('jfe.id, jfe.plugin, jfe.label, jfe.params, jffg.form_id as element_form_id, jff.label as element_form_label')
-                ->from('jos_fabrik_elements as jfe')
-                ->join('inner', 'jos_fabrik_formgroup as jffg ON jfe.group_id = jffg.group_id')
-                ->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
-                ->where('jffg.form_id IN (' . implode(',', $form_ids) . ')')
-                ->andWhere('jfe.published = 1')
-                ->andWhere('jfe.hidden = 0');
+					if (!empty($cache_elements)) {
+						$elements = array_merge($elements, $cache_elements);
+						unset($form_ids[$key]);
+					}
+		        }
+			}
 
-            try {
-                $db->setQuery($query);
-                $elements = $db->loadAssocList();
+			if (!empty($form_ids)) {
+				$db = JFactory::getDbo();
+				$query = $db->getQuery(true);
 
-                foreach ($elements as $key => $element) {
-                    $elements[$key]['label'] = JText::_($element['label']);
-                    $elements[$key]['element_form_label'] = JText::_($element['element_form_label']);
-                }
-            } catch (Exception $e) {
-                JLog::add('Failed to get elements associated to profiles that current user can access : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
-            }
+				$query->clear()
+					->select('jfe.id, jfe.plugin, jfe.label, jfe.params, jffg.form_id as element_form_id, jff.label as element_form_label')
+					->from('jos_fabrik_elements as jfe')
+					->join('inner', 'jos_fabrik_formgroup as jffg ON jfe.group_id = jffg.group_id')
+					->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
+					->where('jffg.form_id IN (' . implode(',', $form_ids) . ')')
+					->andWhere('jfe.published = 1')
+					->andWhere('jfe.hidden = 0');
+
+				try {
+					$db->setQuery($query);
+					$query_elements = $db->loadAssocList();
+					$elements = array_merge($elements, $query_elements);
+
+					foreach ($elements as $key => $element) {
+						$elements[$key]['label'] = JText::_($element['label']);
+						$elements[$key]['element_form_label'] = JText::_($element['element_form_label']);
+					}
+
+					if ($this->h_cache->isEnabled()) {
+						$elements_by_form = [];
+						foreach($elements as $element) {
+							if (!isset($elements_by_form[$element['element_form_id']])) {
+								$elements_by_form[$element['element_form_id']] = [];
+							}
+							$elements_by_form[$element['element_form_id']][] = $element;
+						}
+
+						foreach($elements_by_form as $form_id => $elements) {
+							$this->h_cache->set('elements_from_form_' . $form_id, $elements);
+						}
+					}
+				} catch (Exception $e) {
+					JLog::add('Failed to get elements associated to profiles that current user can access : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+				}
+			}
         }
 
         return $elements;
