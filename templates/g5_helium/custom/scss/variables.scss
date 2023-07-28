@@ -269,18 +269,18 @@
   --em-coordinator-title-color: #{$coordinator-title-color};
   --em-coordinator-text-color: #{$coordinator-text-color};
 
-  --em-default-title-color-1: #{$base-title-color};          //  titre
-  --em-default-title-color-1-500: var(--neutral-500);     //  titre disabled
-  --em-default-title-color-2: var(--neutral-0);           //  titre sur fond foncé
-  --em-default-title-color-3: #{$base-primary-color};        //  titre en highlight
+  --em-default-title-color-1: #{$base-title-color}; //  titre
+  --em-default-title-color-1-500: var(--neutral-500); //  titre disabled
+  --em-default-title-color-2: var(--neutral-0); //  titre sur fond foncé
+  --em-default-title-color-3: #{$base-primary-color}; //  titre en highlight
 
-  --em-default-text-color-1: #{$base-text-color};            // texte principal, input, label des boutons
-  --em-default-text-color-1-500: var(--neutral-500);      // pagination, label des boutons disabled
-  --em-default-text-color-1-800: var(--neutral-600);      // texte tertiaire, texte moins important, annotation, label des radio disabled
-  --em-default-text-color-1-700: var(--neutral-700);      // texte secondaire, texte pour les articles
-  --em-default-text-color-2: var(--neutral-0);            // texte sur fond foncé, label des boutons sur fond concé
-  --em-default-text-color-3: #{$base-secondary-color};       // chiffres, étapes, liens hypertextes
-  --em-default-text-color-4: #{$base-tertiary-color};        // définitions
+  --em-default-text-color-1: #{$base-text-color}; // texte principal, input, label des boutons
+  --em-default-text-color-1-500: var(--neutral-500); // pagination, label des boutons disabled
+  --em-default-text-color-1-800: var(--neutral-600); // texte tertiaire, texte moins important, annotation, label des radio disabled
+  --em-default-text-color-1-700: var(--neutral-700); // texte secondaire, texte pour les articles
+  --em-default-text-color-2: var(--neutral-0); // texte sur fond foncé, label des boutons sur fond concé
+  --em-default-text-color-3: #{$base-secondary-color}; // chiffres, étapes, liens hypertextes
+  --em-default-text-color-4: #{$base-tertiary-color}; // définitions
 
   /* BACKGROUND */
   --em-defaut-bg: #fff;
@@ -301,8 +301,8 @@
 
   --spacing-2: 8px;
 
-  --em-spacing-vertical: #{$spacing-vertical};
-  --em-spacing-horizontal: #{$spacing-horizontal};
+  --em-spacing-vertical: #{$em-spacing-vertical};
+  --em-spacing-horizontal: #{$em-spacing-horizontal};
   --em-coordinator-vertical: #{$coordinator-vertical};
   --em-coordinator-horizontal: #{$coordinator-horizontal};
 
@@ -429,7 +429,7 @@
   --em-coordinator-bc: #{$coordinator-border-color};
 
   /** UTILITIES **/
-  --link-xxs-size: #{$link-xxs-size};
+  --link-xxs-size: #{$font-xxs-size};
   --link-regular: #{$link-regular};
   --link-hover: #{$link-hover};
 
@@ -457,6 +457,20 @@
   --em-grey-1: #{$accent-grey-1};
   --em-grey-2: #{$accent-grey-2};
   --em-black: #{$accent-black};
+
+  /** SPACING **/
+  --em-spacing-1: #{$em-spacing-1};
+  --em-spacing-2: #{$em-spacing-2};
+  --em-spacing-3: #{$em-spacing-3};
+  --em-spacing-4: #{$em-spacing-4};
+  --em-spacing-5: #{$em-spacing-5};
+  --em-spacing-6: #{$em-spacing-6};
+  --em-spacing-7: #{$em-spacing-7};
+  --em-spacing-8: #{$em-spacing-8};
+  --em-spacing-9: #{$em-spacing-9};
+  --em-spacing-10: #{$em-spacing-10};
+  --em-spacing-11: #{$em-spacing-11};
+  --em-spacing-12: #{$em-spacing-12};
 }
 
 // Mixin - typo
@@ -834,7 +848,7 @@
   appearance: auto;
   margin-top: 0 !important;
   border: 1px solid var(--neutral-600);
-  padding: 0!important;
+  padding: 0 !important;
   margin-right: 16px;
 }
 
@@ -845,14 +859,15 @@
 }
 
 @mixin calendar {
-  .calendar{
+  .calendar {
     border-radius: 5px;
     border: solid 1px #e6e6e6;
     box-shadow: 5px 5px 11px #ebebeb, -5px -5px 11px var(--neutral-0);
     padding: 10px;
     width: 250px;
     background: var(--neutral-0);
-    table{
+
+    table {
       border: unset;
       background: var(--neutral-0);
 
@@ -916,37 +931,40 @@
             border: unset;
           }
 
-          td.hilite, td.active{
+          td.hilite, td.active {
             background: transparent;
           }
         }
       }
 
-      tbody{
-        .rowhilite{
+      tbody {
+        .rowhilite {
           td {
             background: transparent;
             color: var(--neutral-900);
           }
         }
-        td{
+
+        td {
           border: unset;
           text-align: center;
           padding: 6px
         }
-        td.selected{
+
+        td.selected {
           border-radius: 5px;
           background: var(--neutral-800);
           color: var(--neutral-0);
         }
-        td.hilite{
+
+        td.hilite {
           background: var(--neutral-400);
           border-radius: 5px;
           color: var(--neutral-900) !important;
         }
       }
 
-      tfoot{
+      tfoot {
         display: none;
       }
     }

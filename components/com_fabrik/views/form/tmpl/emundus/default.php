@@ -17,6 +17,9 @@ $model     = $this->getModel();
 $groupTmpl = $model->editable ? 'group' : 'group_details';
 $active    = ($form->error != '') ? '' : ' fabrikHide';
 
+$eMConfig = JComponentHelper::getParams('com_emundus');
+$display_required_icon = $eMConfig->get('display_required_icon', 1);
+
 $pageClass = $this->params->get('pageclass_sfx', '');
 
 if ($pageClass !== '') :
@@ -44,6 +47,9 @@ endif;
         <?php endif; ?>
 
         <div class="em-form-intro mt-4">
+	        <?php if($display_required_icon == 0) : ?>
+                <p class="mb-2"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
+	        <?php endif; ?>
             <?php
             echo trim($form->intro);
             ?>

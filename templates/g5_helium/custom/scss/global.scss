@@ -749,7 +749,7 @@ footer#g-footer > .g-container {
   .em-attachment-dropzone {
     margin-top: 4px !important;
     border: unset !important;
-    padding: 0 24px 0 0;
+    padding: 0;
     margin-bottom: 0 !important;
   }
 
@@ -3754,7 +3754,6 @@ div#em-appli-block {
       .em-form-intro {
         p {
           @include body-16;
-          color: var(--typo-text-1);
         }
       }
     }

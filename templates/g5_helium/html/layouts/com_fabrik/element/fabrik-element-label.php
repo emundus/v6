@@ -2,20 +2,29 @@
 defined('JPATH_BASE') or die;
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
+$display_required_icon = $eMConfig->get('display_required_icon', 1);
 $required_position_icon = $eMConfig->get('required_icon_position', 1);
 
 $d = $displayData;
+
 $labelText = FText::_($d->label);
 $labelText = $labelText == '' ? $d->hasLabel = false : $labelText;
 $l = $d->j3 ? '' : $labelText;
-if($required_position_icon == 0)
+
+if($required_position_icon == 0 && $display_required_icon == 1)
 {
 	$l .= $d->icons;
 }
+
 $l .= $d->j3 ? $labelText : '';
-if($required_position_icon == 1)
+
+if($required_position_icon == 1 && $display_required_icon == 1)
 {
 	$l .= $d->icons;
+}
+
+if($display_required_icon == 0 && $d->tipOpts->heading != 'Validation') {
+    $l .= '<small class="ml-1 em-text-neutral-600">'.JText::_('COM_FABRIK_OPTIONNAL_FIELD').'</small>';
 }
 
 if ($d->view == 'form' && !($d->canUse || $d->canView))

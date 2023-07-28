@@ -566,8 +566,11 @@ video {
   font-size: 24px;
   font-style: normal;
   line-height: 28.8px;
-  font-weight: 500;
+  font-weight: 600;
 }
+.emundus-form .em-form-intro p {
+        color: var(--neutral-600);
+      }
 @media all and (max-width: 480px) {
   .emundus-form {
       margin-top: unset !important
@@ -595,14 +598,14 @@ video {
             line-height: 24px;
           }
 .view-registration.em-formRegistrationCenter .emundus-form #jos_emundus_users___password_check {
-  margin-top: 0.25rem;
+  margin-top: var(--em-spacing-1);
 }
 .view-registration.em-formRegistrationCenter .emundus-form .fb_el_jos_emundus_users___terms_and_conditions span.material-icons:first-child {
           display: none;
         }
 .view-registration.em-formRegistrationCenter .emundus-form .fb_el_jos_emundus_users___terms_and_conditions .fabrikgrid_checkbox span {
   display: flex;
-  margin-left: 0.25rem;
+  margin-left: var(--em-spacing-1);
             order: 1;
 }
 .view-registration.em-formRegistrationCenter .emundus-form .fb_el_jos_emundus_users___data_privacy_link .fabrikLabel {
@@ -655,7 +658,7 @@ form.fabrikForm .fabrikElement {
       margin-top: var(--em-form-label-margin-bottom);
     }
 form.fabrikForm .fabrikElementContainer:not(.fabrikHide) {
-  margin-bottom: 2rem;
+  margin-bottom: var(--em-spacing-8);
 }
 form.fabrikForm .fabrikLabel {
       display: inline-block !important;
@@ -692,8 +695,8 @@ form.fabrikForm input:not([type='file']), form.fabrikForm select, form.fabrikFor
       border-radius: var(--em-form-br);
       padding-left: 0.625rem;
       padding-right: 0.625rem;
-      padding-top: 0.75rem;
-      padding-bottom: 0.75rem;
+      padding-top: var(--em-spacing-3);
+      padding-bottom: var(--em-spacing-3);
       margin-bottom: 0px;
       background-color: var(--em-form-bgc);
       border-color: var(--em-form-bc);
@@ -1093,7 +1096,7 @@ form.fabrikForm select {
       background-image: url(/images/emundus/arrow.svg);
       background-size: 8px;
       background-repeat: no-repeat;
-      padding-right: 1rem;
+      padding-right: var(--em-spacing-4);
     }
 form.fabrikForm select.input-small {
         background-position-x: 92%;
@@ -1105,9 +1108,9 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer {
         min-width: 40%;
       }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio {
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
-  margin-bottom: 0.25rem;
+  padding-top: var(--em-spacing-1);
+  padding-bottom: var(--em-spacing-1);
+  margin-bottom: var(--em-spacing-1);
   align-items: center;
 }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label {
@@ -1155,16 +1158,16 @@ form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-flu
 /** PANEL **/
 form.fabrikForm .plg-panel .fabrikElement .fabrikinput {
   display: flex;
-  padding: 1.25rem;
+  padding: var(--em-spacing-5);
   border-radius: 0.25rem;
 }
 form.fabrikForm .plg-panel .fabrikElement .fabrikinput .fabrikElementContent {
-  margin-left: 0.75rem;
+  margin-left: var(--em-spacing-3);
             line-height: 24px;
 }
 /** CAPTCHA **/
 form.fabrikForm .plg-captcha .captcha_input {
-  margin-top: 0.25rem;
+  margin-top: var(--em-spacing-1);
 }
 /** FILE **/
 form.fabrikForm .plg-fileupload .fabrikSubElementContainer {
@@ -1277,7 +1280,7 @@ form.fabrikForm .fabrikError.plg-checkbox .fabrikElement .fabrikSubElementContai
             border-color: var(--em-form-checkbox-bc-error);
           }
 form.fabrikForm .fabrikErrorMessage {
-  margin-top: 0.25rem;
+  margin-top: var(--em-spacing-1);
       color: var(--em-form-element-color-error);
       font-weight: 700;
       padding-left: 0;
@@ -1351,8 +1354,8 @@ form.fabrikForm .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn.btn-s
       border-radius: var(--em-coordinator-br);
       padding-left: 0.375rem;
       padding-right: 0.375rem;
-      padding-top: var(--spacing-2);
-      padding-bottom: var(--spacing-2);
+      padding-top: var(--em-spacing-2);
+      padding-bottom: var(--em-spacing-2);
       margin-bottom: 0px;
       background-color: var(--em-form-bgc);
       transition: all 0.1s ease-out;
@@ -1581,10 +1584,10 @@ input[type="text"],
   position: sticky;
 }
 .end-1 {
-  inset-inline-end: 0.25rem;
+  inset-inline-end: var(--em-spacing-1);
 }
 .start-2 {
-  inset-inline-start: var(--spacing-2);
+  inset-inline-start: var(--em-spacing-2);
 }
 .float-right {
   float: right;
@@ -1596,50 +1599,50 @@ input[type="text"],
   margin-bottom: 0px;
 }
 .mb-1 {
-  margin-bottom: 0.25rem;
+  margin-bottom: var(--em-spacing-1);
 }
 .mb-1\.5 {
   margin-bottom: 0.375rem;
 }
 .mb-2 {
-  margin-bottom: var(--spacing-2);
+  margin-bottom: var(--em-spacing-2);
 }
 .mb-4 {
-  margin-bottom: 1rem;
+  margin-bottom: var(--em-spacing-4);
 }
 .mb-6 {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--em-spacing-6);
 }
 .mb-7 {
-  margin-bottom: 1.75rem;
+  margin-bottom: var(--em-spacing-7);
 }
 .mb-8 {
-  margin-bottom: 2rem;
+  margin-bottom: var(--em-spacing-8);
 }
 .me-1 {
-  -webkit-margin-end: 0.25rem;
-          margin-inline-end: 0.25rem;
+  -webkit-margin-end: var(--em-spacing-1);
+          margin-inline-end: var(--em-spacing-1);
 }
 .ml-0 {
   margin-left: 0px;
 }
 .ml-1 {
-  margin-left: 0.25rem;
+  margin-left: var(--em-spacing-1);
 }
 .ml-1\.5 {
   margin-left: 0.375rem;
 }
 .ml-2 {
-  margin-left: var(--spacing-2);
+  margin-left: var(--em-spacing-2);
 }
 .mr-0 {
   margin-right: 0px;
 }
 .mr-2 {
-  margin-right: var(--spacing-2);
+  margin-right: var(--em-spacing-2);
 }
 .mr-4 {
-  margin-right: 1rem;
+  margin-right: var(--em-spacing-4);
 }
 .mt-0 {
   margin-top: 0px;
@@ -1648,31 +1651,31 @@ input[type="text"],
   margin-top: 0.125rem;
 }
 .mt-1 {
-  margin-top: 0.25rem;
+  margin-top: var(--em-spacing-1);
 }
 .mt-1\.5 {
   margin-top: 0.375rem;
 }
 .mt-10 {
-  margin-top: 2.5rem;
+  margin-top: var(--em-spacing-10);
 }
 .mt-12 {
-  margin-top: 3rem;
+  margin-top: var(--em-spacing-12);
 }
 .mt-16 {
   margin-top: 4rem;
 }
 .mt-2 {
-  margin-top: var(--spacing-2);
+  margin-top: var(--em-spacing-2);
 }
 .mt-4 {
-  margin-top: 1rem;
+  margin-top: var(--em-spacing-4);
 }
 .mt-7 {
-  margin-top: 1.75rem;
+  margin-top: var(--em-spacing-7);
 }
 .mt-8 {
-  margin-top: 2rem;
+  margin-top: var(--em-spacing-8);
 }
 .\!block {
   display: block !important;
@@ -1714,14 +1717,14 @@ input[type="text"],
   height: 0px;
 }
 .h-3 {
-  height: 0.75rem;
+  height: var(--em-spacing-3);
 }
 .h-max {
   height: -moz-max-content;
   height: max-content;
 }
 .w-1 {
-  width: 0.25rem;
+  width: var(--em-spacing-1);
 }
 .w-5\/6 {
   width: 83.333333%;
@@ -1791,7 +1794,7 @@ input[type="text"],
   justify-content: space-between;
 }
 .gap-1 {
-  gap: 0.25rem;
+  gap: var(--em-spacing-1);
 }
 .gap-1\.5 {
   gap: 0.375rem;
@@ -1814,17 +1817,17 @@ input[type="text"],
   padding: 0px;
 }
 .p-2 {
-  padding: var(--spacing-2);
+  padding: var(--em-spacing-2);
 }
 .p-4 {
-  padding: 1rem;
+  padding: var(--em-spacing-4);
 }
 .p-6 {
-  padding: 1.5rem;
+  padding: var(--em-spacing-6);
 }
 .py-3 {
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
+  padding-top: var(--em-spacing-3);
+  padding-bottom: var(--em-spacing-3);
 }
 .text-center {
   text-align: center;
@@ -1927,7 +1930,7 @@ h1 {
   font-size: 24px;
   font-style: normal;
   line-height: 28.8px;
-  font-weight: 500;
+  font-weight: 600;
 }
 h2 {
   color: var(--em-default-title-color-1);
@@ -2142,7 +2145,7 @@ legend {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-bottom: 1.25rem;
+  margin-bottom: var(--em-spacing-5);
 }
 .swal2-container .swal2-header .swal2-title {
   color: var(--em-default-title-color-1);
@@ -2172,7 +2175,7 @@ legend {
   line-height: 1.5rem;
 }
 .swal2-container .swal2-actions {
-  margin-top: 2.5rem;
+  margin-top: var(--em-spacing-10);
 }
 .swal2-container .swal2-actions button {
   margin: 0px;
@@ -2232,12 +2235,12 @@ button.swal2-cancel.goback-btn:hover,
     }
 #system-message .alert, .fabrikMainError {
   display: flex;
-  padding: 1.25rem;
+  padding: var(--em-spacing-5);
   font-size: 1.125rem;
   line-height: 1.75rem;
 }
 #system-message .alert .material-icons, .fabrikMainError .material-icons {
-  margin-right: 0.75rem;
+  margin-right: var(--em-spacing-3);
 }
 #system-message .alert p, .fabrikMainError p {
             color: inherit;
@@ -2636,7 +2639,6 @@ button.swal2-cancel.goback-btn:hover,
     font-family: 'Material Icons';
     font-weight: normal;
     font-style: normal;
-    font-size: 24px;  /* Preferred icon size */
     display: inline-block;
     line-height: 1;
     text-transform: none;
@@ -2660,7 +2662,6 @@ button.swal2-cancel.goback-btn:hover,
     font-family: 'Material Icons Outlined';
     font-weight: normal;
     font-style: normal;
-    font-size: 24px;  /* Preferred icon size */
     display: inline-block;
     line-height: 1;
     text-transform: none;

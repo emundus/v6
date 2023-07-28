@@ -2068,17 +2068,14 @@ structure:
 
 				/* UPDATE COLORS */
 				EmundusHelperUpdate::updateNewColors();
+				EmundusHelperUpdate::initNewVariables();
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_OPTIONNAL_FIELD', 'facultatif');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_OPTIONNAL_FIELD', 'optional', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED', 'Tous les champs sont obligatoires sauf mention contraire');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED', 'Tous les champs sont obligatoires sauf mention contraire', 'override', null, null, null, 'en-GB');
 			}
-
-			// Insert new translations in overrides files
-			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
-
-
-			// Recompile Gantry5 css at each update
-			$succeed['recompile_gantry_5'] = EmundusHelperUpdate::recompileGantry5();
-
-			// Clear Joomla Cache
-			$succeed['clear_joomla_cache'] = EmundusHelperUpdate::clearJoomlaCache();
 		}
 
 		return $succeed;
@@ -2163,8 +2160,6 @@ structure:
 		if ($db->execute())
 		{
 			echo "Application name updated";
-
-			return true;
 		}
 		else
 		{
@@ -2172,6 +2167,18 @@ structure:
 
 			return false;
 		}
+
+		// Insert new translations in overrides files
+		EmundusHelperUpdate::languageBaseToFile();
+
+
+		// Recompile Gantry5 css at each update
+		EmundusHelperUpdate::recompileGantry5();
+
+		// Clear Joomla Cache
+		EmundusHelperUpdate::clearJoomlaCache();
+
+		EmundusHelperUpdate::checkHealth();
 	}
 
 

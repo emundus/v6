@@ -25,7 +25,18 @@ module.exports = {
                 }
             },
             spacing: {
-                2: 'var(--spacing-2)',
+                1: 'var(--em-spacing-1)',
+                2: 'var(--em-spacing-2)',
+                3: 'var(--em-spacing-3)',
+                4: 'var(--em-spacing-4)',
+                5: 'var(--em-spacing-5)',
+                6: 'var(--em-spacing-6)',
+                7: 'var(--em-spacing-7)',
+                8: 'var(--em-spacing-8)',
+                9: 'var(--em-spacing-9)',
+                10: 'var(--em-spacing-10)',
+                11: 'var(--em-spacing-11)',
+                12: 'var(--em-spacing-12)',
             },
         },
     },
@@ -38,7 +49,7 @@ module.exports = {
                     fontSize: '24px',
                     fontStyle: 'normal',
                     lineHeight: '28.8px',
-                    fontWeight: 500,
+                    fontWeight: 600,
                 },
                 '.em-default-title-2': {
                     color: 'var(--em-default-title-color-1)',

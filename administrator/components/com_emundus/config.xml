@@ -66,7 +66,12 @@
 			<option value="1">JYES</option>
 		</field>
 
-		<field name="required_icon_position" label="COM_EMUNDUS_REQUIRED_POSITION_ICON" type="list" default="1" description="">
+		<field name="display_required_icon" label="COM_EMUNDUS_DISPLAY_REQUIRED_ICON" type="list" default="1" description="COM_EMUNDUS_DISPLAY_REQUIRED_ICON_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
+		<field showon="display_required_icon:1" name="required_icon_position" label="COM_EMUNDUS_REQUIRED_POSITION_ICON" type="list" default="1" description="">
 			<option value="0">COM_EMUNDUS_REQUIRED_POSITION_ICON_BEFORE</option>
 			<option value="1">COM_EMUNDUS_REQUIRED_POSITION_ICON_AFTER</option>
 		</field>

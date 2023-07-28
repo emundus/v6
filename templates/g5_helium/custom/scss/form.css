@@ -5,6 +5,11 @@
     .page-header h1 {
       @apply em-default-title-1;
     }
+    .em-form-intro {
+      p {
+        color: var(--neutral-600);
+      }
+    }
     @media all and (max-width: 480px) {
       margin-top: unset !important;
     }

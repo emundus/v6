@@ -104,7 +104,7 @@ if (!empty($this->custom_title)) :?>
 
 <?php if (count($this->attachments) > 0) :?>
 
-    <div id="attachment_list" class="em-attachmentList em-repeat-card">
+    <div id="attachment_list" class="em-attachmentList em-repeat-card p-6">
         <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('COM_EMUNDUS_ATTACHMENTS_BYTES'); ?> </p>
     <?php if ($this->show_info_legend) :?>
         <div id="legend" class="em-mt-4">
@@ -617,6 +617,32 @@ if (!empty($this->custom_title)) :?>
         }
     ?>
       </div>
+
+        <div class="col-md-12">
+            <div class="flex justify-between">
+                <div>
+                    <div class="btn-group">
+                        <button type="button" class="btn goback-btn button" onclick="window.history.go(-1)" name="Goback"><?php echo JText::_('GO_BACK') ?></button>
+
+                    </div>
+                </div>
+                <div class="em-submit-form-button">
+                    <div class="btn-group">
+
+                        <button type="button"
+	                        <?php if (!$block_upload && $this->attachments_prog >= 100 && $this->forms_prog >= 100) :?>
+                                onclick="window.location.href=<?php echo $this->confirm_form_url; ?>" style="opacity: 1"
+	                        <?php else: ?>
+                                style="opacity: 0.6; cursor: not-allowed"
+	                        <?php endif; ?>
+                                class="btn btn-primary save-btn sauvegarder button save_continue" name="Submit" id="fabrikSubmit_287">
+                            <?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_SEND_FILE') ?>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <?php endif; ?>
 </div>
