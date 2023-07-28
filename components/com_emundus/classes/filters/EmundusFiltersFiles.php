@@ -296,10 +296,6 @@ class EmundusFiltersFiles extends EmundusFilters
 				'available' => true,
                 'order' => $config['filter_campaigns_order']
             ];
-
-			if (!empty($this->menu_params->get('em_filters_values'))) {
-
-			}
 		}
 
 		if ($config['filter_programs']) {
