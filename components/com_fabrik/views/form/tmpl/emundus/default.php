@@ -98,9 +98,11 @@ endif;
 
                     if (!empty($group->intro)) : ?>
                         <div class="groupintro mt-4"><?php echo $group->intro ?></div>
-                    <?php
-                    endif;
-                    ?>
+                    <?php endif; ?>
+
+	                <?php if(!empty($group->maxRepeat) && $group->maxRepeat > 1) : ?>
+                        <p class="em-text-neutral-600 mt-2"><?php echo JText::sprintf('COM_FABRIK_REPEAT_GROUP_MAX',$group->maxRepeat) ?></p>
+	                <?php endif; ?>
                 </div>
                 <?php endif; ?>
                 <?php
