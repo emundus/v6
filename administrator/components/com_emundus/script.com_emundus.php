@@ -2078,6 +2078,60 @@ structure:
 
 				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_REPEAT_GROUP_MAX','Vous pouvez saisir jusqu\'à %s entrées');
 				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_REPEAT_GROUP_MAX','You can enter up to %s entries', 'override', null, null, null, 'en-GB');
+
+				$dashboard_files_by_status_params = array(
+					'eval' => 'php|$db = JFactory::getDbo();
+$query = $db->getQuery(true);
+
+try {
+    $query->select(\'*\')
+        ->from($db->quoteName(\'jos_emundus_setup_status\'))
+        ->order(\'ordering\');
+    $db->setQuery($query);
+    $status = $db->loadObjectList();
+
+    $datas = [];
+
+    foreach ($status as $statu) {
+        $file = new stdClass;
+        $file->label = $statu->value;
+
+        $styles_files = JPATH_SITE . \'/templates/g5_helium/custom/config/default/styles.yaml\';
+		$yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents($styles_files));
+
+		$file->color = $yaml[\'accent\'][$statu->class];
+
+        $query->clear()
+            ->select(\'COUNT(ecc.id) as files\')
+            ->from($db->quoteName(\'#__emundus_campaign_candidature\',\'ecc\'))
+            ->leftJoin($db->quoteName(\'#__emundus_setup_campaigns\',\'esc\').\' ON \'.$db->quoteName(\'esc.id\').\' = \'.$db->quoteName(\'ecc.campaign_id\'))
+            ->where($db->quoteName(\'ecc.status\') . \' = \' . $db->quote($statu->step))
+            ->andWhere($db->quoteName(\'ecc.published\') . \' = \' . $db->quote(1));
+
+        $db->setQuery($query);
+        $file->value = $db->loadResult();
+        $datas[] = $file;
+    }
+
+	$dataSource = new stdClass;
+	$dataSource->chart = new stdClass;
+	$dataSource->chart = array(
+		\'caption\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_CAPTION"),
+		\'xaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_STATUS"),
+		\'yaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_NUMBER"),
+		\'animation\' => 1,
+		\'numberScaleValue\' => "1",
+		\'numDivLines\' => 1,
+		\'numbersuffix\'=> "",
+		\'theme\'=> "fusion"
+	);
+	$dataSource->data = $datas;
+	return $dataSource;
+} catch (Exception $e) {
+	return array(\'dataset\' => \'\');
+}'
+				);
+				EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS', $dashboard_files_by_status_params);
 			}
 		}
 
