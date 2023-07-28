@@ -630,7 +630,7 @@ if (!empty($this->custom_title)) :?>
 
                         <button type="button"
 	                        <?php if (!$block_upload && $this->attachments_prog >= 100 && $this->forms_prog >= 100) :?>
-                                onclick="window.location.href=<?php echo $this->confirm_form_url; ?>" style="opacity: 1"
+                                onclick="window.location.href='<?php echo $this->confirm_form_url; ?>'" style="opacity: 1"
 	                        <?php else: ?>
                                 style="opacity: 0.6; cursor: not-allowed"
 	                        <?php endif; ?>
