@@ -243,6 +243,73 @@ class EmundusUnittestHelperSamples
 		return $sample_id;
 	}
 
+	public function createSampleLetter($attachment_id, $template_type = 2, $programs = [], $status = [], $campaigns = []) {
+		$letter_id = 0;
+
+		if (!empty($attachment_id)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->insert('#__emundus_setup_letters')
+				->columns(['attachment_id', 'template_type', 'header', 'body', 'footer', 'title'])
+				->values($attachment_id . ',' . $template_type . ',' . $db->quote('<p>letter_header</p>') . ',' . $db->quote('<p>letter_body</p>') . ',' . $db->quote('<p>letter_footer</p>') . ',' . $db->quote('Lettre Test unitaire'));
+			$db->setQuery($query);
+
+			$inserted = $db->execute();
+
+			if ($inserted) {
+				$letter_id = $db->insertid();
+
+				if (!empty($programs)) {
+					$values = [];
+					foreach ($programs as $program) {
+						$values[] = $letter_id . ',' . $db->quote($program);
+					}
+
+					$query->clear()
+						->insert('#__emundus_setup_letters_repeat_training')
+						->columns(['parent_id', 'training'])
+						->values($values);
+
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				if (!empty($status)) {
+					$values = [];
+					foreach ($status as $statu) {
+						$values[] = $letter_id . ',' . $db->quote($statu);
+					}
+
+					$query->clear()
+						->insert('#__emundus_setup_letters_repeat_status')
+						->columns(['parent_id', 'status'])
+						->values($values);
+
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				if (!empty($campaigns)) {
+					$values = [];
+					foreach ($campaigns as $campaign) {
+						$values[] = $letter_id . ',' . $db->quote($campaign);
+					}
+
+					$query->clear()
+						->insert('#__emundus_setup_letters_repeat_campaign')
+						->columns(['parent_id', 'campaign'])
+						->values($values);
+
+					$db->setQuery($query);
+					$db->execute();
+				}
+			}
+		}
+
+		return $letter_id;
+	}
+
 	public function createSampleUpload($fnum, $campaign_id, $user_id = 95, $attachment_id = 1) {
 		$inserted = false;
 

@@ -12,11 +12,12 @@ defined('_JEXEC') or die('ACCESS_DENIED');
 // Require the base controller
 require_once( JPATH_COMPONENT.DS.'controller.php' );
 
-// emundus helpers
+// Helpers
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+
 // LOGGER
 jimport('joomla.log.log');
 JLog::addLogger(
@@ -40,7 +41,8 @@ JLog::addLogger(
     JLog::ALL,
     array('com_emundus.webhook')
 );
-// translation for javacript
+
+// Translations for Javascript
 JText::script('PLEASE_SELECT');
 JText::script('IN');
 JText::script('ALL');
@@ -380,7 +382,6 @@ JText::script('COM_EMUNDUS_EMAILS_CANCEL_EMAIL');
 //view application layout share
 JText::script('COM_EMUNDUS_ACCESS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS');
 
-
 //view ametys
 JText::script('COM_EMUNDUS_CANNOT_RETRIEVE_EMUNDUS_PROGRAMME_LIST');
 JText::script('COM_EMUNDUS_RETRIEVE_AMETYS_STORED_PROGRAMMES');
@@ -610,9 +611,6 @@ JText::script('COM_EMUNDUS_DELETE_ADVANCED_FILTERS');
 
 JText::script('COM_EMUNDUS_MAIL_GB_BUTTON');
 
-
-// ONBOARD
-
 $app = JFactory::getApplication();
 
 // Require specific controller if requested
@@ -633,6 +631,9 @@ $user = JFactory::getUser();
 $secret = JFactory::getConfig()->get('secret');
 $webhook_token = JFactory::getConfig()->get('webhook_token') ?: '';
 
+$eMConfig = JComponentHelper::getParams('com_emundus');
+$cdn = $eMConfig->get('use_cdn', 1);
+
 $name = $app->input->get('view', '', 'CMD');
 $task = $app->input->get('task', '', 'CMD');
 $format = $app->input->get('format', '', 'CMD');
@@ -645,7 +646,12 @@ if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml'
 }
 
 if(!in_array($name,['settings','campaigns','emails','form'])) {
-    JHTML::script("//cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.1/tinymce.min.js");
+    if($cdn == 1)
+    {
+        JHTML::script("//cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.1/tinymce.min.js");
+    } else {
+        JHTML::script('media/com_emundus/js/lib/tinymce.min.js');
+    }
     JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
     JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
     JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
@@ -658,8 +664,7 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
     JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
     JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
 
-    JHtml::styleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css' );
-    //JHtml::styleSheet('media/com_emundus/lib/chosen/chosen.min.css');
+    JHtml::styleSheet('media/com_emundus/css/reset.css');
     JHtml::styleSheet('media/jui/css/chosen.css');
     JHtml::styleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
     JHtml::styleSheet('media/com_emundus/css/emundus_files.css');
@@ -667,13 +672,21 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
     JHTML::stylesheet('libraries/emundus/selectize/dist/css/selectize.default.css' );
     JHTML::stylesheet('libraries/emundus/sumoselect/sumoselect.css');
 }
-JHTML::script('media/com_emundus_vue/chunk-vendors_emundus.js');
 
+// VUE
+JHTML::script('media/com_emundus_vue/chunk-vendors_emundus.js');
 JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
+
+// MATERIAL ICONS
 JHTML::styleSheet('https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined');
 
-/** QUILL */
-JHTML::script('https://cdn.quilljs.com/1.3.6/quill.min.js');
+// QUILL
+if($cdn == 1)
+{
+    JHTML::script('https://cdn.quilljs.com/1.3.6/quill.min.js');
+} else {
+    JHTML::script('media/com_emundus/js/lib/quill.min.js');
+}
 JHtml::script('components/com_emundus/src/assets/js/quill/image-resize.min.js');
 JHtml::styleSheet('components/com_emundus/src/assets/js/quill/quill-mention/quill.mention.min.css');
 JHtml::script('components/com_emundus/src/assets/js/quill/quill-mention/quill.mention.min.js');

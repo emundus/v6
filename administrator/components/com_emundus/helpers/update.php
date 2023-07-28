@@ -545,6 +545,9 @@ class EmundusHelperUpdate
                 ->from($db->quoteName('#__emundus_setup_languages'))
                 ->where($db->quoteName('tag') . ' LIKE ' . $db->quote($tag))
                 ->andWhere($db->quoteName('lang_code') . ' LIKE ' . $db->quote($lang));
+			if($type == 'override') {
+				$query->andWhere($db->quoteName('location') . ' LIKE ' . $db->quote($lang . '.override.ini'));
+			}
             $db->setQuery($query);
             $tag_existing = $db->loadResult();
 
@@ -1489,7 +1492,13 @@ class EmundusHelperUpdate
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
 
-            $alias = $params['alias'] ?: $params['menutype'] . '-' . str_replace(' ','-',strtolower($params['title']));
+			if(empty($params['alias']))
+			{
+				$alias = str_replace("\xc2\xa0", ' ', ($params['menutype'] . '-' . $params['title']));
+				$alias = strtolower(JLanguageTransliterate::utf8_latin_to_ascii(preg_replace('/\s+/', '-', $alias)));
+			} else {
+				$alias = $params['alias'];
+			}
 
             $query->clear()
                 ->select('id')
@@ -1982,6 +1991,49 @@ class EmundusHelperUpdate
         return $result;
     }
 
+    public static function alterColumn($table, $name, $type = 'VARCHAR', $length = null, $null = 1, $default = null){
+        $result = ['status' => false, 'message' => ''];
+
+        if (empty($table)) {
+            $result['message'] = 'ALTER COLUMN : Please refer a database table.';
+            return $result;
+        }
+
+        if (empty($name)) {
+            $result['message'] = 'ALTER COLUMN : Please refer a column name.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $db->setQuery('SHOW COLUMNS FROM ' . $table . ' WHERE ' . $db->quoteName('Field') . ' = ' . $db->quote($name));
+        $column_existing = $db->loadResult();
+
+        if (!empty($column_existing)) {
+            $null_query = $null == 0 ? 'NOT NULL' : 'NULL';
+
+            try {
+                $query = 'ALTER TABLE ' . $table . ' MODIFY ' . $db->quoteName($name) . ' ' . $type;
+                if(!empty($length)) {
+                    $query .= ' (' . $length . ')';
+                }
+
+                if ($default !== null) {
+                    $query .= ' DEFAULT ' . $db->quote($default);
+                }
+
+                $query .= ' ' . $null_query;
+                $db->setQuery($query);
+                $result['status'] = $db->execute();
+            } catch (Exception $e) {
+                $result['message'] = 'ADDING COLUMN : Error : ' . $e->getMessage();
+            }
+        } else {
+            $result['message'] = 'ALTER COLUMN : Column not found.';
+        }
+
+        return $result;
+    }
+
     public static function addColumnIndex($table,$column){
         $result = ['status' => false, 'message' => ''];
 
@@ -2280,7 +2332,7 @@ class EmundusHelperUpdate
         return $response;
     }
 
-    public static function createModule($title, $position, $module, $params, $published = 0, $all_pages = 0, $access = 1, $showtitle = 0, $client_id = 0)
+    public static function createModule($title, $position, $module, $params, $published = 0, $page = 0, $access = 1, $showtitle = 0, $client_id = 0)
     {
         $created = false;
 
@@ -2320,11 +2372,15 @@ class EmundusHelperUpdate
                 $db->execute();
                 $module_id = $db->insertid();
 
-                if (!empty($module_id) && $all_pages) {
+                if (!empty($module_id) && !empty($page)) {
                     $query->clear()
                         ->insert($db->quoteName('#__modules_menu'))
-                        ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module_id))
-                        ->set($db->quoteName('menuid') . ' = ' . $db->quote(0));
+                        ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module_id));
+                    if($page == 1) {
+                        $query->set($db->quoteName('menuid') . ' = ' . $db->quote(0));
+                    } else {
+                        $query->set($db->quoteName('menuid') . ' = ' . $db->quote($page));
+                    }
                     $db->setQuery($query);
                     $created = $db->execute();
                 }
@@ -2565,6 +2621,140 @@ class EmundusHelperUpdate
 		{
 			$result['message'] = 'UPDATE FLAGS : Error : ' . $e->getMessage();
 
+		}
+
+		return $result;
+	}
+
+	public static function updateProfileMenu()
+	{
+		$result = ['status' => false, 'message' => ''];
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try
+		{
+			$query->select('form_id')
+				->from($db->quoteName('#__emundus_setup_formlist'))
+				->where($db->quoteName('type') . ' LIKE ' . $db->quote('profile'));
+			$db->setQuery($query);
+			$form_id = $db->loadResult();
+
+			if(!empty($form_id))
+			{
+				$query->clear()
+					->update($db->quoteName('#__fabrik_forms'))
+					->set($db->quoteName('publish_down') . ' = ' . $db->quote('2099-12-31 00:00:00'))
+					->where($db->quoteName('id') . ' = ' . $db->quote($form_id));
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->select('extension_id')
+					->from($db->quoteName('#__extensions'))
+					->where($db->quoteName('name') . ' LIKE ' . $db->quote('com_fabrik'));
+				$db->setQuery($query);
+				$extension_id = $db->loadResult();
+
+				$query->clear()
+					->select('id')
+					->from($db->quoteName('#__menu'))
+					->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_emundus&view=users&layout=edit'));
+				$db->setQuery($query);
+				$menu_id = $db->loadResult();
+
+				if(!empty($menu_id))
+				{
+					$menu_params = [
+						"rowid"                 => -1,
+						"usekey"                => 'user_id',
+						"random"                => 0,
+						"fabriklayout"          => '',
+						"extra_query_string"    => '',
+						"menu-anchor_title"     => '',
+						"menu-anchor_css"       => '',
+						"menu_image"            => '',
+						"menu_image_css"        => '',
+						"menu_text"             => 1,
+						"menu_show"             => 0,
+						"page_title"            => '',
+						"show_page_heading"     => '',
+						"page_heading"          => '',
+						"pageclass_sfx"         => 'mon-profil',
+						"menu-meta_description" => '',
+						"menu-meta_keywords"    => '',
+						"robots"                => '',
+						"secure"                => 0,
+					];
+
+					$query->clear()
+						->update($db->quoteName('#__menu'))
+						->set($db->quoteName('link') . ' = ' . $db->quote('index.php?option=com_fabrik&view=form&formid=' . $form_id))
+						->set($db->quoteName('component_id') . ' = ' . $db->quote($extension_id))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($menu_params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($menu_id));
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				$query->clear()
+					->select('group_id')
+					->from($db->quoteName('#__fabrik_formgroup'))
+					->where($db->quoteName('form_id') . ' = ' . $db->quote($form_id));
+				$db->setQuery($query);
+				$groups = $db->loadColumn();
+
+				$query->clear()
+					->select('id')
+					->from($db->quoteName('#__fabrik_elements'))
+					->where($db->quoteName('group_id') . ' IN (' . implode(',',$groups) .')')
+					->where($db->quoteName('name') . ' LIKE ' . $db->quote('user_id'));
+				$db->setQuery($query);
+				$userid_elt = $db->loadResult();
+
+				if(empty($userid_elt))
+				{
+					$datas = array(
+						'name' => 'user_id',
+						'group_id' => $groups[0],
+						'plugin' => 'field',
+						'label' => 'Utilisateur Joomla',
+						'hidden' => 1
+					);
+					EmundusHelperUpdate::addFabrikElement($datas);
+				}
+
+				$query->clear()
+					->select('params')
+					->from($db->quoteName('#__fabrik_lists'))
+					->where($db->quoteName('form_id') . ' = ' . $db->quote($form_id));
+				$db->setQuery($query);
+				$list_params = $db->loadResult();
+
+				$list_params = json_decode($list_params, true);
+				$list_params['allow_edit_details'] = 10;
+				$list_params['allow_add'] = 10;
+				$list_params['allow_delete'] = 10;
+				$list_params['allow_drop'] = 10;
+				$list_params['allow_edit_details2'] = "jos_emundus_users.user_id";
+				$list_params['menu_access_only'] = 1;
+
+				$query->clear()
+					->update($db->quoteName('#__fabrik_lists'))
+					->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($list_params)))
+					->where($db->quoteName('form_id') . ' = ' . $db->quote($form_id));
+				$db->setQuery($query);
+				$result['status'] = $db->execute();
+
+				EmundusHelperUpdate::installExtension('MOD_EMUNDUS_PROFILE','mod_emundus_profile','{"name":"MOD_EMUNDUS_PROFILE","type":"module","creationDate":"April 2023","author":"Brice Hubinet","copyright":"Copyright (C) 2023 eMundus. All rights reserved.","authorEmail":"brice.hubinet@emundus.fr","authorUrl":"www.emundus.fr","version":"1.36.0","description":"MOD_EMUNDUS_PROFILE_DESC","group":"","filename":"mod_emundus_profile"}','module',1,'','{"show_profile_picture":"1","update_profile_picture":"1","show_name":"1","show_account_edit_button":"1","intro":""}');
+
+				// We create the module and link it to the menu
+				EmundusHelperUpdate::createModule('Edit my profile', 'content-top-a', 'mod_emundus_profile', '{"show_profile_picture":"1","update_profile_picture":"1","show_name":"1","show_account_edit_button":"1","intro":"\u00c9ditez votre photo de profil et vos informations personnelles. Attention votre photo de profil sera visible sur tous vos dossiers de candidature.","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}', 1, $menu_id, 1);
+			}
+		}
+		catch (Exception $e)
+		{
+			$result['message'] = 'UPDATE PROFILE MENU : Error : ' . $e->getMessage();
 		}
 
 		return $result;

@@ -30,7 +30,7 @@ if(!function_exists('com_install')) {
 
 class hikashopInstall {
 	var $level = 'Business';
-	var $version = '4.7.3';
+	var $version = '4.7.4';
 	var $freshinstall = true;
 	var $update = false;
 	var $fromLevel = '';

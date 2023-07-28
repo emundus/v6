@@ -91,13 +91,13 @@ class EmundusModelEvaluation extends JModelList {
         $hidden = 0;
         $elements_eval = $this->getEvaluationElements($show_in_list_summary, $hidden);
         if (is_array($elements_eval) && count($elements_eval)) {
-            $this->elements_id .= implode(',', $elements_eval);
+            $this->elements_id .= ',' . implode(',', $elements_eval);
         }
 
         if ($session->has('adv_cols')) {
             $adv = $session->get('adv_cols');
-            if (!empty($adv)) {
-                $this->elements_id .= ','.implode(',', $adv);
+            if (!empty($adv) && !is_null($adv)) {
+                $this->elements_id .= ',' . implode(',', $adv);
             }
         }
         $this->elements_values = explode(',', $menu_params->get('em_elements_values'));
@@ -1780,59 +1780,61 @@ class EmundusModelEvaluation extends JModelList {
 
     /// get letters by traininng and status
     public function getLettersByProgrammesStatusCampaigns($programs=array(), $status=array(), $campaigns=array()) : array{
-        $query = $this->_db->getQuery(true);
+		$letters = [];
 
-        try {
-            $query
-                ->select('jesl.*')
-                ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_status', 'jeslrs') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrs.parent_id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_campaign', 'jeslrc') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrc.parent_id'))
-                ->where($this->_db->quoteName('jeslrs.status') . ' IN (' . implode(',', $status) . ')')
-                ->andWhere($this->_db->quoteName('jeslrt.training') . ' IN (' . implode(',', $this->_db->quote($programs)) . ') OR ' .$this->_db->quoteName('jeslrc.campaign') . ' IN (' . implode(',', $this->_db->quote($campaigns)) . ')');
+		$query = $this->_db->getQuery(true);
+		try {
+			$query->select('jesl.*')
+				->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_status', 'jeslrs') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrs.parent_id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_campaign', 'jeslrc') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrc.parent_id'))
+				->where($this->_db->quoteName('jeslrs.status') . ' IN (' . implode(',', $status) . ')')
+				->andWhere($this->_db->quoteName('jeslrt.training') . ' IN (' . implode(',', $this->_db->quote($programs)) . ') OR ' .$this->_db->quoteName('jeslrc.campaign') . ' IN (' . implode(',', $this->_db->quote($campaigns)) . ')');
 
-            $this->_db->setQuery($query);
+			$this->_db->setQuery($query);
 
-            return $this->_db->loadObjectList();
+			$letters = $this->_db->loadObjectList();
+		} catch(Exception $e) {
+			JLog::add('Error in getLettersByProgrammesStatusCampaigns: ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			$letters = [];
+		}
 
-        } catch(Exception $e) {
-            return [];
-        }
+		return $letters;
     }
 
     /// get exactly letter id by fnum and template (32,33,34)
-    public function getLetterTemplateForFnum($fnum,$templates=array()) : array {
-        if (empty($fnum) || empty($templates)) { return []; }
+    public function getLetterTemplateForFnum($fnum, $templates=array()) : array {
+		$letters = [];
 
-        $query = $this->_db->getQuery(true);
+        if (!empty($fnum) && !empty($templates)) {
+	        $query = $this->_db->getQuery(true);
 
-        try {
-            /// first :: get fnum info
-            $_mFile = new EmundusModelFiles;
-            $fnum_infos = $_mFile->getFnumInfos($fnum);
+	        $_mFile = new EmundusModelFiles;
+	        $fnum_infos = $_mFile->getFnumInfos($fnum);
 
-            $_fnumStatus = $fnum_infos['status'];
-            $_fnumProgram = $fnum_infos['training'];
-            $_fnumCampaign = $fnum_infos['id'];
+			if (!empty($fnum_infos)) {
+				$query->select('jesl.*')
+					->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
+					->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_status', 'jeslrs') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrs.parent_id'))
+					->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
+					->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_campaign', 'jeslrc') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrc.parent_id'))
+					->where($this->_db->quoteName('jeslrs.status') . ' = ' . $fnum_infos['status'])
+					->andWhere($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($fnum_infos['training']) . ' OR ' . $this->_db->quoteName('jeslrc.campaign') . ' = ' . $this->_db->quote($fnum_infos['id']))
+					->andWhere($this->_db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')')
+					->order('id ASC');
 
-            /// second :: status, program, templates --> detect the letter id to generate
-            $query
-                ->select('jesl.*')
-                ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_status', 'jeslrs') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrs.parent_id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_campaign', 'jeslrc') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrc.parent_id'))
-                ->where($this->_db->quoteName('jeslrs.status') . ' = ' . $_fnumStatus)
-                ->andWhere($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($_fnumProgram) . ' OR ' . $this->_db->quoteName('jeslrc.campaign') . ' = ' . $this->_db->quote($_fnumCampaign))
-                ->andWhere($this->_db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')')
-                ->order('id ASC');
+				try {
+					$this->_db->setQuery($query);
+					$letters = $this->_db->loadObjectList();
+				} catch(Exception $e) {
+					$letters = [];
+					JLog::add('Error in getLetterTemplateForFnum: ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				}
+			}
+		}
 
-            $this->_db->setQuery($query);
-            return $this->_db->loadObjectList();
-        } catch(Exception $e) {
-            return [];
-        }
+		return $letters;
     }
 
     /// get affected letters by [fnums] and [templates]
@@ -1933,10 +1935,9 @@ class EmundusModelEvaluation extends JModelList {
 					$refreshQuery = $this->_db->getQuery(true);
 
 					$refreshQuery->delete($this->_db->quoteName('#__emundus_uploads'))
-						// TODO: We have to check an other param if this attachment_id is used for an applicant upload
+						// TODO: We have to check another param if this attachment_id is used for an applicant upload
 						->where($this->_db->quoteName('attachment_id') . ' = ' . $attachInfo['id'])
-						// TODO: Why we delete files only generated current day
-						->andWhere('DATE(timedate) = CURRENT_DATE()')
+						->andWhere('DATE('.$db->quoteName('timedate').') = CURRENT_DATE() OR '.$db->quoteName('user_id').' <> '.$db->quote($fnumInfo[$fnum]['applicant_id']))
 						->andWhere($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
                     $this->_db->setQuery($refreshQuery);
                     $this->_db->execute();

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -24,7 +24,7 @@ if(!empty($view) && !$ctrl) {
 }
 elseif(!empty($ctrl) && !$view) {
 	hikaInput::get()->set('view', $ctrl);
-	$layout = hikaInput::get()->getCmd('task');
+	$layout = hikaInput::get()->getString('task');
 	if(!empty($layout)){
 		hikaInput::get()->set('layout', $layout);
 	}
@@ -70,7 +70,7 @@ if(empty($classGroup)) {
 }
 
 hikaInput::get()->set('view', $classGroup->getName() );
-$classGroup->execute( hikaInput::get()->getCmd('task','listing'));
+$classGroup->execute( hikaInput::get()->get('task','listing'));
 $classGroup->redirect();
 if(hikaInput::get()->getString('tmpl') !== 'component'){
 	echo hikashop_footer();

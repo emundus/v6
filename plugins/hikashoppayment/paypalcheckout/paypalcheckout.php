@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -10,6 +10,13 @@ defined('_JEXEC') or die('Restricted access');
 ?><?php
 class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 {
+
+	var $bncode = 'HIKARISOFTWARE_Cart_PPCP';
+	var $liveMerchantId = 'FSXMPYPPVVVMG';
+	var $sandboxMerchantId = 'NZFJZCZ2WRXPN';
+	var $livePartnerClientId = 'AUnDFJMShyffM9evNWx7OD7J6qyklq-f37FENcc_7D_6RHg3TGtHgH9x_yuDiRGXpSOSGYKPP7hdfxCT';
+	var $sandboxPartnerClientId = 'AcTqgpujxMEGpk8rKeEu9LOG6EgskJyK-AtCMdQBtZjN4zt51HLetLv3Y9plTUGrFCont2uzaZVi4aqe';
+
 	var $accepted_currencies = array(
 		'AUD','BRL','CAD','EUR','GBP','JPY','USD','NZD','CHF','HKD','SGD','SEK',
 		'DKK','PLN','NOK','HUF','CZK','MXN','MYR','PHP','TWD','THB','ILS','TRY',
@@ -22,18 +29,21 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 	var $doc_form = 'paypalcheckout';
 
 	var $pluginConfig = array(
-		'client_id' => array('Client ID', 'input'),
-		'client_secret' => array('Client secret', 'input'),
-		'brand_name' => array('Merchant name', 'input'),
+		'sandbox' => array('HIKA_SANDBOX', 'boolean', 0),
+		'connect' => array('PAYPAL_CHECKOUT_CONNECT', 'html'),
+		'client_id' => array('PAYPAL_CHECKOUT_CLIENT_ID', 'input'),
+		'client_secret' => array('PAYPAL_CHECKOUT_CLIENT_SECRET', 'input'),
+		'merchant_id' => array('PAYPAL_CHECKOUT_MERCHANT_ID', 'input'),
+		'brand_name' => array('PAYPAL_CHECKOUT_MERCHANT_NAME', 'input'),
 		'capture' => array('INSTANTCAPTURE', 'boolean','1'),
-		'landing_page' => array('Landing page', 'list', array(
-				'LOGIN' =>'Login page',
-				'BILLING' => 'Credit card page',
-				'NO_PREFERENCE' => 'No preference',
+		'landing_page' => array('PAYPAL_CHECKOUT_LANDING_PAGE', 'list', array(
+				'LOGIN' =>'PAYPAL_CHECKOUT_LOGIN_PAGE',
+				'BILLING' => 'PAYPAL_CHECKOUT_CREDIT_CARD_PAGE',
+				'NO_PREFERENCE' => 'PAYPAL_CHECKOUT_NO_PREFERENCE',
 			),
 		),
 		'disable_funding' => array(
-			'Disable Funding',
+			'PAYPAL_CHECKOUT_DISABLE_FUNDING',
 			'checkbox',
 			array(
 				'card' =>'Credit or debit cards',
@@ -51,10 +61,10 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 				'sepa' => 'SEPA-Lastschrift',
 				'sofort' => 'Sofort',
 			),
-			'tooltip' => 'Select the payment methods you would like to NOT be available to your customers.',
+			'tooltip' => 'PAYPAL_CHECKOUT_DISABLE_FUNDING_TOOLTIP',
 		),
 		'funding' => array(
-			'Enable Funding',
+			'PAYPAL_CHECKOUT_ENABLE_FUNDING',
 			'checkbox',
 			array(
 				'card' =>'Credit or debit cards',
@@ -72,15 +82,316 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 				'sepa' => 'SEPA-Lastschrift',
 				'sofort' => 'Sofort',
 			),
-			'tooltip' => 'Select the payment methods you would like to be available to your customers. Note that even if selected, they will only appear based on your eligibility and the eligibility of your customer to these payment methods.',
+			'tooltip' => 'PAYPAL_CHECKOUT_ENABLE_FUNDING_TOOLTIP',
+		),
+		'layout' => array('PAYPAL_CHECKOUT_BUTTON_LAYOUT', 'list', array(
+				'vertical' => 'VERTICAL',
+				'horizontal' => 'HORIZONTAL',
+			),
+		),
+		'color' => array('PAYPAL_CHECKOUT_BUTTON_COLOR', 'list', array(
+				'gold' => 'PAYPAL_CHECKOUT_GOLD',
+				'blue' => 'PAYPAL_CHECKOUT_BLUE',
+				'silver' => 'PAYPAL_CHECKOUT_SILVER',
+				'white' => 'PAYPAL_CHECKOUT_WHITE',
+				'black' => 'PAYPAL_CHECKOUT_BLACK',
+			),
+		),
+		'shape' => array('PAYPAL_CHECKOUT_BUTTON_SHAPE', 'list', array(
+				'rect' => 'PAYPAL_CHECKOUT_RECTANGLE',
+				'pill' => 'PAYPAL_CHECKOUT_PILL',
+			),
+		),
+		'label' => array('PAYPAL_CHECKOUT_BUTTON_LABEL', 'list', array(
+				'paypal' => 'PayPal',
+				'checkout' => 'PayPal Checkout',
+				'buynow' => 'PayPal Buy Now',
+				'pay' => 'Pay with PayPal',
+			),
+		),
+		'tagline' => array('PAYPAL_CHECKOUT_BUTTON_TAGLINE', 'boolean', 1),
+		'listing_position' => array('PAYPAL_CHECKOUT_PAY_LATER_MESSAGING_ON_PRODUCT_LISTINGS', 'list', array(
+				'' => 'HIKASHOP_NO',
+				'top' => 'HIKA_TOP',
+				'middle' => 'HIKA_MIDDLE',
+				'bottom' => 'HIKA_BOTTOM',
+			),
+		),
+		'product_page_position' => array('PAYPAL_CHECKOUT_PAY_LATER_MESSAGING_ON_PRODUCT_PAGE', 'list', array(
+				'' => 'HIKASHOP_NO',
+				'topBegin' => 'TOP_BEGIN',
+				'topEnd' => 'TOP_END',
+				'leftBegin' => 'LEFT_BEGIN',
+				'leftEnd' => 'LEFT_END',
+				'rightBegin' => 'RIGHT_BEGIN',
+				'rightMiddle' => 'RIGHT_MIDDLE',
+				'rightEnd' => 'RIGHT_END',
+				'bottomBegin' => 'BOTTOM_BEGIN',
+				'bottomMiddle' => 'BOTTOM_MIDDLE',
+				'bottomEnd' => 'BOTTOM_END',
+			),
+		),
+		'cart_page_position' => array('PAYPAL_CHECKOUT_PAY_LATER_MESSAGING_ON_CART_PAGE', 'list', array(
+				'' => 'HIKASHOP_NO',
+				'bottom' => 'HIKA_BOTTOM',
+			),
+		),
+		'checkout_page_position' => array('PAYPAL_CHECKOUT_PAY_LATER_MESSAGING_ON_CHECKOUT_CART', 'list', array(
+				'' => 'HIKASHOP_NO',
+				'top' => 'HIKA_TOP',
+				'bottom' => 'HIKA_BOTTOM',
+			),
+		),
+		'paylater_messaging_color' => array('PAYPAL_CHECKOUT_PAY_LATER_MESSAGING_COLOR', 'list', array(
+				'black' => 'PAYPAL_CHECKOUT_BLACK',
+				'white' => 'PAYPAL_CHECKOUT_WHITE',
+				'monochrome' => 'PAYPAL_CHECKOUT_MONOCHROME',
+				'grayscale' => 'PAYPAL_CHECKOUT_GRAYSCALE',
+			),
 		),
 		'debug' => array('DEBUG', 'boolean', 0),
-		'sandbox' => array('HIKA_SANDBOX', 'boolean', 0),
 		'cancel_url' => array('CANCEL_URL', 'input'),
 		'return_url' => array('RETURN_URL', 'input'),
 		'invalid_status' => array('INVALID_STATUS', 'orderstatus'),
 		'verified_status' => array('VERIFIED_STATUS', 'orderstatus'),
 	);
+
+	function __construct(&$subject, $config) {
+		return parent::__construct($subject, $config);
+	}
+
+	public function onHikashopBeforeDisplayView(&$view) {
+		$app = JFactory::getApplication();
+		if(version_compare(JVERSION,'4.0','<'))
+			$admin = $app->isAdmin();
+		else
+			$admin = $app->isClient('administrator');
+		if($admin)
+			return;
+		$viewName = $view->getName();
+		$layout = $view->getLayout();
+
+		if($viewName == 'product' && $layout == 'listing' && hikaInput::get()->getVar('hikashop_front_end_main', 0) && hikaInput::get()->getVar('task') == 'listing') {
+			$this->processListing($view);
+		}
+		if($viewName == 'product' && $layout == 'show') {
+			$this->processDetailsPage($view);
+		}
+	}
+
+	public function onHikashopAfterDisplayView(&$view) {
+		$app = JFactory::getApplication();
+		if(version_compare(JVERSION,'4.0','<'))
+			$admin = $app->isAdmin();
+		else
+			$admin = $app->isClient('administrator');
+		if($admin)
+			return;
+		$viewName = $view->getName();
+		$layout = $view->getLayout();
+
+		if($viewName == 'cart' && $layout == 'show') {
+			$this->processCart($view);
+		}
+	}
+	public function onBeforeCheckoutViewDisplay($layout, &$view) {
+		if($layout != 'cart')
+			return;
+
+		$method = $this->getPaymentMethod();
+		if(!$method) {
+			return;
+		}
+		$position = $this->getPosition($method, 'listing');
+		if(empty($position))
+			return;
+
+		$data = $this->getMessagingHTML(0, 'payment', $method);
+
+		if(!isset($view->extraData))
+			$view->extraData = array();
+
+		if(!isset($view->extraData[$view->module_position]))
+			$view->extraData[$view->module_position] = new stdClass();
+
+		if(!isset($view->extraData[$view->module_position]->$position))
+			$view->extraData[$view->module_position]->$position = array();
+		array_push($view->extraData[$view->module_position]->$position, $data);
+	}
+
+	private function processListing(&$view) {
+
+		$method = $this->getPaymentMethod();
+		if(!$method) {
+			return;
+		}
+		$position = $this->getPosition($method, 'listing');
+		if(empty($position))
+			return;
+
+		$data = $this->getMessagingHTML(0, 'category', $method);
+
+		if(!isset($view->element->extraData))
+			$view->element->extraData = new stdClass();
+
+		if(!isset($view->element->extraData->$position))
+			$view->element->extraData->$position = array();
+		array_push($view->element->extraData->$position, $data);
+	}
+
+	private function processCart(&$view) {
+		if(empty($view->cart->total->prices)) {
+			return;
+		}
+
+		$method = $this->getPaymentMethod();
+		if(!$method) {
+			return;
+		}
+		$position = $this->getPosition($method, 'cart');
+		if(empty($position))
+			return;
+
+		$price_value = 'price_value';
+		if($view->config->get('price_with_tax')) {
+			$price_value = 'price_value_with_tax';
+		}
+		$mainPrice = reset($view->cart->total->prices);
+
+		if(empty($mainPrice->$price_value) && $mainPrice->$price_value > 0) {
+			return;
+		}
+
+		$data = $this->getMessagingHTML($amount, 'cart', $method);
+
+		echo $data;
+	}
+
+	private function processDetailsPage(&$view) {
+		if(empty($view->element->prices)) {
+			return;
+		}
+		$method = $this->getPaymentMethod();
+		if(!$method) {
+			return;
+		}
+		$position = $this->getPosition($method, 'product_page');
+		if(empty($position))
+			return;
+
+		$price_value = 'price_value';
+		if($view->params->get('price_with_tax')) {
+			$price_value = 'price_value_with_tax';
+		}
+		$mainPrice = reset($view->element->prices);
+
+		if(empty($mainPrice->$price_value) && $mainPrice->$price_value > 0) {
+			return;
+		}
+
+		$data = $this->getMessagingHTML($mainPrice->$price_value, 'product', $method);
+
+		if(!isset($view->element->extraData))
+			$view->element->extraData = new stdClass();
+
+		if(!isset($view->element->extraData->$position))
+			$view->element->extraData->$position = array();
+		array_push($view->element->extraData->$position, $data);
+	}
+
+	private function getMessagingHTML($amount, $type, &$method) {
+		static $currency = null;
+		if($currency == null) {
+			$currency_id = hikashop_getCurrency();
+			$currencyClass = hikashop_get('class.currency');
+			$currencyObj = $currencyClass->get($currency_id);
+			$currency = $currencyObj->currency_code;
+		}
+
+		$attribs = '';
+		if(!empty($method->payment_params->paylater_messaging_color)) {
+			$attribs.=' data-pp-style-text-color="'.$method->payment_params->paylater_messaging_color.'"';
+		}
+		$url = 'https://www.paypal.com';
+		$amount = number_format(round((float)$amount,2), 2, '.', '');
+		return '<div data-pp-message
+		data-pp-placement="'.$type.'" 
+		data-pp-amount="'.$amount.'" 
+		data-pp-currency="'.$currency.'" 
+		'.$attribs.'
+		></div>
+		<script src="'.$url.'/sdk/js?client-id='.$method->payment_params->client_id.'&components=messages" data-partner-attribution-id="'.$this->bncode.'"></script>
+';
+	}
+
+	private function getPosition(&$method, $type) {
+		if(!empty($method->payment_params->funding)) {
+			if(is_string($method->payment_params->funding)) {
+				$fundings = explode(',', $method->payment_params->funding);
+			} else {
+				$fundings = $method->payment_params->funding;
+			}
+			if(!in_array('paylater', $fundings))
+				return '';
+		}
+		$var = $type.'_position';
+		if(!empty($method->payment_params->$var)) {
+			return $method->payment_params->$var;
+		}
+		return '';
+	}
+
+	private function getPaymentMethod() {
+		static $method = null;
+		if(is_null($method)) {
+			$class = hikashop_get('class.cart');
+			$cart = $class->getFullCart();
+			if(!empty($cart->usable_methods->payment)) {
+				foreach($cart->usable_methods->payment as $payment) {
+					if($payment->payment_type == $this->name) {
+						$method = $payment;
+						break;
+					}
+				}
+			}
+			if(is_null($method))
+				$method = $this->loadFirstPaymentMethodFound();
+		}
+
+		if(empty($method->payment_params->client_id))
+			$method = false;
+
+		return $method;
+	}
+
+	private function loadFirstPaymentMethodFound() {
+		static $result = null;
+		if(!is_null($result))
+			return $result;
+
+		$db = JFactory::getDBO();
+		$where = array('payment_type = '.$db->Quote($this->name),'payment_published=\'1\'');
+		$currency = hikashop_getCurrency();
+		if(!empty($currency)){
+			$where[] = "(payment_currency IN ('','_','all') OR payment_currency LIKE '%,".intval($currency).",%')";
+		}
+		hikashop_addACLFilters($where,'payment_access');
+		$db->setQuery('SELECT * FROM `#__hikashop_payment` WHERE '.implode(' AND ',$where).' ORDER BY payment_ordering ASC');
+		$result = $db->loadObject();
+
+		if(empty($result))
+			$result = false;
+
+		if(!empty($result->payment_params)) {
+			$result->payment_params = hikashop_unserialize($result->payment_params);
+		}
+		if(!empty($result->payment_name))
+			$result->payment_name = hikashop_translate($result->payment_name);
+		if(!empty($result->payment_description))
+			$result->payment_description = hikashop_translate($result->payment_description);
+		return $result;
+	}
+
 
 	public function onAfterOrderConfirm(&$order, &$methods, $method_id) {
 		parent::onAfterOrderConfirm($order, $methods, $method_id);
@@ -103,16 +414,417 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 	public function onPaymentConfiguration(&$element) {
 		parent::onPaymentConfiguration($element);
 
+		if(empty($element->payment_params->client_id) || empty($element->payment_params->client_secret)) {
+			if(empty($element->payment_params->sandbox)) {
+				$element->payment_params->sandbox = 0;
+			}			
+			$this->pluginConfig['connect'][2] = $this->getConnectButtonHTML($element->payment_params->sandbox);
+		} else {
+			$this->pluginConfig['connect'][2] = $this->checkMerchantStatus($element);
+			$this->pluginConfig['connect'][2] .= $this->getChangeLinkedAccountHTML();
+		}
 		$config = hikashop_config();
 		$round_calculations = $config->get('round_calculations');
 		if(empty($round_calculations)){
 			$app = JFactory::getApplication();
-			$app->enqueueMessage('The "Round prices during calculations" setting is deactivated in the HikaShop configuration. This can sometimes lead to rounding differences between the total calculated by PayPal and the total calculated by HikaShop, resulting in an "AMOUNT_MISMATCH" error at the end of the checkout with this payment method.');
+			$app->enqueueMessage(JText::_('PAYPAL_CHECKOUT_ROUND_PRICES_WARNING'));
 		}
 
 	}
 
+	public function checkMerchantStatus(&$element) {
+		if(empty($element->payment_params->merchant_id)) {
+			return '';
+		}
+		$url = 'https://api-m.paypal.com';
+		$merchantId = $this->liveMerchantId;
+
+		if(empty($element->payment_params->sandbox)) {
+			$element->payment_params->sandbox = 0;
+		}
+		if(!empty($element->payment_params->sandbox)) {
+			$url = 'https://api-m.sandbox.paypal.com';
+			$merchantId = $this->sandboxMerchantId;
+		}
+
+		$curl = curl_init();
+		$post = "grant_type=client_credentials";
+    	curl_setopt_array($curl, array(
+			CURLOPT_URL => $url."/v1/oauth2/token",
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_ENCODING => "",
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 30,
+			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
+			CURLOPT_USERPWD => $element->payment_params->client_id.":".$element->payment_params->client_secret,
+			CURLOPT_CUSTOMREQUEST => "POST",
+			CURLOPT_POSTFIELDS => $post,
+			CURLOPT_HTTPHEADER => array(
+				"Content-Type: application/x-www-form-urlencoded",
+				"PayPal-Partner-Attribution-Id: ".$this->bncode,
+    		),
+			CURLOPT_CAINFO => __DIR__.'/cacert.pem',
+			CURLOPT_CAPATH => __DIR__.'/cacert.pem',
+			CURLINFO_HEADER_OUT => true,
+		));
+		$curl_result = curl_exec($curl);
+		if(empty($curl_result)) {
+			hikashop_writeToLog(curl_getinfo($curl));
+			hikashop_writeToLog($post);
+			hikashop_writeToLog($curl_result);
+			return hikashop_display('Returned data from Access Token Request not valid','error',true);
+		}
+		$array = json_decode($curl_result, true);
+		if(empty($array)) {
+			hikashop_writeToLog(curl_getinfo($curl));
+			hikashop_writeToLog($post);
+			hikashop_writeToLog($curl_result);
+			return hikashop_display('Returned data from Access Token Request not valid','error',true);
+		}
+		if(empty($array['access_token'])) {
+			hikashop_writeToLog($array);
+			return hikashop_display($array['error_description'],'error',true);
+		}
+		$token = $array['access_token'];
+
+		$curl = curl_init();
+    	curl_setopt_array($curl, array(
+			CURLOPT_URL => $url."/v1/customer/partners/".$merchantId."/merchant-integrations/".$element->payment_params->merchant_id,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_ENCODING => "",
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 30,
+			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			CURLOPT_CUSTOMREQUEST => "GET",
+			CURLOPT_HTTPHEADER => array(
+				"Content-Type: application/json",
+				"Authorization: Bearer ".$token,
+				"PayPal-Partner-Attribution-Id: ".$this->bncode,
+    		),
+			CURLOPT_CAINFO => __DIR__.'/cacert.pem',
+			CURLOPT_CAPATH => __DIR__.'/cacert.pem',
+			CURLINFO_HEADER_OUT => true,
+		));
+		$curl_result = curl_exec($curl);
+		$array = json_decode($curl_result, true);
+		if(empty($array['primary_email_confirmed'])) {
+			$msg = JText::_('PAYPAL_CHECKOUT_PRIMARY_EMAIL_NOT_CONFIRMED');
+			if(!empty($array['message'])) {
+				$msg = $array['message'] .'<br/>'. $msg;
+			}
+			return hikashop_display($msg,'error',true);
+		}
+
+		if(empty($array['payments_receivable'])) {
+			$msg = JText::_('PAYPAL_CHECKOUT_PAYMENTS_NOT_RECEIVABLE');
+			if(!empty($array['message'])) {
+				$msg = $array['message'] .'<br/>'. $msg;
+			}
+			return hikashop_display($msg,'error',true);
+		}
+		return hikashop_display(JText::_('PAYPAL_CHECKOUT_SUCCESSFULLY_CONNECTED'),'success',true);
+	}
+
+	private function getChangeLinkedAccountHTML() {
+		return '
+		<script>
+			window.hikashop.changeLinkedAccount = function() {
+				var clientId = document.getElementById(\'data_payment_payment_params_client_id\');
+				var clientSecret = document.getElementById(\'data_payment_payment_params_client_secret\');
+				var merchantId = document.getElementById(\'data_payment_payment_params_merchant_id\');
+				clientId.value = \'\';
+				clientSecret.value = \'\';
+				merchantId.value = \'\';
+
+				Joomla.submitbutton(\'apply\');
+			}
+		</script>
+		<a href="#" onclick="window.hikashop.changeLinkedAccount();return false;" class="hikabtn hikabtn-primary">'.JText::_('PAYPAL_CHECKOUT_CHANGE_LINKED_ACCOUNT').'</a>
+		';
+	}
+
+	public function getConnectButtonHTML($sandbox = false, $callback = '') {
+		hikashop_loadJslib('notify');
+		$nonce = substr(hash('sha512',mt_rand()),17,70);
+		$AJAX_URL = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment='.$this->name.'&onboarding=1&nonce='.urlencode($nonce).'&tmpl=component';
+		$partnerClientId = $this->livePartnerClientId;
+		$merchantId = $this->liveMerchantId;
+		$url = 'https://www.paypal.com';
+		if(empty($sandbox)) {
+			$sandbox = 0;
+		}
+		if(!empty($sandbox)) {
+			$partnerClientId = $this->sandboxPartnerClientId;
+			$merchantId = $this->sandboxMerchantId;
+			$url = 'https://www.sandbox.paypal.com';
+		}
+
+		$closeURL = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment='.$this->name.'&closepopup=1&tmpl=component';
+		$params = array(
+			'partnerId' => $merchantId,
+			'product' => 'ppcp',
+			'integrationType' => 'FO',
+			'features' => 'PAYMENT',
+			'partnerClientId' => $partnerClientId,
+			'partnerLogoUrl' => 'https://www.hikashop.com/images/branding/hikashop_logo1.png',
+			'displayMode' => 'minibrowser',
+			'sellerNonce' => $nonce,
+		);
+		if(empty($callback)) {
+			$js = 'Joomla.submitbutton(\'apply\');';
+			$selector = '#data_payment_payment_params_sandbox input';
+		} else {
+			$js = $callback.'();';
+			$selector = '#sanbox input';
+		}
+		$html = '
+		<a
+			id="paypal_connect"
+			class="direct"
+			target="_blank"
+			data-paypal-onboard-complete="onboardedCallback"
+			href="'.$url.'/bizsignup/partner/entry?'.http_build_query($params).'"
+			data-paypal-button="PPLtBlue"
+			>
+			'.JText::_('PAYPAL_CHECKOUT_CONNECT_TO_PAYPAL_CHECKOUT').'
+		</a>
+		<script id="paypal-js" src="https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js"></script>
+		<script>
+			function onboardedCallback(authCode, sharedId) {
+				var callbackURL = \''.$AJAX_URL.'\';
+				console.log(window.hikashop.isPayPalSandbox);
+				if(window.hikashop.isPayPalSandbox==1) {
+					callbackURL += \'&sandbox=1\';
+				}
+				callbackURL += \'&authCode=\' + authCode + \'&sharedId=\' + sharedId;
+				window.Oby.xRequest(callbackURL,  {mode:\'POST\'}, function(xhr){
+					var resp = window.Oby.evalJSON(xhr.responseText);
+					if(resp && resp.error) {
+						console.log(callbackURL);
+						console.log(resp);
+						jQuery(document.getElementById(\'paypal_connect\')).notify({title:resp.errorTitle, text:resp.errorMessage, image:\'<i class=\"fas fa-3x fa-file-invoice\"></i>\', globalPosition:\'top right\'},{style:"metro",className:\'error\', autoHide: false, arrowShow:true});
+					} else {
+						var clientId = document.getElementById(\'data_payment_payment_params_client_id\');
+						var clientSecret = document.getElementById(\'data_payment_payment_params_client_secret\');
+						var merchantId = document.getElementById(\'data_payment_payment_params_merchant_id\');
+						clientId.value = resp.clientId;
+						clientSecret.value = resp.clientSecret;
+						merchantId.value = resp.merchantId;
+
+						'.$js.'
+					}
+				});
+			}
+			window.hikashop.changeSandbox = function(sandbox) {
+				window.hikashop.isPayPalSandbox = sandbox;
+
+				var src = \'https://www.paypal\';
+				var dst = \'https://www.paypal\';
+				if(sandbox==1) {
+					dst = \'https://www.sandbox.paypal\';
+				} else {
+					src = \'https://www.sandbox.paypal\';
+				}
+				document.getElementById(\'paypal_connect\').href = document.getElementById(\'paypal_connect\').href.replace(src, dst);
+
+				if(sandbox) {
+					src = \'&sandbox=0\';
+					dst = \'&sandbox=1\';
+				} else {
+					src = \'&sandbox=1\';
+					dst = \'&sandbox=0\';
+				}
+				document.getElementById(\'paypal_connect\').href = document.getElementById(\'paypal_connect\').href.replace(src, dst);
+
+				if(sandbox) {
+					src = \''.$this->livePartnerClientId.'\';
+					dst = \''.$this->sandboxPartnerClientId.'\';
+				} else {
+					src = \''.$this->sandboxPartnerClientId.'\';
+					dst = \''.$this->livePartnerClientId.'\';
+				}
+				document.getElementById(\'paypal_connect\').href = document.getElementById(\'paypal_connect\').href.replace(src, dst);
+
+				if(sandbox) {
+					src = \''.$this->liveMerchantId.'\';
+					dst = \''.$this->sandboxMerchantId.'\';
+				} else {
+					src = \''.$this->sandboxMerchantId.'\';
+					dst = \''.$this->liveMerchantId.'\';
+				}
+				document.getElementById(\'paypal_connect\').href = document.getElementById(\'paypal_connect\').href.replace(src, dst);
+
+
+			}
+			window.hikashop.setSandboxFlag = function() {
+				document.querySelectorAll(\''.$selector.'\').forEach((elem) => {
+					if(elem.checked) {
+						window.hikashop.changeSandbox(elem.value);
+					}
+				});
+			}
+
+			window.hikashop.ready( function() {
+				window.hikashop.isPayPalSandbox = '.(int)empty($sandbox).';
+				window.hikashop.setSandboxFlag();
+				document.querySelectorAll(\''.$selector.'\').forEach((elem) => {
+					elem.addEventListener("click", function(event) {
+						window.hikashop.changeSandbox(event.target.value);
+					});
+				  });
+			});
+		</script>
+		';
+		return $html;
+	}
+
+	private function processOnboarding() {
+		$result = new stdClass();
+		$result->errorTitle = JText::_('PAYPAL_CHECKOUT_ERROR_OCCURRED');
+		$result->errorMessage = '';
+		$result->error = false;
+
+		$nonce = hikaInput::get()->getString('nonce');
+		if(empty($nonce)) {
+			$result->error = true;
+			$result->errorMessage = 'Nonce is missing';
+			return $result;
+		}
+		$authCode = hikaInput::get()->getString('authCode');
+		if(empty($authCode)) {
+			$result->error = true;
+			$result->errorMessage = 'authCode is missing';
+			return $result;
+		}
+		$sharedId = hikaInput::get()->getString('sharedId');
+		if(empty($sharedId)) {
+			$result->error = true;
+			$result->errorMessage = 'sharedId is missing';
+			return $result;
+		}
+		$sharedId = base64_encode($sharedId.':');
+
+		$sandbox = hikaInput::get()->getInt('sandbox');
+		$url = 'https://api-m.paypal.com';
+		$merchantId = $this->liveMerchantId;
+		if($sandbox) {
+			$url = 'https://api-m.sandbox.paypal.com';
+			$merchantId = $this->sandboxMerchantId;
+		}
+
+		$curl = curl_init();
+		$post = "grant_type=authorization_code&code=".urlencode($authCode)."&code_verifier=".urlencode($nonce);
+    	curl_setopt_array($curl, array(
+			CURLOPT_URL => $url."/v1/oauth2/token",
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_ENCODING => "",
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 30,
+			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			CURLOPT_CUSTOMREQUEST => "POST",
+			CURLOPT_POSTFIELDS => $post,
+			CURLOPT_HTTPHEADER => array(
+				"Content-Type: text/plain",
+				"Authorization: Basic ".$sharedId,
+				"PayPal-Partner-Attribution-Id: ".$this->bncode,
+    		),
+			CURLOPT_CAINFO => __DIR__.'/cacert.pem',
+			CURLOPT_CAPATH => __DIR__.'/cacert.pem',
+			CURLINFO_HEADER_OUT => true,
+		));
+		$curl_result = curl_exec($curl);
+		$array = json_decode($curl_result, true);
+		if(empty($array)) {
+			$result->error = true;
+			$result->errorMessage = 'Returned data from Acquire Seller Access not valid';
+			hikashop_writeToLog(curl_getinfo($curl));
+			hikashop_writeToLog($post);
+			hikashop_writeToLog($curl_result);
+			return $result;
+		}
+		if(empty($array['access_token'])) {
+			$result->error = true;
+			$result->errorMessage = 'Returned data from Acquire Seller Access does not contain access token';
+			hikashop_writeToLog(curl_getinfo($curl));
+			hikashop_writeToLog($post);
+			hikashop_writeToLog($array);
+			return $result;
+		}
+		$token = $array['access_token'];
+
+		$curl = curl_init();
+    	curl_setopt_array($curl, array(
+			CURLOPT_URL => $url."/v1/customer/partners/".$merchantId."/merchant-integrations/credentials",
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_ENCODING => "",
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 30,
+			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			CURLOPT_CUSTOMREQUEST => "GET",
+			CURLOPT_HTTPHEADER => array(
+				"Content-Type: application/json",
+				"Authorization: Bearer ".$token,
+				"PayPal-Partner-Attribution-Id: ".$this->bncode,
+    		),
+			CURLOPT_CAINFO => __DIR__.'/cacert.pem',
+			CURLOPT_CAPATH => __DIR__.'/cacert.pem',
+			CURLINFO_HEADER_OUT => true,
+		));
+		$curl_result = curl_exec($curl);
+		$array = json_decode($curl_result, true);
+		if(empty($array)) {
+			$result->error = true;
+			$result->errorMessage = 'Returned data from Get Seller Credentials not valid';
+			hikashop_writeToLog(curl_getinfo($curl));
+			hikashop_writeToLog($curl_result);
+			return $result;
+		}
+		if(empty($array['client_id'])) {
+			$result->error = true;
+			$result->errorMessage = 'Returned data from Get Seller Credentials does not contain client ID';
+			hikashop_writeToLog(curl_getinfo($curl));
+			hikashop_writeToLog($array);
+			return $result;
+		}
+		if(empty($array['client_secret'])) {
+			$result->error = true;
+			$result->errorMessage = 'Returned data from Get Seller Credentials does not contain client secret';
+			hikashop_writeToLog(curl_getinfo($curl));
+			hikashop_writeToLog($array);
+			return $result;
+		}
+		if(empty($array['payer_id'])) {
+			$result->error = true;
+			$result->errorMessage = 'Returned data from Get Seller Credentials does not contain payer ID';
+			hikashop_writeToLog(curl_getinfo($curl));
+			hikashop_writeToLog($array);
+			return $result;
+		}
+
+		$result->clientId = $array['client_id'];
+		$result->clientSecret = $array['client_secret'];
+		$result->merchantId = $array['payer_id'];
+
+		return $result;
+	}
+
 	public function onPaymentNotification(&$statuses) {
+		$onboarding = hikaInput::get()->getInt('onboarding');
+		if($onboarding) {
+			echo json_encode($this->processOnboarding());
+			exit;
+		}
+		$closepopup = hikaInput::get()->getInt('closepopup');
+		if($closepopup) {
+			echo "
+			<script>
+			window.close();
+			</script>
+			";
+			exit;
+		}
+
 		$order_id = hikaInput::get()->getInt('order_id');
 		$paypal_id = hikaInput::get()->getString('paypal_id');
 
@@ -145,7 +857,9 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 			}
 
 			$client = new PayPalCheckoutSdk\Core\PayPalHttpClient($env);
-			$response = $client->execute(new PayPalCheckoutSdk\Orders\OrdersGetRequest($paypal_id));
+			$request = new PayPalCheckoutSdk\Orders\OrdersGetRequest($paypal_id);
+			$request->headers['PayPal-Partner-Attribution-Id'] = $this->bncode;
+			$response = $client->execute($request);
 
 			$ok = $this->checkResponse($response, $dbOrder);
 		} catch(Exception $e) {
@@ -205,6 +919,16 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 		$element->payment_params->invalid_status='cancelled';
 		$element->payment_params->verified_status='confirmed';
 		$element->payment_params->funding = 'paylater';
+		$element->payment_params->layout = 'vertical';
+		$element->payment_params->color = 'gold';
+		$element->payment_params->label = 'paypal';
+		$element->payment_params->shape = 'rect';
+		$element->payment_params->tagline = '1';
+		$element->payment_params->listing_position = 'bottom';
+		$element->payment_params->product_page_position = 'rightMiddle';
+		$element->payment_params->cart_page_position = 'bottom';
+		$element->payment_params->checkout_page_position = 'bottom';
+		$element->payment_params->paylater_messaging_color = 'black';
 	}
 
 	private function getOrderData(&$order) {
@@ -222,6 +946,11 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 			$orderData->intent = 'AUTHORIZE';
 		}
 		$orderData->application_context = new stdClass();
+		if(empty($order->order_shipping_id)) {
+			$orderData->application_context->shipping_preference = 'NO_SHIPPING';
+		}elseif(!empty($order->cart->billing_address)) {
+			$orderData->application_context->shipping_preference = 'SET_PROVIDED_ADDRESS';
+		}
 		if(!empty($this->payment_params->brand_name))
 			$orderData->application_context->brand_name = mb_substr($this->payment_params->brand_name, 0, 127);
 		$orderData->application_context->cancel_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=order&task=cancel_order&order_id='.$order->order_id . $this->url_itemid;
@@ -373,6 +1102,7 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 			'client-id' => $this->payment_params->client_id,
 			'integration-date' => '2022-07-11',
 			'currency' => $this->currency->currency_code,
+			'components' => 'buttons,funding-eligibility,messages',
 		];
 		if(!empty($this->payment_params->disable_funding)) {
 			if(!is_string($this->payment_params->disable_funding)) {
@@ -394,6 +1124,26 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 		}
 		if(!empty($this->payment_params->debug)) {
 			$this->params['debug'] = 'true';
+		}
+
+		if(empty($this->payment_params->layout)) {
+			$this->payment_params->layout = 'vertical';
+		}
+		if(empty($this->payment_params->color)) {
+			$this->payment_params->color = 'gold';
+		}
+		if(empty($this->payment_params->label)) {
+			$this->payment_params->label = 'paypal';
+		}
+		if(empty($this->payment_params->shape)) {
+			$this->payment_params->shape = 'rect';
+		}
+		if($this->payment_params->layout == 'horizontal') {
+			if(!isset($this->payment_params->tagline)) {
+				$this->payment_params->tagline = '1';
+			}
+		} else {
+			$this->payment_params->tagline = false;
 		}
 	}
 }

@@ -66,6 +66,11 @@
 			<option value="1">JYES</option>
 		</field>
 
+		<field name="use_cdn" label="COM_EMUNDUS_USE_CDN" type="list" default="1" description="">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
 		<field
 				name="spacer0"
 				type="spacer"
@@ -156,10 +161,26 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+		<field name="copy_application_form_type" showon="copy_application_form:1" menu="hide" type="list" default="0" label="COM_EMUNDUS_COPY_APPLICATION_FORM_TYPE" description="">
+			<option value="0">COM_EMUNDUS_COPY_APPLICATION_FORM_TYPE_EXCLUDE</option>
+			<option value="1">COM_EMUNDUS_COPY_APPLICATION_FORM_TYPE_INCLUDE</option>
+		</field>
+		<field name="copy_include_forms"
+			   label="COM_EMUNDUS_COPY_APPLICATION_FORM_INCLUDE"
+			   description=""
+			   showon="copy_application_form:1[AND]copy_application_form_type:1"
+			   menu="hide"
+			   type="sql"
+			   query="SELECT id, label FROM jos_fabrik_forms WHERE published = 1"
+			   key_field="id"
+			   value_field="label"
+			   multiple="true"
+			   default=""
+		/>
 		<field name="copy_exclude_forms"
 			   label="COM_EMUNDUS_COPY_APPLICATION_FORM_EXCLUDE"
 			   description="COM_EMUNDUS_COPY_APPLICATION_FORM_EXCLUDE_DESC"
-			   showon="copy_application_form:1"
+			   showon="copy_application_form:1[AND]copy_application_form_type:0"
 			   menu="hide"
 			   type="sql"
 			   query="SELECT id, label FROM jos_fabrik_forms WHERE published = 1"
@@ -410,6 +431,8 @@
 			<option value="1">JYES</option>
 		</field>
 
+		<field name="api_bearer_token" type="text" label="COM_EMUNDUS_API_BEARER_TOKEN"/>
+
 		<field
 				name="integration_gotenberg"
 				type="note"
@@ -586,6 +609,21 @@
 			<field name="smart_agenda_api_key" type="password" label="COM_EMUNDUS_SMART_AGENDA_API_KEY"/>
 			<field name="smart_agenda_base_url" type="text" label="COM_EMUNDUS_SMART_AGENDA_BASE_URL"/>
 			<field name="smart_agenda_ws_base_url" type="text" label="COM_EMUNDUS_SMART_AGENDA_BASE_URL_WS"/>
+		</fieldset>
+
+		<field name="spacer12" type="spacer" hr="true"/>
+		<field name="postgrest" type="note" label="COM_EMUNDUS_POSTGREST_API"/>
+		<fieldset label="COM_EMUNDUS_POSTGREST_API">
+			<field name="postgrest_api_base_url" type="text" label="COM_EMUNDUS_POSTGREST_BASE_URL"/>
+			<field name="postgrest_api_bearer_token" type="text" label="COM_EMUNDUS_POSTGREST_BEARER_TOKEN"/>
+		</fieldset>
+
+		<field name="spacer13" type="spacer" hr="true"/>
+		<field name="glpi" type="note" label="COM_EMUNDUS_GLPI_API"/>
+		<fieldset label="COM_EMUNDUS_GLPI_API">
+			<field name="glpi_api_base_url" type="text" label="COM_EMUNDUS_GLPI_BASE_URL"/>
+			<field name="glpi_api_app_token" type="text" label="COM_EMUNDUS_GLPI_APP_TOKEN"/>
+			<field name="glpi_api_user_token" type="text" label="COM_EMUNDUS_GLPI_USER_TOKEN"/>
 		</fieldset>
 
 	</fieldset>

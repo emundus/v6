@@ -259,6 +259,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         // If no mail sender info is provided, we use the system global config.
         $mail_from_name = $jinput->post->getString('mail_from_name', $mail_from_sys_name);
         $mail_from = $jinput->post->getString('mail_from', $mail_from_sys);
+        $reply_to_from = $jinput->post->getString('reply_to_from', '');
 
         $mail_subject = $jinput->post->getString('mail_subject', 'No Subject');
         $template_id = $jinput->post->getInt('template', null);
@@ -387,9 +388,6 @@ class EmundusControllerMessages extends JControllerLegacy {
             $mail_from_address = $mail_from;
         } else {*/
         $mail_from_address = $mail_from_sys;
-        if (!empty($mail_from_name) && !empty($mail_from)) {
-            $reply_to = $mail_from_name . ' &lt;' . $mail_from . '&gt;';
-        }
         //}
 
         $sender = $mail_from_name.' &lt;'.$mail_from_address.'&gt;';
@@ -398,8 +396,8 @@ class EmundusControllerMessages extends JControllerLegacy {
         $html .= '</hr><div class="email-info">
                     <strong>'.JText::_('COM_EMUNDUS_EMAILS_FROM').'</strong> '.$sender.' </br>';
 
-        if (isset($reply_to)) {
-            $html .= '<strong>'.JText::_('COM_EMUNDUS_EMAILS_REPLY_TO').'</strong> '.$reply_to.' </br>';
+        if (!empty($reply_to_from)) {
+            $html .= '<strong>'.JText::_('COM_EMUNDUS_EMAILS_REPLY_TO').'</strong> '.$reply_to_from.' </br>';
         }
 
         $html .= '<strong>'.JText::_('COM_EMUNDUS_EMAILS_TO').'</strong> '.$fnum->email.' </br>'.
@@ -515,7 +513,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
 			die(JText::_("ACCESS_DENIED"));
 		}
-
+		
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
@@ -543,6 +541,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         // If no mail sender info is provided, we use the system global config.
         $mail_from_name = $jinput->post->getString('mail_from_name', $mail_from_sys_name);
         $mail_from = $jinput->post->getString('mail_from', $mail_from_sys);
+        $reply_to_from = $jinput->post->getString('reply_to_from', '');
 
         $mail_subject = $jinput->post->getString('mail_subject', 'No Subject');
         $template_id = $jinput->post->getInt('template', null);
@@ -652,7 +651,10 @@ class EmundusControllerMessages extends JControllerLegacy {
             // Configure email sender
             $mailer = JFactory::getMailer();
             $mailer->setSender($sender);
-            $mailer->addReplyTo($mail_from, $mail_from_name);
+			if(!empty($reply_to_from))
+			{
+				$mailer->addReplyTo($reply_to_from);
+			}
             $mailer->addRecipient($fnum->email);
             $mailer->setSubject($subject);
             $mailer->isHTML(true);
@@ -666,7 +668,7 @@ class EmundusControllerMessages extends JControllerLegacy {
             if (!empty($bcc)) {
                 $mailer->addBcc($bcc);
             }
-
+			
             // Files uploaded from the frontend.
             if (!empty($attachments['upload'])) {
                 // In the case of an uploaded file, just add it to the email.

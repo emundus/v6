@@ -16,6 +16,10 @@
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
+require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+use libphonenumber\PhoneNumberUtil;
+use libphonenumber\PhoneNumberFormat;
+
 /**
  * Content Component Query Helper
  *
@@ -929,4 +933,51 @@ die("<script>
 
 		return $filters;
 	}
+
+    /**
+     *
+     * @param $phone_number string The phone number to format
+     * @param $format int The format to use
+     * 0 => E164
+     * 1 => INTERNATIONAL
+     * 2 => NATIONAL
+     * 3 => RFC3966
+     * @return string The formatted phone number, if the phone number is not valid, empty string is returned
+     */
+    static function getFormattedPhoneNumberValue($phone_number, $format = PhoneNumberFormat::E164)
+    {
+        $formattedValue = '';
+
+        if (!empty($phone_number)) {
+            $phone_number = trim($phone_number);
+            $phone_number = str_replace(' ', '', $phone_number);
+
+            $iso2Test = '';
+            $phone_number_util = PhoneNumberUtil::getInstance();
+
+            if (preg_match('/^\w{2}/', $phone_number))
+            {
+                $iso2Test = substr($phone_number, 0, 2);
+                $phone_number = substr($phone_number, 2);
+            }
+
+            if (preg_match('/^\+\d+$/', $phone_number))
+            {
+                try
+                {
+                    $phone_number = $phone_number_util->parse($phone_number);
+                    $iso2 = $phone_number_util->getRegionCodeForNumber($phone_number);
+
+                    if ($iso2 || $iso2 === $iso2Test)
+                    {
+                        $formattedValue = $iso2 . $phone_number_util->format($phone_number, $format);
+                    }
+                } catch (Exception $e) {
+                    JLog::add('EmundusHelperFabrik::getFormattedPhoneNumberValue Phone number lib returned an error for given phone number ' . $phone_number . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                }
+            }
+        }
+
+        return $formattedValue;
+    }
 }

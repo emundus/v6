@@ -2962,7 +2962,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 	                $gotenberg_merge_activation = $eMConfig->get('gotenberg_merge_activation', 0);
 
-	                if(!$gotenberg_merge_activation) {
+                    if(!$gotenberg_merge_activation || count($files_list) == 1) {
 		                require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
 
 		                $pdf = new ConcatPdf();

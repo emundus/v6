@@ -459,8 +459,8 @@ function openFiles(fnum, page = 0, vue = false) {
                         var string = this, key;
                         for (key in hash) {
                             string = string.replace(new RegExp('\\{' + key + '\\}', 'gm'), hash[key]);
-                            return string;
                         }
+                        return string;
                     };
 
                     let menuListGroup = $('#em-appli-menu .list-group');
@@ -5540,7 +5540,7 @@ $(document).ready(function() {
         tinymce.remove();
         var fnum = $(this).attr('id').split('candidat_')[1];
 
-        $('#em-modal-actions').modal({backdrop:true,keyboard:true},'toggle');
+        $('#em-modal-actions').modal({backdrop:false,keyboard:true},'toggle');
         $('.modal-title').empty();
         $('.modal-title').append($(this).children('a').text());
         $('.modal-body').empty();
@@ -6462,7 +6462,7 @@ async function sendMailQueue(fnums) {
         switch(currentStep) {
             case 0:
                 title = 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL';
-                html = '<div id="data" class="em-mt-32 em-w-100"><div id="email-loader" class="em-loader" style="margin: auto;"></div></div>';
+                html = '<div id="data" class="em-w-100"><div id="email-loader" class="em-loader" style="margin: auto;"></div></div>';
                 swal_confirm_button = 'COM_EMUNDUS_EMAILS_EMAIL_PREVIEW_BEFORE_SEND';
 
                 $.ajax({
@@ -6501,6 +6501,7 @@ async function sendMailQueue(fnums) {
                     template        : $('#message_template :selected').val(),
                     mail_from_name  : $('#mail_from_name').text(),
                     mail_from       : $('#mail_from').text(),
+                    reply_to_from   : $('#reply_to_from').text(),
                     mail_subject    : $('#mail_subject').text(),
                     message         : body,
                     bcc             : [],
