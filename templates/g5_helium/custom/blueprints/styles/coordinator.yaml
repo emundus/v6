@@ -63,7 +63,7 @@ form:
     font-size:
       type: input.text
       label: Font size
-      default: '14px'
+      default: '16px'
     border-radius:
       type: input.text
       label: Buttons border radius

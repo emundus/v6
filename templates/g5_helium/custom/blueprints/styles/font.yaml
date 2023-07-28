@@ -39,7 +39,7 @@ form:
     font-size:
       type: input.text
       label: Text and button font size
-      default: '14px'
+      default: '16px'
     xxs-size:
       type: input.text
       label: XXS Size
