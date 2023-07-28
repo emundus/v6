@@ -16,10 +16,11 @@ if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
 }
 */
 jimport('joomla.application.component.model');
-require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS. 'helpers' . DS . 'files.php');
-require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS. 'helpers' . DS . 'list.php');
-require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+require_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
+require_once(JPATH_SITE.'/components/com_emundus/helpers/files.php');
+require_once(JPATH_SITE.'/components/com_emundus/helpers/list.php');
+require_once(JPATH_SITE.'/components/com_emundus/models/logs.php');
+require_once(JPATH_SITE.'/components/com_emundus/models/users.php');
 
 /**
  * Class EmundusModelFiles
@@ -1330,9 +1331,7 @@ class EmundusModelFiles extends JModelLegacy
                     $user = JFactory::getUser()->id;
                 }
 
-                $now = new DateTime();
-                $now = $now->setTimezone(new DateTimeZone('UTC'));
-                $now = $now->format('Y-m-d H:i:s');
+                $now = EmundusHelperDate::getNow();
 
                 $query_associated_tags = $db->getQuery(true);
                 $query ="insert into #__emundus_tag_assoc (fnum, id_tag, date_time, user_id) VALUES ";
