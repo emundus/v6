@@ -695,12 +695,12 @@ form.fabrikForm input:not([type='file']), form.fabrikForm select, form.fabrikFor
       padding-top: 0.75rem;
       padding-bottom: 0.75rem;
       margin-bottom: 0px;
-      background-color: var(--em-form-bc);
+      background-color: var(--em-form-bgc);
       border-color: var(--em-form-bc);
       transition: all 0.1s ease-out;
     }
 form.fabrikForm input:not([type='file']):hover:not([type='radio']):not([type='checkbox']), form.fabrikForm select:hover:not([type='radio']):not([type='checkbox']), form.fabrikForm textarea:hover:not([type='radio']):not([type='checkbox']) {
-        background-color: var(--em-form-bc-hover);
+        background-color: var(--em-form-bgc-hover);
         border-color: var(--em-form-bc-hover);
         box-shadow: unset;
       }
@@ -710,7 +710,7 @@ form.fabrikForm input:not([type='file']):focus:not([type='radio']):not([type='ch
         outline-offset: var(--em-form-outline-offset-focus);
         box-shadow: unset;
         border-color: var(--em-form-bc-focus);
-        background-color: var(--em-form-bc-focus);
+        background-color: var(--em-form-bgc-focus);
       }
 /* PHONE NUMBER */
 form.fabrikForm #renderCountryCode
@@ -784,7 +784,7 @@ form.fabrikForm .fabrikEmundusPhoneNumber .chzn-container .chzn-single{
       background-position-x: 90% !important;
       background-position-y: 54% !important;
       background-image: url(/images/emundus/arrow.svg) !important;
-      background: var(--em-form-bc);
+      background: var(--em-form-bgc);
       background-size: 8px;
       background-repeat: no-repeat;
       padding-right: 1.5rem !important;
@@ -888,7 +888,7 @@ form.fabrikForm label.btn-default.btn.btn-success.active {
       padding: var(--p-12);
       box-shadow: none;
       cursor: pointer;
-      background-color: var(--em-form-yesno-background-color-yes);
+      background-color: var(--em-form-yesno-bgc-yes);
       border: var(--em-form-yesno-bw) solid var(--em-form-yesno-bc-yes);
       color: var(--neutral-900);
       border-radius: var(--em-applicant-br) !important;
@@ -906,7 +906,7 @@ form.fabrikForm label.btn-default.btn.btn-success.\!active {
       padding: var(--p-12) !important;
       box-shadow: none !important;
       cursor: pointer !important;
-      background-color: var(--em-form-yesno-background-color-yes) !important;
+      background-color: var(--em-form-yesno-bgc-yes) !important;
       border: var(--em-form-yesno-bw) solid var(--em-form-yesno-bc-yes) !important;
       color: var(--neutral-900) !important;
       border-radius: var(--em-applicant-br) !important;
@@ -921,11 +921,11 @@ form.fabrikForm label.btn-default.btn.btn-success.\!active {
       letter-spacing: 0.0015em !important;
     }
 form.fabrikForm label.btn-default.btn.btn-success.active:hover {
-      background-color: var(--em-form-yesno-background-color-yes-hover);
+      background-color: var(--em-form-yesno-bgc-yes-hover);
       border-color: var(--em-form-yesno-bc-yes-hover) !important;
     }
 form.fabrikForm label.btn-default.btn.btn-success.\!active:hover {
-      background-color: var(--em-form-yesno-background-color-yes-hover) !important;
+      background-color: var(--em-form-yesno-bgc-yes-hover) !important;
       border-color: var(--em-form-yesno-bc-yes-hover) !important;
     }
 form.fabrikForm label.btn-default.btn.btn-success.active:hover span {
@@ -969,7 +969,7 @@ form.fabrikForm label.btn-default.btn.btn-danger.active {
       padding: var(--p-12);
       box-shadow: none;
       cursor: pointer;
-      background-color: var(--em-form-yesno-background-color-no);
+      background-color: var(--em-form-yesno-bgc-no);
       border-color: var(--em-form-yesno-bc-no);
       color: var(--em-form-yesno-color-no);
       border-radius: var(--em-applicant-br) !important;
@@ -987,7 +987,7 @@ form.fabrikForm label.btn-default.btn.btn-danger.\!active {
       padding: var(--p-12) !important;
       box-shadow: none !important;
       cursor: pointer !important;
-      background-color: var(--em-form-yesno-background-color-no) !important;
+      background-color: var(--em-form-yesno-bgc-no) !important;
       border-color: var(--em-form-yesno-bc-no) !important;
       color: var(--em-form-yesno-color-no) !important;
       border-radius: var(--em-applicant-br) !important;
@@ -1001,11 +1001,11 @@ form.fabrikForm label.btn-default.btn.btn-danger.\!active {
       width: var(--em-form-yesno-width) !important;
     }
 form.fabrikForm label.btn-default.btn.btn-danger.active:hover {
-      background-color: var(--em-form-yesno-background-color-no-hover);
+      background-color: var(--em-form-yesno-bgc-no-hover);
       border-color: var(--em-form-yesno-bc-no-hover)!important;
     }
 form.fabrikForm label.btn-default.btn.btn-danger.\!active:hover {
-      background-color: var(--em-form-yesno-background-color-no-hover) !important;
+      background-color: var(--em-form-yesno-bgc-no-hover) !important;
       border-color: var(--em-form-yesno-bc-no-hover)!important;
     }
 form.fabrikForm label.btn-default.btn.btn-danger.active:hover span {
@@ -1050,7 +1050,7 @@ form.fabrikForm label.btn-default.btn:not(.active) {
       box-shadow: none;
       cursor: pointer;
       border: var(--em-form-yesno-bw) solid var(--em-form-yesno-bc-not-active);
-      background: var(--em-form-yesno-background-color-not-active);
+      background: var(--em-form-yesno-bgc-not-active);
       color: var(--em-form-yesno-color-not-active);
       display: flex;
       align-items: center;
@@ -1062,7 +1062,7 @@ form.fabrikForm label.btn-default.btn:not(.active) {
       width: var(--em-form-yesno-width) !important;
     }
 form.fabrikForm label.btn-default.btn:not(.active):hover {
-      background-color: var(--em-form-yesno-background-color-not-active-hover);
+      background-color: var(--em-form-yesno-bgc-not-active-hover);
       border-color: var(--em-form-yesno-bc-not-active-hover) !important;
     }
 form.fabrikForm label.btn-default.btn:not(.active):hover span {
@@ -1115,7 +1115,7 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio la
   display: flex;
   align-items: center;
             padding: var(--em-form-radio-padding);
-            border: var(--em-form-radio-bw) solid var(--em-form-radio-border-color);
+            border: var(--em-form-radio-bw) solid var(--em-form-radio-bc);
             border-radius: var(--em-form-radio-br);
 }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label input {
@@ -1130,8 +1130,8 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio la
               word-wrap: break-word;
             }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label:has(input[type='radio']:checked) {
-              background-color: var(--em-form-radio-background-color-checked);
-              border-color: var(--em-form-radio-border-color-checked);
+              background-color: var(--em-form-radio-bgc-checked);
+              border-color: var(--em-form-radio-bc-checked);
             }
 /** CHECKBOX **/
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer {
@@ -1171,7 +1171,7 @@ form.fabrikForm .plg-fileupload .fabrikSubElementContainer {
         display: flex;
         flex-direction: column-reverse;
         padding: var(--em-form-fileupload-padding);
-        background-color: var(--em-form-fileupload-background-color);
+        background-color: var(--em-form-fileupload-bgc);
       }
 form.fabrikForm .plg-fileupload .fabrikSubElementContainer input[type='file'] {
           height: auto;
@@ -1250,7 +1250,7 @@ form.fabrikForm .currencyElement select .chzn-drop .chzn-results li.highlighted,
             }
 form.fabrikForm .currencyElement input:hover + select,form.fabrikForm .currencyElement input:hover + .chzn-container .chzn-single
       {
-        background-color: var(--em-form-bc-hover);
+        background-color: var(--em-form-bgc-hover);
         border-color: var(--em-form-bc-hover);
         box-shadow: unset;
       }
@@ -1258,7 +1258,7 @@ form.fabrikForm .currencyElement input:focus + select,form.fabrikForm .currencyE
       {
         border-radius: var(--em-form-br-focus);
         border-color: var(--em-form-bc-focus);
-        background-color: var(--em-form-bc-focus);
+        background-color: var(--em-form-bgc-focus);
         border-top-left-radius: unset;
         border-bottom-left-radius: unset;
       }
@@ -1354,11 +1354,11 @@ form.fabrikForm .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn.btn-s
       padding-top: var(--spacing-2);
       padding-bottom: var(--spacing-2);
       margin-bottom: 0px;
-      background-color: var(--em-form-bc);
+      background-color: var(--em-form-bgc);
       transition: all 0.1s ease-out;
     }
 .com_emundus input:not([type='file']):hover:not([type='radio']):not([type='checkbox']), .com_emundus select:hover:not([type='radio']):not([type='checkbox']), .com_emundus textarea:hover:not([type='radio']):not([type='checkbox']) {
-        background-color: var(--em-form-bc-hover);
+        background-color: var(--em-form-bgc-hover);
         border-color: var(--em-form-bc-hover);
         box-shadow: unset;
       }
@@ -1368,7 +1368,7 @@ form.fabrikForm .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn.btn-s
         outline-offset: var(--em-form-outline-offset-focus);
         box-shadow: unset;
         border-color: var(--em-form-bc-focus);
-        background-color: var(--em-form-bc-focus);
+        background-color: var(--em-form-bgc-focus);
       }
 input[type="text"],
   input[type="password"],
@@ -1470,7 +1470,7 @@ input[type="text"],
       -moz-appearance: none;
            appearance: none;
       background-image: url(/images/emundus/arrow.svg);
-      background: var(--em-form-bc);
+      background: var(--em-form-bgc);
       background-size: 8px;
       background-repeat: no-repeat;
       padding-right: 1.5rem !important;
@@ -1490,7 +1490,7 @@ input[type="text"],
       -moz-appearance: none;
            appearance: none;
       background-image: url(/images/emundus/arrow.svg) !important;
-      background: var(--em-form-bc);
+      background: var(--em-form-bgc);
       background-size: 8px;
       background-repeat: no-repeat;
       padding-right: 1.5rem !important;
@@ -1924,7 +1924,7 @@ input[type="text"],
 h1 {
   color: var(--em-default-title-color-1);
   font-family: var(--em-applicant-font-title);
-  font-size: var(--em-applicant-h1);
+  font-size: 24px;
   font-style: normal;
   line-height: 28.8px;
   font-weight: 500;
@@ -1932,7 +1932,7 @@ h1 {
 h2 {
   color: var(--em-default-title-color-1);
   font-family: var(--em-applicant-font-title);
-  font-size: var(--em-applicant-h2);
+  font-size: 22px;
   font-style: normal;
   line-height: 26.4px;
   font-weight: 400;
@@ -1940,7 +1940,7 @@ h2 {
 h3 {
   color: var(--em-default-title-color-1);
   font-family: var(--em-applicant-font-title);
-  font-size: var(--em-applicant-h3);
+  font-size: 20px;
   font-style: normal;
   line-height: 24.2px;
   font-weight: 400;
@@ -1949,7 +1949,7 @@ h4 {
         font-family: var(--em-default-font);
         font-style: normal;
         font-weight: 600;
-        font-size:  var(--em-applicant-h4);
+        font-size: 18px;
         line-height: 23px;
         color: var(--em-default-title-color-1);
     }
@@ -1957,7 +1957,7 @@ h5 {
         font-family: var(--em-default-font);
         font-style: normal;
         font-weight: 600;
-        font-size:  var(--em-applicant-h5);
+        font-size: 16px;
         line-height: 20px;
         color: var(--em-default-title-color-1);
     }
@@ -1965,7 +1965,7 @@ h6 {
         font-family: var(--em-default-font);
         font-style: normal;
         font-weight: 600;
-        font-size:  var(--em-applicant-h6);
+        font-size: 14px;
         line-height: 16px;
         color: var(--em-default-title-color-1);
     }
@@ -2246,7 +2246,7 @@ button.swal2-cancel.goback-btn:hover,
         }
 .fabrikMainError, .alert.alert-error {
         border: solid var(--em-alert-error-border-width) var(--em-alert-error-border-color);
-        background-color: var(--em-alert-error-background-color);
+        background-color: var(--em-alert-error-bgc);
         color: var(--em-alert-error-color);
     }
 .fabrikMainError .material-icons, .alert.alert-error .material-icons {
@@ -2254,7 +2254,7 @@ button.swal2-cancel.goback-btn:hover,
         }
 .alert.alert-warning, .alert.alert-notice {
         border: solid var(--em-alert-warning-border-width) var(--em-alert-warning-border-color);
-        background-color: var(--em-alert-warning-background-color);
+        background-color: var(--em-alert-warning-bgc);
         color: var(--em-alert-warning-color);
     }
 .alert.alert-warning .material-icons, .alert.alert-notice .material-icons {
@@ -2262,7 +2262,7 @@ button.swal2-cancel.goback-btn:hover,
         }
 .alert.alert-info {
         border: solid var(--em-alert-info-border-width) var(--em-alert-info-border-color);
-        background-color: var(--em-alert-info-background-color);
+        background-color: var(--em-alert-info-bgc);
         color: var(--em-alert-info-color);
     }
 .alert.alert-info .material-icons {
@@ -2270,7 +2270,7 @@ button.swal2-cancel.goback-btn:hover,
         }
 .alert.alert-success {
         border: solid var(--em-alert-success-border-width) var(--em-alert-success-border-color);
-        background-color: var(--em-alert-success-background-color);
+        background-color: var(--em-alert-success-bgc);
         color: var(--em-alert-success-color);
     }
 .alert.alert-success .material-icons {

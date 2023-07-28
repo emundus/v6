@@ -148,12 +148,12 @@
       border-radius: var(--em-form-br);
       @apply px-2.5 py-3;
       @apply mb-0;
-      background-color: var(--em-form-bc);
+      background-color: var(--em-form-bgc);
       border-color: var(--em-form-bc);
       transition: all 0.1s ease-out;
 
       &:hover:not([type='radio']):not([type='checkbox']) {
-        background-color: var(--em-form-bc-hover);
+        background-color: var(--em-form-bgc-hover);
         border-color: var(--em-form-bc-hover);
         box-shadow: unset;
       }
@@ -164,7 +164,7 @@
         outline-offset: var(--em-form-outline-offset-focus);
         box-shadow: unset;
         border-color: var(--em-form-bc-focus);
-        background-color: var(--em-form-bc-focus);
+        background-color: var(--em-form-bgc-focus);
       }
     }
 
@@ -250,7 +250,7 @@
       background-position-x: 90% !important;
       background-position-y: 54% !important;
       background-image: url(/images/emundus/arrow.svg) !important;
-      background: var(--em-form-bc);
+      background: var(--em-form-bgc);
       background-size: 8px;
       background-repeat: no-repeat;
       padding-right: 1.5rem !important;
@@ -377,7 +377,7 @@
       padding: var(--p-12);
       box-shadow: none;
       cursor: pointer;
-      background-color: var(--em-form-yesno-background-color-yes);
+      background-color: var(--em-form-yesno-bgc-yes);
       border: var(--em-form-yesno-bw) solid var(--em-form-yesno-bc-yes);
       color: var(--neutral-900);
       border-radius: var(--em-applicant-br) !important;
@@ -393,7 +393,7 @@
     }
 
     label.btn-default.btn.btn-success.active:hover {
-      background-color: var(--em-form-yesno-background-color-yes-hover);
+      background-color: var(--em-form-yesno-bgc-yes-hover);
       border-color: var(--em-form-yesno-bc-yes-hover) !important;
     }
 
@@ -422,7 +422,7 @@
       padding: var(--p-12);
       box-shadow: none;
       cursor: pointer;
-      background-color: var(--em-form-yesno-background-color-no);
+      background-color: var(--em-form-yesno-bgc-no);
       border-color: var(--em-form-yesno-bc-no);
       color: var(--em-form-yesno-color-no);
       border-radius: var(--em-applicant-br) !important;
@@ -438,7 +438,7 @@
 
 
     label.btn-default.btn.btn-danger.active:hover {
-      background-color: var(--em-form-yesno-background-color-no-hover);
+      background-color: var(--em-form-yesno-bgc-no-hover);
       border-color: var(--em-form-yesno-bc-no-hover)!important;
     }
 
@@ -468,7 +468,7 @@
       box-shadow: none;
       cursor: pointer;
       border: var(--em-form-yesno-bw) solid var(--em-form-yesno-bc-not-active);
-      background: var(--em-form-yesno-background-color-not-active);
+      background: var(--em-form-yesno-bgc-not-active);
       color: var(--em-form-yesno-color-not-active);
       display: flex;
       align-items: center;
@@ -481,7 +481,7 @@
     }
 
     label.btn-default.btn:not(.active):hover {
-      background-color: var(--em-form-yesno-background-color-not-active-hover);
+      background-color: var(--em-form-yesno-bgc-not-active-hover);
       border-color: var(--em-form-yesno-bc-not-active-hover) !important;
     }
 
@@ -535,7 +535,7 @@
             @apply flex;
             @apply items-center;
             padding: var(--em-form-radio-padding);
-            border: var(--em-form-radio-bw) solid var(--em-form-radio-border-color);
+            border: var(--em-form-radio-bw) solid var(--em-form-radio-bc);
             border-radius: var(--em-form-radio-br);
             input {
               accent-color: var(--em-form-radio-color-checked);
@@ -549,8 +549,8 @@
               word-wrap: break-word;
             }
             &:has(input[type='radio']:checked) {
-              background-color: var(--em-form-radio-background-color-checked);
-              border-color: var(--em-form-radio-border-color-checked);
+              background-color: var(--em-form-radio-bgc-checked);
+              border-color: var(--em-form-radio-bc-checked);
             }
           }
         }
@@ -612,7 +612,7 @@
         display: flex;
         flex-direction: column-reverse;
         padding: var(--em-form-fileupload-padding);
-        background-color: var(--em-form-fileupload-background-color);
+        background-color: var(--em-form-fileupload-bgc);
         input[type='file'] {
           height: auto;
           @apply w-full;
@@ -692,7 +692,7 @@
       }
       input:hover + select,input:hover + .chzn-container .chzn-single
       {
-        background-color: var(--em-form-bc-hover);
+        background-color: var(--em-form-bgc-hover);
         border-color: var(--em-form-bc-hover);
         box-shadow: unset;
       }
@@ -700,7 +700,7 @@
       {
         border-radius: var(--em-form-br-focus);
         border-color: var(--em-form-bc-focus);
-        background-color: var(--em-form-bc-focus);
+        background-color: var(--em-form-bgc-focus);
         border-top-left-radius: unset;
         border-bottom-left-radius: unset;
       }
@@ -819,11 +819,11 @@
       border-radius: var(--em-coordinator-br);
       @apply px-1.5 py-2;
       @apply mb-0;
-      background-color: var(--em-form-bc);
+      background-color: var(--em-form-bgc);
       transition: all 0.1s ease-out;
 
       &:hover:not([type='radio']):not([type='checkbox']) {
-        background-color: var(--em-form-bc-hover);
+        background-color: var(--em-form-bgc-hover);
         border-color: var(--em-form-bc-hover);
         box-shadow: unset;
       }
@@ -834,7 +834,7 @@
         outline-offset: var(--em-form-outline-offset-focus);
         box-shadow: unset;
         border-color: var(--em-form-bc-focus);
-        background-color: var(--em-form-bc-focus);
+        background-color: var(--em-form-bgc-focus);
       }
     }
   }
@@ -951,7 +951,7 @@
       -webkit-appearance: none;
       appearance: none;
       background-image: url(/images/emundus/arrow.svg);
-      background: var(--em-form-bc);
+      background: var(--em-form-bgc);
       background-size: 8px;
       background-repeat: no-repeat;
       padding-right: 1.5rem !important;
@@ -971,7 +971,7 @@
       -webkit-appearance: none;
       appearance: none;
       background-image: url(/images/emundus/arrow.svg) !important;
-      background: var(--em-form-bc);
+      background: var(--em-form-bgc);
       background-size: 8px;
       background-repeat: no-repeat;
       padding-right: 1.5rem !important;

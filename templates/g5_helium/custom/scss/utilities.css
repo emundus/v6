@@ -382,7 +382,7 @@
 
     .fabrikMainError, .alert.alert-error {
         border: solid var(--em-alert-error-border-width) var(--em-alert-error-border-color);
-        background-color: var(--em-alert-error-background-color);
+        background-color: var(--em-alert-error-bgc);
         color: var(--em-alert-error-color);
 
         .material-icons {
@@ -392,7 +392,7 @@
 
     .alert.alert-warning, .alert.alert-notice {
         border: solid var(--em-alert-warning-border-width) var(--em-alert-warning-border-color);
-        background-color: var(--em-alert-warning-background-color);
+        background-color: var(--em-alert-warning-bgc);
         color: var(--em-alert-warning-color);
 
         .material-icons {
@@ -402,7 +402,7 @@
 
     .alert.alert-info {
         border: solid var(--em-alert-info-border-width) var(--em-alert-info-border-color);
-        background-color: var(--em-alert-info-background-color);
+        background-color: var(--em-alert-info-bgc);
         color: var(--em-alert-info-color);
 
         .material-icons {
@@ -412,7 +412,7 @@
 
     .alert.alert-success {
         border: solid var(--em-alert-success-border-width) var(--em-alert-success-border-color);
-        background-color: var(--em-alert-success-background-color);
+        background-color: var(--em-alert-success-bgc);
         color: var(--em-alert-success-color);
 
         .material-icons {

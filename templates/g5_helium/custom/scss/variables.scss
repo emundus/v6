@@ -216,22 +216,22 @@
   --bg-3: #C62222;
 
   /* ALERTS */
-  --em-alert-error-background-color: #{$em-alert-error-background-color};
+  --em-alert-error-bgc: #{$em-alert-error-background-color};
   --em-alert-error-color: #{$em-alert-error-color};
   --em-alert-error-icon-color: #{$em-alert-error-icon-color};
   --em-alert-error-border-width: #{$em-alert-error-border-width};
   --em-alert-error-border-color: #{$em-alert-error-border-color};
-  --em-alert-warning-background-color: #{$em-alert-warning-background-color};
+  --em-alert-warning-bgc: #{$em-alert-warning-background-color};
   --em-alert-warning-color: #{$em-alert-warning-color};
   --em-alert-warning-icon-color: #{$em-alert-warning-icon-color};
   --em-alert-warning-border-width: #{$em-alert-warning-border-width};
   --em-alert-warning-border-color: #{$em-alert-warning-border-color};
-  --em-alert-info-background-color: #{$em-alert-info-background-color};
+  --em-alert-info-bgc: #{$em-alert-info-background-color};
   --em-alert-info-color: #{$em-alert-info-color};
   --em-alert-info-icon-color: #{$em-alert-info-icon-color};
   --em-alert-info-border-width: #{$em-alert-info-border-width};
   --em-alert-info-border-color: #{$em-alert-info-border-color};
-  --em-alert-success-background-color: #{$em-alert-success-background-color};
+  --em-alert-success-bgc: #{$em-alert-success-background-color};
   --em-alert-success-color: #{$em-alert-success-color};
   --em-alert-success-icon-color: #{$em-alert-success-icon-color};
   --em-alert-success-border-width: #{$em-alert-success-border-width};
@@ -272,14 +272,14 @@
   --em-default-title-color-1: #{$base-title-color};          //  titre
   --em-default-title-color-1-500: var(--neutral-500);     //  titre disabled
   --em-default-title-color-2: var(--neutral-0);           //  titre sur fond foncé
-  --em-default-title-color-3: #{var(--em-primary-color)};        //  titre en highlight
+  --em-default-title-color-3: #{$base-primary-color};        //  titre en highlight
 
   --em-default-text-color-1: #{$base-text-color};            // texte principal, input, label des boutons
   --em-default-text-color-1-500: var(--neutral-500);      // pagination, label des boutons disabled
   --em-default-text-color-1-800: var(--neutral-600);      // texte tertiaire, texte moins important, annotation, label des radio disabled
   --em-default-text-color-1-700: var(--neutral-700);      // texte secondaire, texte pour les articles
   --em-default-text-color-2: var(--neutral-0);            // texte sur fond foncé, label des boutons sur fond concé
-  --em-default-text-color-3: #{var(--em-secondary-color)};       // chiffres, étapes, liens hypertextes
+  --em-default-text-color-3: #{$base-secondary-color};       // chiffres, étapes, liens hypertextes
   --em-default-text-color-4: #{$base-tertiary-color};        // définitions
 
   /* BACKGROUND */
@@ -362,14 +362,14 @@
   --em-form-br: #{$em-form-border-radius};
   --em-form-bc: #{$em-form-border-color};
   --em-form-br-block: #{$em-form-border-radius-block};
-  --em-form-bc: #{$em-form-background-color};
+  --em-form-bgc: #{$em-form-background-color};
   --em-form-br-focus: #{$em-form-border-radius-focus};
   --em-form-bc-focus: #{$em-form-border-color-focus};
-  --em-form-bc-focus: #{$em-form-background-color-focus};
+  --em-form-bgc-focus: #{$em-form-background-color-focus};
   --em-form-outline-width-focus: #{$em-form-outline-width-focus};
   --em-form-outline-color-focus: #{$em-form-outline-color-focus};
   --em-form-outline-offset-focus: #{$em-form-outline-offset-focus};
-  --em-form-bc-hover: #{$em-form-background-color-hover};
+  --em-form-bgc-hover: #{$em-form-background-color-hover};
   --em-form-bc-hover: #{$em-form-border-color-hover};
   --em-form-bc-error: #{$em-form-border-color-error};
   --em-form-label-color-error: #{$em-form-label-color-error};
@@ -383,7 +383,7 @@
   --em-form-radio-height: #{$em-form-radio-height};
   --em-form-radio-margin-right: #{$em-form-radio-margin-right};
   --em-form-radio-color-checked: #{$em-form-radio-color-checked};
-  --em-form-radio-background-color-checked: #{$em-form-radio-background-color-checked};
+  --em-form-radio-bgc-checked: #{$em-form-radio-background-color-checked};
   --em-form-radio-bc-checked: #{$em-form-radio-border-color-checked};
 
   --em-form-yesno-bw: #{$em-form-yesno-border-width};
@@ -393,27 +393,27 @@
   --em-form-yesno-gap: #{$em-form-yesno-gap};
 
   --em-form-yesno-color-yes: #{$em-form-yesno-color-yes};
-  --em-form-yesno-background-color-yes: #{$em-form-yesno-background-color-yes};
+  --em-form-yesno-bgc-yes: #{$em-form-yesno-background-color-yes};
   --em-form-yesno-bc-yes: #{$em-form-yesno-border-color-yes};
 
   --em-form-yesno-color-yes-hover: #{$em-form-yesno-color-yes-hover};
-  --em-form-yesno-background-color-yes-hover: #{$em-form-yesno-background-color-yes-hover};
+  --em-form-yesno-bgc-yes-hover: #{$em-form-yesno-background-color-yes-hover};
   --em-form-yesno-bc-yes-hover: #{$em-form-yesno-border-color-yes-hover};
 
   --em-form-yesno-color-no: #{$em-form-yesno-color-no};
-  --em-form-yesno-background-color-no: #{$em-form-yesno-background-color-no};
+  --em-form-yesno-bgc-no: #{$em-form-yesno-background-color-no};
   --em-form-yesno-bc-no: #{$em-form-yesno-border-color-no};
 
   --em-form-yesno-color-no-hover: #{$em-form-yesno-color-no-hover};
-  --em-form-yesno-background-color-no-hover: #{$em-form-yesno-background-color-no-hover};
+  --em-form-yesno-bgc-no-hover: #{$em-form-yesno-background-color-no-hover};
   --em-form-yesno-bc-no-hover: #{$em-form-yesno-border-color-no-hover};
 
   --em-form-yesno-color-not-active: #{$em-form-yesno-color-not-active};
-  --em-form-yesno-background-color-not-active: #{$em-form-yesno-background-color-not-active};
+  --em-form-yesno-bgc-not-active: #{$em-form-yesno-background-color-not-active};
   --em-form-yesno-bc-not-active: #{$em-form-yesno-border-color-not-active};
 
   --em-form-yesno-color-not-active-hover: #{$em-form-yesno-color-not-active-hover};
-  --em-form-yesno-background-color-not-active-hover: #{$em-form-yesno-background-color-not-active-hover};
+  --em-form-yesno-bgc-not-active-hover: #{$em-form-yesno-background-color-not-active-hover};
   --em-form-yesno-bc-not-active-hover: #{$em-form-yesno-border-color-not-active-hover};
 
   --em-form-checkbox-bw: #{$em-form-checkbox-border-width};
@@ -424,7 +424,7 @@
   --em-form-checkbox-color-checked: #{$em-form-checkbox-color-checked};
   --em-form-checkbox-bc-error: #{$em-form-checkbox-border-color-error};
   --em-form-fileupload-padding: #{$em-form-fileupload-padding};
-  --em-form-fileupload-background-color: #{$em-form-fileupload-background-color};
+  --em-form-fileupload-bgc: #{$em-form-fileupload-background-color};
   --em-coordinator-form-height: #{$coordinator-form-height};
   --em-coordinator-bc: #{$coordinator-border-color};
 
