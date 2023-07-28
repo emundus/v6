@@ -8,8 +8,9 @@ class EmundusFiltersFiles extends EmundusFilters
 	private $user_campaigns = [];
 	private $user_programs = [];
     private $config = [];
-
 	private $m_users = null;
+
+	private $menu_params = null;
 
 	public function __construct($config = array())
 	{
@@ -24,6 +25,8 @@ class EmundusFiltersFiles extends EmundusFilters
 		$this->config = $config;
 		$this->user_campaigns = $this->m_users->getAllCampaignsAssociatedToUser($this->user->id);
 		$this->user_programs = $this->m_users->getUserGroupsProgrammeAssoc($this->user->id, 'jesp.id');
+
+		$this->setMenuParams();
 
 		$this->setProfiles();
 		$this->setDefaultFilters($config);
@@ -48,6 +51,12 @@ class EmundusFiltersFiles extends EmundusFilters
             $this->applied_filters = $helper_files->setFiltersValuesAvailability($this->applied_filters);
         }
     }
+
+	private function setMenuParams() {
+		$menu = JFactory::getApplication()->getMenu();
+		$active = $menu->getActive();
+		$this->menu_params = $active->params;
+	}
 
 	private function setProfiles()
 	{
@@ -181,9 +190,28 @@ class EmundusFiltersFiles extends EmundusFilters
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
+		$filter_menu_values = $this->menu_params->get('em_filters_values', '');
+		$filter_menu_values = explode(',', $filter_menu_values);
+		$filter_menu_values_are_empty = empty($filter_menu_values);
+		$filter_names = [];
+
+		if (!$filter_menu_values_are_empty) {
+			$filter_names = $this->menu_params->get('em_filters_names', '');
+			$filter_names = explode(',', $filter_names);
+		}
+
 		if ($config['filter_status']) {
 			$query->select('id, step, value, 0 as count')
 				->from('#__emundus_setup_status');
+
+			if (!$filter_menu_values_are_empty) {
+				$position = array_search('status', $filter_names);
+
+				if (!empty($position) && isset($filter_menu_values[$position])) {
+					$statuses = explode('|', $filter_menu_values[$position]);
+					$query->where('step IN ('. implode(',', $statuses) .')');
+				}
+			}
 
 			$db->setQuery($query);
 			$statuses = $db->loadObjectList();
@@ -214,6 +242,15 @@ class EmundusFiltersFiles extends EmundusFilters
 				->where('published = 1')
 				->andWhere('id IN (' . implode(',', $this->user_campaigns) . ')');
 
+			if (!$filter_menu_values_are_empty) {
+				$position = array_search('campaign', $filter_names);
+
+				if (!empty($position) && isset($filter_menu_values[$position])) {
+					$campaigns = explode('|', $filter_menu_values[$position]);
+					$query->where('id IN ('. implode(',', $campaigns) .')');
+				}
+			}
+
 			$db->setQuery($query);
 			$campaigns = $db->loadAssocList();
 
@@ -228,6 +265,10 @@ class EmundusFiltersFiles extends EmundusFilters
 				'available' => true,
                 'order' => $config['filter_campaigns_order']
             ];
+
+			if (!empty($this->menu_params->get('em_filters_values'))) {
+
+			}
 		}
 
 		if ($config['filter_programs']) {

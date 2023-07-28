@@ -3570,6 +3570,37 @@ class EmundusHelperFiles
 			$where['q'] .= ' AND (' . $programme_where_cond . $fnum_assoc_where_cond . ') ';
 		}
 
+	    $menu = JFactory::getApplication()->getMenu();
+		if (!empty($menu)) {
+			$active = $menu->getActive();
+			$menu_params = $active->params;
+			$filter_menu_values = $menu_params->get('em_filters_values', '');
+			$filter_menu_values = explode(',', $filter_menu_values);
+
+			if (!empty($filter_menu_values)) {
+				$filter_names = $menu_params->get('em_filters_names', '');
+				$filter_names = explode(',', $filter_names);
+
+				foreach($filter_names as $key => $filter_name) {
+					if (isset($filter_menu_values[$key]) && $filter_menu_values[$key] != '') {
+						$values = explode('|', $filter_menu_values[$key]);
+
+						switch ($filter_name) {
+							case 'status':
+								$where['q'] .= ' AND jecc.status IN ("' . implode('","', $values) . '") ';
+								break;
+							case 'programme':
+								$where['q'] .= ' AND sp.id IN ("' . implode('","', $values) . '") ';
+								break;
+							case 'campaign':
+								$where['q'] .= ' AND esc.id IN ("' . implode('","', $values) . '") ';
+								break;
+						}
+					}
+				}
+			}
+		}
+
 		// Now we handle session filters (if any)
 	    $session = JFactory::getSession();
 	    $session_filters = $session->get('em-applied-filters', []);
