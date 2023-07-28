@@ -3187,8 +3187,9 @@ class EmundusModelApplication extends JModelList
         return $results;
     }
 
-    public function getApplicationMenu() {
-        $juser = JFactory::getUser();
+    public function getApplicationMenu($user_id = 0) {
+		$user_id = $user_id ?: JFactory::getUser()->id;
+        $juser = JFactory::getUser($user_id);
 
 		$menus = [];
 

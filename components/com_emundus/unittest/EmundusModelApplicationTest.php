@@ -43,14 +43,6 @@ class EmundusModelApplicationTest extends TestCase
 		$this->app = JFactory::getApplication();
         $this->m_application = new EmundusModelApplication;
 	    $this->h_sample = new EmundusUnittestHelperSamples;
-
-	    $username = 'test-application-' . rand(0, 1000) . '@emundus.fr';
-	    $this->h_sample->createSampleUser(9, $username, [2,7]);
-	    $this->app->login([
-		    'username' => $username,
-		    'password' => 'test1234'
-	    ]);
-
     }
 
     public function testGetApplicantInfos(){
@@ -244,9 +236,17 @@ class EmundusModelApplicationTest extends TestCase
 		$this->assertSame($done, false, 'Action should no longer work because file status has changed');
 	}
 
-	/*public function testgetApplicationMenu() {
-		$menus = $this->m_application->getApplicationMenu();
+	public function testgetApplicationMenu() {
+		$username = 'test-application-coordinator-' . rand(0, 1000) . '@emundus.fr';
+		$coordinator = $this->h_sample->createSampleUser(9, $username, [2,7]);
+		$username = 'test-application-applicant-' . rand(0, 1000) . '@emundus.fr';
+		$applicant = $this->h_sample->createSampleUser(9, $username);
+
+		$menus = $this->m_application->getApplicationMenu($coordinator);
 		$this->assertNotEmpty($menus, 'A coordinator should have access to the application menu');
-	}*/
+
+		$menus = $this->m_application->getApplicationMenu($applicant);
+		$this->assertEmpty($menus, 'An applicant should not have access to the application menu');
+	}
 }
 
