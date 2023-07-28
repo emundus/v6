@@ -21,6 +21,9 @@ foreach ($group->subgroups as $subgroup) :
 	$introData = array_merge($input->getArray(), array('i' => $i));
 	?>
 	<div class="fabrikSubGroup">
+		<?php if(!empty($group->maxRepeat) && $group->maxRepeat > 1) : ?>
+            <p class="em-text-neutral-600"><?php echo JText::sprintf('COM_FABRIK_REPEAT_GROUP_MAX',$group->maxRepeat) ?></p>
+		<?php endif; ?>
 		<div data-role="group-repeat-intro">
 			<?php echo $w->parseMessageForPlaceHolder($group->repeatIntro, $introData);?>
 		</div>

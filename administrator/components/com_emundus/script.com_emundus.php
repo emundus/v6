@@ -2075,6 +2075,9 @@ structure:
 
 				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED', 'Tous les champs sont obligatoires sauf mention contraire');
 				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED', 'Tous les champs sont obligatoires sauf mention contraire', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_REPEAT_GROUP_MAX','Vous pouvez saisir jusqu\'à %s entrées');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_REPEAT_GROUP_MAX','You can enter up to %s entries', 'override', null, null, null, 'en-GB');
 			}
 		}
 
