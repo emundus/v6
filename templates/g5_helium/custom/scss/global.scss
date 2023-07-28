@@ -367,7 +367,7 @@ div#frame.outline {
       background-color: $base-secondary-color;
       border-color: $base-secondary-color;
       color: var(--neutral-50);
-      font-size: 14px !important;
+      font-size: var(--em-applicant-font-size) !important;
       border-radius: var(--em-applicant-br);
 
       &:hover,
@@ -383,7 +383,7 @@ div#frame.outline {
       background-color: transparent;
       border-color: $base-primary-color;
       color: $base-primary-color;
-      font-size: 14px !important;
+      font-size: var(--em-applicant-font-size) !important;
       border-radius: var(--em-applicant-br);
 
       &:hover,
@@ -870,7 +870,7 @@ footer#g-footer > .g-container {
           width: fit-content;
 
           .btn.btn-default {
-            font-size: 11px;
+            font-size: var(--em-coordinator-font-size);
             display: flex;
             align-items: center;
             border: 1px solid var(--main-500);
@@ -963,7 +963,7 @@ footer#g-footer > .g-container {
 
         .dropfiles-save-submit {
           width: fit-content !important;
-          font-size: 11px !important;
+          font-size: var(--em-coordinator-font-size) !important;
           border: 1px solid var(--main-500);
           background-color: var(--main-500) !important;
           color: var(--neutral-0);
@@ -1096,7 +1096,7 @@ footer#g-footer > .g-container {
     padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
     font-family: $font-family-text;
     line-height: normal;
-    font-size: 15px;
+    font-size: var(--em-applicant-font-size);
     letter-spacing: normal;
   }
 
@@ -1290,7 +1290,7 @@ footer#g-footer > .g-container {
     font-weight: 500;
     letter-spacing: normal;
     font-style: normal;
-    font-size: 15px !important;
+    font-size: var(--em-coordinator-font-size);
     height: var(--em-form-height) !important;
 
     &:hover, &:active, &:focus {
@@ -1299,7 +1299,7 @@ footer#g-footer > .g-container {
       color: var(--main-500);
       letter-spacing: normal;
       font-style: normal;
-      font-size: 15px !important;
+      font-size: var(--em-coordinator-font-size);
     }
   }
 
@@ -1459,13 +1459,13 @@ footer#g-footer > .g-container {
   .btn.btn-success {
     background: var(--main-500);
     border: 1px solid var(--main-500);
-    font-size: 14px;
+    font-size: var(--em-coordinator-font-size);;
 
     &:hover {
       text-decoration: none;
       background: transparent;
       border: 1px solid var(--main-500);
-      font-size: 14px;
+      font-size: var(--em-coordinator-font-size);;
       color: var(--main-500);
     }
   }
@@ -1697,7 +1697,7 @@ div.fabrikFilterContainer {
         border-radius: var(--em-form-border-radius);
         padding: 0 var(--p-8);
         height: 48px;
-        font-size: 16px;
+        font-size: var(--em-applicant-font-size);
         margin: 0;
         border: 1px solid #e0e0e5;
         background-color: var(--em-form-background-color);
@@ -2019,6 +2019,7 @@ span.btn {
   padding: var(--em-spacing-vertical) var(--em-spacing-horizontal) !important;
   color: var(--neutral-50);
   line-height: normal !important;
+  letter-spacing: normal;
 
   &:hover,
   &:focus,
@@ -2088,7 +2089,7 @@ p.readmore .btn,
 .finder #search-form .btn {
   font-family: inherit;
   font-weight: 400;
-  font-size: 15px;
+  font-size: var(--em-applicant-font-size);
   letter-spacing: normal;
 }
 
@@ -2136,7 +2137,7 @@ p.readmore .btn,
     border: 1px solid $base-primary-color;
     border-radius: var(--em-applicant-br) !important;
     color: var(--neutral-50);
-    font-size: 14px;
+    font-size: var(--em-applicant-font-size);
 
     &:hover,
     &:active,
@@ -2406,7 +2407,10 @@ button#back,
   color: $base-secondary-color;
   border-radius: var(--em-applicant-br);
   padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
-  font-weight: inherit;
+  font-weight: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  font-size: var(--em-applicant-font-size);
 
   &:hover,
   &:focus {
@@ -3169,7 +3173,7 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
   }
 
   span.fas.fa-trash {
-    font-size: 15px;
+    font-size: var(--em-coordinator-font-size);
   }
 }
 
@@ -3730,7 +3734,8 @@ div#em-appli-block {
   /* BOUTONS */
   button.btn-primary {
     border-radius: var(--em-applicant-br) !important;
-
+    letter-spacing: normal;
+    line-height: normal;
   }
 
 
@@ -3924,7 +3929,7 @@ div#em-appli-block {
 
 [id$="indicatif_chzn"] .chzn-single span,
 [id$="indicatif_2_chzn"] .chzn-single span {
-  font-size: 13px !important;
+  font-size: var(--em-applicant-font-size);
   position: relative;
   bottom: 6px;
 }
@@ -4780,7 +4785,7 @@ screen and (max-height: 769px) {
   }
 
   .user-menu-phone .content ul {
-    font-size: 15px;
+    font-size: var(--em-applicant-font-size);
     margin: 0;
     padding: 10px 0 0 10px;
   }
@@ -5268,7 +5273,7 @@ fieldset[disabled] .multiselect {
 .multiselect__input,
 .multiselect__single {
   font-family: inherit;
-  font-size: 16px !important;
+  font-size: var(--em-applicant-font-size);
   touch-action: manipulation;
 }
 
@@ -5337,7 +5342,7 @@ fieldset[disabled] .multiselect {
   left: 0 !important;
   white-space: nowrap;
   width: 95%;
-  font-size: 14px !important;
+  font-size: var(--em-applicant-font-size);
 }
 
 .fabrikElement .multiselect .multiselect__tags input.multiselect__input {
@@ -5404,7 +5409,7 @@ fieldset[disabled] .multiselect {
   border-radius: var(--em-coordinator-br);
   border: 1px solid var(--neutral-400);
   background: var(--neutral-0);
-  font-size: 14px;
+  font-size: var(--em-applicant-font-size);
 }
 
 .multiselect__tag {
@@ -5446,7 +5451,7 @@ fieldset[disabled] .multiselect {
 .multiselect__tag-icon:after {
   content: "×";
   color: var(--neutral-900);
-  font-size: 14px;
+  font-size: var(--em-applicant-font-size);
 }
 
 .multiselect__tag-icon:focus,
@@ -5579,7 +5584,7 @@ fieldset[disabled] .multiselect {
   line-height: 40px;
   padding-right: 12px;
   padding-left: 20px;
-  font-size: 13px;
+  font-size: var(--em-applicant-font-size);
 }
 
 .multiselect__option--highlight {

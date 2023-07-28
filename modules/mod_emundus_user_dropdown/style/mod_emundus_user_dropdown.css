@@ -126,7 +126,7 @@ li>a:hover {
 }
 
 #g-navigation #header-c .header-right a.btn.btn-danger {
-    font-size: 15px !important;
+    font-size: var(--em-applicant-font-size) !important;
     margin-bottom: 0 !important;
     text-shadow: none;
     padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
@@ -181,7 +181,7 @@ li>a:hover {
 
 
 a.forgotten_password_header {
-    font-size: 14px;
+    font-size: var(--em-applicant-font-size);
     color: var(--link-regular);
     float: right;
 }
@@ -252,12 +252,15 @@ a.btn.btn-danger :not(.btn-creer-compte):hover {
 }
 
 .logout-button-user{
-    padding: var(--p-8) var(--p-24) !important;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal)!important;
     border-radius: var(--em-applicant-br);
     text-align: center;
     background-color: var(--red-500);
     color: var(--neutral-0) !important;
     margin-top: var(--m-8);
+    letter-spacing: normal;
+    line-height: normal !important;
+    font-size: var(--em-applicant-font-size);
 }
 .logout-button-user:hover{
     background: var(--red-700) !important;
@@ -270,8 +273,11 @@ a.btn.btn-danger :not(.btn-creer-compte):hover {
     text-transform: initial;
     border-radius: var(--em-applicant-br) !important;
     color: var(--neutral-0);
-    padding: var(--p-8) var(--p-24);
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
     text-align: center;
+    line-height: normal;
+    letter-spacing: normal;
+    font-size: var(--em-applicant-font-size);
 }
 
 #header-c #userDropdownMenu a.edit-button-user:hover,

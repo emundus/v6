@@ -1,15 +1,47 @@
-name: Font
-description: Font
+name: Fonts
+description: Fonts
 type: core
 
 form:
   fields:
-    family-text:
-      type: input.fonts
-      label: Body Font
-      default: 'Inter'
     family-title:
       type: input.fonts
       label: Title Font
       default: 'Inter'
+    size-h1:
+      type: input.text
+      label: H1 font size
+      default: '24px'
+    size-h2:
+      type: input.text
+      label: H2 font size
+      default: '22px'
+    size-h3:
+      type: input.text
+      label: H3 font size
+      default: '20px'
+    size-h4:
+      type: input.text
+      label: H4 font size
+      default: '18px'
+    size-h5:
+      type: input.text
+      label: H5 font size
+      default: '16px'
+    size-h6:
+      type: input.text
+      label: H6 font size
+      default: '14px'
+    family-text:
+      type: input.fonts
+      label: Body Font
+      default: 'Inter'
+    font-size:
+      type: input.text
+      label: Text and button font size
+      default: '14px'
+    xxs-size:
+      type: input.text
+      label: XXS Size
+      default: "10px"
 

@@ -43,7 +43,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
     }
 
     .mod_emundus_flow___intro .btn.btn-primary {
-        font-size: 14px !important;
+        font-size: var(--em-applicant-font-size) !important;
         letter-spacing: normal !important;
         line-height: normal !important;
     }

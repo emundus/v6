@@ -1,5 +1,5 @@
-name: Typography
-description: Typography
+name: Links
+description: Links
 type: core
 
 form:
@@ -12,7 +12,3 @@ form:
       type: input.colorpicker
       label: Hover Color
       default: "#424753"
-    xxs-size:
-      type: input.text
-      label: XXS Size
-      default: "10px"

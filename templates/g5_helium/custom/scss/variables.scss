@@ -248,6 +248,23 @@
   --em-default-font: 'Inter', sans-serif;
   --em-default-font-title: 'Inter', sans-serif;
 
+/* FONT SIZE */
+  --em-coordinator-font-size: #{$coordinator-font-size};
+  --em-coordinator-h1: #{$coordinator-size-h1};
+  --em-coordinator-h2: #{$coordinator-size-h2};
+  --em-coordinator-h3: #{$coordinator-size-h3};
+  --em-coordinator-h4: #{$coordinator-size-h4};
+  --em-coordinator-h5: #{$coordinator-size-h5};
+  --em-coordinator-h6: #{$coordinator-size-h6};
+
+  --em-applicant-font-size: #{$font-font-size};
+  --em-applicant-h1: #{$font-size-h1};
+  --em-applicant-h2: #{$font-size-h2};
+  --em-applicant-h3: #{$font-size-h3};
+  --em-applicant-h4: #{$font-size-h4};
+  --em-applicant-h5: #{$font-size-h5};
+  --em-applicant-h6: #{$font-size-h6};
+
   /* FONT COLOR */
   --em-coordinator-title-color: #{$coordinator-title-color};
   --em-coordinator-text-color: #{$coordinator-text-color};
