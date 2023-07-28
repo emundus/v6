@@ -811,7 +811,7 @@
   .com_emundus {
     /** INPUT **/
     input:not([type='radio']):not([type='checkbox']):not([type='file']), select {
-      height: var(--em-form-coordinator-form-height);
+      height: var(--em-coordinator-form-height);
     }
 
     input:not([type='file']), select, textarea {

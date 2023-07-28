@@ -139,23 +139,23 @@
 .btnExport, .btnQueryBuilder:hover, .swal2-confirm:hover, .swal2-cancel {
 	border-radius: var(--em-coordinator-br);
 	background:transparent;
-	padding: 8px 12px;
+	padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
 	white-space: normal;
 }
 
 .btnExport:hover .swal2-cancel:hover, #createButton:hover{
 	border-radius: var(--em-coordinator-br);
 	background: var(--neutral-0);
-	border: 1px	solid var(--em-primary-color-coordinator);
-	color: var(--em-primary-color-coordinator);
+	border: 1px	solid var(--em-coordinator-primary-color);
+	color: var(--em-coordinator-primary-color);
 	padding: 8px 12px;
 	white-space: normal;
 }
 
 .btnQueryBuilder, .swal2-confirm, #createButton {
 	border-radius: var(--em-coordinator-br);
-	background: var(--em-primary-color-coordinator);
-	border: 1px	solid var(--em-primary-color-coordinator);
+	background: var(--em-coordinator-primary-color);
+	border: 1px	solid var(--em-coordinator-primary-color);
 	color: var(--neutral-0);
 	padding: 8px 12px;
 	white-space: normal;
@@ -254,87 +254,87 @@
 }
 
 #validation {
-	background: var(--em-primary-color-coordinator);
-	border: 1px solid var(--em-primary-color-coordinator);
+	background: var(--em-coordinator-primary-color);
+	border: 1px solid var(--em-coordinator-primary-color);
 }
 
 #validation:hover,
 #validation:focus,
 #validation:active {
 	background: transparent;
-	border: 1px solid var(--em-primary-color-coordinator);
-	color: var(--em-primary-color-coordinator);
+	border: 1px solid var(--em-coordinator-primary-color);
+	color: var(--em-coordinator-primary-color);
 }
 
 .btnQueryBuilder,
 .swal2-confirm {
-	background: var(--em-primary-color-coordinator);
-	border: 1px solid var(--em-primary-color-coordinator);
+	background: var(--em-coordinator-primary-color);
+	border: 1px solid var(--em-coordinator-primary-color);
 }
 
 .btnConsulter {
-	background: var(--em-primary-color-coordinator);
-	border: 1px solid var(--em-primary-color-coordinator);
+	background: var(--em-coordinator-primary-color);
+	border: 1px solid var(--em-coordinator-primary-color);
 	border-radius: var(--em-coordinator-br);
 }
 
 .btnConsulter:hover {
-	color: var(--em-primary-color-coordinator);
-	border: 1px solid var(--em-primary-color-coordinator);
+	color: var(--em-coordinator-primary-color);
+	border: 1px solid var(--em-coordinator-primary-color);
 	background: transparent;
 	border-radius: var(--em-coordinator-br) !important;
 }
 
 .btnQueryBuilder:hover,
 .swal2-confirm:hover {
-	color: var(--em-primary-color-coordinator);
-	border: 1px solid var(--em-primary-color-coordinator);
+	color: var(--em-coordinator-primary-color);
+	border: 1px solid var(--em-coordinator-primary-color);
 	background: transparent;
 }
 
 .btnExport,
 .swal2-cancel {
-	color: var(--em-secondary-color-coordinator);
-	border: 1px solid var(--em-secondary-color-coordinator);
+	color: var(--em-coordinator-secondary-color);
+	border: 1px solid var(--em-coordinator-secondary-color);
 	background: transparent;
 }
 
 .btnExport:hover,
 .swal2-cancel:hover {
 	color: var(--neutral-0);
-	border: 1px solid var(--em-secondary-color-coordinator);
-	background: var(--em-secondary-color-coordinator);
+	border: 1px solid var(--em-coordinator-secondary-color);
+	background: var(--em-coordinator-secondary-color);
 }
 
 .g-content h1::after,
 .swal2-title::after {
-	background: var(--em-secondary-color-coordinator) !important;
+	background: var(--em-coordinator-secondary-color) !important;
 }
 
 .swal2-progress-step,
 .swal2-progress-steps .swal2-progress-step-line,
 .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step {
-	background: var(--em-secondary-color-coordinator);
+	background: var(--em-coordinator-secondary-color);
 }
 
 .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step ~ .swal2-progress-step-line {
-	border-top: 1px solid var(--em-secondary-color-coordinator);
-	border-bottom: 1px solid var(--em-secondary-color-coordinator);
+	border-top: 1px solid var(--em-coordinator-secondary-color);
+	border-bottom: 1px solid var(--em-coordinator-secondary-color);
 }
 
 .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step ~ .swal2-progress-step {
-	color: var(--em-secondary-color-coordinator);
-	border: 1px solid var(--em-secondary-color-coordinator);
+	color: var(--em-coordinator-secondary-color);
+	border: 1px solid var(--em-coordinator-secondary-color);
 }
 
 .input .modif,
 .input .delete {
-	color: var(--em-secondary-color-coordinator);
+	color: var(--em-coordinator-secondary-color);
 	border: unset;
 }
 
 .btnConsulter:hover a {
-	color: var(--em-primary-color-coordinator);
+	color: var(--em-coordinator-primary-color);
 }
 
 

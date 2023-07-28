@@ -67,7 +67,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     height: 48px;
     margin-right:0;
     border-radius: 4px;
-    padding: 8px 12px;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
     line-height: normal;
     font-weight: 300;
     font-size: 14px;

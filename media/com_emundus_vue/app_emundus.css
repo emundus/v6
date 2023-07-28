@@ -136,7 +136,7 @@
 #attachment-edit .actions button {
   -webkit-transition: all 0.3s;
   transition: all 0.3s;
-  padding: 8px 12px;
+  padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
 }
 #attachment-edit .input-group {
   margin-top: 10px;
@@ -1815,10 +1815,10 @@ a.em-pointer:nth-child(2):hover .material-icons[data-v-220c8cc4] {
   background: #eeeeee;
 }
 .w--current[data-v-4e57a09e]:hover{
-  color: var(--em-primary-color-coordinator);
+  color: var(--main-500);
 }
 .em-pointer[data-v-4e57a09e]:hover{
-  color: var(--em-primary-color-coordinator);
+  color: var(--main-500);
 }
 .em-w-custom[data-v-4e57a09e] {
   width: calc(100% - 75px) !important;
@@ -2093,7 +2093,7 @@ div.forms-emails-editor .menubar[data-v-18686cfd] {
   border: 2px solid #1C6EF2 !important;
 }
 .form-builder-page-section-element:hover {
-  border: 2px solid var(--em-primary-color-coordinator);
+  border: 2px solid var(--main-500);
 }
 .form-builder-page-section-element:hover #element-action-icons {
   opacity: 1;
@@ -2158,7 +2158,7 @@ div.forms-emails-editor .menubar[data-v-18686cfd] {
       align-self: flex-end;
 }
 .form-builder-page-section .section-card .section-content {
-  border-top: 4px solid var(--em-primary-color-coordinator);
+  border-top: 4px solid var(--main-500);
   background-color: white;
   -webkit-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;
@@ -4035,7 +4035,7 @@ body ::-webkit-scrollbar-track {
 .com_emundus_vue input {
   display: block;
   margin-bottom: 10px;
-  padding: 8px 12px;
+  padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
   border: 1px solid #cccccc;
   border-radius: 4px;
   -webkit-transition: border-color 200ms linear;

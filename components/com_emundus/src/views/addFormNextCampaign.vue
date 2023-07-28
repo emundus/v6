@@ -22,7 +22,7 @@
 
       <div class="em-flex-row em-mb-32">
         <p>
-          <b style="color: var(--em-primary-color-coordinator); font-weight: 700 !important;"> {{form.label}}</b>
+          <b style="color: var(--em-coordinator-primary-color); font-weight: 700 !important;"> {{form.label}}</b>
           {{translations.From}}
           <strong>{{ form.start_date }}</strong>
           {{translations.To}}

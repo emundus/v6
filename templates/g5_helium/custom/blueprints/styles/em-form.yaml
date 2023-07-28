@@ -272,10 +272,6 @@ form:
         type: input.colorpicker
         label: Fileupload background color
         default: '#F0F0F0'
-    coordinator-form-height:
-        type: input.text
-        label: Coordinator form height
-        default: '40px'
 
 
 

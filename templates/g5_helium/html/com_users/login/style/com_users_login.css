@@ -3,7 +3,7 @@ button.btn-primary{
     background: #e03c32;
     border: 1px solid #e03c32;
     border-radius: var(--em-applicant-br) !important;
-    padding: 8px 12px!important;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal) !important;
 }
 button.btn-primary:hover{
     background-color: transparent;
@@ -36,7 +36,7 @@ button.btn-primary:hover{
 .login form.form-validate.form-horizontal.well {
     border: none;
     margin-bottom: 0 !important;
-    background: white;
+    background: var(--neutral-0);
     box-shadow: none;
     width: 100%;
     padding: 0;
@@ -46,7 +46,7 @@ button.btn-primary:hover{
     display: flex !important;
     flex-direction: column;
     align-items: center;
-    background: white;
+    background: var(--neutral-0);
     margin-top: 50px;
     border-radius: 16px 16px 0 0;
     padding: 80px 64px 0 64px;
@@ -64,7 +64,7 @@ button.btn-primary:hover{
     display: flex !important;
     flex-direction: column;
     align-items: center;
-    background: white;
+    background: var(--neutral-0);
     margin-top: 24px;
     border-radius: 16px;
     padding: 0 64px 80px 64px;
@@ -82,7 +82,7 @@ button.btn-primary:hover{
 }
 
 .invalid {
-    color: red !important;
+    color: var(--red-500) !important;
     font-weight: 600;
 }
 .login .well label {
@@ -103,7 +103,7 @@ button.btn-primary:hover{
 
 
 ul.nav.nav-tabs.nav-stacked {
-    background: white;
+    background: var(--neutral-0);
     border-radius: 0 0 16px 16px;
     display: flex;
     justify-content: space-between;

@@ -29,7 +29,6 @@ $now = $dateTime->format('Y-m-d H:i:s');
     }
 
     .mod_emundus_flow___print{
-        height: 38px;
         display: flex !important;
         align-items: center;
     }
@@ -100,7 +99,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
         <div class="flex items-center justify-end">
             <?php if ($show_back_button == 1) : ?>
             <a href="<?php echo $home_link ?>" title="<?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?>">
-                <button class="btn btn-primary mr-4" style="height: 41px"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
+                <button class="btn btn-primary mr-4"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
             </a>
             <?php endif; ?>
             <a href="/component/emundus/?task=pdf&amp;fnum=<?= $current_application->fnum ?>" target="_blank" title="<?php echo JText::_('PRINT') ?>">

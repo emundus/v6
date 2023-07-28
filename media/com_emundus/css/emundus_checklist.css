@@ -67,7 +67,7 @@ button#back:hover, button#back:active, button#back:focus,
 .em-print-button a {
     text-shadow: none;
     width: 100%;
-    padding: 8px 12px;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
     font-size: 1rem;
     border: 1px solid  #29d4ff;
     color: #fff;
@@ -540,7 +540,7 @@ body.view-reset label#jform_username-lbl::after,
     margin-top: 1rem !important;
     text-shadow: none !important;
     width: 100% !important;
-    padding: 8px 12px !important;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal) !important;
     font-size: 1rem !important;
     display: flex !important;
     justify-content: center;
@@ -553,7 +553,7 @@ body.view-reset label#jform_username-lbl::after,
 
 .em-print-button a {
     text-shadow: none !important;
-    padding: 8px 12px !important;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal) !important;
 }
 
 .em-print-button a:hover, .em-print-button a:focus, .em-print-button a:active {

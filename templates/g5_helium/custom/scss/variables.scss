@@ -5,9 +5,9 @@
   --em-secondary-color: #{$base-secondary-color};
   --em-tertiary-color: #{$base-tertiary-color};
 
-  --em-primary-color-coordinator: #{$base-primary-color-coordinator};
-  --em-secondary-color-coordinator: #{$base-secondary-color-coordinator};
-  --em-tertiary-color-coordinator: #{$base-tertiary-color-coordinator};
+  --em-coordinator-primary-color: #{$coordinator-primary-color};
+  --em-coordinator-secondary-color: #{$coordinator-secondary-color};
+  --em-coordinator-tertiary-color: #{$coordinator-tertiary-color};
 
   --attachment-width: 75%;
 
@@ -239,8 +239,8 @@
   --em-alert-modal-padding: #{$em-alert-modal-padding};
 
   /* FONT */
-  --em-coordinator-font: #{$font-coordinator-family-text};
-  --em-coordinator-font-title: #{$font-coordinator-family-title};
+  --em-coordinator-font: #{$coordinator-family-text};
+  --em-coordinator-font-title: #{$coordinator-family-title};
 
   --em-applicant-font: #{$font-family-text};
   --em-applicant-font-title: #{$font-family-title};
@@ -249,8 +249,8 @@
   --em-default-font-title: 'Inter', sans-serif;
 
   /* FONT COLOR */
-  --em-coordinator-title-color: #{$base-title-color-coordinator};
-  --em-coordinator-text-color: #{$base-text-color-coordinator};
+  --em-coordinator-title-color: #{$coordinator-title-color};
+  --em-coordinator-text-color: #{$coordinator-text-color};
 
   --em-default-title-color-1: #{$base-title-color};          //  titre
   --em-default-title-color-1-500: var(--neutral-500);     //  titre disabled
@@ -268,16 +268,26 @@
   /* BACKGROUND */
   --em-defaut-bg: #fff;
   --em-applicant-bg: #{$base-background};
-  --em-coordinator-bg: #{$base-background-coordinator};
+  --em-coordinator-bg: #{$coordinator-background};
 
   /* BORDER RADIUS  */
   --em-default-br: #{$em-border-radius-default};
   --em-applicant-br: #{$em-border-radius-applicant};
-  --em-coordinator-br: #{$em-border-radius-coordinator};
+  --em-coordinator-br: #{$coordinator-border-radius};
+
   --em-default-br-cards: #{$em-border-radius-cards};
   --em-status-br: #{$em-border-radius-status};
+  --em-coordinator-form-br: #{$coordinator-form-border-radius};
+
+
+  // Spacing
 
   --spacing-2: 8px;
+
+  --em-spacing-vertical: #{$spacing-vertical};
+  --em-spacing-horizontal: #{$spacing-horizontal};
+  --em-coordinator-vertical: #{$coordinator-vertical};
+  --em-coordinator-horizontal: #{$coordinator-horizontal};
 
   // Padding
   --p-4: 4px;
@@ -398,7 +408,8 @@
   --em-form-checkbox-border-color-error: #{$em-form-checkbox-border-color-error};
   --em-form-fileupload-padding: #{$em-form-fileupload-padding};
   --em-form-fileupload-background-color: #{$em-form-fileupload-background-color};
-  --em-form-coordinator-form-height: #{$em-form-coordinator-form-height};
+  --em-coordinator-form-height: #{$coordinator-form-height};
+  --em-coordinator-bc: #{$coordinator-border-color};
 
   /** UTILITIES **/
   --link-xxs-size: #{$link-xxs-size};

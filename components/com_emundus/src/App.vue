@@ -136,7 +136,7 @@ export default {
   input {
     display: block;
     margin-bottom: 10px;
-    padding: 8px 12px;
+    padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
     border: 1px solid #cccccc;
     border-radius: 4px;
     -webkit-transition: border-color 200ms linear;

@@ -1344,7 +1344,7 @@ form.fabrikForm .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn.btn-s
 /** BACKEND/VUE FORMS **/
 /** INPUT **/
 .com_emundus input:not([type='radio']):not([type='checkbox']):not([type='file']), .com_emundus select {
-      height: var(--em-form-coordinator-form-height);
+      height: var(--em-coordinator-form-height);
     }
 .com_emundus input:not([type='file']), .com_emundus select, .com_emundus textarea {
       color: var(--em-default-text-color-1);
@@ -1992,7 +1992,7 @@ a,
         display: none;
     }
 .text-xxs {
-        font-size: var(--link-xxs-size);
+        font-size: var(--link-xxs-size) !important;
     }
 .collapse {
         visibility: inherit;

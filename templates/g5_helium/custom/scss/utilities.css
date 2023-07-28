@@ -65,7 +65,7 @@
     }
 
     .text-xxs {
-        font-size: var(--link-xxs-size);
+        font-size: var(--link-xxs-size) !important;
     }
 
     .collapse {

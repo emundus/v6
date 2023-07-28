@@ -786,11 +786,11 @@ footer#g-footer > .g-container {
 
     .dropfiles_progress_block .dropfiles_progress_pause:after,
     .dropfiles_progress_block .dropfiles_progress_cancel:after {
-      color: var(--main-500);
+      color: var(--em-coordinator-primary-color);
     }
 
     .dropfiles_progress_block .dropfiles_process_run {
-      background: var(--main-500);
+      background: var(--em-coordinator-primary-color);
     }
 
     #mybootstrap {
@@ -814,7 +814,7 @@ footer#g-footer > .g-container {
         }
 
         tr.file.selected,  tr.file:hover {
-          box-shadow: 0 0 0 1px var(--main-500);
+          box-shadow: 0 0 0 1px var(--em-coordinator-primary-color);
         }
       }
 
@@ -1093,7 +1093,7 @@ footer#g-footer > .g-container {
     text-transform: unset;
     margin-right: 0;
     border-radius: var(--em-applicant-br) !important;
-    padding: 8px 12px;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
     font-family: $font-family-text;
     line-height: normal;
     font-size: 15px;
@@ -1257,14 +1257,14 @@ footer#g-footer > .g-container {
 
   form .filtertable input.fabrik_filter_submit {
     border-radius: var(--em-coordinator-br);
-    padding: 8px 12px;
+    padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
     border: 1px solid var(--main-500);
     background: var(--night-blue);
     color: var(--neutral-50);
 
     &:active, &:focus, &:hover {
       border-radius: var(--em-coordinator-br);
-      padding: 8px 12px;
+      padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
       border: 1px solid var(--main-500);
       background: transparent;
       color: var(--night-blue);
@@ -1410,7 +1410,7 @@ footer#g-footer > .g-container {
     color: var(--night-blue);
 
     span.icon-edit {
-      color: var(--em-primary-color-coordinator);
+      color: var(--em-coordinator-primary-color);
     }
   }
 }
@@ -1987,8 +1987,7 @@ button.btn-primary {
   background: $base-secondary-color;
   border: 1px solid $base-secondary-color;
   border-radius: var(--em-applicant-br) !important;
-  padding: 8px 12px;
-  height: 40px;
+  padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
 
   &:hover {
     background-color: transparent;
@@ -2000,7 +1999,7 @@ button.btn-secondary {
   background: $base-secondary-color;
   border: 1px solid $base-secondary-color;
   border-radius: var(--em-applicant-br) !important;
-  padding: 8px 12px;
+  padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
 
   &:hover {
     background-color: transparent;
@@ -2017,9 +2016,9 @@ span.btn {
   background: $base-primary-color;
   border: 1px solid $base-primary-color;
   border-radius: var(--em-applicant-br) !important;
-  padding: 8px 12px !important;
+  padding: var(--em-spacing-vertical) var(--em-spacing-horizontal) !important;
   color: var(--neutral-50);
-  height: 40px;
+  line-height: normal !important;
 
   &:hover,
   &:focus,
@@ -2288,7 +2287,7 @@ a#em-doc-zip,
   border: 1px solid $base-primary-color;
   text-shadow: none;
   text-transform: initial;
-  padding: 8px 12px;
+  padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
 }
 
 button.save-btn:hover,
@@ -2406,7 +2405,7 @@ button#back,
   text-transform: none;
   color: $base-secondary-color;
   border-radius: var(--em-applicant-br);
-  padding: 8px 12px;
+  padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
   font-weight: inherit;
 
   &:hover,
@@ -2749,7 +2748,7 @@ ul.g-dropdown.g-dropdown-right.g-fade {
   border: 1px solid $base-secondary-color;
   background: $base-secondary-color;
   color: var(--neutral-50);
-  padding: 8px 12px;
+  padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
 }
 
 .logout-button input.btn.btn-primary:hover {
@@ -2762,7 +2761,7 @@ ul.g-dropdown.g-dropdown-right.g-fade {
   border: 1px solid $base-primary-color;
   background: $base-primary-color;
   color: var(--neutral-0);
-  padding: 8px 12px;
+  padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
 }
 
 #g-container-main div.login .control-group .controls button.btn.btn-primary {
@@ -2869,10 +2868,10 @@ ul.unstyled.em-linkForgot li a {
 /* EMAILS */
 
 #emailForm.em-form-message a {
-  color: var(--main-500);
+  color: var(--em-coordinator-primary-color);
 
   &:hover {
-    color: var(--main-600);
+    color: var(--em-coordinator-primary-color);
   }
 }
 
@@ -3000,15 +2999,15 @@ ul.unstyled.em-linkForgot li a {
 }
 
 .form.em-decision-form .btn.btn-success {
-  padding: 8px 12px;
-  border: 1px solid var(--em-primary-color-coordinator);
-  background: var(--em-primary-color-coordinator);
+  padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
+  border: 1px solid var(--em-coordinator-primary-color);
+  background: var(--em-coordinator-primary-color);
   border-radius: var(--em-coordinator-br) !important;
 
   &:hover, &:active, &:focus {
-    border: 1px solid var(--em-primary-color-coordinator) !important;
+    border: 1px solid var(--em-coordinator-primary-color) !important;
     background: var(--neutral-0);
-    color: var(--em-primary-color-coordinator);
+    color: var(--em-coordinator-primary-color);
   }
 }
 
@@ -3100,7 +3099,7 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
   width: -moz-available;
   width: -webkit-fill-available;
   width: fill-available;
-  padding: 8px 12px !important;
+  padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
   height: 100%;
 
   &:focus,
@@ -3449,7 +3448,7 @@ div#em-appli-block {
     background: var(--night-blue);
     border: 1.5px solid var(--neutral-100);
     color: var(--neutral-100);
-    padding: 8px 12px !important;
+    padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
     border-radius: var(--em-coordinator-br) !important;
 
     &:hover, &:active, &:focus {
@@ -3651,7 +3650,7 @@ div#em-appli-block {
           background-color: $base-secondary-color;
           color: var(--neutral-50);
           border: 1px solid $base-secondary-color;
-          padding: 8px 12px;
+          padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
           border-radius: var(--em-coordinator-br);
 
           &:hover,
@@ -3731,6 +3730,7 @@ div#em-appli-block {
   /* BOUTONS */
   button.btn-primary {
     border-radius: var(--em-applicant-br) !important;
+
   }
 
 
@@ -4352,13 +4352,13 @@ screen and (max-height: 769px) {
       .btn-toolbar .btn.btn-primary {
         border-radius: var(--em-coordinator-br);
         text-transform: initial;
-        padding: 8px 12px;
+        padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
       }
 
       .btn[title="Basculer l'éditeur"] {
         border-radius: var(--em-coordinator-br);
         text-transform: initial;
-        padding: 8px 12px;
+        padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
       }
     }
 

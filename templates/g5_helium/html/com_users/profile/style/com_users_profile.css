@@ -1,9 +1,8 @@
 button.btn-primary{
-    background: #e03c32;
     background-color: #e03c32;
     border: 1px solid #e03c32;
     border-radius: 4px;
-    padding: 8px 12px!important;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal) !important;
 }
 button.btn-primary:hover{
     background-color: transparent;
@@ -11,11 +10,10 @@ button.btn-primary:hover{
     outline: none;
 }
 a.btn{
-    background: #29d4ff;
     background-color: #29d4ff;
     border: 1px solid #29d4ff;
     border-radius: 4px;
-    padding: 8px 12px;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
 }
 a.btn:hover{
     background-color: transparent;
@@ -28,17 +26,13 @@ a.btn:hover{
     padding: 0;
 }
 
-
 form#member-profile.well {
     background: #fff;
     border: none;
-    margin-top: 50px;
-    margin-bottom: 50px;
+    margin: 50px auto 50px auto;
     padding: 32px 32px 24px 32px;
     border-radius: var(--em-form-border-radius-block) !important;
     width: 84%;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 form#member-profile  fieldset .em-heading-form {

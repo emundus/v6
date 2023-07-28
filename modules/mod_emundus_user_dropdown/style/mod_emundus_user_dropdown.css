@@ -129,7 +129,7 @@ li>a:hover {
     font-size: 15px !important;
     margin-bottom: 0 !important;
     text-shadow: none;
-    padding: var(--p-8) var(--p-24);
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
     display: flex;
     align-items: center;
     justify-content: center;
