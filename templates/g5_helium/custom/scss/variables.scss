@@ -272,14 +272,14 @@
   --em-default-title-color-1: #{$base-title-color};          //  titre
   --em-default-title-color-1-500: var(--neutral-500);     //  titre disabled
   --em-default-title-color-2: var(--neutral-0);           //  titre sur fond foncé
-  --em-default-title-color-3: #{$base-primary-color};        //  titre en highlight
+  --em-default-title-color-3: #{var(--em-primary-color)};        //  titre en highlight
 
   --em-default-text-color-1: #{$base-text-color};            // texte principal, input, label des boutons
   --em-default-text-color-1-500: var(--neutral-500);      // pagination, label des boutons disabled
   --em-default-text-color-1-800: var(--neutral-600);      // texte tertiaire, texte moins important, annotation, label des radio disabled
   --em-default-text-color-1-700: var(--neutral-700);      // texte secondaire, texte pour les articles
   --em-default-text-color-2: var(--neutral-0);            // texte sur fond foncé, label des boutons sur fond concé
-  --em-default-text-color-3: #{$base-secondary-color};       // chiffres, étapes, liens hypertextes
+  --em-default-text-color-3: #{var(--em-secondary-color)};       // chiffres, étapes, liens hypertextes
   --em-default-text-color-4: #{$base-tertiary-color};        // définitions
 
   /* BACKGROUND */
@@ -829,7 +829,7 @@
 @mixin radio {
   height: 14px !important;
   width: 14px !important;
-  background: var(--neutral-50);
+  background: var(--neutral-0);
   border-radius: 9px !important;
   appearance: auto;
   margin-top: 0 !important;
@@ -848,13 +848,13 @@
   .calendar{
     border-radius: 5px;
     border: solid 1px #e6e6e6;
-    box-shadow: 5px 5px 11px #ebebeb, -5px -5px 11px var(--neutral-50);
+    box-shadow: 5px 5px 11px #ebebeb, -5px -5px 11px var(--neutral-0);
     padding: 10px;
     width: 250px;
-    background: var(--neutral-50);
+    background: var(--neutral-0);
     table{
       border: unset;
-      background: var(--neutral-50);
+      background: var(--neutral-0);
 
       thead {
         tr:first-child {
@@ -887,7 +887,7 @@
         }
 
         tr.headrow {
-          background: var(--neutral-50);
+          background: var(--neutral-0);
 
           td {
             padding-bottom: 6px;
@@ -906,7 +906,7 @@
         }
 
         tr.daynames {
-          background: var(--neutral-50);
+          background: var(--neutral-0);
 
           td {
             padding: 6px;
@@ -937,7 +937,7 @@
         td.selected{
           border-radius: 5px;
           background: var(--neutral-800);
-          color: var(--neutral-50);
+          color: var(--neutral-0);
         }
         td.hilite{
           background: var(--neutral-400);
@@ -1050,7 +1050,7 @@
     !* INPUT *!
     .fabrikinput:not(textarea):not([type='checkbox']) {
       @include input-default;
-      background-color: var(--neutral-50);
+      background-color: var(--neutral-0);
 
       &:hover {
         @include input-hover;
@@ -1076,7 +1076,7 @@
       }
 
       &[placeholder] {
-        color: var(--neutral-500) !important;
+        color: var(--neutral-00) !important;
         @include body-16;
       }
 
@@ -1223,7 +1223,7 @@
           span {
             @include body-16-medium;
             margin-top: 0;
-            color: var(--neutral-50);
+            color: var(--neutral-0);
           }
         }
 
@@ -1245,7 +1245,7 @@
           span {
             @include body-16-medium;
             margin-top: 0;
-            color: var(--neutral-50);
+            color: var(--neutral-0);
           }
         }
 
@@ -1337,7 +1337,7 @@
           height: 48px !important;
           background: var(--neutral-100);
           border-radius: 0 8px 8px 0 !important;
-          color: var(--neutral-500);
+          color: var(--neutral-00);
           z-index: 10;
 
           i.icon-clock {
