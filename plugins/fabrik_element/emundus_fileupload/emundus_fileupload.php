@@ -119,9 +119,9 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
                     $sizeMax = ($postSize >= $iniSize) ? $iniSize : $postSize;
 
                     if (!empty($fileName)) {
-                        $now = new DateTime();
-                        $now = $now->setTimezone(new DateTimeZone('UTC'));
-                        $now = $now->format('Y-m-d H:i:s');
+                        require_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
+                        $h_date = new EmundusHelperDate();
+                        $now = $h_date->getNow();
                         $insert[] = $db->quote($now) . ' , ' . $db->quote($user) . ' , ' . $db->quote($fnum) . ' , ' . $db->quote($cid) . ' , ' . $db->quote($attachId) . ' , ' . $db->quote($fileName) . ' , ' . $db->quote(1) . ' , ' . $db->quote(1) . ' , ' . $db->quote($now) . ' , ' . $db->quote($file['name']);
                     }
 
@@ -792,9 +792,9 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $current_user = JFactory::getSession()->get('emundusUser');
         $user = (int)$current_user->id;
 
-        $now = new DateTime();
-        $now = $now->setTimezone(new DateTimeZone('UTC'));
-        $now = $now->format('Y-m-d H:i:s');
+        require_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
+        $h_date = new EmundusHelperDate();
+        $now = $h_date->getNow();
 
         $query->update($db->quoteName('#__emundus_uploads'))
             ->set($db->quoteName('filename') . ' = ' . $db->quote($fileName))

@@ -23,7 +23,7 @@ class EmundusModelLogs extends JModelList {
 	 */
 	public function __construct() {
 		parent::__construct();
-		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'date.php');
+		require_once (JPATH_SITE.'/components/com_emundus/helpers/date.php');
 
 		// Assign values to class variables.
 		$this->user = JFactory::getUser();
@@ -66,9 +66,7 @@ class EmundusModelLogs extends JModelList {
                         $ip = JFactory::getApplication()->input->server->get('REMOTE_ADDR','');
                         $user_to = empty($user_to) ? '' : $user_to;
 
-                        $now = new DateTime();
-                        $now = $now->setTimezone(new DateTimeZone('UTC'));
-                        $now = $now->format('Y-m-d H:i:s');
+                        $now = EmundusHelperDate::getNow();
 
                         $columns = ['timestamp', 'user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params', 'ip_from'];
                         $values  = [$db->quote($now), $user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message), $db->quote($params), $db->quote($ip)];

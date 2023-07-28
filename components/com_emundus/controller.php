@@ -784,14 +784,16 @@ class EmundusController extends JControllerLegacy {
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $copy_application_form = $eMConfig->get('copy_application_form', 0);
         $can_submit_encrypted = $eMConfig->get('can_submit_encrypted', 1);
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'checklist.php');
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'checklist.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
-        $m_profile = new EmundusModelProfile;
-        $h_checklist = new EmundusHelperChecklist();
-        $m_checklist = new EmundusModelChecklist;
+        require_once (JPATH_COMPONENT.'/helpers/checklist.php');
+        require_once (JPATH_COMPONENT.'/helpers/date.php');
+        require_once (JPATH_COMPONENT.'/helpers/export.php');
+        require_once (JPATH_COMPONENT.'/models/checklist.php');
+        require_once (JPATH_COMPONENT.'/models/application.php');
+        $h_checklist = new EmundusHelperChecklist;
+        $h_date = new EmundusHelperDate;
         $m_application = new EmundusModelApplication;
+        $m_checklist = new EmundusModelChecklist;
+        $m_profile = new EmundusModelProfile;
 
         $db = JFactory::getDBO();
 	    $query_updating_file = null;
@@ -1123,9 +1125,7 @@ class EmundusController extends JControllerLegacy {
                         $can_be_deleted = @$post['can_be_deleted_'.$attachments]!=''?$post['can_be_deleted_'.$attachments]:JRequest::getVar('can_be_deleted', 1, 'POST', 'none',0);
                         $can_be_viewed = @$post['can_be_viewed_'.$attachments]!=''?$post['can_be_viewed_'.$attachments]:JRequest::getVar('can_be_viewed', 1, 'POST', 'none',0);
 
-                        $now = new DateTime();
-                        $now = $now->setTimezone(new DateTimeZone('UTC'));
-                        $now = $now->format('Y-m-d H:i:s');
+                        $now = $h_date->getNow();
 
                         $query .= '('.$user->id.', '.$attachments.', \''.$paths.'\', '.$db->Quote($descriptions).', '.$can_be_deleted.', '.$can_be_viewed.', '.$fnumInfos['id'].', '.$db->Quote($fnum).', '.$pageCount.', '.$db->quote($local_filename).', '.$db->quote($now).', '.$db->quote($now).', '.$db->quote($file['size']).'),';
                         $nb++;

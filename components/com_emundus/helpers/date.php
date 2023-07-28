@@ -30,16 +30,16 @@ class EmundusHelperDate {
 
     /**
      * Return actual date formatted in UTC timezone
+     * @param $timezone
      *
      * @return string
      *
      * @throws Exception
      * @since version 1.36.7
      */
-    static function saveDate() {
-        // TODO: test calls to this function, replace code using these lines by it
+    static function getNow($timezone = 'UTC') {
         $now = new DateTime();
-        $now = $now->setTimezone(new DateTimeZone('UTC'));
+        $now = $now->setTimezone(new DateTimeZone($timezone));
 
         return $now->format('Y-m-d H:i:s');
     }

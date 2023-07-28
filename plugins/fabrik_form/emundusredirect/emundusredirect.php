@@ -105,9 +105,9 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 			try {
 				$query = $db->getQuery(true);
 
-				$now = new DateTime();
-				$now = $now->setTimezone(new DateTimeZone('UTC'));
-                $now = $now->format('Y-m-d H:i:s');
+                require_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
+                $h_date = new EmundusHelperDate();
+                $now = $h_date->getNow();
 
 				$query->update($db->quoteName('#__emundus_campaign_candidature'))
 					->set($db->quoteName('updated') . ' = ' . $db->quote($now))

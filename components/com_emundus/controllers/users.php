@@ -26,11 +26,12 @@ class EmundusControllerUsers extends JControllerLegacy {
 	private $_db = null;
 
 	public function __construct($config = array()) {
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-		require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
-		require_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
+		require_once (JPATH_COMPONENT.'/helpers/filters.php');
+		require_once (JPATH_COMPONENT.'/helpers/files.php');
+		require_once (JPATH_COMPONENT.'/helpers/access.php');
+        require_once (JPATH_COMPONENT.'/helpers/date.php');
+		require_once (JPATH_COMPONENT.'/models/users.php');
+		require_once (JPATH_COMPONENT.'/models/logs.php');
 
 		$this->_user  = JFactory::getSession()->get('emundusUser');
 		$this->_db    = JFactory::getDBO();
@@ -101,9 +102,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 			$password = $h_users->generateStrongPassword();
 			$user->password = md5($password);
 		}
-        $now = new DateTime();
-        $now = $now->setTimezone(new DateTimeZone('UTC'));
-        $now = $now->format('Y-m-d H:i:s');
+        $now = EmundusHelperDate::getNow();
         $user->registerDate = $now;
         $user->lastvisitDate = null;
 		$user->groups = array($jgr);

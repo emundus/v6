@@ -1466,9 +1466,9 @@ class EmundusModelEmails extends JModelList {
         // log email to admin user if user_id_from is empty
         $row['user_id_from'] = !empty($row['user_id_from']) ? $row['user_id_from'] : 62;
 
-        $now = new DateTime();
-        $now = $now->setTimezone(new DateTimeZone('UTC'));
-        $now = $now->format('Y-m-d H:i:s');
+        require_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
+        $h_date = new EmundusHelperDate();
+        $now = $h_date->getNow();
 
         $query = $this->_db->getQuery(true);
 
