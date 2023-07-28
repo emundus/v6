@@ -180,7 +180,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 			$query = 'SELECT fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name
 				FROM #__menu AS menu
 				INNER JOIN #__emundus_setup_profiles AS profile ON profile.menutype = menu.menutype AND profile.id = '.$pid.'
-				INNER JOIN #__fabrik_forms AS fbforms ON fbforms.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
+				INNER JOIN #__fabrik_forms AS fbforms ON fbforms.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)
 				LEFT JOIN #__fabrik_lists AS fbtables ON fbtables.form_id = fbforms.id
 				WHERE (menu.published = 0 OR menu.published = 1) AND menu.parent_id !=1 AND menu.access IN ('.implode(',', $levels).')';
 			if (!empty($formids) && $formids[0] != "") {
