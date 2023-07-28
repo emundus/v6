@@ -2773,7 +2773,7 @@ class EmundusHelperUpdate
 		$query = $db->getQuery(true);
 
 		// regarder le code des setup_tags
-		$query->select('CONCAT(id, " : [", tag, "]") as id, request as code')
+		$query->select('CONCAT(id, " - [", tag, "]") as id, request as code')
 			->from($db->quoteName('#__emundus_setup_tags', 'est'))
 			->where('published = 1')
 			->andWhere('request LIKE ' . $db->quote('%php|%'));
@@ -2807,10 +2807,9 @@ class EmundusHelperUpdate
 			'codes' => $events
 		];
 
-
 		$fabrik_codes = [];
 		$query->clear()
-			->select('CONCAT("Fabrik calc ", id, " : ", name) as id, params')
+			->select('CONCAT("Fabrik calc ", id, " - ", name) as id, params')
 			->from('#__fabrik_elements')
 			->where('published = 1');
 		$db->setQuery($query);
@@ -2821,6 +2820,39 @@ class EmundusHelperUpdate
 		}
 		$fabrik_codes = array_merge($calculs, $fabrik_codes);
 
+		$query->clear()
+			->select('CONCAT("Fabrik element ", id, " - ", name) as id, `default`')
+			->from('#__fabrik_elements')
+			->where('published = 1')
+			->andWhere('`default` != ' . $db->quote(''))
+			->andWhere('`default` IS NOT NULL')
+			->andWhere('`default` != ' . $db->quote('0'));
+		$db->setQuery($query);
+		$defaults = $db->loadAssocList();
+		$defaults = array_column($defaults, 'default', 'id');
+		$fabrik_codes = array_merge($defaults, $fabrik_codes);
+
+		$query->clear()
+			->select('CONCAT("Fabrik form ", id, " - ", label) AS id, params')
+			->from('#__fabrik_forms')
+			->where('published = 1');
+		$db->setQuery($query);
+		$forms = $db->loadAssocList();
+
+		$forms = array_column($forms, 'params', 'id');
+		$codes = [];
+
+		foreach ($forms as $id => $params) {
+			$params = json_decode($params, true);
+			foreach($params['plugins'] as $index => $plugin) {
+				if ($plugin === 'php' && $params['plugin_state'][$index] == 1) {
+					$displayed_index = $index + 1;
+
+					$codes[$id . ' plugin N°' . $displayed_index . ' - '  . $params['only_process_curl'][$index]] = $params['curl_code'][$index];
+				}
+			}
+		}
+		$fabrik_codes = array_merge($codes, $fabrik_codes);
 
 		$data['fabrik'] = [
 			'label' => 'Codes Fabrik (plugins de formulaire, de listes, champs calculés, etc.)',
