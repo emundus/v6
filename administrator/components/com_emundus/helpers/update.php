@@ -2761,10 +2761,11 @@ class EmundusHelperUpdate
 	}
 
 	/**
-	 * @param $format string (json, file)
-	 * @return void
+	 * Scan the code to find PHP 8 compatibility
+	 * @return array
 	 */
-	public static function scanPHP8Compability($format = 'json') {
+	public static function scanPHP8Compability(): array
+	{
 		$result = [];
 		$data = [];
 
@@ -2785,7 +2786,6 @@ class EmundusHelperUpdate
 			'codes' => $setup_tags
 		];
 
-		// regarder le code des event handler
 		$query->clear()
 			->select('params')
 			->from('#__extensions')
@@ -2807,10 +2807,24 @@ class EmundusHelperUpdate
 			'codes' => $events
 		];
 
-		// regarder le code fabrik
+
+		$fabrik_codes = [];
+		$query->clear()
+			->select('CONCAT("Fabrik calc ", id, " : ", name) as id, params')
+			->from('#__fabrik_elements')
+			->where('published = 1');
+		$db->setQuery($query);
+		$calculs = $db->loadAssocList();
+		$calculs = array_column($calculs, 'params', 'id');
+		foreach ($calculs as $id => $params) {
+			$calculs[$id] = json_decode($params, true)['calc_calculation'];
+		}
+		$fabrik_codes = array_merge($calculs, $fabrik_codes);
+
+
 		$data['fabrik'] = [
 			'label' => 'Codes Fabrik (plugins de formulaire, de listes, champs calculés, etc.)',
-			'codes' => []
+			'codes' => $fabrik_codes
 		];
 
 		foreach($data as $type) {
@@ -2853,6 +2867,11 @@ class EmundusHelperUpdate
 				$count = substr_count($code, 'implode(');
 				if ($count > 0) {
 					$result[$type['label']][$id][] = 'Attention, L\'appel à implode() avec des paramètres dans l\'ordre inverse ($pieces, $glue) n\'est plus supporté. Il y a ' . $count . ' occurence(s) dans le code.';
+				}
+
+				$count = substr_count($code, 'explode(');
+				if ($count > 0) {
+					$result[$type['label']][$id][] = 'Attention, explode() lancera désormais une ValueError quand le paramètre separator est donné une chaîne vide (""). Précédemment, explode() retournait false. Il y a ' . $count . ' occurence(s) dans le code.';
 				}
 
 				if (empty($result[$type['label']][$id])) {
