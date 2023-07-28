@@ -35,7 +35,7 @@ include_once(JPATH_SITE.'/components/com_emundus/models/programme.php');
  */
 class EmundusUnittestHelperSamples
 {
-    public function createSampleUser($profile = 9, $username = 'user.test@emundus.fr')
+    public function createSampleUser($profile = 9, $username = 'user.test@emundus.fr', $j_groups = [2])
     {
         $user_id = 0;
         $m_users = new EmundusModelUsers;
@@ -56,6 +56,21 @@ class EmundusUnittestHelperSamples
         }
 
         if (!empty($user_id)) {
+			if(!empty($j_groups)) {
+				foreach ($j_groups as $j_group) {
+					$query->clear()
+						->insert($db->quoteName('#__user_usergroup_map'))
+						->columns('user_id, group_id')
+						->values($user_id . ',' . $j_group);
+					try {
+						$db->setQuery($query);
+						$db->execute();
+					} catch (Exception $e) {
+						JLog::add("Failed to insert jos_user_usergroup_map" . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					}
+				}
+			}
+
             $other_param['firstname'] 		= 'Test';
             $other_param['lastname'] 		= 'USER';
             $other_param['profile'] 		= $profile;
@@ -237,6 +252,73 @@ class EmundusUnittestHelperSamples
 		return $sample_id;
 	}
 
+	public function createSampleLetter($attachment_id, $template_type = 2, $programs = [], $status = [], $campaigns = []) {
+		$letter_id = 0;
+
+		if (!empty($attachment_id)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->insert('#__emundus_setup_letters')
+				->columns(['attachment_id', 'template_type', 'header', 'body', 'footer', 'title'])
+				->values($attachment_id . ',' . $template_type . ',' . $db->quote('<p>letter_header</p>') . ',' . $db->quote('<p>letter_body</p>') . ',' . $db->quote('<p>letter_footer</p>') . ',' . $db->quote('Lettre Test unitaire'));
+			$db->setQuery($query);
+
+			$inserted = $db->execute();
+
+			if ($inserted) {
+				$letter_id = $db->insertid();
+
+				if (!empty($programs)) {
+					$values = [];
+					foreach ($programs as $program) {
+						$values[] = $letter_id . ',' . $db->quote($program);
+					}
+
+					$query->clear()
+						->insert('#__emundus_setup_letters_repeat_training')
+						->columns(['parent_id', 'training'])
+						->values($values);
+
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				if (!empty($status)) {
+					$values = [];
+					foreach ($status as $statu) {
+						$values[] = $letter_id . ',' . $db->quote($statu);
+					}
+
+					$query->clear()
+						->insert('#__emundus_setup_letters_repeat_status')
+						->columns(['parent_id', 'status'])
+						->values($values);
+
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				if (!empty($campaigns)) {
+					$values = [];
+					foreach ($campaigns as $campaign) {
+						$values[] = $letter_id . ',' . $db->quote($campaign);
+					}
+
+					$query->clear()
+						->insert('#__emundus_setup_letters_repeat_campaign')
+						->columns(['parent_id', 'campaign'])
+						->values($values);
+
+					$db->setQuery($query);
+					$db->execute();
+				}
+			}
+		}
+
+		return $letter_id;
+	}
+
 	public function createSampleUpload($fnum, $campaign_id, $user_id = 95, $attachment_id = 1) {
 		$inserted = false;
 
@@ -292,5 +374,23 @@ class EmundusUnittestHelperSamples
 		}
 
 		return $newprofile;
+	}
+
+	public function addJGroup($j_group, $user_id) {
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try
+		{
+			$query->insert($db->quoteName('#__user_usergroup_map'))
+				->columns('user_id, group_id')
+				->values($user_id . ',' . $j_group);
+			$db->setQuery($query);
+			$db->execute();
+		}
+		catch (Exception $e)
+		{
+			JLog::add("Failed to insert jos_user_usergroup_map" . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
 	}
 }

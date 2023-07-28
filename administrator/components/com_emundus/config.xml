@@ -66,6 +66,11 @@
 			<option value="1">JYES</option>
 		</field>
 
+		<field name="use_cdn" label="COM_EMUNDUS_USE_CDN" type="list" default="1" description="">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
 		<field name="display_required_icon" label="COM_EMUNDUS_DISPLAY_REQUIRED_ICON" type="list" default="1" description="COM_EMUNDUS_DISPLAY_REQUIRED_ICON_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
@@ -436,6 +441,8 @@
 			<option value="1">JYES</option>
 		</field>
 
+		<field name="api_bearer_token" type="text" label="COM_EMUNDUS_API_BEARER_TOKEN"/>
+
 		<field
 				name="integration_gotenberg"
 				type="note"
@@ -612,6 +619,21 @@
 			<field name="smart_agenda_api_key" type="password" label="COM_EMUNDUS_SMART_AGENDA_API_KEY"/>
 			<field name="smart_agenda_base_url" type="text" label="COM_EMUNDUS_SMART_AGENDA_BASE_URL"/>
 			<field name="smart_agenda_ws_base_url" type="text" label="COM_EMUNDUS_SMART_AGENDA_BASE_URL_WS"/>
+		</fieldset>
+
+		<field name="spacer12" type="spacer" hr="true"/>
+		<field name="postgrest" type="note" label="COM_EMUNDUS_POSTGREST_API"/>
+		<fieldset label="COM_EMUNDUS_POSTGREST_API">
+			<field name="postgrest_api_base_url" type="text" label="COM_EMUNDUS_POSTGREST_BASE_URL"/>
+			<field name="postgrest_api_bearer_token" type="text" label="COM_EMUNDUS_POSTGREST_BEARER_TOKEN"/>
+		</fieldset>
+
+		<field name="spacer13" type="spacer" hr="true"/>
+		<field name="glpi" type="note" label="COM_EMUNDUS_GLPI_API"/>
+		<fieldset label="COM_EMUNDUS_GLPI_API">
+			<field name="glpi_api_base_url" type="text" label="COM_EMUNDUS_GLPI_BASE_URL"/>
+			<field name="glpi_api_app_token" type="text" label="COM_EMUNDUS_GLPI_APP_TOKEN"/>
+			<field name="glpi_api_user_token" type="text" label="COM_EMUNDUS_GLPI_USER_TOKEN"/>
 		</fieldset>
 
 	</fieldset>

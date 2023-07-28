@@ -83,7 +83,6 @@
     flex-direction: column;
     justify-content: flex-end;
     align-items: center;
-    height: 100%;
     border-radius: 5px;
     padding: 40px;
 }
@@ -92,6 +91,7 @@
     width: 100%;
     margin-left: auto;
     margin-right: auto;
+    width: 100%;
 }
 
 .container-module-cas  .sous-container-module-cas #inscription .formulaire .btn.btn-danger {
@@ -107,7 +107,7 @@
     width: 100%;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .container-module-cas  .sous-container-module-cas #inscription .container p:nth-child(1),
@@ -194,6 +194,7 @@
 @media all and (max-width: 479px) {
     .container-module-cas {
         width: 90%;
+        max-width: unset;
     }
 }
 

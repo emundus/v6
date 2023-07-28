@@ -29,3 +29,9 @@
         margin-top: 24px;
     }
 }
+
+@media all and (max-width: 479px) {
+    #header-b{
+        justify-content: center;
+    }
+}

@@ -412,8 +412,8 @@ function openFiles(fnum, page = 0, vue = false) {
                         var string = this, key;
                         for (key in hash) {
                             string = string.replace(new RegExp('\\{' + key + '\\}', 'gm'), hash[key]);
-                            return string;
                         }
+                        return string;
                     };
 
                     let menuListGroup = $('#em-appli-menu .list-group');
@@ -1633,6 +1633,7 @@ $(document).ready(function() {
         var checkInput = getUserCheck();
         var prghtml = '';
         var atthtml = '';
+        var tags = null;
 
         switch (id) {
             /**
@@ -4517,6 +4518,8 @@ $(document).ready(function() {
                     url:url,
                     dataType:'json',
                     success: function(result) {
+                        tags = result;
+
                         html = '<form>'+
                             '<div class="em-flex-row"><input type="radio" name="em-tags" id="em-tags-add" value="0" checked><label for="em-tags-add" class="em-mb-0-important">' +Joomla.JText._('COM_EMUNDUS_APPLICATION_ADD_TAGS')+'</label></div>' +
                             '<div class="em-flex-row"><input type="radio" name="em-tags" id="em-tags-delete" value="1"><label for="em-tags-delete" class="em-mb-0-important">' +Joomla.JText._('COM_EMUNDUS_TAGS_DELETE_TAGS')+'</label></div>' +
@@ -4770,6 +4773,39 @@ $(document).ready(function() {
         }
 
         $('.modal-chzn-select').chosen({width:'100%'});
+
+        /***
+         * On Category change
+         */
+        $('#em-action-tag-category').chosen().change(function() {
+            var cat = $(this).val();
+
+            if (cat) {
+                var allowed_cats = tags.tags.filter((tag) => {
+                    if(tag.category != cat) {
+                        return tag.id;
+                    }
+                }).map((item) => {
+                    return item.id;
+                });
+
+                document.querySelectorAll('#em-action-tag option').forEach((option) => {
+                    if (!allowed_cats.contains(option.value)) {
+                        option.disabled = false;
+                        option.show();
+                    } else {
+                        option.disabled = true;
+                        option.hide();
+                    }
+                })
+            } else {
+                document.querySelectorAll('#em-action-tag option').forEach((option) => {
+                    option.disabled = false;
+                    option.show();
+                })
+            }
+            $("#em-action-tag").val('').trigger("liszt:updated");
+        });
     });
 
     $(document).on('click', function() {

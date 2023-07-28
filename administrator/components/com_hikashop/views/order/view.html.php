@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -181,7 +181,7 @@ class OrderViewOrder extends hikashopView{
 		if(!empty($pageInfo->filter->filter_product)) {
 			$tables['order_product'] = 'INNER JOIN '.hikashop_table('order_product').' AS order_product ON b.order_id = order_product.order_id ';
 			$tables['product'] = 'INNER JOIN '.hikashop_table('product').' AS product ON (product.product_id = order_product.product_id OR (product.product_parent_id > 0 AND product.product_parent_id = order_product.product_id))';
-			$filters[] = 'product.product_id = '.(int)$pageInfo->filter->filter_product.' OR product.product_parent_id = '.(int)$pageInfo->filter->filter_product;
+			$filters[] = '( product.product_id = '.(int)$pageInfo->filter->filter_product.' OR product.product_parent_id = '.(int)$pageInfo->filter->filter_product.' )';
 		}
 
 		$order = '';
@@ -200,6 +200,7 @@ class OrderViewOrder extends hikashopView{
 			' LEFT JOIN '.hikashop_table('user').' AS a ON b.order_user_id=a.user_id '.
 			' LEFT JOIN '.hikashop_table('users',false).' AS c ON a.user_cms_id = c.id ' .
 			implode(' ', $tables) . ' ' . $filters . $order;
+		$_SESSION['hikashop_order_listing_query'] = $query;
 		$database->setQuery('SELECT '.$select.$query, (int)$pageInfo->limit->start, (int)$pageInfo->limit->value);
 		$rows = $database->loadObjectList();
 
@@ -430,6 +431,35 @@ class OrderViewOrder extends hikashopView{
 			'|',
 			array('name' => 'pophelp', 'target' => $this->ctrl.'-form')
 		);
+
+		if(!empty($_SESSION['hikashop_order_listing_query']) && $order->order_type == 'sale') {
+			$db = JFactory::getDBO();
+			$db->setQuery('SELECT count(*) '.$_SESSION['hikashop_order_listing_query']);
+			$ordersCount = $db->loadResult();
+			if($ordersCount > 1) {
+				$db->setQuery('SELECT order_id '.$_SESSION['hikashop_order_listing_query']);
+				$orders = $db->loadColumn();
+				if(!empty($orders)) {
+					$current = null;
+					foreach($orders as $k => $v) {
+						if($v == $order->order_id) {
+							$current = $k;
+							break;
+						}
+					}
+					if(!is_null($current)) {
+						if(isset($orders[$current+1])) {
+							$url_previous = 'index.php?option=com_hikashop&ctrl=order&task=edit&cid[]='.$orders[$current+1];
+							$this->toolbar[] = array('name' => 'Link', 'icon' => 'backward', 'alt' => JText::_('HIKA_PREVIOUS'), 'url' => $url_previous);
+						}
+						if($current && isset($orders[$current-1])) {
+							$url_next = 'index.php?option=com_hikashop&ctrl=order&task=edit&cid[]='.$orders[$current-1];
+							$this->toolbar[] = array('name' => 'Link', 'icon' => 'forward', 'alt' => JText::_('HIKA_NEXT'), 'url' => $url_next);
+						}
+					}
+				}
+			}
+		}
 		$popupHelper = hikashop_get('helper.popup');
 		$this->assignRef('popup',$popupHelper);
 		hikashop_setTitle(JText::_($this->nameForm),$this->icon,$this->ctrl.'&task='.$task.'&order_id='.$order_id.$user_info);

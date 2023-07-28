@@ -181,12 +181,10 @@ import Skeleton from '../components/Skeleton.vue';
 import settingsService from '../services/settings.js';
 import client from '../services/axiosClient';
 import Swal from 'sweetalert2';
-import Section from "../components/Users/Section";
 
 export default {
 	name: 'list_v2',
 	components: {
-		Section,
 		Skeleton
 	},
 	props: {

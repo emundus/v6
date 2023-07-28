@@ -21,12 +21,11 @@
 
 <script>
 import formService from '../../services/form';
-import Section from '../Users/Section';
 import Skeleton from '../Skeleton';
 
 export default {
 	name: "FormBuilderPreviewForm",
-	components: {Skeleton, Section},
+	components: {Skeleton},
 	props: {
 		form_id: {
 			type: Number,

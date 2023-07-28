@@ -21,7 +21,6 @@ $secondary_color = $params->get('secondary_color', 'ECF0F1');
 
 
 $document = JFactory::getDocument();
-$document->addStyleSheet('/media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css');
 
 $messages = $helper->getMessages($user->id);
 $message_contacts = $helper->getContacts($user->id);

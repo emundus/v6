@@ -1160,7 +1160,7 @@ class EmundusModelsettings extends JModelList {
 				$db->setQuery($query);
 
 				$data = $db->loadObject();
-				if (!empty($data)) {
+				if (!empty($data->value) || !empty($data->default)) {
 					if (!empty($data->value)) {
 						$lists = json_decode($data->value, true);
 					} else {

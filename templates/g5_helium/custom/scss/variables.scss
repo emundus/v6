@@ -647,7 +647,7 @@
 }
 
 @mixin input-hover {
-  border: 1px solid var(--neutral-600);
+  border: 1px solid var(--neutral-500);
   box-shadow: none;
 }
 
@@ -877,6 +877,25 @@
     color: var(--neutral-800) !important;
   }
 
+    !* DISPLAY *!
+    &.plg-display .fabrikinput {
+      height: auto !important;
+      border: none !important;
+      padding: 0 !important;
+    }
+
+    !* CALC *!
+    &.plg-calc .controls {
+      span:nth-child(1):not(.fabrikinput){
+        display: none !important;
+      }
+      .fabrikinput {
+        height: auto !important;
+        padding: 2px !important;
+        color: $neutral-900 !important;
+      }
+    }
+
 
   !* LABEL *!
   .fabrikLabel {
@@ -1054,13 +1073,23 @@
         li.search-choice {
           margin-top: 4px;
           border-radius: 8px;
-          border: var(--neutral-400);
-          background: var(--neutral-100);
+          border: var(--light-blue-400);
+          background: var(--light-blue-100);
           @include body-14;
+          align-items: center;
+          justify-content: space-between;
+          padding-right: 6px;
+          display: flex;
 
           span {
             margin: 0 !important;
             padding: 7px;
+          }
+
+          .search-choice-close{
+            position: relative;
+            top: 0;
+            right: 0;
           }
         }
 
@@ -1201,7 +1230,6 @@
       .input-append {
         display: flex;
         flex-direction: row;
-        justify-content: flex-end;
 
         input {
           border-radius: 8px 0 0 8px;

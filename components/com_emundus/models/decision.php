@@ -39,6 +39,10 @@ class EmundusModelDecision extends JModelList
 
 		parent::__construct();
 
+		if(!class_exists('EmundusModelFiles')) {
+			include_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+		}
+
 		$this->_files = new EmundusModelFiles;
         $db = JFactory::getDbo();
 		$mainframe = JFactory::getApplication();

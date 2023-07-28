@@ -16,16 +16,7 @@
           </div>
 
           <div>
-            <div class="form-group">
-              <label>{{ translations.emailCategory }}</label>
-              <autocomplete
-                  @searched="onSearchCategory"
-                  :items="this.categories"
-                  :year="this.form.category"
-              />
-            </div>
-
-            <div class="mb-4">
+            <div class="em-mb-16">
               <label>{{translations.emailName}} <span style="color: #E5283B">*</span></label>
               <input
                   type="text"
@@ -58,6 +49,18 @@
             <p v-if="errors.message" class="em-red-500-color mb-2">
               <span class="em-red-500-color">{{translations.BodyRequired}}</span>
             </p>
+
+            <div class="form-group">
+              <label>{{ translations.emailCategory }}</label>
+              <incremental-select
+                  v-if="categories.length > 0"
+                  :options="this.categoriesList"
+                  :defaultValue="incSelectDefaultValue"
+                  :locked="mode != 'create'"
+                  @update-value="updateCategorySelectedValue"
+              >
+              </incremental-select>
+            </div>
           </div>
         </div>
 
@@ -75,6 +78,11 @@
           </div>
           <div id="email-advanced-parameters" v-if="displayAdvancedParameters">
             <div class="form-group mb-4">
+              <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_SENDER_EMAIL') }}</label>
+              <span>{{email_sender}}</span>
+            </div>
+
+            <div class="form-group mb-4">
               <label>{{translations.receiverName}}</label>
               <input
                   type="text"
@@ -91,6 +99,7 @@
                   v-model="form.emailfrom"
                   placeholder="reply-to@tchooz.io"
               />
+              <p class="em-font-size-12 em-neutral-700-color">{{translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESTIP')}}</p>
             </div>
 
             <div class="form-group mb-4" id="receivers_cc">
@@ -106,7 +115,6 @@
                   select-label=""
                   selected-label=""
                   deselect-label=""
-                  :placeholder="translations.ReceiversCCPlaceHolder"
                   @tag="addNewCC"
                   :close-on-select="false"
                   :clear-on-select="false"
@@ -127,7 +135,6 @@
                   select-label=""
                   selected-label=""
                   deselect-label=""
-                  :placeholder="translations.ReceiversBCCPlaceHolder"
                   @tag="addNewBCC"
                   :close-on-select="false"
                   :clear-on-select="false">
@@ -216,6 +223,7 @@ import Autocomplete from "../components/autocomplete";
 import axios from "axios";
 import EditorQuill from "../components/editorQuill";
 import Multiselect from 'vue-multiselect';
+import IncrementalSelect from "@/components/IncrementalSelect.vue";
 
 const qs = require("qs");
 
@@ -223,9 +231,16 @@ export default {
   name: "addEmail",
 
   components: {
+    IncrementalSelect,
     EditorQuill,
     Autocomplete,
     Multiselect
+  },
+  props: {
+    mode: {
+      type: String,
+      default: "create"
+    }
   },
 
   data: () => ({
@@ -312,6 +327,7 @@ export default {
 
     selectedTags: [],
     selectedCandidateAttachments: [],
+    selectedCategory: 0,
 
     form: {
       lbl: "",
@@ -355,10 +371,12 @@ export default {
 
     action_tags: [],
     candidate_attachments: [],
+    email_sender: '',
   }),
   created() {
     this.loading = true;
 
+    this.getEmailSender();
     this.getAllAttachments();
     this.getAllTags();
     this.getAllDocumentLetter();
@@ -508,6 +526,12 @@ export default {
       axios.get("index.php?option=com_emundus&controller=programme&task=searchuserbytermwithoutapplicants&term=" + this.searchTerm)
           .then(response => {
             this.users = response.data.data;
+          });
+    },
+    getEmailSender() {
+      axios.get("index.php?option=com_emundus&controller=settings&task=getemailsender")
+          .then(response => {
+            this.email_sender = response.data.data;
           });
     },
 
@@ -709,7 +733,40 @@ export default {
         console.log(error);
       })
     },
+
+    updateCategorySelectedValue(category)
+    {
+      if (category.label) {
+        this.form.category = category.label;
+      } else {
+        this.selectedCategory = null;
+        this.form.category = '';
+      }
+    },
   },
+
+  computed: {
+    categoriesList() {
+      return this.categories.map((category,index) => {
+        return {
+          id: index+1,
+          label: category
+        };
+      });
+    },
+
+    incSelectDefaultValue() {
+      let defaultValue = null;
+      if (this.form && (this.form.category)) {
+        this.categories.forEach((category, index) => {
+          if (category === this.form.category) {
+            defaultValue = index + 1;
+          }
+        });
+      }
+      return defaultValue;
+    },
+  }
 };
 </script>
 

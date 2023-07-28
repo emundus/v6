@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1951,7 +1951,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 				foreach($attributes as $key => $value) {
 					if(is_object($value) || is_array($value))
 						continue;
-					$code = str_replace('{'.$key.'}', $value, $code);
+					$code = str_replace('{'.$key.'}', (string)$value, $code);
 				}
 				try {
 					eval($code);
