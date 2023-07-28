@@ -133,13 +133,12 @@ class EmundusViewChecklist extends JViewLegacy {
 
                 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
                 $m_application = new EmundusModelApplication;
+
                 $attachments_prog = $m_application->getAttachmentsProgress($this->_user->fnum);
                 $this->assignRef('attachments_prog', $attachments_prog);
 
-                if ($notify_complete_file) {
-	                $forms_prog = $m_application->getFormsProgress($this->_user->fnum);
-	                $this->assignRef('forms_prog', $forms_prog);
-                }
+				$forms_prog = $m_application->getFormsProgress($this->_user->fnum);
+				$this->assignRef('forms_prog', $forms_prog);
 
                 $profile_attachments_ids = array();
                 $all_profile_attachments_ids = array();

@@ -52,7 +52,6 @@ if ($can_edit_after_deadline || (!$is_app_sent && $this->is_campaign_started && 
     $block_upload = false;
 }
 
-
 function return_bytes($val) {
 	$val = trim($val);
 	$last = strtolower($val[strlen($val)-1]);

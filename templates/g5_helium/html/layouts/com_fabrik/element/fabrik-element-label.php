@@ -11,19 +11,19 @@ $labelText = FText::_($d->label);
 $labelText = $labelText == '' ? $d->hasLabel = false : $labelText;
 $l = $d->j3 ? '' : $labelText;
 
-if($required_position_icon == 0 && $display_required_icon == 1)
+if($required_position_icon == 0 && $display_required_icon == 1 && !empty($labelText))
 {
 	$l .= $d->icons;
 }
 
 $l .= $d->j3 ? $labelText : '';
 
-if($required_position_icon == 1 && $display_required_icon == 1)
+if($required_position_icon == 1 && $display_required_icon == 1 && !empty($labelText))
 {
 	$l .= $d->icons;
 }
 
-if($display_required_icon == 0 && $d->tipOpts->heading != 'Validation') {
+if($display_required_icon == 0 && $d->tipOpts->heading != 'Validation' && !empty($labelText)) {
     $l .= '<small class="ml-1 em-text-neutral-600">'.JText::_('COM_FABRIK_OPTIONNAL_FIELD').'</small>';
 }
 
