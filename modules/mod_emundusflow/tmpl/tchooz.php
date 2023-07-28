@@ -78,15 +78,15 @@ $now = $dateTime->format('Y-m-d H:i:s');
         <div class="flex items-center">
             <h2 class="em-mb-0-important"><?php echo $campaign_name ?></h2>
             <?php
-            $color = '#1C6EF2';
+            $color = '#0A53CC';
             $background = '#C8E1FE';
             if(!empty($current_application->tag_color)){
                 $color = $current_application->tag_color;
                 switch ($current_application->tag_color) {
-                    case '#20835F':
+                    case '#106949':
                         $background = '#DFF5E9';
                         break;
-                    case '#DB333E':
+                    case '#C31924':
                         $background = '#FFEEEE';
                         break;
                     case '#FFC633':

@@ -142,15 +142,15 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                     <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
                         <div class="mod_emundus_campaign__list_content_container">
                         <?php
-                        $color = '#1C6EF2';
+                        $color = '#0A53CC';
                         $background = '#C8E1FE';
                         if(!empty($campaign_pinned->tag_color)){
                             $color = $campaign_pinned->tag_color;
                             switch ($campaign_pinned->tag_color) {
-                                case '#20835F':
+                                case '#106949':
                                     $background = '#DFF5E9';
                                     break;
-                                case '#DB333E':
+                                case '#C31924':
                                     $background = '#FFEEEE';
                                     break;
                                 case '#FFC633':
@@ -509,16 +509,16 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                 <div class="mod_emundus_campaign__list_content_container">
 
                                 <?php
-                                $color = '#1C6EF2';
+                                $color = '#0A53CC';
                                 $background = '#C8E1FE';
                                 if(!empty($result->tag_color)){
                                     $color = $result->tag_color;
                                     switch ($result->tag_color) {
-                                        case '#20835F':
-                                            $background = '#CCEDE1';
+                                        case '#106949':
+                                            $background = '#DFF5E9';
                                             break;
-                                        case '#DB333E':
-                                            $background = '#FEDCDC';
+                                        case '#C31924':
+                                            $background = '#FFEEEE';
                                             break;
                                         case '#FFC633':
                                             $background = '#FFF0B5';

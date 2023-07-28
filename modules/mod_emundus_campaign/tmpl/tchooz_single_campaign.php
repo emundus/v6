@@ -52,15 +52,15 @@ if($currentCampaign->apply_online == 0){
         </div>
         <?php if($mod_em_campaign_details_show_programme == 1) : ?>
             <?php
-            $color = '#1C6EF2';
+            $color = '#0A53CC';
             $background = '#C8E1FE';
             if(!empty($currentCampaign->tag_color)){
                 $color = $currentCampaign->tag_color;
                 switch ($currentCampaign->tag_color) {
-                    case '#20835F':
+                    case '#106949':
                         $background = '#DFF5E9';
                         break;
-                    case '#DB333E':
+                    case '#C31924':
                         $background = '#FFEEEE';
                         break;
                     case '#FFC633':

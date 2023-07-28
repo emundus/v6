@@ -575,7 +575,7 @@ footer#g-footer > .g-container {
   margin: auto auto 0 auto;
 
   a {
-    color: $link-regular;
+    color: darken($link-regular, 10%);
 
     &:hover {
       color: $link-hover;

@@ -145,6 +145,11 @@
     background: var(--neutral-200);
 }
 
+.mod_emundus_campaign__list_content--closed .em-applicant-text-color,
+.mod_emundus_campaign__list_content--closed .em-text-neutral-600 {
+   color: #4B4B4B !important;
+}
+
 .mod_emundus_campaign__list_content_resume{
     overflow: hidden;
     display: -webkit-box;
