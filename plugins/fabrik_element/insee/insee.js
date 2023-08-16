@@ -103,7 +103,6 @@ define(['jquery', 'fab/element'],
                                         if(repeatNum !== false) {
                                             item_to_fill = item_to_fill + '_' + repeatNum;
                                         }
-                                        console.log(item_to_fill);
                                         this.form.elements.get(item_to_fill).set(data_to_insert.join(' '));
                                     }
                                 });
