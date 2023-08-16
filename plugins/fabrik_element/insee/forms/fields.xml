@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields">
+		<fieldset label="COM_FABRIK_OPTIONS" name="plg-element-insee">
+
+			<field name="hidden"
+				type="radio"
+				default="0"
+				class="btn-group"
+				description="PLG_ELEMENT_INSEE_HIDDEN_DESC"
+				label="PLG_ELEMENT_INSEE_HIDDEN_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+		</fieldset>
+	</fields>
+
+	<fields name="params">
+		<fieldset name="plg-element-insee-params" label="COM_FABRIK_ADVANCED">
+			<field name="insee_api_base_url" type="text" label="PLG_ELEMENT_INSEE_BASE_URL" default="https://api.insee.fr"/>
+			<field name="insee_api_consumer_key" type="text" label="PLG_ELEMENT_INSEE_CONSUMER_KEY"/>
+			<field name="insee_api_consumer_secret" type="text" label="PLG_ELEMENT_INSEE_CONSUMER_SECRET"/>
+
+			<field name="form_mapping"
+				   type="subform"
+				   multiple="true"
+				   min="1"
+				   label="PLG_ELEMENT_INSEE_MAPPING_LABEL"
+			>
+				<form>
+					<field name="insee_property"
+						   type="text"
+						   class="span12"
+						   label="PLG_ELEMENT_INSEE_API_PROPERTY_LABEL"
+						   description="PLG_ELEMENT_INSEE_API_PROPERTY_DESC"
+						   default=""
+					/>
+
+					<field name="insee_fabrik_element"
+						   type="text"
+						   class="span12"
+						   label="PLG_ELEMENT_INSEE_FABRIK_ELEMENT_LABEL"
+						   description="PLG_ELEMENT_INSEE_FABRIK_ELEMENT_DESC"
+						   default=""
+					/>
+				</form>
+			</field>
+		</fieldset>
+	</fields>
+</form>
