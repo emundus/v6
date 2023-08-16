@@ -22,13 +22,13 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 0 var(--p-16);
+  padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
   border-radius: var(--em-applicant-br);
   border: unset;
-  height: 40px;
   color: var(--neutral-0);
   background-color: var(--em-primary-color) !important;
   border: solid 1px var(--em-primary-color);
+  font-size: var(--em-applicant-font-size);
 
   &:hover {
     background-color: var(--neutral-0) !important;
@@ -47,15 +47,15 @@
 }
 
 .em-secondary-button{
+  font-size: var(--em-coordinator-font-size);
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 0 var(--p-16);
+  padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
   border-radius: var(--em-coordinator-br);
   border: solid 1px var(--em-secondary-color);
-  height: 40px;
   background: transparent;
   color: var(--em-secondary-color);
   font-family: var(--em-coordinator-font);
@@ -73,10 +73,9 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 0 var(--p-16);
+  padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
   border-radius: var(--em-applicant-br);
   border: solid 1px var(--em-secondary-color);
-  height: 40px;
   background: transparent;
   color: var(--em-secondary-color);
 
@@ -89,15 +88,15 @@
 }
 
 .em-tertiary-button{
+  font-size: var(--em-coordinator-font-size);
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 0 var(--p-16);
+  padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
   border-radius: var(--em-coordinator-br);
   border: unset;
-  height: 40px;
   background: transparent;
   color: var(--night-blue);
 }
@@ -161,7 +160,7 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  padding: 0px;
+  padding: 0;
   width: 24px;
   height: 24px;
 
@@ -1524,7 +1523,7 @@ input:focus + .em-slider {
 .em-input-card-selected{
   background: var(--blue-100);
   border: 1px solid var(--blue-400);
-  box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+  box-shadow: 0 1px 1px rgba(5, 47, 55, 0.07), 0 2px 1px rgba(5, 47, 55, 0.06), 0 1px 3px rgba(5, 47, 55, 0.1);
 }
 
 .em-settings-menu{
@@ -1557,7 +1556,7 @@ input:focus + .em-slider {
 
 .em-card-neutral-100{
   background-color: var(--neutral-100);
-  border-radius: var(--em-coordinator-br);
+  border-radius: var(--em-default-br-cards);
   padding: 32px;
   cursor: pointer;
 }
@@ -1581,7 +1580,7 @@ input:focus + .em-slider {
   padding: 8px 12px;
   background: #FFFFFF;
   border: 1px solid #EBECF0;
-  box-shadow: 0px 1px 4px rgba(32, 35, 44, 0.05);
+  box-shadow: 0 1px 4px rgba(32, 35, 44, 0.05);
   border-radius: 8px;
 }
 
@@ -1607,12 +1606,12 @@ button.em-swal-confirm-button{
   justify-content: center;
   align-items: center;
   width: auto !important;
-  padding: 0 var(--p-16) !important;
+  padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal) !important;
   border-radius: var(--em-coordinator-br) !important;
   border: unset !important;
-  height: 40px !important;
   color: white !important;
   background-color: var(--em-coordinator-primary-color) !important;
+  font-size: var(--em-coordinator-font-size) !important;
 }
 .swal2-actions.swal2-loading{
   border-radius: 25px !important;
@@ -1623,12 +1622,12 @@ button.em-swal-cancel-button{
   justify-content: center;
   align-items: center;
   width: auto;
-  padding: 0 var(--p-16) !important;
+  padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal) !important;
   border-radius: var(--em-coordinator-br) !important;
   border: solid 1px var(--neutral-300) !important;
-  height: 40px !important;
   background: transparent !important;
   color: var(--night-blue) !important;
+  font-size: var(--em-coordinator-font-size) !important;
   &:focus{
     box-shadow: unset !important;
   }

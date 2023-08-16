@@ -117,6 +117,10 @@ font-size: 16px;
 	padding: 10px 16px;
 	color: black;
 }
+
+.view-list .fabrikForm .fabrikButtonsContainer .em-action-buttons li a:hover{
+	text-decoration: none;
+}
 .view-list .fabrikForm .fabrikButtonsContainer .em-action-buttons li a i{
 	margin-right: 12px;
 }

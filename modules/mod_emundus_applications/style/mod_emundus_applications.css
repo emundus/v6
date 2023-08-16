@@ -110,7 +110,7 @@ button#back:hover, button#back:active, button#back:focus,
 }
 
 .mod_emundus_application___buttons_enable{
-    border: 1px solid var(--em-primary-color);
+    border: 1px solid var(--em-primary-color) !important;
 }
 
 #tab_adding_link a span.material-icons-outlined{
@@ -122,8 +122,10 @@ button#back:hover, button#back:active, button#back:focus,
     border: 1px solid var(--em-secondary-color);
     border-radius: var(--em-applicant-br);
     color: var(--em-secondary-color);
-    padding: var(--p-8) var(--p-12);
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
     font-weight: inherit;
+    margin-right: var(--m-8);
+    font-size: var(--em-applicant-font-size);
 }
 
 .mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-cancel:hover,
@@ -139,8 +141,9 @@ button#back:hover, button#back:active, button#back:focus,
     border: 1px solid var(--em-primary-color);
     border-radius: var(--em-applicant-br);
     color: var(--neutral-0);
-    padding: var(--p-8) var(--p-12);
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
     font-weight: inherit;
+    font-size: var(--em-applicant-font-size);
 }
 
 .mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-confirm:hover,
@@ -410,7 +413,7 @@ margin-top: var(--m-16);
 }
 .mod_emundus_applications___content_app{
     box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
-    border-radius: var(--em-form-br-block) !important;
+    border-radius: var(--em-default-br-cards) !important;
     padding: var(--p-32);
     background: var(--neutral-0);
 }
@@ -471,7 +474,7 @@ margin-top: var(--m-16);
 
 .mod_emundus_applications___content_app:hover .mod_emundus_applications__container {
     background: #F3F3F3;
-    border-radius: var(--applicant-border-radius);
+    border-radius: var(--em-default-br);
 }
 
 .mod_emundus_applications__actions{

@@ -19,7 +19,7 @@
     line-height: normal;
     letter-spacing: normal;
     font-family: var(--em-applicant-font);
-    font-size: 15px;
+    font-size: var(--em-applicant-font-size);
 }
 
 .mod_emundus_campaign__intro{
@@ -128,7 +128,7 @@
 
 .mod_emundus_campaign__list_content{
     box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
-    border-radius: var(--em-default-br-cards) !important;
+    border-radius: var(--em-coordinator-br-cards) !important;
     padding: var(--p-24);
     height: 345px;
     background: var(--neutral-0);
@@ -136,7 +136,7 @@
 
 .mod_emundus_campaign__list_content--default {
     box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
-    border-radius: var(--em-default-br-cards) !important;
+    border-radius: var(--em-coordinator-br-cards) !important;
     padding: var(--p-32);
     background: var(--neutral-0);
 }
@@ -205,14 +205,16 @@
 
 .mod_emundus_campaign__header_filter__values .btn.btn-primary {
     border-radius: var(--em-default-br) !important;
-    padding: var(--p-8) var(--p-16);
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
     background: var(--neutral-0);
     color: var(--em-primary-color);
     border: 1px solid var(--em-primary-color);
+    line-height: normal;
+    font-size: var(--em-applicant-font-size);
 }
 
 .mod_emundus_campaign__header_filter__values .btn.btn-primary:hover {
-    padding: var(--p-8) var(--p-16);
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
     background: var(--em-primary-color);
     color: var(--neutral-0);
     border: 1px solid var(--em-primary-color);
@@ -373,7 +375,7 @@ a.em-blue-400-color:hover {
 
 .mod_emundus_campaign__details_content{
     box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
-    border-radius: var(--em-default-br-cards) !important;
+    border-radius: var(--em-coordinator-br-cards) !important;
     padding: var(--p-32);
     background: var(--neutral-0);
     color: var(--em-default-title-color-1);

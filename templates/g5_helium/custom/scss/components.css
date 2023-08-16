@@ -5,23 +5,23 @@
         justify-content: center;
         align-items: center;
         width: 100%;
-        padding: 0 var(--p-16);
+        padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
         border-radius: var(--em-coordinator-br);
         border: unset;
-        height: 40px;
-        color: white;
-        background-color: var(--main-500);
+        color: var(--neutral-0);
+        background-color: var(--em-coordinator-primary-color);
         border: solid 1px transparent;
         font-family: var(--em-coordinator-font);
+        font-size: var(--em-coordinator-font-size) !important;
 
         &:hover {
-            background-color: white;
-            color: var(--main-500);
-            border: 1px solid var(--main-500);
+            background-color: var(--neutral-0);
+            color: var(--em-coordinator-primary-color);
+            border: 1px solid var(--em-coordinator-primary-color);
             text-decoration: none;
 
             .material-icons {
-                color: var(--main-500) !important;
+                color: var(--em-coordinator-primary-color) !important;
             }
         }
 

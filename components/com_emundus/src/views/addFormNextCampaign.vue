@@ -414,11 +414,11 @@ export default {
 }
 
 .w--current:hover{
-  color: var(--main-500);
+  color: var(--em-coordinator-primary-color);
 }
 
 .em-pointer:hover{
-  color: var(--main-500);
+  color: var(--em-coordinator-primary-color);
 }
 
 .em-w-custom {

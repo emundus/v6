@@ -637,8 +637,7 @@ footer#g-footer > .g-container {
   text-transform: initial;
   margin-left: 0 !important;
   font-family: var(--em-applicant-font);
-  height: 40px;
-  padding: 0 var(--p-16);
+  padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
 
   &:hover,
   &:active,
@@ -1324,20 +1323,19 @@ footer#g-footer > .g-container {
   }
 
   .fabrik_filter_submit.button {
-    background: var(--main-500);
-    border: 1px solid var(--main-500);
+    background: var(--em-coordinator-primary-color);
+    border: 1px solid var(--em-coordinator-primary-color);
     border-radius: var(--em-coordinator-br) !important;
     font-family: var(--em-coordinator-font);
     font-weight: 500;
     letter-spacing: normal;
     font-style: normal;
     font-size: var(--em-coordinator-font-size);
-    height: var(--em-form-height) !important;
-
+    height: var(--em-form-height);
     &:hover, &:active, &:focus {
       background: var(--neutral-0);
-      border: 1px solid var(--main-500) !important;
-      color: var(--main-500);
+      border: 1px solid var(--em-coordinator-primary-color) !important;
+      color: var(--em-coordinator-primary-color);
       letter-spacing: normal;
       font-style: normal;
       font-size: var(--em-coordinator-font-size);
@@ -2068,6 +2066,7 @@ span.btn {
   color: var(--neutral-0);
   line-height: normal !important;
   letter-spacing: normal;
+  font-size: var(--em-applicant-font-size);
 
   &:hover,
   &:focus,
@@ -2236,7 +2235,7 @@ p.readmore .btn,
     color: var(--dark-grey);
     margin-right: 10px;
     font-weight: normal;
-    padding: 7px 30px !important;
+    padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal) !important;
 
     &:hover,
     &:active,
@@ -2253,13 +2252,13 @@ p.readmore .btn,
     border: 1px solid var(--dark-grey);
     border-radius: var(--em-coordinator-br) !important;
     color: var(--neutral-0);
-    padding: 7px 30px;
+    padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal) !important;
 
     &:hover,
     &:active,
     :focus {
       background: var(--grey);
-      border: 1px solid var(--grey);
+      border: 1px solid var(--grey) !important;
       color: var(--neutral-0);
     }
   }
@@ -2458,7 +2457,7 @@ button#back,
   font-weight: normal;
   line-height: normal;
   letter-spacing: normal;
-  font-size: var(--em-applicant-font-size);
+  font-size: var(--em-applicant-font-size) !important;
 
   &:hover,
   &:focus {
@@ -2777,7 +2776,7 @@ ul.g-dropdown.g-dropdown-right.g-fade {
 }
 
 .g-main-nav .g-standard .g-sublevel .current a span {
-  color: var(--main-500);
+  color: var(--em-coordinator-primary-color);
 }
 
 .g-main-nav .g-toplevel > li.active .g-menu-parent-indicator::after,
@@ -3801,6 +3800,7 @@ div#em-appli-block {
     border-radius: var(--em-applicant-br) !important;
     letter-spacing: normal;
     line-height: normal;
+    font-size: var(--em-applicant-font-size);
   }
 
 

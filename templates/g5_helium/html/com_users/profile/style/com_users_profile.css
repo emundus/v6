@@ -28,11 +28,12 @@ a.btn:hover{
 
 form#member-profile.well {
     background: #fff;
-    border: none;
     margin: 50px auto 50px auto;
     padding: 32px 32px 24px 32px;
     border-radius: var(--em-form-br-block) !important;
     width: 84%;
+    border: 1px solid #EDEDED;
+    box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
 }
 
 form#member-profile  fieldset .em-heading-form {
@@ -128,19 +129,20 @@ form#member-profile .control-group .control-label label {
 }
 form#member-profile.form-validate.form-horizontal.well button.btn.btn-primary.validate {
     text-transform: capitalize;
-    border-radius: 4px;
+    border-radius: var(--em-applicant-br);
     margin-bottom: 0;
-    height: 38px;
     display: flex;
     align-items: center;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
 }
 form#member-profile.form-validate.form-horizontal.well a.btn {
     font-weight: 300;
     margin-right: 16px !important;
     margin-bottom: 0;
-    height: 38px;
     display: flex;
+    border-radius: var(--em-applicant-br);
     align-items: center;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal) !important;
 }
 form#member-profile.form-validate.form-horizontal.well fieldset:nth-child(2) {
     margin-top: 20px;

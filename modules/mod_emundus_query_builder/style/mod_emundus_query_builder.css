@@ -85,14 +85,14 @@
 }
 
 .input {
-	margin:1% 0%;
+	margin:1% 0;
 }
 .input input[type="checkbox"] {
 	vertical-align: text-top;
 }
 .input .modif, .input .delete {
 	background-color:transparent;
-	border:0px;
+	border:0;
 }
 .createModule {
 	margin:1%;
@@ -141,24 +141,46 @@
 	background:transparent;
 	padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
 	white-space: normal;
+	font-size: var(--em-coordinator-font-size);
 }
 
-.btnExport:hover .swal2-cancel:hover, #createButton:hover{
+ #createButton:hover{
+	border-radius: var(--em-coordinator-br);
+	background: var(--neutral-0);
+	border: 1px	solid var(--em-coordinator-secondary-color);
+	color: var(--em-coordinator-secondary-color);
+	padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
+	white-space: normal;
+}
+
+#createButton {
+	border-radius: var(--em-coordinator-br);
+	background: var(--em-coordinator-secondary-color);
+	border: 1px	solid var(--em-coordinator-secondary-color);
+	color: var(--neutral-0);
+	padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
+	white-space: normal;
+	font-size: var(--em-coordinator-font-size);
+}
+
+.btnExport:hover .swal2-cancel:hover, #createButton.btnQueryBuilder:hover{
 	border-radius: var(--em-coordinator-br);
 	background: var(--neutral-0);
 	border: 1px	solid var(--em-coordinator-primary-color);
 	color: var(--em-coordinator-primary-color);
-	padding: 8px 12px;
+	padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
 	white-space: normal;
 }
 
-.btnQueryBuilder, .swal2-confirm, #createButton {
+
+.btnQueryBuilder, .swal2-confirm, #createButton.btnQueryBuilder {
 	border-radius: var(--em-coordinator-br);
 	background: var(--em-coordinator-primary-color);
 	border: 1px	solid var(--em-coordinator-primary-color);
 	color: var(--neutral-0);
-	padding: 8px 12px;
+	padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
 	white-space: normal;
+	font-size: var(--em-coordinator-font-size);
 }
 
 .btnExport:focus, .btnQueryBuilder:focus, .queryBuilder input[type="button"]:focus, .queryBuilder input[type="submit"]:focus, .swal2-confirm:focus, .swal2-cancel:focus {
@@ -214,7 +236,7 @@
 .closeButtonWelcomeStat {
 	float:right;
 	cursor:pointer;
-	color:white;
+	color: var(--neutral-0);
 	font-size:1.5rem;
 	margin-top:-1%;
 	margin-right:-1.5%;
