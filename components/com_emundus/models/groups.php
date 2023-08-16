@@ -381,7 +381,7 @@ class EmundusModelGroups extends JModelList
 				 INNER JOIN jos_fabrik_groups AS groupe ON element.group_id = groupe.id
 				 INNER JOIN jos_fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
 				 INNER JOIN jos_fabrik_lists AS tab ON tab.form_id = formgroup.form_id
-				 INNER JOIN jos_menu AS menu ON tab.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("listid=",menu.link)+7, 3), "&", 1)
+				 INNER JOIN jos_menu AS menu ON tab.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("listid=",menu.link)+7, 4), "&", 1)
 				 INNER JOIN jos_emundus_setup_profiles AS profile ON profile.menutype = menu.menutype
 			WHERE tab.published = 1 AND profile.id =9 AND tab.created_by_alias = "form" AND element.published=1 AND element.hidden=0 AND element.label!=" " AND element.label!=""
 			ORDER BY menu.ordering, formgroup.ordering, element.ordering';

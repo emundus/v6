@@ -169,7 +169,7 @@ class EmundusModelFormbuilderTest extends TestCase
 
         if (!empty($group['group_id'])) {
             $this->assertGreaterThan(0, $group['group_id'], 'Le groupe a bien été créé.');
-            $this->m_formbuilder->updateGroupParams($group['group_id'], ['is_sample' => true]);
+            $this->m_formbuilder->updateGroupParams($group['group_id'], ['is_sample' => true, 'repeat_group_button' => 0]);
 
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
@@ -206,7 +206,7 @@ class EmundusModelFormbuilderTest extends TestCase
 
 
             $new_intro = 'Mon introduction';
-            $this->m_formbuilder->updateGroupParams($group['group_id'], ['intro' => $new_intro, 'is_sample' => true], 'fr');
+            $this->m_formbuilder->updateGroupParams($group['group_id'], ['intro' => $new_intro, 'is_sample' => true, 'repeat_group_button' => 0], 'fr');
 
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);

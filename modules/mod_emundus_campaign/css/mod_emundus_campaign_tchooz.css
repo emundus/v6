@@ -259,7 +259,13 @@ a.em-blue-400-color:hover {
     font-family: var(--applicant-default-font);
 }
 
-.mod_emundus_campaign__campaign_title {
+.view-programme .mod_emundus_campaign__campaign_title {
+    margin-bottom: 8px !important;
+    color: var(--em-applicant-title-color) !important;
+    font-family: var(--applicant-title-font) !important;
+}
+
+.homepage .mod_emundus_campaign__campaign_title {
     margin-bottom: 8px !important;
     color: var(--em-applicant-title-color) !important;
     -webkit-line-clamp: 2;

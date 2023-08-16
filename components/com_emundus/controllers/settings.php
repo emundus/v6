@@ -1050,5 +1050,23 @@ class EmundusControllersettings extends JControllerLegacy {
 		echo json_encode((object)$results);
 		exit;
 	}
+
+	public function gethomearticle() {
+		$results['status'] = true;
+		$results['msg'] = 'Home article';
+		$results['data'] = $this->m_settings->getHomeArticle();
+
+		echo json_encode((object)$results);
+		exit;
+	}
+
+	public function getrgpdarticles() {
+		$results['status'] = true;
+		$results['msg'] = 'RGPD Articles';
+		$results['data'] = $this->m_settings->getRgpdArticles();
+
+		echo json_encode((object)$results);
+		exit;
+	}
 }
 

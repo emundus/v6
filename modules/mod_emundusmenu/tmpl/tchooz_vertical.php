@@ -161,7 +161,7 @@ defined('_JEXEC') or die;
     }
     /*** END ***/
     .message-tooltip{
-        width: 20rem;
+        width: auto;
         height: auto;
         position: fixed;
         margin-left: 0;
