@@ -465,6 +465,15 @@ margin-top: var(--m-16);
     flex-direction: column;
 }
 
+#applications_card_view .mod_emundus_applications__container{
+    padding: 4px;
+}
+
+.mod_emundus_applications___content_app:hover .mod_emundus_applications__container {
+    background: #F3F3F3;
+    border-radius: var(--applicant-border-radius);
+}
+
 .mod_emundus_applications__actions{
     margin-top: var(--m-8);
     flex-direction: column;
@@ -584,6 +593,16 @@ margin-top: var(--m-16);
 }
 #applications_list_view table tr {
     border-bottom: 1px solid var(--neutral-300);
+}
+
+
+#applications_list_view .mod_emundus_applications__container span{
+    padding: 4px;
+}
+
+#applications_list_view table tr:hover .mod_emundus_applications__container span {
+    background: var(--neutral-0);
+    border-radius: var(--applicant-border-radius);
 }
 #applications_list_view .mod_emundus_applications___title{
     min-height: unset;

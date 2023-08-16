@@ -79,10 +79,4 @@
 		</languages>
 	</administration>
 
-	<!-- START UPDATESERVERS
-	<updateservers>
-		<server type="collection" name="eMundus61">http://emundus.fr/update/emundus61/package_list.xml</server>
-	</updateservers>
-	-->
-
 </extension>

@@ -671,8 +671,14 @@ table#groups-table a:hover {
 
 .g-back-office-emundus-tableau #em-modal-actions .modal-dialog, .g-back-office-emundus-tableau #em-modal-actions .modal-dialog.modal-lg{
     width: 50% !important;
-    min-width: 40%;
+    min-width: 50%;
 }
+
+.g-back-office-emundus-tableau #em-modal-actions .modal-dialog,
+.g-back-office-emundus-tableau #em-modal-actions .modal-dialog.modal-lg {
+    margin-top: 72px;
+}
+
 
 /* Layout */
 div#data #exp-opt>label{
@@ -699,13 +705,8 @@ div#em-modal-form {
     top: 44px;
 }
 
-
 div#em-modal-actions {
     overflow: hidden;
-}
-
-div#em-modal-actions .modal-dialog {
-    max-height: 90vh !important;
 }
 
 .modal-dialog .modal-body {

@@ -1223,4 +1223,122 @@ class EmundusModelsettings extends JModelList {
 
 		return $lists;
 	}
+
+	function getHomeArticle() {
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$article_id = 52;
+
+		try
+		{
+			$query->select('id')
+				->from($db->quoteName('#__content'))
+				->where($db->quoteName('featured') . ' = 1');
+			$db->setQuery($query);
+			$article_id = $db->loadResult();
+		}
+		catch (Exception $e)
+		{
+			JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $article_id;
+	}
+
+	function getRgpdArticles() {
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$rgpd_articles = [];
+
+		try
+		{
+			$query->select('params')
+				->from($db->quoteName('#__modules'))
+				->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_footer'));
+			$db->setQuery($query);
+			$params = $db->loadResult();
+
+			if (!empty($params)) {
+				$params = json_decode($params);
+
+				$legal_info = new stdClass();
+				if(!empty($params->mod_emundus_footer_legal_info_alias)) {
+					$query->clear()
+						->select('SUBSTRING_INDEX(SUBSTRING(link, LOCATE("id=",link)+3, 6), "&", 1)')
+						->from($db->quoteName('#__menu'))
+						->where($db->quoteName('alias') . ' = ' . $db->quote($params->mod_emundus_footer_legal_info_alias));
+					$db->setQuery($query);
+					$legal_info->id = $db->loadResult();
+				} else {
+					$legal_info->alias = 'mentions-legales';
+				}
+				$legal_info->title = JText::_('COM_EMUNDUS_ONBOARD_CONTENT_TOOL_LEGAL_MENTION');
+				$rgpd_articles[] = $legal_info;
+
+				$data_privacy = new stdClass();
+				if(!empty($params->mod_emundus_footer_data_privacy_alias)) {
+					$query->clear()
+						->select('SUBSTRING_INDEX(SUBSTRING(link, LOCATE("id=",link)+3, 6), "&", 1)')
+						->from($db->quoteName('#__menu'))
+						->where($db->quoteName('alias') . ' = ' . $db->quote($params->mod_emundus_footer_data_privacy_alias));
+					$db->setQuery($query);
+					$data_privacy->id = $db->loadResult();
+				} else {
+					$data_privacy->alias = 'politique-de-confidentialite-des-donnees';
+				}
+				$data_privacy->title = JText::_('COM_EMUNDUS_ONBOARD_CONTENT_TOOL_DATAS');
+				$rgpd_articles[] = $data_privacy;
+
+				$rights = new stdClass();
+				if(!empty($params->mod_emundus_footer_rights_alias)) {
+					$query->clear()
+						->select('SUBSTRING_INDEX(SUBSTRING(link, LOCATE("id=",link)+3, 6), "&", 1)')
+						->from($db->quoteName('#__menu'))
+						->where($db->quoteName('alias') . ' = ' . $db->quote($params->mod_emundus_footer_rights_alias));
+					$db->setQuery($query);
+					$rights->id = $db->loadResult();
+				} else {
+					$rights->alias = 'gestion-des-droits';
+				}
+				$rights->title = JText::_('COM_EMUNDUS_ONBOARD_CONTENT_TOOL_RIGHTS');
+				$rgpd_articles[] = $rights;
+
+				$cookies = new stdClass();
+				if(!empty($params->mod_emundus_footer_cookies_alias)) {
+					$query->clear()
+						->select('SUBSTRING_INDEX(SUBSTRING(link, LOCATE("id=",link)+3, 6), "&", 1)')
+						->from($db->quoteName('#__menu'))
+						->where($db->quoteName('alias') . ' = ' . $db->quote($params->mod_emundus_footer_cookies_alias));
+					$db->setQuery($query);
+					$cookies->id = $db->loadResult();
+				} else {
+					$cookies->alias = 'gestion-des-cookies';
+				}
+				$cookies->title = JText::_('COM_EMUNDUS_ONBOARD_CONTENT_TOOL_COOKIES');
+				$rgpd_articles[] = $cookies;
+
+				$accessibility = new stdClass();
+				if(!empty($params->mod_emundus_footer_accessibility_alias)) {
+					$query->clear()
+						->select('SUBSTRING_INDEX(SUBSTRING(link, LOCATE("id=",link)+3, 6), "&", 1)')
+						->from($db->quoteName('#__menu'))
+						->where($db->quoteName('alias') . ' = ' . $db->quote($params->mod_emundus_footer_accessibility_alias));
+					$db->setQuery($query);
+					$accessibility->id = $db->loadResult();
+				} else {
+					$accessibility->alias = 'accessibilite';
+				}
+				$accessibility->title = JText::_('COM_EMUNDUS_ONBOARD_CONTENT_TOOL_ACCESSIBILITY');
+				$rgpd_articles[] = $accessibility;
+			}
+		}
+		catch (Exception $e)
+		{
+			JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $rgpd_articles;
+	}
 }

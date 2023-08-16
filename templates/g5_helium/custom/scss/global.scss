@@ -199,6 +199,17 @@ div#frame.outline {
 
 /* ARTICLE */
 
+.view-list.com_fabrik.gantry > ul.dropdown-menu[role="menu"] {
+  width: fit-content !important;
+  padding: 4px;
+}
+
+.gantry.view-list .dropdown-menu > li > a:hover,
+.gantry.view-list .dropdown-menu > li > a:focus,
+.gantry.view-list .dropdown-submenu:hover > a,
+.gantry.view-list .dropdown-submenu:focus > a {
+  background: var(--main-500);
+}
 .view-article.com_content:not(.indicateurs-page) {
   .page-header h2[itemprop="headline"] {
     margin-bottom: 32px;
@@ -3126,6 +3137,15 @@ ul.unstyled.em-linkForgot li a {
   display: none;
 }
 
+fieldset.em_filters_adv_filter .em_save_filter input#save-filter {
+  margin-bottom: 24px !important;
+}
+
+.com_emundus .em_filters_adv_filter #em_adv_filters #advanced-filters .chzn-container.chzn-container-single .chzn-drop {
+  top: auto !important;
+  bottom: 100% !important;
+}
+
 #em-files-filters #em_filters fieldset input#save-filter,
 fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
 #em_adv_filters .em_filters_adv_filter_addColumn button#add-filter {
@@ -3268,10 +3288,14 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
 
 /* DOSSIER CANDIDAT */
 
+.com_emundus .em_filters_filedset > div:nth-child(+n+5) .optWrapper {
+  top: auto;
+  bottom: 100%;
+}
+
 .em-personalInfo > a {
   background-color: unset;
 }
-
 
 /* RECHERCHE */
 .gantry.files-page .selectize-control.multi .selectize-input [data-value],
@@ -4124,7 +4148,7 @@ screen and (max-height: 769px) {
 @media all and (max-width: 479px) {
 
   .view-checklist table form .dz-default.dz-message {
-    padding-right: 12px !important;
+    padding-right: 8px !important;
   }
 
   .view-form:not(.com_emundus) .span12 .page-header h1 {

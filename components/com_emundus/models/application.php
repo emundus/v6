@@ -1847,6 +1847,7 @@ class EmundusModelApplication extends JModelList
                                         $forms .= '</tbody>';
                                     }
                                     $forms .= '</table>';
+	                                $forms .= '</fieldset>';
                                 }
                                 // AFFICHAGE EN LIGNE
                             }
@@ -2125,7 +2126,6 @@ class EmundusModelApplication extends JModelList
                                 }
                             }
                             $forms .= '</table>';
-                            $forms .= '</fieldset>';
                         }
                     }
                 }
