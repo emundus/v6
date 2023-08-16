@@ -527,7 +527,7 @@ form#member-profile .form-horizontal .control-label {
     padding: 80px 64px 80px 64px;
 }
 
-.view-registration .view-registration.login.em-formRegistrationCenter h1.em-h1 {
+.view-registration .view-registration.login.em-formRegistrationCenter h1 {
    font-family:  var(--em-applicant-font-title);
 }
 

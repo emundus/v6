@@ -23,7 +23,7 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_use
                 <a href="index.php" alt="Logo" class="em-profile-picture em-mb-32" style="width: 50px;height: 50px;background-image: url('images/custom/favicon.png')">
                 </a>
             <?php endif; ?>
-            <h3 class="em-mb-8 em-h3">
+            <h3 class="em-mb-8">
                 <?php echo $this->escape($this->params->get('page_heading')); ?>
             </h3>
 		</div>

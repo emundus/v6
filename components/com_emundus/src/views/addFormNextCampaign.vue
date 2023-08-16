@@ -12,8 +12,8 @@
 					<p class="em-ml-8">{{ translate('BACK') }}</p>
 				</div>
 				<div class="em-flex-row em-mt-16">
-					<h1 class="em-h1" v-if="menuHighlight != -1">{{this.translate(formCategories[menuHighlight])}}</h1>
-					<h1 class="em-h1" v-if="menuHighlightProg != -1">{{this.translate(formPrograms[menuHighlightProg])}}</h1>
+					<h1 v-if="menuHighlight != -1">{{this.translate(formCategories[menuHighlight])}}</h1>
+					<h1 v-if="menuHighlightProg != -1">{{this.translate(formPrograms[menuHighlightProg])}}</h1>
 				</div>
 				<p v-if="menuHighlight != -1" v-html="this.translate(formCategoriesDesc[menuHighlight])" style="margin-top: 20px"></p>
 				<p v-if="menuHighlightProg != -1" v-html="this.translate(formProgramsDesc[menuHighlightProg])" style="margin-top: 20px"></p>

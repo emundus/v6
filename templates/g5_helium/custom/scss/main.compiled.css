@@ -548,7 +548,7 @@ video {
         font-size: var(--em-coordinator-font-size) !important;
     }
 .em-primary-button:hover {
-            background-color: white;
+            background-color: var(--neutral-0);
             color: var(--em-coordinator-primary-color);
             border: 1px solid var(--em-coordinator-primary-color);
             text-decoration: none;
@@ -1939,7 +1939,7 @@ h2 {
   font-size: 22px;
   font-style: normal;
   line-height: 26.4px;
-  font-weight: 400;
+  font-weight: 500;
 }
 h3 {
   color: var(--em-default-title-color-1);
