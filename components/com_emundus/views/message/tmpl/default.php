@@ -179,35 +179,47 @@ if ($allowed_attachments !== true) {
             <div class="form-group em-form-recipients em-mt-12 col-md-6 col-sm-6">
 
                 <!-- List of users / their emails, gotten from the fnums selected. -->
-                <div class="em-flex-row em-flex-space-between">
-                    <label class='em-mr-8 em-cursor-text'><?= JText::_('COM_EMUNDUS_TO'); ?> :</label>
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <label class='em-mr-8 em-cursor-text mb-0'><?= JText::_('COM_EMUNDUS_TO'); ?> :</label>
+                    </div>
 
-                    <div class="em-flex-row">
-                        <div id="cc-box-label" class="em-flex-row em-mb-4 em-pointer" onclick="openCC()">
+                    <div class="flex items-center">
+                        <div id="cc-box-label" class="em-flex-row em-pointer" onclick="openCC()">
                             <label class="em-mb-0-important"><?= JText::_('COM_EMUNDUS_EMAILS_CC_LABEL'); ?></label>
                             <span id="cc-icon" class="material-icons-outlined">chevron_right</span>
                         </div>
 
-                        <div id="bcc-box-label" class="em-flex-row em-mb-4 em-pointer" onclick="openBCC()">
+                        <div id="bcc-box-label" class="em-flex-row em-pointer" onclick="openBCC()">
                             <label class="em-mb-0-important"><?= JText::_('COM_EMUNDUS_EMAILS_BCC_LABEL'); ?></label>
                             <span id="bcc-icon" class="material-icons-outlined">chevron_right</span>
                         </div>
                     </div>
                 </div>
+                <div class="em-border-radius-8">
+		            <?php if(count($this->users) == 1) : ?>
+			            <?php foreach ($this->users as $user) : ?>
 
-                <div class="em-border-radius-8" id="em-recipitents">
-                    <?php foreach ($this->users as $user) : ?>
+				            <?php if (!empty($user['email']) && !in_array($user['email'], $email_list)) : ?>
+					            <?php $email_list[] = $user['email']; ?>
+                                <span class="label label-default em-mr-8 em-email-label">
+                                    <?= $user['name'] . ' <em class="em-font-size-14">&lt;' . $user['email'] . '&gt;</em>'; ?>
+                                </span>
 
-                        <?php if (!empty($user['email']) && !in_array($user['email'], $email_list)) : ?>
-                            <?php $email_list[] = $user['email']; ?>
-                            <span class="label label-default em-mr-8 em-email-label">
-                                <?= $user['name'] . ' <em class="em-font-size-14">&lt;' . $user['email'] . '&gt;</em>'; ?>
+                                <input type="hidden" name="ud[]" id="ud" value="<?= $user['id']; ?>"/>
+				            <?php endif; ?>
+
+			            <?php endforeach; ?>
+		            <?php else : ?>
+                    <div class="flex items-center">
+                        <span class="label label-default em-mr-8 em-email-label">
+                                    <?= $this->users[0]['name'] . ' <em class="em-font-size-14">&lt;' . $this->users[0]['email'] . '&gt;</em>'; ?>
+                        </span>
+                        <span class="label label-default em-mr-8 em-email-label">
+                                +<?= count($this->users)-1 ?>
                             </span>
-
-                            <input type="hidden" name="ud[]" id="ud" value="<?= $user['id']; ?>"/>
-                        <?php endif; ?>
-
-                    <?php endforeach; ?>
+                    </div>
+		            <?php endif; ?>
                 </div>
             </div>
         </div>

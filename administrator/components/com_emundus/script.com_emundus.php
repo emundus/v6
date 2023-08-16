@@ -2262,6 +2262,13 @@ structure:
 				$db->execute();
 
 				$query->clear()
+					->update($db->quoteName('#__fabrik_lists'))
+					->set($db->quoteName('template') . ' = ' . $db->quote('emundus'))
+					->where($db->quoteName('template') . ' = ' . $db->quote('bootstrap'));
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
 					->update($db->quoteName('#__menu'))
 					->set($db->quoteName('params') . ' = JSON_REPLACE(params,"$.fabriklayout","emundus")')
 					->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_fabrik&view=form&formid=307'));
