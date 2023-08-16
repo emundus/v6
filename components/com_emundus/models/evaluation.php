@@ -91,13 +91,13 @@ class EmundusModelEvaluation extends JModelList {
         $hidden = 0;
         $elements_eval = $this->getEvaluationElements($show_in_list_summary, $hidden);
         if (is_array($elements_eval) && count($elements_eval)) {
-            $this->elements_id .= implode(',', $elements_eval);
+            $this->elements_id .= ',' . implode(',', $elements_eval);
         }
 
         if ($session->has('adv_cols')) {
             $adv = $session->get('adv_cols');
-            if (!empty($adv)) {
-                $this->elements_id .= ','.implode(',', $adv);
+            if (!empty($adv) && !is_null($adv)) {
+                $this->elements_id .= ',' . implode(',', $adv);
             }
         }
         $this->elements_values = explode(',', $menu_params->get('em_elements_values'));
@@ -1935,10 +1935,9 @@ class EmundusModelEvaluation extends JModelList {
 					$refreshQuery = $this->_db->getQuery(true);
 
 					$refreshQuery->delete($this->_db->quoteName('#__emundus_uploads'))
-						// TODO: We have to check an other param if this attachment_id is used for an applicant upload
+						// TODO: We have to check another param if this attachment_id is used for an applicant upload
 						->where($this->_db->quoteName('attachment_id') . ' = ' . $attachInfo['id'])
-						// TODO: Why we delete files only generated current day
-						->andWhere('DATE(timedate) = CURRENT_DATE()')
+						->andWhere('DATE('.$this->_db->quoteName('timedate').') = CURRENT_DATE() OR '.$this->_db->quoteName('user_id').' <> '.$this->_db->quote($fnumInfo[$fnum]['applicant_id']))
 						->andWhere($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
                     $this->_db->setQuery($refreshQuery);
                     $this->_db->execute();

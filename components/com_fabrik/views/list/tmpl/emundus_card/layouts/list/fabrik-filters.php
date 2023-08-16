@@ -46,7 +46,7 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
 		            ?>
                     <div class="em-mb-12">
 			            <?php if (array_key_exists('all', $d->filters)) { ?>
-                            <p class="em-mb-4 em-text-neutral-600"><?php echo FText::_('COM_FABRIK_ADVANCED_SEARCH') ?></p>
+                            <p class="em-mb-4 em-text-neutral-800"><?php echo FText::_('COM_FABRIK_ADVANCED_SEARCH') ?></p>
 				            <?php echo $d->filters['all']->element;
 			            };
 			            ?>
@@ -79,7 +79,7 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
 					            $required = $filter->required == 1 ? ' notempty' : ''; ?>
                                 <div data-filter-row="<?php echo $key; ?>"
                                     class="em-mb-16 fabrik_row oddRow<?php echo ($c % 2) . $required; ?>">
-                                    <p class="em-mb-4 em-text-neutral-600"><?php echo $filter->label; ?></p>
+                                    <p class="em-mb-4 em-text-neutral-800"><?php echo $filter->label; ?></p>
                                     <p><?php echo $filter->element; ?></p>
                                 </div>
 				            <?php

@@ -171,8 +171,14 @@ a.btn.btn-success:not(.btn-xs) {
 
 .view-featured .candidacy-files-list .row {
    position: relative;
+    height: 100%;
 }
 @media all and (max-width: 479px) {
+
+    #applications_list_view div[id*="group_application_tab"] {
+        overflow-x: scroll;
+    }
+
     .main-page-file-info a {
         margin-bottom: 4px;
     }
@@ -196,6 +202,11 @@ a.btn.btn-success:not(.btn-xs) {
 }
 
 @media all and (min-width: 480px) and (max-width: 767px) {
+
+    #applications_list_view div[id*="group_application_tab"] {
+        overflow-x: scroll;
+    }
+
     .main-page-file-info a {
         margin-bottom: 4px;
     }
@@ -367,9 +378,22 @@ margin-top: 16px;
 .mod_emundus_applications___title:focus {
     text-decoration: none;
 }
+.mod_emundus_applications__container{
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
+}
+
+#applications_card_view .mod_emundus_applications__container{
+    padding: 4px;
+}
+
+.mod_emundus_applications___content_app:hover .mod_emundus_applications__container {
+    background: #F3F3F3;
+    border-radius: var(--applicant-border-radius);
+}
 
 .mod_emundus_applications__actions{
-    margin-top: 8px;
     flex-direction: column;
     box-shadow: 0px 12px 17px rgba(5, 47, 55, 0.07), 0px 5px 22px rgba(5, 47, 55, 0.06), 0px 7px 8px rgba(5, 47, 55, 0.1);
     border-radius: 12px;
@@ -377,7 +401,7 @@ margin-top: 16px;
     position: absolute;
     background: white;
     z-index: 9999;
-    right: 30px;
+    margin-top: 34px;
 }
 .mod_emundus_applications__actions a:not(:last-child){
     margin-bottom: 8px;
@@ -477,6 +501,16 @@ margin-top: 16px;
 }
 #applications_list_view table tr {
     border-bottom: 1px solid #EDEDED;
+}
+
+
+#applications_list_view .mod_emundus_applications__container span{
+    padding: 4px;
+}
+
+#applications_list_view table tr:hover .mod_emundus_applications__container span {
+    background: var(--neutral-0);
+    border-radius: var(--applicant-border-radius);
 }
 #applications_list_view .mod_emundus_applications___title{
     min-height: unset;

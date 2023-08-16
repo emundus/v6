@@ -982,6 +982,10 @@ input:focus + .em-slider {
   padding: 6px 12px;
 }
 
+.em-p-4-6{
+  padding: 4px 6px;
+}
+
 .em-p-8-12{
   padding: 8px 12px;
 }
@@ -1135,6 +1139,9 @@ input:focus + .em-slider {
 }
 .em-mt-80{
   margin-top: $m-80;
+}
+.em-mb-0{
+  margin-bottom: 0;
 }
 .em-mb-0-important{
   margin-bottom: 0 !important;
@@ -1811,6 +1818,14 @@ button.em-swal-delete-button{
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+}
+
+.mod_emundus_campaign__list .em-programme-tag{
+  white-space: initial;
+}
+
+.view-programme .mod_emundus_campaign__grid .em-programme-tag{
+  white-space: inherit !important;
 }
 
 /** SEARCHBAR **/

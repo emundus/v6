@@ -23,7 +23,7 @@ class EmundusModelLogs extends JModelList {
 	 */
 	public function __construct() {
 		parent::__construct();
-		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'date.php');
+		require_once (JPATH_SITE.'/components/com_emundus/helpers/date.php');
 
 		// Assign values to class variables.
 		$this->user = JFactory::getUser();
@@ -65,9 +65,8 @@ class EmundusModelLogs extends JModelList {
 
                         $ip = JFactory::getApplication()->input->server->get('REMOTE_ADDR','');
                         $user_to = empty($user_to) ? '' : $user_to;
-                        $now = new DateTime();
-                        $now->setTimezone(new DateTimeZone('UTC'));
-                        $now = $now->format('Y-m-d H:i:s');
+
+                        $now = EmundusHelperDate::getNow();
 
                         $columns = ['timestamp', 'user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params', 'ip_from'];
                         $values  = [$db->quote($now), $user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message), $db->quote($params), $db->quote($ip)];
@@ -200,11 +199,6 @@ class EmundusModelLogs extends JModelList {
         $action = implode(',', $action);
         $crud = implode(',', $db->quote($crud));
 
-        if (empty($user_from)) {
-            JLog::add('Error in action [' . $action . ' - ' . $crud . '] user_from cannot be null in EmundusModelLogs::log', JLog::WARNING, 'com_emundus');
-            return false;
-        }
-
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $showTimeFormat = $eMConfig->get('log_show_timeformat', 0);
         $showTimeOrder = $eMConfig->get('log_show_timeorder', 'DESC');
@@ -320,9 +314,9 @@ class EmundusModelLogs extends JModelList {
             case ('c'):
                 $action_name = $action_category . '_CREATE';
                 foreach ($params->created as $value) {
-                    if(isset($value->details) and ($value->details) !== null) {
-                        $action_details .= '<span style="margin-bottom: 0.5rem"><b>' . $value->element . '</b></span>';
-                        $action_details .= '<div><span class="em-main-500-color" style="margin-bottom: 0.5rem">' . $value->details . '</span>';
+                    if(is_object($value)) {
+                        $action_details .= '<span style="margin-bottom: 0.5rem"><b>' . (!empty($value->element) ? $value->element : JText::_('UNKNOWN')) . '</b></span>';
+                        $action_details .= '<div class="em-flex-row"><span class="em-red-500-color">' . (!empty($value->details) ? $value->details : JText::_('UNKNOWN')) . '&nbsp</span>&nbsp';
                         $action_details .= '</div>';
                     } else {
                         $action_details .= '<p>' . $value . '</p>';
@@ -371,9 +365,9 @@ class EmundusModelLogs extends JModelList {
             case ('d'):
                 $action_name = $action_category . '_DELETE';
                 foreach ($params->deleted as $value) {
-                    if(isset($value->details) and ($value->details) !== null) {
-                        $action_details .= '<span style="margin-bottom: 0.5rem"><b>' . $value->element . '</b></span>';
-                        $action_details .= '<div class="em-flex-row"><span class="em-red-500-color">' . $value->details . '&nbsp</span>&nbsp';
+                    if(is_object($value)) {
+                        $action_details .= '<span style="margin-bottom: 0.5rem"><b>' . (!empty($value->element) ? $value->element : JText::_('UNKNOWN')) . '</b></span>';
+                        $action_details .= '<div class="em-flex-row"><span class="em-red-500-color">' . (!empty($value->details) ? $value->details : JText::_('UNKNOWN')) . '&nbsp</span>&nbsp';
                         $action_details .= '</div>';
                     } else {
                         $action_details .= '<p>' . $value . '</p>';

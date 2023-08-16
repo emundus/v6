@@ -238,14 +238,6 @@ a {
   }
 }
 
-#emailForm.em-form-message a {
-  color: var(--main-500);
-
-  &:hover {
-    color: var(--main-600);
-  }
-}
-
 
 .hidden {
   display: none;
@@ -615,6 +607,11 @@ p,
 
 .gantry.view-list #g-container-main .g-container .page-header h1 {
   margin-bottom: 16px;
+}
+
+.view-list.com_fabrik.gantry > ul.dropdown-menu[role="menu"] {
+  width: fit-content !important;
+  padding: 4px;
 }
 
 .gantry.view-list .dropdown-menu > li > a:hover,
@@ -1430,18 +1427,28 @@ body > .g-container {
     }
   }
 
-  form .dz-message {
-    height: 150px;
-    border: 1px dashed $neutral-500;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border-radius: 8px;
-    margin: 8px 0;
+  form {
+    .dz-preview {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-    span {
-      color: var(--neutral-800);
+    .dz-message {
+
+      height: 150px;
+      border: 1px dashed $neutral-500;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-radius: 8px;
+      margin: 8px 0;
+
+
+      span {
+        color: var(--neutral-800);
+      }
     }
   }
 
@@ -1877,6 +1884,30 @@ body > .g-container {
       border-color: $base-primary-color;
     }
   }
+}
+
+/* LISTES - TEMPLATE EMUNDUS CARD */
+
+.view-list .fabrik-switch-view-icon{
+  border: 1px solid $neutral-500;
+  color: $neutral-500;
+}
+.view-list .fabrik-switch-view-icon.active{
+  border: 1px solid $base-secondary-color;
+  color: $base-secondary-color;
+}
+
+.view-list .fabrikFilterContainer .fabrik_filter_submit.button {
+    background: $base-secondary-color;
+    border-color: $base-secondary-color;
+    border-radius: var(--applicant-border-radius);
+    color: var(--neutral-0);
+
+    &:hover, &:active, &:focus {
+      background: var(--neutral-0);
+      border-color: $base-secondary-color !important;
+      color: $base-secondary-color;
+    }
 }
 
 /* LISTES  */
@@ -3977,6 +4008,15 @@ ul.unstyled.em-linkForgot li a {
   display: none;
 }
 
+fieldset.em_filters_adv_filter .em_save_filter input#save-filter {
+  margin-bottom: 24px !important;
+}
+
+.com_emundus .em_filters_adv_filter #em_adv_filters #advanced-filters .chzn-container.chzn-container-single .chzn-drop {
+  top: auto !important;
+  bottom: 100% !important;
+}
+
 #em-files-filters #em_filters fieldset input#save-filter,
 fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
 #em_adv_filters .em_filters_adv_filter_addColumn button#add-filter {
@@ -4120,10 +4160,14 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
 
 /* DOSSIER CANDIDAT */
 
+.com_emundus .em_filters_filedset > div:nth-child(+n+5) .optWrapper {
+  top: auto;
+  bottom: 100%;
+}
+
 .em-personalInfo > a {
   background-color: unset;
 }
-
 
 /* RECHERCHE */
 .gantry.files-page .selectize-control.multi .selectize-input [data-value],
@@ -5513,14 +5557,9 @@ screen and (max-height: 769px) {
     row-gap: 8px;
   }
 
-  #g-navigation .g-container #header-c .moduletable .header-right a.btn.btn-danger:not(.btn-creer-compte) {
-    margin-bottom: 8px !important;
-  }
-
 }
 
 @media all and (min-width: 434px) and (max-width: 479px) {
-
   .gantry #g-navigation,
   .gantry #g-navigation .g-container {
     height: auto !important;
@@ -5537,6 +5576,24 @@ screen and (max-height: 769px) {
 }
 
 @media all and (max-width: 479px) {
+
+  .view-checklist table form .dz-default.dz-message {
+    padding-right: 8px !important;
+  }
+
+  .view-form:not(.com_emundus) .span12 .page-header h1 {
+    hyphens: auto;
+  }
+
+  #g-navigation .g-container #header-c .moduletable .header-right {
+    flex-direction: column;
+    display: flex;
+
+    a.btn.btn-danger:not(.btn-creer-compte) {
+      margin-bottom: 8px !important;
+    }
+  }
+
 
   /* BIRTHDAY */
   .view-form:not(.com_emundus) .span12 form .fabrikGroup .row-fluid .fabrikElementContainer.control-group:not(.plg-display) .fabrikElement .fabrikSubElementContainer {
@@ -6453,6 +6510,7 @@ screen and (max-height: 769px) {
 }
 
 @media all and (max-width: 767px) {
+
   #g-navigation .g-container #header-c {
     justify-content: center;
   }

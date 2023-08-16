@@ -156,7 +156,7 @@ $current_tab = 0;
 	<?php endif; ?>
 </div>
 
-<?php if ($show_tabs == 1) : ?>
+<?php if ($show_tabs == 1 && sizeof($applications) > 0) : ?>
     <div class="em-mt-32 em-flex-row em-border-bottom-neutral-300" style="height: 50px; overflow:hidden; overflow-x: auto;">
 		<?php foreach ($tabs as $tab) : ?>
             <div id="tab_link_<?php echo $tab['id'] ?>" onclick="updateTab(<?php echo $tab['id'] ?>)"
@@ -182,90 +182,93 @@ $current_tab = 0;
     </div>
 <?php endif; ?>
 
-<div class="em-flex-row em-flex-space-between em-mt-16">
-    <div class="em-flex-row">
-        <!-- BUTTONS -->
-		<?php if ($mod_em_applications_show_sort == 1) : ?>
-            <div id="mod_emundus_application__header_sort"
-                 class="mod_emundus_application__header_filter em-border-neutral-400 em-white-bg em-neutral-800-color em-pointer em-mr-8"
-                 onclick="displaySort()">
-                <span class="material-icons-outlined">swap_vert</span>
-                <span class="em-ml-8"><?php echo JText::_('MOD_EM_APPPLICATION_LIST_SORT') ?></span>
-            </div>
-		<?php endif; ?>
+<?php if (sizeof($applications) > 0) : ?>
+    <div class="em-flex-row em-flex-space-between em-mt-16">
+        <div class="em-flex-row">
+            <!-- BUTTONS -->
+            <?php if ($mod_em_applications_show_sort == 1) : ?>
+                <div id="mod_emundus_application__header_sort"
+                     class="mod_emundus_application__header_filter em-border-neutral-400 em-white-bg em-neutral-800-color em-pointer em-mr-8"
+                     onclick="displaySort()">
+                    <span class="material-icons-outlined">swap_vert</span>
+                    <span class="em-ml-8"><?php echo JText::_('MOD_EM_APPPLICATION_LIST_SORT') ?></span>
+                </div>
+            <?php endif; ?>
 
-		<?php if ($mod_em_applications_show_filters == 1) : ?>
-            <!--            <div id="mod_emundus_application__header_filter" class="mod_emundus_application__header_filter em-border-neutral-400 em-white-bg em-neutral-800-color em-pointer em-mr-8" onclick="displayFilters()">
-                <span class="material-icons-outlined">filter_list</span>
-                <span class="em-ml-8"><?php /*echo JText::_('MOD_EM_APPPLICATION_LIST_FILTER') */ ?></span>
-                <span id="mod_emundus_campaign__header_filter_count" class="mod_emundus_campaign__header_filter_count em-mr-8"></span>
-            </div>-->
-		<?php endif; ?>
+            <?php if ($mod_em_applications_show_filters == 1) : ?>
+                <!--            <div id="mod_emundus_application__header_filter" class="mod_emundus_application__header_filter em-border-neutral-400 em-white-bg em-neutral-800-color em-pointer em-mr-8" onclick="displayFilters()">
+                    <span class="material-icons-outlined">filter_list</span>
+                    <span class="em-ml-8"><?php /*echo JText::_('MOD_EM_APPPLICATION_LIST_FILTER') */ ?></span>
+                    <span id="mod_emundus_campaign__header_filter_count" class="mod_emundus_campaign__header_filter_count em-mr-8"></span>
+                </div>-->
+            <?php endif; ?>
 
-        <!-- CURRENT SORT -->
-        <?php if(!empty($order_by_session)) : ?>
-            <div id="mod_emundus_application__header_sort"
-                 class="mod_emundus_application__header_filter em-border-neutral-400 em-bg-neutral-200 em-neutral-800-color em-mr-8 em-flex-space-between" style="height: 38px">
-                <span>
-                    <?php if($order_by_session == 'status') : ?>
-                        <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_STATUS') ?>
-                    <?php elseif ($order_by_session == 'campaigns') : ?>
-                        <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_CAMPAIGN') ?>
-                    <?php elseif ($order_by_session == 'programs') : ?>
-                        <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_PROGRAMS') ?>
-                    <?php elseif ($order_by_session == 'last_update') : ?>
-                        <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_LAST_UPDATE') ?>
-                    <?php elseif ($order_by_session == 'years') : ?>
-	                    <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_YEARS') ?>
-                    <?php endif; ?>
-                </span>
-                <span class="material-icons-outlined em-pointer em-ml-8 em-font-size-16" onclick="filterApplications('applications_order_by','')">close</span>
-            </div>
-        <?php endif; ?>
-    </div>
+            <!-- CURRENT SORT -->
+            <?php if(!empty($order_by_session)) : ?>
+                <div id="mod_emundus_application__header_sort"
+                     class="mod_emundus_application__header_filter em-border-neutral-400 em-bg-neutral-200 em-neutral-800-color em-mr-8 em-flex-space-between" style="height: 38px">
+                    <span>
+                        <?php if($order_by_session == 'status') : ?>
+                            <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_STATUS') ?>
+                        <?php elseif ($order_by_session == 'campaigns') : ?>
+                            <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_CAMPAIGN') ?>
+                        <?php elseif ($order_by_session == 'programs') : ?>
+                            <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_PROGRAMS') ?>
+                        <?php elseif ($order_by_session == 'last_update') : ?>
+                            <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_LAST_UPDATE') ?>
+                        <?php elseif ($order_by_session == 'years') : ?>
+                            <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_YEARS') ?>
+                        <?php endif; ?>
+                    </span>
+                    <span class="material-icons-outlined em-pointer em-ml-8 em-font-size-16" onclick="filterApplications('applications_order_by','')">close</span>
+                </div>
+            <?php endif; ?>
+        </div>
 
-    <div class="em-flex-row-justify-end" style="gap: 24px">
-		<?php if ($mod_em_applications_show_search && sizeof($applications) > 0): ?>
-            <div class="em-searchbar em-flex-row-justify-end">
-                <label for="searchword" style="display: inline-block;margin-bottom: unset">
-                    <input name="searchword" type="text" id="applications_searchbar" class="form-control"
-                           placeholder="<?php echo JText::_('MOD_EM_APPLICATIONS_SEARCH') ?>">
-                </label>
-            </div>
-		<?php endif; ?>
-        <div class="em-flex-row" style="gap: 8px">
-            <div id="button_switch_card"
-                 class="em-pointer mod_emundus_application___buttons_switch_view mod_emundus_application___buttons_enable"
-                 onclick="updateView('card')">
-                <span class="material-icons-outlined mod_emundus_application___buttons_switch_view_enable">grid_view</span>
-            </div>
-            <div id="button_switch_list" class="em-pointer mod_emundus_application___buttons_switch_view"
-                 onclick="updateView('list')">
-                <span class="material-icons-outlined mod_emundus_application___buttons_switch_view_disabled">menu</span>
+        <div class="em-flex-row-justify-end" style="gap: 24px">
+            <?php if ($mod_em_applications_show_search): ?>
+                <div class="em-searchbar em-flex-row-justify-end">
+                    <label for="searchword" style="display: inline-block;margin-bottom: unset">
+                        <input name="searchword" type="text" id="applications_searchbar" class="form-control"
+                               placeholder="<?php echo JText::_('MOD_EM_APPLICATIONS_SEARCH') ?>">
+                    </label>
+                </div>
+            <?php endif; ?>
+            <div class="em-flex-row" style="gap: 8px">
+                <div id="button_switch_card"
+                     class="em-pointer mod_emundus_application___buttons_switch_view mod_emundus_application___buttons_enable"
+                     onclick="updateView('card')">
+                    <span class="material-icons-outlined mod_emundus_application___buttons_switch_view_enable">grid_view</span>
+                </div>
+                <div id="button_switch_list" class="em-pointer mod_emundus_application___buttons_switch_view"
+                     onclick="updateView('list')">
+                    <span class="material-icons-outlined mod_emundus_application___buttons_switch_view_disabled">menu</span>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- SORT BLOCK -->
-<div class="mod_emundus_application__header_sort__values em-border-neutral-400 em-neutral-800-color" id="sort_block"
-     style="display: none">
-    <a onclick="filterApplications('applications_order_by','status')" class="em-text-neutral-900 em-pointer">
-		<?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_STATUS') ?>
-    </a>
-    <a onclick="filterApplications('applications_order_by','campaigns')" class="em-text-neutral-900 em-pointer">
-		<?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_CAMPAIGN') ?>
-    </a>
-    <a onclick="filterApplications('applications_order_by','programs')" class="em-text-neutral-900 em-pointer">
-		<?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_PROGRAMS') ?>
-    </a>
-    <a onclick="filterApplications('applications_order_by','years')" class="em-text-neutral-900 em-pointer">
-		<?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_YEARS') ?>
-    </a>
-    <a onclick="filterApplications('applications_order_by','last_update')" class="em-text-neutral-900 em-pointer">
-		<?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_LAST_UPDATE') ?>
-    </a>
-</div>
+    <!-- SORT BLOCK -->
+    <div class="mod_emundus_application__header_sort__values em-border-neutral-400 em-neutral-800-color" id="sort_block"
+         style="display: none">
+        <a onclick="filterApplications('applications_order_by','status')" class="em-text-neutral-900 em-pointer">
+            <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_STATUS') ?>
+        </a>
+        <a onclick="filterApplications('applications_order_by','campaigns')" class="em-text-neutral-900 em-pointer">
+            <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_CAMPAIGN') ?>
+        </a>
+        <a onclick="filterApplications('applications_order_by','programs')" class="em-text-neutral-900 em-pointer">
+            <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_PROGRAMS') ?>
+        </a>
+        <a onclick="filterApplications('applications_order_by','years')" class="em-text-neutral-900 em-pointer">
+            <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_YEARS') ?>
+        </a>
+        <a onclick="filterApplications('applications_order_by','last_update')" class="em-text-neutral-900 em-pointer">
+            <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_LAST_UPDATE') ?>
+        </a>
+    </div>
+
+<?php endif; ?>
 
 
 
@@ -382,7 +385,7 @@ $current_tab = 0;
                                                                       style="background-color: <?= $application->order_color; ?>"><?= JText::_(strtoupper($application->order_status)); ?></span>
 															<?php endif; ?>
                                                         </div>
-                                                        <div>
+                                                        <div class="mod_emundus_applications__container">
                                                             <span class="material-icons em-text-neutral-600 em-font-weight-600"
                                                                   id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
                                                                   >more_vert</span>
@@ -584,7 +587,8 @@ $current_tab = 0;
                 echo $override_default_content;
             } else {
                 ?>
-                <h2 class="em-text-neutral-900 em-h2 em-applicant-title-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE') ?></h2>
+                <p class="em-text-neutral-900 em-h2 em-applicant-title-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE') ?></p>
+                <br/>
                 <p class="em-text-neutral-900 em-default-font em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT') ?></p>
                 <p class="em-applicant-text-color em-default-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT_2') ?></p>
                 <?php
@@ -738,7 +742,7 @@ $current_tab = 0;
                                                     </div>
                                                 </td>
                                                 <td style="width: 5%;">
-                                                    <div>
+                                                    <div class="mod_emundus_applications__container">
                                                             <span class="material-icons em-text-neutral-600 em-font-weight-600"
                                                                   id="actions_button_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>"
                                                                   >more_vert</span>

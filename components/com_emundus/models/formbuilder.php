@@ -50,10 +50,12 @@ class EmundusModelFormbuilder extends JModelList {
     }
 
     /** TRANSLATION SYSTEM */
-    public function translate($key,$values,$reference_table = '',$id = '',$reference_field = ''){
+    public function translate($key, $values, $reference_table = '', $id = '', $reference_field = '') {
         $languages = JLanguageHelper::getLanguages();
         foreach ($languages as $language) {
-            $this->m_translations->insertTranslation($key,$values[$language->sef], $language->lang_code,'','override',$reference_table,$id,$reference_field);
+	        if (isset($values[$language->sef])) {
+		        $this->m_translations->insertTranslation($key, $values[$language->sef], $language->lang_code, '', 'override', $reference_table, $id, $reference_field);
+	        }
         }
         return $key;
     }
@@ -398,7 +400,17 @@ class EmundusModelFormbuilder extends JModelList {
                     'msg' => 'UNABLE_TO_INSERT_NEW_MENU'
                 );
             }
-            $newmenuid = $result['id'];
+	        $newmenuid = $result['id'];
+
+			$alias = 'menu-profile'.$prid.'-form-'.$newmenuid;
+	        $query->clear()
+		        ->update($db->quoteName('#__menu'))
+		        ->set($db->quoteName('alias') . ' = ' . $db->quote($alias))
+		        ->set($db->quoteName('path') . ' = ' . $db->quote($menu_parent->path . '/' . $alias))
+		        ->where($db->quoteName('id') . ' = ' . $db->quote($newmenuid));
+	        $db->setQuery($query);
+	        $db->execute();
+
 
             // Create hidden group
             $group = $this->createGroup(array('fr' => 'Hidden group', 'en' => 'Hidden group',), $formid, -1);
@@ -806,6 +818,17 @@ class EmundusModelFormbuilder extends JModelList {
                     'msg' => 'UNABLE_TO_INSERT_NEW_MENU'
                 );
             }
+	        $submittion_menu_id = $result['id'];
+
+	        $alias = 'menu-profile'.$prid.'-submission-'.$submittion_menu_id;
+	        $query->clear()
+		        ->update($db->quoteName('#__menu'))
+		        ->set($db->quoteName('alias') . ' = ' . $db->quote($alias))
+		        ->set($db->quoteName('path') . ' = ' . $db->quote($alias))
+		        ->where($db->quoteName('id') . ' = ' . $db->quote($submittion_menu_id));
+	        $db->setQuery($query);
+	        $db->execute();
+
             //
 
             // Create hidden group
@@ -1045,16 +1068,22 @@ class EmundusModelFormbuilder extends JModelList {
 
                     $db->setQuery($query);
                     $results = $db->loadObjectList();
-                    $orderings = [];
-                    foreach (array_values($results) as $result) {
-                        if (!in_array($result->ordering, $orderings)) {
-                            $orderings[] = intval($result->ordering);
-                        }
-                    }
 
-                    $columns = array('form_id', 'group_id', 'ordering',);
-                    $order = array_values($orderings)[strval(sizeof($orderings) - 1)] + 1;
-                    $values = array($fid, $groupid, $order,);
+					if (!empty($results)) {
+						$orderings = [];
+						foreach (array_values($results) as $result) {
+							if (!in_array($result->ordering, $orderings)) {
+								$orderings[] = intval($result->ordering);
+							}
+						}
+
+						$order = array_values($orderings)[strval(sizeof($orderings) - 1)] + 1;
+					} else {
+						$order = 1;
+					}
+
+	                $columns = array('form_id', 'group_id', 'ordering',);
+	                $values = array($fid, $groupid, $order);
 
                     $query->clear()
                         ->insert($db->quoteName('#__fabrik_formgroup'))
@@ -1081,6 +1110,7 @@ class EmundusModelFormbuilder extends JModelList {
                     );
                 }
             } catch(Exception $e){
+				error_log($e->getMessage());
                 JLog::add('component/com_emundus/models/formbuilder | Error at creating a group for fabrik_form ' . $fid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             }
         }
@@ -2789,6 +2819,13 @@ class EmundusModelFormbuilder extends JModelList {
 									$newmenuid = $result['id'];
 
 									if (!empty($newmenuid)) {
+										$query->clear()
+											->update($db->quoteName('#__menu'))
+											->set($db->quoteName('alias') . ' = ' . $db->quote('menu-profile'.$profile->id.'-form-'.$newmenuid))
+											->where($db->quoteName('id') . ' = ' . $db->quote($newmenuid));
+										$db->setQuery($query);
+										$db->execute();
+
 										require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
 										$falang = new EmundusModelFalang;
 										$falang->insertFalang($label, $newmenuid,'menu','title');

@@ -207,24 +207,55 @@ class EmundusModelDecision extends JModelList
                     $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
                     $this->_elements_default[] = $query;
 
-		        }elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton') {
+		        } elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'checkbox') {
+					if (@$group_params->repeat_group_button == 1) {
+						$element_attribs = json_decode($def_elmt->element_attribs);
+						$select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
+						foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+							$select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+						}
+						$select = str_replace($def_elmt->tab_name . '.' . $def_elmt->element_name,'GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.' SEPARATOR ", ")',$select);
 
-		        	if (@$group_params->repeat_group_button == 1) {
-                        $this->_elements_default[] = '(
-                                    SELECT  GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.' SEPARATOR ", ")
+						$this->_elements_default[] = '(
+                                    SELECT ' . $select . '
                                     FROM '.$def_elmt->table_join.'
                                     WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
                                   ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
-                    } else {
-                        $element_attribs = json_decode($def_elmt->element_attribs);
-                        $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
-                        foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-                            $select = 'REPLACE(' . $select . ', "' . $value . '", "' .
-                                $element_attribs->sub_options->sub_labels[$key] . '")';
-                        }
-                        $this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
-                    }
+					} else {
+						$element_attribs = json_decode($def_elmt->element_attribs);
+						$select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
+						foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+							$select = 'REPLACE(' . $select . ', "' . $value . '", "' .
+								JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+						}
+						$this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
+					}
+				} elseif ($def_elmt->element_plugin == 'radiobutton') {
+					if (!empty($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
+						$element_attribs = json_decode($def_elmt->element_attribs);
+						$select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
+						foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+							$select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+						}
+						$select = str_replace($def_elmt->tab_name . '.' . $def_elmt->element_name,'GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.' SEPARATOR ", ")',$select);
+						$this->_elements_default[] = '(
+                                    SELECT ' . $select . '
+                                    FROM '.$def_elmt->table_join.'
+                                    WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
+                                  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
+					} else {
+						$element_attribs = json_decode($def_elmt->element_attribs);
 
+						$element_replacement = $def_elmt->tab_name . '___' . $def_elmt->element_name;
+						$select = $def_elmt->tab_name . '.' . $def_elmt->element_name . ' AS ' . $db->quote($element_replacement) . ', CASE ';
+						foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+							$select .= ' WHEN ' . $def_elmt->tab_name . '.' . $def_elmt->element_name . ' = ' . $db->quote($value) . ' THEN ' .  $db->quote(JText::_(addslashes($element_attribs->sub_options->sub_labels[$key]))) ;
+						}
+						$select .= ' ELSE ' . $def_elmt->tab_name . '.' . $def_elmt->element_name;
+						$select .= ' END AS ' . $db->quote($element_replacement);
+
+						$this->_elements_default[] = $select;
+					}
 				} elseif ($def_elmt->element_plugin == 'yesno') {
 					if (@$group_params->repeat_group_button == 1) {
 						$this->_elements_default[] = '(

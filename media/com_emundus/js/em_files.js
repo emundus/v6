@@ -754,7 +754,7 @@ function setFiltersSumo(event){
 
         var id = event.currentTarget.id;
         const my_element = $('#' + id);
-
+        console.log(my_element);
         if (!id.includes('elements-')) {
             var multi = false;
             if (typeof my_element.attr('multiple') !== 'undefined') {
@@ -1683,6 +1683,7 @@ $(document).ready(function() {
         var checkInput = getUserCheck();
         var prghtml = '';
         var atthtml = '';
+        var tags = null;
 
         switch (id) {
             /**
@@ -4567,6 +4568,8 @@ $(document).ready(function() {
                     url:url,
                     dataType:'json',
                     success: function(result) {
+                        tags = result;
+
                         html = '<form>'+
                             '<div class="em-flex-row"><input type="radio" name="em-tags" id="em-tags-add" value="0" checked><label for="em-tags-add" class="em-mb-0-important">' +Joomla.JText._('COM_EMUNDUS_APPLICATION_ADD_TAGS')+'</label></div>' +
                             '<div class="em-flex-row"><input type="radio" name="em-tags" id="em-tags-delete" value="1"><label for="em-tags-delete" class="em-mb-0-important">' +Joomla.JText._('COM_EMUNDUS_TAGS_DELETE_TAGS')+'</label></div>' +
@@ -4820,6 +4823,39 @@ $(document).ready(function() {
         }
 
         $('.modal-chzn-select').chosen({width:'100%'});
+
+        /***
+         * On Category change
+         */
+        $('#em-action-tag-category').chosen().change(function() {
+            var cat = $(this).val();
+
+            if (cat) {
+                var allowed_cats = tags.tags.filter((tag) => {
+                    if(tag.category != cat) {
+                        return tag.id;
+                    }
+                }).map((item) => {
+                    return item.id;
+                });
+
+                document.querySelectorAll('#em-action-tag option').forEach((option) => {
+                    if (!allowed_cats.contains(option.value)) {
+                        option.disabled = false;
+                        option.show();
+                    } else {
+                        option.disabled = true;
+                        option.hide();
+                    }
+                })
+            } else {
+                document.querySelectorAll('#em-action-tag option').forEach((option) => {
+                    option.disabled = false;
+                    option.show();
+                })
+            }
+            $("#em-action-tag").val('').trigger("liszt:updated");
+        });
     });
 
     $(document).on('click', function() {
@@ -4839,6 +4875,9 @@ $(document).ready(function() {
         setFiltersSumo(event);
     });
     $(document).on('change', '#select_published', function(event) {
+        setFiltersSumo(event);
+    });
+    $(document).on('change', '#select_newsletter', function(event) {
         setFiltersSumo(event);
     });
 
@@ -5540,7 +5579,7 @@ $(document).ready(function() {
         tinymce.remove();
         var fnum = $(this).attr('id').split('candidat_')[1];
 
-        $('#em-modal-actions').modal({backdrop:true,keyboard:true},'toggle');
+        $('#em-modal-actions').modal({backdrop:false,keyboard:true},'toggle');
         $('.modal-title').empty();
         $('.modal-title').append($(this).children('a').text());
         $('.modal-body').empty();
@@ -6462,7 +6501,7 @@ async function sendMailQueue(fnums) {
         switch(currentStep) {
             case 0:
                 title = 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL';
-                html = '<div id="data" class="em-mt-32 em-w-100"><div id="email-loader" class="em-loader" style="margin: auto;"></div></div>';
+                html = '<div id="data" class="em-w-100"><div id="email-loader" class="em-loader" style="margin: auto;"></div></div>';
                 swal_confirm_button = 'COM_EMUNDUS_EMAILS_EMAIL_PREVIEW_BEFORE_SEND';
 
                 $.ajax({
@@ -6501,6 +6540,7 @@ async function sendMailQueue(fnums) {
                     template        : $('#message_template :selected').val(),
                     mail_from_name  : $('#mail_from_name').text(),
                     mail_from       : $('#mail_from').text(),
+                    reply_to_from   : $('#reply_to_from').text(),
                     mail_subject    : $('#mail_subject').text(),
                     message         : body,
                     bcc             : [],

@@ -161,7 +161,9 @@ class EmundusHelperEvents {
 
             $eMConfig = JComponentHelper::getParams('com_emundus');
             $copy_application_form = $eMConfig->get('copy_application_form', 0);
-            $copy_exclude_forms = $eMConfig->get('copy_exclude_forms', []);
+	        $copy_application_form_type   = $eMConfig->get('copy_application_form_type', 0);
+	        $copy_exclude_forms      = $eMConfig->get('copy_exclude_forms', []);
+	        $copy_include_forms      = $eMConfig->get('copy_include_forms', []);
             $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
             $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
 
@@ -352,7 +354,14 @@ class EmundusHelperEvents {
 
 			$profile_details = $m_users->getUserById(JFactory::getUser()->id)[0];
 
-            if ($copy_application_form == 1 && isset($user->fnum) && !in_array($formModel->getId(), $copy_exclude_forms) || !empty($fnum_linked)) {
+	        $check_forms = !in_array($formModel->getId(), $copy_exclude_forms);
+	        if($copy_application_form_type == 1)
+	        {
+		        $check_forms = in_array($formModel->getId(), $copy_include_forms);
+	        }
+
+
+	        if ($copy_application_form == 1 && isset($user->fnum) && ($check_forms || !empty($fnum_linked))) {
 
                 if (empty($formModel->getRowId())) {
                     $table = $listModel->getTable();
@@ -1306,11 +1315,12 @@ class EmundusHelperEvents {
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
-			$now = new DateTime();
-			$now->setTimezone(new DateTimeZone('UTC'));
+            require_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
+            $h_date = new EmundusHelperDate();
+            $now = $h_date->getNow();
 
 			$query->update($db->quoteName('#__emundus_campaign_candidature'))
-				->set($db->quoteName('updated') . ' = ' . $db->quote($now->format('Y-m-d H:i:s')))
+				->set($db->quoteName('updated') . ' = ' . $db->quote($now))
 				->set($db->quoteName('updated_by') . ' = ' . JFactory::getUser()->id)
 				->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
 			$db->setQuery($query);

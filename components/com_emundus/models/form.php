@@ -984,6 +984,16 @@ class EmundusModelForm extends JModelList {
             if ($heading_menu['status'] !== true){
                 return false;
             }
+	        $header_menu_id = $heading_menu['id'];
+
+	        $alias = 'menu-profile'.$newprofile.'-heading-'.$header_menu_id;
+	        $query->clear()
+		        ->update($db->quoteName('#__menu'))
+		        ->set($db->quoteName('alias') . ' = ' . $db->quote($alias))
+		        ->set($db->quoteName('path') . ' = ' . $db->quote($alias))
+		        ->where($db->quoteName('id') . ' = ' . $db->quote($header_menu_id));
+	        $db->setQuery($query);
+	        $db->execute();
 
             // Create first page
             if ($first_page) {
@@ -1036,11 +1046,11 @@ class EmundusModelForm extends JModelList {
 			$group = $m_formbuilder->createGroup(array('fr' => 'Hidden group', 'en' => 'Hidden group'), $form_id, -1);
 			if (!empty($group)) {
 				// Create hidden group
-				$m_formbuilder->createElement('id', $group['group_id'],'internalid','id','',1,0,0);
-				$m_formbuilder->createElement('time_date',$group['group_id'],'date','time date','',1, 0);
+				$m_formbuilder->createElement('id', $group['group_id'],'internalid','id','',1,0,0, 1);
+				$m_formbuilder->createElement('time_date',$group['group_id'],'date','time date','',1, 0, 1, 1);
 				$m_formbuilder->createElement('fnum',$group['group_id'],'field','fnum','{jos_emundus_evaluations___fnum}',1,0,0,1,0,44);
-				$m_formbuilder->createElement('user',$group['group_id'],'databasejoin','user','{$my->id}',1,0,1);
-				$m_formbuilder->createElement('student_id',$group['group_id'],'field','student_id','{jos_emundus_evaluations___student_id}',1,0,0);
+				$m_formbuilder->createElement('user',$group['group_id'],'databasejoin','user','{$my->id}',1,0,1, 1);
+				$m_formbuilder->createElement('student_id',$group['group_id'],'field','student_id','{jos_emundus_evaluations___student_id}',1,0,0, 1);
 			}
 
 			$db = JFactory::getDbo();
@@ -1215,6 +1225,7 @@ class EmundusModelForm extends JModelList {
 		if (!empty($prid)) {
 			require_once (JPATH_SITE.'/components/com_emundus/models/formbuilder.php');
 			$formbuilder = new EmundusModelFormbuilder;
+
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
@@ -1227,9 +1238,19 @@ class EmundusModelForm extends JModelList {
 				$results[] = $db->execute();
 
 				$query->clear()
+					->select($db->quoteName('id'))
+					->from($db->quoteName('#__menu'))
+					->where($db->quoteName('menutype') . ' = ' . $db->quote('menu-profile'.$prid))
+					->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
+				$db->setQuery($query);
+				$heading_id = $db->loadResult();
+
+				$alias = 'menu-profile'.$prid . '-heading-'.$heading_id;
+				$query->clear()
 					->update($db->quoteName('#__menu'))
 					->set($db->quoteName('title') . ' = ' . $db->quote($label))
-					->set($db->quoteName('alias') . ' = ' . $db->quote(str_replace($formbuilder->getSpecialCharacters(), '-', strtolower($label).'-'.$prid)))
+					->set($db->quoteName('alias') . ' = ' . $db->quote($alias))
+					->set($db->quoteName('path') . ' = ' . $db->quote($alias))
 					->where($db->quoteName('menutype') . ' = ' . $db->quote('menu-profile'.$prid))
 					->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
 				$db->setQuery($query);

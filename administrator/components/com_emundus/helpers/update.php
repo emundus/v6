@@ -545,6 +545,9 @@ class EmundusHelperUpdate
                 ->from($db->quoteName('#__emundus_setup_languages'))
                 ->where($db->quoteName('tag') . ' LIKE ' . $db->quote($tag))
                 ->andWhere($db->quoteName('lang_code') . ' LIKE ' . $db->quote($lang));
+			if($type == 'override') {
+				$query->andWhere($db->quoteName('location') . ' LIKE ' . $db->quote($lang . '.override.ini'));
+			}
             $db->setQuery($query);
             $tag_existing = $db->loadResult();
 
@@ -1489,7 +1492,13 @@ class EmundusHelperUpdate
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
 
-            $alias = $params['alias'] ?: $params['menutype'] . '-' . str_replace(' ','-',strtolower($params['title']));
+			if(empty($params['alias']))
+			{
+				$alias = str_replace("\xc2\xa0", ' ', ($params['menutype'] . '-' . $params['title']));
+				$alias = strtolower(JLanguageTransliterate::utf8_latin_to_ascii(preg_replace('/\s+/', '-', $alias)));
+			} else {
+				$alias = $params['alias'];
+			}
 
             $query->clear()
                 ->select('id')
@@ -1977,6 +1986,49 @@ class EmundusHelperUpdate
             } catch (Exception $e) {
                 $result['message'] = 'ADDING COLUMN : Error : ' . $e->getMessage();
             }
+        }
+
+        return $result;
+    }
+
+    public static function alterColumn($table, $name, $type = 'VARCHAR', $length = null, $null = 1, $default = null){
+        $result = ['status' => false, 'message' => ''];
+
+        if (empty($table)) {
+            $result['message'] = 'ALTER COLUMN : Please refer a database table.';
+            return $result;
+        }
+
+        if (empty($name)) {
+            $result['message'] = 'ALTER COLUMN : Please refer a column name.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $db->setQuery('SHOW COLUMNS FROM ' . $table . ' WHERE ' . $db->quoteName('Field') . ' = ' . $db->quote($name));
+        $column_existing = $db->loadResult();
+
+        if (!empty($column_existing)) {
+            $null_query = $null == 0 ? 'NOT NULL' : 'NULL';
+
+            try {
+                $query = 'ALTER TABLE ' . $table . ' MODIFY ' . $db->quoteName($name) . ' ' . $type;
+                if(!empty($length)) {
+                    $query .= ' (' . $length . ')';
+                }
+
+                if ($default !== null) {
+                    $query .= ' DEFAULT ' . $db->quote($default);
+                }
+
+                $query .= ' ' . $null_query;
+                $db->setQuery($query);
+                $result['status'] = $db->execute();
+            } catch (Exception $e) {
+                $result['message'] = 'ADDING COLUMN : Error : ' . $e->getMessage();
+            }
+        } else {
+            $result['message'] = 'ALTER COLUMN : Column not found.';
         }
 
         return $result;
@@ -2569,6 +2621,85 @@ class EmundusHelperUpdate
 		{
 			$result['message'] = 'UPDATE FLAGS : Error : ' . $e->getMessage();
 
+		}
+
+		return $result;
+	}
+
+	public static function createJoomlaArticle($data, $category_alias = null){
+		$result = ['status' => false, 'message' => '', 'article_id' => 0];
+		$db = JFactory::getDbo();
+
+		try
+		{
+			$query = $db->getQuery(true);
+			$publish_up = new DateTime();
+			$publish_up->modify('-1 day');
+
+			$query->select('id')
+			       ->from($db->quoteName('#__content'))
+				   ->where('alias = ' . $db->quote($data['alias']));
+			$db->setQuery($query);
+			$article_id = $db->loadResult();
+
+			if(empty($article_id)) {
+
+				if(!empty($category_alias)){
+					$query->clear();
+					$query->select('id')->from($db->quoteName('#__categories'))->where('alias = ' . $db->quote($category_alias));
+					$db->setQuery($query);
+					$category_id = $db->loadResult();
+				}
+				else{
+					$category_id = 1;
+				}
+				$db_columns = array('title', 'alias', 'introtext', 'fulltext', 'state', 'catid', 'created', 'created_by', 'modified', 'modified_by', 'checked_out', 'checked_out_time', 'publish_up', 'publish_down', 'images', 'urls', 'attribs', 'version', 'metakey', 'metadesc', 'access', 'metadata', 'language');
+				foreach ($db_columns as $index => $column) {
+					$db_columns[$index] = $db->quoteName($column);
+				}
+				$values = array(
+					$db->quote($data['title']),
+					$db->quote($data['alias']),
+					$db->quote($data['introtext']),
+					$db->quote($data['fulltext']),
+					$db->quote($data['state']),
+					$db->quote($category_id),
+					$db->quote(date('Y-m-d H:i:s')),
+					$db->quote(62),
+					$db->quote(date('Y-m-d H:i:s')),
+					$db->quote(62),
+					$db->quote(0),
+					$db->quote(date('Y-m-d H:i:s')),
+					$db->quote($publish_up->format('Y-m-d H:i:s')),
+					$db->quote(date('Y-m-d H:i:s', strtotime('2099-12-31 23:59:59'))),
+					$db->quote('{}'),
+					$db->quote('{}'),
+					$db->quote($data['attribs']),
+					$db->quote(1),
+					$db->quote(''),
+					$db->quote(''),
+					$db->quote(1),
+					$db->quote(''),
+					$db->quote('*')
+				);
+
+				$query
+					->clear()
+					->insert($db->quoteName('jos_content'))
+					->columns($db_columns)
+					->values(implode(',', $values));
+				$db->setQuery($query);
+				$result['status'] = $db->execute();
+
+				$result['id'] = $db->insertid();
+			} else {
+				$result['status'] = true;
+				$result['id'] = $article_id;
+			}
+		}
+		catch (Exception $e)
+		{
+			$result['message'] = 'CREATE JOOMLA ARTICLE : Error : ' . $e->getMessage();
 		}
 
 		return $result;

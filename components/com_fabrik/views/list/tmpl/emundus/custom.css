@@ -73,13 +73,14 @@ font-size: 16px;
 /** ACTIONS **/
 .view-list .fabrikForm .fabrikButtonsContainer div li{
 }
-.view-list .table .fabrik___heading th.heading.fabrik_actions{
+.view-list .table .fabrik___heading th.heading.fabrik_actions .btn-group .btn-default.delete{
 	display: none;
 }
 .view-list .table .fabrik_row td.fabrik_actions.fabrik_element{
 	text-align: end;
 }
-.view-list .fabrikDataContainer .table tbody td.fabrik_actions.fabrik_element a.btn.btn-default {
+.view-list .fabrikDataContainer .table tbody td.fabrik_actions.fabrik_element a.btn.btn-default,
+.view-list .table .fabrik___heading th.heading.fabrik_actions .btn-group .btn-default {
 	height: 36px;
 	width: 44px;
 	display: flex;

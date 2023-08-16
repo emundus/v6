@@ -195,12 +195,12 @@ if($user->guest || in_array($e_user->profile,$app_prof))
 
     if (!empty($program_code))
     {
-        $condition .= ' AND pr.code IN(' . implode(',', array_map('trim', explode(',', $db->quote($program_code)))) . ')';
+        $condition .= ' AND pr.code IN (' . implode(',', array_map('trim', explode(',', $db->quote($program_code)))) . ')';
     }
 
     if (!empty($codes))
     {
-        $condition .= ' AND pr.code IN(' . implode(',', $db->quote(explode(',', $codes))) . ')';
+        $condition .= ' AND pr.code IN (' . implode(',', $db->quote(explode(',', $codes))) . ')';
     }
     if (!empty($categories_filt))
     {
@@ -210,7 +210,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
 
     if (!empty($ignored_program_code))
     {
-        $condition .= ' AND pr.code NOT IN(' . implode(',', array_map('trim', explode(',', $db->quote($ignored_program_code)))) . ')';
+        $condition .= ' AND pr.code NOT IN (' . implode(',', $db->quote(array_map('trim', explode(',', $ignored_program_code)))) . ')';
     }
 
 // Get single campaign

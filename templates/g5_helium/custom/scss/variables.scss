@@ -920,7 +920,7 @@ $font:'Inter', sans-serif;
     /* SELECT */
     select {
       @include select-default;
-      color: var(--neutral-800) !important;
+      color: var(--neutral-800);
 
       option {
         @include body-16;

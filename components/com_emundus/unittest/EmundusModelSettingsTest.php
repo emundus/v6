@@ -129,4 +129,22 @@ class EmundusModelSettingsTest extends TestCase
 		$delete = $this->m_settings->deleteTag(0);
 		$this->assertFalse($delete, 'On ne peut pas supprimer une étiquette qui n\'existe pas');
 	}
+
+	public function testgetHomeArticle() {
+		$article = $this->m_settings->getHomeArticle();
+
+		$this->assertNotNull($article, 'La récupération de l\'article d\'accueil fonctionne');
+	}
+
+	public function testgetRgpdArticles() {
+		$articles = $this->m_settings->getRgpdArticles();
+
+		$this->assertNotEmpty($articles, 'La récupération des articles RGPD fonctionne');
+
+		$this->assertSame(5, count($articles), 'Je récupère 5 articles RGPD');
+
+		if(empty($articles[0]->id)){
+			$this->assertNotEmpty($articles[0]->alias, 'Si le paramètre du module n\'est pas défini on récupère un alias par défaut');
+		}
+	}
 }

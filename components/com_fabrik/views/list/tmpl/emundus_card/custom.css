@@ -65,6 +65,25 @@ font-size: 16px;
 	flex-wrap: wrap;
 }
 
+input.fabrik_filter_submit.button {
+	font-weight: inherit;
+	lign-height: normal;
+	letter-spacing: normal;
+	width: 100%;
+	width: -moz-available;
+	width: -webkit-fill-available;
+	width: fill-available;
+}
+
+.fabrikFilterContainer .filtertable a.clearFilters {
+	color: var(--neutral-800);
+}
+
+.fabrikFilterContainer .filtertable a.clearFilters:hover {
+	color: var(--neutral-600);
+	transition: all ease 0.5s;
+}
+
 .fabrikFilterContainer{
 	flex: 0 0 25%;
 	height: 100%;
@@ -96,14 +115,9 @@ font-size: 16px;
 }
 .fabrik-switch-view-icon{
 	padding: 6px;
-	border: solid 1px #E3E5E8;
 	border-radius: 4px;
-	color: #E3E5E8;
 }
-.fabrik-switch-view-icon.active{
-	border-color: #E6332A;
-	color: #E6332A;
-}
+
 /* */
 
 
