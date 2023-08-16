@@ -15,7 +15,7 @@
         :key="'manual-' + manual_trigger"
     />
     <div class="em-flex-row">
-      <span class="em-h4">{{ CandidateAction }}</span>
+      <h4>{{ CandidateAction }}</h4>
     </div>
     <p>{{ TheCandidateDescription }}</p>
 
@@ -58,7 +58,7 @@
     </transition-group>
 
     <div class="em-flex-row">
-      <span class="em-h4 em-mt-16">{{ ManagerAction }}</span>
+      <h4 class="em-mt-16">{{ ManagerAction }}</h4>
     </div>
     <p>{{ ManualDescription }}</p>
 

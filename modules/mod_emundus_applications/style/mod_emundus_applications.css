@@ -384,7 +384,7 @@ a.btn.btn-success:not(.btn-xs) {
     margin-bottom: var(--m-24);
 }
 
-.mod_emundus_applications___header h1.em-h1 {
+.mod_emundus_applications___header h1 {
  font-family: var(--em-applicant-font-title);
  color: var(--em-default-title-color-1);
 margin-top: var(--m-16);

@@ -14,9 +14,9 @@
         @before-open="beforeOpen"
     >
       <div class="em-flex-row em-flex-space-between em-mb-16">
-        <span class="em-h4">
+        <h4>
           {{translations.addMenu}}
-        </span>
+        </h4>
         <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalMenu')">
           <span class="material-icons-outlined">close</span>
         </button>

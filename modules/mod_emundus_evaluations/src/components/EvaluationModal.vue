@@ -23,7 +23,7 @@
         <template #left>
           <div id="modal-applicationform">
             <div class="em-p-16-0">
-              <h3 class="em-h3 em-w-100 em-flex-row em-flex-center">{{ translate('MOD_EMUNDUS_EVALUATIONS_APPLICATION_FORM')}}</h3>
+              <h3 class="em-w-100 em-flex-row em-flex-center">{{ translate('MOD_EMUNDUS_EVALUATIONS_APPLICATION_FORM')}}</h3>
               <button class="btn btn-primary em-ml-16" @click="exportFile">{{ translate('MOD_EMUNDUS_EVALUATIONS_APPLICATION_DOWNLOAD')}}</button>
             </div>
             <div class="scrollable">
@@ -59,7 +59,7 @@
         <template #right>
           <div id="modal-evaluationgrid">
             <div class="em-p-16-0">
-              <h3 class="em-h3 em-w-100 em-flex-row em-flex-center">{{ translate('MOD_EMUNDUS_EVALUATIONS_EVALUATION_GRID') }}</h3>
+              <h3 class="em-w-100 em-flex-row em-flex-center">{{ translate('MOD_EMUNDUS_EVALUATIONS_EVALUATION_GRID') }}</h3>
             </div>
             <iframe :src="url" class="iframe-evaluation" @load="loading = false;" id="iframe-evaluation" title="Evaluation form" />
             <div class="em-page-loader" v-if="loading"></div>

@@ -44,7 +44,7 @@ $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.
         </div>
     </div>
 
-    <p class="em-neutral-700-color em-ml-12 em-font-size-14"><?php echo JText::_($intro) ?></p>
+    <p class="em-neutral-700-color em-ml-12 em-font-size-16"><?php echo JText::_($intro) ?></p>
 </div>
 
 <div class="em-page-loader" style="display: none"></div>

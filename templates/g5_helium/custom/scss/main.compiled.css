@@ -563,10 +563,10 @@ video {
 .emundus-form .page-header h1 {
   color: var(--em-default-title-color-1);
   font-family: var(--em-applicant-font-title);
-  font-size: 24px;
+  font-size: var(--em-coordinator-h1);
   font-style: normal;
   line-height: 28.8px;
-  font-weight: 600;
+  font-weight: 500;
 }
 .emundus-form .em-form-intro p {
         color: var(--neutral-600);
@@ -1928,15 +1928,15 @@ input[type="text"],
 h1 {
   color: var(--em-default-title-color-1);
   font-family: var(--em-applicant-font-title);
-  font-size: 24px;
+  font-size: var(--em-coordinator-h1);
   font-style: normal;
   line-height: 28.8px;
-  font-weight: 600;
+  font-weight: 500;
 }
 h2 {
   color: var(--em-default-title-color-1);
   font-family: var(--em-applicant-font-title);
-  font-size: 22px;
+  font-size: var(--em-coordinator-h2);
   font-style: normal;
   line-height: 26.4px;
   font-weight: 500;
@@ -1944,32 +1944,32 @@ h2 {
 h3 {
   color: var(--em-default-title-color-1);
   font-family: var(--em-applicant-font-title);
-  font-size: 20px;
+  font-size: var(--em-coordinator-h3);
   font-style: normal;
   line-height: 24.2px;
-  font-weight: 400;
+  font-weight: 500;
 }
 h4 {
         font-family: var(--em-default-font);
         font-style: normal;
-        font-weight: 600;
-        font-size: 18px;
+        font-weight: 500;
+        font-size: var(--em-coordinator-h4);
         line-height: 23px;
         color: var(--em-default-title-color-1);
     }
 h5 {
         font-family: var(--em-default-font);
         font-style: normal;
-        font-weight: 600;
-        font-size: 16px;
+        font-weight: 500;
+        font-size: var(--em-coordinator-h5);
         line-height: 20px;
         color: var(--em-default-title-color-1);
     }
 h6 {
         font-family: var(--em-default-font);
         font-style: normal;
-        font-weight: 600;
-        font-size: 14px;
+        font-weight: 500;
+        font-size: var(--em-coordinator-h6);
         line-height: 16px;
         color: var(--em-default-title-color-1);
     }
@@ -2151,7 +2151,7 @@ legend {
 .swal2-container .swal2-header .swal2-title {
   color: var(--em-default-title-color-1);
   font-family: var(--em-applicant-font-title);
-  font-size: 20px;
+  font-size: var(--em-coordinator-h3);
   font-style: normal;
   line-height: 24.2px;
   margin: 0px;

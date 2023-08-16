@@ -34,7 +34,6 @@
 .mod_emundus_campaign__intro p{
     line-height: 150%;
     color: var(--em-default-text-color-1);
-    font-size: 18px;
 }
 
 .mod_emundus_campaign__intro a{
@@ -313,7 +312,6 @@ a.em-blue-400-color:hover {
     padding: var(--p-8) var(--p-16);
     width: fit-content;
     font-size: 12px;
-    font-weight: 600;
     margin-bottom: var(--m-16);
     font-family: var(--em-applicant-font);
 }
@@ -321,8 +319,6 @@ a.em-blue-400-color:hover {
 .mod_emundus_campaign__programme_cat_title {
     font-family: var(--em-applicant-font-title);
     font-style: normal;
-    font-weight: 600;
-    font-size: 20px;
     line-height: 25px;
     color: var(--em-default-title-color-1);
 }
@@ -339,6 +335,7 @@ a.em-blue-400-color:hover {
 
 .mod_emundus_campaign__tabs a:hover span, .mod_emundus_campaign__tabs a:hover {
      color: var(--neutral-900);
+    text-decoration: none;
 }
 
 

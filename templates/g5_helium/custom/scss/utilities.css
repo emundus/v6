@@ -14,8 +14,8 @@
     h4 {
         font-family: var(--em-default-font);
         font-style: normal;
-        font-weight: 600;
-        font-size: 18px;
+        font-weight: 500;
+        font-size: var(--em-coordinator-h4);
         line-height: 23px;
         color: var(--em-default-title-color-1);
     }
@@ -23,8 +23,8 @@
     h5 {
         font-family: var(--em-default-font);
         font-style: normal;
-        font-weight: 600;
-        font-size: 16px;
+        font-weight: 500;
+        font-size: var(--em-coordinator-h5);
         line-height: 20px;
         color: var(--em-default-title-color-1);
     }
@@ -32,8 +32,8 @@
     h6 {
         font-family: var(--em-default-font);
         font-style: normal;
-        font-weight: 600;
-        font-size: 14px;
+        font-weight: 500;
+        font-size: var(--em-coordinator-h6);
         line-height: 16px;
         color: var(--em-default-title-color-1);
     }

@@ -71,6 +71,7 @@ if($just_logged && !$only_applicant) {
         width: auto;
         margin: 10px;
         padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
+        font-size: var(--em-coordinator-font-size);
     }
     .em-switch-profile-card:hover {
         background: var(--em-coordinator-primary-color);
