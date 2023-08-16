@@ -924,11 +924,6 @@ body:not(.g-back-office-emundus-tableau) .fabrikForm div.nav.row-fluid {
 .add-program-year-page .form-actions .row-fluid {
     justify-content: space-between;
 }
-/* date campaign */
-#jos_emundus_setup_campaigns___start_date .input-append:last-of-type,
-#jos_emundus_setup_campaigns___end_date .input-append:last-of-type{
-    margin-left:40px;
-}
 
 #jos_emundus_setup_programmes___programmes > div > div {
     height:auto!important;
