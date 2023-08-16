@@ -50,14 +50,23 @@ export default {
             formData.append('fid', fid);
             formData.append('label', JSON.stringify(label));
 
-            return await client().post(
+            const response = await client().post(
                 'index.php?option=com_emundus&controller=formbuilder&task=createsimplegroup',
                 formData
             );
+
+            if (typeof response.data !== 'object') {
+                return {
+                    status: false,
+                    msg: 'COM_EMUNDUS_FORM_BUILDER_REQUEST_ERROR'
+                };
+            } else {
+                return response.data;
+            }
         } catch (e) {
             return {
                 status: false,
-                message: e.message
+                msg: e.message
             };
         }
     },
