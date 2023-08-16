@@ -637,6 +637,8 @@ footer#g-footer > .g-container {
   text-transform: initial;
   margin-left: 0 !important;
   font-family: var(--em-applicant-font);
+  height: 40px;
+  padding: 0 var(--p-16);
 
   &:hover,
   &:active,
@@ -1216,8 +1218,8 @@ footer#g-footer > .g-container {
 /* LISTES - TEMPLATE EMUNDUS CARD */
 
 .view-list .fabrik-switch-view-icon{
-  border: 1px solid $neutral-500;
-  color: $neutral-500;
+  border: 1px solid var(--neutral-500);
+  color: var(--neutral-500);
 }
 .view-list .fabrik-switch-view-icon.active{
   border: 1px solid $base-secondary-color;
@@ -1557,7 +1559,7 @@ footer#g-footer > .g-container {
 
 .view-list{
   .page-intro p{
-    color: $neutral-500;
+    color: var(--neutral-500);
   }
 }
 
@@ -2818,6 +2820,8 @@ ul.g-dropdown.g-dropdown-right.g-fade {
   border: 1px solid var(--em-primary-color);
   background: var(--neutral-0);
   color: var(--em-primary-color);
+  padding: 0 var(--p-16) !important;
+  height: 40px;
 }
 
 /* CONNEXION */

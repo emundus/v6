@@ -124,6 +124,7 @@
       font-family: var(--em-applicant-font);
       font-style: normal;
       font-weight: var(--em-form-label-weight);
+      margin-bottom: 0;
       &.fabrikTip {
         cursor: text;
       }

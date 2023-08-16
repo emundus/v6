@@ -1511,7 +1511,7 @@ input:focus + .em-slider {
   border-radius: calc(var(--em-border-radius)*2) !important;
   height: auto;
   background: #fff;
-  border: 1px solid $neutral-200;
+  border: 1px solid var(--neutral-200);
 }
 
 .em-input-card{
