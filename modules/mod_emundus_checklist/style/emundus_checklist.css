@@ -10,7 +10,7 @@
 .mod_emundus_checklist{
     margin-left: 32px;
     box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
-    border-radius: var(--em-form-br) !important;
+    border-radius: var(--em-form-br-block) !important;
     padding: 24px;
     background: #fff;
 }
@@ -98,7 +98,7 @@
     background: var(--blue-100);
     color: var(--em-primary-color);
     font-family: var(--em-default-font);
-    border: solid 1px var(--blue-500);
+    border: solid 1px var(--blue-100);
 }
 
 .mod_emundus_checklist .active .mod_emundus_checklist___step_count .material-icons-outlined {
@@ -109,7 +109,8 @@
     color: #727272;
     font-family: var(--em-default-font);
     background: transparent;
-    border: solid 1px var(--red-500);
+    border: solid 1px var(--neutral-300);
+    background: var(--neutral-300);
 }
 .mod_emundus_checklist .mod_emundus_checklist_need_missing:not(.active) .mod_emundus_checklist___step_count .material-icons-outlined {
     color: var(--red-500);
@@ -117,8 +118,8 @@
 
 .mod_emundus_checklist .mod_emundus_checklist_need_ok:not(.active) .mod_emundus_checklist___step_count {
     color: #FFF;
-    border: solid 1px var(--main-500);
-    background: transparent;
+    border: solid 1px var(--main-100);
+    background: var(--main-100);
 }
 .mod_emundus_checklist .mod_emundus_checklist_need_ok:not(.active) .mod_emundus_checklist___step_count  .material-icons-outlined {
     color: var(--main-500);
