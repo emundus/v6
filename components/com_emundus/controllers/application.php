@@ -11,6 +11,7 @@ defined( '_JEXEC' ) or die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 require_once (JPATH_COMPONENT . '/models/application.php');
+require_once (JPATH_COMPONENT.'/models/files.php');
 
 /**
  * Custom report controller
@@ -692,7 +693,12 @@ class EmundusControllerApplication extends JControllerLegacy
 
 			if (EmundusHelperAccess::asAccessAction(4, 'r', JFactory::getUser()->id, $fnum)) {
 				$m_application = new EmundusModelApplication();
-				$response['attachments'] = $m_application->getUserAttachmentsByFnum($fnum, NULL);
+                $m_files = new EmundusModelFiles();
+
+                $fnumInfos = $m_files->getFnumInfos($fnum);
+                $profile_id = $fnumInfos['profile_id'];
+
+				$response['attachments'] = $m_application->getUserAttachmentsByFnum($fnum, NULL, $profile_id);
 
 				$response['msg'] = JText::_('SUCCESS');
 				$response['status'] = true;
