@@ -17,7 +17,8 @@ define(['jquery', 'fab/element'],
             options: {
                 bearerToken: {},
                 mapping: [],
-                baseUrl: ''
+                baseUrl: '',
+                propertyToCheck: ''
             },
 
             initialize: function (element, options) {
@@ -69,7 +70,7 @@ define(['jquery', 'fab/element'],
                 const divError = this.element.parentNode.parentNode.getElementsByClassName('fabrikErrorMessage')[0];
 
                 if(event.target.value !== '') {
-                    fetch(this.options.baseUrl + '/entreprises/sirene/V3/siret?q=siret:' + event.target.value, {
+                    fetch(this.options.baseUrl + '/entreprises/sirene/V3/'+this.options.propertyToCheck+'/' + event.target.value, {
                         method: 'GET',
                         headers: {
                             'Accept': 'application/json',
@@ -82,7 +83,7 @@ define(['jquery', 'fab/element'],
                         switch (data.header.statut) {
                             case 200:
                                 // Populate the fields with the data
-                                const properties = data.etablissements[0];
+                                const properties = data.etablissement;
 
                                 this.options.mapping.forEach((item) => {
                                     let data_to_insert = [];
@@ -110,6 +111,10 @@ define(['jquery', 'fab/element'],
                                 break;
                             case 404:
                                 divError.innerHTML = Joomla.JText._('PLG_ELEMENT_INSEE_SIRET_NOT_FOUND');
+
+                                break;
+                            case 400:
+                                divError.innerHTML = data.header.message;
 
                                 break;
                             default:

@@ -21,6 +21,16 @@
 			<field name="insee_api_consumer_key" type="text" label="PLG_ELEMENT_INSEE_CONSUMER_KEY"/>
 			<field name="insee_api_consumer_secret" type="text" label="PLG_ELEMENT_INSEE_CONSUMER_SECRET"/>
 
+			<field name="insee_property_to_check"
+				   type="list"
+				   label="PLG_ELEMENT_INSEE_PROPERTY_TO_CHECK_LABEL"
+				   description="PLG_ELEMENT_INSEE_PROPERTY_TO_CHECK_DESC"
+				   default="siret"
+			>
+				<option value="siret">PLG_ELEMENT_INSEE_PROPERTY_TO_CHECK_SIRET_NUMBER</option>
+				<option value="siren">PLG_ELEMENT_INSEE_PROPERTY_TO_CHECK_SIREN_NUMBER</option>
+			</field>
+
 			<field name="form_mapping"
 				   type="subform"
 				   multiple="true"

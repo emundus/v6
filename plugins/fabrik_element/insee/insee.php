@@ -124,6 +124,7 @@ class PlgFabrik_ElementInsee extends PlgFabrik_Element
 		$opts->bearerToken = $this->getBearerToken();
 		$opts->baseUrl = trim($config->get('insee_api_base_url', $params->get('insee_api_base_url', 'https://api.insee.fr')));
 		$opts->mapping = $params->get('form_mapping', array());
+		$opts->propertyToCheck = $params->get('insee_property_to_check', 'siret');
 
 		return array('FbInsee', $id, $opts);
 	}
