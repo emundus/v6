@@ -88,14 +88,19 @@ define(['jquery', 'fab/element'],
                                 this.options.mapping.forEach((item) => {
                                     let data_to_insert = [];
                                     let attributes_to_search = item[1].insee_property;
-                                    attributes_to_search = attributes_to_search.split(',');
+                                    attributes_to_search = attributes_to_search.split(';');
                                     attributes_to_search.forEach((attribute_to_search) => {
                                         attribute_to_search = attribute_to_search.split(':');
 
+                                        let property = properties[attribute_to_search[0]];
                                         if (attribute_to_search.length > 1) {
-                                            data_to_insert.push(properties[attribute_to_search[0]][attribute_to_search[1]]);
+                                            property = property[attribute_to_search[1]];
+                                        }
+
+                                        if(property === undefined) {
+                                            data_to_insert.push(attribute_to_search[0]);
                                         } else {
-                                            data_to_insert.push(properties[attribute_to_search[0]]);
+                                            data_to_insert.push(property);
                                         }
                                     });
 
@@ -104,7 +109,15 @@ define(['jquery', 'fab/element'],
                                         if(repeatNum !== false) {
                                             item_to_fill = item_to_fill + '_' + repeatNum;
                                         }
-                                        this.form.elements.get(item_to_fill).set(data_to_insert.join(' '));
+
+                                        let element_to_fill = this.form.elements.get(item_to_fill);
+                                        if(element_to_fill.plugin === 'birthday') {
+                                            let date = new Date(data_to_insert.join(''));
+                                            data_to_insert = date.getDate() + '/' + (date.getMonth()+1) + '/' + date.getFullYear();
+                                            element_to_fill.set(data_to_insert);
+                                        } else {
+                                            element_to_fill.set(data_to_insert.join(''));
+                                        }
                                     }
                                 });
 
