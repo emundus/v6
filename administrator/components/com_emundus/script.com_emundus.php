@@ -2252,6 +2252,47 @@ structure:
 
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ACCOUNT_INFORMATIONS', 'Informations de compte', 'override', null, 'fabrik_groups', 'label');
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ACCOUNT_INFORMATIONS', 'Account informations', 'override', null, 'fabrik_groups', 'label', 'en-GB');
+
+                // Optimize Email history
+                // Remove distinct on list (message_id is unique, so a distinct is not necessary)
+                $query->clear()
+                    ->update($db->quoteName('#__fabrik_lists'))
+                    ->set($db->quoteName('params').' = JSON_REPLACE('.$db->quoteName('params').', "$.distinct", 0)')
+                    ->where($db->quoteName('db_table_name').' = '.$db->quote('jos_messages'))
+                    ->andWhere($db->quoteName('label').' = '.$db->quote('TABLE_SETUP_EMAIL_HISTORY'));
+                $db->setQuery($query);
+                $db->execute();
+
+                // Select the groups associated to the Email history list
+                $query->clear()
+                    ->select($db->quoteName('jff.group_id'))
+                    ->from($db->quoteName('#__fabrik_lists','jfl'))
+                    ->leftJoin($db->quoteName('#__fabrik_formgroup','jff').' ON '.$db->quoteName('jfl.form_id').' = '.$db->quoteName('jff.form_id'))
+                    ->where($db->quoteName('jfl.db_table_name').' = '.$db->quote('jos_messages'))
+                    ->andWhere($db->quoteName('jfl.label').' = '.$db->quote('TABLE_SETUP_EMAIL_HISTORY'));
+                $db->setQuery($query);
+                $messages_group_ids = $db->loadColumn();
+
+                // Remove message_id from the list
+                $query->clear()
+                    ->update($db->quoteName('#__fabrik_elements'))
+                    ->set($db->quoteName('show_in_list_summary').' = 0')
+                    ->where($db->quoteName('name').' = '.$db->quote('message_id'))
+                    ->andWhere($db->quoteName('published').' = 1')
+                    ->andWhere($db->quoteName('group_id').' IN ('.implode(',',$messages_group_ids).')');
+                $db->setQuery($query);
+                $db->execute();
+
+                // Remove filter on message
+                $query->clear()
+                    ->update($db->quoteName('#__fabrik_elements'))
+                    ->set($db->quoteName('show_in_list_summary').' = 0')
+                    ->set($db->quoteName('filter_type').' = '.$db->quote(''))
+                    ->where($db->quoteName('name').' = '.$db->quote('message'))
+                    ->andWhere($db->quoteName('published').' = 1')
+                    ->andWhere($db->quoteName('group_id').' IN ('.implode(',',$messages_group_ids).')');
+                $db->setQuery($query);
+                $db->execute();
 			}
 
 			// Insert new translations in overrides files
