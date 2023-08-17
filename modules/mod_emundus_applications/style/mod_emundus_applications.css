@@ -487,15 +487,17 @@ a.btn.btn-success:not(.btn-xs) {
     z-index: 9999;
     margin-top: 34px;
 }
-.mod_emundus_applications__actions a:not(:last-child){
-    margin-bottom: var(--m-8);
-}
 
 .mod_emundus_applications__actions a:hover {
     background: #EBECF0 !important;
-    border-radius: calc(var(--em-default-br-cards)/2) !important;
+    border-radius: var(--em-default-br) !important;
     color: var(--neutral-900) !important;
     text-decoration: none;
+    padding: 6px 8px;
+}
+
+.mod_emundus_applications__actions a {
+    padding: 6px 8px;
 }
 
 .mod_emundus_applications__actions a.em-red-500-color:hover {

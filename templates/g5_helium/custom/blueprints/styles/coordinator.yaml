@@ -8,6 +8,10 @@ form:
       type: input.colorpicker
       label: Background color
       default: "#f8f8f8"
+    interface:
+      type: input.colorpicker
+      label: Files view color
+      default: "#353544"
     primary-color:
       type: input.colorpicker
       label: Primary color

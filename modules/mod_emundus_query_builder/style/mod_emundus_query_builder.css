@@ -198,10 +198,11 @@
 .etiquette {
 	width:100%!important;
 	margin:0!important;
-	background-color:white;
+	background-color: var(--neutral-0);
 	padding:16px;
-	box-shadow: 0 1px 2px 0 hsla(0,0%,41.2%,.19);
-	border-radius: 8px;
+	box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+	border-radius: var(--em-default-br);
+	border: 1px solid #EDEDED;
 }
 .etiquette label {
 	font-weight:normal!important;
@@ -264,11 +265,11 @@
 }
 
 .etiquette label {
-	color: var(--night-blue);
+	color: var(--neutral-900);
 }
 
 .etiquette p {
-	color: var(--night-blue);
+	color: var(--neutral-900);
 }
 
 #validation {

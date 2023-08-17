@@ -259,6 +259,7 @@
         }
         .swal2-content {
             @apply text-base;
+            text-align: left !important;
         }
         .swal2-actions {
             @apply mt-10;
@@ -281,11 +282,11 @@
         height: 105% !important;
     }
 
-    .swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:active,
+   /* .swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:active,
     .swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:focus,
     .swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:hover {
         border: none !important;
-    }
+    }*/
 
     .swal2-title {
         color: var(--neutral-900);

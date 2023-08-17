@@ -2120,6 +2120,9 @@ h6 {
         line-height: 16px;
         color: var(--em-default-title-color-1);
     }
+b, strong {
+        font-weight: 600;
+    }
 a {
         color: var(--link-regular);
     }
@@ -2328,6 +2331,7 @@ legend {
 .swal2-container .swal2-content {
   font-size: 1rem;
   line-height: 1.5rem;
+            text-align: left !important;
 }
 .swal2-container .swal2-actions {
   margin-top: var(--em-spacing-10);
@@ -2338,11 +2342,11 @@ legend {
 .gantry.g-back-office-emundus-tableau .swal2-popup iframe {
         padding-top: 30px;
     }
-.swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:active,
+/* .swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:active,
     .swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:focus,
     .swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:hover {
         border: none !important;
-    }
+    }*/
 button.swal2-styled.swal2-confirm {
         background: var(--blue-500);
         border-radius: 8px;

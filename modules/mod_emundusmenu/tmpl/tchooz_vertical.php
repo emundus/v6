@@ -60,7 +60,6 @@ defined('_JEXEC') or die;
 
     #header-b #em_user_menu li:hover a, #header-b #em_user_menu li:active a, #header-b #em_user_menu li:focus a{
         color: black;
-        filter: brightness(90%);
     }
     .g-sublevel .g-menu-item-title span:hover,.g-sublevel .g-menu-item-title span:focus,.g-sublevel .g-menu-item-title span:active {
         color: black;
@@ -201,8 +200,8 @@ defined('_JEXEC') or die;
     }
 
     .g-main-nav .g-standard .g-sublevel .g-menu-item a.g-menu-item-container:hover   {
-        background: #eeeeee;
-        border-radius: 5px;
+        background: #EBECF0 !important;
+        border-radius: var(--em-default-br) !important;
     }
 
     .g-sublevel{

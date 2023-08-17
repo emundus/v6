@@ -414,7 +414,7 @@
   -webkit-transition: all 0.3s;
   transition: all 0.3s;
   width: 30px;
-  color: var(--grey-color);
+  color: var(--red-500);
 }
 #em-attachments .wrapper .material-icons-outlined.delete.disabled {
   color: var(--disabled-color);

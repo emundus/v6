@@ -392,7 +392,7 @@ table > thead > tr > th {
 }
 .em-filter label{
     margin-bottom: 5px;
-    font-weight: bold;
+    font-weight: 600;
 }
 
 fieldset.em_filters_filedset > label, fieldset#em_select_filter > label, .panel-heading h3{
@@ -492,6 +492,11 @@ div#em-appli-block .panel-heading {
 }
 div#em-appli-block button.btn.btn-default {
     border: none !important;
+}
+
+div#em-appli-block a#download-pdf:hover,
+div#em-appli-block a#download-pdf{
+    color: transparent;
 }
 
 .em-personalInfo > a.em-link  {
@@ -1229,7 +1234,7 @@ div#em-assoc-files .panel.panel-default {
 
 div#em-assoc-files .panel.panel-primary.current-file{
     border-radius: 4px;
-    border: solid 2px var(--em-coordinator-primary-color);
+    border: solid 2px var(--main-500);
 }
 
 div#em-assoc-files .panel.panel-primary ul,
@@ -1368,7 +1373,11 @@ th>.em-cell {
     overflow: hidden;
     height: auto;
     align-items: center;
-    font-weight: bold;
+    font-weight: 600;
+}
+
+th>.em-cell strong {
+    font-weight: 600 !important;
 }
 
 th:nth-child(2)>.em-cell,

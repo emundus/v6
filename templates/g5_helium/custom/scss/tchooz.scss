@@ -55,14 +55,14 @@
   width: 100%;
   padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
   border-radius: var(--em-coordinator-br);
-  border: solid 1px var(--em-secondary-color);
+  border: solid 1px var(--em-coordinator-secondary-color);
   background: transparent;
-  color: var(--em-secondary-color);
+  color: var(--em-coordinator-secondary-color);
   font-family: var(--em-coordinator-font);
   &:hover {
-    background-color: var(--em-secondary-color) !important;
+    background-color: var(--em-coordinator-secondary-color) !important;
     color: var(--neutral-0);
-    border: 1px solid var(--em-secondary-color);
+    border: 1px solid var(--em-coordinator-secondary-color);
     text-decoration: none;
   }
 }
@@ -98,7 +98,7 @@
   border-radius: var(--em-coordinator-br);
   border: unset;
   background: transparent;
-  color: var(--night-blue);
+  color: var(--em-coordinator-tiertiary-color);
 }
 
 .em-disabled-button {
@@ -1623,11 +1623,18 @@ button.em-swal-confirm-button{
   width: auto !important;
   padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal) !important;
   border-radius: var(--em-coordinator-br) !important;
-  border: unset !important;
-  color: white !important;
+  border: 1px solid var(--em-coordinator-primary-color) !important;
+  color: var(--neutral-0) !important;
   background-color: var(--em-coordinator-primary-color) !important;
   font-size: var(--em-coordinator-font-size) !important;
 }
+
+button.em-swal-confirm-button:hover{
+  color: var(--em-coordinator-primary-color) !important;
+  background-color: var(--neutral-0) !important;
+  border: 1px solid var(--em-coordinator-primary-color) !important;
+}
+
 .swal2-actions.swal2-loading{
   border-radius: 25px !important;
 }
@@ -1640,11 +1647,18 @@ button.em-swal-cancel-button{
   padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal) !important;
   border-radius: var(--em-coordinator-br) !important;
   border: solid 1px var(--neutral-300) !important;
-  background: transparent !important;
-  color: var(--night-blue) !important;
+  background: var(--neutral-0) !important;
+  color: var(--em-coordinator-secondary-color) !important;
+  border: 1px solid var(--em-coordinator-secondary-color) !important;
   font-size: var(--em-coordinator-font-size) !important;
   &:focus{
     box-shadow: unset !important;
+  }
+
+  &:hover {
+    background: var(--em-coordinator-secondary-color) !important;
+    color: var(--neutral-0) !important;
+    border: 1px solid var(--em-coordinator-secondary-color) !important;
   }
 }
 button.em-swal-delete-button{
@@ -1656,10 +1670,17 @@ button.em-swal-delete-button{
   padding: 0 var(--p-16) !important;
   border-radius: var(--em-coordinator-br) !important;
   border: unset !important;
-  height: 40px !important;
   color: white !important;
   background-color: var(--red-500) !important;
+  border: 1px solid var(--red-500) !important;
 }
+
+button.em-swal-delete-button:hover{
+  color: var(--red-500) !important;
+  border: 1px solid var(--red-500) !important;
+  background-color: var(--neutral-0) !important;
+}
+
 .swal2-actions:not(.em-flex-center){
   justify-content: space-between;
 }
