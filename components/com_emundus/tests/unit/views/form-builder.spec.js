@@ -26,9 +26,15 @@ describe('formBuilder.vue', () => {
         localVue,
         store
     });
+    wrapper.vm.$modal.show('formBuilder');
 
     it ('formBuilder should exist', () => {
         expect(wrapper.find('#formBuilder').exists()).toBeTruthy();
+        expect(wrapper.find('[data-modal="formBuilder"]')).toBeTruthy();
+    });
+
+    it('by default, the hierarchy should be displayed in the right panel', () => {
+        expect(wrapper.vm.$data.showInRightPanel).toEqual('hierarchy');
     });
 });
 

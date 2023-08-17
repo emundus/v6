@@ -2,7 +2,7 @@
   <div id="form-builder-documents">
     <div id="form-builder-title" class="em-pointer em-flex-row em-flex-space-between em-p-16" @click="$emit('show-documents')">
       <span>{{ translate('COM_EMUNDUS_FORM_BUILDER_EVERY_DOCUMENTS') }}</span>
-      <span class="material-icons-outlined em-pointer" @click="createDocument">add</span>
+      <span id="add-document" class="material-icons-outlined em-pointer" @click="createDocument">add</span>
     </div>
     <div
         v-for="document in documents"
@@ -10,13 +10,14 @@
         @click="$emit('show-documents')"
         class="em-p-16"
     >
-      <p>{{ document.label }}</p>
+      <p class="document-label">{{ document.label }}</p>
     </div>
   </div>
 </template>
 
 <script>
 import formService from '../../services/form.js';
+import errors from "../../mixins/errors";
 
 export default {
   name: 'FormBuilderDocuments',
@@ -30,6 +31,7 @@ export default {
       required: true
     },
   },
+  mixins: [errors],
   data () {
     return {
       documents: [],
@@ -44,12 +46,18 @@ export default {
   methods: {
     getDocuments () {
       formService.getDocuments(this.profile_id).then(response => {
-        this.documents = response.data.data;
+        if (response.status) {
+          this.documents = response.data;
+        } else {
+          this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_GET_DOCUMENTS_FAILED'), response.msg);
+        }
       });
     },
     getDocumentModels () {
       formService.getDocumentModels().then(response => {
-        this.$store.dispatch('formBuilder/updateDocumentModels', response.data);
+        if (response.status) {
+          this.$store.dispatch('formBuilder/updateDocumentModels', response.data);
+        }
       });
     },
     createDocument() {
