@@ -5,7 +5,7 @@
       <!--- MENU --->
       <transition name="slide-right">
         <div class="em-grid-3" v-if="menuHighlight === 0">
-          <div v-for="(menu,index) in displayedMenus" :key="'menu_' + menu.index" class="em-shadow-cards col-md-3 em-hover-s-scale" v-wave @click="changeMenu(menu)">
+          <div style="background: var(--neutral-0);" v-for="(menu,index) in displayedMenus" :key="'menu_' + menu.index" class="em-shadow-cards col-md-3 em-hover-s-scale" v-wave @click="changeMenu(menu)">
             <span class="material-icons-outlined em-gradient-icons em-mb-16">{{menu.icon}}</span>
             <h4 class="em-body-16-semibold  em-main-500-color em-mb-8">{{translate(menu.title)}}</h4>
             <p class="em-font-size-14">{{translate(menu.description)}}</p>

@@ -599,6 +599,12 @@ input:focus + .em-slider {
   grid-template-columns: repeat(1, 1fr);
 }
 
+.em-grid-small {
+  display: grid;
+  grid-gap: 4px;
+  grid-template-columns: repeat(1, 1fr);
+}
+
 .em-grid-3-2-1{
   display: grid;
   grid-gap: 12px;
@@ -1241,6 +1247,10 @@ input:focus + .em-slider {
   border: 1px solid var(--neutral-300);
   box-sizing: border-box;
 }
+.em-border-neutral-600{
+  border: 1px solid var(--neutral-600);
+  box-sizing: border-box;
+}
 .em-border-left-neutral-700{
   border-left: solid 2px var(--neutral-700);
 }
@@ -1265,7 +1275,6 @@ input:focus + .em-slider {
 .em-border-bottom-coordinator {
   border-bottom: solid 1px var(--em-coordinator-primary-color);
 }
-
 .em-border-left-red-500{
   border-left: solid 2px var(--red-500);
 }
@@ -1487,6 +1496,11 @@ input:focus + .em-slider {
 /**
   CARDS
 **/
+
+.em-border-cards {
+  border: 1px solid #EDEDED;
+}
+
 .em-shadow-cards {
   height: 200px;
   box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
@@ -1494,6 +1508,7 @@ input:focus + .em-slider {
   padding: 24px 32px !important;
   margin: 24px;
   cursor: pointer;
+  border: 1px solid #EDEDED;
 }
 
 .em-repeat-card{

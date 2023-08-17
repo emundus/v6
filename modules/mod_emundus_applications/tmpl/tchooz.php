@@ -220,7 +220,7 @@ $current_tab = 0;
                             <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_YEARS') ?>
                         <?php endif; ?>
                     </span>
-                    <span class="material-icons-outlined em-pointer em-ml-8 em-font-size-16" onclick="filterApplications('applications_order_by','')">close</span>
+                    <span class="material-icons-outlined em-pointer em-ml-8" onclick="filterApplications('applications_order_by','')">close</span>
                 </div>
             <?php endif; ?>
         </div>
@@ -397,7 +397,7 @@ $current_tab = 0;
                                                                 <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                    href="<?= JRoute::_($first_page_url); ?>"
                                                                    id="actions_block_open_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                                    <span class="material-icons-outlined em-font-size-16 em-mr-8">open_in_new</span>
+                                                                    <span class="material-icons-outlined em-mr-8">open_in_new</span>
 																	<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
                                                                 </a>
 
@@ -405,7 +405,7 @@ $current_tab = 0;
                                                                     <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                        onclick="renameApplication('<?php echo $application->fnum ?>','<?php echo $application->name ?>','<?php echo $application->label ?>')"
                                                                        id="actions_button_rename_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                                        <span class="material-icons-outlined em-font-size-16 em-mr-8">drive_file_rename_outline</span>
+                                                                        <span class="material-icons-outlined em-mr-8">drive_file_rename_outline</span>
 																		<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION') ?>
                                                                     </a>
 																<?php endif; ?>
@@ -414,7 +414,7 @@ $current_tab = 0;
                                                                     <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                        onclick="copyApplication('<?php echo $application->fnum ?>')"
                                                                        id="actions_button_copy_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                                        <span class="material-icons-outlined em-font-size-16 em-mr-8">file_copy</span>
+                                                                        <span class="material-icons-outlined em-mr-8">file_copy</span>
 																		<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_COPY_APPLICATION') ?>
                                                                     </a>
 																<?php endif; ?>
@@ -423,7 +423,7 @@ $current_tab = 0;
                                                                     <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                        onclick="moveToTab('<?php echo $application->fnum ?>','tab<?php echo $key ?>','card')"
                                                                        id="actions_button_move_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                                        <span class="material-icons-outlined em-font-size-16 em-mr-8">drive_file_move</span>
+                                                                        <span class="material-icons-outlined em-mr-8">drive_file_move</span>
 																		<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_MOVE_INTO_TAB') ?>
                                                                     </a>
 																<?php endif; ?>
@@ -432,7 +432,7 @@ $current_tab = 0;
                                                                     <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                        href="<?= JRoute::_($first_page_url); ?>"
                                                                        id="actions_button_history_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                                        <span class="material-icons-outlined em-font-size-16 em-mr-8">history</span>
+                                                                        <span class="material-icons-outlined em-mr-8">history</span>
 																		<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_VIEW_HISTORY') ?>
                                                                     </a>
 																<?php endif; ?>
@@ -441,7 +441,7 @@ $current_tab = 0;
                                                                     <a class="em-red-500-color em-flex-row em-pointer"
                                                                        onclick="deletefile('<?php echo $application->fnum; ?>');"
                                                                        id="actions_block_delete_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                                        <span class="material-icons-outlined em-font-size-16 em-mr-8">delete</span>
+                                                                        <span class="material-icons-outlined em-mr-8">delete</span>
 																		<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
                                                                     </a>
 																<?php endif; ?>
@@ -466,7 +466,7 @@ $current_tab = 0;
                                                         </a>
 													<?php endif; ?>
 													<?php if ($show_fnum) : ?>
-                                                        <div class="em-mb-8 em-font-size-16">
+                                                        <div class="em-mb-8">
                                                             <span class="em-applicant-default-font em-text-neutral-600">N°<?php echo $application->fnum ?></span>
                                                         </div>
 													<?php endif; ?>
@@ -500,10 +500,10 @@ $current_tab = 0;
 														?>
                                                         <div class="mod_emundus_applications___date em-mt-8">
 															<?php if (!$displayInterval && !$closed) : ?>
-                                                                <span class="material-icons em-text-neutral-600 em-font-size-16 em-mr-8">schedule</span>
-                                                                <p class="em-text-neutral-600 em-font-size-16 em-applicant-default-font"> <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_END_DATE'); ?><?php echo JFactory::getDate(new JDate($end_date, $site_offset))->format($date_format); ?></p>
+                                                                <span class="material-icons em-text-neutral-600 em-mr-8">schedule</span>
+                                                                <p class="em-text-neutral-600 em-applicant-default-font"> <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_END_DATE'); ?><?php echo JFactory::getDate(new JDate($end_date, $site_offset))->format($date_format); ?></p>
 															<?php elseif ($displayInterval && !$closed) : ?>
-                                                                <span class="material-icons-outlined em-text-neutral-600 em-font-size-16 em-red-500-color em-mr-8">schedule</span>
+                                                                <span class="material-icons-outlined em-text-neutral-600 em-red-500-color em-mr-8">schedule</span>
                                                                 <p class="em-red-500-color"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_LAST_DAY'); ?>
 																	<?php if ($interval->h > 0) {
 																		echo $interval->h . 'h' . $interval->i;
@@ -513,8 +513,8 @@ $current_tab = 0;
 																	} ?>
                                                                 </p>
 															<?php elseif ($closed) : ?>
-                                                                <span class="material-icons em-font-size-16 em-mr-8 em-red-500-color">schedule</span>
-                                                                <p class="em-font-size-16 em-applicant-default-font em-red-500-color"> <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_CLOSED'); ?></p>
+                                                                <span class="material-icons em-mr-8 em-red-500-color">schedule</span>
+                                                                <p class="em-applicant-default-font em-red-500-color"> <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_CLOSED'); ?></p>
 															<?php endif; ?>
                                                         </div>
 													<?php endif; ?>
@@ -752,7 +752,7 @@ $current_tab = 0;
                                                             <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                href="<?= JRoute::_($first_page_url); ?>"
                                                                id="actions_block_open_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
-                                                                <span class="material-icons-outlined em-font-size-16 em-mr-8">open_in_new</span>
+                                                                <span class="material-icons-outlined em-mr-8">open_in_new</span>
 																<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
                                                             </a>
 
@@ -760,7 +760,7 @@ $current_tab = 0;
                                                                 <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                    onclick="renameApplication('<?php echo $application->fnum ?>','<?php echo $application->name ?>','<?php echo $application->label ?>')"
                                                                    id="actions_button_rename_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
-                                                                    <span class="material-icons-outlined em-font-size-16 em-mr-8">drive_file_rename_outline</span>
+                                                                    <span class="material-icons-outlined em-mr-8">drive_file_rename_outline</span>
 																	<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION') ?>
                                                                 </a>
 															<?php endif; ?>
@@ -769,7 +769,7 @@ $current_tab = 0;
                                                                 <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                    onclick="copyApplication('<?php echo $application->fnum ?>')"
                                                                    id="actions_button_copy_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
-                                                                    <span class="material-icons-outlined em-font-size-16 em-mr-8">file_copy</span>
+                                                                    <span class="material-icons-outlined em-mr-8">file_copy</span>
 																	<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_COPY_APPLICATION') ?>
                                                                 </a>
 															<?php endif; ?>
@@ -778,7 +778,7 @@ $current_tab = 0;
                                                                 <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                    onclick="moveToTab('<?php echo $application->fnum ?>','tab<?php echo $key ?>','list')"
                                                                    id="actions_button_move_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
-                                                                    <span class="material-icons-outlined em-font-size-16 em-mr-8">drive_file_move</span>
+                                                                    <span class="material-icons-outlined em-mr-8">drive_file_move</span>
 																	<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_MOVE_INTO_TAB') ?>
                                                                 </a>
 															<?php endif; ?>
@@ -787,7 +787,7 @@ $current_tab = 0;
                                                                 <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                    href="<?= JRoute::_($first_page_url); ?>"
                                                                    id="actions_button_history_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
-                                                                    <span class="material-icons-outlined em-font-size-16 em-mr-8">history</span>
+                                                                    <span class="material-icons-outlined em-mr-8">history</span>
 																	<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_VIEW_HISTORY') ?>
                                                                 </a>
 															<?php endif; ?>
@@ -796,7 +796,7 @@ $current_tab = 0;
                                                                 <a class="em-red-500-color em-flex-row em-pointer"
                                                                    onclick="deletefile('<?php echo $application->fnum; ?>');"
                                                                    id="actions_block_delete_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
-                                                                    <span class="material-icons-outlined em-font-size-16 em-mr-8">delete</span>
+                                                                    <span class="material-icons-outlined em-mr-8">delete</span>
 																	<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
                                                                 </a>
 															<?php endif; ?>

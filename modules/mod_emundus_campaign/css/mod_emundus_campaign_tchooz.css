@@ -161,8 +161,8 @@
     color: var(--em-default-text-color-1);
 }
 
-.mod_emundus_campaign__list_content_resume p {
-    color: var(--neutral-600);
+.mod_emundus_campaign__list_content_resume * {
+    color: var(--neutral-600) !important;
 }
 
 .mod_emundus_campaign__header_filter {
@@ -617,6 +617,6 @@ a.em-blue-400-color:hover {
 @media screen and (max-width: 1024px)  {
     .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content,
     .mod_emundus_campaign__list_items .mod_emundus_campaign__list_content{
-        height: auto;
+        height: 100%;
     }
 }

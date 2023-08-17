@@ -182,7 +182,6 @@
       text-align: center;
       padding: 0 6px 0 6px;
       border-radius: unset;
-      border-left: 0;
       border-right: 0;
       box-shadow: unset;
 
@@ -301,7 +300,7 @@
 
     .fabrikGroup table .fabrikSubGroup td  {
       background: var(--neutral-0) !important;
-      margin-top: -1px;
+      margin-top: 0 !important;
     }
 
     .fabrikGroup table th:last-of-type,

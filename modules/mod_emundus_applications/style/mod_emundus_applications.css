@@ -387,7 +387,6 @@ a.btn.btn-success:not(.btn-xs) {
 .mod_emundus_applications___header h1 {
  font-family: var(--em-applicant-font-title);
  color: var(--em-default-title-color-1);
-margin-top: var(--m-16);
 }
 
 .mod_emundus_applications___header_desc h2 {
@@ -493,7 +492,16 @@ margin-top: var(--m-16);
 }
 
 .mod_emundus_applications__actions a:hover {
-    color: var(--neutral-600);
+    background: #EBECF0 !important;
+    border-radius: calc(var(--em-default-br-cards)/2) !important;
+    color: var(--neutral-900) !important;
+    text-decoration: none;
+}
+
+.mod_emundus_applications__actions a.em-red-500-color:hover {
+    background: #EBECF0 !important;
+    border-radius: calc(var(--em-default-br-cards)/2) !important;
+    color: var(--red-500) !important;
     text-decoration: none;
 }
 
@@ -590,6 +598,11 @@ margin-top: var(--m-16);
 #applications_list_view table{
     border: unset;
 }
+
+#applications_list_view table thead tr th{
+   font-weight: 600;
+}
+
 #applications_list_view table thead tr th,#applications_list_view table tbody tr td{
     background: var(--transparent);
     padding: var(--p-16) var(--p-8) var(--p-16) var(--p-8);
@@ -604,8 +617,7 @@ margin-top: var(--m-16);
 }
 
 #applications_list_view table tr:hover .mod_emundus_applications__container span {
-    background: var(--neutral-0);
-    border-radius: var(--applicant-border-radius);
+    border-radius: var(--em-default-br);
 }
 #applications_list_view .mod_emundus_applications___title{
     min-height: unset;
@@ -614,7 +626,7 @@ margin-top: var(--m-16);
 
 .mod_emundus_application___buttons_switch_view{
     border: solid 1px var(--neutral-600);
-    border-radius: calc(var(--em-default-br)/2);
+    border-radius: var(--em-default-br);
     display: flex;
     height: 38px;
     width: 38px;

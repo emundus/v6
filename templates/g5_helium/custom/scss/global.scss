@@ -1434,8 +1434,9 @@ footer#g-footer > .g-container {
   }
 }
 
-.table-hover tbody tr:hover td {
-  background: #ECEFF3 !important;
+.table-hover tbody tr:hover td,
+.table-hover tbody tr:nth-child(2n):hover > td{
+  background: #EDEDED !important;
 }
 
 .table-hover tbody tr:nth-child(2n) > td,
@@ -1476,7 +1477,7 @@ footer#g-footer > .g-container {
 }
 
 .gantry.view-list #g-container-main .g-container .page-header h1 {
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 
 .gantry.view-list .dropdown-menu > li > a:hover,
@@ -1557,7 +1558,7 @@ footer#g-footer > .g-container {
 
 .view-list{
   .page-intro p{
-    color: var(--neutral-500);
+    color: var(--neutral-700);
   }
 }
 
@@ -1697,7 +1698,7 @@ div.fabrikFilterContainer {
 
     tr.fabrik_row {
       td:first-child {
-        font-weight: bold;
+        font-weight: 600;
       }
 
       td {

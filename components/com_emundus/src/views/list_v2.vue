@@ -84,7 +84,7 @@
 					      class="material-icons-outlined ml-2 cursor-pointer"
 					      :class="{
 								'active em-main-500-color em-border-main-500': viewTypeOption.value === viewType,
-								'em-neutral-300-color em-border-neutral-300': viewTypeOption.value !== viewType
+								'em-neutral-600-color em-border-neutral-600': viewTypeOption.value !== viewType
 							}"
 					      @click="changeViewType(viewTypeOption)"
 					>{{ viewTypeOption.icon }}</span>
@@ -111,7 +111,7 @@
 						</thead>
 						<tbody>
 							<tr v-for="item in displayedItems" :key="item.id"
-							    class="em-border-bottom-neutral-300"
+							    class="em-border-cards"
 							    :class="{'em-card-neutral-100 em-card-shadow em-p-24' : viewType === 'blocs'}"
 							>
 								<td class="cursor-pointer" @click="onClickAction(editAction, item.id)">
