@@ -77,13 +77,17 @@ if($show_preliminary_documents && !empty($preliminary_documents)): ?>
                          class="<?php if($form->id == $menuid) echo 'active'?> mod_emundus_checklist_<?php echo $class; ?> mod_emundus_checklist___form_item">
                         <div class="mod_emundus_checklist___grid">
                             <div class="mod_emundus_checklist___step_count">
-                                <?php if($form->id == $menuid) : ?>
-                                    <span class="material-icons-outlined">more_horiz</span>
-                                <?php elseif($class == 'need_missing') : ?>
-                                    <span class="material-icons-outlined">close</span>
-                                <?php elseif ($class == 'need_ok') : ?>
-                                    <span class="material-icons-outlined">done</span>
-                                <?php endif; ?>
+	                            <?php if($form->id == $menuid) {
+                                    $color = 'var(--blue-900)';
+	                            } elseif($class == 'need_missing') {
+                                    $color = 'var(--neutral-900)';
+                                } elseif ($class == 'need_ok') {
+                                    $color = 'var(--main-900)';
+	                            }
+                                ?>
+                                <span style="color: <?= $color ?>">
+                                    <?php echo $index+1 ?>
+                                </span>
                             </div>
                             <a href="<?php echo $form->link ?>"><?php echo JText::_($form_title); ?></a>
                         </div>
@@ -106,13 +110,17 @@ if($show_preliminary_documents && !empty($preliminary_documents)): ?>
             <div class="<?php if($itemid['id'] == $menuid) echo 'active'?> mod_emundus_checklist_<?php echo $attachment_class; ?> mod_emundus_checklist___form_item">
                 <div class="mod_emundus_checklist___grid">
                     <div class="mod_emundus_checklist___step_count">
-	                    <?php if($itemid['id'] == $menuid) : ?>
-                            <span class="material-icons-outlined">more_horiz</span>
-	                    <?php elseif($attachment_class == 'need_missing') : ?>
-                            <span class="material-icons-outlined">close</span>
-	                    <?php elseif ($attachment_class == 'need_ok') : ?>
-                            <span class="material-icons-outlined">done</span>
-	                    <?php endif; ?>
+	                    <?php if($itemid['id'] == $menuid) {
+		                    $color = 'var(--blue-900)';
+	                    } elseif($class == 'need_missing') {
+		                    $color = 'var(--neutral-900)';
+	                    } elseif ($class == 'need_ok') {
+		                    $color = 'var(--main-900)';
+	                    }
+	                    ?>
+                        <span style="color: <?= $color ?>">
+                            <?php echo sizeof($forms)+1 ?>
+                        </span>
                     </div>
                     <a href="<?php echo $itemid['link'].'&Itemid='.$itemid['id'] ?>"><?php echo JText::_($mandatory_documents_title) ?></a>
                 </div>
@@ -143,11 +151,24 @@ if($show_preliminary_documents && !empty($preliminary_documents)): ?>
             <div class="<?php if($itemid['id'] == $menuid) echo 'active'?> mod_emundus_checklist___form_item">
                 <div class="mod_emundus_checklist___grid">
                     <div class="mod_emundus_checklist___step_count">
-	                    <?php if($itemid['id'] == $menuid) : ?>
-                            <span class="material-icons-outlined">more_horiz</span>
-	                    <?php else : ?>
-                            <span class="material-icons-outlined">priority_high</span>
-	                    <?php endif; ?>
+	                    <?php if($itemid['id'] == $menuid) {
+		                    $color = 'var(--blue-900)';
+	                    } elseif($class == 'need_missing') {
+		                    $color = 'var(--neutral-900)';
+	                    } elseif ($class == 'need_ok') {
+		                    $color = 'var(--main-900)';
+	                    }
+	                    ?>
+                        <span style="color: <?= $color ?>">
+                            <?php
+                            if($show_mandatory_documents == 1 && count($mandatory_documents) > 0)
+                            {
+	                            echo sizeof($forms) + 2;
+                            } else {
+                                echo sizeof($forms) + 1;
+                            }
+                            ?>
+                        </span>
                     </div>
                     <a href="<?php echo $itemid['link'].'&Itemid='.$itemid['id'] ?>#attachment_list_opt"><?php echo JText::_($optional_documents_title) ?></a>
                 </div>

@@ -104,6 +104,7 @@ if (!empty($this->custom_title)) :?>
 <?php if (count($this->attachments) > 0) :?>
 
     <div id="attachment_list" class="em-attachmentList em-repeat-card p-6">
+        <h1><?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_TITLE') ?></h1>
         <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('COM_EMUNDUS_ATTACHMENTS_BYTES'); ?> </p>
     <?php if ($this->show_info_legend) :?>
         <div id="legend" class="em-mt-4">
@@ -602,7 +603,7 @@ if (!empty($this->custom_title)) :?>
       <div class="col-md-<?= (int)(12/$this->show_nb_column); ?>">
     <?php
         if ($attachment_list_mand != '') {
-           echo '<div id="attachment_list_mand" class="em-container-attachments em-w-100"><h3>'.JText::_('COM_EMUNDUS_ATTACHMENTS_MANDATORY_DOCUMENTS').'</h3>'.$attachment_list_mand.'</div>';
+           echo '<div id="attachment_list_mand" class="em-container-attachments em-w-100"><h2>'.JText::_('COM_EMUNDUS_ATTACHMENTS_MANDATORY_DOCUMENTS').'</h2>'.$attachment_list_mand.'</div>';
         }
     ?>
       </div>
@@ -614,7 +615,7 @@ if (!empty($this->custom_title)) :?>
       <div class="col-md-<?= (int)(12/$this->show_nb_column); ?>">
     <?php
         if ($attachment_list_opt != '') {
-           echo '<div id="attachment_list_opt" class="em-container-attachmentsOpt em-mt-16 em-w-100"><h3>'.JText::_('COM_EMUNDUS_ATTACHMENTS_OPTIONAL_DOCUMENTS').'</h3>'.$attachment_list_opt.'</div>';
+           echo '<div id="attachment_list_opt" class="em-container-attachmentsOpt em-mt-16 em-w-100"><h2>'.JText::_('COM_EMUNDUS_ATTACHMENTS_OPTIONAL_DOCUMENTS').'</h2>'.$attachment_list_opt.'</div>';
         }
     ?>
       </div>
