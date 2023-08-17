@@ -40,7 +40,7 @@
 				<form>
 					<field name="insee_property"
 						   type="text"
-						   class="span12"
+						   class="span10"
 						   label="PLG_ELEMENT_INSEE_API_PROPERTY_LABEL"
 						   description="PLG_ELEMENT_INSEE_API_PROPERTY_DESC"
 						   default=""
@@ -48,10 +48,31 @@
 
 					<field name="insee_fabrik_element"
 						   type="text"
-						   class="span12"
+						   class="span10"
 						   label="PLG_ELEMENT_INSEE_FABRIK_ELEMENT_LABEL"
 						   description="PLG_ELEMENT_INSEE_FABRIK_ELEMENT_DESC"
 						   default=""
+					/>
+
+					<field name="insee_property_type"
+						   type="list"
+						   label="PLG_ELEMENT_INSEE_PROPERTY_TYPE_LABEL"
+						   description="PLG_ELEMENT_INSEE_PROPERTY_TYPE_DESC"
+						   default="text"
+						   class="span10"
+					>
+						<option value="text">PLG_ELEMENT_INSEE_PROPERTY_TYPE_TEXT</option>
+						<option value="date">PLG_ELEMENT_INSEE_PROPERTY_TYPE_DATE</option>
+						<option value="tva">PLG_ELEMENT_INSEE_PROPERTY_TYPE_TVA</option>
+					</field>
+
+					<field name="insee_property_date_format"
+						   type="text"
+						   class="span10"
+						   label="PLG_ELEMENT_INSEE_DATE_FORMAT_LABEL"
+						   description="PLG_ELEMENT_INSEE_DATE_FORMAT_DESC"
+						   default=""
+						   showon="insee_property_type:date"
 					/>
 				</form>
 			</field>

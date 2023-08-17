@@ -68,9 +68,10 @@ define(['jquery', 'fab/element'],
             handlerFocusOut: function (event) {
                 let repeatNum = this.getRepeatNum();
                 const divError = this.element.parentNode.parentNode.getElementsByClassName('fabrikErrorMessage')[0];
+                divError.innerHTML = '';
 
-                if(event.target.value !== '') {
-                    fetch(this.options.baseUrl + '/entreprises/sirene/V3/'+this.options.propertyToCheck+'/' + event.target.value, {
+                if (event.target.value !== '') {
+                    fetch(this.options.baseUrl + '/entreprises/sirene/V3/' + this.options.propertyToCheck + '/' + event.target.value, {
                         method: 'GET',
                         headers: {
                             'Accept': 'application/json',
@@ -87,8 +88,11 @@ define(['jquery', 'fab/element'],
 
                                 this.options.mapping.forEach((item) => {
                                     let data_to_insert = [];
+
                                     let attributes_to_search = item[1].insee_property;
                                     attributes_to_search = attributes_to_search.split(';');
+
+                                    // We loop on each attribute to search
                                     attributes_to_search.forEach((attribute_to_search) => {
                                         attribute_to_search = attribute_to_search.split(':');
 
@@ -97,25 +101,97 @@ define(['jquery', 'fab/element'],
                                             property = property[attribute_to_search[1]];
                                         }
 
-                                        if(property === undefined) {
+                                        // If the property is undefined it's a separator
+                                        if (property === undefined) {
                                             data_to_insert.push(attribute_to_search[0]);
                                         } else {
                                             data_to_insert.push(property);
                                         }
                                     });
 
-                                    if (data_to_insert !== '' && data_to_insert.length > 0) {
+                                    // We prepare the data to prefill the field
+                                    if (data_to_insert.length > 0) {
+
+                                        // We search the element to fill
                                         let item_to_fill = item[1].insee_fabrik_element;
-                                        if(repeatNum !== false) {
+                                        if (repeatNum !== false) {
                                             item_to_fill = item_to_fill + '_' + repeatNum;
                                         }
 
+                                        // We get the element from Fabrik
                                         let element_to_fill = this.form.elements.get(item_to_fill);
-                                        if(element_to_fill.plugin === 'birthday') {
+
+                                        // We check if the element is a date or a birthday
+                                        if (element_to_fill.plugin === 'birthday' || item[1].insee_property_type === 'date') {
                                             let date = new Date(data_to_insert.join(''));
-                                            data_to_insert = date.getDate() + '/' + (date.getMonth()+1) + '/' + date.getFullYear();
+                                            data_to_insert = [];
+
+                                            if (item[1].insee_property_type === 'date')
+                                            {
+                                                let date_format = item[1].insee_property_date_format.split('/');
+
+                                                date_format.forEach((format) => {
+                                                    switch (format) {
+                                                        case 'd':
+                                                            if(date.getDate() < 10) {
+                                                                data_to_insert.push('0'+date.getDate());
+                                                            } else {
+                                                                data_to_insert.push(date.getDate());
+                                                            }
+                                                            break;
+                                                        case 'm':
+                                                            if((date.getMonth() + 1) < 10) {
+                                                                data_to_insert.push('0'+(date.getMonth() + 1));
+                                                            } else {
+                                                                data_to_insert.push(date.getMonth() + 1);
+                                                            }
+                                                            break;
+                                                        case 'Y':
+                                                            data_to_insert.push(date.getFullYear());
+                                                            break;
+                                                    }
+                                                });
+                                            } else
+                                            {
+                                                if(date.getDate() < 10) {
+                                                    data_to_insert.push('0'+date.getDate());
+                                                } else {
+                                                    data_to_insert.push(date.getDate());
+                                                }
+
+                                                if((date.getMonth() + 1) < 10) {
+                                                    data_to_insert.push('0'+(date.getMonth() + 1));
+                                                } else {
+                                                    data_to_insert.push(date.getMonth() + 1);
+                                                }
+
+                                                data_to_insert.push(date.getFullYear());
+                                            }
+
+                                            data_to_insert = data_to_insert.join('/');
+
                                             element_to_fill.set(data_to_insert);
-                                        } else {
+                                        }
+                                        else if(item[1].insee_property_type === 'tva') {
+                                            let tva_number = '';
+                                            let code_pays = 'FR';
+                                            let siren = parseInt(properties['siren']);
+                                            if(properties['adresseEtablissement']['codePaysEtrangerEtablissement'] !== null)
+                                            {
+                                                code_pays = properties['adresseEtablissement']['codePaysEtrangerEtablissement'];
+                                            }
+
+                                            if(code_pays !== '' && siren !== 0) {
+                                                let tva_key = [12 + 3 * (siren % 97)] % 97;
+
+                                                if(tva_key !== 0) {
+                                                    tva_number = code_pays + tva_key + siren;
+                                                }
+                                            }
+
+                                            element_to_fill.set(tva_number);
+                                        }
+                                        else {
                                             element_to_fill.set(data_to_insert.join(''));
                                         }
                                     }
@@ -124,10 +200,12 @@ define(['jquery', 'fab/element'],
                                 break;
                             case 404:
                                 divError.innerHTML = Joomla.JText._('PLG_ELEMENT_INSEE_SIRET_NOT_FOUND');
+                                this.resetFields();
 
                                 break;
                             case 400:
                                 divError.innerHTML = data.header.message;
+                                this.resetFields();
 
                                 break;
                             default:
@@ -135,6 +213,20 @@ define(['jquery', 'fab/element'],
                         }
                     });
                 }
+            },
+
+            resetFields: function () {
+                let repeatNum = this.getRepeatNum();
+
+                this.options.mapping.forEach((item) => {
+                    let item_to_reset = item[1].insee_fabrik_element;
+                    if (repeatNum !== false) {
+                        item_to_reset = item_to_reset + '_' + repeatNum;
+                    }
+
+                    let element_to_reset = this.form.elements.get(item_to_reset);
+                    element_to_reset.reset();
+                });
             }
 
         });
