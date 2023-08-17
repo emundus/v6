@@ -372,7 +372,11 @@ class Files
 			$select[] = 'group_concat(distinct eua.user_id) as users_assoc';
 		}
 
-		return $select;
+        if(isset($params->display_tag_assoc) && $params->display_tag_assoc == 1){
+            $select[] = 'group_concat(distinct eta.id_tag) as tags_assoc';
+        }
+
+        return $select;
 	}
 
 	public function buildLeftJoin($params,$status_access): array{
@@ -385,7 +389,7 @@ class Files
 		if($status_access) {
 			$left_joins[] = $db->quoteName('#__emundus_setup_status', 'ess') . ' ON ' . $db->quoteName('ess.step') . ' = ' . $db->quoteName('ecc.status');
 		}
-		if (isset($params->tags) && $params->tags !== '') {
+        if ((isset($params->tags) && $params->tags !== '') || (isset($params->display_tag_assoc) && $params->display_tag_assoc == 1)) {
 			$left_joins[] = $db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum');
 		}
 		if(isset($params->display_group_assoc) && $params->display_group_assoc == 1){
@@ -630,6 +634,34 @@ class Files
 			return $files;
 		}
 	}
+
+    public function buildAssocTags($files){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            foreach ($files as $file) {
+                $tags = [];
+
+                if (!empty($file->tags_assoc) && count($file->tags_assoc) > 0) {
+                    $query->clear()
+                        ->select('label,class')
+                        ->from($db->quoteName('#__emundus_setup_action_tag'))
+                        ->where($db->quoteName('id') . ' IN (' . $file->tags_assoc . ')');
+                    $db->setQuery($query);
+                    $tags = $db->loadObjectList();
+                }
+
+                $file->tags = $tags;
+            }
+
+            return $files;
+        }
+        catch (Exception $e) {
+            JLog::add('Problem when build query with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
+            return $files;
+        }
+    }
 
     /**
      * @param string $element_plugin
