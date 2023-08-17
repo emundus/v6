@@ -26,6 +26,8 @@ define(['jquery', 'fab/element'],
                 this.parent(element, options);
 
                 const htmlElement = document.querySelector('#' + this.element.id);
+                htmlElement.addEventListener('paste', this.handlerPaste.bind(this));
+                htmlElement.addEventListener('keyup', this.handlerKeyup.bind(this));
 
                 if (this.options.bearerToken.status === 200) {
                     htmlElement.addEventListener('focusout', this.handlerFocusOut.bind(this));
@@ -68,6 +70,17 @@ define(['jquery', 'fab/element'],
                 if (this.options.bearerToken.status === 200) {
                     htmlElement.addEventListener('focusout', this.handlerFocusOut.bind(this));
                 }
+            },
+
+            handlerPaste: function (event) {
+                event.preventDefault();
+
+                let value = event.clipboardData.getData('Text');
+                event.target.value = value.replace(/\s/g, '');
+            },
+
+            handlerKeyup: function (event) {
+                event.target.value = event.target.value.replace(/\s/g, '');
             },
 
             handlerFocusOut: function (event) {

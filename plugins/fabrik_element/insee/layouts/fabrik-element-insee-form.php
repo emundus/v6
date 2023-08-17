@@ -10,5 +10,5 @@ JText::script('PLG_ELEMENT_INSEE_ERROR');
 ?>
 
 <div id="<?php echo $d->attributes['id']; ?>" class="em-flex-row fabrikSubElementContainer inseeElement">
-    <input id="insee_inputValue" maxlength="14" name="<?php echo $d->attributes['name']; ?>" class="fabrikinput input-medium" value="<?php echo $d->attributes['value']; ?>" />
+    <input id="insee_inputValue" name="<?php echo $d->attributes['name']; ?>" class="fabrikinput input-medium" value="<?php echo $d->attributes['value']; ?>" />
 </div>
