@@ -1587,6 +1587,9 @@ footer#g-footer > .g-container {
 
 .fabrikNav .list-footer .limit .input-prepend.input-append {
   display: flex;
+  width: fit-content;
+  gap: 6px;
+  height: 40px;
 
   small {
     color: #353544;
