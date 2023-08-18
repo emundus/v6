@@ -6527,7 +6527,6 @@ async function sendMailQueue(fnums) {
             case 1:
                 title = 'COM_EMUNDUS_EMAILS_EMAIL_PREVIEW';
                 html = '<div id="email-recap"></div>';
-                type = 'info';
 
                 // update the textarea with the WYSIWYG content.
                 tinymce.triggerSave();

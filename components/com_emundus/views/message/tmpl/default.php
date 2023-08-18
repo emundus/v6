@@ -89,22 +89,33 @@ if ($allowed_attachments !== true) {
     div#mail_from_name:focus,div#mail_subject:focus,div#reply_to_from:focus {
         outline-color: #2E90FA;
     }
-    div#mail_from_name:hover,div#mail_subject:hover,div#reply_to_from:hover{
+    div#mail_from_name:hover,div#mail_subject:hover{
         border-radius: var(--em-coordinator-br);
         border: solid 2px var(--em-coordinator-bc);
     }
     #cc-box-label,#bcc-box-label,#replyto-box-label{
         border-radius: var(--em-coordinator-br);
         width: fit-content;
-        padding: var(--p-4) var(--p-8) 5px var(--p-8);
+        padding: var(--p-4) var(--p-8) 5px 0;
         margin-left: 0;
     }
-    #cc-box-label:hover,#bcc-box-label:hover,#replyto-box-label:hover {
+    #cc-box-label:hover,#bcc-box-label:hover {
         background: var(--neutral-300);
     }
 
     #reply_to_from,#emailForm div#mail_subject{
         min-width: 100%;
+    }
+
+    #mail_from_block {
+        width: 90%;
+    }
+
+    .em-form-recipients {
+        height: 44px;
+        display: flex !important;
+        flex-direction: column;
+        justify-content: center;
     }
 
 </style>
@@ -165,13 +176,16 @@ if ($allowed_attachments !== true) {
         <!-- FROM -->
         <div class="form-inline row">
             <div class="form-group em-form-sender em-mt-12 col-md-6 col-sm-6">
-                <label class='em-mr-8' for="mail_from"><?= JText::_('FROM'); ?> :</label>
-                <div id="mail_from_block" class="em-border-radius-8 em-mb-4 email-input-block">
-                    <div id="mail_from_name" class="em-p-4-6" contenteditable="true"><?= JFactory::getConfig()->get('fromname') ?></div>
-                    <div id="mail_from" class="em-ml-4" contenteditable="false">
-                        <em class="em-font-size-14">&lt;<?= JFactory::getConfig()->get('mailfrom') ?>&gt;</em>
+                <div class="flex items-center">
+                    <label class='em-mr-8' for="mail_from"><?= JText::_('FROM'); ?> :</label>
+                    <div id="mail_from_block" class="em-border-radius-8 em-mb-4 email-input-block">
+                        <div id="mail_from_name" class="em-p-4-6" contenteditable="true"><?= JFactory::getConfig()->get('fromname') ?></div>
+                        <div id="mail_from" class="em-ml-4" contenteditable="false">
+                            <em class="em-font-size-14">&lt;<?= JFactory::getConfig()->get('mailfrom') ?>&gt;</em>
+                        </div>
                     </div>
                 </div>
+
                 <span class="em-font-size-14"><?= JText::_('COM_EMUNDUS_FROM_HELP_TEXT') ?></span>
 
             </div>
@@ -182,6 +196,32 @@ if ($allowed_attachments !== true) {
                 <div class="flex justify-between items-center">
                     <div class="flex items-center">
                         <label class='em-mr-8 em-cursor-text mb-0'><?= JText::_('COM_EMUNDUS_TO'); ?> :</label>
+
+                        <div class="em-border-radius-8">
+		                    <?php if(count($this->users) == 1) : ?>
+			                    <?php foreach ($this->users as $user) : ?>
+
+				                    <?php if (!empty($user['email']) && !in_array($user['email'], $email_list)) : ?>
+					                    <?php $email_list[] = $user['email']; ?>
+                                        <span class="label label-default em-mr-8 em-email-label">
+                                    <?= $user['name'] . ' <em class="em-font-size-14">&lt;' . $user['email'] . '&gt;</em>'; ?>
+                                </span>
+
+                                        <input type="hidden" name="ud[]" id="ud" value="<?= $user['id']; ?>"/>
+				                    <?php endif; ?>
+
+			                    <?php endforeach; ?>
+		                    <?php else : ?>
+                                <div class="flex items-center">
+                        <span class="label label-default em-mr-8 em-email-label">
+                                    <?= $this->users[0]['name'] . ' <em class="em-font-size-14">&lt;' . $this->users[0]['email'] . '&gt;</em>'; ?>
+                        </span>
+                                    <span class="label label-default em-mr-8 em-email-label">
+                                +<?= count($this->users)-1 ?>
+                            </span>
+                                </div>
+		                    <?php endif; ?>
+                        </div>
                     </div>
 
                     <div class="flex items-center">
@@ -196,31 +236,7 @@ if ($allowed_attachments !== true) {
                         </div>
                     </div>
                 </div>
-                <div class="em-border-radius-8">
-		            <?php if(count($this->users) == 1) : ?>
-			            <?php foreach ($this->users as $user) : ?>
 
-				            <?php if (!empty($user['email']) && !in_array($user['email'], $email_list)) : ?>
-					            <?php $email_list[] = $user['email']; ?>
-                                <span class="label label-default em-mr-8 em-email-label">
-                                    <?= $user['name'] . ' <em class="em-font-size-14">&lt;' . $user['email'] . '&gt;</em>'; ?>
-                                </span>
-
-                                <input type="hidden" name="ud[]" id="ud" value="<?= $user['id']; ?>"/>
-				            <?php endif; ?>
-
-			            <?php endforeach; ?>
-		            <?php else : ?>
-                    <div class="flex items-center">
-                        <span class="label label-default em-mr-8 em-email-label">
-                                    <?= $this->users[0]['name'] . ' <em class="em-font-size-14">&lt;' . $this->users[0]['email'] . '&gt;</em>'; ?>
-                        </span>
-                        <span class="label label-default em-mr-8 em-email-label">
-                                +<?= count($this->users)-1 ?>
-                            </span>
-                    </div>
-		            <?php endif; ?>
-                </div>
             </div>
         </div>
 
