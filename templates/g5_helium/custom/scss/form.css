@@ -529,6 +529,7 @@
           @apply py-1;
           @apply mb-1;
           @apply items-center;
+          width: auto;
           label {
             @apply mb-0;
             @apply flex;
