@@ -131,7 +131,7 @@
 										<a v-if="viewType === 'blocs' && editAction" @click="onClickAction(editAction, item.id)" class="em-primary-button text-sm cursor-pointer em-w-auto">
 											{{ translate(editAction.label) }}
 										</a>
-										<div class="flex">
+										<div class="flex items-center">
 											<span v-if="previewAction" class="material-icons-outlined cursor-pointer" @click="onClickPreview(item)">visibility</span>
 											<span v-for="action in iconActions" :key="action.name" class="cursor-pointer"
 											      :class="{
