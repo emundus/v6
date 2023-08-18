@@ -26,24 +26,6 @@
         </select>
       </div>
 
-      <!-- SQL -->
-      <div v-else-if="param.type === 'sql'">
-          <select v-model="element.params[param.name]" :key="param.id + '-sqlSelect'" class="em-w-100">
-            <option v-for="option in param.options" :value="option.value">{{ option.label}}</option>
-          </select>
-      </div>
-
-      <!-- SUBFORM -->
-      <div v-else-if="param.type === 'subform'" class="mainSubFormDiv">
-        <div v-for="(element_sub_parameters, element_sub_name) in element.params[param.name]" :key="element.id + '-' + param.name" class="subform">
-          <div :key="element_sub_name + '-divSpans'" class="divSpans">
-            <span :key="element_sub_name + '-addButton'" class="material-icons em-pointer" @click="addRow(param.name)">add</span>
-            <span :key="element_sub_name + '-deleteButton'" class="material-icons em-pointer" @click="deleteRow(param.name, element_sub_name)">remove</span>
-          </div>
-          <FormBuilderElementParams :key="element_sub_name" :element="{params:element_sub_parameters}" :databases="null" :params="param.subparams"/>
-        </div>
-      </div>
-
       <!-- INPUT (TEXT,NUMBER) -->
       <input v-else :type="param.type" v-model="element.params[param.name]" class="em-w-100" :placeholder="translate(param.placeholder)"/>
 
@@ -106,13 +88,6 @@ export default {
           }
         }
       }
-      else if (param.type === 'sql')
-      {
-        if (param.key_field && param.value_field && param.plugin_name)
-        {
-          this.prepareSqlFieldData(param);
-        }
-      }
     })
   },
   methods: {
@@ -161,84 +136,6 @@ export default {
         });
       }
     },
-
-    addRow(paramName) {
-
-      const subformObject = this.getSubObject(paramName);
-
-      const new_object = this.prepareNewSubObject(subformObject.subparams);
-      const element_name = paramName+this.idElement;
-      this.idElement++;
-
-      this.$set(this.element.params[paramName], element_name, new_object);
-    },
-
-    deleteRow(paramName, element_sub_name) {
-
-      const subObject = this.getSubObject(paramName);
-
-      if (Object.keys(this.element.params[paramName]).length > subObject.min)
-      {
-        this.$delete(this.element.params[paramName], element_sub_name);
-      }
-    },
-
-    getSubObject(name)
-    {
-      let subObject = {};
-
-      this.params.forEach((element) =>
-      {
-        if (element.name === name)
-        {
-          subObject = element;
-        }
-      })
-
-      return subObject;
-    },
-
-    prepareNewSubObject(allParams)
-    {
-      const new_object = {};
-
-      allParams.forEach((param) =>
-      {
-        if (param.type === 'sql')
-        {
-          new_object[param.name] = param.default ? param.default : param.options[0].value;
-        }
-        else
-        {
-          new_object[param.name] = param.default ? param.default : '';
-        }
-      });
-
-      return new_object;
-    },
-
-    prepareSqlFieldData(params)
-    {
-      const valueColumn = params.key_field;
-      const labelColumn = params.value_field;
-      const plugin = params.plugin_name;
-      const field_name = params.name;
-
-      formBuilderService.getDataForSqlField(plugin, field_name).then((response) =>
-      {
-        if (response.data.data)
-        {
-          this.$set(params, 'options', []);
-          response.data.data.forEach((row, index) =>
-          {
-            let option = {};
-            option.value = row[valueColumn];
-            option.label = row[labelColumn];
-            this.$set(params.options, index, option);
-          });
-        }
-      });
-    },
   },
   computed: {
     sysadmin: function(){
@@ -247,30 +144,3 @@ export default {
   }
 }
 </script>
-
-<style scoped lang="scss">
-
-.mainSubFormDiv
-{
-  .subform
-  {
-    background-color : #fafafa;
-    border: 1px solid #f2f2f3;
-    margin: 2em 0 2em 0;
-    align-items: center;
-    &>*
-    {
-      margin: auto;
-      width: 90%;
-    }
-
-    .divSpans
-    {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-end;
-    }
-  }
-}
-
-</style>

@@ -95,7 +95,7 @@
     "value": "currency",
     "icon": "money",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_CURRENCY",
-    "published": true
+    "published": false
   },
   {
     "id": 7,
