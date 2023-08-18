@@ -2314,6 +2314,7 @@ structure:
 	 */
 	function postflight($type, $parent)
 	{
+		// Update jos_extensions informations
 		$config = JFactory::getConfig();
 
 		$db    = JFactory::getDbo();
@@ -2344,16 +2345,17 @@ structure:
 			->where($db->quoteName('element') . ' LIKE ' . $db->quote('com_emundus'));
 		$db->setQuery($query);
 
-		if ($db->execute())
-		{
-			echo "Application name updated";
+		// Check and update htaccess file if needed
+		$file = JPATH_ROOT . '/.htaccess';
+		$insert = "# Redirect to home page all requests to hidden files or directories" . PHP_EOL . "RewriteRule ^\..+ / [R=301,L]" . PHP_EOL . PHP_EOL . "# Redirect to the home page all requests to other files or directories not needed on the web product" . PHP_EOL . "RewriteRule ^cli / [R=301,L]" . PHP_EOL . "RewriteRule ^Dockerfile / [R=301,L]" . PHP_EOL . "RewriteRule ^LICENCE / [R=301,L]" . PHP_EOL . "RewriteRule ^phpunit\.xml / [R=301,L]" . PHP_EOL . "RewriteRule ^README\.md / [R=301,L]" . PHP_EOL . "RewriteRule ^configuration.php / [R=301,L]" . PHP_EOL . "RewriteRule ^defines.php / [R=301,L]" . PHP_EOL . "RewriteRule ^logs / [R=301,L]" . PHP_EOL;
+		$htaccess_update_status = EmundusHelperUpdate::insertIntoFile($file, $insert);
 
+		if ($db->execute() && $htaccess_update_status)
+		{
 			return true;
 		}
 		else
 		{
-			echo "Application name not updated";
-
 			return false;
 		}
 	}

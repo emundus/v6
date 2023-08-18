@@ -448,7 +448,10 @@ class UpdateCli extends JApplicationCli
                                         }
                                     }
                                     if (method_exists($scriptClass, 'postflight')) {
-                                        $script->postflight('update', $adapter);
+                                        $result = $script->postflight('update', $adapter);
+                                        if (!$result) {
+                                            $success = false;
+                                        }
                                     }
 
                                     break;
