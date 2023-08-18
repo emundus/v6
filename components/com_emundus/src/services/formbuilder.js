@@ -220,30 +220,6 @@ export default {
             };
         }
     },
-    async getDataForSqlField(plugin_name, field_name) {
-
-        if (plugin_name && field_name) {
-
-            try {
-                const response = client().get(
-                    'index.php?option=com_emundus&controller=formbuilder&task=getDataForSqlField',
-                    {
-                        params: {
-                            plugin_name: plugin_name,
-                            field_name: field_name,
-                        }
-                    }
-                );
-
-                return response;
-            } catch (e) {
-                return {
-                    status: false,
-                    message: e.message
-                };
-            }
-        }
-    },
     async updateParams(element)
     {
         const formData = new FormData();
