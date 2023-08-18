@@ -1748,14 +1748,17 @@ class EmundusModelEmails extends JModelList {
             if (!empty($emails)) {
                 foreach ($emails as $key => $email) {
                     $email->label = ['fr' => $email->subject, 'en' => $email->subject];
-                    $email->additional_columns = [
-                        [
-                            'key' => JText::_('COM_EMUNDUS_ONBOARD_CATEGORY'),
-                            'value' => $email->category,
-                            'classes' => 'em-mt-8 em-mb-8 label label-default em-p-5-12 em-font-weight-600',
-                            'display' => 'all'
-                        ],
-                    ];
+
+                    if (!empty($email->category)) {
+                        $email->additional_columns = [
+                            [
+                                'key' => JText::_('COM_EMUNDUS_ONBOARD_CATEGORY'),
+                                'value' => $email->category,
+                                'classes' => 'em-mt-8 em-mb-8 label label-default em-p-5-12 em-font-weight-600',
+                                'display' => 'all'
+                            ],
+                        ];
+                    }
 
                     $emails[$key] = $email;
                 }
