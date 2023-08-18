@@ -2297,6 +2297,10 @@ label[for="em-file_to_upload"]:hover {
     padding: 11px;
 }
 
+.files-board #system-message-container {
+   padding: 0;
+}
+
 @media screen and (max-width: 991px){
     .download{
         display: inline !important;
