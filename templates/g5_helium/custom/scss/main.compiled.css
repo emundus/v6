@@ -1114,7 +1114,7 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio {
   padding-bottom: var(--em-spacing-1);
   margin-bottom: var(--em-spacing-1);
   align-items: center;
-  width: auto;
+          width: auto;
 }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label {
   margin-bottom: 0px;
@@ -1616,6 +1616,9 @@ input[type="text"],
 .end-2 {
   inset-inline-end: var(--em-spacing-2);
 }
+.left-1 {
+  left: var(--em-spacing-1);
+}
 .start-1 {
   inset-inline-start: var(--em-spacing-1);
 }
@@ -1920,6 +1923,9 @@ input[type="text"],
 .p-2 {
   padding: var(--em-spacing-2);
 }
+.p-3 {
+  padding: var(--em-spacing-3);
+}
 .p-4 {
   padding: var(--em-spacing-4);
 }
@@ -1994,6 +2000,11 @@ input[type="text"],
 .subpixel-antialiased {
   -webkit-font-smoothing: auto;
   -moz-osx-font-smoothing: auto;
+}
+.\!shadow {
+  --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1) !important;
+  --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color) !important;
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
 }
 .shadow {
   --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
@@ -2336,7 +2347,7 @@ legend {
     }*/
 button.swal2-styled.swal2-confirm {
         background: var(--blue-500);
-        border-radius: 8px;
+        border-radius: var(--em-coordinator-br);
         padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
         color: var(--neutral-0);
     }
@@ -2452,6 +2463,18 @@ button.swal2-cancel.goback-btn:hover,
         right: unset;
         background: transparent;
     }
+.alert .\!close {
+        font-size: xx-large !important;
+        opacity: 1 !important;
+        top: unset !important;
+        left: unset !important;
+        width: auto !important;
+        display: block !important;
+        position: relative !important;
+        float: right !important;
+        right: unset !important;
+        background: transparent !important;
+    }
 .alert h4 {
         font-weight: 500;
     }
@@ -2471,6 +2494,10 @@ button.swal2-cancel.goback-btn:hover,
     .has-error .radio-inline,
     .has-error .checkbox-inline {
         color: #b94a48;
+    }
+
+    .has-error .\!checkbox {
+        color: #b94a48 !important;
     }
 .has-error .form-control {
         border-color: #b94a48;
@@ -2767,6 +2794,9 @@ button.swal2-cancel.goback-btn:hover,
     }
 .\!\[a-zA-Z\:_\] {
   a-z-a--z:  !important;
+}
+.\[-a-zA-Z\:0-9_\.\] {
+  -a-z-a--z: 0-9 .;
 }
 .\[_errors\:protected\] {
   _errors: protected;

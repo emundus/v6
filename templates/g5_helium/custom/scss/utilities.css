@@ -300,7 +300,7 @@
 
     button.swal2-styled.swal2-confirm {
         background: var(--blue-500);
-        border-radius: 8px;
+        border-radius: var(--em-coordinator-br);
         padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
         color: var(--neutral-0);
     }
@@ -308,7 +308,7 @@
     button.swal2-styled.swal2-cancel {
         background: #FFFFFF;
         border: 1px solid var(--blue-500);
-        border-radius: 8px;
+        border-radius: var(--em-coordinator-br);
         color: var(--blue-500);
         padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
     }

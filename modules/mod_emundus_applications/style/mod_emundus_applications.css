@@ -97,6 +97,7 @@ button#back:hover, button#back:active, button#back:focus,
 .swal2-actions button.swal2-styled.swal2-cancel:not(.mod_emundus_application_swal_manage_tabs_cancel):not(.em-swal-cancel-button) {
     border: 1px solid var(--red-500) !important;
     color: var(--neutral-0) !important;
+    padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
 }
 
 .swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:hover,
