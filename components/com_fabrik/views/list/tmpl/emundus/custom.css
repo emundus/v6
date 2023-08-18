@@ -156,6 +156,8 @@ font-size: 16px;
 .view-list .em-list-pagination select.inputbox{
 	border: unset;
 	padding-left: 4px;
+	height: 30px;
+	padding: 0 6px;
 }
 .view-list .fabrikDataContainer .table tfoot tr td{
 	padding-left: 0;

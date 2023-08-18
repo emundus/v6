@@ -447,7 +447,7 @@ class modemundusApplicationsHelper {
 
                 if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)) {
                     if ($custom_action->mod_em_application_custom_action_type == 2) {
-                        $html .= '<div class="em-flex-row">';
+                        $html .= '<div class="em-flex-row px-2.5 py-2">';
                         if ($custom_action->mod_em_application_custom_action_icon) {
                             $html .= '<span class="material-icons-outlined em-font-size-16 em-mr-8">' . $custom_action->mod_em_application_custom_action_icon . '</span>';
                         }

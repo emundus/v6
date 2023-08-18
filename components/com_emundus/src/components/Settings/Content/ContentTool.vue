@@ -34,7 +34,7 @@
           </div>
         </div>
 
-        <transition name="fade" mode="out-in">
+        <transition name="fade" mode="out-in" v-if="selectedMenu">
           <EditArticle v-if="selectedMenu.type === 'article'" :key="currentMenu" :article_id="selectedMenu.id" :article_alias="selectedMenu.alias" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditArticle>
           <EditFooter v-else-if="selectedMenu.type === 'footer'" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditFooter>
         </transition>
