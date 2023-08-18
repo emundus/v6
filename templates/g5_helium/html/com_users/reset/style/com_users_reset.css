@@ -132,7 +132,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     align-items: center;
     background: #fff;
     width: 50%;
-    margin: 24px auto 50px auto;
+    margin: 0 auto 50px auto;
     border-radius: 16px;
 }
 
@@ -184,7 +184,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     .view-reset .reset-confirm .page-header,
     .view-reset .reset-complete .page-header {
         width: 100% !important;
-        padding: 80px 24px 0 24px !important;
+        padding: 0 24px 0 24px !important;
     }
 
     .view-reset .reset,
@@ -227,6 +227,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     .view-reset .reset-confirm,
     .view-reset .reset-complete  {
         width: 65% !important;
+        margin-top: 0;
     }
 
     form#user-registration.form-validate.form-horizontal.well,

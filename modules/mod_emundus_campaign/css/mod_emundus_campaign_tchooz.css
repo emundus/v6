@@ -173,25 +173,29 @@
     margin-top: var(--m-8);
     flex-direction: column;
     box-shadow: 0 12px 17px rgba(5, 47, 55, 0.07), 0 5px 22px rgba(5, 47, 55, 0.06), 0 7px 8px rgba(5, 47, 55, 0.1);
-    border-radius: var(--em-default-br);
-    padding: var(--p-24);
+    border-radius: calc(var(--em-coordinator-br-cards)/2);
+    padding: var(--p-16);
     position: absolute;
     background: var(--neutral-0);
 }
 
-.mod_emundus_campaign__header_sort__values a:not(:last-child){
-    margin-bottom: var(--m-24);
+.mod_emundus_campaign__header_sort__values a:hover {
+    background: #EBECF0 !important;
+    border-radius: var(--em-default-br) !important;
+    color: var(--neutral-900) !important;
+    text-decoration: none;
+    padding: 6px 8px;
 }
 
-.mod_emundus_campaign__header_sort__values a:hover {
-    color: var(--neutral-600);
+.mod_emundus_campaign__header_sort__values a {
+    padding: 6px 8px;
 }
 
 .mod_emundus_campaign__header_filter__values{
     margin-top: var(--m-8);
     flex-direction: column;
     box-shadow: 0 12px 17px rgba(5, 47, 55, 0.07), 0 5px 22px rgba(5, 47, 55, 0.06), 0 7px 8px rgba(5, 47, 55, 0.1);
-    border-radius: var(--em-default-br);
+    border-radius: calc(var(--em-coordinator-br-cards)/2);
     padding: var(--p-16);
     position: absolute;
     background: var(--neutral-0);
@@ -203,7 +207,7 @@
 }
 
 .mod_emundus_campaign__header_filter__values .btn.btn-primary {
-    border-radius: var(--em-default-br) !important;
+    border-radius: var(--em-applicant-br) !important;
     padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
     background: var(--neutral-0);
     color: var(--em-primary-color);

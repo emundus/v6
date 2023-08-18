@@ -47,7 +47,7 @@ button.btn-primary:hover{
     flex-direction: column;
     align-items: center;
     background: var(--neutral-0);
-    margin-top: 50px;
+    margin-top: 0;
     border-radius: 16px 16px 0 0;
     padding: 80px 64px 0 64px;
     width: 50%;
@@ -65,7 +65,6 @@ button.btn-primary:hover{
     flex-direction: column;
     align-items: center;
     background: var(--neutral-0);
-    margin-top: 24px;
     border-radius: 16px;
     padding: 0 64px 80px 64px;
     width: 50%;
@@ -321,6 +320,7 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     .view-login #g-container-main div.login {
         width: 100%;
         padding: 0 24px 0 24px;
+        margin-bottom: 50px;
     }
 }
 
@@ -369,7 +369,8 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 
     #g-container-main div.em-formRegistrationCenter, #g-container-main div.login {
         width: 65%;
-        padding: 80px 24px 0 24px !important;
+        padding: 0 24px 0 24px !important;
+        margin-top: 0;
     }
 
     ul.nav.nav-tabs.nav-stacked

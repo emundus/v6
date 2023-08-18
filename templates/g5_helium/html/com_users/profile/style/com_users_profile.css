@@ -28,7 +28,7 @@ a.btn:hover{
 
 form#member-profile.well {
     background: #fff;
-    margin: 50px auto 50px auto;
+    margin: 0px auto 50px auto;
     padding: 32px 32px 24px 32px;
     border-radius: var(--em-form-br-block) !important;
     width: 84%;
@@ -51,7 +51,7 @@ form#member-profile  fieldset .em-heading-form {
     text-align: center;
     padding-top: 24px;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     flex-direction: row;
 }
 
@@ -175,13 +175,8 @@ form#member-profile.form-validate.form-horizontal.well  label.required::after{
 @media all and (max-width: 767px) {
     form#member-profile {
         padding: 2rem 3rem 1rem 3rem;
-    }
-
-    .view-profile #member-profile > .control-group .controls {
-        flex-direction: column;
-        row-gap: 8px;
-        display: flex;
-        align-items: flex-start;
+        width: 100% !important;
+        margin: 0 0 50px 0 !important;
     }
 
     .view-profile form#member-profile.form-validate.form-horizontal.well button.btn.btn-primary.validate {

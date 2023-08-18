@@ -238,10 +238,6 @@ div#frame.outline {
   background: $base-background;
 }
 
-.homepage #g-container-main {
-  margin-top: 24px;
-}
-
 .homepage {
   .campaigns-list {
 
@@ -3821,7 +3817,7 @@ div#em-appli-block {
 
     /* INTRO FORMULAIRE */
     .emundus-form {
-      margin-top: 48px;
+      margin-top: 0;
       margin-bottom: 64px;
       border-radius: var(--em-form-br-block) !important;
       background: #FFFFFF;
@@ -4247,6 +4243,11 @@ screen and (max-height: 769px) {
   .view-form .span12 form .fabrikGroup .row-fluid .fabrikElementContainer.control-group.plg-databasejoin.mode-dropdown {
     display: flex;
     justify-content: flex-end;
+    width: auto;
+  }
+
+  .view-form .span12 form .fabrikGroup .row-fluid .fabrikElementContainer.control-group.plg-display label {
+    word-break: break-all;
   }
 
   /* FORMULAIRES  - GP REPEAT TABLEAU */
@@ -4350,14 +4351,9 @@ screen and (max-height: 769px) {
     main#g-main-mainbody {
       padding: 0;
 
-      .view-registration.login.em-formRegistrationCenter {
-        margin-top: 50px;
-      }
-
       .login.em-formRegistrationCenter, .em-formRegistrationCenter:not(.componentheading) {
         padding: 0;
         width: 100% !important;
-        margin-top: 5px;
 
         ol {
           width: 100%;
@@ -4966,6 +4962,20 @@ screen and (max-height: 769px) {
 
 @media all and (max-width: 767px) {
 
+  .view-registration.em-formRegistrationCenter {
+     margin-right: 0 !important;
+     margin-left: 0 !important;
+    justify-content: center;
+
+    .emundus-form {
+      margin-top: 0 !important;
+    }
+  }
+
+  .homepage #g-container-main {
+    margin-top: 0;
+  }
+
   #g-navigation .g-container #header-c {
     justify-content: center;
   }
@@ -5035,11 +5045,9 @@ screen and (max-height: 769px) {
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
 
-  .gantry.view-registration main#g-main-mainbody .login.em-formRegistrationCenter,
-  .gantry.view-registration main#g-main-mainbody .em-formRegistrationCenter:not(.componentheading),
-  .gantry.view-form.em-formRegistrationCenter main#g-main-mainbody .login.em-formRegistrationCenter,
-  .gantry.view-form.em-formRegistrationCenter main#g-main-mainbody .em-formRegistrationCenter:not(.componentheading) {
-    width: 90% !important;
+  .view-registration.em-formRegistrationCenter .emundus-form {
+     max-width: 100% !important;
+    margin-top: 0 !important;
   }
 
   .gantry #g-navigation, .gantry #g-navigation .g-container {
@@ -5048,7 +5056,7 @@ screen and (max-height: 769px) {
   }
 
   #g-navigation .g-container #header-c {
-    justify-content: center;
+    justify-content: right;
   }
 
   #g-navigation .g-container {
@@ -5126,7 +5134,6 @@ screen and (max-height: 769px) {
     }
 
     #header-a {
-      justify-content: center;
       left: 0;
     }
 
@@ -5242,7 +5249,7 @@ screen and (max-height: 769px) {
   }
 
   .gantry:not(.files-board)  #g-container-main {
-    padding: 20px;
+    padding: 0 20px;
   }
 
   /* GENERAL */

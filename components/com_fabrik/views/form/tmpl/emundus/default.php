@@ -40,7 +40,7 @@ endif;
     </div>
     <div class="mb-8">
         <?php if ($this->params->get('show-title', 1)) : ?>
-            <div class="page-header mt-10">
+            <div class="page-header mt-8">
                 <?php $title = trim(preg_replace('/^([^-]+ - )/', '', $form->label)); ?>
                 <h1 class="after-em-border after:bg-red-800"><?= JText::_($title) ?></h1>
             </div>
