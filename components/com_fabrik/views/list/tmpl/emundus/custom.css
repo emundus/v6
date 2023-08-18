@@ -132,7 +132,7 @@ font-size: 16px;
 
 /** LIST **/
 .view-list .span12 .page-header.emundus-list-page-header{
-	margin-top: 16px !important;
+	margin-top: 0 !important;
 }
 .view-list .table-striped tbody tr:nth-child(2n+1) td, .table-striped tbody tr:nth-child(2n+1) th {
 	background: transparent;

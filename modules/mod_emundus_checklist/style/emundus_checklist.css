@@ -51,6 +51,11 @@
     max-height: 1000px;
     transition: max-height 300ms linear;
 }
+
+.mod_emundus_campaign__details_file_icon{
+    margin-right: 16px;
+}
+
 .mod_emundus_checklist___content_closed{
     max-height: 0 !important;
     /* margin-top: 0 !important; */

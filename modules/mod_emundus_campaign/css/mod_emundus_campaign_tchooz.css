@@ -412,7 +412,7 @@ a.em-blue-400-color:hover {
 }
 
 .mod_emundus_campaign__details_file a{
-    color: var(--neutral-900);
+    color: var(--link-regular);
     text-decoration: underline;
     text-underline: var(--neutral-900);
     width: 100%;
@@ -421,7 +421,7 @@ a.em-blue-400-color:hover {
 }
 
 .mod_emundus_campaign__details_file a:hover {
-    color: var(--neutral-700);
+    color: var(--link-hover);
 }
 
 
@@ -453,7 +453,7 @@ a.em-blue-400-color:hover {
 
 .tchooz-single-campaign #campaign * {
     line-height: 160%;
-    color: var(--em-default-text-color-1);
+    color: var(--neutral-900);
     font-family: var(--em-applicant-font);
 }
 

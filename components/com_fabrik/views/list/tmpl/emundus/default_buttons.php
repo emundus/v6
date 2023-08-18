@@ -14,7 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 ?>
 <div class="fabrikButtonsContainer row-fluid">
-<div class="pull-left em-mt-32">
+<div class="pull-left em-mt-16">
 
 <?php if ($this->showAdd && $this->showTitle != 1) :?>
 

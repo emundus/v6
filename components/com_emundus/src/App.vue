@@ -170,7 +170,19 @@ export default {
 .view-settings #g-container-main .g-container,
 .view-file #g-container-main .g-container,
 .view-users #g-container-main .g-container{
-  width: 85%;
+  width: auto;
+  left: 38px;
+  position: relative;
+}
+
+.view-campaigns.no-layout #g-container-main,
+.view-emails.no-layout #g-container-main,
+.view-form #g-container-main,
+.view-settings #g-container-main,
+.view-file #g-container-main,
+.view-users #g-container-main {
+  padding-left: 5% !important;
+  padding-right: 5% !important;
 }
 
 @media all and (max-width: 1366px) {

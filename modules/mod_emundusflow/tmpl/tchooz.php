@@ -74,7 +74,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
 </style>
 
 <div style="padding: 0 20px">
-    <div class="flex justify-between mt-2 mod_emundus_flow___intro">
+    <div class="flex justify-between mod_emundus_flow___intro">
         <div class="flex items-center">
             <h2 class="em-mb-0-important"><?php echo $campaign_name ?></h2>
             <?php
