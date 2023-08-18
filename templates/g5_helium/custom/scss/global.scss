@@ -6344,6 +6344,10 @@ fieldset[disabled] .multiselect {
     z-index: 0 !important;
   }
 
+  .swal2-actions .goback-btn.button {
+    border-radius: var(--em-applicant-br);
+  }
+
   .em-actions-fixed {
     position: fixed;
     bottom: 0;

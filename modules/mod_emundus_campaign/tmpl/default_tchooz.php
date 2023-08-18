@@ -98,13 +98,13 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     <?php if (sizeof($campaigns) == 0 && empty($codes_filters) && empty($categories_filters) && empty($searchword)) : ?>
         <hr>
         <div class="mod_emundus_campaign__list_content--default">
-            <h2 class="em-applicant-title-font em-mb-24"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN') ?></h2>
+            <h2 class="em-applicant-title-font em-mb-16"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN') ?></h2>
             <?php if(JFactory::getUser()->guest) : ?>
                 <?php if($show_registration) : ?>
-                <h3 class="em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT') ?></h3>
+                <h3 class="em-font-weight-500"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT') ?></h3>
                 <p class="em-applicant-text-color"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_2') ?></p><br/>
                 <?php endif; ?>
-                <h3 class="em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_3') ?></h3>
+                <h3 class="em-font-weight-500"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_3') ?></h3>
                 <p class="em-applicant-text-color"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_4') ?></p>
                 <?php if (!empty($links)) : ?>
                     <div class="em-flex-row-justify-end mod_emundus_campaign__buttons em-mt-32">

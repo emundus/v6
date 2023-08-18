@@ -301,7 +301,7 @@
     button.swal2-styled.swal2-confirm {
         background: var(--blue-500);
         border-radius: 8px;
-        padding: 11px 20px;
+        padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
         color: white;
     }
 
@@ -310,7 +310,7 @@
         border: 1px solid var(--blue-500);
         border-radius: 8px;
         color: var(--blue-500);
-        padding: 11px 20px;
+        padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
     }
 
     button.swal2-styled.swal2-cancel:hover,
@@ -333,10 +333,10 @@
     button.swal2-confirm.save-btn.sauvegarder.save_continue:hover,
     button.swal2-confirm.save-btn.sauvegarder.save_continue:active,
     button.swal2-confirm.save-btn.sauvegarder.save_continue:focus {
-        background: var(--em-primary-color) !important;
+        background: var(--neutral-0) !important;
         border: 1px solid var(--em-primary-color) !important;
         border-radius: var(--em-coordinator-br);
-        color: var(--neutral-50) !important;
+        color: var(--em-primary-color) !important;
 
     }
 
@@ -345,16 +345,16 @@
         background: var(--em-secondary-color) !important;
         border: 1px solid var(--em-secondary-color) !important;
         border-radius: var(--em-coordinator-br) !important;
-        color: var(--neutral-50) !important;
+        color: var(--neutral-0) !important;
     }
 
     button.swal2-cancel.goback-btn:hover,
     button.swal2-cancel.goback-btn:active,
     button.swal2-cancel.goback-btn:focus {
-        background: var(--em-primary-color) !important;
-        border: 1px solid var(--em-primary-color) !important;
+        background: var(--neutral-0) !important;
+        border: 1px solid var(--em-secondary-color) !important;
         border-radius: var(--em-coordinator-br);
-        color: var(--neutral-50) !important;
+        color: var(--em-secondary-color) !important;
     }
 
     .swal2-content {

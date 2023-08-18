@@ -1,5 +1,5 @@
 <template>
-	<div class="com_emundus_vue em-flex-column em-flex-col-center">
+	<div class="com_emundus_vue em-flex-col-center">
 		<Attachments
 			v-if="component === 'attachments'"
 			:fnum="data.fnum"
@@ -165,7 +165,8 @@ export default {
 }
 
 .view-campaigns.no-layout #g-container-main .g-container,
-.view-campaigns.layout-addnextcampaign #g-container-main.g-container,
+.view-campaigns.layout-addnextcampaign #g-container-main .g-container,
+.view-campaigns.layout-add #g-container-main .g-container,
 .view-emails.layout-add #g-container-main .g-container,
 .view-emails.no-layout #g-container-main .g-container,
 .view-form #g-container-main .g-container,
@@ -177,6 +178,7 @@ export default {
 
 .view-campaigns.no-layout #g-container-main,
 .view-campaigns.layout-addnextcampaign #g-container-main,
+.view-campaigns.layout-add #g-container-main,
 .view-emails.layout-add #g-container-main,
 .view-emails.no-layout #g-container-main,
 .view-form #g-container-main,
