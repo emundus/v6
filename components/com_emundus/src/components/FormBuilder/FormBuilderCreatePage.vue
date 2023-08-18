@@ -223,7 +223,10 @@ export default {
 						}
 
 						return used;
-					});
+					}).catch(() => {
+            this.canUseInitialStructure = false; // if error, we can't use initial structure, in doubt
+            return true;
+          });
 				} else {
 					return used;
 				}

@@ -100,17 +100,19 @@ export default {
     {
         if (id > 0) {
             try {
-                return await client().get(baseUrl + '&task=getDocuments', {params: {pid: id}});
+                const response = await client().get(baseUrl + '&task=getDocuments', {params: {pid: id}});
+
+                return response.data;
             } catch (error) {
                 return {
                     status: false,
-                    error: error
+                    msg: error
                 };
             }
         } else {
             return {
                 status: false,
-                error: 'Missing parameter'
+                msg: 'Missing parameter'
             };
         }
     },

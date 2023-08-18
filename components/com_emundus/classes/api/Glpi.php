@@ -18,7 +18,7 @@ use classes\api\Api;
 defined('_JEXEC') or die('Restricted access');
 class Glpi extends Api
 {
-	public function __construct()
+	public function __construct($entities = array())
 	{
 		parent::__construct();
 
@@ -26,6 +26,10 @@ class Glpi extends Api
 		$this->setClient();
 		$this->setAuth();
 		$this->setHeaders();
+		if(!empty($entities))
+		{
+			$this->setEntities($entities);
+		}
 	}
 
 	public function setBaseUrl(): void
@@ -77,6 +81,35 @@ class Glpi extends Api
 		}
 
 		return $glpi_session_token;
+	}
+
+	private function setEntities($entities): void
+	{
+		if(!empty($entities))
+		{
+			$body = array();
+			array_map(function($entity) use (&$body) {
+				$body[] = array(
+					'entities_id' => $entity,
+					'is_recursive' => true
+				);
+			}, $entities);
+
+			$this->post('changeActiveEntities',json_encode($body));
+		}
+	}
+
+	public function getEntities(): array
+	{
+		$response = $this->get('getMyEntities');
+
+		$entities = array();
+		if($response['status'] == 200)
+		{
+			$entities = $response['data']->myentities;
+		}
+
+		return $entities;
 	}
 
 	public function get($url, $params = array(), $retry = true)

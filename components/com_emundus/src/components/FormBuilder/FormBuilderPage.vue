@@ -140,22 +140,14 @@ export default {
           if (response.status) {
             this.getSections();
             this.updateLastSave();
+          } else {
+            this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_CREATE_SECTION_ERROR'), this.translate(response.msg));
           }
+        }).catch(error => {
+          this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_CREATE_SECTION_ERROR'), error);
         });
       } else {
-        Swal.fire({
-          title: this.translate('COM_EMUNDUS_FORM_BUILDER_MAX_SECTION_TITLE'),
-          text: this.translate('COM_EMUNDUS_FORM_BUILDER_MAX_SECTION_TEXT'),
-          type: 'error',
-          showCancelButton: false,
-          confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
-          reverseButtons: true,
-          customClass: {
-            title: 'em-swal-title',
-            confirmButton: 'em-swal-confirm-button',
-            actions: 'em-swal-single-action'
-          },
-        });
+        this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_MAX_SECTION_TITLE'), this.translate('COM_EMUNDUS_FORM_BUILDER_MAX_SECTION_TEXT'))
       }
     },
     moveSection(sectionId, direction) {

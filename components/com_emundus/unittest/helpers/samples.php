@@ -41,7 +41,7 @@ class EmundusUnittestHelperSamples
 		define('EVALUATOR_RIGHTS', array ([ 'id' => '1', 'c' => 0, 'r' => 1, 'u' => 0, 'd' => 0, ], 1 => array ( 'id' => '4', 'c' => 1, 'r' => 1, 'u' => 0, 'd' => 0, ), 2 => array ( 'id' => '5', 'c' => 1, 'r' => 1, 'u' => 1, 'd' => 0, ), 3 => array ( 'id' => '29', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 4 => array ( 'id' => '32', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 5 => array ( 'id' => '34', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 6 => array ( 'id' => '28', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 7 => array ( 'id' => '13', 'c' => 0, 'r' => 1, 'u' => 0, 'd' => 0, ), 8 => array ( 'id' => '14', 'c' => 1, 'r' => 1, 'u' => 1, 'd' => 0, ), 9 => array ( 'id' => '10', 'c' => 1, 'r' => 1, 'u' => 1, 'd' => 0, ), 10 => array ( 'id' => '11', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 11 => array ( 'id' => '37', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 12 => array ( 'id' => '36', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 13 => array ( 'id' => '8', 'c' => 1, 'r' => 0, 'u' => 0, 'd' => 0, ), 14 => array ( 'id' => '6', 'c' => 1, 'r' => 0, 'u' => 0, 'd' => 0, ), 15 => array ( 'id' => '7', 'c' => 1, 'r' => 0, 'u' => 0, 'd' => 0, ), 16 => array ( 'id' => '27', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 17 => array ( 'id' => '31', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 18 => array ( 'id' => '35', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 19 => array ( 'id' => '18', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 20 => array ( 'id' => '9', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 21 => array ( 'id' => '16', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 22 => array ( 'id' => '15', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), ));
 	}
 
-    public function createSampleUser($profile = 9, $username = 'user.test@emundus.fr', $password = 'test1234')
+    public function createSampleUser($profile = 9, $username = 'user.test@emundus.fr', $password = 'test1234', $j_groups = [2])
     {
         $user_id = 0;
         $m_users = new EmundusModelUsers;
@@ -62,6 +62,21 @@ class EmundusUnittestHelperSamples
         }
 
         if (!empty($user_id)) {
+			if(!empty($j_groups)) {
+				foreach ($j_groups as $j_group) {
+					$query->clear()
+						->insert($db->quoteName('#__user_usergroup_map'))
+						->columns('user_id, group_id')
+						->values($user_id . ',' . $j_group);
+					try {
+						$db->setQuery($query);
+						$db->execute();
+					} catch (Exception $e) {
+						JLog::add("Failed to insert jos_user_usergroup_map" . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					}
+				}
+			}
+
             $other_param['firstname'] 		= 'Test';
             $other_param['lastname'] 		= 'USER';
             $other_param['profile'] 		= $profile;
@@ -365,6 +380,24 @@ class EmundusUnittestHelperSamples
 		}
 
 		return $newprofile;
+	}
+
+	public function addJGroup($j_group, $user_id) {
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try
+		{
+			$query->insert($db->quoteName('#__user_usergroup_map'))
+				->columns('user_id, group_id')
+				->values($user_id . ',' . $j_group);
+			$db->setQuery($query);
+			$db->execute();
+		}
+		catch (Exception $e)
+		{
+			JLog::add("Failed to insert jos_user_usergroup_map" . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
 	}
 
     public function getUnitTestFabrikForm()

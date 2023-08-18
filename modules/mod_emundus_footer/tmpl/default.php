@@ -73,23 +73,23 @@ if($applicant = !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 
         <div class="footer-rgpd-links">
         <?php if ($mod_emundus_footer_legal_info == '1') :?>
-            <p><a href="<?php echo $actualLanguage ?>/mentions-legales"><?= JText::_('MOD_EM_FOOTER_LEGAL_INFO_LINK'); ?></a></p>
+            <p><a href="<?php echo $actualLanguage ?>/<?php echo $mod_emundus_footer_legal_info_alias ?>"><?= JText::_('MOD_EM_FOOTER_LEGAL_INFO_LINK'); ?></a></p>
         <?php endif; ?>
 
          <?php if ($mod_emundus_footer_data_privacy == '1') :?>
-            <p><a href="<?php echo $actualLanguage ?>/politique-de-confidentialite-des-donnees"><?= JText::_('MOD_EM_FOOTER_DATA_PRIVACY_LINK'); ?></a></p>
+            <p><a href="<?php echo $actualLanguage ?>/<?php echo $mod_emundus_footer_data_privacy_alias ?>"><?= JText::_('MOD_EM_FOOTER_DATA_PRIVACY_LINK'); ?></a></p>
         <?php endif; ?>
 
         <?php if ($mod_emundus_footer_rights == '1') :?>
-            <p><a href="<?php echo $actualLanguage ?>/gestion-des-droits"><?= JText::_('MOD_EM_FOOTER_RIGHTS_LINK'); ?></a></p>
+            <p><a href="<?php echo $actualLanguage ?>/<?php echo $mod_emundus_footer_rights_alias ?>"><?= JText::_('MOD_EM_FOOTER_RIGHTS_LINK'); ?></a></p>
         <?php endif; ?>
 
         <?php if ($mod_emundus_footer_cookies == '1') :?>
-            <p><a href="<?php echo $actualLanguage ?>/gestion-des-cookies"><?= JText::_('MOD_EM_FOOTER_COOKIES_LINK'); ?></a></p>
+            <p><a href="<?php echo $actualLanguage ?>/<?php echo $mod_emundus_footer_cookies_alias ?>"><?= JText::_('MOD_EM_FOOTER_COOKIES_LINK'); ?></a></p>
         <?php endif; ?>
 
             <?php if ($mod_emundus_footer_accessibility== '1') :?>
-                <p><a href="<?php echo $actualLanguage ?>/accessibilite"><?= JText::_('MOD_EM_FOOTER_RGAA_LINK'); ?></a></p>
+                <p><a href="<?php echo $actualLanguage ?>/<?php echo $mod_emundus_footer_accessibility_alias ?>"><?= JText::_('MOD_EM_FOOTER_RGAA_LINK'); ?></a></p>
             <?php endif; ?>
         </div>
         </div>
