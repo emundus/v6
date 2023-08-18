@@ -252,7 +252,7 @@ class EmundusHelperUpdate
                     $db->setQuery($query);
                     $installed = $db->execute();
                 } else {
-                    echo "$element already installed.";
+                    echo " - " . $element . " already installed." . PHP_EOL ;
                     $installed = true;
                 }
             } catch (Exception $e) {
@@ -2406,7 +2406,7 @@ class EmundusHelperUpdate
                     $created = $db->execute();
                 }
             } else {
-                echo "$title module already exists.";
+                echo " - " . $title . " module already exists." . PHP_EOL ;
                 $created = true;
             }
         } catch (Exception $e) {
@@ -2859,6 +2859,47 @@ class EmundusHelperUpdate
 
 		return $result;
 	}
+
+    /**
+     * Inserts content into a file if it doesn't already exist.
+     *
+     * @param string $file   The path to the file.
+     * @param string $insert The content to insert.
+     *
+     * @return bool True if insertion is successful or the content already exists, false otherwise.
+     *
+     * @since version 1.37.0
+     */
+    public static function insertIntoFile($file, $insert)
+    {
+        echo " - Check and update the {$file} file" . PHP_EOL;
+
+        if (empty($file)) {
+            echo "ERROR: Please specify a file." . PHP_EOL;
+        } elseif (!file_exists($file)) {
+            echo "ERROR: The file {$file} does not exist." . PHP_EOL;
+        } elseif (!is_writable($file)) {
+            echo "ERROR: Please specify a writable file ({$file})" . PHP_EOL;
+        } elseif (empty($insert)) {
+            echo "ERROR: Please specify an insert." . PHP_EOL;
+        } else {
+            $file_content = file_get_contents($file);
+
+            if (strpos($file_content, $insert) === false) {
+                $file_content .= PHP_EOL . $insert;
+                if (file_put_contents($file, $file_content) !== false) {
+                    return true;
+                } else {
+                    echo "ERROR: Failed to write content to the file." . PHP_EOL;
+                    return false;
+                }
+            }
+            return true; // The content already exists.
+        }
+
+        return false;
+    }
+}
 
 	public static function updateNewColors() {
 		$db = JFactory::getDbo();
