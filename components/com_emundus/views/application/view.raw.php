@@ -79,10 +79,12 @@ class EmundusViewApplication extends JViewLegacy {
                         $m_email = new EmundusModelEmails();
                         $tag = array(
                             'FNUM' => $fnum,
-                            'CAMPAIGN_NAME' => $fnum,
-                            'APPLICATION_STATUS' => $fnum,
+                            'CAMPAIGN_NAME' => $fnumInfos['label'],
+                            'CAMPAIGN_LABEL' => $fnumInfos['label'],
+                            'APPLICATION_STATUS' => $fnumInfos['value'],
                             'APPLICATION_TAGS' => $fnum,
-                            'APPLICATION_PROGRESS' => $fnum
+                            'APPLICATION_PROGRESS' => $fnumInfos['form_progress'],
+                            'ATTACHMENT_PROGRESS' => $fnumInfos['attachment_progress']
                         );
 
                         $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum, '', $program->synthesis);
@@ -319,7 +321,7 @@ class EmundusViewApplication extends JViewLegacy {
                         EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 37, 'r', 'COM_EMUNDUS_ACCESS_LOGS_READ');
 						$m_logs = new EmundusModelLogs();
 
-                        $fileLogs = $m_logs->getActionsOnFnum($fnum, null, null, ["c", "u", "d"]);
+                        $fileLogs = $m_logs->getActionsOnFnum($fnum, null, null, ["c", "r", "u", "d"]);
 
                         foreach ($fileLogs as $key => $log) {
                             $log->timestamp = EmundusHelperDate::displayDate($log->timestamp);

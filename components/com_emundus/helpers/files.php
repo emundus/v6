@@ -1845,6 +1845,13 @@ class EmundusHelperFiles
             }
 
             $filters .= '>'.JText::_("JYES").'</option>
+                <option value="2"';
+
+            if (@$newsletter == 2) {
+                $filters .= ' selected';
+            }
+
+            $filters .= '>'.JText::_("JNO").'</option>
                         </select>
                     </div>
                 </div>';
@@ -2210,17 +2217,32 @@ class EmundusHelperFiles
             $lastitem   = 0;
             if ($items) {
                 foreach ($items as $i => $item) {
-                    $note = explode('|', $item->note);
-                    if (count($note) > 1) {
-                        if (EmundusHelperAccess::asAccessAction($note[0], $note[1], $user->id, $fnum)) {
-                            $actions[$note[0]]['multi'] = @$note[2];
-                            $actions[$note[0]]['grud'] = @$note[1];
-                            $item->action = $actions[$note[0]];
-                        } else {
-                            unset($items[$i]);
-                            continue;
-                        }
-                    }
+					$access_actions = explode(',', $item->note);
+	                $has_access = true;
+
+					if (!empty($access_actions)) {
+
+						foreach($access_actions as $access_action) {
+							list($action, $crud, $multi) = explode('|', $access_action);
+
+							if (!empty($action) && !empty($crud)) {
+								$has_access = false;
+
+								if (EmundusHelperAccess::asAccessAction($action, $crud, $user->id, $fnum)) {
+									$actions[$action]['multi'] = !empty($multi) ? $multi : 0;
+									$actions[$action]['grud'] = $crud;
+									$item->action = $actions[$action];
+									$has_access = true;
+									break;
+								}
+							}
+						}
+
+						if (!$has_access) {
+							unset($items[$i]);
+							continue;
+						}
+					}
 
                     if (($start && $start > $item->level) || ($end && $item->level > $end) || (!$showAll && $item->level > 1 && !in_array($item->parent_id, $path)) || ($start > 1 && !in_array($item->tree[$start-2], $path))) {
                         unset($items[$i]);
@@ -3484,14 +3506,21 @@ class EmundusHelperFiles
 									$query['q'] .= ' and jecc.fnum NOT IN (SELECT cc.fnum FROM jos_emundus_campaign_candidature AS cc LEFT JOIN jos_emundus_tag_assoc as ta ON ta.fnum = cc.fnum WHERE ta.id_tag IN (' . implode(',', $not_in) . ')) ';
 								}
 
-								if (!empty($value)) {
-									$query['q'] .= ' and eta.id_tag IN ('.implode(',', $value).') ';
-								}
-							}
-						}
-						break;
-
-					case 'published':
+                                if (!empty($value)) {
+                                    $query['q'] .= ' and eta.id_tag IN ('.implode(',', $value).') ';
+                                }
+                            }
+                        }
+                        break;
+                    case 'newsletter' :
+                       if ($value[0] == "1") {
+                           $query['q'] .= ' and eu.newsletter LIKE \'["1"]\' OR eu.newsletter = 1 ';
+                       }
+                       elseif ($value[0] == "2") {
+                           $query['q'] .= ' and eu.newsletter LIKE \'[""]\' OR eu.newsletter = \'\' ';
+                       }
+                       break;
+                    case 'published':
 						if ($value == "-1") {
 							$query['q'] .= ' and jecc.published=-1 ';
 						} elseif ($value == 0) {

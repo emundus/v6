@@ -50,10 +50,12 @@ class EmundusModelFormbuilder extends JModelList {
     }
 
     /** TRANSLATION SYSTEM */
-    public function translate($key,$values,$reference_table = '',$id = '',$reference_field = ''){
+    public function translate($key, $values, $reference_table = '', $id = '', $reference_field = '') {
         $languages = JLanguageHelper::getLanguages();
         foreach ($languages as $language) {
-            $this->m_translations->insertTranslation($key,$values[$language->sef], $language->lang_code,'','override',$reference_table,$id,$reference_field);
+	        if (isset($values[$language->sef])) {
+		        $this->m_translations->insertTranslation($key, $values[$language->sef], $language->lang_code, '', 'override', $reference_table, $id, $reference_field);
+	        }
         }
         return $key;
     }
@@ -1066,16 +1068,22 @@ class EmundusModelFormbuilder extends JModelList {
 
                     $db->setQuery($query);
                     $results = $db->loadObjectList();
-                    $orderings = [];
-                    foreach (array_values($results) as $result) {
-                        if (!in_array($result->ordering, $orderings)) {
-                            $orderings[] = intval($result->ordering);
-                        }
-                    }
 
-                    $columns = array('form_id', 'group_id', 'ordering',);
-                    $order = array_values($orderings)[strval(sizeof($orderings) - 1)] + 1;
-                    $values = array($fid, $groupid, $order,);
+					if (!empty($results)) {
+						$orderings = [];
+						foreach (array_values($results) as $result) {
+							if (!in_array($result->ordering, $orderings)) {
+								$orderings[] = intval($result->ordering);
+							}
+						}
+
+						$order = array_values($orderings)[strval(sizeof($orderings) - 1)] + 1;
+					} else {
+						$order = 1;
+					}
+
+	                $columns = array('form_id', 'group_id', 'ordering',);
+	                $values = array($fid, $groupid, $order);
 
                     $query->clear()
                         ->insert($db->quoteName('#__fabrik_formgroup'))
@@ -1102,6 +1110,7 @@ class EmundusModelFormbuilder extends JModelList {
                     );
                 }
             } catch(Exception $e){
+				error_log($e->getMessage());
                 JLog::add('component/com_emundus/models/formbuilder | Error at creating a group for fabrik_form ' . $fid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             }
         }

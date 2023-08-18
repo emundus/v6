@@ -115,6 +115,14 @@ hr.footer-separation {
 /* MOBILE */
 @media all and (max-width: 479px) {
 
+    .em-container-footer-cand {
+        flex-direction: column-reverse;
+    }
+
+    hr.footer-separation {
+        display: none;
+    }
+
     .footer-rgpd {
         align-items: center;
         display: flex;

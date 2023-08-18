@@ -16,10 +16,11 @@ if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
 }
 */
 jimport('joomla.application.component.model');
-require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS. 'helpers' . DS . 'files.php');
-require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS. 'helpers' . DS . 'list.php');
-require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+require_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
+require_once(JPATH_SITE.'/components/com_emundus/helpers/files.php');
+require_once(JPATH_SITE.'/components/com_emundus/helpers/list.php');
+require_once(JPATH_SITE.'/components/com_emundus/models/logs.php');
+require_once(JPATH_SITE.'/components/com_emundus/models/users.php');
 
 /**
  * Class EmundusModelFiles
@@ -331,6 +332,9 @@ class EmundusModelFiles extends JModelLegacy
         if (in_array('unread_messages', $em_other_columns)) {
             $this->_elements_default[] = ' COUNT(`m`.`message_id`) AS `unread_messages` ';
         }
+        if (in_array('commentaire', $em_other_columns)) {
+            $this->_elements_default[] = ' COUNT(`ecom`.`id`) AS `commentaire` ';
+        }
         if (empty($col_elt)) {
             $col_elt = array();
         }
@@ -424,6 +428,9 @@ class EmundusModelFiles extends JModelLegacy
 
         if (in_array('overall', $em_other_columns)) {
             $can_be_ordering[] = 'overall';
+        }
+        if (in_array('commentaire', $em_other_columns)) {
+            $can_be_ordering[] = 'commentaire';
         }
 
         if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)) {
@@ -635,6 +642,9 @@ class EmundusModelFiles extends JModelLegacy
 	        $already_joined_tables['ec'] = 'jos_emundus_chatroom';
 	        $already_joined_tables['m'] = 'jos_messages';
         }
+        if (in_array('commentaire', $em_other_columns)) {
+            $lastTab[] = ['#__emundus_comments', 'jos_emundus_comments'];
+        }
 
         if (!empty($this->_elements)) {
 	        $h_files = new EmundusHelperFiles();
@@ -704,6 +714,10 @@ class EmundusModelFiles extends JModelLegacy
             $query.= ' LEFT JOIN #__emundus_chatroom as ec on ec.fnum = jecc.fnum
             LEFT JOIN #__messages as m on m.page = ec.id AND m.state = 0 AND m.page IS NOT NULL ';
         }
+        if (in_array('commentaire', $em_other_columns)) {
+            $query.= ' LEFT JOIN #__emundus_comments as ecom on ecom.fnum = jecc.fnum ';
+        }
+
 
 	    $q = $this->_buildWhere($already_joined_tables);
         if (!empty($leftJoin)) {
@@ -920,7 +934,7 @@ class EmundusModelFiles extends JModelLegacy
                  INNER JOIN jos_fabrik_groups AS groupe ON element.group_id = groupe.id
                  INNER JOIN jos_fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
                  INNER JOIN jos_fabrik_lists AS tab ON tab.form_id = formgroup.form_id
-                 INNER JOIN jos_menu AS menu ON tab.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("listid=",menu.link)+7, 3), "&", 1)
+                 INNER JOIN jos_menu AS menu ON tab.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("listid=",menu.link)+7, 4), "&", 1)
                  INNER JOIN jos_emundus_setup_profiles AS profile ON profile.menutype = menu.menutype
             WHERE tab.published = 1 AND element.published=1 AND element.hidden=0 AND element.label!=" " AND element.label!=""
             ORDER BY menu.ordering, formgroup.ordering, element.ordering';
@@ -942,7 +956,7 @@ class EmundusModelFiles extends JModelLegacy
                  INNER JOIN jos_fabrik_groups AS groupe ON element.group_id = groupe.id
                  INNER JOIN jos_fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
                  INNER JOIN jos_fabrik_lists AS tab ON tab.form_id = formgroup.form_id
-                 INNER JOIN jos_menu AS menu ON tab.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("listid=",menu.link)+7, 3), "&", 1)
+                 INNER JOIN jos_menu AS menu ON tab.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("listid=",menu.link)+7, 4), "&", 1)
                  INNER JOIN jos_emundus_setup_profiles AS profile ON profile.menutype = menu.menutype
             WHERE tab.published = 1 AND element.published=1 AND element.hidden=0 AND element.label!=" " AND element.label!=""
             ORDER BY menu.ordering, formgroup.ordering, element.ordering';
@@ -1393,9 +1407,7 @@ class EmundusModelFiles extends JModelLegacy
                     $user = JFactory::getUser()->id;
                 }
 
-                $now = new DateTime();
-                $now->setTimezone(new DateTimeZone('UTC'));
-                $now = $now->format('Y-m-d H:i:s');
+                $now = EmundusHelperDate::getNow();
 
                 $query_associated_tags = $db->getQuery(true);
                 $query ="insert into #__emundus_tag_assoc (fnum, id_tag, date_time, user_id) VALUES ";
@@ -1762,12 +1774,13 @@ class EmundusModelFiles extends JModelLegacy
     public static function getFnumInfos($fnum) {
         try {
             $db = JFactory::getDBO();
-            $query = 'select u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, ss.value, ss.class, c.*, cc.campaign_id
-                        from #__emundus_campaign_candidature as cc
-                        left join #__emundus_setup_campaigns as c on c.id = cc.campaign_id 
-                        left join #__users as u on u.id = cc.applicant_id
-                        left join #__emundus_setup_status as ss on ss.step = cc.status
-                        where cc.fnum like '.$db->Quote($fnum);
+            $query = $db->getQuery(true);
+            $query->select('u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, cc.form_progress, cc.attachment_progress, ss.value, ss.class, c.*, cc.campaign_id')
+                ->from($db->quoteName('#__emundus_campaign_candidature','cc'))
+                ->leftJoin($db->quoteName('#__emundus_setup_campaigns','c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('cc.campaign_id'))
+                ->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('u.id').' = '.$db->quoteName('cc.applicant_id'))
+                ->leftJoin($db->quoteName('#__emundus_setup_status','ss').' ON '.$db->quoteName('ss.step').' = '.$db->quoteName('cc.status'))
+                ->where($db->quoteName('cc.fnum').' LIKE '.$db->quote($fnum));
             $db->setQuery($query);
             $fnumInfos = $db->loadAssoc();
 

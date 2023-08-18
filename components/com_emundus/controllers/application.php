@@ -385,9 +385,21 @@ class EmundusControllerApplication extends JControllerLegacy
                 $i=0;
 
                 foreach($menus as $k => $menu) {
-                    $action = explode('|', $menu['note']);
-                    if (EmundusHelperAccess::asAccessAction($action[0], $action[1], $user->id, $fnum)) {
-                        if($action[0] == 36){
+					$access = false;
+					$actions_for_access = explode(',', $menu['note']);
+					
+					foreach ($actions_for_access as $action_for_access) {
+						$action = explode('|', $action_for_access);
+						$action_id = $action[0];
+						
+						if (EmundusHelperAccess::asAccessAction($action[0], $action[1], $user->id, $fnum)) {
+							$access = true;
+							break;
+						}
+					}
+
+                    if ($access) {
+                        if($action_id == 36){
                             require_once (JPATH_SITE.'/components/com_emundus/models/messenger.php');
 
                             $messenger = new EmundusModelMessenger;
@@ -396,7 +408,7 @@ class EmundusControllerApplication extends JControllerLegacy
                                 $menu['notifications'] = $messenger->getNotificationsByFnum($fnum);
                             }
                         }
-                        if($action[0] == 10){
+                        if($action_id == 10){
                             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
                             $m_files = new EmundusModelFiles;
                             $notifications_comments = sizeof($m_files->getCommentsByFnum([$fnum]));

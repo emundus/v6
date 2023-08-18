@@ -66,6 +66,8 @@ class EmundusViewFiles extends JViewLegacy
 		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'export.php');
 		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'users.php');
 		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'evaluation.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+
 
 		$menu = JFactory::getApplication()->getMenu();
 		$current_menu = $menu->getActive();
@@ -307,12 +309,14 @@ class EmundusViewFiles extends JViewLegacy
 								$data[0]['attachment_progress'] = JText::_('COM_EMUNDUS_ATTACHMENT_PROGRESS');
 								$colsSup['attachment_progress'] = array();
 								break;
-
                             case 'unread_messages':
                                 $data[0]['unread_messages'] = JText::_('COM_EMUNDUS_UNREAD_MESSAGES');
                                 $colsSup['unread_messages'] = array();
                                 break;
-
+                            case 'commentaire':
+                                $data[0]['commentaire'] = JText::_('COM_EMUNDUS_COMMENTAIRE');
+                                $colsSup['commentaire'] = array();
+                                break;
                             case 'module':
 								// Get every module without a positon.
 								$mod_emundus_custom = array();
@@ -356,7 +360,7 @@ class EmundusViewFiles extends JViewLegacy
                                 $userObj->user = JFactory::getUser((int)$user['applicant_id']);
 								$userObj->user->name = $user['name'];
 								$line['fnum'] = $userObj;
-							} elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'applicant_id' || $key == 'campaign_id' || $key == 'unread_messages') {
+							} elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'applicant_id' || $key == 'campaign_id' || $key == 'unread_messages' || $key == 'commentaire') {
 								continue;
 							} elseif (isset($elements) && in_array($key, array_keys($elements))) {
 								$userObj->val 			= $value;
@@ -439,6 +443,12 @@ class EmundusViewFiles extends JViewLegacy
                         }
                     }
 
+                    if(isset($colsSup['commentaire'])) {
+                        foreach($fnumArray as $fnum) {
+                            $notifications_comments = sizeof($m_files->getCommentsByFnum([$fnum]));
+                            $colsSup['commentaire'][$fnum] = '<p class="messenger__notifications_counter">'. $notifications_comments .'</p> ';
+                        }
+                    }
 
 					if (!empty($mod_emundus_custom)) {
 						foreach ($mod_emundus_custom as $key => $module) {
