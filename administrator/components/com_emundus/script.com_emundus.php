@@ -2259,7 +2259,17 @@ structure:
 				$xml_file = JPATH_SITE . '/templates/g5_helium/templateDetails.xml';
 				$xml      = simplexml_load_file($xml_file);
 				$positions = $xml->xpath('//extension/positions');
-				$positions[0]->addChild('position', 'emundus_filters');
+				// Check if position emundus_filters exist
+				$exist = false;
+				foreach ($positions[0]->children() as $position) {
+					if ($position == 'emundus_filters') {
+						$exist = true;
+					}
+				}
+				if (!$exist)
+				{
+					$positions[0]->addChild('position', 'emundus_filters');
+				}
 				$xml->asXML($xml_file);
 
 			}
