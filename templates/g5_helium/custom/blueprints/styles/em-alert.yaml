@@ -1,0 +1,90 @@
+name: Alerts
+description: Alerts
+type: core
+
+form:
+  fields:
+    error-background-color:
+      type: input.colorpicker
+      label: Alert error background color
+      default: "#fae9e9"
+    error-color:
+      type: input.colorpicker
+      label: Alert error text color
+      default: "#520105"
+    error-icon-color:
+      type: input.colorpicker
+      label: Alert error icon color
+      default: "#A60E15"
+    error-border-width:
+      type: input.text
+      label: Alert error border width
+      default: "1px"
+    error-border-color:
+      type: input.colorpicker
+      label: Alert error border color
+      default: "rgba(255, 255, 255, 0)"
+    warning-background-color:
+      type: input.colorpicker
+      label: Alert warning background color
+      default: "#FFF6DE"
+    warning-color:
+      type: input.colorpicker
+      label: Alert warning text color
+      default: "#563A04"
+    warning-icon-color:
+      type: input.colorpicker
+      label: Alert warning icon color
+      default: "#B38405"
+    warning-border-width:
+      type: input.text
+      label: Alert warning border width
+      default: "1px"
+    warning-border-color:
+      type: input.colorpicker
+      label: Alert warning border color
+      default: "rgba(255, 255, 255, 0)"
+    info-background-color:
+      type: input.colorpicker
+      label: Alert info background color
+      default: "#EBEEFA"
+    info-color:
+      type: input.colorpicker
+      label: Alert info text color
+      default: "#232B4F"
+    info-icon-color:
+      type: input.colorpicker
+      label: Alert info icon color
+      default: "#525B85"
+    info-border-width:
+      type: input.text
+      label: Alert info border width
+      default: "1px"
+    info-border-color:
+      type: input.colorpicker
+      label: Alert info border color
+      default: "rgba(255, 255, 255, 0)"
+    success-background-color:
+      type: input.colorpicker
+      label: Alert success background color
+      default: "#EAF3E8"
+    success-color:
+      type: input.colorpicker
+      label: Alert success text color
+      default: "#02300C"
+    success-icon-color:
+      type: input.colorpicker
+      label: Alert success icon color
+      default: "#2D871D"
+    success-border-width:
+      type: input.text
+      label: Alert success border width
+      default: "1px"
+    success-border-color:
+      type: input.colorpicker
+      label: Alert success border color
+      default: "rgba(255, 255, 255, 0)"
+    modal-padding:
+      type: input.text
+      label: Modal padding
+      default: "32px"

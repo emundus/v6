@@ -18,7 +18,7 @@ $current_user = JFactory::getUser();
                         </div>
                     </div>
                 </div>
-                <h3 class="em-h3 em-mb-32 em-mt-24"><?= JText::_('COM_EMUNDUS_MAIL_SEND') ?></h3>
+                <h3 class="em-mb-32 em-mt-24"><?= JText::_('COM_EMUNDUS_MAIL_SEND') ?></h3>
                 <p class="instructions"><?= JText::sprintf( 'COM_EMUNDUS_ACCESS_PLATFORM', $this->user_email ); ?></p>
                 <div class="resend em-mt-48">
                     <p><?= JText::_('COM_EMUNDUS_MAIL_NOT_RECEIVE_DESC'); ?>

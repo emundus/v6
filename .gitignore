@@ -1,5 +1,6 @@
 /.gitignore.*
 .idea
+!.idea/runConfigurations
 .scannerwork
 workspace.xml
 /cache/*
@@ -140,3 +141,7 @@ components/com_eventbooking/fields.xml
 /components/com_fabrik/js/table_*.js
 /components/com_fabrik/js/viz_*.js
 /components/com_fabrik/js/details_*.js
+
+## tailwind ##
+node_modules
+custom_variables.js

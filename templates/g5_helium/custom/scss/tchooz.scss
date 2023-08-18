@@ -15,40 +15,6 @@
 }
 
 /* BUTTONS */
-.em-primary-button{
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  padding: 8px 20px;
-  border-radius: var(--em-border-radius);
-  border: unset;
-  height: 40px;
-  color: white;
-  background-color: var(--main-500);
-  border: solid 1px transparent;
-  font-family: var(--font);
-
-  &:hover {
-    background-color: white;
-    color: var(--main-500);
-    border: 1px solid var(--main-500);
-    text-decoration: none;
-
-    .material-icons {
-      color: var(--main-500) !important;
-    }
-  }
-
-  .material-icons {
-    color: $white;
-  }
-}
-
-.em-primary-disabled{
-  background-color: $main-100;
-}
 
 .em-applicant-primary-button{
   display: flex;
@@ -56,43 +22,49 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 0 $p-16;
-  border-radius: var(--em-applicant-border-radius);
+  padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
+  border-radius: var(--em-applicant-br);
   border: unset;
-  height: 40px;
-  color: white;
-  background-color: $base-secondary-color;
-  border: solid 1px transparent;
+  color: var(--neutral-0);
+  background-color: var(--em-primary-color) !important;
+  border: solid 1px var(--em-primary-color);
+  font-size: var(--em-applicant-font-size);
 
-  &:hover {
-    background-color: white;
-    color: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+  &:hover, &:active, &:focus {
+    background-color: var(--neutral-0) !important;
+    color: var(--em-primary-color);
+    border: 1px solid var(--em-primary-color);
     text-decoration: none;
 
     .material-icons {
-      color: $base-secondary-color !important;
+      color: var(--em-primary-color) !important;
     }
   }
 
   .material-icons {
-    color: $white;
+    color: var(--white);
   }
 }
 
 .em-secondary-button{
+  font-size: var(--em-coordinator-font-size);
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 0 $p-16;
-  border-radius: var(--em-border-radius);
-  border: solid 1px var(--neutral-200);
-  height: 40px;
+  padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
+  border-radius: var(--em-coordinator-br);
+  border: solid 1px var(--em-coordinator-secondary-color);
   background: transparent;
-  color: $night-blue;
-  font-family: var(--font);
+  color: var(--em-coordinator-secondary-color);
+  font-family: var(--em-coordinator-font);
+  &:hover {
+    background-color: var(--em-coordinator-secondary-color) !important;
+    color: var(--neutral-0);
+    border: 1px solid var(--em-coordinator-secondary-color);
+    text-decoration: none;
+  }
 }
 
 .em-applicant-secondary-button{
@@ -101,34 +73,40 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 0 $p-16;
-  border-radius: var(--em-applicant-border-radius);
-  border: solid 1px $neutral-300;
-  height: 40px;
+  padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
+  border-radius: var(--em-applicant-br);
+  border: solid 1px var(--em-secondary-color);
   background: transparent;
-  color: $night-blue;
+  color: var(--em-secondary-color);
+
+  &:hover {
+    background-color: var(--em-secondary-color) !important;
+    color: var(--neutral-0);
+    border: 1px solid var(--em-secondary-color);
+    text-decoration: none;
+  }
 }
 
 .em-tertiary-button{
+  font-size: var(--em-coordinator-font-size);
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 0 $p-16;
-  border-radius: var(--em-border-radius);
+  padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
+  border-radius: var(--em-coordinator-br);
   border: unset;
-  height: 40px;
   background: transparent;
-  color: $night-blue;
+  color: var(--em-coordinator-tiertiary-color);
 }
 
 .em-disabled-button {
-  background: $neutral-300;
-  border: 1px solid $neutral-300;
-  border-radius: var(--em-applicant-border-radius);
-  padding: 8px 12px;
-  color: $neutral-600;
+  background: var(--neutral-300);
+  border: 1px solid var(--neutral-300);
+  border-radius: var(--em-applicant-br);
+  padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
+  color: var(--neutral-600);
   cursor: unset;
 }
 
@@ -151,10 +129,10 @@
   justify-content: center;
   background: transparent;
   border: 1px solid transparent;
-  border-radius: var(--em-border-radius);
+  border-radius: var(--em-coordinator-br);
   padding: 6px 20px;
-  color: $neutral-900;
-  font-family: var(--font);
+  color: var(--neutral-900);
+  font-family: var(--em-coordinator-font);
 }
 
 .em-back-button:focus{
@@ -182,11 +160,11 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  padding: 0px;
+  padding: 0;
   width: 24px;
   height: 24px;
 
-  background: var(--neutral-50);
+  background: var(--neutral-0);
   border: 1px solid transparent;
   border-radius: 4px;
 
@@ -262,7 +240,7 @@ button[class ^= 'em-']{
 .em-editable-content{
   caret-color: var(--main-500);
   &:focus{
-    border: solid 1px $neutral-500;
+    border: solid 1px var(--neutral-500);
     border-radius: 5px;
   }
 }
@@ -395,7 +373,7 @@ button[class ^= 'em-']{
 }
 
 input:checked + .em-slider {
-  background-color: $em-green;
+  background-color: var(--em-green);
 
   &:before {
     -webkit-transform: translateX(32px);
@@ -633,6 +611,12 @@ input:focus + .em-slider {
   grid-template-columns: repeat(1, 1fr);
 }
 
+.em-grid-small {
+  display: grid;
+  grid-gap: 4px;
+  grid-template-columns: repeat(1, 1fr);
+}
+
 .em-grid-3-2-1{
   display: grid;
   grid-gap: 12px;
@@ -702,12 +686,12 @@ input:focus + .em-slider {
 }
 .em-hover-blue-500{
   &:hover{
-    color: $blue-500;
+    color: var(--blue-500);
   }
 }
 .em-hover-background-neutral-300{
   &:hover{
-    background: $neutral-300;
+    background: var(--neutral-300);
   }
 }
 
@@ -779,9 +763,7 @@ input:focus + .em-slider {
   max-width: 1200px;
 }
 
-.em-w-auto{
-  width: auto;
-}
+
 
 .em-w-75rem{
   width: 75rem;
@@ -838,61 +820,72 @@ input:focus + .em-slider {
   color: white;
 }
 .em-green-color{
-  color: $em-green;
+  color: var(--em-green);
 }
+
+.em-form-success-color{
+  color: var(--em-form-success-color);
+}
+.em-form-error-color{
+  color: var(--em-form-error-color);
+}
+
 .em-main-100-color{
-  color: $main-100;
+  color: var(--main-100);
 }
 .em-main-400-color{
-  color: $main-400;
+  color: var(--main-400);
 }
 .em-main-500-color{
-  color: var(--main-500) !important;
+  color: var(--em-coordinator-primary-color) !important;
 }
 .em-yellow-500-color{
-  color: $yellow-500;
+  color: var(--orange-500);
+}
+.em-yellow-600-color{
+  color: var(--yellow-600);
 }
 .em-blue-color{
-  color: $em-blue;
+  color: var(--em-blue);
 }
 .em-blue-300-color{
-  color: $blue-300;
+  color: var(--blue-300);
 }
 .em-blue-400-color{
-  color: $blue-400;
+  color: var(--blue-400);
 }
 .em-blue-500-color{
-  color: $blue-500;
+  color: var(--blue-500);
 }
 .em-gray-color{
-  color: $grey;
+  color: var(--grey);
 }
 .em-neutral-300-color{
-  color: $neutral-300;
+  color: var(--neutral-300);
 }
 .em-neutral-700-color{
-  color: $neutral-700;
+  color: var(--neutral-700);
 }
 .em-neutral-800-color{
-  color: $neutral-800;
+  color: var(--neutral-800);
 }
 .em-text-neutral-600{
-  color: $neutral-600;
+  color: var(--neutral-600);
 }
 .em-text-neutral-500{
-  color: $neutral-500;
+  color: var(--neutral-500);
 }
 .em-text-neutral-300{
-  color: $neutral-300;
+  color: var(--neutral-300);
 }
 .em-text-neutral-900{
-  color: $neutral-900;
+  color: var(--neutral-900);
 }
 .em-text-neutral-800{
-  color: $neutral-800;
+  color: var(--neutral-800);
 }
 .em-red-500-color{
-  color: $red-500;
+  color: var(--red-500);
 }
 
 .em-dark-blue-500-color{
@@ -900,21 +893,21 @@ input:focus + .em-slider {
 }
 
 .em-applicant-text-color {
-  color: var(--em-applicant-text-color);
+  color: var(--em-default-text-color-1);
 }
 
 .em-applicant-title-color {
-  color: var(--em-applicant-title-color);
+  color: var(--em-default-title-color-1);
 }
 
 .em-green-bg{
-  background: $em-green;
+  background: var(--em-green);
 }
 .em-blue-bg{
-  background: $em-blue;
+  background: var(--em-blue);
 }
 .em-gray-bg{
-  background: $grey;
+  background: var(--grey);
 }
 .em-lightgray-bg{
   background: #F5F6F6;
@@ -929,16 +922,16 @@ input:focus + .em-slider {
   background: var(--main-300);
 }
 .em-bg-main-500{
-  background: var(--main-500);
+  background: var(--em-coordinator-primary-color);
 }
 .em-bg-main-900{
-  background: $main-900;
+  background: var(--main-900);
 }
 .em-bg-neutral-100{
-  background: $neutral-100;
+  background: var(--neutral-100);
 }
 .em-bg-neutral-200{
-  background: $neutral-200;
+  background: var(--neutral-200);
 }
 .em-bg-transparent{
   background: transparent;
@@ -1034,19 +1027,19 @@ input:focus + .em-slider {
 }
 
 .em-pr-4{
-  padding-right: $p-4;
+  padding-right: var(--p-4);
 }
 .em-pl-4{
-  padding-left: $p-4;
+  padding-left: var(--p-4);
 }
 .em-pr-8{
-  padding-right: $p-8;
+  padding-right: var(--p-8);
 }
 .em-pr-16{
   padding-right: 16px;
 }
 .em-pl-8{
-  padding-left: $p-8;
+  padding-left: var(--p-8);
 }
 .em-pl-16{
   padding-left: 16px;
@@ -1061,10 +1054,10 @@ input:focus + .em-slider {
   margin-right: 12px;
 }
 .em-mr-16{
-  margin-right: $m-16;
+  margin-right: var(--m-16);
 }
 .em-mr-24{
-  margin-right: $m-24;
+  margin-right: var(--m-24);
 }
 .em-mr-32{
   margin-right: 32px;
@@ -1088,7 +1081,7 @@ input:focus + .em-slider {
   margin-left: 22px;
 }
 .em-ml-24{
-  margin-left: $m-24;
+  margin-left: var(--m-24);
 }
 .em-ml-28{
   margin-left: 28px;
@@ -1117,28 +1110,28 @@ input:focus + .em-slider {
   margin-top: 4px;
 }
 .em-mt-8{
-  margin-top: $m-8;
+  margin-top: var(--m-8);
 }
 .em-mt-12{
   margin-top: 12px;
 }
 .em-mt-16{
-  margin-top: $m-16;
+  margin-top: var(--m-16);
 }
 .em-mt-24{
-  margin-top: $m-24;
+  margin-top: var(--m-24);
 }
 .em-mt-32{
-  margin-top: $m-32;
+  margin-top: var(--m-32);
 }
 .em-mt-48{
-  margin-top: $m-48;
+  margin-top: var(--m-48);
 }
 .em-mt-64{
   margin-top: 64px;
 }
 .em-mt-80{
-  margin-top: $m-80;
+  margin-top: var(--m-80);
 }
 .em-mb-0{
   margin-bottom: 0;
@@ -1150,19 +1143,19 @@ input:focus + .em-slider {
   margin-bottom: 4px;
 }
 .em-mb-8{
-  margin-bottom: $m-8;
+  margin-bottom: var(--m-8);
 }
 .em-mb-12{
   margin-bottom: 12px;
 }
 .em-mb-16{
-  margin-bottom: $m-16;
+  margin-bottom: var(--m-16);
 }
 .em-mb-24{
   margin-bottom: 24px;
 }
 .em-mb-32{
-  margin-bottom: $m-32;
+  margin-bottom: var(--m-32);
 }
 .em-mb-44{
   margin-bottom: 44px;
@@ -1171,7 +1164,7 @@ input:focus + .em-slider {
   margin-bottom: 64px;
 }
 .em-divider{
-  background: $neutral-300;
+  background: var(--neutral-300);
   margin-top: 16px;
   margin-bottom: 16px;
 }
@@ -1263,46 +1256,52 @@ input:focus + .em-slider {
   border-radius: 8px;
 }
 .em-border-neutral-400{
-  border: 1px solid $neutral-400;
+  border: 1px solid var(--neutral-400);
   box-sizing: border-box;
 }
 .em-border-neutral-300{
-  border: 1px solid $neutral-300;
+  border: 1px solid var(--neutral-300);
   box-sizing: border-box;
-  border-radius: 4px;
+}
+.em-border-neutral-600{
+  border: 1px solid var(--neutral-600);
+  box-sizing: border-box;
 }
 .em-border-left-neutral-700{
-  border-left: solid 2px $neutral-700;
+  border-left: solid 2px var(--neutral-700);
 }
 .em-border-left-yellow-500{
-  border-left: solid 2px $yellow-500;
+  border-left: solid 2px var(--orange-500);
 }
 .em-border-main-500 {
-  border: 1px solid var(--main-500);
+  border: 1px solid var(--em-coordinator-primary-color);
 
   &.important {
-    border: 1px solid var(--main-500) !important;
+    border: 1px solid var(--em-coordinator-primary-color) !important;
   }
 }
 .em-border-left-main-500{
-  border-left: solid 2px var(--main-500);
+  border-left: solid 2px var(--em-coordinator-primary-color);
 }
 
 .em-border-bottom-main-500 {
-  border-bottom: solid 1px $main-500;
+  border-bottom: solid 1px var(--em-coordinator-primary-color);
 }
 
+.em-border-bottom-coordinator {
+  border-bottom: solid 1px var(--em-coordinator-primary-color);
+}
 .em-border-left-red-500{
-  border-left: solid 2px $red-500;
+  border-left: solid 2px var(--red-500);
 }
 .em-border-bottom-neutral-300{
-  border-bottom: solid 1px $neutral-300;
+  border-bottom: solid 1px var(--neutral-300);
 }
 .em-border-top-neutral-300{
-  border-top: solid 1px $neutral-300;
+  border-top: solid 1px var(--neutral-300);
 }
 .em-border-blue-400{
-  border: solid 1px $blue-400;
+  border: solid 1px var(--blue-400);
   box-sizing: border-box;
   border-radius: 4px;
 }
@@ -1334,7 +1333,7 @@ input:focus + .em-slider {
   }
 }
 .em-tabs{
-  padding: 8px 12px;
+  padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
   border-radius: 6px;
   border: 1px solid #D4D6DF;
   box-shadow: 0 1px 4px rgba(32, 35, 44, 0.05);
@@ -1354,65 +1353,65 @@ input:focus + .em-slider {
   TITLES
 */
 .em-h1{
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font-title);
   font-style: normal;
   font-weight: 600;
   font-size: 32px;
   line-height: 40px;
-  color: $night-blue;
+  color: var(--night-blue);
 }
 .em-h2{
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font-title);
   font-style: normal;
   font-weight: 600;
   font-size: 24px;
   line-height: 30px;
-  color: $night-blue;
+  color: var(--night-blue);
 }
 .em-h3{
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font-title);
   font-style: normal;
   font-weight: 600;
   font-size: 20px;
   line-height: 25px;
-  color: $night-blue;
+  color: var(--night-blue);
 }
 .em-h4{
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font-title);
   font-style: normal;
   font-weight: 600;
   font-size: 18px;
   line-height: 23px;
-  color: $night-blue;
+  color: var(--night-blue);
 }
 .em-h5{
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font-title);
   font-style: normal;
   font-weight: 600;
   font-size: 16px;
   line-height: 20px;
-  color: $night-blue;
+  color: var(--night-blue);
 }
 .em-h6{
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font-title);
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
   line-height: 16px;
-  color: $night-blue;
+  color: var(--night-blue);
 }
 
 .em-applicant-default-font {
-  font-family: var(--font);
+  font-family: $font-family-text;
   text-transform: inherit;
 }
 
 .em-applicant-title-font {
-  font-family: var(--applicant-title-font);
+  font-family: var(--em-applicant-font-title);
 }
 
 .em-default-font {
-  font-family: var(--font);
+  font-family: $font-family-text;
 }
 
 .em-caption{
@@ -1470,11 +1469,11 @@ input:focus + .em-slider {
 }
 
 .em-border-radius {
-  font-family: var(--em-border-radius);
+  font-family: var(--em-coordinator-br);
 }
 
 .em-applicant-border-radius {
-  border-radius: var(--em-applicant-border-radius);
+  border-radius: var(--em-applicant-br);
 }
 
 @supports (background-clip: text) {
@@ -1497,12 +1496,12 @@ input:focus + .em-slider {
   border-color: var(--main-500) !important;
 }
 .em-not-available{
-  color: $red-500;
+  color: var(--red-500);
   align-items: center;
   display: flex;
 }
 .em-border-notavailable:focus {
-  border-color: $red-500 !important;
+  border-color: var(--red-500) !important;
 }
 
 .em-overflow-ellipsis {
@@ -1513,22 +1512,28 @@ input:focus + .em-slider {
 /**
   CARDS
 **/
+
+.em-border-cards {
+  border: 1px solid #EDEDED;
+}
+
 .em-shadow-cards {
   height: 200px;
-  box-shadow: 0 4px 5px rgba(5, 47, 55, 0.07), 0 1px 10px rgba(5, 47, 55, 0.06), 0 2px 4px rgba(5, 47, 55, 0.1);
+  box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
   border-radius: 8px;
   padding: 24px 32px !important;
   margin: 24px;
   cursor: pointer;
+  border: 1px solid #EDEDED;
 }
 
 .em-repeat-card{
-  box-shadow: 0 1px 1px rgba(5, 47, 55, 0.07), 0 2px 1px rgba(5, 47, 55, 0.06), 0 1px 3px rgba(5, 47, 55, 0.1);
-  border-radius: calc(var(--em-border-radius)*2) !important;
+  box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+  border-radius: calc(var(--em-applicant-br)*2) !important;
   padding: 24px;
   height: auto;
   background: #fff;
-  border: 1px solid $neutral-200;
+  border: 1px solid var(--neutral-200);
 }
 
 .em-repeat-card-no-padding{
@@ -1536,20 +1541,20 @@ input:focus + .em-slider {
   border-radius: calc(var(--em-border-radius)*2) !important;
   height: auto;
   background: #fff;
-  border: 1px solid $neutral-200;
+  border: 1px solid var(--neutral-200);
 }
 
 .em-input-card{
-  border-radius: var(--em-border-radius);
+  border-radius: var(--em-coordinator-br);
   padding: 12px 16px;
   height: auto;
   background: #fff;
-  border: 1px solid $neutral-400;
+  border: 1px solid var(--neutral-400);
 }
 .em-input-card-selected{
-  background: $blue-100;
-  border: 1px solid $blue-400;
-  box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+  background: var(--blue-100);
+  border: 1px solid var(--blue-400);
+  box-shadow: 0 1px 1px rgba(5, 47, 55, 0.07), 0 2px 1px rgba(5, 47, 55, 0.06), 0 1px 3px rgba(5, 47, 55, 0.1);
 }
 
 .em-settings-menu{
@@ -1565,7 +1570,7 @@ input:focus + .em-slider {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border: solid 1px $neutral-400;
+  border: solid 1px var(--neutral-400);
   padding: 10px;
   border-radius: 8px;
   img{
@@ -1577,18 +1582,18 @@ input:focus + .em-slider {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: $yellow-500;
+  background-color: var(--orange-500);
 }
 
 .em-card-neutral-100{
-  background-color: $neutral-100;
-  border-radius: 16px;
+  background-color: var(--neutral-100);
+  border-radius: var(--em-default-br-cards);
   padding: 32px;
   cursor: pointer;
 }
 
 .em-card-shadow {
-  box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+  box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
 }
 
 .em-card-white{
@@ -1606,7 +1611,7 @@ input:focus + .em-slider {
   padding: 8px 12px;
   background: #FFFFFF;
   border: 1px solid #EBECF0;
-  box-shadow: 0px 1px 4px rgba(32, 35, 44, 0.05);
+  box-shadow: 0 1px 4px rgba(32, 35, 44, 0.05);
   border-radius: 8px;
 }
 
@@ -1626,22 +1631,26 @@ input:focus + .em-slider {
 }
 
 /** SWAL CUSTOM CLASSES **/
-.em-swal-title{
-  margin: 8px 8px 32px 8px !important;
-}
 button.em-swal-confirm-button{
   display: flex !important;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   width: auto !important;
-  padding: 0 $p-16 !important;
-  border-radius: var(--em-border-radius) !important;
-  border: unset !important;
-  height: 40px !important;
-  color: white !important;
-  background-color: var(--main-500) !important;
+  padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal) !important;
+  border-radius: var(--em-coordinator-br) !important;
+  border: 1px solid var(--em-coordinator-primary-color) !important;
+  color: var(--neutral-0) !important;
+  background-color: var(--em-coordinator-primary-color) !important;
+  font-size: var(--em-coordinator-font-size) !important;
 }
+
+button.em-swal-confirm-button:hover{
+  color: var(--em-coordinator-primary-color) !important;
+  background-color: var(--neutral-0) !important;
+  border: 1px solid var(--em-coordinator-primary-color) !important;
+}
+
 .swal2-actions.swal2-loading{
   border-radius: 25px !important;
 }
@@ -1651,14 +1660,20 @@ button.em-swal-cancel-button{
   justify-content: center;
   align-items: center;
   width: auto;
-  padding: 0 $p-16 !important;
-  border-radius: var(--em-border-radius) !important;
-  border: solid 1px $neutral-300 !important;
-  height: 40px !important;
-  background: transparent !important;
-  color: $night-blue !important;
+  padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal) !important;
+  border-radius: var(--em-coordinator-br) !important;
+  background: var(--neutral-0) !important;
+  color: var(--em-coordinator-secondary-color) !important;
+  border: 1px solid var(--em-coordinator-secondary-color) !important;
+  font-size: var(--em-coordinator-font-size) !important;
   &:focus{
     box-shadow: unset !important;
+  }
+
+  &:hover {
+    background: var(--em-coordinator-secondary-color) !important;
+    color: var(--neutral-0) !important;
+    border: 1px solid var(--em-coordinator-secondary-color) !important;
   }
 }
 button.em-swal-delete-button{
@@ -1667,13 +1682,20 @@ button.em-swal-delete-button{
   justify-content: center;
   align-items: center;
   width: auto !important;
-  padding: 0 $p-16 !important;
-  border-radius: var(--em-border-radius) !important;
+  padding: 0 var(--p-16) !important;
+  border-radius: var(--em-coordinator-br) !important;
   border: unset !important;
-  height: 40px !important;
   color: white !important;
-  background-color: $red-500 !important;
+  background-color: var(--red-500) !important;
+  border: 1px solid var(--red-500) !important;
 }
+
+button.em-swal-delete-button:hover{
+  color: var(--red-500) !important;
+  border: 1px solid var(--red-500) !important;
+  background-color: var(--neutral-0) !important;
+}
+
 .swal2-actions:not(.em-flex-center){
   justify-content: space-between;
 }
@@ -1707,7 +1729,7 @@ button.em-swal-delete-button{
   .em-modal-header{
     height: 50px;
     padding: 12px 24px;
-    box-shadow: inset 0px -1px 0px $neutral-300;
+    box-shadow: inset 0px -1px 0px var(--neutral-300);
     background-color: white;
     position: sticky;
     top: 0;
@@ -1724,11 +1746,11 @@ button.em-swal-delete-button{
     left: 0;
     top: 50px;
     .translation-menu-item:not(.em-modal-menu__current):hover{
-      background-color: $neutral-300;
+      background-color: var(--neutral-300);
     }
   }
   .em-modal-menu__current{
-    background-color: $neutral-400;
+    background-color: var(--neutral-400);
   }
   .em-modal-component{
     width: 100%;
@@ -1751,22 +1773,22 @@ button.em-swal-delete-button{
 .em-circle-blue-100{
   border-radius: 50%;
   padding: 12px;
-  background: $blue-100;
+  background: var(--blue-100);
 }
 .em-circle-blue-200{
   border-radius: 50%;
   padding: 12px;
-  background: $blue-200;
+  background: var(--blue-200);
 }
 .em-circle-main-100{
   border-radius: 50%;
   padding: 12px;
-  background: $main-100;
+  background: var(--main-100);
 }
 .em-circle-main-200{
   border-radius: 50%;
   padding: 12px;
-  background: $main-200;
+  background: var(--main-200);
   box-shadow: 0 1px 4px rgba(32, 35, 44, 0.05);
 }
 /** **/
@@ -1807,13 +1829,12 @@ button.em-swal-delete-button{
 
 /** PROGRAMME **/
 .em-programme-tag{
-  border-radius: 8px;
-  padding: 5px 12px;
+  border-radius: var(--em-default-br);
   width: fit-content;
   font-size: 12px;
   font-weight: 600;
   margin-bottom: 12px;
-  font-family: var(--applicant-default-font);
+  font-family: var(--em-default-font);
   height: fit-content;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -1832,13 +1853,13 @@ button.em-swal-delete-button{
 .em-searchbar label input[type="text"].form-control{
   margin-bottom: 0 !important;
   height: 40px;
-  border-radius: 8px;
+  border-radius: var(--em-applicant-br);
   width: 300px;
   padding: 8px 16px;
   background-image: url('/images/emundus/searchbar/search.svg') !important;
   background-repeat: no-repeat !important;
   background-position: 96% 50% !important;
-  font-family: var(--applicant-default-font);
+  font-family: $font-family-text;
 }
 
 /**
@@ -1851,7 +1872,7 @@ button.em-swal-delete-button{
   }
 
   .em-mt-s-4{
-    margin-top: $m-8;
+    margin-top: var(--m-8);
   }
 
   .em-mb-16-xs{

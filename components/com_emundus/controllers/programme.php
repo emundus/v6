@@ -236,7 +236,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
 									[
 										'key' => '',
 										'value' => $program->nb_campaigns > 1 ? $program->nb_campaigns . ' ' . JText::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED') : $program->nb_campaigns . ' ' . JText::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_SINGLE'),
-										'classes' => 'em-mt-8 em-mb-8 label label-default em-p-5-12 em-font-weight-600',
+										'classes' => 'label label-default em-p-5-12 em-font-weight-600',
 									]
 								],
 								'display' => 'blocs',

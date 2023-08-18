@@ -140,12 +140,12 @@
 
 .widget-files-status-number .widget-files-status-number-block p {
  color: var(--neutral-600);
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font);
 }
 
 .widget-files-status-number h1 {
   color: var(--neutral-900);
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font-title);
 }
 
 #g-container-main .g-container{

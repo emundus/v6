@@ -2272,17 +2272,152 @@ structure:
 				}
 				$xml->asXML($xml_file);
 
+				// Setup our new layouts
+				$query->clear()
+					->update($db->quoteName('#__fabrik_forms'))
+					->set($db->quoteName('form_template') . ' = ' . $db->quote('emundus'))
+					->where($db->quoteName('form_template') . ' = ' . $db->quote('_emundus'));
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->update($db->quoteName('#__fabrik_lists'))
+					->set($db->quoteName('template') . ' = ' . $db->quote('emundus'))
+					->where($db->quoteName('template') . ' = ' . $db->quote('bootstrap'));
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->update($db->quoteName('#__menu'))
+					->set($db->quoteName('params') . ' = JSON_REPLACE(params,"$.fabriklayout","emundus")')
+					->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_fabrik&view=form&formid=307'));
+				$db->setQuery($query);
+				$db->execute();
+
+				EmundusHelperUpdate::addYamlVariable('location', 'gantry-assets://custom/scss/main.compiled.css', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css', true, true);
+				EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('name', 'Main', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'css');
+
+				$query->clear()
+					->update($db->quoteName('#__fabrik_forms'))
+					->set($db->quoteName('params') . ' = JSON_REPLACE(params,"$.labels_above","1")');
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->update($db->quoteName('#__fabrik_forms'))
+					->set($db->quoteName('params') . ' = JSON_REPLACE(params,"$.labels_above_details","1")');
+				$db->setQuery($query);
+				$db->execute();
+
+				EmundusHelperUpdate::installExtension('plg_fabrik_element_panel', 'panel', '{"name":"plg_fabrik_element_panel","type":"plugin","creationDate":"July 2023","author":"eMundus","copyright":"Copyright (C) 2005-2023 Media A-Team, Inc. - All rights reserved.","authorEmail":"dev@emundus.io","authorUrl":"www.emundus.fr","version":"3.10","description":"PLG_ELEMENT_PANEL_DESCRIPTION","group":"","filename":"panel"}', 'plugin', 1, 'fabrik_element');
+
+				EmundusHelperUpdate::installExtension('plg_fabrik_element_currency', 'currency', '{"name":"plg_fabrik_element_currency","type":"plugin","creationDate":"Mai 2023","author":"eMundus - Thibaud Grignon","copyright":"Copyright (C) 2005-2021 Media A-Team, Inc. - All rights reserved.","authorEmail":"dev@emundus.io","authorUrl":"www.emundus.fr","version":"3.10","description":"PLG_ELEMENT_FIELD_DESCRIPTION","group":"","filename":"currency"}', 'plugin', 1, 'fabrik_element');
+				$columns      = [
+					[
+						'name'    => 'symbol',
+						'type'    => 'varchar',
+						'length'  => 255,
+						'null'    => 0,
+					],
+					[
+						'name'    => 'iso3',
+						'type'    => 'varchar',
+						'length'  => 3,
+						'null'    => 0,
+					],
+					[
+						'name'    => 'name',
+						'type'    => 'varchar',
+						'length'  => 255,
+						'null'    => 0,
+					],
+					[
+						'name'    => 'published',
+						'type'    => 'tinyint',
+						'length'  => 1,
+						'default' => 1,
+						'null'    => 0,
+					]
+				];
+				$data_currency = EmundusHelperUpdate::createTable('data_currency', $columns);
+
+				if($data_currency['status']){
+					EmundusHelperUpdate::executeSQlFile('insert_data_currency');
+				}
+
+				/* UPDATE COLORS */
+				EmundusHelperUpdate::updateNewColors();
+				EmundusHelperUpdate::initNewVariables();
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_OPTIONNAL_FIELD', 'facultatif');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_OPTIONNAL_FIELD', 'optional', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED', 'Tous les champs sont obligatoires sauf mention contraire');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED', 'Tous les champs sont obligatoires sauf mention contraire', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_REPEAT_GROUP_MAX','Vous pouvez saisir jusqu\'à %s entrées');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_REPEAT_GROUP_MAX','You can enter up to %s entries', 'override', null, null, null, 'en-GB');
+
+				$dashboard_files_by_status_params = array(
+					'eval' => 'php|$db = JFactory::getDbo();
+$query = $db->getQuery(true);
+
+try {
+    $query->select(\'*\')
+        ->from($db->quoteName(\'jos_emundus_setup_status\'))
+        ->order(\'ordering\');
+    $db->setQuery($query);
+    $status = $db->loadObjectList();
+
+    $datas = [];
+
+    foreach ($status as $statu) {
+        $file = new stdClass;
+        $file->label = $statu->value;
+
+        $styles_files = JPATH_SITE . \'/templates/g5_helium/custom/config/default/styles.yaml\';
+		$yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents($styles_files));
+
+		$file->color = $yaml[\'accent\'][$statu->class];
+
+        $query->clear()
+            ->select(\'COUNT(ecc.id) as files\')
+            ->from($db->quoteName(\'#__emundus_campaign_candidature\',\'ecc\'))
+            ->leftJoin($db->quoteName(\'#__emundus_setup_campaigns\',\'esc\').\' ON \'.$db->quoteName(\'esc.id\').\' = \'.$db->quoteName(\'ecc.campaign_id\'))
+            ->where($db->quoteName(\'ecc.status\') . \' = \' . $db->quote($statu->step))
+            ->andWhere($db->quoteName(\'ecc.published\') . \' = \' . $db->quote(1));
+
+        $db->setQuery($query);
+        $file->value = $db->loadResult();
+        $datas[] = $file;
+    }
+
+	$dataSource = new stdClass;
+	$dataSource->chart = new stdClass;
+	$dataSource->chart = array(
+		\'caption\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_CAPTION"),
+		\'xaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_STATUS"),
+		\'yaxisname\'=> JText::_("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_NUMBER"),
+		\'animation\' => 1,
+		\'numberScaleValue\' => "1",
+		\'numDivLines\' => 1,
+		\'numbersuffix\'=> "",
+		\'theme\'=> "fusion"
+	);
+	$dataSource->data = $datas;
+	return $dataSource;
+} catch (Exception $e) {
+	return array(\'dataset\' => \'\');
+}'
+				);
+				EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS', $dashboard_files_by_status_params);
+
+				EmundusHelperUpdate::insertTranslationsTag('JGLOBAL_AUTH_NO_USER','Cet utilisateur et/ou ce mot de passe est incorrecte');
+				EmundusHelperUpdate::insertTranslationsTag('JGLOBAL_AUTH_NO_USER','This user and/or password is incorrect', 'override', null, null, null, 'en-GB');
 			}
-
-			// Insert new translations in overrides files
-			$succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
-
-
-			// Recompile Gantry5 css at each update
-			$succeed['recompile_gantry_5'] = EmundusHelperUpdate::recompileGantry5();
-
-			// Clear Joomla Cache
-			$succeed['clear_joomla_cache'] = EmundusHelperUpdate::clearJoomlaCache();
 		}
 
 		return $succeed;
@@ -2376,7 +2511,7 @@ structure:
     "RewriteRule ^configuration.php / [R=301,L]" . PHP_EOL .
     "RewriteRule ^defines.php / [R=301,L]" . PHP_EOL .
     "RewriteRule ^logs / [R=301,L]" . PHP_EOL . PHP_EOL .
-    "# Redirect specific file types to home page" . PHP_EOL . 
+    "# Redirect specific file types to home page" . PHP_EOL .
     "RewriteRule ^.*\\.sql / [R=301,L]" . PHP_EOL .
     "RewriteRule ^.*\\.zip / [R=301,L]" . PHP_EOL .
     "RewriteRule ^.*\\.json / [R=301,L]" . PHP_EOL .
@@ -2392,6 +2527,18 @@ structure:
 		{
 			return false;
 		}
+
+		// Insert new translations in overrides files
+		EmundusHelperUpdate::languageBaseToFile();
+
+
+		// Recompile Gantry5 css at each update
+		EmundusHelperUpdate::recompileGantry5();
+
+		// Clear Joomla Cache
+		EmundusHelperUpdate::clearJoomlaCache();
+
+		EmundusHelperUpdate::checkHealth();
 	}
 
 

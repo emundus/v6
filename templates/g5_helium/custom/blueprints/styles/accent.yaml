@@ -1,0 +1,94 @@
+name: Colour palette (Status,Tags,Groups)
+description: Colour palette for tags
+type: core
+
+form:
+  fields:
+    red-1:
+      type: input.colorpicker
+      label: Red 1
+      default: "#eb0000"
+    red-2:
+      type: input.colorpicker
+      label: Red 2
+      default: "#c00016"
+    pink-1:
+      type: input.colorpicker
+      label: Pink 1
+      default: "#ff78d1"
+    pink-2:
+      type: input.colorpicker
+      label: Pink 2
+      default: "#e0008a"
+    purple-1:
+      type: input.colorpicker
+      label: Purple 1
+      default: "#d292ef"
+    purple-2:
+      type: input.colorpicker
+      label: Purple 2
+      default: "#9600c7"
+    light-blue-1:
+      type: input.colorpicker
+      label: Light blue 1
+      default: "#35d7d2"
+    light-blue-2:
+      type: input.colorpicker
+      label: Light blue 2
+      default: "#308281"
+    blue-1:
+      type: input.colorpicker
+      label: Blue 1
+      default: "#64d8ff"
+    blue-2:
+      type: input.colorpicker
+      label: Blue 2
+      default: "#0073e5"
+    blue-3:
+      type: input.colorpicker
+      label: Blue 3
+      default: "#0644ae"
+    green-1:
+      type: input.colorpicker
+      label: Green 1
+      default: "#98d432"
+    green-2:
+      type: input.colorpicker
+      label: Green 2
+      default: "#008a35"
+    yellow-1:
+      type: input.colorpicker
+      label: Yellow 1
+      default: "#ffe014"
+    yellow-2:
+      type: input.colorpicker
+      label: Yellow 2
+      default: "#ffae00"
+    orange-1:
+      type: input.colorpicker
+      label: Orange 1
+      default: "#ff6900"
+    orange-2:
+      type: input.colorpicker
+      label: Orange 2
+      default: "#cc4b00"
+    beige:
+      type: input.colorpicker
+      label: Beige
+      default: "#ffc285"
+    brown:
+      type: input.colorpicker
+      label: Brown
+      default: "#8b511f"
+    grey-1:
+      type: input.colorpicker
+      label: Grey 1
+      default: "#b4b4b4"
+    grey-2:
+      type: input.colorpicker
+      label: Grey 2
+      default: "#757575"
+    black:
+      type: input.colorpicker
+      label: Black
+      default: "#1e1e1e"

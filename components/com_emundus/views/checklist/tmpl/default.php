@@ -52,7 +52,6 @@ if ($can_edit_after_deadline || (!$is_app_sent && $this->is_campaign_started && 
     $block_upload = false;
 }
 
-
 function return_bytes($val) {
 	$val = trim($val);
 	$last = strtolower($val[strlen($val)-1]);
@@ -104,7 +103,8 @@ if (!empty($this->custom_title)) :?>
 
 <?php if (count($this->attachments) > 0) :?>
 
-    <div id="attachment_list" class="em-attachmentList em-repeat-card">
+    <div id="attachment_list" class="em-attachmentList em-repeat-card p-6">
+        <h1><?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_TITLE') ?></h1>
         <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('COM_EMUNDUS_ATTACHMENTS_BYTES'); ?> </p>
     <?php if ($this->show_info_legend) :?>
         <div id="legend" class="em-mt-4">
@@ -117,7 +117,7 @@ if (!empty($this->custom_title)) :?>
                 <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_SENT_DOC'); ?></p>
             </div>
             <div class="em-flex-row em-mb-4">
-                <span class="material-icons-outlined em-yellow-500-color em-mr-4">error_outline</span>
+                <span class="material-icons-outlined em-yellow-600-color em-mr-4">error_outline</span>
                 <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC_FAC'); ?></p>
             </div>
         </div>
@@ -137,11 +137,13 @@ if (!empty($this->custom_title)) :?>
                 <fieldset id="a'.$attachment->id.'" class="em-fieldset-attachment em-mt-24">
                 <div id="l'.$attachment->id.'" class="em-flex-row">';
             if ($attachment->nb == 0) {
-                $div .= $attachment->mandatory?'<span class="material-icons-outlined em-red-500-color em-mr-4">highlight_off</span>':'<span class="material-icons-outlined em-yellow-500-color em-mr-4">error_outline</span>';
+                $div .= $attachment->mandatory?'<span class="material-icons-outlined em-red-500-color em-mr-4">highlight_off</span>':'<span class="material-icons-outlined em-yellow-6
+
+00-color em-mr-4">error_outline</span>';
             } else {
                 $div .= '<span class="material-icons-outlined em-main-500-color em-mr-4">check_circle</span>';
             }
-            $div .= '<h4 class="em-h4 em-mt-0-important">'.$attachment->value .'</h4>';
+            $div .= '<h4 class="em-mt-0-important">'.$attachment->value .'</h4>';
             $div .= '</div><p class="em-ml-8 em-mt-8">'.$attachment->description .'</p><div>';
 
 	        if ($attachment->has_sample && !empty($attachment->sample_filepath)) {
@@ -569,12 +571,12 @@ if (!empty($this->custom_title)) :?>
 
                 $div .= '</tr>';
                 } else {
-                    $div .= '
+                    /*$div .= '
                 <tr class="em-no-more-files">
                     <td>
                     <span class="em-red-500-color">'. JText::_('COM_EMUNDUS_ATTACHMENTS_NO_MORE').'</span>
                     </td>
-                </tr>';
+                </tr>';*/
 
                 $div .= '</tbody>';
                 }
@@ -601,7 +603,7 @@ if (!empty($this->custom_title)) :?>
       <div class="col-md-<?= (int)(12/$this->show_nb_column); ?>">
     <?php
         if ($attachment_list_mand != '') {
-           echo '<div id="attachment_list_mand" class="em-container-attachments em-w-100"><h3 class="em-h3">'.JText::_('COM_EMUNDUS_ATTACHMENTS_MANDATORY_DOCUMENTS').'</h3>'.$attachment_list_mand.'</div>';
+           echo '<div id="attachment_list_mand" class="em-container-attachments em-w-100"><h2>'.JText::_('COM_EMUNDUS_ATTACHMENTS_MANDATORY_DOCUMENTS').'</h2>'.$attachment_list_mand.'</div>';
         }
     ?>
       </div>
@@ -613,10 +615,36 @@ if (!empty($this->custom_title)) :?>
       <div class="col-md-<?= (int)(12/$this->show_nb_column); ?>">
     <?php
         if ($attachment_list_opt != '') {
-           echo '<div id="attachment_list_opt" class="em-container-attachmentsOpt em-mt-16 em-w-100"><h3 class="em-h3">'.JText::_('COM_EMUNDUS_ATTACHMENTS_OPTIONAL_DOCUMENTS').'</h3>'.$attachment_list_opt.'</div>';
+           echo '<div id="attachment_list_opt" class="em-container-attachmentsOpt em-mt-16 em-w-100"><h2>'.JText::_('COM_EMUNDUS_ATTACHMENTS_OPTIONAL_DOCUMENTS').'</h2>'.$attachment_list_opt.'</div>';
         }
     ?>
       </div>
+
+        <div class="col-md-12">
+            <div class="flex justify-between">
+                <div>
+                    <div class="btn-group">
+                        <button type="button" class="btn goback-btn button" onclick="window.history.go(-1)" name="Goback"><?php echo JText::_('GO_BACK') ?></button>
+
+                    </div>
+                </div>
+                <div class="em-submit-form-button">
+                    <div class="btn-group">
+
+                        <button type="button"
+	                        <?php if (!$block_upload && $this->attachments_prog >= 100 && $this->forms_prog >= 100) :?>
+                                onclick="window.location.href='<?php echo $this->confirm_form_url; ?>'" style="opacity: 1"
+	                        <?php else: ?>
+                                style="opacity: 0.6; cursor: not-allowed"
+	                        <?php endif; ?>
+                                class="btn btn-primary save-btn sauvegarder button save_continue" name="Submit" id="fabrikSubmit_287">
+                            <?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_SEND_FILE') ?>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <?php endif; ?>
 </div>

@@ -343,7 +343,7 @@ export default {
 
     button {
       transition: all 0.3s;
-      padding: 8px 12px;
+      padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
     }
   }
 

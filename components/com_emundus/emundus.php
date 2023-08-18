@@ -56,6 +56,8 @@ JText::script('COM_EMUNDUS_ONBOARD_OK');
 JText::script('COM_EMUNDUS_ONBOARD_CANCEL');
 
 JText::script('COM_EMUNDUS_EX');
+JText::script('COM_EMUNDUS_ADD');
+JText::script('COM_EMUNDUS_THESIS_DELETE');
 JText::script('COM_EMUNDUS_APPLICATION_TAG');
 JText::script('COM_EMUNDUS_ACCESS_FILE');
 JText::script('COM_EMUNDUS_ACCESS_ATTACHMENT');
@@ -133,6 +135,14 @@ JText::script('SELECT_HERE');
 JText::script('COM_EMUNDUS_FILTERS_CHECK_ALL_ALL');
 JText::script('COM_EMUNDUS_FILES_SAVE_FILTER');
 JText::script('COM_EMUNDUS_FILES_ENTER_HERE');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_OPTIONS');
+JText::script('COM_EMUNDUS_ONBOARD_TYPE_CURRENCY');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_ALL_OPTIONS');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_CURRENCY');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_THOUSAND_SEPARATOR');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_DECIMAL_SEPARATOR');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_DECIMAL_NUMBERS');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_REGEX');
 
 JText::script('USERNAME_Q');
 JText::script('ID_Q');
@@ -676,9 +686,6 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
 // VUE
 JHTML::script('media/com_emundus_vue/chunk-vendors_emundus.js');
 JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
-
-// MATERIAL ICONS
-JHTML::styleSheet('https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined');
 
 // QUILL
 if($cdn == 1)

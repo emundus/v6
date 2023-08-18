@@ -65,6 +65,7 @@ export default {
     reloadOptions: 0,
     reloadOptionsCascade: 0,
 
+    idElement: 0,
     loading: false,
   }),
   created() {
@@ -134,7 +135,7 @@ export default {
           this.reloadOptionsCascade += 1;
         });
       }
-    }
+    },
   },
   computed: {
     sysadmin: function(){
@@ -143,7 +144,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

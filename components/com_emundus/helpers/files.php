@@ -2056,10 +2056,11 @@ class EmundusHelperFiles
         $tagsList = array();
         foreach ($tags as $tag) {
             $fnum = $tag['fnum'];
+			$class = str_replace('label-','',$tag['class']);
             if (!isset($tagsList[$fnum])) {
-                $tagsList[$fnum] = '<span class="'.$tag['class'].' label">'.$tag['label'].'</span>';
+                $tagsList[$fnum] = '<div class="flex sticker label-border-'.$class.'"><span class="circle '.$tag['class'].'"></span><span class="label-text-'.$class.'">'.$tag['label'].'</span></div>';
             } else {
-                $tagsList[$fnum] .= '<span class="'.$tag['class'].' label">'.$tag['label'].'</span>';
+                $tagsList[$fnum] .= '<div class="flex sticker label-border-'.$class.'"><span class="circle '.$tag['class'].'"></span><span class="label-text-'.$class.'">'.$tag['label'].'</span></div>';
             }
         }
         return $tagsList;
