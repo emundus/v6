@@ -2347,7 +2347,23 @@ structure:
 
 		// Check and update htaccess file if needed
 		$file = JPATH_ROOT . '/.htaccess';
-		$insert = "# Redirect to home page all requests to hidden files or directories" . PHP_EOL . "RewriteRule ^\..+ / [R=301,L]" . PHP_EOL . PHP_EOL . "# Redirect to the home page all requests to other files or directories not needed on the web product" . PHP_EOL . "RewriteRule ^cli / [R=301,L]" . PHP_EOL . "RewriteRule ^Dockerfile / [R=301,L]" . PHP_EOL . "RewriteRule ^LICENCE / [R=301,L]" . PHP_EOL . "RewriteRule ^phpunit\.xml / [R=301,L]" . PHP_EOL . "RewriteRule ^README\.md / [R=301,L]" . PHP_EOL . "RewriteRule ^configuration.php / [R=301,L]" . PHP_EOL . "RewriteRule ^defines.php / [R=301,L]" . PHP_EOL . "RewriteRule ^logs / [R=301,L]" . PHP_EOL;
+		$insert = "# Redirect to home page all requests to hidden files or directories" . PHP_EOL .
+    "RewriteRule ^\\..+ / [R=301,L]" . PHP_EOL . PHP_EOL .
+    "# Redirect to the home page all requests to other files or directories not needed on the web product" . PHP_EOL .
+    "RewriteRule ^cli / [R=301,L]" . PHP_EOL .
+    "RewriteRule ^Dockerfile / [R=301,L]" . PHP_EOL .
+    "RewriteRule ^LICENCE / [R=301,L]" . PHP_EOL .
+    "RewriteRule ^configuration.php / [R=301,L]" . PHP_EOL .
+    "RewriteRule ^defines.php / [R=301,L]" . PHP_EOL .
+    "RewriteRule ^logs / [R=301,L]" . PHP_EOL .
+    "# Redirect specific file types to home page" . PHP_EOL . PHP_EOL .
+    "RewriteRule .*\\.sql / [R=301,L]" . PHP_EOL .
+    "RewriteRule .*\\.zip / [R=301,L]" . PHP_EOL .
+    "RewriteRule .*\\.xml / [R=301,L]" . PHP_EOL .
+    "RewriteRule .*\\.json / [R=301,L]" . PHP_EOL .
+    "RewriteRule .*\\.config.js / [R=301,L]" . PHP_EOL .
+    "RewriteRule .*\\.txt / [R=301,L]" . PHP_EOL .
+    "RewriteRule .*\\.md / [R=301,L]" . PHP_EOL;
 		$htaccess_update_status = EmundusHelperUpdate::insertIntoFile($file, $insert);
 
 		if ($db->execute() && $htaccess_update_status)
