@@ -1529,7 +1529,7 @@ input:focus + .em-slider {
 
 .em-repeat-card{
   box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
-  border-radius: calc(var(--em-applicant-br)*2) !important;
+  border-radius: calc(var(--em-form-br-block)/2) !important;
   padding: 24px;
   height: auto;
   background: #fff;
@@ -1538,7 +1538,7 @@ input:focus + .em-slider {
 
 .em-repeat-card-no-padding{
   box-shadow: 0 1px 1px rgba(5, 47, 55, 0.07), 0 2px 1px rgba(5, 47, 55, 0.06), 0 1px 3px rgba(5, 47, 55, 0.1);
-  border-radius: calc(var(--em-border-radius)*2) !important;
+  border-radius: calc(var(--em-form-br-block)/2) !important;
   height: auto;
   background: #fff;
   border: 1px solid var(--neutral-200);

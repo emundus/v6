@@ -373,6 +373,7 @@
 
         .material-icons {
             @apply mr-3;
+            margin-top: 4px;
         }
 
         p {

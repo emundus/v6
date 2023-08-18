@@ -2253,6 +2253,7 @@ button.swal2-cancel.goback-btn:hover,
 }
 #system-message .alert .material-icons, .fabrikMainError .material-icons {
   margin-right: var(--em-spacing-3);
+            margin-top: 4px;
 }
 #system-message .alert p, .fabrikMainError p {
             color: inherit;
@@ -2670,6 +2671,7 @@ button.swal2-cancel.goback-btn:hover,
 }
 .material-icons-outlined {
     font-family: 'Material Icons Outlined';
+    font-size: 18px;
     font-weight: normal;
     font-style: normal;
     display: inline-block;
