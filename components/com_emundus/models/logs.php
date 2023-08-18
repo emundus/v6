@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+require_once (JPATH_SITE.'/components/com_emundus/helpers/date.php');
 class EmundusModelLogs extends JModelList {
 
 	// Add Class variables.
@@ -23,7 +24,6 @@ class EmundusModelLogs extends JModelList {
 	 */
 	public function __construct() {
 		parent::__construct();
-		require_once (JPATH_SITE.'/components/com_emundus/helpers/date.php');
 
 		// Assign values to class variables.
 		$this->user = JFactory::getUser();

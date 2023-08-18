@@ -464,12 +464,10 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 
 
     public function createsimplegroup(){
+        $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
 
             $fid = $jinput->getInt('fid');
@@ -482,9 +480,14 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
                 );
             }
 
-            $changeresponse = $this->m_formbuilder->createGroup($label,$fid);
+            $group = $this->m_formbuilder->createGroup($label,$fid);
+
+            if (!empty($group['group_id'])) {
+                $response = $group;
+                $response['status'] = true;
+            }
         }
-        echo json_encode((object)$changeresponse);
+        echo json_encode((object)$response);
         exit;
     }
 
