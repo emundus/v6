@@ -2899,7 +2899,6 @@ class EmundusHelperUpdate
 
         return false;
     }
-}
 
 	public static function updateNewColors() {
 		$db = JFactory::getDbo();
