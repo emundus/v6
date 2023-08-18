@@ -122,6 +122,18 @@ p,
   padding: 0 20px;
 }
 
+.view-form.com_fabrik:not(.applicant-form) #g-container-main .g-container {
+  width: auto;
+  left: 38px;
+  position: relative;
+}
+
+.view-form.com_fabrik:not(.applicant-form) #g-container-main,
+ {
+  padding-left: 5% !important;
+  padding-right: 5% !important;
+}
+
 .g-container.g-flushed {
   width: calc(100% - 75px) !important;
   margin: unset;
@@ -702,10 +714,6 @@ footer#g-footer > .g-container {
 }
 
 .view-checklist {
-
-  .em-attachmentList {
-    margin-top: 48px;
-  }
 
   #attachment_list_mand,
   #attachment_list_opt {

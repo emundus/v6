@@ -165,6 +165,8 @@ export default {
 }
 
 .view-campaigns.no-layout #g-container-main .g-container,
+.view-campaigns.layout-addnextcampaign #g-container-main.g-container,
+.view-emails.layout-add #g-container-main .g-container,
 .view-emails.no-layout #g-container-main .g-container,
 .view-form #g-container-main .g-container,
 .view-settings #g-container-main .g-container,
@@ -176,6 +178,8 @@ export default {
 }
 
 .view-campaigns.no-layout #g-container-main,
+.view-campaigns.layout-addnextcampaign #g-container-main,
+.view-emails.layout-add #g-container-main,
 .view-emails.no-layout #g-container-main,
 .view-form #g-container-main,
 .view-settings #g-container-main,
@@ -185,13 +189,6 @@ export default {
   padding-right: 5% !important;
 }
 
-@media all and (max-width: 1366px) {
-  .view-campaigns.layout-addnextcampaign #g-container-main .g-container,
-  .view-emails.layout-add #g-container-main .g-container,
-  .view-settings.no-layout #g-container-main .g-container {
-    width: calc(95% - 150px);
-  }
-}
 
 
 </style>

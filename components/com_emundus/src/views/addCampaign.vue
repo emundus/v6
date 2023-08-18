@@ -1,5 +1,5 @@
 <template>
-  <div class="campaigns__add-campaign w-5/6">
+  <div class="campaigns__add-campaign">
     <div v-if="typeof campaignId == 'undefined' || campaignId == 0">
       <div class="flex items-center mt-4 cursor-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
         <span class="material-icons-outlined">arrow_back</span>

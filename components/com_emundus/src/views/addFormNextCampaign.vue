@@ -58,7 +58,7 @@
 
 				<div v-if="menuHighlightProg != -1" class="warning-message-program mb-1">
 					<p class="em-red-500-color em-flex-row"><span class="material-icons-outlined em-mr-8 em-red-500-color">warning_amber</span>{{translations.ProgramWarning}}</p>
-					<ul v-if="campaignsByProgram.length > 0" class="em-mt-8 em-mb-32">
+					<ul v-if="campaignsByProgram.length > 0" class="em-mt-8 em-mb-32 em-pl-16">
 						<li v-for="(campaign, index) in campaignsByProgram" :key="'camp_progs_' + index">{{campaign.label}}</li>
 					</ul>
 				</div>
