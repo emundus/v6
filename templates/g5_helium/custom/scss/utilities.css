@@ -241,7 +241,7 @@
             .swal2-title {
                 @apply em-default-title-3;
                 @apply m-0;
-                @apply font-bold;
+                 font-weight: 600;
             }
             .swal2-close {
                 @apply flex;
