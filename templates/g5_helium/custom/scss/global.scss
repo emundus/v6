@@ -1009,18 +1009,12 @@ footer#g-footer > .g-container {
 
 .single-campaign-tabs {
   .btn:first-child {
-    border-top-left-radius: var(--em-applicant-br) !important;
-    border-bottom-left-radius: var(--em-applicant-br) !important;
-    border-top-right-radius: 0 !important;
-    border-bottom-right-radius: 0 !important;
+    border-radius: 0  var(--em-applicant-br)  0 var(--em-applicant-br) !important;
     left: 0;
   }
 
   .btn:last-child {
-    border-top-left-radius: 0 !important;
-    border-bottom-left-radius: 0 !important;
-    border-top-right-radius: var(--em-applicant-br) !important;
-    border-bottom-right-radius: var(--em-applicant-br) !important;
+    border-radius: var(--em-applicant-br)  0 var(--em-applicant-br) 0 !important;
   }
 
   .btn {

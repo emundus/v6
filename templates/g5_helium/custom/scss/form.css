@@ -90,11 +90,11 @@
         display: none;
       }
       .popover-content {
-        background-color: white;
+        background-color: var(--neutral-0);
       }
       .clockpicker-button {
-        background: white;
-        color: black;
+        background: var(--neutral-0);
+        color: var(--neutral-900);
         border-top: solid 1px #ebebeb;
         border-radius: 0 !important;
       }
@@ -194,10 +194,7 @@
     {
       height: var(--em-form-height) !important;
       border-left: var(--em-form-br);
-      border-top-left-radius: 0;
-      border-bottom-left-radius: 0;
-      border-top-right-radius: var(--em-form-br);
-      border-bottom-right-radius: var(--em-form-br);
+      border-radius: var(--em-form-br) 0 var(--em-form-br) 0;
       border-color: var(--em-form-bc);
       padding: 0;
       box-shadow: unset;
@@ -247,10 +244,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      border-top-right-radius: 0 !important;
-      border-bottom-right-radius: 0 !important;
-      border-top-left-radius: var(--em-form-br) !important;
-      border-bottom-left-radius: var(--em-form-br)  !important;
+      border-radius: 0 var(--em-form-br) 0 var(--em-form-br) !important;
       height: calc(var(--em-form-height) + 2px);
       background-position-x: 90% !important;
       background-position-y: 54% !important;
@@ -661,7 +655,7 @@
             position: static;
             margin-right: 4px;
             b{
-              border: solid black;
+              border: solid var(--neutral-900);
               border-width: 0 2px 2px 0;
               display: inline-block;
               transform: rotate(45deg);
@@ -863,7 +857,7 @@
   a.chzn-single,
   textarea {
     background-color: var(--neutral-50);
-    color: black;
+    color: var(--neutral-900);
     font-family: var(--em-default-font);
   }
 
