@@ -238,7 +238,7 @@ class EmundusModelApplicationTest extends TestCase
 
 	public function testgetApplicationMenu() {
 		$username = 'test-application-coordinator-' . rand(0, 1000) . '@emundus.fr';
-		$coordinator = $this->h_sample->createSampleUser(9, $username, [2,7]);
+		$coordinator = $this->h_sample->createSampleUser(9, $username, 'test1234',  [2,7]);
 		$username = 'test-application-applicant-' . rand(0, 1000) . '@emundus.fr';
 		$applicant = $this->h_sample->createSampleUser(9, $username);
 

@@ -1651,20 +1651,58 @@ class EmundusModelUsers extends JModelList {
     }
 
     // get programme associated to user groups
-    public function getUserGroupsProgrammeAssoc($uid) {
-        try {
-            $query = "SELECT DISTINCT (esgc.course)
-                      FROM #__emundus_groups as g
-                      LEFT JOIN #__emundus_setup_groups AS esg ON g.group_id = esg.id
-                      LEFT JOIN #__emundus_setup_groups_repeat_course AS esgc ON esgc.parent_id=esg.id
-                      WHERE g.user_id = " .$uid;
-            $db = $this->getDbo();
-            $db->setQuery($query);
-            return $db->loadColumn();
-        } catch(Exception $e) {
-            return false;
-        }
+    public static function getUserGroupsProgrammeAssoc($uid, $select = 'jesgrc.course') {
+	    $program_ids = [];
+
+	    $user_id = empty($user_id) ? JFactory::getUser()->id : $user_id;
+
+	    if (!empty($user_id)) {
+		    $db = JFactory::getDbo();
+		    $query = $db->getQuery(true);
+
+		    $query->select('DISTINCT ' . $db->quoteName($select))
+			    ->from($db->quoteName('#__emundus_setup_programmes', 'jesp'))
+			    ->innerJoin($db->quoteName('#__emundus_setup_groups_repeat_course', 'jesgrc').' ON '.$db->quoteName('jesp.code').' = '.$db->quoteName('jesgrc.course'))
+			    ->innerJoin($db->quoteName('#__emundus_groups', 'jeg').' ON '.$db->quoteName('jeg.group_id').' = '.$db->quoteName('jesgrc.parent_id'))
+			    ->where($db->quoteName('jeg.user_id').' = '.$user_id.' AND '.$db->quoteName('jesp.published').' = 1');
+
+		    $db->setQuery($query);
+
+		    try {
+			    $program_ids = $db->loadColumn();
+		    } catch (Exception $e) {
+			    JLog::add('Error getting all profiles associated to user in model/access at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		    }
+	    }
+
+	    return $program_ids;
     }
+
+	public static function getAllCampaignsAssociatedToUser($user_id) {
+		$campaign_ids = [];
+
+		$user_id = empty($user_id) ? JFactory::getUser()->id : $user_id;
+
+		if (!empty($user_id)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('DISTINCT jesc.id')
+				->from($db->quoteName('#__emundus_setup_campaigns', 'jesc'))
+				->innerJoin($db->quoteName('#__emundus_setup_groups_repeat_course', 'jesgrc').' ON '.$db->quoteName('jesc.training').' = '.$db->quoteName('jesgrc.course'))
+				->innerJoin($db->quoteName('#__emundus_groups', 'jeg').' ON '.$db->quoteName('jeg.group_id').' = '.$db->quoteName('jesgrc.parent_id'))
+				->where($db->quoteName('jeg.user_id').' = '.$user_id.' AND '.$db->quoteName('jesc.published').' = 1');
+
+			$db->setQuery($query);
+			try {
+				$campaign_ids = $db->loadColumn();
+			} catch (Exception $e) {
+				JLog::add('Error getting all profiles associated to user in model/access at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $campaign_ids;
+	}
 
     /*
      *   Get application fnums associated to a groups
