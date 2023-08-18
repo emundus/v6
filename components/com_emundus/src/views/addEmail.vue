@@ -8,10 +8,10 @@
         :classes="'vue-notification-custom'"
     />
     <div>
-      <form @submit.prevent="submit">
+      <form @submit.prevent="submit" class="fabrikForm emundus-form">
         <div>
-          <div class="em-mb-16">
-            <h1 class="em-h1">{{ translate('COM_EMUNDUS_ONBOARD_ADD_EMAIL') }}</h1>
+          <div class="mb-4">
+            <h1>{{ translate('COM_EMUNDUS_ONBOARD_ADD_EMAIL') }}</h1>
             <span class="em-red-500-color em-mb-8">{{translations.RequiredFieldsIndicate}}</span>
           </div>
 
@@ -20,16 +20,16 @@
               <label>{{translations.emailName}} <span style="color: #E5283B">*</span></label>
               <input
                   type="text"
-                  class="em-w-100"
+                  class="w-full"
                   v-model="form.subject"
                   :class="{ 'is-invalid': errors.subject}"
               />
             </div>
-            <span v-if="errors.subject" class="em-red-500-color em-mb-8">
+            <span v-if="errors.subject" class="em-red-500-color mb-2">
               <span class="em-red-500-color">{{translations.SubjectRequired}}</span>
             </span>
 
-            <div class="em-mb-16">
+            <div class="mb-4">
               <label>{{translations.emailBody}} <span style="color: #E5283B">*</span></label>
               <editor-quill
                   style="height: 30em"
@@ -42,11 +42,11 @@
                   :class="{ 'is-invalid': errors.message}"
               >
               </editor-quill>
-              <div class="em-mt-48">
+              <div class="mt-12">
                 <a href="component/emundus/?view=export_select_columns&format=html&layout=all_programs&Itemid=1173" class="em-main-500-color em-hover-main-600" target="_blank">{{ translate('COM_EMUNDUS_EMAIL_SHOW_TAGS') }}</a>
               </div>
             </div>
-            <p v-if="errors.message" class="em-red-500-color em-mb-8">
+            <p v-if="errors.message" class="em-red-500-color mb-2">
               <span class="em-red-500-color">{{translations.BodyRequired}}</span>
             </p>
 
@@ -67,42 +67,42 @@
         <hr/>
 
         <div>
-          <div class="em-flex-row em-mb-16">
-            <h3 class="em-h3 em-pointer em-mb-0-important" @click="displayAdvanced">{{ translations.Advanced }}</h3>
-            <button :title="translations.Advanced" type="button" class="em-transparent-button em-flex-column" @click="displayAdvanced" v-show="!displayAdvancedParameters">
+          <div class="flex items-center mb-4 gap-1">
+            <h3 class="cursor-pointer em-mb-0-important" @click="displayAdvanced">{{ translations.Advanced }}</h3>
+            <button :title="translations.Advanced" type="button" class="em-transparent-button flex flex-col" @click="displayAdvanced" v-show="!displayAdvancedParameters">
               <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
             </button>
-            <button :title="translations.Advanced" type="button" @click="displayAdvanced" class="em-transparent-button em-flex-column" v-show="displayAdvancedParameters">
+            <button :title="translations.Advanced" type="button" @click="displayAdvanced" class="em-transparent-button flex flex-col" v-show="displayAdvancedParameters">
               <span class="material-icons-outlined em-main-500-color">remove_circle_outline</span>
             </button>
           </div>
           <div id="email-advanced-parameters" v-if="displayAdvancedParameters">
-            <div class="form-group em-mb-16">
+            <div class="form-group mb-4">
               <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_SENDER_EMAIL') }}</label>
               <span>{{email_sender}}</span>
             </div>
 
-            <div class="form-group em-mb-12">
+            <div class="form-group mb-4">
               <label>{{translations.receiverName}}</label>
               <input
                   type="text"
-                  class="em-w-100"
+                  class="w-full fabrikinput"
                   v-model="form.name"
               />
             </div>
 
-            <div class="form-group em-mb-12">
+            <div class="form-group mb-4">
               <label>{{translations.emailAddress}}</label>
               <input
                   type="text"
-                  class="em-w-100"
+                  class="w-full fabrikinput"
                   v-model="form.emailfrom"
                   placeholder="reply-to@tchooz.io"
               />
               <p class="em-font-size-12 em-neutral-700-color">{{translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESTIP')}}</p>
             </div>
 
-            <div class="form-group em-mb-12" id="receivers_cc">
+            <div class="form-group mb-4" id="receivers_cc">
               <label>{{ translations.ReceiversCC }}</label>
               <multiselect
                   v-model="selectedReceiversCC"
@@ -122,7 +122,7 @@
             </div>
 
             <!-- Email -- BCC (in form of email adress or fabrik element -->
-            <div class="form-group em-mb-12" id="receivers_bcc">
+            <div class="form-group mb-4" id="receivers_bcc">
               <label>{{ translations.ReceiversBCC }}</label>
               <multiselect
                   v-model="selectedReceiversBCC"
@@ -142,7 +142,7 @@
             </div>
 
             <!-- Email -- Associated letters (in form of email adress or fabrik element -->
-            <div class="form-group em-mb-12" id="attached_letters" v-if="attached_letters">
+            <div class="form-group mb-4" id="attached_letters" v-if="attached_letters">
               <label>{{ translations.Letters }}</label>
               <multiselect
                   v-model="selectedLetterAttachments"
@@ -161,7 +161,7 @@
             </div>
 
             <!-- Email -- Action tags -->
-            <div class="form-group em-mb-12" v-if="tags">
+            <div class="form-group mb-4" v-if="tags">
               <label>{{ translations.Tags }}</label>
               <multiselect
                   v-model="selectedTags"
@@ -180,7 +180,7 @@
             </div>
 
             <!-- Email -- Candidat attachments -->
-            <div class="form-group em-mb-12">
+            <div class="form-group mb-4">
               <label>{{ translations.CandidateAttachments }}</label>
               <multiselect
                   v-model="selectedCandidateAttachments"
@@ -200,7 +200,7 @@
           </div>
         </div>
 
-        <div class="em-flex-row em-flex-space-between em-mt-16">
+        <div class="flex justify-between mt-4">
           <button
               type="button"
               class="em-secondary-button em-w-auto"

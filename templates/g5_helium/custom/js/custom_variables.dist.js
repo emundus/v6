@@ -1,0 +1,1 @@
+document.documentElement.style.setProperty("--neutral-100", "#FAFAFA");

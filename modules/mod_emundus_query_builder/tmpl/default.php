@@ -80,7 +80,7 @@ jQuery(document).ready(function(){
 	jQuery('.platform-content').attr('style', 'width:100%!important');
 	jQuery('.platform-content').has('.container-stat').attr('style', 'margin-bottom:50px;background-color:white;padding-bottom:1%;box-shadow: 0 1px 2px 0 hsla(0,0%,41.2%,.19);');
 	jQuery('.etiquette').attr('style', 'grid-column-end:span 3;');
-	jQuery('.informationStatistique').attr('style', 'grid-column-end:span 3;margin-top: 32px');
+	jQuery('.informationStatistique').attr('style', 'grid-column-end:span 3;');
 	jQuery('#g-container-main').attr('style', 'padding-left:5%!important;padding-right:5%!important');
 
 	taillerEtiquette();

@@ -3,7 +3,7 @@
     <Application v-if="currentFile" :file="currentFile" :type="$props.type" :user="$props.user" :ratio="$props.ratio" @getFiles="getFiles(true)" />
 
     <div class="em-mb-12 em-flex-row em-flex-space-between">
-      <p class="em-h4">{{ translate('COM_EMUNDUS_FILES_'+type.toUpperCase()) }}</p>
+      <h4>{{ translate('COM_EMUNDUS_FILES_'+type.toUpperCase()) }}</h4>
     </div>
 
     <div v-if="files">
@@ -166,7 +166,7 @@
     </div>
 
     <div v-if="files && columns && files.length === 0">
-      <span class="em-h6">{{ translate('COM_EMUNDUS_ONBOARD_NOFILES') }}</span>
+      <h6>{{ translate('COM_EMUNDUS_ONBOARD_NOFILES') }}</h6>
     </div>
 
     <div v-if="rows_selected.length > 0" class="selected-rows-tip">

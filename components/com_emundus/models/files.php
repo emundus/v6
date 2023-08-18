@@ -3098,7 +3098,8 @@ class EmundusModelFiles extends JModelLegacy
                 $group_labels = explode(',',$r['label']);
                 $class_labels = explode(',',$r['class']);
                 foreach ($group_labels as $key => $g_label) {
-                    $assocTagcampaign = '<span class="label '.$class_labels[$key].'" id="'.$r['id'].'">'.$g_label.'</span>';
+                    $assocTagcampaign = '<div class="flex"><span class="circle '.$class_labels[$key].'" id="'.$r['id'].'"></span>';
+                    $assocTagcampaign .= '<span id="'.$r['id'].'">'.$g_label.'</span></div>';
                     $access[$r['fnum']] .= $assocTagcampaign;
                 }
             }
@@ -3111,7 +3112,8 @@ class EmundusModelFiles extends JModelLegacy
             $res = $db->loadAssocList();
 
             foreach ($res as $r) {
-                $assocTaggroup = '<span class="label '.$r['class'].'">'.$r['label'].'</span>';
+                $assocTaggroup = '<div class="flex"><span class="circle '.$r['class'].'"></span>';
+                $assocTaggroup .= '<span id="'.$r['id'].'">'.$r['label'].'</span></div>';
                 if (isset($access[$r['fnum']])) {
                     $access[$r['fnum']] .= ''.$assocTaggroup;
                 } else {
@@ -3131,9 +3133,9 @@ class EmundusModelFiles extends JModelLegacy
             $res = $db->loadAssocList();
             foreach ($res as $r) {
                 if (isset($access[$r['fnum']])) {
-                    $access[$r['fnum']] .= '<span class="label '.$r['class'].'"><span class=\'glyphicon glyphicon-user\'></span> '.$r['uname'].'</span>';
+                    $access[$r['fnum']] .= '<div class="flex"><span class="circle '.$r['class'].'">'.$r['uname'].'</span></div>';
                 } else {
-                    $access[$r['fnum']] = '<span class="label '.$r['class'].'"><span class=\'glyphicon glyphicon-user\'></span> '.$r['uname'].'</span>';
+                    $access[$r['fnum']] = '<div class="flex"><span class="circle '.$r['class'].'">'.$r['uname'].'</span></div>';
                 }
             }
             return $access;

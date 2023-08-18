@@ -5,6 +5,16 @@ requirejs(['fab/fabrik'], function () {
         if (!removedFabrikFormSkeleton) {
             removeFabrikFormSkeleton();
         }
+
+        manageRepeatGroup(form);
+    });
+
+    Fabrik.addEvent('fabrik.form.group.duplicate.end', function(form, event) {
+        manageRepeatGroup(form);
+    });
+
+    Fabrik.addEvent('fabrik.form.group.delete.end', function(form, event) {
+        manageRepeatGroup(form);
     });
 
     window.setInterval(function() {
@@ -49,5 +59,42 @@ requirejs(['fab/fabrik'], function () {
         }
 
         removedFabrikFormSkeleton = true;
+    }
+
+    function manageRepeatGroup(form)
+    {
+        setTimeout(() => {
+            // ID of the group that was duplicated (ex. group686)
+            let repeat_groups = form.repeatGroupMarkers;
+            repeat_groups.forEach(function (repeatGroupsMarked, group) {
+                if(repeatGroupsMarked !== 0) {
+                    let maxRepeat = form.options.maxRepeat[group];
+
+                    let deleteButtons = document.querySelectorAll('#group' + group + ' .fabrikGroupRepeater.pull-right');
+
+                    if (repeatGroupsMarked > 1) {
+                        deleteButtons.forEach(function (button, index) {
+                            button.show();
+                        })
+                    } else {
+                        deleteButtons.forEach(function (button, index) {
+                            button.hide();
+                        })
+                    }
+
+                    let addButtons = document.querySelectorAll('#group' + group + ' .fabrikGroupRepeater .addGroup');
+
+                    if (maxRepeat !== 0 && repeatGroupsMarked >= maxRepeat) {
+                        addButtons.forEach(function (button, index) {
+                            button.hide();
+                        })
+                    } else {
+                        addButtons.forEach(function (button, index) {
+                            button.show();
+                        })
+                    }
+                }
+            });
+        },100)
     }
 });

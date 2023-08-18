@@ -10,7 +10,7 @@
 	<version>1.37.0</version>
 	<description>Online application component for Joomla!</description>
 	<scriptfile>script.com_emundus.php</scriptfile>
-	
+
 	<update>
 		<schemas>
 			<schemapath type="mysql">sql/updates/mysql</schemapath>

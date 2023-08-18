@@ -1,0 +1,48 @@
+/* COLUMNS */
+
+form .fabrikGroupColumns.fabrikGroup .row-fluid {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    column-gap: 8px;
+}
+
+@media all and (max-width: 479px) {
+    .fabrikGroup .repeatGroupTable .fabrikSubGroupElements .fabrikGroupRepeater {
+        display: flex;
+        justify-content: flex-end;
+    }
+}
+
+@media all and (min-width: 480px) and (max-width: 767px) {
+
+    .fabrikGroup .repeatGroupTable .fabrikSubGroupElements .fabrikGroupRepeater {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .view-form.applicant-form  .fabrikGroup .repeatGroupTable {
+        display: block !important;
+    }
+
+    .view-form.applicant-form  .fabrikGroup .repeatGroupTable th:last-of-type,
+    .view-form.applicant-form  .fabrikGroup .repeatGroupTable  td:last-of-type {
+        width: 100% !important;
+    }
+
+    .view-form.applicant-form  .fabrikGroup .repeatGroupTable tbody tr .fabrikElement input {
+        width: 100%;
+    }
+
+    .view-form.applicant-form  .fabrikGroup .repeatGroupTable .fabrikSubGroupElements  td .fabrikElement  select {
+        background-position-x: 98% !important;
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 959px) {
+
+    .fabrikGroup .repeatGroupTable .fabrikSubGroupElements .fabrikGroupRepeater {
+        display: flex;
+        justify-content: flex-end;
+    }
+}

@@ -12,8 +12,8 @@
 					<p class="em-ml-8">{{ translate('BACK') }}</p>
 				</div>
 				<div class="em-flex-row em-mt-16">
-					<h1 class="em-h1" v-if="menuHighlight != -1">{{this.translate(formCategories[menuHighlight])}}</h1>
-					<h1 class="em-h1" v-if="menuHighlightProg != -1">{{this.translate(formPrograms[menuHighlightProg])}}</h1>
+					<h1 v-if="menuHighlight != -1">{{this.translate(formCategories[menuHighlight])}}</h1>
+					<h1 v-if="menuHighlightProg != -1">{{this.translate(formPrograms[menuHighlightProg])}}</h1>
 				</div>
 				<p v-if="menuHighlight != -1" v-html="this.translate(formCategoriesDesc[menuHighlight])" style="margin-top: 20px"></p>
 				<p v-if="menuHighlightProg != -1" v-html="this.translate(formProgramsDesc[menuHighlightProg])" style="margin-top: 20px"></p>
@@ -22,7 +22,7 @@
 
       <div class="em-flex-row em-mb-32">
         <p>
-          <b style="color: var(--main-500); font-weight: 700 !important;"> {{form.label}}</b>
+          <b style="color: var(--em-coordinator-primary-color); font-weight: 700 !important;"> {{form.label}}</b>
           {{translations.From}}
           <strong>{{ form.start_date }}</strong>
           {{translations.To}}
@@ -58,7 +58,7 @@
 
 				<div v-if="menuHighlightProg != -1" class="warning-message-program mb-1">
 					<p class="em-red-500-color em-flex-row"><span class="material-icons-outlined em-mr-8 em-red-500-color">warning_amber</span>{{translations.ProgramWarning}}</p>
-					<ul v-if="campaignsByProgram.length > 0" class="em-mt-8 em-mb-32">
+					<ul v-if="campaignsByProgram.length > 0" class="em-mt-8 em-mb-32 em-pl-16">
 						<li v-for="(campaign, index) in campaignsByProgram" :key="'camp_progs_' + index">{{campaign.label}}</li>
 					</ul>
 				</div>
@@ -414,11 +414,11 @@ export default {
 }
 
 .w--current:hover{
-  color: var(--main-500);
+  color: var(--em-coordinator-primary-color);
 }
 
 .em-pointer:hover{
-  color: var(--main-500);
+  color: var(--em-coordinator-primary-color);
 }
 
 .em-w-custom {

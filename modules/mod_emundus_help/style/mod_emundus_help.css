@@ -3,6 +3,7 @@
     position: fixed !important;
     padding: 0;
     margin-top: 0 !important;
+    display: block !important;
 }
 
 #mod_emundus_help .popover.top{

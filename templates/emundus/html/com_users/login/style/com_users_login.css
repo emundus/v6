@@ -3,7 +3,7 @@ button.btn-primary{
     background: #e03c32;
     border: 1px solid #e03c32;
     border-radius: 0!important;
-    padding: 8px 12px!important;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal) !important;
 }
 button.btn-primary:hover{
     background-color: transparent;

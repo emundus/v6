@@ -14,6 +14,7 @@ if($just_logged && !$only_applicant) {
 <style>
     .em-switch-profile-img{
         text-align: center;
+        justify-content: center;
     }
     .em-switch-profile-img img{
         width: 10vw;
@@ -43,7 +44,7 @@ if($just_logged && !$only_applicant) {
     }
 
     .swal2-content p.em-text-align-center.em-font-size-24 {
-        color: var(--main-500);
+        color: var(--em-coordinator-primary-color);
     }
 
     @media (max-width: 1368px) {
@@ -57,23 +58,23 @@ if($just_logged && !$only_applicant) {
         }
     }
     .em-switch-profile-card{
-        height: 45px;
         text-align: center;
-        border: solid 1px var(--main-500);
+        border: solid 1px var(--em-coordinator-primary-color);
         display: flex;
         justify-content: center;
         align-items: center;
-        border-radius: var(--em-border-radius);
+        border-radius: var(--em-coordinator-br);
         flex-direction: column;
         cursor: pointer;
-        color: var(--main-500);
+        color: var(--em-coordinator-primary-color);
         transition: all 0.3s ease-in-out;
         width: auto;
         margin: 10px;
-        padding: 8px 12px;
+        padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
+        font-size: var(--em-coordinator-font-size);
     }
     .em-switch-profile-card:hover {
-        background: var(--main-500);
+        background: var(--em-coordinator-primary-color);
         color: var(--neutral-50);
     }
     .em-switch-profile-card .material-icons-outlined{
@@ -112,6 +113,7 @@ if($just_logged && !$only_applicant) {
             allowOutsideClick: false,
             confirmButtonText: "<?php echo JText::_('MOD_EMUNDUS_SWITCH_PROFILE_OK') ?>",
             customClass: {
+                header: 'items-center',
                 title: 'em-swal-title',
                 confirmButton: 'em-swal-confirm-button',
                 content: 'em-switch-profile-swal-content',

@@ -1,0 +1,55 @@
+name: Box shadows
+description: Style for box shadows
+type: core
+
+form:
+  fields:
+    x-1:
+      type: input.text
+      label: Offset x (1)
+      default: '0px'
+    y-1:
+      type: input.text
+      label: Offset y (1)
+      default: '1px'
+    blur-1:
+      type: input.text
+      label: Blur (1)
+      default: '1px'
+    color-1:
+      type: input.colorpicker
+      label: Color (1)
+      default: 'rgba(5, 47, 55, 0.07)'
+    x-2:
+      type: input.text
+      label: Offset x (2)
+      default: '0px'
+    y-2:
+      type: input.text
+      label: Offset y (2)
+      default: '1px'
+    blur-2:
+      type: input.text
+      label: Blur (2)
+      default: '1px'
+    color-2:
+      type: input.colorpicker
+      label: Color (2)
+      default: 'rgba(5, 47, 55, 0.07)'
+    x-3:
+      type: input.text
+      label: Offset x (3)
+      default: '0px'
+    y-3:
+      type: input.text
+      label: Offset y (3)
+      default: '1px'
+    blur-3:
+      type: input.text
+      label: Blur (3)
+      default: '1px'
+    color-3:
+      type: input.colorpicker
+      label: Color (3)
+      default: 'rgba(5, 47, 55, 0.07)'
+

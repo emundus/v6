@@ -287,15 +287,12 @@ class EmundusModelsettings extends JModelList {
 
         $lang_to = $m_translations->getDefaultLanguage()->lang_code;
 
-        $classes = $this->getColorClasses();
         $results = [];
 
         try {
-            $class = array_search($color, $classes);
-
             $query->clear()
                 ->update('#__falang_content')
-                ->set($db->quoteName('value') . ' = ' . $db->quote($class))
+                ->set($db->quoteName('value') . ' = ' . $db->quote($color))
                 ->where(array(
                     $db->quoteName('reference_id') . ' = ' . $db->quote($status),
                     $db->quoteName('reference_table') . ' = ' . $db->quote('emundus_setup_status'),
@@ -310,7 +307,7 @@ class EmundusModelsettings extends JModelList {
             $query->clear()
                 ->update('#__emundus_setup_status')
                 ->set($db->quoteName('value') . ' = ' . $db->quote($label))
-                ->set($db->quoteName('class') . ' = ' . $db->quote($class))
+                ->set($db->quoteName('class') . ' = ' . $db->quote($color))
                 ->where($db->quoteName('step') . ' = ' . $db->quote($status));
             $db->setQuery($query);
             $db->execute();
@@ -387,16 +384,11 @@ class EmundusModelsettings extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $classes = $this->getColorClasses();
-
         try {
-            $class = array_search($color, $classes);
-			$class = !empty($class) ? $class : 'default';
-
             $query->clear()
                 ->update('#__emundus_setup_action_tag')
                 ->set($db->quoteName('label') . ' = ' . $db->quote($label))
-                ->set($db->quoteName('class') . ' = ' . $db->quote('label-' . $class))
+                ->set($db->quoteName('class') . ' = ' . $db->quote('label-' . $color))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($tag));
             $db->setQuery($query);
             return $db->execute();

@@ -103,9 +103,11 @@ export default {
 	methods: {
     getDocuments () {
       formService.getDocuments(this.profile_id).then(response => {
-        this.documents = response.data.data.filter((document) => {
-          return document.id;
-        });
+				if (response.status) {
+					this.documents = response.data.filter((document) => {
+						return document.id;
+					});
+				}
       });
     },
     moveDocument (documentToMove, direction) {
