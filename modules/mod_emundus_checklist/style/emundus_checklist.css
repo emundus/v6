@@ -124,7 +124,6 @@
 .mod_emundus_checklist .mod_emundus_checklist_need_ok:not(.active) .mod_emundus_checklist___step_count {
     color: #FFF;
     border: solid 1px var(--main-100);
-    background: var(--main-100);
 }
 .mod_emundus_checklist .mod_emundus_checklist_need_ok:not(.active) .mod_emundus_checklist___step_count  .material-icons-outlined {
     color: var(--main-500);
