@@ -169,9 +169,7 @@ export default {
 .view-emails.layout-add #g-container-main .g-container,
 .view-emails.no-layout #g-container-main .g-container,
 .view-form #g-container-main .g-container,
-.view-settings #g-container-main .g-container,
-.view-file #g-container-main .g-container,
-.view-users #g-container-main .g-container{
+.view-settings #g-container-main .g-container {
   width: auto;
   left: 38px;
   position: relative;
@@ -182,13 +180,9 @@ export default {
 .view-emails.layout-add #g-container-main,
 .view-emails.no-layout #g-container-main,
 .view-form #g-container-main,
-.view-settings #g-container-main,
-.view-file #g-container-main,
-.view-users #g-container-main {
+.view-settings #g-container-main {
   padding-left: 5% !important;
   padding-right: 5% !important;
 }
-
-
 
 </style>
