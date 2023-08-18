@@ -108,3 +108,42 @@ describe('FormBuilderCreatePage.vue check model already used', () => {
         expect(isInitialStructureAlreadyUsed).toHaveBeenCalled();
     });
 });
+
+describe('FormBuilderCreatePage.vue case model already used', () => {
+    // isInitialStructureAlreadyUsed should return true
+    const wrapper = mount(FormBuilderCreatePage, {
+        propsData: {
+            profile_id: 9,
+        },
+        localVue,
+        store
+    });
+
+    wrapper.vm.$data.models = models;
+    wrapper.vm.$data.loading = false;
+    wrapper.vm.$data.selected = -1;
+    wrapper.vm.isInitialStructureAlreadyUsed = jest.fn(() => {
+        wrapper.vm.canUseInitialStructure = false;
+        return true;
+    });
+    const isInitialStructureAlreadyUsed = jest.spyOn(wrapper.vm, 'isInitialStructureAlreadyUsed');
+
+    wrapper.vm.$data.selected = models[0].id;
+
+    it('#initial-structure parent should have class "disabled"', () => {
+        expect(isInitialStructureAlreadyUsed).toHaveBeenCalled();
+        expect(isInitialStructureAlreadyUsed).toHaveReturnedWith(true);
+        expect(wrapper.vm.$data.canUseInitialStructure).toBeFalsy();
+        let input = wrapper.find('#initial-structure');
+        let inputParent = input.element.parentElement;
+
+        expect(inputParent.classList.contains('disabled')).toBeTruthy();
+    });
+
+    it('even if user is smart enough to check the input, the submit function won\'t let structure be set to other than "new"', () => {
+        wrapper.vm.$data.structure = 'initial';
+        wrapper.vm.createPage();
+        expect(wrapper.vm.$data.structure).toEqual('new');
+    });
+
+});
