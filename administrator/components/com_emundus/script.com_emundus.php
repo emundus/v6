@@ -2355,14 +2355,13 @@ structure:
     "RewriteRule ^LICENCE / [R=301,L]" . PHP_EOL .
     "RewriteRule ^configuration.php / [R=301,L]" . PHP_EOL .
     "RewriteRule ^defines.php / [R=301,L]" . PHP_EOL .
-    "RewriteRule ^logs / [R=301,L]" . PHP_EOL .
-    "# Redirect specific file types to home page" . PHP_EOL . PHP_EOL .
+    "RewriteRule ^logs / [R=301,L]" . PHP_EOL . PHP_EOL .
+    "# Redirect specific file types to home page" . PHP_EOL . 
     "RewriteRule .*\\.sql / [R=301,L]" . PHP_EOL .
     "RewriteRule .*\\.zip / [R=301,L]" . PHP_EOL .
     "RewriteRule .*\\.xml / [R=301,L]" . PHP_EOL .
     "RewriteRule .*\\.json / [R=301,L]" . PHP_EOL .
     "RewriteRule .*\\.config.js / [R=301,L]" . PHP_EOL .
-    "RewriteRule .*\\.txt / [R=301,L]" . PHP_EOL .
     "RewriteRule .*\\.md / [R=301,L]" . PHP_EOL;
 		$htaccess_update_status = EmundusHelperUpdate::insertIntoFile($file, $insert);
 
