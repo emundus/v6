@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="1.0.0" client="site" method="upgrade">
-    <name>Emundus - Filtres avancés.</name>
+    <name>eMundus - Filtres avancés [mod_emundus_filters]</name>
     <author>LEGENDRE Jérémy</author>
     <creationDate>May 2022</creationDate>
     <copyright>Copyright (C) 2022 eMundus. All rights reserved.</copyright>

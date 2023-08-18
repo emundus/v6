@@ -2253,8 +2253,15 @@ structure:
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ACCOUNT_INFORMATIONS', 'Informations de compte', 'override', null, 'fabrik_groups', 'label');
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ACCOUNT_INFORMATIONS', 'Account informations', 'override', null, 'fabrik_groups', 'label', 'en-GB');
 
-				EmundusHelperUpdate::installExtension('Emundus - Filtres avancés.', 'mod_emundus_filters', '{"name":"Emundus - Filtres avancés.","type":"module","creationDate":"May 2022","author":"LEGENDRE J\u00e9r\u00e9my","copyright":"Copyright (C) 2022 eMundus. All rights reserved.","authorEmail":"jeremy.legendre@emundus.fr","authorUrl":"www.emundus.fr","version":"1.0.0","description":"","group":"","filename":"mod_emundus_filters"}', 'module', 1);
+				EmundusHelperUpdate::installExtension('eMundus - Filtres avancés [mod_emundus_filters]', 'mod_emundus_filters', '{"name":"eMundus - Filtres avancés [mod_emundus_filters]","type":"module","creationDate":"May 2022","author":"LEGENDRE J\u00e9r\u00e9my","copyright":"Copyright (C) 2022 eMundus. All rights reserved.","authorEmail":"jeremy.legendre@emundus.fr","authorUrl":"www.emundus.fr","version":"1.0.0","description":"","group":"","filename":"mod_emundus_filters"}', 'module', 1);
 				EmundusHelperUpdate::enableEmundusPlugins('mod_emundus_filters');
+
+				$xml_file = JPATH_SITE . '/templates/g5_helium/templateDetails.xml';
+				$xml      = simplexml_load_file($xml_file);
+				$positions = $xml->xpath('//extension/positions');
+				$positions[0]->addChild('position', 'emundus_filters');
+				$xml->asXML($xml_file);
+
 			}
 
 			// Insert new translations in overrides files
