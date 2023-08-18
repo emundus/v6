@@ -27,6 +27,11 @@
         max-width: 50%;
         margin: 16px auto;
       }
+      @media all and (min-width: 1440px) {
+        flex: 0 0 33%;
+        max-width: 33%;
+        margin: 16px auto;
+      }
 
       .em-form-intro {
         ul {
@@ -530,6 +535,7 @@
           @apply mb-1;
           @apply items-center;
           width: auto;
+          @apply ml-0;
           label {
             @apply mb-0;
             @apply flex;
