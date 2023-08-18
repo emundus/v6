@@ -533,6 +533,10 @@ input:focus + .em-slider {
   margin: unset;
 }
 
+.em-flex-wrap {
+    flex-wrap: wrap;
+}
+
 .em-flex-row{
   display: flex;
   flex-direction: row;
@@ -545,6 +549,14 @@ input:focus + .em-slider {
 .em-flex-wrap {
   display: flex;
   flex-wrap: wrap;
+}
+
+.em-flex-gap-8 {
+  gap: 8px;
+}
+
+.em-flex-gap-16 {
+  gap: 16px;
 }
 
 .em-grid-simple {
@@ -881,6 +893,10 @@ input:focus + .em-slider {
 }
 .em-red-500-color{
   color: $red-500;
+}
+
+.em-dark-blue-500-color{
+  color: var(--dark-blue-500);
 }
 
 .em-applicant-text-color {
