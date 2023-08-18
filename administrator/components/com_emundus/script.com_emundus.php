@@ -2417,6 +2417,9 @@ try {
 
 				EmundusHelperUpdate::insertTranslationsTag('JGLOBAL_AUTH_NO_USER','Cet utilisateur et/ou ce mot de passe est incorrecte');
 				EmundusHelperUpdate::insertTranslationsTag('JGLOBAL_AUTH_NO_USER','This user and/or password is incorrect', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('JGLOBAL_AUTH_INVALID_PASS','Cet utilisateur et/ou ce mot de passe est incorrecte');
+				EmundusHelperUpdate::insertTranslationsTag('JGLOBAL_AUTH_INVALID_PASS','This user and/or password is incorrect', 'override', null, null, null, 'en-GB');
 			}
 		}
 
@@ -2519,18 +2522,13 @@ try {
     "RewriteRule ^.*\\.md / [R=301,L]" . PHP_EOL;
 		$htaccess_update_status = EmundusHelperUpdate::insertIntoFile($file, $insert);
 
-		if ($db->execute() && $htaccess_update_status)
-		{
-			return true;
-		}
-		else
+		if (!$db->execute() || !$htaccess_update_status)
 		{
 			return false;
 		}
 
 		// Insert new translations in overrides files
 		EmundusHelperUpdate::languageBaseToFile();
-
 
 		// Recompile Gantry5 css at each update
 		EmundusHelperUpdate::recompileGantry5();
@@ -2539,6 +2537,8 @@ try {
 		EmundusHelperUpdate::clearJoomlaCache();
 
 		EmundusHelperUpdate::checkHealth();
+
+		return true;
 	}
 
 
