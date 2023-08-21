@@ -2968,14 +2968,8 @@ class EmundusHelperUpdate
 		$file = JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml';
 		$datas = [
 			'base' => [
-				'title-color' => '#000000',
 				'tertiary-color' => '#bd5631',
-				'background-coordinator' => '#f8f8f8',
-				'text-color-coordinator' => '#4b4b4b',
-				'title-color-coordinator' => '#000000',
-				'primary-color-coordinator' => '#238c69',
-				'secondary-color-coordinator' => '#353544',
-				'tertiary-color-coordinator' => '#5a5a72',
+				'title-color' => '#000000',
 			],
 			'accent' => [
 				'red-1' => '#eb0000',
@@ -3002,8 +2996,8 @@ class EmundusHelperUpdate
 				'black' => '#1e1e1e',
 			],
 			'font' => [
-				'family-text' => 'Inter',
 				'family-title' => 'Inter',
+				'family-text' => 'Inter',
 				'coordinator-family-text' => 'Inter',
 				'coordinator-family-title' => 'Inter',
 			],
