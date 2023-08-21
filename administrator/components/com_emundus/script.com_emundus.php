@@ -2425,6 +2425,9 @@ try {
 
 				EmundusHelperUpdate::insertTranslationsTag('JGLOBAL_AUTH_INVALID_PASS','Cet utilisateur et/ou ce mot de passe est incorrect');
 				EmundusHelperUpdate::insertTranslationsTag('JGLOBAL_AUTH_INVALID_PASS','This user and/or password is incorrect', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('JGLOBAL_AUTH_NO_USER','Cet utilisateur et/ou ce mot de passe est incorrect');
+				EmundusHelperUpdate::insertTranslationsTag('JGLOBAL_AUTH_NO_USER','This user and/or password is incorrect', 'override', null, null, null, 'en-GB');
 			}
 		}
 

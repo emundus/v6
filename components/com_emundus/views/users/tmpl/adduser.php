@@ -27,16 +27,6 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
     }
 </style>
 <form action="index.php?option=com_emundus&controller=users&task=<?= ($this->edit == 1)? 'edituser' : 'adduser'; ?>" id="em-add-user" class="em-addUser" role="form" method="post">
-	<h3>
-		<?php
-			if ($this->edit == 1) {
-				echo JText::_('COM_EMUNDUS_ACTIONS_EDIT_USER');
-			} else {
-				echo JText::_('COM_EMUNDUS_ACTIONS_ADD_USER');
-			}
-		?>
-	</h3>
-
 	<fieldset class="em-addUser-detail">
 		<?php if (JPluginHelper::getPlugin('authentication','ldap') && $this->edit == 0) :?>
 			<div class="form-group em-addUser-detail-ldap">
@@ -165,7 +155,7 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
 	};
 	$(document).ready(function() {
 		var edit = '<?php echo $this->edit?>';
-		$('form').css({padding:"26px"});
+		$('form').css({padding:"16px"});
 		$('alertes-details').css({padding:"30px"});
 		$('.em-chosen').chosen({width:'100%'});
 

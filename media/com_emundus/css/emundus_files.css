@@ -957,7 +957,7 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 }
 
 .g-back-office-emundus-tableau .panel-info > .panel-heading {
-    height: 40px !important;
+    min-height: 40px !important;
     border-radius: 0;
     padding: 8px 22px;
     border-bottom: unset;
@@ -1131,7 +1131,6 @@ label[for='clear-search']{
 div#em-appli-menu .panel-heading h3,
 div#em-synthesis .panel-heading h3 {
     font-size: 1rem;
-    padding-top: 5px;
 }
 
 .g-back-office-emundus-tableau div#em-appli-menu .panel-body {

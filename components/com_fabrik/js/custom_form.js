@@ -43,6 +43,10 @@ requirejs(['fab/fabrik'], function () {
         for (title of grouptitle){
             title.style.opacity = 1;
         }
+        grouptitle = document.querySelectorAll('.fabrikGroup h2');
+        for (title of grouptitle){
+            title.style.opacity = 1;
+        }
         let groupintro = document.querySelector('.groupintro');
         if (groupintro) {
             groupintro.style.opacity = 1;
