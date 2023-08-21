@@ -23,7 +23,7 @@
       :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_INTRO_ADD')"></span>
 
     <div class="form-builder-page-sections">
-      <button v-if="sections.length > 0" id="add-section" class="em-secondary-button top" @click="addSection()">
+      <button v-if="sections.length > 0" id="add-section" class="em-primary-button px-6 py-3" @click="addSection()">
         {{ translate('COM_EMUNDUS_FORM_BUILDER_ADD_SECTION') }}
       </button>
       <form-builder-page-section
@@ -44,7 +44,7 @@
       >
       </form-builder-page-section>
     </div>
-    <button id="add-section" class="em-secondary-button" @click="addSection()">
+    <button id="add-section" class="em-primary-button px-6 py-3" @click="addSection()">
       {{ translate('COM_EMUNDUS_FORM_BUILDER_ADD_SECTION') }}
     </button>
 
@@ -269,13 +269,7 @@ export default {
 
   #add-section {
     width: fit-content;
-    padding: 24px;
     margin: auto;
-    background-color: white;
-
-    &.top {
-      margin-top: 24px !important;
-    }
   }
 }
 </style>
