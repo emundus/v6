@@ -82,7 +82,7 @@ if($show_preliminary_documents && !empty($preliminary_documents)): ?>
 	                            } elseif($class == 'need_missing') {
                                     $color = 'var(--neutral-900)';
                                 } elseif ($class == 'need_ok') {
-                                    $color = 'var(--main-500)';
+                                    $color = 'var(--main-900)';
 	                            }
                                 ?>
                                 <span style="color: <?= $color ?>">
@@ -115,7 +115,7 @@ if($show_preliminary_documents && !empty($preliminary_documents)): ?>
 	                    } elseif($class == 'need_missing') {
 		                    $color = 'var(--neutral-900)';
 	                    } elseif ($class == 'need_ok') {
-		                    $color = 'var(--main-500)';
+		                    $color = 'var(--main-900)';
 	                    }
 	                    ?>
                         <span style="color: <?= $color ?>">
@@ -156,7 +156,7 @@ if($show_preliminary_documents && !empty($preliminary_documents)): ?>
 	                    } elseif($class == 'need_missing') {
 		                    $color = 'var(--neutral-900)';
 	                    } elseif ($class == 'need_ok') {
-		                    $color = 'var(--main-500)';
+		                    $color = 'var(--main-900)';
 	                    }
 	                    ?>
                         <span style="color: <?= $color ?>">

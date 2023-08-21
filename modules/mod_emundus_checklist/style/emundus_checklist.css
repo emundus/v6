@@ -83,7 +83,7 @@
 .mod_emundus_checklist___step_count {
     margin-right: 12px;
     border-radius: 50px;
-    background: #F0F6FD;
+    background: var(--main-50);
     color: var(--neutral-600);
     height: 24px;
     width: 24px;
@@ -123,7 +123,7 @@
 
 .mod_emundus_checklist .mod_emundus_checklist_need_ok:not(.active) .mod_emundus_checklist___step_count {
     color: #FFF;
-    border: solid 1px var(--main-100);
+    border: none;
 }
 .mod_emundus_checklist .mod_emundus_checklist_need_ok:not(.active) .mod_emundus_checklist___step_count  .material-icons-outlined {
     color: var(--main-500);
