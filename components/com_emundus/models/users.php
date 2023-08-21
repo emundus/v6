@@ -2312,7 +2312,7 @@ class EmundusModelUsers extends JModelList {
 	 * @throws Exception
 	 * @since  3.9.11
 	 */
-	public function passwordReset($data) {
+	public function passwordReset($data, $subject = 'COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT', $body = 'COM_USERS_EMAIL_PASSWORD_RESET_BODY') {
 
 		$config = JFactory::getConfig();
 
@@ -2418,8 +2418,8 @@ class EmundusModelUsers extends JModelList {
 		$data['token'] = $token;
 
 		// Build the translated email.
-		$subject = JText::sprintf('COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT', $data['sitename']);
-		$body = JText::sprintf('COM_USERS_EMAIL_PASSWORD_RESET_BODY', $data['sitename'], $data['token'], $data['link_html']);
+		$subject = JText::sprintf($subject, $data['sitename']);
+		$body = JText::sprintf($body, $data['sitename'], $data['token'], $data['link_html']);
 
         $post = [
             'USER_NAME' => $user->name,
