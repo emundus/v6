@@ -35,11 +35,11 @@ form:
     height:
       type: input.text
       label: Height of fields
-      default: '48px'
+      default: '40px'
     font-size:
       type: input.text
       label: Font size of fields
-      default: '12px'
+      default: '15px'
     tip-color:
       type: input.colorpicker
       label: Tip color

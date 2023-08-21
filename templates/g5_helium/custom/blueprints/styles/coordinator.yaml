@@ -15,7 +15,7 @@ form:
     primary-color:
       type: input.colorpicker
       label: Primary color
-      default: "#238C69"
+      default: "#20835F"
     secondary-color:
       type: input.colorpicker
       label: Secondary color

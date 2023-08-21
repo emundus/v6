@@ -8,11 +8,11 @@ form:
     default:
       type: input.text
       label: Border radius by default
-      default: '8px'
+      default: '4px'
     applicant:
       type: input.text
       label: Border radius for Applicant
-      default: '8px'
+      default: '4px'
     cards:
       type: input.text
       label: Border radius for Applicant cards
