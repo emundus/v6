@@ -98,7 +98,11 @@
 
       <div v-else>
         <div v-for="section in object.fields.Sections" class="em-mb-32">
-          <h4>{{section.Label}}</h4>
+          <div class="flex items-center justify-between mb-2">
+            <h4>{{section.Label}}</h4>
+            <button v-if="object.table.name === 'emundus_setup_profiles'" @click="exportToCsv">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_EXPORT') }}</button>
+          </div>
+
           <TranslationRow :section="section" :translations="translations" @saveTranslation="saveTranslation"/>
         </div>
       </div>
@@ -270,6 +274,10 @@ export default {
         this.$emit('updateLastSaving',this.formattedDate('','LT'));
         this.$emit('updateSaving',false);
       });
+    },
+
+    async exportToCsv() {
+      window.open('index.php?option=com_emundus&controller=translations&task=export&profile='+this.data.id, '_blank');
     }
   },
 
