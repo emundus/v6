@@ -608,7 +608,7 @@ $(document).ready(function () {
 		e.preventDefault();
 		var id = parseInt($(this).attr('id').split('|')[3]);
 
-		if(id != 26) {
+		if(id != 26 && id != 33) {
 			$('#em-modal-actions').modal({
 				backdrop: false
 			}, 'toggle');
@@ -867,14 +867,82 @@ $(document).ready(function () {
 					}
 				});
 
-				/*$('.modal-body').empty();
-				$('.modal-body').append('<div style="padding:26px"><strong>'+ Joomla.JText._('ARE_YOU_SURE_TO_DELETE_USERS') + '</strong></div>');*/
 				break;
 
 			case 33:
 				/*regenerate password*/
-				$('.modal-body').empty();
-				$('.modal-body').append('<div style="display: flex; flex-direction: row; justify-content: center;"><strong>' + Joomla.JText._('ARE_YOU_SURE_TO_REGENERATE_PASSWORD') + '</strong></div>');
+				Swal.fire({
+					title: $(this).children('a').text(),
+					text: Joomla.JText._('COM_EMUNDUS_WANT_RESET_PASSWORD'),
+					showCancelButton: true,
+					showCloseButton: true,
+					confirmButtonText: Joomla.JText._('COM_EMUNDUS_OK'),
+					cancelButtonText: Joomla.JText._('JCANCEL'),
+					reverseButtons: true,
+					customClass: {
+						title: 'em-swal-title',
+						cancelButton: 'em-swal-cancel-button',
+						confirmButton: 'em-swal-confirm-button',
+					},
+				}).then(function(result) {
+					if (result.value) {
+						addLoader();
+
+						const formData = new FormData();
+						var checkInput = getUserCheck();
+						formData.append('users', checkInput);
+						fetch('index.php?option=com_emundus&controller=users&task=passrequest&Itemid=' + itemId, {
+							method: 'POST',
+							body: formData
+						}).then(function(response) {
+							if (response.ok) {
+								return response.json();
+							}
+							throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+						}).then(function(result) {
+							removeLoader();
+
+							if (result.status) {
+								Swal.fire({
+									position: 'center',
+									type: 'success',
+									title: result.msg,
+									showConfirmButton: false,
+									timer: 1500,
+									customClass: {
+										title: 'w-full justify-center',
+									}
+								});
+								reloadData();
+								reloadActions($('#view').val());
+
+							} else {
+								Swal.fire({
+									position: 'center',
+									type: 'warning',
+									title: result.msg,
+									customClass: {
+										title: 'em-swal-title',
+										confirmButton: 'em-swal-confirm-button',
+										actions: "em-swal-single-action",
+									},
+								});
+							}
+						}).catch(function(error) {
+							removeLoader();
+							Swal.fire({
+								position: 'center',
+								type: 'warning',
+								title: error.message,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
+							});
+						});
+					}
+				});
 				break;
 
 			case 34:

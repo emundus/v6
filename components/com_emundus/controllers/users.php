@@ -923,31 +923,64 @@ class EmundusControllerUsers extends JControllerLegacy {
 	 */
 	public function passrequest() {
 
-		// Check the request token.
-		$this->checkToken('post');
-
 		$m_users = new EmundusModelusers();
-		$data = JFactory::getApplication()->input->post->get('jform', array(), 'array');
+		$response = array('status' => true, 'msg' => '');
 
-		// Submit the password reset request.
-		$return	= $m_users->passwordReset($data);
+		// Check the request token.
+		if(JFactory::getUser()->guest)
+		{
+			$this->checkToken('post');
 
-		// Check for a hard error.
-		if ($return->status === false) {
+			$data = JFactory::getApplication()->input->post->get('jform', array(), 'array');
 
-			// The request failed.
-			// Go back to the request form.
-			$message = JText::sprintf('COM_USERS_RESET_REQUEST_FAILED', $return->message);
-			$this->setRedirect('index.php?option=com_users&view=reset', $message, 'notice');
-			return false;
+			$return = $m_users->passwordReset($data);
 
+			// Check for a hard error.
+			if ($return->status === false) {
+				// The request failed.
+				// Go back to the request form.
+				$message = JText::sprintf('COM_USERS_RESET_REQUEST_FAILED', $return->message);
+				$this->setRedirect('index.php?option=com_users&view=reset', $message, 'notice');
+
+			} else {
+				// The request succeeded.
+				// Proceed to step two.
+				$this->setRedirect(JRoute::_('index.php?option=com_users&view=reset&layout=confirm'));
+			}
+		} elseif(EmundusHelperAccess::asAccessAction(12,'u')) {
+			$response['msg'] = JText::_('COM_EMUNDUS_USERS_RESET_REQUEST_LINK_SENDED');
+			$users = JFactory::getApplication()->input->post->getString('users', null);
+			if ($users === 'all') {
+				$us = $m_users->getUsers(0,0);
+
+				$users = array();
+				foreach ($us as $u) {
+					$users[] = $u->id;
+				}
+			} else {
+				$users = (array) json_decode(stripslashes($users));
+			}
+
+			foreach ($users as $user)
+			{
+				$data = array();
+				$data['email'] = JFactory::getUser($user)->email;
+
+				$return = $m_users->passwordReset($data, 'COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT_FOR_OTHER', 'COM_USERS_EMAIL_PASSWORD_RESET_BODY_FOR_OTHER');
+				if($return->status === false) {
+					$response['status'] = false;
+					$response['msg'] = $return->msg;
+				}
+			}
 		} else {
+			$response['status'] = false;
+			$response['msg'] = JText::_('ACCESS_DENIED');
+		}
 
-			// The request succeeded.
-			// Proceed to step two.
-			$this->setRedirect(JRoute::_('index.php?option=com_users&view=reset&layout=confirm'));
-			return true;
-
+		if(!JFactory::getUser()->guest)
+		{
+			echo json_encode($response);
+			exit;
 		}
 	}
 

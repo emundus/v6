@@ -2428,6 +2428,15 @@ try {
 
 				EmundusHelperUpdate::insertTranslationsTag('JGLOBAL_AUTH_NO_USER','Cet utilisateur et/ou ce mot de passe est incorrect');
 				EmundusHelperUpdate::insertTranslationsTag('JGLOBAL_AUTH_NO_USER','This user and/or password is incorrect', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_WANT_RESET_PASSWORD','Souhaitez-vous envoyer un lien de réinitialisation ?');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_WANT_RESET_PASSWORD','Would you like to send a reset link?', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT_FOR_OTHER','%s - Une demande de réinitialisation de mot de passe a été effectuée pour vous');
+				EmundusHelperUpdate::insertTranslationsTag('COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT_FOR_OTHER','%s - A password reset request has been made for you', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_USERS_EMAIL_PASSWORD_RESET_BODY_FOR_OTHER','Madame, Monsieur,</br></br>Une demande de réinitialisation du mot de passe de votre compte <b> %s</b> a été effectuée par un administrateur.</br></br>Cliquez sur le lien ci-dessous pour finaliser la réinitialisation :</br>%3$s</br></br>Si ce lien ne fonctionne pas, voici le code de vérification à saisir sur la page de réinitialisation de mot de passe :  %2$s</br>');
+				EmundusHelperUpdate::insertTranslationsTag('COM_USERS_EMAIL_PASSWORD_RESET_BODY_FOR_OTHER','Hello,</br></br> A request has been made to reset your <b> %s</b> account password.</br></br>To reset your password, click on the link below:</br>%3$s</br></br>If this link doesn\'t match, you will need to submit this token on the password reset page: %2$s</br>', 'override', null, null, null, 'en-GB');
 			}
 		}
 
