@@ -80,7 +80,7 @@
 					</div>
 					<div class="view-type flex items-center">
 					<span v-for="viewTypeOption in viewTypeOptions" :key="viewTypeOption.value"
-					      style="padding: 4px;border-radius: var(--em-default-br);"
+					      style="padding: 4px;border-radius: calc(var(--em-default-br)/2);display: flex;height: 38px;width: 38px;align-items: center;justify-content: center;"
 					      class="material-icons-outlined ml-2 cursor-pointer"
 					      :class="{
 								'active em-main-500-color em-border-main-500': viewTypeOption.value === viewType,

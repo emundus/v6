@@ -629,7 +629,7 @@ a.btn.btn-success:not(.btn-xs) {
 
 .mod_emundus_application___buttons_switch_view{
     border: solid 1px var(--neutral-600);
-    border-radius: var(--em-default-br);
+    border-radius: calc(var(--em-default-br)/2);
     display: flex;
     height: 38px;
     width: 38px;
