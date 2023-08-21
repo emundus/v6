@@ -186,7 +186,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
                         [
                             'key' => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
                             'value' => $campaign->published ? JText::_('PUBLISHED') : JText::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
-                            'classes' => $campaign->published ? 'label label-lightgreen em-p-5-12 em-font-weight-600' : 'label label-default em-p-5-12 em-font-weight-600',
+                            'classes' => $campaign->published ? 'label label-green-1 em-p-5-12 em-font-weight-600' : 'label label-default em-p-5-12 em-font-weight-600',
                         ],
                         [
                             'key' => JText::_('COM_EMUNDUS_ONBOARD_TIME_STATE'),

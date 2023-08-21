@@ -126,7 +126,7 @@
 									</span>
 								</td>
 								<div>
-									<hr v-if="viewType === 'blocs'" class="w-full mt-1.5 mb-1.5">
+									<hr v-if="viewType === 'blocs'" class="w-full mt-1.5 mb-3">
 									<td class="actions">
 										<a v-if="viewType === 'blocs' && editAction" @click="onClickAction(editAction, item.id)" class="em-primary-button text-sm cursor-pointer em-w-auto">
 											{{ translate(editAction.label) }}
@@ -151,7 +151,7 @@
 														    :key="action.name"
 														    :class="{'hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))}"
 														    @click="onClickAction(action, item.id)"
-														    class="cursor-pointer p-2 font-semibold"
+														    class="cursor-pointer p-2 em-font-size-12"
 														>
 															{{ translate(action.label) }}
 														</li>
