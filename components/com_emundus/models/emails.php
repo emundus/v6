@@ -1758,6 +1758,8 @@ class EmundusModelEmails extends JModelList {
                                 'display' => 'all'
                             ],
                         ];
+                    } else {
+                        $email->additional_columns = [['key' => JText::_('COM_EMUNDUS_ONBOARD_CATEGORY'), 'value' => '', 'classes' => '', 'display' => 'all']];
                     }
 
                     $emails[$key] = $email;
