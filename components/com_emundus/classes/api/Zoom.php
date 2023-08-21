@@ -54,10 +54,26 @@ class Zoom
 		}
 	}
 
+	private function generateToken() {
+		$config = JComponentHelper::getParams('com_emundus');
+
+		$this->client = new GuzzleClient([
+			'base_uri' => 'https://zoom.us',
+			'headers' => ['Authorization' => 'Basic ' . base64_encode($config->get('zoom_client_id') . ':' . $config->get('zoom_client_secret')),]
+		]);
+
+		$response = $this->post('/oauth/token?grant_type=account_credentials&account_id='.$config->get('zoom_account_id'));
+
+		if (!empty($response->access_token)) {
+			return $response->access_token;
+		} else {
+			return '';
+		}
+	}
+
 	private function setAuth()
 	{
-		$config = JComponentHelper::getParams('com_emundus');
-		$this->auth['token'] = $config->get('zoom_jwt', '');
+		$this->auth['token'] = $this->generateToken();
 	}
 
 	private function getAuth(): array
@@ -106,12 +122,17 @@ class Zoom
 		}
 	}
 
-	private function post($url, $json)
+	private function post($url, $json = null)
 	{
 		$response = '';
 
 		try {
-			$response = $this->client->post($url, ['body' => $json]);
+			if ($json !== null) {
+				$response = $this->client->post($url, ['body' => $json]);
+			} else {
+				$response = $this->client->post($url);
+			}
+
 			$response = json_decode($response->getBody());
 		} catch (\Exception $e) {
 			JLog::add('[POST] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.zoom');
