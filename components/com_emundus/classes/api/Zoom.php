@@ -176,7 +176,7 @@ class Zoom
 			$host = $this->getUserById($host_id);
 
 			if (!empty($host->id)) {
-				$meeting = $this->post("users/$host_id/meetings", json_encode($body));
+				$meeting = $this->post("users/$host_id/meetings", $body);
 			} else {
 				JLog::add('[CREATE MEETING] Host not found', JLog::ERROR, 'com_emundus.zoom');
 			}
@@ -198,21 +198,32 @@ class Zoom
 
 	public function createUser($user)
 	{
-		$user = null;
+		$response = null;
 
-		if (!empty($user['eamil'])) {
-			$user = $this->post('users', [
+		if (!empty($user['email'])) {
+			$response = $this->post('users', [
 				'action' => 'custCreate',
 				'user_info' => [
 					'email' => $user['email'],
-					'type' => 2,
+					'type' => !empty($user['type']) ? $user['type'] : 2,
 					'first_name' => $user['first_name'],
 					'last_name' => $user['last_name']
 				]
 			]);
 		}
 
-		return $user;
+		return $response;
+	}
+
+	public function updateMeeting($meeting_id, $body)
+	{
+		$response = null;
+
+		if (!empty($meeting_id) && !empty($body)) {
+			$response = $this->patch('meetings/' . $meeting_id, $body);
+		}
+
+		return $response;
 	}
 
 	public function updateMeetingDuration($meeting_id, $duration = 60) {
