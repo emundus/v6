@@ -103,7 +103,7 @@ form:
     after-border-height:
       type: input.text
       label: After border height
-      default: '3px'
+      default: '0px'
     radio-padding:
       type: input.text
       label: Radio padding

@@ -3073,7 +3073,7 @@ class EmundusHelperUpdate
 				'border-color-error' => '#c62222',
 				'label-color-error' => '#000000',
 				'element-color-error' => '#a60e15',
-				'after-border-height' => '3px',
+				'after-border-height' => '0px',
 				'radio-padding' => '0px 12px 0px 0px',
 				'radio-border-width' => '0px',
 				'radio-border-color' => '#a7a7a7',
