@@ -107,7 +107,7 @@ form:
     radio-padding:
       type: input.text
       label: Radio padding
-      default: '0 0 0 0'
+      default: '0px 12px 0px 0px'
     radio-border-width:
       type: input.text
       label: Radio border width
