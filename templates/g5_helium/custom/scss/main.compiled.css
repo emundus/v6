@@ -1414,7 +1414,7 @@ input[type="text"],
   select:not(.profile-select),
   a.chzn-single,
   textarea {
-    background-color: var(--neutral-50);
+    background-color: var(--neutral-0);
     color: var(--neutral-900);
     font-family: var(--em-default-font);
   }
@@ -1463,7 +1463,7 @@ input[type="text"],
     padding: 30px 12px !important;
   }
 .fabrik_element___emundus_file_upload_parent .btn-upload {
-    color: var(--neutral-50);
+    color: var(--neutral-0);
     border: 1px dashed #E3E3E3;
     border-radius: var(--em-applicant-br) !important;
     cursor: pointer;
@@ -2292,10 +2292,10 @@ legend {
         background: var(--red-500) !important;
         background-color: var(--red-500) !important;
         border: 1px solid var(--red-500) !important;
-        color: var(--neutral-50) !important;
+        color: var(--neutral-0) !important;
     }
 .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs .material-icons {
-        color: var(--neutral-50);
+        color: var(--neutral-0);
     }
 .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:active,
     .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:focus,
@@ -2373,7 +2373,7 @@ button.swal2-confirm.save-btn.sauvegarder.save_continue {
         background: var(--em-primary-color) !important;
         border: 1px solid var(--em-primary-color) !important;
         border-radius: var(--em-coordinator-br);
-        color: var(--neutral-50) !important;
+        color: var(--neutral-0) !important;
         font-weight: inherit;
     }
 button.swal2-confirm.save-btn.sauvegarder.save_continue:hover,
@@ -2461,7 +2461,7 @@ button.swal2-cancel.goback-btn:hover,
         border-radius: 50%;
         width: 20px;
         height: 21px;
-        color: var(--neutral-50);
+        color: var(--neutral-0);
         display: flex;
         justify-content: center;
         align-items: center;

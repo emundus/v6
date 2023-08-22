@@ -864,7 +864,7 @@
   select:not(.profile-select),
   a.chzn-single,
   textarea {
-    background-color: var(--neutral-50);
+    background-color: var(--neutral-0);
     color: var(--neutral-900);
     font-family: var(--em-default-font);
   }
@@ -922,7 +922,7 @@
   }
 
   .fabrik_element___emundus_file_upload_parent .btn-upload {
-    color: var(--neutral-50);
+    color: var(--neutral-0);
     border: 1px dashed #E3E3E3;
     border-radius: var(--em-applicant-br) !important;
     cursor: pointer;

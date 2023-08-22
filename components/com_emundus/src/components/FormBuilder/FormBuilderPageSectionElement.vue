@@ -208,7 +208,7 @@ export default {
 
       span {
         margin-top: 0;
-        color: var(--neutral-50) !important;
+        color: var(--neutral-0) !important;
       }
     }
 
@@ -226,7 +226,7 @@ export default {
 
       span {
         margin-top: 0;
-        color: var(--neutral-50) !important;
+        color: var(--neutral-0) !important;
       }
     }
   }

@@ -72,7 +72,7 @@ if($just_logged && !$only_applicant) {
     }
     .em-switch-profile-card:hover {
         background: var(--em-coordinator-primary-color);
-        color: var(--neutral-50);
+        color: var(--neutral-0);
     }
     .em-switch-profile-card .material-icons-outlined{
         font-size: 64px;

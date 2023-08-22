@@ -206,11 +206,11 @@
         background: var(--red-500) !important;
         background-color: var(--red-500) !important;
         border: 1px solid var(--red-500) !important;
-        color: var(--neutral-50) !important;
+        color: var(--neutral-0) !important;
     }
 
     .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs .material-icons {
-        color: var(--neutral-50);
+        color: var(--neutral-0);
     }
 
     .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:active,
@@ -326,7 +326,7 @@
         background: var(--em-primary-color) !important;
         border: 1px solid var(--em-primary-color) !important;
         border-radius: var(--em-coordinator-br);
-        color: var(--neutral-50) !important;
+        color: var(--neutral-0) !important;
         font-weight: inherit;
     }
 
@@ -430,7 +430,7 @@
         border-radius: 50%;
         width: 20px;
         height: 21px;
-        color: var(--neutral-50);
+        color: var(--neutral-0);
         display: flex;
         justify-content: center;
         align-items: center;

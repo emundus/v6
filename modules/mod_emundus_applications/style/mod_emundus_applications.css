@@ -685,7 +685,7 @@ a.btn.btn-success:not(.btn-xs) {
 .platform-content a.btn[title="Envoyer le dossier"] {
     background: var(--em-secondary-color);
     border: 1px solid var(--em-secondary-color);
-    color: var(--neutral-50);
+    color: var(--neutral-0);
 }
 
 .platform-content a.btn[title="Envoyer le dossier"]:hover,
