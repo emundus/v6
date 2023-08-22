@@ -204,7 +204,7 @@
 
         <hr class="mt-1.5 mb-1.5"/>
 
-        <div class="flex justify-between float-right">
+        <div class="flex justify-between float-right em-mb-16">
           <button
               type="button"
               class="em-primary-button em-w-auto"
