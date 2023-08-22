@@ -3082,7 +3082,7 @@ class EmundusHelperUpdate
 				'radio-height' => '16px',
 				'radio-margin-right' => '8px',
 				'radio-color-checked' => '#007BFF',
-				'radio-background-color-checked' => 'rgba(255, 255, 255, 0)',
+				'radio-background-color-checked' => '#EDEDED',
 				'radio-border-color-checked' => 'rgba(255, 255, 255, 0)',
 				'yesno-border-width' => '1px',
 				'yesno-border-radius' => '4px',

@@ -139,7 +139,7 @@ form:
     radio-background-color-checked:
         type: input.colorpicker
         label: Radio background color checked
-        default: 'rgba(255, 255, 255, 0)'
+        default: '#EDEDED'
     radio-border-color-checked:
         type: input.colorpicker
         label: Radio border color checked
