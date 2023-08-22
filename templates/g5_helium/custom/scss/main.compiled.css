@@ -560,7 +560,6 @@ video {
             color: var(--white);
         }
 .btn-tertiary {
-        background: white;
         padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
         border: 1px solid var(--em-tertiary-color);
         border-radius: var(--em-applicant-br);
@@ -572,10 +571,10 @@ video {
         }
 .btn-tertiary:hover {
             background: var(--em-tertiary-color);
-            color: white;
+            color: var(--neutral-0);
         }
 .btn-tertiary:hover p,.btn-tertiary:hover span {
-                color: white;
+                color: var(--neutral-0);
             }
 /** APPLICANT **/
 .emundus-form .page-header h1 {
@@ -708,6 +707,7 @@ form.fabrikForm .fabrikElementTip {
       font-weight: 400;
       font-family: var(--em-applicant-font);
       font-style: normal;
+      display: flex;
     }
 form.fabrikForm .fabrikElementTip i.icon-question-sign  {
         display: none;
@@ -1750,6 +1750,9 @@ input[type="text"],
 .mt-2 {
   margin-top: var(--em-spacing-2);
 }
+.mt-3 {
+  margin-top: var(--em-spacing-3);
+}
 .mt-4 {
   margin-top: var(--em-spacing-4);
 }
@@ -1946,6 +1949,10 @@ input[type="text"],
 .border {
   border-width: 1px;
 }
+.border-black {
+  --tw-border-opacity: 1;
+  border-color: rgb(0 0 0 / var(--tw-border-opacity));
+}
 .bg-black {
   --tw-bg-opacity: 1;
   background-color: rgb(0 0 0 / var(--tw-bg-opacity));
@@ -1956,10 +1963,6 @@ input[type="text"],
 }
 .bg-none {
   background-image: none;
-}
-.border-black {
-  --tw-border-opacity: 1;
-  border-color: rgb(0 0 0 / var(--tw-border-opacity));
 }
 .p-0 {
   padding: 0px;

@@ -141,6 +141,7 @@
       font-weight: 400;
       font-family: var(--em-applicant-font);
       font-style: normal;
+      display: flex;
 
       i.icon-question-sign  {
         display: none;
