@@ -2969,7 +2969,7 @@ class EmundusHelperUpdate
 		$datas = [
 			'base' => [
 				'title-color' => '#000000',
-				'tertiary-color' => '#bd5631',
+				'tertiary-color' => '#5c5c5c',
 			],
 			'accent' => [
 				'red-1' => '#eb0000',

@@ -10,10 +10,6 @@ $now = $dateTime->format('Y-m-d H:i:s');
 ?>
 
 <style>
-    .mod_emundus_flow___print .material-icons-outlined{
-        color: var(--em-primary-color);
-    }
-
     .btn.btn-primary.mod_emundus_flow___print:hover,
     .btn.btn-primary.mod_emundus_flow___print:active,
     .btn.btn-primary.mod_emundus_flow___print:focus{
@@ -31,9 +27,11 @@ $now = $dateTime->format('Y-m-d H:i:s');
     .mod_emundus_flow___print{
         display: flex !important;
         align-items: center;
+        gap: 4px;
+        background: white;
     }
     .btn-primary.mod_emundus_flow___print{
-        background: transparent;
+        background: white;
     }
 
     .mod_emundus_flow___infos{
@@ -76,7 +74,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
 <div style="padding: 0 20px">
     <div class="flex justify-between mod_emundus_flow___intro">
         <div class="flex items-center">
-            <h2 class="em-mb-0-important"><?php echo $campaign_name ?></h2>
+            <h1 class="em-mb-0-important"><?php echo $campaign_name ?></h1>
             <?php
             $color = '#0A53CC';
             $background = '#C8E1FE';
@@ -103,8 +101,9 @@ $now = $dateTime->format('Y-m-d H:i:s');
             </a>
             <?php endif; ?>
             <a href="/component/emundus/?task=pdf&amp;fnum=<?= $current_application->fnum ?>" target="_blank" title="<?php echo JText::_('PRINT') ?>">
-                <button class="btn btn-primary mod_emundus_flow___print">
+                <button class="btn-tertiary mod_emundus_flow___print">
                     <span class="material-icons-outlined" style="font-size: 19px">print</span>
+                    <p><?php echo JText::_('PRINT') ?></p>
                 </button>
             </a>
         </div>

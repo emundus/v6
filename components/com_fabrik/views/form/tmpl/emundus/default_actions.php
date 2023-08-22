@@ -26,6 +26,7 @@ if ($form->customButtons) {
 if ( $form->prevButton || $form->nextButton ) {
     $countActions++;
 }
+
 if ($this->hasActions) : ?>
 <div class="fabrikActions form-actions p-0 m-0">
 	<div
@@ -37,7 +38,12 @@ if ($this->hasActions) : ?>
         <div>
             <div class="btn-group">
                 <?php
-                echo $form->gobackButton;
+                if($form->gobackButton)
+                {
+                    echo '<div class="em-goback-btn flex items-center"><span class="material-icons-outlined" style="color:var(--neutral-900);">navigate_before</span>';
+	                echo $form->gobackButton;
+                    echo '</div>';
+                }
                 echo $form->resetButton;
                 echo $form->deleteButton;
                 echo $form->clearMultipageSessionButton;

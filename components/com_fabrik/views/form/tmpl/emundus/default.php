@@ -46,7 +46,7 @@ endif;
 	        <?php if ($this->params->get('show-title', 1)) : ?>
                 <div class="page-header">
 			        <?php $title = trim(preg_replace('/^([^-]+ - )/', '', $form->label)); ?>
-                    <h1 class="after-em-border after:bg-red-800"><?= JText::_($title) ?></h1>
+                    <h2 class="after-em-border after:bg-red-800"><?= JText::_($title) ?></h2>
                 </div>
 	        <?php endif; ?>
         </div>
@@ -95,7 +95,7 @@ endif;
                 <div class="mb-7">
                     <?php
                     if ($group->showLegend) :?>
-                        <h2 class="after-em-border after:bg-neutral-500"><?php echo $group->title; ?></h2>
+                        <h3 class="after-em-border after:bg-neutral-500"><?php echo $group->title; ?></h3>
                     <?php
                     endif;
 

@@ -559,6 +559,24 @@ video {
 .em-primary-button .material-icons {
             color: var(--white);
         }
+.btn-tertiary {
+        background: white;
+        padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
+        border: 1px solid var(--em-tertiary-color);
+        border-radius: var(--em-applicant-br);
+        color: var(--em-tertiary-color);
+        transition: all 0.3s ease-in-out;
+    }
+.btn-tertiary p,.btn-tertiary span {
+            color: var(--em-tertiary-color);
+        }
+.btn-tertiary:hover {
+            background: var(--em-tertiary-color);
+            color: white;
+        }
+.btn-tertiary:hover p,.btn-tertiary:hover span {
+                color: white;
+            }
 /** APPLICANT **/
 .emundus-form .page-header h1 {
   color: var(--em-default-title-color-1);
@@ -727,6 +745,14 @@ form.fabrikForm input:not([type='file']):focus:not([type='radio']):not([type='ch
         border-color: var(--em-form-bc-focus);
         background-color: var(--em-form-bgc-focus);
       }
+/* TEXTAREA */
+form.fabrikForm .fabrik_characters_left.muted {
+      color: var(--neutral-600);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px;
+    }
 /* PHONE NUMBER */
 form.fabrikForm #renderCountryCode
     {
@@ -1319,7 +1345,7 @@ form.fabrikForm .fabrikGroupRepeater {
       justify-content: flex-end;
 }
 form.fabrikForm .fabrikGroupRepeater .addGroup {
-        padding-right: calc(var(--em-applicant-br)*2);
+        padding: 6px 10px;
       }
 /* GROUPE REPEAT */
 form.fabrikForm .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn.btn-small.btn-success,
@@ -1452,6 +1478,10 @@ input[type="text"],
     position: relative;
     overflow: hidden;
     width: 100%;
+  }
+.fabrik_element___file_upload_formats {
+    font-size: 16px;
+    color: var(--neutral-600);
   }
 .fabrik_element___emundus_file_upload_parent input[type=file] {
     left: 0;
@@ -1926,6 +1956,10 @@ input[type="text"],
 }
 .bg-none {
   background-image: none;
+}
+.border-black {
+  --tw-border-opacity: 1;
+  border-color: rgb(0 0 0 / var(--tw-border-opacity));
 }
 .p-0 {
   padding: 0px;
@@ -2906,7 +2940,23 @@ body {
 }
 small {
     font-size: 15px;
+    font-weight: 500;
 }
+.em-goback-btn {
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
+}
+.em-goback-btn .material-icons-outlined {
+        color: var(--em-secondary-color);
+    }
+.em-goback-btn button.btn.goback-btn {
+        text-shadow: none;
+        text-transform: none;
+        color: var(--neutral-900);
+        font-weight: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        font-size: var(--em-applicant-font-size);
+    }
 .after\:bg-neutral-500::after {
   content: var(--tw-content);
   background-color: var(--neutral-500);

@@ -89,4 +89,22 @@ body {
 }
 small {
     font-size: 15px;
+    font-weight: 500;
+}
+.em-goback-btn {
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
+
+    .material-icons-outlined {
+        color: var(--em-secondary-color);
+    }
+
+    button.btn.goback-btn {
+        text-shadow: none;
+        text-transform: none;
+        color: var(--neutral-900);
+        font-weight: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        font-size: var(--em-applicant-font-size);
+    }
 }

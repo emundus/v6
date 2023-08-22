@@ -5,6 +5,10 @@ defined('_JEXEC') or die('Restricted access');
 $index_form = 1;
 $index_doc = 1;
 
+if($itemid['id'] == $menuid && $show_mandatory_documents == 1) {
+	$index_form = sizeof($forms) + 1;
+}
+
 foreach ($forms as $index => $form){
     if ($form->id == $menuid) {
         $index_form = $index + 1;
@@ -26,7 +30,6 @@ if($show_optional_documents == 1 && count($optional_documents) > 0) {
 if (!empty($checkout_url)){
 	$pages_no++;
 }
-
 
 if($show_preliminary_documents && !empty($preliminary_documents)): ?>
 <div class="mod_emundus_checklist em-mb-24">
@@ -51,7 +54,7 @@ if($show_preliminary_documents && !empty($preliminary_documents)): ?>
 <div class="mod_emundus_checklist">
     <div class="em-flex-row em-flex-space-between em-pointer mod_emundus_checklist_expand">
         <div class="em-flex-row">
-            <h4> <?php echo JText::_($forms_title) ?></h4>
+            <h4> <?php echo JText::_($forms_title) . ' ' . $index_form . '/' . $pages_no ?></h4>
         </div>
         <span id="mod_emundus_checklist___expand_icon" class="material-icons-outlined">expand_more</span>
     </div>
@@ -239,7 +242,7 @@ $details_view = array_search('view=details',$url);
     });
 
     document.addEventListener('click', function(e) {
-        if (e.target.closest('.mod_emundus_checklist_expand')) {
+        if (window.innerWidth < 480 && e.target.closest('.mod_emundus_checklist_expand')) {
             expandForms(e);
         }
     });
