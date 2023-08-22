@@ -543,6 +543,7 @@
             padding: var(--em-form-radio-padding);
             border: var(--em-form-radio-bw) solid var(--em-form-radio-bc);
             border-radius: var(--em-form-radio-br);
+            margin-right: var(--em-form-radio-margin-right);
             input {
               accent-color: var(--em-form-radio-color-checked);
               width: var(--em-form-radio-width);
