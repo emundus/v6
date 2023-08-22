@@ -32,9 +32,6 @@ if($just_logged && !$only_applicant) {
         margin-bottom: 8px;
         margin-top: 8px;
     }
-    .em-switch-profile-swal-container h2{
-        margin-bottom: 0 !important;
-    }
     .em-switch-profile-swal-container .swal2-modal {
         width: 40vw;
     }
@@ -106,7 +103,7 @@ if($just_logged && !$only_applicant) {
         Swal.fire({
             position: 'center',
             iconHtml: '',
-            title: "<span class='em-main-500-color'><?php echo JText::_('MOD_EMUNDUS_SWITCH_PROFILE_WELCOME') . ' ' . $user->name ?></span>",
+            title: "<h1 class='em-main-500-color'><?php echo JText::_('MOD_EMUNDUS_SWITCH_PROFILE_WELCOME') . ' ' . $user->name ?></h1>",
             html: "<?php echo $text ?>",
             showConfirmButton: false,
             reverseButtons: true,
