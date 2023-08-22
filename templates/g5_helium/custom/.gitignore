@@ -4,7 +4,7 @@ language/*
 layouts/*
 back-office.css
 custom-css.css
-custom-js.js
+js/custom-js.js
 responsive.css
 !modal_fix.css
 !scss/*

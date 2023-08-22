@@ -153,7 +153,12 @@ switch ($order) {
                             $files_sent = $db->loadResult();
                         }
 
-                        echo '<div style="width:100%;display:flex;justify-content:center;"><p style="display:inline-block;padding:10px;border:1px solid red;border-radius:4px;font-weight:bold;color:red;">' . $files_sent . ' ' . JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_SENT_NUMBER') . ' ' . $file_limit . '</p></div>';
+                        if ($files_sent == 1) {
+                            $files_sent_tag = 'MOD_EM_CAMPAIGN_CAMPAIGN_SENT_NUMBER_SINGULAR';
+                        } else {
+                            $files_sent_tag = 'MOD_EM_CAMPAIGN_CAMPAIGN_SENT_NUMBER_PLURAL';
+                        }
+                        echo '<div style="width:100%;display:flex;justify-content:center;"><p style="display:inline-block;padding:10px;border:1px solid red;border-radius:4px;font-weight:bold;color:red;">' . $files_sent . ' ' . JText::_($files_sent_tag) . ' ' . $file_limit . '</p></div>';
                     }
                 }
                 ?>

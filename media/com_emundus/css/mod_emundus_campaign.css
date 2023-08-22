@@ -1,11 +1,4 @@
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
-
-
 /************ HOME ***************/
-body{
-    font-family: 'Material Icons';
-}
-
 @media (min-width: 768px) {
     .position-me {
         position: absolute;

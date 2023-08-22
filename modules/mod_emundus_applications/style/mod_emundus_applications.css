@@ -8,10 +8,8 @@ button.save-btn, .btn-success, button.save, button.save_continue, button.send, a
 }
 
 .btn-success:active:hover, .btn-warning:active:hover, .btn-danger:active:hover  {
-    background-color: transparent !important;
+    background-color: var(--transparent) !important;
 }
-
-
 
 button.save-btn:hover, button.save-btn:active, button.save-btn:focus,
 .btn-success:hover, .btn-success:focus, .btn-success:active,
@@ -36,7 +34,7 @@ a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
 .toggle-addoption.btn:hover, .toggle-addoption.btn:active, .toggle-addoption.btn:focus,
 .candidacy-files-list a#send:hover, .candidacy-files-list a#send:active, .candidacy-files-list a#send:focus,
 .choice-statut-btn:hover, .choice-statut-btn:active, .choice-statut-btn:focus {
-    background-color: transparent;
+    background-color: var(--transparent);
     outline: none;
 }
 
@@ -60,20 +58,105 @@ button#back:hover, button#back:active, button#back:focus,
 .fabrikUploadDelete .btn:hover, .fabrikUploadDelete .btn:active, .fabrikUploadDelete .btn:focus,
 #em_select_filter #del-filter:hover, #em_select_filter #del-filter:active, #em_select_filter #del-filter:focus,
 .btn-toolbar .btn-group:nth-child(2) .btn:hover, .btn-toolbar .btn-group:nth-child(2) .btn:active, .btn-toolbar .btn-group:nth-child(2) .btn:focus {
-    background-color: transparent;
+    background-color: var(--transparent);
     outline: none;
 }
 
-    /* Accueil Dossiers */
+/* Accueil Dossiers */
+
 .main-page-application-title {
     font-size: 20px;
     width:55%;
 }
 
-    /*******************Mes dossiers de candidature*****************/
+/*******************Mes dossiers de candidature*****************/
+
+.candidacy-files-list a#send {
+    background: var(--em-primary-color);
+    border: 1px solid var(--em-primary-color);
+    text-shadow: none;
+    text-transform: initial;
+    padding: var(--p-8) var(--p-12);
+}
+
+.candidacy-files-list a#send:hover,
+.candidacy-files-list a#send:active,
+.candidacy-files-list a#send:focus{
+    background-color: transparent;
+    color: var(--em-primary-color);
+    border: 1px solid var(--em-primary-color) !important;
+}
+
+.list-group.candidacy-files-list .row .ui.yellow.segment:not(.inverted) {
+    border-top: 2px solid var(--em-primary-color) !important;
+}
+
+.candidacy-files-list .em-light-selected-tab {
+    border-bottom: 1px solid var(--em-primary-color);
+}
+.swal2-actions button.swal2-styled.swal2-cancel:not(.mod_emundus_application_swal_manage_tabs_cancel):not(.em-swal-cancel-button) {
+    border: 1px solid var(--red-500) !important;
+    color: var(--neutral-0) !important;
+    padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
+}
+
+.swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:hover,
+.swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:active,
+.swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:focus{
+    border: none !important;
+}
+
+.mod_emundus_application___buttons_switch_view_enable{
+    color: var(--em-primary-color);
+}
+
+.mod_emundus_application___buttons_enable{
+    border: 1px solid var(--em-primary-color) !important;
+}
+
+#tab_adding_link a span.material-icons-outlined{
+    color: var(--em-primary-color);
+}
+
+.mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-cancel {
+    background: transparent;
+    border: 1px solid var(--em-secondary-color);
+    border-radius: var(--em-applicant-br);
+    color: var(--em-secondary-color);
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
+    font-weight: inherit;
+    margin-right: var(--m-8);
+    font-size: var(--em-applicant-font-size);
+}
+
+.mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-cancel:hover,
+.mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-cancel:active,
+.mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-cancel:focus{
+    background: var(--em-secondary-color);
+    border: 1px solid var(--em-secondary-color);
+    color: var(--neutral-0);
+}
+
+.mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-confirm {
+    background: var(--em-primary-color);
+    border: 1px solid var(--em-primary-color);
+    border-radius: var(--em-applicant-br);
+    color: var(--neutral-0);
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
+    font-weight: inherit;
+    font-size: var(--em-applicant-font-size);
+}
+
+.mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-confirm:hover,
+.mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-confirm:active,
+.mod_emundus_application_swal_manage_tabs_actions button.swal2-styled.swal2-confirm:focus {
+    background: var(--transparent);
+    border: 1px solid var(--em-primary-color);
+    color: var(--em-primary-color);
+}
 
 .main-page-file-info p {
-    padding-bottom: 10px;
+    padding-bottom: var(--p-8);
 }
 
 .select {
@@ -98,13 +181,13 @@ button#back:hover, button#back:active, button#back:focus,
 
 .navsearch-content .form-control {
     border-radius: 0 0 0 0 !important;
-    padding: 8px 12px;
+    padding: var(--p-8) var(--p-12);
     height: 33px !important;
 }
 
 .navsearch-content input[type="text"]:focus,
 .navsearch-content input[type="text"]:hover {
-    border-color: #d5d5d5;
+    border-color: var(--neutral-300);
     box-shadow: none;
 }
 
@@ -117,7 +200,7 @@ button#back:hover, button#back:active, button#back:focus,
 }
 
 .forget-mdp {
-    margin-top: 5px;
+    margin-top: var(--m-4);
     display: block;
 }
 
@@ -126,7 +209,7 @@ button#back:hover, button#back:active, button#back:focus,
 }
 
 .campaigntext.blue h4 a {
-    color: #292929;
+    color: var(--neutral-800);
 }
 
 .homepage .candidacy-files-list .icon-plus-sign {
@@ -138,29 +221,29 @@ button#back:hover, button#back:active, button#back:focus,
 }
 
 .candidacy-files-list .col-xs-6:nth-child(2) a {
-    margin: 5px 0 !important;
+    margin: var(--m-4) 0 !important;
 }
 
 .homepage #g-main-mainbody #content-bottom-a .platform-content i.icon-print, .homepage #g-main-mainbody #content-bottom-a .platform-content i.icon-trash {
-    padding-left: 2px;
+    padding-left: var(--p-4);
 }
 
 .list-group .col-xs-6.col-md-4 a {
-    margin-bottom: 2px;
+    margin-bottom: var(--m-4);
 }
 
 a.btn.btn-success:not(.btn-xs) {
     width: 100%;
     text-align: center;
-    border-radius: var(--applicant-border-radius) !important;
+    border-radius: var(--em-applicant-br) !important;
 }
 
 /*** Progression bar percentage ***/
 .main-page-file-progress text.timer {
-    color: #000 !important;
+    color: var(--neutral-900) !important;
     font-size: 30px !important;
     font-weight: 600;
-    fill: #000 !important;
+    fill: var(--neutral-900) !important;
 }
 .g-block.size-100.content-bottom-a hr:last-child {
     display: none !important;
@@ -171,6 +254,7 @@ a.btn.btn-success:not(.btn-xs) {
 
 .view-featured .candidacy-files-list .row {
    position: relative;
+    height: 100%;
 }
 @media all and (max-width: 479px) {
 
@@ -179,7 +263,7 @@ a.btn.btn-success:not(.btn-xs) {
     }
 
     .main-page-file-info a {
-        margin-bottom: 4px;
+        margin-bottom: var(--m-4);
     }
 
     .view-featured .candidacy-files-list .row {
@@ -188,7 +272,6 @@ a.btn.btn-success:not(.btn-xs) {
         justify-content: center;
         align-items: center;
     }
-
     .view-featured .candidacy-files-list .row .main-page-application-title  {
         align-self: flex-start;
         text-align: left;
@@ -207,7 +290,7 @@ a.btn.btn-success:not(.btn-xs) {
     }
 
     .main-page-file-info a {
-        margin-bottom: 4px;
+        margin-bottom: var(--m-4);
     }
 
     .view-featured .candidacy-files-list .row {
@@ -244,7 +327,7 @@ a.btn.btn-success:not(.btn-xs) {
 
     .main-page-file-progress {
         width: 100%;
-        margin-top: 10px;
+        margin-top: var(--m-8);
     }
 }
 
@@ -257,7 +340,7 @@ a.btn.btn-success:not(.btn-xs) {
 
     .candidacy-files-list .main-page-file-progress {
         top: 40px;
-        padding-bottom: 40px;
+        padding-bottom: var(--p-40);
     }
 }
 
@@ -298,24 +381,23 @@ a.btn.btn-success:not(.btn-xs) {
 }
 
 .mod_emundus_applications___footer a.btn.btn-success:not(.btn-xs){
-    width: 40%;
-    margin-bottom: 24px;
+    width: auto;
+    margin-bottom: var(--m-24);
 }
 
-.mod_emundus_applications___header h1.em-h1 {
- font-family: var(--applicant-title-font);
- color: var(--em-applicant-title-color);
-margin-top: 16px;
+.mod_emundus_applications___header h1 {
+ font-family: var(--em-applicant-font-title);
+ color: var(--em-default-title-color-1);
 }
 
 .mod_emundus_applications___header_desc h2 {
-    margin-top: 24px;
-    font-family: var(--applicant-title-font);
-    color: var(--em-applicant-title-color);
+    margin-top: var(--m-24);
+    font-family: var(--em-applicant-font-title);
+    color: var(--em-default-title-color-1);
 }
 
 .mod_emundus_applications___header_desc p{
-    color: #727272;
+    color: var(--neutral-600);
 }
 
 .mod_emundus_applications___header.mod_emundus_applications___tmp_tchooz a#add-application {
@@ -325,16 +407,15 @@ margin-top: 16px;
 .mod_emundus_applications___content{
     display: grid;
     align-items: flex-start;
-    padding: 0px;
-    gap: 32px;
+    padding: 0;
+    gap: var(--p-32);
     grid-template-columns: repeat(2,1fr);
 }
 .mod_emundus_applications___content_app{
-    box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
-    border-radius: 16px !important;
-    padding: 32px;
-    background: #fff;
-    height: -webkit-fill-available;
+    box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+    border-radius: var(--em-default-br-cards) !important;
+    padding: var(--p-32);
+    background: var(--neutral-0);
 }
 .mod_emundus_applications___date{
     display: flex;
@@ -343,9 +424,13 @@ margin-top: 16px;
 .mod_emundus_applications___informations{
     display: grid;
     align-items: flex-start;
-    padding: 0px;
-    gap: 16px;
+    padding: 0;
+    gap: var(--p-16);
     grid-template-columns: repeat(2,1fr);
+}
+
+.mod_emundus_applications___content_app hr {
+    margin: var(--m-16) 0;
 }
 
 .mod_emundus_applications___circle{
@@ -354,15 +439,15 @@ margin-top: 16px;
     border-radius: 50%;
 }
 .mod_emundus_applications___programme_tag{
-    border-radius: 8px;
-    padding: 5px 12px;
+    border-radius: var(--em-default-br);
+    padding: var(--p-4) var(--p-16);
     width: fit-content;
     font-size: 12px;
     font-weight: 600;
 }
 .mod_emundus_applications___title{
-    margin-bottom: 8px !important;
-    color: var(--em-applicant-title-color) !important;
+    margin-bottom: var(--m-8) !important;
+    color: var(--em-default-title-color-1) !important;
     -webkit-line-clamp: 2;
     overflow: hidden;
     -webkit-box-orient: vertical;
@@ -370,7 +455,7 @@ margin-top: 16px;
     display: -webkit-box;
     line-height: 140%;
     min-height: 50px;
-    font-family: var(--applicant-title-font) !important;
+    font-family: var(--em-applicant-font-title) !important;
 }
 
 .mod_emundus_applications___title:hover,
@@ -383,41 +468,62 @@ margin-top: 16px;
     flex-direction: column;
 }
 
+#applications_card_view .mod_emundus_applications__container{
+    padding: 4px;
+}
+
+.mod_emundus_applications___content_app:hover .mod_emundus_applications__container {
+    background: #F3F3F3;
+    border-radius: var(--em-default-br);
+}
+
 .mod_emundus_applications__actions{
+    margin-top: var(--m-8);
     flex-direction: column;
-    box-shadow: 0px 12px 17px rgba(5, 47, 55, 0.07), 0px 5px 22px rgba(5, 47, 55, 0.06), 0px 7px 8px rgba(5, 47, 55, 0.1);
-    border-radius: 12px;
-    padding: 12px;
+    box-shadow: 0 12px 17px rgba(5, 47, 55, 0.07), 0 5px 22px rgba(5, 47, 55, 0.06), 0 7px 8px rgba(5, 47, 55, 0.1);
+    border-radius: calc(var(--em-default-br-cards)/2);
+    padding: var(--p-16);
     position: absolute;
-    background: white;
+    background: var(--neutral-0);
     z-index: 9999;
     margin-top: 34px;
 }
-.mod_emundus_applications__actions a:not(:last-child){
-    margin-bottom: 8px;
+
+.mod_emundus_applications__actions a:hover,
+.mod_emundus_applications__actions > div:hover {
+    background: #EBECF0 !important;
+    border-radius: var(--em-default-br) !important;
+    color: var(--neutral-900) !important;
+    text-decoration: none;
 }
 
-.mod_emundus_applications__actions a:hover {
-    color: #727272;
+.mod_emundus_applications__actions a {
+    padding: 6px 8px;
+}
+
+.mod_emundus_applications__actions a.em-red-500-color:hover {
+    background: #EBECF0 !important;
+    border-radius: calc(var(--em-default-br-cards)/2) !important;
+    color: var(--red-500) !important;
     text-decoration: none;
 }
 
 .mod_emundus_applications__list_content--default {
-    box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
-    border-radius: 16px !important;
-    padding: 32px;
-    background: #fff;
+    box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+    border-radius: calc(var(--em-applicant-br)*2) !important;
+    padding: var(--p-32);
+    background: var(--neutral-0);
 }
 
 .mod_emundus_applications___content_text {
     justify-content: space-between;
 }
 .mod_emundus_applications_badge{
-    margin-left: 8px;
-    background: white;
-    border: solid 1px #ececec;
+    margin-left: var(--m-8);
+    background: var(--neutral-0);
+    border: solid 1px var(--neutral-300);
     border-radius: 50px;
-    color: black;
+    color: var(--neutral-600) !important;
     display: flex;
     height: 25px;
     width: 25px;
@@ -428,8 +534,19 @@ margin-top: 16px;
 .em-light-tabs{
     height: 50px;
 }
+
+.em-light-tabs a {
+    color: var(--neutral-700);
+}
+
+.em-light-tabs a:hover,
+.em-light-tabs a:active,
+.em-light-tabs a:focus{
+    color: var(--neutral-800);
+}
+
 .em-light-selected-tab p{
-    color: black;
+    color: var(--neutral-900);
 }
 
 .mod_emundus_application_swal_manage_tabs_popup{
@@ -438,16 +555,16 @@ margin-top: 16px;
 }
 .mod_emundus_application_swal_manage_tabs_header{
     align-items: start !important;
-    padding: 24px 16px 8px 16px !important;
+    padding: var(--p-24) var(--p-16) var(--p-8) var(--p-16) !important;
 }
 .mod_emundus_application_swal_manage_tabs_header h2{
-    color: black !important;
+    color: var(--neutral-900) !important;
     flex-direction: column;
     align-items: start;
     margin-top: 0 !important;
 }
 .mod_emundus_application_swal_manage_tabs_popup .swal2-content{
-    padding: 0 16px 0 16px;
+    padding: 0 var(--p-16) 0 var(--p-16);
 }
 .mod_emundus_application_swal_manage_tabs_popup #swal2-content{
     display: flex !important;
@@ -455,29 +572,28 @@ margin-top: 16px;
 .mod_emundus_application_swal_manage_tabs_popup #swal2-content ul{
     list-style-type: none;
     margin-left: 0;
-    margin-top: 4px;
+    margin-top: var(--m-4);
     margin-bottom: 0;
 }
 .mod_emundus_application_swal_manage_tabs_actions{
-    border-top: solid 1px #ececec;
-    margin-top: 8px !important;
-    padding: 8px 16px;
+    border-top: solid 1px var(--neutral-300);
+    margin-top:var(--m-8) !important;
+    padding: var(--p-8) var(--p-12);
     display: flex !important;
     justify-content: end !important;
 }
 .mod_emundus_application_swal_manage_tabs_actions button{
-    border-radius: 8px !important;
+    border-radius: var(--em-applicant-br) !important;
 }
 .mod_emundus_application_swal_manage_tabs_popup .swal2-select{
     font-size: 14px;
-    margin: 0;
     width: 100%;
-    margin-top: 12px;
+    margin-top: var(--m-16) 0 0 0;
     height: 48px;
-    border-radius: 8px;
+    border-radius: var(--em-applicant-br);
 }
 .mod_emundus_application_swal_manage_tabs_popup .swal2-content .swal2-validation-message{
-    background: transparent;
+    background: var(--transparent);
     margin-left: -20px !important;
     justify-content: start;
 }
@@ -485,12 +601,26 @@ margin-top: 16px;
 #applications_list_view table{
     border: unset;
 }
+
+#applications_list_view table thead tr th{
+   font-weight: 600;
+}
+
 #applications_list_view table thead tr th,#applications_list_view table tbody tr td{
-    background: transparent;
-    padding: 12px 8px 12px 8px;
+    background: var(--transparent);
+    padding: var(--p-16) var(--p-8) var(--p-16) var(--p-8);
 }
 #applications_list_view table tr {
-    border-bottom: 1px solid #EDEDED;
+    border-bottom: 1px solid var(--neutral-300);
+}
+
+
+#applications_list_view .mod_emundus_applications__container span{
+    padding: 4px;
+}
+
+#applications_list_view table tr:hover .mod_emundus_applications__container span {
+    border-radius: var(--em-default-br);
 }
 #applications_list_view .mod_emundus_applications___title{
     min-height: unset;
@@ -498,8 +628,8 @@ margin-top: 16px;
 }
 
 .mod_emundus_application___buttons_switch_view{
-    border: solid 1px #8F96A3;
-    border-radius: 4px;
+    border: solid 1px var(--neutral-600);
+    border-radius: var(--em-default-br);
     display: flex;
     height: 38px;
     width: 38px;
@@ -507,43 +637,93 @@ margin-top: 16px;
     justify-content: center;
 }
 .mod_emundus_application___buttons_switch_view_disabled{
-    color: #8F96A3;
+    color: var(--neutral-600);
 }
 
 .mod_emundus_application__header_filter{
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 8px;
-    padding: 6px 16px;
+    border-radius: var(--em-default-br);
+    padding: var(--p-8) var(--p-12);
     width: max-content;
 }
 
 .mod_emundus_application__header_sort__values{
-    margin-top: 8px;
+    margin-top: var(--m-8);
     flex-direction: column;
-    box-shadow: 0px 12px 17px rgba(5, 47, 55, 0.07), 0px 5px 22px rgba(5, 47, 55, 0.06), 0px 7px 8px rgba(5, 47, 55, 0.1);
-    border-radius: 8px;
-    padding: 24px;
+    box-shadow: 0 12px 17px rgba(5, 47, 55, 0.07), 0 5px 22px rgba(5, 47, 55, 0.06), 0 7px 8px rgba(5, 47, 55, 0.1);
+    border-radius: var(--em-default-br) !important;
+    padding: var(--p-24);
     position: absolute;
-    background: white;
+    background: var(--neutral-0);
+    z-index: 10;
 }
 
 .mod_emundus_application__header_sort__values a:not(:last-child){
-    margin-bottom: 20px;
+    margin-bottom: var(--m-24);
 }
 
 .mod_emundus_application__header_sort__values a:hover {
-    color: #727272;
+    color: var(--neutral-600);
+}
+
+.homepage #g-main-mainbody #content-bottom-a .platform-content .btn.btn-info {
+    background: var(--em-secondary-color);
+    border-color: var(--em-secondary-color);
+}
+
+.homepage #g-main-mainbody #content-bottom-a .platform-content .btn.btn-info:hover,
+.homepage #g-main-mainbody #content-bottom-a .platform-content .btn.btn-info:active,
+.homepage #g-main-mainbody #content-bottom-a .platform-content .btn.btn-info:focus {
+    background-color: transparent;
+    color: var(--em-secondary-color);
+    border-color: var(--em-secondary-color);
+}
+
+
+.platform-content a.btn[title="Envoyer le dossier"] {
+    background: var(--em-secondary-color);
+    border: 1px solid var(--em-secondary-color);
+    color: var(--neutral-50);
+}
+
+.platform-content a.btn[title="Envoyer le dossier"]:hover,
+.platform-content a.btn[title="Envoyer le dossier"]:active,
+.platform-content a.btn[title="Envoyer le dossier"]:focus {
+    background: transparent;
+    border: 1px solid var(--em-secondary-color);
+    color: var(--em-secondary-color);
+}
+
+circle.circle {
+    stroke: var(--em-secondary-color);
 }
 
 @media screen and (max-width: 767px) {
-    .mod_emundus_applications___header #add-application {
+
+    .moduletable.list-group.candidacy-files-list > div.em-flex-row.em-flex-space-between.em-mt-16 {
+        flex-wrap: wrap;
+        gap: 9px;
+    }
+
+    .mod_emundus_applications___header .em-flex-row.em-flex-space-between {
+       flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .mod_emundus_applications___header .em-flex-row.em-flex-space-between #add-application {
         width: 100% !important;
+        margin-left: 0;
+    }
+
+    .mod_emundus_applications___header .em-flex-row.em-flex-space-between .em-flex-row.em-w-auto {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
     .mod_emundus_applications___footer a.btn.btn-success:not(.btn-xs){
-        width: 100%;
+        width: auto;
     }
 
 

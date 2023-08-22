@@ -1515,7 +1515,7 @@ class EmundusModelApplication extends JModelList
                     } else {
                         $title= JText::_(trim($title[1]));
                     }
-                    $forms .= '<p class="em-h5">' . $title . '</p>';
+                    $forms .= '<h5>' . $title . '</h5>';
                     $form_params = json_decode($itemt->params);
 
                     if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $itemt->db_table_name != '#__emundus_training') {
@@ -1560,7 +1560,7 @@ class EmundusModelApplication extends JModelList
 
                         if (($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) || !EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int)$g_params->access)) {
                             $forms .= '<fieldset class="em-personalDetail">
-											<p class="em-h6 em-font-weight-400">' . JText::_($itemg->label) . '</p>
+											<h6 class="em-font-weight-400">' . JText::_($itemg->label) . '</h6>
 											<table class="em-restricted-group">
 												<thead><tr><td>' . JText::_('COM_EMUNDUS_CANNOT_SEE_GROUP') . '</td></tr></thead>
 											</table>
@@ -1613,7 +1613,7 @@ class EmundusModelApplication extends JModelList
                                     unset($element);
 
                                     $forms .= '<fieldset class="em-personalDetail">';
-                                    $forms .= (!empty($itemg->label)) ? '<p class="em-h6 em-font-weight-400">' . JText::_($itemg->label) . '</legend>' : '';
+                                    $forms .= (!empty($itemg->label)) ? '<h6 class="em-font-weight-400">' . JText::_($itemg->label) . '</h6>' : '';
 
                                     $forms .= '<table class="em-mt-8 em-mb-16 table table-bordered table-striped em-personalDetail-table-multiplleLine"><thead><tr> ';
 
@@ -1847,6 +1847,7 @@ class EmundusModelApplication extends JModelList
                                         $forms .= '</tbody>';
                                     }
                                     $forms .= '</table>';
+	                                $forms .= '</fieldset>';
                                 }
                                 // AFFICHAGE EN LIGNE
                             }
@@ -1855,7 +1856,7 @@ class EmundusModelApplication extends JModelList
                                 $check_not_empty_group = $this->checkEmptyGroups($elements ,$itemt->db_table_name, $fnum);
 
                                 if($check_not_empty_group && $g_params->repeat_group_show_first != -1) {
-                                    $forms .= '<table class="em-mt-8 em-mb-16 em-personalDetail-table-inline"><p class="em-h6 em-font-weight-400">' . JText::_($itemg->label) . '</legend>';
+                                    $forms .= '<table class="em-mt-8 em-mb-16 em-personalDetail-table-inline"><h6 class="em-font-weight-400">' . JText::_($itemg->label) . '</h6>';
 
                                     $modulo = 0;
                                     foreach ($elements as &$element) {
@@ -2125,7 +2126,6 @@ class EmundusModelApplication extends JModelList
                                 }
                             }
                             $forms .= '</table>';
-                            $forms .= '</fieldset>';
                         }
                     }
                 }
@@ -3187,24 +3187,32 @@ class EmundusModelApplication extends JModelList
         return $results;
     }
 
-    public function getApplicationMenu() {
-        $juser = JFactory::getUser();
+    public function getApplicationMenu($user_id = 0) {
+		$user_id = $user_id ?: JFactory::getUser()->id;
+        $juser = JFactory::getUser($user_id);
+
+		$menus = [];
 
         try {
             $db = $this->getDbo();
+	        $query = $db->getQuery(true);
+
             $grUser = $juser->getAuthorisedViewLevels();
 
-            $query = 'SELECT m.id, m.title, m.link, m.lft, m.rgt, m.note
-                        FROM #__menu as m
-                        WHERE m.published=1 AND m.menutype = "application" and m.access in ('.implode(',', $grUser).')
-                        ORDER BY m.lft';
-
+			$query->select('id, title, link, lft, rgt, note')
+				->from($db->quoteName('#__menu'))
+				->where($db->quoteName('published') . ' = 1')
+				->where($db->quoteName('menutype') . ' = ' . $db->quote('application'))
+				->where($db->quoteName('access') . ' IN (' . implode(',', $grUser) . ')')
+				->order($db->quoteName('lft'));
             $db->setQuery($query);
-            return $db->loadAssocList();
+            $menus = $db->loadAssocList();
 
         } catch (Exception $e) {
-            return false;
+            JLog::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query->__toString(), JLog::ERROR, 'com_emundus');
         }
+
+		return $menus;
     }
 
     public function getProgramSynthesis($cid) {

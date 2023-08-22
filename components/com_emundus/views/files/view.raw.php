@@ -53,6 +53,7 @@ class EmundusViewFiles extends JViewLegacy
 	protected array $code;
 	protected array $fnum_assoc;
 	protected string $filters;
+	protected bool $use_module_for_filters;
 
 	protected array $docs;
 	protected array $prgs;
@@ -65,6 +66,13 @@ class EmundusViewFiles extends JViewLegacy
 		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'export.php');
 		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'users.php');
 		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'evaluation.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+
+
+		$menu = JFactory::getApplication()->getMenu();
+		$current_menu = $menu->getActive();
+		$menu_params = $menu->getParams(@$current_menu->id);
+		$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
 
 		parent::__construct($config);
 	}
@@ -151,21 +159,22 @@ class EmundusViewFiles extends JViewLegacy
 				break;
 
 			case 'filters':
-				$m_user = new EmundusModelUsers();
+				if (!$this->use_module_for_filters) {
+					$m_user = new EmundusModelUsers();
+					$m_files->code = $m_user->getUserGroupsProgrammeAssoc($current_user->id);
 
-				$m_files->code = $m_user->getUserGroupsProgrammeAssoc($current_user->id);
+					// get all fnums manually associated to user
+					$groups = $m_user->getUserGroups($current_user->id, 'Column');
+					$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
+					$fnum_assoc = $m_user->getApplicantsAssoc($current_user->id);
+					$m_files->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
 
-				// get all fnums manually associated to user
-				$groups = $m_user->getUserGroups($current_user->id, 'Column');
-				$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
-				$fnum_assoc = $m_user->getApplicantsAssoc($current_user->id);
-				$m_files->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
+					$this->code = $m_files->code;
+					$this->fnum_assoc = $m_files->fnum_assoc;
 
-				$this->code = $m_files->code;
-				$this->fnum_assoc = $m_files->fnum_assoc;
-
-				$filters = $h_files->resetFilter();
-				$this->filters = $filters;
+					$filters = $h_files->resetFilter();
+					$this->filters = $filters;
+				}
 				break;
 
             case 'docs':
@@ -300,12 +309,14 @@ class EmundusViewFiles extends JViewLegacy
 								$data[0]['attachment_progress'] = JText::_('COM_EMUNDUS_ATTACHMENT_PROGRESS');
 								$colsSup['attachment_progress'] = array();
 								break;
-
                             case 'unread_messages':
                                 $data[0]['unread_messages'] = JText::_('COM_EMUNDUS_UNREAD_MESSAGES');
                                 $colsSup['unread_messages'] = array();
                                 break;
-
+                            case 'commentaire':
+                                $data[0]['commentaire'] = JText::_('COM_EMUNDUS_COMMENTAIRE');
+                                $colsSup['commentaire'] = array();
+                                break;
                             case 'module':
 								// Get every module without a positon.
 								$mod_emundus_custom = array();
@@ -349,7 +360,7 @@ class EmundusViewFiles extends JViewLegacy
                                 $userObj->user = JFactory::getUser((int)$user['applicant_id']);
 								$userObj->user->name = $user['name'];
 								$line['fnum'] = $userObj;
-							} elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'applicant_id' || $key == 'campaign_id' || $key == 'unread_messages') {
+							} elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'applicant_id' || $key == 'campaign_id' || $key == 'unread_messages' || $key == 'commentaire') {
 								continue;
 							} elseif (isset($elements) && in_array($key, array_keys($elements))) {
 								$userObj->val 			= $value;
@@ -432,6 +443,12 @@ class EmundusViewFiles extends JViewLegacy
                         }
                     }
 
+                    if(isset($colsSup['commentaire'])) {
+                        foreach($fnumArray as $fnum) {
+                            $notifications_comments = sizeof($m_files->getCommentsByFnum([$fnum]));
+                            $colsSup['commentaire'][$fnum] = '<p class="messenger__notifications_counter">'. $notifications_comments .'</p> ';
+                        }
+                    }
 
 					if (!empty($mod_emundus_custom)) {
 						foreach ($mod_emundus_custom as $key => $module) {

@@ -149,6 +149,7 @@ p.description {
 #attachment_list {
 	margin-bottom: 1em;
 	/*width:100%;*/
+	border-radius: var(--em-form-br) !important;
 }
 
 #attachment_list_mand {

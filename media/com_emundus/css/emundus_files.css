@@ -392,7 +392,7 @@ table > thead > tr > th {
 }
 .em-filter label{
     margin-bottom: 5px;
-    font-weight: bold;
+    font-weight: 600;
 }
 
 fieldset.em_filters_filedset > label, fieldset#em_select_filter > label, .panel-heading h3{
@@ -494,8 +494,13 @@ div#em-appli-block button.btn.btn-default {
     border: none !important;
 }
 
+div#em-appli-block a#download-pdf:hover,
+div#em-appli-block a#download-pdf{
+    color: transparent;
+}
+
 .em-personalInfo > a.em-link  {
-    color: var(--main-500);
+    color: var(--em-coordinator-primary-color);
 }
 
 .em-personalInfo > a {
@@ -609,7 +614,7 @@ div#em-appli-block h3 {
 }
 
 div#em-appli-block .em-container-mail-content-heading h3 {
-    color: var(--neutral-50) !important;
+    color: var(--neutral-0) !important;
     font-size: 1rem;
 }
 
@@ -671,8 +676,14 @@ table#groups-table a:hover {
 
 .g-back-office-emundus-tableau #em-modal-actions .modal-dialog, .g-back-office-emundus-tableau #em-modal-actions .modal-dialog.modal-lg{
     width: 50% !important;
-    min-width: 40%;
+    min-width: 50%;
 }
+
+.g-back-office-emundus-tableau #em-modal-actions .modal-dialog,
+.g-back-office-emundus-tableau #em-modal-actions .modal-dialog.modal-lg {
+    margin-top: 72px;
+}
+
 
 /* Layout */
 div#data #exp-opt>label{
@@ -699,13 +710,8 @@ div#em-modal-form {
     top: 44px;
 }
 
-
 div#em-modal-actions {
     overflow: hidden;
-}
-
-div#em-modal-actions .modal-dialog {
-    max-height: 90vh !important;
 }
 
 .modal-dialog .modal-body {
@@ -830,7 +836,7 @@ div#em-modal-actions #form-element{
 div#em-modal-actions #savePDFfilter, div#em-modal-actions #savefilter{
     margin-left: 0;
     margin-right: 1%;
-    border-radius: var(--em-border-radius);
+    border-radius: var(--em-coordinator-br);
     margin-top: 10px;
     background: #5a5a72;
     border: solid 1px #5a5a72;
@@ -1180,6 +1186,11 @@ div#em-synthesis .panel-heading h3 {
     color: #353544;
 }
 
+
+.col-md-9.main-panel div#em-appli-block .panel.panel-default.widget .panel-body ul.list-group {
+    padding: 13px 0 0 13px;
+}
+
 .col-md-9.main-panel div#em-appli-block .em-decision-form-content textarea {
     color: #353544;
 }
@@ -1223,7 +1234,7 @@ div#em-assoc-files .panel.panel-default {
 
 div#em-assoc-files .panel.panel-primary.current-file{
     border-radius: 4px;
-    border: solid 2px #20835F;
+    border: solid 2px var(--main-500);
 }
 
 div#em-assoc-files .panel.panel-primary ul,
@@ -1362,7 +1373,11 @@ th>.em-cell {
     overflow: hidden;
     height: auto;
     align-items: center;
-    font-weight: bold;
+    font-weight: 600;
+}
+
+th>.em-cell strong {
+    font-weight: 600 !important;
 }
 
 th:nth-child(2)>.em-cell,
@@ -1385,7 +1400,7 @@ td:first-child>.em-cell {
 
 .em-cell-scroll > .em-cell {
     max-height: 85px;
-    max-width: 300px;
+    width: max-content;
     overflow-x: hidden;
     overflow-y: scroll;
     -ms-overflow-style: none;
@@ -1555,27 +1570,6 @@ thead th:hover {
 /*
 *   Modal pour les actions fait main pour eviter les conflits bootstrap
 */
-
-.label {
-    display: inline !important;
-    padding: 6px 10px !important;
-    font-size: 100% !important;
-    font-weight: bold !important;
-    line-height: 1 !important;
-    color: #ffffff !important;
-    text-align: center !important;
-    white-space: nowrap !important;
-    vertical-align: baseline !important;
-    border-radius: .25em !important;
-}
-
-.label[href]:hover,
-.label[href]:focus {
-    color: #ffffff !important;
-    text-decoration: none !important;
-    cursor: pointer !important;
-}
-
 .em-hide {
     display: none;
 }
@@ -1795,7 +1789,6 @@ thead th:hover {
 }
 
 .em-cell>.label {
-    display: inline-block !important;
     margin: 2px 1px !important;
 }
 
@@ -2254,11 +2247,11 @@ label[for="em-file_to_upload"]:hover {
 }
 
 .countCheckedCheckbox a.em-pointer{
-    color: var(--main-500);
+    color: var(--em-coordinator-primary-color);
 }
 
 .countCheckedCheckbox a.em-pointer:hover {
-    color: var(--main-600);
+    color: var(--em-coordinator-tertiary-color);
 }
 
 
@@ -2304,6 +2297,10 @@ label[for="em-file_to_upload"]:hover {
     padding: 11px;
 }
 
+.files-board #system-message-container {
+   padding: 0;
+}
+
 @media screen and (max-width: 991px){
     .download{
         display: inline !important;
@@ -2345,9 +2342,6 @@ label[for="em-file_to_upload"]:hover {
 
 #emailForm #mail_from{
     min-width: 10% !important;
-}
-#emailForm #mail_subject{
-    min-width: 60% !important;
 }
 .em_email_block .em-form-attachments-candidateFile .input-group-btn > a,
 .em-form-attachments-setupLetters .input-group-btn > a{
@@ -2460,7 +2454,7 @@ div#em-assoc-files .panel > .panel-heading {
     text-shadow: none;
     color: #FFFFFF;
     padding: 0px 12px !important;
-    border-radius: var(--em-border-radius) !important;
+    border-radius: var(--em-coordinator-br) !important;
 }
 
 .g-back-office-emundus-tableau #em_select_filter #del-filter {

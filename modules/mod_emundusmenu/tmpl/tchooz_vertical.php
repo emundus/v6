@@ -60,7 +60,6 @@ defined('_JEXEC') or die;
 
     #header-b #em_user_menu li:hover a, #header-b #em_user_menu li:active a, #header-b #em_user_menu li:focus a{
         color: black;
-        filter: brightness(90%);
     }
     .g-sublevel .g-menu-item-title span:hover,.g-sublevel .g-menu-item-title span:focus,.g-sublevel .g-menu-item-title span:active {
         color: black;
@@ -78,7 +77,7 @@ defined('_JEXEC') or die;
 
     /*** Sublevel parent ***/
     ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item::before{
-        background: #12DB42;
+        background: var(--em-coordinator-primary-color);
         width: 5px;
         height: 100%;
         content: "";
@@ -86,7 +85,7 @@ defined('_JEXEC') or die;
         left: -20px;
     }
     .active .item .image-title{
-        color: #12DB42;
+        color: var(--em-coordinator-primary-color);
     }
     .g-menu-parent-indicator{
         margin-left: 20px;
@@ -102,7 +101,7 @@ defined('_JEXEC') or die;
     #g-navigation .g-main-nav .tchooz-vertical-toplevel > li{
         width: 50px;
         margin: 5px 10px !important;
-        font-family: var(--font);
+        font-family: var(--em-default-font);
     }
 
     .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo > a {
@@ -161,7 +160,7 @@ defined('_JEXEC') or die;
     }
     /*** END ***/
     .message-tooltip{
-        width: 20rem;
+        width: auto;
         height: auto;
         position: fixed;
         margin-left: 0;
@@ -201,8 +200,8 @@ defined('_JEXEC') or die;
     }
 
     .g-main-nav .g-standard .g-sublevel .g-menu-item a.g-menu-item-container:hover   {
-        background: #eeeeee;
-        border-radius: 5px;
+        background: #EBECF0 !important;
+        border-radius: var(--em-default-br) !important;
     }
 
     .g-sublevel{
@@ -306,7 +305,7 @@ defined('_JEXEC') or die;
             endforeach;
 
             if(sizeof($tchooz_list) > 0) :
-                echo '<hr id="menu_separator">';
+                echo '<hr id="menu_separator" class="mb-4 mt-4">';
             endif;
         endif;
 

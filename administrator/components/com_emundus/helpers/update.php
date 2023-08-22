@@ -252,7 +252,7 @@ class EmundusHelperUpdate
                     $db->setQuery($query);
                     $installed = $db->execute();
                 } else {
-                    echo "$element already installed.";
+                    echo " - " . $element . " already installed." . PHP_EOL ;
                     $installed = true;
                 }
             } catch (Exception $e) {
@@ -459,12 +459,9 @@ class EmundusHelperUpdate
 			$yaml = $content_yaml;
 		} else
 		{
-			if (!empty($key2) && isset($yaml[$key1]))
+			if (!empty($key2))
 			{
-				if(isset($yaml[$key1][$key2]))
-				{
-					$yaml[$key1][$key2] = $value;
-				}
+				$yaml[$key1][$key2] = $value;
 			}
 			elseif (isset($yaml[$key1]))
 			{
@@ -481,27 +478,51 @@ class EmundusHelperUpdate
         file_put_contents($file, $new_yaml);
     }
 
-    public static function addYamlVariable($key,$value,$file,$parent = null,$breakline = false,$check_existing = false) {
+    public static function addYamlVariable($key,$value,$file,$parent = null,$breakline = false,$check_existing = false,$is_array = true) {
         $yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents($file));
+		$parent_exist = true;
 
-        if (!empty($parent) && isset($yaml[$parent])){
+		if($is_array && (!empty($parent) && !isset($yaml[$parent]))){
+			$parent_exist = false;
+		}
+
+
+        if ($parent_exist){
             $already_exist = false;
 
             if($check_existing) {
-                foreach ($yaml[$parent] as $object) {
-                    if (isset($object[$key]) && $object[$key] == $value) {
-                        $already_exist = true;
-                        break;
-                    }
-                }
+				if($is_array)
+				{
+					foreach ($yaml[$parent] as $object)
+					{
+						if (isset($object[$key]) && $object[$key] == $value)
+						{
+							$already_exist = true;
+							break;
+						}
+					}
+				} else {
+					if (isset($yaml[$parent][$key]))
+					{
+						$already_exist = true;
+					}
+				}
             }
 
             if(!$already_exist) {
-                if ($breakline) {
-                    $yaml[$parent][][$key] = $value;
-                } else {
-                    $yaml[$parent][sizeof($yaml[$parent]) - 1][$key] = $value;
-                }
+	            if($is_array)
+	            {
+		            if ($breakline)
+		            {
+			            $yaml[$parent][][$key] = $value;
+		            }
+		            else
+		            {
+			            $yaml[$parent][sizeof($yaml[$parent]) - 1][$key] = $value;
+		            }
+	            } else {
+		            $yaml[$parent][$key] = $value;
+	            }
             }
         } else {
             echo ("Key " . $parent . ' not found in file ' . $file);
@@ -2385,7 +2406,7 @@ class EmundusHelperUpdate
                     $created = $db->execute();
                 }
             } else {
-                echo "$title module already exists.";
+                echo " - " . $title . " module already exists." . PHP_EOL ;
                 $created = true;
             }
         } catch (Exception $e) {
@@ -2621,6 +2642,85 @@ class EmundusHelperUpdate
 		{
 			$result['message'] = 'UPDATE FLAGS : Error : ' . $e->getMessage();
 
+		}
+
+		return $result;
+	}
+
+	public static function createJoomlaArticle($data, $category_alias = null){
+		$result = ['status' => false, 'message' => '', 'article_id' => 0];
+		$db = JFactory::getDbo();
+
+		try
+		{
+			$query = $db->getQuery(true);
+			$publish_up = new DateTime();
+			$publish_up->modify('-1 day');
+
+			$query->select('id')
+			       ->from($db->quoteName('#__content'))
+				   ->where('alias = ' . $db->quote($data['alias']));
+			$db->setQuery($query);
+			$article_id = $db->loadResult();
+
+			if(empty($article_id)) {
+
+				if(!empty($category_alias)){
+					$query->clear();
+					$query->select('id')->from($db->quoteName('#__categories'))->where('alias = ' . $db->quote($category_alias));
+					$db->setQuery($query);
+					$category_id = $db->loadResult();
+				}
+				else{
+					$category_id = 1;
+				}
+				$db_columns = array('title', 'alias', 'introtext', 'fulltext', 'state', 'catid', 'created', 'created_by', 'modified', 'modified_by', 'checked_out', 'checked_out_time', 'publish_up', 'publish_down', 'images', 'urls', 'attribs', 'version', 'metakey', 'metadesc', 'access', 'metadata', 'language');
+				foreach ($db_columns as $index => $column) {
+					$db_columns[$index] = $db->quoteName($column);
+				}
+				$values = array(
+					$db->quote($data['title']),
+					$db->quote($data['alias']),
+					$db->quote($data['introtext']),
+					$db->quote($data['fulltext']),
+					$db->quote($data['state']),
+					$db->quote($category_id),
+					$db->quote(date('Y-m-d H:i:s')),
+					$db->quote(62),
+					$db->quote(date('Y-m-d H:i:s')),
+					$db->quote(62),
+					$db->quote(0),
+					$db->quote(date('Y-m-d H:i:s')),
+					$db->quote($publish_up->format('Y-m-d H:i:s')),
+					$db->quote(date('Y-m-d H:i:s', strtotime('2099-12-31 23:59:59'))),
+					$db->quote('{}'),
+					$db->quote('{}'),
+					$db->quote($data['attribs']),
+					$db->quote(1),
+					$db->quote(''),
+					$db->quote(''),
+					$db->quote(1),
+					$db->quote(''),
+					$db->quote('*')
+				);
+
+				$query
+					->clear()
+					->insert($db->quoteName('jos_content'))
+					->columns($db_columns)
+					->values(implode(',', $values));
+				$db->setQuery($query);
+				$result['status'] = $db->execute();
+
+				$result['id'] = $db->insertid();
+			} else {
+				$result['status'] = true;
+				$result['id'] = $article_id;
+			}
+		}
+		catch (Exception $e)
+		{
+			$result['message'] = 'CREATE JOOMLA ARTICLE : Error : ' . $e->getMessage();
 		}
 
 		return $result;
@@ -2963,5 +3063,351 @@ class EmundusHelperUpdate
 		}
 
 		return $result;
+	}
+
+    /**
+     * Inserts content into a file if it doesn't already exist.
+     *
+     * @param string $file   The path to the file.
+     * @param string $insert The content to insert.
+     *
+     * @return bool True if insertion is successful or the content already exists, false otherwise.
+     *
+     * @since version 1.37.0
+     */
+    public static function insertIntoFile($file, $insert)
+    {
+        echo " - Check and update the {$file} file" . PHP_EOL;
+
+        if (empty($file)) {
+            echo "ERROR: Please specify a file." . PHP_EOL;
+        } elseif (!file_exists($file)) {
+            echo "ERROR: The file {$file} does not exist." . PHP_EOL;
+        } elseif (!is_writable($file)) {
+            echo "ERROR: Please specify a writable file ({$file})" . PHP_EOL;
+        } elseif (empty($insert)) {
+            echo "ERROR: Please specify an insert." . PHP_EOL;
+        } else {
+            $file_content = file_get_contents($file);
+
+            if (strpos($file_content, $insert) === false) {
+                $file_content .= PHP_EOL . $insert;
+                if (file_put_contents($file, $file_content) !== false) {
+                    return true;
+                } else {
+                    echo "ERROR: Failed to write content to the file." . PHP_EOL;
+                    return false;
+                }
+            }
+            return true; // The content already exists.
+        }
+
+        return false;
+    }
+
+	public static function updateNewColors() {
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$colors = [
+			'lightpurple' => 'purple-1',
+			'purple' => 'purple-2',
+			'darkpurple' => 'purple-2',
+			'lightblue' => 'light-blue-1',
+			'blue' => 'blue-2',
+			'darkblue' => 'blue-3',
+			'lightgreen' => 'green-1',
+			'green' => 'green-2',
+			'darkgreen' => 'green-2',
+			'lightyellow' => 'yellow-1',
+			'yellow' => 'yellow-2',
+			'darkyellow' => 'yellow-2',
+			'lightorange' => 'orange-1',
+			'orange' => 'orange-2',
+			'darkorange' => 'orange-2',
+			'lightred' => 'red-1',
+			'red' => 'red-2',
+			'darkred' => 'red-2',
+			'lightpink' => 'pink-1',
+			'pink' => 'pink-2',
+			'darkpink' => 'pink-2',
+		];
+
+		foreach ($colors as $key => $color) {
+			$query->clear()
+				->update('#__falang_content')
+				->set($db->quoteName('value') . ' = ' . $db->quote($color))
+				->where(array(
+					$db->quoteName('value') . ' = ' . $db->quote($key),
+					$db->quoteName('reference_table') . ' = ' . $db->quote('emundus_setup_status'),
+					$db->quoteName('reference_field') . ' = ' . $db->quote('class'),
+					$db->quoteName('language_id') . ' = 2'
+				));
+			$db->setQuery($query);
+			$db->execute();
+
+			$query->clear()
+				->update($db->quoteName('#__emundus_setup_status'))
+				->set($db->quoteName('class') . ' = ' . $db->quote($color))
+				->where($db->quoteName('class') . ' = ' . $db->quote($key));
+			$db->setQuery($query);
+			$db->execute();
+
+			$query->clear()
+				->update($db->quoteName('#__emundus_setup_action_tag'))
+				->set($db->quoteName('class') . ' = ' . $db->quote('label-'.$color))
+				->where($db->quoteName('class') . ' = ' . $db->quote('label-'.$key));
+			$db->setQuery($query);
+			$db->execute();
+
+			$query->clear()
+				->update($db->quoteName('#__emundus_setup_groups'))
+				->set($db->quoteName('class') . ' = ' . $db->quote('label-'.$color))
+				->where($db->quoteName('class') . ' = ' . $db->quote('label-'.$key));
+			$db->setQuery($query);
+			$db->execute();
+		}
+	}
+
+	public static function initNewVariables() {
+		$file = JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml';
+		$datas = [
+			'base' => [
+				'title-color' => '#000000',
+				'tertiary-color' => '#bd5631',
+				'background-coordinator' => '#f8f8f8',
+				'text-color-coordinator' => '#4b4b4b',
+				'title-color-coordinator' => '#000000',
+				'primary-color-coordinator' => '#238c69',
+				'secondary-color-coordinator' => '#353544',
+				'tertiary-color-coordinator' => '#5a5a72',
+			],
+			'accent' => [
+				'red-1' => '#eb0000',
+				'red-2' => '#c00016',
+				'pink-1' => '#ff78d1',
+				'pink-2' => '#e0008a',
+				'purple-1' => '#d292ef',
+				'purple-2' => '#9600c7',
+				'light-blue-1' => '#35d7d2',
+				'light-blue-2' => '#308281',
+				'blue-1' => '#64d8ff',
+				'blue-2' => '#0073e5',
+				'blue-3' => '#0644ae',
+				'green-1' => '#98d432',
+				'green-2' => '#008a35',
+				'yellow-1' => '#ffe014',
+				'yellow-2' => '#ffae00',
+				'orange-1' => '#ff6900',
+				'orange-2' => '#cc4b00',
+				'beige' => '#ffc285',
+				'brown' => '#8b511f',
+				'grey-1' => '#b4b4b4',
+				'grey-2' => '#757575',
+				'black' => '#1e1e1e',
+			],
+			'font' => [
+				'family-text' => 'Inter',
+				'family-title' => 'Inter',
+				'coordinator-family-text' => 'Inter',
+				'coordinator-family-title' => 'Inter',
+			],
+			'em-alert' => [
+				'error-background-color' => '#fae9e9',
+				'error-color' => '#520105',
+				'error-icon-color' => '#a60e15',
+				'error-border-width' => '0px',
+				'error-border-color' => 'rgba(255, 255, 255, 0)',
+				'warning-background-color' => '#fff6de',
+				'warning-color' => '#563a04',
+				'warning-icon-color' => '#b38405',
+				'warning-border-width' => '1px',
+				'warning-border-color' => 'rgba(255, 255, 255, 0)',
+				'info-background-color' => '#ebeefa',
+				'info-color' => '#232b4f',
+				'info-icon-color' => '#525b85',
+				'info-border-width' => '1px',
+				'info-border-color' => 'rgba(255, 255, 255, 0)',
+				'success-background-color' => '#eaf3e8',
+				'success-color' => '#02300c',
+				'success-icon-color' => '#2d871d',
+				'success-border-width' => '1px',
+				'success-border-color' => 'rgba(255, 255, 255, 0)',
+				'modal-padding' => '32px',
+			],
+			'em-border-radius' => [
+				'default' => '8px',
+				'applicant' => '8px',
+				'coordinator' => '8px',
+				'cards' => '16px',
+				'coordinator-cards' => '16px',
+				'status' => '8px',
+			],
+			'em-box-shadow' => [
+				'x-1' => '0px',
+				'y-1' => '1px',
+				'blur-1' => '1px',
+				'color-1' => 'rgba(5, 47, 55, 0.07)',
+				'x-2' => '0px',
+				'y-2' => '1px',
+				'blur-2' => '1px',
+				'color-2' => 'rgba(5, 47, 55, 0.07)',
+				'x-3' => '0px',
+				'y-3' => '1px',
+				'blur-3' => '1px',
+				'color-3' => 'rgba(5, 47, 55, 0.07)',
+			],
+			'em-form' => [
+				'success-color' => '#20835f',
+				'error-color' => '#f04437',
+				'border-radius-block' => '16px',
+				'label-color' => '#000000',
+				'label-margin-bottom' => '4px',
+				'label-size' => '16px',
+				'label-weight' => '500',
+				'height' => '40px',
+				'font-size' => '14px',
+				'tip-color' => '#5c5c5c',
+				'border-radius' => '4px',
+				'border-color' => '#e0e0e5',
+				'background-color' => '#ffffff',
+				'border-radius-focus' => '6px',
+				'border-color-focus' => '#a7a7a7',
+				'background-color-focus' => '#ffffff',
+				'outline-width-focus' => '1px',
+				'outline-color-focus' => '#007bff',
+				'outline-offset-focus' => '2px',
+				'background-color-hover' => 'rgba(225, 231, 239, 0)',
+				'border-color-hover' => '#a7a7a7',
+				'border-color-error' => '#c62222',
+				'label-color-error' => '#000000',
+				'element-color-error' => '#a60e15',
+				'after-border-height' => '0px',
+				'radio-padding' => '8px',
+				'radio-border-width' => '0px',
+				'radio-border-color' => '#a7a7a7',
+				'radio-border-radius' => '4px',
+				'radio-width' => '16px',
+				'radio-height' => '16px',
+				'radio-margin-right' => '8px',
+				'radio-color-checked' => '#2d871d',
+				'radio-background-color-checked' => '#e1e7ef',
+				'radio-border-color-checked' => '#2e404f',
+				'yesno-border-width' => '1px',
+				'yesno-border-radius' => '4px',
+				'yesno-width' => '50%',
+				'yesno-height' => '48px',
+				'yesno-gap' => '20px',
+				'yesno-color-not-active' => '#000000',
+				'yesno-background-color-not-active' => '#ffffff',
+				'yesno-border-color-not-active' => '#8990a9',
+				'yesno-color-not-active-hover' => '#ffffff',
+				'yesno-background-color-not-active-hover' => '#8990a9',
+				'yesno-border-color-not-active-hover' => '#8990a9',
+				'yesno-color-yes' => '#ffffff',
+				'yesno-background-color-yes' => '#238c69',
+				'yesno-border-color-yes' => '#238c69',
+				'yesno-color-yes-hover' => '#238c69',
+				'yesno-background-color-yes-hover' => '#ffffff',
+				'yesno-border-color-yes-hover' => '#238c69',
+				'yesno-color-no' => '#ffffff',
+				'yesno-background-color-no' => '#f04437',
+				'yesno-border-color-no' => '#f04437',
+				'yesno-color-no-hover' => '#f04437',
+				'yesno-background-color-no-hover' => '#ffffff',
+				'yesno-border-color-no-hover' => '#f04437',
+				'checkbox-border-width' => '0px',
+				'checkbox-border-color' => '#a7a7a7',
+				'checkbox-padding' => '12px',
+				'checkbox-scale' => '1.3',
+				'checkbox-input-margin' => '12px',
+				'checkbox-color-checked' => '#2d871d',
+				'checkbox-border-color-error' => '#c62222',
+				'fileupload-padding' => '12px 8px',
+				'fileupload-background-color' => '#f0f0f0',
+				'coordinator-form-height' => '40px',
+			],
+			'link' => [
+				'xxs-size' => '10px'
+			],
+			'em-spacing' => [
+				'1' => '4px',
+				'2' => '6px',
+				'3' => '10px',
+				'4' => '14px',
+				'5' => '18px',
+				'6' => '20px',
+				'7' => '24px',
+				'8' => '26px',
+				'9' => '36px',
+				'10' => '40px',
+				'11' => '44px',
+				'12' => '48px',
+				'vertical' => '8px',
+				'horizontal' => '12px',
+			],
+			'coordinator' => [
+				'background' => '#f8f8f8',
+				'primary-color' => '#238c69',
+				'secondary-color' => '#353544',
+				'tertiary-color' => '#5a5a72',
+				'text-color' => '#4b4b4b',
+				'title-color' => '#000000',
+				'family-text' => 'Inter',
+				'family-title' => 'Inter',
+				'size-h1' => '24px',
+				'size-h2' => '22px',
+				'size-h3' => '20px',
+				'size-h4' => '18px',
+				'size-h5' => '16px',
+				'size-h6' => '14px',
+				'font-size' => '16px',
+				'border-radius' => '8px',
+				'border-color' => '#cccccc',
+				'form-height' => '40px',
+				'form-border-radius' => '4px',
+				'vertical' => '8px',
+				'horizontal' => '12px',
+				'border-radius-cards' => '16px',
+			]
+		];
+
+		foreach ($datas as $key => $data) {
+			foreach ($data as $variable => $value) {
+				self::addYamlVariable($variable, $value, $file, $key, false, true, false);
+			}
+		}
+	}
+
+	public static function checkHealth()
+	{
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		// Check back button
+		$query->select('id,content')
+			->from($db->quoteName('#__modules'))
+			->where($db->quoteName('title') . ' LIKE ' . $db->quote('eMundus - Back button'))
+			->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_custom'));
+		$db->setQuery($query);
+		$back_button = $db->loadObject();
+
+		$back_button->content = str_replace('https://vanilla.tchooz.io/','/',$back_button->content);
+		$back_button->content = str_replace(JURI::base().'/','/',$back_button->content);
+
+		$query->clear()
+			->update($db->quoteName('#__modules'))
+			->set($db->quoteName('content') . ' = ' . $db->quote($back_button->content))
+			->where($db->quoteName('id') . ' = ' . $db->quote($back_button->id));
+		$db->setQuery($query);
+		$db->execute();
+		//
+
+		// Remove appli emundus yaml assets
+		$file = JPATH_ROOT . '/templates/g5_helium/custom/config/24/page/assets.yaml';
+		unlink($file);
+		//
+
+		return true;
 	}
 }

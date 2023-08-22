@@ -1,0 +1,88 @@
+@import "utilities.css";
+@import "components.css";
+@import "form.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: url(/media/com_emundus/css/fonts/google/MaterialIcons-Regular.ttf); /* For IE6-8 */
+    src: local('Material Icons'),
+    local('MaterialIcons-Regular'),
+    url(/media/com_emundus/css/fonts/google/MaterialIcons-Regular.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Material Icons Outlined';
+    font-style: normal;
+    font-weight: 400;
+    src: url(/media/com_emundus/css/fonts/google/MaterialIconsOutlined-Regular.otf); /* For IE6-8 */
+    src: local('Material Icons Outlined'),
+    local('MaterialIconsOutlined-Regular'),
+    url(/media/com_emundus/css/fonts/google/MaterialIconsOutlined-Regular.otf) format('truetype');
+}
+
+.material-icons {
+    font-family: 'Material Icons';
+    font-size: 18px;
+    font-weight: normal;
+    font-style: normal;
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+
+    /* Support for IE. */
+    font-feature-settings: 'liga';
+}
+
+.material-icons-outlined {
+    font-family: 'Material Icons Outlined';
+    font-weight: normal;
+    font-style: normal;
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+
+    /* Support for IE. */
+    font-feature-settings: 'liga';
+}
+
+body {
+    font-family: var(--em-default-font);
+}
+
+.after-em-border::after{
+    content: "";
+    width: 40px;
+    height: var(--em-form-after-bh);
+    display: block;
+    margin-top: 8px;
+}

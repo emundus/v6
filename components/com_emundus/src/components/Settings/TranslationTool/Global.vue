@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="em-h1">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_GLOBAL') }}</h1>
+    <h1>{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_GLOBAL') }}</h1>
     <div class="em-mb-24 em-flex-row em-flex-space-between">
       <div>
         <p class="em-body-16-semibold em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_DEFAULT') }}</p>

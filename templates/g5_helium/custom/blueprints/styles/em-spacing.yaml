@@ -1,0 +1,63 @@
+name: Spacing
+description: Spacing
+type: core
+
+form:
+  fields:
+    1:
+      type: input.text
+      label: 1
+      default: '4px'
+    2:
+      type: input.text
+      label: 2
+      default: '8px'
+    3:
+      type: input.text
+      label: 3
+      default: '12px'
+    4:
+      type: input.text
+      label: 4
+      default: '16px'
+    5:
+      type: input.text
+      label: 5
+      default: '20px'
+    6:
+      type: input.text
+      label: 6
+      default: '24px'
+    7:
+      type: input.text
+      label: 7
+      default: '28px'
+    8:
+      type: input.text
+      label: 8
+      default: '32px'
+    9:
+      type: input.text
+      label: 9
+      default: '36px'
+    10:
+      type: input.text
+      label: 10
+      default: '40px'
+    11:
+      type: input.text
+      label: 11
+      default: '44px'
+    12:
+      type: input.text
+      label: 12
+      default: '48px'
+    vertical:
+      type: input.text
+      label: Vertical padding for buttons
+      default: '8px'
+    horizontal:
+      type: input.text
+      label: Horizontal padding for buttons
+      default: '12px'
+

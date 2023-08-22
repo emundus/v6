@@ -476,7 +476,7 @@ die("<script>
             $params['databasejoin_where_ajax'] = '0';
             $params['database_join_filter_where_sql'] = '';
             $params['database_join_show_please_select'] = '1';
-            $params['database_join_noselectionvalue'] = '';
+            $params['database_join_noselectionvalue'] = '0';
             $params['database_join_noselectionlabel'] = '';
             $params['placeholder'] = '';
             $params['databasejoin_popupform'] = '0';
@@ -571,6 +571,7 @@ die("<script>
             $params['textarea-truncate'] = '0';
             $params['textarea-hover'] = '1';
             $params['textarea_hover_location'] = 'top';
+            $params['bootstrap_class'] = 'input-xxlarge';
         }
 
         if($plugin == 'dropdown' || $plugin == 'checkbox' || $plugin == 'radiobutton'){
@@ -646,6 +647,18 @@ die("<script>
             $params['toggle_where']='';
         }
 
+        if($plugin == 'currency') {
+
+            $object = (object) [
+                'iso3' => 'EUR',
+                'minimal_value' => '0.00',
+                'maximal_value' => '10000.00',
+                'thousand_separator' => ' ',
+                'decimal_separator' => ',',
+                'decimal_numbers' => '2'
+            ];
+            $params['all_currencies_options']['all_currencies_options0'] = $object;
+        }
         return $params;
     }
 
@@ -881,7 +894,7 @@ die("<script>
         try {
             $query->select('fl.db_table_name')
                 ->from($db->quoteName('#__fabrik_lists','fl'));
-            if($object == 'form'){
+            if ($object == 'form') {
                 $query->leftJoin($db->quoteName('#__fabrik_forms','ff').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ff.id'))
                     ->where($db->quoteName('ff.id') . ' = ' . $db->quote($id));
             } else {

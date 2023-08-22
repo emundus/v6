@@ -7,6 +7,8 @@
  */
 
 var loading;
+var moduleFilters = null;
+var refreshModuleFiltersEvent = new Event('refresh-emundus-module-filters');
 
 // to abort all AJAX query at once
 $.ajaxQ = (function(){
@@ -240,23 +242,68 @@ function addElement() {
 
 }
 
-function refreshFilter(view) {
-    view = (typeof view === 'undefined') ? 'files' : view;
-    $.ajax({
-        type: 'GET',
-        url: 'index.php?option=com_emundus&view='+view+'&layout=filters&format=raw&Itemid=' + itemId,
-        dataType: 'html',
-        success: function(data) {
-            let panelBody = $('#em-files-filters .panel-body');
-            panelBody.empty();
-            panelBody.append(data);
-            $('.chzn-select').chosen();
-            reloadData($('#view').val());
-        },
-        error: function(jqXHR) {
-            console.log(jqXHR.responseText);
+function usingModuleFilters()
+{
+    itemId = (typeof itemId === 'undefined') ? 0 : itemId;
+
+    if (itemId > 0) {
+        if (moduleFilters === null) {
+            fetch('index.php?option=com_emundus&controller=files&task=checkmenufilterparams&Itemid=' + itemId, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(function(response) {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    console.log('Network response was not ok.');
+                    moduleFilters = false;
+                    return moduleFilters;
+                }
+            }).then(function(data) {
+                if (data.status) {
+                    moduleFilters = data.use_module_filters;
+                } else {
+                    moduleFilters = false;
+                }
+
+                return moduleFilters;
+            }).catch(function(error) {
+                console.log('There has been a problem with your fetch operation: ' + error.message);
+                moduleFilters = false;
+                return moduleFilters;
+            });
         }
-    });
+    }
+
+    return moduleFilters;
+}
+usingModuleFilters();
+
+function refreshFilter(view) {
+    usingModuleFilters();
+
+    if (moduleFilters === false || moduleFilters === null) {
+        view = (typeof view === 'undefined') ? 'files' : view;
+        $.ajax({
+            type: 'GET',
+            url: 'index.php?option=com_emundus&view='+view+'&layout=filters&format=raw&Itemid=' + itemId,
+            dataType: 'html',
+            success: function(data) {
+                let panelBody = $('#em-files-filters .panel-body');
+                panelBody.empty();
+                panelBody.append(data);
+                $('.chzn-select').chosen();
+                reloadData($('#view').val());
+            },
+            error: function(jqXHR) {
+                console.log(jqXHR.responseText);
+            }
+        });
+    } else {
+        reloadData($('#view').val(), false);
+    }
 }
 
 function tableOrder(order) {
@@ -707,7 +754,7 @@ function setFiltersSumo(event){
 
         var id = event.currentTarget.id;
         const my_element = $('#' + id);
-
+        console.log(my_element);
         if (!id.includes('elements-')) {
             var multi = false;
             if (typeof my_element.attr('multiple') !== 'undefined') {
@@ -1217,8 +1264,11 @@ function runAction(action, url = '', option = '') {
                             timer: 1500
                         });
 
-                        reloadData();
+                        if (moduleFilters) {
+                            window.dispatchEvent(refreshModuleFiltersEvent);
+                        }
 
+                        reloadData();
                         reloadActions($('#view').val(), undefined, false);
                         $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
                         $('body').removeClass('modal-open');
@@ -1633,6 +1683,7 @@ $(document).ready(function() {
         var checkInput = getUserCheck();
         var prghtml = '';
         var atthtml = '';
+        var tags = null;
 
         switch (id) {
             /**
@@ -4489,7 +4540,7 @@ $(document).ready(function() {
                         title = 'COM_EMUNDUS_APPLICATION_VALIDATE_CHANGE_STATUT'
 
                         // Build HTML for SweetAlert
-                        html = '<div class="form-group em-flex-column em-flex-align-start"><label>'+result.state+'</label><select class="modal-chzn-select" data-placeholder="'+result.select_state+'" name="em-action-state" id="em-action-state" value="">';
+                        html = '<div class="em-flex-column em-flex-align-start"><label>'+result.state+'</label><select class="modal-chzn-select" data-placeholder="'+result.select_state+'" name="em-action-state" id="em-action-state" value="">';
 
                         for (var i in result.states) {
                             if (isNaN(parseInt(i)))
@@ -4517,6 +4568,8 @@ $(document).ready(function() {
                     url:url,
                     dataType:'json',
                     success: function(result) {
+                        tags = result;
+
                         html = '<form>'+
                             '<div class="em-flex-row"><input type="radio" name="em-tags" id="em-tags-add" value="0" checked><label for="em-tags-add" class="em-mb-0-important">' +Joomla.JText._('COM_EMUNDUS_APPLICATION_ADD_TAGS')+'</label></div>' +
                             '<div class="em-flex-row"><input type="radio" name="em-tags" id="em-tags-delete" value="1"><label for="em-tags-delete" class="em-mb-0-important">' +Joomla.JText._('COM_EMUNDUS_TAGS_DELETE_TAGS')+'</label></div>' +
@@ -4634,7 +4687,7 @@ $(document).ready(function() {
                     success: function(result) {
                         title = 'COM_EMUNDUS_PUBLISH_UPDATE';
 
-                        html = '<div class="form-group em-flex-column em-flex-align-start"><label>'+result.state+'</label><select class="modal-chzn-select" data-placeholder="'+result.select_state+'" name="em-action-publish" id="em-action-publish" value="">';
+                        html = '<div class="em-flex-column em-flex-align-start"><label>'+result.state+'</label><select class="modal-chzn-select" data-placeholder="'+result.select_state+'" name="em-action-publish" id="em-action-publish" value="">';
 
                         for (var i in result.states) {
                             if(isNaN(parseInt(i)))
@@ -4770,6 +4823,39 @@ $(document).ready(function() {
         }
 
         $('.modal-chzn-select').chosen({width:'100%'});
+
+        /***
+         * On Category change
+         */
+        $('#em-action-tag-category').chosen().change(function() {
+            var cat = $(this).val();
+
+            if (cat) {
+                var allowed_cats = tags.tags.filter((tag) => {
+                    if(tag.category != cat) {
+                        return tag.id;
+                    }
+                }).map((item) => {
+                    return item.id;
+                });
+
+                document.querySelectorAll('#em-action-tag option').forEach((option) => {
+                    if (!allowed_cats.contains(option.value)) {
+                        option.disabled = false;
+                        option.show();
+                    } else {
+                        option.disabled = true;
+                        option.hide();
+                    }
+                })
+            } else {
+                document.querySelectorAll('#em-action-tag option').forEach((option) => {
+                    option.disabled = false;
+                    option.show();
+                })
+            }
+            $("#em-action-tag").val('').trigger("liszt:updated");
+        });
     });
 
     $(document).on('click', function() {
@@ -4791,6 +4877,9 @@ $(document).ready(function() {
     $(document).on('change', '#select_published', function(event) {
         setFiltersSumo(event);
     });
+    $(document).on('change', '#select_newsletter', function(event) {
+        setFiltersSumo(event);
+    });
 
     $(document).on('click', '#em-data thead th', function(e) {
         $.ajaxQ.abortAll();
@@ -4810,21 +4899,25 @@ $(document).ready(function() {
             var name = $(this).attr('id');
             switch (name) {
                 case 'clear-search':
-                    lastVal = {};
-                    addLoader();
-                    $.ajax({
-                        type: 'POST',
-                        url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=clear',
-                        dataType: 'json',
-                        success: function(result) {
-                            if (result.status) {
-                                refreshFilter();
+                    if(moduleFilters) {
+                        document.querySelector('#emundus-filters #clear-filters').click();
+                    } else {
+                        lastVal = {};
+                        addLoader();
+                        $.ajax({
+                            type: 'POST',
+                            url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=clear',
+                            dataType: 'json',
+                            success: function(result) {
+                                if (result.status) {
+                                    refreshFilter();
+                                }
+                            },
+                            error: function(jqXHR) {
+                                console.log(jqXHR.responseText);
                             }
-                        },
-                        error: function(jqXHR) {
-                            console.log(jqXHR.responseText);
-                        }
-                    });
+                        });
+                    }
                     break;
 
                 case 'search':
@@ -4832,42 +4925,46 @@ $(document).ready(function() {
                     break;
 
                 case 'save-filter':
-                    $.ajaxQ.abortAll();
-                    var filName = prompt(filterName);
-                    if (filName != null) {
-                        $.ajax({
-                            type: 'POST',
-                            url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=savefilters&Itemid=' + itemId,
-                            dataType: 'json',
-                            data: ({
-                                name: filName
-                            }),
-                            success: function(result) {
-
-                                if (result.status) {
-                                    document.getElementById('em_select_filter').style.display = 'block'
-                                    $('#select_filter').append('<option id="' + result.filter.id + '" selected="">' + result.filter.name + '<option>');
-                                    $("#select_filter").trigger("chosen:updated");
-                                    $('#saved-filter').show();
-                                    setTimeout(function(e) {
-                                        $('#saved-filter').hide();
-                                    }, 600);
-
-                                } else {
-                                    $('#error-filter').show();
-                                    setTimeout(function(e) {
-                                        $('#error-filter').hide();
-                                    }, 600);
-                                }
-
-                            },
-                            error: function(jqXHR) {
-                                console.log(jqXHR.responseText);
-                            }
-                        })
+                    if(moduleFilters) {
+                        document.querySelector('#emundus-filters #save-filters').click();
                     } else {
-                        alert(filterEmpty);
-                        filName = prompt(filterName, "name");
+                        $.ajaxQ.abortAll();
+                        var filName = prompt(filterName);
+                        if (filName != null) {
+                            $.ajax({
+                                type: 'POST',
+                                url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=savefilters&Itemid=' + itemId,
+                                dataType: 'json',
+                                data: ({
+                                    name: filName
+                                }),
+                                success: function (result) {
+
+                                    if (result.status) {
+                                        document.getElementById('em_select_filter').style.display = 'block'
+                                        $('#select_filter').append('<option id="' + result.filter.id + '" selected="">' + result.filter.name + '<option>');
+                                        $("#select_filter").trigger("chosen:updated");
+                                        $('#saved-filter').show();
+                                        setTimeout(function (e) {
+                                            $('#saved-filter').hide();
+                                        }, 600);
+
+                                    } else {
+                                        $('#error-filter').show();
+                                        setTimeout(function (e) {
+                                            $('#error-filter').hide();
+                                        }, 600);
+                                    }
+
+                                },
+                                error: function (jqXHR) {
+                                    console.log(jqXHR.responseText);
+                                }
+                            })
+                        } else {
+                            alert(filterEmpty);
+                            filName = prompt(filterName, "name");
+                        }
                     }
                     break;
 
@@ -4933,8 +5030,9 @@ $(document).ready(function() {
         }
     });
 
+    const handledIds = ['del-filter', 'em-close-file', 'em-mini-file', 'em-next-file', 'em-prev-file', 'em-see-files', 'em-delete-files', 'add-filter'];
     $(document).on('click', 'button', function(e) {
-        if (e.handle != true) {
+        if (e.handle != true && handledIds.indexOf(this.id) != -1) {
             e.handle = true;
             var id = this.id;
             var cfnum = '';
@@ -6403,7 +6501,7 @@ async function sendMailQueue(fnums) {
         switch(currentStep) {
             case 0:
                 title = 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL';
-                html = '<div id="data" class="em-mt-32 em-w-100"><div id="email-loader" class="em-loader" style="margin: auto;"></div></div>';
+                html = '<div id="data" class="em-w-100"><div id="email-loader" class="em-loader" style="margin: auto;"></div></div>';
                 swal_confirm_button = 'COM_EMUNDUS_EMAILS_EMAIL_PREVIEW_BEFORE_SEND';
 
                 $.ajax({
@@ -6429,7 +6527,6 @@ async function sendMailQueue(fnums) {
             case 1:
                 title = 'COM_EMUNDUS_EMAILS_EMAIL_PREVIEW';
                 html = '<div id="email-recap"></div>';
-                type = 'info';
 
                 // update the textarea with the WYSIWYG content.
                 tinymce.triggerSave();
@@ -6442,6 +6539,7 @@ async function sendMailQueue(fnums) {
                     template        : $('#message_template :selected').val(),
                     mail_from_name  : $('#mail_from_name').text(),
                     mail_from       : $('#mail_from').text(),
+                    reply_to_from   : $('#reply_to_from').text(),
                     mail_subject    : $('#mail_subject').text(),
                     message         : body,
                     bcc             : [],
@@ -6730,3 +6828,11 @@ function createScrollbarForElement(element, id) {
     };
     element.parentNode.insertBefore(new_scrollbar, element);
 }
+
+window.addEventListener('emundus-start-apply-filters', () => {
+    addLoader();
+});
+
+window.addEventListener('emundus-apply-filters-success', () => {
+     reloadData(document.getElementById('view').getAttribute('value'), false);
+});

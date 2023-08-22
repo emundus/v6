@@ -9,7 +9,7 @@
       <div class="em-style-options em-mb-32">
         <div class="em-flex-row">
           <div>
-            <h4 class="em-text-neutral-800 em-h4 em-flex-row em-mb-8">
+            <h4 class="em-text-neutral-800 em-flex-row em-mb-8">
               Logo
               <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayLogoTip">help_outline</span>
             </h4>
@@ -50,7 +50,7 @@
       <div class="em-style-options em-mb-32">
         <div class="em-flex-row">
           <div>
-            <h4 class="em-text-neutral-800 em-h4 em-flex-row em-mb-8">
+            <h4 class="em-text-neutral-800 em-flex-row em-mb-8">
               {{ translate("COM_EMUNDUS_ONBOARD_ICON") }}
               <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayFaviconTip">help_outline</span>
             </h4>
@@ -90,7 +90,7 @@
       <!-- COLORS -->
       <div class="em-style-options em-mb-32">
         <div>
-          <h4 class="em-text-neutral-800 em-h4 em-flex-row em-mb-8">
+          <h4 class="em-text-neutral-800 em-flex-row em-mb-8">
             {{ translate("COM_EMUNDUS_ONBOARD_COLORS") }}
             <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayColorsTip">help_outline</span>
           </h4>
@@ -112,7 +112,7 @@
       <div v-if="bannerLink" class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
         <div class="em-flex-row">
           <div>
-            <h4 class="em-text-neutral-800 em-h4 em-mb-8 em-flex-row">
+            <h4 class="em-text-neutral-800 em-mb-8 em-flex-row">
               {{ translate("COM_EMUNDUS_ONBOARD_BANNER") }}
               <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayBannerTip">help_outline</span>
             </h4>

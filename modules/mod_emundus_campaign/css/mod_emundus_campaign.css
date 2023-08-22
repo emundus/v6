@@ -21,12 +21,12 @@
     margin-left: -5px !important;
     height: 34px !important;
     margin-bottom: 0;
-    border-radius: 0px var(--em-border-radius) var(--em-border-radius) 0px !important;
+    border-radius: 0 var(--em-default-br) var(--em-default-br) 0 !important;
 }
 #navfilter .navsearch .navsearch-content .input-group label input {
-    border-radius: var(--em-border-radius) 0px 0px var(--em-border-radius) !important;
+    border-radius: var(--em-default-br) 0 0 var(--em-default-br) !important;
     height: 34px;
-    margin-top: 0px;
+    margin-top: 0;
 }
 .campaignbymonth {
     margin-top: 0 !important;
@@ -123,9 +123,9 @@
 }
 
 .campaigns-list .below-content a.btn {
-  border-radius: var(--em-border-radius);
+  border-radius: var(--em-applicant-br);
   width: auto;
-  padding: 8px 12px;
+  padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
   text-transform: inherit;
 }
 
@@ -267,7 +267,7 @@
         right: 0;
         padding-right: 30px;
     }
-    ​
+
     #depositor-select {
         margin-bottom: 10px !important;
     }
@@ -290,7 +290,7 @@
     }
 
     .campaigns-list .campaignbymonth .campaign-month-label .position-me {
-        top: 0px;
+        top: 0;
     }
 
     .campaingapplycontent {
@@ -363,12 +363,12 @@
     }
 
     .homepage #navfilter .navsearch .navsearch-content .input-group-btn button {
-        margin-bottom: 0px;
+        margin-bottom: 0;
     }
 
     .campaign-month-campaigns .campaign-content  .left-side.campaigntext p {
-        padding-left: 0px;
-        margin-left: 0px;
+        padding-left: 0;
+        margin-left: 0;
     }
 
     .homepage .campaingapply .campaingapplycontent {
@@ -520,7 +520,6 @@
     .campaign-content .below-content a{
         width: 17.3%;
     }
-    ​
 }
 
 @media all and (max-width: 1239px) {

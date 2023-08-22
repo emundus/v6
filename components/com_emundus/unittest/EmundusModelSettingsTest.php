@@ -104,11 +104,8 @@ class EmundusModelSettingsTest extends TestCase
 	public function testupdateTags() {
 		$tag = $this->m_settings->createTag();
 		$label = 'Nouvelle étiquette modifiée';
-		$colors = $this->m_settings->getColorClasses();
-		$color = current($colors);
-		$color_key = array_search($color, $colors);
 
-		$update = $this->m_settings->updateTags($tag->id, $label, $color);
+		$update = $this->m_settings->updateTags($tag->id, $label, 'lightblue');
 		$this->assertTrue($update, 'La modification d\'une étiquette fonctionne');
 
 		$tags = $this->m_settings->getTags();
@@ -118,7 +115,7 @@ class EmundusModelSettingsTest extends TestCase
 		$tag_found = current($tags_found);
 
 		$this->assertSame($label, $tag_found->label, 'Le titre de l\'étiquette a été modifié');
-		$this->assertSame('label-' . $color_key, $tag_found->class, 'Le titre de l\'étiquette a été modifié');
+		$this->assertSame('label-lightblue', $tag_found->class, 'Le titre de l\'étiquette a été modifié');
 	}
 
 	public function testdeleteTag() {
@@ -128,5 +125,23 @@ class EmundusModelSettingsTest extends TestCase
 
 		$delete = $this->m_settings->deleteTag(0);
 		$this->assertFalse($delete, 'On ne peut pas supprimer une étiquette qui n\'existe pas');
+	}
+
+	public function testgetHomeArticle() {
+		$article = $this->m_settings->getHomeArticle();
+
+		$this->assertNotNull($article, 'La récupération de l\'article d\'accueil fonctionne');
+	}
+
+	public function testgetRgpdArticles() {
+		$articles = $this->m_settings->getRgpdArticles();
+
+		$this->assertNotEmpty($articles, 'La récupération des articles RGPD fonctionne');
+
+		$this->assertSame(5, count($articles), 'Je récupère 5 articles RGPD');
+
+		if(empty($articles[0]->id)){
+			$this->assertNotEmpty($articles[0]->alias, 'Si le paramètre du module n\'est pas défini on récupère un alias par défaut');
+		}
 	}
 }

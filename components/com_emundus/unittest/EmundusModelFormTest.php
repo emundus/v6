@@ -80,4 +80,36 @@ class EmundusModelFormTest extends TestCase
 
 		// TODO: test duplicate form, error coming from cms language
 	}
+
+	public function testcreateFormEval()
+	{
+		$form_id = $this->m_form->createFormEval();
+		$this->assertNotEmpty($form_id, 'Evaluation form creation succeeds');
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('jfe.name, jfe.published')
+			->from($db->quoteName('#__fabrik_elements', 'jfe'))
+			->leftJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON (' . $db->quoteName('jffg.group_id') . ' = ' . $db->quoteName('jfe.group_id') . ')')
+			->where($db->quoteName('jffg.form_id') . ' = ' . $db->quote($form_id));
+
+		$db->setQuery($query);
+		$elements = $db->loadAssocList();
+
+		$this->assertNotEmpty($elements, 'Evaluation form elements are not empty');
+
+		$element_names = array_column($elements, 'name');
+		$this->assertContains('id', $element_names, 'Evaluation form elements contains id');
+		$this->assertContains('time_date', $element_names, 'Evaluation form elements contains time_date');
+		$this->assertContains('fnum', $element_names, 'Evaluation form elements contains fnum');
+		$this->assertContains('user', $element_names, 'Evaluation form elements contains user');
+		$this->assertContains('student_id', $element_names, 'Evaluation form elements contains student_id');
+
+		foreach($elements as $element) {
+			if (in_array($element['name'], ['id', 'time_date', 'fnum', 'user', 'student_id'])) {
+				$this->assertSame(1, intval($element['published']), 'Evaluation default form elements are published');
+			}
+		}
+	}
 }
