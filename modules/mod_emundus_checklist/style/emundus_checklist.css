@@ -42,6 +42,7 @@
 }
 
 .mod_emundus_checklist #mod_emundus_checklist___expand_icon{
+    display: none;
     font-size: 24px !important;
     color: var(--neutral-800);
 }
@@ -140,6 +141,10 @@
     .mod_emundus_checklist___buttons{
         margin-left: 0;
         width: 100%;
+    }
+
+    .mod_emundus_checklist #mod_emundus_checklist___expand_icon{
+        display: block;
     }
 }
 

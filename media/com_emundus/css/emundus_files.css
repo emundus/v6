@@ -32,7 +32,7 @@
     color: #fff;
 }
 
-button.goback-btn, .btn-danger, .pull-right .btn:not(.dropdown-toggle), .below-content a, #member-profile .controls a, .toggle-editor .btn, .xclsform .panel-body button#delfilter, button#back, .btn.advanced-search-clearall, .emails-setup-page .form-actions button:not(.save), .documents-type-candidacy-page .fabrikDetails .btn, .fabrikUploadDelete .btn, #em_select_filter #del-filter, .btn-toolbar .btn-group:nth-child(2) .btn {
+.btn-danger, .pull-right .btn:not(.dropdown-toggle), .below-content a, #member-profile .controls a, .toggle-editor .btn, .xclsform .panel-body button#delfilter, button#back, .btn.advanced-search-clearall, .emails-setup-page .form-actions button:not(.save), .documents-type-candidacy-page .fabrikDetails .btn, .fabrikUploadDelete .btn, #em_select_filter #del-filter, .btn-toolbar .btn-group:nth-child(2) .btn {
     background: #4e5b6d;
     border: 1px solid #4e5b6d;
     text-shadow: none;
