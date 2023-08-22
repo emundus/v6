@@ -97,11 +97,10 @@
       </div>
 
       <div v-else>
+        <button v-if="object.table.name === 'emundus_setup_profiles'" class="float-right" @click="exportToCsv">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_EXPORT') }}</button>
+
         <div v-for="section in object.fields.Sections" class="em-mb-32">
-          <div class="flex items-center justify-between mb-2">
-            <h4>{{section.Label}}</h4>
-            <button v-if="object.table.name === 'emundus_setup_profiles'" @click="exportToCsv">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_EXPORT') }}</button>
-          </div>
+          <h4 class="mb-2">{{section.Label}}</h4>
 
           <TranslationRow :section="section" :translations="translations" @saveTranslation="saveTranslation"/>
         </div>
