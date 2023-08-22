@@ -40,10 +40,10 @@ endif;
     </div>
     <div class="mb-8">
         <div class="mt-8">
-	        <?php if($display_required_icon == 0) : ?>
-                <p class="mb-2 text-neutral-600"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
-	        <?php endif; ?>
 	        <?php if ($this->params->get('show-title', 1)) : ?>
+                <?php if($display_required_icon == 0) : ?>
+                    <p class="mb-2 text-neutral-600"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
+                <?php endif; ?>
                 <div class="page-header">
 			        <?php $title = trim(preg_replace('/^([^-]+ - )/', '', $form->label)); ?>
                     <h2 class="after-em-border after:bg-red-800"><?= JText::_($title) ?></h2>
