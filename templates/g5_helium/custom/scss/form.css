@@ -157,7 +157,7 @@
     input:not([type='file']), select, textarea {
       color: var(--em-default-text-color-1);
       border-radius: var(--em-form-br);
-      @apply px-2.5 py-3;
+      @apply px-2.5 py-2;
       @apply mb-0;
       background-color: var(--em-form-bgc);
       border-color: var(--em-form-bc);
