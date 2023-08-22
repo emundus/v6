@@ -12,7 +12,7 @@ module.exports = {
     safelist: [
         {
             pattern: /label-/
-        },
+        }
     ],
     theme: {
         extend: {
