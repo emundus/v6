@@ -39,17 +39,20 @@ endif;
 		<?php echo $form->error; ?>
     </div>
     <div class="mb-8">
-        <?php if ($this->params->get('show-title', 1)) : ?>
-            <div class="page-header mt-8">
-                <?php $title = trim(preg_replace('/^([^-]+ - )/', '', $form->label)); ?>
-                <h1 class="after-em-border after:bg-red-800"><?= JText::_($title) ?></h1>
-            </div>
-        <?php endif; ?>
+        <div class="mt-8">
+	        <?php if($display_required_icon == 0) : ?>
+                <p class="mb-2 text-neutral-600"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
+	        <?php endif; ?>
+	        <?php if ($this->params->get('show-title', 1)) : ?>
+                <div class="page-header">
+			        <?php $title = trim(preg_replace('/^([^-]+ - )/', '', $form->label)); ?>
+                    <h1 class="after-em-border after:bg-red-800"><?= JText::_($title) ?></h1>
+                </div>
+	        <?php endif; ?>
+        </div>
+
 
         <div class="em-form-intro mt-4">
-	        <?php if($display_required_icon == 0) : ?>
-                <p class="mb-2"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
-	        <?php endif; ?>
             <?php
             echo trim($form->intro);
             ?>

@@ -555,7 +555,7 @@ class EmundusControllerForm extends JControllerLegacy {
 				if (!empty($documents)) {
 					$response = array('status' => true, 'msg' => 'worked', 'data' => $documents);
 				} else {
-					$response = array('status' => false, 'msg' => 'No documents attached to profile found', 'data' => $documents);
+					$response = array('status' => true, 'msg' => 'No documents attached to profile found', 'data' => $documents);
 				}
 			} else {
 				$response = array('status' => false, 'msg' => 'Missing parameters');

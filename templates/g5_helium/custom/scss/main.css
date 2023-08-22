@@ -87,3 +87,6 @@ body {
     display: block;
     margin-top: 8px;
 }
+small {
+    font-size: 15px;
+}

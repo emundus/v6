@@ -706,7 +706,7 @@ form.fabrikForm input:not([type='file']), form.fabrikForm select, form.fabrikFor
       padding-right: 0.625rem;
       padding-top: var(--em-spacing-2);
       padding-bottom: var(--em-spacing-2);
-      margin-bottom: 0;
+      margin-bottom: 0px;
       background-color: var(--em-form-bgc);
       border-color: var(--em-form-bc);
       transition: all 0.1s ease-out;
@@ -1872,6 +1872,9 @@ input[type="text"],
   --tw-ordinal: ordinal;
   font-variant-numeric: var(--tw-ordinal) var(--tw-slashed-zero) var(--tw-numeric-figure) var(--tw-numeric-spacing) var(--tw-numeric-fraction);
 }
+.text-neutral-600 {
+  color: var(--neutral-600);
+}
 .text-red-500 {
   --tw-text-opacity: 1;
   color: rgb(239 68 68 / var(--tw-text-opacity));
@@ -2706,6 +2709,9 @@ body {
     height: var(--em-form-after-bh);
     display: block;
     margin-top: 8px;
+}
+small {
+    font-size: 15px;
 }
 .after\:bg-neutral-500::after {
   content: var(--tw-content);

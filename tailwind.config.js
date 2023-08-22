@@ -22,6 +22,7 @@ module.exports = {
                 },
                 neutral: {
                     500: 'var(--neutral-500)',
+                    600: 'var(--neutral-600)',
                 }
             },
             spacing: {

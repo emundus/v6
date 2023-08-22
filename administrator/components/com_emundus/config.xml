@@ -81,6 +81,8 @@
 			<option value="1">COM_EMUNDUS_REQUIRED_POSITION_ICON_AFTER</option>
 		</field>
 
+		<field name="repeat_icon" type="text" label="COM_EMUNDUS_REPEAT_GROUP_ICON" default="clear" description="COM_EMUNDUS_REPEAT_GROUP_ICON_DESC" size="60"/>
+
 		<field
 				name="spacer0"
 				type="spacer"
