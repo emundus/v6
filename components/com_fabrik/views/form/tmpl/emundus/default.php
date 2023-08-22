@@ -165,7 +165,7 @@ endif;
         // Load skeleton
         let header = document.querySelector('.page-header');
         if (header) {
-            document.querySelector('.page-header h1').style.opacity = 0;
+            document.querySelector('.page-header h2').style.opacity = 0;
             header.classList.add('skeleton');
         }
         let intro = document.querySelector('.em-form-intro');
