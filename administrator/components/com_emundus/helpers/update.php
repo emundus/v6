@@ -2795,6 +2795,15 @@ class EmundusHelperUpdate
 						->where($db->quoteName('id') . ' = ' . $db->quote($menu_id));
 					$db->setQuery($query);
 					$db->execute();
+
+					$query->clear()
+						->update($db->quoteName('#__falang_content'))
+						->set($db->quoteName('value') . ' = ' . $db->quote('index.php?option=com_fabrik&view=form&formid=' . $form_id))
+						->where($db->quoteName('reference_table') . ' = ' . $db->quote('menu'))
+						->where($db->quoteName('reference_field') . ' = ' . $db->quote('link'))
+						->where($db->quoteName('reference_id') . ' = ' . $db->quote($menu_id));
+					$db->setQuery($query);
+					$db->execute();
 				}
 
 				$query->clear()
@@ -3194,6 +3203,25 @@ class EmundusHelperUpdate
 		// Remove appli emundus yaml assets
 		$file = JPATH_ROOT . '/templates/g5_helium/custom/config/24/page/assets.yaml';
 		unlink($file);
+		//
+
+		// Remove ajax_validation on registration form
+		$query->clear()
+			->select('id,params')
+			->from($db->quoteName('#__fabrik_forms'))
+			->where($db->quoteName('id') . ' = 307');
+		$db->setQuery($query);
+		$registration_form = $db->loadObject();
+
+		$params = json_decode($registration_form->params, true);
+		$params['ajax_validations'] = 0;
+
+		$query->clear()
+			->update($db->quoteName('#__fabrik_forms'))
+			->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+			->where($db->quoteName('id') . ' = ' . $db->quote($registration_form->id));
+		$db->setQuery($query);
+		$db->execute();
 		//
 
 		return true;

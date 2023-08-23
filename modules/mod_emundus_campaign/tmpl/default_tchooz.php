@@ -943,7 +943,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             }
         }
 
-        if(typeof filter !== 'undefined') {
+        if(typeof filters !== 'undefined') {
             clickInsideModule = false;
             if (filters.style.display === 'flex') {
                 e.composedPath().forEach((pathElement) => {

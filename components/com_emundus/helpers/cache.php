@@ -97,4 +97,15 @@ class EmundusHelperCache
 
 		return $cleaned;
 	}
+
+	public static function getCurrentGitHash() {
+		$gitBasePath = JPATH_SITE.'/.git';
+
+		$gitStr = file_get_contents($gitBasePath.'/HEAD');
+		$gitBranchName = rtrim(preg_replace("/(.*?\/){2}/", '', $gitStr));
+
+		$HEAD_hash = trim(file_get_contents($gitBasePath.'/refs/heads/'.$gitBranchName));
+
+		return $HEAD_hash;
+	}
 }

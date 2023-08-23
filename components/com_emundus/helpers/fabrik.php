@@ -465,6 +465,7 @@ die("<script>
         }
 
         if ($plugin == 'databasejoin') {
+	        $params['bootstrap_class'] = 'span12';
             $params['database_join_display_type'] = 'dropdown';
             $params['join_db_name'] = '';
             $params['join_key_column'] = '';
