@@ -15,6 +15,8 @@ JHtml::_('behavior.formvalidator');
 $document = JFactory::getDocument();
 $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_users_reset.css");
 
+$this->form->setValue('username', '', JFactory::getApplication()->input->get('username'));
+
 ?>
 <div class="reset-confirm<?php echo $this->pageclass_sfx; ?>">
 
@@ -32,7 +34,7 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_use
             <?php foreach ($this->form->getFieldsets() as $fieldset) : ?>
                 <fieldset>
                     <?php if (isset($fieldset->label)) : ?>
-                        <p><?php echo JText::_($fieldset->label); ?></p>
+                        <p class="mb-4"><?php echo JText::_($fieldset->label); ?></p>
                     <?php endif; ?>
                     <?php echo $this->form->renderFieldset($fieldset->name); ?>
                 </fieldset>
