@@ -1,5 +1,5 @@
 <template>
-  <div class="em-w-100 em-mt-80">
+  <div class="em-w-100">
     <div>
 
       <!--- MENU --->
