@@ -174,10 +174,8 @@ $lang = JFactory::getLanguage();
 $short_lang = substr($lang->getTag(), 0 , 2);
 $current_lang = $lang->getTag();
 
-$xmlDoc = new DOMDocument();
-if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
-    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
-}
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 
 <list id="em-component-vue"
@@ -189,4 +187,4 @@ if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml'
       manyLanguages="<?= $many_languages ?>">
 </list>
 
-<script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>
+<script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
