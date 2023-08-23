@@ -99,13 +99,27 @@ class EmundusHelperCache
 	}
 
 	public static function getCurrentGitHash() {
-		$gitBasePath = JPATH_SITE.'/.git';
+		$hash = '';
+		$git_base_path = JPATH_SITE.'/.git';
 
-		$gitStr = file_get_contents($gitBasePath.'/HEAD');
-		$gitBranchName = rtrim(preg_replace("/(.*?\/){2}/", '', $gitStr));
+		if(file_exists($git_base_path.'/HEAD')) {
+			$git_str = file_get_contents($git_base_path . '/HEAD');
+			$git_branch = rtrim(preg_replace("/(.*?\/){2}/", '', $git_str));
 
-		$HEAD_hash = trim(file_get_contents($gitBasePath.'/refs/heads/'.$gitBranchName));
+			if(!empty($git_branch))
+			{
+				$hash = trim(file_get_contents($git_base_path . '/refs/heads/' . $git_branch));
+			}
+		}
 
-		return $HEAD_hash;
+		if(empty($hash))
+		{
+			$xmlDoc = new DOMDocument();
+			if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
+				$hash = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
+			}
+		}
+
+		return $hash;
 	}
 }

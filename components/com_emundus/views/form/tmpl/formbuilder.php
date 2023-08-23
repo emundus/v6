@@ -438,10 +438,8 @@ $sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
 
 $component = JFactory::getApplication()->input->get('evaluation') ? 'evaluationbuilder' : 'formbuilder';
 
-$xmlDoc = new DOMDocument();
-if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
-    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
-}
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
 
 $mode = JFactory::getApplication()->input->get('mode', '');
 
@@ -462,4 +460,4 @@ $mode = JFactory::getApplication()->input->get('mode', '');
      <?php endif; ?>
 ></div>
 
-<script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>
+<script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
