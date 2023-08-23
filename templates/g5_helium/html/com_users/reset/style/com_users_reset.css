@@ -1,3 +1,7 @@
+.view-reset.layout-complete div.popover {
+    display: none !important;
+}
+
 #user-registration fieldset  {
     background: transparent;
 }
@@ -160,11 +164,11 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 }
 
 
-.view-reset .reset-complete label#jform_password2-lbl.hasPopover.required::after {
+.view-reset .reset-complete label#jform_password2-lbl.hasPopover.required::after,.view-reset .reset-complete label#jform_password1-lbl.hasPopover.required::after {
  display: none;
 }
 
-.view-reset .reset-complete label#jform_password2-lbl.hasPopover.required ul  {
+.view-reset .reset-complete label#jform_password2-lbl.hasPopover.required ul,.view-reset .reset-complete label#jform_password1-lbl.hasPopover.required ul  {
    list-style: none;
     margin: 10px 0;
 }

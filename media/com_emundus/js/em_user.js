@@ -711,11 +711,11 @@ $(document).ready(function () {
 								customClass: {
 									title: 'w-full justify-center',
 								}
-							});
-							reloadData();
+							}).then((result) => {
+								reloadData();
 
-							reloadActions($('#view').val(), undefined, false);
-							$('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+								reloadActions($('#view').val(), undefined, false);
+							});
 						}
 
 					},
@@ -761,8 +761,9 @@ $(document).ready(function () {
 								customClass: {
 									title: 'w-full justify-center',
 								}
+							}).then(() => {
+								reloadData();
 							});
-							reloadData();
 						}
 
 					},

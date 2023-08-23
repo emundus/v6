@@ -40,13 +40,13 @@ endif;
     </div>
     <div class="mb-8">
         <div class="mt-8">
-	        <?php if($display_required_icon == 0) : ?>
-                <p class="mb-2 text-neutral-600"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
-	        <?php endif; ?>
 	        <?php if ($this->params->get('show-title', 1)) : ?>
+                <?php if($display_required_icon == 0) : ?>
+                    <p class="mb-2 text-neutral-600"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
+                <?php endif; ?>
                 <div class="page-header">
 			        <?php $title = trim(preg_replace('/^([^-]+ - )/', '', $form->label)); ?>
-                    <h1 class="after-em-border after:bg-red-800"><?= JText::_($title) ?></h1>
+                    <h2 class="after-em-border after:bg-red-800"><?= JText::_($title) ?></h2>
                 </div>
 	        <?php endif; ?>
         </div>
@@ -95,7 +95,7 @@ endif;
                 <div class="mb-7">
                     <?php
                     if ($group->showLegend) :?>
-                        <h2 class="after-em-border after:bg-neutral-500"><?php echo $group->title; ?></h2>
+                        <h3 class="after-em-border after:bg-neutral-500"><?php echo $group->title; ?></h3>
                     <?php
                     endif;
 
@@ -165,7 +165,7 @@ endif;
         // Load skeleton
         let header = document.querySelector('.page-header');
         if (header) {
-            document.querySelector('.page-header h1').style.opacity = 0;
+            document.querySelector('.page-header h2').style.opacity = 0;
             header.classList.add('skeleton');
         }
         let intro = document.querySelector('.em-form-intro');

@@ -173,6 +173,7 @@ class plgUserEmundus extends JPlugin
         $controller = $jinput->get->get('controller', null);
         $task = $jinput->get->get('task', null);
 
+
         $profile = 0;
 
         // If the details are empty, we are probably signing in via LDAP for the first time.
@@ -260,7 +261,7 @@ class plgUserEmundus extends JPlugin
             }
         }
 
-        if (is_array($details) && count($details) > 0) {
+        if (is_array($details) && count($details) > 0 && $task != 'reset.complete') {
             $campaign_id = @isset($details['emundus_profile']['campaign'])?$details['emundus_profile']['campaign']:@$details['campaign'];
             $lastname = @isset($details['emundus_profile']['lastname'])?$details['emundus_profile']['lastname']:@$details['name'];
             $firstname = @isset($details['emundus_profile']['firstname'])?$details['emundus_profile']['firstname']:@$details['firstname'];
@@ -383,7 +384,7 @@ class plgUserEmundus extends JPlugin
         // ThirdPartyApp::loginUser($user['username'], $user['password']);
         $app = JFactory::getApplication();
         $jinput = JFactory::getApplication()->input;
-        $redirect = $jinput->get->getBase64('redirect');
+        $redirect = $jinput->get->getBase64('redirect',$options['redirect']);
 
         if (empty($redirect)) {
             parse_str($jinput->server->getVar('HTTP_REFERER'), $return_url);

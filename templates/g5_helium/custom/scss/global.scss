@@ -658,6 +658,11 @@ footer#g-footer > .g-container {
     display: none !important;
   }
 
+  form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-fluid {
+    padding-left: 4px;
+    margin-bottom: 0;
+  }
+
   #jos_emundus_users___password_tip {
     margin-top: -60px;
     margin-left: -10px;
@@ -2437,7 +2442,6 @@ a#em-doc-zip:focus,
 
 
 
-button.goback-btn,
 .btn-danger,
 .pull-right .btn:not(.dropdown-toggle),
 .below-content a,
@@ -3813,6 +3817,7 @@ div#em-appli-block {
     letter-spacing: normal;
     line-height: normal;
     font-size: var(--em-applicant-font-size);
+    transition: all ease-in-out 0.3s;
   }
 
 

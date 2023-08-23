@@ -141,11 +141,13 @@
       font-weight: 400;
       font-family: var(--em-applicant-font);
       font-style: normal;
+      display: flex;
 
       i.icon-question-sign  {
         display: none;
       }
     }
+
 
     /** INPUT **/
     input:not([type='radio']):not([type='checkbox']):not([type='file']), select {
@@ -177,6 +179,15 @@
         border-color: var(--em-form-bc-focus);
         background-color: var(--em-form-bgc-focus);
       }
+    }
+
+    /* TEXTAREA */
+    .fabrik_characters_left.muted {
+      color: var(--neutral-600);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px;
     }
 
     /* PHONE NUMBER */
@@ -753,7 +764,7 @@
       @apply justify-end;
 
       .addGroup {
-        padding-right: calc(var(--em-applicant-br)*2);
+        padding: 6px 10px;
       }
     }
 
@@ -909,6 +920,11 @@
     position: relative;
     overflow: hidden;
     width: 100%;
+  }
+
+  .fabrik_element___file_upload_formats {
+    font-size: 16px;
+    color: var(--neutral-600);
   }
 
   .fabrik_element___emundus_file_upload_parent input[type=file] {

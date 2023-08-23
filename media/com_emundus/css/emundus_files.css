@@ -32,7 +32,7 @@
     color: #fff;
 }
 
-button.goback-btn, .btn-danger, .pull-right .btn:not(.dropdown-toggle), .below-content a, #member-profile .controls a, .toggle-editor .btn, .xclsform .panel-body button#delfilter, button#back, .btn.advanced-search-clearall, .emails-setup-page .form-actions button:not(.save), .documents-type-candidacy-page .fabrikDetails .btn, .fabrikUploadDelete .btn, #em_select_filter #del-filter, .btn-toolbar .btn-group:nth-child(2) .btn {
+.btn-danger, .pull-right .btn:not(.dropdown-toggle), .below-content a, #member-profile .controls a, .toggle-editor .btn, .xclsform .panel-body button#delfilter, button#back, .btn.advanced-search-clearall, .emails-setup-page .form-actions button:not(.save), .documents-type-candidacy-page .fabrikDetails .btn, .fabrikUploadDelete .btn, #em_select_filter #del-filter, .btn-toolbar .btn-group:nth-child(2) .btn {
     background: #4e5b6d;
     border: 1px solid #4e5b6d;
     text-shadow: none;
@@ -369,6 +369,22 @@ table > thead > tr > th {
 #em-assoc-files #em-see-files{
     margin-right: 4px !important;
 }
+
+/* FILTRES AVANCES */
+
+#emundus-filters .multi-select-filter-card div.label-default,
+#emundus-filters .default-filter-card div.label-default{
+    background-color: var(--neutral-0) !important;
+    border: 1px solid var(--neutral-500);
+}
+
+#emundus-filters .multi-select-filter-card div.label-darkblue,
+#emundus-filters .default-filter-card div.label-darkblue{
+    background-color: var(--neutral-300) !important;
+    border: 1px solid var(--neutral-800);
+}
+
+
 /* FILTRES */
 
 .em_filters_filedset > label{

@@ -179,6 +179,18 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     }
 
     $forms = @EmundusHelperMenu::buildMenuQuery($user->profile);
+	$keys_to_remove = array();
+	foreach($forms as $key => $form) {
+		$m_params = json_decode($form->menu_params, true);
+		if(isset($m_params['menu_show']) && $m_params['menu_show'] == 0)
+		{
+			$keys_to_remove[] = $key;
+		}
+	}
+	foreach($keys_to_remove as $key) {
+		unset($forms[$key]);
+	}
+	$forms = array_values($forms);
 
     // Prepare display of send button
     $application = @modEmundusChecklistHelper::getApplication($user->fnum);
