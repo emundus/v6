@@ -105,18 +105,7 @@ export default {
           this.sections = groups.filter(group => group.hidden_group != -1);
 	        this.getDescription();
         } else {
-					Swal.fire({
-						title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
-						type: 'error',
-						showCancelButton: false,
-						confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
-						reverseButtons: true,
-						customClass: {
-							title: 'em-swal-title',
-							confirmButton: 'em-swal-confirm-button',
-							actions: 'em-swal-single-action'
-						},
-					});
+					this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
         }
 
 	      this.loading = false;
