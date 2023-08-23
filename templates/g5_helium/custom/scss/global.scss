@@ -128,10 +128,9 @@ p,
   position: relative;
 }
 
-.view-form.com_fabrik:not(.applicant-form) #g-container-main,
- {
-  padding-left: 5% !important;
-  padding-right: 5% !important;
+.view-form.com_fabrik:not(.applicant-form) #g-container-main .g-container {
+  padding-left: 5%;
+  padding-right: 5%;
 }
 
 .g-container.g-flushed {
@@ -517,7 +516,7 @@ footer#g-footer {
   width: 100vw;
   position: relative;
   z-index: 1;
-  padding: 20px !important;
+  padding: 20px;
   //margin-top: 75px !important;
   transition: all 0.3s ease-in-out;
 }
@@ -1513,9 +1512,9 @@ footer#g-footer > .g-container {
   }
 }
 
-.view-list #g-container-main {
-  padding-left: 5% !important;
-  padding-right: 5% !important;
+.view-list #g-container-main .g-container {
+  padding-left: 5%;
+  padding-right: 5%;
 }
 
 .row-fluid .span3 {
