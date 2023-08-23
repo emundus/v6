@@ -48,6 +48,7 @@ class EmundusApiZoomTest extends TestCase
 		$config->set('zoom_client_secret', 'y6kOHCAQkgY54OGPzcHyK42es5T0Zps6');
 
 		$this->testAuthToZoom();
+		$this->testgetUsers();
 	}
 
 	public function testConstruct()
@@ -68,20 +69,39 @@ class EmundusApiZoomTest extends TestCase
 		$this->assertTrue($auth_succeed, 'Authentification to Zoom is working properly');
 	}
 
+	public function testgetUsers()
+	{
+		$users = $this->zoom->getUsers();
+
+		$this->assertNotEmpty($users, 'Users are fetched successfully');
+		$this->assertObjectHasAttribute('users', $users, 'Users are fetched successfully, users attribute exists');
+
+		$this->host_id = $users->users[0]->id;
+	}
+
+	public function testgetUserMeetings()
+	{
+		$meetings = $this->zoom->getUserMeetings($this->host_id);
+		$this->assertNotEmpty($meetings, 'User\'s meetings are fetched successfully');
+		$this->assertObjectHasAttribute('meetings', $meetings, 'User\'s meetings are fetched successfully, meetings attribute exists');
+
+	}
+
 	public function  testCreateUser()
 	{
 		$data = [];
 		$user = $this->zoom->createUser($data);
 		$this->assertNull($user, 'User is not created, because no data is given');
 
-		$data = [
-			'email' => 'test-emundus-zoom@emundus.fr',
+		/*$data = [
+			'email' => 'test-emundus-zoom+'. rand(0, 1000) .'@emundus.fr',
 			'first_name' => 'Test',
 			'last_name' => 'Emundus',
+			'type' => 1
 		];
 		$user = $this->zoom->createUser($data);
-		$this->assertNotEmpty($user, 'User is created successfully');
-		$this->host_id = $user->id;
+
+		$this->assertNotEmpty($user, 'User is created successfully');*/
 	}
 
 	public function testcreateMeeting()

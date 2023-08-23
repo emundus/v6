@@ -201,7 +201,7 @@ class Zoom
 		$response = null;
 
 		if (!empty($user['email'])) {
-			$response = $this->post('users', [
+			$response = $this->post('users', json_encode([
 				'action' => 'custCreate',
 				'user_info' => [
 					'email' => $user['email'],
@@ -209,7 +209,7 @@ class Zoom
 					'first_name' => $user['first_name'],
 					'last_name' => $user['last_name']
 				]
-			]);
+			]));
 		}
 
 		return $response;
@@ -236,5 +236,25 @@ class Zoom
 		}
 
 		return $response;
+	}
+
+	public function getUsers()
+	{
+		$users = null;
+
+		$users = $this->get('users?page_number=1&page_size=10');
+
+		return $users;
+	}
+
+	public function getUserMeetings($zoom_user_id)
+	{
+		$meetings = null;
+
+		if (!empty($zoom_user_id)) {
+			$meetings = $this->get('users/' . $zoom_user_id . '/meetings');
+		}
+
+		return $meetings;
 	}
 }
