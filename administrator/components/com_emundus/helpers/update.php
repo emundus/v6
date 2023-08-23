@@ -3074,7 +3074,7 @@ class EmundusHelperUpdate
 				'label-color-error' => '#000000',
 				'element-color-error' => '#a60e15',
 				'after-border-height' => '0px',
-				'radio-padding' => '0px 12px 0px 0px',
+				'radio-padding' => '8px 12px 8px 8px',
 				'radio-border-width' => '0px',
 				'radio-border-color' => '#a7a7a7',
 				'radio-border-radius' => '4px',
