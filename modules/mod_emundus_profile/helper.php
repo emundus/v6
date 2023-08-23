@@ -16,6 +16,7 @@ class modEmundusProfileHelper {
 
     static function getProfilePicture() {
         $db = JFactory::getDBO();
+		$pp = '';
 
         try {
             $query = $db->getQuery(true);
@@ -23,10 +24,16 @@ class modEmundusProfileHelper {
                 ->from($db->quoteName('#__emundus_users'))
                 ->where($db->quoteName('user_id') . ' = ' . $db->quote(JFactory::getUser()->id));
             $db->setQuery($query);
-            return $db->loadResult();
+            $pp = $db->loadResult();
+
+			if(empty($pp)) {
+				$pp = '/media/com_emundus/images/profile/default-profile.jpg';
+			}
 
         } catch(Exception $e) {
-            return null;
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
         }
+
+		return $pp;
     }
 }
