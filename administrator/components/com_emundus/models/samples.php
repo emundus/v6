@@ -38,8 +38,8 @@ class EmundusModelSamples extends JModelList {
 
         $query->clear()
 	        ->insert('#__users')
-            ->columns('name, username, email, password')
-            ->values($db->quote('Test USER') . ', ' . $db->quote($username) . ',' . $db->quote($username . '@emundus.fr') . ',' .  $db->quote(md5('test1234')));
+            ->columns('name, username, email, password, registerDate')
+            ->values($db->quote('Test USER') . ', ' . $db->quote($username) . ',' . $db->quote($username . '@emundus.fr') . ',' .  $db->quote(md5('test1234')) . ',' . $db->quote(date('Y-m-d H:i:s')));
 
         try {
             $db->setQuery($query);

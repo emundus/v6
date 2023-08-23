@@ -2406,7 +2406,7 @@ class EmundusModelUsers extends JModelList {
 
 		// Assemble the password reset confirmation link.
 		$mode = $config->get('force_ssl', 0) == 2 ? 1 : (-1);
-		$link = 'index.php?option=com_users&view=reset&layout=confirm&token=' . $token;
+		$link = 'index.php?option=com_users&view=reset&layout=confirm&token=' . $token . '&username=' . $user->get('username');
 
         $mailer = JFactory::getMailer();
 
