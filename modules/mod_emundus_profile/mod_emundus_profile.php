@@ -10,6 +10,11 @@
 defined('_JEXEC') or die;
 require_once dirname(__FILE__).'/helper.php';
 
+Jtext::script('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_ERROR_TITLE');
+Jtext::script('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_ERROR_TEXT');
+Jtext::script('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_ERROR_UPDATE_TEXT');
+Jtext::script('COM_EMUNDUS_ONBOARD_OK');
+
 $layout = $params->get('layout', 'default');
 
 $user = JFactory::getUser();

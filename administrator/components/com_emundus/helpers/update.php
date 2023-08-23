@@ -2795,15 +2795,6 @@ class EmundusHelperUpdate
 						->where($db->quoteName('id') . ' = ' . $db->quote($menu_id));
 					$db->setQuery($query);
 					$db->execute();
-
-					$query->clear()
-						->update($db->quoteName('#__falang_content'))
-						->set($db->quoteName('value') . ' = ' . $db->quote('index.php?option=com_fabrik&view=form&formid=' . $form_id))
-						->where($db->quoteName('reference_table') . ' = ' . $db->quote('menu'))
-						->where($db->quoteName('reference_field') . ' = ' . $db->quote('link'))
-						->where($db->quoteName('reference_id') . ' = ' . $db->quote($menu_id));
-					$db->setQuery($query);
-					$db->execute();
 				}
 
 				$query->clear()
@@ -3222,6 +3213,46 @@ class EmundusHelperUpdate
 			->where($db->quoteName('id') . ' = ' . $db->quote($registration_form->id));
 		$db->setQuery($query);
 		$db->execute();
+		//
+
+		// Check if profile menu translations is good
+		$query->clear()
+			->select('form_id')
+			->from($db->quoteName('#__emundus_setup_formlist'))
+			->where($db->quoteName('type') . ' LIKE ' . $db->quote('profile'));
+		$db->setQuery($query);
+		$form_id = $db->loadResult();
+
+		if(!empty($form_id))
+		{
+			$query->clear()
+				->select('id,params')
+				->from($db->quoteName('#__menu'))
+				->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_fabrik&view=form&formid=' . $form_id));
+			$db->setQuery($query);
+			$menu = $db->loadObject();
+
+			if(!empty($menu->id))
+			{
+				$query->clear()
+					->update($db->quoteName('#__falang_content'))
+					->set($db->quoteName('value') . ' = ' . $db->quote('index.php?option=com_fabrik&view=form&formid=' . $form_id))
+					->where($db->quoteName('reference_table') . ' = ' . $db->quote('menu'))
+					->where($db->quoteName('reference_field') . ' = ' . $db->quote('link'))
+					->where($db->quoteName('reference_id') . ' = ' . $db->quote($menu->id));
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->update($db->quoteName('#__falang_content'))
+					->set($db->quoteName('value') . ' = ' . $db->quote($menu->params))
+					->where($db->quoteName('reference_table') . ' = ' . $db->quote('menu'))
+					->where($db->quoteName('reference_field') . ' = ' . $db->quote('params'))
+					->where($db->quoteName('reference_id') . ' = ' . $db->quote($menu->id));
+				$db->setQuery($query);
+				$db->execute();
+			}
+		}
 		//
 
 		return true;

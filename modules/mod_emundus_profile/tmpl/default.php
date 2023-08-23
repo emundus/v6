@@ -79,10 +79,10 @@ $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.
 
             if (error) {
                 Swal.fire({
-                    title: this.translate(title),
-                    text: this.translate(text),
+                    title: Joomla.JText._(title),
+                    text: Joomla.JText._(text),
                     type: "error",
-                    confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+                    confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
                     timer: 4000,
                     customClass: {
                         title: 'em-swal-title',
