@@ -16,7 +16,7 @@
           <span class="em-ml-8 em-mr-8">|</span>
           <div class="em-flex-row">
             <span>{{ translate('COM_EMUNDUS_FILES_DISPLAY_PAGE') }}</span>
-            <select class="em-select-no-border em-ml-8" style="width: 50px;height: 20px;" v-model="limit">
+            <select class="em-select-no-border em-ml-8" style="width: max-content; height: fit-content;" v-model="limit">
               <option>10</option>
               <option>25</option>
               <option>50</option>
@@ -130,7 +130,7 @@
               <span :title="translate('COM_EMUNDUS_ONBOARD_STATUS')" class="em-neutral-700-color">{{translate('COM_EMUNDUS_ONBOARD_STATUS')}}</span>
             </template>
             <template slot-scope="scope">
-              <p :class="'label-text-'+scope.row.status_color + ' label-'+scope.row.status_color" class="em-status">{{ scope.row.status }}</p>
+              <p :class="'label label-'+scope.row.status_color" class="em-status">{{ scope.row.status }}</p>
             </template>
           </el-table-column>
 
