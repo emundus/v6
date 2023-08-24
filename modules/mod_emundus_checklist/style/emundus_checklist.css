@@ -49,8 +49,6 @@
 
 #mod_emundus_checklist___content{
     overflow: hidden;
-    max-height: 1000px;
-    transition: max-height 300ms linear;
 }
 
 .mod_emundus_campaign__details_file_icon{
