@@ -37,7 +37,10 @@ $current_user = JFactory::getUser();
 
 <script>
     window.addEventListener('DOMContentLoaded', () => {
-        document.getElementsByClassName('em-page-loader')[0].style.display = 'none';
+        const loaders = document.getElementsByClassName('em-page-loader');
+        for(loader of loaders) {
+           loader.style.display = 'none';
+        }
         document.getElementById('g-page-surround').style.background = 'white';
         document.getElementById('g-footer').style.display = 'none';
         document.getElementById('header-c').style.display = 'none';
