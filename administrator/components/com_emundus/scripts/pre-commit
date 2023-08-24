@@ -11,6 +11,9 @@ if [ "$status" -eq 0 ]; then
     echo "***** VueJS files changed ******"
 
     cd components/com_emundus && yarn run build && cd ../.. && git add media/com_emundus_vue/
+    git add media/com_emundus_vue/app_emundus.js
+    git add media/com_emundus_vue/chunk-vendors_emundus.css
+    git add media/com_emundus_vue/chunk-vendors_emundus.js
 else
     echo "***** No VueJS files changed ******"
 fi
