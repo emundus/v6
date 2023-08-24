@@ -52,7 +52,30 @@ export default {
       light: [
         ['bold', 'italic', 'underline', 'strike'],
       ]
-    }
+    },
+    formats: [
+      'background',
+      'bold',
+      'color',
+      'font',
+      'code',
+      'italic',
+      'link',
+      'size',
+      'strike',
+      'script',
+      'underline',
+      'blockquote',
+      'header',
+      'indent',
+      'list',
+      'align',
+      'direction',
+      'code-block',
+      'formula'
+      // 'image'
+      // 'video'
+    ]
   }),
   mounted() {
     axios({
@@ -65,11 +88,11 @@ export default {
     var options = {
       modules: {
         toolbar: this.toolbarOptions[this.$props.toolbar],
-        imageResize: {},
         mention: null
       },
       placeholder: this.$props.placeholder,
-      theme: 'snow'
+      theme: 'snow',
+      formats: this.formats
     };
 
     if(this.$props.enable_variables){
@@ -140,9 +163,6 @@ export default {
         }
       }
     });
-
-    var toolbar = this.editor.getModule('toolbar');
-    toolbar.addHandler('image', this.imageHandler);
   },
   methods: {
     async imageHandler() {
