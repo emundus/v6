@@ -2437,6 +2437,23 @@ try {
 
 				EmundusHelperUpdate::insertTranslationsTag('COM_USERS_EMAIL_PASSWORD_RESET_BODY_FOR_OTHER','Madame, Monsieur,</br></br>Une demande de réinitialisation du mot de passe de votre compte <b> %s</b> a été effectuée par un administrateur.</br></br>Cliquez sur le lien ci-dessous pour finaliser la réinitialisation :</br>%3$s</br></br>Si ce lien ne fonctionne pas, voici le code de vérification à saisir sur la page de réinitialisation de mot de passe :  %2$s</br>');
 				EmundusHelperUpdate::insertTranslationsTag('COM_USERS_EMAIL_PASSWORD_RESET_BODY_FOR_OTHER','Hello,</br></br> A request has been made to reset your <b> %s</b> account password.</br></br>To reset your password, click on the link below:</br>%3$s</br></br>If this link doesn\'t match, you will need to submit this token on the password reset page: %2$s</br>', 'override', null, null, null, 'en-GB');
+
+				$query->clear()
+					->select('id')
+					->from($db->quoteName('#__emundus_groups'))
+					->where($db->quoteName('user_id') . ' = 62')
+					->where($db->quoteName('group_id') . ' = 1');
+				$db->setQuery($query);
+				$group = $db->loadResult();
+
+				if(empty($group)){
+					$query->clear()
+						->insert($db->quoteName('#__emundus_groups'))
+						->columns($db->quoteName('user_id') . ',' . $db->quoteName('group_id'))
+						->values('62,1');
+					$db->setQuery($query);
+					$db->execute();
+				}
 			}
 		}
 

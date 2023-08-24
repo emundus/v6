@@ -685,7 +685,9 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
 }
 
 // VUE
-JHTML::script('media/com_emundus_vue/chunk-vendors_emundus.js');
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+JFactory::getDocument()->addScript('media/com_emundus_vue/chunk-vendors_emundus.js?'.$hash);
 JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
 
 // QUILL
