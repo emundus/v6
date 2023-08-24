@@ -2,8 +2,15 @@
 
 echo "***** Build VueJS files ******"
 
-cd components/com_emundus && yarn run build
+status=$(git status -s --untracked-files=no | grep 'components/com_emundus/' | grep '.vue' | echo $?)
+echo $status;
+if [ "$status" -eq 0 ]; then
+    echo "***** VueJS files changed ******"
 
-cd ../..
+    cd components/com_emundus && yarn run build && cd ../.. && git add media/com_emundus_vue/
+else
+    echo "***** No VueJS files changed ******"
+fi
 
-git add media/com_emundus_vue/app_emundus.js
+exit 0;
+
