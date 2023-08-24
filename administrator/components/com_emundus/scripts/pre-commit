@@ -1,0 +1,9 @@
+#!/bin/sh
+
+echo "***** Build VueJS files ******"
+
+cd components/com_emundus && yarn run build
+
+status=$?
+
+exit $status
