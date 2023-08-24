@@ -2426,6 +2426,15 @@ try {
 				EmundusHelperUpdate::insertTranslationsTag('JGLOBAL_AUTH_INVALID_PASS','Cet utilisateur et/ou ce mot de passe est incorrect');
 				EmundusHelperUpdate::insertTranslationsTag('JGLOBAL_AUTH_INVALID_PASS','This user and/or password is incorrect', 'override', null, null, null, 'en-GB');
 
+				$old_values = [
+					'fr-FR' => 'Cet utilisateur et/ou ce mot de passe est incorrecte'
+				];
+				$new_values = [
+					'fr-FR' => 'Cet utilisateur et/ou ce mot de passe est incorrect'
+				];
+				EmundusHelperUpdate::updateOverrideTag('JGLOBAL_AUTH_INVALID_PASS', $old_values, $new_values);
+				EmundusHelperUpdate::updateOverrideTag('JGLOBAL_AUTH_NO_USER', $old_values, $new_values);
+
 				EmundusHelperUpdate::insertTranslationsTag('JGLOBAL_AUTH_NO_USER','Cet utilisateur et/ou ce mot de passe est incorrect');
 				EmundusHelperUpdate::insertTranslationsTag('JGLOBAL_AUTH_NO_USER','This user and/or password is incorrect', 'override', null, null, null, 'en-GB');
 
@@ -2437,6 +2446,18 @@ try {
 
 				EmundusHelperUpdate::insertTranslationsTag('COM_USERS_EMAIL_PASSWORD_RESET_BODY_FOR_OTHER','<p>Madame, Monsieur,</p>\n<p>Une demande de réinitialisation du mot de passe de votre compte <b> %s</b> a été effectuée par un administrateur.</p>\n<p>Cliquez sur le lien ci-dessous pour finaliser la réinitialisation :</p>\n<p>%3$s</p>\n<p>Si ce lien ne fonctionne pas, voici le code de vérification à saisir sur la page de réinitialisation de mot de passe :  %2$s</p>');
 				EmundusHelperUpdate::insertTranslationsTag('COM_USERS_EMAIL_PASSWORD_RESET_BODY_FOR_OTHER','<p>Madam, Sir,</p>\n<p>A request to reset the password for your <b> %s</b> account has been made by an administrator.</p>\n<p>Click on the link below to complete the reset:</p>\n<p>%3$s</p>\n<p>If this link does not work, here is the verification code to enter on the password reset page: %2$s</p>', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TITLE','Voulez-vous vraiment quitter le formulaire ?');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TITLE','Do you really want to leave the form?', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TEXT','Les saisies sur l’étape en cours ne seront pas conservées. Seules les saisies validées en fin d’étape sont sauvegardées.');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TEXT','Entries for the current stage will not be saved. Only entries validated at the end of the stage will be saved.', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CONFIRM','Quitter et reprendre plus tard');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CONFIRM','Quit and resume later', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CANCEL','Retour');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CANCEL','Go back', 'override', null, null, null, 'en-GB');
 
 				$query->clear()
 					->select('id')
@@ -2458,6 +2479,21 @@ try {
 				$query->clear()
 					->delete($db->quoteName('#__emundus_setup_emails'))
 					->where($db->quoteName('lbl') . ' LIKE ' . $db->quote('regenerate_password'));
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->update($db->quoteName('#__emundus_setup_actions'))
+					->set($db->quoteName('status') . ' = 0')
+					->where($db->quoteName('name') . ' IN (' . $db->quote('mail_evaluator') . ',' . $db->quote('mail_group') . ')');
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->update($db->quoteName('#__menu'))
+					->set($db->quoteName('note') . ' = ' . $db->quote('11|u|1,11|c|1'))
+					->where($db->quoteName('note') . ' = ' . $db->quote('11|u|1'))
+					->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_emundus&view=files&format=raw&layout=access&users={fnums}'));
 				$db->setQuery($query);
 				$db->execute();
 			}

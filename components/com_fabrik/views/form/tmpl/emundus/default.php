@@ -22,6 +22,11 @@ $display_required_icon = $eMConfig->get('display_required_icon', 1);
 
 $pageClass = $this->params->get('pageclass_sfx', '');
 
+JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TITLE');
+JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TEXT');
+JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CONFIRM');
+JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CANCEL');
+
 if ($pageClass !== '') :
 	echo '<div class="' . $pageClass . '">';
 endif;
