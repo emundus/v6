@@ -478,7 +478,6 @@ a.btn.btn-success:not(.btn-xs) {
 }
 
 .mod_emundus_applications__actions{
-    margin-top: var(--m-8);
     flex-direction: column;
     box-shadow: 0 12px 17px rgba(5, 47, 55, 0.07), 0 5px 22px rgba(5, 47, 55, 0.06), 0 7px 8px rgba(5, 47, 55, 0.1);
     border-radius: calc(var(--em-default-br-cards)/2);
@@ -487,6 +486,7 @@ a.btn.btn-success:not(.btn-xs) {
     background: var(--neutral-0);
     z-index: 9999;
     margin-top: 34px;
+    width: max-content;
 }
 
 .mod_emundus_applications__actions a:hover,
