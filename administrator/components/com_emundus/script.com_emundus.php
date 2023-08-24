@@ -2618,6 +2618,8 @@ try {
 		{
 			copy(JPATH_SITE . '/administrator/components/com_emundus/scripts/pre-commit', JPATH_SITE.'/.git/hooks/pre-commit');
 			chmod(JPATH_SITE.'/.git/hooks/pre-commit', 0755);
+
+			echo ' - Git pre-commit hook installed' . PHP_EOL;
 		}
 
 		return true;

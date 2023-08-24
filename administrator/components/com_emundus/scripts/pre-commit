@@ -1,5 +1,8 @@
 #!/bin/sh
 
+echo "***** Compile Tailwind CSS ******"
+npm run build && git add templates/g5_helium/custom/scss/main.compiled.css
+
 echo "***** Build VueJS files ******"
 
 status=$(git status -s --untracked-files=no | grep 'components/com_emundus/' | grep '.vue' | echo $?)
