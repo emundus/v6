@@ -170,13 +170,13 @@ class EmundusControllerCampaign extends JControllerLegacy {
 
                     if ($now < $start_date) {
                         $campaign_time_state_label = JText::_('COM_EMUNDUS_CAMPAIGN_YET_TO_COME');
-                        $campaign_time_state_class = 'label label-default em-p-5-12 em-font-weight-600';
+                        $campaign_time_state_class = 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius';
                     } else if ($now > $end_date) {
                         $campaign_time_state_label = JText::_('COM_EMUNDUS_ONBOARD_FILTER_CLOSE');
                         $campaign_time_state_class = 'label label-black em-p-5-12 em-font-weight-600';
                     } else {
                         $campaign_time_state_label = JText::_('COM_EMUNDUS_CAMPAIGN_ONGOING');
-                        $campaign_time_state_class = 'label label-default em-p-5-12 em-font-weight-600';
+                        $campaign_time_state_class = 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius';
                     }
 
                     $start_date = date('d/m/Y H\hi', strtotime($campaign->start_date));
@@ -186,7 +186,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
                         [
                             'key' => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
                             'value' => $campaign->published ? JText::_('PUBLISHED') : JText::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
-                            'classes' => $campaign->published ? 'label label-green-1 em-p-5-12 em-font-weight-600' : 'label label-default em-p-5-12 em-font-weight-600',
+                            'classes' => $campaign->published ? 'em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius' : 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
                         ],
                         [
                             'key' => JText::_('COM_EMUNDUS_ONBOARD_TIME_STATE'),
@@ -234,7 +234,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
                                 [
                                     'key' => JText::_('COM_EMUNDUS_FILES_FILES'),
                                     'value' => $campaign->nb_files . ' ' . ( $campaign->nb_files > 1 ? JText::_('COM_EMUNDUS_FILES_FILES') : JText::_('COM_EMUNDUS_FILES_FILE')),
-                                    'classes' => 'label label-default em-p-5-12 em-font-weight-600',
+                                    'classes' => 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
                                 ]
                             ],
                             'classes' => 'em-mt-8 em-mb-8',
