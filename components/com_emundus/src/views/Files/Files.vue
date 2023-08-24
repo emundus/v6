@@ -307,6 +307,7 @@ export default {
       });
     },
     getFiles(refresh = false){
+      document.querySelector('body.layout-evaluation').style.overflow= 'visible';
       this.loading = true;
 
       let fnum = window.location.href.split('#')[1];

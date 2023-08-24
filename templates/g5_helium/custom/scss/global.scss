@@ -3276,6 +3276,12 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
   }
 }
 
+/* LISTE EVALUATION TCHOOZ
+
+.gantry.view-file.layout-evaluation {
+  overflow: hidden;
+}*/
+
 /* SUPPRIMER EVAL */
 .g-back-office-emundus-tableau .panel-heading.em-container-evaluation-heading #em_delete_evals.btn.btn-danger.btn-xs.btn-attach {
   background: transparent !important;
