@@ -4,6 +4,6 @@ echo "***** Build VueJS files ******"
 
 cd components/com_emundus && yarn run build
 
-status=$?
+cd ../..
 
-exit $status
+git add media/com_emundus_vue/app_emundus.js

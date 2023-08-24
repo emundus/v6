@@ -38,7 +38,7 @@ export default {
       complete: [
         ['bold', 'italic', 'underline', 'strike'],
         ['blockquote'],
-        ['link'],
+        ['link', 'image'],
 
         [{'header': 1}, {'header': 2}],
         [{'list': 'ordered'}, {'list': 'bullet'}],
