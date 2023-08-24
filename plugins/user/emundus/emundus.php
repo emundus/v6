@@ -348,17 +348,18 @@ class plgUserEmundus extends JPlugin
                         $db->execute();
                     }
 
-                    if(!empty($email)) {
-                        $db->setQuery('UPDATE #__emundus_users SET email=' . $db->quote($email) . ' WHERE user_id=' . $user['id']);
+                    if(!empty($details['email1'])) {
+                        $db->setQuery('UPDATE #__emundus_users SET email=' . $db->quote($details['email1']) . ' WHERE user_id=' . $user['id']);
                         $db->execute();
+
+	                    $e_session = JFactory::getSession()->get('emundusUser');
+	                    $e_session->email = $details['email1'];
+						JFactory::getSession()->set('emundusUser', $e_session);
                     }
+					
                 } catch (Exception $e) {
                     JLog::add('Error at line ' . __LINE__ . ' of file ' . __FILE__ . ' : ' . '. Error is : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
                 }
-
-                /*if (!in_array($task, ["passrequest", "reset.complete"])) {
-                    JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_USERS_EDIT_PROFILE_SAVE_SUCCESS_TEXT'));
-                }*/
 
                 $this->onUserLogin($user);
             }

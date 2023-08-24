@@ -14,8 +14,9 @@ JHtml::_('behavior.formvalidator');
 
 $document = JFactory::getDocument();
 $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_users_reset.css");
+$username = JFactory::getApplication()->input->getString('username');
 
-$this->form->setValue('username', '', JFactory::getApplication()->input->get('username'));
+$this->form->setValue('username', '', $username);
 
 ?>
 <div class="reset-confirm<?php echo $this->pageclass_sfx; ?>">

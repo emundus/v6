@@ -247,9 +247,6 @@ JText::script('COM_EMUNDUS_STATE');
 JText::script('COM_EMUNDUS_PROFILE_SWITCH_PROFILE');
 JText::script('COM_EMUNDUS_PROFILE_PROFILE_CHOSEN');
 Jtext::script('COM_EMUNDUS_USERS_ARE_YOU_SURE_TO_REGENERATE_PASSWORD');
-Jtext::script('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_ERROR_TITLE');
-Jtext::script('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_ERROR_TEXT');
-Jtext::script('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_ERROR_UPDATE_TEXT');
 
 //Export Excel
 JText::script('COM_EMUNDUS_ADD_DATA_TO_CSV');
@@ -688,7 +685,9 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
 }
 
 // VUE
-JHTML::script('media/com_emundus_vue/chunk-vendors_emundus.js');
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+JFactory::getDocument()->addScript('media/com_emundus_vue/chunk-vendors_emundus.js?'.$hash);
 JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
 
 // QUILL

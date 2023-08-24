@@ -114,6 +114,7 @@ if (!empty($this->custom_title)) :?>
     <?php if ($this->show_info_legend) :?>
         <div id="legend" class="em-mt-4">
             <div class="em-flex-row em-mb-4">
+                <span class="material-icons-outlined em-red-500-color em-mr-4">highlight_off</span>
                 <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC'); ?></p>
             </div>
             <div class="em-flex-row em-mb-4">
@@ -121,6 +122,7 @@ if (!empty($this->custom_title)) :?>
                 <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_SENT_DOC'); ?></p>
             </div>
             <div class="em-flex-row em-mb-4">
+                <span class="material-icons-outlined em-yellow-600-color em-mr-4">error_outline</span>
                 <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC_FAC'); ?></p>
             </div>
         </div>
@@ -139,7 +141,12 @@ if (!empty($this->custom_title)) :?>
             $div = '<div id="a'.$attachment->id.'" style="position: relative;top: -65px;"></div>
                 <fieldset id="a'.$attachment->id.'" class="em-fieldset-attachment mt-3">
                 <div id="l'.$attachment->id.'" class="em-flex-row">';
-            if ($attachment->nb != 0) {
+            if ($attachment->nb == 0 ) {
+                if($this->show_info_legend)
+                {
+	                $div .= $attachment->mandatory ? '<span class="material-icons-outlined em-red-500-color em-mr-4">highlight_off</span>' : '<span class="material-icons-outlined em-yellow-600-color em-mr-4">error_outline</span>';
+                }
+            } else {
                 $div .= '<span class="material-icons-outlined em-main-500-color em-mr-4">check_circle</span>';
             }
             $div .= '<h4 class="em-mt-0-important">'.$attachment->value .'</h4>';

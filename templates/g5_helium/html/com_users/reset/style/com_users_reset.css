@@ -7,8 +7,8 @@
 }
 
 #user-registration fieldset p,
-#reset-confirm fieldset p,
-#reset-complete fieldset p {
+.reset-confirm fieldset p,
+.reset-complete fieldset p {
     margin-bottom: 16px !important;
     text-align: justify;
     background: #FFFFFF;

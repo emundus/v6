@@ -22,7 +22,7 @@
       contenteditable="true"
       :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_INTRO_ADD')"></span>
 
-    <div class="form-builder-page-sections">
+    <div class="form-builder-page-sections mt-2">
       <button v-if="sections.length > 0" id="add-section" class="em-primary-button px-6 py-3" @click="addSection()">
         {{ translate('COM_EMUNDUS_FORM_BUILDER_ADD_SECTION') }}
       </button>

@@ -372,14 +372,12 @@ table > thead > tr > th {
 
 /* FILTRES AVANCES */
 
-#emundus-filters .multi-select-filter-card div.label-default,
-#emundus-filters .default-filter-card div.label-default{
+.em-containerFilter-body #emundus-filters div.label-default {
     background-color: var(--neutral-0) !important;
     border: 1px solid var(--neutral-500);
 }
 
-#emundus-filters .multi-select-filter-card div.label-darkblue,
-#emundus-filters .default-filter-card div.label-darkblue{
+.em-containerFilter-body #emundus-filters .label-darkblue {
     background-color: var(--neutral-300) !important;
     border: 1px solid var(--neutral-800);
 }

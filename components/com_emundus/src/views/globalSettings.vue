@@ -213,4 +213,10 @@ export default {
 .em-hover-s-scale:hover{
   transform: scale(1.03);
 }
+
+@media all and (max-width: 959px) {
+  div.em-grid-3 {
+    padding: var(--p-24);
+  }
+}
 </style>

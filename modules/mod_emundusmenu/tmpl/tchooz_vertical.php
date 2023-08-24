@@ -522,7 +522,7 @@ defined('_JEXEC') or die;
             if(window.innerWidth >= 1280) {
                 jQuery("#g-footer").css("padding-left", "300px");
                 jQuery("#footer-rgpd").css("padding-left", "300px");
-                jQuery("#g-container-main").css("padding-left", "180px");
+                jQuery("#g-container-main").css("padding-left", "195px");
                 jQuery("#header-a").css("opacity", "1");
             }
             setTimeout(() =>{

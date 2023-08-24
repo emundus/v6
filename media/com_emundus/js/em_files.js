@@ -117,13 +117,17 @@ function reloadData(view) {
             let col9 = $('.col-md-9 .panel.panel-default');
             if(col9.length > 0) {
                 col9.remove();
-                $('.col-md-9').append(data);
+                if($('.col-md-9')) {
+                    $('.col-md-9').append(data);
+                }
             }
 
             let col12 = $('.col-md-12 .panel.panel-default');
             if(col12.length > 0) {
                 col12.remove();
-                $('.col-md-12').append(data);
+                if($('.col-md-12')) {
+                    $('.col-md-12').append(data);
+                }
             }
         },
         error: function(jqXHR) {

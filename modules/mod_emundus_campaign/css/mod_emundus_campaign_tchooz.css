@@ -405,7 +405,7 @@ a.em-blue-400-color:hover {
     color: var(--neutral-900);
     height: 24px;
     width: 24px;
-    display: flex;
+    display: flex !important;
     justify-content: center;
     align-items: center;
     font-size: 16px;
