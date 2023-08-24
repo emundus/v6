@@ -2454,6 +2454,12 @@ try {
 					$db->setQuery($query);
 					$db->execute();
 				}
+
+				$query->clear()
+					->delete($db->quoteName('#__emundus_setup_emails'))
+					->where($db->quoteName('lbl') . ' LIKE ' . $db->quote('regenerate_password'));
+				$db->setQuery($query);
+				$db->execute();
 			}
 		}
 

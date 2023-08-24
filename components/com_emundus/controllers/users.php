@@ -782,53 +782,6 @@ class EmundusControllerUsers extends JControllerLegacy {
 		exit;
 	}
 
-    public function regeneratepassword() {
-
-        include_once(JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-        require_once(JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
-
-        jimport('joomla.user.helper');
-
-	    if (!EmundusHelperAccess::asAccessAction(12, 'u') && !EmundusHelperAccess::asAccessAction(20, 'u')) {
-	    	$msg = JText::_('ACCESS_DENIED');
-		    echo json_encode((object)array('status' => false, 'msg'=>$msg));
-		    exit;
-	    }
-
-        $id = JFactory::getApplication()->input->getInt('user', null); //get id from the ajax request
-        $user = new EmundusModelUsers(); // Instanciation of object from user model
-        $users = $user->getUsersById($id); // get user from uid
-        foreach ($users as $selectUser) {
-
-			$passwd = $user->randomPassword(8); //generate a random password
-            $passwd_md5 = JUserHelper::hashPassword($passwd); // hash the random password
-
-            $m_users = new EmundusModelUsers();
-            $res = $m_users->setNewPasswd($id, $passwd_md5); //update password
-            $post = [ // values tout change in the bdd with key => values
-                'PASSWORD' => $passwd,
-                'USER_NAME' => $selectUser->username
-            ];
-            if (!$res) {
-                $msg = JText::_('COM_EMUNDUS_CANNOT_SET_NEW_PASSWORD');
-                echo json_encode((object)array('status' => false, 'msg' => $msg));
-                exit;
-            } else {
-                $c_messages = new EmundusControllerMessages();
-                $c_messages->sendEmailNoFnum($selectUser->email, 'regenerate_password', $post, $id, [], null, false);
-
-                if ($c_messages != true) {
-                    $msg = JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT');
-                } else {
-                    $msg = JText::_('COM_EMUNDUS_USER_REGENERATE_PASSWORD_SUCCESS');
-                }
-            }
-        }
-
-        echo json_encode((object)array('status' => true, 'msg'=>$msg));
-        exit;
-    }
-
 	// Edit actions rights for group
 	public function setgrouprights() {
 		$current_user = JFactory::getUser();
@@ -951,7 +904,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 				// Proceed to step two.
 				$this->setRedirect(JRoute::_('index.php?option=com_users&view=reset&layout=confirm'));
 			}
-		} elseif(EmundusHelperAccess::asAccessAction(12,'u')) {
+		} elseif(EmundusHelperAccess::asAccessAction(12,'u') || EmundusHelperAccess::asAccessAction(20, 'u')) {
 			$response['msg'] = JText::_('COM_EMUNDUS_USERS_RESET_REQUEST_LINK_SENDED');
 			$users = JFactory::getApplication()->input->post->getString('users', null);
 			if ($users === 'all') {
