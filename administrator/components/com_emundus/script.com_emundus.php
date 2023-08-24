@@ -2614,6 +2614,12 @@ try {
 
 		EmundusHelperUpdate::checkHealth();
 
+		if(file_exists(JPATH_SITE.'/.git') && file_exists(JPATH_SITE . '/administrator/components/com_emundus/scripts/pre-commit'))
+		{
+			copy(JPATH_SITE . '/administrator/components/com_emundus/scripts/pre-commit', JPATH_SITE.'/.git/hooks/pre-commit');
+			chmod(JPATH_SITE.'/.git/hooks/pre-commit', 0755);
+		}
+
 		return true;
 	}
 
