@@ -375,11 +375,15 @@ table > thead > tr > th {
 .em-containerFilter-body #emundus-filters div.label-default {
     background-color: var(--neutral-0) !important;
     border: 1px solid var(--neutral-500);
+    color: var(--neutral-900);
+    text-shadow: none;
 }
 
 .em-containerFilter-body #emundus-filters .label-darkblue {
     background-color: var(--neutral-300) !important;
     border: 1px solid var(--neutral-800);
+    color: var(--neutral-900);
+    text-shadow: none;
 }
 
 

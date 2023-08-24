@@ -1,5 +1,12 @@
 requirejs(['fab/fabrik'], function () {
     var removedFabrikFormSkeleton = false;
+    var formDataChanged = false;
+
+    var form = document.getElementsByTagName('form')[0];
+
+    form.addEventListener("input", function () {
+        console.log("Form has changed!");
+    });
 
     Fabrik.addEvent('fabrik.form.loaded', function (form) {
         if (!removedFabrikFormSkeleton) {
@@ -7,6 +14,50 @@ requirejs(['fab/fabrik'], function () {
         }
 
         manageRepeatGroup(form);
+
+        var form = document.getElementsByClassName('fabrikForm')[0];
+
+        form.addEventListener('input', function () {
+            if(!formDataChanged) {
+                formDataChanged = true;
+            }
+        });
+
+        var links = [];
+        var checklist_items = document.querySelectorAll('.mod_emundus_checklist a');
+        var menu_items = document.querySelectorAll('#header-b a');
+        var user_items = document.querySelectorAll('#userDropdown a');
+        var flow_items = document.querySelectorAll('.mod_emundus_flow___intro a');
+
+        links = [...checklist_items, ...menu_items, ...user_items, ...flow_items];
+
+        for(var i = 0, len = links.length; i < len; i++) {
+            links[i].onclick = (e) => {
+                if(formDataChanged) {
+                    e.preventDefault();
+
+                    Swal.fire({
+                        title: Joomla.JText._('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TITLE'),
+                        text: Joomla.JText._('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TEXT'),
+                        reverseButtons: true,
+                        showCloseButton: true,
+                        showCancelButton: true,
+                        confirmButtonText: Joomla.JText._('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CONFIRM'),
+                        cancelButtonText: Joomla.JText._('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CANCEL'),
+                        customClass: {
+                            title: 'em-swal-title',
+                            cancelButton: 'em-swal-cancel-button',
+                            confirmButton: 'btn btn-primary save-btn sauvegarder button save_continue',
+                        },
+                    }).then((result) => {
+                        if(result.value)
+                        {
+                            window.location.href = e.target.href;
+                        }
+                    });
+                }
+            }
+        }
     });
 
     Fabrik.addEvent('fabrik.form.group.duplicate.end', function(form, event) {
