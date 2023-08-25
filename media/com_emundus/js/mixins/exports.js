@@ -168,7 +168,7 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter) {
                         $('#datasbs').replaceWith('<div id="datasbs" data-start="' + result.json.start + '"><p>' + result.json.start + '</p></div>');
 
                     }
-                    if (start != json.start) {
+                    if (start != json.start && totalfile > json.start) {
                         generate_csv(json, eltJson, objJson, options, objclass, letter);
                     } else {
                         $('#extractstep').replaceWith('<div id="extractstep"><p>' + Joomla.JText._('COM_EMUNDUS_XLS_GENERATION') + '</p></div>');
