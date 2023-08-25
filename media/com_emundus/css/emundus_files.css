@@ -468,6 +468,14 @@ button#em-close-file {
     color: #353544;
 }
 
+.files-board #em-data thead th div.em-cell {
+    display: -webkit-box !important;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .suwala-doubleScroll-scroll-wrapper,
 .em-data-container {
     padding-left: 0 !important;
