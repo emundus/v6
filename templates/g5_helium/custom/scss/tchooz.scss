@@ -1731,6 +1731,10 @@ button.em-swal-delete-button:hover{
     scrollbar-width: none;
     margin-top: unset !important;
   }
+
+  .v--modal-background-click .v--modal-box.v--modal {
+    top: 0 !important;
+  }
   .v--modal-box{
     padding: 0;
   }
