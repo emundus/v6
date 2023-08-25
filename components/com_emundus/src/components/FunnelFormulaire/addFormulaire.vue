@@ -53,9 +53,6 @@ import FormCarrousel from "../../components/Form/FormCarrousel";
 import axios from "axios";
 
 const qs = require("qs");
-
-import "@fortawesome/fontawesome-free/css/all.css";
-import "@fortawesome/fontawesome-free/js/all.js";
 import FormBuilderPreviewForm from "@/components/FormBuilder/FormBuilderPreviewForm.vue";
 import FormBuilderPreviewAttachments from "@/components/FormBuilder/FormBuilderPreviewAttachments";
 
