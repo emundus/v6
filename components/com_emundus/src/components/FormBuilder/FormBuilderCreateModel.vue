@@ -21,7 +21,7 @@
 				class="em-primary-button em-m-16"
 				@click="addFormModel()"
 				:disabled="modelTitle.length < 1 || loading"
-				:class="{'em-gray-bg em-color-white': modelTitle.length < 1 || loading,}"
+				:class="{'em-color-white em-gray-bg em-w-100 em-p-8-12 em-border-radius': modelTitle.length < 1 || loading,}"
 			>
 				{{ translate('COM_EMUNDUS_FORM_BUILDER_SECTION_PROPERTIES_SAVE') }}
 			</button>
@@ -95,10 +95,11 @@ export default {
 			if (!this.alreadyExists) {
 				formBuilderService.addFormModel(this.page, this.modelTitle).then((response) => {
 					if (!response.status) {
+						this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_FAILURE'), response.msg);
+					} else {
 						Swal.fire({
-							type: 'warning',
-							title: this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_FAILURE'),
-							text: response.msg,
+							type: 'success',
+							title: this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_SUCCESS'),
 							reverseButtons: true,
 							customClass: {
 								title: 'em-swal-title',
@@ -117,17 +118,7 @@ export default {
 		replaceFormModel(model_id, label) {
 			formBuilderService.addFormModel(this.page, label).then((response) => {
 				if (!response.status) {
-					Swal.fire({
-						type: 'warning',
-						title: this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_FAILURE'),
-						text: response.msg,
-						reverseButtons: true,
-						customClass: {
-							title: 'em-swal-title',
-							confirmButton: 'em-swal-confirm-button',
-							actions: 'em-swal-single-action',
-						}
-					});
+					this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_FAILURE'), response.msg);
 
 					this.$emit('close');
 				} else {
@@ -162,9 +153,9 @@ export default {
 	.em-primary-button:disabled {
 		cursor: not-allowed;
 		border-color: var(--grey-color);
+		background: var(--grey-color);
 
 		&:hover {
-			background: var(--grey-color);
 			color: white;
 		}
 	}
