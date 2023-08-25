@@ -5345,8 +5345,6 @@ $(document).ready(function() {
         e.preventDefault();
         var id = $(this).attr('id');
         var url = $(this).attr('href');
-        console.log(url)
-        console.log(window.location.origin)
 
         $.ajax({
             type: "get",
