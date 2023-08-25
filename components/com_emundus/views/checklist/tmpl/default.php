@@ -118,7 +118,7 @@ if (!empty($this->custom_title)) :?>
                 <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC'); ?></p>
             </div>
             <div class="em-flex-row em-mb-4">
-                <span class="material-icons-outlined em-main-500-color em-mr-4">check_circle</span>
+                <span class="material-icons-outlined em-green-500-color em-mr-4">check_circle</span>
                 <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_SENT_DOC'); ?></p>
             </div>
             <div class="em-flex-row em-mb-4">
@@ -147,7 +147,7 @@ if (!empty($this->custom_title)) :?>
 	                $div .= $attachment->mandatory ? '<span class="material-icons-outlined em-red-500-color em-mr-4">highlight_off</span>' : '<span class="material-icons-outlined em-yellow-600-color em-mr-4">error_outline</span>';
                 }
             } else {
-                $div .= '<span class="material-icons-outlined em-main-500-color em-mr-4">check_circle</span>';
+                $div .= '<span class="material-icons-outlined em-green-500-color em-mr-4">check_circle</span>';
             }
             $div .= '<h4 class="em-mt-0-important">'.$attachment->value .'</h4>';
             $div .= '</div><p class="em-ml-8 em-mt-8">'.$attachment->description .'</p><div>';
@@ -177,12 +177,12 @@ if (!empty($this->custom_title)) :?>
 	                $div .= '<tr class="em-added-files">
                     <td class="em-flex-row">';
 	                if ($item->can_be_viewed == 1) {
-		                $div .= '<a class="em-flex-row em-mr-16 btn-tertiary border-black" href="'.$chemin.$this->user->id .'/'.$item->filename .'" target="_blank"><span class="material-icons-outlined em-mr-4">visibility</span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_VIEW').'</a>';
+		                $div .= '<a class="em-flex-row em-mr-16 btn-tertiary" href="'.$chemin.$this->user->id .'/'.$item->filename .'" target="_blank"><span class="material-icons-outlined em-mr-4">visibility</span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_VIEW').'</a>';
 	                } else {
 		                $div .= JText::_('COM_EMUNDUS_ATTACHMENTS_CANT_VIEW') . '</br>';
 	                }
 	                if (($item->can_be_deleted == 1 || $item->is_validated == "0") && !$block_upload) {
-		                $div .= '<a class="em-flex-row btn-tertiary border-black" href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->id.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="material-icons-outlined em-mr-4">delete_outline</span> '.JText::_('COM_EMUNDUS_ACTIONS_DELETE').'</a>';
+		                $div .= '<a class="em-flex-row em-error-button" href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->id.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="material-icons-outlined em-mr-4">delete_outline</span> '.JText::_('COM_EMUNDUS_ACTIONS_DELETE').'</a>';
 	                } else {
 		                $div .= JText::_('COM_EMUNDUS_ATTACHMENTS_CANT_DELETE') . '</br>';
 	                }
