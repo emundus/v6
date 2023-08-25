@@ -268,11 +268,16 @@ export default {
             const response = await client().get(
                 'index.php?option=com_emundus&view=form&formid=' + formId + '&format=vue_jsonclean'
             );
+
+            if (typeof response.data !== 'object') {
+                throw 'COM_EMUNDUS_FORM_BUILDER_FAILED_TO_LOAD_FORM';
+            }
+
             return response;
         } catch (error) {
             return {
                 status: false,
-                error:error
+                msg: error
             };
         }
     },

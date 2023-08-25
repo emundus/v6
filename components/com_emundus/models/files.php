@@ -2533,7 +2533,7 @@ class EmundusModelFiles extends JModelLegacy
 									WHERE ' . $multi_element_repeat_table . '.parent_id IS NOT NULL
 									GROUP BY ' . $multi_element_repeat_table . '.parent_id
 								) AS ' . $multi_element_repeat_table_alias_2 . ' ON ' . $multi_element_repeat_table_alias_2 . '.parent_id = ' . $group_repeat_table . '.id';
-								$databasejoin_sub_query = '(' . $multi_element_repeat_table_alias_2 . '.value) AS ' . $element->tab_name . '___' . $element->element_name;
+								$databasejoin_sub_query = '(' . $multi_element_repeat_table_alias_2 . '.value) AS ' . $already_joined[$group_repeat_table] . '___' . $element->element_name;
 							}
 						}
 						else
@@ -2556,16 +2556,17 @@ class EmundusModelFiles extends JModelLegacy
 
 									$databasejoin_sub_query = ' (' . $databasejoin_sub_query;
 									$databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_table_alias . '.' . $element->element_name . '))';
+									$databasejoin_sub_query .= ' AS ' . $already_joined[$child_table_alias] . '___' . $element->element_name;
 								}
 							} else {
 								if ($is_repeat) {
 									$databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_element_table_alias . '.' . $element->element_name . ')';
+									$databasejoin_sub_query .= ' AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
 								} else {
 									$databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $element_table_alias . '.' . $element->element_name . ')';
+									$databasejoin_sub_query .= ' AS ' . $element->tab_name . '___' . $element->element_name;
 								}
 							}
-
-							$databasejoin_sub_query .= ' AS ' . $element->tab_name . '___' . $element->element_name;
 						}
 
 						$query .= ', ' . $databasejoin_sub_query;
@@ -2588,10 +2589,14 @@ class EmundusModelFiles extends JModelLegacy
 								$query .= ' WHEN \'' . $sub_value . '\' THEN \'' . $sub_label . '\'';
 							}
 
-							$query .= ' END) AS ' . $element->tab_name . '___' . $element->element_name;
+							if ($is_repeat) {
+								$query .= ' END) AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
+							} else {
+								$query .= ' END) AS ' . $element->tab_name . '___' . $element->element_name;
+							}
 						} else {
 							if ($is_repeat) {
-								$query .= ', ' . $child_element_table_alias . '.' . $element->element_name . ' AS ' . $element->tab_name . '___' . $element->element_name;
+								$query .= ', ' . $child_element_table_alias . '.' . $element->element_name . ' AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
 							} else {
 								$query .= ', ' . $element_table_alias . '.' . $element->element_name . ' AS ' . $element->tab_name . '___' . $element->element_name;
 							}
@@ -2641,7 +2646,12 @@ class EmundusModelFiles extends JModelLegacy
 
 								$query .= ' WHEN \'' . $sub_value . '\' THEN \'' . $sub_label . '\'';
 							}
-							$query .= ' END) AS ' . $element->tab_name . '___' . $element->element_name;
+
+							if ($is_repeat) {
+								$query .= ' END) AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
+							} else {
+								$query .= ' END) AS ' . $element->tab_name . '___' . $element->element_name;
+							}
 						} else {
 							// value is saved as string '["value1", "value2"]' in the database
 							$query .= ', (';
@@ -2674,33 +2684,37 @@ class EmundusModelFiles extends JModelLegacy
 								$regexp_sub_query = 'replace(' . $regexp_sub_query . ', \']\', \' \')';
 							}
 
-							$query .= $regexp_sub_query . ') AS ' . $element->tab_name . '___' . $element->element_name;
+							if ($is_repeat) {
+								$query .= $regexp_sub_query . ') AS ' .  $already_joined[$child_element_table_alias] . '___' . $element->element_name;
+							} else {
+								$query .= $regexp_sub_query . ') AS ' . $element->tab_name . '___' . $element->element_name;
+							}
 						}
 						break;
 					case 'birthday':
 						if ($is_repeat) {
-							$query .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y\') AS ' . $element->tab_name . '___' . $element->element_name;
+							$query .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y\') AS ' . $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
 						} else {
 							$query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y\') AS ' . $element->tab_name . '___' . $element->element_name;
 						}
 						break;
 					case 'date':
 						if ($is_repeat) {
-							$query .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y %H:%i:%s\') AS ' . $element->tab_name . '___' . $element->element_name;
+							$query .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y %H:%i:%s\') AS ' . $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
 						} else {
 							$query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y %H:%i:%s\') AS ' . $element->tab_name . '___' . $element->element_name;
 						}
 						break;
 					case 'yesno':
 						if ($is_repeat) {
-							$query .= ', CASE ' . $child_element_table_alias . '.' . $element->element_name . ' WHEN 0 THEN \'' . JText::_('JNO') . '\' WHEN 1 THEN \'' . JText::_('JYES') . '\' ELSE ' . $child_element_table_alias . '.' . $element->element_name . ' END AS ' . $element->tab_name . '___' . $element->element_name;
+							$query .= ', CASE ' . $child_element_table_alias . '.' . $element->element_name . ' WHEN 0 THEN \'' . JText::_('JNO') . '\' WHEN 1 THEN \'' . JText::_('JYES') . '\' ELSE ' . $child_element_table_alias . '.' . $element->element_name . ' END AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
 						} else {
 							$query .= ', CASE ' . $element_table_alias . '.' . $element->element_name . ' WHEN 0 THEN \'' . JText::_('JNO') . '\' WHEN 1 THEN \'' . JText::_('JYES') . '\' ELSE ' . $element_table_alias . '.' . $element->element_name . ' END AS ' . $element->tab_name . '___' . $element->element_name;
 						}
 						break;
 					default:
 						if ($is_repeat) {
-							$query .= ', ' . $child_element_table_alias . '.' . $element->element_name . ' AS ' . $element->tab_name . '___' . $element->element_name;
+							$query .= ', ' . $child_element_table_alias . '.' . $element->element_name . ' AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
 						} else {
 							$query .= ', ' . $element_table_alias . '.' . $element->element_name . ' AS ' . $element->tab_name . '___' . $element->element_name;
 						}
