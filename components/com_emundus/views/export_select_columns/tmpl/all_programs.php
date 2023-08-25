@@ -13,13 +13,24 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 $session = JFactory::getSession();
 $s_elements = $session->get('s_elements');
 $comments = $session->get('comments');
+
+JText::script('COM_EMUNDUS_TAG_APPLICANT_CAMPAIGN_YEAR');
+JText::script('COM_EMUNDUS_TAG_APPLICANT_CAMPAIGN_START');
+JText::script('COM_EMUNDUS_TAG_APPLICANT_CAMPAIGN_END');
+JText::script('COM_EMUNDUS_TAG_APPLICANT_ID');
+JText::script('COM_EMUNDUS_TAG_USER_ID');
+JText::script('COM_EMUNDUS_TAG_APPLICANT_NAME');
+JText::script('COM_EMUNDUS_TAG_CURRENT_DATE');
+JText::script('COM_EMUNDUS_TAG_APPLICANT_BIRTH_DATE');
+JText::script('COM_EMUNDUS_TAG_APPLICANT_SITE_URL');
+JText::script('COM_EMUNDUS_TAG_APPLICANT_APPLICATION_STATUS');
 ?>
 
     <h1><?= JText::_('COM_EMUNDUS_TAGS_EM_TAGS_PAGE_TITLE'); ?></h1>
 
-    <div id="em-select-program">
-        <h2><?= JText::_('COM_EMUNDUS_EMTAGS_SELECT_PROG_DESC');?></h2>
-        <select id="program" class="em-w-100" onchange="programSelect();">
+    <div id="em-select-program" class="mt-2">
+        <p><?= JText::_('COM_EMUNDUS_EMTAGS_SELECT_PROG_DESC');?></p>
+        <select id="program" class="em-w-100 mt-3" onchange="programSelect();">
             <option value=""><?= JText::_('COM_EMUNDUS_EMTAGS_PROGRAM_SELECT'); ?></option>
             <?php foreach ($this->programs as $program) :?>
                 <option value="<?= $program["code"]; ?>"><?= $program["label"]; ?></option>
@@ -30,7 +41,7 @@ $comments = $session->get('comments');
     <div id="program-categories" class="hide">
         <hr>
         <div id="program-categories_desc" class="em-mb-32">
-            <h2><?= JText::_('COM_EMUNDUS_EMTAGS_SELECT_CAT_DESC'); ?></h2>
+            <p><?= JText::_('COM_EMUNDUS_EMTAGS_SELECT_CAT_DESC'); ?></p>
         </div>
 
         <div id="program-categories-group">
@@ -282,7 +293,7 @@ $comments = $session->get('comments');
                     var label = document.createElement('div');
                     label.setAttribute('class', 'em-element-label');
                     label.classList.add('col-md-9');
-                    label.innerText = tag.description;
+                    label.innerText = Joomla.JText._(tag.description)?Joomla.JText._(tag.description):tag.description;
 
                     const container =  document.createElement('div');
                     container.setAttribute('class', 'em-element other-em-element');

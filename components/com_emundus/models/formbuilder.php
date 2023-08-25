@@ -2465,14 +2465,23 @@ class EmundusModelFormbuilder extends JModelList {
             $models = $db->loadObjectList();
 
             foreach ($models as $model) {
-                $model->label = array(
-                    'fr' => $this->getTranslation($model->label,'fr-FR'),
-                    'en' => $this->getTranslation($model->label,'en-GB')
-                );
-                $model->intro = array(
-                    'fr' => $this->getTranslation($model->intro,'fr-FR'),
-                    'en' => $this->getTranslation($model->intro,'en-GB')
-                );
+				$model->label = array(
+					'fr' => $this->getTranslation($model->label, 'fr-FR'),
+					'en' => $this->getTranslation($model->label, 'en-GB')
+				);
+
+	            $query->clear()
+		            ->select('intro')
+		            ->from($db->quoteName('#__fabrik_forms'))
+		            ->where('id = ' . $db->quote($model->form_id));
+
+	            $db->setQuery($query);
+	            $model_data = $db->loadObject();
+
+				$model->intro = array(
+					'fr' => $this->getTranslation(strip_tags($model_data->intro), 'fr-FR'),
+					'en' => $this->getTranslation(strip_tags($model_data->intro), 'en-GB')
+				);
             }
         } catch(Exception $e) {
             JLog::add('component/com_emundus/models/formbuilder | Error at getting pages models : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');

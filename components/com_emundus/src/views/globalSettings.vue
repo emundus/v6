@@ -213,6 +213,9 @@ export default {
 .em-hover-s-scale:hover{
   transform: scale(1.03);
 }
+.em-shadow-cards{
+  margin: unset;
+}
 
 @media all and (max-width: 959px) {
   div.em-grid-3 {

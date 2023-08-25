@@ -2055,12 +2055,12 @@ class EmundusModelUsers extends JModelList {
 	                $query = "select esa.label, ea.*, esa.c as is_c, esa.r as is_r, esa.u as is_u, esa.d as is_d
 	                      from #__emundus_acl as ea
 	                      left join #__emundus_setup_actions as esa on esa.id = ea.action_id
-	                      where ea.group_id in (" .implode(',', $gid).") order by esa.ordering asc,esa.name asc";
+	                      where ea.group_id in (" .implode(',', $gid).") and esa.status != 0 order by esa.ordering asc,esa.name asc";
                 } else {
 	                $query = "select esa.label, ea.*, esa.c as is_c, esa.r as is_r, esa.u as is_u, esa.d as is_d
 	                      from #__emundus_acl as ea
 	                      left join #__emundus_setup_actions as esa on esa.id = ea.action_id
-	                      where ea.group_id = " .$gid ." order by esa.ordering asc,esa.name asc";
+	                      where ea.group_id = " .$gid ." and esa.status != 0 order by esa.ordering asc,esa.name asc";
                 }
 	            $db = $this->getDbo();
 	            $db->setQuery($query);

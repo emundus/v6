@@ -165,27 +165,19 @@ export default {
     createMenu() {
       this.changes = true;
 
-      if(this.label[this.actualLanguage] != '' || this.model_id != -1) {
+      if (this.label[this.actualLanguage] != '' || this.model_id != -1) {
         this.submitted = true;
 
-        if(this.actualLanguage=='fr'&& this.label.en==''){
-
-          this.label.en='My new page'
-
-        } else if(this.actualLanguage=='en'&& this.label.fr==''){
-          this.label.fr='Ma nouvelle page';
-        } else {
-          this.label.en=this.label.en;
-          this.label.fr=this.label.fr;
+        if (this.actualLanguage == 'fr' && this.label.en == '') {
+          this.label.en = 'My new page'
+        } else if (this.actualLanguage == 'en' && this.label.fr == '') {
+          this.label.fr = 'Ma nouvelle page';
         }
 
         axios({
-          method: "post",
-          url:
-              "index.php?option=com_emundus&controller=formbuilder&task=createMenu",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
+          method: 'post',
+          url: 'index.php?option=com_emundus&controller=formbuilder&task=createMenu',
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
           data: qs.stringify({
             label: this.label,
             intro: this.intro,

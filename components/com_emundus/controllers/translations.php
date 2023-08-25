@@ -168,7 +168,7 @@ class EmundusControllerTranslations extends JControllerLegacy {
         $user = JFactory::getUser();
 
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            die(JText::_("ACCESS_DENIED"));
+            die(JText::_('ACCESS_DENIED'));
         }
 
         $jinput = JFactory::getApplication()->input;
@@ -181,7 +181,11 @@ class EmundusControllerTranslations extends JControllerLegacy {
 
         foreach ($references_table as $reference_table) {
             if(!empty($reference_table['join_table']) && !empty($reference_table['join_column']) && !empty($reference_table['reference_column'])){
-                $reference_id = $this->model->getJoinReferenceId($reference_table['table'],$reference_table['reference_column'],$reference_table['join_table'],$reference_table['join_column'],$reference_id);
+                $join_reference_id = $this->model->getJoinReferenceId($reference_table['table'],$reference_table['reference_column'],$reference_table['join_table'],$reference_table['join_column'],$reference_id);
+
+				if (!empty($join_reference_id)) {
+					$reference_id = $join_reference_id;
+				}
 			}
             $results = $this->model->getTranslations('override', '*', '', '', $reference_table['table'], $reference_id, $reference_table['fields']);
 

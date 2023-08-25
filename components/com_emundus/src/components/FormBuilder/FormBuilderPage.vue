@@ -11,6 +11,7 @@
 			    :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
 			    v-html="translate(title)"></span>
 	    <span class="material-icons-outlined em-pointer"
+						v-if="mode == 'forms'"
 	          :title="translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE')"
 	          @click="$emit('open-create-model', page.id)">post_add</span>
     </div>
@@ -76,6 +77,10 @@ export default {
       type: Object,
       default: {}
     },
+	  mode: {
+		  type: String,
+		  default: 'forms'
+	  }
   },
   mixins: [formBuilderMixin, globalMixin, errorMixin],
   data() {

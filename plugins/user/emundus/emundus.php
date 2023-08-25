@@ -385,7 +385,7 @@ class plgUserEmundus extends JPlugin
         // ThirdPartyApp::loginUser($user['username'], $user['password']);
         $app = JFactory::getApplication();
         $jinput = JFactory::getApplication()->input;
-        $redirect = $jinput->get->getBase64('redirect',$options['redirect']);
+        $redirect = $jinput->get->getBase64('redirect');
 
         if (empty($redirect)) {
             parse_str($jinput->server->getVar('HTTP_REFERER'), $return_url);

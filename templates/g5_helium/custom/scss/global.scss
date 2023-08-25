@@ -2652,7 +2652,7 @@ label[for='clear-search'] img:hover:focus {
   }
 }
 
-.panel-heading.em-container-form-heading, .panel-heading.em-container-evaluation-heading, .panel-heading.em-container-decision-heading, .panel-heading.em-container-comment-heading, .panel-heading.em-container-tags-heading, .panel-heading.em-container-share-heading, .panel-heading.em-container-mail-heading {
+.panel-heading.em-container-form-heading, .panel-heading.em-container-admission-heading, .panel-heading.em-container-evaluation-heading, .panel-heading.em-container-decision-heading, .panel-heading.em-container-comment-heading, .panel-heading.em-container-tags-heading, .panel-heading.em-container-share-heading, .panel-heading.em-container-mail-heading {
   padding: 6px !important;
 
   #em-prev-file.btn.btn-info.btn-xxl,
@@ -3275,6 +3275,12 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
     }
   }
 }
+
+/* LISTE EVALUATION TCHOOZ
+
+.gantry.view-file.layout-evaluation {
+  overflow: hidden;
+}*/
 
 /* SUPPRIMER EVAL */
 .g-back-office-emundus-tableau .panel-heading.em-container-evaluation-heading #em_delete_evals.btn.btn-danger.btn-xs.btn-attach {
