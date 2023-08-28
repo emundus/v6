@@ -110,11 +110,12 @@ export default {
 			originalFilterOperator: null,
 		}
 	},
-	mounted () {
-		if (this.filter.value === null || this.filter.value === undefined) {
-			this.filter.value = [];
-		}
-
+  beforeMount() {
+    if (this.filter.value === null || this.filter.value === undefined) {
+      this.filter.value = [];
+    }
+  },
+  mounted () {
 		this.filter.operator = this.filter.operator === '=' ? 'IN' : this.filter.operator;
 		this.originalFilterValue = this.filter.value;
 		this.originalFilterOperator = this.filter.operator;
