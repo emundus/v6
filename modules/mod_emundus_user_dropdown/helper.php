@@ -7,6 +7,8 @@
 // no direct access
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+
 /**
  * @package		Joomla.Site
  * @subpackage	mod_emundusmenu
@@ -16,7 +18,8 @@ class modEmundusUserDropdownHelper {
 
 	static function getList($menu_name) {
 
-		$app = JFactory::getApplication();
+		$app = Factory::getApplication();
+        $is_sef = (bool)Factory::getApplication()->getConfig()->get('sef');
 		$menu = $app->getMenu();
 
 		$items = $menu->getItems('menutype', $menu_name);
@@ -25,6 +28,7 @@ class modEmundusUserDropdownHelper {
 
 		if ($items) {
 			foreach ($items as $i => $item) {
+                $params = $item->getParams();
 
 				// Only get surface level menu items.
 				if ($item->level > 1) {
@@ -38,7 +42,7 @@ class modEmundusUserDropdownHelper {
 				}
 
 				// Hide hidden menu items.
-				if ($item->params->get('menu_show', 0) != 1) {
+				if ($params->get('menu_show', 0) != 1) {
 					unset($items[$i]);
 					continue;
 				}
@@ -60,12 +64,11 @@ class modEmundusUserDropdownHelper {
 
 					case 'alias':
 						// If this is an alias use the item id stored in the parameters to make the link.
-						$item->flink = 'index.php?Itemid='.$item->params->get('aliasoptions');
+						$item->flink = 'index.php?Itemid='.$params->get('aliasoptions');
 						break;
 
 					default:
-						$router = JSite::getRouter();
-						if ($router->getMode() == JROUTER_MODE_SEF) {
+						if ($is_sef) {
 							$item->flink = 'index.php?Itemid='.$item->id;
 						}
 						else {
@@ -75,17 +78,17 @@ class modEmundusUserDropdownHelper {
 				}
 
 				if (strcasecmp(substr($item->flink, 0, 4), 'http') && (strpos($item->flink, 'index.php?') !== false)) {
-					$item->flink = JRoute::_($item->flink, true, $item->params->get('secure'));
+					$item->flink = JRoute::_($item->flink, true, $params->get('secure'));
 				} else {
 					$item->flink = JRoute::_($item->flink);
 				}
 
 				$item->title = htmlspecialchars($item->title, ENT_COMPAT, 'UTF-8', false);
-				$item->anchor_css = htmlspecialchars($item->params->get('menu-anchor_css', ''), ENT_COMPAT, 'UTF-8', false);
-				$item->anchor_title = htmlspecialchars($item->params->get('menu-anchor_title', ''), ENT_COMPAT, 'UTF-8', false);
-				$item->anchor_rel = htmlspecialchars($item->params->get('menu-anchor_rel', ''), ENT_COMPAT, 'UTF-8', false);
-				$item->menu_image = $item->params->get('menu_image', '') ?
-				htmlspecialchars($item->params->get('menu_image', ''), ENT_COMPAT, 'UTF-8', false) : '';
+				$item->anchor_css = htmlspecialchars($params->get('menu-anchor_css', ''), ENT_COMPAT, 'UTF-8', false);
+				$item->anchor_title = htmlspecialchars($params->get('menu-anchor_title', ''), ENT_COMPAT, 'UTF-8', false);
+				$item->anchor_rel = htmlspecialchars($params->get('menu-anchor_rel', ''), ENT_COMPAT, 'UTF-8', false);
+				$item->menu_image = $params->get('menu_image', '') ?
+				htmlspecialchars($params->get('menu_image', ''), ENT_COMPAT, 'UTF-8', false) : '';
 			}
 		}
 

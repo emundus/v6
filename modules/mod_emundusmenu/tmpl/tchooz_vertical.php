@@ -253,7 +253,7 @@ defined('_JEXEC') or die;
                     $class .= ' active';
                 }
                 elseif ($item->type == 'alias') {
-                    $aliasToId = $item->params->get('aliasoptions');
+                    $aliasToId = $item->getParams()->get('aliasoptions');
                     if (count($path) > 0 && $aliasToId == $path[count($path)-1]) {
                         $class .= ' active';
                     }
@@ -310,7 +310,7 @@ defined('_JEXEC') or die;
         endif;
 
         foreach ($list as $i => &$item) :
-            if($item->alias != 'homepage' && $item->params->get('menu_show') != 0) :
+            if($item->alias != 'homepage' && $item->getParams()->get('menu_show') != 0) :
                 $item->anchor_css="item";
                 $class = 'item-'.$item->id.' g-standard';
                 if ($item->id == $active_id) {
@@ -321,7 +321,7 @@ defined('_JEXEC') or die;
                     $class .= ' active';
                 }
                 elseif ($item->type == 'alias') {
-                    $aliasToId = $item->params->get('aliasoptions');
+                    $aliasToId = $item->getParams()->get('aliasoptions');
                     if (count($path) > 0 && $aliasToId == $path[count($path)-1]) {
                         $class .= ' active';
                     }
@@ -381,7 +381,7 @@ defined('_JEXEC') or die;
 
 
         foreach ($help_list as $i => &$item) :
-            if($item->params->get('menu_show') != 0) :
+            if($item->getParams()->get('menu_show') != 0) :
                 $item->anchor_css="item";
                 $class = 'item-'.$item->id.' g-standard';
                 if ($item->id == $active_id) {
@@ -392,7 +392,7 @@ defined('_JEXEC') or die;
                     $class .= ' active';
                 }
                 elseif ($item->type == 'alias') {
-                    $aliasToId = $item->params->get('aliasoptions');
+                    $aliasToId = $item->getParams()->get('aliasoptions');
                     if (count($path) > 0 && $aliasToId == $path[count($path)-1]) {
                         $class .= ' active';
                     }
@@ -451,39 +451,41 @@ defined('_JEXEC') or die;
 
 
 <script type="text/javascript">
-    jQuery(document).ready(function() {
-        jQuery(".g-sublevel > li").on('mouseenter', function (e) {
-            if (jQuery('ul', this).length) {
-                var elm = jQuery('ul:first', this);
-                var off = elm.offset();
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll(".g-sublevel > li").forEach(function(el) {
+            el.addEventListener("mouseenter", function(e) {
+                if (this.querySelector("ul")) {
+                    var elm = this.querySelector("ul:first-child");
+                    var off = elm.getBoundingClientRect();
                 var l = off.left;
-                var w = elm.width();
-                var docH = jQuery("#g-page-surround").height();
-                var docW = jQuery("#g-page-surround").width();
+                    var w = elm.offsetWidth;
+                    var docH = document.querySelector("#g-page-surround").offsetHeight;
+                    var docW = document.querySelector("#g-page-surround").offsetWidth;
                 var isEntirelyVisible = (l + w <= docW);
 
                 if (!isEntirelyVisible) {
-                    jQuery(this).addClass('edge');
+                        this.classList.add("edge");
                 } else {
-                    jQuery(this).removeClass('edge');
+                        this.classList.remove("edge");
                 }
             }
         });
     });
+    });
 
 
     //Keep original tooltip margin to reposition after mouse out (usefull in case of window resizing)
-    const originalMargin = parseInt(jQuery("[id^=tooltip-]:first").css('margin-top'),10);
+    const originalMargin = parseInt(document.querySelector("[id^=tooltip-]:first-of-type").style.marginTop, 10);
 
     function enableTooltip(menu){
-        if(jQuery(".image-title").css("display") != 'none') {
-            if(typeof jQuery("#sublevel_list_" + menu)[0] != 'undefined'){
-                jQuery("#tooltip-" + menu).css('margin-left', '200px');
-                jQuery("#tooltip-" + menu).css('display', 'block');
+        if (window.getComputedStyle(document.querySelector(".image-title")).getPropertyValue("display") !== "none") {
+            if (document.querySelector("#sublevel_list_" + menu)) {
+                document.querySelector("#tooltip-" + menu).style.marginLeft = "200px";
+                document.querySelector("#tooltip-" + menu).style.display = "block";
             }
         } else {
-            jQuery("#tooltip-" + menu).css('margin-left', '0');
-            jQuery("#tooltip-" + menu).css('display', 'block');
+            document.querySelector("#tooltip-" + menu).style.marginLeft = "0";
+            document.querySelector("#tooltip-" + menu).style.display = "block";
 
             //Reposition tooltip if out of viewport or scroll happened
             var tooltipBox = document.querySelector("#tooltip-" + menu);
@@ -494,7 +496,7 @@ defined('_JEXEC') or die;
 
             //reposition after scrolling
             if(tooltipRect.top - menuRect.top > 10){
-                jQuery("#tooltip-" + menu).css('margin-top', -(tooltipRect.top - menuRect.top - originalMargin)+'px');
+                document.querySelector("#tooltip-" + menu).style.marginTop = -(tooltipRect.top - menuRect.top - originalMargin)+'px';
                 //get new position of tooltip
                 tooltipBox = document.querySelector("#tooltip-" + menu);
                 tooltipRect = tooltipBox.getBoundingClientRect();
@@ -502,90 +504,144 @@ defined('_JEXEC') or die;
 
             //reposition out of viewport
             if(tooltipRect.bottom > viewportHeight){
-                jQuery("#tooltip-" + menu).css('margin-top', -(tooltipRect.bottom - viewportHeight - parseInt(jQuery("#tooltip-" + menu).css('margin-top'),10))+'px');
+                document.querySelector("#tooltip-" + menu).style.marginTop = -(tooltipRect.bottom - viewportHeight - parseInt(document.querySelector("#tooltip-" + menu).style.marginTop, 10))+'px';
             }
         }
     }
 
     function disableTooltip(menu){
-        jQuery("#tooltip-" + menu).css('display', 'none');
-        jQuery("#tooltip-" + menu).css('margin-top', originalMargin);
+        document.querySelector("#tooltip-" + menu).style.display = "none";
+        document.querySelector("#tooltip-" + menu).style.marginTop = originalMargin + "px";
     }
 
-    function enableTitles(state = null){
-        if(jQuery(".image-title").css("display") == 'none' && state == null){
-            localStorage.setItem('menu', 'true');
-            jQuery(".tchooz-vertical-toplevel").css("width","250px");
-            jQuery(".tchooz-vertical-item").css("width","auto");
-            jQuery(".grey-navbar-icons").css("opacity","1");
-            jQuery(".sidebar-formbuilder").css("opacity","0");
+    function enableTitles(state) {
+        if (
+            window.getComputedStyle(document.querySelector(".image-title")).display === "none" &&
+            state === undefined
+        ) {
+            localStorage.setItem("menu", "true");
+            document.querySelector(".tchooz-vertical-toplevel").style.width = "250px";
+            document.querySelectorAll(".tchooz-vertical-item").forEach(function (elem) {
+                elem.style.width = "auto";
+            });
+            document.querySelector(".grey-navbar-icons").style.opacity = "1";
+            if(document.querySelector(".sidebar-formbuilder")) {
+                document.querySelector(".sidebar-formbuilder").style.opacity = "0";
+            }
             if(window.innerWidth >= 1280) {
-                jQuery("#g-footer").css("padding-left", "300px");
-                jQuery("#footer-rgpd").css("padding-left", "300px");
-                jQuery("#g-container-main").css("padding-left", "195px");
-                jQuery("#header-a").css("opacity", "1");
+                if(document.querySelector("#g-footer")) {
+                    document.querySelector("#g-footer").style.paddingLeft = "300px";
+                    if(document.querySelector("#footer-rgpd")) {
+                        document.querySelector("#footer-rgpd").style.paddingLeft = "300px";
+                    }
+                }
+                document.querySelector("#g-container-main").style.paddingLeft = "180px";
+                document.querySelector("#header-a").style.opacity = "1";
             }
             setTimeout(() =>{
-                jQuery(".image-title").css("display","block");
-                jQuery(".image-title").css("opacity","1");
-                jQuery(".sidebar-formbuilder").css("display","none");
+                document.querySelectorAll(".image-title").forEach(function (elem) {
+                    elem.style.display = "block";
+                    elem.style.opacity = "1";
+                });
+                if(document.querySelector(".sidebar-formbuilder")) {
+                    document.querySelector(".sidebar-formbuilder").style.display = "none";
+                }
                 setTimeout(() => {
-                    jQuery(".g-menu-parent-indicator").css("display","block");
+                    if(document.querySelector(".g-menu-parent-indicator")) {
+                        document.querySelector(".g-menu-parent-indicator").style.display = "block";
+                    }
                 },50);
-            },250)
-        } else if(state == 'true'){
-            jQuery(".tchooz-vertical-toplevel").css("width","250px");
-            jQuery(".tchooz-vertical-item").css("width","auto");
-            jQuery(".grey-navbar-icons").css("opacity","1");
-            jQuery(".sidebar-formbuilder").css("opacity","0");
+            }, 250);
+        } else if (state === "true") {
+            document.querySelector(".tchooz-vertical-toplevel").style.width = "250px";
+            document.querySelectorAll(".tchooz-vertical-item").forEach(function (elem) {
+                elem.style.width = "auto";
+            });
+            document.querySelector(".grey-navbar-icons").style.opacity = "1";
+            if(document.querySelector(".sidebar-formbuilder")) {
+                document.querySelector(".sidebar-formbuilder").style.opacity = "0";
+            }
             if(window.innerWidth >= 1280) {
-                jQuery("#g-footer").css("padding-left", "300px");
-                jQuery("#footer-rgpd").css("padding-left", "300px");
-                jQuery("#g-container-main").css("padding-left", "180px");
-                jQuery("#header-a").css("opacity", "1");
+                if(document.querySelector("#g-footer")) {
+                    document.querySelector("#g-footer").style.paddingLeft = "300px";
+                    if(document.querySelector("#footer-rgpd")) {
+                        document.querySelector("#footer-rgpd").style.paddingLeft = "300px";
+                    }
+                }
+                document.querySelector("#g-container-main").style.paddingLeft = "180px";
+                document.querySelector("#header-a").style.opacity = "1";
             }
             setTimeout(() =>{
-                jQuery(".image-title").css("display","block");
-                jQuery(".image-title").css("opacity","1");
-                jQuery(".sidebar-formbuilder").css("display","none");
+                document.querySelectorAll(".image-title").forEach(function (elem) {
+                    elem.style.display = "block";
+                    elem.style.opacity = "1";
+                });
+                if(document.querySelector(".sidebar-formbuilder")) {
+                    document.querySelector(".sidebar-formbuilder").style.display = "none";
+                }
                 setTimeout(() => {
-                    jQuery(".g-menu-parent-indicator").css("display","block");
+                    if(document.querySelector(".g-menu-parent-indicator")) {
+                        document.querySelector(".g-menu-parent-indicator").style.display = "block";
+                    }
                 },50);
-            },250)
+            }, 250);
         } else {
-            localStorage.setItem('menu', 'false');
-            jQuery(".tchooz-vertical-toplevel").css("width","55px");
-            jQuery(".image-title").css("opacity","0");
-            jQuery(".g-menu-parent-indicator").css("display","none");
-            jQuery(".sidebar-formbuilder").css("display","block");
-            jQuery(".sidebar-formbuilder").css("opacity","1");
-            if(window.innerWidth >= 1280) {
-                jQuery("#g-container-main").css("padding-left", "0");
-                jQuery("#g-footer").css("padding-left", "80px");
-                jQuery("#footer-rgpd").css("padding-left", "80px");
-                jQuery("#header-a").css("opacity", "0");
+            localStorage.setItem("menu", "false");
+            document.querySelector(".tchooz-vertical-toplevel").style.width = "55px";
+            document.querySelectorAll(".image-title").forEach(function (elem) {
+                elem.style.opacity = "0";
+            });
+            if(document.querySelector(".g-menu-parent-indicator")) {
+                document.querySelectorAll(".g-menu-parent-indicator").forEach(function (elem) {
+                    elem.style.display = "none";
+                });
             }
-            setTimeout(() =>{
-                jQuery(".image-title").css("display","none");
-                jQuery(".grey-navbar-icons").css("opacity","0");
-            },50)
+
+            if(document.querySelector(".sidebar-formbuilder")) {
+                document.querySelector(".sidebar-formbuilder").style.display = "block";
+                document.querySelector(".sidebar-formbuilder").style.opacity = "1";
+            }
+
+            if(window.innerWidth >= 1280) {
+                document.querySelector("#g-container-main").style.paddingLeft = "0";
+                if(document.querySelector("#g-footer")) {
+                    document.querySelector("#g-footer").style.paddingLeft = "80px";
+                    if(document.querySelector("#footer-rgpd")) {
+                        document.querySelector("#footer-rgpd").style.paddingLeft = "80px";
+                    }
+            }
+                document.querySelector("#header-a").style.opacity = "0";
+            }
+
+            setTimeout(function() {
+                document.querySelectorAll(".image-title").forEach(function(elem) {
+                    elem.style.display = "none";
+                });
+                document.querySelectorAll(".grey-navbar-icons").forEach(function(elem) {
+                    elem.style.opacity = "0";
+                });
+            }, 50);
         }
     }
 
     function backToParentMenu(id){
-        jQuery(".tchooz-vertical-toplevel").css("width","250px");
-        jQuery(".tchooz-vertical-item").css("width","auto");
-        jQuery("#menu_separator").css('width','auto');
-        jQuery(".g-menu-item-" + id).removeClass('parent-active');
-        jQuery("#sublevel_list_" + id).css("display", "none");
-        jQuery(".g-menu-parent-indicator").css("display","block");
-        jQuery(".image-title").css("display","block");
-        jQuery(".image-title").css("opacity","1");
+        document.querySelector(".tchooz-vertical-toplevel").style.width = '250px';
+        document.querySelectorAll(".tchooz-vertical-item").forEach(function (elem) {
+            elem.style.width = "auto";
+        });
+        document.querySelector("#menu_separator").style.width = 'auto';
+        document.querySelector(".g-menu-item-" + id).removeClass('parent-active');
+        document.querySelector("#sublevel_list_" + id).style.display =  "none";
+        document.querySelector(".g-menu-parent-indicator").style.display = "block";
+        document.querySelectorAll(".image-title").forEach(function (elem) {
+            elem.style.display = "block";
+            elem.style.opacity = "1";
+        });
     }
 
     document.addEventListener('click', function (e) {
         e.stopPropagation();
-        if(jQuery(".image-title").css("display") == 'block') {
+        if(document.querySelector(".image-title").style.display == 'block') {
             enableTitles();
         }
     });
@@ -593,4 +649,5 @@ defined('_JEXEC') or die;
     window.onload = function () {
         this.enableTitles(localStorage.getItem('menu'));
     }
+
 </script>

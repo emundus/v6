@@ -1,5 +1,5 @@
 <?php
-defined('_JEXEC') or die('Access Deny');
+defined('_JEXEC') or die('Restricted access');
 
 class modEmundusCampaignHelper {
     private $totalCurrent;

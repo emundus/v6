@@ -12,9 +12,9 @@ defined('_JEXEC') or die;
 // Note. It is important to remove spaces between elements.
 $class = $item->anchor_css ? 'class="'.$item->anchor_css.'" ' : '';
 $title = $item->anchor_title ? 'title="'.$item->anchor_title.'" ' : '';
-$icon_css = $item->params->get('menu_image_css', '');
+$icon_css = $item->getParams()->get('menu_image_css', '');
 if ($item->menu_image) {
-    if($item->params->get('menu_text', 1 )) {
+    if($item->getParams()->get('menu_text', 1 )) {
         $linktype = '<img src="' . $item->menu_image . '" alt="' . $item->title . '" /><span class="image-title" style="display: none;opacity: 0">' . $item->title . '</span>';
     } else {
         $linktype = '<img src="' . $item->menu_image . '" alt="' . $item->title . '" />';

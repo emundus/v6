@@ -1,6 +1,8 @@
 <?php
 defined('_JEXEC') or die('Access Deny');
 
+use Joomla\CMS\Factory;
+
 // INCLUDES
 require_once(dirname(__FILE__).DS.'helper.php');
 include_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
@@ -20,7 +22,8 @@ $app = JFactory::getApplication();
 $session = JFactory::getSession();
 $db = JFactory::getDbo();
 
-$user = JFactory::getUser();
+
+$user = Factory::getUser();
 $e_user = JFactory::getSession()->get('emundusUser');
 $app_prof = $m_profiles->getApplicantsProfilesArray();
 

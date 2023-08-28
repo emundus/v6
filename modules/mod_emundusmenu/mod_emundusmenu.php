@@ -8,12 +8,15 @@
 
 // no direct access
 defined('_JEXEC') or die;
+
 $document 	= JFactory::getDocument();
 $document->addStyleSheet("modules/mod_emundusmenu/style/mod_emundusmenu.css" );
+
 // Include the syndicate functions only once
 require_once dirname(__FILE__).'/helper.php';
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+
 // needed when default top menu is missing
 global $gantry;
 if (!empty($gantry)) {
