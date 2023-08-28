@@ -17,8 +17,7 @@ if (!empty($this->items)) :
 <div class="navbar-collapse collapse navbar-inverse-collapse em-collapse-menuaction">
 <ul class="nav navbar-nav em-collapse-menuaction-nav" style="display:<?php echo $this->display; ?>">
 <?php
-//var_dump($this->items);
-    $multiple = JRequest::getVar('multi', '0', 'get','INT', JREQUEST_NOTRIM);
+    $multiple = JFactory::getApplication()->input->get('multi', '0', 'get','INT', JREQUEST_NOTRIM);
     foreach ($this->items as $i => $item) :
         if ($item->level == 1) {
             echo '<li class="dropdown" style="background-color:none"><a class="em-dropdown" id="em-menu-' . $i . '" href="#">' . @$item->title . '<b class="caret"></b></a>';

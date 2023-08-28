@@ -11,7 +11,7 @@ require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.
 
 $user = JFactory::getSession()->get('emundusUser');
 $_db = JFactory::getDBO();
-$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+$itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
 
 $forms = @EmundusHelperMenu::buildMenuQuery($user->profile);
 

@@ -528,10 +528,10 @@ class EmundusModelDecision extends JModelList
 	 * @since version
 	 */
 	public function setSubQuery($tab, $elem) {
-		$search = JRequest::getVar('elements', NULL, 'POST', 'array', 0);
-		$search_values = JRequest::getVar('elements_values', NULL, 'POST', 'array', 0);
-		$search_other = JRequest::getVar('elements_other', NULL, 'POST', 'array', 0);
-		$search_values_other = JRequest::getVar('elements_values_other', NULL, 'POST', 'array', 0);
+		$search = JFactory::getApplication()->input->get('elements', NULL, 'POST', 'array', 0);
+		$search_values = JFactory::getApplication()->input->get('elements_values', NULL, 'POST', 'array', 0);
+		$search_other = JFactory::getApplication()->input->get('elements_other', NULL, 'POST', 'array', 0);
+		$search_values_other = JFactory::getApplication()->input->get('elements_values_other', NULL, 'POST', 'array', 0);
 
 		$db = JFactory::getDBO();
 

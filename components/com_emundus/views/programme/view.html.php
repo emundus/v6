@@ -29,8 +29,9 @@ class EmundusViewProgramme extends JViewLegacy
 
         $app = JFactory::getApplication();
         $jinput = $app->input;
-        $menu_params = $app->getMenu()->getActive()->params;
-
+        $menu 			= @JFactory::getApplication()->getMenu();
+        $current_menu  	= $menu->getActive();
+        $menu_params 	= $menu->getParams(@$current_menu->id);
 
         $this->com_emundus_programme_progdesc_class = '';
         $this->com_emundus_programme_campdesc_class = '';
@@ -51,7 +52,6 @@ class EmundusViewProgramme extends JViewLegacy
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
-            JError::raiseError(500, implode('<br />', $errors));
             return false;
         }
         // Assign data to the view

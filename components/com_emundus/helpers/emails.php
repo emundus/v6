@@ -366,7 +366,7 @@ class EmundusHelperEmails {
             $mail_body = $editor->display( 'mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
             $email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
 
-            $email_to = JRequest::getVar('sid', null, 'GET', 'none',0);
+            $email_to = JFactory::getApplication()->input->get('sid', null, 'GET', 'none',0);
             $student = JFactory::getUser($email_to);
 
             $AllEmail_template = EmundusHelperEmails::getAllEmail(2);
@@ -409,7 +409,7 @@ class EmundusHelperEmails {
 
     public static function getTemplate(){
         $db = JFactory::getDBO();
-        $select = JRequest::getVar('select', null, 'POST', 'none', 0);
+        $select = JFactory::getApplication()->input->get('select', null, 'POST', 'none', 0);
         $query = 'SELECT * FROM #__emundus_setup_emails WHERE id='.$select;
         $db->setQuery($query);
         $email = $db->loadObject();
@@ -444,10 +444,10 @@ class EmundusHelperEmails {
         $db 		= JFactory::getDBO();
         $jinput 	= JFactory::getApplication()->input;
 
-        $limitstart 		= JRequest::getVar('limitstart', null, 'POST', 'none',0);
-        $filter_order 		= JRequest::getVar('filter_order', null, 'POST', null, 0);
-        $filter_order_Dir 	= JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
-        $itemid 			= JRequest::getVar('Itemid', null, 'GET', null, 0);
+        $limitstart 		= JFactory::getApplication()->input->get('limitstart', null, 'POST', 'none',0);
+        $filter_order 		= JFactory::getApplication()->input->get('filter_order', null, 'POST', null, 0);
+        $filter_order_Dir 	= JFactory::getApplication()->input->get('filter_order_Dir', null, 'POST', null, 0);
+        $itemid 			= JFactory::getApplication()->input->get('Itemid', null, 'GET', null, 0);
 
         $ag_id = $jinput->get('mail_group', array(), "ARRAY");
         $users_id = array();
@@ -462,13 +462,13 @@ class EmundusHelperEmails {
         }
 
         // Content of email
-        $captcha	= 1;//JRequest::getInt( JR_CAPTCHA, null, 'post' );
+        $captcha	= 1;//JFactory::getApplication()->input->getInt( JR_CAPTCHA, null, 'post' );
 
-        $from 		= JRequest::getVar( 'mail_from', null, 'post' );
-        $from_id	= JRequest::getVar( 'mail_from_id', null, 'post' );
-        $fromname	= JRequest::getVar( 'mail_from_name', null, 'post' );
-        $subject	= JRequest::getVar( 'mail_subject', null, 'post' );
-        $message	= JRequest::getVar( 'mail_body','','POST','STRING',JREQUEST_ALLOWHTML);
+        $from 		= JFactory::getApplication()->input->get( 'mail_from', null, 'post' );
+        $from_id	= JFactory::getApplication()->input->get( 'mail_from_id', null, 'post' );
+        $fromname	= JFactory::getApplication()->input->get( 'mail_from_name', null, 'post' );
+        $subject	= JFactory::getApplication()->input->get( 'mail_subject', null, 'post' );
+        $message	= JFactory::getApplication()->input->get( 'mail_body','','POST','STRING',JREQUEST_ALLOWHTML);
 
         if ($subject == '') {
             JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_EMAILS_YOU_MUST_PROVIDE_SUBJECT' ) );
@@ -612,7 +612,7 @@ class EmundusHelperEmails {
 
         $email_from_sys = $mainframe->getCfg('mailfrom');
 
-        $cids = JRequest::getVar( 'ud', array(), 'post', 'array' );
+        $cids = JFactory::getApplication()->input->get( 'ud', array(), 'post', 'array' );
         foreach ($cids as $cid){
             $params=explode('|',$cid);
             $users_id[] = intval($params[0]);
@@ -621,33 +621,33 @@ class EmundusHelperEmails {
 
         $captcha	= 1;
 
-        $from 		= JRequest::getVar( 'mail_from', null, 'post' );
-        $from_id	= JRequest::getVar( 'mail_from_id', null, 'post' );
-        $fromname	= JRequest::getVar( 'mail_from_name', null, 'post' );
-        $subject	= JRequest::getVar( 'mail_subject', null, 'post' );
-        $message	= JRequest::getVar( 'mail_body','','POST','STRING',JREQUEST_ALLOWHTML);
+        $from 		= JFactory::getApplication()->input->get( 'mail_from', null, 'post' );
+        $from_id	= JFactory::getApplication()->input->get( 'mail_from_id', null, 'post' );
+        $fromname	= JFactory::getApplication()->input->get( 'mail_from_name', null, 'post' );
+        $subject	= JFactory::getApplication()->input->get( 'mail_subject', null, 'post' );
+        $message	= JFactory::getApplication()->input->get( 'mail_body','','POST','STRING',JREQUEST_ALLOWHTML);
 
         $fnums = $mainframe->input->get('fnums', null, 'RAW');
         $fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
         if ($captcha !== 1) {
             JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_EMAILS_NOT_A_VALID_POST' ) );
-            $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&Itemid='.JRequest::getCmd( 'Itemid' ));
+            $mainframe->redirect('index.php?option=com_emundus&view='.JFactory::getApplication()->input->get( 'view' ).'&tmpl='.JFactory::getApplication()->input->get( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JFactory::getApplication()->input->get( 'Itemid' ));
             return;
         }
         if (count( $users_id ) == 0) {
             JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_NO_ITEMS_SELECTED' ) );
-            $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&Itemid='.JRequest::getCmd( 'Itemid' ));
+            $mainframe->redirect('index.php?option=com_emundus&view='.JFactory::getApplication()->input->get( 'view' ).'&tmpl='.JFactory::getApplication()->input->get( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JFactory::getApplication()->input->get( 'Itemid' ));
             return;
         }
         if ($subject == '') {
             JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_EMAILS_YOU_MUST_PROVIDE_SUBJECT' ) );
-            $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&Itemid='.JRequest::getCmd( 'Itemid' ));
+            $mainframe->redirect('index.php?option=com_emundus&view='.JFactory::getApplication()->input->get( 'view' ).'&tmpl='.JFactory::getApplication()->input->get( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JFactory::getApplication()->input->get( 'Itemid' ));
             return;
         }
         if ($message == '') {
             JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_EMAILS_YOU_MUST_PROVIDE_A_MESSAGE' ) );
-            $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&Itemid='.JRequest::getCmd( 'Itemid' ));
+            $mainframe->redirect('index.php?option=com_emundus&view='.JFactory::getApplication()->input->get( 'view' ).'&tmpl='.JFactory::getApplication()->input->get( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JFactory::getApplication()->input->get( 'Itemid' ));
             return;
         }
 

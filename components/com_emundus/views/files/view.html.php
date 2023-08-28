@@ -23,6 +23,8 @@ class EmundusViewFiles extends JViewLegacy
 	protected $itemId;
 	protected $actions;
 	protected $use_module_for_filters;
+	protected array $lists;
+	protected JPagination $pagination;
 
 	public function __construct($config = array())
 	{
@@ -41,6 +43,12 @@ class EmundusViewFiles extends JViewLegacy
 			die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 		}
 
+		$m_files = new EmundusModelFiles();
+
+    	// translation to load in javacript file ; /media/com_emundus/em_files.js
+    	// put it in com_emundus/emundus.php
+		//JHTML::stylesheet("media/jui/css/chosen.min.css");
+
 		$app = JFactory::getApplication();
 
 	    $this->itemId = $app->input->getInt('Itemid', null);
@@ -49,10 +57,8 @@ class EmundusViewFiles extends JViewLegacy
 		/* Get the values from the state object that were inserted in the model's construct function */
 		$lists['order_dir'] = JFactory::getSession()->get( 'filter_order_Dir' );
 		$lists['order']     = JFactory::getSession()->get( 'filter_order' );
-		$this->assignRef('lists', $lists);
-		$this->assignRef('actions', $actions);
-		$pagination = $this->get('Pagination');
-		$this->assignRef('pagination', $pagination);
+		$this->lists = $lists;
+		$this->pagination = $m_files->getPagination();
 
 		parent::display($tpl);
 	}

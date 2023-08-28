@@ -382,6 +382,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 
         if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
+
             $label = $jinput->getRaw('label');
             $intro = $jinput->getRaw('intro');
             $prid = $jinput->getInt('prid');

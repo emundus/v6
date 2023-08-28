@@ -4002,8 +4002,7 @@ class EmundusModelApplication extends JModelList
                 $db->execute();
 
                 JPluginHelper::importPlugin('emundus');
-                $dispatcher = JDispatcher::getInstance();
-                $dispatcher->trigger('callEventHandler', array(
+                JFactory::getApplication()->triggerEvent('callEventHandler', array(
                         'onAfterMoveApplication',
                         array(
                             'fnum_from' => $fnum_from,
@@ -4251,8 +4250,7 @@ class EmundusModelApplication extends JModelList
         }
 
         JPluginHelper::importPlugin('emundus');
-        $dispatcher = JDispatcher::getInstance();
-        $dispatcher->trigger('callEventHandler', array(
+        JFactory::getApplication()->triggerEvent('callEventHandler', array(
             'onAfterCopyApplication',
             array(
                 'fnum_from' => $fnum_from,
@@ -5540,8 +5538,8 @@ class EmundusModelApplication extends JModelList
 			$regex = '/^[a-zA-Z0-9\s\p{L}\'"\-]+$/';
 
 			if (preg_match($regex, $new_name)) {
-				$db = JFactory::getDbo();
-				$query = $db->getQuery(true);
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
 
 				$query->update($db->quoteName('#__emundus_campaign_candidature'))
 					->set($db->quoteName('name') . ' = ' . $db->quote($new_name))

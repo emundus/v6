@@ -71,10 +71,10 @@ class EmundusControllerFiles extends JControllerLegacy
     public function display($cachable = false, $urlparams = false)
     {
         // Set a default view if none exists
-        if ( ! JRequest::getCmd( 'view' ) )
+        if ( ! JFactory::getApplication()->input->get( 'view' ) )
         {
             $default = 'files';
-            JRequest::setVar('view', $default );
+            JFactory::getApplication()->input->set('view', $default );
         }
 
         parent::display();
@@ -555,16 +555,16 @@ class EmundusControllerFiles extends JControllerLegacy
                 );
 
                 JPluginHelper::importPlugin('emundus', 'custom_event_handler');
-                $dispatcher = JEventDispatcher::getInstance();
-                $dispatcher->trigger('onBeforeCommentAdd', [$comment_content]);
-                $dispatcher->trigger('callEventHandler', ['onBeforeCommentAdd', ['comment' => $comment_content]]);
+
+                JFactory::getApplication()->triggerEvent('onBeforeCommentAdd', [$comment_content]);
+                JFactory::getApplication()->triggerEvent('callEventHandler', ['onBeforeCommentAdd', ['comment' => $comment_content]]);
 
                 $res = $m_application->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum, 'status_from' => -1, 'status_to' => -1,)));
                 if (empty($res)) {
                     $fnumErrorList[] = $fnum;
                 } else {
-                    $dispatcher->trigger('onAfterCommentAdd', [$comment_content]);
-                    $dispatcher->trigger('callEventHandler', ['onAfterCommentAdd', ['comment' => $comment_content]]);
+                    JFactory::getApplication()->triggerEvent('onAfterCommentAdd', [$comment_content]);
+                    JFactory::getApplication()->triggerEvent('callEventHandler', ['onAfterCommentAdd', ['comment' => $comment_content]]);
                 }
             } else {
                 $fnumErrorList[] = $fnum;
@@ -666,9 +666,9 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         JPluginHelper::importPlugin('emundus');
-        $dispatcher = JEventDispatcher::getInstance();
 
-        $dispatcher->trigger('callEventHandler', ['onBeforeTagRemove', ['fnums' => $fnums, 'tags' => $tags]]);
+
+        JFactory::getApplication()->triggerEvent('callEventHandler', ['onBeforeTagRemove', ['fnums' => $fnums, 'tags' => $tags]]);
 
         foreach ($fnums as $fnum) {
             if ($fnum != 'em-check-all') {
@@ -685,7 +685,7 @@ class EmundusControllerFiles extends JControllerLegacy
             }
         }
 
-        $dispatcher->trigger('callEventHandler', ['onAfterTagRemove', ['fnums' => $fnums, 'tags' => $tags]]);
+        JFactory::getApplication()->triggerEvent('callEventHandler', ['onAfterTagRemove', ['fnums' => $fnums, 'tags' => $tags]]);
 
         unset($fnums);
         unset($tags);
@@ -713,6 +713,7 @@ class EmundusControllerFiles extends JControllerLegacy
 	    $fnums = ($fnums_post) == 'all' ? $m_files->getAllFnums() : (array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
         $validFnums = array();
+
         foreach ($fnums as $fnum) {
             if ($fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction(11, 'c', $this->_user->id, $fnum)) {
                 $validFnums[] = $fnum;
@@ -2778,7 +2779,6 @@ class EmundusControllerFiles extends JControllerLegacy
                         $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('COM_EMUNDUS_ASSOCIATED_USERS'));
                         break;
                     case 'overall':
-						echo '<pre>'; var_dump('here'); echo '</pre>'; die;
                         $objPHPSpreadsheet->getActiveSheet()->setCellValue([$col, $line], JText::_('COM_EMUNDUS_EVALUATIONS_OVERALL'));
                         break;
                 }
@@ -2860,7 +2860,7 @@ class EmundusControllerFiles extends JControllerLegacy
     function export_zip($fnums, $form_post = 1, $attachment = 1, $assessment = 1, $decision = 1, $admission = 1, $form_ids = null, $attachids = null, $options = null, $acl_override = false) {
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
-        $view = JRequest::getCmd( 'view' );
+        $view = JFactory::getApplication()->input->get( 'view' );
         $current_user = JFactory::getUser();
 
         if ((!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) && $view != 'renew_application' && !$acl_override) {
@@ -2939,9 +2939,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
                 }
 
-
-
-	            if ($assessment) {
+                if ($assessment) {
                     $files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
                 }
 
@@ -3104,7 +3102,7 @@ class EmundusControllerFiles extends JControllerLegacy
      */
     function export_zip_pcl($fnums)
     {
-        $view           = JRequest::getCmd( 'view' );
+        $view           = JFactory::getApplication()->input->get( 'view' );
         $current_user   = JFactory::getUser();
 
         if ((!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) && $view != 'renew_application')
@@ -3810,10 +3808,10 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
         JPluginHelper::importPlugin('emundus');
-        $dispatcher = JEventDispatcher::getInstance();
 
-        $status = $dispatcher->trigger('onExportFiles', array($fnums, $type));
-        $dispatcher->trigger('callEventHandler', ['onExportFiles', ['fnums' => $fnums, 'type' => $type]]);
+
+        $status = JFactory::getApplication()->triggerEvent('onExportFiles', array($fnums, $type));
+        JFactory::getApplication()->triggerEvent('callEventHandler', ['onExportFiles', ['fnums' => $fnums, 'type' => $type]]);
 
         if (is_array($status) && !in_array(false, $status)) {
             $msg = JText::_('COM_EMUNDUS_EXPORTS_FILES_EXPORTED_TO_EXTERNAL');
@@ -3866,9 +3864,9 @@ class EmundusControllerFiles extends JControllerLegacy
         $letters = $_mEval->generateLetters($fnums,$templates,$canSee,$showMode,$mergeMode);
         ob_clean();
         if ($letters) {
-            $dispatcher = JEventDispatcher::getInstance();
-            $dispatcher->trigger('onAfterGenerateLetters', ['letters' => $letters]);
-            $dispatcher->trigger('callEventHandler', ['onAfterGenerateLetters', ['letters' => $letters]]);
+
+            JFactory::getApplication()->triggerEvent('onAfterGenerateLetters', ['letters' => $letters]);
+            JFactory::getApplication()->triggerEvent('callEventHandler', ['onAfterGenerateLetters', ['letters' => $letters]]);
 
             echo json_encode((object)(array('status' => true, 'data' => $letters)));
         } else {

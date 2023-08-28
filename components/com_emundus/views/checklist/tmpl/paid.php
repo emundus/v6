@@ -1,7 +1,7 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
 
-$Itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+$Itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
 
 echo JText::_('PAYMENT_RECEIVED');
 

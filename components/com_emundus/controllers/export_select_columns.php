@@ -12,9 +12,9 @@ class EmundusControllerExport_select_columns extends JControllerLegacy {
 
 	function display($cachable = false, $urlparams = false){
 		// Set a default view if none exists
-		if ( ! JRequest::getCmd( 'view' ) ){
+		if ( ! JFactory::getApplication()->input->get( 'view' ) ){
 			$default = 'export_select_columns';
-			JRequest::setVar('view', $default );
+			JFactory::getApplication()->input->set('view', $default );
 		}
 		parent::display();
     }

@@ -20,9 +20,9 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 	echo "<script>window.setTimeout('closeme();', 1500); function closeme() { parent.SqueezeBox.close(); }</script>";
 	die('<h1><img src="'.$this->baseurl.'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("COM_EMUNDUS_SAVED").'</h1>');
 } else {
-	$student_id = JRequest::getVar('jos_emundus_evaluations___student_id', null, 'GET', 'INT',0);
-	$evaluations_id = JRequest::getVar('jos_emundus_evaluations___id', null, 'GET', 'INT',0);
-	$itemid = JRequest::getVar('Itemid', null, 'GET', 'INT',0);
+	$student_id = JFactory::getApplication()->input->get('jos_emundus_evaluations___student_id', null, 'GET', 'INT',0);
+	$evaluations_id = JFactory::getApplication()->input->get('jos_emundus_evaluations___id', null, 'GET', 'INT',0);
+	$itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'INT',0);
 
 	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
 	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');

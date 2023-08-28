@@ -29,9 +29,9 @@ class EmundusControllerExport extends JControllerLegacy
 {
     public function display($cachable = false, $urlparams = false) {
         // Set a default view if none exists
-        if ( ! JRequest::getCmd( 'view' ) ) {
+        if ( ! JFactory::getApplication()->input->get( 'view' ) ) {
             $default = 'application_form';
-            JRequest::setVar('view', $default );
+            JFactory::getApplication()->input->set('view', $default );
         }
         parent::display();
     }

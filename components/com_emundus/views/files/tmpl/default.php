@@ -12,7 +12,6 @@
  * details.
  */
 defined( '_JEXEC' ) or die( 'Restricted access' );
-JHTML::_('behavior.tooltip');
 JHTML::stylesheet('media/com_emundus/css/emundus_panel.css');
 JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.4.1/css/all.css');
 

@@ -40,9 +40,9 @@ class EmundusControllerEmail extends JControllerLegacy {
 
 	function display($cachable = false, $urlparams = false) {
 		// Set a default view if none exists
-		if ( ! JRequest::getCmd( 'view' ) ) {
+		if ( ! JFactory::getApplication()->input->get( 'view' ) ) {
 			$default = 'evaluation';
-			JRequest::setVar('view', $default );
+			JFactory::getApplication()->input->set('view', $default );
 		}
 
 		if (EmundusHelperAccess::asEvaluatorAccessLevel($this->_em_user->id)) {
@@ -56,11 +56,11 @@ class EmundusControllerEmail extends JControllerLegacy {
 		EmundusHelperFiles::clear();
 
 		$itemid=JFactory::getApplication()->getMenu()->getActive()->id;
-		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
-		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
-		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
+		$limitstart = JFactory::getApplication()->input->get('limitstart', null, 'POST', 'none',0);
+		$filter_order = JFactory::getApplication()->input->get('filter_order', null, 'POST', null, 0);
+		$filter_order_Dir = JFactory::getApplication()->input->get('filter_order_Dir', null, 'POST', null, 0);
 
-		$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
+		$this->setRedirect('index.php?option=com_emundus&view='.JFactory::getApplication()->input->get( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
 	}
 
 
@@ -91,8 +91,8 @@ class EmundusControllerEmail extends JControllerLegacy {
 		$response = ['status' => false, 'sent' => null, 'failed' => true, 'message' => JText::_( 'ACCESS_DENIED')];
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_em_user->id) || EmundusHelperAccess::asAccessAction(18, 'c', $this->_user->id)) {
-			$jinput = JFactory::getApplication()->input;
-			$fnums = $jinput->post->getString('fnums');
+		$jinput = JFactory::getApplication()->input;
+        $fnums = $jinput->post->getString('fnums');
 
 			if (!empty($fnums)) {
 				$email = $this->m_emails->sendExpertMail((array) $fnums);

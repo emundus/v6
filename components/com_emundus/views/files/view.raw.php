@@ -205,10 +205,11 @@ class EmundusViewFiles extends JViewLegacy
                         exit();
                     }
 
-                    $this->assignRef('docs', $docs);
-                    $this->assignRef('prgs', $prgs);
-                    $fnums_array = implode(',', $fnums);
-                    $this->assignRef('fnums', $fnums_array);
+	                $this->docs = $docs;
+	                $this->prgs = $prgs;
+
+	                $fnums_array = implode(',', $fnums);
+	                $this->fnums = $fnums_array;
                 } else {
                     echo JText::_('COM_EMUNDUS_ONBOARD_NOFILES');
                     exit();
@@ -236,8 +237,8 @@ class EmundusViewFiles extends JViewLegacy
 				$fnum_assoc = $m_user->getApplicantsAssoc($current_user->id);
 				$m_files->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
 
-				$this->assignRef('code', $m_files->code);
-				$this->assignRef('fnum_assoc', $m_files->fnum_assoc);
+                $this->code = $m_files->code;
+                $this->fnum_assoc = $m_files->fnum_assoc;
 
 				// get applications files
 				$users = $m_files->getUsers();

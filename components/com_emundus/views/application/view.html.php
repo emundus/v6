@@ -58,9 +58,9 @@ class EmundusViewApplication extends JViewLegacy{
 
 		$menu_params = $menu->getParams($current_menu->id);
 
-		$campaign_id 	= JRequest::getVar('campaign_id', null, 'GET', 'none', 0);
-		$rowid 			= JRequest::getVar('rowid', null, 'GET', 'none', 0);
-		$aid 			= JRequest::getVar('sid', null, 'GET', 'none', 0);
+		$campaign_id 	= JFactory::getApplication()->input->get('campaign_id', null, 'GET', 'none', 0);
+		$rowid 			= JFactory::getApplication()->input->get('rowid', null, 'GET', 'none', 0);
+		$aid 			= JFactory::getApplication()->input->get('sid', null, 'GET', 'none', 0);
 		$student 		= JFactory::getUser($aid);
 
 		$this->assignRef('student', $student);

@@ -23,9 +23,9 @@ class EmundusControllerGroups extends JControllerLegacy {
 
 	function display($cachable = false, $urlparams = false) {
 		// Set a default view if none exists
-		if ( ! JRequest::getCmd( 'view' ) ) {
+		if ( ! JFactory::getApplication()->input->get( 'view' ) ) {
 			$default = 'groups';
-			JRequest::setVar('view', $default );
+			JFactory::getApplication()->input->set('view', $default );
 		}
 		$user = JFactory::getUser();
 		$menu=JFactory::getApplication()->getMenu()->getActive();
@@ -38,9 +38,9 @@ class EmundusControllerGroups extends JControllerLegacy {
 	function clear() {
 		unset($_SESSION['s_elements']);
 		unset($_SESSION['s_elements_values']);
-		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
-		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
-		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
+		$limitstart = JFactory::getApplication()->input->get('limitstart', null, 'POST', 'none',0);
+		$filter_order = JFactory::getApplication()->input->get('filter_order', null, 'POST', null, 0);
+		$filter_order_Dir = JFactory::getApplication()->input->get('filter_order_Dir', null, 'POST', null, 0);
 		$Itemid=JFactory::getApplication()->getMenu()->getActive()->id;
 		$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$Itemid);
 	}
@@ -54,12 +54,12 @@ class EmundusControllerGroups extends JControllerLegacy {
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access))
 			die("You are not allowed to access to this page.");
 		$db = JFactory::getDBO();
-		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
-		$ag_id = JRequest::getVar('assessor_group', null, 'POST', 'none',0);
-		$au_id = JRequest::getVar('assessor_user', null, 'POST', 'none',0);
-		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
-		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
-		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
+		$ids = JFactory::getApplication()->input->get('ud', null, 'POST', 'array', 0);
+		$ag_id = JFactory::getApplication()->input->get('assessor_group', null, 'POST', 'none',0);
+		$au_id = JFactory::getApplication()->input->get('assessor_user', null, 'POST', 'none',0);
+		$limitstart = JFactory::getApplication()->input->get('limitstart', null, 'POST', 'none',0);
+		$filter_order = JFactory::getApplication()->input->get('filter_order', null, 'POST', null, 0);
+		$filter_order_Dir = JFactory::getApplication()->input->get('filter_order_Dir', null, 'POST', null, 0);
 
 		if(empty($ids) && !empty($reqids))
 			$ids = $reqids;
@@ -112,12 +112,12 @@ class EmundusControllerGroups extends JControllerLegacy {
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access))
 			die("You are not allowed to access to this page.");
 		$db = JFactory::getDBO();
-		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
-		$ag_id = JRequest::getVar('assessor_group', null, 'POST', 'none',0);
-		$au_id = JRequest::getVar('assessor_user', null, 'POST', 'none',0);
-		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
-		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
-		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
+		$ids = JFactory::getApplication()->input->get('ud', null, 'POST', 'array', 0);
+		$ag_id = JFactory::getApplication()->input->get('assessor_group', null, 'POST', 'none',0);
+		$au_id = JFactory::getApplication()->input->get('assessor_user', null, 'POST', 'none',0);
+		$limitstart = JFactory::getApplication()->input->get('limitstart', null, 'POST', 'none',0);
+		$filter_order = JFactory::getApplication()->input->get('filter_order', null, 'POST', null, 0);
+		$filter_order_Dir = JFactory::getApplication()->input->get('filter_order_Dir', null, 'POST', null, 0);
 
 		if(empty($ids) && !empty($reqids)) {
 			$ids = $reqids;
@@ -151,12 +151,12 @@ class EmundusControllerGroups extends JControllerLegacy {
 			$this->setRedirect('index.php', JText::_('You are not allowed to access to this page.'), 'error');
 			return;
 		}
-		$uid = JRequest::getVar('uid', null, 'GET', null, 0);
-		$aid = JRequest::getVar('aid', null, 'GET', null, 0);
-		$pid = JRequest::getVar('pid', null, 'GET', null, 0);
-		$limitstart = JRequest::getVar('limitstart', null, 'GET', null, 0);
-		$filter_order = JRequest::getVar('filter_order', null, 'GET', null, 0);
-		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', null, 0);
+		$uid = JFactory::getApplication()->input->get('uid', null, 'GET', null, 0);
+		$aid = JFactory::getApplication()->input->get('aid', null, 'GET', null, 0);
+		$pid = JFactory::getApplication()->input->get('pid', null, 'GET', null, 0);
+		$limitstart = JFactory::getApplication()->input->get('limitstart', null, 'GET', null, 0);
+		$filter_order = JFactory::getApplication()->input->get('filter_order', null, 'GET', null, 0);
+		$filter_order_Dir = JFactory::getApplication()->input->get('filter_order_Dir', null, 'GET', null, 0);
 
 		if(!empty($aid) && is_numeric($aid)) {
 			$db = JFactory::getDBO();
@@ -181,9 +181,9 @@ class EmundusControllerGroups extends JControllerLegacy {
 			die("You are not allowed to access to this page.");
 		$mainframe = JFactory::getApplication();
 		$db = JFactory::getDBO();
-		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
-		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
-		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
+		$limitstart = JFactory::getApplication()->input->get('limitstart', null, 'POST', 'none',0);
+		$filter_order = JFactory::getApplication()->input->get('filter_order', null, 'POST', null, 0);
+		$filter_order_Dir = JFactory::getApplication()->input->get('filter_order_Dir', null, 'POST', null, 0);
 
 		// List of evaluators
 		$query = 'SELECT eg.user_id
@@ -312,13 +312,13 @@ class EmundusControllerGroups extends JControllerLegacy {
 			die("You are not allowed to access to this page.");
 		$mainframe = JFactory::getApplication();
 		$db = JFactory::getDBO();
-		$ag_id = JRequest::getVar('mail_group', null, 'POST', 'none',0);
-		$ae_id = JRequest::getVar('mail_user', null, 'POST', 'none',0);
-		$subject = JRequest::getVar('mail_subject', null, 'POST', 'none',0);
-		$message = JRequest::getVar('mail_body', null, 'POST', 'none',0);
-		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
-		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
-		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
+		$ag_id = JFactory::getApplication()->input->get('mail_group', null, 'POST', 'none',0);
+		$ae_id = JFactory::getApplication()->input->get('mail_user', null, 'POST', 'none',0);
+		$subject = JFactory::getApplication()->input->get('mail_subject', null, 'POST', 'none',0);
+		$message = JFactory::getApplication()->input->get('mail_body', null, 'POST', 'none',0);
+		$limitstart = JFactory::getApplication()->input->get('limitstart', null, 'POST', 'none',0);
+		$filter_order = JFactory::getApplication()->input->get('filter_order', null, 'POST', null, 0);
+		$filter_order_Dir = JFactory::getApplication()->input->get('filter_order_Dir', null, 'POST', null, 0);
 
 		if ($subject == '') {
 			JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_EMAILS_YOU_MUST_PROVIDE_SUBJECT' ) );
@@ -433,8 +433,8 @@ class EmundusControllerGroups extends JControllerLegacy {
 	public function addgroups() {
 		$tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
 
-		$user = JFactory::getUser();
-        $data = JRequest::getVar('data', null, 'POST', 'none',0);
+        $user = JFactory::getUser();
+        $data = JFactory::getApplication()->input->get('data', null, 'POST', 'none',0);
 
         if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			require_once (JPATH_COMPONENT . '/models/groups.php');

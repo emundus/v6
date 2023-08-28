@@ -40,9 +40,9 @@ class EmundusControllerUser extends JControllerLegacy
     public function display($cachable = false, $urlparams = false)
     {
         // Set a default view if none exists
-        if (!JRequest::getCmd('view')) {
+        if (!JFactory::getApplication()->input->get('view')) {
             $default = 'user';
-            JRequest::setVar('view', $default);
+            JFactory::getApplication()->input->set('view', $default);
         }
 
         if ($this->_user->guest == 0)
