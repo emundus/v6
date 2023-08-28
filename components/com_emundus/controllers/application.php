@@ -966,9 +966,12 @@ class EmundusControllerApplication extends JControllerLegacy
 				$response['msg'] = JText::_('ACCESS_DENIED');
 			} else {
 				$m_application      = $this->getModel('Application');
-				$response['status'] = $m_application->renameFile($fnum, $new_name);
-
-				$response['msg'] =  $response['status'] ? JText::_('SUCCESS') : JText::_('FAILED');
+                try {
+                    $response['status'] = $m_application->renameFile($fnum, $new_name);
+                    $response['msg'] =  $response['status'] ? JText::_('SUCCESS') : JText::_('FAILED');
+                } catch (Exception $e) {
+                    $response['msg'] = $e->getMessage();
+                }
 			}
 		}
 
