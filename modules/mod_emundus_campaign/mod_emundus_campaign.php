@@ -15,31 +15,52 @@ $m_profiles = new EmundusModelProfile();
 // END INCLUDES
 
 $now = $helper->now;
-$offset = JFactory::getConfig()->get('offset');
-$sef = JFactory::getConfig()->get('sef');
+$app = Factory::getApplication();
 
-$app = JFactory::getApplication();
-$session = JFactory::getSession();
-$db = JFactory::getDbo();
+if (version_compare(JVERSION, '4.0', '>')) {
+    $config = $app->getConfig();
+    $session = $app->getSession();
+    $db = Factory::getContainer()->get('DatabaseDriver');
+    $user = $app->getIdentity();
+    $document = $app->getDocument();
+    $wa = $document->getWebAssetManager();
+    $lang_tag = $app->getLanguage()->getTag();
+} else {
+    $config = Factory::getConfig();
+    $session = Factory::getSession();
+    $db = Factory::getDbo();
+    $user = Factory::getUser();
+    $document = Factory::getDocument();
+    $lang_tag = Factory::getLanguage()->getTag();
+}
 
+$offset = $config->get('offset');
+$sef = $config->get('sef');
 
-$user = Factory::getUser();
-$e_user = JFactory::getSession()->get('emundusUser');
+$e_user = $session->get('emundusUser');
 $app_prof = $m_profiles->getApplicantsProfilesArray();
 
 if($user->guest || in_array($e_user->profile,$app_prof))
 {
-    $document = JFactory::getDocument();
     JHtml::script('media/com_emundus/js/jquery.cookie.js');
     JHtml::script('media/jui/js/bootstrap.min.js');
     if (!in_array($params->get('mod_em_campaign_layout'), ['default_tchooz', 'tchooz_single_campaign']))
     {
         JHtml::stylesheet('media/com_emundus/css/mod_emundus_campaign.css');
-        $document->addStyleSheet("modules/mod_emundus_campaign/css/mod_emundus_campaign.css");
+
+        if (version_compare(JVERSION, '4.0', '>')) {
+            $wa->registerAndUseStyle('mod_emundus_campaign','modules/mod_emundus_campaign/css/mod_emundus_campaign.css');
+        } else {
+            $document->addStyleSheet("modules/mod_emundus_campaign/css/mod_emundus_campaign.css");
+        }
     }
     else
     {
-        $document->addStyleSheet("modules/mod_emundus_campaign/css/mod_emundus_campaign_tchooz.css");
+        if (version_compare(JVERSION, '4.0', '>')) {
+            $wa->registerAndUseStyle('mod_emundus_campaign','modules/mod_emundus_campaign/css/mod_emundus_campaign_tchooz.css');
+        } else {
+            $document->addStyleSheet("modules/mod_emundus_campaign/css/mod_emundus_campaign_tchooz.css");
+        }
     }
 
     // PARAMS
@@ -53,7 +74,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     $mod_em_campaign_intro                = $params->get('mod_em_campaign_intro', null);
     if (empty($mod_em_campaign_intro) && $params->get('mod_em_campaign_layout') == 'default_tchooz')
     {
-        $mod_em_campaign_intro = $m_settings->getArticle(JFactory::getLanguage()->getTag(), 52)->introtext;
+        $mod_em_campaign_intro = $m_settings->getArticle($lang_tag, 52)->introtext;
     }
     $mod_em_campaign_show_search             = $params->get('mod_em_campaign_show_search', 1);
     $mod_em_campaign_show_results            = $params->get('mod_em_campaign_show_results', 1);
@@ -126,7 +147,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     } elseif (empty($order)) {
         $session->set('order_time', $mod_em_campaign_order_type);
     }
-    if (isset($group_by) && !empty($group_by))
+    if (!empty($group_by))
     {
         $session->set('group_by', $group_by);
     }
@@ -134,7 +155,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     {
         $session->set('group_by', $mod_em_campaign_groupby);
     }
-    if (isset($codes) && !empty($codes))
+    if (!empty($codes))
     {
         $session->set('code', $codes);
     }
@@ -142,7 +163,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     {
         $session->clear('code');
     }
-    if (isset($categories_filt) && !empty($categories_filt))
+    if (!empty($categories_filt))
     {
         $session->set('category', $categories_filt);
     }
@@ -198,12 +219,12 @@ if($user->guest || in_array($e_user->profile,$app_prof))
 
     if (!empty($program_code))
     {
-        $condition .= ' AND pr.code IN (' . implode(',', array_map('trim', explode(',', $db->quote($program_code)))) . ')';
+        $condition .= ' AND pr.code IN(' . implode(',', array_map('trim', explode(',', $db->quote($program_code)))) . ')';
     }
 
     if (!empty($codes))
     {
-        $condition .= ' AND pr.code IN (' . implode(',', $db->quote(explode(',', $codes))) . ')';
+        $condition .= ' AND pr.code IN(' . implode(',', $db->quote(explode(',', $codes))) . ')';
     }
     if (!empty($categories_filt))
     {
@@ -294,8 +315,6 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     }
 
     jimport('joomla.html.pagination');
-    $session = JFactory::getSession();
-
     $paginationCurrent = new JPagination($helper->getTotalCurrent(), $session->get('limitstartCurrent'), $session->get('limit'));
     $paginationPast    = new JPagination($helper->getTotalPast(), $session->get('limitstartPast'), $session->get('limit'));
     $paginationFutur   = new JPagination($helper->getTotalFutur(), $session->get('limitstartFutur'), $session->get('limit'));

@@ -19,7 +19,12 @@ class modEmundusUserDropdownHelper {
 	static function getList($menu_name) {
 
 		$app = Factory::getApplication();
-        $is_sef = (bool)Factory::getApplication()->getConfig()->get('sef');
+		if (version_compare(JVERSION, '4.0', '>')) {
+			$config = $app->getConfig();
+		} else {
+			$config = Factory::getConfig();
+		}
+        $is_sef = (bool)$config->get('sef');
 		$menu = $app->getMenu();
 
 		$items = $menu->getItems('menutype', $menu_name);

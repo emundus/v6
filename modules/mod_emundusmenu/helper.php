@@ -27,8 +27,14 @@ class modEmundusMenuHelper
 	static function getList(&$params,$default_menutype = null)
 	{
 		$user = JFactory::getUser();
-		$app = JFactory::getApplication();
-		$is_sef = (bool)Factory::getApplication()->getConfig()->get('sef');
+		$app = Factory::getApplication();
+		if (version_compare(JVERSION, '4.0', '>'))
+		{
+			$config = $app->getConfig();
+		} else {
+			$config = Factory::getConfig();
+		}
+		$is_sef = (bool)$config->get('sef');
 		$menu = $app->getMenu();
 
 		// If no active menu, use default

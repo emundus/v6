@@ -15,6 +15,8 @@
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
+use Joomla\CMS\Factory;
+
 /**
  * eMundus Component Query Helper
  *
@@ -2192,6 +2194,14 @@ class EmundusHelperFiles
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
         $m_users = new EmundusModelUsers();
 
+		$app = Factory::getApplication();
+	    if (version_compare(JVERSION, '4.0', '>'))
+	    {
+		    $config = $app->getConfig();
+		} else {
+		    $config = Factory::getConfig();
+	    }
+
         $menu = @JFactory::getApplication()->getMenu();
         // If no active menu, use default
         $active = ($menu->getActive()) ? $menu->getActive() : $menu->getDefault();
@@ -2284,7 +2294,7 @@ class EmundusHelperFiles
                             break;
 
                         default:
-                            $is_sef = (bool)JFactory::getApplication()->getConfig()->get('sef');
+                            $is_sef = (bool)$config->get('sef');
                             if ($is_sef) {
                                 $item->flink = 'index.php?Itemid='.$item->id;
                             } else {
