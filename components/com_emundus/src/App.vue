@@ -27,7 +27,7 @@ import Attachments from "./views/Attachments.vue";
 import Files from './views/Files/Files.vue';
 
 import fileService from "./services/file.js";
-import list_v2 from "./views/list_v2";
+import list_v2 from "./views/list.vue";
 import addcampaign from "./views/addCampaign"
 import addemail from "./views/addEmail"
 import addformnextcampaign from "./views/addFormNextCampaign"

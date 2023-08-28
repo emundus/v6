@@ -174,11 +174,11 @@ class EmundusControllerForm extends JControllerLegacy {
 
     public function duplicateform() {
         $user = JFactory::getUser();
-	    $tab = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
+	    $tab = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
         if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 	        $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->getInt('id');
+	        $data = $jinput->getInt('id', 0);
 
 			if (!empty($data)) {
 				$form = $this->m_form->duplicateForm($data);
