@@ -5363,12 +5363,13 @@ class EmundusModelApplication extends JModelList
 		$tab_id = 0;
 
 		if (!empty($user_id) && !empty($name) && strlen($name) <= 255 && strlen($name) >= 3) {
-			/*
-			 * a-zA-Z0-9: Alphanumeric characters (both uppercase and lowercase).
+			/**
+			 * \d: digits
 			 * \s: Space character.
 			 * \p{L}: Unicode letters.
+             * u :  unicode characters accepted
 			 */
-			$regex = '/^[a-zA-Z0-9\s\p{L}\'"\-]+$/u';
+			$regex = '/^[\d\s\p{L}\'"\-]{3,255}$/u';
 
 			if (preg_match($regex, $name)) {
 				$db = JFactory::getDbo();
@@ -5536,8 +5537,9 @@ class EmundusModelApplication extends JModelList
 	public function renameFile($fnum, $new_name){
 		$result = false;
 
-		if (!empty($fnum) && !empty($new_name) && strlen($new_name) <= 255 && strlen($new_name) >= 3) {
-			$regex = '/^[a-zA-Z0-9\s\p{L}\'"\-]+$/';
+        $new_name = trim($new_name);
+		if (!empty($fnum) && !empty($new_name)) {
+            $regex = '/^[\d\s\p{L}\'"\-]{3,255}$/u';
 
 			if (preg_match($regex, $new_name)) {
 				$db = JFactory::getDbo();
@@ -5553,7 +5555,9 @@ class EmundusModelApplication extends JModelList
 				} catch (Exception $e) {
 					JLog::add('Failed to rename file ' . $fnum . ' with name ' . $new_name . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 				}
-			}
+			} else {
+                throw new Exception(JText::_('COM_EMUNDUS_INVALID_NAME'));
+            }
 		}
 
 		return $result;
