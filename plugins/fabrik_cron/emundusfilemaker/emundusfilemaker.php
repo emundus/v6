@@ -206,8 +206,6 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
     public function createUserIfNotExist($email, $name, $singleFieldData)
     {
         $email = str_replace([' ','\r'], '', $email);
-        $fieldData = $singleFieldData->fieldData;
-        $check_if_file_not_already_exist = $this->checkIfFileNotAlreadyExist($fieldData->uuid);
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -222,26 +220,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
         if (!empty($user)) {
             return $user->id;
         } else {
-            $email = str_replace([' ','\r'], '', $email);
-            if (!empty($check_if_file_not_already_exist)) {
-                $user_id = intval($check_if_file_not_already_exist->applicant_id);
 
-                $query->clear()
-                    ->update($db->quoteName('jos_users'))
-                    ->set($db->quoteName('email') . ' = ' . $db->quote($email))
-                    ->set($db->quoteName('username') . ' = ' . $db->quote($email))
-                    ->where($db->quoteName('id') . ' = ' . $user_id);
-
-                $db->setQuery($query);
-
-                try {
-                    $db->execute();
-                } catch (Exception $e) {
-
-                    JLog::add("Failed to update user jos_users" . $e->getMessage(), JLog::ERROR, 'com_emundus');
-                }
-
-            } else {
                 $profile = intval($this->getParams()->get('profile'));
 
                 $m_users = new EmundusModelUsers;
@@ -288,11 +267,30 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                 }
 
                 return $user_id;
-            }
+            //}
         }
 
 
     }
+
+    public function updateFileApplicantId($file, $user_id,$fnum)
+    {
+        $fieldData = $file->fieldData;
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->clear()
+            ->update($db->quoteName('#__emundus_campaign_candidature'))
+            ->set($db->quoteName('applicant_id') . ' = ' . $user_id)
+            ->where($db->quoteName('uuid') . "=" . $db->quote($fieldData->uuid));
+        $db->setQuery($query);
+
+        try {
+            $db->execute();
+        } catch (Exception $e) {
+            JLog::add("[FILEMAKER CRON] Failed to update file applicant id $fnum - $user_id" . $e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+    }
+
 
     public function createSingleFile($singleFieldData, $user_id, $mapped_columns, $filemaker):void
     {
@@ -346,6 +344,12 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
             $admin_step = $this->getParams()->get('admin_step');
             $mail_trigger_state = $this->getParams()->get('mail_trigger_state');
+
+            if(intval($checkIfFileNotAlreadyExist->applicant_id) != intval($user_id)){
+
+                $this->updateFileApplicantId($singleFieldData, $user_id,$checkIfFileNotAlreadyExist->fnum);
+                $m_message->sendEmail($checkIfFileNotAlreadyExist->fnum, $this->getParams()->get('mail_template'));
+            }
 
             if ($checkIfFileNotAlreadyExist->uuidConnect !== $fieldData->uuidConnect) {
 
