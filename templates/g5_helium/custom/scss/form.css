@@ -593,7 +593,11 @@
                 input {
                   accent-color: var(--em-form-checkbox-color-checked);
                   transform: scale(var(--em-form-checkbox-scale));
-                  margin-right: var(--em-form-checkbox-input-margin);
+                }
+                span {
+                  box-decoration-break: clone;
+                  -webkit-box-decoration-break: clone;
+                  padding-left: var(--em-form-checkbox-input-margin);
                 }
               }
             }

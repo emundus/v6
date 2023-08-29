@@ -104,7 +104,7 @@ if (!empty($this->custom_title)) :?>
 <?php if (count($this->attachments) > 0) :?>
 
     <div id="attachment_list" class="em-attachmentList em-repeat-card p-6">
-        <h2><?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_TITLE') ?></h2>
+        <h2 class="after-em-border after:bg-red-800"><?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_TITLE') ?></h2>
         <div class="alert alert-info flex items-center gap-1 mt-1">
             <span class="material-icons">info</span>
             <div>
@@ -140,7 +140,7 @@ if (!empty($this->custom_title)) :?>
             }
             $div = '<div id="a'.$attachment->id.'" style="position: relative;top: -65px;"></div>
                 <fieldset id="a'.$attachment->id.'" class="em-fieldset-attachment mt-3">
-                <div id="l'.$attachment->id.'" class="em-flex-row">';
+                <div id="l'.$attachment->id.'" class="flex items-center em-ml-8 em-mt-8">';
             if ($attachment->nb == 0 ) {
                 if($this->show_info_legend)
                 {
@@ -609,7 +609,7 @@ if (!empty($this->custom_title)) :?>
       <div class="col-md-<?= (int)(12/$this->show_nb_column); ?>">
     <?php
         if ($attachment_list_mand != '') {
-           echo '<div id="attachment_list_mand" class="em-container-attachments em-w-100"><h3>'.JText::_('COM_EMUNDUS_ATTACHMENTS_MANDATORY_DOCUMENTS').'</h3>'.$attachment_list_mand.'</div>';
+           echo '<div id="attachment_list_mand" class="em-container-attachments em-w-100"><h3 class="after-em-border after:bg-neutral-500">'.JText::_('COM_EMUNDUS_ATTACHMENTS_MANDATORY_DOCUMENTS').'</h3>'.$attachment_list_mand.'</div>';
         }
     ?>
       </div>
@@ -621,7 +621,7 @@ if (!empty($this->custom_title)) :?>
       <div class="col-md-<?= (int)(12/$this->show_nb_column); ?>">
     <?php
         if ($attachment_list_opt != '') {
-           echo '<div id="attachment_list_opt" class="em-container-attachmentsOpt em-mt-16 em-w-100"><h3>'.JText::_('COM_EMUNDUS_ATTACHMENTS_OPTIONAL_DOCUMENTS').'</h3>'.$attachment_list_opt.'</div>';
+           echo '<div id="attachment_list_opt" class="em-container-attachmentsOpt em-mt-16 em-w-100"><h3 class="after-em-border after:bg-neutral-500">'.JText::_('COM_EMUNDUS_ATTACHMENTS_OPTIONAL_DOCUMENTS').'</h3>'.$attachment_list_opt.'</div>';
         }
     ?>
       </div>

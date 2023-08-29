@@ -1184,7 +1184,11 @@ form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-flu
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-fluid .fabrikgrid_checkbox label input {
                   accent-color: var(--em-form-checkbox-color-checked);
                   transform: scale(var(--em-form-checkbox-scale));
-                  margin-right: var(--em-form-checkbox-input-margin);
+                }
+form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-fluid .fabrikgrid_checkbox label span {
+                  box-decoration-break: clone;
+                  -webkit-box-decoration-break: clone;
+                  padding-left: var(--em-form-checkbox-input-margin);
                 }
 /** PANEL **/
 form.fabrikForm .plg-panel .fabrikElement .fabrikinput {
