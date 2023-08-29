@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Language\Text;
+
 $form      = $this->form;
 $model     = $this->getModel();
 $groupTmpl = $model->editable ? 'group' : 'group_details';

@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Language\Text;
+
 $d             = $displayData;
 $underHeadings = $d->filterMode === 3 || $d->filterMode === 4;
 $clearFiltersClass = $d->gotOptionalFilters ? "clearFilters hasFilters" : "clearFilters";
@@ -32,7 +34,7 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
 			?>
             <div class="filtertable table table-striped">
                 <div class="em-flex-row em-flex-space-between em-mb-24 em-filter-intro">
-                    <h4><?php echo FText::_('COM_FABRIK_FILTER') ?></h4>
+                    <h4><?php echo Text::_('COM_FABRIK_FILTER') ?></h4>
 	                <?php if ($d->showClearFilters) : ?>
                         <a class="<?php echo $clearFiltersClass; ?>" href="#">
                             <span class="material-icons-outlined">filter_alt_off</span>
@@ -46,7 +48,7 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
 		            ?>
                     <div class="em-mb-12">
 			            <?php if (array_key_exists('all', $d->filters)) { ?>
-                            <p class="em-mb-4 em-text-neutral-800"><?php echo FText::_('COM_FABRIK_ADVANCED_SEARCH') ?></p>
+                            <p class="em-mb-4 em-text-neutral-800"><?php echo Text::_('COM_FABRIK_ADVANCED_SEARCH') ?></p>
 				            <?php echo $d->filters['all']->element;
 			            };
 			            ?>
@@ -119,7 +121,7 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
             <div>
                 <input type="button" class="btn-info btn fabrik_filter_submit button"
                        style="width: -webkit-fill-available;"
-                       value="<?php echo FText::_('COM_FABRIK_GO'); ?>" name="filter">
+                       value="<?php echo Text::_('COM_FABRIK_GO'); ?>" name="filter">
             </div>
         </div>
 	<?php

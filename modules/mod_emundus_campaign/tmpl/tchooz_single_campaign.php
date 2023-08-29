@@ -1,20 +1,35 @@
 <?php
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+
 header('Content-Type: text/html; charset=utf-8');
 
-$app = JFactory::getApplication();
-$user = JFactory::getUser();
-$lang = JFactory::getLanguage();
-$locallang = $lang->getTag();
+$app = Factory::getApplication();
 
-if ($locallang == "fr-FR") {
+if (version_compare(JVERSION, '4.0', '>')) {
+	$config = $app->getConfig();
+	$session = $app->getSession();
+	$db = Factory::getContainer()->get('DatabaseDriver');
+	$user = $app->getIdentity();
+	$document = $app->getDocument();
+	$wa = $document->getWebAssetManager();
+	$lang_tag = $app->getLanguage()->getTag();
+} else {
+	$config = Factory::getConfig();
+	$session = Factory::getSession();
+	$db = Factory::getDbo();
+	$user = Factory::getUser();
+	$document = Factory::getDocument();
+	$lang_tag = Factory::getLanguage()->getTag();
+}
+
+if ($lang_tag == "fr-FR") {
     setlocale(LC_TIME, 'fr', 'fr_FR', 'french', 'fra', 'fra_FRA', 'fr_FR.ISO_8859-1', 'fra_FRA.ISO_8859-1', 'fr_FR.utf8', 'fr_FR.utf-8', 'fra_FRA.utf8', 'fra_FRA.utf-8');
 } else {
     setlocale (LC_ALL, 'en_GB');
 }
 
-$config = JFactory::getConfig();
 $site_offset = $config->get('offset');
 $site_name = $config->get('sitename');
 
@@ -170,6 +185,7 @@ if($currentCampaign->apply_online == 0){
             <div class="em-mt-24">
                 <?php $index = 1; ?>
                 <?php foreach ($mod_em_campaign_show_registration_steps as $key => $step): ?>
+                        <?php if($step->mod_em_campaign_show_registration_steps_text == '') continue; ?>
                     <span class="em-applicant-text-color em-flex-row em-font-size-14 em-mb-16"><span class="mod_emundus_campaign__details_step_count"><?php echo $index ?></span><?php echo $step->mod_em_campaign_show_registration_steps_text ?></span>
                     <?php $index++; ?>
                 <?php endforeach;?>
@@ -227,11 +243,12 @@ if($currentCampaign->apply_online == 0){
 
     window.onload = function() {
         document.getElementById('campaign_tab').classList.add('current-tab');
-        <?php if (in_array('faq', $modules_tabs)) : ?>
+
+		<?php if (is_array($modules_tabs) && in_array('faq', $modules_tabs)) : ?>
         document.getElementById('faq').style.display = 'none';
         <?php endif; ?>
 
-        <?php if (in_array('documents', $modules_tabs)) : ?>
+		<?php if (is_array($modules_tabs) && in_array('documents', $modules_tabs)) : ?>
         document.getElementById('documents').style.display = 'none';
         if(typeof document.getElementsByClassName('campaign-documents')[0] != 'undefined') {
             document.getElementsByClassName('campaign-documents')[0].parentElement.style.display = 'none';

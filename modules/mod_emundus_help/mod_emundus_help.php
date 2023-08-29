@@ -9,8 +9,23 @@
 // no direct access
 defined('_JEXEC') or die;
 
-$document = JFactory::getDocument();
-$document->addStyleSheet("modules/mod_emundus_help/style/mod_emundus_help.css" );
+use Joomla\CMS\Factory;
+
+$app = Factory::getApplication();
+if (version_compare(JVERSION, '4.0', '>'))
+{
+	$lang_tag = $app->getLanguage()->getTag();
+	$document = $app->getDocument();
+	$wa = $document->getWebAssetManager();
+	$wa->useScript('jquery');
+	$wa->registerAndUseStyle('mod_emundus_help','modules/mod_emundus_help/style/mod_emundus_help.css');
+} else {
+	$lang_tag = JFactory::getLanguage()->getTag();
+	$document = JFactory::getDocument();
+	$document->addStyleSheet("modules/mod_emundus_help/style/mod_emundus_help.css" );
+}
+
+
 
 // Get release version
 $xmlDoc = new DOMDocument();
@@ -19,7 +34,7 @@ if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml'
 }
 //
 
-$current_lang = substr(JFactory::getLanguage()->getTag(), 0 , 2);
+$current_lang = substr($lang_tag, 0 , 2);
 
 require JModuleHelper::getLayoutPath('mod_emundus_help', 'default');
 

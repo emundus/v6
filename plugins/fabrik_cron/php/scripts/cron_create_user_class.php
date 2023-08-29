@@ -19,6 +19,9 @@
  * @author hugh.messenger@gmail.com
  *
  */
+
+use Joomla\CMS\Language\Text;
+
 class CronCreateUsers
 {
 
@@ -195,7 +198,7 @@ class CronCreateUsers
 				{
 					if ($app->isAdmin())
 					{
-						$app->enqueueMessage(FText::_('CANNOT SAVE THE USER INFORMATION'), 'message');
+						$app->enqueueMessage(Text::_('CANNOT SAVE THE USER INFORMATION'), 'message');
 						$app->enqueueMessage($user->getError(), 'error');
 					}
 
@@ -208,7 +211,7 @@ class CronCreateUsers
 				{
 					if ($app->isAdmin())
 					{
-						$app->enqueueMessage(FText::_('CANNOT SAVE THE USER INFORMATION'), 'message');
+						$app->enqueueMessage(Text::_('CANNOT SAVE THE USER INFORMATION'), 'message');
 						$app->enqueueMessage($user->getError(), 'error');
 					}
 

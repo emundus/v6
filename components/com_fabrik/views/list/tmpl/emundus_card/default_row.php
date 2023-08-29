@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Language\Text;
+
 $notes = $this->params->get('note', '');
 if(!empty($notes)){
     $notes = explode(',',$notes);
@@ -36,7 +38,7 @@ if(!empty($notes)){
                 <?php else : ?>
                     <?php if (strpos($this->headingClass[$heading]['class'],'displayed')) : ?>
                         <div class="em-mt-12 em-p-8-12">
-                            <label class="em-font-weight-600 em-mb-0-important"><?php echo FText::_($label) ?></label>
+                            <label class="em-font-weight-600 em-mb-0-important"><?php echo Text::_($label) ?></label>
                             <p class="em-mt-8 <?php echo $this->cellClass[$heading]['class']?>" <?php echo $style?>>
                                 <?php echo isset($this->_row->data) ? $this->_row->data->$heading : '';?>
                             </p>
@@ -70,7 +72,7 @@ if(!empty($notes)){
             <?php if (isset($this->_row->data) && strpos($this->cellClass[$heading]['class'],'summary') === false) : ?>
                 <?php if (strpos($this->headingClass[$heading]['class'],'displayed')) : ?>
                     <div class="em-p-8-12">
-                        <label class="em-font-weight-600 em-mb-0-important"><?php echo FText::_($label) ?></label>
+                        <label class="em-font-weight-600 em-mb-0-important"><?php echo Text::_($label) ?></label>
                         <p class="em-mt-8 <?php echo $this->cellClass[$heading]['class']?>" <?php echo $style?>>
                             <?php echo isset($this->_row->data) ? $this->_row->data->$heading : '';?>
                         </p>

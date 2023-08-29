@@ -8,6 +8,8 @@
 
 // No direct access
 
+use Joomla\CMS\Component\ComponentHelper;
+
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
@@ -884,26 +886,16 @@ class EmundusModelTranslations extends JModelList
 	 */
 	public function getDefaultLanguage()
 	{
+
+		$lang = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
+
 		$query = $this->_db->getQuery(true);
-
-		require_once(JPATH_SITE . DS . 'administrator' . DS . 'components' . DS . 'com_languages' . DS . 'models' . DS . 'installed.php');
-		$m_installed         = new LanguagesModelInstalled;
-		$languages_installed = $m_installed->getData();
-
-		foreach ($languages_installed as $language)
-		{
-			if ($language->published == 1)
-			{
-				$default = $language->language;
-				break;
-			}
-		}
 
 		try
 		{
 			$query->select('lang_code,title_native')
 				->from($this->_db->quoteName('#__languages'))
-				->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($default));
+				->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($lang));
 			$this->_db->setQuery($query);
 
 			return $this->_db->loadObject();
@@ -988,10 +980,7 @@ class EmundusModelTranslations extends JModelList
 			if (!empty($default))
 			{
 				$old_lang = $this->getDefaultLanguage();
-				require_once(JPATH_SITE . DS . 'administrator' . DS . 'components' . DS . 'com_languages' . DS . 'models' . DS . 'installed.php');
-				$m_installed = new LanguagesModelInstalled;
-
-				$m_installed->publish($lang_code);
+				ComponentHelper::getParams('com_languages')->set('site', $lang_code);
 
 				$query->update($this->_db->quoteName('#__languages'))
 					->set($this->_db->quoteName('published') . ' = ' . $this->_db->quote($published))

@@ -144,10 +144,22 @@ JText::script('COM_EMUNDUS_CAMPAIGNS_PIN');
 JText::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_CAMPAIGN_PINNED');
 JText::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_CAMPAIGN_PINNED_TEXT');
 
-$lang = JFactory::getLanguage();
+use Joomla\CMS\Factory;
+
+if (version_compare(JVERSION, '4.0', '>'))
+{
+    $lang = Factory::getApplication()->getLanguage();
+	$user = Factory::getApplication()->getIdentity();
+} else
+{
+	$lang = Factory::getLanguage();
+	$user = Factory::getUser();
+}
+
 $short_lang = substr($lang->getTag(), 0 , 2);
 $current_lang = $lang->getTag();
 $languages = JLanguageHelper::getLanguages();
+
 if (count($languages) > 1) {
     $many_languages = '1';
     require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
@@ -157,7 +169,7 @@ if (count($languages) > 1) {
     $many_languages = '0';
     $default_lang = $current_lang;
 }
-$user = JFactory::getUser();
+
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
 $sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
 

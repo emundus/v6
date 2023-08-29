@@ -11,6 +11,8 @@
 
 $d = $displayData;
 
+use Joomla\CMS\Language\Text;
+
 // Initialize variables
 $limits = array();
 $values = array();
@@ -37,7 +39,7 @@ foreach ($values as $v)
 
 if ($d->showAllOption == true)
 {
-	$limits[] = JHTML::_('select.option', '-1', FText::_('COM_FABRIK_ALL'));
+	$limits[] = JHTML::_('select.option', '-1', Text::_('COM_FABRIK_ALL'));
 }
 
 $selected   = $d->viewAll ? '-1' : $d->limit;

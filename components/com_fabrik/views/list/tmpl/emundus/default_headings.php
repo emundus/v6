@@ -11,11 +11,14 @@
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\CMS\Language\Text;
+
 $btnLayout  = $this->getModel()->getLayout('fabrik-button');
 $layoutData = (object) array(
 	'class' => 'btn-info fabrik_filter_submit button',
 	'name' => 'filter',
-	'label' => FabrikHelperHTML::icon('icon-filter', FText::_('COM_FABRIK_GO'))
+	'label' => FabrikHelperHTML::icon('icon-filter', Text::_('COM_FABRIK_GO'))
 );
 ?>
 	<tr class="fabrik___heading">

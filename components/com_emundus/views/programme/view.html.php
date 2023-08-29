@@ -12,6 +12,8 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
+use Joomla\CMS\Factory;
+
 /**
  * View class for a list of Emundus.
  */
@@ -24,12 +26,11 @@ class EmundusViewProgramme extends JViewLegacy
     {
 
         // Get data from the model
-        //$items = $this->get('Items');
         $model = $this->getModel();
 
-        $app = JFactory::getApplication();
+        $app = Factory::getApplication();
         $jinput = $app->input;
-        $menu 			= @JFactory::getApplication()->getMenu();
+        $menu 			= $app->getMenu();
         $current_menu  	= $menu->getActive();
         $menu_params 	= $menu->getParams(@$current_menu->id);
 

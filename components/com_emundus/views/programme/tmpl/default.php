@@ -1,9 +1,17 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Factory;
+
 JHTML::stylesheet('media/com_emundus/css/emundus.css' );
 JHTML::stylesheet('media/com_emundus/css/emundus_programme.css' );
-$config = JFactory::getConfig();
+
+if (version_compare(JVERSION, '4.0', '>'))
+{
+	$config = Factory::getApplication()->getConfig();
+} else {
+	$config = Factory::getConfig();
+}
 $site_offset = $config->get('offset');
 ?>
 
@@ -29,8 +37,7 @@ $site_offset = $config->get('offset');
 <?php } ?>
 
 <script>
-    jQuery(document).ready(function() {
-        var titre = "<?php echo $this->campaign['label']; ?>";
-        jQuery(document).prop('title', titre);
+    document.addEventListener('DOMContentLoaded', function() {
+        document.title = "<?php echo $this->campaign['label']; ?>";
     });
 </script>
