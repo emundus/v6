@@ -94,7 +94,9 @@ JFactory::getSession()->set('application_layout', 'evaluation');
     });
 
     function resizeIframe(obj) {
-        obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+        if(obj.contentWindow.document.body) {
+            obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+        }
     }
 
     window.ScrollToTop = function() {

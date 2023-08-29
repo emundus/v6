@@ -52,7 +52,7 @@ $limits = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 15 => 15,
                                         <?= strip_tags(JText::_($v)); ?>
                                     </strong>
 
-                                <?php elseif ($kl == 'check') :?>
+                                <?php elseif ($kl == 'check' && empty($this->cfnum)) :?>
                                 <div class="selectContainer" id="selectContainer">
                                     <div class="selectPage">
                                         <input type="checkbox" value="-1" id="em-check-all" class="em-hide em-check">

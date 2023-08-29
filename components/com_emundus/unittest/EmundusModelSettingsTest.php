@@ -144,4 +144,19 @@ class EmundusModelSettingsTest extends TestCase
 			$this->assertNotEmpty($articles[0]->alias, 'Si le paramètre du module n\'est pas défini on récupère un alias par défaut');
 		}
 	}
+
+	public function testpublishArticle() {
+		$articles = $this->m_settings->getRgpdArticles();
+
+		foreach ($articles as $article) {
+			if(empty($article->id))
+			{
+				$publish = $this->m_settings->publishArticle(0, $article->alias);
+				$this->assertTrue($publish, 'La dépublication d\'un article RGPD fonctionne');
+			} else {
+				$publish = $this->m_settings->publishArticle(0, $article->id);
+				$this->assertTrue($publish, 'La dépublication d\'un article RGPD fonctionne');
+			}
+		}
+	}
 }

@@ -10,16 +10,8 @@
           "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_TEXT"
         },
         {
-          "value": 3,
-          "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_EMAIL"
-        },
-        {
           "value": 5,
           "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_LINK"
-        },
-        {
-          "value": 6,
-          "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_NUMBER"
         }
       ],
       "helptext": "",

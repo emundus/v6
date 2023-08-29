@@ -2450,14 +2450,17 @@ try {
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TITLE','Voulez-vous vraiment quitter le formulaire ?');
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TITLE','Do you really want to leave the form?', 'override', null, null, null, 'en-GB');
 
-				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TEXT','Les saisies sur l’étape en cours ne seront pas conservées. Seules les saisies validées en fin d’étape sont sauvegardées.');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TEXT','Les données/informations saisies sur l’étape en cours ne seront pas conservées. Seules les saisies validées en fin d’étape sont sauvegardées.');
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TEXT','Entries for the current stage will not be saved. Only entries validated at the end of the stage will be saved.', 'override', null, null, null, 'en-GB');
 
-				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CONFIRM','Quitter et reprendre plus tard');
-				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CONFIRM','Quit and resume later', 'override', null, null, null, 'en-GB');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CONFIRM','Quitter sans enregistrer');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CONFIRM','Quit without saving', 'override', null, null, null, 'en-GB');
 
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CANCEL','Retour');
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CANCEL','Go back', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_USERS_EXCEPTIONS_INTRO','Utilisateurs ayant le droit de compléter des formulaires en dehors des périodes de candidature. Utile pour tester un environnement de candidature avant la publication d\'une phase !');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_USERS_EXCEPTIONS_INTRO','Users with the right to complete forms outside the application periods. Useful for testing an application environment before publishing a phase!', 'override', null, null, null, 'en-GB');
 
 				$query->clear()
 					->select('id')
@@ -2503,6 +2506,45 @@ try {
 					->where('namekey = ' . $db->quote('onboarding_lists'));
 				$db->setQuery($query);
 				$db->execute();
+
+				$query->clear()
+					->select('form_id')
+					->from($db->quoteName('#__emundus_setup_formlist'))
+					->where($db->quoteName('type') . ' LIKE ' . $db->quote('profile'));
+				$db->setQuery($query);
+				$form_id = $db->loadResult();
+
+				$query->clear()
+					->select('group_id')
+					->from($db->quoteName('#__fabrik_formgroup'))
+					->where($db->quoteName('form_id') . ' = ' . $db->quote($form_id));
+				$db->setQuery($query);
+				$groups = $db->loadColumn();
+
+				if(!empty($groups))
+				{
+					$query->clear()
+						->select('id,params')
+						->from($db->quoteName('#__fabrik_elements'))
+						->where($db->quoteName('group_id') . ' IN (' . implode(',', $groups) . ')')
+						->andWhere($db->quoteName('name') . ' IN (' . $db->quote('nationality') . ',' . $db->quote('default_language') . ')');
+					$db->setQuery($query);
+					$elements = $db->loadObjectList();
+
+					foreach ($elements as $element)
+					{
+						$params = json_decode($element->params, true);
+						$params['bootstrap_class'] = 'input-large';
+
+						$query->clear()
+							->update($db->quoteName('#__fabrik_elements'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+							->where($db->quoteName('id') . ' = ' . $db->quote($element->id));
+						$db->setQuery($query);
+						$db->execute();
+					}
+				}
+
 			}
 		}
 
