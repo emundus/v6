@@ -427,6 +427,15 @@ if ($allowed_attachments !== true) {
                     '</div>';
             }
         },
+        onItemAdd: function(value, $item) {
+            let email = value.substring(value.indexOf(":") + 1);
+            email = email.trim();
+
+            const regex = /^\S{1,64}@\S{1,255}\.\S{1,255}$/;
+            if (!regex.test(email)) {
+                $selectize_cc[0].selectize.removeItem(value);
+            }
+        }
     });
 
     // add bcc
@@ -445,6 +454,15 @@ if ($allowed_attachments !== true) {
                     '</div>';
             }
         },
+        onItemAdd: function(value, $item) {
+            let email = value.substring(value.indexOf(":") + 1);
+            email = email.trim();
+
+            const regex = /^\S{1,64}@\S{1,255}\.\S{1,255}$/;
+            if (!regex.test(email)) {
+                $selectize_cc[0].selectize.removeItem(value);
+            }
+        }
     });
 
     // get attachments by profiles (fnums)
