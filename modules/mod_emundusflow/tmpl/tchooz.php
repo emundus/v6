@@ -28,7 +28,6 @@ $now = $dateTime->format('Y-m-d H:i:s');
         display: flex !important;
         align-items: center;
         gap: 4px;
-        background: white;
     }
     .btn-primary.mod_emundus_flow___print{
         background: white;
