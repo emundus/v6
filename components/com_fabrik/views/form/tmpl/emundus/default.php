@@ -57,11 +57,13 @@ endif;
         </div>
 
 
-        <div class="em-form-intro mt-4">
-            <?php
-            echo trim($form->intro);
-            ?>
-        </div>
+	    <?php if(!empty($form->intro)) : ?>
+            <div class="em-form-intro mt-4">
+                <?php
+                echo trim($form->intro);
+                ?>
+            </div>
+        <?php endif; ?>
     </div>
     <form method="post" <?php echo $form->attribs ?>>
 		<?php
