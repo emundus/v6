@@ -122,13 +122,13 @@ p,
   padding: 0 20px;
 }
 
-.view-form.com_fabrik:not(.applicant-form):not(.mon-profil) #g-container-main .g-container {
+.view-form.com_fabrik:not(.applicant-form):not(.mon-profil):not(.view-registration) #g-container-main .g-container {
   width: auto;
   left: 38px;
   position: relative;
 }
 
-.view-form.com_fabrik:not(.applicant-form) #g-container-main .g-container {
+.view-form.com_fabrik:not(.applicant-form):not(.view-registration) #g-container-main .g-container {
   padding-left: 5%;
   padding-right: 5%;
 }

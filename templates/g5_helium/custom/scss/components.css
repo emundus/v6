@@ -14,7 +14,7 @@
         font-family: var(--em-coordinator-font);
         font-size: var(--em-coordinator-font-size) !important;
 
-        &:hover {
+        &:hover, &:focus, &:active {
             background-color: var(--neutral-0);
             color: var(--em-coordinator-primary-color);
             border: 1px solid var(--em-coordinator-primary-color);
@@ -43,7 +43,7 @@
         p,span {
             color: var(--em-tertiary-color);
         }
-        &:hover {
+        &:hover, &:focus, &:active {
             background: var(--em-tertiary-color);
             color: var(--neutral-0);
             p,span {

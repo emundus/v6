@@ -547,13 +547,13 @@ video {
         font-family: var(--em-coordinator-font);
         font-size: var(--em-coordinator-font-size) !important;
     }
-.em-primary-button:hover {
+.em-primary-button:hover, .em-primary-button:focus, .em-primary-button:active {
             background-color: var(--neutral-0);
             color: var(--em-coordinator-primary-color);
             border: 1px solid var(--em-coordinator-primary-color);
             text-decoration: none;
         }
-.em-primary-button:hover .material-icons {
+.em-primary-button:hover .material-icons, .em-primary-button:focus .material-icons, .em-primary-button:active .material-icons {
                 color: var(--em-coordinator-primary-color) !important;
             }
 .em-primary-button .material-icons {
@@ -569,11 +569,11 @@ video {
 .btn-tertiary p,.btn-tertiary span {
             color: var(--em-tertiary-color);
         }
-.btn-tertiary:hover {
+.btn-tertiary:hover, .btn-tertiary:focus, .btn-tertiary:active {
             background: var(--em-tertiary-color);
             color: var(--neutral-0);
         }
-.btn-tertiary:hover p,.btn-tertiary:hover span {
+.btn-tertiary:hover p,.btn-tertiary:hover span,.btn-tertiary:focus p,.btn-tertiary:focus span,.btn-tertiary:active p,.btn-tertiary:active span {
                 color: var(--neutral-0);
             }
 /** APPLICANT **/
