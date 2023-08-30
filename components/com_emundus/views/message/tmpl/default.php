@@ -433,7 +433,7 @@ if ($allowed_attachments !== true) {
 
             const regex = /^\S{1,64}@\S{1,255}\.\S{1,255}$/;
             if (!regex.test(email)) {
-                $selectize_cc[0].selectize.removeItem(value);
+                this.removeItem(value);
             }
         }
     });
@@ -460,7 +460,7 @@ if ($allowed_attachments !== true) {
 
             const regex = /^\S{1,64}@\S{1,255}\.\S{1,255}$/;
             if (!regex.test(email)) {
-                $selectize_cc[0].selectize.removeItem(value);
+                this.removeItem(value);
             }
         }
     });
