@@ -6,7 +6,7 @@
     <div class="em-modal-header em-w-100 em-h-50 em-p-12-16 em-bg-main-900 em-flex-row">
       <div class="em-flex-row em-pointer em-gap-8" id="evaluation-modal-close">
         <div class="em-w-max-content em-flex-row">
-          <span class="material-icons-outlined em-font-size-16" onclick="swal.close()" style="color: white">arrow_back</span>
+          <span class="material-icons-outlined em-font-size-16" onclick="document.querySelector('body').style.overflow= 'visible';swal.close()" style="color: white">arrow_back</span>
         </div>
         <span class="em-text-neutral-500">|</span>
         <p class="em-font-size-14" style="color: white" v-if="file.applicant_name != ''">
@@ -112,7 +112,7 @@ export default {
   }),
 
   created(){
-    document.querySelector('body.com_fabrik').style.overflow= 'hidden';
+    document.querySelector('body').style.overflow= 'hidden';
     var r = document.querySelector(':root');
     let ratio_array = this.$props.ratio.split('/');
     r.style.setProperty('--attachment-width', ratio_array[0]+'%');
