@@ -415,25 +415,32 @@ class EmundusModelApplication extends JModelList
 
     }
 
-    public function deleteTag($id_tag, $fnum)
+    public function deleteTag($id_tag, $fnum, $user_id = null)
     {
         $query = $this->_db->getQuery(true);
-        // Get the tag for logs
+
+		// Get the tag for logs
         $query->select($this->_db->quoteName('label'))
             ->from($this->_db->quoteName('#__emundus_setup_action_tag'))
             ->where($this->_db->quoteName('id') . ' = ' . $id_tag);
         $this->_db->setQuery($query);
         $deleted_tag = $this->_db->loadResult();
 
-        // Log the tag in the eMundus logging system.
-        $logsStd = new stdClass();
+		$query->clear()
+			->delete($this->_db->quoteName('#__emundus_tag_assoc'))
+			->where($this->_db->quoteName('id_tag') . ' = ' . $id_tag)
+			->andWhere($this->_db->quoteName('fnum') . ' like ' . $this->_db->Quote($fnum));
 
-        $query = 'DELETE FROM #__emundus_tag_assoc WHERE id_tag = ' . $id_tag . ' AND fnum like ' . $this->_db->Quote($fnum);
+		if (!empty($user_id)) {
+			$query->andWhere($this->_db->quoteName('user_id') . ' = ' . $user_id);
+		}
+
         $this->_db->setQuery($query);
         $res = $this->_db->execute();
 
-        // Log the action in the eMundus logging system.
         if ($res) {
+	        // Log the tag in the eMundus logging system.
+	        $logsStd = new stdClass();
             $logsStd->details = $deleted_tag;
             $logsParams = array('deleted' => [$logsStd]);
             $user_id = JFactory::getUser()->id;

@@ -97,28 +97,43 @@ JFactory::getSession()->set('application_layout', 'tag');
     $(document).off('click', '.tags .comment-text .btn.btn-danger.btn-xs');
 
     function deleteTag(id, fnum) {
-        url = 'index.php?option=com_emundus&controller=application&task=deletetag';
-        $.ajax({
-            type: 'GET',
-            url: url,
-            dataType: 'json',
-            data: ({fnum: fnum, id_tag: id}),
-            success: function (result) {
-                if (result.status) {
+        if (id && fnum) {
+            let formData = new FormData();
+            formData.append('fnum', fnum);
+            formData.append('id_tag', id);
 
-                    $('.tags li[id=' + id + ']').empty();
-                    $('.tags li[id=' + id + ']').append(result.msg);
+            fetch('index.php?option=com_emundus&controller=application&task=deletetag', {
+                method: 'POST',
+                body: formData
+            }).then((response) => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Server response wasn\'t OK');
+                }
+            }).then((result) => {
+                if (result.status) {
+                    document.querySelectorAll('.tags li[id="' + id + '"]').forEach(e => {
+                        if (e.querySelector('.material-icons') !== null) {
+                            // remove all children of e
+                            while (e.firstChild) {
+                                e.removeChild(e.firstChild);
+                            }
+
+                            e.innerText = result.msg;
+                        }
+                    });
+
                     var nbCom = parseInt($('.panel-default.widget .panel-heading .label.label-info').text().trim())
                     nbCom--;
                     $('.panel-default.widget .panel-heading .label.label-info').html(nbCom);
                 } else {
                     $('#form').append('<p class="text-danger"><strong>' + result.msg + '</strong></p>');
                 }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(jqXHR.responseText);
-            }
-        });
+            }).catch((error) => {
+                console.error('Error:', error);
+            });
+        }
     }
 
     $(document).ready(function () {
