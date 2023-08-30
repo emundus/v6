@@ -1408,6 +1408,12 @@ class EmundusModelsettings extends JModelList {
 					->where($db->quoteName('id') . ' = ' . $db->quote($footer->id));
 				$db->setQuery($query);
 				$result = $db->execute();
+
+                if ($result) {
+                    require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+                    $h_update = new EmundusHelperUpdate();
+                    $h_update->clearJoomlaCache();
+                }
 			}
 		} catch (Exception $e) {
 			JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
