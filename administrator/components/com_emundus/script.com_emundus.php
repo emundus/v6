@@ -2545,6 +2545,12 @@ try {
 					}
 				}
 
+				$query->clear()
+					->delete($db->quoteName('#__modules'))
+					->where($db->quoteName('title') . ' LIKE ' . $db->quote('Spotlight eMundus'));
+				$db->setQuery($query);
+				$db->execute();
+
 			}
 		}
 

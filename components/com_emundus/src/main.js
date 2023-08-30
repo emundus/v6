@@ -64,6 +64,11 @@ if (attachmentElement || filesElement) {
             data[attr.name] = attr.value;
         });
 
+        if(data.fnum !== '' && filesElement)
+        {
+            componentName = 'application';
+        }
+
         new Vue({
             el: elementId,
             store,

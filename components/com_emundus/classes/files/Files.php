@@ -322,6 +322,13 @@ class Files
 	public function checkAccess($fnum): bool
 	{
 		$can_access = false;
+
+		if(empty($this->files['fnums'])){
+			require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+
+			$can_access = \EmundusHelperAccess::asAccessAction(1,'r',$this->current_user->id,$fnum);
+		}
+
 		if(in_array($fnum,$this->files['fnums'])){
 			$can_access = true;
 		}
