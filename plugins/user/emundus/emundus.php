@@ -27,15 +27,15 @@ class plgUserEmundus extends JPlugin
      * Method is called after user data is deleted from the database
      *
      * @param   array    $user    Holds the user data
-     * @param   boolean  $succes  True if user was succesfully stored in the database
+     * @param   boolean  $success  True if user was succesfully stored in the database
      * @param   string   $msg     Message
      *
      * @return  boolean
      * @throws Exception
      * @since   1.6
      */
-    public function onUserAfterDelete($user, $succes, $msg) {
-        if (!$succes) {
+    public function onUserAfterDelete($user, $success, $msg) {
+        if (!$success) {
             return false;
         }
 
@@ -72,6 +72,7 @@ class plgUserEmundus extends JPlugin
                 continue;
             }
         }
+
         $dir = EMUNDUS_PATH_ABS.$user['id'].DS;
         if (!$dh = @opendir($dir))
             return false;
@@ -85,14 +86,17 @@ class plgUserEmundus extends JPlugin
 
 	    // Send email to inform applicant
 	    if($this->params->get('send_email_delete', 0) == 1) {
-		    require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
-		    $c_messages = new EmundusControllerMessages();
+		    require_once(JPATH_SITE . '/components/com_emundus/controllers/messages.php');
+            require_once (JPATH_SITE.'/components/com_emundus/helpers/emails.php');
+
+            $c_messages = new EmundusControllerMessages();
 		    $post       = [
-			    'NAME' => $user['name']
+			    'NAME' => $user['name'],
+                'LOGO' => EmundusHelperEmails::getLogo(),
+                'SITE_NAME' => JFactory::getConfig()->get('sitename'),
 		    ];
 		    $c_messages->sendEmailNoFnum($user['email'], 'delete_user', $post);
-	    }
-	    //
+        }
 
         return true;
     }
