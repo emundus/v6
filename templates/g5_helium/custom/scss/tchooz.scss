@@ -812,6 +812,9 @@ input:focus + .em-slider {
 .em-w-100{
   width: 100%;
 }
+.swal2-popup.em-w-100 {
+    width: 100% !important;
+}
 
 .em-w-40-vw{
   width: 40vw;

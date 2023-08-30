@@ -6611,3 +6611,14 @@ tbody .el-table__row:nth-child(odd){
 }
 
 /**** END ****/
+
+.swal2-container.em-application-modal-container {
+  padding: unset;
+  overflow-y: hidden !important;
+  .swal2-popup.swal2-modal {
+    padding: unset;
+  }
+  .swal2-header {
+    display: none;
+  }
+}

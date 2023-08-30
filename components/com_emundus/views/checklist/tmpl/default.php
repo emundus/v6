@@ -150,7 +150,7 @@ if (!empty($this->custom_title)) :?>
                 $div .= '<span class="material-icons-outlined em-green-500-color em-mr-4">check_circle</span>';
             }
             $div .= '<h4 class="em-mt-0-important">'.$attachment->value .'</h4>';
-            $div .= '</div><p class="em-ml-8 em-mt-8">'.$attachment->description .'</p><div>';
+            $div .= '</div><p class="em-ml-8 em-mt-8" style="white-space: pre-line">'.$attachment->description .'</p><div>';
 
 	        if ($attachment->has_sample && !empty($attachment->sample_filepath)) {
 		        $div .= '<div class="em-ml-8 em-mb-8 em-flex-row">

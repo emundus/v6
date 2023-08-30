@@ -10,6 +10,9 @@
         color: var(--neutral-600);
       }
     }
+    .groupintro {
+      white-space: pre-line;
+    }
     @media all and (max-width: 480px) {
       margin-top: unset !important;
     }
