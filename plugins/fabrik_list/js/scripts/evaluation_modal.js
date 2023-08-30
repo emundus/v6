@@ -34,6 +34,11 @@ if(rows) {
                     container: 'em-application-modal-container',
                     popup: 'em-w-100',
                 },
+            }).then(() => {
+                const filters = document.querySelector('.fabrik_filter_submit');
+                if(filters) {
+                    filters.click();
+                }
             });
 
             loadJS(window.location.origin + '/media/com_emundus_vue/chunk-vendors_emundus.js');
