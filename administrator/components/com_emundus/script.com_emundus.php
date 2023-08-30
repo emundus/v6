@@ -2551,7 +2551,9 @@ try {
 				$db->setQuery($query);
 				$db->execute();
 
-			}
+                EmundusHelperUpdate::insertTranslationsTag('COM_USERS_RESET_REQUEST_FAILED', 'Si un compte est associé à cette adresse, alors vous avez reçu un email pour changer de mot de passe', 'override', null, 'fabrik_groups', 'label', 'fr-FR');
+                EmundusHelperUpdate::insertTranslationsTag('COM_USERS_RESET_REQUEST_FAILED', 'If an account is associated with this address, you have received an email to change your password.', 'override', null, 'fabrik_groups', 'label', 'en-GB');
+            }
 		}
 
 		return $succeed;
