@@ -28,8 +28,8 @@
         margin: 16px auto;
       }
       @media all and (min-width: 1440px) {
-        flex: 0 0 33%;
-        max-width: 33%;
+        flex: 0 0 40%;
+        max-width: 40%;
         margin: 16px auto;
       }
 
