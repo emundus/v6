@@ -23,8 +23,7 @@
 }
 
 .mod_emundus_campaign__intro{
-    width: 66%;
-    max-width: 750px;
+    width: 70%;
 }
 
 .mod_emundus_campaign__intro *{
@@ -564,7 +563,7 @@ a.em-blue-400-color:hover {
         margin-top: var(--m-16);
     }
     .mod_emundus_campaign__intro{
-        width: 100%;
+        width: 89%;
     }
     .mod_emundus_campaign__pinned_campaign{
         grid-template-columns: repeat(1, 1fr);
