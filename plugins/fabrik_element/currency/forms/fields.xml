@@ -59,7 +59,7 @@
 						   label="PLG_ELEMENT_CURRENCY_MINIMAL_NUMBER"
 						   required="1"
 						   min="0.00"
-						   max="99999999.98"
+						   max="999999999.98"
 						   default="0.00"
 						   step="1"
 					/>
@@ -69,7 +69,7 @@
 						   label="PLG_ELEMENT_CURRENCY_MAXIMAL_NUMBER"
 						   required="1"
 						   min="0.00"
-						   max="99999999.99"
+						   max="999999999.99"
 						   default="10000.00"
 						   step="1"
 					/>
