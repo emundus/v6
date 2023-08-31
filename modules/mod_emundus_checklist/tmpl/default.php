@@ -59,7 +59,7 @@ if($show_preliminary_documents && !empty($preliminary_documents)): ?>
         <span id="mod_emundus_checklist___expand_icon" class="material-icons-outlined">expand_more</span>
     </div>
 
-    <div id="mod_emundus_checklist___content" class="em-mt-24">
+    <div id="mod_emundus_checklist___content" class="em-mt-24 mod_emundus_checklist___content_closed">
         <?php if ($show_forms == 1 && count($forms) > 0) : ?>
             <?php
             $index_doc = !empty($mandatory_documents) && $show_mandatory_documents ? count($forms) + 1 : count($forms);
