@@ -254,10 +254,10 @@ $details_view = array_search('view=details',$url);
         if(typeof content !== 'undefined'){
             if(!content.classList.contains('mod_emundus_checklist___content_closed')){
                 content.classList.add('mod_emundus_checklist___content_closed');
-                icon.style.transform = 'rotate(-90deg)';
+                icon.style.transform = 'rotate(0deg)';
             } else {
                 content.classList.remove('mod_emundus_checklist___content_closed');
-                icon.style.transform = 'rotate(0deg)';
+                icon.style.transform = 'rotate(180deg)';
             }
         }
 
