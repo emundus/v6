@@ -963,6 +963,15 @@
     color: var(--neutral-900) !important;
   }
 
+  @media all and (max-width: 479px) {
+    .fabrik_element___emundus_file_upload_parent .btn-upload p {
+      flex-direction: column;
+    }
+    .fabrik_element___emundus_file_upload_parent .fabrik_element___file_upload_formats {
+      word-break: break-all;
+    }
+  }
+
   .fabrik_element___emundus_file_upload_parent .em-deleteFile {
     margin-left: 10px;
   }
