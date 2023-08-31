@@ -196,19 +196,28 @@ JFactory::getSession()->set('application_layout', 'evaluation');
     }
 
     $(document).on('click', '#em_delete_evals', function(e) {
+        var checked = getEvalChecked();
 
-        if (e.handle === true) {
-            e.handle = false;
-            var checked = getEvalChecked();
-
-            if (checked.length > 0) {
-                var res = confirm("<?php echo JText::_('COM_EMUNDUS_EVALUATIONS_CONFIRM_DELETE_SELETED_EVALUATIONS')?>");
-                if (res) {
+        if (checked.length > 0) {
+            Swal.fire({
+                title: "<?php echo JText::_('COM_EMUNDUS_EVALUATIONS_CONFIRM_DELETE_SELETED_EVALUATIONS')?>",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: "<?php echo JText::_('JYES') ?>",
+                cancelButtonText: "<?php echo JText::_('JNO') ?>",
+                reverseButtons: true,
+                customClass: {
+                    title: 'em-swal-title',
+                    confirmButton: 'em-swal-confirm-button',
+                    cancelButton: 'em-swal-cancel-button'
+                }
+            }).then((result) => {
+                if (result.value) {
                     var url = $(this).attr('link');
 
                     $('#em-modal-actions .modal-body').empty();
                     $('#em-modal-actions .modal-body').append('<div><img src="' + loadingLine + '" alt="' +
-                    Joomla.JText._('COM_EMUNDUS_LOADING') + '"/></div>');
+                        Joomla.JText._('COM_EMUNDUS_LOADING') + '"/></div>');
                     $('#em-modal-actions .modal-footer').hide();
                     $('#em-modal-actions .modal-dialog').addClass('modal-lg');
                     $('#em-modal-actions .modal').show();
@@ -240,9 +249,20 @@ JFactory::getSession()->set('application_layout', 'evaluation');
                         }
                     });
                 }
-            } else {
-                alert("<?php echo JText::_('COM_EMUNDUS_EVALUATIONS_YOU_MUST_SELECT_EVALUATIONS')?>");
-            }
+            });
+        } else {
+            Swal.fire({
+                title: "<?php echo JText::_('COM_EMUNDUS_EVALUATIONS_YOU_MUST_SELECT_EVALUATIONS')?>",
+                type: 'warning',
+                showCancelButton: false,
+                confirmButtonText: "<?php echo JText::_('CONFIRM') ?>",
+                reverseButtons: true,
+                customClass: {
+                    title: 'em-swal-title',
+                    confirmButton: 'em-swal-confirm-button',
+                    actions: 'em-swal-single-action'
+                }
+            });
         }
     });
 </script>
