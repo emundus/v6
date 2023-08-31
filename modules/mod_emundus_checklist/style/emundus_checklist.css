@@ -38,7 +38,11 @@
     font-family: var(--em-applicant-font);
 }
 .mod_emundus_checklist___attachment_links{
-    color: black;
+    color: var(--neutral-900);
+}
+
+.mod_emundus_checklist___attachment_links:hover{
+    color: var(--neutral-700);
 }
 
 .mod_emundus_checklist #mod_emundus_checklist___expand_icon{
