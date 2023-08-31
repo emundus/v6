@@ -2,12 +2,6 @@ requirejs(['fab/fabrik'], function () {
     var removedFabrikFormSkeleton = false;
     var formDataChanged = false;
 
-    var form = document.getElementsByTagName('form')[0];
-
-    form.addEventListener("input", function () {
-        console.log("Form has changed!");
-    });
-
     Fabrik.addEvent('fabrik.form.loaded', function (form) {
         if (!removedFabrikFormSkeleton) {
             removeFabrikFormSkeleton();
@@ -25,11 +19,14 @@ requirejs(['fab/fabrik'], function () {
 
         var links = [];
         var checklist_items = document.querySelectorAll('.mod_emundus_checklist a');
+        var logo = document.querySelectorAll('#header-a a');
         var menu_items = document.querySelectorAll('#header-b a');
         var user_items = document.querySelectorAll('#userDropdown a');
         var flow_items = document.querySelectorAll('.mod_emundus_flow___intro a');
+        var footer_items = document.querySelectorAll('#g-footer a');
+        var back_button_form = document.querySelectorAll('.fabrikActions .goback-btn');
 
-        links = [...checklist_items, ...menu_items, ...user_items, ...flow_items];
+        links = [...checklist_items, ...menu_items, ...user_items, ...flow_items, ...logo, ...footer_items, ...back_button_form];
 
         for(var i = 0, len = links.length; i < len; i++) {
             links[i].onclick = (e) => {
