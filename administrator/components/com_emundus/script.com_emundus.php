@@ -2553,6 +2553,17 @@ try {
 
                 EmundusHelperUpdate::insertTranslationsTag('COM_USERS_RESET_REQUEST_FAILED', 'Si un compte est associé à cette adresse, alors vous avez reçu un email afin de réinitialiser votre mot de passe', 'override', null, 'fabrik_groups', 'label', 'fr-FR');
                 EmundusHelperUpdate::insertTranslationsTag('COM_USERS_RESET_REQUEST_FAILED', 'If an account is associated with this address, you have received an email to reset your password.', 'override', null, 'fabrik_groups', 'label', 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_GO','Rechercher');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_GO','Search', 'override', null, null, null, 'en-GB');
+
+				$query->clear()
+					->update($db->quoteName('#__menu'))
+					->set($db->quoteName('published') . ' = 1')
+					->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_emundus&view=application&format=raw&layout=logs'));
+				$db->setQuery($query);
+				$db->execute();
+
             }
 		}
 

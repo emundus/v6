@@ -49,7 +49,27 @@ requirejs(['fab/fabrik'], function () {
                     }).then((result) => {
                         if(result.value)
                         {
-                            window.location.href = e.target.href;
+                            let href = window.location.origin+'/index.php';
+                            // If click event target is a direct link
+                            if(typeof e.target.href !== 'undefined')
+                            {
+                                href = e.target.href;
+                            }
+                            // If click event target is a child of a link
+                            else
+                            {
+                                e = e.target;
+                                let attempt = 0;
+                                do {
+                                    e = e.parentNode;
+                                } while(typeof e.href === 'undefined' && attempt++ < 5);
+
+                                if(typeof e.href !== 'undefined') {
+                                    href = e.href;
+                                }
+                            }
+
+                            window.location.href = href;
                         }
                     });
                 }
