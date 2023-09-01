@@ -386,6 +386,19 @@ async function checkIfSomeoneIsEditing(fnum) {
     }
 }
 
+function hideItems(selectors){
+    if (selectors.length > 0) {
+        selectors.forEach(function (selector) {
+            const selectedEl = document.querySelector(selector);
+
+            if (selectedEl) {
+                selectedEl.classList.add('em-hide');
+                selectedEl.style.display = 'none';
+            }
+        });
+    }
+}
+
 function openFiles(fnum, page = 0, vue = false) {
     checkIfSomeoneIsEditing(fnum.fnum);
 
@@ -5093,12 +5106,12 @@ $(document).ready(function() {
                     reloadActions('files', undefined, false);
 
                 case 'em-mini-file':
+                    hideItems(['#em-appli-menu', '#em-synthesis', '#em-assoc-files', '.em-hide', '#em-last-open']);
+
                     $.ajaxQ.abortAll();
                     $('#em-appli-block').remove();
                     $('.em-close-minimise').remove();
                     $('.em-open-files').remove();
-                    $('.em-hide').hide();
-                    $('#em-last-open').show();
                     $('#em-last-open .list-group .list-group-item').removeClass('active');
                     $('#em-files-filters').show();
                     $('.em-check:checked').prop('checked', false);
