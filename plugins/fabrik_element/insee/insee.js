@@ -148,9 +148,6 @@ define(['jquery', 'fab/element'],
                                     }
                                 });
 
-                                // We prepare the data to prefill the field
-                                if (data_to_insert.length > 0) {
-
                                     // We search the element to fill
                                     let item_to_fill = item[1].insee_fabrik_element;
                                     if (repeatNum !== false) {
@@ -160,6 +157,10 @@ define(['jquery', 'fab/element'],
                                     // We get the element from Fabrik
                                     let element_to_fill = this.form.elements.get(item_to_fill);
 
+                                // We prepare the data to prefill the field
+                                let empty_datas = data_to_insert.every(element => element == null)
+
+                                if (data_to_insert.length > 0 && !data_to_insert.includes('[ND]') && !empty_datas) {
                                     // We check if the element is a date or a birthday
                                     if (element_to_fill.plugin === 'birthday' || item[1].insee_property_type === 'date') {
                                         let date = new Date(data_to_insert.join(''));
@@ -227,6 +228,12 @@ define(['jquery', 'fab/element'],
                                         element_to_fill.set(tva_number);
                                     } else {
                                         element_to_fill.set(data_to_insert.join(''));
+                                    }
+                                } else {
+                                    let htmlElement = document.querySelector('#' + element_to_fill.baseElementId);
+                                    if(htmlElement.hasAttribute('readonly')){
+                                        htmlElement.removeAttribute('readonly')
+                                        htmlElement.classList.remove('readonly')
                                     }
                                 }
                             });
