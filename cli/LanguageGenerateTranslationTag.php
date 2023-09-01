@@ -32,8 +32,6 @@ require_once JPATH_LIBRARIES . '/cms.php';
 
 define(DS, DIRECTORY_SEPARATOR);
 
-// dependance
-
 
 /**
  * Cron job to trash expired cache data.
@@ -57,18 +55,53 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
         $this->generateTranslationTag((int)$args[1]);
     }
 
-    private function generateTranslationTag($profile_id) {
+    private function generateTranslationTag($profile_id)
+    {
 
         require_once JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'form.php';
         $languages = $this->getPlatformLanguages();
+        $forms = $this->getFormsByProfileId($profile_id);
+
+        //var_dump($forms);
 
         $fileEndname = '.override.ini';
-        $file = parse_ini_file(JPATH_SITE.DS. 'language'.DS.'overrides'.DS.$languages[0].$fileEndname);
 
-        var_dump($file);
+        foreach($languages as $language)
+        {
+            $file_content = parse_ini_file(JPATH_SITE . DS . 'language' . DS . 'overrides' . DS . $language . $fileEndname);
 
+            if ($file_content)
+            {
+                foreach ($forms as $form)
+                {
+                    $id = $form->id;
+
+                    $label = $this->getInfoFromId($id, 'label', 'fabrik_forms');
+                    var_dump($label);
+                }
+            }
+        }
     }
 
+    private function getInfoFromId($id, $info, $table)
+    {
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select($db->quoteName($info))
+            ->from($db->quoteName('#__'.$table))
+            ->where($db->quoteName('id') . ' ='.$id);
+
+        $db->setQuery($query);
+
+        try {
+            return $db->loadResult();
+        } catch (Exception $e) {
+            return false;
+        }
+    }
 
     private function getPlatformLanguages() : array {
 
@@ -89,7 +122,8 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
         }
     }
 
-    private function getFormsByProfileId($profile_id) {
+    private function getFormsByProfileId($profile_id)
+    {
 
         if (empty($profile_id)) {
             return false;
