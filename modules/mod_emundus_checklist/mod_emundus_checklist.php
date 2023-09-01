@@ -14,10 +14,28 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Factory;
+
+$app = Factory::getApplication();
+
+if(version_compare(JVERSION, '4.0','>'))
+{
+	$document = $app->getDocument();
+	$wa = $document->getWebAssetManager();
+	$wa->registerAndUseStyle('mod_emundus_checklist', 'modules/mod_emundus_checklist/style/emundus_checklist.css');
+
+	$user = $app->getSession()->get('emundusUser');
+	$db = JFactory::getContainer()->get('DatabaseDriver');
+} else {
 $document = JFactory::getDocument();
 $document->addStyleSheet('modules/mod_emundus_checklist/style/emundus_checklist.css');
 
 $user = JFactory::getSession()->get('emundusUser');
+	$db = JFactory::getDBO();
+}
+
+$query = $db->getQuery(true);
+
 
 if (isset($user->fnum) && !empty($user->fnum)) {
     require_once(dirname(__FILE__).DS.'helper.php');
@@ -34,9 +52,6 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $m_profile = new EmundusModelProfile();
     $m_files = new EmundusModelFiles();
     $m_emails = new EmundusModelEmails();
-
-    $db = JFactory::getDBO();
-    $app = JFactory::getApplication();
 
     $jinput = $app->input;
     $option = $jinput->get('option');
@@ -76,11 +91,10 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
                 // See if applicant has uploaded the required scolarship form.
                 try {
-
-                    $query = 'SELECT count(id) FROM #__emundus_uploads
-								WHERE attachment_id = ' . $scholarship_document . '
-								AND fnum LIKE ' . $db->Quote($user->fnum);
-
+					$query->select('count(id)')
+						->from($db->quoteName('#__emundus_uploads'))
+						->where($db->quoteName('attachment_id') . ' = ' . $db->quote($scholarship_document))
+						->andWhere($db->quoteName('fnum') . ' LIKE ' . $db->quote($user->fnum));
                     $db->setQuery($query);
                     $uploaded_document = $db->loadResult();
 
@@ -123,7 +137,11 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     }
 
     $menuid = $app->getMenu()->getActive()->id;
-    $query='SELECT id, link FROM #__menu WHERE alias like "checklist%" AND menutype like "%'.$user->menutype.'"';
+	$query->clear()
+		->select('id,link')
+		->from($db->quoteName('#__menu'))
+		->where($db->quoteName('alias') . ' LIKE ' . $db->quote('checklist%'))
+		->andWhere($db->quoteName('menutype') . ' LIKE ' . $db->quote('%' . $user->menutype));
     $db->setQuery( $query );
     $itemid = $db->loadAssoc();
 
@@ -211,7 +229,6 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $attachments_progress = $m_application->getAttachmentsProgress($user->fnum);
     $forms_progress 	= $m_application->getFormsProgress($user->fnum);
 
-    $app = JFactory::getApplication();
     $offset = $app->get('offset', 'UTC');
     $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
     $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
