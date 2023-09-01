@@ -41,6 +41,8 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                 this.mapLayer.addLayer(L.marker(e.latlng));
                 this.update(e.latlng.lat + ',' + e.latlng.lng);
                 this.mapContainer.setView(e.latlng, 13);
+
+                Fabrik.fireEvent('fabrik.emundus_geolocation.update', [this, e.latlng.lat + ',' + e.latlng.lng]);
             }
         });
 
