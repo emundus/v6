@@ -912,7 +912,8 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 }
 
 #filters #quick .selectize-control  {
-    width: 85%;
+    width: 100%;
+    display: flex;
 }
 
 #filters #quick .selectize-input {

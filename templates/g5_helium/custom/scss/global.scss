@@ -516,8 +516,7 @@ footer#g-footer {
   width: 100vw;
   position: relative;
   z-index: 1;
-  padding: 20px;
-  //margin-top: 75px !important;
+  padding: 20px !important;
   transition: all 0.3s ease-in-out;
 }
 
@@ -2616,9 +2615,9 @@ label[for='clear-search'] img:hover:focus {
 #filters #quick.form-group input#search.btn.btn-sm.btn-info {
   background-color: transparent;
   color: var(--neutral-600);
-  border: none;
-  font-size: 19px !important;
-  padding-right: 3px !important;
+  height: auto;
+  padding: 0 !important;
+  border-radius: 0 !important;
 
   &:hover,
   &:active,

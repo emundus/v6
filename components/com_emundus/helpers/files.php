@@ -1144,7 +1144,7 @@ class EmundusHelperFiles
         // Quick filter
        $filters = '<div id="filters">
                  <p>'.JText::_('COM_EMUNDUS_FILTERS_RAPID_SEARCH').'</p>
-                    <div id="quick" class="form-group">
+                    <div id="quick" class="form-group flex items-center gap-2">
                         <input type="text" id="input-tags" class="input-tags demo-default" value="'.$cs.'" placeholder="'.JText::_('COM_EMUNDUS_ACTIONS_SEARCH').' ...">
                        <input value="&#xf002" type="button" class="btn btn-sm btn-info" id="search" style="font-family: \'FontAwesome\';" title="'.JText::_('COM_EMUNDUS_ACTIONS_SEARCH_BTN').'"/>'.
 
