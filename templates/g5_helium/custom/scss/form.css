@@ -545,6 +545,10 @@
       .fabrikSubElementContainer {
         width: fit-content;
         min-width: 40%;
+        @media all and (max-width: 479px) {
+          display: flex;
+          flex-wrap: wrap;
+        }
         .fabrikgrid_radio {
           @apply py-1;
           @apply mb-1;
@@ -1102,7 +1106,7 @@
     align-items: center;
   }
 
-  form.fabrikForm .fabrikActions .justify-between div:first-of-type) {
+  form.fabrikForm .fabrikActions .justify-between div:first-of-type {
     align-self: flex-start;
     margin-left: 20px;
   }

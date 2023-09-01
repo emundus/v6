@@ -6,7 +6,7 @@
     align-items: center;
   }
 
-  form.fabrikForm .fabrikActions .justify-between div:not(.em-submit-form-button):nth-child(1) {
+  form.fabrikForm .fabrikActions .justify-between div:first-of-type {
     align-self: flex-start;
     margin-left: 20px;
   }
@@ -588,7 +588,8 @@ video {
 @media all and (max-width: 480px) {
     .com_fabrik #g-sidebar {
         position: static;
-        padding-top: 0
+        padding-top: 0;
+        padding-bottom: 24px
     }
       }
 .com_fabrik .popover:not(.clockpicker-popover) {
@@ -1080,6 +1081,12 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer {
         width: fit-content;
         min-width: 40%;
       }
+@media all and (max-width: 479px) {
+      form.fabrikForm .plg-radiobutton .fabrikSubElementContainer {
+          display: flex;
+          flex-wrap: wrap
+      }
+        }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio {
   padding-top: var(--em-spacing-1);
   padding-bottom: var(--em-spacing-1);
