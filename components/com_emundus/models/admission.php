@@ -848,7 +848,7 @@ class EmundusModelAdmission extends JModelList
         $eMConfig 	= JComponentHelper::getParams('com_emundus');
 
         $current_menu = $app->getMenu()->getActive();
-        $menu_params = $current_menu->params;
+        $menu_params = $current_menu->getParams();
         $em_blocks_names = explode(',', $menu_params->get('em_blocks_names'));
 
         $query = 'select jecc.fnum, ss.step, ss.value as status, ss.class as status_class, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name ';

@@ -10,17 +10,15 @@
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-/*
-if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
-    use PhpOffice\PhpWord\Exception\rootException;
-}
-*/
+
 jimport('joomla.application.component.model');
 require_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
 require_once(JPATH_SITE.'/components/com_emundus/helpers/files.php');
 require_once(JPATH_SITE.'/components/com_emundus/helpers/list.php');
 require_once(JPATH_SITE.'/components/com_emundus/models/logs.php');
 require_once(JPATH_SITE.'/components/com_emundus/models/users.php');
+
+use Joomla\CMS\Factory;
 
 /**
  * Class EmundusModelFiles
@@ -66,17 +64,29 @@ class EmundusModelFiles extends JModelLegacy
     public function __construct() {
         parent::__construct();
 
-        $db = JFactory::getDbo();
-        $mainframe = JFactory::getApplication();
+	    $mainframe = Factory::getApplication();
+
+		if(version_compare(JVERSION, '4.0', '>')) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$current_user = $mainframe->getIdentity();
+			$language = $mainframe->getLanguage();
+			$session = $mainframe->getSession();
+		} else {
+			$db = Factory::getDbo();
+			$current_user = Factory::getUser();
+			$language = Factory::getLanguage();
+			$session = JFactory::getSession();
+		}
+
+	    $this->locales = substr($language->getTag(), 0 , 2);
 
         JPluginHelper::importPlugin('emundus');
 
         // Get current menu parameters
-        $current_user = JFactory::getUser();
-        $menu = @JFactory::getApplication()->getMenu();
+        $menu = $mainframe->getMenu();
         $current_menu = $menu->getActive();
 
-        $Itemid = @JFactory::getApplication()->input->getInt('Itemid', $current_menu->id);
+        $Itemid = $mainframe->input->getInt('Itemid', $current_menu->id);
         $menu_params = $menu->getParams($Itemid);
 		$this->use_module_filters = boolval($menu_params->get('em_use_module_for_filters', false));
 
@@ -87,15 +97,11 @@ class EmundusModelFiles extends JModelLegacy
         $progAssoc = array_filter($this->getAssociatedProgrammes($current_user->id));
         $this->code = array_merge($groupAssoc, $progAssoc);
 
-        $this->locales = substr(JFactory::getLanguage()->getTag(), 0 , 2);
-
         if (empty($current_menu)) {
             return false;
         }
 
         $em_other_columns = explode(',', $menu_params->get('em_other_columns'));
-
-        $session = JFactory::getSession();
 
         if (!$session->has('filter_order') || $session->get('filter_order') == 'c.id') {
             if (in_array('overall', $em_other_columns)) {
@@ -133,7 +139,7 @@ class EmundusModelFiles extends JModelLegacy
         $this->elements_id = $menu_params->get('em_elements_id');
 		if ($session->has('adv_cols')) {
             $adv = $session->get('adv_cols');
-            if (!empty($adv) && !is_null($adv)) {
+            if (!empty($adv)) {
                 $this->elements_id .= ','.implode(',', $adv);
             }
 
@@ -167,7 +173,7 @@ class EmundusModelFiles extends JModelLegacy
 				}
 
                 if ($def_elmt->element_plugin == 'date') {
-                    if (@$group_params->repeat_group_button == 1) {
+                    if ($group_params->repeat_group_button == 1) {
                         $this->_elements_default[] = '(
                                                         SELECT  GROUP_CONCAT(DATE_FORMAT('.$def_elmt->table_join.'.'.$def_elmt->element_name.', "%d/%m/%Y %H:%i:%m") SEPARATOR ", ")
                                                         FROM '.$def_elmt->table_join.'
@@ -187,7 +193,7 @@ class EmundusModelFiles extends JModelLegacy
                     $db->setQuery("SHOW COLUMNS FROM $attribs->join_db_name LIKE 'published'");
                     $publish_query = ($db->loadResult()) ? " AND $attribs->join_db_name.published = 1 " : '';
 
-                    if (@$group_params->repeat_group_button == 1) {
+                    if ($group_params->repeat_group_button == 1) {
                         $query = '(
                                     select GROUP_CONCAT('.$column.' SEPARATOR ", ")
                                     from '.$attribs->join_db_name.'
@@ -236,7 +242,7 @@ class EmundusModelFiles extends JModelLegacy
                     $from = $r2[0];
                     $where = $r1[1];
 
-                    if (@$group_params->repeat_group_button == 1) {
+                    if ($group_params->repeat_group_button == 1) {
                         $query = '(
                                     select GROUP_CONCAT('.$select.' SEPARATOR ", ")
                                     from '.$from.'
@@ -255,7 +261,7 @@ class EmundusModelFiles extends JModelLegacy
                     $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
                     $this->_elements_default[] = $query;
                 } elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'checkbox') {
-                    if (@$group_params->repeat_group_button == 1) {
+                    if ($group_params->repeat_group_button == 1) {
                         $element_attribs = json_decode($def_elmt->element_attribs);
                         $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
                         foreach ($element_attribs->sub_options->sub_values as $key => $value) {
@@ -304,7 +310,7 @@ class EmundusModelFiles extends JModelLegacy
 		                $this->_elements_default[] = $select;
 	                }
                 } elseif ($def_elmt->element_plugin == 'yesno') {
-                    if (@$group_params->repeat_group_button == 1) {
+                    if ($group_params->repeat_group_button == 1) {
                         $this->_elements_default[] = '(
                                                         SELECT REPLACE(REPLACE(GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.'  SEPARATOR ", "), "0", "' . JText::_('JNO') . '"), "1", "' . JText::_('JYES') . '")
                                                         FROM '.$def_elmt->table_join.'
@@ -314,7 +320,7 @@ class EmundusModelFiles extends JModelLegacy
                         $this->_elements_default[] = 'REPLACE(REPLACE('.$def_elmt->tab_name.'.'.$def_elmt->element_name.', "0", "' . JText::_('JNO') . '"), "1", "' . JText::_('JYES') . '")  AS '.$def_elmt->tab_name.'___'.$def_elmt->element_name;
                     }
                 }else {
-                    if (@$group_params->repeat_group_button == 1) {
+                    if ($group_params->repeat_group_button == 1) {
                         $this->_elements_default[] = '(
                                                         SELECT  GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.'  SEPARATOR ", ")
                                                         FROM '.$def_elmt->table_join.'
@@ -341,7 +347,7 @@ class EmundusModelFiles extends JModelLegacy
         if (empty($col_other)) {
             $col_other = array();
         }
-        if (empty(@$this->_elements_default_name)) {
+        if (empty($this->_elements_default_name)) {
             $this->_elements_default_name = array();
         }
 

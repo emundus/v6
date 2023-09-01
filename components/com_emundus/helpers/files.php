@@ -3617,7 +3617,7 @@ class EmundusHelperFiles
 			$active = $menu->getActive();
 
 			if (!empty($active)) {
-				$menu_params = $active->params;
+				$menu_params = $active->getParams();
 				$filter_menu_values = $menu_params->get('em_filters_values', '');
 				$filter_menu_values = explode(',', $filter_menu_values);
 
