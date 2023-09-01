@@ -1242,7 +1242,8 @@ class EmundusModelsettings extends JModelList {
 		{
 			$query->select('id')
 				->from($db->quoteName('#__content'))
-				->where($db->quoteName('featured') . ' = 1');
+				->where($db->quoteName('featured') . ' = 1')
+                ->andWhere($db->quoteName('published').' = 1');
 			$db->setQuery($query);
 			$article_id = $db->loadResult();
 		}
