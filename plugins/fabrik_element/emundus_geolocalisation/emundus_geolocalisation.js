@@ -21,6 +21,18 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     this.mapLayer = L.layerGroup().addTo(this.mapContainer);
 
                     this.mapContainer.on('click', this.onClickMap.bind(this));
+
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            this.onClickMap({latlng: {lat: position.coords.latitude, lng: position.coords.longitude}});
+                        },
+                        function(error) {
+                            console.log(error);
+                        }, {
+                            enableHighAccuracy: true,
+                            timeout: 5000,
+                            maximumAge: 0
+                        });
                 }
             },
 
@@ -28,6 +40,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                 this.mapLayer.clearLayers();
                 this.mapLayer.addLayer(L.marker(e.latlng));
                 this.update(e.latlng.lat + ',' + e.latlng.lng);
+                this.mapContainer.setView(e.latlng, 13);
             }
         });
 
