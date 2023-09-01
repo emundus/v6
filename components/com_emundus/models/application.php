@@ -720,7 +720,13 @@ class EmundusModelApplication extends JModelList
 
         $m_profile = new EmundusModelProfile();
 
-        $db = JFactory::getDBO();
+		if(version_compare(JVERSION, '4.0', '>'))
+		{
+			$db = JFactory::getContainer()->get('DatabaseDriver');
+		} else {
+        	$db = JFactory::getDBO();
+		}
+
         $query = $db->getQuery(true);
 
         if (!is_array($fnum)) {
@@ -730,13 +736,12 @@ class EmundusModelApplication extends JModelList
         $result = array();
         foreach ($fnum as $f) {
 
-            // get profile for each fnum
             $current_profile = $m_profile->getProfileByFnum($f);
             $this->getFormsProgressWithProfile($f,$current_profile);
 
             $query->clear()
                 ->select('attachment_progress, form_progress')
-                ->from('#__emundus_campaign_candidature')
+                ->from($db->quoteName('#__emundus_campaign_candidature'))
                 ->where($db->quoteName('fnum') . ' = ' . $db->quote($f));
             $db->setQuery($query);
 
@@ -2108,7 +2113,7 @@ class EmundusModelApplication extends JModelList
                                                     JLog::add('component/com_emundus/models/application | Error at getting emundus_fileupload for applicant ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
                                                     $elt = '';
                                                 }
-                                            } 
+                                            }
 											elseif ($element->plugin == 'emundus_phonenumber') {
                                                 $elt = substr($element->content, 2, strlen($element->content));
                                             }

@@ -10,6 +10,7 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
+use Joomla\CMS\Factory;
 use \setasign\Fpdi\Fpdi;
 use \setasign\Fpdi\PdfReader;
 
@@ -686,14 +687,19 @@ class EmundusController extends JControllerLegacy {
         include_once (JPATH_SITE.'/components/com_emundus/models/profile.php');
         include_once (JPATH_SITE.'/components/com_emundus/models/users.php');
 
-        $jinput = JFactory::getApplication()->input;
+        $jinput = Factory::getApplication()->input;
         $profile_fnum = $jinput->get('profnum', null);
         $redirect = $jinput->get('redirect', null);
 
         $ids = explode('.', $profile_fnum);
-        $profile = $ids[0];
+        $profile = (int)$ids[0];
 
-        $session = JFactory::getSession();
+		if(version_compare(JVERSION, '4.0', '>'))
+		{
+			$session = Factory::getApplication()->getSession();
+		} else {
+        	$session = JFactory::getSession();
+		}
         $aid = $session->get('emundusUser');
 
         $m_profile = new EmundusModelProfile;

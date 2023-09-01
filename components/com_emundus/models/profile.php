@@ -12,6 +12,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport( 'joomla.application.component.model' );
 
+use Joomla\CMS\Factory;
+
 class EmundusModelProfile extends JModelList {
     var $_db = null;
     /**
@@ -21,7 +23,13 @@ class EmundusModelProfile extends JModelList {
      */
     function __construct() {
         parent::__construct();
-        $this->_db = JFactory::getDBO();
+
+		if(version_compare(JVERSION, '4.0', '>'))
+		{
+			$this->_db = Factory::getContainer()->get('DatabaseDriver');
+		} else {
+			$this->_db = Factory::getDBO();
+		}
     }
 
     /**
@@ -50,11 +58,19 @@ class EmundusModelProfile extends JModelList {
      * @return mixed
      */
     public function getApplicantsProfiles() {
-        $db = JFactory::getDBO();
-        $query = 'SELECT *
-        			FROM #__emundus_setup_profiles esp
-                 	WHERE esp.published=1
-                  	ORDER BY esp.label';
+		if(version_compare(JVERSION, '4.0', '>'))
+		{
+			$db = Factory::getContainer()->get('DatabaseDriver');
+		} else {
+			$db = Factory::getDBO();
+		}
+
+		$query = $db->getQuery(true);
+
+		$query->select('*')
+			->from($db->quoteName('#__emundus_setup_profiles'))
+			->where($db->quoteName('published') . ' = 1')
+			->order($db->quoteName('label'));
         $db->setQuery($query);
         return $db->loadObjectList();
     }

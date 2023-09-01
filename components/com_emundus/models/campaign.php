@@ -16,6 +16,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport( 'joomla.application.component.model' );
 use Joomla\CMS\Date\Date;
+use Joomla\CMS\Factory;
 
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
@@ -30,9 +31,16 @@ class EmundusModelCampaign extends JModelList {
 
 		$mainframe = JFactory::getApplication();
 
-		$this->_db = JFactory::getDBO();
-		$this->_em_user = JFactory::getSession()->get('emundusUser');
-		$this->_user = JFactory::getUser();
+		if(version_compare(JVERSION,'4.0','>'))
+		{
+			$this->_db = Factory::getContainer()->get('DatabaseDriver');
+			$this->_em_user = $mainframe->getSession()->get('emundusUser');
+			$this->_user = $mainframe->getIdentity();
+		} else {
+			$this->_db = Factory::getDBO();
+			$this->_em_user = Factory::getSession()->get('emundusUser');
+			$this->_user = Factory::getUser();
+		}
 
 		// Get pagination request variables
 		$filter_order = $mainframe->getUserStateFromRequest( $option.'filter_order', 'filter_order', 'label', 'cmd' );

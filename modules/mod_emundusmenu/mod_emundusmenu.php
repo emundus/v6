@@ -9,13 +9,27 @@
 // no direct access
 defined('_JEXEC') or die;
 
-$document 	= JFactory::getDocument();
-$document->addStyleSheet("modules/mod_emundusmenu/style/mod_emundusmenu.css" );
+use Joomla\CMS\Factory;
+
+$app = Factory::getApplication();
+if(version_compare(JVERSION, '4.0', '>')) {
+	$document = $app->getDocument();
+	$wa = $document->getWebAssetManager();
+	$wa->registerAndUseStyle('mod_emundusmenu', 'modules/mod_emundusmenu/style/mod_emundusmenu.css');
+
+	$user = $app->getSession()->get('emundusUser');
+} else {
+	$document 	= Factory::getDocument();
+	$document->addStyleSheet("modules/mod_emundusmenu/style/mod_emundusmenu.css" );
+
+	$user = Factory::getSession()->get('emundusUser');
+}
 
 // Include the syndicate functions only once
 require_once dirname(__FILE__).'/helper.php';
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+$m_profile = new EmundusModelProfile();
 
 // needed when default top menu is missing
 global $gantry;
@@ -39,9 +53,6 @@ $applicant_menu = $params->get('applicant_menu', '');
 $display_tchooz = $params->get('displayTchooz', 1);
 $favicon_link = $params->get('favicon_link', 'index.php');
 
-$user = JFactory::getSession()->get('emundusUser');
-$m_profile = new EmundusModelProfile();
-
 if ((!empty($user->applicant) || !empty($user->fnum)) && $display_applicant_menu==0) {
 	return;
 }
@@ -59,9 +70,12 @@ if (isset($user->menutype) && empty($user->applicant) || isset($user->menutype) 
     $list = modEmundusMenuHelper::getList($params,$applicant_menu);
     $layout = 'default';
 
-    $document->addStyleSheet("modules/mod_emundusmenu/style/mod_emundusmenu_applicant.css" );
+	if(version_compare(JVERSION, '4.0', '>')) {
+		$wa->registerAndUseStyle('mod_emundusmenu_applicant', 'modules/mod_emundusmenu/style/mod_emundusmenu_applicant.css');
+	} else {
+    	$document->addStyleSheet("modules/mod_emundusmenu/style/mod_emundusmenu_applicant.css" );
+	}
 }
-$app = JFactory::getApplication();
 $menu = $app->getMenu();
 $active	= $menu->getActive();
 $active_id = isset($active) ? $active->id : $menu->getDefault()->id;

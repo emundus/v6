@@ -9,13 +9,35 @@
 // no direct access
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 $m_profile = new EmundusModelProfile();
 
-$user = JFactory::getSession()->get('emundusUser');
+$app = Factory::getApplication();
+
+if(version_compare(JVERSION, '4.0', '>')) {
+	$document = $app->getDocument();
+	$wa = $document->getWebAssetManager();
+	$wa->registerAndUseStyle('mod_emundus_applications', 'modules/mod_emundus_applications/style/mod_emundus_applications.css');
+	$wa->registerAndUseScript('jquery-plugin-circliful-master', 'media/com_emundus/lib/jquery-plugin-circliful-master/js/jquery.circliful.js', ['jquery']);
+	$wa->useScript('jquery');
+	$user = $app->getSession()->get('emundusUser');
+} else {
+	$document 	= Factory::getDocument();
+	$document->addStyleSheet("modules/mod_emundus_applications/style/mod_emundus_applications.css" );
+	$document->addScript("media/com_emundus/lib/jquery-plugin-circliful-master/js/jquery.circliful.js" );
+	$user = Factory::getSession()->get('emundusUser');
+}
+
 if(empty($user->firstname) && empty($user->lastname)) {
 	$m_profile->initEmundusSession();
-	$user = JFactory::getSession()->get('emundusUser');
+	if(version_compare(JVERSION, '4.0', '>')) {
+		$user = $app->getSession()->get('emundusUser');
+	} else
+	{
+		$user = Factory::getSession()->get('emundusUser');
+	}
 }
 $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 
@@ -37,22 +59,9 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 	$m_application = new EmundusModelApplication();
 
-    $document = JFactory::getApplication()->getDocument();
-    $wa = $document->getWebAssetManager();
-    $wa->useScript('jquery');
-
-    $wa->registerAndUseStyle('bootstrap336', "media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
-    $wa->registerAndUseStyle('circliful', "media/com_emundus/lib/jquery-plugin-circliful-master/css/material-design-iconic-font.min.css" );
-    $wa->registerAndUseStyle('mod_emundus_applications', "modules/mod_emundus_applications/style/mod_emundus_applications.css" );
-
     $document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script><![endif]-->');
     $document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->');
 
-    $document->addScript("media/jui/js/jquery.min.js" );
-    $document->addScript("media/com_emundus/lib/bootstrap-336/js/bootstrap.min.js");
-    $document->addScript("media/com_emundus/lib/jquery-plugin-circliful-master/js/jquery.circliful.js" );
-
-    $app = JFactory::getApplication();
     $Itemid = $app->input->getInt('Itemid', null, 'int');
     $layout = $params->get('layout', 'default');
 
@@ -145,7 +154,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     } else {
         // We send the layout as a param because Hesam needs different information.
         $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by, $params);
-		$tabs = $m_application->getTabs(JFactory::getUser()->id);
+		$tabs = $m_application->getTabs($user->id);
     }
 
     $linknames = $params->get('linknames', 0);
@@ -153,7 +162,11 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 
     if (empty($user)) {
         $user = new stdClass();
-        $user->id = JFactory::getUser()->id;
+		if(version_compare(JVERSION, '4.0', '>')) {
+			$user->id = $app->getIdentity()->id;
+		} else {
+			$user->id = Factory::getUser()->id;
+		}
     }
 
     $user->fnums = $applications;
