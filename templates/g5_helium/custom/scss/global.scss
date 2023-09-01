@@ -122,13 +122,13 @@ p,
   padding: 0 20px;
 }
 
-.view-form.com_fabrik:not(.applicant-form):not(.mon-profil) #g-container-main .g-container {
+.view-form.com_fabrik:not(.applicant-form):not(.mon-profil):not(.view-registration) #g-container-main .g-container {
   width: auto;
   left: 38px;
   position: relative;
 }
 
-.view-form.com_fabrik:not(.applicant-form) #g-container-main .g-container {
+.view-form.com_fabrik:not(.applicant-form):not(.view-registration) #g-container-main .g-container {
   padding-left: 5%;
   padding-right: 5%;
 }
@@ -4173,6 +4173,19 @@ screen and (max-height: 769px) {
 
 @media all and (max-width: 479px) {
 
+  .view-checklist #attachment_list .col-md-12 {
+    &:last-of-type .justify-between {
+      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    &:last-of-type .justify-between div:first-of-type {
+      align-self: flex-start;
+      margin-left: 20px;
+    }
+  }
+
   .view-checklist table form .dz-default.dz-message {
     padding-right: 8px !important;
   }
@@ -4366,7 +4379,6 @@ screen and (max-height: 769px) {
       padding: 0;
 
       .login.em-formRegistrationCenter, .em-formRegistrationCenter:not(.componentheading) {
-        padding: 0;
         width: 100% !important;
 
         ol {
@@ -5235,6 +5247,12 @@ screen and (max-height: 769px) {
   .tchooz-single-campaign .right-side {
     width: 64%;
   }
+
+  .view-checklist #attachment_list .col-md-12 {
+    width: 100%;
+    float: left;
+  }
+
 }
 
 @media all and (max-width: 1239px) {
@@ -6612,3 +6630,14 @@ tbody .el-table__row:nth-child(odd){
 }
 
 /**** END ****/
+
+.swal2-container.em-application-modal-container {
+  padding: unset;
+  overflow-y: hidden !important;
+  .swal2-popup.swal2-modal {
+    padding: unset;
+  }
+  .swal2-header {
+    display: none;
+  }
+}

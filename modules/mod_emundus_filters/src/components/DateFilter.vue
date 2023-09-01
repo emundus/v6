@@ -12,8 +12,8 @@
 				<div v-if="filter.value[0]" class="em-flex-row em-flex-wrap em-flex-gap-8">
 					<span class="recap-operator label label-darkblue"> {{ selectedOperatorLabel }}</span>
 					<p class="recap-value em-flex-row em-flex-wrap em-flex-gap-8">
-						<span v-if="filter.value[0]" class="label label-default">{{ filter.value[0] }}</span>
-						<span v-if="['between', '!between'].includes(filter.operator) && filter.value[1]" class="label label-default"> {{ translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_AND') }} {{ filter.value[1] }}</span>
+						<span v-if="filter.value[0]" class="label label-default">{{ formattedDate(filter.value[0]) }}</span>
+						<span v-if="['between', '!between'].includes(filter.operator) && filter.value[1]" class="label label-default"> {{ translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_AND') }} {{ formattedDate(filter.value[1]) }}</span>
 					</p>
 				</div>
 				<p v-else class="em-text-neutral-500"> {{ translate('MOD_EMUNDUS_FILTERS_PLEASE_SELECT') }}</p>
@@ -42,8 +42,11 @@
 </template>
 
 <script>
+import date from '@/mixins/date.js';
+
 export default {
 	name: "DateFilter.vue",
+  mixins: [date],
 	props: {
 		moduleId: {
 			type: Number,

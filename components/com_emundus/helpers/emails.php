@@ -692,7 +692,7 @@ class EmundusHelperEmails {
 
             $user = $users[$i];
 
-            $can_send_mail = $this->assertCanSendMailToUser($user->id);
+            $can_send_mail = EmundusHelperEmails::assertCanSendMailToUser($user->id);
             if (!$can_send_mail) {
                 continue;
             }
@@ -852,6 +852,36 @@ class EmundusHelperEmails {
         }
 
         return $is_correct;
+    }
+
+    function getLogo(): string {
+        $logo = '';
+        $app = JFactory::getApplication();
+        $template = $app->getTemplate(true);
+        $config = JFactory::getConfig();
+
+        $params = $template->params;
+
+
+        if (!empty($params->get('logo')->custom->image)) {
+            $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+            $logo = !empty($logo['path']) ? JURI::base().$logo['path'] : "";
+        } else {
+            $logo_module = JModuleHelper::getModuleById('90');
+            preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
+            $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
+        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
+        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
+
+            if (preg_match($pattern, $tab[1])) {
+                $tab[1] = parse_url($tab[1], PHP_URL_PATH);
+            }
+
+            $logo = JURI::base().$tab[1];
+        }
+
+        return $logo;
     }
 }
 ?>

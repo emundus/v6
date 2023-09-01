@@ -53,7 +53,7 @@ class EmundusModelFormbuilder extends JModelList {
     public function translate($key, $values, $reference_table = '', $id = '', $reference_field = '') {
         $languages = JLanguageHelper::getLanguages();
         foreach ($languages as $language) {
-	        if (isset($values[$language->sef])) {
+	        if (!empty($values) && isset($values[$language->sef])) {
 		        $this->m_translations->insertTranslation($key, $values[$language->sef], $language->lang_code, '', 'override', $reference_table, $id, $reference_field);
 	        }
         }

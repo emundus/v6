@@ -10,6 +10,9 @@
         color: var(--neutral-600);
       }
     }
+    .groupintro {
+      white-space: pre-line;
+    }
     @media all and (max-width: 480px) {
       margin-top: unset !important;
     }
@@ -28,8 +31,8 @@
         margin: 16px auto;
       }
       @media all and (min-width: 1440px) {
-        flex: 0 0 33%;
-        max-width: 33%;
+        flex: 0 0 40%;
+        max-width: 40%;
         margin: 16px auto;
       }
 
@@ -84,6 +87,7 @@
       @media all and (max-width: 480px) {
         position: static;
         padding-top: 0;
+        padding-bottom: 24px;
       }
     }
     .popover:not(.clockpicker-popover) {
@@ -593,7 +597,11 @@
                 input {
                   accent-color: var(--em-form-checkbox-color-checked);
                   transform: scale(var(--em-form-checkbox-scale));
-                  margin-right: var(--em-form-checkbox-input-margin);
+                }
+                span {
+                  box-decoration-break: clone;
+                  -webkit-box-decoration-break: clone;
+                  padding-left: var(--em-form-checkbox-input-margin);
                 }
               }
             }
@@ -748,7 +756,7 @@
 
     .fabrikErrorMessage {
       @apply mt-1;
-      color: var(--em-form-element-color-error);
+      color: var(--em-form-element-color-error) !important;
       font-weight: 700;
       padding-left: 0;
     }
@@ -956,6 +964,15 @@
     color: var(--neutral-900) !important;
   }
 
+  @media all and (max-width: 479px) {
+    .fabrik_element___emundus_file_upload_parent .btn-upload p {
+      flex-direction: column;
+    }
+    .fabrik_element___emundus_file_upload_parent .fabrik_element___file_upload_formats {
+      word-break: break-all;
+    }
+  }
+
   .fabrik_element___emundus_file_upload_parent .em-deleteFile {
     margin-left: 10px;
   }
@@ -1022,6 +1039,7 @@
         align-items: center !important;
         margin-top: 0 !important;
         color: var(--em-form-label-color);
+        font-size: var(--em-form-font-size);
       }
 
       div b {
@@ -1072,5 +1090,20 @@
 
   .chzn-container-multi:not(.chzn-container-active) .chzn-drop {
     display: none;
+  }
+}
+
+/* ACTIONS */
+
+@media all and (max-width: 479px) {
+  form.fabrikForm .fabrikActions .justify-between {
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  form.fabrikForm .fabrikActions .justify-between div:first-of-type) {
+    align-self: flex-start;
+    margin-left: 20px;
   }
 }

@@ -248,3 +248,31 @@ function submit(title = 'Dossier en cours d\'envoi...',timer = 3000) {
         }
     });
 }
+function purcentage(elements){
+
+    const value = elements.get('value');
+
+    if (typeof value === "number") {
+        if (value < 0) {
+            elements.set("");
+        } else if (value > 100) {
+            elements.set("100");
+        } else {
+            elements.set(value.toString());
+        }
+    } else if (typeof value === "string") {
+        const numericValue = parseFloat(value);
+
+        if (!isNaN(numericValue)) {
+            if (numericValue < 0) {
+                elements.set("");
+            } else if (numericValue > 100) {
+                elements.set("100");
+            } else {
+                elements.set(numericValue.toString());
+            }
+        } else {
+            elements.set("");
+        }
+    }
+}

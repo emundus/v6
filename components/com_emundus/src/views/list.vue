@@ -488,6 +488,8 @@ export default {
 			}
 		},
 		executeAction (url) {
+      this.loading.items = true;
+
 			client().get(url)
 					.then(response => {
 						if (response.data.status === true || response.data.status === 1) {
@@ -510,9 +512,12 @@ export default {
 								});
 							}
 						}
+
+						this.loading.items = false;
 					})
 					.catch(error => {
 						console.error(error);
+						this.loading.items = false;
 					});
 		},
 		onClickPreview(item) {

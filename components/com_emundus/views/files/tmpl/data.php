@@ -150,11 +150,21 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 											<?php else: ?>
 												<?php
 													$formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
-													//echo $formatted_date->format("M j, Y, H:i");
 													echo JFactory::getDate($value->val)->format(JText::_('DATE_FORMAT_LC2'));
 												?>
 											<?php endif; ?>
 										</strong>
+                                        <?php elseif ($value->type === 'birthday')  :?>
+                                            <strong>
+                                                <?php if (empty($value->val) || $value->val === '0000-00-00 00:00:00') :?>
+                                                    <span class="em-radio" id="<?= $value->id.'-'.$value->val; ?>" aria-hidden="true"></span>
+                                                <?php else: ?>
+                                                    <?php
+                                                    $formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
+                                                    echo JFactory::getDate($value->val)->format(JText::_('COM_EMUNDUS_BIRTHDAY_FORMAT'));
+                                                    ?>
+                                                <?php endif; ?>
+                                            </strong>
 										<?php else:
                                             // Do not display the typical COM_EMUNDUS_PLEASE_SELECT text used for empty dropdowns.
                                             if ($value->val !== 'COM_EMUNDUS_PLEASE_SELECT') {

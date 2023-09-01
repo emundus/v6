@@ -47,6 +47,11 @@ if ($allowed_attachments !== true) {
     #emailForm #mceu_15 {
         display: none;
     }
+
+    #emailForm .selectize-input {
+        overflow: auto;
+    }
+
     .ql-editor{
         height: 300px !important;
         overflow-y: scroll;
@@ -427,6 +432,15 @@ if ($allowed_attachments !== true) {
                     '</div>';
             }
         },
+        onItemAdd: function(value, $item) {
+            let email = value.substring(value.indexOf(":") + 1);
+            email = email.trim();
+
+            const regex = /^\S{1,64}@\S{1,255}\.\S{1,255}$/;
+            if (!regex.test(email)) {
+                this.removeItem(value);
+            }
+        }
     });
 
     // add bcc
@@ -445,6 +459,15 @@ if ($allowed_attachments !== true) {
                     '</div>';
             }
         },
+        onItemAdd: function(value, $item) {
+            let email = value.substring(value.indexOf(":") + 1);
+            email = email.trim();
+
+            const regex = /^\S{1,64}@\S{1,255}\.\S{1,255}$/;
+            if (!regex.test(email)) {
+                this.removeItem(value);
+            }
+        }
     });
 
     // get attachments by profiles (fnums)

@@ -35,7 +35,7 @@
         </div>
 
         <transition name="fade" mode="out-in" v-if="selectedMenu">
-          <EditArticle v-if="selectedMenu.type === 'article'" :key="currentMenu" :article_id="selectedMenu.id" :article_alias="selectedMenu.alias" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditArticle>
+          <EditArticle v-if="selectedMenu.type === 'article'" :key="currentMenu" :article_id="selectedMenu.id" :article_alias="selectedMenu.alias" :category="selectedMenu.category" :published="selectedMenu.published" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditArticle>
           <EditFooter v-else-if="selectedMenu.type === 'footer'" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditFooter>
         </transition>
       </div>
@@ -76,7 +76,9 @@ export default {
         type: "article",
         id: response.data.data,
         title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_HOMEPAGE",
-        index: index
+        index: index,
+        category: 'homepage',
+        published: 1
       });
 
       client().get("index.php?option=com_emundus&controller=settings&task=getrgpdarticles").then(response => {
@@ -87,14 +89,18 @@ export default {
               type: "article",
               id: parseInt(article.id),
               title: article.title,
-              index: index
+              index: index,
+              category: 'rgpd',
+              published: article.published
             });
           } else {
             this.menus.push({
               type: "article",
               alias: article.alias,
               title: article.title,
-              index: index
+              index: index,
+              category: 'rgpd',
+              published: article.published
             });
           }
         });

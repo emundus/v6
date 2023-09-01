@@ -3860,7 +3860,7 @@ class EmundusHelperFiles
             $where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.published', 1, '=');
         }
 
-		return $where;
+        return $where;
     }
 
 	public function getFabrikElementData(int $element_id): array
@@ -4207,12 +4207,27 @@ class EmundusHelperFiles
 						}
 						break;
 					case 'IN':
-						if (is_array($values)) {
-							$values = implode(',', $db->quote($values));
-						} else {
-							$values = $db->quote($values);
-						}
-						$query = $element . ' IN (' . $values . ')';
+                        if ($fabrik_element_data['plugin'] === 'checkbox') { // value is stored as a serialized array
+
+                            if (is_array($values)) {
+                                foreach($values as $key => $value) {
+                                    if ($key == 0) {
+                                        $query = $element . ' LIKE ' . $db->quote('%"' . $value . '"%');
+                                    } else {
+                                        $query .= ' OR ' . $element . ' LIKE ' . $db->quote('%"' . $value . '"%');
+                                    }
+                                }
+                            } else {
+                                $query = $element . ' LIKE ' . $db->quote('%"' . $values . '"%');
+                            }
+                        } else {
+                            if (is_array($values)) {
+                                $values = implode(',', $db->quote($values));
+                            } else {
+                                $values = $db->quote($values);
+                            }
+                            $query = $element . ' IN (' . $values . ')';
+                        }
 						break;
 					case 'NOT IN':
 						$query = $this->notInQuery($element, $values, $fabrik_element_data);
@@ -4229,11 +4244,18 @@ class EmundusHelperFiles
 		$simple_case = false;
 
 		$db = JFactory::getDbo();
-		if (is_array($values)) {
-			$values = implode(',', $db->quote($values));
-		} else {
-			$values = $db->quote($values);
-		}
+
+        if ($fabrik_element_data['plugin'] === 'checkbox') {
+            if (is_array($values)) {
+                $values = implode(',', $values);
+            }
+        } else {
+            if (is_array($values)) {
+                $values = implode(',', $db->quote($values));
+            } else {
+                $values = $db->quote($values);
+            }
+        }
 
 		// if it is not given, we assume that we are not creating a filter from a fabrik element so it is a simple case
 		if (empty($fabrik_element_data)) {
@@ -4264,7 +4286,20 @@ class EmundusHelperFiles
 					$already_joined_tables = [];
 					$subquery .= $this->writeJoins($joins, $already_joined_tables);
 
-					$subquery .= ' WHERE ' . $element . ' IN (' . $values . ')';
+                    if ($fabrik_element_data['plugin'] === 'checkbox') {
+                        $values = explode(',', $values);
+
+                        foreach ($values as $key => $value) {
+                            if ($key == 0) {
+                                $subquery .= ' WHERE ' . $element .  ' LIKE ' . $db->quote('%"' . $value . '"%');
+                            } else {
+                                $subquery .= ' OR ' . $element .  ' LIKE ' . $db->quote('%"' . $value . '"%');
+                            }
+                        }
+
+                    } else {
+                        $subquery .= ' WHERE ' . $element . ' IN (' . $values . ')';
+                    }
 				}
 
 				if (!empty($subquery)) {
@@ -4276,8 +4311,22 @@ class EmundusHelperFiles
 		}
 
 		if ($simple_case) {
-			$query = '(' . $element .  ' NOT IN (' . $values . ')' . ' OR ' . $element . ' IS NULL) ';
-		}
+            if ($fabrik_element_data['plugin'] === 'checkbox') {
+                $values = explode(',', $values);
+                foreach ($values as $key => $value) {
+                    if ($key == 0) {
+                        $query = '(' . $element .  ' NOT LIKE ' . $db->quote("%\"$value\"%") . ' ';
+
+                    } else {
+                        $query .= ' AND ' . $element . ' NOT LIKE ' . $db->quote("%\"$value\"%") . ' ';
+                    }
+                }
+
+                $query .= ' OR ' . $element . ' IS NULL) ';
+            } else {
+                $query = '(' . $element .  ' NOT IN (' . $values . ')' . ' OR ' . $element . ' IS NULL) ';
+            }
+        }
 
 		return $query;
 	}
@@ -4369,7 +4418,8 @@ class EmundusHelperFiles
                     if (!empty($table_column_to_count)) {
                         $db = JFactory::getDbo();
 
-                        $query = 'SELECT ' . $table_column_to_count . ' as count_value, COUNT(1) as count
+                        if ($applied_filter['plugin'] === 'checkbox') { // checkbox is a specific case because data is registered as following example '["x", "y",... "n"]', so we can not count like other columns
+                            $query = 'SELECT ' . $table_column_to_count . '
                             FROM #__emundus_campaign_candidature as jecc
                             LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
                             LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
@@ -4378,20 +4428,68 @@ class EmundusHelperFiles
                             LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
                             LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
 
-                        if (!empty($leftJoins)) {
-                            $query .= $leftJoins;
+                            if (!empty($leftJoins)) {
+                                $query .= $leftJoins;
+                            }
+
+                            $whereConditions = $this->_moduleBuildWhere($already_joined, 'files', ['code' => $user_programmes, 'fnum_assoc' => $user_fnums_assoc], [$applied_filter['uid']]);
+
+                            $query .= $whereConditions['join'];
+                            $query .= ' WHERE u.block=0 ' . $whereConditions['q'];
+                            $query .= ' GROUP BY ' . $table_column_to_count . ' ORDER BY ' . $table_column_to_count . ' ASC';
+
+                            try {
+                                $db->setQuery($query);
+                                $all_values = $db->loadColumn();
+                            } catch (Exception $e) {
+                                JLog::add('Failed to get available values for filter ' . $applied_filter['uid'] . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+                            }
+
+
+                            $available_values = [];
+                            foreach($all_values as $value) {
+                                $row_values = json_decode($value);
+
+                                if (!empty($row_values)) {
+                                    foreach($row_values as $row_value) {
+                                        if (!isset($available_values[$row_value])) {
+                                            $available_values[$row_value] = 1;
+                                        } else {
+                                            $available_values[$row_value]++;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else {
+                            $query = 'SELECT ' . $table_column_to_count . ' as count_value, COUNT(1) as count
+                            FROM #__emundus_campaign_candidature as jecc
+                            LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
+                            LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
+                            LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
+                            LEFT JOIN #__users as u on u.id = jecc.applicant_id
+                            LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
+                            LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
+
+                            if (!empty($leftJoins)) {
+                                $query .= $leftJoins;
+                            }
+
+                            $whereConditions = $this->_moduleBuildWhere($already_joined, 'files', ['code' => $user_programmes, 'fnum_assoc' => $user_fnums_assoc], [$applied_filter['uid']]);
+
+                            $query .= $whereConditions['join'];
+                            $query .= ' WHERE u.block=0 ' . $whereConditions['q'];
+                            $query .= ' GROUP BY ' . $table_column_to_count . ' ORDER BY ' . $table_column_to_count . ' ASC';
+
+                            try {
+                                $db->setQuery($query);
+                                $available_values = $db->loadAssocList('count_value');
+                            } catch (Exception $e) {
+                                JLog::add('Failed to get available values for filter ' . $applied_filter['uid'] . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+                            }
                         }
 
-                        $whereConditions = $this->_moduleBuildWhere($already_joined, 'files', ['code' => $user_programmes, 'fnum_assoc' => $user_fnums_assoc], [$applied_filter['uid']]);
-
-                        $query .= $whereConditions['join'];
-                        $query .= ' WHERE u.block=0 ' . $whereConditions['q'];
-                        $query .= ' GROUP BY ' . $table_column_to_count . ' ORDER BY ' . $table_column_to_count . ' ASC';
-
-                        try {
-                            $db->setQuery($query);
-                            $available_values = $db->loadAssocList('count_value');
-
+                        if (!empty($available_values)) {
                             foreach($applied_filter['values'] as $key => $value) {
                                 if (isset($available_values[$value['value']])) {
                                     $applied_filters[$applied_filter_key]['values'][$key]['count'] = $available_values[$value['value']]['count'];
@@ -4399,8 +4497,6 @@ class EmundusHelperFiles
                                     $applied_filters[$applied_filter_key]['values'][$key]['count'] = 0;
                                 }
                             }
-                        } catch (Exception $e) {
-                            JLog::add('Failed to get available values for filter ' . $applied_filter['uid'] . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
                         }
                     }
                 }

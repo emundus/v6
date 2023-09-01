@@ -2450,14 +2450,17 @@ try {
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TITLE','Voulez-vous vraiment quitter le formulaire ?');
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TITLE','Do you really want to leave the form?', 'override', null, null, null, 'en-GB');
 
-				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TEXT','Les saisies sur l’étape en cours ne seront pas conservées. Seules les saisies validées en fin d’étape sont sauvegardées.');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TEXT','Les données/informations saisies sur l’étape en cours ne seront pas conservées. Seules les saisies validées en fin d’étape sont sauvegardées.');
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TEXT','Entries for the current stage will not be saved. Only entries validated at the end of the stage will be saved.', 'override', null, null, null, 'en-GB');
 
-				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CONFIRM','Quitter et reprendre plus tard');
-				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CONFIRM','Quit and resume later', 'override', null, null, null, 'en-GB');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CONFIRM','Quitter sans enregistrer');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CONFIRM','Quit without saving', 'override', null, null, null, 'en-GB');
 
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CANCEL','Retour');
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CANCEL','Go back', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_USERS_EXCEPTIONS_INTRO','Utilisateurs ayant le droit de compléter des formulaires en dehors des périodes de candidature. Utile pour tester un environnement de candidature avant la publication d\'une phase !');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_USERS_EXCEPTIONS_INTRO','Users with the right to complete forms outside the application periods. Useful for testing an application environment before publishing a phase!', 'override', null, null, null, 'en-GB');
 
 				$query->clear()
 					->select('id')
@@ -2496,7 +2499,72 @@ try {
 					->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_emundus&view=files&format=raw&layout=access&users={fnums}'));
 				$db->setQuery($query);
 				$db->execute();
-			}
+
+				$query->clear()
+					->update('#__emundus_setup_config')
+					->set($db->quoteName('value') . ' = ' . $db->quote('{"forms":{"title":"COM_EMUNDUS_ONBOARD_FORMS","tabs":[{"title":"COM_EMUNDUS_FORM_MY_FORMS","key":"form","controller":"form","getter":"getallform","actions":[{"action":"duplicateform","label":"COM_EMUNDUS_ONBOARD_ACTION_DUPLICATE","controller":"form","name":"duplicate"},{"action":"publishform","label":"COM_EMUNDUS_ONBOARD_ACTION_PUBLISH","controller":"form","name":"publish","showon":{"key":"status","operator":"!=","value":"1"}},{"action":"unpublishform","label":"COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH","controller":"form","name":"unpublish","showon":{"key":"status","operator":"=","value":"1"}},{"action":"index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%","label":"COM_EMUNDUS_ONBOARD_MODIFY","controller":"form","type":"redirect","name":"edit"},{"action":"createform","controller":"form","label":"COM_EMUNDUS_ONBOARD_ADD_FORM","name":"add"}],"filters":[{"label":"COM_EMUNDUS_ONBOARD_FILTER_PUBLISH","getter":"","controller":"form","key":"filter","default":"1","values":[{"label":"COM_EMUNDUS_ONBOARD_FILTER_PUBLISH","value":"1"},{"label":"COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH","value":"Unpublish"}]}]},{"title":"COM_EMUNDUS_FORM_MY_EVAL_FORMS","key":"form_evaluations","controller":"form","getter":"getallgrilleEval","actions":[{"action":"createformeval","label":"COM_EMUNDUS_ONBOARD_ADD_EVAL_FORM","controller":"form","name":"add"},{"action":"/index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%&mode=eval","label":"COM_EMUNDUS_ONBOARD_MODIFY","controller":"form","type":"redirect","name":"edit"}],"filters":[]},{"title":"COM_EMUNDUS_FORM_PAGE_MODELS","key":"form_models","controller":"formbuilder","getter":"getallmodels","actions":[{"action":"deleteformmodelfromids","label":"COM_EMUNDUS_ACTIONS_DELETE","controller":"formbuilder","parameters":"&model_ids=%id%","name":"delete"},{"action":"/index.php?option=com_emundus&view=form&layout=formbuilder&prid=%form_id%&mode=models","label":"COM_EMUNDUS_ONBOARD_MODIFY","controller":"form","type":"redirect","name":"edit"}],"filters":[]}]},"campaigns":{"title":"COM_EMUNDUS_ONBOARD_CAMPAIGNS","tabs":[{"title":"COM_EMUNDUS_ONBOARD_CAMPAIGNS","key":"campaign","controller":"campaign","getter":"getallcampaign","actions":[{"action":"index.php?option=com_emundus&view=campaigns&layout=add","label":"COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN","controller":"campaign","name":"add","type":"redirect"},{"action":"duplicatecampaign","label":"COM_EMUNDUS_ONBOARD_ACTION_DUPLICATE","controller":"campaign","name":"duplicate"},{"action":"index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=%id%","label":"COM_EMUNDUS_ONBOARD_MODIFY","controller":"campaign","type":"redirect","name":"edit"},{"action":"deletecampaign","label":"COM_EMUNDUS_ONBOARD_ACTION_DELETE","controller":"campaign","name":"delete","confirm":"COM_EMUNDUS_ONBOARD_CAMPDELETE","showon":{"key":"nb_files","operator":"<","value":"1"}},{"action":"unpublishcampaign","label":"COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH","controller":"campaign","name":"unpublish","showon":{"key":"published","operator":"=","value":"1"}},{"action":"publishcampaign","label":"COM_EMUNDUS_ONBOARD_ACTION_PUBLISH","controller":"campaign","name":"publish","showon":{"key":"published","operator":"=","value":"0"}},{"action":"pincampaign","label":"COM_EMUNDUS_ONBOARD_ACTION_PIN_CAMPAIGN","controller":"campaign","name":"pin","icon":"push_pin","iconOutlined":true,"showon":{"key":"pinned","operator":"!=","value":"1"}},{"action":"unpincampaign","label":"COM_EMUNDUS_ONBOARD_ACTION_UNPIN_CAMPAIGN","controller":"campaign","name":"unpin","icon":"push_pin","iconOutlined":false,"showon":{"key":"pinned","operator":"=","value":"1"}}],"filters":[{"label":"COM_EMUNDUS_ONBOARD_FILTER_ALL","getter":"","controller":"campaigns","key":"filter","values":[{"label":"COM_EMUNDUS_ONBOARD_FILTER_ALL","value":"all"},{"label":"COM_EMUNDUS_CAMPAIGN_YET_TO_COME","value":"yettocome"},{"label":"COM_EMUNDUS_ONBOARD_FILTER_OPEN","value":"ongoing"},{"label":"COM_EMUNDUS_ONBOARD_FILTER_CLOSE","value":"Terminated"},{"label":"COM_EMUNDUS_ONBOARD_FILTER_PUBLISH","value":"Publish"},{"label":"COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH","value":"Unpublish"}],"default":"Publish"},{"label":"COM_EMUNDUS_ONBOARD_ALL_PROGRAMS","getter":"getallprogramforfilter","controller":"programme","key":"program","values":null}]},{"title":"COM_EMUNDUS_ONBOARD_PROGRAMS","key":"programs","controller":"programme","getter":"getallprogram","actions":[{"action":"index.php?option=com_fabrik&view=form&formid=108","controller":"programme","label":"COM_EMUNDUS_ONBOARD_ADD_PROGRAM","name":"add","type":"redirect"},{"action":"index.php?option=com_fabrik&view=form&formid=108&rowid=%id%","label":"COM_EMUNDUS_ONBOARD_MODIFY","controller":"programme","type":"redirect","name":"edit"}],"filters":[{"label":"COM_EMUNDUS_ONBOARD_ALL_PROGRAM_CATEGORIES","getter":"getprogramcategories","controller":"programme","key":"recherche","values":null}]}]},"emails":{"title":"COM_EMUNDUS_ONBOARD_EMAILS","tabs":[{"controller":"email","getter":"getallemail","title":"COM_EMUNDUS_ONBOARD_EMAILS","key":"emails","actions":[{"action":"index.php?option=com_emundus&view=emails&layout=add","controller":"email","label":"COM_EMUNDUS_ONBOARD_ADD_EMAIL","name":"add","type":"redirect"},{"action":"index.php?option=com_emundus&view=emails&layout=add&eid=%id%","label":"COM_EMUNDUS_ONBOARD_MODIFY","controller":"email","type":"redirect","name":"edit"},{"action":"deleteemail","label":"COM_EMUNDUS_ACTIONS_DELETE","controller":"email","name":"delete","showon":{"key":"type","operator":"!=","value":"1"}},{"action":"preview","label":"COM_EMUNDUS_ONBOARD_VISUALIZE","controller":"email","name":"preview","icon":"preview","iconOutlined":true,"title":"subject","content":"message"}],"filters":[{"label":"COM_EMUNDUS_ONBOARD_ALL_PROGRAM_CATEGORIES","getter":"getemailcategories","controller":"email","key":"recherche","values":null}]}]}}'))
+					->where('namekey = ' . $db->quote('onboarding_lists'));
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->select('form_id')
+					->from($db->quoteName('#__emundus_setup_formlist'))
+					->where($db->quoteName('type') . ' LIKE ' . $db->quote('profile'));
+				$db->setQuery($query);
+				$form_id = $db->loadResult();
+
+				$query->clear()
+					->select('group_id')
+					->from($db->quoteName('#__fabrik_formgroup'))
+					->where($db->quoteName('form_id') . ' = ' . $db->quote($form_id));
+				$db->setQuery($query);
+				$groups = $db->loadColumn();
+
+				if(!empty($groups))
+				{
+					$query->clear()
+						->select('id,params')
+						->from($db->quoteName('#__fabrik_elements'))
+						->where($db->quoteName('group_id') . ' IN (' . implode(',', $groups) . ')')
+						->andWhere($db->quoteName('name') . ' IN (' . $db->quote('nationality') . ',' . $db->quote('default_language') . ')');
+					$db->setQuery($query);
+					$elements = $db->loadObjectList();
+
+					foreach ($elements as $element)
+					{
+						$params = json_decode($element->params, true);
+						$params['bootstrap_class'] = 'input-large';
+
+						$query->clear()
+							->update($db->quoteName('#__fabrik_elements'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+							->where($db->quoteName('id') . ' = ' . $db->quote($element->id));
+						$db->setQuery($query);
+						$db->execute();
+					}
+				}
+
+				$query->clear()
+					->delete($db->quoteName('#__modules'))
+					->where($db->quoteName('title') . ' LIKE ' . $db->quote('Spotlight eMundus'));
+				$db->setQuery($query);
+				$db->execute();
+
+                EmundusHelperUpdate::insertTranslationsTag('COM_USERS_RESET_REQUEST_FAILED', 'Si un compte est associé à cette adresse, alors vous avez reçu un email afin de réinitialiser votre mot de passe', 'override', null, 'fabrik_groups', 'label', 'fr-FR');
+                EmundusHelperUpdate::insertTranslationsTag('COM_USERS_RESET_REQUEST_FAILED', 'If an account is associated with this address, you have received an email to reset your password.', 'override', null, 'fabrik_groups', 'label', 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_GO','Rechercher');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_GO','Search', 'override', null, null, null, 'en-GB');
+
+				$query->clear()
+					->update($db->quoteName('#__menu'))
+					->set($db->quoteName('published') . ' = 1')
+					->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_emundus&view=application&format=raw&layout=logs'));
+				$db->setQuery($query);
+				$db->execute();
+
+            }
 		}
 
 		return $succeed;

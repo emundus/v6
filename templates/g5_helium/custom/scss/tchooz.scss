@@ -110,6 +110,26 @@
   cursor: unset;
 }
 
+.em-error-button {
+  background: var(--red-500);
+  border: 1px solid var(--red-500);
+  border-radius: var(--em-applicant-br);
+  padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
+  color: var(--neutral-0);
+  span {
+    color: var(--neutral-0);
+  }
+}
+
+.em-error-button:hover {
+  background: var(--neutral-0);
+  border: 1px solid var(--red-500);
+  color: var(--red-500);
+  span {
+    color: var(--red-500);
+  }
+}
+
 .btn[disabled] {
   border: 1px solid #e6e6e6;
   color: #333333;
@@ -792,6 +812,9 @@ input:focus + .em-slider {
 .em-w-100{
   width: 100%;
 }
+.swal2-popup.em-w-100 {
+    width: 100% !important;
+}
 
 .em-w-40-vw{
   width: 40vw;
@@ -839,6 +862,9 @@ input:focus + .em-slider {
 }
 .em-main-400-color{
   color: var(--main-400);
+}
+.em-green-500-color{
+  color: var(--green-500) !important;
 }
 .em-main-500-color{
   color: var(--em-coordinator-primary-color) !important;
@@ -1730,6 +1756,10 @@ button.em-swal-delete-button:hover{
     -ms-overflow-style: none;
     scrollbar-width: none;
     margin-top: unset !important;
+  }
+
+  .v--modal-background-click .v--modal-box.v--modal {
+    top: 0 !important;
   }
   .v--modal-box{
     padding: 0;

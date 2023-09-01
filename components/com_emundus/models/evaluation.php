@@ -921,6 +921,9 @@ class EmundusModelEvaluation extends JModelList {
 		    }
 	    }
 
+	    $query .= ', jos_emundus_evaluations.id AS evaluation_id, CONCAT(eue.lastname," ",eue.firstname) AS evaluator';
+	    $group_by .= ', evaluation_id';
+
 	    if (!empty($this->_elements_default)) {
 		    $query .= ', '.implode(',', $this->_elements_default);
 	    }

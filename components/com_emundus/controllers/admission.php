@@ -717,6 +717,9 @@ class EmundusControllerAdmission extends JControllerLegacy {
             }
         }
 
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
+
         $m_profile  = new EmundusModelProfile();
         $m_campaign = new EmundusModelCampaign();
 

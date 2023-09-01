@@ -3147,9 +3147,9 @@ class EmundusModelFiles extends JModelLegacy
             $res = $db->loadAssocList();
             foreach ($res as $r) {
                 if (isset($access[$r['fnum']])) {
-                    $access[$r['fnum']] .= '<div class="flex"><span class="circle '.$r['class'].'">'.$r['uname'].'</span></div>';
+                    $access[$r['fnum']] .= '<div class="flex"><span class="circle '.$r['class'].'"></span><span>'.$r['uname'].'</span></div>';
                 } else {
-                    $access[$r['fnum']] = '<div class="flex"><span class="circle '.$r['class'].'">'.$r['uname'].'</span></div>';
+                    $access[$r['fnum']] = '<div class="flex"><span class="circle '.$r['class'].'"></span><span>'.$r['uname'].'</span></div>';
                 }
             }
             return $access;

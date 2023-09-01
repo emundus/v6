@@ -52,7 +52,7 @@ $limits = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 15 => 15,
                                         <?= strip_tags(JText::_($v)); ?>
                                     </strong>
 
-                                <?php elseif ($kl == 'check') :?>
+                                <?php elseif ($kl == 'check' && empty($this->cfnum)) :?>
                                 <div class="selectContainer" id="selectContainer">
                                     <div class="selectPage">
                                         <input type="checkbox" value="-1" id="em-check-all" class="em-hide em-check">
@@ -187,23 +187,26 @@ $limits = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 15 => 15,
 <script>
     const selectDropdownContainer = document.querySelector('#selectAll_evaluation');
     const countFiles = document.querySelector('#countCheckedCheckbox');
-    selectDropdownContainer.style.display = 'none';
 
-    $('.selectDropdown').click(function() {
-        if(selectDropdownContainer.style.display === 'none'){
-            selectDropdownContainer.style.display = 'flex';
-        } else {
-            selectDropdownContainer.style.display = 'none';
-        }
-    });
+    if (selectDropdownContainer) {
+        selectDropdownContainer.style.display = 'none';
 
-    $(document).click(function (e) {
-        var container = $(".selectDropdown");
+        $('.selectDropdown').click(function() {
+            if(selectDropdownContainer.style.display === 'none'){
+                selectDropdownContainer.style.display = 'flex';
+            } else {
+                selectDropdownContainer.style.display = 'none';
+            }
+        });
 
-        if (!container.is(e.target) && container.has(e.target).length === 0){
-            selectDropdownContainer.style.display = 'none';
-        }
-    });
+        $(document).click(function (e) {
+            var container = $(".selectDropdown");
+
+            if (!container.is(e.target) && container.has(e.target).length === 0){
+                selectDropdownContainer.style.display = 'none';
+            }
+        });
+    }
 
     function checkAllFiles(){
         $('#em-check-all-all').prop('checked',true);

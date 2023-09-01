@@ -201,7 +201,7 @@ class EmundusHelperAccess {
 			}
 		} else {
 			$groupsActions = $m_users->getGroupsAcl($gids);
-            if (count($groupsActions) > 0) {
+            if (!empty($groupsActions)) {
                 foreach ($groupsActions as $action) {
                     if ($action['action_id'] == $action_id && $action[$crud] == 1) {
                         return true;

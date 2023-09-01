@@ -21,6 +21,23 @@
         ></multiselect>
       </div>
 
+      <div class="mb-4 flex items-center" v-if="category === 'rgpd'">
+        <div class="em-toggle">
+          <input type="checkbox"
+                 true-value="1"
+                 false-value="0"
+                 class="em-toggle-check"
+                 id="published"
+                 name="published"
+                 v-model="form.published"
+                 @change="publishArticle()"
+          />
+          <strong class="b em-toggle-switch"></strong>
+          <strong class="b em-toggle-track"></strong>
+        </div>
+        <span for="published" class="ml-2">{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_CONTENT_PUBLISH') }}</span>
+      </div>
+
       <div class="form-group controls">
         <editor-quill :height="'30em'" :text="form.content" :enable_variables="false" :id="'editor'" :key="dynamicComponent" v-model="form.content" @focusout="saveContent"></editor-quill>
       </div>
@@ -62,6 +79,14 @@ export default {
     article_id: {
       type: Number,
       default: 0
+    },
+    category: {
+      type: String,
+      default: null
+    },
+    published: {
+      type: Number,
+      default: 1
     }
   },
 
@@ -76,6 +101,7 @@ export default {
       dynamicComponent: 0,
 
       form: {
+        published: this.$props.published,
         content: ''
       },
     };
@@ -144,6 +170,30 @@ export default {
         this.availableLanguages = response;
         this.lang = this.defaultLang;
       })
+    },
+
+    async publishArticle() {
+      this.$emit('updateSaving',true);
+
+      const formData = new FormData();
+      formData.append('publish', this.form.published);
+      if (this.$props.article_alias !== null) {
+        formData.append('article_alias', this.$props.article_alias);
+      } else {
+        formData.append('article_id', this.$props.article_id);
+      }
+
+      await client().post(`index.php?option=com_emundus&controller=settings&task=publisharticle`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          }
+      ).then(() => {
+        this.$emit('updateSaving',false);
+        this.$emit('updateLastSaving',this.formattedDate('','LT'));
+      });
     },
   },
 
