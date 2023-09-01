@@ -112,7 +112,7 @@ class EmundusFiltersFiles extends EmundusFilters
 		$this->filters = $this->createFiltersFromFabrikElements($elements);
 	}
 
-	protected function getAllAssociatedElements()
+	protected function getAllAssociatedElements($elementid = null)
 	{
 		$elements = [];
 		$profiles = $this->getProfiles();
