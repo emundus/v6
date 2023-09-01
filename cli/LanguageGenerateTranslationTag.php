@@ -60,9 +60,6 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
 
         require_once JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'form.php';
         $languages = $this->getPlatformLanguages();
-
-        //var_dump($forms);
-
         $fileEndname = '.override.ini';
 
         foreach($languages as $language)
@@ -91,10 +88,15 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
                 if (is_null($file_content[$columnValue])) // only if the index doesn't exist, "" value will not enter
                 {
                     $newTag = $this->generateTag($id, $profile_id, 'jos_fabrik_forms', 'label', 'FORM');
-
                     $this->writeTagInFile($fileName, $newTag, $columnValue);
                 }
             }
+            else // the value is null, so its "unnamed item"
+            {
+                $newTag = $this->generateTag($id, $profile_id, 'jos_fabrik_forms', 'label', 'FORM');
+                $this->writeTagInFile($fileName, $newTag, "Unnamed item");
+            }
+
             $this->generateTagGroupsHandler($fileName, $file_content, $id);
         }
     }
@@ -117,6 +119,12 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
                     $this->writeTagInFile($fileName, $newTag, $columnValue);
                 }
             }
+            else // the value is null, so its "unnamed item"
+            {
+                $newTag = $this->generateTag($id, $form_id, 'jos_fabrik_groups', 'label', 'GROUP');
+                $this->writeTagInFile($fileName, $newTag, "Unnamed item");
+            }
+
             $this->generateTagElementsHandler($fileName, $file_content, $id);
         }
     }
@@ -138,6 +146,11 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
 
                     $this->writeTagInFile($fileName, $newTag, $columnValue);
                 }
+            }
+            else // the value is null, so its "unnamed item"
+            {
+                $newTag = $this->generateTag($id, $group_id, 'jos_fabrik_elements', 'label', 'ELEMENT');
+                $this->writeTagInFile($fileName, $newTag, "Unnamed item");
             }
         }
     }
