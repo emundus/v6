@@ -3749,8 +3749,10 @@ $(document).ready(function() {
                                 });
                             }
 
-                            $('#filt_save_pdf').on('change', async function() {
-                                var model = $('#filt_save_pdf').val();
+                            let filtSavePdf = $('#filt_save_pdf');
+
+                            filtSavePdf.on('change', async function() {
+                                var model = filtSavePdf.val();
 
                                 $('#model-err-pdf').remove();
                                 $('.modal-header').before('<div id="loadingimg-campaign"><img src="'+loading+'" alt="loading"/></div>');
@@ -3771,11 +3773,29 @@ $(document).ready(function() {
                                     // show #admission-div
                                     $('#adm-exists').show();
 
-                                    // TODO: if no program is selected, if only one select it then get export pdf model
-                                    // if multiple, display modal to ask to select a program before
+                                    let result = {status: false};
+                                    let programSelector = $('#em-export-prg');
+                                    const selectedProgram = programSelector.val();
 
+                                    if (selectedProgram == 0) {
+                                        // select id="filt_save_pdf" and add sibling saying to select a program
+                                        programSelector.after('<span id="model-err-pdf" class="error em-red-500-color">Please select a program</span>');
+                                        filtSavePdf.val(0);
+                                        filtSavePdf.trigger('chosen:updated');
+                                        filtSavePdf.trigger('liszt:updated');
 
-                                    let result = await getExportPDFModel(model);
+                                        setTimeout(() => {
+                                            const errorTxt = document.getElementById('model-err-pdf');
+
+                                            if (errorTxt) {
+                                                errorTxt.remove();
+                                            }
+                                        }, 5000);
+
+                                        return;
+                                    }
+
+                                    result = await getExportPDFModel(model);
                                     if (result.status) {
                                         var constraints = result.filter.constraints;
                                         var json = JSON.parse(constraints);
