@@ -433,6 +433,10 @@ a.btn.btn-success:not(.btn-xs) {
     margin: var(--m-16) 0;
 }
 
+.mod_emundus_applications___content_app span.em-applicant-default-font   {
+    word-break: break-word;
+}
+
 .mod_emundus_applications___circle{
     height: 8px;
     width: 8px;
