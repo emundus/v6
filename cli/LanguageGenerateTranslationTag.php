@@ -60,7 +60,6 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
 
         require_once JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'form.php';
         $languages = $this->getPlatformLanguages();
-        $forms = $this->getFormsByProfileId($profile_id);
 
         //var_dump($forms);
 
@@ -73,21 +72,71 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
 
             if ($file_content)
             {
-                foreach ($forms as $form)
+                $this->generateTagFormsHandler($fileName, $file_content, $profile_id);
+            }
+        }
+    }
+
+    private function generateTagFormsHandler($fileName, $file_content, $profile_id)
+    {
+        $forms = $this->getFormsByProfileId($profile_id);
+
+        foreach ($forms as $form)
+        {
+            $id = $form->id;
+            $columnValue = $this->getColumnValueFromId($id, 'label', 'jos_fabrik_forms');
+
+            if ($columnValue)
+            {
+                if (is_null($file_content[$columnValue])) // only if the index doesn't exist, "" value will not enter
                 {
-                    $id = $form->id;
+                    $newTag = $this->generateTag($id, $profile_id, 'jos_fabrik_forms', 'label', 'FORM');
 
-                    $columnValue = $this->getColumnValueFromId($id, 'label', 'jos_fabrik_forms');
+                    $this->writeTagInFile($fileName, $newTag, $columnValue);
+                }
+            }
+            $this->generateTagGroupsHandler($fileName, $file_content, $id);
+        }
+    }
 
-                    if ($columnValue)
-                    {
-                        if (is_null($file_content[$columnValue])) // only if the index doesn't exist, "" value will not enter
-                        {
-                            $newTag = $this->generateTag($id, $profile_id, 'jos_fabrik_forms', 'label', 'FORM');
+    private function generateTagGroupsHandler($fileName, $file_content, $form_id)
+    {
+        $groups = $this->getGroupsFromForm_id($form_id);
 
-                            $this->writeTagInFile($fileName, $newTag, $columnValue);
-                        }
-                    }
+        foreach ($groups as $group)
+        {
+            $id = $group->id;
+            $columnValue = $this->getColumnValueFromId($id, 'label', 'jos_fabrik_groups');
+
+            if ($columnValue)
+            {
+                if (is_null($file_content[$columnValue])) // only if the index doesn't exist, "" value will not enter
+                {
+                    $newTag = $this->generateTag($id, $form_id, 'jos_fabrik_groups', 'label', 'GROUP');
+
+                    $this->writeTagInFile($fileName, $newTag, $columnValue);
+                }
+            }
+            $this->generateTagElementsHandler($fileName, $file_content, $id);
+        }
+    }
+
+    private function generateTagElementsHandler($fileName, $file_content, $group_id)
+    {
+        $elements = $this->getElementsFromGroup_id($group_id);
+
+        foreach ($elements as $element)
+        {
+            $id = $element->id;
+            $columnValue = $this->getColumnValueFromId($id, 'label', 'jos_fabrik_elements');
+
+            if ($columnValue)
+            {
+                if (is_null($file_content[$columnValue])) // only if the index doesn't exist, "" value will not enter
+                {
+                    $newTag = $this->generateTag($id, $group_id, 'jos_fabrik_elements', 'label', 'ELEMENT');
+
+                    $this->writeTagInFile($fileName, $newTag, $columnValue);
                 }
             }
         }
@@ -106,7 +155,6 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
 
         $newTag = $tag.'_'.$ref_id.'_'.$id;
 
-        var_dump($newTag);
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -115,10 +163,18 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
             ->where('id = '.$id);
 
         $db->setQuery($query);
-        $db->execute();
 
-        // renvoie le nouveau tag après avoir modifié la colonne correspondante avec ce nouveau tag
-        return $newTag;
+        try
+        {
+            $db->execute();
+
+            // renvoie le nouveau tag après avoir modifié la colonne correspondante avec ce nouveau tag
+            return $newTag;
+        }
+        catch (Exception $e)
+        {
+            return false;
+        }
     }
 
     private function writeTagInFile($fileName, $tagName, $tagValue)
@@ -218,7 +274,53 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
 
             return $forms;
         } catch(Exception $e) {
-            JLog::add('component/com_emundus/models/form | Error at getting form pages by profile_id ' . $profile_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('cli/LanguageGenerateTranslationTag | Error at getting form pages by profile_id ' . $profile_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    private function getGroupsFromForm_id($form_id)
+    {
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('groups.id, groups.name, groups.label')
+            ->from($db->quoteName('#__fabrik_groups', 'groups'))
+            ->leftJoin($db->quoteName('#__fabrik_formgroup', 'formgroup').' ON '.$db->quoteName('formgroup.group_id').' = '.$db->quoteName('groups.id'))
+            ->where($db->quoteName('formgroup.form_id'). ' = '. $form_id);
+
+        $db->setQuery($query);
+
+        try
+        {
+            return $db->loadObjectList();
+        }
+        catch (Exception $e)
+        {
+            JLog::add('cli/LanguageGenerateTranslationTag | Error at getting groups pages by form_id ' . $form_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    private function getElementsFromGroup_id($group_id)
+    {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('id, label')
+            ->from($db->quoteName('#__fabrik_elements', 'elms'))
+            ->where($db->quoteName('elms.group_id'). ' = '. $group_id);
+
+        $db->setQuery($query);
+
+        try
+        {
+            return $db->loadObjectList();
+        }
+        catch (Exception $e)
+        {
+            JLog::add('cli/LanguageGenerateTranslationTag | Error at getting elements pages by group_id ' . $group_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
