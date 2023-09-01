@@ -83,19 +83,30 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
             $id = $form->id;
             $columnValue = $this->getColumnValueFromId($id, 'label', 'jos_fabrik_forms');
 
-            if ($columnValue)
+            $this->columnValueHandler($columnValue, $fileName, $file_content, $id, $profile_id, 'jos_fabrik_forms', 'label', 'FORM');
+
+            /*
+            $introValue = $this->getColumnValueFromId($id, 'intro', 'jos_fabrik_forms');
+
+            if ($introValue)
             {
-                if (is_null($file_content[$columnValue])) // only if the index doesn't exist, "" value will not enter
+                if (substr($introValue, 0, 3) == '<p>')
                 {
-                    $newTag = $this->generateTag($id, $profile_id, 'jos_fabrik_forms', 'label', 'FORM');
-                    $this->writeTagInFile($fileName, $newTag, $columnValue);
+                    // remove <p> and </p>
+                    $introValue = substr($introValue, 1, -1);
+                    $introValue = substr($introValue, 2, -3);
+                }
+
+                if (is_null($file_content[$introValue])) // only if the index doesn't exist, "" value will not enter
+                {
+                    $newTag = $this->generateTag($id.'</p>', $profile_id.'_INTRO', 'jos_fabrik_forms', 'intro', '<p>FORM');
+                    var_dump($newTag);
+
+
+                    $this->writeTagInFile($fileName, $newTag, $introValue);
                 }
             }
-            else // the value is null, so its "unnamed item"
-            {
-                $newTag = $this->generateTag($id, $profile_id, 'jos_fabrik_forms', 'label', 'FORM');
-                $this->writeTagInFile($fileName, $newTag, "Unnamed item");
-            }
+            */
 
             $this->generateTagGroupsHandler($fileName, $file_content, $id);
         }
@@ -110,20 +121,7 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
             $id = $group->id;
             $columnValue = $this->getColumnValueFromId($id, 'label', 'jos_fabrik_groups');
 
-            if ($columnValue)
-            {
-                if (is_null($file_content[$columnValue])) // only if the index doesn't exist, "" value will not enter
-                {
-                    $newTag = $this->generateTag($id, $form_id, 'jos_fabrik_groups', 'label', 'GROUP');
-
-                    $this->writeTagInFile($fileName, $newTag, $columnValue);
-                }
-            }
-            else // the value is null, so its "unnamed item"
-            {
-                $newTag = $this->generateTag($id, $form_id, 'jos_fabrik_groups', 'label', 'GROUP');
-                $this->writeTagInFile($fileName, $newTag, "Unnamed item");
-            }
+            $this->columnValueHandler($columnValue, $fileName, $file_content, $id, $form_id, 'jos_fabrik_groups', 'label', 'GROUP');
 
             $this->generateTagElementsHandler($fileName, $file_content, $id);
         }
@@ -138,20 +136,29 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
             $id = $element->id;
             $columnValue = $this->getColumnValueFromId($id, 'label', 'jos_fabrik_elements');
 
-            if ($columnValue)
-            {
-                if (is_null($file_content[$columnValue])) // only if the index doesn't exist, "" value will not enter
-                {
-                    $newTag = $this->generateTag($id, $group_id, 'jos_fabrik_elements', 'label', 'ELEMENT');
+            $this->columnValueHandler($columnValue, $fileName, $file_content, $id, $group_id, 'jos_fabrik_elements', 'label', 'ELEMENT');
+        }
+    }
 
-                    $this->writeTagInFile($fileName, $newTag, $columnValue);
+    private function columnValueHandler($columnValue, $fileName, $file_content, $id, $ref_id, $table, $column, $tag)
+    {
+
+        if ($columnValue)
+        {
+            if (is_null($file_content[$columnValue])) // only if the index doesn't exist, "" value will not enter
+            {
+                $newTag = $this->generateTag($id, $ref_id, $table, $column, $tag);
+
+                if ($newTag)
+                {
+                    $this->writeTagInFileLanguage($fileName, $newTag, $columnValue);
                 }
             }
-            else // the value is null, so its "unnamed item"
-            {
-                $newTag = $this->generateTag($id, $group_id, 'jos_fabrik_elements', 'label', 'ELEMENT');
-                $this->writeTagInFile($fileName, $newTag, "Unnamed item");
-            }
+        }
+        else // the value is null, so its "Unnamed item"
+        {
+            $newTag = $this->generateTag($id, $ref_id, $table, $column, $tag);
+            $this->writeTagInFileLanguage($fileName, $newTag, "Unnamed item");
         }
     }
 
@@ -186,11 +193,12 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
         }
         catch (Exception $e)
         {
+            JLog::add('cli/LanguageGenerateTranslationTag | Error at updating column '.$column. ' in table '.$table. ' with id ' . $ref_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
 
-    private function writeTagInFile($fileName, $tagName, $tagValue)
+    private function writeTagInFileLanguage($fileName, $tagName, $tagValue)
     {
         $file = fopen($fileName, "a") or die("Unable to open file!");
 
