@@ -22,17 +22,22 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 
                     this.mapContainer.on('click', this.onClickMap.bind(this));
 
-                    navigator.geolocation.getCurrentPosition(
-                        function(position) {
-                            this.onClickMap({latlng: {lat: position.coords.latitude, lng: position.coords.longitude}});
-                        },
-                        function(error) {
-                            console.log(error);
-                        }, {
-                            enableHighAccuracy: true,
-                            timeout: 5000,
-                            maximumAge: 0
-                        });
+                    if (options.value) {
+                        var latlng = options.value.split(',');
+                        this.onClickMap({latlng: {lat: latlng[0], lng: latlng[1]}});
+                    } else {
+                        navigator.geolocation.getCurrentPosition(
+                            function(position) {
+                                this.onClickMap({latlng: {lat: position.coords.latitude, lng: position.coords.longitude}});
+                            },
+                            function(error) {
+                                console.log(error);
+                            }, {
+                                enableHighAccuracy: true,
+                                timeout: 5000,
+                                maximumAge: 0
+                            });
+                    }
                 }
             },
 

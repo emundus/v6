@@ -27,15 +27,21 @@ class PlgFabrik_ElementEmundus_geolocalisation extends PlgFabrik_Element {
     {
         JHTML::stylesheet('plugins/fabrik_element/emundus_geolocalisation/css/emundus_geolocalisation.css');
 
-        $element = $this->getElement();
         $properties = $this->inputProperties($repeatCounter);
-        $data['attributes'] = $properties;
+
+        if (is_array($this->getFormModel()->data))
+        {
+            $data = $this->getFormModel()->data;
+        }
+        $value = $this->getValue($data, $repeatCounter);
 
         $layout = $this->getLayout('form');
+        $layoutData = new stdClass;
+        $layoutData->attributes = $properties;
+        $layoutData->attributes['value'] = $value;
 
-        return $layout->render($data);
+        return $layout->render($layoutData);
     }
-
 
     public function elementJavascript($repeatCounter)
     {
