@@ -4173,6 +4173,19 @@ screen and (max-height: 769px) {
 
 @media all and (max-width: 479px) {
 
+  .view-checklist #attachment_list .col-md-12 {
+    &:last-of-type .justify-between {
+      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    &:last-of-type .justify-between div:first-of-type {
+      align-self: flex-start;
+      margin-left: 20px;
+    }
+  }
+
   .view-checklist table form .dz-default.dz-message {
     padding-right: 8px !important;
   }
@@ -5234,6 +5247,12 @@ screen and (max-height: 769px) {
   .tchooz-single-campaign .right-side {
     width: 64%;
   }
+
+  .view-checklist #attachment_list .col-md-12 {
+    width: 100%;
+    float: left;
+  }
+
 }
 
 @media all and (max-width: 1239px) {

@@ -87,6 +87,7 @@
       @media all and (max-width: 480px) {
         position: static;
         padding-top: 0;
+        padding-bottom: 24px;
       }
     }
     .popover:not(.clockpicker-popover) {
