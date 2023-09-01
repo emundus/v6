@@ -68,7 +68,8 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
 
         foreach($languages as $language)
         {
-            $file_content = parse_ini_file(JPATH_SITE . DS . 'language' . DS . 'overrides' . DS . $language . $fileEndname);
+            $fileName = JPATH_SITE.DS.'language'.DS.'overrides'.DS.$language.$fileEndname;
+            $file_content = parse_ini_file($fileName);
 
             if ($file_content)
             {
@@ -76,14 +77,61 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
                 {
                     $id = $form->id;
 
-                    $label = $this->getInfoFromId($id, 'label', 'fabrik_forms');
-                    var_dump($label);
+                    $columnValue = $this->getColumnValueFromId($id, 'label', 'jos_fabrik_forms');
+
+                    if ($columnValue)
+                    {
+                        if (is_null($file_content[$columnValue])) // only if the index doesn't exist, "" value will not enter
+                        {
+                            $newTag = $this->generateTag($id, $profile_id, 'jos_fabrik_forms', 'label', 'FORM');
+
+                            $this->writeTagInFile($fileName, $newTag, $columnValue);
+                        }
+                    }
                 }
             }
         }
     }
 
-    private function getInfoFromId($id, $info, $table)
+    private function generateTag($id, $ref_id, $table, $column, $tag)
+    {
+        // $id = l'id du formulaire / group / element
+        // $tag = FORM, GROUP, ELEMENT
+        // ref_id = id de sa référence (profile utilisateur / formulaire / group)
+        // table = la table à laquelle on doit modifier le tag
+        // column = la colonne pour la modification
+
+        // le nouveau nom de la balise = $tag_$ref_id_$id
+        // ex = FORM_95_183
+
+        $newTag = $tag.'_'.$ref_id.'_'.$id;
+
+        var_dump($newTag);
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->update($table)
+            ->set($db->quoteName($column) .' = \''. $newTag. '\'')
+            ->where('id = '.$id);
+
+        $db->setQuery($query);
+        $db->execute();
+
+        // renvoie le nouveau tag après avoir modifié la colonne correspondante avec ce nouveau tag
+        return $newTag;
+    }
+
+    private function writeTagInFile($fileName, $tagName, $tagValue)
+    {
+        $file = fopen($fileName, "a") or die("Unable to open file!");
+
+        $text = $tagName."=\"".$tagValue."\"";
+
+        fwrite($file, $text."\n");
+        fclose($file);
+    }
+
+    private function getColumnValueFromId($id, $info, $table)
     {
 
         $db = JFactory::getDbo();
@@ -91,7 +139,7 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
 
         $query
             ->select($db->quoteName($info))
-            ->from($db->quoteName('#__'.$table))
+            ->from($db->quoteName($table))
             ->where($db->quoteName('id') . ' ='.$id);
 
         $db->setQuery($query);
