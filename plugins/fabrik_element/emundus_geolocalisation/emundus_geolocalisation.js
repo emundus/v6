@@ -40,9 +40,8 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                                 console.log(error);
                             },
                             {
-                                enableHighAccuracy: true,
-                                timeout: 5000,
-                                maximumAge: 0
+                                enableHighAccuracy: false,
+                                timeout: 5000
                             });
                     } else {
                         this.onClickMap({latlng: {lat: options.default_lat, lng: options.default_lng}});
