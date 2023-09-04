@@ -612,6 +612,9 @@ JText::script('COM_EMUNDUS_EDIT_COMMENT_TITLE');
 JText::script('COM_EMUNDUS_FORM_BUILDER_DELETE_MODEL');
 JText::script('COM_EMUNDUS_FORM_PAGE_MODELS');
 JText::script('COM_EMUNDUS_FORM_MY_FORMS');
+JText::script('COM_EMUNDUS_ONBOARD_PROGRAM_ADDUSER');
+JText::script('COM_EMUNDUS_ACTIONS_EDIT_USER');
+JText::script('COM_EMUNDUS_USERS_ERROR_PLEASE_COMPLETE');
 
 // PASSWORD CHARACTER VALIDATION
 JText::script('COM_EMUNDUS_PASSWORD_WRONG_FORMAT_TITLE');
@@ -675,7 +678,7 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
     JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
     JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
 
-    JHtml::styleSheet('media/com_emundus/css/reset.css');
+    //JHtml::styleSheet('media/com_emundus/css/reset.css');
     JHtml::styleSheet('media/jui/css/chosen.css');
     JHtml::styleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
     JHtml::styleSheet('media/com_emundus/css/emundus_files.css');

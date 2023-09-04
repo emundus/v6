@@ -603,12 +603,23 @@ $(document).ready(function () {
 
 	/* Menu action */
 	$(document).off('click', '.em-actions');
-	$(document).on('click', '.em-actions', function (e) {
+	$(document).on('click', '.em-actions',async function (e) {
 
 		e.preventDefault();
 		var id = parseInt($(this).attr('id').split('|')[3]);
 
-		if(id != 26 && id != 33) {
+		// Prepare SweetAlert variables
+		var title = '';
+		var html = '';
+		var swal_container_class = '';
+		var swal_popup_class = '';
+		var swal_actions_class = '';
+		var swal_confirm_button = 'COM_EMUNDUS_ONBOARD_OK';
+		var preconfirm = '';
+		var preconfirm_value
+		var swalForm = false;
+
+		/*if(id != 26 && id != 33) {
 			$('#em-modal-actions').modal({
 				backdrop: false
 			}, 'toggle');
@@ -621,7 +632,7 @@ $(document).ready(function () {
 			$('.modal-footer').show();
 
 			$('.modal-body').attr('act-id', id);
-		}
+		}*/
 
 
 		var view = $('#view').val();
@@ -656,13 +667,20 @@ $(document).ready(function () {
 			/*create user*/
 			case 23:
 				/*affect*/
-				$.ajax({
+				addLoader();
+
+				await $.ajax({
 					type: 'get',
 					url: url,
 					dataType: 'html',
 					success: function (result) {
-						$('.modal-body').empty();
-						$('.modal-body').append(result);
+						swalForm = true;
+						title = 'COM_EMUNDUS_ONBOARD_PROGRAM_ADDUSER';
+						html = result;
+
+						preconfirm = "if (!formCheck('fname') || !formCheck('lname') || !formCheck('login') || !formCheck('mail')) {Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_USERS_ERROR_PLEASE_COMPLETE'))}";
+
+						removeLoader();
 					},
 					error: function (jqXHR) {
 						console.log(jqXHR.responseText);
@@ -671,7 +689,9 @@ $(document).ready(function () {
 				break;
 			case 24:
 				/* edit user*/
-				$.ajax({
+				addLoader();
+
+				await $.ajax({
 					type: 'get',
 					url: url,
 					dataType: 'html',
@@ -679,8 +699,11 @@ $(document).ready(function () {
 						user: sid
 					},
 					success: function (result) {
-						$('.modal-body').empty();
-						$('.modal-body').append(result);
+						swalForm = true;
+						title = 'COM_EMUNDUS_ACTIONS_EDIT_USER';
+						html = result;
+
+						removeLoader();
 					},
 					error: function (jqXHR, textStatus, errorThrown) {
 						console.log(jqXHR.responseText);
@@ -690,8 +713,8 @@ $(document).ready(function () {
 
 			case 21:
 				/*activate*/
-				$('#em-modal-actions').modal('hide');
 				var checkInput = getUserCheck();
+
 				$.ajax({
 					type: 'POST',
 					url: url,
@@ -740,8 +763,8 @@ $(document).ready(function () {
 
 			case 22:
 				/*desactivate*/
-				$('#em-modal-actions').modal('hide');
 				var checkInput = getUserCheck();
+
 				$.ajax({
 					type: 'POST',
 					url: url,
@@ -967,13 +990,43 @@ $(document).ready(function () {
 				});
 				break;
 		}
+
+		if(swalForm) {
+			Swal.fire({
+				title: Joomla.JText._(title),
+				html: html,
+				allowOutsideClick: false,
+				showCancelButton: true,
+				showCloseButton: true,
+				reverseButtons: true,
+				confirmButtonText: Joomla.JText._(swal_confirm_button),
+				cancelButtonText: Joomla.JText._('COM_EMUNDUS_ONBOARD_CANCEL'),
+				customClass: {
+					container: 'em-modal-actions ' + swal_container_class,
+					popup: swal_popup_class,
+					title: 'em-swal-title',
+					cancelButton: 'em-swal-cancel-button',
+					confirmButton: 'em-swal-confirm-button btn btn-success',
+					actions: swal_actions_class
+				},
+				preConfirm: () => {
+					if (preconfirm !== '') {
+						preconfirm_value = new Function(preconfirm)();
+					}
+				},
+			}).then((result) => {
+				if (result.value) {
+					runAction(id, url, preconfirm_value);
+				}
+			});
+
+			$('.em-chosen').chosen({width: '100%'});
+		}
 	});
 
-	/* Button on Actions*/
-	$(document).off('click', '#em-modal-actions .btn.btn-success');
+	function runAction(id, url = '', option = '') {
+		//var id = parseInt($('.modal-body').attr('act-id'));
 
-	$(document).on('click', '#em-modal-actions .btn.btn-success', function (e) {
-		var id = parseInt($('.modal-body').attr('act-id'));
 		if ($('#em-check-all-all').is(':checked')) {
 			var checkInput = 'all';
 		} else {
@@ -991,10 +1044,6 @@ $(document).ready(function () {
 			} else {
 				checkInput = myJSONObject;
 			}
-		}
-
-		if ($('#em-dimmer').is(':visible')) {
-			return false;
 		}
 
 		switch (id) {
@@ -1060,6 +1109,7 @@ $(document).ready(function () {
 				break;
 
 			case 20:
+				console.log('here');
 				var groups = "";
 				var campaigns = "";
 				var oprofiles = "";
@@ -1194,7 +1244,7 @@ $(document).ready(function () {
 								timer: 1500
 							});
 
-								$('#em-modal-actions').modal('hide');
+							$('#em-modal-actions').modal('hide');
 
 						} else {
 							Swal.fire({
@@ -1413,8 +1463,15 @@ $(document).ready(function () {
 					}
 				});
 
-			break;
+				break;
 		}
+	}
+
+	/* Button on Actions*/
+	$(document).off('click', '#em-modal-actions .btn.btn-success');
+
+	$(document).on('click', '#em-modal-actions .btn.btn-success', function (e) {
+
 	});
 
 	/*action fin*/
