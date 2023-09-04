@@ -2615,6 +2615,38 @@ try {
 						$db->execute();
 					}
 				}
+
+				/* DASHBOARD FOR SYSADMIN PROFILE */
+				$query->clear()
+					->select('*')
+					->from($db->quoteName('#__emundus_widgets_repeat_access'))
+					->where($db->quoteName('profile') . ' = 2');
+				$db->setQuery($query);
+				$dashboards = $db->loadObjectList();
+
+				foreach ($dashboards as $dashboard)
+				{
+					$query->clear()
+						->insert($db->quoteName('#__emundus_widgets_repeat_access'));
+					foreach ($dashboard as $key => $widget)
+					{
+						if ($key == 'id')
+						{
+							continue;
+						}
+
+						if($key == 'profile')
+						{
+							$query->set($db->quoteName($key) . ' = 1');
+							continue;
+						}
+
+						$query->set($db->quoteName($key) . ' = ' . $db->quote($widget));
+					}
+					$db->setQuery($query);
+					$db->execute();
+				}
+
             }
 		}
 
