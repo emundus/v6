@@ -53,7 +53,6 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
 
         if (empty($args[1])) {
             $this->out('Please provide a profile id');
-            return;
         } else {
             $profile_id = (int)$args[1];
 
@@ -300,120 +299,119 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
     }
 
     private function getPlatformLanguages() : array {
+        $languages = [];
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query
-            ->select($db->quoteName('lang_code'))
+        $query->select($db->quoteName('lang_code'))
             ->from($db->quoteName('#__languages'))
-            ->where($db->quoteName('published') . ' = 1 ');
-
-        $db->setQuery($query);
-
-        try {
-            return $db->loadColumn();
-        } catch (Exception $e) {
-            return [];
-        }
-    }
-
-    private function getFormsByProfileId($profile_id)
-    {
-
-        if (empty($profile_id)) {
-            return false;
-        }
-
-        require_once (JPATH_SITE . '/components/com_emundus/models/formbuilder.php');
-        $formbuilder = new EmundusModelFormbuilder;
-
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        $query->select(['menu.link' , 'menu.rgt'])
-            ->from ($db->quoteName('#__menu', 'menu'))
-            ->leftJoin($db->quoteName('#__menu_types', 'mt').' ON '.$db->quoteName('mt.menutype').' = '.$db->quoteName('menu.menutype'))
-            ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'sp').' ON '.$db->quoteName('sp.menutype').' = '.$db->quoteName('mt.menutype'))
-            ->where($db->quoteName('sp.id') . ' = '.$profile_id)
-            ->where($db->quoteName('menu.parent_id') . ' != 1')
-            ->where($db->quoteName('menu.published') . ' = 1')
-            ->where($db->quoteName('menu.link') . ' LIKE ' . $db->quote('%option=com_fabrik%'))
-            ->group('menu.rgt')
-            ->order('menu.rgt ASC');
-
+            ->where($db->quoteName('published') . ' = 1');
 
         try {
             $db->setQuery($query);
-            $forms = $db->loadObjectList();
+            $languages = $db->loadColumn();
+        } catch (Exception $e) {
+            JLog::add('cli/LanguageGenerateTranslationTag | Error at getting platform languages : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+        }
 
-            foreach ($forms as $form) {
-                $link = explode('=', $form->link);
-                $form->id = $link[sizeof($link) - 1];
+        return $languages;
+    }
 
-                $query->clear()
-                    ->select('label')
-                    ->from($db->quoteName('#__fabrik_forms'))
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($form->id));
+    private function getFormsByProfileId($profile_id): array
+    {
+        $forms = [];
+
+        if (!empty($profile_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select(['menu.link' , 'menu.rgt'])
+                ->from ($db->quoteName('#__menu', 'menu'))
+                ->leftJoin($db->quoteName('#__menu_types', 'mt').' ON '.$db->quoteName('mt.menutype').' = '.$db->quoteName('menu.menutype'))
+                ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'sp').' ON '.$db->quoteName('sp.menutype').' = '.$db->quoteName('mt.menutype'))
+                ->where($db->quoteName('sp.id') . ' = '.$profile_id)
+                ->where($db->quoteName('menu.parent_id') . ' != 1')
+                ->where($db->quoteName('menu.published') . ' = 1')
+                ->where($db->quoteName('menu.link') . ' LIKE ' . $db->quote('%option=com_fabrik%'))
+                ->group('menu.rgt')
+                ->order('menu.rgt ASC');
+
+
+            try {
                 $db->setQuery($query);
-                $form->label = $formbuilder->getJTEXT($db->loadResult());
-                print_r($forms->label);
+                $forms = $db->loadObjectList();
+
+                if (!empty($forms)) {
+                    require_once (JPATH_SITE . '/components/com_emundus/models/formbuilder.php');
+                    $formbuilder = new EmundusModelFormbuilder;
+
+                    foreach ($forms as $form) {
+                        $link = explode('=', $form->link);
+                        $form->id = $link[sizeof($link) - 1];
+
+                        $query->clear()
+                            ->select('label')
+                            ->from($db->quoteName('#__fabrik_forms'))
+                            ->where($db->quoteName('id') . ' = ' . $db->quote($form->id));
+
+                        $db->setQuery($query);
+                        $form->label = $formbuilder->getJTEXT($db->loadResult());
+                    }
+                }
+            } catch(Exception $e) {
+                JLog::add('cli/LanguageGenerateTranslationTag | Error at getting form pages by profile_id ' . $profile_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             }
-
-            return $forms;
-        } catch(Exception $e) {
-            JLog::add('cli/LanguageGenerateTranslationTag | Error at getting form pages by profile_id ' . $profile_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
         }
+
+        return $forms;
     }
 
-    private function getGroupsFromFormId($form_id)
+    private function getGroupsFromFormId($form_id): array
     {
+        $groups = [];
 
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        if (!empty($form_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-        $query->select('groups.id, groups.name, groups.label')
-            ->from($db->quoteName('#__fabrik_groups', 'groups'))
-            ->leftJoin($db->quoteName('#__fabrik_formgroup', 'formgroup').' ON '.$db->quoteName('formgroup.group_id').' = '.$db->quoteName('groups.id'))
-            ->where($db->quoteName('formgroup.form_id'). ' = '. $form_id);
+            $query->select('groups.id, groups.name, groups.label')
+                ->from($db->quoteName('#__fabrik_groups', 'groups'))
+                ->leftJoin($db->quoteName('#__fabrik_formgroup', 'formgroup').' ON '.$db->quoteName('formgroup.group_id').' = '.$db->quoteName('groups.id'))
+                ->where($db->quoteName('formgroup.form_id'). ' = '. $form_id);
 
-        $db->setQuery($query);
-
-        try
-        {
-            return $db->loadObjectList();
+            try {
+                $db->setQuery($query);
+                $groups = $db->loadObjectList();
+            } catch (Exception $e) {
+                JLog::add('cli/LanguageGenerateTranslationTag | Error at getting groups pages by form_id ' . $form_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            }
         }
-        catch (Exception $e)
-        {
-            JLog::add('cli/LanguageGenerateTranslationTag | Error at getting groups pages by form_id ' . $form_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
-        }
+
+        return $groups;
     }
 
-    private function getElementsFromGroupId($group_id)
+    private function getElementsFromGroupId($group_id): array
     {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $elements = [];
 
-        $query->select('id, label')
-            ->from($db->quoteName('#__fabrik_elements', 'elms'))
-            ->where($db->quoteName('elms.group_id'). ' = '. $group_id);
+        if (!empty($group_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-        $db->setQuery($query);
+            $query->select('id, label')
+                ->from($db->quoteName('#__fabrik_elements', 'elms'))
+                ->where($db->quoteName('elms.group_id'). ' = '. $group_id);
 
-        try
-        {
-            return $db->loadObjectList();
+            try {
+                $db->setQuery($query);
+                $elements = $db->loadObjectList();
+            } catch (Exception $e) {
+                JLog::add('cli/LanguageGenerateTranslationTag | Error at getting elements pages by group_id ' . $group_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            }
         }
-        catch (Exception $e)
-        {
-            JLog::add('cli/LanguageGenerateTranslationTag | Error at getting elements pages by group_id ' . $group_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
-        }
+
+        return $elements;
     }
 }
 
