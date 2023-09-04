@@ -49,6 +49,11 @@ class PlgFabrik_ElementEmundus_geolocalisation extends PlgFabrik_Element {
         $id = $this->getHTMLId($repeatCounter);
         $opts = $this->getElementJSOptions($repeatCounter);
 
+        $opts->default_lat = $params->get('default_lat', 48.85341);
+        $opts->default_lng = $params->get('default_lng', 2.3488);
+        $opts->default_zoom = $params->get('default_zoom', 13);
+        $opts->get_location = $params->get('get_location', 0);
+
         return array('FbEmundusGeolocation', $id, $opts);
     }
 }
