@@ -38,6 +38,8 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                             },
                             function(error) {
                                 console.log(error);
+
+                                this.onClickMap({latlng: {lat: options.default_lat, lng: options.default_lng}});
                             },
                             {
                                 enableHighAccuracy: false,
