@@ -30,7 +30,7 @@ require_once JPATH_LIBRARIES . '/import.legacy.php';
 // Bootstrap the CMS libraries.
 require_once JPATH_LIBRARIES . '/cms.php';
 
-define(DS, DIRECTORY_SEPARATOR);
+define('DS', DIRECTORY_SEPARATOR);
 
 /**
  * Cron job to trash expired cache data.
