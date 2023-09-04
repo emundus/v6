@@ -55,8 +55,40 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
             $this->out('Please provide a profile id');
             return;
         } else {
-            $this->generateTranslationTag((int)$args[1]);
+            $profile_id = (int)$args[1];
+
+            if (!$this->checkProfileIdExists($profile_id)) {
+                $this->out('Given profile id does not exist');
+            } else {
+                $this->generateTranslationTag($profile_id);
+            }
         }
+    }
+
+    private function checkProfileIdExists($profile_id)
+    {
+        $exists = false;
+
+        if (!empty($profile_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->clear()
+                ->select($db->quoteName('id'))
+                ->from($db->quoteName('jos_emundus_setup_profiles'))
+                ->where($db->quoteName('id') . ' = ' . $profile_id);
+
+            try {
+                $db->setQuery($query);
+                $result = $db->loadResult();
+
+                $exists = !empty($result);
+            } catch (Exception $e) {
+                $this->out($e->getMessage());
+            }
+        }
+
+        return $exists;
     }
 
     private function generateTranslationTag($profile_id)
@@ -106,7 +138,7 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
                 }
             }
         } else {
-            $this->out('No forms found for profile id: ' . $profile_id);
+            $this->out('- No forms found for profile id: ' . $profile_id);
         }
     }
 
@@ -140,7 +172,7 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
                 }
             }
         } else {
-            $this->out('No groups found for profile id: ' . $profile_id);
+            $this->out('- No groups found for profile id: ' . $profile_id);
         }
     }
 
@@ -178,7 +210,7 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
                 }
             }
         } else {
-            $this->out('No elements found for profile id: ' . $profile_id);
+            $this->out('- No elements found for profile id: ' . $profile_id);
         }
     }
 
