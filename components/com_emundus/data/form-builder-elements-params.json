@@ -547,5 +547,55 @@
         }
       ]
     }
+  ],
+  "emundus_geolocalisation": [
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_DEFAULT_LNG",
+      "name": "default_lng",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_DEFAULT_LAT",
+      "name": "default_lat",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_DEFAULT_ZOOM",
+      "name": "default_zoom",
+      "type": "number",
+      "minlength": 1,
+      "maxlength": 20,
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_GET_LOCATION",
+      "name": "get_location",
+      "type": "dropdown",
+      "options": [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    }
   ]
 }
