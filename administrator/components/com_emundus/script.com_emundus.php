@@ -2618,33 +2618,43 @@ try {
 
 				/* DASHBOARD FOR SYSADMIN PROFILE */
 				$query->clear()
+					->select('count(id)')
+					->from($db->quoteName('#__emundus_widgets_repeat_access'))
+					->where($db->quoteName('profile') . ' = 1');
+				$db->setQuery($query);
+				$existing_dashboard = $db->loadResult();
+
+				if(empty($existing_dashboard))
+				{
+				$query->clear()
 					->select('*')
 					->from($db->quoteName('#__emundus_widgets_repeat_access'))
 					->where($db->quoteName('profile') . ' = 2');
 				$db->setQuery($query);
 				$dashboards = $db->loadObjectList();
 
-				foreach ($dashboards as $dashboard)
-				{
-					$query->clear()
-						->insert($db->quoteName('#__emundus_widgets_repeat_access'));
-					foreach ($dashboard as $key => $widget)
+					foreach ($dashboards as $dashboard)
 					{
-						if ($key == 'id')
+						$query->clear()
+							->insert($db->quoteName('#__emundus_widgets_repeat_access'));
+						foreach ($dashboard as $key => $widget)
 						{
-							continue;
-						}
+							if ($key == 'id')
+							{
+								continue;
+							}
 
-						if($key == 'profile')
-						{
-							$query->set($db->quoteName($key) . ' = 1');
-							continue;
-						}
+							if($key == 'profile')
+							{
+								$query->set($db->quoteName($key) . ' = 1');
+								continue;
+							}
 
-						$query->set($db->quoteName($key) . ' = ' . $db->quote($widget));
+							$query->set($db->quoteName($key) . ' = ' . $db->quote($widget));
+						}
+						$db->setQuery($query);
+						$db->execute();
 					}
-					$db->setQuery($query);
-					$db->execute();
 				}
 
             }
