@@ -32,7 +32,6 @@ require_once JPATH_LIBRARIES . '/cms.php';
 
 define(DS, DIRECTORY_SEPARATOR);
 
-
 /**
  * Cron job to trash expired cache data.
  *
@@ -50,162 +49,202 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
      */
     public function doExecute() {
 
-        $args = (array)$GLOBALS['argv']; // like C or C++
+        $args = (array)$GLOBALS['argv'];
 
-        $this->generateTranslationTag((int)$args[1]);
+        if (empty($args[1])) {
+            $this->out('Please provide a profile id');
+            return;
+        } else {
+            $this->generateTranslationTag((int)$args[1]);
+        }
     }
 
     private function generateTranslationTag($profile_id)
     {
 
-        require_once JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'form.php';
+        require_once JPATH_SITE . '/components/com_emundus/models/form.php';
         $languages = $this->getPlatformLanguages();
-        $fileEndname = '.override.ini';
 
         foreach($languages as $language)
         {
-            $fileName = JPATH_SITE.DS.'language'.DS.'overrides'.DS.$language.$fileEndname;
-            $file_content = parse_ini_file($fileName);
+            $filename = JPATH_SITE . '/language/overrides/' . $language. '.override.ini';
+            $file_content = parse_ini_file($filename);
 
             if ($file_content)
             {
-                $this->generateTagFormsHandler($fileName, $file_content, $profile_id);
+                $this->out('Generating translation tag for language: ' . $language);
+                $this->generateTagFormsHandler($filename, $file_content, $profile_id);
+                $this->generateTagGroupsHandler($filename, $file_content, $profile_id); // not working
+                $this->generateTagElementsHandler($filename, $file_content, $profile_id); // not working
             }
         }
     }
 
-    private function generateTagFormsHandler($fileName, $file_content, $profile_id)
+    private function generateTagFormsHandler($filename, $file_content, $profile_id)
     {
         $forms = $this->getFormsByProfileId($profile_id);
 
-        foreach ($forms as $form)
-        {
-            $id = $form->id;
-            $columnValue = $this->getColumnValueFromId($id, 'label', 'jos_fabrik_forms');
+        if (!empty($forms)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-            $this->columnValueHandler($columnValue, $fileName, $file_content, $id, $profile_id, 'jos_fabrik_forms', 'label', 'FORM');
-
-            /*
-            $introValue = $this->getColumnValueFromId($id, 'intro', 'jos_fabrik_forms');
-
-            if ($introValue)
+            foreach ($forms as $form)
             {
-                if (substr($introValue, 0, 3) == '<p>')
-                {
-                    // remove <p> and </p>
-                    $introValue = substr($introValue, 1, -1);
-                    $introValue = substr($introValue, 2, -3);
-                }
+                $query->clear()
+                    ->select($db->quoteName('label'))
+                    ->from($db->quoteName('jos_fabrik_forms'))
+                    ->where($db->quoteName('id') . ' = ' . $form->id);
 
-                if (is_null($file_content[$introValue])) // only if the index doesn't exist, "" value will not enter
-                {
-                    $newTag = $this->generateTag($id.'</p>', $profile_id.'_INTRO', 'jos_fabrik_forms', 'intro', '<p>FORM');
-                    var_dump($newTag);
+                $db->setQuery($query);
 
+                try {
+                    $value = $db->loadResult();
 
-                    $this->writeTagInFile($fileName, $newTag, $introValue);
+                    $this->insertTagValue($value, $filename, $file_content, $form->id, $profile_id, 'jos_fabrik_forms', 'label', 'FORM');
+                } catch (Exception $e) {
+                    $value = null;
                 }
             }
-            */
-
-            $this->generateTagGroupsHandler($fileName, $file_content, $id);
+        } else {
+            $this->out('No forms found for profile id: ' . $profile_id);
         }
     }
 
-    private function generateTagGroupsHandler($fileName, $file_content, $form_id)
+    private function generateTagGroupsHandler($fileName, $file_content, $profile_id)
     {
-        $groups = $this->getGroupsFromForm_id($form_id);
+        $forms = $this->getFormsByProfileId($profile_id);
 
-        foreach ($groups as $group)
-        {
-            $id = $group->id;
-            $columnValue = $this->getColumnValueFromId($id, 'label', 'jos_fabrik_groups');
+        if (!empty($forms)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-            $this->columnValueHandler($columnValue, $fileName, $file_content, $id, $form_id, 'jos_fabrik_groups', 'label', 'GROUP');
+            foreach($forms as $form) {
+                $groups = $this->getGroupsFromFormId($form->id);
 
-            $this->generateTagElementsHandler($fileName, $file_content, $id);
-        }
-    }
+                if (!empty($groups)) {
+                    foreach ($groups as $group) {
+                        $query->clear()
+                            ->select($db->quoteName('label'))
+                            ->from($db->quoteName('jos_fabrik_groups'))
+                            ->where($db->quoteName('id') . ' ='. $group->id);
 
-    private function generateTagElementsHandler($fileName, $file_content, $group_id)
-    {
-        $elements = $this->getElementsFromGroup_id($group_id);
+                        try {
+                            $db->setQuery($query);
+                            $value = $db->loadResult();
 
-        foreach ($elements as $element)
-        {
-            $id = $element->id;
-            $columnValue = $this->getColumnValueFromId($id, 'label', 'jos_fabrik_elements');
-
-            $this->columnValueHandler($columnValue, $fileName, $file_content, $id, $group_id, 'jos_fabrik_elements', 'label', 'ELEMENT');
-        }
-    }
-
-    private function columnValueHandler($columnValue, $fileName, $file_content, $id, $ref_id, $table, $column, $tag)
-    {
-
-        if ($columnValue)
-        {
-            if (is_null($file_content[$columnValue])) // only if the index doesn't exist, "" value will not enter
-            {
-                $newTag = $this->generateTag($id, $ref_id, $table, $column, $tag);
-
-                if ($newTag)
-                {
-                    $this->writeTagInFileLanguage($fileName, $newTag, $columnValue);
+                            $this->insertTagValue($value, $fileName, $file_content, $group->id, $form->id, 'jos_fabrik_groups', 'label', 'GROUP');
+                        } catch (Exception $e) {
+                            $value = null;
+                        }
+                    }
                 }
             }
-        }
-        else // the value is null, so its "Unnamed item"
-        {
-            $newTag = $this->generateTag($id, $ref_id, $table, $column, $tag);
-            $this->writeTagInFileLanguage($fileName, $newTag, "Unnamed item");
+        } else {
+            $this->out('No groups found for profile id: ' . $profile_id);
         }
     }
 
+    private function generateTagElementsHandler($filename, $file_content, $profile_id)
+    {
+        $forms = $this->getFormsByProfileId($profile_id);
+
+        if (!empty($forms)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            foreach($forms as $form)
+            {
+                $groups = $this->getGroupsFromFormId($form->id);
+
+                foreach($groups as $group) {
+                    $elements = $this->getElementsFromGroupId($group->id);
+
+                    foreach ($elements as $element)
+                    {
+                        $query->clear()
+                            ->select($db->quoteName('label'))
+                            ->from($db->quoteName('jos_fabrik_elements'))
+                            ->where($db->quoteName('id') . ' ='. $element->id);
+
+                        try {
+                            $db->setQuery($query);
+                            $value = $db->loadResult();
+
+                            $this->insertTagValue($value, $filename, $file_content, $element->id, $group->id, 'jos_fabrik_elements', 'label', 'ELEMENT');
+                        } catch (Exception $e) {
+                            $value = null;
+                        }
+                    }
+                }
+            }
+        } else {
+            $this->out('No elements found for profile id: ' . $profile_id);
+        }
+    }
+
+    private function insertTagValue($value, $filename, $file_content, $id, $ref_id, $table, $column, $tag)
+    {
+        if ($value) {
+            if (is_null($file_content[$value])) {
+                $new_tag = $this->generateTag($id, $ref_id, $table, $column, $tag);
+
+                if ($new_tag) {
+                    $this->writeTagInFileLanguage($filename, $new_tag, $value);
+                }
+            }
+        } else {
+            $new_tag = $this->generateTag($id, $ref_id, $table, $column, $tag);
+            $this->writeTagInFileLanguage($filename, $new_tag, 'Unnamed item');
+        }
+    }
+
+    /**
+     * @param $id int du formulaire / group / element
+     * @param $ref_id int de sa référence (profile utilisateur / formulaire / group)
+     * @param $table string la table associée
+     * @param $column string
+     * @param $tag
+     * @return false|string le nouveau nom de la balise = $tag_$ref_id_$id. ex = FORM_95_183
+     */
     private function generateTag($id, $ref_id, $table, $column, $tag)
     {
-        // $id = l'id du formulaire / group / element
-        // $tag = FORM, GROUP, ELEMENT
-        // ref_id = id de sa référence (profile utilisateur / formulaire / group)
-        // table = la table à laquelle on doit modifier le tag
-        // column = la colonne pour la modification
+        $inserted_tag = '';
 
-        // le nouveau nom de la balise = $tag_$ref_id_$id
-        // ex = FORM_95_183
+        if (!empty($id) && !empty($ref_id) && !empty($table) && !empty($column) && !empty($tag)) {
+            $new_tag = $tag . '_' . $ref_id . '_' . $id;
 
-        $newTag = $tag.'_'.$ref_id.'_'.$id;
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+            $query->update($table)
+                ->set($db->quoteName($column) .' = '. $db->quote($new_tag))
+                ->where('id = '. $id);
 
-        $query->update($table)
-            ->set($db->quoteName($column) .' = \''. $newTag. '\'')
-            ->where('id = '.$id);
+            try {
+                $db->setQuery($query);
+                $inserted = $db->execute();
 
-        $db->setQuery($query);
-
-        try
-        {
-            $db->execute();
-
-            // renvoie le nouveau tag après avoir modifié la colonne correspondante avec ce nouveau tag
-            return $newTag;
+                if ($inserted) {
+                    $inserted_tag = $new_tag;
+                }
+            } catch (Exception $e) {
+                JLog::add('cli/LanguageGenerateTranslationTag | Error at updating column '.$column. ' in table '.$table. ' with id ' . $ref_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            }
         }
-        catch (Exception $e)
-        {
-            JLog::add('cli/LanguageGenerateTranslationTag | Error at updating column '.$column. ' in table '.$table. ' with id ' . $ref_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
-        }
+
+        return $inserted_tag;
     }
 
-    private function writeTagInFileLanguage($fileName, $tagName, $tagValue)
+    private function writeTagInFileLanguage($filename, $tag, $value)
     {
-        $file = fopen($fileName, "a") or die("Unable to open file!");
+        $file = fopen($filename, 'a') or die('Unable to open file!');
 
-        $text = $tagName."=\"".$tagValue."\"";
+        $text = $tag."=\"".$value."\"";
 
         fwrite($file, $text."\n");
         fclose($file);
+
+        $this->out('Tag '.$tag.' added in file with value '.$value);
     }
 
     private function getColumnValueFromId($id, $info, $table)
@@ -254,8 +293,7 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
             return false;
         }
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'formbuilder.php');
-
+        require_once (JPATH_SITE . '/components/com_emundus/models/formbuilder.php');
         $formbuilder = new EmundusModelFormbuilder;
 
         $db = JFactory::getDbo();
@@ -300,7 +338,7 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
         }
     }
 
-    private function getGroupsFromForm_id($form_id)
+    private function getGroupsFromFormId($form_id)
     {
 
         $db = JFactory::getDbo();
@@ -324,7 +362,7 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
         }
     }
 
-    private function getElementsFromGroup_id($group_id)
+    private function getElementsFromGroupId($group_id)
     {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
