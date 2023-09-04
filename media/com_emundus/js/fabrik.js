@@ -276,3 +276,50 @@ function purcentage(elements){
         }
     }
 }
+
+function birthDateValidation(element, minAge = 0, maxAge = 0) {
+    const errorElement = document.querySelector('.fb_el_'+element.baseElementId + ' .fabrikErrorMessage');
+    if(errorElement) {
+        errorElement.innerHTML = '';
+    }
+
+    let error = '';
+    const value = element.get('value');
+
+    let regex = /^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/;
+    const regexTest = regex.test(value);
+    const userBirthDate = new Date(value.replace(regex, "$3-$2-$1"));
+    let todayYear = (new Date()).getFullYear();
+
+    if (!regexTest || isNaN(userBirthDate))
+    {
+        error = 'Veuillez saisir une date de naissance valide';
+    }
+    else if(minAge !== 0)
+    {
+        let cutOffMin = new Date();
+        cutOffMin.setFullYear(todayYear - minAge);
+
+        if (userBirthDate > cutOffMin) {
+            error = 'Vous devez être plus agé que ' + minAge;
+        }
+    }
+    else if(maxAge !== 0)
+    {
+        let cutOffMax = new Date();
+        cutOffMax.setFullYear(todayYear - maxAge);
+
+        if (userBirthDate < cutOffMax) {
+            error = 'Vous devez être plus jeune que ' + maxAge;
+        }
+    }
+
+    if(error !== '')
+    {
+        if(errorElement) {
+            errorElement.innerHTML = error;
+        }
+    }
+
+    return userBirthDate;
+}

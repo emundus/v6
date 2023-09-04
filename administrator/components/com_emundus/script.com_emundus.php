@@ -2564,6 +2564,57 @@ try {
 				$db->setQuery($query);
 				$db->execute();
 
+				$query->clear()
+					->select('id')
+					->from($db->quoteName('#__fabrik_forms'))
+					->where($db->quoteName('label') . ' LIKE ' . $db->quote('SETUP_EMAIL_DETAILS'));
+				$db->setQuery($query);
+				$emails_history_formid = $db->loadResult();
+
+				if(!empty($emails_history_formid)) {
+					$query->clear()
+						->select('group_id')
+						->from($db->quoteName('#__fabrik_formgroup'))
+						->where($db->quoteName('form_id') . ' = ' . $db->quote($emails_history_formid));
+					$db->setQuery($query);
+					$groups = $db->loadColumn();
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_elements'))
+						->set($db->quoteName('hidden') . ' = 1')
+						->where($db->quoteName('group_id') . ' IN (' . implode(',', $groups) . ')')
+						->where($db->quoteName('name') . ' LIKE ' . $db->quote('state'));
+					$db->setQuery($query);
+					$db->execute();
+
+					$query->clear()
+						->update($db->quoteName('#__menu'))
+						->set($db->quoteName('template_style_id') . ' = 22')
+						->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_fabrik%'));
+					$db->setQuery($query);
+					$db->execute();
+
+					$query->clear()
+						->select('id,params')
+						->from($db->quoteName('#__fabrik_lists'))
+						->where($db->quoteName('form_id') . ' = ' . $db->quote($emails_history_formid));
+					$db->setQuery($query);
+					$list = $db->loadObject();
+
+					if(!empty($list))
+					{
+						$params = json_decode($list->params, true);
+						$params['csv_export_frontend'] = '10';
+						$params['allow_edit_details'] = '10';
+
+						$query->clear()
+							->update($db->quoteName('#__fabrik_lists'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+							->where($db->quoteName('id') . ' = ' . $db->quote($list->id));
+						$db->setQuery($query);
+						$db->execute();
+					}
+				}
             }
 		}
 
