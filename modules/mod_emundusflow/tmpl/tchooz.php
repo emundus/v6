@@ -54,6 +54,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
 
     .em-programme-tag {
         overflow: visible;
+        white-space: initial;
     }
 
     @media all and (max-width: 767px) {
@@ -117,7 +118,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
         <?php endif; ?>
 
         <?php if ($show_programme==1) : ?>
-        <div class="flex items-center">
+        <div class="flex items-center em-flex-wrap">
             <p class="em-text-neutral-600 mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_PROGRAMME'); ?> : </p>
             <p class="em-programme-tag" style="color: <?php echo $color ?>;margin: unset;padding: 0">
                 <?php  echo $current_application->prog_label; ?>
