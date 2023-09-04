@@ -31,12 +31,12 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                         this.onClickMap({latlng: {lat: latlng[0], lng: latlng[1]}});
                     } else if (options.get_location == 1) {
                         navigator.geolocation.getCurrentPosition(
-                            function(position) {
+                            (position) => {
                                 this.onClickMap({
                                     latlng: {lat: position.coords.latitude, lng: position.coords.longitude}
                                 });
                             },
-                            function(error) {
+                            (error) => {
                                 console.log(error);
 
                                 this.onClickMap({latlng: {lat: options.default_lat, lng: options.default_lng}});
