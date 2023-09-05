@@ -122,8 +122,16 @@ define(['jquery', 'fab/element'],
 
                     switch (data.header.statut) {
                         case 200:
+                            this.resetFields();
+
                             // Populate the fields with the data
                             const properties = data.etablissement;
+
+                            if(properties['uniteLegale']['etatAdministratifUniteLegale'] !== 'A'){
+                                divError.innerHTML = Joomla.JText._('PLG_ELEMENT_INSEE_SIRET_CLOSED');
+                                document.querySelector('#' + this.element.id + ' input').value = '';
+                                break;
+                            }
 
                             this.options.mapping.forEach((item) => {
                                 let data_to_insert = [];
