@@ -110,7 +110,12 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
 					}
 				}
 
-				JLanguageHelper::saveToIniFile($file, $parsed_file);
+				$saved = JLanguageHelper::saveToIniFile($file, $parsed_file);
+
+				if (!$saved) {
+					$this->out('Could not save language file for ' . $language);
+					die();
+				}
 			}
 
 			if (!empty($labels)) {
