@@ -168,7 +168,8 @@ if ($allowed_attachments !== true) {
                     <?php endif; ?>
                 </select>
                 <a class="em-font-size-14 em-pointer" href="emails"
-                   target="_blank"><?= JText::_('COM_EMUNDUS_EMAILS_ADD_TEMPLATE'); ?></a>
+                   target="_blank"><?= JText::_('COM_EMUNDUS_EMAILS_ADD_TEMPLATE'); ?>
+                </a>
             </div>
         </div>
 

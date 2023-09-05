@@ -1522,7 +1522,7 @@ input[type="text"],
         border: none;
       }
 .chzn-container .chzn-single li.search-field, .chzn-container .chzn-choices li.search-field, .chzn-container.chzn-container-multi .chzn-single li.search-field, .chzn-container.chzn-container-multi .chzn-choices li.search-field, .chzn-container.chzn-container-multi.chzn-container-active .chzn-single li.search-field, .chzn-container.chzn-container-multi.chzn-container-active .chzn-choices li.search-field {
-        height: 15px;
+        height: auto;
       }
 .chzn-container .chzn-single li.search-field input[type="text"], .chzn-container .chzn-choices li.search-field input[type="text"], .chzn-container.chzn-container-multi .chzn-single li.search-field input[type="text"], .chzn-container.chzn-container-multi .chzn-choices li.search-field input[type="text"], .chzn-container.chzn-container-multi.chzn-container-active .chzn-single li.search-field input[type="text"], .chzn-container.chzn-container-multi.chzn-container-active .chzn-choices li.search-field input[type="text"] {
           outline: none;
@@ -1530,7 +1530,8 @@ input[type="text"],
           width: 17vw !important;
         }
 .chzn-container .chzn-search, .chzn-container.chzn-container-multi .chzn-search, .chzn-container.chzn-container-multi.chzn-container-active .chzn-search {
-      padding: 8px 12px;
+      padding: 4px 12px;
+      line-height: 20px;
     }
 .chzn-container .chzn-search input[type="text"], .chzn-container.chzn-container-multi .chzn-search input[type="text"], .chzn-container.chzn-container-multi.chzn-container-active .chzn-search input[type="text"] {
         border-radius: var(--em-form-br-focus) !important;
