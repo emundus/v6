@@ -275,26 +275,6 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
 	    $this->out('Tag '.$tag.' added in file with value '.$value);
     }
 
-    private function getColumnValueFromId($id, $info, $table)
-    {
-
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        $query
-            ->select($db->quoteName($info))
-            ->from($db->quoteName($table))
-            ->where($db->quoteName('id') . ' ='.$id);
-
-        $db->setQuery($query);
-
-        try {
-            return $db->loadResult();
-        } catch (Exception $e) {
-            return false;
-        }
-    }
-
     private function getPlatformLanguages() : array {
         $languages = [];
 
@@ -333,7 +313,6 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
                 ->where($db->quoteName('menu.link') . ' LIKE ' . $db->quote('%option=com_fabrik%'))
                 ->group('menu.rgt')
                 ->order('menu.rgt ASC');
-
 
             try {
                 $db->setQuery($query);
