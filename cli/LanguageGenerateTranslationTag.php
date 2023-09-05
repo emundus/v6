@@ -268,14 +268,11 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
 
     private function writeTagInFileLanguage($filename, $tag, $value)
     {
-        $file = fopen($filename, 'a') or die('Unable to open file!');
+	    $parsed_file = JLanguageHelper::parseIniFile($filename);
+		$parsed_file[$tag] = $value;
+	    JLanguageHelper::saveToIniFile($filename, $parsed_file);
 
-        $text = $tag."=\"".$value."\"";
-
-        fwrite($file, $text."\n");
-        fclose($file);
-
-        $this->out('Tag '.$tag.' added in file with value '.$value);
+	    $this->out('Tag '.$tag.' added in file with value '.$value);
     }
 
     private function getColumnValueFromId($id, $info, $table)
