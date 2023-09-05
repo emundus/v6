@@ -6,10 +6,13 @@
  * Time: 10:30
  */?>
 
+<style>
+    form {
+        margin: 0;
+    }
+</style>
+
 <form action="index.php?option=com_emundus&controller=users&task=addgroup" id="em-add-group" class="em-addGroup" role="form" method="post">
-
-    <h3><?= JText::_('COM_EMUNDUS_USERS_ADD_GROUP'); ?></h3>
-
     <fieldset class="em-addGroup-defineGroup">
         <div class="form-group em-addGroup-defineGroup-name">
             <label class="control-label em-addGroup-defineGroup-description" for="gname"><?= JText::_('COM_EMUNDUS_GROUPS_GROUP_NAME'); ?></label>
@@ -33,7 +36,6 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-        $('form').css({padding:"26px"});
         $('#gprogs').chosen({width:'100%'});
     });
 </script>
