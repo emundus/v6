@@ -714,7 +714,7 @@ elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller',
 {
     $controller->execute($task);
 }
-elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign' && $json != 'json') && $task != 'passrequest' && $task != 'getusername')
+elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign' && $json != 'json') && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity')
 {
     JPluginHelper::importPlugin('emundus', 'custom_event_handler');
     $app->triggerEvent('callEventHandler', ['onAccessDenied', []]);

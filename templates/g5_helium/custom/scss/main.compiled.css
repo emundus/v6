@@ -539,16 +539,16 @@ video {
 }
 @media all and (min-width: 768px) {
     .view-registration.em-formRegistrationCenter .emundus-form {
-        flex: 0 0 50%;
-        max-width: 50%;
+        flex: 0 0 45%;
+        max-width: 45%;
         margin: 16px auto
 
     }
       }
 @media all and (min-width: 1440px) {
     .view-registration.em-formRegistrationCenter .emundus-form {
-        flex: 0 0 40%;
-        max-width: 40%;
+        flex: 0 0 30%;
+        max-width: 30%;
         margin: 16px auto
 
     }
@@ -559,6 +559,16 @@ video {
 .view-registration.em-formRegistrationCenter .emundus-form .em-form-intro ul li {
             line-height: 24px;
           }
+.view-registration.em-formRegistrationCenter .emundus-form .fabrikGroupColumns.fabrikGroup .row-fluid {
+          -moz-column-gap: 0;
+               column-gap: 0;
+        }
+.view-registration.em-formRegistrationCenter .emundus-form .fabrikGroupColumns-2 {
+        margin-bottom: 0;
+      }
+.view-registration.em-formRegistrationCenter .emundus-form .fabrikElementContainer:not(.fabrikHide) {
+  margin-bottom: var(--em-spacing-3);
+}
 .view-registration.em-formRegistrationCenter .emundus-form #jos_emundus_users___password_check {
   margin-top: var(--em-spacing-1);
 }
@@ -1145,8 +1155,18 @@ form.fabrikForm .plg-panel .fabrikElement .fabrikinput .fabrikElementContent {
             line-height: 24px;
 }
 /** CAPTCHA **/
+form.fabrikForm .plg-captcha .fabrikElement {
+  display: flex;
+  align-items: center;
+        gap: 8px;
+}
+form.fabrikForm .plg-captcha .fabrikElement img {
+          height: 40px;
+          border-radius: 8px;
+        }
 form.fabrikForm .plg-captcha .captcha_input {
-  margin-top: var(--em-spacing-1);
+  margin-top: 0px;
+  width: 100%;
 }
 /** FILE **/
 form.fabrikForm .plg-fileupload .fabrikSubElementContainer {

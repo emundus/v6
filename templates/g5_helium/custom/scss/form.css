@@ -26,13 +26,13 @@
     margin-left: -10px;
     .emundus-form {
       @media all and (min-width: 768px) {
-        flex: 0 0 50%;
-        max-width: 50%;
+        flex: 0 0 45%;
+        max-width: 45%;
         margin: 16px auto;
       }
       @media all and (min-width: 1440px) {
-        flex: 0 0 40%;
-        max-width: 40%;
+        flex: 0 0 30%;
+        max-width: 30%;
         margin: 16px auto;
       }
 
@@ -44,6 +44,21 @@
           }
         }
       }
+
+      .fabrikGroupColumns.fabrikGroup  {
+        .row-fluid {
+          column-gap: 0;
+        }
+      }
+
+      .fabrikGroupColumns-2 {
+        margin-bottom: 0;
+      }
+
+      .fabrikElementContainer:not(.fabrikHide) {
+        @apply mb-3;
+      }
+
       #jos_emundus_users___password_check {
         @apply mt-1;
       }
@@ -631,8 +646,19 @@
 
     /** CAPTCHA **/
     .plg-captcha {
+      .fabrikElement {
+        @apply flex;
+        @apply items-center;
+        gap: 8px;
+
+        img {
+          height: 40px;
+          border-radius: 8px;
+        }
+      }
       .captcha_input {
-        @apply mt-1;
+        @apply mt-0;
+        @apply w-full;
       }
     }
 
