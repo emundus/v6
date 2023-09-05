@@ -666,7 +666,7 @@ $(document).ready(function () {
 				break;
 			case 20:
 				title = 'COM_EMUNDUS_ONBOARD_PROGRAM_ADDUSER';
-				preconfirm = "if (!formCheck('lname') || !formCheck('lname') || !formCheck('mail') || !formCheck('login')) {Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_USERS_ERROR_PLEASE_COMPLETE'))}";
+				preconfirm = "if (!formCheck('lname') || !formCheck('lname') || !formCheck('mail')) {Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_USERS_ERROR_PLEASE_COMPLETE'))}";
 				swal_confirm_button = 'COM_EMUNDUS_USERS_CREATE_USER_CONFIRM';
 				break;
 			case 23:
@@ -703,7 +703,7 @@ $(document).ready(function () {
 				swalForm = true;
 				title = 'COM_EMUNDUS_ACTIONS_EDIT_USER';
 				swal_confirm_button = 'COM_EMUNDUS_USERS_EDIT_USER_CONFIRM';
-				preconfirm = "if (!formCheck('lname') || !formCheck('fname') || !formCheck('mail') || !formCheck('login')) {Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_USERS_ERROR_PLEASE_COMPLETE'))}";
+				preconfirm = "if (!formCheck('lname') || !formCheck('fname') || !formCheck('mail')) {Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_USERS_ERROR_PLEASE_COMPLETE'))}";
 				html = '<div id="data"></div>';
 
 				addLoader();
