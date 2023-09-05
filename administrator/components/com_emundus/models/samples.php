@@ -13,6 +13,7 @@ include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
 include_once(JPATH_SITE.'/components/com_emundus/models/formbuilder.php');
 include_once(JPATH_SITE.'/components/com_emundus/models/settings.php');
 include_once(JPATH_SITE.'/components/com_emundus/helpers/files.php');
+include_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
 
 class EmundusModelSamples extends JModelList {
 
@@ -36,10 +37,12 @@ class EmundusModelSamples extends JModelList {
             $existing = $db->loadResult();
         } while(!is_null($existing));
 
+	    $now = EmundusHelperDate::getNow();
+
         $query->clear()
 	        ->insert('#__users')
             ->columns('name, username, email, password, registerDate')
-            ->values($db->quote('Test USER') . ', ' . $db->quote($username) . ',' . $db->quote($username . '@emundus.fr') . ',' .  $db->quote(md5('test1234')) . ',' . $db->quote(date('Y-m-d H:i:s')));
+            ->values($db->quote('Test USER') . ', ' . $db->quote($username) . ',' . $db->quote($username . '@emundus.fr') . ',' .  $db->quote(md5('test1234')) . ',' . $db->quote($now));
 
         try {
             $db->setQuery($query);
