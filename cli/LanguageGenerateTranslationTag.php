@@ -137,14 +137,16 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
 			$forms = $this->getFormsByProfileId($profile_id);
 			foreach($forms as $form) {
 				$query->clear()
-					->select('label')
+					->select('label, intro')
 					->from($db->quoteName('jos_fabrik_forms'))
 					->where($db->quoteName('id') . ' = ' . $form->id);
 
 				$db->setQuery($query);
-				$form_label = $db->loadResult();
+				$form_data = $db->loadAssoc();
 				$form_label_tag = $this->generateTag($form->id, $profile_id, 'jos_fabrik_forms', 'label', 'FORM');
-				$labels[$form_label_tag] = $form_label;
+				$labels[$form_label_tag] = $form_data['label'];
+				$form_intro_tag = $this->generateTag($form->id, $profile_id, 'jos_fabrik_forms', 'intro', 'FORMINTRO');
+				$labels[$form_intro_tag] = $form_data['intro'];
 
 				$groups = $this->getGroupsFromFormId($form->id);
 				foreach($groups as $group) {
@@ -189,6 +191,12 @@ class LanguageGenerateTranslationTag extends JApplicationCli {
 					$query->clear()
 						->update($db->quoteName('jos_fabrik_forms'))
 						->set($db->quoteName('label') . ' = ' . $db->quote($tag))
+						->where($db->quoteName('id') . ' = ' . $id);
+					break;
+				case 'FORMINTRO':
+					$query->clear()
+						->update($db->quoteName('jos_fabrik_forms'))
+						->set($db->quoteName('intro') . ' = ' . $db->quote($tag))
 						->where($db->quoteName('id') . ' = ' . $id);
 					break;
 				case 'GROUP':
