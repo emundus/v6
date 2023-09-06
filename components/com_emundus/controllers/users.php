@@ -88,7 +88,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
 		$h_emails = new EmundusHelperEmails();
 		if (!$h_emails->correctEmail($email)) {
-			echo json_encode((object)array('status' => false, 'msg' => JText::_('MAIL_NOT_GOOD')));
+			echo json_encode((object)array('status' => false, 'msg' => JText::_('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_EMAIL')));
 			exit;
 		}
 
@@ -700,7 +700,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 			exit;
 		}
 		if (!filter_var($newuser['email'], FILTER_VALIDATE_EMAIL)) {
-			echo json_encode((object)array('status' => false, 'msg' => 'MAIL_NOT_GOOD'));
+			echo json_encode((object)array('status' => false, 'msg' => JText::_('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_EMAIL')));
 			exit;
 		}
 
