@@ -2864,16 +2864,17 @@ class EmundusHelperFiles
                     ->values(implode(',', $db->quote(array_values($params))));
 
                 $db->setQuery($query);
-                $db->execute();
-                return array('id' => $db->insertid(), 'name' => $params['name']);
+                $inserted = $db->execute();
+
+				if ($inserted) {
+					return array('id' => $db->insertid(), 'name' => $params['name']);
+				}
             } catch (Exception $e) {
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-                return false;
             }
         }
-        else {
-            return false;
-        }
+
+		return false;
     }
 
     // delete pdf filter
