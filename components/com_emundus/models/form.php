@@ -850,14 +850,15 @@ class EmundusModelForm extends JModelList {
 						->columns($db->quoteName($columns))
 						->values($values);
 
-					try {
-						$db->setQuery($query);
-						$copied = $db->execute();
-					} catch (Exception $e) {
-						JLog::add('component/com_emundus/models/form | Error when copy attachments to new profile : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-					}
-				} else {
-					$copied = true;
+				$query->insert($db->quoteName('#__emundus_setup_attachment_profiles'))
+					->columns($db->quoteName($columns))
+					->values($values);
+
+				try {
+					$db->setQuery($query);
+					$copied = $db->execute();
+				} catch (Exception $e) {
+					JLog::add('component/com_emundus/models/form | Error when copy attachments to new profile : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 				}
 			}
 		}
