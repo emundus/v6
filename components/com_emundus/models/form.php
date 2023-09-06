@@ -840,7 +840,7 @@ class EmundusModelForm extends JModelList {
 						}
 
 						// do not use db->quote() every time, only if the value is not an integer and not null
-						$values[] = implode(',', array_map(function($value) use ($db) {
+						$values[] = implode(',', array_map(function ($value) use ($db) {
 							return is_null($value) ? 'NULL' : $db->quote($value);
 						}, $attachment));
 					}
@@ -850,15 +850,12 @@ class EmundusModelForm extends JModelList {
 						->columns($db->quoteName($columns))
 						->values($values);
 
-				$query->insert($db->quoteName('#__emundus_setup_attachment_profiles'))
-					->columns($db->quoteName($columns))
-					->values($values);
-
-				try {
-					$db->setQuery($query);
-					$copied = $db->execute();
-				} catch (Exception $e) {
-					JLog::add('component/com_emundus/models/form | Error when copy attachments to new profile : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+					try {
+						$db->setQuery($query);
+						$copied = $db->execute();
+					} catch (Exception $e) {
+						JLog::add('component/com_emundus/models/form | Error when copy attachments to new profile : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+					}
 				}
 			}
 		}
