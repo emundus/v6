@@ -911,13 +911,13 @@ function generate_trombinoscope(fnums, data)
             if (data.status && data.pdf_url !== undefined && data.pdf_url !== null) {
                 Swal.fire({
                     title: Joomla.JText._('COM_EMUNDUS_TROMBI_DOWNLOAD'),
-                    html: '<a href="' +data.pdf_url + '" target="_blank">Télécharger le fichier</a>',
+                    html: Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED'),
                     customClass: {
                         title: 'em-swal-title',
-                        confirmButton: 'em-swal-confirm-button',
                         actions: 'em-swal-single-action'
                     },
                 });
+                $('.swal2-confirm').replaceWith('<a class="em-primary-button em-w-auto" href="' +data.pdf_url + '" target="_blank">Télécharger le fichier</a>')
             } else {
                 Swal.fire({
                     title: Joomla.JText._('COM_EMUNDUS_ERROR'),
