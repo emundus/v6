@@ -76,7 +76,7 @@ export default {
 		}
 	},
 	mounted () {
-		this.originalFilterValue = this.filter.value;
+		this.originalFilterValue = JSON.parse(JSON.stringify(this.filter.value));
 		this.originalFilterOperator = this.filter.operator;
 		document.addEventListener('click', this.handleClickOutside);
 	},
@@ -112,7 +112,7 @@ export default {
 			}
 		},
 		onCloseCard() {
-			const valueDifferences = this.filter.value[0] !== this.originalFilterValue[0] || this.filter.value[1] !== this.originalFilterValue[1];
+			const valueDifferences = (this.filter.value[0] !== this.originalFilterValue[0]) || (this.filter.value[1] !== this.originalFilterValue[1]);
 			const operatorDifferences = this.filter.operator !== this.originalFilterOperator;
 
 			if (valueDifferences || operatorDifferences) {
