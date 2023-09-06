@@ -45,9 +45,11 @@
         }
       }
 
-      .fabrikGroupColumns.fabrikGroup  {
-        .row-fluid {
-          column-gap: 0;
+      @media all and (min-width: 480px) {
+        .fabrikGroupColumns.fabrikGroup {
+          .row-fluid {
+            column-gap: 0;
+          }
         }
       }
 
@@ -140,6 +142,9 @@
     /** GLOBAL **/
     .row-fluid{
       width: auto;
+      &:before, &:after {
+        display: none;
+      }
     }
 
     .fabrikElement {
