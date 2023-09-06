@@ -5059,7 +5059,7 @@ class EmundusModelApplication extends JModelList
         return $content;
     }
 
-	public function getValuesByElementAndFnum($fnum,$eid,$fid,$raw=1,$wheres = []){
+	public function getValuesByElementAndFnum($fnum,$eid,$fid,$raw=1,$wheres = [],$uid=null){
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
@@ -5121,6 +5121,9 @@ class EmundusModelApplication extends JModelList
 					->select($db->quoteName($element->name))
 					->from($db->quoteName($table))
 					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+                if(!empty($uid)){
+                    $query->andWhere($db->quoteName('user') . ' = ' . $db->quote($uid));
+                }
 				foreach ($wheres as $where){
 					$query->where($where);
 				}

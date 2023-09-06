@@ -2657,6 +2657,32 @@ try {
 					}
 				}
 
+				// Add redirect rules in .htaccess file for Tchooz security
+				$file = JPATH_ROOT . '/.htaccess';
+				$insertLines = "# Redirect to home page all requests to hidden files or directories" . PHP_EOL .
+			"RewriteRule ^\\..+ / [R=301,L]" . PHP_EOL . PHP_EOL .
+			"# Redirect to the home page all requests to other files or directories not needed on the web product" . PHP_EOL .
+			"RewriteRule ^cli / [R=301,L]" . PHP_EOL .
+			"RewriteRule ^Dockerfile / [R=301,L]" . PHP_EOL .
+			"RewriteRule ^LICENCE / [R=301,L]" . PHP_EOL .
+			"RewriteRule ^configuration.php / [R=301,L]" . PHP_EOL .
+			"RewriteRule ^defines.php / [R=301,L]" . PHP_EOL .
+			"RewriteRule ^logs / [R=301,L]" . PHP_EOL . PHP_EOL .
+			"# Redirect specific file types to home page" . PHP_EOL .
+			"RewriteRule ^.*\\.sql / [R=301,L]" . PHP_EOL .
+			"RewriteRule ^.*\\.zip / [R=301,L]" . PHP_EOL .
+			"RewriteRule ^.*\\.json / [R=301,L]" . PHP_EOL .
+			"RewriteRule ^.*\\.config.js / [R=301,L]" . PHP_EOL .
+			"RewriteRule ^.*\\.md / [R=301,L]" . PHP_EOL;
+				$succeed['add_htaccess_redirect_rules'] = EmundusHelperUpdate::insertIntoFile($file, $insertLines);
+
+				// Add exception rules in .htaccess file for certbot and manifest.json file
+				$insertLines = "# Redirect exclusion list" . PHP_EOL .
+			"RewriteCond %{REQUEST_URI} !^/.well-known/acme-challenge/" . PHP_EOL .
+			"RewriteCond %{REQUEST_URI} !^/.manifest.json" . PHP_EOL;
+				$insertBeforeLine = "# Redirect to home page all requests to hidden files or directories";
+				$succeed['add_htaccess_exeption'] = EmundusHelperUpdate::insertIntoFile($file, $insertLines, $insertBeforeLine);
+
 				$old_values = [
 					'fr-FR' => 'Longueur minimum : %s caractères.',
 					'en-GB' => 'Minimum length: %s characters.'
@@ -2996,26 +3022,8 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 			->where($db->quoteName('element') . ' LIKE ' . $db->quote('com_emundus'));
 		$db->setQuery($query);
 
-		// Check and update htaccess file if needed
-		$file = JPATH_ROOT . '/.htaccess';
-		$insert = "# Redirect to home page all requests to hidden files or directories" . PHP_EOL .
-    "RewriteRule ^\\..+ / [R=301,L]" . PHP_EOL . PHP_EOL .
-    "# Redirect to the home page all requests to other files or directories not needed on the web product" . PHP_EOL .
-    "RewriteRule ^cli / [R=301,L]" . PHP_EOL .
-    "RewriteRule ^Dockerfile / [R=301,L]" . PHP_EOL .
-    "RewriteRule ^LICENCE / [R=301,L]" . PHP_EOL .
-    "RewriteRule ^configuration.php / [R=301,L]" . PHP_EOL .
-    "RewriteRule ^defines.php / [R=301,L]" . PHP_EOL .
-    "RewriteRule ^logs / [R=301,L]" . PHP_EOL . PHP_EOL .
-    "# Redirect specific file types to home page" . PHP_EOL .
-    "RewriteRule ^.*\\.sql / [R=301,L]" . PHP_EOL .
-    "RewriteRule ^.*\\.zip / [R=301,L]" . PHP_EOL .
-    "RewriteRule ^.*\\.json / [R=301,L]" . PHP_EOL .
-    "RewriteRule ^.*\\.config.js / [R=301,L]" . PHP_EOL .
-    "RewriteRule ^.*\\.md / [R=301,L]" . PHP_EOL;
-		$htaccess_update_status = EmundusHelperUpdate::insertIntoFile($file, $insert);
 
-		if (!$db->execute() || !$htaccess_update_status)
+		if (!$db->execute())
 		{
 			return false;
 		}

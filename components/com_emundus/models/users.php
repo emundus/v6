@@ -2411,14 +2411,15 @@ class EmundusModelUsers extends JModelList {
 		// Assemble the password reset confirmation link.
 		$mode = $config->get('force_ssl', 0) == 2 ? 1 : (-1);
 		$link = 'index.php?option=com_users&view=reset&layout=confirm&token=' . $token . '&username=' . $user->get('username');
+		$link = str_replace('+', '%2B', $link);
 
         $mailer = JFactory::getMailer();
 
 		// Put together the email template data.
 		$data = $user->getProperties();
 		$data['sitename'] = $config->get('sitename');
-		$data['link_text'] = JRoute::_($link, false, $mode);
-		$data['link_html'] = '<a href='.JRoute::_($link, true, $mode).'> '.JRoute::_($link, true, $mode).'</a>';
+		$data['link_text'] = JURI::base().$link;
+		$data['link_html'] = '<a href='.JURI::base().$link.'> '.JURI::base().$link.'</a>';
 		$data['token'] = $token;
 
 		// Build the translated email.

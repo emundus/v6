@@ -1094,7 +1094,7 @@
       }
 
       li.search-field {
-        height: 15px;
+        height: auto;
         input[type="text"] {
           outline: none;
           height: 15px;
@@ -1104,7 +1104,8 @@
     }
 
     .chzn-search {
-      padding: 8px 12px;
+      padding: 4px 12px;
+      line-height: 20px;
 
       input[type="text"] {
         border-radius: var(--em-form-br-focus) !important;

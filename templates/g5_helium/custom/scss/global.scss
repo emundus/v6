@@ -468,7 +468,7 @@ div#frame.outline {
 }
 
 #g-navigation {
-  width: 100vw;
+  width: 100%;
   position: sticky;
   max-height: 100px;
   height: 72px;
@@ -513,7 +513,7 @@ footer#g-footer {
   background-color: var(--neutral-0);
   border-top: 1px solid #E3E5E8;
   bottom: 0;
-  width: 100vw;
+  width: 100%;
   position: relative;
   z-index: 1;
   padding: 20px !important;

@@ -2872,29 +2872,36 @@ class EmundusHelperUpdate
      * Inserts content into a file if it doesn't already exist.
      *
      * @param string $file   The path to the file.
-     * @param string $insert The content to insert.
+     * @param string $insertLines The content to insert.
+     * @param string $insertBeforeLine The line before which the content should be inserted.
      *
      * @return bool True if insertion is successful or the content already exists, false otherwise.
      *
      * @since version 1.37.0
      */
-    public static function insertIntoFile($file, $insert)
+    public static function insertIntoFile($file, $insertLines, $insertBeforeLine = false)
     {
-        echo " - Check and update the {$file} file" . PHP_EOL;
-
         if (empty($file)) {
             echo "ERROR: Please specify a file." . PHP_EOL;
+            return false;
         } elseif (!file_exists($file)) {
             echo "ERROR: The file {$file} does not exist." . PHP_EOL;
+            return false; 
         } elseif (!is_writable($file)) {
             echo "ERROR: Please specify a writable file ({$file})" . PHP_EOL;
-        } elseif (empty($insert)) {
+            return false;
+        } elseif (empty($insertLines)) {
             echo "ERROR: Please specify an insert." . PHP_EOL;
-        } else {
-            $file_content = file_get_contents($file);
-
-            if (strpos($file_content, $insert) === false) {
-                $file_content .= PHP_EOL . $insert;
+            return false;
+        }
+    
+        $file_content = file_get_contents($file);
+    
+        // if the content doesn't already exist in the file, insert it in end of file
+        if ($insertBeforeLine === false) {
+            if (strpos($file_content, $insertLines) === false) {
+                echo " - Update {$file} file with this content: " . PHP_EOL . $insertLines . PHP_EOL;
+                $file_content .= PHP_EOL . $insertLines;
                 if (file_put_contents($file, $file_content) !== false) {
                     return true;
                 } else {
@@ -2902,10 +2909,47 @@ class EmundusHelperUpdate
                     return false;
                 }
             }
-            return true; // The content already exists.
+        } else {
+            if (strpos($file_content, $insertLines) === false && strpos($file_content, $insertBeforeLine) !== false) {
+                $buffer = array();
+    
+                $file_handle = fopen($file, 'r');
+                if ($file_handle === false) {
+                    echo "ERROR: Failed to open the file for reading." . PHP_EOL;
+                    return false;
+                }
+    
+                // Read the file line by line and write it to the buffer, inserting the new content when we've reached the line before which we want to insert
+                while (($line = fgets($file_handle)) !== false) {
+                    if (trim($line) === $insertBeforeLine) {
+                        $buffer[] = $insertLines . PHP_EOL;
+                    }
+                    $buffer[] = $line;
+                }
+                fclose($file_handle);
+    
+                // Open the file again for writing line by line
+                $file_handle = fopen($file, 'w');
+                if ($file_handle === false) {
+                    echo "ERROR: Failed to open the file for writing." . PHP_EOL;
+                    return false;
+                }
+                foreach ($buffer as $line) {
+                    fwrite($file_handle, $line);
+                }
+                fclose($file_handle);
+
+                echo " - Update {$file} file with this content: " . PHP_EOL . $insertLines . PHP_EOL;
+                return true;
+
+            } else {
+                echo " - {$file} file is already up to date or matching line not found" . PHP_EOL;
+                return true;
+            }
         }
 
-        return false;
+        echo " - {$file} file is already up to date" . PHP_EOL;
+        return true;
     }
 
 	public static function updateNewColors() {

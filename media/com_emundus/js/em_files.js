@@ -3889,6 +3889,12 @@ $(document).ready(function() {
                                                 } else {
                                                     document.getElementById('em-ex-assessment').checked = false;
                                                 }
+
+                                                if (json.pdffilter.checkAllAttachments === '1') {
+                                                    document.getElementById('em-ex-attachment').checked = true;
+                                                } else {
+                                                    document.getElementById('em-ex-attachment').checked = false;
+                                                }
                                             } else {
                                                 $('#loadingimg-campaign').remove();
                                                 $('#filt_save_pdf_chosen').append('<div id="model-err-pdf" style="color: red">' + Joomla.JText._('COM_EMUNDUS_MODEL_ERR') + '</div>');
@@ -4189,7 +4195,7 @@ $(document).ready(function() {
 
 
                             /// save pdf filter
-                            $('#savePDFfilter').on("click", function() {
+                            $('#savePDFfilter').on('click', function() {
                                 /// find all childs of #felts which has the name 'emundus_elm'
 
                                 var code = $('#em-export-prg').val();
@@ -4258,8 +4264,7 @@ $(document).ready(function() {
                                         var id = $(this).attr('id').split('emundus_grp_')[1];
                                         groups.push(id);
                                     }
-                                })
-
+                                });
 
 
                                 var headers = [];
@@ -4272,14 +4277,14 @@ $(document).ready(function() {
                                     headersArray.forEach(header => {
                                         if (header.selected == true)
                                             headers.push(header.value);
-                                    })
+                                    });
                                 }
 
                                 // save all attachments id
                                 var attachments = [];
                                 $('#aelts input:checked').each(function() {
                                     attachments.push($(this).val());
-                                })
+                                });
 
                                 var is_assessment = 0;
                                 var is_decision = 0;
@@ -4307,6 +4312,7 @@ $(document).ready(function() {
                                     'checkAllGroups': checkAllGroups.length > 0 ? checkAllGroups : [""],
                                     'headers': headers.length > 0 ? headers : [""],
 
+                                    'checkAllAttachments': $('#em-ex-attachment').is(":checked") ? 1 : 0,
                                     'attachments': attachments.length > 0 ? attachments : [""],
                                     'assessment': is_assessment,
                                     'admission': is_admission,
