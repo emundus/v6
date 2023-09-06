@@ -2657,6 +2657,262 @@ try {
 					}
 				}
 
+				$old_values = [
+					'fr-FR' => 'Longueur minimum : %s caractères.',
+					'en-GB' => 'Minimum length: %s characters.'
+				];
+				$new_values = [
+					'fr-FR' => 'Minimum %s caractères',
+					'en-GB' => 'Minimum %s characters'
+				];
+				EmundusHelperUpdate::updateOverrideTag('USER_PASSWORD_MIN_LENGTH', $old_values, $new_values);
+
+				$old_values = [
+					'fr-FR' => 'Avec au moins %s chiffre.',
+					'en-GB' => 'With at least %s number(s).'
+				];
+				$new_values = [
+					'fr-FR' => '%s chiffre(s)',
+					'en-GB' => '%s number(s)'
+				];
+				EmundusHelperUpdate::updateOverrideTag('USER_PASSWORD_MIN_INT', $old_values, $new_values);
+
+				$old_values = [
+					'fr-FR' => 'Avec au moins %s symbole.',
+					'en-GB' => 'With at least %s symbol(s).'
+				];
+				$new_values = [
+					'fr-FR' => '%s symbole(s)',
+					'en-GB' => '%s symbol(s)'
+				];
+				EmundusHelperUpdate::updateOverrideTag('USER_PASSWORD_MIN_SYM', $old_values, $new_values);
+
+				$old_values = [
+					'fr-FR' => 'Avec au moins %s lettre majuscule.',
+					'en-GB' => 'With at least %s uppercase letter(s).'
+				];
+				$new_values = [
+					'fr-FR' => '%s lettre(s) majuscule',
+					'en-GB' => '%s uppercase letter(s)'
+				];
+				EmundusHelperUpdate::updateOverrideTag('USER_PASSWORD_MIN_UPPER', $old_values, $new_values);
+
+				$old_values = [
+					'fr-FR' => 'Avec au moins %s lettre minuscule.',
+					'en-GB' => 'With at least %s lowercase letter(s).'
+				];
+				$new_values = [
+					'fr-FR' => '%s lettre(s) minuscule',
+					'en-GB' => '%s lowercase letter(s)'
+				];
+				EmundusHelperUpdate::updateOverrideTag('USER_PASSWORD_MIN_LOWER', $old_values, $new_values);
+
+				$query->clear()
+					->select('id')
+					->from($db->quoteName('#__fabrik_forms'))
+					->where($db->quoteName('label') . ' LIKE ' . $db->quote('FORM_REGISTRATION'));
+				$db->setQuery($query);
+				$registration_form_id = $db->loadResult();
+
+				if(!empty($registration_form_id))
+				{
+					$query->clear()
+						->update($db->quoteName('#__fabrik_forms'))
+						->set($db->quoteName('intro') . ' = ' . $db->quote(''))
+						->where($db->quoteName('id') . ' = ' . $db->quote($registration_form_id))
+						->where($db->quoteName('intro') . ' LIKE ' . $db->quote('<p>EMUNDUS_REGISTRATION_INSTRUCTIONS</p>'));
+					$db->setQuery($query);
+					$db->execute();
+
+					$query->clear()
+						->select('id')
+						->from($db->quoteName('#__fabrik_groups'))
+						->where($db->quoteName('name') . ' LIKE ' . $db->quote('GROUP_REGISTRATION_CIVILITY'));
+					$db->setQuery($query);
+					$group_civility = $db->loadAssoc();
+
+					if(empty($group_civility))
+					{
+						$datas          = [
+							'name'  => 'GROUP_REGISTRATION_CIVILITY'
+						];
+						$group_civility = EmundusHelperUpdate::addFabrikGroup($datas, ['repeat_group_show_first' => 1],1,true);
+
+						EmundusHelperUpdate::joinFormGroup($registration_form_id, [$group_civility['id']]);
+					}
+
+
+					$query->clear()
+						->select('id')
+						->from($db->quoteName('#__fabrik_groups'))
+						->where($db->quoteName('name') . ' LIKE ' . $db->quote('GROUP_REGISTRATION_NAMES'));
+					$db->setQuery($query);
+					$group = $db->loadAssoc();
+
+					if(empty($group))
+					{
+						$datas = [
+							'name'  => 'GROUP_REGISTRATION_NAMES'
+						];
+						$group = EmundusHelperUpdate::addFabrikGroup($datas, ['group_columns' => 2, 'repeat_group_show_first' => 1],1,true);
+
+						EmundusHelperUpdate::joinFormGroup($registration_form_id,[$group['id']]);
+					}
+
+					$elements_to_search = [$db->quote('firstname'), $db->quote('lastname')];
+					$query->clear()
+						->select('fe.id')
+						->from($db->quoteName('#__fabrik_elements','fe'))
+						->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
+						->where($db->quoteName('ffg.form_id') . ' = ' . $db->quote($registration_form_id))
+						->where($db->quoteName('fe.name') . ' IN (' .implode(',',$elements_to_search) . ')')
+						->where($db->quoteName('fe.published') . ' = 1');
+					$db->setQuery($query);
+					$elements = $db->loadColumn();
+
+					if(!empty($elements))
+					{
+						$query->clear()
+							->update($db->quoteName('#__fabrik_elements'))
+							->set($db->quoteName('group_id') . ' = ' . $db->quote($group['id']))
+							->where($db->quoteName('id') . ' IN (' . implode(',', $elements) . ')');
+						$db->setQuery($query);
+						$db->execute();
+					}
+
+					$query->clear()
+						->select('fe.id')
+						->from($db->quoteName('#__fabrik_elements','fe'))
+						->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
+						->where($db->quoteName('ffg.form_id') . ' = ' . $db->quote($registration_form_id))
+						->where($db->quoteName('fe.name') . ' LIKE ' . $db->quote('civility'))
+						->where($db->quoteName('fe.published') . ' = 1');
+					$db->setQuery($query);
+					$elements = $db->loadColumn();
+
+					if(!empty($elements))
+					{
+						$query->clear()
+							->update($db->quoteName('#__fabrik_elements'))
+							->set($db->quoteName('group_id') . ' = ' . $db->quote($group_civility['id']))
+							->where($db->quoteName('id') . ' IN (' . implode(',', $elements) . ')');
+						$db->setQuery($query);
+						$db->execute();
+					}
+
+					$query->clear()
+						->select('fe.id,fe.params')
+						->from($db->quoteName('#__fabrik_elements','fe'))
+						->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
+						->where($db->quoteName('ffg.form_id') . ' = ' . $db->quote($registration_form_id))
+						->where($db->quoteName('fe.name') . ' LIKE ' . $db->quote('password'))
+						->where($db->quoteName('fe.published') . ' = 1');
+					$db->setQuery($query);
+					$password_field = $db->loadObject();
+
+					if(!empty($password_field))
+					{
+						$tip_code = '$params = JComponentHelper::getParams(\'com_users\');
+$min_length = $params->get(\'minimum_length\');
+$min_int = $params->get(\'minimum_integers\');
+$min_sym = $params->get(\'minimum_symbols\');
+$min_up = $params->get(\'minimum_uppercase\');
+$min_low = $params->get(\'minimum_lowercase\');
+
+$tip_text = JText::sprintf(\'USER_PASSWORD_MIN_LENGTH\', $min_length);
+
+if ((int)$min_int > 0) {
+	$tip_text .= \',\'.JText::sprintf(\'USER_PASSWORD_MIN_INT\', $min_int);
+}
+if ((int)$min_sym > 0) {
+	$tip_text .= \',\'.JText::sprintf(\'USER_PASSWORD_MIN_SYM\', $min_sym);
+}
+if ((int)$min_up > 0) {
+	$tip_text .= \',\'.JText::sprintf(\'USER_PASSWORD_MIN_UPPER\', $min_up);
+}
+if ((int)$min_low > 0) {
+	$tip_text .= \',\'.JText::sprintf(\'USER_PASSWORD_MIN_LOWER\', $min_low);
+}
+
+return $tip_text;';
+						$params = json_decode($password_field->params, true);
+						$params['rollover'] = $tip_code;
+						$params['tipseval'] = 1;
+						$params['password'] = 1;
+						$params['validations'] = [
+							'plugin' => ['checkpassword'],
+							'plugin_published' => ['1'],
+							'validate_in' => ['both'],
+							'validation_on' => ['both'],
+							'validate_hidden' => ['0'],
+							'must_validate' => ['0'],
+							'show_icon' => ['1'],
+						];
+
+						$query->clear()
+							->update($db->quoteName('#__fabrik_elements'))
+							->set($db->quoteName('plugin') . ' = ' . $db->quote('field'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+							->where($db->quoteName('id') . ' = ' . $db->quote($password_field->id));
+						$db->setQuery($query);
+						$db->execute();
+
+						$js_showicon = 'var passwordInput = document.querySelector(&#039;#jos_emundus_users___password&#039;);
+
+var spanShowPassword = document.createElement(&#039;span&#039;);
+spanShowPassword.classList.add(&#039;material-icons-outlined&#039;);
+spanShowPassword.classList.add(&#039;em-pointer&#039;);
+spanShowPassword.innerText = &quot;visibility_off&quot;;
+spanShowPassword.style.position = &quot;absolute&quot;;
+spanShowPassword.style.top = &quot;12px&quot;;
+spanShowPassword.style.right = &quot;10px&quot;;
+spanShowPassword.style.opacity = &quot;0.3&quot;;
+
+passwordInput.parentNode.style.position = &quot;relative&quot;;
+
+passwordInput.parentNode.insertBefore(spanShowPassword, passwordInput.nextSibling);
+
+spanShowPassword.addEventListener(&#039;click&#039;, function () {
+  if (spanShowPassword.innerText == &quot;visibility&quot;) {
+    spanShowPassword.innerText = &quot;visibility_off&quot;;
+    passwordInput.type = &quot;password&quot;;
+  } else {
+    spanShowPassword.innerText = &quot;visibility&quot;;
+    passwordInput.type = &quot;text&quot;;
+  }
+});';
+
+						$query->clear()
+							->select('id,params')
+							->from($db->quoteName('#__fabrik_jsactions'))
+							->where($db->quoteName('element_id') . ' = ' . $db->quote($password_field->id))
+							->where($db->quoteName('action') . ' LIKE ' . $db->quote('load'));
+						$db->setQuery($query);
+						$password_js = $db->loadObject();
+
+						if(!empty($password_js))
+						{
+							$params = json_decode($password_js->params, true);
+							$params['js_published'] = 1;
+
+							$query->clear()
+								->update($db->quoteName('#__fabrik_jsactions'))
+								->set($db->quoteName('code') . ' = ' . $db->quote($js_showicon))
+								->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+								->where($db->quoteName('id') . ' = ' . $db->quote($password_js->id));
+							$db->setQuery($query);
+							$db->execute();
+						}
+					}
+				}
+
+				EmundusHelperUpdate::updateComponentParameter('com_users', 'minimum_length', 12);
+				EmundusHelperUpdate::updateComponentParameter('com_fabrik', 'use_fabrikdebug', 1);
+
+				EmundusHelperUpdate::installExtension('plg_fabrik_validationrule_checkpassword','checkpassword','{"name":"plg_fabrik_validationrule_checkpassword","type":"plugin","creationDate":"September 2023","author":"eMundus","copyright":"Copyright (C) 2015-2023 eMundus - All rights reserved.","authorEmail":"dev@emundus.io","authorUrl":"www.emundus.fr","version":"3.10","description":"PLG_VALIDATIONRULE_CHECKPASSWORD_DESCRIPTION","group":"","filename":"checkpassword"}','plugin',1,'fabrik_validationrule');
+
+				EmundusHelperUpdate::insertTranslationsTag('PLEASE_CHECK_THIS_FIELD','Veuillez cocher la case');
+				EmundusHelperUpdate::insertTranslationsTag('PLEASE_CHECK_THIS_FIELD','Please tick the box', 'override', null, null, null, 'en-GB');
             }
 		}
 

@@ -26,6 +26,7 @@ JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TITLE');
 JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TEXT');
 JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CONFIRM');
 JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CANCEL');
+JText::script('PLEASE_CHECK_THIS_FIELD');
 
 if ($pageClass !== '') :
 	echo '<div class="' . $pageClass . '">';

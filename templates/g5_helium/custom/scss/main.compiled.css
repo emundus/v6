@@ -539,16 +539,16 @@ video {
 }
 @media all and (min-width: 768px) {
     .view-registration.em-formRegistrationCenter .emundus-form {
-        flex: 0 0 45%;
-        max-width: 45%;
+        flex: 0 0 30rem;
+        max-width: 30rem;
         margin: 16px auto
 
     }
       }
 @media all and (min-width: 1440px) {
     .view-registration.em-formRegistrationCenter .emundus-form {
-        flex: 0 0 30%;
-        max-width: 30%;
+        flex: 0 0 30rem;
+        max-width: 30rem;
         margin: 16px auto
 
     }
@@ -563,7 +563,7 @@ video {
           -moz-column-gap: 0;
                column-gap: 0;
         }
-.view-registration.em-formRegistrationCenter .emundus-form .fabrikGroupColumns-2 {
+.view-registration.em-formRegistrationCenter .emundus-form .fabrikGroup {
         margin-bottom: 0;
       }
 .view-registration.em-formRegistrationCenter .emundus-form .fabrikElementContainer:not(.fabrikHide) {
@@ -572,6 +572,9 @@ video {
 .view-registration.em-formRegistrationCenter .emundus-form #jos_emundus_users___password_check {
   margin-top: var(--em-spacing-1);
 }
+.view-registration.em-formRegistrationCenter .emundus-form .fb_el_jos_emundus_users___terms_and_conditions .row-fluid {
+          padding-bottom: 0 !important;
+        }
 .view-registration.em-formRegistrationCenter .emundus-form .fb_el_jos_emundus_users___terms_and_conditions span.material-icons:first-child {
           display: none;
         }
@@ -580,6 +583,9 @@ video {
   margin-left: var(--em-spacing-1);
             order: 1;
 }
+.view-registration.em-formRegistrationCenter .emundus-form .fb_el_jos_emundus_users___password .fabrikElementTip {
+          font-size: 14px;
+        }
 .view-registration.em-formRegistrationCenter .emundus-form .fb_el_jos_emundus_users___data_privacy_link .fabrikLabel {
           display: block !important;
         }
@@ -629,6 +635,7 @@ form.fabrikForm .row-fluid{
     }
 form.fabrikForm .fabrikElement {
       margin-top: var(--em-form-label-margin-bottom);
+      position: relative;
     }
 form.fabrikForm .fabrikElementContainer:not(.fabrikHide) {
   margin-bottom: var(--em-spacing-6);
