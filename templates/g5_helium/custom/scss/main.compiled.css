@@ -587,6 +587,7 @@ video {
 }
 .view-registration.em-formRegistrationCenter .emundus-form .fb_el_jos_emundus_users___password .fabrikElementTip {
           font-size: 14px;
+          line-height: 1.1;
         }
 .view-registration.em-formRegistrationCenter .emundus-form .fb_el_jos_emundus_users___data_privacy_link .fabrikLabel {
           display: block !important;
