@@ -827,7 +827,7 @@ $(document).ready(function () {
 
 						swalForm = true;
 						title = 'COM_EMUNDUS_USERS_SHOW_USER_RIGHTS';
-						swal_popup_class = 'em-w-100';
+						swal_popup_class = 'em-w-auto';
 						html = result
 					},
 					error: function (jqXHR) {
