@@ -26,6 +26,16 @@ span.label[data-v-2064eced] {
 }
 
 
+#advanced-select ul[data-v-02fe3224]{
+	list-style-type: none;
+	max-height: 300px;
+	overflow-y: auto;
+}
+#advanced-select ul li.em-pointer[data-v-02fe3224]:hover{
+	background-color: #E4E4E4;
+}
+
+
 .date-filter-card[data-v-b7261814] {
 	position: relative;
 }
