@@ -433,7 +433,7 @@ $email_list = array();
 
                         // Get the attached uploaded file if there is one.
                         if (typeof (email.tmpl.attachment) != 'undefined' && email.tmpl.attachment != null) {
-                            $('#em-attachment-list').append('<li class="list-group-item upload"><div class="value hidden">' + email.tmpl.attachment + '</div>' + email.tmpl.attachment.split('\\').pop().split('/').pop() + '<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
+                            $('#em-attachment-list').append('<li class="list-group-item upload"><div class="value hidden">' + email.tmpl.attachment + '</div>' + email.tmpl.attachment.split('\\').pop().split('/').pop() + '<span class="badge em-error-button" style="padding: 0;" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
                         }
                     }
                 },
@@ -537,7 +537,7 @@ $email_list = array();
                 data = JSON.parse(data);
 
                 if (data.status) {
-                    $('#em-attachment-list').append('<li class="list-group-item upload"><div class="value hidden">'+data.file_path+'</div>'+data.file_name+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
+                    $('#em-attachment-list').append('<li class="list-group-item upload"><div class="value hidden">'+data.file_path+'</div>'+data.file_name+'<span class="badge em-error-button" style="padding: 2px 9px;" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
                 } else {
                     $("#em-file_to_upload").append('<span class="alert"> <?= JText::_('UPLOAD_FAILED'); ?> </span>')
                 }
