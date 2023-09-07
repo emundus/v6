@@ -2831,6 +2831,29 @@ try {
 						->from($db->quoteName('#__fabrik_elements','fe'))
 						->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
 						->where($db->quoteName('ffg.form_id') . ' = ' . $db->quote($registration_form_id))
+						->where($db->quoteName('fe.name') . ' LIKE ' . $db->quote('email'))
+						->where($db->quoteName('fe.published') . ' = 1');
+					$db->setQuery($query);
+					$email_field = $db->loadObject();
+
+					if(!empty($email_field))
+					{
+						$params = json_decode($email_field->params, true);
+						$params['password'] = 3;
+
+						$query->clear()
+							->update($db->quoteName('#__fabrik_elements'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+							->where($db->quoteName('id') . ' = ' . $db->quote($email_field->id));
+						$db->setQuery($query);
+						$db->execute();
+					}
+
+					$query->clear()
+						->select('fe.id,fe.params')
+						->from($db->quoteName('#__fabrik_elements','fe'))
+						->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
+						->where($db->quoteName('ffg.form_id') . ' = ' . $db->quote($registration_form_id))
 						->where($db->quoteName('fe.name') . ' LIKE ' . $db->quote('password'))
 						->where($db->quoteName('fe.published') . ' = 1');
 					$db->setQuery($query);
