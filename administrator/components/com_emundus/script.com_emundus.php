@@ -3047,6 +3047,21 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 						}
 					}
 				}
+
+				EmundusHelperUpdate::insertFalangTranslation(2,12,'emundus_setup_tags','description','Identifiant du candidat');
+				EmundusHelperUpdate::insertFalangTranslation(2,13,'emundus_setup_tags','description','Nom complet du candidat');
+				EmundusHelperUpdate::insertFalangTranslation(2,14,'emundus_setup_tags','description','Email du candidat');
+				EmundusHelperUpdate::insertFalangTranslation(2,15,'emundus_setup_tags','description','Identifiant du candidat');
+				EmundusHelperUpdate::insertFalangTranslation(2,20,'emundus_setup_tags','description','Nom de l\'utilisateur actif');
+				EmundusHelperUpdate::insertFalangTranslation(2,21,'emundus_setup_tags','description','Email de l\'utilisateur actif');
+				EmundusHelperUpdate::insertFalangTranslation(2,34,'emundus_setup_tags','description','Numéro de dossier');
+
+				$query->clear()
+					->update($db->quoteName('#__menu'))
+					->set($db->quoteName('alias') . ' = ' . $db->quote('gestion-des-droits'))
+					->where($db->quoteName('alias') . ' LIKE ' . $db->quote('gestion-de-vos-droits'));
+				$db->setQuery($query);
+				$db->execute();
             }
 		}
 

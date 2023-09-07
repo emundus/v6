@@ -601,6 +601,70 @@ class EmundusHelperUpdate
         }
     }
 
+	public static function insertFalangTranslation($lang_id, $reference_id, $reference_table, $reference_field, $value, $update = false) {
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try {
+			$query->clear()
+				->select('id')
+				->from($db->quoteName('#__falang_content'))
+				->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
+				->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
+				->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field));
+			$db->setQuery($query);
+			$translation_id = $db->loadResult();
+
+			if(empty($translation_id))
+			{
+				$columns = [
+					$db->quoteName('reference_id'),
+					$db->quoteName('reference_table'),
+					$db->quoteName('reference_field'),
+					$db->quoteName('value'),
+					$db->quoteName('language_id'),
+					$db->quoteName('published'),
+					$db->quoteName('original_value'),
+					$db->quoteName('original_text'),
+					$db->quoteName('modified'),
+					$db->quoteName('modified_by'),
+				];
+
+				$values = [
+					$db->quote($reference_id),
+					$db->quote($reference_table),
+					$db->quote($reference_field),
+					$db->quote($value),
+					$db->quote($lang_id),
+					$db->quote(1),
+					$db->quote($value),
+					$db->quote($value),
+					$db->quote(date('Y-m-d H:i:s')),
+					$db->quote(62),
+				];
+
+				$query->clear()
+					->insert($db->quoteName('#__falang_content'))
+					->columns($columns)
+					->values(implode(',', $values));
+				$db->setQuery($query);
+				return $db->execute();
+			} else if($update)
+			{
+				$query->clear()
+					->update($db->quoteName('#__falang_content'))
+					->set($db->quoteName('value') . ' = ' . $db->quote($value))
+					->where($db->quoteName('id') . ' = ' . $db->quote($translation_id));
+				$db->setQuery($query);
+				return $db->execute();
+			}
+
+		} catch (Exception $e) {
+			echo $e->getMessage();
+			return false;
+		}
+	}
+
     public static function languageFileToBase() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
