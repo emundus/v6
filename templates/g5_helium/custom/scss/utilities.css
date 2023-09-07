@@ -423,6 +423,10 @@
         }
     }
 
+    .field-error {
+        border: solid 1px var(--red-500);
+    }
+
     /* ALERT */
     .messenger__notifications_counter {
         background: var(--red-500);
