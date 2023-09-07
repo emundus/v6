@@ -1347,14 +1347,13 @@ class EmundusModelsettings extends JModelList {
 		return $rgpd_articles;
 	}
 
-	function publishArticle($publish,$article_id = 0,$article_alias = '') {
-		$db = JFactory::getDbo();
+	function publishArticle($publish, $article_id = 0,$article_alias = '') {
+        $result = false;
+
+        $db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		$result = false;
-
-		try
-		{
+		try {
 			$query->select('id,params')
 				->from($db->quoteName('#__modules'))
 				->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_footer'));
@@ -1410,6 +1409,36 @@ class EmundusModelsettings extends JModelList {
 				$result = $db->execute();
 
                 if ($result) {
+                    $query->clear()
+                        ->select('id, value')
+                        ->from('#__falang_content')
+                        ->where('reference_id = ' . $db->quote($footer->id))
+                        ->andWhere('reference_table = ' . $db->quote('modules'))
+                        ->andWhere('reference_field = ' . $db->quote('params'));
+
+                    $db->setQuery($query);
+                    $falang_contents = $db->loadObjectList();
+
+                    if (!empty($falang_contents)) {
+                        foreach ($falang_contents as $falang_content) {
+                            $falang_content->value = json_decode($falang_content->value, true);
+
+                            $falang_content->value['mod_emundus_footer_legal_info'] = $params['mod_emundus_footer_legal_info'];
+                            $falang_content->value['mod_emundus_footer_data_privacy'] = $params['mod_emundus_footer_data_privacy'];
+                            $falang_content->value['mod_emundus_footer_rights'] = $params['mod_emundus_footer_rights'];
+                            $falang_content->value['mod_emundus_footer_cookies'] = $params['mod_emundus_footer_cookies'];
+                            $falang_content->value['mod_emundus_footer_accessibility'] = $params['mod_emundus_footer_accessibility'];
+
+                            $query->clear()
+                                ->update('#__falang_content')
+                                ->set('value = ' . $db->quote(json_encode($falang_content->value)))
+                                ->where('id = ' . $db->quote($falang_content->id));
+
+                            $db->setQuery($query);
+                            $db->execute();
+                        }
+                    }
+
                     require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
                     $h_update = new EmundusHelperUpdate();
                     $h_update->clearJoomlaCache();
