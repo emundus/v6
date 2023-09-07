@@ -931,7 +931,7 @@ class EmundusHelperUpdate
 					$parsed_file = JLanguageHelper::parseIniFile($file->file);
 
 					if (!empty($parsed_file) && !empty($old_values[$file->language])) {
-						if (!empty($parsed_file[$tag]) && $parsed_file[$tag] == $old_values[$file->language])
+						if (!empty($parsed_file[$tag]) && strip_tags($parsed_file[$tag]) == strip_tags($old_values[$file->language]))
 						{
 							$parsed_file[$tag] = $new_values[$file->language];
 							JLanguageHelper::saveToIniFile($file->file, $parsed_file);

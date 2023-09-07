@@ -34,6 +34,7 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
     .em-addUser-groups .chzn-container .chzn-drop,.em-addUser-campaign .chzn-container .chzn-drop {
         top: auto;
         bottom: 100%;
+        box-shadow: 0 -4px 5px rgba(0, 0, 0, 0.15);
     }
 </style>
 <form action="index.php?option=com_emundus&controller=users&task=<?= ($this->edit == 1)? 'edituser' : 'adduser'; ?>" id="em-add-user" class="em-addUser" role="form" method="post">

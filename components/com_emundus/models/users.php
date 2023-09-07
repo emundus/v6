@@ -1785,16 +1785,35 @@ class EmundusModelUsers extends JModelList {
 
     public function countUserEvaluations($uid) {
         try {
-            $query = "select count(*) from #__emundus_evaluations
-                      where user = " .$uid;
-            $db = $this->getDbo();
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('COUNT(*)')
+				->from($db->quoteName('#__emundus_evaluations'))
+				->where($db->quoteName('user').' = '.$db->quote($uid));
             $db->setQuery($query);
             return $db->loadResult();
         } catch(Exception $e) {
             error_log($e->getMessage(), 0);
-            return false;
+            return 0;
         }
     }
+
+	public function countUserDecisions($uid) {
+		try {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('COUNT(*)')
+				->from($db->quoteName('#__emundus_final_grade'))
+				->where($db->quoteName('user').' = '.$db->quote($uid));
+			$db->setQuery($query);
+			return $db->loadResult();
+		} catch(Exception $e) {
+			error_log($e->getMessage(), 0);
+			return 0;
+		}
+	}
 
 	/**
 	 * @param $uid Int User id

@@ -19,6 +19,8 @@ $message_categories = $m_messages->getAllCategories();
 $message_templates 	= $m_messages->getAllMessages();
 
 $email_list = array();
+$name_list = array();
+$uids = array();
 ?>
 
 <style>
@@ -33,9 +35,16 @@ $email_list = array();
         overflow: auto;
     }
 
+    .ql-container.ql-snow {
+        position: static !important;
+    }
+
     .ql-editor{
         height: 300px !important;
         overflow-y: scroll;
+    }
+    .form-group,#em-progress-wrp {
+        position: static;
     }
     .form-group .email-input-block{
         height: var(--em-coordinator-form-height);
@@ -102,6 +111,24 @@ $email_list = array();
         display: flex !important;
         flex-direction: column;
         justify-content: center;
+    }
+
+    .email-list-modal {
+        width: 50%;
+        position: absolute;
+        left: 0;
+        right: 0;
+        margin-left: auto;
+        margin-right: auto;
+        background: white;
+        padding: 24px;
+        box-shadow: 0 0 0 50vmax rgba(0,0,0,.5);
+        border-radius: 8px;
+    }
+
+    .em-email-label {
+        color: var(--neutral-800);
+        background-color: var(--neutral-300) !important;
     }
 </style>
 
@@ -178,29 +205,46 @@ $email_list = array();
 
             </div>
 
-            <div class="form-group em-form-recipients em-mt-12 col-md-6 col-sm-6">
+            <div class="form-group em-form-recipients em-mt-12 col-md-6 col-sm-6" style="position: static">
 
-                <!-- List of users / their emails, gotten from the fnums selected. -->
+                <div class="email-list-modal hidden" id="email-list-modal">
+                    <div class="flex justify-between mb-3">
+                        <h3><?= JText::_('COM_EMUNDUS_EMAILS_TO_LIST') ?></h3>
+                        <span class="material-icons-outlined pointer" onclick="showEmailList()">close</span>
+                    </div>
+
+                    <div class="flex items-center gap-2 flex-wrap" style="max-height: 150px; overflow-y: auto;">
+			            <?php foreach ($this->users as $user) : ?>
+				            <?php if (!empty($user->email)) : ?>
+					            <?php $email_list[] = $user->email; ?>
+					            <?php $name_list[] = $user->name; ?>
+					            <?php $uids[] = $user->id; ?>
+
+                                <span class="label label-default em-mr-8 em-email-label">
+                                    <?= $user->email . ' <em class="em-font-size-14">&lt;' . $user->name . '&gt;</em>'; ?>
+                                </span>
+
+                                <input type="hidden" name="ud[]" id="ud" value="<?= $user->id; ?>"/>
+				            <?php endif; ?>
+			            <?php endforeach; ?>
+                    </div>
+                </div>
+
                 <div class="flex justify-between items-center">
                     <div class="flex items-center">
-                        <label class='em-mr-8 em-cursor-text mb-0'><?= JText::_('COM_EMUNDUS_TO'); ?>:</label>
+                        <label class='em-mr-8 em-cursor-text mb-0'><?= JText::_('COM_EMUNDUS_TO'); ?> :</label>
 
                         <div class="em-border-radius-8">
-                            <?php $uids = []; ?>
-                            <?php foreach ($this->users as $user) :?>
+                            <span class="label label-default em-mr-8 em-email-label">
+                                <?= $name_list[0] . ' <em class="em-font-size-14">&lt;' . $email_list[0] . '&gt;</em>'; ?>
+                            </span>
 
-                                <?php if (!empty($user->email)) : ?>
-                                    <?php
-                                        $email_list[] = $user->email;
-                                        $uids[] = $user->id;
-                                        ?>
-                                    <span class="label label-default em-mr-8 em-email-label">
-                                        <?= $user->name.' <em>&lt;'.$user->email.'&gt;</em>'; ?>
-                                    </span>
-                                    <input type="hidden" name="ud[]" id="ud" value="<?= $user->id; ?>"/>
-                                <?php endif; ?>
 
-                            <?php endforeach; ?>
+				            <?php if(count($email_list) > 1) : ?>
+                                <span class="label label-default em-mr-8 em-email-label pointer" onclick="showEmailList()">
+                                    +<?= count($email_list)-1 ?>
+                                </span>
+				            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -311,6 +355,10 @@ $email_list = array();
         $("#reply_to_from").html("<?= $this->data['reply_to_from'] ?>");
 	    <?php endif; ?>
     });
+
+    function showEmailList() {
+        document.querySelector('#email-list-modal').classList.toggle('hidden');
+    }
 
     function initQuill() {
         let variables = [];
@@ -433,7 +481,7 @@ $email_list = array();
 
                         // Get the attached uploaded file if there is one.
                         if (typeof (email.tmpl.attachment) != 'undefined' && email.tmpl.attachment != null) {
-                            $('#em-attachment-list').append('<li class="list-group-item upload"><div class="value hidden">' + email.tmpl.attachment + '</div>' + email.tmpl.attachment.split('\\').pop().split('/').pop() + '<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
+                            $('#em-attachment-list').append('<li class="list-group-item upload"><div class="value hidden">' + email.tmpl.attachment + '</div>' + email.tmpl.attachment.split('\\').pop().split('/').pop() + '<span class="badge em-error-button" style="padding: 0;" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
                         }
                     }
                 },
@@ -537,7 +585,7 @@ $email_list = array();
                 data = JSON.parse(data);
 
                 if (data.status) {
-                    $('#em-attachment-list').append('<li class="list-group-item upload"><div class="value hidden">'+data.file_path+'</div>'+data.file_name+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
+                    $('#em-attachment-list').append('<li class="list-group-item upload"><div class="value hidden">'+data.file_path+'</div>'+data.file_name+'<span class="badge em-error-button" style="padding: 2px 9px;" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
                 } else {
                     $("#em-file_to_upload").append('<span class="alert"> <?= JText::_('UPLOAD_FAILED'); ?> </span>')
                 }

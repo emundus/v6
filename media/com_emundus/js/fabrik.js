@@ -323,3 +323,27 @@ function birthDateValidation(element, minAge = 0, maxAge = 0) {
 
     return userBirthDate;
 }
+
+function submitNewFile() {
+    let campaign = document.getElementById('jos_emundus_campaign_candidature___campaign_id');
+    for (let i = 0; i < campaign.length; i++){
+        if (campaign.options[i].value == -1) {
+            campaign.options[i].disabled = true;
+            campaign.options[i].style.backgroundColor = "#efefef";
+            campaign.options[i].style.fontStyle = "italic";
+        }
+    }
+
+    var cid = document.querySelector('#jos_emundus_campaign_candidature___campaign_id option:checked').value;
+    if(cid !== "") {
+        document.querySelector('#form_102').style.visibility = 'hidden';
+        Swal.fire({
+                title: Joomla.JText._('COM_EMUNDUS_FABRIK_NEW_FILE'),
+                text: Joomla.JText._('COM_EMUNDUS_FABRIK_NEW_FILE_DESC'),
+                type: 'success',
+                showConfirmButton: false
+            }
+        );
+        document.querySelector('#form_102').submit();
+    }
+}

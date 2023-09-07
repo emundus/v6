@@ -31,6 +31,7 @@ $_mEval = new EmundusModelEvaluation;
 $_applicant_letters = $_mEval->getLettersByFnums(implode(',', $this->fnums), false);
 
 $email_list = array();
+$name_list = array();
 
 $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($current_user->id);
 if ($allowed_attachments !== true) {
@@ -50,6 +51,10 @@ if ($allowed_attachments !== true) {
 
     #emailForm .selectize-input {
         overflow: auto;
+    }
+
+    .ql-container.ql-snow {
+        position: static !important;
     }
 
     .ql-editor{
@@ -121,6 +126,24 @@ if ($allowed_attachments !== true) {
         display: flex !important;
         flex-direction: column;
         justify-content: center;
+    }
+
+    .email-list-modal {
+        width: 50%;
+        position: absolute;
+        left: 0;
+        right: 0;
+        margin-left: auto;
+        margin-right: auto;
+        background: white;
+        padding: 24px;
+        box-shadow: 0 0 0 50vmax rgba(0,0,0,.5);
+        border-radius: 8px;
+    }
+
+    .em-email-label {
+        color: var(--neutral-800);
+        background-color: var(--neutral-300) !important;
     }
 
 </style>
@@ -196,7 +219,29 @@ if ($allowed_attachments !== true) {
 
             </div>
 
-            <div class="form-group em-form-recipients em-mt-12 col-md-6 col-sm-6">
+            <div class="form-group em-form-recipients em-mt-12 col-md-6 col-sm-6" style="position:static;">
+
+                <div class="email-list-modal hidden" id="email-list-modal">
+                    <div class="flex justify-between mb-3">
+                        <h3><?= JText::_('COM_EMUNDUS_EMAILS_TO_LIST') ?></h3>
+                        <span class="material-icons-outlined pointer" onclick="showEmailList()">close</span>
+                    </div>
+
+                    <div class="flex items-center gap-2 flex-wrap" style="max-height: 150px; overflow-y: auto;">
+                        <?php foreach ($this->users as $user) : ?>
+                            <?php if (!empty($user['email']) && !in_array($user['email'], $email_list)) : ?>
+                                <?php $email_list[] = $user['email']; ?>
+                                <?php $name_list[] = $user['name']; ?>
+
+                                <span class="label label-default em-mr-8 em-email-label">
+                                    <?= $user['email'] . ' <em class="em-font-size-14">&lt;' . $user['name'] . '&gt;</em>'; ?>
+                                </span>
+
+                                <input type="hidden" name="ud[]" id="ud" value="<?= $user['id']; ?>"/>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
 
                 <!-- List of users / their emails, gotten from the fnums selected. -->
                 <div class="flex justify-between items-center">
@@ -204,28 +249,15 @@ if ($allowed_attachments !== true) {
                         <label class='em-mr-8 em-cursor-text mb-0'><?= JText::_('COM_EMUNDUS_TO'); ?> :</label>
 
                         <div class="em-border-radius-8">
-		                    <?php if(count($this->users) == 1) : ?>
-			                    <?php foreach ($this->users as $user) : ?>
-
-				                    <?php if (!empty($user['email']) && !in_array($user['email'], $email_list)) : ?>
-					                    <?php $email_list[] = $user['email']; ?>
-                                        <span class="label label-default em-mr-8 em-email-label">
-                                    <?= $user['name'] . ' <em class="em-font-size-14">&lt;' . $user['email'] . '&gt;</em>'; ?>
-                                </span>
-
-                                        <input type="hidden" name="ud[]" id="ud" value="<?= $user['id']; ?>"/>
-				                    <?php endif; ?>
-
-			                    <?php endforeach; ?>
-		                    <?php else : ?>
-                                <div class="flex items-center">
-                        <span class="label label-default em-mr-8 em-email-label">
-                                    <?= $this->users[0]['name'] . ' <em class="em-font-size-14">&lt;' . $this->users[0]['email'] . '&gt;</em>'; ?>
-                        </span>
-                                    <span class="label label-default em-mr-8 em-email-label">
-                                +<?= count($this->users)-1 ?>
+                            <span class="label label-default em-mr-8 em-email-label">
+                                <?= $email_list[0] . ' <em class="em-font-size-14">&lt;' . $name_list[0] . '&gt;</em>'; ?>
                             </span>
-                                </div>
+
+
+		                    <?php if(count($email_list) > 1) : ?>
+                                <span class="label label-default em-mr-8 em-email-label pointer" onclick="showEmailList()">
+                                    +<?= count($email_list)-1 ?>
+                                </span>
 		                    <?php endif; ?>
                         </div>
                     </div>
@@ -532,6 +564,10 @@ if ($allowed_attachments !== true) {
         $("#em-progress-wrp .progress-bar").css("width", +0 + "%");
         $("#em-progress-wrp .status").text(0 + "%");
     });
+
+    function showEmailList() {
+        document.querySelector('#email-list-modal').classList.toggle('hidden');
+    }
 
     function openCC()
     {
@@ -1195,4 +1231,5 @@ if ($allowed_attachments !== true) {
         $("#em-progress-wrp .progress-bar").css("width", +percent + "%");
         $("#em-progress-wrp .status").text(percent + "%");
     };
+
 </script>
