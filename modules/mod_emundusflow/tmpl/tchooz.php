@@ -68,6 +68,12 @@ $now = $dateTime->format('Y-m-d H:i:s');
         .mod_emundus_flow___infos div:first-child{
             margin-bottom: 6px;
         }
+
+        .mod_emundus_flow___buttons {
+            flex-direction: column;
+            align-items: flex-start;
+            row-gap: 8px;
+        }
     }
 </style>
 
@@ -94,7 +100,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
             }
             ?>
         </div>
-        <div class="flex items-center justify-end">
+        <div class="flex items-center justify-end mod_emundus_flow___buttons">
             <?php if ($show_back_button == 1) : ?>
             <a href="<?php echo $home_link ?>" title="<?php echo strip_tags(JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT')) ?>">
                 <button class="btn btn-primary mr-4"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
