@@ -1101,20 +1101,16 @@ form.fabrikForm select.input-small {
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer {
         width: -moz-fit-content;
         width: fit-content;
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;
         min-width: 40%;
       }
-@media all and (max-width: 767px) {
-      form.fabrikForm .plg-radiobutton .fabrikSubElementContainer {
-          display: flex;
-          flex-wrap: wrap;
-          flex-direction: column
-      }
-        }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio {
   padding-top: var(--em-spacing-1);
   padding-bottom: var(--em-spacing-1);
   margin-bottom: var(--em-spacing-1);
-          width: auto;
+          width: 100%;
           align-items: center;
           margin-left: 0px;
 }
