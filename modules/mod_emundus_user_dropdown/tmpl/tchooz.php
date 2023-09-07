@@ -209,7 +209,7 @@ if ($user != null) {
                 <li class="dropdown-header"><?= $user->email; ?></li>
             <?php endif; ?>
             <?php if ($show_logout == '1') :?>
-                <?= '<li><a class="logout-button-user" href="/index.php?option=com_users&task=user.logout&'.JSession::getFormToken().'=1">'.JText::_('LOGOUT').'</a></li>'; ?>
+                <?= '<li><a class="logout-button-user" href="'.JURI::base().'index.php?option=com_users&task=user.logout&'.JSession::getFormToken().'=1">'.JText::_('LOGOUT').'</a></li>'; ?>
             <?php endif; ?>
             <?php if ($show_update == '1' && !$is_anonym_user) :?>
                 <hr style="width: 100%">
