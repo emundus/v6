@@ -284,7 +284,7 @@ function purcentage(elements){
  * @param maxAge
  * @returns {Date}
  */
-function birthDateValidation(element, minAge = 0, maxAge = 0) {
+function birthDateValidation(element, minAge = 0, maxAge = 0, minMessage = 'Vous devez être plus agé que %s ans', maxMessage = 'Vous devez être plus jeune que %s ans') {
     const errorElement = document.querySelector('.fb_el_'+element.baseElementId + ' .fabrikErrorMessage');
     if(errorElement) {
         errorElement.innerHTML = '';
@@ -308,7 +308,7 @@ function birthDateValidation(element, minAge = 0, maxAge = 0) {
         cutOffMin.setFullYear(todayYear - minAge);
 
         if (userBirthDate > cutOffMin) {
-            error = 'Vous devez être plus agé que ' + minAge;
+            error = minMessage.replace('%s', minAge.toString());
         }
     }
     else if(maxAge !== 0)
@@ -317,7 +317,7 @@ function birthDateValidation(element, minAge = 0, maxAge = 0) {
         cutOffMax.setFullYear(todayYear - maxAge);
 
         if (userBirthDate < cutOffMax) {
-            error = 'Vous devez être plus jeune que ' + maxAge;
+            error = maxMessage.replace('%s', maxAge.toString());
         }
     }
 
