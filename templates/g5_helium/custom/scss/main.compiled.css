@@ -729,7 +729,7 @@ form.fabrikForm #inputValue
     {
       height: var(--em-form-height) !important;
       border-left: var(--em-form-br);
-      border-radius: var(--em-form-br) 0 var(--em-form-br) 0;
+      border-radius: 0 var(--em-form-br) var(--em-form-br) 0;
       border-color: var(--em-form-bc);
       padding: 0;
       box-shadow: unset;
@@ -750,7 +750,6 @@ form.fabrikForm .fabrikEmundusPhoneNumber .chzn-container .chzn-drop{
       width: fit-content;
       border-radius: var(--em-form-br);
       margin-top: var(--m-8);
-      min-width: 80vw !important;
     }
 form.fabrikForm .fabrikEmundusPhoneNumber .chzn-container .chzn-drop .chzn-search{
       padding: var(--p-4);
@@ -771,7 +770,7 @@ form.fabrikForm .fabrikEmundusPhoneNumber .chzn-container .chzn-single{
       display: flex;
       justify-content: center;
       align-items: center;
-      border-radius: 0 var(--em-form-br) 0 var(--em-form-br) !important;
+      border-radius: var(--em-form-br) 0 0 var(--em-form-br) !important;
       height: calc(var(--em-form-height) + 2px);
       background-position-x: 90% !important;
       background-position-y: 54% !important;
