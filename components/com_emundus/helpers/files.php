@@ -3693,7 +3693,7 @@ class EmundusHelperFiles
                         continue;
                     }
 
-                    if (!in_array('all', $filter['value']) && (!empty($filter['value']) || $filter['value'] == '0')) {
+                    if (!in_array('all', $filter['value'], true) && (!empty($filter['value']) || $filter['value'] == '0')) {
                         $filter_id = str_replace(['filter-', 'default-filter-'], '', $filter['id']);
 
                         if (is_numeric($filter_id)) {
