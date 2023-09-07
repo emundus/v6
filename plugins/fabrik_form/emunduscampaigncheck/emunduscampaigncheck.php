@@ -125,10 +125,21 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
 
             // Cannot create new campaigns at all.
             case 0:
-                JLog::add('User: '.$user->id.' already has a file.', JLog::ERROR, 'com_emundus.campaign-check');
-                $this->getModel()->formErrorMsg = '';
-                $this->getModel()->getForm()->error = JText::_('CANNOT_HAVE_MULTI_FILE');
-	            $app->redirect('index.php', JText::_('CANNOT_HAVE_MULTI_FILE'));
+                $query->select('COUNT('.$db->quoteName('id').')')
+                    ->from($db->quoteName('#__emundus_campaign_candidature'))
+                    ->where($db->quoteName('applicant_id') . ' = ' . $user->id)
+                    ->andWhere($db->quoteName('published').' <> '.$db->quote('-1'));
+
+                $db->setQuery($query);
+                $files = $db->loadResult();
+
+                if ($files > 0) {
+                    JLog::add('User: '.$user->id.' already has a file.', JLog::ERROR, 'com_emundus.campaign-check');
+                    $this->getModel()->formErrorMsg = '';
+                    $this->getModel()->getForm()->error = JText::_('CANNOT_HAVE_MULTI_FILE');
+                    $app->redirect('index.php', JText::_('CANNOT_HAVE_MULTI_FILE'));
+                }
+
                 break;
 
             // If the applicant can only have one file per campaign.
