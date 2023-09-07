@@ -1839,7 +1839,7 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addFabrikGroup($datas,$params = [], $published = 1) {
+    public static function addFabrikGroup($datas,$params = [], $published = 1, $no_label = false) {
         $result = ['status' => false, 'message' => '', 'id' => 0];
 
         if(empty($datas['name'])){
@@ -1862,11 +1862,19 @@ class EmundusHelperUpdate
             $default_params = EmundusHelperFabrik::prepareGroupParams();
             $params = array_merge($default_params, $params);
 
+			if($no_label){
+				$datas['label'] = '';
+			} else {
+				if(empty($datas['label'])){
+					$datas['label'] = $datas['name'];
+				}
+			}
+
             try {
                 $inserting_datas = [
                     'name' => $datas['name'],
                     'css' => $datas['css'] ?: '',
-                    'label' => $datas['label'] ?: $datas['name'],
+                    'label' => $datas['label'],
                     'created' => date('Y-m-d H:i:s'),
                     'created_by' => 62,
                     'created_by_alias' => 'admin',
@@ -3300,5 +3308,42 @@ class EmundusHelperUpdate
 		//
 
 		return true;
+	}
+
+	public static function updateComponentParameter($component,$key,$value,$old_value = null)
+	{
+		$update = true;
+		$result = ['status' => true, 'message' => ''];
+
+		$params = JComponentHelper::getParams($component);
+		if(!empty($old_value))
+		{
+			$current_value = $params->get($key);
+			if($current_value != $old_value)
+			{
+				$update = false;
+			}
+		}
+
+		if($update){
+			$params->set($key,$value);
+		}
+
+		$componentid = JComponentHelper::getComponent($component)->id;
+		$table = JTable::getInstance('extension');
+		$table->load($componentid);
+		$table->bind(array('params' => $params->toString()));
+
+		if (!$table->check()) {
+			$result['message'] = $table->getError();
+			$result['status'] = false;
+		}
+
+		if (!$table->store()) {
+			$result['message'] = $table->getError();
+			$result['status'] = false;
+		}
+
+		return $result;
 	}
 }
