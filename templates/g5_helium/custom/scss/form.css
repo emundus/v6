@@ -26,13 +26,13 @@
     margin-left: -10px;
     .emundus-form {
       @media all and (min-width: 768px) {
-        flex: 0 0 50%;
-        max-width: 50%;
+        flex: 0 0 30rem;
+        max-width: 30rem;
         margin: 16px auto;
       }
       @media all and (min-width: 1440px) {
-        flex: 0 0 40%;
-        max-width: 40%;
+        flex: 0 0 30rem;
+        max-width: 30rem;
         margin: 16px auto;
       }
 
@@ -44,10 +44,30 @@
           }
         }
       }
+
+      @media all and (min-width: 480px) {
+        .fabrikGroupColumns.fabrikGroup {
+          .row-fluid {
+            column-gap: 0;
+          }
+        }
+      }
+
+      .fabrikGroup {
+        margin-bottom: 0;
+      }
+
+      .fabrikElementContainer:not(.fabrikHide) {
+        @apply mb-3;
+      }
+
       #jos_emundus_users___password_check {
         @apply mt-1;
       }
       .fb_el_jos_emundus_users___terms_and_conditions {
+        .row-fluid {
+          padding-bottom: 0 !important;
+        }
         span.material-icons:first-child {
           display: none;
         }
@@ -57,6 +77,13 @@
             @apply ml-1;
             order: 1;
           }
+        }
+      }
+
+      .fb_el_jos_emundus_users___password {
+        .fabrikElementTip {
+          font-size: 14px;
+          line-height: 1.1;
         }
       }
 
@@ -116,10 +143,14 @@
     /** GLOBAL **/
     .row-fluid{
       width: auto;
+      &:before, &:after {
+        display: none;
+      }
     }
 
     .fabrikElement {
       margin-top: var(--em-form-label-margin-bottom);
+      position: relative;
     }
 
     .fabrikElementContainer:not(.fabrikHide) {
@@ -631,8 +662,19 @@
 
     /** CAPTCHA **/
     .plg-captcha {
+      .fabrikElement {
+        @apply flex;
+        @apply items-center;
+        gap: 8px;
+
+        img {
+          height: 40px;
+          border-radius: 8px;
+        }
+      }
       .captcha_input {
-        @apply mt-1;
+        @apply mt-0;
+        @apply w-full;
       }
     }
 
