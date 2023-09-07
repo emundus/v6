@@ -338,7 +338,9 @@ die("<script>
 
     static function prepareElementParameters($plugin, $notempty = true, $attachementId = 0) {
 
+		$plugin_to_setup = '';
         if ($plugin == 'nom' || $plugin == 'prenom' || $plugin == 'email') {
+	        $plugin_to_setup = $plugin;
             $plugin = 'field';
         }
 
@@ -553,6 +555,23 @@ die("<script>
             $params['rel'] = '';
             $params['link_title'] = '';
             $params['link_attributes'] = '';
+
+	        if($plugin_to_setup == 'email') {
+		        $params['password'] = 3;
+
+		        $params['validations']['plugin'][] = 'isemail';
+		        $params['validations']['plugin_published'][] = '1';
+		        $params['validations']['validate_in'][] = 'both';
+		        $params['validations']['validation_on'][] = 'both';
+		        $params['validations']['validate_hidden'][] = '0';
+		        $params['validations']['must_validate'][] = '0';
+		        $params['validations']['show_icon'][] = '1';
+
+		        $params['isemail-message'] = array('','');
+		        $params['isemail-validation_condition'] = array('','');
+		        $params['isemail-allow_empty'] = array('','1');
+		        $params['isemail-check_mx'] = array('','0');
+	        }
         }
 
         if($plugin == 'textarea'){
