@@ -578,15 +578,16 @@
       .fabrikSubElementContainer {
         width: fit-content;
         min-width: 40%;
-        @media all and (max-width: 479px) {
+        @media all and (max-width: 767px) {
           display: flex;
           flex-wrap: wrap;
+          flex-direction: column;
         }
         .fabrikgrid_radio {
           @apply py-1;
           @apply mb-1;
+          width: 100%;
           @apply items-center;
-          width: auto;
           @apply ml-0;
           label {
             @apply mb-0;

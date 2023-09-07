@@ -1103,18 +1103,19 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer {
         width: fit-content;
         min-width: 40%;
       }
-@media all and (max-width: 479px) {
+@media all and (max-width: 767px) {
       form.fabrikForm .plg-radiobutton .fabrikSubElementContainer {
           display: flex;
-          flex-wrap: wrap
+          flex-wrap: wrap;
+          flex-direction: column
       }
         }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio {
   padding-top: var(--em-spacing-1);
   padding-bottom: var(--em-spacing-1);
   margin-bottom: var(--em-spacing-1);
-  align-items: center;
-          width: auto;
+          width: 100%;
+          align-items: center;
           margin-left: 0px;
 }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label {
