@@ -2606,6 +2606,8 @@ try {
 						$params = json_decode($list->params, true);
 						$params['csv_export_frontend'] = '10';
 						$params['allow_edit_details'] = '10';
+						$params['allow_add'] = '10';
+						$params['allow_delete'] = '10';
 
 						$query->clear()
 							->update($db->quoteName('#__fabrik_lists'))
