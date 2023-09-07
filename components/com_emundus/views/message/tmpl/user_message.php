@@ -43,7 +43,7 @@ $uids = array();
         height: 300px !important;
         overflow-y: scroll;
     }
-    .form-group,#em-progress-wrp {
+    .form-group {
         position: static;
     }
     .form-group .email-input-block{
