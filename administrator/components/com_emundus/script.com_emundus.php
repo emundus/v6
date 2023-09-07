@@ -3005,6 +3005,48 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 
 				EmundusHelperUpdate::insertTranslationsTag('PLEASE_CHECK_THIS_FIELD','Veuillez cocher la case');
 				EmundusHelperUpdate::insertTranslationsTag('PLEASE_CHECK_THIS_FIELD','Please tick the box', 'override', null, null, null, 'en-GB');
+
+				$query->clear()
+					->select('form_id')
+					->from($db->quoteName('#__emundus_setup_formlist'))
+					->where($db->quoteName('type') . ' LIKE ' . $db->quote('profile'));
+				$db->setQuery($query);
+				$form_id = $db->loadResult();
+
+				if(!empty($form_id))
+				{
+					$query->clear()
+						->select('id,params')
+						->from($db->quoteName('#__fabrik_forms'))
+						->where($db->quoteName('id') . ' = ' . $db->quote($form_id));
+					$db->setQuery($query);
+					$form = $db->loadObject();
+
+					if(!empty($form))
+					{
+						$params = json_decode($form->params, true);
+
+						if(!in_array('emundus-updatesession.php', $params['form_php_file']))
+						{
+							$params['plugin_state'][]          = 1;
+							$params['only_process_curl'][]     = 'onAfterProcess';
+							$params['form_php_file'][]         = 'emundus-updatesession.php';
+							$params['form_php_require_once'][] = 0;
+							$params['curl_code'][]             = '';
+							$params['plugins'][]               = 'php';
+							$params['plugin_locations'][]      = 'both';
+							$params['plugin_events'][]         = 'both';
+							$params['plugin_description'][]    = 'Update eMundus session';
+
+							$query->clear()
+								->update($db->quoteName('#__fabrik_forms'))
+								->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+								->where($db->quoteName('id') . ' = ' . $db->quote($form_id));
+							$db->setQuery($query);
+							$db->execute();
+						}
+					}
+				}
             }
 		}
 

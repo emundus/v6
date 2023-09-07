@@ -52,7 +52,6 @@ $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.
 <script>
     <?php if($update_profile_picture == 1) : ?>
     function displayEdit(state) {
-        console.log('here')
         document.querySelector('#pp_edit_icon').style.display = state;
     }
 
