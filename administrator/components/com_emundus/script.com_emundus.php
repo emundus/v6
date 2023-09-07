@@ -2700,6 +2700,12 @@ try {
 					'en-GB' => 'New password',
 				];
 				EmundusHelperUpdate::updateOverrideTag('COM_USERS_FIELD_RESET_PASSWORD1_LABEL', $old_values, $new_values);
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_NEW_FILE','Nouveau dossier');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_NEW_FILE','New file', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_NEW_FILE_DESC','Votre dossier est en cours de création, merci de patienter...');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_NEW_FILE_DESC','Your file is being created, so please be patient...', 'override', null, null, null, 'en-GB');
 			}
 		}
 
