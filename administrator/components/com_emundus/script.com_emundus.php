@@ -2976,6 +2976,25 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 							$db->setQuery($query);
 							$db->execute();
 						}
+
+						$query->clear()
+							->select('id,params')
+							->from($db->quoteName('#__fabrik_jsactions'))
+							->where($db->quoteName('element_id') . ' = ' . $db->quote($password_field->id))
+							->where($db->quoteName('action') . ' LIKE ' . $db->quote('change'));
+						$db->setQuery($query);
+						$password_js_change = $db->loadObject();
+
+						if(!empty($password_js_change))
+						{
+
+							$query->clear()
+								->update($db->quoteName('#__fabrik_jsactions'))
+								->set($db->quoteName('code') . ' = ' . $db->quote('checkPasswordSymbols(this.form.formElements.get(&#039;jos_emundus_users___password&#039;));'))
+								->where($db->quoteName('id') . ' = ' . $db->quote($password_js_change->id));
+							$db->setQuery($query);
+							$db->execute();
+						}
 					}
 				}
 

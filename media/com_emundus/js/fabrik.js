@@ -277,6 +277,13 @@ function purcentage(elements){
     }
 }
 
+/**
+ * Check if the user is older than the minAge or younger than the maxAge
+ * @param element
+ * @param minAge
+ * @param maxAge
+ * @returns {Date}
+ */
 function birthDateValidation(element, minAge = 0, maxAge = 0) {
     const errorElement = document.querySelector('.fb_el_'+element.baseElementId + ' .fabrikErrorMessage');
     if(errorElement) {
@@ -324,6 +331,9 @@ function birthDateValidation(element, minAge = 0, maxAge = 0) {
     return userBirthDate;
 }
 
+/**
+ * Function to display a modal with a message in form 102
+ */
 function submitNewFile() {
     let campaign = document.getElementById('jos_emundus_campaign_candidature___campaign_id');
     for (let i = 0; i < campaign.length; i++){
@@ -345,5 +355,36 @@ function submitNewFile() {
             }
         );
         document.querySelector('#form_102').submit();
+    }
+}
+
+function checkPasswordSymbols(element) {
+    var wrong_password_title = ['Invalid password', 'Mot de passe invalide'];
+    var wrong_password_description = ['The #$\{\};<> characters are forbidden, as are spaces.', 'Les caractères #$\{\};<> sont interdits ainsi que les espaces'];
+
+    var site_url = window.location.toString();
+    var site_url_lang_regexp = /\w+.\/en/d;
+
+    var index = 0;
+
+    if(site_url.match(site_url_lang_regexp) === null) { index = 1; }
+
+    var regex = /[#$\{\};<> ]/;
+    var password_value = element.get('value');
+
+    if (password_value.match(regex) != null) {
+        Swal.fire({
+            type: 'error',
+            title: wrong_password_title[index],
+            text: wrong_password_description[index],
+            reverseButtons: true,
+            customClass: {
+                title: 'em-swal-title',
+                confirmButton: 'em-swal-confirm-button',
+                actions: 'em-swal-single-action',
+            }
+        });
+
+        element.set('');
     }
 }
