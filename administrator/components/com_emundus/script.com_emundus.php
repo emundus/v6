@@ -2889,13 +2889,13 @@ return $tip_text;';
 						$params['tipseval'] = 1;
 						$params['password'] = 1;
 						$params['validations'] = [
-							'plugin' => ['checkpassword'],
-							'plugin_published' => ['1'],
-							'validate_in' => ['both'],
-							'validation_on' => ['both'],
-							'validate_hidden' => ['0'],
-							'must_validate' => ['0'],
-							'show_icon' => ['1'],
+							'plugin' => ['checkpassword','notempty'],
+							'plugin_published' => ['1','1'],
+							'validate_in' => ['both','both'],
+							'validation_on' => ['both','both'],
+							'validate_hidden' => ['0','0'],
+							'must_validate' => ['0','0'],
+							'show_icon' => ['1','1'],
 						];
 
 						$query->clear()
