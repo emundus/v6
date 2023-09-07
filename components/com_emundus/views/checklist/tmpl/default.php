@@ -108,7 +108,7 @@ if (!empty($this->custom_title)) :?>
         <div class="alert alert-info flex items-center gap-1 mt-1">
             <span class="material-icons">info</span>
             <div>
-                <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('COM_EMUNDUS_ATTACHMENTS_BYTES'); ?> </p>
+                <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' ' . ini_get("upload_max_filesize") . ' '. JText::_('COM_EMUNDUS_ATTACHMENTS_BYTES'); ?> </p>
             </div>
         </div>
     <?php if ($this->show_info_legend) :?>
