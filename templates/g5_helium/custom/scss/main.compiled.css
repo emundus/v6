@@ -1114,7 +1114,7 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio {
   padding-top: var(--em-spacing-1);
   padding-bottom: var(--em-spacing-1);
   margin-bottom: var(--em-spacing-1);
-          width: 100%;
+          width: auto;
           align-items: center;
           margin-left: 0px;
 }

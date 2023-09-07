@@ -586,7 +586,7 @@
         .fabrikgrid_radio {
           @apply py-1;
           @apply mb-1;
-          width: 100%;
+          width: auto;
           @apply items-center;
           @apply ml-0;
           label {
