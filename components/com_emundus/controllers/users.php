@@ -761,6 +761,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 			if (is_numeric($user)) {
 				$u = JUser::getInstance($user);
 				$count = $m_users->countUserEvaluations($user);
+				$count += $m_users->countUserDecisions($user);
 
 				if ($count > 0) {
 					/** user disactivation */

@@ -15,6 +15,28 @@ JHtml::_('behavior.formvalidator');
 $document = JFactory::getDocument();
 $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_users_reset.css");
 
+$params = JComponentHelper::getParams('com_users');
+$min_length = $params->get('minimum_length');
+$min_int = $params->get('minimum_integers');
+$min_sym = $params->get('minimum_symbols');
+$min_up = $params->get('minimum_uppercase');
+$min_low = $params->get('minimum_lowercase');
+
+$tip_text = JText::sprintf('USER_PASSWORD_MIN_LENGTH', $min_length);
+
+if ((int)$min_int > 0) {
+	$tip_text .= ','.JText::sprintf('USER_PASSWORD_MIN_INT', $min_int);
+}
+if ((int)$min_sym > 0) {
+	$tip_text .= ','.JText::sprintf('USER_PASSWORD_MIN_SYM', $min_sym);
+}
+if ((int)$min_up > 0) {
+	$tip_text .= ','.JText::sprintf('USER_PASSWORD_MIN_UPPER', $min_up);
+}
+if ((int)$min_low > 0) {
+	$tip_text .= ','.JText::sprintf('USER_PASSWORD_MIN_LOWER', $min_low);
+}
+
 ?>
 <div class="reset-complete<?php echo $this->pageclass_sfx; ?>">
 	<?php if ($this->params->get('show_page_heading')) : ?>
@@ -32,8 +54,13 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_use
 		<?php foreach ($this->form->getFieldsets() as $fieldset) : ?>
 			<fieldset>
 				<?php if (isset($fieldset->label)) : ?>
-					<p class="mb-4"><?php echo JText::_($fieldset->label); ?></p>
+					<p class="mb-4">
+                        <?php echo JText::_($fieldset->label); ?>
+                        <br/>
+                        <?php echo $tip_text ?>
+                    </p>
 				<?php endif; ?>
+
 				<?php echo $this->form->renderFieldset($fieldset->name); ?>
 			</fieldset>
 		<?php endforeach; ?>

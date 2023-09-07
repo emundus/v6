@@ -198,6 +198,12 @@ if ($allowed_attachments !== true) {
 
             <div class="form-group em-form-recipients em-mt-12 col-md-6 col-sm-6">
 
+	            <?php foreach ($this->users as $user) : ?>
+                    <?php if (!empty($user['email']) && !in_array($user['email'], $email_list)) : ?>
+                        <?php $email_list[] = $user['email']; ?>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+
                 <!-- List of users / their emails, gotten from the fnums selected. -->
                 <div class="flex justify-between items-center">
                     <div class="flex items-center">
@@ -206,25 +212,20 @@ if ($allowed_attachments !== true) {
                         <div class="em-border-radius-8">
 		                    <?php if(count($this->users) == 1) : ?>
 			                    <?php foreach ($this->users as $user) : ?>
+                                    <span class="label label-default em-mr-8 em-email-label">
+                                        <?= $user['name'] . ' <em class="em-font-size-14">&lt;' . $user['email'] . '&gt;</em>'; ?>
+                                    </span>
 
-				                    <?php if (!empty($user['email']) && !in_array($user['email'], $email_list)) : ?>
-					                    <?php $email_list[] = $user['email']; ?>
-                                        <span class="label label-default em-mr-8 em-email-label">
-                                    <?= $user['name'] . ' <em class="em-font-size-14">&lt;' . $user['email'] . '&gt;</em>'; ?>
-                                </span>
-
-                                        <input type="hidden" name="ud[]" id="ud" value="<?= $user['id']; ?>"/>
-				                    <?php endif; ?>
-
+                                    <input type="hidden" name="ud[]" id="ud" value="<?= $user['id']; ?>"/>
 			                    <?php endforeach; ?>
 		                    <?php else : ?>
                                 <div class="flex items-center">
-                        <span class="label label-default em-mr-8 em-email-label">
-                                    <?= $this->users[0]['name'] . ' <em class="em-font-size-14">&lt;' . $this->users[0]['email'] . '&gt;</em>'; ?>
-                        </span>
                                     <span class="label label-default em-mr-8 em-email-label">
-                                +<?= count($this->users)-1 ?>
-                            </span>
+                                        <?= $this->users[0]['name'] . ' <em class="em-font-size-14">&lt;' . $this->users[0]['email'] . '&gt;</em>'; ?>
+                                    </span>
+                                    <span class="label label-default em-mr-8 em-email-label">
+                                        +<?= count($this->users)-1 ?>
+                                    </span>
                                 </div>
 		                    <?php endif; ?>
                         </div>

@@ -2683,8 +2683,24 @@ try {
 				$insertBeforeLine = "# Redirect to home page all requests to hidden files or directories";
 				$succeed['add_htaccess_exeption'] = EmundusHelperUpdate::insertIntoFile($file, $insertLines, $insertBeforeLine);
 
-				return $succeed;
-            }
+				$old_values = [
+					'fr-FR' => 'Confirmer le mot de passe <span class=\"required\"></span><ul><li> Longueur minimum : 6 caractères.</li>\n<li>Avec au moins 1 chiffre.</li>\n<li>Avec au moins 1 symbole.</li>\n<li>Avec au moins 1 lettre majuscule.</li></ul>\n',
+				];
+				$new_values = [
+					'fr-FR' => 'Confirmez le mot de passe'
+				];
+				EmundusHelperUpdate::updateOverrideTag('COM_USERS_FIELD_RESET_PASSWORD2_LABEL', $old_values, $new_values);
+
+				$old_values = [
+					'fr-FR' => 'Mot de passe',
+					'en-GB' => 'Password',
+				];
+				$new_values = [
+					'fr-FR' => 'Nouveau mot de passe',
+					'en-GB' => 'New password',
+				];
+				EmundusHelperUpdate::updateOverrideTag('COM_USERS_FIELD_RESET_PASSWORD1_LABEL', $old_values, $new_values);
+			}
 		}
 
 		return $succeed;
