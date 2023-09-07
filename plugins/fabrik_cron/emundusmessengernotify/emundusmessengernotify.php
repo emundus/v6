@@ -64,10 +64,10 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query->select('distinct cc.fnum, cc.applicant_id')
+        $query->select('DISTINCT cc.fnum, cc.applicant_id')
             ->from($db->quoteName('#__emundus_campaign_candidature','cc'))
-            ->innerJoin($db->quoteName('#__emundus_chatroom','c').' ON '.$db->quoteName('c.fnum').' = '.$db->quoteName('cc.fnum'))
-            ->innerJoin($db->quoteName('#__messages','m').' ON '.$db->quoteName('m.page').' = '.$db->quoteName('c.id') . ' AND ' . $db->quoteName('m.state') . ' = ' . $db->quote(0));
+            ->innerJoin($db->quoteName('#__emundus_chatroom','c').' ON '.$db->quoteName('c.fnum').' LIKE '.$db->quoteName('cc.fnum'))
+            ->innerJoin($db->quoteName('#__messages','m').' ON '.$db->quoteName('m.page').' = '.$db->quoteName('c.id').' AND '.$db->quoteName('m.state').' = '.$db->quote(0));
         $db->setQuery($query);
         $chatrooms = $db->loadObjectList();
 
@@ -76,10 +76,10 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
 
         // Generate emails for applicant from template
         if (!empty($chatrooms)) {
-            include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
-            include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-            include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
-            include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
+            include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
+            include_once(JPATH_SITE.'/components/com_emundus/models/files.php');
+            include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
+            include_once(JPATH_SITE.'/components/com_emundus/controllers/messages.php');
 
             $m_emails = new EmundusModelEmails;
             $m_files = new EmundusModelFiles;
@@ -89,21 +89,21 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
             $email = $m_emails->getEmailById($reminder_mail_id);
 
             $query->clear()
-                ->select('Template')
+                ->select($db->quoteName('Template'))
                 ->from($db->quoteName('#__emundus_email_templates'))
-                ->where($db->quoteName('id') . ' = ' . $email->email_tmpl);
+                ->where($db->quoteName('id').' = '.$email->email_tmpl);
             $db->setQuery($query);
             $email->Template = $db->loadResult();
 
             // For every chatroom, check if the applicant has an unread message
             foreach ($chatrooms as $chatroom) {
                 $query->clear()
-                    ->select('count(m.message_id)')
+                    ->select('COUNT('.$db-quoteName('m.message_id').')')
                     ->from($db->quoteName('#__messages', 'm'))
-                    ->leftJoin($db->quoteName('#__emundus_chatroom', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('m.page'))
-                    ->where($db->quoteName('c.fnum') . ' LIKE ' . $db->quote($chatroom->fnum))
-                    ->andWhere($db->quoteName('m.user_id_from') . ' <> ' . $db->quote($chatroom->applicant_id))
-                    ->andWhere($db->quoteName('m.state') . ' = 0');
+                    ->leftJoin($db->quoteName('#__emundus_chatroom', 'c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('m.page'))
+                    ->where($db->quoteName('c.fnum').' LIKE '.$db->quote($chatroom->fnum))
+                    ->andWhere($db->quoteName('m.user_id_from').' <> '.$db->quote($chatroom->applicant_id))
+                    ->andWhere($db->quoteName('m.state').' = 0');
 
                 $db->setQuery($query);
                 $messages_not_read = $db->loadResult();
@@ -121,9 +121,9 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
                 $mailer = JFactory::getMailer();
 
                 $query->clear()
-                    ->select('id, email, name')
+                    ->select($db->quoteName(array('id','email','name')))
                     ->from($db->quoteName('#__users'))
-                    ->where($db->quoteName('id') . ' = ' . $applicant_to_send);
+                    ->where($db->quoteName('id').' = '.$applicant_to_send);
                 $db->setQuery($query);
                 $applicant = $db->loadObject();
 
@@ -171,7 +171,7 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
                 // Send emails
                 $send = $mailer->Send();
                 if ($send !== true) {
-                    $this->log .= "\n Error sending email : " . $to;
+                    $this->log .= "\n Error sending email : ".$to;
                 }
                 // to avoid been considered as a spam process or DDoS
                 sleep(0.1);
@@ -185,12 +185,12 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
 
                 // Check if unread messages from the chatroom come from the applicant
                 $query->clear()
-                    ->select('count(m.message_id)')
+                    ->select('COUNT('.$db->quoteName('m.message_id').')')
                     ->from($db->quoteName('#__messages', 'm'))
-                    ->leftJoin($db->quoteName('#__emundus_chatroom', 'ec') . ' ON ' . $db->quoteName('ec.id') . ' = ' . $db->quoteName('m.page'))
-                    ->where($db->quoteName('ec.fnum') . ' LIKE ' . $db->quote($chatroom->fnum))
-                    ->andWhere($db->quoteName('m.user_id_from') . ' = ' . $db->quote($chatroom->applicant_id))
-                    ->andWhere($db->quoteName('m.state') . ' = 0');
+                    ->leftJoin($db->quoteName('#__emundus_chatroom', 'ec').' ON '.$db->quoteName('ec.id').' = '.$db->quoteName('m.page'))
+                    ->where($db->quoteName('ec.fnum').' LIKE '.$db->quote($chatroom->fnum))
+                    ->andWhere($db->quoteName('m.user_id_from').' = '.$db->quote($chatroom->applicant_id))
+                    ->andWhere($db->quoteName('m.state').' = 0');
                 $db->setQuery($query);
                 $messages_not_read = $db->loadResult();
 
@@ -198,23 +198,23 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
                     // Get users associated to the file by their group and the campaign program
                     if ($notify_users_programs == 1 || !empty($notify_groups) || !empty($notify_profiles)) {
                         $query->clear()
-                            ->select('distinct eu.user_id')
+                            ->select('DISTINCT '.$db->quoteName('eu.user_id'))
                             ->from($db->quoteName('#__emundus_groups', 'eg'))
-                            ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course', 'esgrc') . ' ON ' . $db->quoteName('esgrc.parent_id') . ' = ' . $db->quoteName('eg.group_id'))
-                            ->innerJoin($db->quoteName('#__emundus_users', 'eu') . ' ON ' . $db->quoteName('eu.user_id') . ' = ' . $db->quoteName('eg.user_id'));
+                            ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course', 'esgrc').' ON '.$db->quoteName('esgrc.parent_id').' = '.$db->quoteName('eg.group_id'))
+                            ->innerJoin($db->quoteName('#__emundus_users', 'eu').' ON '.$db->quoteName('eu.user_id').' = '.$db->quoteName('eg.user_id'));
                         if (!empty($notify_profiles)) {
-                            $query->leftJoin($db->quoteName('#__emundus_users_profiles', 'eup') . ' ON ' . $db->quoteName('eup.user_id') . ' = ' . $db->quoteName('eu.user_id'));
+                            $query->leftJoin($db->quoteName('#__emundus_users_profiles', 'eup').' ON '.$db->quoteName('eup.user_id').' = '.$db->quoteName('eu.user_id'));
                         }
 
-                        $query->where($db->quoteName('esgrc.course') . ' = ' . $db->quote($fnumInfos['training']));
+                        $query->where($db->quoteName('esgrc.course').' LIKE '.$db->quote($fnumInfos['training']));
 
                         // Keep only users associated to groups given in parameter
                         if (!empty($notify_groups)) {
-                            $query->andWhere($db->quoteName('eg.group_id') . ' IN (' . $notify_groups . ')');
+                            $query->andWhere($db->quoteName('eg.group_id').' IN ('.$notify_groups.')');
                         }
                         // Keep only users associated to profiles given in parameter
                         if (!empty($notify_profiles)) {
-                            $query->andWhere($db->quoteName('eu.profile') . ' IN (' . $notify_profiles . ') OR ' . $db->quoteName('eup.profile_id') . ' IN (' . $notify_profiles . ')');
+                            $query->andWhere($db->quoteName('eu.profile').' IN ('.$notify_profiles.') OR '.$db->quoteName('eup.profile_id').' IN ('.$notify_profiles.')');
                         }
 
                         $db->setQuery($query);
@@ -229,23 +229,23 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
                     // Get users associated to the file by their group directly
                     if ($notify_users_groups == 1 || !empty($notify_groups) || !empty($notify_profiles)) {
                         $query->clear()
-                            ->select('distinct eu.user_id')
+                            ->select('DISTINCT '.$db->quoteName('eu.user_id'))
                             ->from($db->quoteName('#__emundus_groups', 'eg'))
-                            ->leftJoin($db->quoteName('#__emundus_group_assoc', 'ega') . ' ON ' . $db->quoteName('ega.group_id') . ' = ' . $db->quoteName('eg.group_id'))
-                            ->innerJoin($db->quoteName('#__emundus_users', 'eu') . ' ON ' . $db->quoteName('eu.user_id') . ' = ' . $db->quoteName('eg.user_id'));
+                            ->leftJoin($db->quoteName('#__emundus_group_assoc', 'ega').' ON '.$db->quoteName('ega.group_id').' = '.$db->quoteName('eg.group_id'))
+                            ->innerJoin($db->quoteName('#__emundus_users', 'eu').' ON '.$db->quoteName('eu.user_id').' = '.$db->quoteName('eg.user_id'));
                         if (!empty($notify_profiles)) {
-                            $query->leftJoin($db->quoteName('#__emundus_users_profiles', 'eup') . ' ON ' . $db->quoteName('eup.user_id') . ' = ' . $db->quoteName('eu.user_id'));
+                            $query->leftJoin($db->quoteName('#__emundus_users_profiles', 'eup').' ON '.$db->quoteName('eup.user_id').' = '.$db->quoteName('eu.user_id'));
                         }
 
-                        $query->where($db->quoteName('ega.fnum') . ' LIKE ' . $db->quote($chatroom->fnum));
+                        $query->where($db->quoteName('ega.fnum').' LIKE '.$db->quote($chatroom->fnum));
 
                         // Keep only users associated to groups given in parameter
                         if (!empty($notify_groups)) {
-                            $query->andWhere($db->quoteName('eg.group_id') . ' IN (' . $notify_groups . ')');
+                            $query->andWhere($db->quoteName('eg.group_id').' IN ('.$notify_groups.')');
                         }
                         // Keep only users associated to profiles given in parameter
                         if (!empty($notify_profiles)) {
-                            $query->andWhere($db->quoteName('eu.profile') . ' IN (' . $notify_profiles . ') OR ' . $db->quoteName('eup.profile_id') . ' IN (' . $notify_profiles . ')');
+                            $query->andWhere($db->quoteName('eu.profile').' IN ('.$notify_profiles.') OR '.$db->quoteName('eup.profile_id').' IN ('.$notify_profiles.')');
                         }
 
                         $db->setQuery($query);
@@ -260,23 +260,23 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
                     // Get users associated to the file directly
                     if ($notify_users_assoc == 1 || !empty($notify_groups) || !empty($notify_profiles)) {
                         $query->clear()
-                            ->select('distinct eu.user_id')
+                            ->select('DISTINCT '.$db->quoteName('eu.user_id'))
                             ->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
-                            ->leftJoin($db->quoteName('#__emundus_users_assoc', 'eua') . ' ON ' . $db->quoteName('eua.fnum') . ' LIKE ' . $db->quoteName('ecc.fnum'))
-                            ->innerJoin($db->quoteName('#__emundus_users', 'eu') . ' ON ' . $db->quoteName('eu.user_id') . ' = ' . $db->quoteName('eua.user_id'));
+                            ->leftJoin($db->quoteName('#__emundus_users_assoc', 'eua').' ON '.$db->quoteName('eua.fnum').' LIKE '.$db->quoteName('ecc.fnum'))
+                            ->innerJoin($db->quoteName('#__emundus_users', 'eu').' ON '.$db->quoteName('eu.user_id').' = '.$db->quoteName('eua.user_id'));
                         if (!empty($notify_profiles)) {
-                            $query->leftJoin($db->quoteName('#__emundus_users_profiles', 'eup') . ' ON ' . $db->quoteName('eup.user_id') . ' = ' . $db->quoteName('eu.user_id'));
+                            $query->leftJoin($db->quoteName('#__emundus_users_profiles', 'eup').' ON '.$db->quoteName('eup.user_id').' = '.$db->quoteName('eu.user_id'));
                         }
 
-                        $query->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($chatroom->fnum));
+                        $query->where($db->quoteName('ecc.fnum').' LIKE '.$db->quote($chatroom->fnum));
 
                         // Keep only users associated to groups given in parameter
                         if (!empty($notify_groups)) {
-                            $query->andWhere($db->quoteName('eg.group_id') . ' IN (' . $notify_groups . ')');
+                            $query->andWhere($db->quoteName('eg.group_id').' IN ('.$notify_groups.')');
                         }
                         // Keep only users associated to profiles given in parameter
                         if (!empty($notify_profiles)) {
-                            $query->andWhere($db->quoteName('eu.profile') . ' IN (' . $notify_profiles . ') OR ' . $db->quoteName('eup.profile_id') . ' IN (' . $notify_profiles . ')');
+                            $query->andWhere($db->quoteName('eu.profile').' IN ('.$notify_profiles.') OR '.$db->quoteName('eup.profile_id').' IN ('.$notify_profiles.')');
                         }
 
                         $db->setQuery($query);
@@ -294,18 +294,18 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
                     // If there are no users associated to the file, get a list of all coordinators
                     if(empty($users_to_send)){
                         $query->clear()
-                            ->select('distinct eu.user_id')
+                            ->select('DISTINCT '.$db->quoteName('eu.user_id'))
                             ->from($db->quoteName('#__emundus_users','eu'))
                             ->leftJoin($db->quoteName('#__emundus_users_profiles','eup').' ON '.$db->quoteName('eu.user_id').' = '.$db->quoteName('eup.user_id'))
-                            ->where($db->quoteName('eup.profile_id') . ' = 2');
+                            ->where($db->quoteName('eup.profile_id').' = 2');
                         $db->setQuery($query);
                         $users_to_send = $db->loadColumn();
                     } else if ($notify_coordinators == 1) {
                         $query->clear()
-                            ->select('distinct eu.user_id')
+                            ->select('DISTINCT '.$db->quoteName('eu.user_id'))
                             ->from($db->quoteName('#__emundus_users','eu'))
                             ->leftJoin($db->quoteName('#__emundus_users_profiles','eup').' ON '.$db->quoteName('eu.user_id').' = '.$db->quoteName('eup.user_id'))
-                            ->where($db->quoteName('eup.profile_id') . ' = 2');
+                            ->where($db->quoteName('eup.profile_id').' = 2');
                         $db->setQuery($query);
                         $users_coordinators = $db->loadColumn();
 
@@ -324,9 +324,9 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
                 // So we have to send one email to these partners
                 foreach ($users_fnum_assoc as $user_to_send => $fnums_not_read) {
                     $query->clear()
-                        ->select(array('id, email, name'))
+                        ->select($db->quoteName(array('id, email, name')))
                         ->from($db->quoteName('#__users'))
-                        ->where($db->quoteName('id') . ' = ' . $user_to_send);
+                        ->where($db->quoteName('id').' = '.$user_to_send);
                     $db->setQuery($query);
                     $user_info = $db->loadObject();
 
@@ -336,11 +336,11 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
 
                     // Get the first link from the partner's menu that corresponds to the file list.
                     $query->clear()
-                        ->select(array('id', 'path'))
+                        ->select($db->quoteName(array('id', 'path')))
                         ->from($db->quoteName('#__menu'))
-                        ->where($db->quoteName('menutype') . ' = ' . $db->quote($menutype))
-                        ->andWhere($db->quoteName('published') . ' = 1')
-                        ->andWhere($db->quoteName('link') . ' LIKE ' . $db->quote('%option=com_emundus&view=files%') . ' OR ' . $db->quoteName('link') . ' LIKE ' . $db->quote('%option=com_emundus&view=evaluation%') . ' OR ' . $db->quoteName('link') . ' LIKE ' . $db->quote('%option=com_emundus&view=decision%'))
+                        ->where($db->quoteName('menutype').' LIKE '.$db->quote($menutype))
+                        ->andWhere($db->quoteName('published').' = 1')
+                        ->andWhere($db->quoteName('link').' LIKE '.$db->quote('%option=com_emundus&view=files%').' OR '.$db->quoteName('link').' LIKE '.$db->quote('%option=com_emundus&view=evaluation%').' OR '.$db->quoteName('link').' LIKE '.$db->quote('%option=com_emundus&view=decision%'))
                         ->order($db->quoteName('lft'));
                     $db->setQuery($query);
                     $userLink = $db->loadObject();
@@ -359,11 +359,11 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
                         $query->clear()
                             ->select($db->quoteName('value'))
                             ->from($db->quoteName('#__falang_content'))
-                            ->where($db->quoteName('language_id') . ' = 1')
-                            ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote('menu'))
-                            ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote('path'))
-                            ->andWhere($db->quoteName('reference_id') . ' = ' . $db->quote($userLink->id))
-                            ->andWhere($db->quoteName('published') . ' = 1');
+                            ->where($db->quoteName('language_id').' = 1')
+                            ->andWhere($db->quoteName('reference_table').' = '.$db->quote('menu'))
+                            ->andWhere($db->quoteName('reference_field').' = '.$db->quote('path'))
+                            ->andWhere($db->quoteName('reference_id').' = '.$db->quote($userLink->id))
+                            ->andWhere($db->quoteName('published').' = 1');
                         $db->setQuery($query);
                         $path_en = $db->loadResult();
                     } else {
@@ -375,11 +375,11 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
                         $query->clear()
                             ->select($db->quoteName('value'))
                             ->from($db->quoteName('#__falang_content'))
-                            ->where($db->quoteName('language_id') . ' = 2')
-                            ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote('menu'))
-                            ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote('path'))
-                            ->andWhere($db->quoteName('reference_id') . ' = ' . $db->quote($userLink->id))
-                            ->andWhere($db->quoteName('published') . ' = 1');
+                            ->where($db->quoteName('language_id').' = 2')
+                            ->andWhere($db->quoteName('reference_table').' = '.$db->quote('menu'))
+                            ->andWhere($db->quoteName('reference_field').' = '.$db->quote('path'))
+                            ->andWhere($db->quoteName('reference_id').' = '.$db->quote($userLink->id))
+                            ->andWhere($db->quoteName('published').' = 1');
                         $db->setQuery($query);
                         $path_fr = $db->loadResult();
                     } else {
@@ -404,9 +404,9 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
                     // Using the fnums array stocked as a value for each user_id, we can list all the associated fnums with unread messages for each user specifically
                     foreach ($fnums_not_read as $fnum) {
                         if (!empty($userLink)) {
-                            $fnumList .= '<li><a href="' . JURI::root() . $userLink->path . '#' . $fnum . '|open">' . $fnum . '</a></li>';
+                            $fnumList .= '<li><a href="'.JURI::root().$userLink->path.'#'.$fnum.'|open">'.$fnum.'</a></li>';
                         } else {
-                            $fnumList .= '<li>' . $fnum . '</li>';
+                            $fnumList .= '<li>'.$fnum.'</li>';
                         }
                     }
                     $fnumList .= '</ul>';
@@ -423,7 +423,7 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
                 }
             }
         }
-        $this->log .= "\n process " . count($applicants_to_send) . " applicant(s)";
+        $this->log .= "\n process ".count($applicants_to_send)." applicant(s)";
 
         return count($applicants_to_send);
     }
