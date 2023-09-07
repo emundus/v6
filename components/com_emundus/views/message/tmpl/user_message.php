@@ -180,27 +180,44 @@ $email_list = array();
 
             <div class="form-group em-form-recipients em-mt-12 col-md-6 col-sm-6">
 
-                <!-- List of users / their emails, gotten from the fnums selected. -->
+	            <?php $uids = []; ?>
+	            <?php foreach ($this->users as $user) :?>
+
+		            <?php if (!empty($user->email)) : ?>
+			            <?php
+			            $email_list[] = $user->email;
+			            $uids[] = $user->id;
+			            ?>
+		            <?php endif; ?>
+
+	            <?php endforeach; ?>
                 <div class="flex justify-between items-center">
                     <div class="flex items-center">
-                        <label class='em-mr-8 em-cursor-text mb-0'><?= JText::_('COM_EMUNDUS_TO'); ?>:</label>
+                        <label class='em-mr-8 em-cursor-text mb-0'><?= JText::_('COM_EMUNDUS_TO'); ?> :</label>
 
                         <div class="em-border-radius-8">
-                            <?php $uids = []; ?>
-                            <?php foreach ($this->users as $user) :?>
+				            <?php if(count($this->users) == 1) : ?>
+					            <?php foreach ($this->users as $user) : ?>
 
-                                <?php if (!empty($user->email)) : ?>
-                                    <?php
-                                        $email_list[] = $user->email;
-                                        $uids[] = $user->id;
-                                        ?>
+						            <?php if (!empty($user->email)) : ?>
+                                        <span class="label label-default em-mr-8 em-email-label">
+                                            <?= $user->name . ' <em class="em-font-size-14">&lt;' . $user->email . '&gt;</em>'; ?>
+                                        </span>
+
+                                        <input type="hidden" name="ud[]" id="ud" value="<?= $user->id; ?>"/>
+						            <?php endif; ?>
+
+					            <?php endforeach; ?>
+				            <?php else : ?>
+                                <div class="flex items-center">
                                     <span class="label label-default em-mr-8 em-email-label">
-                                        <?= $user->name.' <em>&lt;'.$user->email.'&gt;</em>'; ?>
+                                        <?= $this->users[0]->name . ' <em class="em-font-size-14">&lt;' . $this->users[0]->email . '&gt;</em>'; ?>
                                     </span>
-                                    <input type="hidden" name="ud[]" id="ud" value="<?= $user->id; ?>"/>
-                                <?php endif; ?>
-
-                            <?php endforeach; ?>
+                                    <span class="label label-default em-mr-8 em-email-label">
+                                        +<?= count($this->users)-1 ?>
+                                    </span>
+                                </div>
+				            <?php endif; ?>
                         </div>
                     </div>
                 </div>
