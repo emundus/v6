@@ -53,6 +53,12 @@
         }
       }
 
+      .row-fluid{
+        &:before, &:after {
+          display: none;
+        }
+      }
+
       .fabrikGroup {
         margin-bottom: 0;
       }
@@ -143,9 +149,6 @@
     /** GLOBAL **/
     .row-fluid{
       width: auto;
-      &:before, &:after {
-        display: none;
-      }
     }
 
     .fabrikElement {

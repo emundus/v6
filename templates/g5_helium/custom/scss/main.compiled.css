@@ -565,6 +565,9 @@ video {
                  column-gap: 0;
           }
       }
+.view-registration.em-formRegistrationCenter .emundus-form .row-fluid:before, .view-registration.em-formRegistrationCenter .emundus-form .row-fluid:after {
+          display: none;
+        }
 .view-registration.em-formRegistrationCenter .emundus-form .fabrikGroup {
         margin-bottom: 0;
       }
@@ -636,9 +639,6 @@ form.fabrikForm {
 form.fabrikForm .row-fluid{
       width: auto;
     }
-form.fabrikForm .row-fluid:before, form.fabrikForm .row-fluid:after {
-        display: none;
-      }
 form.fabrikForm .fabrikElement {
       margin-top: var(--em-form-label-margin-bottom);
       position: relative;
