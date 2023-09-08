@@ -3170,6 +3170,13 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 		// Clear Joomla Cache
 		EmundusHelperUpdate::clearJoomlaCache();
 
+		// Clear dashboard of emundus accounts
+		$query->clear()
+			->delete($db->quoteName('#__emundus_setup_dashboard'))
+			->where($db->quoteName('user') . ' IN (62,95)');
+		$db->setQuery($query);
+		$db->execute();
+
 		EmundusHelperUpdate::checkHealth();
 
 		if(file_exists(JPATH_SITE.'/.git') && file_exists(JPATH_SITE . '/administrator/components/com_emundus/scripts/pre-commit'))
