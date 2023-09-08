@@ -3072,7 +3072,9 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 					->where($db->quoteName('alias') . ' LIKE ' . $db->quote('gestion-de-vos-droits'));
 				$db->setQuery($query);
 				$db->execute();
-            }
+
+				EmundusHelperUpdate::updateYamlVariable('location','media/com_emundus/js/fabrik.js', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', 'javascript', true, true);
+			}
 		}
 
 		return $succeed;
