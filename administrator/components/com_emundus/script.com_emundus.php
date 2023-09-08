@@ -3065,6 +3065,13 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 					->where($db->quoteName('alias') . ' LIKE ' . $db->quote('gestion-de-vos-droits'));
 				$db->setQuery($query);
 				$db->execute();
+
+				$query->clear()
+					->update($db->quoteName('#__content'))
+					->set($db->quoteName('alias') . ' = ' . $db->quote('gestion-des-droits'))
+					->where($db->quoteName('alias') . ' LIKE ' . $db->quote('gestion-de-vos-droits'));
+				$db->setQuery($query);
+				$db->execute();
             }
 		}
 
