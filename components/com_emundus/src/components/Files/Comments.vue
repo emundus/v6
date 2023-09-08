@@ -157,6 +157,10 @@ export default {
 </script>
 
 <style scoped>
+#comments .em-input-card {
+  position: relative;
+}
+
 .em-comment-option{
   position: absolute;
   border-radius: var(--em-coordinator-br);
@@ -164,5 +168,6 @@ export default {
   height: auto;
   background: #fff;
   border: 1px solid #E3E3E3;
+  text-wrap: nowrap;
 }
 </style>
