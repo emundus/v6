@@ -157,7 +157,7 @@
     }
 
     .fabrikElementContainer:not(.fabrikHide) {
-      @apply mb-6;
+      margin-bottom: var(--em-form-field-margin-bottom);
     }
 
     .fabrikLabel {

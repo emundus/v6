@@ -3170,6 +3170,7 @@ class EmundusHelperUpdate
 				'border-radius-block' => '16px',
 				'label-color' => '#000000',
 				'label-margin-bottom' => '6px',
+				'field-margin-bottom' => '24px',
 				'label-size' => '16px',
 				'label-weight' => '500',
 				'height' => '40px',

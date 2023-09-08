@@ -642,8 +642,8 @@ form.fabrikForm .fabrikElement {
       position: relative;
     }
 form.fabrikForm .fabrikElementContainer:not(.fabrikHide) {
-  margin-bottom: var(--em-spacing-6);
-}
+      margin-bottom: var(--em-form-field-margin-bottom);
+    }
 form.fabrikForm .fabrikLabel {
       display: inline-block !important;
       font-size: var(--em-form-label-size);
