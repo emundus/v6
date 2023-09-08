@@ -62,7 +62,7 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
 				<input type="text" class="em-w-100" id="mail" name="email" <?= $this->edit == 1?'value="'.$this->user['email'].'"':''; ?>/>
 			</div>
             <div class="form-group em-addUser-detail-info-same-login flex items-center">
-                <input type="checkbox" id="same_login_email" name="same_login_email" style="margin-bottom: 5px; width: 20px !important" <?= ($this->user['email'] == $this->user['login']) ? 'checked' : ''; ?>>
+                <input type="checkbox" id="same_login_email" name="same_login_email" style="margin-bottom: 5px; outline-offset: 1px;" <?= ($this->user['email'] == $this->user['login']) ? 'checked' : ''; ?>>
                 <label for="same_login_email" class="mb-0"><?= JText::_('COM_EMUNDUS_USERS_LOGIN_SAME_EMAIL'); ?></label>
             </div>
             <div class="form-group em-addUser-detail-info-id" id="login_field">
