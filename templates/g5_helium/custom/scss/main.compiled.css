@@ -567,8 +567,8 @@ video {
         margin-bottom: 0;
       }
 .view-registration.em-formRegistrationCenter .emundus-form .fabrikElementContainer:not(.fabrikHide) {
-        margin-bottom: 24px;
-      }
+  margin-bottom: var(--em-spacing-3);
+}
 .view-registration.em-formRegistrationCenter .emundus-form #jos_emundus_users___password_check {
   margin-top: var(--em-spacing-1);
 }
