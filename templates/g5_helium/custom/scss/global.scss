@@ -4170,20 +4170,16 @@ screen and (max-height: 769px) {
   }
 }
 
-@media all and (max-width: 479px) {
+@media all and (max-width: 416px) {
 
-  .view-checklist #attachment_list .col-md-12 {
-    &:last-of-type .justify-between {
+  .view-checklist #attachment_list .col-md-12:last-of-type .justify-between {
       justify-content: center;
-      flex-direction: column;
-      align-items: center;
+      flex-direction: row;
+      flex-wrap: wrap;
     }
+}
 
-    &:last-of-type .justify-between div:first-of-type {
-      align-self: flex-start;
-      margin-left: 20px;
-    }
-  }
+@media all and (max-width: 479px) {
 
   .view-checklist table form .dz-default.dz-message {
     padding-right: 8px !important;
