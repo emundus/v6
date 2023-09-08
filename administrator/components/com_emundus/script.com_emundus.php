@@ -3001,6 +3001,7 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 				}
 
 				EmundusHelperUpdate::updateComponentParameter('com_users', 'minimum_length', 12);
+				EmundusHelperUpdate::updateComponentParameter('com_users', 'minimum_lowercase', 1);
 				EmundusHelperUpdate::updateComponentParameter('com_fabrik', 'use_fabrikdebug', 1);
 
 				EmundusHelperUpdate::installExtension('plg_fabrik_validationrule_checkpassword','checkpassword','{"name":"plg_fabrik_validationrule_checkpassword","type":"plugin","creationDate":"September 2023","author":"eMundus","copyright":"Copyright (C) 2015-2023 eMundus - All rights reserved.","authorEmail":"dev@emundus.io","authorUrl":"www.emundus.fr","version":"3.10","description":"PLG_VALIDATIONRULE_CHECKPASSWORD_DESCRIPTION","group":"","filename":"checkpassword"}','plugin',1,'fabrik_validationrule');
