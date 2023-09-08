@@ -1144,15 +1144,10 @@
 
 /* ACTIONS */
 
-@media all and (max-width: 479px) {
+@media all and (max-width: 416px) {
   form.fabrikForm .fabrikActions .justify-between {
     justify-content: center;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  form.fabrikForm .fabrikActions .justify-between div:first-of-type {
-    align-self: flex-start;
-    margin-left: 20px;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 }
