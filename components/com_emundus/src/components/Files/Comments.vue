@@ -168,6 +168,5 @@ export default {
   height: auto;
   background: #fff;
   border: 1px solid #E3E3E3;
-  text-wrap: nowrap;
 }
 </style>

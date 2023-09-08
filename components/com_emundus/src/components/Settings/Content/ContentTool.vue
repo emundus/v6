@@ -35,7 +35,14 @@
         </div>
 
         <transition name="fade" mode="out-in" v-if="selectedMenu">
-          <EditArticle v-if="selectedMenu.type === 'article'" :key="currentMenu" :article_id="selectedMenu.id" :article_alias="selectedMenu.alias" :category="selectedMenu.category" :published="selectedMenu.published" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditArticle>
+          <EditArticle v-if="selectedMenu.type === 'article'"
+                       :key="currentMenu"
+                       :article_id="selectedMenu.id" :article_alias="selectedMenu.alias" :category="selectedMenu.category" :published="selectedMenu.published"
+                       class="em-modal-component"
+                       @updateSaving="updateSaving"
+                       @updateLastSaving="updateLastSaving"
+                       @updatePublished="updatePublished"
+          ></EditArticle>
           <EditFooter v-else-if="selectedMenu.type === 'footer'" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditFooter>
         </transition>
       </div>
@@ -126,6 +133,14 @@ export default {
 
     updateLastSaving(last_save){
       this.last_save = last_save;
+    },
+
+    updatePublished(published){
+      this.menus.forEach((menu) => {
+        if (menu.index === this.currentMenu) {
+          menu.published = Number(published);
+        }
+      });
     }
   },
   computed: {

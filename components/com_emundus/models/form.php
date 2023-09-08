@@ -755,8 +755,8 @@ class EmundusModelForm extends JModelList {
 											if ($label[$language->sef] == ''){
 												$label[$language->sef] = $form->label;
 											}
-											if ($intro[$language->sef] == ''){
-												$intro[$language->sef] = $form->intro;
+											if (!isset($intro[$language->sef])){
+												$intro[$language->sef] = '';
 											}
 										}
 
