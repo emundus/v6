@@ -3233,7 +3233,6 @@ class EmundusHelperUpdate
 				'checkbox-border-color-error' => '#F04437',
 				'fileupload-padding' => '12px 8px',
 				'fileupload-background-color' => '#f0f0f0',
-				'field-margin-bottom' => '24px'
 			],
 			'em-spacing' => [
 				'1' => '4px',
