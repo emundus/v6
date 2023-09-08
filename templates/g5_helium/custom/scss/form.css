@@ -1146,8 +1146,8 @@
 
 @media all and (max-width: 416px) {
   form.fabrikForm .fabrikActions .justify-between {
-    justify-content: center;
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 16px;
   }
 }

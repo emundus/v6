@@ -4175,9 +4175,9 @@ screen and (max-height: 769px) {
 @media all and (max-width: 416px) {
 
   .view-checklist #attachment_list .col-md-12:last-of-type .justify-between {
-      justify-content: center;
-      flex-direction: row;
-      flex-wrap: wrap;
+        flex-direction: column-reverse;
+        align-items: center;
+        gap: 16px;
     }
 }
 
