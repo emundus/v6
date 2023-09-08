@@ -40,6 +40,8 @@ requirejs(['fab/fabrik'], function () {
             }
         });
 
+        document.querySelector('.em-submit-form-button button[type="submit"]').disabled = false;
+
         if(no_valid_elts.length === 0) {
             form.result = true;
         }
