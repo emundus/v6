@@ -123,9 +123,9 @@ p,
 }
 
 .view-form.com_fabrik:not(.applicant-form):not(.mon-profil):not(.view-registration) #g-container-main .g-container {
+  width: auto;
   left: 38px;
   position: relative;
-  width: calc(100% - 76px);
 }
 
 .view-form.com_fabrik:not(.applicant-form):not(.view-registration) #g-container-main .g-container {
@@ -1531,9 +1531,9 @@ footer#g-footer > .g-container {
 }
 
 .view-list:not(.g-back-office-emundus-tableau) #g-container-main .g-container {
-  width: auto;
   left: 38px;
   position: relative;
+  width: calc(100% - 76px);
 }
 
 .view-list, .g-back-office-emundus-tableau {
