@@ -8,8 +8,6 @@
 /* IMPORT YOUR COMPONENTS */
 
 /* IMPORT YOUR SERVICES */
-
-import tinymce from "tinymce";
 import client from "../services/axiosClient";
 import axios from "axios";
 
@@ -72,9 +70,10 @@ export default {
       'align',
       'direction',
       'code-block',
-      'formula'
+      'formula',
       // 'image'
-      // 'video'
+      // 'video',
+      'mention'
     ]
   }),
   mounted() {
