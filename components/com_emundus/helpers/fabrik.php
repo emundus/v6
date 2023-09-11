@@ -16,6 +16,10 @@
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
+require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+use libphonenumber\PhoneNumberUtil;
+use libphonenumber\PhoneNumberFormat;
+
 /**
  * Content Component Query Helper
  *
@@ -334,7 +338,9 @@ die("<script>
 
     static function prepareElementParameters($plugin, $notempty = true, $attachementId = 0) {
 
+		$plugin_to_setup = '';
         if ($plugin == 'nom' || $plugin == 'prenom' || $plugin == 'email') {
+	        $plugin_to_setup = $plugin;
             $plugin = 'field';
         }
 
@@ -461,6 +467,7 @@ die("<script>
         }
 
         if ($plugin == 'databasejoin') {
+	        $params['bootstrap_class'] = 'span12';
             $params['database_join_display_type'] = 'dropdown';
             $params['join_db_name'] = '';
             $params['join_key_column'] = '';
@@ -472,7 +479,7 @@ die("<script>
             $params['databasejoin_where_ajax'] = '0';
             $params['database_join_filter_where_sql'] = '';
             $params['database_join_show_please_select'] = '1';
-            $params['database_join_noselectionvalue'] = '';
+            $params['database_join_noselectionvalue'] = '0';
             $params['database_join_noselectionlabel'] = '';
             $params['placeholder'] = '';
             $params['databasejoin_popupform'] = '0';
@@ -548,6 +555,23 @@ die("<script>
             $params['rel'] = '';
             $params['link_title'] = '';
             $params['link_attributes'] = '';
+
+	        if($plugin_to_setup == 'email') {
+		        $params['password'] = 3;
+
+		        $params['validations']['plugin'][] = 'isemail';
+		        $params['validations']['plugin_published'][] = '1';
+		        $params['validations']['validate_in'][] = 'both';
+		        $params['validations']['validation_on'][] = 'both';
+		        $params['validations']['validate_hidden'][] = '0';
+		        $params['validations']['must_validate'][] = '0';
+		        $params['validations']['show_icon'][] = '1';
+
+		        $params['isemail-message'] = array('','');
+		        $params['isemail-validation_condition'] = array('','');
+		        $params['isemail-allow_empty'] = array('','1');
+		        $params['isemail-check_mx'] = array('','0');
+	        }
         }
 
         if($plugin == 'textarea'){
@@ -567,6 +591,7 @@ die("<script>
             $params['textarea-truncate'] = '0';
             $params['textarea-hover'] = '1';
             $params['textarea_hover_location'] = 'top';
+            $params['bootstrap_class'] = 'input-xxlarge';
         }
 
         if($plugin == 'dropdown' || $plugin == 'checkbox' || $plugin == 'radiobutton'){
@@ -642,6 +667,18 @@ die("<script>
             $params['toggle_where']='';
         }
 
+        if($plugin == 'currency') {
+
+            $object = (object) [
+                'iso3' => 'EUR',
+                'minimal_value' => '0.00',
+                'maximal_value' => '10000.00',
+                'thousand_separator' => ' ',
+                'decimal_separator' => ',',
+                'decimal_numbers' => '2'
+            ];
+            $params['all_currencies_options']['all_currencies_options0'] = $object;
+        }
         return $params;
     }
 
@@ -877,7 +914,7 @@ die("<script>
         try {
             $query->select('fl.db_table_name')
                 ->from($db->quoteName('#__fabrik_lists','fl'));
-            if($object == 'form'){
+            if ($object == 'form') {
                 $query->leftJoin($db->quoteName('#__fabrik_forms','ff').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ff.id'))
                     ->where($db->quoteName('ff.id') . ' = ' . $db->quote($id));
             } else {
@@ -929,4 +966,51 @@ die("<script>
 
 		return $filters;
 	}
+
+    /**
+     *
+     * @param $phone_number string The phone number to format
+     * @param $format int The format to use
+     * 0 => E164
+     * 1 => INTERNATIONAL
+     * 2 => NATIONAL
+     * 3 => RFC3966
+     * @return string The formatted phone number, if the phone number is not valid, empty string is returned
+     */
+    static function getFormattedPhoneNumberValue($phone_number, $format = PhoneNumberFormat::E164)
+    {
+        $formattedValue = '';
+
+        if (!empty($phone_number)) {
+            $phone_number = trim($phone_number);
+            $phone_number = str_replace(' ', '', $phone_number);
+
+            $iso2Test = '';
+            $phone_number_util = PhoneNumberUtil::getInstance();
+
+            if (preg_match('/^\w{2}/', $phone_number))
+            {
+                $iso2Test = substr($phone_number, 0, 2);
+                $phone_number = substr($phone_number, 2);
+            }
+
+            if (preg_match('/^\+\d+$/', $phone_number))
+            {
+                try
+                {
+                    $phone_number = $phone_number_util->parse($phone_number);
+                    $iso2 = $phone_number_util->getRegionCodeForNumber($phone_number);
+
+                    if ($iso2 || $iso2 === $iso2Test)
+                    {
+                        $formattedValue = $iso2 . $phone_number_util->format($phone_number, $format);
+                    }
+                } catch (Exception $e) {
+                    JLog::add('EmundusHelperFabrik::getFormattedPhoneNumberValue Phone number lib returned an error for given phone number ' . $phone_number . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                }
+            }
+        }
+
+        return $formattedValue;
+    }
 }

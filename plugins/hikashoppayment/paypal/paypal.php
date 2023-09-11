@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -565,6 +565,10 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 		parent::onPaymentConfiguration($element);
 		$this->address = hikashop_get('type.address');
 
+		$app = JFactory::getApplication();
+		$app->enqueueMessage(JText::_('YOUR_PAYPAL_PAYMENT_METHOD_IS_OBSOLETE_PLEASE_SWITCH_TO_PAYPAL_CHECKOUT'), 'error');
+		return;
+
 		if(empty($element->payment_params->email)) {
 			$app = JFactory::getApplication();
 			$lang = JFactory::getLanguage();
@@ -622,7 +626,7 @@ function paypal_refreshIps() {
 	}
 
 	public function getPaymentDefaultValues(&$element) {
-		$element->payment_name = 'PayPal';
+		$element->payment_name = 'PayPal (legacy)';
 		$element->payment_description='You can pay by credit card or paypal using this payment method';
 		$element->payment_images = 'MasterCard,VISA,Credit_card,PayPal,Discover';
 

@@ -177,7 +177,7 @@
 						label="MOD_EM_FOOTER_RGAA_LINK_SWITCH"
 						description="MOD_EM_FOOTER_RGAA_LINK_SWITCH"
 						class="btn-group btn-group-yesno"
-						default="1"
+						default="0"
 						filter="integer">
 					<option value="1">JYES</option>
 					<option value="0">JNO</option>

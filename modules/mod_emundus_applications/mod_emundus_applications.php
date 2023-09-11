@@ -13,6 +13,10 @@ include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile
 $m_profile = new EmundusModelProfile();
 
 $user = JFactory::getSession()->get('emundusUser');
+if(empty($user->firstname) && empty($user->lastname)) {
+	$m_profile->initEmundusSession();
+	$user = JFactory::getSession()->get('emundusUser');
+}
 $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 
 $specific_profiles = $params->get('for_specific_profiles', '');
@@ -106,6 +110,8 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     } else {
 		$visible_status = [];
     }
+	$selected_campaigns = $params->get('selected_campaigns', []);
+
     $mod_em_applications_show_search = $params->get('mod_em_applications_show_search', 1);
     $mod_em_applications_show_sort = $params->get('mod_em_applications_show_sort', 0);
     $mod_em_applications_show_filters = $params->get('mod_em_applications_show_filters', 0);
@@ -135,7 +141,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
         $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by);
     } else {
         // We send the layout as a param because Hesam needs different information.
-        $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by);
+        $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by, $params);
 		$tabs = $m_application->getTabs(JFactory::getUser()->id);
     }
 
@@ -158,7 +164,6 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $m_email = new EmundusModelEmails();
     $m_files = new EmundusModelFiles();
     $m_campaign = new EmundusModelCampaign();
-
 
     $fnums = array_keys($applications);
 
@@ -230,13 +235,22 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     }
 
     if (!empty($show_payment_status)) {
-
         foreach ($applications as $application => $val) {
             $order_status = modemundusApplicationsHelper::getHikashopOrder($applications[$application]);
             $applications[$application]->order_status = $order_status->orderstatus_namekey;
             $applications[$application]->order_color = $order_status->orderstatus_color;
         }
+    }
 
+    $override_default_content = JText::_($params->get('override_default_content', ''));
+    if (!empty($override_default_content)) {
+        try {
+            $post = array('APPLICANT_ID'   => $user->id, 'FNUM' => '');
+            $tags              = $m_email->setTags($user->id, $post, null, '', $override_default_content);
+            $override_default_content = preg_replace($tags['patterns'], $tags['replacements'], $override_default_content);
+        } catch (Exception $e) {
+            $override_default_content = JText::_($params->get('override_default_content', ''));
+        }
     }
 
     $status = $m_files->getStatus();

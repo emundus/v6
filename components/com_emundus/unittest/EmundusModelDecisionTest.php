@@ -39,7 +39,7 @@ class EmundusModelDecisionTest extends TestCase
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-        $this->m_decision = new EmundusModelDecision;
+        $this->m_decision = new EmundusModelDecision();
     }
 
 	public function testFoo()

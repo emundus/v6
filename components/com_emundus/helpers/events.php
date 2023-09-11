@@ -1092,11 +1092,17 @@ class EmundusHelperEvents {
                 $redirect_url = 'index.php?option=com_emundus&task=openfile&fnum='.$student->fnum;
             } else {
                 $redirect_url = !empty($params['plugin_options']->get('trigger_confirmpost_redirect_url'))  ? JText::_($params['plugin_options']->get('trigger_confirmpost_redirect_url')) : 'index.php';
-                $app->enqueueMessage($redirect_message, 'success');
+				if($params['plugin_options']->get('trigger_confirmpost_display_success_msg',1) == 1)
+				{
+					$app->enqueueMessage($redirect_message, 'success');
+				}
             }
 
         } else {
-            $app->enqueueMessage($redirect_message, 'success');
+			if($params['plugin_options']->get('trigger_confirmpost_display_success_msg',1) == 1)
+			{
+				$app->enqueueMessage($redirect_message, 'success');
+			}
             $redirect_url = 'index.php';
         }
 

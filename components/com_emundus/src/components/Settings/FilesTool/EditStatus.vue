@@ -93,19 +93,69 @@ export default {
       status: [],
       show: false,
       actualLanguage : '',
-      swatches: [
-        '#EBECF0', '#FBE8FF', '#EBE9FE', '#E0F2FE', '#D1E9FF', '#D1E0FF', '#CCFBEF', '#C4F0E1', '#BEDBD0', '#FDF7C3',
-        '#FEF0C7', '#FCEAD7', '#FFE5D5', '#FEE4E2'
-      ],
+      swatches: [],
+      colors: [],
+      variables: null,
     };
   },
 
   created() {
+    let root = document.querySelector(':root');
+    this.variables = getComputedStyle(root);
+
+    this.prepareSwatchesColor();
     this.getStatus();
     this.actualLanguage = this.$store.getters['global/shortLang'];
   },
 
   methods: {
+    prepareSwatchesColor() {
+      this.swatches.push(this.variables.getPropertyValue('--em-red-1'));
+      this.colors.push({name: 'red-1', value: this.variables.getPropertyValue('--em-red-1')})
+      this.swatches.push(this.variables.getPropertyValue('--em-red-2'));
+      this.colors.push({name: 'red-2', value: this.variables.getPropertyValue('--em-red-2')})
+      this.swatches.push(this.variables.getPropertyValue('--em-pink-1'));
+      this.colors.push({name: 'pink-1', value: this.variables.getPropertyValue('--em-pink-1')})
+      this.swatches.push(this.variables.getPropertyValue('--em-pink-2'));
+      this.colors.push({name: 'pink-2', value: this.variables.getPropertyValue('--em-pink-2')})
+      this.swatches.push(this.variables.getPropertyValue('--em-purple-1'));
+      this.colors.push({name: 'purple-1', value: this.variables.getPropertyValue('--em-purple-1')})
+      this.swatches.push(this.variables.getPropertyValue('--em-purple-2'));
+      this.colors.push({name: 'purple-2', value: this.variables.getPropertyValue('--em-purple-2')})
+      this.swatches.push(this.variables.getPropertyValue('--em-light-blue-1'));
+      this.colors.push({name: 'light-blue-1', value: this.variables.getPropertyValue('--em-light-blue-1')})
+      this.swatches.push(this.variables.getPropertyValue('--em-light-blue-2'));
+      this.colors.push({name: 'light-blue-2', value: this.variables.getPropertyValue('--em-light-blue-2')})
+      this.swatches.push(this.variables.getPropertyValue('--em-blue-1'));
+      this.colors.push({name: 'blue-1', value: this.variables.getPropertyValue('--em-blue-1')})
+      this.swatches.push(this.variables.getPropertyValue('--em-blue-2'));
+      this.colors.push({name: 'blue-2', value: this.variables.getPropertyValue('--em-blue-2')})
+      this.swatches.push(this.variables.getPropertyValue('--em-blue-3'));
+      this.colors.push({name: 'blue-3', value: this.variables.getPropertyValue('--em-blue-3')})
+      this.swatches.push(this.variables.getPropertyValue('--em-green-1'));
+      this.colors.push({name: 'green-1', value: this.variables.getPropertyValue('--em-green-1')})
+      this.swatches.push(this.variables.getPropertyValue('--em-green-2'));
+      this.colors.push({name: 'green-2', value: this.variables.getPropertyValue('--em-green-2')})
+      this.swatches.push(this.variables.getPropertyValue('--em-yellow-1'));
+      this.colors.push({name: 'yellow-1', value: this.variables.getPropertyValue('--em-yellow-1')})
+      this.swatches.push(this.variables.getPropertyValue('--em-yellow-2'));
+      this.colors.push({name: 'yellow-2', value: this.variables.getPropertyValue('--em-yellow-2')})
+      this.swatches.push(this.variables.getPropertyValue('--em-orange-1'));
+      this.colors.push({name: 'orange-1', value: this.variables.getPropertyValue('--em-orange-1')})
+      this.swatches.push(this.variables.getPropertyValue('--em-orange-2'));
+      this.colors.push({name: 'orange-2', value: this.variables.getPropertyValue('--em-orange-2')})
+      this.swatches.push(this.variables.getPropertyValue('--em-beige'));
+      this.colors.push({name: 'beige', value: this.variables.getPropertyValue('--em-beige')})
+      this.swatches.push(this.variables.getPropertyValue('--em-brown'));
+      this.colors.push({name: 'brown', value: this.variables.getPropertyValue('--em-brown')})
+      this.swatches.push(this.variables.getPropertyValue('--em-grey-1'));
+      this.colors.push({name: 'grey-1', value: this.variables.getPropertyValue('--em-grey-1')})
+      this.swatches.push(this.variables.getPropertyValue('--em-grey-2'));
+      this.colors.push({name: 'grey-2', value: this.variables.getPropertyValue('--em-grey-2')})
+      this.swatches.push(this.variables.getPropertyValue('--em-black'));
+      this.colors.push({name: 'black', value: this.variables.getPropertyValue('--em-black')})
+    },
+
     getStatus() {
       axios.get("index.php?option=com_emundus&controller=settings&task=getstatus")
           .then(response => {
@@ -121,10 +171,11 @@ export default {
     async updateStatus(status) {
       this.$emit('updateSaving',true);
 
+      let index = this.colors.findIndex(item => item.value === status.class);
       const formData = new FormData();
       formData.append('status', status.step);
       formData.append('label', document.getElementById(('status_label_' + status.step)).textContent);
-      formData.append('color', status.class);
+      formData.append('color', this.colors[index].name);
 
       await client().post('index.php?option=com_emundus&controller=settings&task=updatestatus',
           formData,
@@ -213,14 +264,7 @@ export default {
 
     getHexColors(element) {
       element.translate = false;
-      let status_class = document.querySelector('.label-' + element.class);
-      let style = getComputedStyle(status_class);
-      let rgbs = style.backgroundColor.split('(')[1].split(')')[0].split(',');
-      element.class = this.rgbToHex(parseInt(rgbs[0]),parseInt(rgbs[1]),parseInt(rgbs[2]));
-    },
-
-    rgbToHex(r, g, b) {
-      return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+      element.class = this.variables.getPropertyValue('--em-'+element.class);
     },
 
     checkMaxlength(event) {

@@ -322,10 +322,10 @@ export default {
 	width: 100%;
 	height: 100%;
 	justify-content: center;
-	border-radius: 4px;
+	border-radius: var(--em-coordinator-br-cards);
 	background-color: #fff;
 	color: #1f1f1f;
-	box-shadow: 0 1px 2px 0 hsla(0, 0%, 41.2%, 0.19);
+	box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
 	padding: 30px;
 }
 </style>

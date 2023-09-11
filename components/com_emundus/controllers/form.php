@@ -35,7 +35,7 @@ class EmundusControllerForm extends JControllerLegacy {
 
     public function getallform() {
         $user = JFactory::getUser();
-	    $tab = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
+	    $tab = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
         if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 	        $jinput = JFactory::getApplication()->input;
@@ -45,7 +45,7 @@ class EmundusControllerForm extends JControllerLegacy {
 	        $sort = $jinput->getString('sort', '');
 	        $recherche = $jinput->getString('recherche', '');
 
-            $data = $this->m_form->getAllForms($filter, $sort, $recherche, $lim, $page);
+	        $data = $this->m_form->getAllForms($filter, $sort, $recherche, $lim, $page);
 
             if (!empty($data)) {
                 $tab = array('status' => true, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $data);
@@ -53,6 +53,7 @@ class EmundusControllerForm extends JControllerLegacy {
                 $tab['msg'] = JText::_('ERROR_CANNOT_RETRIEVE_FORM');
             }
         }
+
         echo json_encode((object)$tab);
         exit;
     }
@@ -127,24 +128,23 @@ class EmundusControllerForm extends JControllerLegacy {
 
 
     public function unpublishform() {
-        $user = JFactory::getUser();
+	    $response = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
+	    $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 	        $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->getInt('id');
+	        $id = $jinput->getInt('id', 0);
 
-            $forms = $this->m_form->unpublishForm($data);
+            $result = $this->m_form->unpublishForm([$id]);
 
-            if ($forms) {
-                $tab = array('status' => 1, 'msg' => JText::_('FORM_UNPUBLISHED'), 'data' => $forms);
+            if ($result['status']) {
+	            $response = array('status' => 1, 'msg' => JText::_('FORM_UNPUBLISHED'));
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UNPUBLISH_FORM'), 'data' => $forms);
+	            $response = array('status' => 0, 'msg' => !empty($result['msg']) ? JText::_($result['msg']) : JText::_('ERROR_CANNOT_UNPUBLISH_FORM'));
             }
         }
-        echo json_encode((object)$tab);
+
+        echo json_encode((object)$response);
         exit;
     }
 
@@ -157,9 +157,9 @@ class EmundusControllerForm extends JControllerLegacy {
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
 	        $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->getInt('id');
+	        $id = $jinput->getInt('id');
 
-            $forms = $this->m_form->publishForm($data);
+            $forms = $this->m_form->publishForm([$id]);
 
             if ($forms) {
                 $tab = array('status' => 1, 'msg' => JText::_('FORM_PUBLISHED'), 'data' => $forms);
@@ -174,11 +174,11 @@ class EmundusControllerForm extends JControllerLegacy {
 
     public function duplicateform() {
         $user = JFactory::getUser();
-	    $tab = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
+	    $tab = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
         if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 	        $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->getInt('id');
+	        $data = $jinput->getInt('id', 0);
 
 			if (!empty($data)) {
 				$form = $this->m_form->duplicateForm($data);
@@ -555,7 +555,7 @@ class EmundusControllerForm extends JControllerLegacy {
 				if (!empty($documents)) {
 					$response = array('status' => true, 'msg' => 'worked', 'data' => $documents);
 				} else {
-					$response = array('status' => false, 'msg' => 'No documents attached to profile found', 'data' => $documents);
+					$response = array('status' => true, 'msg' => 'No documents attached to profile found', 'data' => $documents);
 				}
 			} else {
 				$response = array('status' => false, 'msg' => 'Missing parameters');

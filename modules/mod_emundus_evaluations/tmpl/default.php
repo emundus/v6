@@ -73,7 +73,7 @@ $intro = $params->get('intro', 'Veuillez sélectionner une campagne afin de comm
 $readonly = $params->get('readonly_eval', '0');
 
 if (!empty($label)) {
-    echo '<h3 class="em-h3 em-mb-16">'.$label.'</h3>';
+    echo '<h3 class="em-mb-16">'.$label.'</h3>';
 }
 
 if (!empty($intro)) {

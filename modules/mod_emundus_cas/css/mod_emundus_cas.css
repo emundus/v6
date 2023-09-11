@@ -1,20 +1,16 @@
 /* Module CAS */
- .em-formRegistrationCenter .container-module-cas  {
-     margin-top: 150px !important;
- }
-
+#g-container-main .span12 .login.em-formRegistrationCenter {
+    display: none !important;
+}
 .container-module-cas {
     display: flex !important;
     flex-direction: column;
     align-items: center;
     background: white;
-    width: 48%;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 50px;
-    margin-top: 50px;
-    height: 35rem;
-    border-radius: 5px;
+    width: 50%;
+    margin: 50px auto;
+    border-radius: var(--em-default-br);
+    box-shadow: 0 0 8px #cfcfcf;
 }
 
 .container-module-cas .sous-container-module-cas form .controls {
@@ -25,7 +21,7 @@
 }
 
 .container-module-cas .sous-container-module-cas form .controls input  {
-    width: 100%;
+    width: 100% !important;
 }
 
 .container-module-cas .sous-container-module-cas {
@@ -33,7 +29,7 @@
 }
 .container-module-cas  .sous-container-module-cas   ul {
     list-style: none;
-    margin: 0px;
+    margin: 0;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -48,12 +44,11 @@
 .container-module-cas .sous-container-module-cas #connexion {
     display: flex;
     flex-direction: row;
-    height: 25rem;
-    width: 85%;
     justify-content: center;
     align-items: center;
     margin-left: auto;
     margin-right: auto;
+    padding: 40px;
 }
 
 .container-module-cas .sous-container-module-cas #connexion .container {
@@ -88,14 +83,15 @@
     flex-direction: column;
     justify-content: flex-end;
     align-items: center;
-    height: 100%;
     border-radius: 5px;
+    padding: 40px;
 }
 
 .container-module-cas  .sous-container-module-cas #inscription .formulaire {
-    width: 85%;
+    width: 100%;
     margin-left: auto;
     margin-right: auto;
+    width: 100%;
 }
 
 .container-module-cas  .sous-container-module-cas #inscription .formulaire .btn.btn-danger {
@@ -108,10 +104,10 @@
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    width: 85%;
+    width: 100%;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .container-module-cas  .sous-container-module-cas #inscription .container p:nth-child(1),
@@ -125,11 +121,11 @@
 
 .container-module-cas  .sous-container-module-cas li.couleurFoncee {
     background: #FCFCFC;
-    border-radius: 5px 5px 0 0;
+    border-radius: var(--em-default-br) var(--em-default-br) 0 0;
 }
 
 .container-module-cas  .sous-container-module-cas li:not(.couleurFoncee) {
-    border-radius: 5px 5px 0 0;
+    border-radius: var(--em-default-br) var(--em-default-br) 0 0;
 }
 
 .container-module-cas  .sous-container-module-cas li:nth-child(1):not(.couleurFoncee) {
@@ -145,8 +141,8 @@
 }
 
 .container-module-cas .icon-star.small {
-    margin-top: 0px;
-    padding-top: 0px;
+    margin-top: 0;
+    padding-top: 0;
     position: relative;
     padding-left: 2px;
     color: #c30505;
@@ -160,7 +156,7 @@
 }
 
 .container-module-cas .btn-cas a.btn.btn-primary.logo {
-    border-radius: 4px 0px 0px 4px !important;
+    border-radius: var(--em-default-br) 0 0 var(--em-default-br) !important;
     padding: 5px 12px !important;
 }
 
@@ -174,36 +170,31 @@
 }
 
 .container-module-cas .sous-container-module-cas #connexion .btn-cas a.btn.btn-primary:not(.logo) {
-    border-radius: 0px 4px 4px 0px !important;
-   opacity: 0.9;
-    width: 90%;
-    height: 50px;
+    border-radius: 0 var(--em-default-br) var(--em-default-br) 0 !important;
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 100%;
 }
 .container-module-cas .sous-container-module-cas #connexion .btn-cas a.btn.btn-primary.rounded:not(.logo) {
-    border-radius: 4px !important;
+    border-radius: var(--em-default-br) !important;
 }
 
 
 #login-form .control-group button.login-button {
     text-transform: capitalize;
     width: 100% !important;
-    height: 50px;
-    margin-right: 0px !important;
     font-weight: 300;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 4px;
+    border-radius: var(--em-default-br) !important;
 }
 
 @media all and (max-width: 479px) {
-
     .container-module-cas {
         width: 90%;
+        max-width: unset;
     }
-
 }
 

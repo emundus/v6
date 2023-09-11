@@ -66,12 +66,80 @@ class PlgFabrik_FormEmundusFinalGrade extends plgFabrik_Form {
         return $params->get($pname);
     }
 
-    /**
-     * Main script.
-     *
-     * @return Bool
-     * @throws Exception
-     */
+
+	public function onBeforeLoad() {
+		$app = JFactory::getApplication();
+		$db = JFactory::getDBO();
+		$query = $db->getQuery(true);
+		$user =  JFactory::getUser();
+
+		$r = $app->input->get('r', 0);
+		$formid = $app->input->get('formid', '256');
+		$rowid = $app->input->get('rowid');
+		$student_id = $app->input->get('jos_emundus_final_grade___student_id') ?: '';
+		$fnum = $app->input->get('jos_emundus_final_grade___fnum') ?:'';
+		$view = strpos(JUri::getInstance()->getPath(), '/details/') !== false ? 'details' : 'form';
+
+		if (empty($fnum) || empty($student_id)) {
+			if (!empty($rowid)) {
+				$query->select('fnum, student_id')
+					->from('#__emundus_final_grade')
+					->where('id = ' . $rowid);
+
+				try {
+					$db->setQuery($query);
+					$decision_row = $db->loadAssoc();
+
+					if (!empty($decision_row)) {
+						$fnum = $decision_row['fnum'];
+						$student_id = $decision_row['student_id'];
+					}
+				} catch (Exception $e) {
+					JLog::add('Failed to find fnum from rowid ' . $rowid . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				}
+			} else {
+				$fnum = '{jos_emundus_final_grade___fnum}';
+				$student_id = '{jos_emundus_final_grade___student_id}';
+			}
+		}
+
+		require_once(JPATH_SITE.'/components/com_emundus/models/decision.php');
+		$m_decision = new EmundusModelDecision();
+		$decision = $m_decision->getDecisionUrl($fnum,$formid,$rowid,$student_id,1, $view);
+
+		if(!empty($decision)) {
+			$event_datas = [
+				'formid' => $formid,
+				'rowid' => $rowid,
+				'student_id' => $student_id,
+				'fnum' => $fnum
+			];
+			JPluginHelper::importPlugin('emundus', 'custom_event_handler');
+			\Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onRenderFinalgrade', ['event_datas' => $event_datas]]);
+		}
+
+		$app->enqueueMessage($decision['message']);
+		if($r != 1) {
+			$app->redirect($decision['url']);
+		}
+
+		return true;
+	}
+
+	public function onBeforeProcess() {
+		$formModel = $this->getModel();
+
+		JPluginHelper::importPlugin('emundus','custom_event_handler');
+		\Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeSubmitFinalgrade', ['formModel' => $formModel]]);
+	}
+
+	public function onAfterProcess() {
+		$formModel = $this->getModel();
+
+		JPluginHelper::importPlugin('emundus','custom_event_handler');
+		\Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterSubmitFinalgrade', ['formModel' => $formModel]]);
+	}
+
     public function onBeforeCalculations() {
 
         jimport('joomla.log.log');

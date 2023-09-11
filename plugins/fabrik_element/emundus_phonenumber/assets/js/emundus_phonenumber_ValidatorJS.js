@@ -1,8 +1,8 @@
 
 const allColor =  getComputedStyle(document.querySelector(':root'));
-const errorColor = allColor.getPropertyValue("--red-600");
-const validColor = allColor.getPropertyValue("--secondary-main-400");
-const defaultColor = allColor.getPropertyValue("--neutral-400");
+const errorColor = allColor.getPropertyValue("--em-form-error-color");
+const validColor = allColor.getPropertyValue("--em-form-success-color");
+const defaultColor = allColor.getPropertyValue("--em-form-bc");
 const unsupportedColor = allColor.getPropertyValue("--orange-400")
 
 class ValidatorJS {
@@ -50,6 +50,11 @@ class ValidatorJS {
         this.input.addEventListener('input', this.inputValidation.bind(this));
         this.input.addEventListener('focusout', this.handlerFocusOut.bind(this));
         this.input.addEventListener('focusin', this.handlerInputFocusIn.bind(this));
+
+        if (this.mustValidate)
+        {
+            this.inputValidation();
+        }
     }
 
     inputValidation(e)

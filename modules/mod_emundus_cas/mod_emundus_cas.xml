@@ -146,6 +146,18 @@
 				<field class="text" label="TAB2" name="spacer2" type="spacer" hr="true"/>
 				<field type="spacer" name="TAB2_TITLE" label="Onglet 2" />
 
+				<field
+						name="mod_emundus_cas_tab2_display"
+						type="radio"
+						label="MOD_EM_CAS_SUBMENU2_DISPLAY"
+						description=""
+						class="btn-group btn-group-yesno"
+						default="1"
+						filter="integer"
+				>
+					<option value="1">JYES</option>
+					<option value="0">JNO</option>
+				</field>
 				<field type="text" name="mod_emundus_cas_url2_desc" default="" label="MOD_EM_CAS_SUBMENU2_URL2_DESC" description="MOD_EM_CAS_SUBMENU1_URL2_DESC"/>
 				<field type="text" name="mod_emundus_cas_btn2" default="" label="MOD_EM_CAS_SUBMENU2_URL2_BTN" description="MOD_EM_CAS_SUBMENU2_URL2_BTN"/>
 				<field type="text" name="mod_emundus_cas_url2" default="" label="MOD_EM_CAS_SUBMENU2_URL2" description="MOD_EM_CAS_SUBMENU2_URL2"/>

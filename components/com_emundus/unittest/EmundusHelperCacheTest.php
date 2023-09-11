@@ -31,14 +31,15 @@ class EmundusHelperCacheTest extends TestCase
 	public function __construct(?string $name = null, array $data = [], $dataName = '')
 	{
 		parent::__construct($name, $data, $dataName);
+
+		$config = JFactory::getConfig();
+		$config->set('cache_handler', 'file');
 	}
 
 	public function testFoo()
 	{
 		$foo = true;
 		$this->assertSame(true, $foo);
-		$config = JFactory::getConfig();
-		$config->set('cache_handler', 'file');
 	}
 
 	/**

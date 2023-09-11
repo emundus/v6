@@ -8,9 +8,9 @@ if (!empty((array)$this->assoc_files)) : ?>
 				<div class = "panel-title">
 					<a style="text-decoration: none" data-toggle="collapse" data-parent="#accordion" href="#<?php echo $camp->fnum?>-collapse" onclick="openAccordion('<?php echo $camp->fnum?>')">
                         <div class="em-flex-row em-flex-space-between em-mb-8">
-                            <p class="em-h6">
+                            <h6>
 		                        <?php echo $camp->label?>
-                            </p>
+                            </h6>
                             <span id="<?php echo $camp->fnum?>-icon" class="material-icons-outlined">expand_more</span>
                         </div>
                         <div class="em-flex-row em-flex-space-between em-mb-8">

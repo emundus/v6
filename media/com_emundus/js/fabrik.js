@@ -212,3 +212,179 @@ function numberOfDaysBetweenDates(date1,date2 = null) {
     const diffTime = Math.abs(date2 - date1);
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
+
+function submit(title = 'Dossier en cours d\'envoi...',timer = 3000) {
+    let fabrikForm = document.querySelector('form.fabrikForm');
+    if(fabrikForm)
+    {
+        fabrikForm.style.opacity = 0;
+    }
+    let fabrikHeader = document.querySelector('.page-header');
+    if(fabrikHeader)
+    {
+        fabrikHeader.style.opacity = 0;
+    }
+
+    let emundusForm = document.querySelector('.emundus-form');
+    if(emundusForm)
+    {
+        emundusForm.classList.add('skeleton');
+    }
+
+    Swal.fire({
+        type: 'success',
+        position: 'center',
+        title: title,
+        showCancelButton: false,
+        showConfirmButton: false,
+        customClass: {
+            title: 'em-swal-title',
+        },
+        timer: timer
+    }).then(() => {
+        if(fabrikForm)
+        {
+            fabrikForm.submit();
+        }
+    });
+}
+function purcentage(elements){
+
+    const value = elements.get('value');
+
+    if (typeof value === "number") {
+        if (value < 0) {
+            elements.set("");
+        } else if (value > 100) {
+            elements.set("100");
+        } else {
+            elements.set(value.toString());
+        }
+    } else if (typeof value === "string") {
+        const numericValue = parseFloat(value);
+
+        if (!isNaN(numericValue)) {
+            if (numericValue < 0) {
+                elements.set("");
+            } else if (numericValue > 100) {
+                elements.set("100");
+            } else {
+                elements.set(numericValue.toString());
+            }
+        } else {
+            elements.set("");
+        }
+    }
+}
+
+/**
+ * Check if the user is older than the minAge or younger than the maxAge
+ * @param element
+ * @param minAge
+ * @param maxAge
+ * @returns {Date}
+ */
+function birthDateValidation(element, minAge = 0, maxAge = 0, minMessage = 'Vous devez être plus agé que %s ans', maxMessage = 'Vous devez être plus jeune que %s ans') {
+    const errorElement = document.querySelector('.fb_el_'+element.baseElementId + ' .fabrikErrorMessage');
+    if(errorElement) {
+        errorElement.innerHTML = '';
+    }
+
+    let error = '';
+    const value = element.get('value');
+
+    let regex = /^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/;
+    const regexTest = regex.test(value);
+    const userBirthDate = new Date(value.replace(regex, "$3-$2-$1"));
+    let todayYear = (new Date()).getFullYear();
+
+    if (!regexTest || isNaN(userBirthDate))
+    {
+        error = 'Veuillez saisir une date de naissance valide';
+    }
+    else if(minAge !== 0)
+    {
+        let cutOffMin = new Date();
+        cutOffMin.setFullYear(todayYear - minAge);
+
+        if (userBirthDate > cutOffMin) {
+            error = minMessage.replace('%s', minAge.toString());
+        }
+    }
+    else if(maxAge !== 0)
+    {
+        let cutOffMax = new Date();
+        cutOffMax.setFullYear(todayYear - maxAge);
+
+        if (userBirthDate < cutOffMax) {
+            error = maxMessage.replace('%s', maxAge.toString());
+        }
+    }
+
+    if(error !== '')
+    {
+        if(errorElement) {
+            errorElement.innerHTML = error;
+        }
+    }
+
+    return userBirthDate;
+}
+
+/**
+ * Function to display a modal with a message in form 102
+ */
+function submitNewFile() {
+    let campaign = document.getElementById('jos_emundus_campaign_candidature___campaign_id');
+    for (let i = 0; i < campaign.length; i++){
+        if (campaign.options[i].value == -1) {
+            campaign.options[i].disabled = true;
+            campaign.options[i].style.backgroundColor = "#efefef";
+            campaign.options[i].style.fontStyle = "italic";
+        }
+    }
+
+    var cid = document.querySelector('#jos_emundus_campaign_candidature___campaign_id option:checked').value;
+    if(cid !== "") {
+        document.querySelector('#form_102').style.visibility = 'hidden';
+        Swal.fire({
+                title: Joomla.JText._('COM_EMUNDUS_FABRIK_NEW_FILE'),
+                text: Joomla.JText._('COM_EMUNDUS_FABRIK_NEW_FILE_DESC'),
+                type: 'success',
+                showConfirmButton: false
+            }
+        );
+        document.querySelector('#form_102').submit();
+    }
+}
+
+function checkPasswordSymbols(element) {
+    var wrong_password_title = ['Invalid password', 'Mot de passe invalide'];
+    var wrong_password_description = ['The #$\{\};<> characters are forbidden, as are spaces.', 'Les caractères #$\{\};<> sont interdits ainsi que les espaces'];
+
+    var site_url = window.location.toString();
+    var site_url_lang_regexp = /\w+.\/en/d;
+
+    var index = 0;
+
+    if(site_url.match(site_url_lang_regexp) === null) { index = 1; }
+
+    var regex = /[#$\{\};<> ]/;
+    var password_value = element.get('value');
+
+    if (password_value.match(regex) != null) {
+        Swal.fire({
+            type: 'error',
+            title: wrong_password_title[index],
+            text: wrong_password_description[index],
+            reverseButtons: true,
+            customClass: {
+                title: 'em-swal-title',
+                confirmButton: 'em-swal-confirm-button',
+                actions: 'em-swal-single-action',
+            }
+        });
+
+        element.set('');
+    }
+}

@@ -53,7 +53,7 @@ class EmundusModelFormbuilder extends JModelList {
     public function translate($key, $values, $reference_table = '', $id = '', $reference_field = '') {
         $languages = JLanguageHelper::getLanguages();
         foreach ($languages as $language) {
-	        if (isset($values[$language->sef])) {
+	        if (!empty($values) && isset($values[$language->sef])) {
 		        $this->m_translations->insertTranslation($key, $values[$language->sef], $language->lang_code, '', 'override', $reference_table, $id, $reference_field);
 	        }
         }
@@ -489,7 +489,7 @@ class EmundusModelFormbuilder extends JModelList {
                     'publish_up' => gmdate('Y-m-d h:i:s'),
                     'reset_button_label' => 'RESET',
                     'submit_button_label' => 'SAVE_CONTINUE',
-                    'form_template' => '_emundus',
+                    'form_template' => 'emundus',
                     'view_only_template' => 'bootstrap',
                     'published' => 1,
                     'params' => json_encode($params),
@@ -721,7 +721,7 @@ class EmundusModelFormbuilder extends JModelList {
                 'publish_up' => $now,
                 'reset_button_label' => 'RESET',
                 'submit_button_label' => 'SUBMIT',
-                'form_template' => '_emundus',
+                'form_template' => 'emundus',
                 'view_only_template' => 'bootstrap',
                 'published' => 1,
                 'params' => json_encode($params),
@@ -993,7 +993,12 @@ class EmundusModelFormbuilder extends JModelList {
             $languages = JLanguageHelper::getLanguages();
             foreach ($languages as $language) {
                 $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
-                $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+
+                if (file_exists($path_to_files[$language->sef])) {
+                    $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+                } else {
+                    $Content_Folder[$language->sef] = '';
+                }
             }
 
             try {
@@ -2460,14 +2465,23 @@ class EmundusModelFormbuilder extends JModelList {
             $models = $db->loadObjectList();
 
             foreach ($models as $model) {
-                $model->label = array(
-                    'fr' => $this->getTranslation($model->label,'fr-FR'),
-                    'en' => $this->getTranslation($model->label,'en-GB')
-                );
-                $model->intro = array(
-                    'fr' => $this->getTranslation($model->intro,'fr-FR'),
-                    'en' => $this->getTranslation($model->intro,'en-GB')
-                );
+				$model->label = array(
+					'fr' => $this->getTranslation($model->label, 'fr-FR'),
+					'en' => $this->getTranslation($model->label, 'en-GB')
+				);
+
+	            $query->clear()
+		            ->select('intro')
+		            ->from($db->quoteName('#__fabrik_forms'))
+		            ->where('id = ' . $db->quote($model->form_id));
+
+	            $db->setQuery($query);
+	            $model_data = $db->loadObject();
+
+				$model->intro = array(
+					'fr' => $this->getTranslation(strip_tags($model_data->intro), 'fr-FR'),
+					'en' => $this->getTranslation(strip_tags($model_data->intro), 'en-GB')
+				);
             }
         } catch(Exception $e) {
             JLog::add('component/com_emundus/models/formbuilder | Error at getting pages models : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');

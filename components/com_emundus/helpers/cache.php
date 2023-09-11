@@ -33,24 +33,32 @@ class EmundusHelperCache
 
 	public function __construct($group = 'com_emundus', $handler = '', $lifetime = '', $context = 'component')
 	{
-		$config = JFactory::getConfig();
-		$cache_enabled = $config->get('caching'); // 1 = conservative, 2 = progressive
-		$cache_handler = $config->get('cache_handler', 'file');
+        JLog::addLogger(['text_file' => 'com_emundus.cache.error.php'], JLog::ERROR, ['com_emundus.cache.error']);
 
-		if ($cache_enabled > 0 && $cache_handler == 'file') {
-			if ($context === 'component' || $cache_enabled === 2) {
-				if (empty($lifetime)) {
-					$cache_time = $config->get('cachetime', 15);
-					$lifetime = $cache_time * 60;
-				}
+        $cache_path = JPATH_SITE . '/cache';
+        if (is_dir($cache_path)) {
+            $config = JFactory::getConfig();
+            $cache_enabled = $config->get('caching'); // 1 = conservative, 2 = progressive
+            $cache_handler = $config->get('cache_handler', 'file');
 
-				$this->group = $group;
-				$this->cache = JFactory::getCache($group, $handler);
-				$this->cache->setLifeTime($lifetime);
-				$this->cache->setCaching(true);
-				$this->cache_enabled = true;
-			}
-		}
+            if ($cache_enabled > 0 && $cache_handler == 'file') {
+                if ($context === 'component' || $cache_enabled === 2) {
+                    if (empty($lifetime)) {
+                        $cache_time = $config->get('cachetime', 15);
+                        $lifetime = $cache_time * 60;
+                    }
+
+                    $this->group = $group;
+                    $this->cache = JFactory::getCache($group, $handler);
+                    $this->cache->setLifeTime($lifetime);
+                    $this->cache->setCaching(true);
+                    $this->cache_enabled = true;
+                }
+            }
+        } else {
+            error_log('Cache directory does not exists!');
+            JLog::add('Cache directory does not exists!', JLog::WARNING, 'com_emundus.cache.error');
+        }
 	}
 
 	public function isEnabled()
@@ -88,5 +96,30 @@ class EmundusHelperCache
 		}
 
 		return $cleaned;
+	}
+
+	public static function getCurrentGitHash() {
+		$hash = '';
+		$git_base_path = JPATH_SITE.'/.git';
+
+		if(file_exists($git_base_path.'/HEAD')) {
+			$git_str = file_get_contents($git_base_path . '/HEAD');
+			$git_branch = rtrim(preg_replace("/(.*?\/){2}/", '', $git_str));
+
+			if(!empty($git_branch))
+			{
+				$hash = trim(file_get_contents($git_base_path . '/refs/heads/' . $git_branch));
+			}
+		}
+
+		if(empty($hash))
+		{
+			$xmlDoc = new DOMDocument();
+			if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
+				$hash = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
+			}
+		}
+
+		return $hash;
 	}
 }

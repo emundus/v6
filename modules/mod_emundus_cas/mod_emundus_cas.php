@@ -17,6 +17,8 @@ $document->addStyleSheet("modules/mod_emundus_cas/css/mod_emundus_cas.css" );
 
 $params->def('greeting', 1);
 
+$mod_emundus_cas_tab2_display=$params->get('mod_emundus_cas_tab2_display', 1);
+
 $mod_emundus_cas_url1=$params->get('mod_emundus_cas_url1', '');
 $mod_emundus_cas_url2=$params->get('mod_emundus_cas_url2', '');
 

@@ -14,6 +14,8 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Factory;
+
 use GuzzleHttp\Client as GuzzleClient;
 
 /**
@@ -875,4 +877,66 @@ class EmundusControllerWebhook extends JControllerLegacy {
         echo json_encode(array('status' => $realstatus, 'msg' => $msg));
         exit;
     }
+
+	public function getwidgets() {
+		JLog::addLogger(['text_file' => 'com_emundus.webhook.php'], JLog::ALL, array('com_emundus.webhook'));
+
+		$result = ['status' => true,'message' => '','count' => 0,'data' => []];
+
+		try {
+			$payload       = !empty($_POST["payload"]) ? $_POST["payload"] : file_get_contents("php://input");
+			$webhook_datas = json_decode($payload, true);
+
+			if(!empty($webhook_datas['user']))
+			{
+				if(version_compare(JVERSION, '4.0', '>')) {
+					$db = Factory::getContainer()->get('DatabaseDriver');
+				} else {
+					$db = Factory::getDbo();
+				}
+
+				$query = $db->getQuery(true);
+
+				$query->select('id')
+					->from($db->quoteName('#__users'))
+					->where($db->quoteName('email').' LIKE '.$db->quote($webhook_datas['user']));
+				$db->setQuery($query);
+				$uid = $db->loadResult();
+
+				if(!empty($uid))
+				{
+					require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'dashboard.php');
+					$m_dashboard = new EmundusModelDashboard;
+					$widgets = $m_dashboard->getwidgets($uid);
+
+					$result['status'] = true;
+					$result['count'] = count($widgets);
+
+					foreach ($widgets as $widget)
+					{
+						switch ($widget->type)
+						{
+							case 'chart':
+							case 'other':
+								$widget->evaluation = $m_dashboard->renderchartbytag($widget->id);
+								break;
+							case 'article':
+								$widget->evaluation = $m_dashboard->getarticle($widget->id,$widget->article_id);
+								break;
+						}
+
+						$result['data'][] = $widget;
+					}
+				}
+			}
+
+		} catch (Exception $e) {
+			$result['status'] = false;
+			JLog::add('Cannot get widgets count with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.webhook');
+		}
+
+		header('Content-type: application/json');
+		echo json_encode((object)$result);
+		exit;
+	}
 }

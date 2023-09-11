@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -173,6 +173,15 @@ defined('_JEXEC') or die('Restricted access');
 		<div class="hikashop_product_part_title hikashop_product_edit_price_title">
 			<?php echo JText::_('PRICES_AND_TAXES'); ?>
 		</div>
+<?php
+	if(hikashop_acl('product/edit/price')) {
+?>
+		<div class="hikashop_product_price"><?php
+			echo $this->loadTemplate('price');
+		?></div>
+<?php
+	}
+?>
 		<dl class="hika_options">
 <?php
 		if(hikashop_acl('product/edit/tax')) {
@@ -187,20 +196,11 @@ defined('_JEXEC') or die('Restricted access');
 		$curr = '';
 		$mainCurr = $this->currencyClass->getCurrencies($this->main_currency_id, $curr);
 ?>
-			<dt class="hikashop_product_msrp"><label for="data_product__product_msrp"><?php echo JText::_('PRODUCT_MSRP'); ?></label></dt>
+			<dt class="hikashop_product_msrp"><label for="data_product__product_msrp"><?php echo hikashop_tooltip(JText::_('PRODUCT_MSRP_DESC'), '', '', JText::_('PRODUCT_MSRP'), '', 0); ?></label></dt>
 			<dd class="hikashop_product_msrp">
 				<input type="text" id="data_product__product_msrp" name="data[product][product_msrp]" value="<?php echo $this->escape(@$this->product->product_msrp); ?>"/> <?php echo $mainCurr[$this->main_currency_id]->currency_symbol.' '.$mainCurr[$this->main_currency_id]->currency_code;?>
 			</dd>
 		</dl>
-<?php
-	if(hikashop_acl('product/edit/price')) {
-?>
-		<div class="hikashop_product_price"><?php
-			echo $this->loadTemplate('price');
-		?></div>
-<?php
-	}
-?>
 	</div></div>
 	<div class="hkc-xl-clear"></div>
 

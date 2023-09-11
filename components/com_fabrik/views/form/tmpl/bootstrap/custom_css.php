@@ -503,7 +503,7 @@ form#member-profile .form-horizontal .control-label {
 .view-registration .login.em-formRegistrationCenter .em-heading-registration h1, 
 .view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) .em-heading-registration h1 {
     margin-top: 0px !important; 
-    color: var(--em-applicant-title-color);
+    color: var(--em-default-text-color-1);
     margin-bottom: 8px;
 }
 
@@ -527,8 +527,8 @@ form#member-profile .form-horizontal .control-label {
     padding: 80px 64px 80px 64px;
 }
 
-.view-registration .view-registration.login.em-formRegistrationCenter h1.em-h1 {
-   font-family:  var(--applicant-title-font);
+.view-registration .view-registration.login.em-formRegistrationCenter h1 {
+   font-family:  var(--em-applicant-font-title);
 }
 
 
@@ -1034,7 +1034,7 @@ a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
     border: 1px solid #4e5b6d;
     border-radius: 4px !important;
     padding: 10px 12px !important;
-   font-family:  var(--applicant-default-font);
+   font-family:  var(--em-applicant-font);
     font-weight: 500;
 }
 .span4 > .btn-group > button.save-btn:hover, .span4 > .btn-group > button.save:hover {

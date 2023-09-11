@@ -305,36 +305,43 @@ class EmundusControllerApplication extends JControllerLegacy
     }
 
     public function deletetag(){
+		$response = array('status' => 0, 'msg' => JText::_('TAG_DELETE_ERROR'));
+
         $user = JFactory::getUser();
-        $id_tag = JRequest::getVar('id_tag', null, 'GET', 'none',0);
-        $fnum = JRequest::getVar('fnum', null, 'GET', 'none',0);
 
-        $m_application = new EmundusModelApplication();
-        $m_files = $this->getModel('files');
+		if (empty($user->id)) {
+			$response['msg'] = JText::_('ACCESS_DENIED');
+		} else {
+			$jinput = JFactory::getApplication()->input;
+			$id_tag = $jinput->getInt('id_tag', 0);
+			$fnum = $jinput->getString('fnum', '');
 
-        $tags = $m_files->getTagsByIdFnumUser($id_tag, $fnum, $user->id);
-        if($tags){
-            $result = $m_application->deleteTag($id_tag, $fnum);
-            if($result!=1 && $result!=true)
-                $tab = array('status' => $result, 'msg' => JText::_('TAG_DELETE_ERROR'));
-            else
-                $tab = array('status' => $result, 'msg' => JText::_('COM_EMUNDUS_TAGS_DELETED'));
-        }else{
-            if(EmundusHelperAccess::asAccessAction(14, 'd', $user->id, $fnum))
-            {
-                $result = $m_application->deleteTag($id_tag, $fnum);
-                if($result!=1 && $result!=true)
-                    $tab = array('status' => $result, 'msg' => JText::_('TAG_DELETE_ERROR'));
-                else
-                    $tab = array('status' => $result, 'msg' => JText::_('COM_EMUNDUS_TAGS_DELETED'));
-            } else{
-                $result = 0;
-                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-            }
-        }
+			if (!empty($fnum) && $id_tag > 0) {
+				$m_application = new EmundusModelApplication();
+				$m_files = $this->getModel('files');
 
+				$tags = $m_files->getTagsByIdFnumUser($id_tag, $fnum, $user->id);
 
-        echo json_encode((object)$tab);
+				if (EmundusHelperAccess::asAccessAction(14, 'd', $user->id, $fnum))
+				{
+					$result = $m_application->deleteTag($id_tag, $fnum);
+
+					if ($result == 1 || $result) {
+						$response = array('status' => $result, 'msg' => JText::_('COM_EMUNDUS_TAGS_DELETED'));
+					}
+				} else if ($tags) {
+					$result = $m_application->deleteTag($id_tag, $fnum, $user->id);
+
+					if ($result == 1 || $result) {
+						$response = array('status' => $result, 'msg' => JText::_('COM_EMUNDUS_TAGS_DELETED'));
+					}
+				} else {
+					$response = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
+				}
+			}
+		}
+
+        echo json_encode((object)$response);
         exit;
     }
 
@@ -385,9 +392,21 @@ class EmundusControllerApplication extends JControllerLegacy
                 $i=0;
 
                 foreach($menus as $k => $menu) {
-                    $action = explode('|', $menu['note']);
-                    if (EmundusHelperAccess::asAccessAction($action[0], $action[1], $user->id, $fnum)) {
-                        if($action[0] == 36){
+					$access = false;
+					$actions_for_access = explode(',', $menu['note']);
+					
+					foreach ($actions_for_access as $action_for_access) {
+						$action = explode('|', $action_for_access);
+						$action_id = $action[0];
+						
+						if (EmundusHelperAccess::asAccessAction($action[0], $action[1], $user->id, $fnum)) {
+							$access = true;
+							break;
+						}
+					}
+
+                    if ($access) {
+                        if($action_id == 36){
                             require_once (JPATH_SITE.'/components/com_emundus/models/messenger.php');
 
                             $messenger = new EmundusModelMessenger;
@@ -396,7 +415,7 @@ class EmundusControllerApplication extends JControllerLegacy
                                 $menu['notifications'] = $messenger->getNotificationsByFnum($fnum);
                             }
                         }
-                        if($action[0] == 10){
+                        if($action_id == 10){
                             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
                             $m_files = new EmundusModelFiles;
                             $notifications_comments = sizeof($m_files->getCommentsByFnum([$fnum]));
@@ -954,9 +973,12 @@ class EmundusControllerApplication extends JControllerLegacy
 				$response['msg'] = JText::_('ACCESS_DENIED');
 			} else {
 				$m_application      = $this->getModel('Application');
-				$response['status'] = $m_application->renameFile($fnum, $new_name);
-
-				$response['msg'] =  $response['status'] ? JText::_('SUCCESS') : JText::_('FAILED');
+                try {
+                    $response['status'] = $m_application->renameFile($fnum, $new_name);
+                    $response['msg'] =  $response['status'] ? JText::_('SUCCESS') : JText::_('FAILED');
+                } catch (Exception $e) {
+                    $response['msg'] = $e->getMessage();
+                }
 			}
 		}
 
