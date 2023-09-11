@@ -339,36 +339,52 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
                         ->select(array('id', 'path'))
                         ->from($db->quoteName('#__menu'))
                         ->where($db->quoteName('menutype') . ' = ' . $db->quote($menutype))
-                        ->andWhere($db->quoteName('published') . ' = ' . $db->quote(1))
+                        ->andWhere($db->quoteName('published') . ' = 1')
                         ->andWhere($db->quoteName('link') . ' LIKE ' . $db->quote('%option=com_emundus&view=files%') . ' OR ' . $db->quoteName('link') . ' LIKE ' . $db->quote('%option=com_emundus&view=evaluation%') . ' OR ' . $db->quoteName('link') . ' LIKE ' . $db->quote('%option=com_emundus&view=decision%'))
                         ->order($db->quoteName('lft'));
                     $db->setQuery($query);
                     $userLink = $db->loadObject();
 
+                    // Check published languages on the platform
+                    $query->clear()
+                        ->select($db->quoteName('lang_code'))
+                        ->from($db->quoteName('#__languages'))
+                        ->where($db->quoteName('published').' = 1');
+                    $db->setQuery($query);
+                    $languages = $db->loadColumn();
+
                     // Check if a translation exists for this link
                     // In english
-                    $query->clear()
-                        ->select($db->quoteName('value'))
-                        ->from($db->quoteName('#__falang_content'))
-                        ->where($db->quoteName('language_id') . ' = ' . $db->quote(1))
-                        ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote('menu'))
-                        ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote('path'))
-                        ->andWhere($db->quoteName('reference_id') . ' = ' . $db->quote($userLink->id))
-                        ->andWhere($db->quoteName('published') . ' = ' . $db->quote(1));
-                    $db->setQuery($query);
-                    $path_en = $db->loadResult();
+                    if (in_array('en-GB', $languages)) {
+                        $query->clear()
+                            ->select($db->quoteName('value'))
+                            ->from($db->quoteName('#__falang_content'))
+                            ->where($db->quoteName('language_id') . ' = 1')
+                            ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote('menu'))
+                            ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote('path'))
+                            ->andWhere($db->quoteName('reference_id') . ' = ' . $db->quote($userLink->id))
+                            ->andWhere($db->quoteName('published') . ' = 1');
+                        $db->setQuery($query);
+                        $path_en = $db->loadResult();
+                    } else {
+                        $path_en = '';
+                    }
 
                     // In french
-                    $query->clear()
-                        ->select($db->quoteName('value'))
-                        ->from($db->quoteName('#__falang_content'))
-                        ->where($db->quoteName('language_id') . ' = ' . $db->quote(2))
-                        ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote('menu'))
-                        ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote('path'))
-                        ->andWhere($db->quoteName('reference_id') . ' = ' . $db->quote($userLink->id))
-                        ->andWhere($db->quoteName('published') . ' = ' . $db->quote(1));
-                    $db->setQuery($query);
-                    $path_fr = $db->loadResult();
+                    if (in_array('fr-FR', $languages)) {
+                        $query->clear()
+                            ->select($db->quoteName('value'))
+                            ->from($db->quoteName('#__falang_content'))
+                            ->where($db->quoteName('language_id') . ' = 2')
+                            ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote('menu'))
+                            ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote('path'))
+                            ->andWhere($db->quoteName('reference_id') . ' = ' . $db->quote($userLink->id))
+                            ->andWhere($db->quoteName('published') . ' = 1');
+                        $db->setQuery($query);
+                        $path_fr = $db->loadResult();
+                    } else {
+                        $path_fr = '';
+                    }
 
                     // If there are both en and fr translations, use no link in the mail
                     if ((!empty($path_fr) && !empty($path_en)) && $path_fr !== $path_en) {
