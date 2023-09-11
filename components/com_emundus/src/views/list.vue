@@ -87,7 +87,7 @@
 							    :class="{'em-card-neutral-100 em-card-shadow em-p-24' : viewType === 'blocs'}"
 							>
 								<td class="cursor-pointer" @click="onClickAction(editAction, item.id)">
-									<span :class="{'em-font-weight-600 mb-4':  viewType === 'blocs'}">{{ item.label[params.shortlang] }}</span>
+									<span :class="{'em-font-weight-600 mb-4 text-ellipsis overflow-hidden':  viewType === 'blocs'}" :title="item.label[params.shortlang]">{{ item.label[params.shortlang] }}</span>
 								</td>
 								<td class="columns" v-for="column in item.additional_columns" :key="column.key" v-if="column.display === viewType || column.display === 'all'">
 									<div v-if="column.type === 'tags'" class="flex flex-wrap" :class="column.classes">

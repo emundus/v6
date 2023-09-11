@@ -1825,10 +1825,16 @@ input[type="text"],
 .gap-2 {
   gap: var(--em-spacing-2);
 }
+.overflow-hidden {
+  overflow: hidden;
+}
 .truncate {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.text-ellipsis {
+  text-overflow: ellipsis;
 }
 .rounded {
   border-radius: 0.25rem;

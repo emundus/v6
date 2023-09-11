@@ -40,9 +40,9 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
 <form action="index.php?option=com_emundus&controller=users&task=<?= ($this->edit == 1)? 'edituser' : 'adduser'; ?>" id="em-add-user" class="em-addUser" role="form" method="post">
 	<fieldset class="em-addUser-detail">
 		<?php if (JPluginHelper::getPlugin('authentication','ldap') && $this->edit == 0) :?>
-			<div class="form-group em-addUser-detail-ldap">
+			<div class="form-group em-addUser-detail-ldap flex items-center">
 				<input type="checkbox" id="ldap" name="ldap" style="margin-bottom:5px;" />
-				<label class="control-label" for="ldap">LDAP</label>
+				<label class="control-label mb-0" for="ldap">LDAP</label>
 			</div>
 		<?php endif; ?>
 		<div id="user-information" class="em-addUser-detail-info">

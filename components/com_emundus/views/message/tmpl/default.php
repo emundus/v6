@@ -563,6 +563,15 @@ if ($allowed_attachments !== true) {
 
     function showEmailList() {
         document.querySelector('#email-list-modal').classList.toggle('hidden');
+
+        if(document.querySelector('#email-list-modal').classList.contains('hidden')){
+            document.querySelector('.ql-container.ql-snow').style.position = 'relative';
+            document.querySelector('.em-form-attachments .form-group').style.position = 'relative';
+        } else {
+            document.querySelector('.ql-container.ql-snow').style.position = 'static';
+            document.querySelector('.em-form-attachments .form-group').style.position = 'static';
+        }
+
     }
 
     function openCC()
