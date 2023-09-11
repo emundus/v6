@@ -3372,6 +3372,121 @@ class EmundusHelperUpdate
 		}
 		//
 
+		// Check if emundus event handler is enabled
+		$query->clear()
+			->select('extension_id')
+			->from($db->quoteName('#__extensions'))
+			->where($db->quoteName('element') . ' LIKE ' . $db->quote('custom_event_handler'));
+		$db->setQuery($query);
+		$custom_event_handler = $db->loadResult();
+
+		if(empty($custom_event_handler))
+		{
+			EmundusHelperUpdate::installExtension('PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE', 'custom_event_handler', '{"name":"PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE","type":"plugin","creationDate":"18 August 2021","author":"James Dean","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"james@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"1.22.1","description":"PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE_DESC","group":"","filename":"custom_event_handler"}', 'plugin', 1, 'emundus');
+		} else {
+			$query->clear()
+				->update($db->quoteName('#__extensions'))
+				->set($db->quoteName('enabled') . ' = 1')
+				->where($db->quoteName('extension_id') . ' = ' . $db->quote($custom_event_handler));
+			$db->setQuery($query);
+			$db->execute();
+		}
+		//
+
+		// Check if emundus send zip file to user is enabled and delete_file email is here
+		$query->clear()
+			->select('extension_id')
+			->from($db->quoteName('#__extensions'))
+			->where($db->quoteName('element') . ' LIKE ' . $db->quote('send_file_archive'));
+		$db->setQuery($query);
+		$send_file_archive = $db->loadResult();
+
+		if(empty($send_file_archive))
+		{
+			EmundusHelperUpdate::installExtension('Emundus - Send ZIP file to user.', 'send_file_archive', '{"name":"Emundus - Send ZIP file to user.","type":"plugin","creationDate":"19 July 2019","author":"eMundus","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"6.9.10","description":"This plugin sends a ZIP of the file when it is changed to a certain status or when it is deleted.","group":"","filename":"send_file_archive"}', 'plugin', 1, 'emundus', '{"delete_email":"delete_file"}');
+		} else {
+			$query->clear()
+				->update($db->quoteName('#__extensions'))
+				->set($db->quoteName('enabled') . ' = 1')
+				->where($db->quoteName('extension_id') . ' = ' . $db->quote($send_file_archive));
+			$db->setQuery($query);
+			$db->execute();
+		}
+
+		$query->clear()
+			->select('id')
+			->from($db->quoteName('#__emundus_setup_emails'))
+			->where($db->quoteName('lbl') . ' LIKE ' . $db->quote('delete_file'));
+		$db->setQuery($query);
+		$delete_file_email = $db->loadResult();
+
+		if(empty($delete_file_email))
+		{
+			$columns = [
+				$db->quoteName('lbl'),
+				$db->quoteName('subject'),
+				$db->quoteName('message'),
+				$db->quoteName('type'),
+				$db->quoteName('category'),
+			];
+			$values = [
+				$db->quote('delete_file'),
+				$db->quote('Application file deleted / Dossier supprimé'),
+				$db->quote('<p>Dear [NAME],</p>
+<p>Your application file <strong><em>[FNUM]</em></strong> has been deleted.</p>
+<p>A zip file containing the data deleted is attached to this email.</p>
+<hr />
+<p>Bonjour [NAME],</p>
+<p>Votre dossier de candidature <strong><em>[FNUM]</em></strong> vient d\'&ecirc;tre supprim&eacute;.</p>
+<p>Ci-joint, une archive des informations qui ont &eacute;t&eacute; supprim&eacute;es.</p>'),
+				$db->quote(1),
+				$db->quote('Système'),
+			];
+			$query->clear()
+				->insert($db->quoteName('#__emundus_setup_emails'))
+				->columns($columns)
+				->values(implode(',', $values));
+			$db->setQuery($query);
+			$db->execute();
+		}
+		//
+
+		// Check if dropfiles plugin is enabled
+		$query->clear()
+			->select('extension_id')
+			->from($db->quoteName('#__extensions'))
+			->where($db->quoteName('element') . ' LIKE ' . $db->quote('setup_category'))
+			->where($db->quoteName('folder') . ' LIKE ' . $db->quote('emundus'));
+		$db->setQuery($query);
+		$emundus_dropfiles_plugin = $db->loadResult();
+
+		if(empty($emundus_dropfiles_plugin))
+		{
+			EmundusHelperUpdate::installExtension('Emundus - Create new dropfiles category', 'setup_category', '{"name":"Emundus - Create new dropfiles category","type":"plugin","creationDate":"July 2020","author":"eMundus","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"6.9.10","description":"PLG_EMUNDUS_SETUP_CATEGORY_DESCRIPTION","group":"","filename":"setup_category"}', 'plugin', 1, 'emundus');
+		} else {
+			$query->clear()
+				->update($db->quoteName('#__extensions'))
+				->set($db->quoteName('enabled') . ' = 1')
+				->where($db->quoteName('extension_id') . ' = ' . $db->quote($emundus_dropfiles_plugin));
+			$db->setQuery($query);
+			$db->execute();
+		}
+		//
+
+		// Check all rights group parameter
+		$query->clear()
+			->select('id')
+			->from($db->quoteName('#__emundus_setup_groups'))
+			->where($db->quoteName('label') . ' LIKE ' . $db->quote('Tous les droits'));
+		$db->setQuery($query);
+		$all_rights_group = $db->loadResult();
+
+		if(!empty($all_rights_group))
+		{
+			EmundusHelperUpdate::updateComponentParameter('com_emundus', 'all_rights_group', $all_rights_group);
+		}
+		//
+
 		return true;
 	}
 

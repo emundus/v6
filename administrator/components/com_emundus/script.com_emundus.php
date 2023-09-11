@@ -2588,6 +2588,15 @@ try {
 					$db->execute();
 
 					$query->clear()
+						->update($db->quoteName('#__fabrik_elements'))
+						->set($db->quoteName('show_in_list_summary') . ' = 0')
+						->set($db->quoteName('filter_type') . ' = ' . $db->quote(''))
+						->where($db->quoteName('group_id') . ' IN (' . implode(',', $groups) . ')')
+						->where($db->quoteName('name') . ' LIKE ' . $db->quote('message'));
+					$db->setQuery($query);
+					$db->execute();
+
+					$query->clear()
 						->update($db->quoteName('#__menu'))
 						->set($db->quoteName('template_style_id') . ' = 22')
 						->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_fabrik%'));
@@ -2608,6 +2617,7 @@ try {
 						$params['allow_edit_details'] = '10';
 						$params['allow_add'] = '10';
 						$params['allow_delete'] = '10';
+						$params['distinct'] = '0';
 
 						$query->clear()
 							->update($db->quoteName('#__fabrik_lists'))
@@ -3080,6 +3090,79 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 					->where($db->quoteName('title') . ' LIKE ' . $db->quote('Spotlight%'));
 				$db->setQuery($query);
 				$db->execute();
+
+				// Sort by invitation date
+				$query->clear()
+					->update($db->quoteName('#__fabrik_lists'))
+					->set($db->quoteName('order_by') . ' = ' . $db->quote('["5849"]'))
+					->set($db->quoteName('order_dir') . ' = ' . $db->quote('["DESC"]'))
+					->where($db->quoteName('label') . ' LIKE ' . $db->quote('TABLE_SETUP_INVITATION_BY_EMAIL'));
+				$db->setQuery($query);
+				$db->execute();
+
+				// Update databasejoin
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_elements'))
+					->where($db->quoteName('name') . ' LIKE ' . $db->quote('course'))
+					->where($db->quoteName('plugin') . ' LIKE ' . $db->quote('databasejoin'))
+					->where($db->quoteName('group_id') . ' = 139');
+				$db->setQuery($query);
+				$course_elt = $db->loadObject();
+
+				if(!empty($course_elt))
+				{
+					$params = json_decode($course_elt->params, true);
+					$params['join_db_name'] = 'jos_emundus_setup_programmes';
+					$params['join_key_column'] = 'code';
+					$params['join_val_column'] = 'label';
+					$params['join_val_column_concat'] = "label, ' [', code, ']'";
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_elements'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($course_elt->id));
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				EmundusHelperUpdate::updateComponentParameter('com_emundus', 'logs', 1);
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_NEWSLETTER','Newsletter');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_NEWSLETTER','Newsletter', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_UNIVERSITY','Université');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_UNIVERSITY','University', 'override', null, null, null, 'en-GB');
+
+				$query->clear()
+					->delete($db->quoteName('#__modules'))
+					->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emunduspanel'))
+					->where($db->quoteName('position') . ' LIKE ' . $db->quote('content-top-a'))
+					->where($db->quoteName('client_id') . ' = 0');
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->select($db->quoteName('id'))
+					->from($db->quoteName('#__emundus_widgets'))
+					->where($db->quoteName('name') . ' LIKE ' . $db->quote('faq'))
+					->orWhere($db->quoteName('label') . ' LIKE ' . $db->quote('FAQ'));
+				$db->setQuery($query);
+				$faq_widget_id = $db->loadColumn();
+
+				if(!empty($faq_widget_id))
+				{
+					$query->clear()
+						->delete($db->quoteName('#__emundus_widgets_repeat_access'))
+						->where($db->quoteName('parent_id') . ' IN (' . implode(',',$faq_widget_id) . ')');
+					$db->setQuery($query);
+					$db->execute();
+
+					$query->clear()
+						->delete($db->quoteName('#__emundus_setup_dashboard'));
+					$db->setQuery($query);
+					$db->execute();
+				}
 			}
 		}
 
