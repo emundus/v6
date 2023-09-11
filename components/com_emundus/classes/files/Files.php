@@ -869,7 +869,14 @@ class Files
                                         }
                                     }
                                 } else {
-                                    if ($element_data['db_table_name'] != 'jos_emundus_campaign_candidature') {
+                                    if ($element_data['db_table_name'] == 'jos_emundus_evaluations') {
+                                        $join_key = 'lj_' . $element_data['db_table_name'];
+
+                                        if (!in_array($element_data['db_table_name'], $left_joins_already_used)) {
+                                            $left_joins[] = $db->quoteName($element_data['db_table_name']) . 'AS ' . $join_key .  ' ON  ' . $join_key . '.fnum = ecc.fnum AND ' . $join_key . '.user = ' . JFactory::getUser()->id;
+                                            $left_joins_already_used[] = $element_data['db_table_name'];
+                                        }
+                                    } else if ($element_data['db_table_name'] != 'jos_emundus_campaign_candidature') {
                                         $join_key = 'lj_' . $element_data['db_table_name'];
 
                                         if (!in_array($element_data['db_table_name'], $left_joins_already_used)) {
