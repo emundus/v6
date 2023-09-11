@@ -3424,7 +3424,10 @@ class EmundusModelFiles extends JModelLegacy
 
     public function getSetupAttachmentsById($ids) {
         $dbo = $this->getDbo();
-        $query = 'select * from jos_emundus_setup_attachments where id in ("'.implode('","', $ids).'")';
+        $query = $dbo->getQuery(true);
+        $query->select('*')
+            ->from($dbo->quoteName('#__emundus_setup_attachments'))
+            ->where($dbo->quoteName('id').' IN (' . implode(',', $ids) . ')');
         try {
             $dbo->setQuery($query);
             return $dbo->loadAssocList();
@@ -3445,16 +3448,17 @@ class EmundusModelFiles extends JModelLegacy
         }
 
         $dbo = $this->getDbo();
-        $select = "select jfe.id, jfe.name, jfe.plugin, jfe.params, jfg.params as group_params, jfg.id as group_id, jfl.db_table_name, jfj.table_join
-                    from jos_fabrik_elements as jfe
-                    left join #__fabrik_formgroup as jff on jff.group_id = jfe.group_id
-                    left join #__fabrik_groups as jfg on jfg.id = jff.group_id
-                    left join #__fabrik_forms as jff2 on jff2.id = jff.form_id
-                    left join #__fabrik_lists as jfl on jfl.form_id = jff2.id
-                    LEFT JOIN #__fabrik_joins AS jfj ON jfl.id = jfj.list_id AND jfg.id=jfj.group_id
-                    where jfe.id in (".implode(',', $idFabrik).")";
+        $query = $dbo->getQuery(true);
+        $query->select('jfe.id, jfe.name, jfe.plugin, jfe.params, jfg.params as group_params, jfg.id as group_id, jfl.db_table_name, jfj.table_join')
+            ->from($dbo->quoteName('#__fabrik_elements','jfe'))
+            ->leftJoin($dbo->quoteName('#__fabrik_formgroup','jff').' ON '.$dbo->quoteName('jff.group_id').' = '.$dbo->quoteName('jfe.group_id'))
+            ->leftJoin($dbo->quoteName('#__fabrik_groups','jfg').' ON '.$dbo->quoteName('jfg.id').' = '.$dbo->quoteName('jff.group_id'))
+            ->leftJoin($dbo->quoteName('#__fabrik_forms','jff2').' ON '.$dbo->quoteName('jff2.id').' = '.$dbo->quoteName('jff.form_id'))
+            ->leftJoin($dbo->quoteName('#__fabrik_lists','jfl').' ON '.$dbo->quoteName('jfl.form_id').' = '.$dbo->quoteName('jff2.id'))
+            ->leftJoin($dbo->quoteName('#__fabrik_joins','jfj').' ON '.$dbo->quoteName('jfl.id').' = '.$dbo->quoteName('jfj.list_id').' AND '.$dbo->quoteName('jfg.id').' = '.$dbo->quoteName('jfj.group_id'))
+            ->where($dbo->quoteName('jfe.id').' IN (' . implode(',', $idFabrik) . ')');
         try {
-            $dbo->setQuery($select);
+            $dbo->setQuery($query);
             return $dbo->loadAssocList();
         } catch(Exception $e) {
             throw $e;
