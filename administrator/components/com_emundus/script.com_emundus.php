@@ -3072,6 +3072,14 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 					->where($db->quoteName('alias') . ' LIKE ' . $db->quote('gestion-de-vos-droits'));
 				$db->setQuery($query);
 				$db->execute();
+
+				// Remove spotlight module
+				$query->clear()
+					->delete($db->quoteName('#__modules'))
+					->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_finder'))
+					->where($db->quoteName('title') . ' LIKE ' . $db->quote('Spotlight%'));
+				$db->setQuery($query);
+				$db->execute();
 			}
 		}
 
