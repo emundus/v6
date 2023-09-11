@@ -54,7 +54,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
         return $result;
     }
 
-    public function retrieveMappingColumnsData()
+    public function retrieveMappingColumnsData(): array
     {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -122,9 +122,6 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
             }
 
 
-
-
-
         } catch (\Exception $e) {
 
             JLog::add('[FABRIK CRON FILEMAKER retrieveMappingColumnsData] ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
@@ -136,7 +133,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
     }
 
 
-    public function retrieveAssociatedElementsWithgroup($groups_id)
+    public function retrieveAssociatedElementsWithgroup($groups_id): array
     {
         $associatedElements = array();
         $db = JFactory::getDbo();
@@ -167,12 +164,17 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
     public function getRecords($limit, $offset, $adminStep)
     {
+        $records = [];
         $file_maker_api = new FileMaker();
-        $records = '';
-        try {
-            $records = $file_maker_api->findRecord($limit, $offset, $adminStep);
-        } catch (\Exception $e) {
-            JLog::add('[FABRIK CRON FILEMAKER  GET RECORDS] ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+
+        if (!empty($file_maker_api->getAuth()['bear_token'])) {
+            try {
+                $records = $file_maker_api->findRecord($limit, $offset, $adminStep);
+            } catch (\Exception $e) {
+                JLog::add('[FABRIK CRON FILEMAKER  GET RECORDS] ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+        } else {
+            JLog::add("[FILEMAKER ] Failed to login to API", JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
         }
 
         return $records;
@@ -180,14 +182,16 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
     }
 
-    public function createFiles($filesData, $mappedColumns = []):void
+    public function createFiles($filesData, $mappedColumns = []): void
     {
         $filemaker = new FileMaker();
+        if (empty($filemaker->getAuth()['bear_token'])) {
+            JLog::add("[FILEMAKER ] Failed to login to API", JLog::ERROR, 'com_emundus.filemaker_fabrik_cron');
+            return;
+        }
         foreach ($filesData as $file) {
 
-
             $fieldData = $file->fieldData;
-
 
             if (!empty($fieldData->{"zWEB_FORMULAIRES_PROGRAMMATIONS::web_emailContact"})) {
 
@@ -203,9 +207,10 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
     }
 
 
-    public function createUserIfNotExist($email, $name, $singleFieldData)
+    public function createUserIfNotExist($email, $name, $singleFieldData): int
     {
-        $email = str_replace([' ','\r'], '', $email);
+        $user_id = 0;
+        $email = preg_replace('/\r/', '', $email);
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -218,62 +223,60 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
         $query->clear();
 
         if (!empty($user)) {
-            return $user->id;
+            $user_id = $user->id;
         } else {
 
-                $profile = intval($this->getParams()->get('profile'));
+            $profile = intval($this->getParams()->get('profile'));
 
-                $m_users = new EmundusModelUsers;
-                $h_users = new EmundusHelperUsers;
-                $firstname_and_lastname = explode(" ", $name);
-                $user_id = 0;
-
-                $db = JFactory::getDbo();
-                $query = $db->getQuery(true);
-
-                $password = md5($h_users->generateStrongPassword());
-                $acl_aro_groups = $m_users->getDefaultGroup($profile);
-
-                $query->insert('#__users')
-                    ->columns('name, username, email, password')
-                    ->values($db->quote($name) . ', ' . $db->quote($email) . ', ' . $db->quote($email) . ',' . $db->quote($password));
-
-                try {
-                    $db->setQuery($query);
-                    $db->execute();
-                    $user_id = $db->insertid();
-
-                    $query->clear();
-                    $query->insert('jos_user_usergroup_map')
-                        ->columns('user_id,group_id ')
-                        ->values($db->quote($user_id) . ', ' . $db->quote($acl_aro_groups[0]));
-                    $db->setQuery($query);
-                    $db->execute();
-                } catch (Exception $e) {
-                    JLog::add("Failed to insert jos_users" . $e->getMessage(), JLog::ERROR, 'com_emundus');
-                }
+            $m_users = new EmundusModelUsers;
+            $h_users = new EmundusHelperUsers;
+            $firstname_and_lastname = explode(" ", $name);
 
 
-                if (!empty($user_id)) {
-                    $other_param['firstname'] = $firstname_and_lastname[0];
-                    $other_param['lastname'] = $firstname_and_lastname[1];
-                    $other_param['profile'] = $profile;
-                    $other_param['em_oprofiles'] = '';
-                    $other_param['univ_id'] = 0;
-                    $other_param['em_groups'] = '';
-                    $other_param['em_campaigns'] = [];
-                    $other_param['news'] = '';
-                    $m_users->addEmundusUser($user_id, $other_param);
-                }
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-                return $user_id;
-            //}
+            $password = md5($h_users->generateStrongPassword());
+            $acl_aro_groups = $m_users->getDefaultGroup($profile);
+
+            $query->insert('#__users')
+                ->columns('name, username, email, password')
+                ->values($db->quote($name) . ', ' . $db->quote($email) . ', ' . $db->quote($email) . ',' . $db->quote($password));
+
+            try {
+                $db->setQuery($query);
+                $db->execute();
+                $user_id = $db->insertid();
+
+                $query->clear();
+                $query->insert('jos_user_usergroup_map')
+                    ->columns('user_id,group_id ')
+                    ->values($db->quote($user_id) . ', ' . $db->quote($acl_aro_groups[0]));
+                $db->setQuery($query);
+                $db->execute();
+            } catch (Exception $e) {
+                JLog::add("Failed to insert jos_users" . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+
+
+            if (!empty($user_id)) {
+                $other_param['firstname'] = $firstname_and_lastname[0];
+                $other_param['lastname'] = $firstname_and_lastname[1];
+                $other_param['profile'] = $profile;
+                $other_param['em_oprofiles'] = '';
+                $other_param['univ_id'] = 0;
+                $other_param['em_groups'] = '';
+                $other_param['em_campaigns'] = [];
+                $other_param['news'] = '';
+                $m_users->addEmundusUser($user_id, $other_param);
+            }
+
         }
-
+        return $user_id;
 
     }
 
-    public function updateFileApplicantId($file, $user_id,$fnum)
+    public function updateFileApplicantId($file, $user_id, $fnum): void
     {
         $fieldData = $file->fieldData;
         $db = JFactory::getDbo();
@@ -291,8 +294,35 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
         }
     }
 
+    public function updateProjectInformation($file, $fnum): void
+    {
+        $fieldData = $file->fieldData;
 
-    public function createSingleFile($singleFieldData, $user_id, $mapped_columns, $filemaker):void
+        $closingDateString = str_replace('/', '-', $fieldData->Admin_ClosingDate);
+        $date = DateTime::createFromFormat('m-d-Y', $closingDateString);
+        $date !== false ? $date_value = $date->format('Y-m-d') : $date_value = $closingDateString;
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->clear()
+            ->update($db->quoteName('jos_emundus_1001_00'))
+            ->set($db->quoteName('e_947_8592') . ' = ' . $db->quote($fieldData->InterlocuteurIF))
+            ->set($db->quoteName('e_947_8593') . ' = ' . $db->quote($fieldData->InterlocuteurIF_Email))
+            ->set($db->quoteName('e_800_7974') . ' = ' . $db->quote($fieldData->Projet_Intitule))
+            ->set($db->quoteName('e_796_7967') . ' = ' . $db->quote($date_value))
+            ->where($db->quoteName('fnum') . 'LIKE' . $db->quote($fnum));
+        $db->setQuery($query);
+
+        try {
+            $db->execute();
+
+        } catch (Exception $e) {
+
+            JLog::add("[FILEMAKER CRON] Failed to update project information for  $fnum " . $e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+    }
+
+
+    public function createSingleFile($singleFieldData, $user_id, $mapped_columns, $filemaker): void
     {
         $fieldData = $singleFieldData->fieldData;
         $campaign_id = $this->getParams()->get('campaign_id');
@@ -306,8 +336,8 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $checkIfFileNotAlreadyExist = $this->checkIfFileNotAlreadyExist($fieldData->uuid);
-        if (empty($checkIfFileNotAlreadyExist)) {
+        $check_if_file_not_already_exist = $this->checkIfFileNotAlreadyExist($fieldData->uuid);
+        if (empty($check_if_file_not_already_exist)) {
 
 
             $fnum = $h_files->createFnum($campaign_id, $user_id);
@@ -345,89 +375,96 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
             $admin_step = $this->getParams()->get('admin_step');
             $mail_trigger_state = $this->getParams()->get('mail_trigger_state');
 
-            if(intval($checkIfFileNotAlreadyExist->applicant_id) != intval($user_id)){
+            if (intval($check_if_file_not_already_exist->applicant_id) != intval($user_id)) {
 
-                $this->updateFileApplicantId($singleFieldData, $user_id,$checkIfFileNotAlreadyExist->fnum);
-                $m_message->sendEmail($checkIfFileNotAlreadyExist->fnum, $this->getParams()->get('mail_template'));
+                $this->updateFileApplicantId($singleFieldData, $user_id, $check_if_file_not_already_exist->fnum);
+                $this->updateProjectInformation($singleFieldData, $check_if_file_not_already_exist->fnum);
+                $m_message->sendEmail($check_if_file_not_already_exist->fnum, $this->getParams()->get('mail_template'));
             }
 
-            if ($checkIfFileNotAlreadyExist->uuidConnect !== $fieldData->uuidConnect) {
+            $this->updateFile($check_if_file_not_already_exist, $fieldData, $singleFieldData, $query, $m_files, $m_message, $db, $admin_step, $filemaker, $mapped_columns, $user_id);
 
-
-
-                switch ($admin_step) {
-
-                    case 'PRE':
-                        $query->clear()
-                            ->update($db->quoteName('#__emundus_campaign_candidature'))
-                            ->set($db->quoteName('uuidConnect') . ' = ' . $db->quote($fieldData->uuidConnect))
-                            ->where($db->quoteName('uuid') . "=" . $db->quote($fieldData->uuid));
-                        $db->setQuery($query);
-
-                        try {
-                            $db->execute();
-                            $m_files->updateState($checkIfFileNotAlreadyExist->fnum, $this->getParams()->get('mail_trigger_state'));
-
-                        } catch (Exception $e) {
-                            $fnum = '';
-                            $inserted = false;
-
-                            JLog::add("[FILEMAKER CRON] Failed to update file status $fnum - $user_id" . $e->getMessage(), JLog::ERROR, 'com_emundus');
-                        }
-                        break;
-
-                    case 'POST':
-
-                        $query->clear()
-                            ->update($db->quoteName('#__emundus_campaign_candidature'))
-                            ->set($db->quoteName('uuidConnect') . ' = ' . $db->quote($fieldData->uuidConnect))
-                            ->where($db->quoteName('uuid') . "=" . $db->quote($fieldData->uuid));
-                        $db->setQuery($query);
-
-                        try {
-
-                            $db->execute();
-
-                            if (intval($checkIfFileNotAlreadyExist->status === 1)) {
-                                $this->insertFileDataToEmundusTables($checkIfFileNotAlreadyExist->fnum, $singleFieldData, $mapped_columns, $user_id);
-                                $m_message->sendEmail($checkIfFileNotAlreadyExist->fnum, $this->getParams()->get('mail_template', 83));
-                                $filemaker->logActionIntoEmundusFileMakerlog(0, $checkIfFileNotAlreadyExist->fnum, $fieldData->uuid, $fieldData->uuidConnect, 3, NULL, 1, "layouts/zWEB_FORMULAIRES/_find", "");
-                            }
-
-                            $m_files->updateState($checkIfFileNotAlreadyExist->fnum, $this->getParams()->get('mail_trigger_state'));
-
-                        } catch (Exception $e) {
-                            $fnum = '';
-                            $inserted = false;
-
-                            JLog::add("[FILEMAKER CRON] Failed to update file status $fnum - $user_id" . $e->getMessage(), JLog::ERROR, 'com_emundus');
-                        }
-                        break;
-                }
-            }
-
-            else {
-                switch ($admin_step) {
-
-                    case 'PRE':
-                        if(intval($checkIfFileNotAlreadyExist->status) === 3){
-                            $m_files->updateState($checkIfFileNotAlreadyExist->fnum, $this->getParams()->get('mail_trigger_state'));
-                        }
-                        break;
-
-                    case 'POST':
-                        if(intval($checkIfFileNotAlreadyExist->status) === 0){
-                            $m_files->updateState($checkIfFileNotAlreadyExist->fnum, $this->getParams()->get('mail_trigger_state'));
-                        }
-                        break;
-                }
-            }
         }
 
     }
 
-    public function retrieveRecetteContributionIf($data)
+    public function updateFile($check_if_file_not_already_exist, $fieldData, $singleFieldData, $query, $m_files, $m_message, $db, $admin_step, $filemaker, $mapped_columns, $user_id): void
     {
+        if ($check_if_file_not_already_exist->uuidConnect !== $fieldData->uuidConnect) {
+
+            switch ($admin_step) {
+
+                case 'PRE':
+                    $query->clear()
+                        ->update($db->quoteName('#__emundus_campaign_candidature'))
+                        ->set($db->quoteName('uuidConnect') . ' = ' . $db->quote($fieldData->uuidConnect))
+                        ->where($db->quoteName('uuid') . "=" . $db->quote($fieldData->uuid));
+                    $db->setQuery($query);
+
+                    try {
+                        $db->execute();
+                        $m_files->updateState($check_if_file_not_already_exist->fnum, $this->getParams()->get('mail_trigger_state'));
+                        $this->updateProjectInformation($singleFieldData, $check_if_file_not_already_exist->fnum);
+
+                    } catch (Exception $e) {
+                        $fnum = '';
+                        $inserted = false;
+
+                        JLog::add("[FILEMAKER CRON] Failed to update file status $fnum - $user_id" . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                    }
+                    break;
+
+                case 'POST':
+
+                    $query->clear()
+                        ->update($db->quoteName('#__emundus_campaign_candidature'))
+                        ->set($db->quoteName('uuidConnect') . ' = ' . $db->quote($fieldData->uuidConnect))
+                        ->where($db->quoteName('uuid') . "=" . $db->quote($fieldData->uuid));
+                    $db->setQuery($query);
+
+                    try {
+
+                        $db->execute();
+
+                        if (intval($check_if_file_not_already_exist->status === 1)) {
+                            $this->insertFileDataToEmundusTables($check_if_file_not_already_exist->fnum, $singleFieldData, $mapped_columns, $user_id);
+                            $m_message->sendEmail($check_if_file_not_already_exist->fnum, $this->getParams()->get('mail_template', 83));
+                            $filemaker->logActionIntoEmundusFileMakerlog(0, $check_if_file_not_already_exist->fnum, $fieldData->uuid, $fieldData->uuidConnect, 3, NULL, 1, "layouts/zWEB_FORMULAIRES/_find", "");
+                        }
+
+                        $m_files->updateState($check_if_file_not_already_exist->fnum, $this->getParams()->get('mail_trigger_state'));
+
+                    } catch (Exception $e) {
+                        $fnum = '';
+                        $inserted = false;
+
+                        JLog::add("[FILEMAKER CRON] Failed to update file status $fnum - $user_id" . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                    }
+                    break;
+            }
+        } else {
+            switch ($admin_step) {
+
+                case 'PRE':
+                    if (in_array(intval($check_if_file_not_already_exist->status), [1, 3])) {
+                        $m_files->updateState($check_if_file_not_already_exist->fnum, $this->getParams()->get('mail_trigger_state'));
+                        $this->updateProjectInformation($singleFieldData, $check_if_file_not_already_exist->fnum);
+                    }
+                    break;
+
+                case 'POST':
+                    if (in_array(intval($check_if_file_not_already_exist->status), [1, 4])) {
+                        $m_files->updateState($check_if_file_not_already_exist->fnum, $this->getParams()->get('mail_trigger_state'));
+                        $this->updateProjectInformation($singleFieldData, $check_if_file_not_already_exist->fnum);
+                    }
+                    break;
+            }
+        }
+    }
+
+    public function retrieveRecetteContributionIf($data): array
+    {
+
         $dataContributionInstituFrancais = array_filter(($data)->{"zWEB_FORMULAIRES_RECETTES"}, function ($item) {
             return !empty($item->{"zWEB_FORMULAIRES_RECETTES::EstContributionIF"});
         });
@@ -463,19 +500,17 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
             return $newItem;
         }, $dataContributionInstituFrancais);
 
-        $mergedRecettes = array_merge(...$modifiedRecettes);
-
-        return $mergedRecettes;
+        return array_merge(...$modifiedRecettes);
     }
 
-    public function insertFileDataToEmundusTables($fnum, $singleFieldData, $mapped_columns, $user_id):void
+    public function insertFileDataToEmundusTables($fnum, $singleFieldData, $mapped_columns, $user_id): void
     {
         $this->insertGlobalLayoutFormData($fnum, $singleFieldData, $mapped_columns, $user_id);
         $this->insertPortalsDatasElements($singleFieldData, $mapped_columns, $fnum, $user_id);
 
     }
 
-    public function insertGlobalLayoutFormData($fnum, $singleFieldData, $mapped_columns, $user_id):void
+    public function insertGlobalLayoutFormData($fnum, $singleFieldData, $mapped_columns, $user_id): void
     {
 
         $db = JFactory::getDbo();
@@ -521,8 +556,6 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                 foreach ($elements_columns_assoc_filemaker_attribute_names as $val) {
 
 
-
-
                     switch ($val->plugin) {
                         case 'internalid':
                             break;
@@ -556,7 +589,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                             if ($index !== false) {
                                 $elements_columns_value[] = $db->quote($params->sub_options->sub_values[$index]);
                             } else {
-                                $elements_columns_value[] = !empty($fieldData[$val->name])? $db->quote($fieldData[$val->name]) : 'NULL';
+                                $elements_columns_value[] = !empty($fieldData[$val->name]) ? $db->quote($fieldData[$val->name]) : 'NULL';
                             }
                             break;
 
@@ -577,7 +610,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                                 $key = array_search($sub_val, $option_sub_labels);
                                 $elm[] = "" . $params->sub_options->sub_values[$key] . "";
                             }
-                            $elements_columns_value[] = $db->quote("[".implode(",",@$elm)."]");
+                            $elements_columns_value[] = $db->quote("[" . implode(",", @$elm) . "]");
 
                             break;
 
@@ -618,7 +651,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
     }
 
-    public function insertPortalsDatasElements($singleFieldData, $mapped_columns, $fnum, $user_id):void
+    public function insertPortalsDatasElements($singleFieldData, $mapped_columns, $fnum, $user_id): void
     {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -641,7 +674,6 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                 $ZWEB_FORMULAIRE_MAPPED_ELEMENTS = $this->searchMappedElementsByFileMakerFormLabel($mapped_columns, $key);
 
                 if (!empty($ZWEB_FORMULAIRE_MAPPED_ELEMENTS)) {
-                    $config = JFactory::getConfig();
                     foreach ($ZWEB_FORMULAIRE_MAPPED_ELEMENTS as $row) {
 
                         $formGroups = array_map('json_encode', $row->groups);
@@ -744,7 +776,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                                                             $elm[] = "" . $params->sub_options->sub_values[$key] . "";
                                                         }
 
-                                                        $arr_key_cal[] = array("" . $val->name . "" => $db->quote("[".implode(",",@$elm)."]"));
+                                                        $arr_key_cal[] = array("" . $val->name . "" => $db->quote("[" . implode(",", @$elm) . "]"));
 
                                                         break;
 
@@ -790,7 +822,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
 
     }
 
-    public function insertDataIntoRepeatGroupsTable($fnum, $group, $user_id):void
+    public function insertDataIntoRepeatGroupsTable($fnum, $group, $user_id): void
     {
         $db = JFactory::getDbo();
 
@@ -893,7 +925,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
         return $result;
     }
 
-    public function insertIntoATable($db_table_name, $elements_columns_name, $elements_columns_value, $fnum = 0, $user_id = 0)
+    public function insertIntoATable($db_table_name, $elements_columns_name, $elements_columns_value, $fnum = 0, $user_id = 0):int
     {
         $insertedId = 0;
         $db = JFactory::getDbo();
@@ -918,7 +950,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
         return $insertedId;
     }
 
-    public function transformToAssociativeArray($array)
+    public function transformToAssociativeArray($array): array
     {
         $associativeArray = array();
 
@@ -933,7 +965,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
     }
 
 
-    public function searchMappedElementsByFileMakerFormLabel($mapped_columns, $label)
+    public function searchMappedElementsByFileMakerFormLabel($mapped_columns, $label): array
     {
 
         $values = [];
@@ -1108,8 +1140,9 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
                 $returnedCount = $dataInfo->returnedCount;
                 $offset += $limit;
 
-
                 $this->createFiles($find_records_response->data, $mapped_columns);
+            } else {
+                $returnedCount = 0;
             }
         }
 

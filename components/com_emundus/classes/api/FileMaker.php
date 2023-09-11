@@ -495,9 +495,8 @@ class FileMaker
 
     }
 
-    public function deleteAllLinkedData($uuidConnect, $fnum, $uuid, $status,$layout){
-
-        $url = "layouts/".$layout."/script/zWebFormulaire_Delete_AllLinkedData?script.param=" . $uuidConnect;
+    public function deleteAllLinkedData($uuidConnect, $fnum, $uuid, $status,$layout,$scriptName = "zWebFormulaire_Delete_AllLinkedData" ){
+        $url = "layouts/".$layout."/script/".$scriptName."?script.param=" . $uuidConnect;
 
         $res = $this->get($url);
 
@@ -785,7 +784,7 @@ class FileMaker
                                                 return $date->format('m-d-Y');
 
                                             } else {
-                                                return $dateString;
+                                                return "";
                                             }
                                         }, $values);
                                         $temp_records_mapping[] = array("" . $zweb_form_name . "::" . $data->name . "" => $reformatted);
@@ -812,7 +811,7 @@ class FileMaker
                                 case "birthday":
                                     $dateString = str_replace('.', '-', $value);
                                     $date = DateTime::createFromFormat('d-m-Y', $dateString);
-                                    $reformatted_date = $date !== false ? $date->format('m-d-Y') : $dateString;
+                                    $reformatted_date = $date !== false ? $date->format('m-d-Y') : "";
                                     $temp_records_mapping[] = array("" . $zweb_form_name . "::" . $data->name . "" => $reformatted_date);
                                     break;
                                 default:
@@ -831,15 +830,15 @@ class FileMaker
         }
 
 
-        $array = $this->transformToAssociativeArray($temp_records_mapping);
+        $mapped_records = $this->transformToAssociativeArray($temp_records_mapping);
 
 
         if ($isPortalDataForm == true) {
 
 
-            $keys = array_keys($array);
+            $keys = array_keys($mapped_records);
 
-            $arraySize = !empty($keys[0]) ? count($array[$keys[0]]) : 0;
+            $arraySize = !empty($keys[0]) ? count($mapped_records[$keys[0]]) : 0;
 
 
             $finalArray = array();
@@ -861,7 +860,7 @@ class FileMaker
             //return $finalArray;
         } else {
 
-            return $array;
+            return $mapped_records;
 
         }
 
