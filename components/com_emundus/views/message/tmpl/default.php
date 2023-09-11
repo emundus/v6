@@ -53,10 +53,6 @@ if ($allowed_attachments !== true) {
         overflow: auto;
     }
 
-    .ql-container.ql-snow {
-        position: static !important;
-    }
-
     .ql-editor{
         height: 300px !important;
         overflow-y: scroll;
