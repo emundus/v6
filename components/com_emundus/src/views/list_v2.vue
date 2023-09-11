@@ -119,11 +119,9 @@
 								</td>
 								<td class="columns" v-for="column in item.additional_columns" :key="column.key" v-if="column.display === viewType || column.display === 'all'">
 									<div v-if="column.type === 'tags'" class="flex flex-wrap" :class="column.classes">
-										<span v-for="tag in column.values" :key="tag.key" class="mr-2 h-max" :class="tag.classes">{{ tag.value }}</span>
+										<span v-for="tag in column.values" :key="tag.key" class="mr-2 h-max" :class="tag.classes" v-html="tag.value"></span>
 									</div>
-									<span v-else class="mt-2 mb-2" :class="column.classes">
-										{{ column.value }}
-									</span>
+									<span v-else class="mt-2 mb-2" :class="column.classes">{{ column.value }}</span>
 								</td>
 								<div>
 									<hr v-if="viewType === 'blocs'" class="w-full mt-1.5 mb-1.5">
