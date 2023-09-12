@@ -2491,7 +2491,7 @@ class EmundusModelFiles extends JModelLegacy
 
                         $leftJoin .= ' LEFT JOIN ' . $group_join_informations['table_join'] . ' as ' . $child_element_table_alias . ' ON ' . $child_element_table_alias . '.' . $group_join_informations['table_join_key'] . ' = ' . $element_table_alias . '.' . $group_join_informations['table_key'];
                     } else {
-                        $child_element_table_alias = $already_joined[$group_join_informations['table_join']];
+	                    $child_element_table_alias = array_search($group_join_informations['table_join'], $already_joined);
                     }
                 }
 
