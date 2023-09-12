@@ -1,4 +1,4 @@
-var filtersInstances = [];
+let filtersInstances = [];
 const filterSampleContainerHTML = '<div class="filter-container em-w-100" id="sample-id" style="position: relative;">'+
     '<section class="filter-recap-container em-pointer em-border-radius-8 em-border-neutral-400 em-flex-row em-flex-space-between em-box-shadow em-white-bg">' +
     '   <div class="filter-recap em-p-8 em-flex-col-start">' +
