@@ -143,6 +143,8 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 									<?php else :?>
 										<?php if ($value->type == 'text' ) :?>
 											<?= strip_tags(JText::_($value->val)); ?>
+                                        <?php elseif ($value->type == "textarea" && !empty($value->val) && strlen($value->val) > 200) :?>
+                                            <?= substr(strip_tags($value->val),0,200)." ..."; ?>
 										<?php elseif ($value->type == "date")  :?>
 										<strong>
 											<?php if (!isset($value->val) || $value->val == "0000-00-00 00:00:00") :?>
