@@ -560,9 +560,9 @@ defined('_JEXEC') or die;
             jQuery(".sidebar-formbuilder").css("display","block");
             jQuery(".sidebar-formbuilder").css("opacity","1");
             if(window.innerWidth >= 1280) {
-                jQuery("#g-container-main").css("padding-left", "80px");
-                jQuery("#g-footer").css("padding-left", "80px");
-                jQuery("#footer-rgpd").css("padding-left", "80px");
+                jQuery("#g-container-main").css("padding-left", "76px");
+                jQuery("#g-footer").css("padding-left", "76px");
+                jQuery("#footer-rgpd").css("padding-left", "76px");
                 jQuery("#header-a").css("opacity", "0");
             }
             setTimeout(() =>{
