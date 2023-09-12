@@ -601,6 +601,70 @@ class EmundusHelperUpdate
         }
     }
 
+	public static function insertFalangTranslation($lang_id, $reference_id, $reference_table, $reference_field, $value, $update = false) {
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try {
+			$query->clear()
+				->select('id')
+				->from($db->quoteName('#__falang_content'))
+				->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
+				->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
+				->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field));
+			$db->setQuery($query);
+			$translation_id = $db->loadResult();
+
+			if(empty($translation_id))
+			{
+				$columns = [
+					$db->quoteName('reference_id'),
+					$db->quoteName('reference_table'),
+					$db->quoteName('reference_field'),
+					$db->quoteName('value'),
+					$db->quoteName('language_id'),
+					$db->quoteName('published'),
+					$db->quoteName('original_value'),
+					$db->quoteName('original_text'),
+					$db->quoteName('modified'),
+					$db->quoteName('modified_by'),
+				];
+
+				$values = [
+					$db->quote($reference_id),
+					$db->quote($reference_table),
+					$db->quote($reference_field),
+					$db->quote($value),
+					$db->quote($lang_id),
+					$db->quote(1),
+					$db->quote($value),
+					$db->quote($value),
+					$db->quote(date('Y-m-d H:i:s')),
+					$db->quote(62),
+				];
+
+				$query->clear()
+					->insert($db->quoteName('#__falang_content'))
+					->columns($columns)
+					->values(implode(',', $values));
+				$db->setQuery($query);
+				return $db->execute();
+			} else if($update)
+			{
+				$query->clear()
+					->update($db->quoteName('#__falang_content'))
+					->set($db->quoteName('value') . ' = ' . $db->quote($value))
+					->where($db->quoteName('id') . ' = ' . $db->quote($translation_id));
+				$db->setQuery($query);
+				return $db->execute();
+			}
+
+		} catch (Exception $e) {
+			echo $e->getMessage();
+			return false;
+		}
+	}
+
     public static function languageFileToBase() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -931,7 +995,7 @@ class EmundusHelperUpdate
 					$parsed_file = JLanguageHelper::parseIniFile($file->file);
 
 					if (!empty($parsed_file) && !empty($old_values[$file->language])) {
-						if (!empty($parsed_file[$tag]) && $parsed_file[$tag] == $old_values[$file->language])
+						if (!empty($parsed_file[$tag]) && strip_tags($parsed_file[$tag]) == strip_tags($old_values[$file->language]))
 						{
 							$parsed_file[$tag] = $new_values[$file->language];
 							JLanguageHelper::saveToIniFile($file->file, $parsed_file);
@@ -1839,7 +1903,7 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addFabrikGroup($datas,$params = [], $published = 1) {
+    public static function addFabrikGroup($datas,$params = [], $published = 1, $no_label = false) {
         $result = ['status' => false, 'message' => '', 'id' => 0];
 
         if(empty($datas['name'])){
@@ -1862,11 +1926,19 @@ class EmundusHelperUpdate
             $default_params = EmundusHelperFabrik::prepareGroupParams();
             $params = array_merge($default_params, $params);
 
+			if($no_label){
+				$datas['label'] = '';
+			} else {
+				if(empty($datas['label'])){
+					$datas['label'] = $datas['name'];
+				}
+			}
+
             try {
                 $inserting_datas = [
                     'name' => $datas['name'],
                     'css' => $datas['css'] ?: '',
-                    'label' => $datas['label'] ?: $datas['name'],
+                    'label' => $datas['label'],
                     'created' => date('Y-m-d H:i:s'),
                     'created_by' => 62,
                     'created_by_alias' => 'admin',
@@ -2864,29 +2936,36 @@ class EmundusHelperUpdate
      * Inserts content into a file if it doesn't already exist.
      *
      * @param string $file   The path to the file.
-     * @param string $insert The content to insert.
+     * @param string $insertLines The content to insert.
+     * @param string $insertBeforeLine The line before which the content should be inserted.
      *
      * @return bool True if insertion is successful or the content already exists, false otherwise.
      *
      * @since version 1.37.0
      */
-    public static function insertIntoFile($file, $insert)
+    public static function insertIntoFile($file, $insertLines, $insertBeforeLine = false)
     {
-        echo " - Check and update the {$file} file" . PHP_EOL;
-
         if (empty($file)) {
             echo "ERROR: Please specify a file." . PHP_EOL;
+            return false;
         } elseif (!file_exists($file)) {
             echo "ERROR: The file {$file} does not exist." . PHP_EOL;
+            return false; 
         } elseif (!is_writable($file)) {
             echo "ERROR: Please specify a writable file ({$file})" . PHP_EOL;
-        } elseif (empty($insert)) {
+            return false;
+        } elseif (empty($insertLines)) {
             echo "ERROR: Please specify an insert." . PHP_EOL;
-        } else {
-            $file_content = file_get_contents($file);
-
-            if (strpos($file_content, $insert) === false) {
-                $file_content .= PHP_EOL . $insert;
+            return false;
+        }
+    
+        $file_content = file_get_contents($file);
+    
+        // if the content doesn't already exist in the file, insert it in end of file
+        if ($insertBeforeLine === false) {
+            if (strpos($file_content, $insertLines) === false) {
+                echo " - Update {$file} file with this content: " . PHP_EOL . $insertLines . PHP_EOL;
+                $file_content .= PHP_EOL . $insertLines;
                 if (file_put_contents($file, $file_content) !== false) {
                     return true;
                 } else {
@@ -2894,10 +2973,47 @@ class EmundusHelperUpdate
                     return false;
                 }
             }
-            return true; // The content already exists.
+        } else {
+            if (strpos($file_content, $insertLines) === false && strpos($file_content, $insertBeforeLine) !== false) {
+                $buffer = array();
+    
+                $file_handle = fopen($file, 'r');
+                if ($file_handle === false) {
+                    echo "ERROR: Failed to open the file for reading." . PHP_EOL;
+                    return false;
+                }
+    
+                // Read the file line by line and write it to the buffer, inserting the new content when we've reached the line before which we want to insert
+                while (($line = fgets($file_handle)) !== false) {
+                    if (trim($line) === $insertBeforeLine) {
+                        $buffer[] = $insertLines . PHP_EOL;
+                    }
+                    $buffer[] = $line;
+                }
+                fclose($file_handle);
+    
+                // Open the file again for writing line by line
+                $file_handle = fopen($file, 'w');
+                if ($file_handle === false) {
+                    echo "ERROR: Failed to open the file for writing." . PHP_EOL;
+                    return false;
+                }
+                foreach ($buffer as $line) {
+                    fwrite($file_handle, $line);
+                }
+                fclose($file_handle);
+
+                echo " - Update {$file} file with this content: " . PHP_EOL . $insertLines . PHP_EOL;
+                return true;
+
+            } else {
+                echo " - {$file} file is already up to date or matching line not found" . PHP_EOL;
+                return true;
+            }
         }
 
-        return false;
+        echo " - {$file} file is already up to date" . PHP_EOL;
+        return true;
     }
 
 	public static function updateNewColors() {
@@ -3054,6 +3170,7 @@ class EmundusHelperUpdate
 				'border-radius-block' => '16px',
 				'label-color' => '#000000',
 				'label-margin-bottom' => '6px',
+				'field-margin-bottom' => '24px',
 				'label-size' => '16px',
 				'label-weight' => '500',
 				'height' => '40px',
@@ -3255,6 +3372,158 @@ class EmundusHelperUpdate
 		}
 		//
 
+		// Check if emundus event handler is enabled
+		$query->clear()
+			->select('extension_id')
+			->from($db->quoteName('#__extensions'))
+			->where($db->quoteName('element') . ' LIKE ' . $db->quote('custom_event_handler'));
+		$db->setQuery($query);
+		$custom_event_handler = $db->loadResult();
+
+		if(empty($custom_event_handler))
+		{
+			EmundusHelperUpdate::installExtension('PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE', 'custom_event_handler', '{"name":"PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE","type":"plugin","creationDate":"18 August 2021","author":"James Dean","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"james@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"1.22.1","description":"PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE_DESC","group":"","filename":"custom_event_handler"}', 'plugin', 1, 'emundus');
+		} else {
+			$query->clear()
+				->update($db->quoteName('#__extensions'))
+				->set($db->quoteName('enabled') . ' = 1')
+				->where($db->quoteName('extension_id') . ' = ' . $db->quote($custom_event_handler));
+			$db->setQuery($query);
+			$db->execute();
+		}
+		//
+
+		// Check if emundus send zip file to user is enabled and delete_file email is here
+		$query->clear()
+			->select('extension_id')
+			->from($db->quoteName('#__extensions'))
+			->where($db->quoteName('element') . ' LIKE ' . $db->quote('send_file_archive'));
+		$db->setQuery($query);
+		$send_file_archive = $db->loadResult();
+
+		if(empty($send_file_archive))
+		{
+			EmundusHelperUpdate::installExtension('Emundus - Send ZIP file to user.', 'send_file_archive', '{"name":"Emundus - Send ZIP file to user.","type":"plugin","creationDate":"19 July 2019","author":"eMundus","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"6.9.10","description":"This plugin sends a ZIP of the file when it is changed to a certain status or when it is deleted.","group":"","filename":"send_file_archive"}', 'plugin', 1, 'emundus', '{"delete_email":"delete_file"}');
+		} else {
+			$query->clear()
+				->update($db->quoteName('#__extensions'))
+				->set($db->quoteName('enabled') . ' = 1')
+				->where($db->quoteName('extension_id') . ' = ' . $db->quote($send_file_archive));
+			$db->setQuery($query);
+			$db->execute();
+		}
+
+		$query->clear()
+			->select('id')
+			->from($db->quoteName('#__emundus_setup_emails'))
+			->where($db->quoteName('lbl') . ' LIKE ' . $db->quote('delete_file'));
+		$db->setQuery($query);
+		$delete_file_email = $db->loadResult();
+
+		if(empty($delete_file_email))
+		{
+			$columns = [
+				$db->quoteName('lbl'),
+				$db->quoteName('subject'),
+				$db->quoteName('message'),
+				$db->quoteName('type'),
+				$db->quoteName('category'),
+			];
+			$values = [
+				$db->quote('delete_file'),
+				$db->quote('Application file deleted / Dossier supprimé'),
+				$db->quote('<p>Dear [NAME],</p>
+<p>Your application file <strong><em>[FNUM]</em></strong> has been deleted.</p>
+<p>A zip file containing the data deleted is attached to this email.</p>
+<hr />
+<p>Bonjour [NAME],</p>
+<p>Votre dossier de candidature <strong><em>[FNUM]</em></strong> vient d\'&ecirc;tre supprim&eacute;.</p>
+<p>Ci-joint, une archive des informations qui ont &eacute;t&eacute; supprim&eacute;es.</p>'),
+				$db->quote(1),
+				$db->quote('Système'),
+			];
+			$query->clear()
+				->insert($db->quoteName('#__emundus_setup_emails'))
+				->columns($columns)
+				->values(implode(',', $values));
+			$db->setQuery($query);
+			$db->execute();
+		}
+		//
+
+		// Check if dropfiles plugin is enabled
+		$query->clear()
+			->select('extension_id')
+			->from($db->quoteName('#__extensions'))
+			->where($db->quoteName('element') . ' LIKE ' . $db->quote('setup_category'))
+			->where($db->quoteName('folder') . ' LIKE ' . $db->quote('emundus'));
+		$db->setQuery($query);
+		$emundus_dropfiles_plugin = $db->loadResult();
+
+		if(empty($emundus_dropfiles_plugin))
+		{
+			EmundusHelperUpdate::installExtension('Emundus - Create new dropfiles category', 'setup_category', '{"name":"Emundus - Create new dropfiles category","type":"plugin","creationDate":"July 2020","author":"eMundus","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"6.9.10","description":"PLG_EMUNDUS_SETUP_CATEGORY_DESCRIPTION","group":"","filename":"setup_category"}', 'plugin', 1, 'emundus');
+		} else {
+			$query->clear()
+				->update($db->quoteName('#__extensions'))
+				->set($db->quoteName('enabled') . ' = 1')
+				->where($db->quoteName('extension_id') . ' = ' . $db->quote($emundus_dropfiles_plugin));
+			$db->setQuery($query);
+			$db->execute();
+		}
+		//
+
+		// Check all rights group parameter
+		$query->clear()
+			->select('id')
+			->from($db->quoteName('#__emundus_setup_groups'))
+			->where($db->quoteName('label') . ' LIKE ' . $db->quote('Tous les droits'));
+		$db->setQuery($query);
+		$all_rights_group = $db->loadResult();
+
+		if(!empty($all_rights_group))
+		{
+			EmundusHelperUpdate::updateComponentParameter('com_emundus', 'all_rights_group', $all_rights_group);
+		}
+		//
+
 		return true;
+	}
+
+	public static function updateComponentParameter($component,$key,$value,$old_value = null)
+	{
+		$update = true;
+		$result = ['status' => true, 'message' => ''];
+
+		$params = JComponentHelper::getParams($component);
+		if(!empty($old_value))
+		{
+			$current_value = $params->get($key);
+			if($current_value != $old_value)
+			{
+				$update = false;
+			}
+		}
+
+		if($update){
+			$params->set($key,$value);
+		}
+
+		$componentid = JComponentHelper::getComponent($component)->id;
+		$table = JTable::getInstance('extension');
+		$table->load($componentid);
+		$table->bind(array('params' => $params->toString()));
+
+		if (!$table->check()) {
+			$result['message'] = $table->getError();
+			$result['status'] = false;
+		}
+
+		if (!$table->store()) {
+			$result['message'] = $table->getError();
+			$result['status'] = false;
+		}
+
+		return $result;
 	}
 }

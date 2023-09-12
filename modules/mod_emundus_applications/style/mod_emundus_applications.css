@@ -413,7 +413,7 @@ a.btn.btn-success:not(.btn-xs) {
 }
 .mod_emundus_applications___content_app{
     box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
-    border-radius: var(--em-default-br-cards) !important;
+    border-radius: var(--em-applicant-br-cards) !important;
     padding: var(--p-32);
     background: var(--neutral-0);
 }
@@ -431,6 +431,10 @@ a.btn.btn-success:not(.btn-xs) {
 
 .mod_emundus_applications___content_app hr {
     margin: var(--m-16) 0;
+}
+
+.mod_emundus_applications___content_app span.em-applicant-default-font   {
+    word-break: break-word;
 }
 
 .mod_emundus_applications___circle{
@@ -480,7 +484,7 @@ a.btn.btn-success:not(.btn-xs) {
 .mod_emundus_applications__actions{
     flex-direction: column;
     box-shadow: 0 12px 17px rgba(5, 47, 55, 0.07), 0 5px 22px rgba(5, 47, 55, 0.06), 0 7px 8px rgba(5, 47, 55, 0.1);
-    border-radius: calc(var(--em-default-br-cards)/2);
+    border-radius: calc(var(--em-applicant-br-cards)/2);
     padding: var(--p-16);
     position: absolute;
     background: var(--neutral-0);
@@ -503,7 +507,7 @@ a.btn.btn-success:not(.btn-xs) {
 
 .mod_emundus_applications__actions a.em-red-500-color:hover {
     background: #EBECF0 !important;
-    border-radius: calc(var(--em-default-br-cards)/2) !important;
+    border-radius: calc(var(--em-applicant-br-cards)/2) !important;
     color: var(--red-500) !important;
     text-decoration: none;
 }

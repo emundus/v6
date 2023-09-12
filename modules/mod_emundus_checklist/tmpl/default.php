@@ -42,7 +42,7 @@ if($show_preliminary_documents && !empty($preliminary_documents)): ?>
         </div>
         <span id="mod_emundus_checklist___expand_icon" class="material-icons-outlined" style="transform: rotate(-90deg);">expand_more</span>
     </div>
-    <div id="mod_emundus_checklist___content" class="em-mt-24 mod_emundus_checklist___content_closed">
+    <div id="mod_emundus_checklist___content" class="em-mt-24">
         <?php foreach($preliminary_documents as $document): ?>
             <div class="em-flex-row em-mb-16 mod_emundus_campaign__details_file">
                 <span class="material-icons-outlined mod_emundus_campaign__details_file_icon">insert_drive_file</span>

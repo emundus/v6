@@ -617,6 +617,19 @@ Text::script('COM_EMUNDUS_EDIT_COMMENT_TITLE');
 Text::script('COM_EMUNDUS_FORM_BUILDER_DELETE_MODEL');
 Text::script('COM_EMUNDUS_FORM_PAGE_MODELS');
 Text::script('COM_EMUNDUS_FORM_MY_FORMS');
+Text::script('COM_EMUNDUS_ONBOARD_PROGRAM_ADDUSER');
+Text::script('COM_EMUNDUS_ACTIONS_EDIT_USER');
+Text::script('COM_EMUNDUS_USERS_ERROR_PLEASE_COMPLETE');
+Text::script('COM_EMUNDUS_USERS_SHOW_USER_RIGHTS');
+Text::script('COM_EMUNDUS_MAILS_SEND_EMAIL');
+Text::script('COM_EMUNDUS_USERS_CREATE_GROUP');
+Text::script('COM_EMUNDUS_USERS_AFFECT_USER');
+Text::script('COM_EMUNDUS_USERS_AFFECT_GROUP_ERROR');
+Text::script('COM_EMUNDUS_ERROR_OCCURED');
+Text::script('COM_EMUNDUS_USERS_CREATE_USER_CONFIRM');
+Text::script('COM_EMUNDUS_USERS_EDIT_USER_CONFIRM');
+Text::script('COM_EMUNDUS_USERS_AFFECT_USER_CONFIRM');
+Text::script('COM_EMUNDUS_MAIL_SEND_NEW');
 
 // PASSWORD CHARACTER VALIDATION
 Text::script('COM_EMUNDUS_PASSWORD_WRONG_FORMAT_TITLE');
@@ -715,7 +728,6 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
         JHTML::script('media/com_emundus/lib/selectize/dist/js/standalone/selectize.js' );
         JHTML::script('media/com_emundus/lib/sumoselect/jquery.sumoselect.min.js');
 
-        JHtml::styleSheet('media/com_emundus/css/reset.css');
         JHtml::styleSheet('media/jui/css/chosen.css');
         JHtml::styleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
         JHtml::styleSheet('media/com_emundus/css/emundus_files.css');
@@ -767,7 +779,7 @@ elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller',
 {
     $controller->execute($task);
 }
-elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign') && $task != 'passrequest' && $task != 'getusername')
+elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign') && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity')
 {
     JPluginHelper::importPlugin('emundus', 'custom_event_handler');
     $app->triggerEvent('callEventHandler', ['onAccessDenied', []]);

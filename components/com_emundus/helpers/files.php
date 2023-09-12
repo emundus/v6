@@ -1146,7 +1146,7 @@ class EmundusHelperFiles
         // Quick filter
        $filters = '<div id="filters">
                  <p>'.JText::_('COM_EMUNDUS_FILTERS_RAPID_SEARCH').'</p>
-                    <div id="quick" class="form-group">
+                    <div id="quick" class="form-group flex items-center gap-2">
                         <input type="text" id="input-tags" class="input-tags demo-default" value="'.$cs.'" placeholder="'.JText::_('COM_EMUNDUS_ACTIONS_SEARCH').' ...">
                        <input value="&#xf002" type="button" class="btn btn-sm btn-info" id="search" style="font-family: \'FontAwesome\';" title="'.JText::_('COM_EMUNDUS_ACTIONS_SEARCH_BTN').'"/>'.
 
@@ -1245,7 +1245,7 @@ class EmundusHelperFiles
 
             $profiles = $h_files->getApplicants();
             foreach ($profiles as $prof) {
-                $profile .= '<option value="'.$prof->id.'"';
+                $profile .= '<option title="' . $prof->label . '" value="' . $prof->id . '"';
                 if (!empty($current_profile) && (in_array($prof->id, $current_profile) || $prof->id == $current_profile)) {
 	                $profile .= ' selected="true"';
                 }
@@ -1271,8 +1271,7 @@ class EmundusHelperFiles
             $profile .= ' <select class="testSelAll em-filt-select" id="select_oprofiles" multiple="multiple" name="o_profiles" '.($hidden ? 'style="height: 100%;visibility:hidden;max-height:0px;width:0px;" >' : 'style="height: 100%;">');
 
             foreach ($profiles as $prof) {
-                $profile .= '<option value="'.$prof->id.'"';
-                $profile .= '>'.$prof->label.'</option>';
+                $profile .= '<option title="' . $prof->label . '" value="'.$prof->id.'" >'.$prof->label.'</option>';
             }
             $profile .= '</select>';
 
@@ -1303,7 +1302,7 @@ class EmundusHelperFiles
 
             foreach ($profile_users as $profu) {
                 if (!$prefilter || ($prefilter && in_array($profu->id, $params['profile_users']))) {
-                    $profile_user .= '<option value="' . $profu->id . '"';
+                    $profile_user .= '<option title="' . $profu->label . '" value="' . $profu->id . '"';
                     if ($current_user_profile == $profu->id)
                         $profile_user .= ' selected="true"';
                     $profile_user .= '>' . $profu->label . '</option>';
@@ -1334,7 +1333,7 @@ class EmundusHelperFiles
 
             $evaluators = $h_files->getEvaluators();
             foreach ($evaluators as $evaluator) {
-                $eval .= '<option value="'.$evaluator->id.'"';
+                $eval .= '<option title="' . $evaluator->name . '" value="'.$evaluator->id.'"';
                 if ($current_eval == $evaluator->id) {
 	                $eval .= ' selected="true"';
                 }
@@ -1366,7 +1365,7 @@ class EmundusHelperFiles
 
             $groups = $h_files->getGroups();
             foreach ($groups as $group) {
-                $group_eval .= '<option value="'.$group->id.'"';
+                $group_eval .= '<option title="' . $group->label . '" value="'.$group->id.'"';
                 if ($current_group_eval == $group->id) {
 	                $group_eval .= ' selected="true"';
                 }
@@ -1403,7 +1402,7 @@ class EmundusHelperFiles
             $groupe = "";
             for ($i = 0; $i < count($final_gradeList); $i++) {
                 $val = substr($p_grade[$i], 1, 1);
-                $final_grade .= '<option value="'.$val.'"';
+                $final_grade .= '<option title="' . $final_gradeList[$i] . '" value="'.$val.'"';
                 if ($val == $current_finalgrade) {
 	                $final_grade .= ' selected="true"';
                 }
@@ -1434,7 +1433,7 @@ class EmundusHelperFiles
 
 	        $missing_docList = $h_files->getMissing_doc();
             foreach ($missing_docList as $md) {
-                $missing_doc .= '<option value="'.$md->attachment_id.'"';
+                $missing_doc .= '<option title="' . $md->value . '"  value="'.$md->attachment_id.'"';
                 if ($miss_doc == $md->attachment_id) {
 	                $missing_doc .= ' selected="true"';
                 }
@@ -1530,7 +1529,7 @@ class EmundusHelperFiles
 
 	        $campaignList = $h_files->getCampaigns();
             foreach ($campaignList as $c) {
-                $campaign .= '<option value="'.$c->id.'"';
+                $campaign .= '<option title="' . $c->label.' - '.$c->year . '" value="'.$c->id.'"';
                 if (!empty($current_campaign) && in_array($c->id, $current_campaign)) {
 	                $campaign .= ' selected="true"';
                 }
@@ -1561,7 +1560,7 @@ class EmundusHelperFiles
 
 	        $schoolyearList = $h_files->getSchoolyears();
             foreach ($schoolyearList as $key => $value) {
-                $schoolyear .= '<option value="'.$value->schoolyear.'"';
+                $schoolyear .= '<option title="' . $value->schoolyear . '" value="'.$value->schoolyear.'"';
                 if (!empty($current_schoolyear) && in_array($value->schoolyear, $current_schoolyear)) {
 	                $schoolyear .= ' selected="true"';
                 }
@@ -1590,7 +1589,7 @@ class EmundusHelperFiles
 
 	        $programmeList = $h_files->getProgrammes($params['programme']);
             foreach ($programmeList as $p) {
-                $programme .= '<option value="'.$p->code.'"';
+                $programme .= '<option title="' . $p->label . ' - ' . $p->code . '" value="'.$p->code.'"';
                 if (!empty($current_programme) && in_array($p->code, $current_programme)){
                     $programme .= ' selected="true"';
                     $program_selected = true;
@@ -1630,7 +1629,7 @@ class EmundusHelperFiles
             $status .= '<select '.(!$hidden ? 'class="testSelAll em-filt-select" ' : '').' id="select_multiple_status" name="status" multiple="multiple" '.($hidden ? 'style="height: 100%;visibility:hidden;max-height:0px;width:0px;" >' : 'style="height: 100%;">');
 
             foreach ($statusList as $p) {
-                $status .= '<option value="'.$p->step.'"';
+                $status .= '<option title="' . $p->value . '" value="'.$p->step.'"';
                 if (!empty($current_status) && in_array($p->step, $current_status)) {
 	                $status .= ' selected="true"';
                 }
@@ -1711,7 +1710,7 @@ class EmundusHelperFiles
 
 	        foreach ($tagList as $p) {
 	            if (empty($not_in) || !in_array($p['id'], $not_in)) {
-			        $tag .= '<option value="'.$p['id'].'"';
+			        $tag .= '<option title="' . $p['label'] . '"  value="'.$p['id'].'"';
 			        if (!empty($current_tag) && in_array($p['id'], (array) $current_tag)) {
 				        $tag .= ' selected="true"';
 			        }
@@ -1741,7 +1740,7 @@ class EmundusHelperFiles
 
 		    $groupList = $m_files->getUserAssocGroups();
 		    foreach ($groupList as $p) {
-			    $group_assoc .= '<option value="'.$p['id'].'"';
+			    $group_assoc .= '<option title="' . $p['label'] . '" value="'.$p['id'].'"';
 			    if (!empty($current_group_assoc) && in_array($p['id'], (array)$current_group_assoc)) {
 				    $group_assoc .= ' selected="true"';
 			    }
@@ -1877,7 +1876,7 @@ class EmundusHelperFiles
 
 	        $groupList = $m_files->getAllGroups();
             foreach ($groupList as $p) {
-                $group .= '<option value="'.$p['id'].'"';
+                $group .= '<option title="' . $p['label'] . '" value="'.$p['id'].'"';
                 if (!empty($current_group) && in_array($p['id'], $current_group)) {
 	                $group .= ' selected="true"';
                 }
@@ -2875,16 +2874,17 @@ class EmundusHelperFiles
                     ->values(implode(',', $db->quote(array_values($params))));
 
                 $db->setQuery($query);
-                $db->execute();
-                return array('id' => $db->insertid(), 'name' => $params['name']);
+                $inserted = $db->execute();
+
+				if ($inserted) {
+					return array('id' => $db->insertid(), 'name' => $params['name']);
+				}
             } catch (Exception $e) {
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-                return false;
             }
         }
-        else {
-            return false;
-        }
+
+		return false;
     }
 
     // delete pdf filter
@@ -3703,7 +3703,7 @@ class EmundusHelperFiles
                         continue;
                     }
 
-                    if (!in_array('all', $filter['value']) && (!empty($filter['value']) || $filter['value'] == '0')) {
+                    if (!in_array('all', $filter['value'], true) && (!empty($filter['value']) || $filter['value'] == '0')) {
                         $filter_id = str_replace(['filter-', 'default-filter-'], '', $filter['id']);
 
                         if (is_numeric($filter_id)) {

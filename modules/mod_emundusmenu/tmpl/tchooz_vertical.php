@@ -530,12 +530,12 @@ defined('_JEXEC') or die;
             }
             if(window.innerWidth >= 1280) {
                 if(document.querySelector("#g-footer")) {
-                    document.querySelector("#g-footer").style.paddingLeft = "300px";
+                    document.querySelector("#g-footer").style.paddingLeft = "280px";
                     if(document.querySelector("#footer-rgpd")) {
-                        document.querySelector("#footer-rgpd").style.paddingLeft = "300px";
+                        document.querySelector("#footer-rgpd").style.paddingLeft = "280px";
                     }
                 }
-                document.querySelector("#g-container-main").style.paddingLeft = "180px";
+                document.querySelector("#g-container-main").style.paddingLeft = "280px";
                 document.querySelector("#header-a").style.opacity = "1";
             }
             setTimeout(() =>{
@@ -563,12 +563,12 @@ defined('_JEXEC') or die;
             }
             if(window.innerWidth >= 1280) {
                 if(document.querySelector("#g-footer")) {
-                    document.querySelector("#g-footer").style.paddingLeft = "300px";
+                    document.querySelector("#g-footer").style.paddingLeft = "280px";
                     if(document.querySelector("#footer-rgpd")) {
-                        document.querySelector("#footer-rgpd").style.paddingLeft = "300px";
+                        document.querySelector("#footer-rgpd").style.paddingLeft = "280px";
                     }
                 }
-                document.querySelector("#g-container-main").style.paddingLeft = "180px";
+                document.querySelector("#g-container-main").style.paddingLeft = "280px";
                 document.querySelector("#header-a").style.opacity = "1";
             }
             setTimeout(() =>{
@@ -603,7 +603,7 @@ defined('_JEXEC') or die;
             }
 
             if(window.innerWidth >= 1280) {
-                document.querySelector("#g-container-main").style.paddingLeft = "0";
+                document.querySelector("#g-container-main").style.paddingLeft = "80px";
                 if(document.querySelector("#g-footer")) {
                     document.querySelector("#g-footer").style.paddingLeft = "80px";
                     if(document.querySelector("#footer-rgpd")) {

@@ -182,10 +182,17 @@ export default {
 .view-form #g-container-main .g-container,
 .view-settings #g-container-main .g-container {
   width: auto;
-  left: 38px;
   position: relative;
-  padding-left: 5%;
-  padding-right: 5%;
+}
+
+.view-campaigns.no-layout #g-container-main,
+.view-campaigns.layout-addnextcampaign #g-container-main,
+.view-campaigns.layout-add #g-container-main,
+.view-emails.layout-add #g-container-main,
+.view-emails.no-layout #g-container-main,
+.view-form #g-container-main,
+.view-settings #g-container-main {
+  padding-left: 80px;
 }
 
 </style>

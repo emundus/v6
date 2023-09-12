@@ -386,6 +386,19 @@ async function checkIfSomeoneIsEditing(fnum) {
     }
 }
 
+function hideItems(selectors){
+    if (selectors.length > 0) {
+        selectors.forEach(function (selector) {
+            const selectedEl = document.querySelector(selector);
+
+            if (selectedEl) {
+                selectedEl.classList.add('em-hide');
+                selectedEl.style.display = 'none';
+            }
+        });
+    }
+}
+
 function openFiles(fnum, page = 0, vue = false) {
     checkIfSomeoneIsEditing(fnum.fnum);
 
@@ -3736,8 +3749,10 @@ $(document).ready(function() {
                                 });
                             }
 
-                            $('#filt_save_pdf').on('change', function() {
-                                var model = $('#filt_save_pdf').val();
+                            let filtSavePdf = $('#filt_save_pdf');
+
+                            filtSavePdf.on('change', async function() {
+                                var model = filtSavePdf.val();
 
                                 $('#model-err-pdf').remove();
                                 $('.modal-header').before('<div id="loadingimg-campaign"><img src="'+loading+'" alt="loading"/></div>');
@@ -3758,125 +3773,144 @@ $(document).ready(function() {
                                     // show #admission-div
                                     $('#adm-exists').show();
 
-                                    $.ajax({
-                                        type: 'post',
-                                        url: 'index.php?option=com_emundus&controller=files&task=getExportPdfFilterById',
-                                        data: {
-                                            id: model,
-                                        },
-                                        dataType: 'JSON',
-                                        success: function(result) {
-                                            if(result.status) {
-                                                var constraints = result.filter.constraints;
-                                                var json = JSON.parse(constraints);
-                                                var progCode = json.pdffilter.code;
-                                                var campCode = json.pdffilter.camp;
+                                    let result = {status: false};
+                                    let programSelector = $('#em-export-prg');
+                                    const selectedProgram = programSelector.val();
 
-                                                /// case 1 :: one program
-                                                if($("#em-export-prg option").length == 2) {
-                                                    // if only program is preselected --> check the camp
-                                                    if($("#em-export-camp option[value='" + campCode + "']").length > 0 === true) {
-                                                        var elements = json.pdffilter.elements;
-                                                        var checkAllGroups = json.pdffilter.checkAllGroups;
-                                                        var checkAllTables = json.pdffilter.checkAllTables;
-                                                        var attachments = json.pdffilter.attachments;
+                                    if (selectedProgram == 0) {
+                                        // select id="filt_save_pdf" and add sibling saying to select a program
+                                        programSelector.after('<span id="model-err-pdf" class="error em-red-500-color">Please select a program</span>');
+                                        filtSavePdf.val(0);
+                                        filtSavePdf.trigger('chosen:updated');
+                                        filtSavePdf.trigger('liszt:updated');
+
+                                        setTimeout(() => {
+                                            const errorTxt = document.getElementById('model-err-pdf');
+
+                                            if (errorTxt) {
+                                                errorTxt.remove();
+                                            }
+                                        }, 5000);
+
+                                        return;
+                                    }
+
+                                    result = await getExportPDFModel(model);
+                                    if (result.status) {
+                                        var constraints = result.filter.constraints;
+                                        var json = JSON.parse(constraints);
+                                        var progCode = json.pdffilter.code;
+                                        var campCode = json.pdffilter.camp;
+
+                                        /// case 1 :: one program
+                                        if($("#em-export-prg option").length == 2) {
+                                            // if only program is preselected --> check the camp
+                                            if($("#em-export-camp option[value='" + campCode + "']").length > 0 === true) {
+                                                var elements = json.pdffilter.elements;
+                                                var checkAllGroups = json.pdffilter.checkAllGroups;
+                                                var checkAllTables = json.pdffilter.checkAllTables;
+                                                var attachments = json.pdffilter.attachments;
 
 
-                                                        let emExportCamp = $('#em-export-camp');
-                                                        emExportCamp.val(campCode);
-                                                        emExportCamp.trigger("chosen:updated");
-                                                        emExportCamp.trigger("change");
+                                                let emExportCamp = $('#em-export-camp');
+                                                emExportCamp.val(campCode);
+                                                emExportCamp.trigger("chosen:updated");
+                                                emExportCamp.trigger("change");
 
-                                                        if (elements[0] !== "") {
-                                                            $.ajax({
-                                                                type: 'post',
-                                                                url: 'index.php?option=com_emundus&controller=files&task=getfabrikdatabyelements',
-                                                                dataType: 'JSON',
-                                                                data: {elts: elements.toString()},
-                                                                async: false,
-                                                                success: function (returnData) {
-                                                                    // build profile(s)
-                                                                    var profiles = returnData.fabrik_data.profiles;
-                                                                    profiles.forEach((profile) => {
-                                                                        checkElement('#felts'+profile.id).then((selector) => {
-                                                                            $('#' + selector.id).show();        // show felts
-                                                                           removeLoader();
+                                                if (elements[0] !== "") {
+                                                    $.ajax({
+                                                        type: 'post',
+                                                        url: 'index.php?option=com_emundus&controller=files&task=getfabrikdatabyelements',
+                                                        dataType: 'JSON',
+                                                        data: {elts: elements.toString()},
+                                                        async: false,
+                                                        success: function (returnData) {
+                                                            // build profile(s)
+                                                            var profiles = returnData.fabrik_data.profiles;
+                                                            profiles.forEach((profile) => {
+                                                                checkElement('#felts'+profile.id).then((selector) => {
+                                                                    $('#' + selector.id).show();        // show felts
+                                                                    removeLoader();
 
-                                                                            // uncheck all checkbox of each felts
-                                                                            if($('#form-exists input:checked').length > 0) {
-                                                                                $('#form-exists input:checked').prop('checked', false);
-                                                                            }
+                                                                    // uncheck all checkbox of each felts
+                                                                    if($('#form-exists input:checked').length > 0) {
+                                                                        $('#form-exists input:checked').prop('checked', false);
+                                                                    }
 
-                                                                            // render tables
-                                                                            if (checkAllTables !== null || checkAllTables !== undefined || checkAllTables[0] !== "") {
-                                                                                checkAllTables.forEach(tbl => {
-                                                                                    $('#emundus_checkall_tbl_' + tbl).attr('checked', true);
-                                                                                })
-                                                                            }
+                                                                    // render tables
+                                                                    if (checkAllTables !== null || checkAllTables !== undefined || checkAllTables[0] !== "") {
+                                                                        checkAllTables.forEach(tbl => {
+                                                                            $('#emundus_checkall_tbl_' + tbl).attr('checked', true);
+                                                                        })
+                                                                    }
 
-                                                                            if (checkAllGroups !== null || checkAllGroups !== undefined || checkAllGroups[0] !== "") {
-                                                                                checkAllGroups.forEach(grp => {
-                                                                                    $('#emundus_checkall_grp_' + grp).attr('checked', true);
-                                                                                })
-                                                                            }
+                                                                    if (checkAllGroups !== null || checkAllGroups !== undefined || checkAllGroups[0] !== "") {
+                                                                        checkAllGroups.forEach(grp => {
+                                                                            $('#emundus_checkall_grp_' + grp).attr('checked', true);
+                                                                        })
+                                                                    }
 
-                                                                            if (elements !== null || elements !== undefined || elements[0] !== "") {
-                                                                                elements.forEach(elt => {
-                                                                                    $('#emundus_elm_' + elt).attr('checked', true);
-                                                                                })
-                                                                            }
-                                                                        });
-                                                                    })
-                                                                }
+                                                                    if (elements !== null || elements !== undefined || elements[0] !== "") {
+                                                                        elements.forEach(elt => {
+                                                                            $('#emundus_elm_' + elt).attr('checked', true);
+                                                                        })
+                                                                    }
+                                                                });
                                                             })
                                                         }
-
-                                                        /// render attachments
-                                                        checkElement('#aelts-' + progCode + campCode).then((selector) => {
-                                                            /// show #aelts
-                                                            $('#' + selector.id).show();
-
-                                                            /// check to selected elements
-                                                            attachments.forEach((attachmentToCheck) => {
-                                                                $('[id="' + attachmentToCheck + '"]').prop('checked', true);
-                                                            });
-                                                        });
-
-                                                        if (json.pdffilter.assessment === '1') {
-                                                            document.getElementById('em-ex-assessment').checked = true;
-                                                        } else {
-                                                            document.getElementById('em-ex-assessment').checked = false;
-                                                        }
-
-                                                        if (json.pdffilter.decision === '1') {
-                                                            document.getElementById('em-ex-decision').checked = true;
-                                                        } else {
-                                                            document.getElementById('em-ex-assessment').checked = false;
-                                                        }
-
-                                                        if (json.pdffilter.admission === '1') {
-                                                            document.getElementById('em-ex-admission').checked = true;
-                                                        } else {
-                                                            document.getElementById('em-ex-assessment').checked = false;
-                                                        }
-                                                    } else {
-                                                        $('#loadingimg-campaign').remove();
-                                                        $('#filt_save_pdf_chosen').append('<div id="model-err-pdf" style="color: red">' + Joomla.JText._('COM_EMUNDUS_MODEL_ERR') + '</div>');
-                                                    }
+                                                    })
                                                 }
-                                                /// case 2 :: many programs
-                                                else if($("#em-export-prg option").length > 2)
-                                                {
-                                                    if ($("#em-export-prg option[value='" + progCode + "']").length > 0 === true) {
-                                                        setModel(json);      /// if prog is found --> keep going
-                                                    } else {
-                                                        $('#loadingimg-campaign').remove();
-                                                        $('#filt_save_pdf_chosen').append('<div id="model-err-pdf" style="color: red">' + Joomla.JText._('COM_EMUNDUS_MODEL_ERR') + '</div>');
-                                                    }
+
+                                                /// render attachments
+                                                checkElement('#aelts-' + progCode + campCode).then((selector) => {
+                                                    /// show #aelts
+                                                    $('#' + selector.id).show();
+
+                                                    /// check to selected elements
+                                                    attachments.forEach((attachmentToCheck) => {
+                                                        $('[id="' + attachmentToCheck + '"]').prop('checked', true);
+                                                    });
+                                                });
+
+                                                if (json.pdffilter.assessment === '1') {
+                                                    document.getElementById('em-ex-assessment').checked = true;
+                                                } else {
+                                                    document.getElementById('em-ex-assessment').checked = false;
                                                 }
+
+                                                if (json.pdffilter.decision === '1') {
+                                                    document.getElementById('em-ex-decision').checked = true;
+                                                } else {
+                                                    document.getElementById('em-ex-assessment').checked = false;
+                                                }
+
+                                                if (json.pdffilter.admission === '1') {
+                                                    document.getElementById('em-ex-admission').checked = true;
+                                                } else {
+                                                    document.getElementById('em-ex-assessment').checked = false;
+                                                }
+
+                                                if (json.pdffilter.checkAllAttachments === '1') {
+                                                    document.getElementById('em-ex-attachment').checked = true;
+                                                } else {
+                                                    document.getElementById('em-ex-attachment').checked = false;
+                                                }
+                                            } else {
+                                                $('#loadingimg-campaign').remove();
+                                                $('#filt_save_pdf_chosen').append('<div id="model-err-pdf" style="color: red">' + Joomla.JText._('COM_EMUNDUS_MODEL_ERR') + '</div>');
                                             }
-                                        }, error: function(jqXHR) {console.log(jqXHR.responseText);}
-                                    });
+                                        }
+                                        /// case 2 :: many programs
+                                        else if($("#em-export-prg option").length > 2)
+                                        {
+                                            if ($("#em-export-prg option[value='" + progCode + "']").length > 0 === true) {
+                                                setModel(json);      /// if prog is found --> keep going
+                                            } else {
+                                                $('#loadingimg-campaign').remove();
+                                                $('#filt_save_pdf_chosen').append('<div id="model-err-pdf" style="color: red">' + Joomla.JText._('COM_EMUNDUS_MODEL_ERR') + '</div>');
+                                            }
+                                        }
+                                    }
                                 } else {
                                     // set "unselect" program
                                     $('#loadingimg-campaign').remove();
@@ -4161,7 +4195,7 @@ $(document).ready(function() {
 
 
                             /// save pdf filter
-                            $('#savePDFfilter').on("click", function() {
+                            $('#savePDFfilter').on('click', function() {
                                 /// find all childs of #felts which has the name 'emundus_elm'
 
                                 var code = $('#em-export-prg').val();
@@ -4230,8 +4264,7 @@ $(document).ready(function() {
                                         var id = $(this).attr('id').split('emundus_grp_')[1];
                                         groups.push(id);
                                     }
-                                })
-
+                                });
 
 
                                 var headers = [];
@@ -4244,14 +4277,14 @@ $(document).ready(function() {
                                     headersArray.forEach(header => {
                                         if (header.selected == true)
                                             headers.push(header.value);
-                                    })
+                                    });
                                 }
 
                                 // save all attachments id
                                 var attachments = [];
                                 $('#aelts input:checked').each(function() {
                                     attachments.push($(this).val());
-                                })
+                                });
 
                                 var is_assessment = 0;
                                 var is_decision = 0;
@@ -4279,6 +4312,7 @@ $(document).ready(function() {
                                     'checkAllGroups': checkAllGroups.length > 0 ? checkAllGroups : [""],
                                     'headers': headers.length > 0 ? headers : [""],
 
+                                    'checkAllAttachments': $('#em-ex-attachment').is(":checked") ? 1 : 0,
                                     'attachments': attachments.length > 0 ? attachments : [""],
                                     'assessment': is_assessment,
                                     'admission': is_admission,
@@ -5093,12 +5127,12 @@ $(document).ready(function() {
                     reloadActions('files', undefined, false);
 
                 case 'em-mini-file':
+                    hideItems(['#em-appli-menu', '#em-synthesis', '#em-assoc-files', '.em-hide', '#em-last-open']);
+
                     $.ajaxQ.abortAll();
                     $('#em-appli-block').remove();
                     $('.em-close-minimise').remove();
                     $('.em-open-files').remove();
-                    $('.em-hide').hide();
-                    $('#em-last-open').show();
                     $('#em-last-open .list-group .list-group-item').removeClass('active');
                     $('#em-files-filters').show();
                     $('.em-check:checked').prop('checked', false);
@@ -6829,6 +6863,29 @@ function createScrollbarForElement(element, id) {
         new_scrollbar.scrollLeft = element.scrollLeft;
     };
     element.parentNode.insertBefore(new_scrollbar, element);
+}
+
+async function getExportPDFModel(model) {
+    if (model) {
+        return fetch('index.php?option=com_emundus&controller=files&task=getExportPdfFilterById&id=' + model)
+            .then((response) => {
+                if (response.ok) {
+                    return response.json();
+                }
+            }).then((result) => {
+                return result;
+            }).catch((error) => {
+                return {
+                    status: false,
+                    msg: error
+                }
+            });
+    } else {
+        return {
+            status: false,
+            msg: 'Missing parameters'
+        }
+    }
 }
 
 window.addEventListener('emundus-start-apply-filters', () => {

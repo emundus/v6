@@ -124,17 +124,11 @@ p,
 
 .view-form.com_fabrik:not(.applicant-form):not(.mon-profil):not(.view-registration) #g-container-main .g-container {
   width: auto;
-  left: 38px;
   position: relative;
 }
 
-.view-form.com_fabrik:not(.applicant-form):not(.view-registration) #g-container-main .g-container {
-  padding-left: 5%;
-  padding-right: 5%;
-}
-
 .g-container.g-flushed {
-  width: calc(100% - 75px) !important;
+  //width: calc(100% - 75px) !important;
   margin: unset;
 }
 
@@ -468,7 +462,7 @@ div#frame.outline {
 }
 
 #g-navigation {
-  width: 100vw;
+  width: 100%;
   position: sticky;
   max-height: 100px;
   height: 72px;
@@ -513,11 +507,10 @@ footer#g-footer {
   background-color: var(--neutral-0);
   border-top: 1px solid #E3E5E8;
   bottom: 0;
-  width: 100vw;
+  width: 100%;
   position: relative;
   z-index: 1;
-  padding: 20px;
-  //margin-top: 75px !important;
+  padding: 20px !important;
   transition: all 0.3s ease-in-out;
 }
 
@@ -1531,10 +1524,14 @@ footer#g-footer > .g-container {
   text-decoration: none;
 }
 
+.view-list:not(.g-back-office-emundus-tableau) #g-container-main {
+  padding-left: 80px;
+}
+
 .view-list:not(.g-back-office-emundus-tableau) #g-container-main .g-container {
   width: auto;
-  left: 38px;
   position: relative;
+  width: calc(100% - 76px);
 }
 
 .view-list, .g-back-office-emundus-tableau {
@@ -2616,9 +2613,9 @@ label[for='clear-search'] img:hover:focus {
 #filters #quick.form-group input#search.btn.btn-sm.btn-info {
   background-color: transparent;
   color: var(--neutral-600);
-  border: none;
-  font-size: 19px !important;
-  padding-right: 3px !important;
+  height: auto;
+  padding: 0 !important;
+  border-radius: 0 !important;
 
   &:hover,
   &:active,
@@ -2907,9 +2904,13 @@ ul.unstyled.em-linkForgot li a {
   font-size: 24px !important;
 }
 
+.g-back-office-emundus-tableau #g-container-main {
+  padding-left: 80px;
+}
+
 .g-back-office-emundus-tableau #g-container-main .g-container {
   position: relative;
-  left: 75px;
+  width: 100%;
 }
 
 /* EMAILS */
@@ -4171,20 +4172,16 @@ screen and (max-height: 769px) {
   }
 }
 
+@media all and (max-width: 416px) {
+
+  .view-checklist #attachment_list .col-md-12:last-of-type .justify-between {
+        flex-direction: column-reverse;
+        align-items: center;
+        gap: 16px;
+    }
+}
+
 @media all and (max-width: 479px) {
-
-  .view-checklist #attachment_list .col-md-12 {
-    &:last-of-type .justify-between {
-      justify-content: center;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    &:last-of-type .justify-between div:first-of-type {
-      align-self: flex-start;
-      margin-left: 20px;
-    }
-  }
 
   .view-checklist table form .dz-default.dz-message {
     padding-right: 8px !important;
@@ -5278,10 +5275,6 @@ screen and (max-height: 769px) {
   #g-utility #drawer .moduletable {
     width: 100% !important;
     margin-left: 0 !important;
-  }
-
-  .gantry:not(.files-board)  #g-container-main {
-    padding: 0 20px;
   }
 
   /* GENERAL */

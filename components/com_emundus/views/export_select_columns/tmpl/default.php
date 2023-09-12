@@ -78,7 +78,7 @@ if (is_array($this->elements) && count($this->elements) > 0) {
 
     } else {
         echo '<div class="em-flex-row em-mb-16"><input type="checkbox" id="emundus_checkall' . $this->elements[0]->profil_id . '" class="emundusall" data-check=".emunduspage"/>';
-        echo '<label for="emundus_checkall" style="margin-bottom: 0">'.JText::_('COM_EMUNDUS_SELECT_ALL').'</label></div>';
+        echo '<label for="emundus_checkall' . $this->elements[0]->profil_id . '" style="margin-bottom: 0">'.JText::_('COM_EMUNDUS_SELECT_ALL').'</label></div>';
         echo '<div id="emundus_elements">';
         $tbl_tmp='';
         $grp_tmp='';

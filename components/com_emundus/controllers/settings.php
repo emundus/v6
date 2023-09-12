@@ -233,21 +233,20 @@ class EmundusControllersettings extends JControllerLegacy {
     }
 
 	public function publisharticle() {
+        $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 		$user = JFactory::getUser();
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$result = 0;
-			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-		} else {
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$jinput = JFactory::getApplication()->input;
 
 			$publish = $jinput->getInt('publish', 1);
-			$article_id = $jinput->getString('article_id',0);
-			$article_alias = $jinput->getString('article_alias','');
+			$article_id = $jinput->getString('article_id', 0);
+			$article_alias = $jinput->getString('article_alias', '');
 
-			$changeresponse = $this->m_settings->publishArticle($publish,$article_id,$article_alias);
+            $response = $this->m_settings->publishArticle($publish, $article_id, $article_alias);
 		}
-		echo json_encode((object)$changeresponse);
+
+		echo json_encode((object)$response);
 		exit;
 	}
 

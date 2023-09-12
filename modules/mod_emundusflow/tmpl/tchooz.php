@@ -54,6 +54,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
 
     .em-programme-tag {
         overflow: visible;
+        white-space: initial;
     }
 
     @media all and (max-width: 767px) {
@@ -66,6 +67,12 @@ $now = $dateTime->format('Y-m-d H:i:s');
         }
         .mod_emundus_flow___infos div:first-child{
             margin-bottom: 6px;
+        }
+
+        .mod_emundus_flow___buttons {
+            flex-direction: column;
+            align-items: flex-start;
+            row-gap: 8px;
         }
     }
 </style>
@@ -93,13 +100,13 @@ $now = $dateTime->format('Y-m-d H:i:s');
             }
             ?>
         </div>
-        <div class="flex items-center justify-end">
+        <div class="flex items-center justify-end mod_emundus_flow___buttons">
             <?php if ($show_back_button == 1) : ?>
             <a href="<?php echo $home_link ?>" title="<?php echo strip_tags(JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT')) ?>">
                 <button class="btn btn-primary mr-4"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
             </a>
             <?php endif; ?>
-            <a href="/component/emundus/?task=pdf&amp;fnum=<?= $current_application->fnum ?>" target="_blank" title="<?php echo JText::_('PRINT') ?>">
+            <a href="<?php echo JURI::base() ?>component/emundus/?task=pdf&amp;fnum=<?= $current_application->fnum ?>" target="_blank" title="<?php echo JText::_('PRINT') ?>">
                 <button class="btn-tertiary mod_emundus_flow___print">
                     <span class="material-icons-outlined" style="font-size: 19px">print</span>
                     <p><?php echo JText::_('PRINT') ?></p>
@@ -117,7 +124,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
         <?php endif; ?>
 
         <?php if ($show_programme==1) : ?>
-        <div class="flex items-center">
+        <div class="flex items-center em-flex-wrap">
             <p class="em-text-neutral-600 mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_PROGRAMME'); ?> : </p>
             <p class="em-programme-tag" style="color: <?php echo $color ?>;margin: unset;padding: 0">
                 <?php  echo $current_application->prog_label; ?>

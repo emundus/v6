@@ -28,6 +28,10 @@ JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TITLE');
 JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TEXT');
 JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CONFIRM');
 JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CANCEL');
+JText::script('PLEASE_CHECK_THIS_FIELD');
+
+JText::script('COM_EMUNDUS_FABRIK_NEW_FILE');
+JText::script('COM_EMUNDUS_FABRIK_NEW_FILE_DESC');
 
 if ($pageClass !== '') :
 	echo '<div class="' . $pageClass . '">';
@@ -46,10 +50,10 @@ endif;
 		<?php echo $form->error; ?>
     </div>
     <div class="mb-8">
-        <div class="mt-8">
+        <div class="em-mt-8">
 	        <?php if ($this->params->get('show-title', 1)) : ?>
                 <?php if($display_required_icon == 0) : ?>
-                    <p class="mb-2 text-neutral-600"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
+                    <p class="mb-5 text-neutral-600"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
                 <?php endif; ?>
                 <div class="page-header">
 			        <?php $title = trim(preg_replace('/^([^-]+ - )/', '', $form->label)); ?>

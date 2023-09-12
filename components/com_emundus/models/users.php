@@ -1783,16 +1783,35 @@ class EmundusModelUsers extends JModelList {
 
     public function countUserEvaluations($uid) {
         try {
-            $query = "select count(*) from #__emundus_evaluations
-                      where user = " .$uid;
-            $db = $this->getDbo();
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('COUNT(*)')
+				->from($db->quoteName('#__emundus_evaluations'))
+				->where($db->quoteName('user').' = '.$db->quote($uid));
             $db->setQuery($query);
             return $db->loadResult();
         } catch(Exception $e) {
             error_log($e->getMessage(), 0);
-            return false;
+            return 0;
         }
     }
+
+	public function countUserDecisions($uid) {
+		try {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('COUNT(*)')
+				->from($db->quoteName('#__emundus_final_grade'))
+				->where($db->quoteName('user').' = '.$db->quote($uid));
+			$db->setQuery($query);
+			return $db->loadResult();
+		} catch(Exception $e) {
+			error_log($e->getMessage(), 0);
+			return 0;
+		}
+	}
 
 	/**
 	 * @param $uid Int User id
@@ -2409,14 +2428,15 @@ class EmundusModelUsers extends JModelList {
 		// Assemble the password reset confirmation link.
 		$mode = $config->get('force_ssl', 0) == 2 ? 1 : (-1);
 		$link = 'index.php?option=com_users&view=reset&layout=confirm&token=' . $token . '&username=' . $user->get('username');
+		$link = str_replace('+', '%2B', $link);
 
         $mailer = JFactory::getMailer();
 
 		// Put together the email template data.
 		$data = $user->getProperties();
 		$data['sitename'] = $config->get('sitename');
-		$data['link_text'] = JRoute::_($link, false, $mode);
-		$data['link_html'] = '<a href='.JRoute::_($link, true, $mode).'> '.JRoute::_($link, true, $mode).'</a>';
+		$data['link_text'] = JURI::base().$link;
+		$data['link_html'] = '<a href='.JURI::base().$link.'> '.JURI::base().$link.'</a>';
 		$data['token'] = $token;
 
 		// Build the translated email.

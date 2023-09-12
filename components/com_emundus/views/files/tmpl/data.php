@@ -18,7 +18,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 
 <input type="hidden" id="view" name="view" value="files">
 <div class="panel panel-default em-data">
-	<?php if (is_array($this->datas)):?>
+    <?php if (is_array($this->datas)):?>
         <div class="container-result">
             <div class="em-ml-8 em-flex-row">
                 <?= $this->pagination->getResultsCounter(); ?>
@@ -41,14 +41,14 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
             <?php echo $this->pageNavigation ?>
             <div id="countCheckedCheckbox" class="countCheckedCheckbox" style="display: none"></div>
         </div>
-		<div class="em-data-container" style="padding-bottom: unset">
-			<table class="table table-striped table-hover" id="em-data">
-				<thead>
-				<tr>
-					<?php foreach ($this->datas[0] as $kl => $v): ?>
-						<th title="<?= strip_tags(JText::_($v)); ?>" id="<?= $kl; ?>" >
-							<div class="em-cell">
-								<?php if($kl == 'check'): ?>
+        <div class="em-data-container" style="padding-bottom: unset">
+            <table class="table table-striped table-hover" id="em-data">
+                <thead>
+                <tr>
+                    <?php foreach ($this->datas[0] as $kl => $v): ?>
+                        <th title="<?= strip_tags(JText::_($v)); ?>" id="<?= $kl; ?>" >
+                            <div class="em-cell">
+                                <?php if($kl == 'check'): ?>
 
                                     <div class="selectContainer" id="selectContainer">
                                         <div class="selectPage">
@@ -73,87 +73,89 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                                             <span id="span-check-none"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_NONE'); ?></span>
                                         </label>
                                     </div>
-								<?php elseif ($this->lists['order'] == $kl): ?>
-									<?php if ($this->lists['order_dir'] == 'desc'): ?>
-										<span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-									<?php else: ?>
-										<span class="glyphicon glyphicon-sort-by-attributes"></span>
-									<?php endif;?>
-									<strong>
-										<?= strip_tags(JText::_($v)); ?>
-									</strong>
-								<?php else: ?>
-									<?= strip_tags(JText::_($v)); ?>
-								<?php endif;?>
+                                <?php elseif ($this->lists['order'] == $kl): ?>
+                                    <?php if ($this->lists['order_dir'] == 'desc'): ?>
+                                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                    <?php else: ?>
+                                        <span class="glyphicon glyphicon-sort-by-attributes"></span>
+                                    <?php endif;?>
+                                    <strong>
+                                        <?= strip_tags(JText::_($v)); ?>
+                                    </strong>
+                                <?php else: ?>
+                                    <?= strip_tags(JText::_($v)); ?>
+                                <?php endif;?>
 
-							</div>
-						</th>
-					<?php endforeach; ?>
-				</tr>
-				</thead>
+                            </div>
+                        </th>
+                    <?php endforeach; ?>
+                </tr>
+                </thead>
 
-				<tbody>
-				<?php foreach ($this->datas as $key => $line):?>
-					<?php if ($key != 0): ?>
+                <tbody>
+                <?php foreach ($this->datas as $key => $line):?>
+                    <?php if ($key != 0): ?>
 
                         <?php foreach ($line as $k => $value) :?>
                             <?php
-                                if($k == 'status') { ?>
-                                    <tr>
-                                <?php }
+                            if($k == 'status') { ?>
+                                <tr>
+                            <?php }
                             ?>
 
                         <?php endforeach; ?>
 
-							<?php foreach ($line as $k => $value) :?>
+                        <?php foreach ($line as $k => $value) :?>
 
-								<td <?php if ($k == 'check' && $value->class != null) { echo 'class="'.$value->class.'"'; } if ($k == 'access' || $k == 'id_tag') { echo 'class="em-cell-scroll"'; } ?>>
-									<div class="em-cell" >
-										<?php if ($k == 'check'): ?>
-											<label for = "<?= $line['fnum']->val; ?>_check">
-												<input type="checkbox" name="<?= $line['fnum']->val; ?>_check" id="<?= $line['fnum']->val; ?>_check" class='em-check' style="width:20px !important;"/>
-												<?php
-													$tab = explode('-', $key);
-													echo $tab[1] + $this->pagination->limitstart;
-												?>
-											</label>
-										<?php elseif ($k == 'status'):?>
-											<span style="width: 100%" class="label label-<?= $value->status_class; ?>" title="<?= $value->val; ?>"><?= $value->val; ?></span>
-										<?php elseif ($k == 'fnum'):?>
-											<a href="#<?= $value->val; ?>|open" id="<?= $value->val; ?>" class="em_file_open">
-												<?php if (isset($value->photo) && !$anonymize_data) :?>
-													<div class="em_list_photo"><?= $value->photo; ?></div>
-												<?php endif; ?>
-												<div class="em_list_text">
-                                                    <?php if ($anonymize_data) :?>
-                                                        <div class="em_list_fnum"><?= $value->val; ?></div>
-                                                    <?php else :?>
-                                                       <span class="em_list_text" title="<?= $value->val; ?>"> <strong> <?= $value->user->name; ?></strong></span>
-                                                        <div class="em_list_email"><?= $value->user->email; ?></div>
-                                                        <div class="em_list_email"><?= $value->user->id; ?></div>
-                                                    <?php endif; ?>
-												</div>
-											</a>
-									<?php elseif ($k == "access"):?>
-										<?= $this->accessObj[$line['fnum']->val]; ?>
-									<?php elseif ($k == "id_tag"):?>
-										<?= @$this->colsSup['id_tag'][$line['fnum']->val]?>
+                            <td <?php if ($k == 'check' && $value->class != null) { echo 'class="'.$value->class.'"'; } if ($k == 'access' || $k == 'id_tag') { echo 'class="em-cell-scroll"'; } ?>>
+                                <div class="em-cell" >
+                                    <?php if ($k == 'check'): ?>
+                                        <label for = "<?= $line['fnum']->val; ?>_check">
+                                            <input type="checkbox" name="<?= $line['fnum']->val; ?>_check" id="<?= $line['fnum']->val; ?>_check" class='em-check' style="width:20px !important;"/>
+                                            <?php
+                                            $tab = explode('-', $key);
+                                            echo $tab[1] + $this->pagination->limitstart;
+                                            ?>
+                                        </label>
+                                    <?php elseif ($k == 'status'):?>
+                                        <span style="width: 100%" class="label label-<?= $value->status_class; ?>" title="<?= $value->val; ?>"><?= $value->val; ?></span>
+                                    <?php elseif ($k == 'fnum'):?>
+                                        <a href="#<?= $value->val; ?>|open" id="<?= $value->val; ?>" class="em_file_open">
+                                            <?php if (isset($value->photo) && !$anonymize_data) :?>
+                                                <div class="em_list_photo"><?= $value->photo; ?></div>
+                                            <?php endif; ?>
+                                            <div class="em_list_text">
+                                                <?php if ($anonymize_data) :?>
+                                                    <div class="em_list_fnum"><?= $value->val; ?></div>
+                                                <?php else :?>
+                                                    <span class="em_list_text" title="<?= $value->val; ?>"> <strong> <?= $value->user->name; ?></strong></span>
+                                                    <div class="em_list_email"><?= $value->user->email; ?></div>
+                                                    <div class="em_list_email"><?= $value->user->id; ?></div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </a>
+                                    <?php elseif ($k == "access"):?>
+                                        <?= $this->accessObj[$line['fnum']->val]; ?>
+                                    <?php elseif ($k == "id_tag"):?>
+                                        <?= @$this->colsSup['id_tag'][$line['fnum']->val]?>
                                     <?php elseif (array_key_exists($k, $this->colsSup)) :?>
                                         <?= @$this->colsSup[$k][$line['fnum']->val] ?>
-									<?php else :?>
-										<?php if ($value->type == 'text' ) :?>
-											<?= strip_tags(JText::_($value->val)); ?>
-										<?php elseif ($value->type == "date")  :?>
-										<strong>
-											<?php if (!isset($value->val) || $value->val == "0000-00-00 00:00:00") :?>
-													<span class="em-radio" id="<?= $value->id.'-'.$value->val; ?>" aria-hidden="true"></span>
-											<?php else: ?>
-												<?php
-													$formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
-													echo JFactory::getDate($value->val)->format(JText::_('DATE_FORMAT_LC2'));
-												?>
-											<?php endif; ?>
-										</strong>
+                                    <?php else :?>
+                                        <?php if ($value->type == 'text' ) :?>
+                                            <?= strip_tags(JText::_($value->val)); ?>
+                                        <?php elseif ($value->type == "textarea" && !empty($value->val) && strlen($value->val) > 200) :?>
+                                            <?= substr(strip_tags($value->val),0,200)." ..."; ?>
+                                        <?php elseif ($value->type == "date")  :?>
+                                            <strong>
+                                                <?php if (!isset($value->val) || $value->val == "0000-00-00 00:00:00") :?>
+                                                    <span class="em-radio" id="<?= $value->id.'-'.$value->val; ?>" aria-hidden="true"></span>
+                                                <?php else: ?>
+                                                    <?php
+                                                    $formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
+                                                    echo JFactory::getDate($value->val)->format(JText::_('DATE_FORMAT_LC2'));
+                                                    ?>
+                                                <?php endif; ?>
+                                            </strong>
                                         <?php elseif ($value->type === 'birthday')  :?>
                                             <strong>
                                                 <?php if (empty($value->val) || $value->val === '0000-00-00 00:00:00') :?>
@@ -165,25 +167,25 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                                                     ?>
                                                 <?php endif; ?>
                                             </strong>
-										<?php else:
+                                        <?php else:
                                             // Do not display the typical COM_EMUNDUS_PLEASE_SELECT text used for empty dropdowns.
                                             if ($value->val !== 'COM_EMUNDUS_PLEASE_SELECT') {
                                                 echo JText::_($value->val);
                                             }
-										endif; ?>
-									<?php endif; ?>
-									</div>
-								</td>
-							<?php endforeach; ?>
-						</tr>
-					<?php endif;?>
-				<?php  endforeach;?>
-				</tbody>
-			</table>
-		</div>
-	<?php else:?>
-		<?= $this->datas?>
-	<?php endif;?>
+                                        endif; ?>
+                                    <?php endif; ?>
+                                </div>
+                            </td>
+                        <?php endforeach; ?>
+                        </tr>
+                    <?php endif;?>
+                <?php  endforeach;?>
+                </tbody>
+            </table>
+        </div>
+    <?php else:?>
+        <?= $this->datas?>
+    <?php endif;?>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 
@@ -237,7 +239,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
         }
 
     }
-	$(document).ready(function() {
+    $(document).ready(function() {
         checkurl();
         $('#rt-mainbody-surround').children().addClass('mainemundus');
         $('#rt-main').children().addClass('mainemundus');
@@ -257,7 +259,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
         if (dataContainer) {
             DoubleScroll(document.querySelector('.em-data-container'));
         }
-	});
+    });
     window.parent.$("html, body").animate({scrollTop : 0}, 300);
 </script>
 

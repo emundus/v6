@@ -193,6 +193,7 @@ export default {
       ).then(() => {
         this.$emit('updateSaving',false);
         this.$emit('updateLastSaving',this.formattedDate('','LT'));
+        this.$emit('updatePublished',this.form.published);
       });
     },
   },
