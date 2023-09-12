@@ -2462,11 +2462,14 @@ try {
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_USERS_EXCEPTIONS_INTRO','Utilisateurs ayant le droit de compléter des formulaires en dehors des périodes de candidature. Utile pour tester un environnement de candidature avant la publication d\'une phase !');
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_USERS_EXCEPTIONS_INTRO','Users with the right to complete forms outside the application periods. Useful for testing an application environment before publishing a phase!', 'override', null, null, null, 'en-GB');
 
+				$eMConfig            = JComponentHelper::getParams('com_emundus');
+				$all_rights_group_id = $eMConfig->get('all_rights_group', 1);
+
 				$query->clear()
 					->select('id')
 					->from($db->quoteName('#__emundus_groups'))
 					->where($db->quoteName('user_id') . ' = 62')
-					->where($db->quoteName('group_id') . ' = 1');
+					->where($db->quoteName('group_id') . ' = ' . $db->quote($all_rights_group_id));
 				$db->setQuery($query);
 				$group = $db->loadResult();
 
@@ -2474,7 +2477,7 @@ try {
 					$query->clear()
 						->insert($db->quoteName('#__emundus_groups'))
 						->columns($db->quoteName('user_id') . ',' . $db->quoteName('group_id'))
-						->values('62,1');
+						->values('62,' . $db->quote($all_rights_group_id));
 					$db->setQuery($query);
 					$db->execute();
 				}
