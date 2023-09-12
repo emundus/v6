@@ -2517,6 +2517,21 @@ class EmundusModelFiles extends JModelLegacy
                         $join_column = str_replace('{thistable}', $element_params['join_db_name'], $join_column);
                         $join_column = str_replace('{shortlang}', $current_lang, $join_column);
                         $join_column = str_replace('{my->id}', $current_user, $join_column);
+                        $where_condition = '';
+
+                        if (!empty($element_params['database_join_where_sql']) && strpos($element_params['database_join_where_sql'], '{jos_') === false && strpos($element_params['database_join_where_sql'], '{rowid}') === false) {
+                            $where_condition = str_replace('WHERE', '', $element_params['database_join_where_sql']);
+                            $where_condition = str_replace('{thistable}', $element_params['join_db_name'], $where_condition);
+                            $where_condition = str_replace('{my->id}', $current_user, $where_condition);
+                            foreach ($already_joined as $alias => $table) {
+                                str_replace($table . '.', $alias . '.', $where_condition);
+                            }
+                            if (strpos($where_condition, 'ORDER BY') !== false) {
+                                $where_condition = substr($where_condition, 0, strpos($where_condition, 'ORDER BY'));
+                            }
+
+                            $where_condition = ' AND (' . $where_condition . ')';
+                        }
 
                         $databasejoin_sub_query = '';
 
@@ -2563,15 +2578,15 @@ class EmundusModelFiles extends JModelLegacy
                                     }
 
                                     $databasejoin_sub_query = ' (' . $databasejoin_sub_query;
-                                    $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_table_alias . '.' . $element->element_name . '))';
+                                    $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_table_alias . '.' . $element->element_name . $where_condition . '))';
                                     $databasejoin_sub_query .= ' AS ' . $already_joined[$child_table_alias] . '___' . $element->element_name;
                                 }
                             } else {
                                 if ($is_repeat) {
-                                    $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_element_table_alias . '.' . $element->element_name . ')';
+                                    $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_element_table_alias . '.' . $element->element_name . $where_condition . ')';
                                     $databasejoin_sub_query .= ' AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
                                 } else {
-                                    $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $element_table_alias . '.' . $element->element_name . ')';
+                                    $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $element_table_alias . '.' . $element->element_name . $where_condition . ')';
                                     $databasejoin_sub_query .= ' AS ' . $element->tab_name . '___' . $element->element_name;
                                 }
                             }
@@ -2748,6 +2763,7 @@ class EmundusModelFiles extends JModelLegacy
                 $data = $db->loadAssocList();
             } catch(Exception $e) {
                 JLog::add('Error trying to generate data for xlsx export ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                return false;
             }
 
             if (!empty($data)) {
