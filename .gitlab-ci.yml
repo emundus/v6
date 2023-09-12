@@ -15,8 +15,8 @@ stages:
   - build
   - test
   - release
-  - publish
   - deploy
+  - publish
 
 include:
 - project: 'emundus/devops/ci-cd-templates'
