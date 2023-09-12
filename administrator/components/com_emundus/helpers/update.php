@@ -3227,7 +3227,7 @@ class EmundusHelperUpdate
 				'checkbox-border-width' => '0px',
 				'checkbox-border-color' => '#a7a7a7',
 				'checkbox-padding' => '12px',
-				'checkbox-scale' => '1.7',
+				'checkbox-scale' => '1.3',
 				'checkbox-input-margin' => '12px',
 				'checkbox-color-checked' => '#007bff',
 				'checkbox-border-color-error' => '#F04437',
