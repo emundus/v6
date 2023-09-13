@@ -2526,12 +2526,14 @@ class EmundusModelFiles extends JModelLegacy
                             foreach ($already_joined as $alias => $table) {
                                 str_replace($table . '.', $alias . '.', $where_condition);
                             }
-                            if (strpos($where_condition, 'ORDER BY') !== false) {
+                            if (stripos($where_condition, 'ORDER BY') !== false) {
                                 $where_condition = substr($where_condition, 0, strpos($where_condition, 'ORDER BY'));
                             }
 
-                            $where_condition = ' AND (' . $where_condition . ')';
-                        }
+							if (!empty(trim($where_condition))) {
+								$where_condition = ' AND (' . $where_condition . ')';
+							}
+						}
 
                         $databasejoin_sub_query = '';
 
@@ -2763,7 +2765,7 @@ class EmundusModelFiles extends JModelLegacy
                 $data = $db->loadAssocList();
             } catch(Exception $e) {
                 JLog::add('Error trying to generate data for xlsx export ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-                return false;
+	            return false;
             }
 
             if (!empty($data)) {
