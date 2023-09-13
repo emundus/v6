@@ -2520,8 +2520,8 @@ class EmundusModelFiles extends JModelLegacy
                         $where_condition = '';
 
                         if (!empty($element_params['database_join_where_sql']) && strpos($element_params['database_join_where_sql'], '{jos_') === false && strpos($element_params['database_join_where_sql'], '{rowid}') === false) {
-                            $where_condition = str_replace('WHERE', '', $element_params['database_join_where_sql']);
-                            $where_condition = str_replace('{thistable}', $element_params['join_db_name'], $where_condition);
+	                        $where_condition = preg_replace('/WHERE/', '', $where_condition, 1);
+							$where_condition = str_replace('{thistable}', $element_params['join_db_name'], $where_condition);
                             $where_condition = str_replace('{my->id}', $current_user, $where_condition);
                             foreach ($already_joined as $alias => $table) {
                                 str_replace($table . '.', $alias . '.', $where_condition);
