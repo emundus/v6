@@ -695,6 +695,9 @@ class FabrikFEModelForm extends FabModelForm
 		 */
 		$scriptsKey = $view . '_' . $this->getId();
 
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'cache.php');
+		$hash = EmundusHelperCache::getCurrentGitHash();
+
 		if (JFile::exists(COM_FABRIK_FRONTEND . '/js/' . $this->getId() . '.js'))
 		{
 			$scripts[$scriptsKey] = 'components/com_fabrik/js/' . $this->getId() . '.js';
@@ -705,7 +708,7 @@ class FabrikFEModelForm extends FabModelForm
 		}
 		elseif (JFile::exists(COM_FABRIK_FRONTEND . '/js/custom_' . $view . '.js'))
 		{
-			$scripts[$scriptsKey] = 'components/com_fabrik/js/custom_' . $view . '.js';
+			$scripts[$scriptsKey] = 'components/com_fabrik/js/custom_' . $view . '.js?'.$hash;
 		}
 	}
 
