@@ -638,6 +638,12 @@
             margin-bottom: var(--em-form-checkbox-padding);
             border-bottom: solid var(--em-form-checkbox-bw) var(--em-form-checkbox-bc);
             padding: 0 0 var(--em-form-checkbox-padding) var(--em-form-checkbox-padding);
+
+              &:last-of-type {
+                margin-bottom: 0;
+                padding-bottom: 0;
+              }
+
             .fabrikgrid_checkbox {
               label {
                 margin-bottom: 0;

@@ -1151,6 +1151,10 @@ form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-flu
             border-bottom: solid var(--em-form-checkbox-bw) var(--em-form-checkbox-bc);
             padding: 0 0 var(--em-form-checkbox-padding) var(--em-form-checkbox-padding);
           }
+form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-fluid:last-of-type {
+                margin-bottom: 0;
+                padding-bottom: 0;
+              }
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-fluid .fabrikgrid_checkbox label {
                 margin-bottom: 0;
               }
