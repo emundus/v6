@@ -363,6 +363,7 @@
 	<fieldset label="COM_EMUNDUS_EMAIL_REMINDER" name="email" description="COM_EMUNDUS_EMAIL_REMINDER_DESC">
 		<field name="nb_email_per_batch" type="text" size="3" default="50" label="NB_EMAIL_PER_BATCH" description="NB_EMAIL_PER_BATCH_DESC" />
 		<field name="time_sleep_per_batch" type="text" size="6" default="1000" label="TIME_SLEEP_PER_BATCH" description="TIME_SLEEP_PER_BATCH_DESC" />
+		<field name="email_custom_tag" type="text" default="" label="COM_EMUNDUS_EMAIL_CUSTOM_TAG" description="COM_EMUNDUS_EMAIL_CUSTOM_TAG_DESC" />
 		<field
 				name="spacer1"
 				type="spacer"

@@ -358,6 +358,14 @@ class EmundusModelEmails extends JModelList {
                     $mailer->Encoding = 'base64';
                     $mailer->setBody($body);
 
+                    $eMConfig = JComponentHelper::getParams('com_emundus');
+                    $custom_email_tag = $eMConfig->get('email_custom_tag', null);
+                    if(!empty($custom_email_tag))
+                    {
+                        $custom_email_tag = explode(',', $custom_email_tag);
+                        $mailer->addCustomHeader($custom_email_tag[0].':'.$custom_email_tag[1]);
+                    }
+
                     try {
                         $send = $mailer->Send();
                     } catch (Exception $e) {
@@ -1094,6 +1102,14 @@ class EmundusModelEmails extends JModelList {
                     }
                 }
 
+                $eMConfig = JComponentHelper::getParams('com_emundus');
+                $custom_email_tag = $eMConfig->get('email_custom_tag', null);
+                if(!empty($custom_email_tag))
+                {
+                    $custom_email_tag = explode(',', $custom_email_tag);
+                    $mailer->addCustomHeader($custom_email_tag[0].':'.$custom_email_tag[1]);
+                }
+
                 $send = $mailer->Send();
 
                 if ($send !== true) {
@@ -1383,7 +1399,16 @@ class EmundusModelEmails extends JModelList {
                         }
                     }
 
+                    $eMConfig = JComponentHelper::getParams('com_emundus');
+                    $custom_email_tag = $eMConfig->get('email_custom_tag', null);
+                    if(!empty($custom_email_tag))
+                    {
+                        $custom_email_tag = explode(',', $custom_email_tag);
+                        $mailer->addCustomHeader($custom_email_tag[0].':'.$custom_email_tag[1]);
+                    }
+
                     $send = $mailer->Send();
+
                     if ($send !== true) {
                         $failed[] = $m_to;
                         $print_message .= '<hr>Error sending email: ' . $send;
