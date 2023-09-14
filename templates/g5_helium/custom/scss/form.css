@@ -582,6 +582,10 @@
         flex-direction: column;
         min-width: 40%;
 
+        @media all and (max-width: 767px) {
+          width: 100%;
+        }
+
         .fabrikgrid_radio {
           @apply py-1;
           @apply mb-1;

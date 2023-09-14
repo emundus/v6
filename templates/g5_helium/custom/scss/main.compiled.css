@@ -1101,6 +1101,11 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer {
         flex-direction: column;
         min-width: 40%;
       }
+@media all and (max-width: 767px) {
+      form.fabrikForm .plg-radiobutton .fabrikSubElementContainer {
+          width: 100%
+      }
+        }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio {
   padding-top: var(--em-spacing-1);
   padding-bottom: var(--em-spacing-1);
