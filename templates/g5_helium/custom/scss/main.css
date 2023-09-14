@@ -1,6 +1,7 @@
 @import "utilities.css";
 @import "components.css";
 @import "form.css";
+@import "tchoozy.css";
 
 @tailwind base;
 @tailwind components;
@@ -78,6 +79,10 @@
 
 body {
     font-family: var(--em-default-font);
+}
+
+.view-featured.homepage #g-page-surround {
+    @apply wide-background;
 }
 
 .after-em-border::after{

@@ -6,6 +6,322 @@
     gap: 16px;
   }
 }
+/*******************
+ * TCHOOZY CLASSES
+ *******************/
+/* backgrounds */
+.circle-background {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/backgrounds/circle-background.svg");
+}
+.corner-background {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/backgrounds/corner-background.svg");
+}
+.floor-shapes-background {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/backgrounds/floor-shapes-background.svg");
+}
+.wide-background {
+  background-image: var(--display-wide-background);
+}
+/* body-expressions */
+.angry {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/angry.svg");
+}
+.clever {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/clever.svg");
+}
+.concerned {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/concerned.svg");
+}
+.disagreeing {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/disagreeing.svg");
+}
+.embarrassed {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/embarrassed.svg");
+}
+.endearing {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/endearing.svg");
+}
+.fine {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/fine.svg");
+}
+.happy {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/happy.svg");
+}
+.in-love {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/in-love.svg");
+}
+.joyful {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/joyful.svg");
+}
+.laughing {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/laughing.svg");
+}
+.neutral {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/neutral.svg");
+}
+.sad {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/sad.svg");
+}
+.shocked {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/shocked.svg");
+}
+.sick {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/sick.svg");
+}
+.sleepy {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/sleepy.svg");
+}
+.surprised {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/surprised.svg");
+}
+.thinking {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/thinking.svg");
+}
+.tired {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/tired.svg");
+}
+.whistling {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/whistling.svg");
+}
+/* complex-illustrations */
+.aim-for-the-center {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/aim-for-the-center.svg");
+}
+.archives {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/archives.svg");
+}
+.behind-schedule {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/behind-schedule.svg");
+}
+.brilliant-idea {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/brilliant-idea.svg");
+}
+.building {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/building.svg");
+}
+.candidate-button {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/candidate-button.svg");
+}
+.celebrating {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/celebrating.svg");
+}
+.checklist {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/checklist.svg");
+}
+.demonstration {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/demonstration.svg");
+  background-size: 400px;
+  background-repeat: no-repeat;
+  background-position: 60vw 120px;
+}
+.digital-testing {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/digital-testing.svg");
+}
+.emundus-help-center {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/emundus-help-center.svg");
+}
+.FAQ {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/FAQ.svg");
+}
+.fast-and-efficient {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/fast-and-efficient.svg");
+}
+.goal-achieved {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/goal-achieved.svg");
+}
+.goal-achieved-together {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/goal-achieved-together.svg");
+}
+.handshake {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/handshake.svg");
+}
+.heart-hug {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/heart-hug.svg");
+}
+.help-center {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/help-center.svg");
+}
+.hiding {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/hiding.svg");
+}
+.high-workload {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/high-workload.svg");
+}
+.looking-for-something {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/looking-for-something.svg");
+}
+.message-sent {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/message-sent.svg");
+}
+.money-saving {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/money-saving.svg");
+}
+.multitasking.svg {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/multitasking.svg");
+}
+.no-result {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg");
+}
+.notes-taking {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/notes-taking.svg");
+}
+.number-one {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/number-one.svg");
+}
+.page-not-found {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/page-not-found.svg");
+}
+.plug-connection {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/plug-connection.svg");
+}
+.post-a-letter {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/post-a-letter.svg");
+}
+.questions {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/questions.svg");
+}
+.reading-and-learning {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/reading-and-learning.svg");
+}
+.ready-to-send {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/ready-to-send.svg");
+}
+.rocket-take-off {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/rocket-take-off.svg");
+}
+.sending-message {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/sending-message.svg");
+}
+.serenity {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/serenity.svg");
+}
+.setting-tools {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/setting-tools.svg");
+}
+.social-networks {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/social-networks.svg");
+}
+.solve-a-puzzle {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/solve-a-puzzle.svg");
+}
+.solving-problem {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/solving-problem.svg");
+}
+.solving-rubiks-cube {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/solving-rubiks-cube.svg");
+}
+.sporty-activity {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/sporty-activity.svg");
+}
+.team-presentation {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/team-presentation.svg");
+}
+.team-talk {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/team-talk.svg");
+}
+.workflow-building {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/workflow-building.svg");
+}
+/* facial-expressions */
+.angry-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/angry-face.svg");
+}
+.clever-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/clever-face.svg");
+}
+.concerned-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/concerned-face.svg");
+}
+.disagreeing-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/disagreeing-face.svg");
+}
+.embarrassed-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/embarrassed-face.svg");
+}
+.endearing-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/endearing-face.svg");
+}
+.fine-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/fine-face.svg");
+}
+.happy-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/happy-face.svg");
+}
+.in-love-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/in-love-face.svg");
+}
+.joyful-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/joyful-face.svg");
+}
+.laughing-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/laughing-face.svg");
+}
+.neutral-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/neutral-face.svg");
+}
+.sad-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/sad-face.svg");
+}
+.shocked-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/shocked-face.svg");
+}
+.sick-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/sick-face.svg");
+}
+.sleepy-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/sleepy-face.svg");
+}
+.surprised-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/surprised-face.svg");
+}
+.thinking-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/thinking-face.svg");
+}
+.tired-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/tired-face.svg");
+}
+.whistling-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/whistling-face.svg");
+}
+/* objects-illustrations */
+.account-settings {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/account-settings.svg");
+}
+.gantry .wide-background {
+   background-image: url("../../../../media/com_emundus/images/tchoozy/backgrounds/wide-background.svg") ;
+ }
+.cookie-policy.svg {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/cookie-policy.svg");
+}
+.email-history {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/email-history.svg");
+}
+.groups {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/groups.svg");
+}
+.indicators {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/indicators.svg");
+}
+.legal-notice {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/legal-notice.svg");
+}
+.privacy-policy {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/privacy-policy.svg");
+}
+.profiles {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/profiles.svg");
+}
+.rights-management {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/rights-management.svg");
+}
+/* Surcharge de l'id g-page-surround pour voir l'illustration */
+.wide-background #g-page-surround {
+  background : none !important;
+}
+/*.test-tchoozy {
+  background : gray;
+  border: 3px solid yellow;
+}*/
 /* ! tailwindcss v3.3.2 | MIT License | https://tailwindcss.com */
 /*
 1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
@@ -2733,6 +3049,15 @@ button.swal2-cancel.goback-btn:hover,
 }
 body {
     font-family: var(--em-default-font);
+}
+.view-featured.homepage #g-page-surround {
+  background-image: var(--display-wide-background);
+}
+.gantry .view-featured.homepage #g-page-surround {
+   background-image: url("../../../../media/com_emundus/images/tchoozy/backgrounds/wide-background.svg") ;
+ }
+.view-featured.homepage #g-page-surround #g-page-surround {
+  background : none;
 }
 .after-em-border::after{
     content: "";

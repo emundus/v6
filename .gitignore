@@ -20,6 +20,7 @@ templates/g5_helium/custom/*
 !templates/g5_helium/custom/scss/tchooz.scss
 !templates/g5_helium/custom/scss/global.scss
 !templates/g5_helium/custom/scss/variables.scss
+!templates/g5_helium/custom/scss/tchoozy.css
 templates/g5_helium/html/com_eventbooking/*
 templates/g5_helium/html/com_hikashop/*
 templates/emundus_vanilla/*
