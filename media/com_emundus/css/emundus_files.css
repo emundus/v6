@@ -1027,6 +1027,10 @@ label[for='clear-search']{
     flex-wrap: wrap;
 }
 
+.g-back-office-emundus-tableau .panel-body div#filters .selectize-control.input-tags.demo-default.multi.plugin-remove_button .selectize-input.items.not-full > div {
+    word-break: break-all;
+}
+
 .g-back-office-emundus-tableau .panel-body.em-containerFilter-body .em-filter .SumoSelect > .CaptionCont {
     height: 37px !important;
     align-items: center;
