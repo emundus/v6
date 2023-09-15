@@ -118,6 +118,14 @@ p,
   transition: all ease-in-out 0.3s;
 }
 
+.gantry:not(.applicant-form):not(.files-board) #g-container-main,
+.gantry.view-form #g-utility,
+.gantry.view-checklist #g-utility,
+.gantry.view-details #g-utility,
+.gantry.mon-profil #g-container-main {
+  padding-top: 20px !important;
+}
+
 #g-container-main .g-container {
   padding: 0 20px;
 }
