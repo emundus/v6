@@ -121,7 +121,9 @@
   }
 }
 
-.em-error-button:hover {
+.em-error-button:hover,
+.em-error-button:focus,
+.em-error-button:active {
   background: var(--neutral-0);
   border: 1px solid var(--red-500);
   color: var(--red-500);
