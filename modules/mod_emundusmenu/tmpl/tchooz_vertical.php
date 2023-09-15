@@ -99,7 +99,6 @@ defined('_JEXEC') or die;
 
     /*** List style ***/
     #g-navigation .g-main-nav .tchooz-vertical-toplevel > li{
-        width: 50px;
         margin: 5px 10px !important;
         font-family: var(--em-default-font);
     }
