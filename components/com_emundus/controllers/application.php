@@ -702,9 +702,8 @@ class EmundusControllerApplication extends JControllerLegacy
                 $m_files = new EmundusModelFiles();
 
                 $fnumInfos = $m_files->getFnumInfos($fnum);
-                $profile_id = $fnumInfos['profile_id'];
 
-                $response['attachments'] = $m_application->getUserAttachmentsByFnum($fnum, NULL, $profile_id);
+                $response['attachments'] = $m_application->getUserAttachmentsByFnum($fnum, NULL, $fnumInfos['profile_id']);
 
 				$response['msg'] = JText::_('SUCCESS');
 				$response['status'] = true;

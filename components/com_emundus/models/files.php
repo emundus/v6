@@ -3134,9 +3134,9 @@ class EmundusModelFiles extends JModelLegacy
             // Write the code to show the results to the user
             foreach ($res as $r) {
                 if (isset($access[$r['fnum']])) {
-                    $access[$r['fnum']] .= '<span class="label '.$r['class'].'"><span class=\'glyphicon glyphicon-user\'></span> '.$r['uname'].'</span>';
+                    $access[$r['fnum']] .= '<span class="label '.$r['class'].'"><span class=\'material-icons-outlined\'>person_outline</span> '.$r['uname'].'</span>';
                 } else {
-                    $access[$r['fnum']] = '<span class="label '.$r['class'].'"><span class=\'glyphicon glyphicon-user\'></span> '.$r['uname'].'</span>';
+                    $access[$r['fnum']] = '<span class="label '.$r['class'].'"><span class=\'material-icons-outlined\'>person_outline</span> '.$r['uname'].'</span>';
                 }
             }
 

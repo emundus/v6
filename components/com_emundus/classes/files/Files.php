@@ -662,12 +662,10 @@ class Files
                 $file->tags = $tags;
             }
 
-            return $files;
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             JLog::add('Problem when build query with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
-            return $files;
         }
+        return $files;
     }
 
         /**
