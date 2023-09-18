@@ -3042,7 +3042,7 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 					{
 						$params = json_decode($form->params, true);
 
-						if(!in_array('emundus-updatesession.php', $params['form_php_file']))
+						if(is_array($params['form_php_file']) && !in_array('emundus-updatesession.php', $params['form_php_file']))
 						{
 							$params['plugin_state'][]          = 1;
 							$params['only_process_curl'][]     = 'onAfterProcess';

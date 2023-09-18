@@ -2157,7 +2157,7 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addFabrikElement($datas,$params = null) {
+    public static function addFabrikElement($datas,$params = []) {
         $result = ['status' => false, 'message' => ''];
 
         if(empty($datas['name'])){
