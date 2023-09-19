@@ -122,10 +122,11 @@ defined('_JEXEC') or die;
         z-index: 2;
         transition: all 0.3s ease-in-out;
     }
-    .tchooz-vertical-item a img{
+    .tchooz-vertical-item a img,
+    .tchooz-vertical-item a span{
         width: 30px;
         height: 30px;
-        padding: 5px;
+        padding: 3px !important;
     }
 
     .image-title{
