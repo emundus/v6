@@ -214,6 +214,10 @@ defined('_JEXEC') or die;
         border-radius: 5px;
         content: "";
     }
+
+    #g-container-main,#g-footer,#footer-rgpd {
+        padding-left: 76px;
+    }
 </style>
 <nav class="g-main-nav <?php echo $class_sfx;?>" data-g-hover-expand="true"
     <?php
