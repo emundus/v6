@@ -699,6 +699,7 @@ class EmundusControllerApplication extends JControllerLegacy
 
 			if (EmundusHelperAccess::asAccessAction(4, 'r', JFactory::getUser()->id, $fnum)) {
 				$m_application = new EmundusModelApplication();
+                require_once(JPATH_SITE.'/components/com_emundus/models/files.php');
                 $m_files = new EmundusModelFiles();
 
                 $fnumInfos = $m_files->getFnumInfos($fnum);
