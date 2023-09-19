@@ -1,0 +1,11 @@
+{% extends '@nucleus/partials/particle.html.twig' %}
+
+{% block particle %}
+    <div class="example_particle {{ particle.css.class }}">
+        <div align="center">
+            <h2>{{ particle.title }}</h2>
+            <p>{{ particle.description }}</p>
+            <img src="{{ url(particle.image) }}" alt="image">
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,40 @@
+name: Error
+description: Displays a custom error message.
+type: particle
+
+form:
+  fields:
+    enabled:
+      type: input.checkbox
+      label: Enabled
+      description: Globally enable to the particles.
+      default: true
+
+    title:
+      type: input.text
+      label: Title
+      description: Customize the section title text.
+      default: Oups
+
+    image:
+      type: input.imagepicker
+      label: Image
+      description: Select the main image.
+      default: /media/com_emundus/images/tchoozy/complex-illustrations/page-not-found.svg
+
+    description:
+      type: input.text
+      label: Text / HTML
+      description: Create or modify your description.
+      default: La page que vous cherchez semble introuvable...
+
+    css.class:
+      type: input.text
+      label: Class
+      description: CSS class name for the particle.
+
+    button:
+      type: input.text
+      label: Text of button
+      description: Text to display on the button.
+      default: Retour à l'accueil
