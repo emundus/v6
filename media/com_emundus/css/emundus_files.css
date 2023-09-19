@@ -1032,14 +1032,10 @@ label[for='clear-search']{
 }
 
 .g-back-office-emundus-tableau .panel-body.em-containerFilter-body .em-filter .SumoSelect > .CaptionCont {
-    height: 37px !important;
-    overflow-y: scroll;
+    min-height: 37px !important;
+    display: flex;
+    align-items: center;
 }
-
-.g-back-office-emundus-tableau .panel-body.em-containerFilter-body .em-filter .SumoSelect > .CaptionCont span > div {
-    white-space: break-spaces;
-}
-
 
 .g-back-office-emundus-tableau div#em_filters .chosen-container.chosen-with-drop .chosen-drop {
     background: #ffffff;
