@@ -88,7 +88,9 @@ button#back:hover, button#back:active, button#back:focus,
 }
 
 .list-group.candidacy-files-list .row .ui.yellow.segment:not(.inverted) {
-    border-top: 2px solid var(--em-primary-color) !important;
+    border-left: 2px solid var(--neutral-600) !important;
+    background: var(--neutral-300);
+    padding: 10px;
 }
 
 .candidacy-files-list .em-light-selected-tab {
@@ -197,6 +199,7 @@ button#back:hover, button#back:active, button#back:focus,
     justify-content: center;
     align-items: center;
     margin-top: -30px;
+    margin-bottom: var(--m-16);
 }
 
 .forget-mdp {

@@ -346,7 +346,7 @@ die("<script>
 
         $params = array(
             'show_in_rss_feed' => '0',
-            'bootstrap_class' => 'input-medium',
+            'bootstrap_class' => 'input-large',
             'show_label_in_rss_feed' => '0',
             'use_as_rss_enclosure' => '0',
             'rollover' => '',

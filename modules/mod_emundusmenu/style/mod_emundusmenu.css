@@ -193,6 +193,7 @@ a {
     text-align: left;
     width: 55px;
     transition: width 0.3s ease-in-out;
+    align-items: center;
 }
 
 .grey-navbar-icons{

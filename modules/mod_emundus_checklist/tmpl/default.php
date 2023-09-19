@@ -242,9 +242,13 @@ if(is_array($url))
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        if(window.innerWidth < 480){
-            expandForms();
+    addEventListener("resize", (event) => {
+        let content = document.getElementById('mod_emundus_checklist___content');
+        if(innerWidth <= 753){
+            content.classList.add('mod_emundus_checklist___content_closed');
+        }
+        else{
+            content.classList.remove('mod_emundus_checklist___content_closed');
         }
     });
 

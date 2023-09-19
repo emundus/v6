@@ -3554,6 +3554,7 @@ class EmundusHelperFiles
 		}
 
 		$and = ' AND ';
+        $sql_code = '1=1';
 		if (isset($filt_menu['programme'])) {
 			if (isset($filt_menu['programme'][0]) && $filt_menu['programme'][0] == "%") {
 				$sql_code = '1=1';
