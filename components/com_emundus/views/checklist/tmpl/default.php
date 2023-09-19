@@ -151,11 +151,13 @@ if (!empty($this->custom_title)) :?>
             }
             $div .= '<h4 class="em-mt-0-important">'.$attachment->value .'</h4>';
 
+            $div .= '</div>';
+
 	        if(!empty($attachment->description)) {
-		        $div .= '</div><p class="em-ml-8 em-mt-8" style="white-space: pre-line">' . $attachment->description . '</p><div>';
-	        } else {
-                $div .= '</div><div>';
-            }
+		        $div .= '<p class="em-ml-8 em-mt-8" style="white-space: pre-line">' . $attachment->description . '</p>';
+	        }
+
+            $div .= '<div>';
 
 	        if ($attachment->has_sample && !empty($attachment->sample_filepath)) {
 		        $div .= '<div class="em-ml-8 em-mb-8 em-flex-row">
