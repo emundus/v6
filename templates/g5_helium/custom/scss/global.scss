@@ -3708,52 +3708,61 @@ div#em-appli-block {
 
 .error-page {
 
-  #g-main-mainbody .g-grid .g-block {
-    display: flex;
-    justify-content: center;
-    flex-direction: row;
-  }
-
   .container-404 {
     display: flex;
     justify-content: space-around;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
+    width: 100%;
 
-    .left-side-404 {
-      width: 50%;
+    h2 {
+      text-align: center;
+      font-weight: 600;
+      color: var(--em-primary-color);
+      font-size: 40px;
+      margin-bottom: 0;
+    }
 
-      h2 {
-        text-align: center;
-        font-weight: bold;
-        color: var(--em-primary-color);
-        font-size: 80px;
-        margin-bottom: 10px;
-      }
+    p {
+      text-align: center;
+      font-size: 20px;
+      font-weight: 600;
 
-      p {
-        text-align: center;
+      a {
+        background-color: var(--em-secondary-color);
+        color: var(--neutral-0);
+        border: 1px solid var(--em-secondary-color);
+        padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
+        border-radius: var(--em-applicant-br);
         font-size: var(--em-applicant-font-size);
 
-        a {
-          background-color: var(--em-secondary-color);
-          color: var(--neutral-0);
+        &:hover,
+        &:active,
+        &:focus {
+          background-color: transparent;
+          color: var(--em-secondary-color);
+          text-decoration: none;
           border: 1px solid var(--em-secondary-color);
-          padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
-          border-radius: var(--em-applicant-br);
-          font-size: var(--em-applicant-font-size);
-
-          &:hover,
-          &:active,
-          &:focus {
-            background-color: transparent;
-            color: var(--em-secondary-color);
-            text-decoration: none;
-            border: 1px solid var(--em-secondary-color);
-          }
         }
       }
     }
+
+    img {
+      width : 55vw;
+      margin-top: -50px;
+      margin-bottom: -50px;
+    }
+
+  }
+}
+
+/* MOBILE */
+@media screen and (max-width: 767px) {
+  .error-page .container-404 {
+    gap: 40px;
+    width: 90%;
+    margin-left: 50px;
+    margin-top: 30px;
   }
 }
 
