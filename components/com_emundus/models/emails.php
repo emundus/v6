@@ -744,7 +744,7 @@ class EmundusModelEmails extends JModelList {
      * @since version v6
      */
     public function setTagsFabrik($str, $fnums = array(), $raw = false) {
-        require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        require_once(JPATH_SITE.'/components/com_emundus/models/files.php');
         $m_files = new EmundusModelFiles();
 
         $jinput = JFactory::getApplication()->input;

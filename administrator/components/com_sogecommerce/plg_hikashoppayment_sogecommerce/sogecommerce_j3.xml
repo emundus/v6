@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/**
+ * Copyright © Lyra Network.
+ * This file is part of Sogecommerce plugin for HikaShop. See COPYING.md for license details.
+ *
+ * @author    Lyra Network (https://www.lyra.com/)
+ * @copyright Lyra Network
+ * @license   http://www.gnu.org/licenses/gpl.html GNU General Public License (GPL v3)
+ */
+-->
+
+<extension type="plugin" version="2.5" method="upgrade" group="hikashoppayment">
+    <name><![CDATA[Sogecommerce payment plugin]]></name>
+    <creationDate>July</creationDate>
+    <version>2.1.5</version>
+    <author>Lyra Network</author>
+    <authorEmail>support@sogecommerce.societegenerale.eu</authorEmail>
+    <authorUrl>https://www.lyra.com/</authorUrl>
+    <copyright>Copyright (C) 2013-2020 Lyra Network. All rights reserved.</copyright>
+    <license>http://www.gnu.org/licenses/gpl.html GNU General Public License (GPL v3)</license>
+    <description><![CDATA[This plugin enables you to setup the Sogecommerce payment gateway.]]></description>
+
+    <scriptfile>script.install.php</scriptfile>
+
+    <files>
+        <filename plugin="sogecommerce">sogecommerce.php</filename>
+        <filename>sogecommerce_end.php</filename>
+        <filename>sogecommerce_configuration.php</filename>
+        <folder>images</folder>
+    </files>
+
+    <languages>
+        <language tag="fr-FR">languages/fr-FR.plg_hikashoppayment_sogecommerce.ini</language>
+        <language tag="en-GB">languages/en-GB.plg_hikashoppayment_sogecommerce.ini</language>
+        <language tag="de-DE">languages/de-DE.plg_hikashoppayment_sogecommerce.ini</language>
+        <language tag="es-ES">languages/es-ES.plg_hikashoppayment_sogecommerce.ini</language>
+    </languages>
+
+    <params addpath="/components/com_hikashop/params">
+        <param name="pluginoptions" type="pluginoptions" default="plugin" label="hikashop" description="HikaShop options" />
+    </params>
+
+    <config>
+        <fields name="params" addfieldpath="/components/com_hikashop/fields">
+            <fieldset name="basic">
+                <field id="pluginoptions" name="pluginoptions" type="pluginoptions" label="hikashop" description="HikaShop options" />
+            </fieldset>
+        </fields>
+    </config>
+</extension>

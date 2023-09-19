@@ -1093,6 +1093,11 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer {
         flex-direction: column;
         min-width: 40%;
       }
+@media all and (max-width: 767px) {
+      form.fabrikForm .plg-radiobutton .fabrikSubElementContainer {
+          width: 100%
+      }
+        }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio {
   padding-top: var(--em-spacing-1);
   padding-bottom: var(--em-spacing-1);
@@ -1121,9 +1126,16 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio la
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label span{
               word-wrap: break-word;
             }
-form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label:has(input[type='radio']:checked) {
-              background-color: var(--em-form-radio-bgc-checked);
-              border-color: var(--em-form-radio-bc-checked);
+@supports selector(:has(*)) {
+              form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label:has(input[type='radio']:checked) {
+                background-color: var(--em-form-radio-bgc-checked);
+                border-color: var(--em-form-radio-bc-checked);
+              }
+            }
+@supports not (selector(:has(*))) {
+              form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label.radio {
+                border: none;
+              }
             }
 /** CHECKBOX **/
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer {
@@ -1136,6 +1148,10 @@ form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-flu
             border-bottom: solid var(--em-form-checkbox-bw) var(--em-form-checkbox-bc);
             padding: 0 0 var(--em-form-checkbox-padding) var(--em-form-checkbox-padding);
           }
+form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-fluid:last-of-type {
+                margin-bottom: 0;
+                padding-bottom: 0;
+              }
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-fluid .fabrikgrid_checkbox label {
                 margin-bottom: 0;
               }
@@ -2280,9 +2296,6 @@ button.swal2-cancel.goback-btn:hover,
         font-family: var(--em-coordinator-font);
     }
 /* ALERTES */
-#system-message-container {
-        padding: 20px;
-    }
 #system-message .alert, .fabrikMainError {
   display: flex;
   padding: var(--em-spacing-5);
