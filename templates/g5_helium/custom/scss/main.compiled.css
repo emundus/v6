@@ -13,8 +13,11 @@
 .circle-background {
   background-image: url("../../../../media/com_emundus/images/tchoozy/backgrounds/circle-background.svg");
 }
-.corner-background {
-  background-image: url("../../../../media/com_emundus/images/tchoozy/backgrounds/corner-background.svg");
+.corner-bottom-left-background {
+  background-image: var(--display-corner-bottom-left-background);
+}
+.corner-top-right-background {
+  background-image: var(--display-corner-top-right-background);
 }
 .floor-shapes-background {
   background-image: url("../../../../media/com_emundus/images/tchoozy/backgrounds/floor-shapes-background.svg");
@@ -100,7 +103,7 @@
   background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/building.svg");
 }
 .candidate-button {
-  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/candidate-button.svg");
+  background-image: var(--display-candidate-button);
 }
 .celebrating {
   background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/celebrating.svg");
@@ -109,13 +112,10 @@
   background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/checklist.svg");
 }
 .demonstration {
-  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/demonstration.svg");
-  background-size: 400px;
-  background-repeat: no-repeat;
-  background-position: 60vw 120px;
+  background-image: var(--display-demonstration);
 }
 .digital-testing {
-  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/digital-testing.svg");
+  background-image: var(--display-corner-bottom-left-background);
 }
 .emundus-help-center {
   background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/emundus-help-center.svg");
@@ -3050,15 +3050,66 @@ button.swal2-cancel.goback-btn:hover,
 body {
     font-family: var(--em-default-font);
 }
+/***********
+/* TCHOOZY *
+ ***********/
+/* Accueil */
 .view-featured.homepage #g-page-surround {
-  background-image: var(--display-wide-background);
+    background-image: var(--display-wide-background);
+    background-size: 60%;
+    background-repeat: repeat;
+    background-position: 60vw 120px;
 }
-.gantry .view-featured.homepage #g-page-surround {
-   background-image: url("../../../../media/com_emundus/images/tchoozy/backgrounds/wide-background.svg") ;
- }
-.view-featured.homepage #g-page-surround #g-page-surround {
-  background : none;
+.homepage #g-container-main .g-container {
+    background-image: var(--display-demonstration);
+    background-size: 250px;
+    background-repeat: no-repeat;
+    background-position: top right 30px;
 }
+/* Connexion */
+.login > #g-page-surround {
+    background-image: var(--display-digital-testing), var(--display-corner-bottom-left-background), var(--display-candidate-button), var(--display-corner-top-right-background);
+    background-position: top 120px left 20px, bottom left, bottom 50px right 20px, top right;
+    background-repeat : no-repeat, no-repeat, no-repeat, no-repeat;
+    background-size : 25%, 50%, 25%, 50%;
+}
+.login #g-navigation .g-container {
+    background : transparent;
+}
+#g-container-main div.login {
+    background : none;
+}
+/* TABLETTE */
+@media screen and (min-width: 768px) and (max-width: 959px) {
+
+
+
+    /* Accueil */
+    .homepage #g-container-main .g-container {
+        background-image : none;
+    }
+
+    /* Connexion */
+    .login > #g-page-surround {
+        background-position: top 120px left 20px, bottom left, top 500px right 20px, top 72px right;
+        background-size : 25%, 50%, 25%, 50%;
+    }
+}
+/* MOBILE */
+@media screen and (max-width: 767px) {
+
+    /* Accueil */
+    .homepage #g-container-main .g-container {
+        background-image : none;
+    }
+
+    /* Connexion */
+    .login > #g-page-surround {
+        background-image : none, var(--display-corner-bottom-left-background), none, var(--display-corner-top-right-background);
+        background-size : 80%, 80%, 80%, 80%;
+    }
+}
+/* FIN TCHOOZY */
 .after-em-border::after{
     content: "";
     width: 40px;

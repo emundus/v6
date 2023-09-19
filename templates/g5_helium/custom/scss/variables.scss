@@ -348,8 +348,15 @@
   --em-spacing-11: #{$em-spacing-11};
   --em-spacing-12: #{$em-spacing-12};
 
-  // Tchoozy
+  // TCHOOZY - Accueil
   --display-wide-background: #{$tchoozy-wide-background};
+  --display-demonstration: #{$tchoozy-demonstration};
+
+  //TCHOOZY - Connexion
+  --display-corner-bottom-left-background: #{$tchoozy-corner-bottom-left-background};
+  --display-corner-top-right-background: #{$tchoozy-corner-top-right-background};
+  --display-candidate-button: #{$tchoozy-candidate-button};
+  --display-digital-testing: #{$tchoozy-digital-testing};
 }
 
 // Mixin - typo

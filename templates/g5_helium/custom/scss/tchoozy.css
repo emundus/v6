@@ -7,8 +7,12 @@
   background-image: url("../../../../media/com_emundus/images/tchoozy/backgrounds/circle-background.svg");
 }
 
-.corner-background {
-  background-image: url("../../../../media/com_emundus/images/tchoozy/backgrounds/corner-background.svg");
+.corner-bottom-left-background {
+  background-image: var(--display-corner-bottom-left-background);
+}
+
+.corner-top-right-background {
+  background-image: var(--display-corner-top-right-background);
 }
 
 .floor-shapes-background {
@@ -124,7 +128,7 @@
 }
 
 .candidate-button {
-  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/candidate-button.svg");
+  background-image: var(--display-candidate-button);
 }
 
 .celebrating {
@@ -136,14 +140,11 @@
 }
 
 .demonstration {
-  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/demonstration.svg");
-  background-size: 400px;
-  background-repeat: no-repeat;
-  background-position: 60vw 120px;
+  background-image: var(--display-demonstration);
 }
 
 .digital-testing {
-  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/digital-testing.svg");
+  background-image: var(--display-corner-bottom-left-background);
 }
 
 .emundus-help-center {
