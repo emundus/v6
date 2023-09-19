@@ -15,6 +15,8 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
+
+use Joomla\CMS\Component\ComponentHelper;
 /**
  * Content Component Query Helper
  *
@@ -882,6 +884,22 @@ class EmundusHelperEmails {
         }
 
         return $logo;
+    }
+
+    public static function getCustomHeader(): string {
+        $result = '';
+
+        $eMConfig = ComponentHelper::getParams('com_emundus');
+        $custom_email_tag = $eMConfig->get('email_custom_tag', null);
+
+        if(!empty($custom_email_tag))
+        {
+            $custom_email_tag = explode(',', $custom_email_tag);
+
+            $result = $custom_email_tag[0].':'.$custom_email_tag[1];
+        }
+
+        return $result;
     }
 }
 ?>

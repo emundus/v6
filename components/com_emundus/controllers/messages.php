@@ -769,13 +769,11 @@ class EmundusControllerMessages extends JControllerLegacy {
 
             $mailer->addAttachment(array_unique($toAttach));
 
-	        $eMConfig = JComponentHelper::getParams('com_emundus');
-	        $custom_email_tag = $eMConfig->get('email_custom_tag', null);
-			if(!empty($custom_email_tag))
-			{
-				$custom_email_tag = explode(',', $custom_email_tag);
-				$mailer->addCustomHeader($custom_email_tag[0].':'.$custom_email_tag[1]);
-			}
+	        $custom_email_tag = EmundusHelperEmails::getCustomHeader();
+	        if(!empty($custom_email_tag))
+	        {
+		        $mailer->addCustomHeader($custom_email_tag);
+	        }
 
             // Send and log the email.
             $send = $mailer->Send();
@@ -972,12 +970,10 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 			$mailer->addAttachment($toAttach);
 
-			$eMConfig = JComponentHelper::getParams('com_emundus');
-			$custom_email_tag = $eMConfig->get('email_custom_tag', null);
+			$custom_email_tag = EmundusHelperEmails::getCustomHeader();
 			if(!empty($custom_email_tag))
 			{
-				$custom_email_tag = explode(',', $custom_email_tag);
-				$mailer->addCustomHeader($custom_email_tag[0].':'.$custom_email_tag[1]);
+				$mailer->addCustomHeader($custom_email_tag);
 			}
 
 			// Send and log the email.
@@ -1221,12 +1217,10 @@ class EmundusControllerMessages extends JControllerLegacy {
 	        $mailer->addAttachment($toAttach);
         }
 
-	    $eMConfig = JComponentHelper::getParams('com_emundus');
-	    $custom_email_tag = $eMConfig->get('email_custom_tag', null);
+	    $custom_email_tag = EmundusHelperEmails::getCustomHeader();
 	    if(!empty($custom_email_tag))
 	    {
-		    $custom_email_tag = explode(',', $custom_email_tag);
-		    $mailer->addCustomHeader($custom_email_tag[0].':'.$custom_email_tag[1]);
+		    $mailer->addCustomHeader($custom_email_tag);
 	    }
 
 	    // Send and log the email.
@@ -1382,12 +1376,11 @@ class EmundusControllerMessages extends JControllerLegacy {
 			$mailer->addAttachment($toAttach);
 		}
 
-		$eMConfig = JComponentHelper::getParams('com_emundus');
-		$custom_email_tag = $eMConfig->get('email_custom_tag', null);
+		require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+		$custom_email_tag = EmundusHelperEmails::getCustomHeader();
 		if(!empty($custom_email_tag))
 		{
-			$custom_email_tag = explode(',', $custom_email_tag);
-			$mailer->addCustomHeader($custom_email_tag[0].':'.$custom_email_tag[1]);
+			$mailer->addCustomHeader($custom_email_tag);
 		}
 
 		$send = $mailer->Send();
