@@ -1033,8 +1033,11 @@ label[for='clear-search']{
 
 .g-back-office-emundus-tableau .panel-body.em-containerFilter-body .em-filter .SumoSelect > .CaptionCont {
     height: 37px !important;
-    align-items: center;
-    display: flex;
+    overflow-y: scroll;
+}
+
+.g-back-office-emundus-tableau .panel-body.em-containerFilter-body .em-filter .SumoSelect > .CaptionCont span > div {
+    white-space: break-spaces;
 }
 
 
