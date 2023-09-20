@@ -195,9 +195,9 @@ class EmundusModelLogs extends JModelList {
         $db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-        $user_from = implode(',', $user_from);
-        $action = implode(',', $action);
-        $crud = implode(',', $db->quote($crud));
+        $user_from = is_array($user_from) ? implode(',', $user_from) : $user_from;
+        $action = is_array($action) ? implode(',', $action) : $action;
+        $crud = is_array($crud) ? implode(',', $db->quote($crud)) : $crud;
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $showTimeFormat = $eMConfig->get('log_show_timeformat', 0);
@@ -297,8 +297,8 @@ class EmundusModelLogs extends JModelList {
 		$query->select('label')
 			->from($db->quoteName('#__emundus_setup_actions'))
 			->where($db->quoteName('id').' = '.$db->quote($action));
-		$db->setQuery($query);
 
+        $db->setQuery($query);
 		$action_category = $db->loadResult();
 
 		// Decode the json params string
@@ -328,9 +328,10 @@ class EmundusModelLogs extends JModelList {
                 break;
             case ('u'):
                 $action_name = $action_category . '_UPDATE';
-                $action_details = '<b>' . reset($params->updated)->description . '</b>';
 
                 if (!empty($params->updated)) {
+                    $action_details = '<b>' . reset($params->updated)->description . '</b>';
+
                     foreach ($params->updated as $value) {
                         $action_details .= '<div class="em-flex-row"><span>' . $value->element . '&nbsp</span>&nbsp';
                         $value->old = !empty($value->old) ? $value->old : '';
