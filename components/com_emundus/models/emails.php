@@ -1730,7 +1730,7 @@ class EmundusModelEmails extends JModelList {
         $query->select('*')
             ->from($this->_db->quoteName('#__emundus_setup_emails', 'se'))
             ->where($filterDate)
-            ->where($fullRecherche)
+            ->andWhere($fullRecherche)
 
             ->group($sortDb)
             ->order($sortDb.$sort);

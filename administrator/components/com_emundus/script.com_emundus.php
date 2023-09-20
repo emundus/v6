@@ -3175,6 +3175,18 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 				EmundusHelperUpdate::updateComponentParameter('com_users', 'reset_count', 5);
 				EmundusHelperUpdate::updateComponentParameter('com_users', 'reset_time', 1);
 			}
+
+            if (version_compare($cache_version, '1.37.3', '<=') || $firstrun) {
+                $old_values = [
+                    'fr-FR' => "<div>J'accepte <a href=\"fr/politique-de-confidentialite-des-donnees\" target=\"_blank\"> <i> la politique de confidentialité des données </i></a><i data-isicon=\"true\" class=\"icon-star small \"></i></div>",
+                    'en-GB' => "<div> I accept <a href=\"en/politique-de-confidentialite-des-donnees\" target=\"_blank\"><i>the terms and conditions </i></a><i data-isicon=\"true\" class=\"icon-star small \"></i></div>",
+                ];
+                $new_values = [
+                    'fr-FR' => "Je consens à l'exploitation de mes données personnelles afin de créer mon compte utilisateur.",
+                    'en-GB' => 'I hereby give my consent to the processing of my personal data to create my user account.',
+                ];
+                EmundusHelperUpdate::updateOverrideTag('ACCEPT_THE_TERMS', $old_values, $new_values);
+            }
 		}
 
 		return $succeed;
