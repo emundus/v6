@@ -41,7 +41,7 @@ class EmundusHelperFilters {
 
 					$params = json_decode($result['params']);
 					foreach ($options as $option) {
-						if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options)) {
+						if (property_exists($params, 'sub_options') && property_exists($params->sub_options, $option)) {
 							$results[$key][$option] = implode('|', $params->sub_options->$option);
 						} else {
 							$results[$key][$option] = '';
@@ -55,7 +55,7 @@ class EmundusHelperFilters {
 
 					$params = json_decode($result->params);
 					foreach ($options as $option) {
-						if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options)) {
+						if (property_exists($params, 'sub_options') && property_exists($params->sub_options, $option)) {
 							$results[$key]->$option = implode('|', $params->sub_options->$option);
 						} else {
 							$results[$key]->$option = '';
