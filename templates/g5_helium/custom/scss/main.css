@@ -119,8 +119,6 @@ body {
 /* TABLETTE */
 @media screen and (min-width: 768px) and (max-width: 959px) {
 
-
-
     /* Accueil */
     .homepage #g-container-main .g-container {
         background-image : none;

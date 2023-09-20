@@ -3707,6 +3707,16 @@ div#em-appli-block {
 /* ERREUR 404 */
 
 .error-page {
+  font-family: var(--em-default-font);
+
+  @supports (-webkit-background-clip: text) {
+    .gradient-404 {
+      background: linear-gradient(95deg, #353544 7.64%, #5B5A72 52.08%, #B0B0BF 98.42%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
 
   .container-404 {
     display: flex;
@@ -3717,7 +3727,7 @@ div#em-appli-block {
 
     h2 {
       text-align: center;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--em-primary-color);
       font-size: 40px;
       margin-bottom: 0;
@@ -3760,9 +3770,7 @@ div#em-appli-block {
 @media screen and (max-width: 767px) {
   .error-page .container-404 {
     gap: 40px;
-    width: 90%;
-    margin-left: 50px;
-    margin-top: 30px;
+    margin: 30px 0 0 0;
   }
 }
 
