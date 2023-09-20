@@ -1,0 +1,40 @@
+name: Tchoozy
+description: Display of Tchoozy
+type: core
+
+form:
+  fields:
+    #Accueil
+    wide-background:
+      type: input.text
+      label: Wide background
+      default: url("../../../../media/com_emundus/images/tchoozy/backgrounds/wide-background.svg")
+      description: Fond formes large
+    demonstration:
+      type: input.text
+      label: Demonstration
+      default: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/demonstration.svg")
+      description: Tchoozy demonstration illustration
+
+    #Connexion
+    corner-bottom-left-background:
+      type: input.text
+      label: Corner bottom left background
+      default: url("../../../../media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg")
+      description: Fond formes coin bas gauche
+    corner-top-right-background:
+      type: input.text
+      label: Corner top right background
+      default: url("../../../../media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg")
+      description: Fond formes coin haut droite
+
+    candidate-button:
+      type: input.text
+      label: Candidate button illustration
+      default: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/candidate-button.svg")
+      description: Tchoozy candidature
+    digital-testing:
+      type: input.text
+      label: Digital testing illustration
+      default: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/digital-testing.svg")
+      description: Tchoozy écran tactile
