@@ -7837,7 +7837,7 @@ class FabrikFEModelList extends JModelForm
 			}
 		}
 
-		if ($origRowId == '')
+		if (empty($origRowId))
 		{
 			/**
 			 * $$$ rob added test for auto_inc as sugarid key is set from storeDatabaseFormat() and needs to be maintained

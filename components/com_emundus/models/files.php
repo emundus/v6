@@ -4223,7 +4223,7 @@ class EmundusModelFiles extends JModelLegacy
 
             require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
             $h_files = new EmundusHelperFiles();
-            $fnum = $h_files->createFnum($campaign_id, $user_id);
+            $fnum = EmundusHelperFiles::createFnum($campaign_id, $user_id);
 
             if (!empty($fnum)) {
                 $config = JFactory::getConfig();
