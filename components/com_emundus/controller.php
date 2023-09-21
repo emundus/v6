@@ -352,7 +352,8 @@ class EmundusController extends JControllerLegacy {
         if (in_array($fnum, array_keys($current_user->fnums))){
             $user = $current_user;
             $m_files->deleteFile($fnum);
-            EmundusModelLogs::log($current_user->id, (int)substr($fnum, -7), $fnum, 1, 'd', 'COM_EMUNDUS_ACCESS_FORM_DELETE');        } elseif (EmundusHelperAccess::asAccessAction(1, 'd', $current_user->id, $fnum) || EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
+            EmundusModelLogs::log($current_user->id, (int)substr($fnum, -7), $fnum, 1, 'd', 'COM_EMUNDUS_ACCESS_FORM_DELETE');
+        } elseif (EmundusHelperAccess::asAccessAction(1, 'd', $current_user->id, $fnum) || EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
             $user = $m_profile->getEmundusUser($student_id);
         } else {
             JError::raiseError(500, JText::_('ACCESS_DENIED'));
@@ -1617,6 +1618,7 @@ class EmundusController extends JControllerLegacy {
 
             $first_part_of_filename = explode('_', $file)[0];
             if (empty($fileInfo) && is_numeric($first_part_of_filename) && strlen($first_part_of_filename) === 28) {
+                $fileInfo = new stdClass();
                 $fileInfo->fnum = $first_part_of_filename;
                 $fileInfo->can_be_viewed = 1;
             }

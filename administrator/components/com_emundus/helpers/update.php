@@ -3473,20 +3473,6 @@ class EmundusHelperUpdate
 		}
 		//
 
-		// Check all rights group parameter
-		$query->clear()
-			->select('id')
-			->from($db->quoteName('#__emundus_setup_groups'))
-			->where($db->quoteName('label') . ' LIKE ' . $db->quote('Tous les droits'));
-		$db->setQuery($query);
-		$all_rights_group = $db->loadResult();
-
-		if(!empty($all_rights_group))
-		{
-			EmundusHelperUpdate::updateComponentParameter('com_emundus', 'all_rights_group', $all_rights_group);
-		}
-		//
-
 		return true;
 	}
 

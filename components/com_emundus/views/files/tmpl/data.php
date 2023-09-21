@@ -140,22 +140,22 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                                         <?= @$this->colsSup['id_tag'][$line['fnum']->val]?>
                                     <?php elseif (array_key_exists($k, $this->colsSup)) :?>
                                         <?= @$this->colsSup[$k][$line['fnum']->val] ?>
-                                    <?php else :?>
-                                        <?php if ($value->type == 'text' ) :?>
-                                            <?= strip_tags(JText::_($value->val)); ?>
+									<?php else :?>
+										<?php if ($value->type == 'text' ) :?>
+											<?= strip_tags(JText::_($value->val)); ?>
                                         <?php elseif ($value->type == "textarea" && !empty($value->val) && strlen($value->val) > 200) :?>
                                             <?= substr(strip_tags($value->val),0,200)." ..."; ?>
-                                        <?php elseif ($value->type == "date")  :?>
-                                            <strong>
-                                                <?php if (!isset($value->val) || $value->val == "0000-00-00 00:00:00") :?>
-                                                    <span class="em-radio" id="<?= $value->id.'-'.$value->val; ?>" aria-hidden="true"></span>
-                                                <?php else: ?>
-                                                    <?php
-                                                    $formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
-                                                    echo JFactory::getDate($value->val)->format(JText::_('DATE_FORMAT_LC2'));
-                                                    ?>
-                                                <?php endif; ?>
-                                            </strong>
+										<?php elseif ($value->type == "date")  :?>
+										<strong>
+											<?php if (!isset($value->val) || $value->val == "0000-00-00 00:00:00") :?>
+													<span class="em-radio" id="<?= $value->id.'-'.$value->val; ?>" aria-hidden="true"></span>
+											<?php else: ?>
+												<?php
+													$formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
+													echo JFactory::getDate($value->val)->format(JText::_('DATE_FORMAT_LC2'));
+												?>
+											<?php endif; ?>
+										</strong>
                                         <?php elseif ($value->type === 'birthday')  :?>
                                             <strong>
                                                 <?php if (empty($value->val) || $value->val === '0000-00-00 00:00:00') :?>

@@ -3034,7 +3034,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
 
                     $fnum = explode(',', $fnum);
-                    if ($attachment || !empty($attachment_to_export)) {
+                    if (($attachment || !empty($attachment_to_export)) && count($attachment_to_export) > 0) {
                         $files = $m_files->getFilesByFnums($fnum, $attachment_to_export);
                         $file_ids = array();
 

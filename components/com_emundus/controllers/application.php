@@ -699,7 +699,14 @@ class EmundusControllerApplication extends JControllerLegacy
 
 			if (EmundusHelperAccess::asAccessAction(4, 'r', JFactory::getUser()->id, $fnum)) {
 				$m_application = new EmundusModelApplication();
-				$response['attachments'] = $m_application->getUserAttachmentsByFnum($fnum, NULL);
+                if (!class_exists('EmundusModelFiles')) {
+                    require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+                }
+                $m_files = new EmundusModelFiles();
+
+                $fnumInfos = $m_files->getFnumInfos($fnum);
+
+                $response['attachments'] = $m_application->getUserAttachmentsByFnum($fnum, NULL, $fnumInfos['profile_id']);
 
 				$response['msg'] = JText::_('SUCCESS');
 				$response['status'] = true;

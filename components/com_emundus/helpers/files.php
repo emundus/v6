@@ -2755,7 +2755,7 @@ class EmundusHelperFiles
      * @return  string      FNUM for application.
      * @since   1.6
      */
-    public function createFnum($campaign_id, $user_id, $redirect = true){
+    public static function createFnum($campaign_id, $user_id, $redirect = true){
 		$fnum = '';
 	    $app = JFactory::getApplication();
 	    JLog::addLogger(array('text_file' => 'com_emundus.fnum.php'), JLog::ALL, 'com_emundus.fnum');

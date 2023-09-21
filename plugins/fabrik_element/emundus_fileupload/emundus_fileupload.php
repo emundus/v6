@@ -225,7 +225,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
     }
 
     private function formatBytes($bytes, $precision = 2) {
-        $units = array('KB', 'MB', 'GB', 'TB');
+        $units = array('B', 'KB', 'MB', 'GB', 'TB');
         $bytes = max($bytes, 0);
         $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
         $pow = min($pow, count($units) - 1);
@@ -562,6 +562,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $bits['class'] .= ' ' . $params->get('text_format');
         $bits['attachmentId'] = $params->get('attachmentId');
         $bits['size'] = $params->get('size');
+        $bits['max_size_txt'] = $this->formatBytes($bits['size']);
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $bits['encrypted'] = ($params->get('encrypt') == 2)?$eMConfig->get('can_submit_encrypted', 1):$params->get('encrypt');
