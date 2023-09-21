@@ -11,6 +11,9 @@ use GuzzleHttp\Client as GuzzleClient;
 
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+
 class SmartAgenda
 {
     /**
@@ -43,12 +46,22 @@ class SmartAgenda
      */
     private $client = null;
 
+	private $db;
+
     /**
      * @throws Exception
      */
     public function __construct()
     {
         JLog::addLogger(['text_file' => 'com_emundus.smart_agenda.php'], JLog::ALL, 'com_emundus.smart_agenda');
+
+	    if (version_compare(JVERSION, '4.0', '>'))
+	    {
+		    $this->db = Factory::getContainer()->get('DatabaseDriver');
+	    } else {
+		    $this->db = Factory::getDbo();
+		}
+
         $this->setAuth();
 
         if (empty($this->auth['login']) || empty($this->auth['pwd']) || empty($this->auth['api_id']) || empty($this->auth['api_key'])) {
@@ -67,7 +80,7 @@ class SmartAgenda
 
     private function setAuth(): void
     {
-        $config = JComponentHelper::getParams('com_emundus');
+        $config = ComponentHelper::getParams('com_emundus');
         $this->auth['login'] = $config->get('smart_agenda_login');
         $this->auth['pwd'] = $config->get('smart_agenda_pwd');
         $this->auth['api_id'] = $config->get('smart_agenda_api_id');
@@ -94,7 +107,7 @@ class SmartAgenda
 
     private function setBaseUrl()
     {
-        $config = JComponentHelper::getParams('com_emundus');
+        $config = ComponentHelper::getParams('com_emundus');
         $this->baseUrl = $config->get('smart_agenda_base_url', '');
 		$this->webServiceBaseUrl = $config->get('smart_agenda_ws_base_url', '');
     }
@@ -221,17 +234,16 @@ class SmartAgenda
         $client_id = 0;
 
         if (!empty($fnum)) {
-            $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
+            $query = $this->db->getQuery(true);
 
             $query->select('eu.smart_agenda_client_id, eu.email')
                 ->from('#__emundus_users AS eu')
                 ->leftJoin('#__emundus_campaign_candidature AS ecc ON ecc.applicant_id = eu.user_id')
-                ->where('ecc.fnum LIKE ' . $db->quote($fnum));
+                ->where('ecc.fnum LIKE ' . $this->db->quote($fnum));
 
             try {
-                $db->setQuery($query);
-                $user_data = $db->loadObject();
+                $this->db->setQuery($query);
+                $user_data = $this->db->loadObject();
             } catch (Exception $e) {
                 JLog::add('Failed to get smart agenda client id from fnum ' . $fnum . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.smart_agenda');
             }
@@ -285,16 +297,15 @@ class SmartAgenda
                 if (!empty($response->id) && $response->mail == $json['mail']) {
                     $added = true;
 
-                    $db = JFactory::getDbo();
-                    $query = $db->getQuery(true);
+                    $query = $this->db->getQuery(true);
 
                     $query->update('#__emundus_users')
                         ->set('smart_agenda_client_id = ' . $response->id)
-                        ->where('email LIKE ' . $db->quote($json['mail']));
+                        ->where('email LIKE ' . $this->db->quote($json['mail']));
 
                     try {
-                        $db->setQuery($query);
-                        $updated = $db->execute();
+                        $this->db->setQuery($query);
+                        $updated = $this->db->execute();
 
                         if (!$updated) {
                             JLog::add('Failed to save smart agenda user_id ' . $response->id . ' for user with mail ' . $json['mail'] . ' and fnum ' . $json['cc1'], JLog::WARNING, 'com_emundus.smart_agenda');
@@ -339,16 +350,15 @@ class SmartAgenda
 			if (!empty($response) && $response->code == 0 && !empty($response->id_client)) {
 				$invited = true;
 
-				$db = JFactory::getDbo();
-				$query = $db->getQuery(true);
+				$query = $this->db->getQuery(true);
 
 				$query->update('#__emundus_users')
 					->set('smart_agenda_client_id = ' . $response->id_client)
-					->where('email LIKE ' . $db->quote($params['mail']));
+					->where('email LIKE ' . $this->db->quote($params['mail']));
 
 				try {
-					$db->setQuery($query);
-					$updated = $db->execute();
+					$this->db->setQuery($query);
+					$updated = $this->db->execute();
 
 					if (!$updated) {
 						JLog::add('Failed to save smart agenda user_id ' . $response->id . ' for user with mail ' . $params['mail'] . ' and fnum ' . $params['id_interne_candidat'], JLog::WARNING, 'com_emundus.smart_agenda');

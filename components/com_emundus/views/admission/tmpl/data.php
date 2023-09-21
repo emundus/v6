@@ -13,7 +13,15 @@
  */
 defined('_JEXEC') or die('Restricted access');
 
-$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+use Joomla\CMS\Factory;
+
+if (version_compare(JVERSION, '4.0', '>'))
+{
+	$user = Factory::getApplication()->getIdentity();
+} else {
+    $user = Factory::getUser();
+}
+$anonymize_data = EmundusHelperAccess::isDataAnonymized($user->id);
 ?>
 
 <input type="hidden" id="view" name="view" value="admission">
@@ -75,8 +83,8 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                                             <span id="span-check-none"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_NONE'); ?></span>
                                         </label>
                                     </div>
-                                <?php elseif (@$this->lists['order'] == $kl) :?>
-                                    <?php if (@$this->lists['order_dir'] == 'desc') :?>
+                                <?php elseif ($this->lists['order'] == $kl) :?>
+                                    <?php if ($this->lists['order_dir'] == 'desc') :?>
                                         <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
                                     <?php else :?>
                                         <span class="glyphicon glyphicon-sort-by-attributes"></span>

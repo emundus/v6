@@ -44,7 +44,9 @@ class plgUserEmundus_su_csc extends JPlugin
         include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
 
-        if (!$app->isAdmin()) {
+        $isAdmin = JFactory::getApplication()->isClient('administrator');
+
+        if (!$isAdmin) {
             $current_user = JFactory::getSession()->get('emundusUser');
             if (EmundusHelperAccess::isApplicant($current_user->id)) {
                 if ($current_user->code == "utc-dfp-dri") {
@@ -75,7 +77,9 @@ class plgUserEmundus_su_csc extends JPlugin
 
         $campaign = $profiles->getCurrentCampaignInfoByApplicant($user['id']);
 
-        if (!$app->isAdmin()) {
+        $isAdmin = JFactory::getApplication()->isClient('administrator');
+
+        if (!$isAdmin) {
             if ($campaign["training"] == "utc-dfp-dri") {
                 $app->redirect("index.php?option=com_content&view=article&id=80&Itemid=1570");
             } else {

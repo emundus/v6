@@ -14,8 +14,30 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 use Joomla\CMS\Date\Date;
+use Joomla\CMS\Factory;
 
 class EmundusModelsettings extends JModelList {
+
+	private $db;
+	private $user;
+	private $app;
+
+	function __construct() {
+		parent::__construct();
+
+		$this->app = JFactory::getApplication();
+
+		if(version_compare(JVERSION,'4.0','>'))
+		{
+			$this->db = Factory::getContainer()->get('DatabaseDriver');
+			$this->user = $this->app->getIdentity();
+		} else {
+			$this->db = Factory::getDBO();
+			$this->user = Factory::getUser();
+		}
+
+		JLog::addLogger(['text_file' => 'com_emundus.error.php'], JLog::ERROR, array('com_emundus'));
+	}
 
     /**
      * Get all colors available for status and tags
@@ -1450,5 +1472,33 @@ class EmundusModelsettings extends JModelList {
 		}
 
 		return $result;
+	}
+
+	function getMenuId($link = '',$alias = '') {
+		$itemId = 0;
+		$query = $this->db->getQuery(true);
+
+		try
+		{
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__menu'));
+			if(!empty($link))
+			{
+				$query->where($this->db->quoteName('link') . ' LIKE ' . $this->db->quote($link));
+			}
+			elseif (!empty($alias))
+			{
+				$query->where($this->db->quoteName('alias') . ' LIKE ' . $this->db->quote($alias));
+			}
+			$this->db->setQuery($query);
+			$itemId = $this->db->loadResult();
+		}
+		catch (Exception $e)
+		{
+			JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $itemId;
 	}
 }

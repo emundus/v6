@@ -15,6 +15,9 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
+
+use Joomla\CMS\Factory;
+
 /**
  * Content Component Query Helper
  *
@@ -26,12 +29,22 @@ jimport('joomla.application.component.helper');
 class EmundusHelperEmails {
 
     function createEmailBlock($params, $users = null) {
-        $jinput = JFactory::getApplication()->input;
+        $app = Factory::getApplication();
+        if (version_compare(JVERSION, '4.0', '>'))
+        {
+            $current_user = $app->getIdentity();
+        } else {
+            $current_user = Factory::getUser();
+        }
+
+        $jinput = Factory::getApplication()->input;
         $itemid = $jinput->get('Itemid', null, 'INT');
         $fnums = $jinput->get('fnums', null, 'RAW');
 
         $fnumsArray = (array) json_decode($fnums);
         if (count($fnumsArray) > 0) {
+            $fnums_tab = array();
+
             foreach ($fnumsArray as $value) {
                 if ($value->fnum !== 'em-check-all') {
                     $fnums_tab[] = $value->fnum;
@@ -40,7 +53,6 @@ class EmundusHelperEmails {
             $fnums = json_encode($fnums_tab);
         }
 
-        $current_user = JFactory::getUser();
         $email = '<div class="em_email_block" id="em_email_block">
 					<input placeholder="'.JText::_('NAME_FROM').'" name="mail_from_name" type="text" class="inputbox input-xlarge" id="mail_from_name" style="margin-bottom: 16px" value="'.$current_user->name.'" />
 					<input placeholder="'.JText::_('COM_EMUNDUS_MAILS_EMAIL_FROM').'" name="mail_from" type="text" class="inputbox input-xlarge" style="margin-bottom: 16px" id="mail_from" value="'.$current_user->email.'" />
@@ -135,7 +147,7 @@ class EmundusHelperEmails {
         if (in_array('evaluators', $params)) {
 
             $default_template = EmundusHelperEmails::getEmail('assessors_set');
-            $editor = JFactory::getEditor('tinymce');
+            $editor = Factory::getEditor('tinymce');
             $params = array('mode' => 'simple');
             $mail_body = $editor->display( 'mail_body', $default_template->message, '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
             $email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
@@ -180,14 +192,20 @@ class EmundusHelperEmails {
         }
 
         if (in_array('evaluation_result', $params)) {
-            $editor = JFactory::getEditor('tinymce');
+            $editor = Factory::getEditor('tinymce');
             $params = array('mode' => 'simple');
             $mail_body = $editor->display( 'mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
             $email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
 
             $student_id = $jinput->getInt('jos_emundus_evaluations___student_id');
             $campaign_id = $jinput->getInt('jos_emundus_evaluations___campaign_id');
-            $applicant = JFactory::getUser($student_id);
+
+            if (version_compare(JVERSION, '4.0', '>'))
+            {
+                $applicant = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($student_id);
+            } else {
+                $applicant = Factory::getUser($student_id);
+            }
 
             $email .= '<fieldset>
 				<legend>
@@ -361,13 +379,19 @@ class EmundusHelperEmails {
         }
 
         if (in_array('this_applicant', $params)) {
-            $editor = JFactory::getEditor('tinymce');
+            $editor = Factory::getEditor('tinymce');
             $params = array('mode' => 'simple');
             $mail_body = $editor->display( 'mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
             $email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
 
-            $email_to = JFactory::getApplication()->input->get('sid', null, 'GET', 'none',0);
-            $student = JFactory::getUser($email_to);
+            $email_to = $app->input->get('sid', null, 'GET', 'none',0);
+
+            if (version_compare(JVERSION, '4.0', '>'))
+            {
+                $student = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($email_to);
+            } else {
+                $student = Factory::getUser($email_to);
+            }
 
             $AllEmail_template = EmundusHelperEmails::getAllEmail(2);
             $email.='<select name="select_template" onChange="getTemplate(this);">
@@ -391,10 +415,20 @@ class EmundusHelperEmails {
         return $email;
     }
 
-    function getEmail($lbl)
+    public static function getEmail($lbl)
     {
-        $db = JFactory::getDBO();
-        $query = 'SELECT * FROM #__emundus_setup_emails WHERE lbl like '.$db->Quote($lbl);
+        if (version_compare(JVERSION, '4.0', '>'))
+        {
+            $db = Factory::getContainer()->get('DatabaseDriver');
+        } else {
+            $db = Factory::getDBO();
+        }
+
+        $query = $db->getQuery(true);
+
+        $query->select('*')
+            ->from($db->quoteName('#__emundus_setup_emails'))
+            ->where($db->quoteName('lbl') . ' = ' . $db->quote($lbl));
         $db->setQuery( $query );
         return $db->loadObject();
     }

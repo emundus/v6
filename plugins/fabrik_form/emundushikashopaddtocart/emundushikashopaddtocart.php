@@ -64,7 +64,7 @@ class PlgFabrik_FormEmundushikashopaddtocart extends plgFabrik_Form {
 
         $mainframe = JFactory::getApplication();
 
-        if (!$mainframe->isAdmin()) {
+        if (!$mainframe->isClient('administrator')) {
             $jinput = JFactory::getApplication()->input;
             $current_user = JFactory::getUser();
             $db = JFactory::getDbo();

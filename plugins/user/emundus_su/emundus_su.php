@@ -44,7 +44,9 @@ class plgUserEmundus_su extends JPlugin
         include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
 
-        if (!$app->isAdmin()) {
+        $isAdmin = JFactory::getApplication()->isClient('administrator');
+
+        if (!$isAdmin) {
             $current_user = JFactory::getSession()->get('emundusUser');
             if (EmundusHelperAccess::isApplicant($current_user->id)) {
                 switch ($current_user->code) {
@@ -89,7 +91,9 @@ class plgUserEmundus_su extends JPlugin
 
         $campaign = $profiles->getCurrentCampaignInfoByApplicant($user['id']);
 
-        if (!$app->isAdmin()) {
+        $isAdmin = JFactory::getApplication()->isClient('administrator');
+
+        if (!$isAdmin) {
             switch ($campaign["training"]) {
                 case 'pcsc':
                         $app->redirect("index.php?option=com_content&view=article&id=83&Itemid=1570");

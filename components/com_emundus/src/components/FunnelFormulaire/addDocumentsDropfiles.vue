@@ -38,12 +38,12 @@
               </button>
               <div class="em-flex-row em-w-100 em-flex-center">
                 <div class="em-flex-column em-edit-cursor" @click="editName(document)">
-                  <img v-if="document.ext === 'pdf'" src="media/com_emundus/images/icones/filetype/pdf.png" class="em-filetype-icon" alt="filetype">
-                  <img v-else-if="['docx','doc','odf'].includes(document.ext)" src="media/com_emundus/images/icones/filetype/doc.png" class="em-filetype-icon" alt="filetype">
-                  <img v-else-if="['xls','xlsx','csv'].includes(document.ext)" src="media/com_emundus/images/icones/filetype/excel.png" class="em-filetype-icon" alt="filetype">
-                  <img v-else-if="['png','gif','jpg','jpeg'].includes(document.ext)" src="media/com_emundus/images/icones/filetype/image.png" class="em-filetype-icon" alt="filetype">
-                  <img v-else-if="['zip','rar'].includes(document.ext)" src="media/com_emundus/images/icones/filetype/zip.png" class="em-filetype-icon" alt="filetype">
-                  <img v-else-if="['svg'].includes(document.ext)" src="media/com_emundus/images/icones/filetype/svg.png" class="em-filetype-icon" alt="filetype">
+                  <img v-if="document.ext === 'pdf'" src="/media/com_emundus/images/icones/filetype/pdf.png" class="em-filetype-icon" alt="filetype">
+                  <img v-else-if="['docx','doc','odf'].includes(document.ext)" src="/media/com_emundus/images/icones/filetype/doc.png" class="em-filetype-icon" alt="filetype">
+                  <img v-else-if="['xls','xlsx','csv'].includes(document.ext)" src="/media/com_emundus/images/icones/filetype/excel.png" class="em-filetype-icon" alt="filetype">
+                  <img v-else-if="['png','gif','jpg','jpeg'].includes(document.ext)" src="/media/com_emundus/images/icones/filetype/image.png" class="em-filetype-icon" alt="filetype">
+                  <img v-else-if="['zip','rar'].includes(document.ext)" src="/media/com_emundus/images/icones/filetype/zip.png" class="em-filetype-icon" alt="filetype">
+                  <img v-else-if="['svg'].includes(document.ext)" src="/media/com_emundus/images/icones/filetype/svg.png" class="em-filetype-icon" alt="filetype">
                   <div class="em-mt-8">
                     <span class="em-overflow-ellipsis em-max-width-250 em-mr-4">{{ document.title }}</span>
                   </div>
@@ -103,7 +103,7 @@ export default {
   data() {
     return {
       dropzoneOptions: {
-        url: 'index.php?option=com_emundus&controller=settings&task=uploaddropfiledoc&cid=' + this.campaignId,
+        url: window.location.origin+'/index.php?option=com_emundus&controller=settings&task=uploaddropfiledoc&cid=' + this.campaignId,
         maxFilesize: 10,
         maxFiles: 1,
         autoProcessQueue: true,

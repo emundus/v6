@@ -14,6 +14,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Factory;
+
 /**
  * campaign Controller
  *
@@ -22,15 +24,25 @@ jimport('joomla.application.component.controller');
  * @since      5.0.0
  */
 class EmundusControllerProgramme extends JControllerLegacy {
-    var $_user = null;
-    var $_db = null;
-    var $m_programme = null;
+	protected $app;
+
+    private $_user;
+	private $_db;
+	private $m_programme;
 
     function __construct($config = array()){
         parent::__construct($config);
 
+		$this->app = Factory::getApplication();
+	    if (version_compare(JVERSION, '4.0', '>'))
+	    {
+		    $this->_user = $this->app->getIdentity();
+			$this->_db = Factory::getContainer()->get('DatabaseDriver');
+		} else {
         $this->_user = JFactory::getUser();
         $this->_db = JFactory::getDBO();
+	    }
+
         $this->m_programme = $this->getModel('programme');
     }
 
@@ -315,9 +327,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
-
-            $data = $jinput->getRaw('body');
+            $data = $this->input->getRaw('body');
 
             $result = $this->m_programme->addProgram($data);
 

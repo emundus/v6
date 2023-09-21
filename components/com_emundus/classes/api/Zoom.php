@@ -12,6 +12,8 @@ use GuzzleHttp\Client as GuzzleClient;
 
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Component\ComponentHelper;
+
 class Zoom
 {
 	/**
@@ -56,7 +58,7 @@ class Zoom
 
 	private function setAuth()
 	{
-		$config = JComponentHelper::getParams('com_emundus');
+		$config = ComponentHelper::getParams('com_emundus');
 		$this->auth['token'] = $config->get('zoom_jwt', '');
 	}
 
@@ -83,7 +85,7 @@ class Zoom
 
 	private function setBaseUrl()
 	{
-		$config = JComponentHelper::getParams('com_emundus');
+		$config = ComponentHelper::getParams('com_emundus');
 		$this->baseUrl = $config->get('zoom_base_url', 'https://api.zoom.us/v2/');
 	}
 

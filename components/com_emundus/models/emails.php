@@ -744,7 +744,7 @@ class EmundusModelEmails extends JModelList {
      * @since version v6
      */
     public function setTagsFabrik($str, $fnums = array(), $raw = false) {
-        require_once(JPATH_SITE.'/components/com_emundus/models/files.php');
+        require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         $m_files = new EmundusModelFiles();
 
         $jinput = JFactory::getApplication()->input;
@@ -1468,7 +1468,7 @@ class EmundusModelEmails extends JModelList {
 
         require_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
         $h_date = new EmundusHelperDate();
-        $now = $h_date->getNow();
+        $now = $h_date::getNow();
 
         $query = $this->_db->getQuery(true);
 
@@ -1730,7 +1730,7 @@ class EmundusModelEmails extends JModelList {
         $query->select('*')
             ->from($this->_db->quoteName('#__emundus_setup_emails', 'se'))
             ->where($filterDate)
-            ->andWhere($fullRecherche)
+            ->where($fullRecherche)
 
             ->group($sortDb)
             ->order($sortDb.$sort);

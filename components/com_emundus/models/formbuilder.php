@@ -14,16 +14,20 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 use Joomla\CMS\Date\Date;
+use Joomla\CMS\Factory;
 
 class EmundusModelFormbuilder extends JModelList {
-    var $model_language = null;
-    var $model_language_overrides = null;
-    var $model_menus = null;
-    var $m_translations = null;
-    var $h_fabrik = null;
+	private $app;
+    private $model_language;
+	private $model_language_overrides;
+	private $model_menus;
+	private $m_translations;
+	private $h_fabrik;
 
     public function __construct($config = array()) {
         parent::__construct($config);
+
+		$this->app = Factory::getApplication();
 
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'translations.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'fabrik.php');

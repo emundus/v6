@@ -8,6 +8,8 @@
  */
 
 // Protect from unauthorized access
+use Joomla\CMS\Factory;
+
 defined('_JEXEC') or die('Restricted access');
 defined('DS') or define('DS', DIRECTORY_SEPARATOR);
 
@@ -28,8 +30,11 @@ class plgUserEmundus_registration_email extends JPlugin {
 
         parent::__construct($subject, $config);
         $this->loadLanguage();
-        if (JRequest::getInt('emailactivation')) {
-            $userId = JRequest::getInt('u');
+
+        $input = JFactory::getApplication()->input;
+
+        if ($input->getInt('emailactivation')) {
+            $userId = $input->getInt('u');
             $app    = JFactory::getApplication();
             $user   = JFactory::getUser($userId);
 
@@ -52,7 +57,7 @@ class plgUserEmundus_registration_email extends JPlugin {
                 $redirect = $this->params->get('activation_redirect','index.php');
 
                 // Check that the token is in a valid format.
-                if (!empty($token) && strlen($token) === 32 && JRequest::getInt($token, 0, 'get') === 1) {
+                if (!empty($token) && strlen($token) === 32 && $input->getInt($token, 0, 'get') === 1) {
 
                     // Remove token and from user params.
                     $params->set('emailactivation_token', null);

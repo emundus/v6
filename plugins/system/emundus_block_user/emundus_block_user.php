@@ -55,7 +55,7 @@ class plgSystemEmundus_block_user extends JPlugin
 
             $token = $params->get('emailactivation_token');
             $token = md5($token);
-            if (!empty($token) && strlen($token) === 32 && JRequest::getInt($token, 0, 'get') === 1) {
+            if (!empty($token) && strlen($token) === 32 && $app->input->getInt($token, 0, 'get') === 1) {
                 $table->activation = 1;
             }
             if ($table->activation == -1) {

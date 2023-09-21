@@ -45,8 +45,10 @@ class plgUserEmundus_su_forminnov extends JPlugin
 
         include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
+        $isAdmin = JFactory::getApplication()->isClient('administrator');
 
-        if (!$app->isAdmin()) {
+
+        if (!$isAdmin) {
             $current_user = $session->get('emundusUser');
             if (EmundusHelperAccess::isApplicant($current_user->id)) {
                 if ($current_user->code == "forminnov") {

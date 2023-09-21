@@ -61,5 +61,24 @@ export default {
         } catch (e) {
             return false;
         }
+    },
+
+    async redirectJRoute(link) {
+        let formDatas = new FormData();
+        formDatas.append('link', link);
+
+        fetch(window.location.origin + '/index.php?option=com_emundus&controller=settings&task=redirectjroute', {
+            method: 'POST',
+            body: formDatas,
+        }).then((response) => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+        }).then((result) => {
+            if (result.status) {
+                window.location.href = window.location.origin + '/' + result.data;
+            }
+        });
     }
 };

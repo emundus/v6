@@ -73,14 +73,21 @@ class EmundusHelperFiles
     public function setMenuFilter() {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
-        $current_user   = JFactory::getUser();
-        $menu           = @JFactory::getApplication()->getMenu();
+		$app = Factory::getApplication();
+	    if (version_compare(JVERSION, '4.0', '>'))
+	    {
+		    $session = $app->getSession();
+		} else {
+		    $session = Factory::getSession();
+	    }
+
+
+        $menu           = $app->getMenu();
         $current_menu   = $menu->getActive();
-        $Itemid         = JFactory::getApplication()->input->getInt('Itemid', @$current_menu->id);
+        $Itemid         = $app->input->getInt('Itemid', @$current_menu->id);
         $menu_params    = $menu->getParams($Itemid);
         $m_files        = new EmundusModelFiles();
 
-        $session = JFactory::getSession();
         $params = $session->get('filt_params');
 
         //Filters
@@ -173,25 +180,25 @@ class EmundusHelperFiles
 
         }
 
-        if (is_array($filts_details['group']) && count($filts_details['group']) > 0 && isset($filts_details['group'][0]) && !empty($filts_details['group'][0])) {
+        if (is_array($filts_details['group']) && count($filts_details['group']) > 0 && !empty($filts_details['group'][0])) {
             $fd_with_param          = $params['group'] + $filts_details['group'];
             $params['group']        = $filts_details['group'];
             $filts_details['group'] = $fd_with_param;
         }
 
-        if (is_array($filts_details['institution']) && count($filts_details['institution']) > 0 && isset($filts_details['institution'][0]) && !empty($filts_details['institution'][0])) {
+        if (is_array($filts_details['institution']) && count($filts_details['institution']) > 0 && !empty($filts_details['institution'][0])) {
             $fd_with_param = $params['institution'] + $filts_details['institution'];
             $params['institution'] = $filts_details['institution'];
             $filts_details['institution'] = $fd_with_param;
         }
 
         // Else statement is present due to the fact that programmes are group limited
-        if ((is_array($filts_details['programme']) && count($filts_details['programme']) > 0) && isset($filts_details['programme'][0]) && !empty($filts_details['programme'][0])) {
+        if ((is_array($filts_details['programme']) && count($filts_details['programme']) > 0) && !empty($filts_details['programme'][0])) {
             $fd_with_param = $params['programme'] + $filts_details['programme'];
             $params['programme'] = $filts_details['programme'];
             $filts_details['programme'] = $fd_with_param;
         } else {
-            $codes = $m_files->getAssociatedProgrammes($current_user->id);
+            //$codes = $m_files->getAssociatedProgrammes($current_user->id);
 
             // ONLY FILES LINKED TO MY GROUP
             $programme = null;

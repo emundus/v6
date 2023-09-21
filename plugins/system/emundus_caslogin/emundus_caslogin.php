@@ -188,7 +188,7 @@ class plgSystemEmundus_caslogin extends JPlugin
 
             $ticket = $input->get('ticket');
 
-            if ($app->isAdmin()) {
+            if ($app->isClient('administrator')) {
                 $sid = $input->get('server');
             } else {
                 $sid = $app->getUserState('com_externallogin.server');
@@ -467,7 +467,7 @@ class plgSystemEmundus_caslogin extends JPlugin
                                     $request = JFactory::getApplication()->input->getInputForRequestMethod();
 
                                     // Prepare the connection process
-                                    if ($app->isAdmin()) {
+                                    if ($app->isClient('administrator')) {
                                         $input->set('option', 'com_login');
                                         $input->set('task', 'login');
                                         $input->set(JSession::getFormToken(), 1);

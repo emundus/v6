@@ -9,12 +9,23 @@
 // no direct access
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+
 $layout = $params->get('layout', 'default');
 // Include the syndicate functions only once
 require_once dirname(__FILE__).'/helper.php';
 include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
 
-$user = JFactory::getSession()->get('emundusUser');
+$app = Factory::getApplication();
+
+if (version_compare(JVERSION, '4.0', '>')) {
+    $session = $app->getSession();
+    $document = $app->getDocument();
+} else {
+    $session = Factory::getSession();
+    $document = Factory::getDocument();
+}
+$user = $session->get('emundusUser');
 
 // Here we get the menu which is defined in the params
 $jooomla_menu_name = $params->get('menu_name', 0);
@@ -59,7 +70,7 @@ if (!empty($custom_actions) && !empty($user->id)) {
     }
 }
 
-$document = JFactory::getDocument();
+
 
 if ($jooomla_menu_name !== 0 || $jooomla_menu_name !== '0') {
     $list = modEmundusUserDropdownHelper::getList($jooomla_menu_name);
@@ -88,7 +99,6 @@ $applicant_option = false;
 
 
 // used for getting the page we are currently on.
-$app = JFactory::getApplication();
 $menu = $app->getMenu();
 $active	= $menu->getActive();
 $active_id = isset($active) ? $active->id : $menu->getDefault()->id;

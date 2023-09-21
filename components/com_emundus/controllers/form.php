@@ -15,6 +15,8 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Factory;
+
 /**
  * Form Controller
  *
@@ -22,14 +24,26 @@ jimport('joomla.application.component.controller');
  * @subpackage eMundus
  * @since      5.0.0
  */
-class EmundusControllerForm extends JControllerLegacy {
+class EmundusControllerForm extends JControllerLegacy
+{
+	protected $app;
 
-    var $m_form = null;
+	private $user;
+	private $m_form;
+
     public function __construct($config = array()) {
         parent::__construct($config);
 
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'form.php');
+		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'access.php');
+		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'form.php');
+		$this->app = Factory::getApplication();
+		if (version_compare(JVERSION, '4.0', '>'))
+		{
+			$this->user = $this->app->getIdentity();
+		} else {
+			$this->user = Factory::getUser();
+		}
+
         $this->m_form = new EmundusModelForm;
     }
 
@@ -518,16 +532,17 @@ class EmundusControllerForm extends JControllerLegacy {
     }
 
 
-     public function getFormsByProfileId() {
-        $user = JFactory::getUser();
+	public function getFormsByProfileId()
+	{
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-	        $jinput = JFactory::getApplication()->input;
-
-	        $profile_id = $jinput->getInt('profile_id');
+		}
+		else
+		{
+			$profile_id = $this->input->getInt('profile_id');
 
             $form = $this->m_form->getFormsByProfileId($profile_id);
 

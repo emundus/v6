@@ -14,6 +14,9 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Access\Access;
+
 class EmundusHelperMenu {
 
 	public static function buildMenuQuery($profile, $formids = null, $checklevel=true) {
@@ -22,13 +25,21 @@ class EmundusHelperMenu {
         }
 		$list = [];
 
-		$db = JFactory::getDBO();
+		$app = Factory::getApplication();
+		if (version_compare(JVERSION, '4.0', '>'))
+		{
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$user = $app->getIdentity();
+		} else {
+			$db = Factory::getDBO();
+			$user = Factory::getUser();
+		}
+
 		$query = $db->getQuery(true);
 
-		$user   = JFactory::getUser();
 		$levels = [];
 		if ($checklevel) {
-			$levels = JAccess::getAuthorisedViewLevels($user->id);
+			$levels = Access::getAuthorisedViewLevels($user->id);
 		}
 
 		$query->select('fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name, CONCAT(menu.link,"&Itemid=",menu.id) AS link, menu.id, menu.title, profile.menutype, fbforms.params, menu.params as menu_params')
@@ -90,46 +101,71 @@ class EmundusHelperMenu {
 		return $list;
 	}
 
-	static function getUserApplicationMenu($profile, $formids = null) {
-		$user   = JFactory::getUser();
-		$levels = JAccess::getAuthorisedViewLevels($user->id);
-
-		$_db = JFactory::getDBO();
-		$query = 'SELECT fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name, CONCAT(menu.link,"&Itemid=",menu.id) AS link, menu.id, menu.title, profile.menutype
-		FROM #__menu AS menu
-		INNER JOIN #__emundus_setup_profiles AS profile ON profile.menutype = menu.menutype AND profile.id = '.$profile.'
-		INNER JOIN #__fabrik_forms AS fbforms ON fbforms.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)
-		LEFT JOIN #__fabrik_lists AS fbtables ON fbtables.form_id = fbforms.id
-		WHERE menu.published = 1 AND menu.parent_id != 1 AND menu.access IN ('.implode(',', $levels).')';
-		if (!empty($formids) && $formids[0] != "") {
-			$query .= ' AND fbtables.form_id IN('.implode(',',$formids).')';
+	public static function getUserApplicationMenu($profile, $formids = null) {
+		$app = Factory::getApplication();
+		if (version_compare(JVERSION, '4.0', '>'))
+		{
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$user = $app->getIdentity();
+		} else {
+			$db = Factory::getDBO();
+			$user = Factory::getUser();
 		}
-		$query .= ' ORDER BY menu.lft';
+
+		$levels = Access::getAuthorisedViewLevels($user->id);
+
+		$query = $db->getQuery(true);
+
+		$query->select('fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name, CONCAT(menu.link,"&Itemid=",menu.id) AS link, menu.id, menu.title, profile.menutype, fbforms.params, menu.params as menu_params')
+			->from($db->quoteName('#__menu','menu'))
+			->innerJoin($db->quoteName('#__emundus_setup_profiles','profile').' ON '.$db->quoteName('profile.menutype').' = '.$db->quoteName('menu.menutype') . ' AND ' . $db->quoteName('profile.id') . ' = ' . $db->quote($profile))
+			->innerJoin($db->quoteName('#__fabrik_forms','fbforms').' ON '.$db->quoteName('fbforms.id').' = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)')
+			->leftJoin($db->quoteName('#__fabrik_lists','fbtables').' ON '.$db->quoteName('fbtables.form_id').' = '.$db->quoteName('fbforms.id'))
+			->where($db->quoteName('menu.published') . ' = 1')
+			->where($db->quoteName('menu.parent_id') . ' != 1')
+			->where($db->quoteName('menu.access') . ' IN ('.implode(',',$levels) . ')');
+		if (!empty($formids) && $formids[0] != "") {
+			$query->where($db->quote('fbtables.form_id') . ' IN ('.implode(',',$formids).')');
+		}
+		$query->order('menu.lft');
 
 		try {
-			$_db->setQuery($query);
-			return $_db->loadObjectList();
+			$db->setQuery($query);
+			return $db->loadObjectList();
 		} catch(Exception $e) {
 			throw new $e->getMessage();
 		}
 	}
 
 	function buildMenuListQuery($profile) {
-		$_db = JFactory::getDBO();
-		$query = 'SELECT fbtables.db_table_name
-		FROM #__menu AS menu
-		INNER JOIN #__emundus_setup_profiles AS profile ON profile.menutype = menu.menutype AND profile.id = '.$profile.'
-		INNER JOIN #__fabrik_forms AS fbforms ON fbforms.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)
-		LEFT JOIN #__fabrik_lists AS fbtables ON fbtables.form_id = fbforms.id
-		WHERE fbtables.published = 1 AND menu.parent_id !=1
-		ORDER BY menu.lft';
+		$menu_lists = array();
+
+		if (version_compare(JVERSION, '4.0', '>'))
+		{
+			$db = Factory::getContainer()->get('DatabaseDriver');
+		} else {
+			$db = Factory::getDBO();
+		}
+
+		$query = $db->getQuery(true);
+
+		$query->select('fbtables.db_table_name')
+			->from($db->quoteName('#__menu','menu'))
+			->innerJoin($db->quoteName('#__emundus_setup_profiles','profile').' ON '.$db->quoteName('profile.menutype').' = '.$db->quoteName('menu.menutype') . ' AND ' . $db->quoteName('profile.id') . ' = ' . $db->quote($profile))
+			->innerJoin($db->quoteName('#__fabrik_forms','fbforms').' ON '.$db->quoteName('fbforms.id').' = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)')
+			->leftJoin($db->quoteName('#__fabrik_lists','fbtables').' ON '.$db->quoteName('fbtables.form_id').' = '.$db->quoteName('fbforms.id'))
+			->where($db->quoteName('menu.published') . ' = 1')
+			->where($db->quoteName('menu.parent_id') . ' != 1')
+			->order('menu.lft');
 
 		try {
-	    	$_db->setQuery( $query );
-			return $_db->loadResultArray();
+	    	$db->setQuery( $query );
+			$menu_lists = $db->loadResultArray();
 	    } catch(Exception $e) {
 	        throw new $e->getMessage();
 	    }
+
+		return $menu_lists;
 	}
 }
 ?>

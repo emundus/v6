@@ -42,8 +42,10 @@ class plgUserEmundus_su_pepite extends JPlugin
 
         include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
+        $isAdmin = JFactory::getApplication()->isClient('administrator');
 
-        if (!$app->isAdmin()) {
+
+        if (!$isAdmin) {
             $current_user = JFactory::getSession()->get('emundusUser');
             if (EmundusHelperAccess::isApplicant($current_user->id)) { 
                 if ($current_user->code == "pepite") {
@@ -74,8 +76,9 @@ class plgUserEmundus_su_pepite extends JPlugin
         $profiles = new EmundusModelProfile;
 
         $campaign = $profiles->getCurrentCampaignInfoByApplicant($user['id']);
+        $isAdmin = JFactory::getApplication()->isClient('administrator');
 
-        if (!$app->isAdmin()) {
+        if (!$isAdmin) {
             if ($campaign["training"] == "pepite") {
                 $app->redirect("https://ideepepite.sorbonne-universites.fr/");
             } else {

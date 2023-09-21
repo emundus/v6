@@ -18,9 +18,10 @@ class plgUserEmundus_su_tt_associate_user extends JPlugin
         jimport('joomla.log.log');
         JLog::addLogger(['text_file' => 'com_emundus.emundus_su_tt_plg.php'], JLog::ALL, ['emundus_su_tt_plg']);
         $app = JFactory::getApplication();
+        $isAdmin = JFactory::getApplication()->isClient('administrator');
 
 
-        if (!$app->isAdmin()) {
+        if (!$isAdmin) {
             $db = JFactory::getDbo();
 
             $query = $db->getQuery(true);

@@ -407,7 +407,7 @@ class PlgFabrik_FormEmundusReferentLetterHopitauxParis extends plgFabrik_Form
     protected function raiseError(&$err, $field, $msg) {
         $app = JFactory::getApplication();
 
-        if ($app->isAdmin()) {
+        if ($app->isClient('administrator')) {
             $app->enqueueMessage($msg, 'notice');
         } else {
             $err[$field][0][] = $msg;

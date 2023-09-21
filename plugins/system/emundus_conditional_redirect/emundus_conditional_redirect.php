@@ -31,7 +31,7 @@ class plgSystemEmundus_conditional_redirect extends JPlugin {
     function onAfterRender() {
 		$app = JFactory::getApplication();
 
-		if ($app->isAdmin() || JFactory::getUser()->guest) {
+		if ($app->isClient('administrator') || JFactory::getUser()->guest) {
 			return true;
 		}
 

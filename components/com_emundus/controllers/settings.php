@@ -14,6 +14,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Factory;
+
 /**
  * Settings Controller
  *
@@ -23,12 +25,27 @@ jimport('joomla.application.component.controller');
  */
 class EmundusControllersettings extends JControllerLegacy {
 
-    var $m_settings = null;
+	protected $app;
+
+	private $user;
+    private $m_settings;
 
     public function __construct($config = array()) {
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+
         parent::__construct($config);
+
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
         $this->m_settings = $this->getModel('settings');
+		$this->app = Factory::getApplication();
+
+	    if (version_compare(JVERSION, '4.0', '>'))
+	    {
+		    $this->user = $this->app->getIdentity();
+	    }
+	    else
+	    {
+		    $this->user = Factory::getUser();
+	    }
     }
 
     public function getstatus() {
@@ -693,16 +710,36 @@ class EmundusControllersettings extends JControllerLegacy {
     }
 
     public function redirectjroute() {
-        $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $jinput = JFactory::getApplication()->input;
-            $link = $jinput->getString('link');
+	    $current_link = $this->input->getString('link');
 
-            $response = array('status' => true, 'msg' => 'SUCCESS', 'data' => JRoute::_($link, false));
+		$options_to_set = [];
+		$segments = explode('?', $current_link);
+		$segments = explode('&', $segments[1]);
+
+		$exceptions = ['view','layout','option','format'];
+		foreach ($segments as $key => $segment) {
+			$segment = explode('=', $segment);
+
+			if(!in_array($segment[0],$exceptions))
+			{
+				$options_to_set[$segment[0]] = $segment[1];
+				unset($segments[$key]);
+			}
+		}
+		$link = 'index.php?'.implode('&',$segments);
+
+	    $response = array('status' => true, 'msg' => 'SUCCESS', 'data' => $current_link);
+
+		$itemId = $this->m_settings->getMenuId($link);
+
+		if(!empty($itemId)) {
+			$menu = $this->app->getMenu()->getItem($itemId);
+			$response['data'] = $menu->route;
+
+			if(!empty($options_to_set)) {
+				$response['data'] .= '?' . http_build_query($options_to_set);
+			}
         }
         echo json_encode((object)$response);
         exit;
@@ -797,19 +834,17 @@ class EmundusControllersettings extends JControllerLegacy {
     }
 
     public function uploaddropfiledoc() {
-        $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
             $result = 0;
             echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
         } else {
 
-	        require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
+	        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
             $m_campaign = new EmundusModelCampaign();
 
-            $jinput = JFactory::getApplication()->input;
-            $file = $jinput->files->get('file');
-            $cid = $jinput->get('cid');
+            $file = $this->input->files->get('file');
+            $cid = $this->input->get('cid');
 
             if(isset($file)) {
                 $campaign_category = $m_campaign->getCampaignCategory($cid);

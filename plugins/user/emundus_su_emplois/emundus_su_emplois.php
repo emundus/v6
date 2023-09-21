@@ -41,8 +41,9 @@ class plgUserEmundus_su_emplois extends JPlugin
         $app            = JFactory::getApplication();
         include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
+        $isAdmin = JFactory::getApplication()->isClient('administrator');
 
-        if (!$app->isAdmin()) {
+        if (!$isAdmin) {
             $current_user = JFactory::getSession()->get('emundusUser');
             if (EmundusHelperAccess::isApplicant($current_user->id)) {
                 if ($current_user->code == "utc-dfp-dri") {
@@ -76,7 +77,9 @@ class plgUserEmundus_su_emplois extends JPlugin
 
         $campaign = $profiles->getCurrentCampaignInfoByApplicant($user['id']);
 
-        if (!$app->isAdmin()) {
+        $isAdmin = JFactory::getApplication()->isClient('administrator');
+
+        if (!$isAdmin) {
             if ($campaign["training"] == "utc-dfp-dri") {
                 $app->redirect("index.php?option=com_emundus&view=jobs&Itemid=1468");
             } else {

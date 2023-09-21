@@ -2,8 +2,8 @@
 
 defined('_JEXEC') or die('Access Deny');
 
-require_once (JPATH_SITE . '/components/com_emundus/helpers/access.php');
-require_once (JPATH_SITE . '/components/com_emundus/models/messenger.php');
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messenger.php');
 
 JHtml::script('media/com_emundus/js/jquery.cookie.js');
 JHtml::script('media/jui/js/bootstrap.min.js');

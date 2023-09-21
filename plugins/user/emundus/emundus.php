@@ -404,7 +404,8 @@ class plgUserEmundus extends JPlugin
             $previous_url = base64_decode($redirect);
         }
 
-        if (!$app->isAdmin()) {
+        $isAdmin = JFactory::getApplication()->isClient('administrator');
+        if (!$isAdmin) {
 
             // Users coming from an OAuth system are immediately signed in and thus need to have their data entered in the eMundus table.
             if ($user['type'] == 'OAuth2') {
@@ -452,8 +453,7 @@ class plgUserEmundus extends JPlugin
                     }
 
                     JPluginHelper::importPlugin('authentication');
-                    $dispatcher = JEventDispatcher::getInstance();
-                    $dispatcher->trigger('onOAuthAfterRegister', ['user' => $user]);
+                    JFactory::getApplication()->triggerEvent('onOAuthAfterRegister', ['user' => $user]);
                 }
 
                 // Add the Oauth provider type to the Joomla user params.
@@ -589,8 +589,7 @@ class plgUserEmundus extends JPlugin
             }
 
             JPluginHelper::importPlugin('emundus', 'custom_event_handler');
-            $dispatcher = JEventDispatcher::getInstance();
-            $dispatcher->trigger('callEventHandler', ['onUserLogin', ['user_id' => $user->id]]);
+            JFactory::getApplication()->triggerEvent('callEventHandler', ['onUserLogin', ['user_id' => $user->id]]);
 
 	        if (!empty($previous_url)) {
                 $app->redirect($previous_url);
@@ -637,8 +636,7 @@ class plgUserEmundus extends JPlugin
         if (JFactory::getUser($user["id"])->getParam('OAuth2')) {
 
             JPluginHelper::importPlugin('authentication');
-            $dispatcher = JEventDispatcher::getInstance();
-            $dispatcher->trigger('onUserAfterLogout', $user['id']);
+            JFactory::getApplication()->triggerEvent('onUserAfterLogout', $user['id']);
             return true;
         }
 

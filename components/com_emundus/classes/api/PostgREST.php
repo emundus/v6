@@ -14,13 +14,24 @@ use JFactory;
 use JLog;
 
 use classes\api\Api;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
 
 defined('_JEXEC') or die('Restricted access');
 class PostgREST extends Api
 {
+	private $db;
+
 	public function __construct()
 	{
 		parent::__construct();
+
+		if (version_compare(JVERSION, '4.0', '>'))
+		{
+			$this->db = Factory::getContainer()->get('DatabaseDriver');
+		} else {
+			$this->db = Factory::getDbo();
+		}
 
 		$this->setAuth();
 		$this->setHeaders();
@@ -30,7 +41,7 @@ class PostgREST extends Api
 
 	public function setBaseUrl(): void
 	{
-		$config = JComponentHelper::getParams('com_emundus');
+		$config = ComponentHelper::getParams('com_emundus');
 		$this->baseUrl = $config->get('postgrest_api_base_url', '');
 	}
 
@@ -45,7 +56,7 @@ class PostgREST extends Api
 
 	public function setAuth(): void
 	{
-		$config = JComponentHelper::getParams('com_emundus');
+		$config = ComponentHelper::getParams('com_emundus');
 
 		$this->auth['bearer_token'] = $config->get('postgrest_api_bearer_token', '');
 	}
@@ -54,23 +65,22 @@ class PostgREST extends Api
 	{
 		$result = array();
 
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		try
 		{
 			$query->select('config')
-				->from($db->quoteName('#__emundus_setup_sync'))
-				->where($db->quoteName('type') . ' LIKE ' . $db->quote('postgrest'));
-			$db->setQuery($query);
-			$result = $db->loadResult();
+				->from($this->db->quoteName('#__emundus_setup_sync'))
+				->where($this->db->quoteName('type') . ' LIKE ' . $this->db->quote('postgrest'));
+			$this->db->setQuery($query);
+			$result = $this->db->loadResult();
 			if(!empty($result)){
 				$result = json_decode($result, true);
 			} else {
 				$result = array();
 			}
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
@@ -81,12 +91,16 @@ class PostgREST extends Api
 	public function mapDatas($datas,$uid = 0): bool{
 		$result = true;
 
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 		$mapping = $this->getAttributeMapping();
 
 		if(empty($uid)){
-			$uid = JFactory::getUser()->id;
+			if (version_compare(JVERSION, '4.0', '>'))
+			{
+				$uid = Factory::getApplication()->getIdentity()->id;
+			} else {
+				$uid = Factory::getUser()->id;
+			}
 		}
 
 		try
@@ -99,20 +113,20 @@ class PostgREST extends Api
 
 					$query->clear()
 						->select('id')
-						->from($db->quoteName($table))
-						->where($db->quoteName($user_key) . ' = ' . $db->quote($uid));
-					$db->setQuery($query);
-					$exists = $db->loadResult();
+						->from($this->db->quoteName($table))
+						->where($this->db->quoteName($user_key) . ' = ' . $this->db->quote($uid));
+					$this->db->setQuery($query);
+					$exists = $this->db->loadResult();
 
 					if($exists)
 					{
 						$query->clear()
-							->update($db->quoteName($table))
-							->where($db->quoteName($user_key) . ' = ' . $db->quote($uid));
+							->update($this->db->quoteName($table))
+							->where($this->db->quoteName($user_key) . ' = ' . $this->db->quote($uid));
 					} else {
 						$query->clear()
-							->insert($db->quoteName($table))
-							->set($db->quoteName($user_key) . ' = ' . $db->quote($uid));
+							->insert($this->db->quoteName($table))
+							->set($this->db->quoteName($user_key) . ' = ' . $this->db->quote($uid));
 					}
 
 					foreach($map['attributes'] as $api_key => $attribute){
@@ -126,14 +140,14 @@ class PostgREST extends Api
 							}
 
 							if(!empty($value)){
-								$query->set($db->quoteName($attribute['key']) . ' = ' . $db->quote($value));
+								$query->set($this->db->quoteName($attribute['key']) . ' = ' . $this->db->quote($value));
 							}
 						}
 					}
 
-					$db->setQuery($query);
-					if(!$db->execute()){
-						JLog::add('Error when map Postgrest api datas with query : '.$query->__toString().' with error : '.$db->getErrorMsg(), JLog::ERROR, 'com_emundus');
+					$this->db->setQuery($query);
+					if(!$this->db->execute()){
+						JLog::add('Error when map Postgrest api datas with query : '.$query->__toString().' with error : '.$this->db->getErrorMsg(), JLog::ERROR, 'com_emundus');
 						return false;
 					}
 				}

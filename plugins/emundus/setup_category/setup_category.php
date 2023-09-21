@@ -8,15 +8,27 @@
  */
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Factory;
+use Joomla\Database\DatabaseInterface;
+
 class plgEmundusSetup_category extends JPlugin {
 
-    var $db;
-    var $query;
+	private $app;
+	private $db;
+	private $query;
 
     function __construct(&$subject, $config) {
         parent::__construct($subject, $config);
 
-        $this->db = JFactory::getDbo();
+		$this->app = Factory::getApplication();
+
+	    if (version_compare(JVERSION, '4.0', '>'))
+	    {
+		    $this->db = Factory::getContainer()->get('DatabaseDriver');
+		} else {
+			$this->db = Factory::getDbo();
+	    }
+
         $this->query = $this->db->getQuery(true);
 
         jimport('joomla.log.log');
@@ -26,24 +38,24 @@ class plgEmundusSetup_category extends JPlugin {
 
     function onAfterCampaignCreate($id) {
         try {
-            $app = JFactory::getApplication();
-            $label = $app->input->getString("jos_emundus_setup_campaigns___label");
+            $label = $this->app->input->getString("jos_emundus_setup_campaigns___label");
+
             if($label == null){
                 $this->query
                     ->clear()
                     ->select($this->db->quoteName('label'))
-                    ->from($this->db->quoteName('jos_emundus_setup_campaigns'))
+                    ->from($this->db->quoteName('#__emundus_setup_campaigns'))
                     ->where($this->db->quoteName('id') . ' = ' . $this->db->quote($id));
                 $this->db->setQuery($this->query);
                 $label = $this->db->loadResult();
             }
-            $nom = JFilterOutput::stringURLSafe($label);
 
+            $name = JFilterOutput::stringURLSafe($label);
 
             $this->query
                 ->clear()
                 ->select($this->db->quoteName('id'))
-                ->from($this->db->quoteName('jos_categories'))
+                ->from($this->db->quoteName('#__categories'))
                 ->where($this->db->quoteName('extension') . ' LIKE ' .$this->db->quote('com_dropfiles'))
                 ->andWhere('json_extract(`params`, "$.idCampaign") LIKE ' . $this->db->quote('"'.$id.'"'));
 
@@ -52,16 +64,22 @@ class plgEmundusSetup_category extends JPlugin {
             $cat_id = $this->db->loadResult();
 
             if(!$cat_id) {
-	            JFactory::$database = null;
+	            if (version_compare(JVERSION, '4.0', '>'))
+	            {
+		            $this->db = Factory::getContainer()->get(DatabaseInterface::class);
 
-	            $this->db = JFactory::getDbo();
+				} else {
+		            Factory::$database = null;
+	                $this->db = JFactory::getDbo();
+	            }
+
 	            $this->query = $this->db->getQuery(true);
 
                 $table = JTable::getInstance('category');
 
                 $data = array();
-                $data['path'] = $nom;
-                $data['alias'] = $nom . '-' . rand(1000,99999);
+                $data['path'] = $name;
+                $data['alias'] = $name . '-' . rand(1000,99999);
                 $data['title'] = $label;
                 $data['parent_id'] = 1;
                 $data['extension'] = "com_dropfiles";
@@ -96,9 +114,9 @@ class plgEmundusSetup_category extends JPlugin {
 
                 // Fields to update.
                 $fields = array(
-                    $this->db->quoteName('path') . ' = ' . $this->db->quote($nom),
+                    $this->db->quoteName('path') . ' = ' . $this->db->quote($name),
                     $this->db->quoteName('title') . ' = ' . $this->db->quote($label),
-                    $this->db->quoteName('alias') . ' = ' . $this->db->quote($nom)
+                    $this->db->quoteName('alias') . ' = ' . $this->db->quote($name)
                 );
 
                 // Conditions for which records should be updated.

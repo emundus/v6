@@ -13,6 +13,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Factory;
+
 /**
  * Campaign Controller
  *
@@ -21,19 +23,33 @@ jimport('joomla.application.component.controller');
  * @since      v6
  */
 class EmundusControllerCampaign extends JControllerLegacy {
-    var $_user = null;
-    var $_em_user = null;
-    var $_db = null;
-    var $m_campaign = null;
+
+    protected $app;
+
+    private $_user;
+    private $_em_user;
+    private $_db;
+    private $m_campaign;
 
     function __construct($config = array()){
         parent::__construct($config);
 
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 
-        $this->_user = JFactory::getUser();
-        $this->_em_user = JFactory::getSession()->get('emundusUser');
-        $this->_db = JFactory::getDBO();
+        $this->app = Factory::getApplication();
+
+        if (version_compare(JVERSION, '4.0', '>'))
+        {
+            $this->_user = $this->app->getIdentity();
+            $this->_db = Factory::getContainer()->get('DatabaseDriver');
+            $session = $this->app->getSession();
+        } else {
+            $this->_user = Factory::getUser();
+            $this->_db = Factory::getDBO();
+            $session = Factory::getSession();
+        }
+
+        $this->_em_user = $session->get('emundusUser');
 
         $this->m_campaign = $this->getModel('campaign');
     }
@@ -395,7 +411,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
+            $jinput = $this->input;
 
             $data = $jinput->getArray();
             $data['user'] = $this->_user->id;

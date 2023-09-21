@@ -504,8 +504,8 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 			}
 
 			$fnum = $jinput->get($db_table_name.'___fnum');
-			$s1 = JRequest::getVar($db_table_name.'___user', null, 'POST');
-			$s2 = JRequest::getVar('sid', '', 'GET');
+			$s1 = JFactory::getApplication()->input->get($db_table_name.'___user', null, 'POST');
+			$s2 = JFactory::getApplication()->input->get('sid', '', 'GET');
 			$student_id = !empty($s2)?$s2:$s1;
 
 			$sid = is_array($student_id)?$student_id[0]:$student_id;
@@ -615,7 +615,7 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 	{
 		$app = JFactory::getApplication();
 
-		if ($app->isAdmin())
+		if ($app->isClient('administrator'))
 		{
 			$app->enqueueMessage($msg, 'notice');
 		}

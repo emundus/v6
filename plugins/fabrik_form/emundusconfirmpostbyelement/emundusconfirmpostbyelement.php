@@ -192,13 +192,13 @@ class PlgFabrik_FormEmundusconfirmpostbyelement extends plgFabrik_Form
         }
 
         JPluginHelper::importPlugin('emundus');
-        $dispatcher = JEventDispatcher::getInstance();
+
         if($student->status != $step) {
-            $dispatcher->trigger('onBeforeStatusChange', [$student->fnum, $step]);
-            $dispatcher->trigger('callEventHandler', ['onBeforeStatusChange', ['fnum' => $student->fnum, 'state' => $step]]);
+            $app->triggerEvent('onBeforeStatusChange', [$student->fnum, $step]);
+            $app->triggerEvent('callEventHandler', ['onBeforeStatusChange', ['fnum' => $student->fnum, 'state' => $step]]);
         }
-        $dispatcher->trigger('onBeforeSubmitFile', [$student->id, $student->fnum]);
-        $dispatcher->trigger('callEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
+        $app->triggerEvent('onBeforeSubmitFile', [$student->id, $student->fnum]);
+        $app->triggerEvent('callEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
         $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $db->Quote($now) . ', status='.$step.' WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id. ' AND fnum like '.$db->Quote($student->fnum);
         $db->setQuery($query);
@@ -218,8 +218,8 @@ class PlgFabrik_FormEmundusconfirmpostbyelement extends plgFabrik_Form
         } catch (Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
-        $dispatcher->trigger('onAfterSubmitFile', [$student->id, $student->fnum]);
-        $dispatcher->trigger('callEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
+        JFactory::getApplication()->triggerEvent('onAfterSubmitFile', [$student->id, $student->fnum]);
+        JFactory::getApplication()->triggerEvent('callEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
         $student->candidature_posted = 1;
 
@@ -343,7 +343,7 @@ class PlgFabrik_FormEmundusconfirmpostbyelement extends plgFabrik_Form
     {
         $app = JFactory::getApplication();
 
-        if ($app->isAdmin())
+        if ($app->isClient('administrator'))
         {
             $app->enqueueMessage($msg, 'notice');
         }

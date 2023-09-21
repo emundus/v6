@@ -1,7 +1,7 @@
 <template>
 	<div id="form-builder-preview-attachment" class="em-h-100 em-w-100" :class="{loading: loading}">
 		<div v-if="!loading" class="em-text-align-center">
-      <img src="media/com_emundus/images/icones/filetype/doc.png" class="em-m-center" style="width: 50px" alt="filetype">
+      <img src="/media/com_emundus/images/icones/filetype/doc.png" class="em-m-center" style="width: 50px" alt="filetype">
 			<p class="em-font-size-12 em-w-100 em-mt-16">{{ document_label }}</p>
 		</div>
 		<skeleton v-else height="100%" width="100%"></skeleton>

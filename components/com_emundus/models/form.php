@@ -15,15 +15,29 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 jimport('joomla.database.table');
 
+use Joomla\CMS\Factory;
+
 class EmundusModelForm extends JModelList {
 
-    var $model_campaign = null;
-    var $model_menus = null;
+	private $app;
+	private $db;
+
+    private $model_campaign = null;
+	private $model_menus = null;
+
     public function __construct($config = array()) {
         parent::__construct($config);
 
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
         $this->model_campaign = new EmundusModelCampaign;
+
+		$this->app = Factory::getApplication();
+	    if (version_compare(JVERSION, '4.0', '>'))
+	    {
+		    $this->db = Factory::getContainer()->get('DatabaseDriver');
+		} else {
+			$this->db = Factory::getDbo();
+	    }
 
         // Get MenuItemModel.
         JLoader::register('MenusHelper', JPATH_ADMINISTRATOR . '/components/com_menus/helpers/menus.php');
