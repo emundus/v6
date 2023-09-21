@@ -3079,6 +3079,11 @@ body {
 #g-container-main div.login {
     background : none;
 }
+/* Pop-up aide */
+.icone-aide-tchoozy {
+    width: 20px;
+    margin-right: 5px;
+}
 /* TABLETTE */
 @media screen and (min-width: 768px) and (max-width: 959px) {
 
