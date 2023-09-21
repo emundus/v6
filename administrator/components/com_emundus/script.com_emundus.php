@@ -3214,11 +3214,11 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 			exit;
 		}
 
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
 		if (version_compare(PHP_VERSION, '8.0.0', '>='))
 		{
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
-
 			$query->clear()
 				->update('#__extensions')
 				->set($db->quoteName('enabled') . ' = 0')
