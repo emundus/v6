@@ -192,7 +192,7 @@ export default {
 .view-emails.no-layout #g-container-main,
 .view-form #g-container-main,
 .view-settings #g-container-main {
-  padding-left: 80px;
+  padding-left: 76px;
 }
 
 </style>

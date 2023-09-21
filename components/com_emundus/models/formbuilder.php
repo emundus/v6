@@ -417,7 +417,7 @@ class EmundusModelFormbuilder extends JModelList {
             $this->createElement('id',$group['group_id'],'internalid','id','',1,0,0);
             $this->createElement('time_date',$group['group_id'],'date','time date','',1, 0);
             $this->createElement('user',$group['group_id'],'user','user','',1, 0);
-            $default_fnum = '$fnum = JFactory::getSession()->get(\'emundusUser\')->fnum;if (!isset($fnum)) {return JFactory::getApplication()->input->get->get(\'rowid\');}return $fnum;';
+            $default_fnum = '$fnum = JFactory::getApplication()->input->get(\'rowid\');if (empty($fnum)) { $fnum = JFactory::getSession()->get(\'emundusUser\')->fnum;}return $fnum;';
             $this->createElement('fnum',$group['group_id'],'field','fnum',$default_fnum,1,0,1,1,0,44);
             //
 
@@ -840,7 +840,7 @@ class EmundusModelFormbuilder extends JModelList {
             $this->createElement('id',$hidden_group['group_id'],'internalid','id','',1,0,0);
             $this->createElement('time_date',$hidden_group['group_id'],'date','SENT_ON','',1, 0);
             $this->createElement('user',$hidden_group['group_id'],'user','user','',1, 0);
-            $default_fnum = '$fnum = JFactory::getSession()->get(\'emundusUser\')->fnum;if (!isset($fnum)) {return JFactory::getApplication()->input->get->get(\'rowid\');}return $fnum;';
+            $default_fnum = '$fnum = JFactory::getApplication()->input->get(\'rowid\');if (empty($fnum)) { $fnum = JFactory::getSession()->get(\'emundusUser\')->fnum;}return $fnum;';
             $this->createElement('fnum',$hidden_group['group_id'],'field','fnum',$default_fnum,1,0,1,1,0,44);
             //
 

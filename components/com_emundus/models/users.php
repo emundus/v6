@@ -2593,8 +2593,17 @@ class EmundusModelUsers extends JModelList {
             }
         }
 
+        $fullname = $user->firstname.' '.$user->lastname;
+
         try {
-            $query->update($db->quoteName('#__emundus_users'));
+            $query->update($db->quoteName('#__users'))
+                ->set($db->quoteName('name').' = '.$db->quote($fullname))
+                ->where($db->quoteName('id').' = '.$db->quote($uid));
+            $db->setQuery($query);
+            $db->execute();
+
+            $query->clear()
+                ->update($db->quoteName('#__emundus_users'));
             foreach ($columns as $column) {
                 $query->set($db->quoteName($column) . ' = ' . $db->quote($user->{$column}));
             }

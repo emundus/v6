@@ -148,6 +148,18 @@
           </el-table-column>
 
           <el-table-column
+              v-else-if="column.name === 'tags'"
+              min-width="180">
+            <template slot="header" slot-scope="scope" >
+              <span :title="translate('COM_EMUNDUS_FILES_TAGS')" class="em-neutral-700-color">{{translate('COM_EMUNDUS_FILES_TAGS')}}</span>
+            </template>
+            <template slot-scope="scope">
+              <div class="em-group-assoc-column">
+                <span v-for="tag in scope.row.tags" :class="tag.class" class="em-status em-mb-4">{{ tag.label }}</span>
+              </div>
+            </template>
+
+            <el-table-column
               v-else
               min-width="180">
             <template slot="header" slot-scope="scope" >

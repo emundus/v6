@@ -34,7 +34,7 @@
 
 <div id="div_<?php echo $d->attributes['name']; ?>" class="fabrik_element___emundus_file_upload_parent">
     <span class="fabrik_element___file_upload_formats">
-        <?= JText::_('PLG_ELEMENT_FILEUPLOAD_ALLOWED_TYPES')  . ' : ' . $allowed_types ?>
+        <?= JText::_('PLG_ELEMENT_FILEUPLOAD_ALLOWED_TYPES')  . ' : ' . $allowed_types ?>. <?= JText::_('PLG_ELEMENT_FIELD_MAXSIZE_TIP') . $d->attributes['max_size_txt']; ?>
     </span>
     <div class="btn-upload em-pointer">
         <p class="em-flex-row"><?php echo JText::_('PLG_ELEMENT_FILEUPLOAD_DROP') ?><u class="em-ml-4"><?php echo JText::_('PLG_ELEMENT_FILEUPLOAD_DROP_CLICK') ?></u><span class="material-icons-outlined em-ml-12">cloud_upload</span></p>
