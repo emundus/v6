@@ -14,7 +14,7 @@ form:
       type: input.text
       label: Title
       description: Customize the section title text.
-      default: Oups
+      default: Oups !
 
     image:
       type: input.imagepicker
