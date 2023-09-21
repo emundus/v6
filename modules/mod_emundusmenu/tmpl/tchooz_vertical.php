@@ -122,10 +122,11 @@ defined('_JEXEC') or die;
         z-index: 2;
         transition: all 0.3s ease-in-out;
     }
-    .tchooz-vertical-item a img{
+    .tchooz-vertical-item a img,
+    .tchooz-vertical-item a span[class*="material-icons"] {
         width: 30px;
         height: 30px;
-        padding: 5px;
+        padding: 3px !important;
     }
 
     .image-title{
@@ -213,6 +214,10 @@ defined('_JEXEC') or die;
        border: solid 2px #fff;
         border-radius: 5px;
         content: "";
+    }
+
+    #g-container-main,#g-footer,#footer-rgpd {
+        padding-left: 76px;
     }
 </style>
 <nav class="g-main-nav <?php echo $class_sfx;?>" data-g-hover-expand="true"

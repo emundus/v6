@@ -83,7 +83,7 @@ define(['jquery', 'fab/element'],
             const select = this.HTMLSelectElement;
             const val = select.value;
             const symbol = this.getSymbolFromIso3(val);
-            const displayiso3 = document.querySelector('#'+this.element.id+' input[name="currency_displayiso3"]').value;
+            const displayiso3 =this.element.getElementById('currency_displayiso3').value;
             if(displayiso3 == 1) {
                 element.textContent = symbol + ' (' + val + ')';
             } else {
