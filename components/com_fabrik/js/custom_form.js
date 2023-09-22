@@ -161,9 +161,19 @@ requirejs(['fab/fabrik'], function () {
                             button.hide();
                         })
                     } else {
+                        if(addButtons.length > 1) {
                         addButtons.forEach(function (button, index) {
-                            button.show();
+                                if((index + 1) < addButtons.length) {
+                                    button.hide();
+                                } else {
+                                    button.style.display = 'flex';
+                                }
                         })
+                        } else {
+                            addButtons.forEach(function (button, index) {
+                                button.style.display = 'flex';
+                            })
+                        }
                     }
                 }
             });

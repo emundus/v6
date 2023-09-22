@@ -40,7 +40,10 @@ requirejs(['fab/fabrik'], function () {
             }
         });
 
-        document.querySelector('.em-submit-form-button button[type="submit"]').disabled = false;
+        let submitBtn =  document.querySelector('button[type="submit"].register');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+        }
 
         if(no_valid_elts.length === 0) {
             form.result = true;
@@ -72,7 +75,10 @@ requirejs(['fab/fabrik'], function () {
     function removeFabrikFormSkeleton() {
         let header = document.querySelector('.page-header');
         if (header) {
-            document.querySelector('.page-header h2').style.opacity = 1;
+            let headerTitle = document.querySelector('.page-header h1');
+            if (headerTitle) {
+                headerTitle.style.opacity = 1;
+            }
             header.classList.remove('skeleton');
         }
         let intro = document.querySelector('.em-form-intro');

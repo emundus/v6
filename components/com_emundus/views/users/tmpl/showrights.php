@@ -13,9 +13,9 @@
 </style>
 <form action = "index.php?option=com_emundus&controller=users&task=addgroup" id="em-add-group" class="em-add-group" role="form" method="post">
 	<?php
-	if(count($this->groups) == 0)
+	if(!empty($this->groups)) {
 		echo JText::_('COM_EMUNDUS_GROUPS_NO_GROUP');
-	else {
+	} else {
 	?>
 		<?php foreach($this->groups as $k => $g):?>
 			<fieldset id="<?php echo $k?>" class="em-add-group-right">

@@ -2157,7 +2157,7 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addFabrikElement($datas,$params = null) {
+    public static function addFabrikElement($datas,$params = []) {
         $result = ['status' => false, 'message' => ''];
 
         if(empty($datas['name'])){
@@ -3227,7 +3227,7 @@ class EmundusHelperUpdate
 				'checkbox-border-width' => '0px',
 				'checkbox-border-color' => '#a7a7a7',
 				'checkbox-padding' => '12px',
-				'checkbox-scale' => '1.7',
+				'checkbox-scale' => '1.3',
 				'checkbox-input-margin' => '12px',
 				'checkbox-color-checked' => '#007bff',
 				'checkbox-border-color-error' => '#F04437',
@@ -3470,20 +3470,6 @@ class EmundusHelperUpdate
 				->where($db->quoteName('extension_id') . ' = ' . $db->quote($emundus_dropfiles_plugin));
 			$db->setQuery($query);
 			$db->execute();
-		}
-		//
-
-		// Check all rights group parameter
-		$query->clear()
-			->select('id')
-			->from($db->quoteName('#__emundus_setup_groups'))
-			->where($db->quoteName('label') . ' LIKE ' . $db->quote('Tous les droits'));
-		$db->setQuery($query);
-		$all_rights_group = $db->loadResult();
-
-		if(!empty($all_rights_group))
-		{
-			EmundusHelperUpdate::updateComponentParameter('com_emundus', 'all_rights_group', $all_rights_group);
 		}
 		//
 
