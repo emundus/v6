@@ -217,7 +217,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
                         [
                             'key' => JText::_('COM_EMUNDUS_ONBOARD_NB_FILES'),
                             'value' => '<a target="_blank" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;">' . $campaign->nb_files . '</a>',
-                            'classes' => '',
+                            'classes' => 'go-to-campaign-link',
                             'display' => 'table'
                         ],
                         [
@@ -234,7 +234,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
                                 [
                                     'key' => JText::_('COM_EMUNDUS_FILES_FILES'),
                                     'value' => '<a target="_blank" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;">' . $campaign->nb_files . ' ' . ( $campaign->nb_files > 1 ? JText::_('COM_EMUNDUS_FILES_FILES') : JText::_('COM_EMUNDUS_FILES_FILE')) . '</a>',
-                                    'classes' => 'label label-default em-p-5-12 em-font-weight-600',
+                                    'classes' => 'label label-default em-p-5-12 em-font-weight-600 go-to-campaign-link',
                                 ]
                             ],
                             'classes' => 'em-mt-8 em-mb-8',

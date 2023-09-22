@@ -111,7 +111,7 @@
 						</thead>
 						<tbody>
 							<tr v-for="item in displayedItems" :key="item.id"
-							    class="em-border-cards"
+							    class="em-border-cards list-item"
 							    :class="{'em-card-neutral-100 em-card-shadow em-p-24' : viewType === 'blocs'}"
 							>
 								<td class="cursor-pointer" @click="onClickAction(editAction, item.id)">
