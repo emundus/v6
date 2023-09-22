@@ -122,6 +122,14 @@ body {
     margin-right: 5px;
 }
 
+/* Page settings */
+.com_emundus:not(.view-programme):not(.view-checklist):not(.view-users) #g-page-surround, .files-board #g-page-surround, .g-back-office-emundus-tableau #g-page-surround, .view-list.com_fabrik #g-page-surround {
+    background-image: var(--display-setting-tools), var(--display-corner-bottom-right-background) !important;
+    background-position: bottom 65px right, bottom 60px right !important;
+    background-repeat : no-repeat, no-repeat !important;
+    background-size :  30%, 50% !important;
+}
+
 /* TABLETTE */
 @media screen and (min-width: 768px) and (max-width: 959px) {
 
@@ -134,6 +142,14 @@ body {
     .login > #g-page-surround {
         background-position: top 120px left 20px, bottom left, top 500px right 20px, top 72px right;
         background-size : 25%, 50%, 25%, 50%;
+    }
+
+    /* Page settings */
+    .com_emundus:not(.view-programme):not(.view-checklist):not(.view-users) #g-page-surround, .files-board #g-page-surround, .g-back-office-emundus-tableau #g-page-surround, .view-list.com_fabrik #g-page-surround {
+        background-image: var(--display-corner-bottom-right-background) !important;
+        background-position: bottom 60px right !important;
+        background-repeat : no-repeat !important;
+        background-size : 90% !important;
     }
 }
 
@@ -150,9 +166,19 @@ body {
         background-image : none, var(--display-corner-bottom-left-background), none, var(--display-corner-top-right-background);
         background-size : 80%, 80%, 80%, 80%;
     }
+
+    /* Page settings */
+    .com_emundus:not(.view-programme):not(.view-checklist):not(.view-users) #g-page-surround, .files-board #g-page-surround, .g-back-office-emundus-tableau #g-page-surround, .view-list.com_fabrik #g-page-surround {
+        background-image: var(--display-corner-bottom-right-background) !important;
+        background-position: bottom 60px right !important;
+        background-repeat : no-repeat !important;
+        background-size : 100% !important;
+    }
 }
 
-/* FIN TCHOOZY */
+/***************
+/* FIN TCHOOZY *
+ ***************/
 
 .after-em-border::after{
     content: "";

@@ -15,6 +15,10 @@
   background-image: var(--display-corner-top-right-background);
 }
 
+.corner-bottom-right-background {
+  background-image: var(--display-corner-bottom-right-background);
+}
+
 .floor-shapes-background {
   background-image: url("../../../../media/com_emundus/images/tchoozy/backgrounds/floor-shapes-background.svg");
 }
@@ -252,7 +256,7 @@
 }
 
 .setting-tools {
-  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/setting-tools.svg");
+  background-image: var(--display-setting-tools);
 }
 
 .social-networks {
@@ -371,7 +375,9 @@
 /* objects-illustrations */
 .account-settings {
   background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/account-settings.svg");
-}.gantry .wide-background {
+}
+
+.gantry .wide-background {
    background-image: url("../../../../media/com_emundus/images/tchoozy/backgrounds/wide-background.svg") ;
  }
 

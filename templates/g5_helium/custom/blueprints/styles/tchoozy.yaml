@@ -38,3 +38,16 @@ form:
       label: Digital testing illustration
       default: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/digital-testing.svg")
       description: Tchoozy écran tactile
+
+    #Page settings
+    corner-bottom-right-background:
+      type: input.text
+      label: Corner bottom right background
+      default: url("../../../../media/com_emundus/images/tchoozy/backgrounds/corner-bottom-right-background.svg")
+      description: Fond formes coin bas droite
+
+    setting-tools:
+      type: input.text
+      label: setting tools illustration
+      default: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/setting-tools")
+      description: Tchoozy paramètres globaux
