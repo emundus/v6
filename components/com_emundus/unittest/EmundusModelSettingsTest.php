@@ -138,10 +138,25 @@ class EmundusModelSettingsTest extends TestCase
 
 		$this->assertNotEmpty($articles, 'La récupération des articles RGPD fonctionne');
 
-		$this->assertSame(5, count($articles), 'Je récupère 5 articles RGPD');
+		$this->assertSame(4, count($articles), 'Je récupère 4 articles RGPD. (Cookies, mentions légales, politique de confidentialité et conditions générales d\'utilisation et Gestion des droits)');
 
 		if(empty($articles[0]->id)){
 			$this->assertNotEmpty($articles[0]->alias, 'Si le paramètre du module n\'est pas défini on récupère un alias par défaut');
+		}
+	}
+
+	public function testpublishArticle() {
+		$articles = $this->m_settings->getRgpdArticles();
+
+		foreach ($articles as $article) {
+			if(empty($article->id))
+			{
+				$publish = $this->m_settings->publishArticle(0, $article->alias);
+				$this->assertTrue($publish, 'La dépublication d\'un article RGPD fonctionne');
+			} else {
+				$publish = $this->m_settings->publishArticle(0, $article->id);
+				$this->assertTrue($publish, 'La dépublication d\'un article RGPD fonctionne');
+			}
 		}
 	}
 }

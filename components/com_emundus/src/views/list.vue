@@ -17,34 +17,6 @@
 			</div>
 		</div>
 		<div v-else class="list mt-4">
-			<section id="pagination-wrapper" class="flex justify-between items-center">
-				<select name="numberOfItemsToDisplay" v-model="numberOfItemsToDisplay" @change="getListItems()">
-					<option value='10'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 10</option>
-					<option value='25'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 25</option>
-					<option value='50'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 50</option>
-					<option value='all'>{{ translate('ALL') }}</option>
-				</select>
-				<div v-if="typeof currentTab.pagination !== undefined && currentTab.pagination && currentTab.pagination.total > 1" id="pagination" class="text-center">
-					<ul class="flex list-none">
-						<span :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === 1}"
-					      class="material-icons-outlined cursor-pointer mr-2"
-					      @click="getListItems(currentTab.pagination.current - 1, selectedListTab)">
-							chevron_left
-						</span>
-						<li v-for="i in currentTab.pagination.total" :key="i"
-						    class="cursor-pointer em-square-button"
-						    :class="{'active': i === currentTab.pagination.current}"
-						    @click="getListItems(i, selectedListTab)">
-							{{ i }}
-						</li>
-						<span :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === currentTab.pagination.total}"
-						      class="material-icons-outlined cursor-pointer ml-2"
-						      @click="getListItems(currentTab.pagination.current + 1, selectedListTab)">
-							chevron_right
-						</span>
-					</ul>
-				</div>
-			</section>
 			<nav v-if="currentList.tabs.length > 1" id="list-nav">
 				<ul style="list-style-type: none;margin-left:0;" class="flex">
 					<li v-for="tab in currentList.tabs" :key="tab.key"
@@ -80,7 +52,7 @@
 					</div>
 					<div class="view-type flex items-center">
 					<span v-for="viewTypeOption in viewTypeOptions" :key="viewTypeOption.value"
-					      style="padding: 4px;border-radius: var(--em-default-br);"
+					      style="padding: 4px;border-radius: calc(var(--em-default-br)/2);display: flex;height: 38px;width: 38px;align-items: center;justify-content: center;"
 					      class="material-icons-outlined ml-2 cursor-pointer"
 					      :class="{
 								'active em-main-500-color em-border-main-500': viewTypeOption.value === viewType,
@@ -115,7 +87,7 @@
 							    :class="{'em-card-neutral-100 em-card-shadow em-p-24' : viewType === 'blocs'}"
 							>
 								<td class="cursor-pointer" @click="onClickAction(editAction, item.id)">
-									<span :class="{'em-font-weight-600 mb-4':  viewType === 'blocs'}">{{ item.label[params.shortlang] }}</span>
+									<span :class="{'em-font-weight-600 mb-4 text-ellipsis overflow-hidden':  viewType === 'blocs'}" :title="item.label[params.shortlang]">{{ item.label[params.shortlang] }}</span>
 								</td>
 								<td class="columns" v-for="column in item.additional_columns" :key="column.key" v-if="column.display === viewType || column.display === 'all'">
 									<div v-if="column.type === 'tags'" class="flex flex-wrap" :class="column.classes">
@@ -124,12 +96,12 @@
 									<span v-else class="mt-2 mb-2" :class="column.classes">{{ column.value }}</span>
 								</td>
 								<div>
-									<hr v-if="viewType === 'blocs'" class="w-full mt-1.5 mb-1.5">
+									<hr v-if="viewType === 'blocs'" class="w-full mt-1.5 mb-3">
 									<td class="actions">
 										<a v-if="viewType === 'blocs' && editAction" @click="onClickAction(editAction, item.id)" class="em-primary-button text-sm cursor-pointer em-w-auto">
 											{{ translate(editAction.label) }}
 										</a>
-										<div class="flex">
+										<div class="flex items-center">
 											<span v-if="previewAction" class="material-icons-outlined cursor-pointer" @click="onClickPreview(item)">visibility</span>
 											<span v-for="action in iconActions" :key="action.name" class="cursor-pointer"
 											      :class="{
@@ -149,7 +121,7 @@
 														    :key="action.name"
 														    :class="{'hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))}"
 														    @click="onClickAction(action, item.id)"
-														    class="cursor-pointer p-2 font-semibold"
+														    class="cursor-pointer p-2 em-font-size-12"
 														>
 															{{ translate(action.label) }}
 														</li>
@@ -165,6 +137,37 @@
 				</div>
 				<div v-else id="empty-list" class="noneDiscover"  v-html="noneDiscoverTranslation"></div>
 			</div>
+
+      <section id="pagination-wrapper" class="flex justify-between items-center mt-5">
+        <select name="numberOfItemsToDisplay" v-model="numberOfItemsToDisplay" @change="getListItems()">
+          <option value='10'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 10</option>
+          <option value='25'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 25</option>
+          <option value='50'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 50</option>
+          <option value='all'>{{ translate('ALL') }}</option>
+        </select>
+        <div v-if="typeof currentTab.pagination !== undefined && currentTab.pagination && currentTab.pagination.total > 1" id="pagination" class="text-center">
+          <ul class="flex list-none gap-1">
+						<span :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === 1}"
+                  class="material-icons-outlined cursor-pointer mr-2 items-center"
+                  style="display: flex"
+                  @click="getListItems(currentTab.pagination.current - 1, selectedListTab)">
+							chevron_left
+						</span>
+            <li v-for="i in currentTab.pagination.total" :key="i"
+                class="cursor-pointer em-square-button"
+                :class="{'active': i === currentTab.pagination.current}"
+                @click="getListItems(i, selectedListTab)">
+              {{ i }}
+            </li>
+            <span :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === currentTab.pagination.total}"
+                  class="material-icons-outlined cursor-pointer ml-2 items-center"
+                  style="display: flex"
+                  @click="getListItems(currentTab.pagination.current + 1, selectedListTab)">
+							chevron_right
+						</span>
+          </ul>
+        </div>
+      </section>
 		</div>
 	</div>
 </template>
@@ -237,7 +240,11 @@ export default {
 		}
 		const storageNbItemsDisplay = localStorage.getItem('tchooz_number_of_items_to_display/' + document.location.hostname);
 		if (storageNbItemsDisplay !== null) {
-			this.numberOfItemsToDisplay = parseInt(storageNbItemsDisplay);
+      if(storageNbItemsDisplay !== 'all') {
+        this.numberOfItemsToDisplay = parseInt(storageNbItemsDisplay);
+      } else {
+        this.numberOfItemsToDisplay = storageNbItemsDisplay;
+      }
 		}
 
 		this.initList();
@@ -486,6 +493,8 @@ export default {
 			}
 		},
 		executeAction (url) {
+      this.loading.items = true;
+
 			client().get(url)
 					.then(response => {
 						if (response.data.status === true || response.data.status === 1) {
@@ -508,9 +517,12 @@ export default {
 								});
 							}
 						}
+
+						this.loading.items = false;
 					})
 					.catch(error => {
 						console.error(error);
+						this.loading.items = false;
 					});
 		},
 		onClickPreview(item) {

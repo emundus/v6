@@ -122,20 +122,13 @@ p,
   padding: 0 20px;
 }
 
-.view-form.com_fabrik:not(.applicant-form):not(.mon-profil) #g-container-main .g-container {
+.view-form.com_fabrik:not(.applicant-form):not(.mon-profil):not(.view-registration) #g-container-main .g-container {
   width: auto;
-  left: 38px;
   position: relative;
 }
 
-.view-form.com_fabrik:not(.applicant-form) #g-container-main,
- {
-  padding-left: 5% !important;
-  padding-right: 5% !important;
-}
-
 .g-container.g-flushed {
-  width: calc(100% - 75px) !important;
+  //width: calc(100% - 75px) !important;
   margin: unset;
 }
 
@@ -225,16 +218,12 @@ div#frame.outline {
 }
 .view-article.com_content:not(.indicateurs-page) {
   .page-header h2[itemprop="headline"] {
-    margin-bottom: 32px;
+    margin-bottom: 16px;
   }
 
   table td {
     border: 1px solid #dce2e9;
   }
-}
-
-.view-article #g-main-mainbody .span12 .item-page {
-  margin-top: 40px;
 }
 
 .view-article a:nth-child(.btn) {
@@ -473,7 +462,7 @@ div#frame.outline {
 }
 
 #g-navigation {
-  width: 100vw;
+  width: 100%;
   position: sticky;
   max-height: 100px;
   height: 72px;
@@ -518,11 +507,10 @@ footer#g-footer {
   background-color: var(--neutral-0);
   border-top: 1px solid #E3E5E8;
   bottom: 0;
-  width: 100vw;
+  width: 100%;
   position: relative;
   z-index: 1;
   padding: 20px !important;
-  //margin-top: 75px !important;
   transition: all 0.3s ease-in-out;
 }
 
@@ -660,6 +648,11 @@ footer#g-footer > .g-container {
 .view-registration {
   .fabrikElementContainer .fabrikEmptyLabel {
     display: none !important;
+  }
+
+  form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-fluid {
+    padding-left: 4px;
+    margin-bottom: 0;
   }
 
   #jos_emundus_users___password_tip {
@@ -1512,9 +1505,9 @@ footer#g-footer > .g-container {
   }
 }
 
-.view-list #g-container-main {
-  padding-left: 5% !important;
-  padding-right: 5% !important;
+.view-list #g-container-main .g-container {
+  padding-left: 5%;
+  padding-right: 5%;
 }
 
 .row-fluid .span3 {
@@ -1531,10 +1524,14 @@ footer#g-footer > .g-container {
   text-decoration: none;
 }
 
+.view-list:not(.g-back-office-emundus-tableau) #g-container-main {
+  padding-left: 80px;
+}
+
 .view-list:not(.g-back-office-emundus-tableau) #g-container-main .g-container {
   width: auto;
-  left: 38px;
   position: relative;
+  width: calc(100% - 76px);
 }
 
 .view-list, .g-back-office-emundus-tableau {
@@ -2441,7 +2438,6 @@ a#em-doc-zip:focus,
 
 
 
-button.goback-btn,
 .btn-danger,
 .pull-right .btn:not(.dropdown-toggle),
 .below-content a,
@@ -2617,9 +2613,9 @@ label[for='clear-search'] img:hover:focus {
 #filters #quick.form-group input#search.btn.btn-sm.btn-info {
   background-color: transparent;
   color: var(--neutral-600);
-  border: none;
-  font-size: 19px !important;
-  padding-right: 3px !important;
+  height: auto;
+  padding: 0 !important;
+  border-radius: 0 !important;
 
   &:hover,
   &:active,
@@ -2653,7 +2649,7 @@ label[for='clear-search'] img:hover:focus {
   }
 }
 
-.panel-heading.em-container-form-heading, .panel-heading.em-container-evaluation-heading, .panel-heading.em-container-decision-heading, .panel-heading.em-container-comment-heading, .panel-heading.em-container-tags-heading, .panel-heading.em-container-share-heading, .panel-heading.em-container-mail-heading {
+.panel-heading.em-container-form-heading, .panel-heading.em-container-admission-heading, .panel-heading.em-container-evaluation-heading, .panel-heading.em-container-decision-heading, .panel-heading.em-container-comment-heading, .panel-heading.em-container-tags-heading, .panel-heading.em-container-share-heading, .panel-heading.em-container-mail-heading {
   padding: 6px !important;
 
   #em-prev-file.btn.btn-info.btn-xxl,
@@ -2908,9 +2904,13 @@ ul.unstyled.em-linkForgot li a {
   font-size: 24px !important;
 }
 
+.g-back-office-emundus-tableau #g-container-main {
+  padding-left: 80px;
+}
+
 .g-back-office-emundus-tableau #g-container-main .g-container {
   position: relative;
-  left: 75px;
+  width: 100%;
 }
 
 /* EMAILS */
@@ -3276,6 +3276,12 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
     }
   }
 }
+
+/* LISTE EVALUATION TCHOOZ
+
+.gantry.view-file.layout-evaluation {
+  overflow: hidden;
+}*/
 
 /* SUPPRIMER EVAL */
 .g-back-office-emundus-tableau .panel-heading.em-container-evaluation-heading #em_delete_evals.btn.btn-danger.btn-xs.btn-attach {
@@ -3817,6 +3823,7 @@ div#em-appli-block {
     letter-spacing: normal;
     line-height: normal;
     font-size: var(--em-applicant-font-size);
+    transition: all ease-in-out 0.3s;
   }
 
 
@@ -4165,6 +4172,15 @@ screen and (max-height: 769px) {
   }
 }
 
+@media all and (max-width: 416px) {
+
+  .view-checklist #attachment_list .col-md-12:last-of-type .justify-between {
+        flex-direction: column-reverse;
+        align-items: center;
+        gap: 16px;
+    }
+}
+
 @media all and (max-width: 479px) {
 
   .view-checklist table form .dz-default.dz-message {
@@ -4360,7 +4376,6 @@ screen and (max-height: 769px) {
       padding: 0;
 
       .login.em-formRegistrationCenter, .em-formRegistrationCenter:not(.componentheading) {
-        padding: 0;
         width: 100% !important;
 
         ol {
@@ -5229,6 +5244,12 @@ screen and (max-height: 769px) {
   .tchooz-single-campaign .right-side {
     width: 64%;
   }
+
+  .view-checklist #attachment_list .col-md-12 {
+    width: 100%;
+    float: left;
+  }
+
 }
 
 @media all and (max-width: 1239px) {
@@ -5254,10 +5275,6 @@ screen and (max-height: 769px) {
   #g-utility #drawer .moduletable {
     width: 100% !important;
     margin-left: 0 !important;
-  }
-
-  .gantry:not(.files-board)  #g-container-main {
-    padding: 0 20px;
   }
 
   /* GENERAL */
@@ -6606,3 +6623,14 @@ tbody .el-table__row:nth-child(odd){
 }
 
 /**** END ****/
+
+.swal2-container.em-application-modal-container {
+  padding: unset;
+  overflow-y: hidden !important;
+  .swal2-popup.swal2-modal {
+    padding: unset;
+  }
+  .swal2-header {
+    display: none;
+  }
+}

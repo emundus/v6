@@ -69,6 +69,7 @@
               :key="currentPage.id"
               :profile_id="parseInt(profile_id)"
               :page="currentPage"
+              :mode="mode"
               @open-element-properties="onOpenElementProperties"
               @open-section-properties="onOpenSectionProperties"
               @open-create-model="onOpenCreateModel"

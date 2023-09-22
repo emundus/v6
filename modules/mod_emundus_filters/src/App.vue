@@ -344,6 +344,14 @@ export default {
 	position: relative;
 }
 
+#emundus-filters .recap-label {
+	display: -webkit-box !important;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
 #select-scopes:not(.hidden) {
 	position: absolute;
 	top: 42px;

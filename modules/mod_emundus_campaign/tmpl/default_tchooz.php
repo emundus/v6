@@ -101,10 +101,10 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             <h2 class="em-applicant-title-font em-mb-16"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN') ?></h2>
             <?php if(JFactory::getUser()->guest) : ?>
                 <?php if($show_registration) : ?>
-                <h3 class="em-font-weight-500"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT') ?></h3>
+                <h3 class="em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT') ?></h3>
                 <p class="em-applicant-text-color"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_2') ?></p><br/>
                 <?php endif; ?>
-                <h3 class="em-font-weight-500"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_3') ?></h3>
+                <h3 class="em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_3') ?></h3>
                 <p class="em-applicant-text-color"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_4') ?></p>
                 <?php if (!empty($links)) : ?>
                     <div class="em-flex-row-justify-end mod_emundus_campaign__buttons em-mt-32">
@@ -199,7 +199,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                             <div>
                                 <?php if($mod_em_campaign_show_camp_end_date && strtotime($now) < strtotime($campaign_pinned->start_date)  ) : //pas commencé ?>
 
-                                    <div class="mod_emundus_campaign__date em-flex-row">
+                                    <div class="mod_emundus_campaign__date em-flex-row em-mb-4">
                                         <span class="material-icons em-text-neutral-600 em-mr-4">schedule</span>
                                         <p class="em-text-neutral-600 em-mr-4"> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?></p>
                                         <span class="em-camp-start em-applicant-text-color"> <?php echo JFactory::getDate(new JDate($campaign_pinned->start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
@@ -207,14 +207,14 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                 <?php endif; ?>
 
                                 <?php if($mod_em_campaign_show_camp_end_date && strtotime($now) > strtotime($campaign_pinned->end_date) ) :    //fini  ?>
-                                    <div class="mod_emundus_campaign__date em-flex-row">
+                                    <div class="mod_emundus_campaign__date em-flex-row em-mb-4">
                                         <span class="material-icons em-text-neutral-600 em-mr-4">alarm_off</span>
                                         <p class="em-text-neutral-600"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_CLOSED'); ?></p>
                                     </div>
                                 <?php endif; ?>
 
                                 <?php if($mod_em_campaign_show_camp_end_date && strtotime($now) < strtotime($campaign_pinned->end_date)  && strtotime($now) > strtotime($campaign_pinned->start_date) ) : //en cours ?>
-                                    <div class="mod_emundus_campaign__date em-flex-row">
+                                    <div class="mod_emundus_campaign__date em-flex-row em-mb-4">
                                         <span class="material-icons em-text-neutral-600 em-mr-4">schedule</span>
                                         <p class="em-text-neutral-600 em-mr-4"> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?>
                                         </p>
@@ -224,14 +224,14 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
 
                                 <?php if ($mod_em_campaign_show_formation_start_date && $campaign_pinned->formation_start !== '0000-00-00 00:00:00') : ?>
-                                    <div class="mod_emundus_campaign__date em-flex-row">
+                                    <div class="mod_emundus_campaign__date em-flex-row em-mb-4">
                                         <p class="em-applicant-text-color"><?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_START_DATE'); ?>:</p>
                                         <span class="em-formation-start em-applicant-text-color"><?php echo JFactory::getDate(new JDate($campaign_pinned->formation_start, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                     </div>
                                 <?php endif; ?>
 
                                 <?php if ($mod_em_campaign_show_formation_end_date && $campaign_pinned->formation_end !== '0000-00-00 00:00:00') : ?>
-                                    <div class="mod_emundus_campaign__date em-flex-row">
+                                    <div class="mod_emundus_campaign__date em-flex-row em-mb-4">
                                         <p class="em-applicant-text-color"><?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_END_DATE'); ?>:</p>
                                         <span class="em-formation-end em-applicant-text-color"><?php echo JFactory::getDate(new JDate($campaign_pinned->formation_end, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                     </div>
@@ -566,7 +566,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                     <div>
                                         <?php if(strtotime($now) < strtotime($result->start_date)  ) : //pas commencé ?>
 
-                                            <div class="mod_emundus_campaign__date em-flex-row">
+                                            <div class="mod_emundus_campaign__date em-flex-row em-mb-4">
                                                 <span class="material-icons em-text-neutral-600 em-mr-4">schedule</span>
                                                 <p class="em-text-neutral-600 em-mr-4"> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?></p>
                                                 <span class="em-camp-start em-applicant-text-color"> <?php echo JFactory::getDate(new JDate($result->start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
@@ -574,7 +574,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                         <?php endif; ?>
 
                                         <?php if($mod_em_campaign_show_camp_end_date && strtotime($now) > strtotime($result->end_date) ) :    //fini  ?>
-                                            <div class="mod_emundus_campaign__date em-flex-row">
+                                            <div class="mod_emundus_campaign__date em-flex-row em-mb-4">
                                                 <span class="material-icons em-text-neutral-600 em-mr-4">alarm_off</span>
                                                 <p class="em-text-neutral-600"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_CLOSED'); ?></p>
                                             </div>
@@ -588,7 +588,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 		                                        $displayInterval = true;
 	                                        }
                                             ?>
-                                            <div class="mod_emundus_campaign__date em-flex-row">
+                                            <div class="mod_emundus_campaign__date em-flex-row em-mb-4">
                                                 <?php if (!$displayInterval) : ?>
                                                     <span class="material-icons em-text-neutral-600 em-mr-4">schedule</span>
                                                     <p class="em-text-neutral-600  em-mr-4"> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?>
@@ -609,14 +609,14 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
 
                                         <?php if ($mod_em_campaign_show_formation_start_date && $result->formation_start !== '0000-00-00 00:00:00') : ?>
-                                            <div class="mod_emundus_campaign__date em-flex-row">
+                                            <div class="mod_emundus_campaign__date em-flex-row em-mb-4">
                                                 <p class="em-text-neutral-600"><?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_START_DATE'); ?>:</p>
                                                 <span class="em-formation-start em-text-neutral-600"><?php echo JFactory::getDate(new JDate($result->formation_start, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                             </div>
                                         <?php endif; ?>
 
                                         <?php if ($mod_em_campaign_show_formation_end_date && $result->formation_end !== '0000-00-00 00:00:00') : ?>
-                                            <div class="mod_emundus_campaign__date em-flex-row">
+                                            <div class="mod_emundus_campaign__date em-flex-row em-mb-4">
                                                 <p class="em-text-neutral-600"><?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_END_DATE'); ?>:</p>
                                                 <span class="em-formation-end em-text-neutral-600"><?php echo JFactory::getDate(new JDate($result->formation_end, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                             </div>
@@ -943,7 +943,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             }
         }
 
-        if(typeof filter !== 'undefined') {
+        if(typeof filters !== 'undefined') {
             clickInsideModule = false;
             if (filters.style.display === 'flex') {
                 e.composedPath().forEach((pathElement) => {

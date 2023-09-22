@@ -198,8 +198,8 @@ export default {
       padding: 12px;
       box-shadow: none;
       cursor: pointer;
-      border: 1px solid var(--main-500);
-      background: var(--main-500);
+      border: 1px solid var(--em-coordinator-primary-color);
+      background: var(--em-coordinator-primary-color);
       border-radius: var(--em-coordinator-br) !important;
       width: 100% !important;
       max-width: 250px;
@@ -208,7 +208,7 @@ export default {
 
       span {
         margin-top: 0;
-        color: var(--neutral-50) !important;
+        color: var(--neutral-0) !important;
       }
     }
 
@@ -226,7 +226,7 @@ export default {
 
       span {
         margin-top: 0;
-        color: var(--neutral-50) !important;
+        color: var(--neutral-0) !important;
       }
     }
   }
@@ -240,7 +240,7 @@ export default {
   }
 
   &:hover {
-    border: 2px solid var(--main-500);
+    border: 2px solid var(--em-coordinator-primary-color);
 
     #element-action-icons {
       opacity: 1;

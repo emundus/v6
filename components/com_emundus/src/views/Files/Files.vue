@@ -16,7 +16,7 @@
           <span class="em-ml-8 em-mr-8">|</span>
           <div class="em-flex-row">
             <span>{{ translate('COM_EMUNDUS_FILES_DISPLAY_PAGE') }}</span>
-            <select class="em-select-no-border em-ml-8" style="width: 50px;height: 20px;" v-model="limit">
+            <select class="em-select-no-border em-ml-8" style="width: max-content; height: fit-content;" v-model="limit">
               <option>10</option>
               <option>25</option>
               <option>50</option>
@@ -83,7 +83,7 @@
 			    </div>
 		    </div>
 		    <div v-if="defaultFilters.length > 0" class="em-flex-row">
-			    <span class="material-icons-outlined em-mr-16 em-red-500-color" :class="{'em-pointer': filters.length > 0, 'em-pointer-disbabled': filters.length < 1 }" :alt="translate('COM_EMUNDUS_FILES_RESET_FILTERS')" @click="resetFilters">filter_list_off</span>
+			    <span class="material-icons-outlined em-mr-16 em-red-500-color" :class="{'em-pointer': filters.length > 0, 'em-pointer-disbabled': filters.length < 1 }" :alt="translate('COM_EMUNDUS_FILES_RESET_FILTERS')" @click="resetFilters">filter_alt_off</span>
 			    <button class="em-primary-button em-pointer" @click="applyFilters">{{ translate('COM_EMUNDUS_FILES_APPLY_FILTER') }}</button>
 		    </div>
 	    </div>
@@ -130,7 +130,7 @@
               <span :title="translate('COM_EMUNDUS_ONBOARD_STATUS')" class="em-neutral-700-color">{{translate('COM_EMUNDUS_ONBOARD_STATUS')}}</span>
             </template>
             <template slot-scope="scope">
-              <p :class="'label-text-'+scope.row.status_color + ' label-'+scope.row.status_color" class="em-status">{{ scope.row.status }}</p>
+              <p :class="'label label-'+scope.row.status_color" class="em-status">{{ scope.row.status }}</p>
             </template>
           </el-table-column>
 
@@ -307,6 +307,7 @@ export default {
       });
     },
     getFiles(refresh = false){
+      document.querySelector('body.layout-evaluation').style.overflow= 'visible';
       this.loading = true;
 
       let fnum = window.location.href.split('#')[1];

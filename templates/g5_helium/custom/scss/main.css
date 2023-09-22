@@ -53,6 +53,7 @@
 
 .material-icons-outlined {
     font-family: 'Material Icons Outlined';
+    font-size: 18px;
     font-weight: normal;
     font-style: normal;
     display: inline-block;
@@ -85,4 +86,25 @@ body {
     height: var(--em-form-after-bh);
     display: block;
     margin-top: 8px;
+}
+small {
+    font-size: 15px;
+    font-weight: 500;
+}
+.em-goback-btn {
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
+
+    .material-icons-outlined {
+        color: var(--em-secondary-color);
+    }
+
+    button.btn.goback-btn {
+        text-shadow: none;
+        text-transform: none;
+        color: var(--neutral-900);
+        font-weight: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        font-size: var(--em-applicant-font-size);
+    }
 }

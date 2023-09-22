@@ -90,6 +90,23 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 		$layoutData->attributes = $bits;
 
         $layoutData->dataSelect = $this->countries;
+		$countries_to_display = [];
+		$countries_to_display_param = (array)$this->getParams()->get('countries_options', []);
+		foreach ($countries_to_display_param as $country) {
+			if(!in_array($country->country, $countries_to_display))
+			{
+				$countries_to_display[] = $country->country;
+			}
+		}
+
+		if(!empty($countries_to_display))
+		{
+			$layoutData->dataSelect = array_filter($layoutData->dataSelect, function($country) use ($countries_to_display) {
+				return in_array($country->iso2, $countries_to_display);
+			});
+		}
+
+		$layoutData->dataSelect = array_values($layoutData->dataSelect);
 
 		return $layout->render($layoutData);
 	}
@@ -219,7 +236,27 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 
         $opts = $this->getElementJSOptions($repeatCounter);
         $opts->default_country = $params->get('default_country');
-        $opts->allCountries = $this->countries;
+
+	    $countries_to_display = [];
+	    $countries_to_display_param = (array)$params->get('countries_options', []);
+	    foreach ($countries_to_display_param as $country) {
+		    if(!in_array($country->country, $countries_to_display))
+		    {
+			    $countries_to_display[] = $country->country;
+		    }
+	    }
+
+	    if(!empty($countries_to_display))
+	    {
+		    $opts->allCountries = array_filter($this->countries, function($country) use ($countries_to_display) {
+			    return in_array($country->iso2, $countries_to_display);
+		    });
+	    } else {
+		    $opts->allCountries = $this->countries;
+	    }
+
+	    $opts->allCountries = array_values($opts->allCountries);
+		
 
         return array('FbPhoneNumber', $id, $opts);
     }

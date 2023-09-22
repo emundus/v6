@@ -11,13 +11,13 @@
             :clickToClose="false"
     >
 
-      <div class="em-flex-row em-flex-space-between em-mb-16">
-        <h4>
-          {{updateColors}}
-        </h4>
-        <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalUpdateColors')">
-          <span class="material-icons-outlined">close</span>
-        </button>
+      <div class="em-modal-header">
+        <div class="em-flex-space-between em-flex-row em-pointer" @click.prevent="$modal.hide('modalUpdateColors')">
+          <div class="em-w-max-content em-flex-row">
+            <span class="material-icons-outlined">arrow_back</span>
+            <span class="em-ml-8">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
+          </div>
+        </div>
       </div>
 
       <div class="em-grid-3">

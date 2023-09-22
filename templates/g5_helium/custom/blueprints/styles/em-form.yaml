@@ -23,7 +23,11 @@ form:
     label-margin-bottom:
       type: input.text
       label: Label margin bottom
-      default: '8px'
+      default: '6px'
+    field-margin-bottom:
+      type: input.text
+      label: Field margin bottom
+      default: '24px'
     label-size:
       type: input.text
       label: Label font size
@@ -35,11 +39,11 @@ form:
     height:
       type: input.text
       label: Height of fields
-      default: '48px'
+      default: '40px'
     font-size:
       type: input.text
       label: Font size of fields
-      default: '12px'
+      default: '15px'
     tip-color:
       type: input.colorpicker
       label: Tip color
@@ -51,7 +55,7 @@ form:
     border-color:
       type: input.colorpicker
       label: Border color of fields
-      default: '#e0e0e5'
+      default: '#a7a7a7'
     background-color:
       type: input.colorpicker
       label: Background color of fields
@@ -59,7 +63,7 @@ form:
     border-radius-focus:
       type: input.text
       label: Border radius of fields when focused
-      default: '6px'
+      default: '4px'
     border-color-focus:
       type: input.colorpicker
       label: Border color of fields when focused
@@ -83,7 +87,7 @@ form:
     background-color-hover:
       type: input.colorpicker
       label: Background color of fields when hovered
-      default: '#E1E7EF'
+      default: '#ededed'
     border-color-hover:
       type: input.colorpicker
       label: Border color of fields when hovered
@@ -91,7 +95,7 @@ form:
     border-color-error:
       type: input.colorpicker
       label: Border color of fields when error
-      default: '#C62222'
+      default: '#f04437'
     label-color-error:
       type: input.colorpicker
       label: Label color of fields when error
@@ -99,23 +103,23 @@ form:
     element-color-error:
       type: input.colorpicker
       label: Color of fields when error
-      default: '#A60E15'
+      default: '#f04437'
     after-border-height:
       type: input.text
       label: After border height
-      default: '3px'
+      default: '0px'
     radio-padding:
       type: input.text
       label: Radio padding
-      default: '0 0 0 0'
+      default: '8px 12px 8px 8px'
     radio-border-width:
       type: input.text
       label: Radio border width
-      default: '0px'
+      default: '1px'
     radio-border-color:
         type: input.colorpicker
         label: Radio border color
-        default: '#A7A7A7'
+        default: '#A4A4A4'
     radio-border-radius:
         type: input.text
         label: Radio border radius
@@ -139,11 +143,11 @@ form:
     radio-background-color-checked:
         type: input.colorpicker
         label: Radio background color checked
-        default: 'rgba(255, 255, 255, 0)'
+        default: '#EDEDED'
     radio-border-color-checked:
         type: input.colorpicker
         label: Radio border color checked
-        default: 'rgba(255, 255, 255, 0)'
+        default: '#2B2B2B'
     yesno-border-width:
       type: input.text
       label: Yes/No border width
@@ -167,7 +171,7 @@ form:
     yesno-color-not-active:
       type: input.colorpicker
       label: Yes/No color not active
-      default: '#000000'
+      default: '#171717'
     yesno-background-color-not-active:
       type: input.colorpicker
       label: Yes/No background color not active
@@ -175,67 +179,67 @@ form:
     yesno-border-color-not-active:
       type: input.colorpicker
       label: Yes/No border color not active
-      default: '#8990A9'
+      default: '#a4a4a4'
     yesno-color-not-active-hover:
       type: input.colorpicker
       label: Yes/No color not active hover
-      default: '#ffffff'
+      default: '#2b2b2b'
     yesno-background-color-not-active-hover:
       type: input.colorpicker
       label: Yes/No background color not active hover
-      default: '#8990A9'
+      default: '#ffffff'
     yesno-border-color-not-active-hover:
       type: input.colorpicker
       label: Yes/No border color not active hover
-      default: '#8990A9'
+      default: '#a7a7a7'
     yesno-color-yes:
       type: input.colorpicker
       label: Yes/No color for the "yes"
-      default: '#ffffff'
+      default: '#171717'
     yesno-background-color-yes:
       type: input.colorpicker
       label: Yes/No background color for the "yes"
-      default: '#238C69'
+      default: '#ededed'
     yesno-border-color-yes:
       type: input.colorpicker
       label: Yes/No border color for the "yes"
-      default: '#238C69'
+      default: '#171717'
     yesno-color-yes-hover:
       type: input.colorpicker
       label: Yes/No color for the "yes" hover
-      default: '#238C69'
+      default: '#2e404f'
     yesno-background-color-yes-hover:
       type: input.colorpicker
       label: Yes/No background color for the "yes" hover
-      default: '#ffffff'
+      default: '#ededed'
     yesno-border-color-yes-hover:
       type: input.colorpicker
       label: Yes/No border color for the "yes" hover
-      default: '#238C69'
+      default: '#2e404f'
     yesno-color-no:
       type: input.colorpicker
       label: Yes/No color for the "no"
-      default: '#ffffff'
+      default: '#171717'
     yesno-background-color-no:
       type: input.colorpicker
       label: Yes/No background color for the "no"
-      default: '#F04437'
+      default: '#ededed'
     yesno-border-color-no:
       type: input.colorpicker
       label: Yes/No border color for the "no"
-      default: '#F04437'
+      default: '#2e404f'
     yesno-color-no-hover:
       type: input.colorpicker
       label: Yes/No color for the "no" hover
-      default: '#F04437'
+      default: '#171717'
     yesno-background-color-no-hover:
       type: input.colorpicker
       label: Yes/No background color for the "no" hover
-      default: '#ffffff'
+      default: '#ededed'
     yesno-border-color-no-hover:
       type: input.colorpicker
       label: Yes/No border color for the "no" hover
-      default: '#F04437'
+      default: '#2e404f'
     checkbox-border-width:
         type: input.text
         label: Checkbox border width
@@ -259,11 +263,11 @@ form:
     checkbox-color-checked:
         type: input.colorpicker
         label: Checkbox color checked
-        default: '#007BFF'
+        default: '#007bff'
     checkbox-border-color-error:
         type: input.colorpicker
         label: Checkbox border color error
-        default: '#C62222'
+        default: '#f04437'
     fileupload-padding:
         type: input.text
         label: Fileupload padding

@@ -40,7 +40,7 @@ $mod_emundus_footer_rights_alias=$params->get('mod_emundus_footer_rights_alias',
 $mod_emundus_footer_cookies=$params->get('mod_emundus_footer_cookies', '1');
 $mod_emundus_footer_cookies_alias=$params->get('mod_emundus_footer_cookies_alias', 'gestion-des-cookies');
 
-$mod_emundus_footer_accessibility=$params->get('mod_emundus_footer_accessibility', '1');
+$mod_emundus_footer_accessibility=$params->get('mod_emundus_footer_accessibility', '0');
 $mod_emundus_footer_accessibility_alias=$params->get('mod_emundus_footer_accessibility_alias', 'accessibilite');
 
 $type             = ModLoginHelper::getType();

@@ -26,7 +26,7 @@
   --neutral-600: #727272;
   --neutral-700: #4B4B4B;
   --neutral-800: #2B2B2B;
-  --neutral-900: #000000;
+  --neutral-900: #0B0C0F;
 
   --red-25: #FFFBFA;
   --red-50: #FEF3F2;
@@ -51,6 +51,9 @@
   --main-700: #15553E;
   --main-800: #104331;
   --main-900: #073122;
+
+  // applicant main-500 color
+  --green-500: #20835F;
 
   --blue-25: #F4F9FF;
   --blue-50: #EFF8FF;
@@ -163,7 +166,7 @@
   --em-applicant-br: #{$em-border-radius-applicant};
   --em-coordinator-br: #{$coordinator-border-radius};
 
-  --em-default-br-cards: #{$em-border-radius-cards};
+  --em-applicant-br-cards: #{$em-border-radius-cards};
   --em-coordinator-br-cards: #{$coordinator-border-radius-cards};
   --em-status-br: #{$em-border-radius-status};
   --em-coordinator-form-br: #{$coordinator-form-border-radius};
@@ -226,6 +229,7 @@
 
   --em-form-label-color: #{$em-form-label-color};
   --em-form-label-margin-bottom: #{$em-form-label-margin-bottom};
+  --em-form-field-margin-bottom: #{$em-form-field-margin-bottom};
   --em-form-label-size: #{$em-form-label-size};
   --em-form-label-weight: #{$em-form-label-weight};
   --em-form-height: #{$em-form-height};
@@ -736,7 +740,7 @@
     border: solid 1px #e6e6e6;
     box-shadow: 5px 5px 11px #ebebeb, -5px -5px 11px var(--neutral-0);
     padding: 10px;
-    width: 250px;
+    width: auto;
     background: var(--neutral-0);
 
     table {

@@ -5,6 +5,10 @@ defined('_JEXEC') or die('Restricted access');
 $index_form = 1;
 $index_doc = 1;
 
+if($itemid['id'] == $menuid && $show_mandatory_documents == 1) {
+	$index_form = sizeof($forms) + 1;
+}
+
 foreach ($forms as $index => $form){
     if ($form->id == $menuid) {
         $index_form = $index + 1;
@@ -27,7 +31,6 @@ if (!empty($checkout_url)){
 	$pages_no++;
 }
 
-
 if($show_preliminary_documents && !empty($preliminary_documents)): ?>
 <div class="mod_emundus_checklist em-mb-24">
     <div class="em-flex-row em-flex-space-between em-pointer mod_emundus_checklist_expand" >
@@ -36,7 +39,7 @@ if($show_preliminary_documents && !empty($preliminary_documents)): ?>
         </div>
         <span id="mod_emundus_checklist___expand_icon" class="material-icons-outlined" style="transform: rotate(-90deg);">expand_more</span>
     </div>
-    <div id="mod_emundus_checklist___content" class="em-mt-24 mod_emundus_checklist___content_closed">
+    <div id="mod_emundus_checklist___content" class="em-mt-24">
         <?php foreach($preliminary_documents as $document): ?>
             <div class="em-flex-row em-mb-16 mod_emundus_campaign__details_file">
                 <span class="material-icons-outlined mod_emundus_campaign__details_file_icon">insert_drive_file</span>
@@ -51,7 +54,7 @@ if($show_preliminary_documents && !empty($preliminary_documents)): ?>
 <div class="mod_emundus_checklist">
     <div class="em-flex-row em-flex-space-between em-pointer mod_emundus_checklist_expand">
         <div class="em-flex-row">
-            <h4> <?php echo JText::_($forms_title) ?></h4>
+            <h4> <?php echo JText::_($forms_title) . ' ' . $index_form . '/' . $pages_no ?></h4>
         </div>
         <span id="mod_emundus_checklist___expand_icon" class="material-icons-outlined">expand_more</span>
     </div>
@@ -82,7 +85,7 @@ if($show_preliminary_documents && !empty($preliminary_documents)): ?>
 	                            } elseif($class == 'need_missing') {
                                     $color = 'var(--neutral-900)';
                                 } elseif ($class == 'need_ok') {
-                                    $color = 'var(--main-500)';
+                                    $color = 'var(--main-900)';
 	                            }
                                 ?>
                                 <span style="color: <?= $color ?>">
@@ -115,7 +118,7 @@ if($show_preliminary_documents && !empty($preliminary_documents)): ?>
 	                    } elseif($class == 'need_missing') {
 		                    $color = 'var(--neutral-900)';
 	                    } elseif ($class == 'need_ok') {
-		                    $color = 'var(--main-500)';
+		                    $color = 'var(--main-900)';
 	                    }
 	                    ?>
                         <span style="color: <?= $color ?>">
@@ -156,7 +159,7 @@ if($show_preliminary_documents && !empty($preliminary_documents)): ?>
 	                    } elseif($class == 'need_missing') {
 		                    $color = 'var(--neutral-900)';
 	                    } elseif ($class == 'need_ok') {
-		                    $color = 'var(--main-500)';
+		                    $color = 'var(--main-900)';
 	                    }
 	                    ?>
                         <span style="color: <?= $color ?>">
@@ -239,7 +242,7 @@ $details_view = array_search('view=details',$url);
     });
 
     document.addEventListener('click', function(e) {
-        if (e.target.closest('.mod_emundus_checklist_expand')) {
+        if (window.innerWidth < 480 && e.target.closest('.mod_emundus_checklist_expand')) {
             expandForms(e);
         }
     });
@@ -251,10 +254,10 @@ $details_view = array_search('view=details',$url);
         if(typeof content !== 'undefined'){
             if(!content.classList.contains('mod_emundus_checklist___content_closed')){
                 content.classList.add('mod_emundus_checklist___content_closed');
-                icon.style.transform = 'rotate(-90deg)';
+                icon.style.transform = 'rotate(0deg)';
             } else {
                 content.classList.remove('mod_emundus_checklist___content_closed');
-                icon.style.transform = 'rotate(0deg)';
+                icon.style.transform = 'rotate(180deg)';
             }
         }
 

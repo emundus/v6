@@ -116,6 +116,7 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 		$layoutData = new stdClass;
 		$layoutData->attributes = $bits;
 		$layoutData->displayiso3 = $this->getParams()->get('display_iso3',0);
+		$layoutData->bootstrap_class = $this->getParams()->get('bootstrap_class','input-large');
 
 		return $layout->render($layoutData);
 	}

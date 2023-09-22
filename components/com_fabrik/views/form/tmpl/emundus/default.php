@@ -22,6 +22,15 @@ $display_required_icon = $eMConfig->get('display_required_icon', 1);
 
 $pageClass = $this->params->get('pageclass_sfx', '');
 
+JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TITLE');
+JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TEXT');
+JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CONFIRM');
+JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CANCEL');
+JText::script('PLEASE_CHECK_THIS_FIELD');
+
+JText::script('COM_EMUNDUS_FABRIK_NEW_FILE');
+JText::script('COM_EMUNDUS_FABRIK_NEW_FILE_DESC');
+
 if ($pageClass !== '') :
 	echo '<div class="' . $pageClass . '">';
 endif;
@@ -39,21 +48,26 @@ endif;
 		<?php echo $form->error; ?>
     </div>
     <div class="mb-8">
-        <?php if ($this->params->get('show-title', 1)) : ?>
-            <div class="page-header mt-8">
-                <?php $title = trim(preg_replace('/^([^-]+ - )/', '', $form->label)); ?>
-                <h1 class="after-em-border after:bg-red-800"><?= JText::_($title) ?></h1>
+        <div class="em-mt-8">
+	        <?php if ($this->params->get('show-title', 1)) : ?>
+                <?php if($display_required_icon == 0) : ?>
+                    <p class="mb-5 text-neutral-600"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
+                <?php endif; ?>
+                <div class="page-header">
+			        <?php $title = trim(preg_replace('/^([^-]+ - )/', '', $form->label)); ?>
+                    <h2 class="after-em-border after:bg-red-800"><?= JText::_($title) ?></h2>
+                </div>
+	        <?php endif; ?>
+        </div>
+
+
+	    <?php if(!empty($form->intro)) : ?>
+            <div class="em-form-intro mt-4">
+                <?php
+                echo trim($form->intro);
+                ?>
             </div>
         <?php endif; ?>
-
-        <div class="em-form-intro mt-4">
-	        <?php if($display_required_icon == 0) : ?>
-                <p class="mb-2"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
-	        <?php endif; ?>
-            <?php
-            echo trim($form->intro);
-            ?>
-        </div>
     </div>
     <form method="post" <?php echo $form->attribs ?>>
 		<?php
@@ -92,7 +106,7 @@ endif;
                 <div class="mb-7">
                     <?php
                     if ($group->showLegend) :?>
-                        <h2 class="after-em-border after:bg-neutral-500"><?php echo $group->title; ?></h2>
+                        <h3 class="after-em-border after:bg-neutral-500"><?php echo $group->title; ?></h3>
                     <?php
                     endif;
 
@@ -162,7 +176,7 @@ endif;
         // Load skeleton
         let header = document.querySelector('.page-header');
         if (header) {
-            document.querySelector('.page-header h1').style.opacity = 0;
+            document.querySelector('.page-header h2').style.opacity = 0;
             header.classList.add('skeleton');
         }
         let intro = document.querySelector('.em-form-intro');
@@ -177,6 +191,10 @@ endif;
         }
         let grouptitle = document.querySelectorAll('.fabrikGroup .legend');
         for (title of grouptitle) {
+            title.style.opacity = 0;
+        }
+        grouptitle = document.querySelectorAll('.fabrikGroup h2');
+        for (title of grouptitle){
             title.style.opacity = 0;
         }
         let groupintro = document.querySelector('.groupintro');

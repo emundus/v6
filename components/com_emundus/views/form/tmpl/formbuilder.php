@@ -361,6 +361,7 @@ JText::script('COM_EMUNDUS_FORM_BUILDER_EMPTY_PAGE_MODELS');
 JText::script('COM_EMUNDUS_FORM_BUILDER_UPDATE_ORDER_PAGE_ERROR');
 JText::script('COM_EMUNDUS_FORM_BUILDER_CREATE_SECTION_ERROR');
 JText::script('COM_EMUNDUS_FORM_BUILDER_REQUEST_ERROR');
+JText::script('COM_EMUNDUS_FORM_BUILDER_FAILED_TO_LOAD_FORM');
 JText::script('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_TITLE');
 JText::script('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_GIVE_MODEL');
 JText::script('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_ADD');
@@ -371,6 +372,7 @@ JText::script('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_SAMPLE_WRONG_FORMAT');
 JText::script('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_FILE_UPLOADED');
 JText::script('COM_EMUNDUS_FORM_BUILDER_NEW_STRUCTURE');
 JText::script('COM_EMUNDUS_FORM_BUILDER_INITIAL_STRUCTURE');
+JText::script('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_SUCCESS');
 ## END ##
 
 ## TUTORIAL ##
@@ -438,10 +440,8 @@ $sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
 
 $component = JFactory::getApplication()->input->get('evaluation') ? 'evaluationbuilder' : 'formbuilder';
 
-$xmlDoc = new DOMDocument();
-if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
-    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
-}
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
 
 $mode = JFactory::getApplication()->input->get('mode', '');
 
@@ -462,4 +462,4 @@ $mode = JFactory::getApplication()->input->get('mode', '');
      <?php endif; ?>
 ></div>
 
-<script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>
+<script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
