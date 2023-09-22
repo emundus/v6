@@ -2462,26 +2462,6 @@ try {
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_USERS_EXCEPTIONS_INTRO','Utilisateurs ayant le droit de compléter des formulaires en dehors des périodes de candidature. Utile pour tester un environnement de candidature avant la publication d\'une phase !');
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_USERS_EXCEPTIONS_INTRO','Users with the right to complete forms outside the application periods. Useful for testing an application environment before publishing a phase!', 'override', null, null, null, 'en-GB');
 
-				$eMConfig            = JComponentHelper::getParams('com_emundus');
-				$all_rights_group_id = $eMConfig->get('all_rights_group', 1);
-
-				$query->clear()
-					->select('id')
-					->from($db->quoteName('#__emundus_groups'))
-					->where($db->quoteName('user_id') . ' = 62')
-					->where($db->quoteName('group_id') . ' = ' . $db->quote($all_rights_group_id));
-				$db->setQuery($query);
-				$group = $db->loadResult();
-
-				if(empty($group)){
-					$query->clear()
-						->insert($db->quoteName('#__emundus_groups'))
-						->columns($db->quoteName('user_id') . ',' . $db->quoteName('group_id'))
-						->values('62,' . $db->quote($all_rights_group_id));
-					$db->setQuery($query);
-					$db->execute();
-				}
-
 				$query->clear()
 					->delete($db->quoteName('#__emundus_setup_emails'))
 					->where($db->quoteName('lbl') . ' LIKE ' . $db->quote('regenerate_password'));
@@ -3013,8 +2993,6 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 					}
 				}
 
-				EmundusHelperUpdate::updateComponentParameter('com_users', 'minimum_length', 12);
-				EmundusHelperUpdate::updateComponentParameter('com_users', 'minimum_lowercase', 1);
 				EmundusHelperUpdate::updateComponentParameter('com_fabrik', 'use_fabrikdebug', 1);
 
 				EmundusHelperUpdate::installExtension('plg_fabrik_validationrule_checkpassword','checkpassword','{"name":"plg_fabrik_validationrule_checkpassword","type":"plugin","creationDate":"September 2023","author":"eMundus","copyright":"Copyright (C) 2015-2023 eMundus - All rights reserved.","authorEmail":"dev@emundus.io","authorUrl":"www.emundus.fr","version":"3.10","description":"PLG_VALIDATIONRULE_CHECKPASSWORD_DESCRIPTION","group":"","filename":"checkpassword"}','plugin',1,'fabrik_validationrule');
@@ -3042,7 +3020,7 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 					{
 						$params = json_decode($form->params, true);
 
-						if(!in_array('emundus-updatesession.php', $params['form_php_file']))
+						if(is_array($params['form_php_file']) && !in_array('emundus-updatesession.php', $params['form_php_file']))
 						{
 							$params['plugin_state'][]          = 1;
 							$params['only_process_curl'][]     = 'onAfterProcess';
@@ -3167,6 +3145,48 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 					$db->execute();
 				}
 			}
+
+			if (version_compare($cache_version, '1.37.2', '<=') || $firstrun) {
+				EmundusHelperUpdate::updateComponentParameter('com_users', 'minimum_length', 12);
+				EmundusHelperUpdate::updateComponentParameter('com_users', 'minimum_integers', 1);
+				EmundusHelperUpdate::updateComponentParameter('com_users', 'minimum_symbols', 1);
+				EmundusHelperUpdate::updateComponentParameter('com_users', 'minimum_uppercase', 1);
+				EmundusHelperUpdate::updateComponentParameter('com_users', 'minimum_lowercase', 1);
+				EmundusHelperUpdate::updateComponentParameter('com_users', 'reset_count', 5);
+				EmundusHelperUpdate::updateComponentParameter('com_users', 'reset_time', 1);
+			}
+
+            if (version_compare($cache_version, '1.37.3', '<=') || $firstrun) {
+                $old_values = [
+                    'fr-FR' => "<div>J'accepte <a href=\"fr/politique-de-confidentialite-des-donnees\" target=\"_blank\"> <i> la politique de confidentialité des données </i></a><i data-isicon=\"true\" class=\"icon-star small \"></i></div>",
+                    'en-GB' => "<div> I accept <a href=\"en/politique-de-confidentialite-des-donnees\" target=\"_blank\"><i>the terms and conditions </i></a><i data-isicon=\"true\" class=\"icon-star small \"></i></div>",
+                ];
+                $new_values = [
+                    'fr-FR' => "Je consens à l'exploitation de mes données personnelles afin de créer mon compte utilisateur.",
+                    'en-GB' => 'I hereby give my consent to the processing of my personal data to create my user account.',
+                ];
+                EmundusHelperUpdate::updateOverrideTag('ACCEPT_THE_TERMS', $old_values, $new_values);
+
+                $eMConfig            = JComponentHelper::getParams('com_emundus');
+                $all_rights_group_id = $eMConfig->get('all_rights_group', 1);
+
+                $query->clear()
+                    ->select('id')
+                    ->from($db->quoteName('#__emundus_groups'))
+                    ->where($db->quoteName('user_id') . ' = 62')
+                    ->where($db->quoteName('group_id') . ' = ' . $db->quote($all_rights_group_id));
+                $db->setQuery($query);
+                $group = $db->loadResult();
+
+                if(empty($group)){
+                    $query->clear()
+                        ->insert($db->quoteName('#__emundus_groups'))
+                        ->columns($db->quoteName('user_id') . ',' . $db->quoteName('group_id'))
+                        ->values('62,' . $db->quote($all_rights_group_id));
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+            }
 		}
 
 		return $succeed;
@@ -3194,11 +3214,11 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 			exit;
 		}
 
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
 		if (version_compare(PHP_VERSION, '8.0.0', '>='))
 		{
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
-
 			$query->clear()
 				->update('#__extensions')
 				->set($db->quoteName('enabled') . ' = 0')
@@ -3206,6 +3226,19 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 			$db->setQuery($query);
 			$db->execute();
 		}
+
+        // Check all rights group parameter
+        $query->clear()
+            ->select($db->quoteName('id'))
+            ->from($db->quoteName('#__emundus_setup_groups'))
+            ->order($db->quoteName('id'));
+        $db->setQuery($query);
+        $all_rights_group = $db->loadResult();
+
+        if(!empty($all_rights_group))
+        {
+            EmundusHelperUpdate::updateComponentParameter('com_emundus', 'all_rights_group', $all_rights_group);
+        }
 	}
 
 

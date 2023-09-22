@@ -2517,6 +2517,23 @@ class EmundusModelFiles extends JModelLegacy
                         $join_column = str_replace('{thistable}', $element_params['join_db_name'], $join_column);
                         $join_column = str_replace('{shortlang}', $current_lang, $join_column);
                         $join_column = str_replace('{my->id}', $current_user, $join_column);
+                        $where_condition = '';
+
+                        if (!empty($element_params['database_join_where_sql']) && strpos($element_params['database_join_where_sql'], '{jos_') === false && strpos($element_params['database_join_where_sql'], '{rowid}') === false) {
+	                        $where_condition = preg_replace('/WHERE/', '', $where_condition, 1);
+							$where_condition = str_replace('{thistable}', $element_params['join_db_name'], $where_condition);
+                            $where_condition = str_replace('{my->id}', $current_user, $where_condition);
+                            foreach ($already_joined as $alias => $table) {
+                                str_replace($table . '.', $alias . '.', $where_condition);
+                            }
+                            if (stripos($where_condition, 'ORDER BY') !== false) {
+                                $where_condition = substr($where_condition, 0, strpos($where_condition, 'ORDER BY'));
+                            }
+
+							if (!empty(trim($where_condition))) {
+								$where_condition = ' AND (' . $where_condition . ')';
+							}
+						}
 
                         $databasejoin_sub_query = '';
 
@@ -2563,15 +2580,15 @@ class EmundusModelFiles extends JModelLegacy
                                     }
 
                                     $databasejoin_sub_query = ' (' . $databasejoin_sub_query;
-                                    $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_table_alias . '.' . $element->element_name . '))';
+                                    $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_table_alias . '.' . $element->element_name . $where_condition . '))';
                                     $databasejoin_sub_query .= ' AS ' . $already_joined[$child_table_alias] . '___' . $element->element_name;
                                 }
                             } else {
                                 if ($is_repeat) {
-                                    $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_element_table_alias . '.' . $element->element_name . ')';
+                                    $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_element_table_alias . '.' . $element->element_name . $where_condition . ')';
                                     $databasejoin_sub_query .= ' AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
                                 } else {
-                                    $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $element_table_alias . '.' . $element->element_name . ')';
+                                    $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $element_table_alias . '.' . $element->element_name . $where_condition . ')';
                                     $databasejoin_sub_query .= ' AS ' . $element->tab_name . '___' . $element->element_name;
                                 }
                             }
@@ -2748,6 +2765,7 @@ class EmundusModelFiles extends JModelLegacy
                 $data = $db->loadAssocList();
             } catch(Exception $e) {
                 JLog::add('Error trying to generate data for xlsx export ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+	            return false;
             }
 
             if (!empty($data)) {
@@ -3115,56 +3133,23 @@ class EmundusModelFiles extends JModelLegacy
      * @return array|bool
      */
     public function getAccessorByFnums($fnums) {
-        $query = "SELECT jecc.fnum, jesg.id, GROUP_CONCAT(jesg.label) as label, GROUP_CONCAT(jesg.class) as class FROM #__emundus_campaign_candidature as jecc
-                  LEFT JOIN #__emundus_setup_campaigns as jesc on jesc.id = jecc.campaign_id
-                  LEFT JOIN #__emundus_setup_programmes as jesp on jesp.code = jesc.training
-                  LEFT JOIN #__emundus_setup_groups_repeat_course as jesgrc on jesgrc.course = jesp.code
-                  LEFT JOIN #__emundus_setup_groups as jesg on jesg.id = jesgrc.parent_id
-                  LEFT JOIN #__emundus_acl as jea on jea.group_id = jesg.id
-                  WHERE jea.action_id = 1 and jea.r = 1 and jecc.fnum in ('".implode("','", $fnums)."')
-                  GROUP BY jecc.fnum";
+        $access = array();
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        // Select all users associated directly to the file
+        $query->select([$db->quoteName('jeua.fnum'), $db->quoteName('ju.name', 'uname'), $db->quoteName('jesp.class')])
+            ->from($db->quoteName('#__emundus_users_assoc', 'jeua'))
+            ->leftJoin($db->quoteName('#__users', 'ju').' ON '.$db->quoteName('ju.id').' = '.$db->quoteName('jeua.user_id'))
+            ->leftJoin($db->quoteName('#__emundus_users', 'jeu').' ON '.$db->quoteName('ju.id').' = '.$db->quoteName('jeu.user_id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'jesp').' ON '.$db->quoteName('jeu.profile').' = '.$db->quoteName('jesp.id'))
+            ->where($db->quoteName('jeua.action_id').' = 1 AND '.$db->quoteName('jeua.r').' = 1 AND '.$db->quoteName('jeua.fnum').' IN ("'.implode('","', $fnums).'")');
+
         try {
-            $db = $this->getDbo();
-            $db->setQuery($query);
-            $res = $db->loadAssocList();
-            $access = array();
-            foreach ($res as $r) {
-                $group_labels = explode(',',$r['label']);
-                $class_labels = explode(',',$r['class']);
-                foreach ($group_labels as $key => $g_label) {
-                    $assocTagcampaign = '<div class="flex"><span class="circle '.$class_labels[$key].'" id="'.$r['id'].'"></span>';
-                    $assocTagcampaign .= '<span id="'.$r['id'].'">'.$g_label.'</span></div>';
-                    $access[$r['fnum']] .= $assocTagcampaign;
-                }
-            }
-
-            $query = "SELECT jega.fnum, jesg.label, jesg.class FROM #__emundus_group_assoc as jega
-                      LEFT JOIN #__emundus_setup_groups as jesg on jesg.id = jega.group_id
-                      where jega.action_id = 1 and jega.r = 1  and jega.fnum in ('".implode("','", $fnums)."')";
-            $db = $this->getDbo();
             $db->setQuery($query);
             $res = $db->loadAssocList();
 
-            foreach ($res as $r) {
-                $assocTaggroup = '<div class="flex"><span class="circle '.$r['class'].'"></span>';
-                $assocTaggroup .= '<span id="'.$r['id'].'">'.$r['label'].'</span></div>';
-                if (isset($access[$r['fnum']])) {
-                    $access[$r['fnum']] .= ''.$assocTaggroup;
-                } else {
-                    $access[$r['fnum']] .= $assocTaggroup;
-                }
-            }
-
-            $query = $db->getQuery(true);
-            $query->select([$db->quoteName('jeua.fnum'), $db->quoteName('ju.name', 'uname'), $db->quoteName('jesp.class')])
-                ->from($db->quoteName('#__emundus_users_assoc', 'jeua'))
-                ->leftJoin($db->quoteName('#__users', 'ju').' ON '.$db->quoteName('ju.id').' = '.$db->quoteName('jeua.user_id'))
-                ->leftJoin($db->quoteName('#__emundus_users', 'jeu').' ON '.$db->quoteName('ju.id').' = '.$db->quoteName('jeu.user_id'))
-                ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'jesp').' ON '.$db->quoteName('jeu.profile').' = '.$db->quoteName('jesp.id'))
-                ->where($db->quoteName('jeua.action_id').' = 1 AND '.$db->quoteName('jeua.r').' = 1 AND '.$db->quoteName('jeua.fnum').' IN ("'.implode('","', $fnums).'")');
-            $db = $this->getDbo();
-            $db->setQuery($query);
-            $res = $db->loadAssocList();
+            // Write the code to show the results to the user
             foreach ($res as $r) {
                 if (isset($access[$r['fnum']])) {
                     $access[$r['fnum']] .= '<div class="flex"><span class="circle '.$r['class'].'"></span><span>'.$r['uname'].'</span></div>';
@@ -3172,9 +3157,60 @@ class EmundusModelFiles extends JModelLegacy
                     $access[$r['fnum']] = '<div class="flex"><span class="circle '.$r['class'].'"></span><span>'.$r['uname'].'</span></div>';
                 }
             }
+
+            // Then, select all groups associated directly to the file
+            $query->clear()
+                ->select($db->quoteName(array('jega.fnum','jesg.label','jesg.class')))
+                ->from($db->quoteName('#__emundus_group_assoc','jega'))
+                ->leftJoin($db->quoteName('#__emundus_setup_groups','jesg').' ON '.$db->quoteName('jesg.id').' = '.$db->quoteName('jega.group_id'))
+                ->where($db->quoteName('jega.action_id').' = 1')
+                ->andWhere($db->quoteName('jega.r').' = 1')
+                ->andWhere($db->quoteName('jega.fnum').' IN (\''.implode('\',\'',$fnums).'\')')
+                ->order($db->quoteName('jesg.id').' DESC');
+
+            $db->setQuery($query);
+            $res = $db->loadAssocList();
+
+            // Write the code to show the results to the user
+            foreach ($res as $r) {
+                $assocTaggroup = '<div class="flex"><span class="circle '.$r['class'].'"></span><span id="'.$r['id'].'">'.$r['label'].'</span></div>';
+                if (isset($access[$r['fnum']])) {
+                    $access[$r['fnum']] .= ''.$assocTaggroup;
+                } else {
+                    $access[$r['fnum']] .= $assocTaggroup;
+                }
+            }
+
+            // Finally, select all groups associated to the file by its program
+            $query->clear()
+                ->select(array($db->quoteName('jecc.fnum'), $db->quoteName('jesg.id'), 'GROUP_CONCAT('.$db->quoteName('jesg.label').' ORDER BY '.$db->quoteName('jesg.id').' DESC) as label', 'GROUP_CONCAT('.$db->quoteName('jesg.class').' ORDER BY '.$db->quoteName('jesg.id').' DESC) as class'))
+                ->from($db->quoteName('#__emundus_campaign_candidature','jecc'))
+                ->leftJoin($db->quoteName('#__emundus_setup_campaigns','jesc').' ON '.$db->quoteName('jesc.id').' = '.$db->quoteName('jecc.campaign_id'))
+                ->leftJoin($db->quoteName('#__emundus_setup_programmes','jesp').' ON '.$db->quoteName('jesp.code').' = '.$db->quoteName('jesc.training'))
+                ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course','jesgrc').' ON '.$db->quoteName('jesgrc.course').' = '.$db->quoteName('jesp.code'))
+                ->leftJoin($db->quoteName('#__emundus_setup_groups','jesg').' ON '.$db->quoteName('jesg.id').' = '.$db->quoteName('jesgrc.parent_id'))
+                ->leftJoin($db->quoteName('#__emundus_acl','jea').' ON '.$db->quoteName('jea.group_id').' = '.$db->quoteName('jesg.id'))
+                ->where($db->quoteName('jea.action_id').' = 1')
+                ->andWhere($db->quoteName('jea.r').' = 1')
+                ->andWhere($db->quoteName('jecc.fnum').' IN (\''.implode('\',\'',$fnums).'\')')
+                ->group($db->quoteName('jecc.fnum'));
+
+            $db->setQuery($query);
+            $res = $db->loadAssocList();
+
+            // Write the code to show the results to the user
+            foreach ($res as $r) {
+                $group_labels = explode(',',$r['label']);
+                $class_labels = explode(',',$r['class']);
+                foreach ($group_labels as $key => $g_label) {
+                    $assocTagcampaign = '<div class="flex"><span class="circle '.$class_labels[$key].'" id="'.$r['id'].'"></span><span id="'.$r['id'].'">'.$g_label.'</span></div>';
+                    $access[$r['fnum']] .= $assocTagcampaign;
+                }
+            }
+
             return $access;
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus.email');
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -3424,7 +3460,10 @@ class EmundusModelFiles extends JModelLegacy
 
     public function getSetupAttachmentsById($ids) {
         $dbo = $this->getDbo();
-        $query = 'select * from jos_emundus_setup_attachments where id in ("'.implode('","', $ids).'")';
+        $query = $dbo->getQuery(true);
+        $query->select('*')
+            ->from($dbo->quoteName('#__emundus_setup_attachments'))
+            ->where($dbo->quoteName('id').' IN (' . implode(',', $ids) . ')');
         try {
             $dbo->setQuery($query);
             return $dbo->loadAssocList();
@@ -3445,16 +3484,17 @@ class EmundusModelFiles extends JModelLegacy
         }
 
         $dbo = $this->getDbo();
-        $select = "select jfe.id, jfe.name, jfe.plugin, jfe.params, jfg.params as group_params, jfg.id as group_id, jfl.db_table_name, jfj.table_join
-                    from jos_fabrik_elements as jfe
-                    left join #__fabrik_formgroup as jff on jff.group_id = jfe.group_id
-                    left join #__fabrik_groups as jfg on jfg.id = jff.group_id
-                    left join #__fabrik_forms as jff2 on jff2.id = jff.form_id
-                    left join #__fabrik_lists as jfl on jfl.form_id = jff2.id
-                    LEFT JOIN #__fabrik_joins AS jfj ON jfl.id = jfj.list_id AND jfg.id=jfj.group_id
-                    where jfe.id in (".implode(',', $idFabrik).")";
+        $query = $dbo->getQuery(true);
+        $query->select('jfe.id, jfe.name, jfe.plugin, jfe.params, jfg.params as group_params, jfg.id as group_id, jfl.db_table_name, jfj.table_join')
+            ->from($dbo->quoteName('#__fabrik_elements','jfe'))
+            ->leftJoin($dbo->quoteName('#__fabrik_formgroup','jff').' ON '.$dbo->quoteName('jff.group_id').' = '.$dbo->quoteName('jfe.group_id'))
+            ->leftJoin($dbo->quoteName('#__fabrik_groups','jfg').' ON '.$dbo->quoteName('jfg.id').' = '.$dbo->quoteName('jff.group_id'))
+            ->leftJoin($dbo->quoteName('#__fabrik_forms','jff2').' ON '.$dbo->quoteName('jff2.id').' = '.$dbo->quoteName('jff.form_id'))
+            ->leftJoin($dbo->quoteName('#__fabrik_lists','jfl').' ON '.$dbo->quoteName('jfl.form_id').' = '.$dbo->quoteName('jff2.id'))
+            ->leftJoin($dbo->quoteName('#__fabrik_joins','jfj').' ON '.$dbo->quoteName('jfl.id').' = '.$dbo->quoteName('jfj.list_id').' AND '.$dbo->quoteName('jfg.id').' = '.$dbo->quoteName('jfj.group_id'))
+            ->where($dbo->quoteName('jfe.id').' IN (' . implode(',', $idFabrik) . ')');
         try {
-            $dbo->setQuery($select);
+            $dbo->setQuery($query);
             return $dbo->loadAssocList();
         } catch(Exception $e) {
             throw $e;
@@ -4183,7 +4223,7 @@ class EmundusModelFiles extends JModelLegacy
 
             require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
             $h_files = new EmundusHelperFiles();
-            $fnum = $h_files->createFnum($campaign_id, $user_id);
+            $fnum = EmundusHelperFiles::createFnum($campaign_id, $user_id);
 
             if (!empty($fnum)) {
                 $config = JFactory::getConfig();

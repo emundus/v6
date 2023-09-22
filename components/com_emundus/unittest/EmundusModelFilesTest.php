@@ -291,6 +291,7 @@ class EmundusModelFilesTest extends TestCase{
 		}
 		if ($databasejoin_element) {
 			$data = $this->m_files->getFnumArray2([$fnum], [$databasejoin_element]);
+			$this->assertNotFalse($data, 'getFnumArray does not encounter an error');
 			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with databasejoin element');
 			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
 			$this->assertArrayHasKey($databasejoin_element->tab_name . '___' . $databasejoin_element->element_name, $data[$fnum], 'the data contains the databasejoin element');

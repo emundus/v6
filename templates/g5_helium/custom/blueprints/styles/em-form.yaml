@@ -255,7 +255,7 @@ form:
     checkbox-scale:
         type: input.text
         label: Checkbox scale
-        default: '1.7'
+        default: '1.3'
     checkbox-input-margin:
         type: input.text
         label: Checkbox input margin

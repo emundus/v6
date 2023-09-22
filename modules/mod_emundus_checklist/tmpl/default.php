@@ -140,7 +140,7 @@ if($show_preliminary_documents && !empty($preliminary_documents)): ?>
                             <a class="em-font-size-12 em-ml-8 mod_emundus_checklist___attachment_links"  href="<?php echo $itemid['link'].'&Itemid='.$itemid['id'].'#a'.$upload->attachment_id ?>">
                                 <?php echo $upload->attachment_name ?>
                                 <?php if($upload->filesize > 0) :?>
-                                    <span class="em-ml-4 em-text-neutral-600"><?php echo $upload->filesize  ?></span>
+                                    <span class="em-ml-4 em-text-neutral-600 em-font-size-12"><?php echo $upload->filesize  ?></span>
                                 <?php endif; ?>
                             </a>
                         </div>
@@ -235,9 +235,13 @@ $details_view = array_search('view=details',$url);
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        if(window.innerWidth < 480){
-            expandForms();
+    addEventListener("resize", (event) => {
+        let content = document.getElementById('mod_emundus_checklist___content');
+        if(innerWidth <= 753){
+            content.classList.add('mod_emundus_checklist___content_closed');
+        }
+        else{
+            content.classList.remove('mod_emundus_checklist___content_closed');
         }
     });
 
