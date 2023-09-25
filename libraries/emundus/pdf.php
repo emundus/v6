@@ -1240,8 +1240,6 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     jimport('joomla.html.parameter');
     set_time_limit(0);
 
-    require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'tcpdf' . DS . 'tcpdf.php');
-
     require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
     require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
     require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
@@ -1266,7 +1264,6 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     $htmldata = '';
 
     // Create PDF object
-    //$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
     $pdf = new Fpdi();
 
     $pdf->SetCreator(PDF_CREATOR);
