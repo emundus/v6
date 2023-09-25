@@ -461,7 +461,7 @@ a.btn.btn-success:not(.btn-xs) {
     max-height: 48px;
     display: -webkit-box;
     line-height: 140%;
-    min-height: 50px;
+    min-height: 42px;
     font-family: var(--em-applicant-font-title) !important;
 }
 
