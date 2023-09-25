@@ -63,6 +63,11 @@
     max-height: 0 !important;
     /* margin-top: 0 !important; */
 }
+
+.mod_emundus_checklist #mod_emundus_checklist___content.mod_emundus_checklist___content_closed.em-mt-24 {
+     margin-top: 0;
+}
+
 #mod_emundus_checklist___expand_icon{
     transition: transform 300ms linear;
 }
