@@ -184,7 +184,7 @@
 }
 
 .hiding {
-  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/hiding.svg");
+  background-image: var(--display-corner-bottom-left-background);
 }
 
 .high-workload {

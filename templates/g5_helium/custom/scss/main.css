@@ -123,12 +123,29 @@ body {
 }
 
 /* Page settings */
-.com_emundus:not(.view-programme):not(.view-checklist):not(.view-users) #g-page-surround, .files-board #g-page-surround, .g-back-office-emundus-tableau #g-page-surround, .view-list.com_fabrik #g-page-surround {
-    background-image: var(--display-setting-tools), var(--display-corner-bottom-right-background) !important;
-    background-position: bottom 65px right, bottom 60px right !important;
-    background-repeat : no-repeat, no-repeat !important;
-    background-size :  30%, 50% !important;
+.com_emundus.view-settings #g-page-surround {
+    background-image: var(--display-setting-tools), var(--display-corner-bottom-right-background);
+    background-position: bottom 65px right, bottom 60px right ;
+    background-repeat : no-repeat, no-repeat ;
+    background-size :  30%, 50% ;
 }
+
+/* Page mentions légales */
+.view-article #g-page-surround {
+    background-image: var(--display-corner-top-right-background);
+    background-position: top 70px right;
+    background-repeat: no-repeat;
+    background-size: 50%;
+}
+
+
+/* Easter egg */
+/*#g-page-surround {
+    background-image: var(--display-hiding);
+    background-position: bottom -100px center;
+    background-size: 30%;
+    background-repeat: no-repeat;
+}*/
 
 /* TABLETTE */
 @media screen and (min-width: 768px) and (max-width: 959px) {
