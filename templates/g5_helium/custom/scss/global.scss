@@ -164,7 +164,7 @@ body > .g-container {
 .view-profile.layout-edit #g-page-surround,
 .view-details #g-page-surround,
 .view-checklist.com_emundus #g-page-surround {
-  background: var(--em-applicant-bg) !important;
+  background-color: var(--em-applicant-bg);
 }
 
 .com_emundus:not(.view-programme):not(.view-checklist):not(.view-users) #g-page-surround,

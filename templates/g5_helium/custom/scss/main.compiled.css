@@ -297,10 +297,10 @@
   background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/cookie-policy.svg");
 }
 .email-history {
-  background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/email-history.svg");
+  background-image: var(--display-email-history);
 }
 .groups {
-  background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/groups.svg");
+  background-image: var(--display-groups);
 }
 .indicators {
   background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/indicators.svg");
@@ -312,7 +312,7 @@
   background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/privacy-policy.svg");
 }
 .profiles {
-  background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/profiles.svg");
+  background-image: var(--display-profiles);
 }
 .rights-management {
   background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/rights-management.svg");
@@ -3107,20 +3107,34 @@ body {
     background-repeat : no-repeat, no-repeat ;
     background-size :  30%, 50% ;
 }
-/* Page mentions légales */
-.view-article #g-page-surround {
+/* Coin haut droite des pages mentions légales, cookies, indicateurs, groupes, campagnes... */
+.view-article #g-page-surround, .view-list #g-page-surround, .view-form #g-page-surround, .view-emails #g-page-surround, .view-campaigns #g-page-surround, .view-form.mon-profil #g-page-surround {
     background-image: var(--display-corner-top-right-background);
     background-position: top 70px right;
     background-repeat: no-repeat;
     background-size: 50%;
 }
-/* Easter egg */
-/*#g-page-surround {
-    background-image: var(--display-hiding);
-    background-position: bottom -100px center;
-    background-size: 30%;
+/* Historique des emails */
+.view-list.email-history-indicators-page #g-container-main {
+    background-image: var(--display-email-history);
+    background-position: top -10px right -10px;
     background-repeat: no-repeat;
-}*/
+    background-size: 350px;
+}
+/* Groupes */
+.view-list.groups-setup-page #g-container-main {
+    background-image: var(--display-groups);
+    background-position: top 30px right;
+    background-repeat: no-repeat;
+    background-size: 350px;
+}
+/* Profils */
+.view-list.users-profile-setup-page #g-container-main {
+    background-image: var(--display-profiles);
+    background-position: top -10px right -10px;
+    background-repeat: no-repeat;
+    background-size: 350px;
+}
 /* TABLETTE */
 @media screen and (min-width: 768px) and (max-width: 959px) {
 
@@ -3136,11 +3150,31 @@ body {
     }
 
     /* Page settings */
-    .com_emundus:not(.view-programme):not(.view-checklist):not(.view-users) #g-page-surround, .files-board #g-page-surround, .g-back-office-emundus-tableau #g-page-surround, .view-list.com_fabrik #g-page-surround {
-        background-image: var(--display-corner-bottom-right-background) !important;
-        background-position: bottom 60px right !important;
-        background-repeat : no-repeat !important;
-        background-size : 90% !important;
+    .com_emundus.view-settings #g-page-surround {
+        background-image: var(--display-corner-bottom-right-background);
+        background-position: bottom 60px right;
+        background-repeat : no-repeat;
+        background-size : 90%;
+    }
+
+    /* Coin haut droite des pages mentions légales, cookies, indicateurs, groupes, campagnes... */
+    .view-article #g-page-surround, .view-list #g-page-surround, .view-form #g-page-surround, .view-emails #g-page-surround, .view-campaigns #g-page-surround {
+        background-size: 90%;
+    }
+
+    /* Historique des emails */
+    .view-list.email-history-indicators-page #g-container-main {
+        background-size: 30%;
+    }
+
+    /* Groupes */
+    .view-list.groups-setup-page #g-container-main {
+        background-size: 35%;
+    }
+
+    /* Profils */
+    .view-list.users-profile-setup-page #g-container-main {
+        background-size: 45%;
     }
 }
 /* MOBILE */
@@ -3158,11 +3192,31 @@ body {
     }
 
     /* Page settings */
-    .com_emundus:not(.view-programme):not(.view-checklist):not(.view-users) #g-page-surround, .files-board #g-page-surround, .g-back-office-emundus-tableau #g-page-surround, .view-list.com_fabrik #g-page-surround {
-        background-image: var(--display-corner-bottom-right-background) !important;
-        background-position: bottom 60px right !important;
-        background-repeat : no-repeat !important;
-        background-size : 100% !important;
+    .com_emundus.view-settings #g-page-surround {
+        background-image: var(--display-corner-bottom-right-background);
+        background-position: bottom 60px right;
+        background-repeat : no-repeat;
+        background-size : 100%;
+    }
+
+    /* Coin haut droite des pages mentions légales, cookies, indicateurs, groupes, campagnes... */
+    .view-article #g-page-surround, .view-list #g-page-surround, .view-form #g-page-surround, .view-emails #g-page-surround, .view-campaigns #g-page-surround {
+        background-size: 100%;
+    }
+
+    /* Historique des emails */
+    .view-list.email-history-indicators-page #g-container-main {
+        background-image: none;
+    }
+
+    /* Groupes */
+    .view-list.groups-setup-page #g-container-main {
+        background-image: none;
+    }
+
+    /* Profils */
+    .view-list.users-profile-setup-page #g-container-main {
+        background-image: none;
     }
 }
 /***************

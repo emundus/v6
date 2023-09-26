@@ -386,11 +386,11 @@
 }
 
 .email-history {
-  background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/email-history.svg");
+  background-image: var(--display-email-history);
 }
 
 .groups {
-  background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/groups.svg");
+  background-image: var(--display-groups);
 }
 
 .indicators {
@@ -406,7 +406,7 @@
 }
 
 .profiles {
-  background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/profiles.svg");
+  background-image: var(--display-profiles);
 }
 
 .rights-management {

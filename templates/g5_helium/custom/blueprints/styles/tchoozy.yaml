@@ -52,6 +52,27 @@ form:
       default: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/setting-tools.svg")
       description: Tchoozy paramètres globaux
 
+    #Historique des emails
+    email-history:
+      type: input.text
+      label: email history illustration
+      default: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/email-history.svg")
+      description: Illustration historique des emails
+
+    #Groupes
+    groups:
+      type: input.text
+      label: groups illustration
+      default: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/groups.svg")
+      description: Illustration groupes
+
+    #Profiles
+    profiles:
+      type: input.text
+      label: profiles illustration
+      default: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/profiles.svg")
+      description: Illustration profils
+
     #Easter egg
     hiding:
       type: input.text
