@@ -1,6 +1,6 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import '../../mocks/matchMedia.mock';
-import List from '../../../src/views/list_v2';
+import List from '../../../src/views/list.vue';
 import translate from '../../mocks/mixins/translate';
 import store from '../../../src/store/index';
 import VModal from 'vue-js-modal';

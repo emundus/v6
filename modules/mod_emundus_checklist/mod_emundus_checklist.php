@@ -46,7 +46,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $show_mandatory_documents = $params->get('show_mandatory_documents', 1);
     $show_optional_documents = $params->get('show_optional_documents', 0);
     $show_duplicate_documents = $params->get('show_duplicate_documents', 1);
-	$show_preliminary_documents = $params->get('show_preliminary_documents', 1);
+	$show_preliminary_documents = $params->get('show_preliminary_documents', 0);
 	$forms_title = $params->get('forms_title', JText::_('FORMS'));
     $mandatory_documents_title = $params->get('mandatory_documents_title', JText::_('MANDATORY_DOCUMENTS'));
     $optional_documents_title = $params->get('optional_documents_title', JText::_('OPTIONAL_DOCUMENTS'));
@@ -179,6 +179,18 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     }
 
     $forms = @EmundusHelperMenu::buildMenuQuery($user->profile);
+	$keys_to_remove = array();
+	foreach($forms as $key => $form) {
+		$m_params = json_decode($form->menu_params, true);
+		if(isset($m_params['menu_show']) && $m_params['menu_show'] == 0)
+		{
+			$keys_to_remove[] = $key;
+		}
+	}
+	foreach($keys_to_remove as $key) {
+		unset($forms[$key]);
+	}
+	$forms = array_values($forms);
 
     // Prepare display of send button
     $application = @modEmundusChecklistHelper::getApplication($user->fnum);

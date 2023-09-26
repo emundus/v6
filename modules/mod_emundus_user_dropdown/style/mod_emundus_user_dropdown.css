@@ -211,14 +211,14 @@ a.btn.btn-danger .inscription:active{
     border-color: var(--em-primary-color) !important;
 }
 
-a.btn.btn-danger :not(.btn-creer-compte) {
+a.btn.btn-danger:not(.btn-creer-compte) {
     background: var(--transparent);
     border: 1px solid var(--em-secondary-color);
     color: var(--em-secondary-color);
     height: auto;
 }
 
-a.btn.btn-danger :not(.btn-creer-compte):hover {
+a.btn.btn-danger:not(.btn-creer-compte):hover {
      background: var(--em-secondary-color);
      color: var(--neutral-0);
      border-color: var(--em-secondary-color) !important;

@@ -7,7 +7,7 @@ $doc->addScript(JURI::root() . "plugins/fabrik_element/currency/assets/js/emundu
 
 ?>
 
-<div id="<?php echo $displayData->attributes['id']; ?>" class="em-flex-row fabrikSubElementContainer marginNone currencyElement" >
+<div id="<?php echo $displayData->attributes['id']; ?>" class="em-flex-row fabrikSubElementContainer marginNone currencyElement <?php echo $displayData->bootstrap_class?>" >
 
     <input id="currency_inputValue" name="<?php echo $displayData->attributes['name']; ?>" class="fabrikinput input-medium"
            autocomplete="off" type="text" value="<?php echo $displayData->attributes['inputValue']; ?>">
@@ -28,5 +28,5 @@ $doc->addScript(JURI::root() . "plugins/fabrik_element/currency/assets/js/emundu
     </select>
 
     <input id="currency_rowInputValue" name="<?php echo $displayData->attributes['name'].'[rowInputValueFront]'; ?>" hidden="hidden" class="fabrikinput">
-    <input id="currency_displayiso3_<?php echo $displayData->attributes['id']; ?>" name="currency_displayiso3" value="<?php echo $displayData->displayiso3; ?>" hidden="hidden" class="fabrikinput">
+    <input id="currency_displayiso3" name="<?php echo $displayData->attributes['name'].'[currency_displayiso3]'; ?>" value="<?php echo $displayData->displayiso3; ?>" hidden="hidden" class="fabrikinput">
 </div>

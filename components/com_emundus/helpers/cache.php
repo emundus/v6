@@ -97,4 +97,29 @@ class EmundusHelperCache
 
 		return $cleaned;
 	}
+
+	public static function getCurrentGitHash() {
+		$hash = '';
+		$git_base_path = JPATH_SITE.'/.git';
+
+		if(file_exists($git_base_path.'/HEAD')) {
+			$git_str = file_get_contents($git_base_path . '/HEAD');
+			$git_branch = rtrim(preg_replace("/(.*?\/){2}/", '', $git_str));
+
+			if(!empty($git_branch))
+			{
+				$hash = trim(file_get_contents($git_base_path . '/refs/heads/' . $git_branch));
+			}
+		}
+
+		if(empty($hash))
+		{
+			$xmlDoc = new DOMDocument();
+			if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
+				$hash = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
+			}
+		}
+
+		return $hash;
+	}
 }

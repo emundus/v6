@@ -145,3 +145,6 @@ components/com_eventbooking/fields.xml
 ## tailwind ##
 node_modules
 custom_variables.js
+
+## Imt Atlantique Me3+ And Sarena ##
+assessment/

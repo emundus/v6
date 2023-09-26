@@ -1,12 +1,12 @@
 <template>
-  <div class="em-w-100 em-mt-80">
+  <div class="em-w-100">
     <div>
 
       <!--- MENU --->
       <transition name="slide-right">
         <div class="em-grid-3" v-if="menuHighlight === 0">
           <div style="background: var(--neutral-0);" v-for="(menu,index) in displayedMenus" :key="'menu_' + menu.index" class="em-shadow-cards col-md-3 em-hover-s-scale" v-wave @click="changeMenu(menu)">
-            <span class="material-icons-outlined em-gradient-icons em-mb-16">{{menu.icon}}</span>
+            <span class="material-icons-outlined em-main-500-color em-mb-16">{{menu.icon}}</span>
             <h4 class="em-body-16-semibold em-mb-8">{{translate(menu.title)}}</h4>
             <p class="em-font-size-14">{{translate(menu.description)}}</p>
           </div>
@@ -212,5 +212,14 @@ export default {
 }
 .em-hover-s-scale:hover{
   transform: scale(1.03);
+}
+.em-shadow-cards{
+  margin: unset;
+}
+
+@media all and (max-width: 959px) {
+  div.em-grid-3 {
+    padding: var(--p-24);
+  }
 }
 </style>

@@ -446,8 +446,9 @@ class EmundusFiltersFiles extends EmundusFilters
 									}
 									$new_default_filter['andorOperator'] = 'OR';
 									$new_default_filter['operator'] = $new_default_filter['type'] === 'select' ? 'IN' : '=';
-								}
-							}
+                                }
+                                $new_default_filter['plugin'] = $element['plugin'];
+                            }
 						}
 
 						if (!empty($new_default_filter)) {

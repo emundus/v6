@@ -1457,8 +1457,8 @@ class EmundusControllerFiles extends JControllerLegacy
             $ordered_elements[$c] = $elements[$c];
         }
 
-        $fnumsArray = $m_files->getFnumArray($fnums, $ordered_elements, $methode, $start, $limit, 0);
-	    //$fnumsArray = $m_files->getFnumArray2($fnums, $ordered_elements, $start, $limit);
+        //$fnumsArray = $m_files->getFnumArray($fnums, $ordered_elements, $methode, $start, $limit, 0);
+	    $fnumsArray = $m_files->getFnumArray2($fnums, $ordered_elements, $start, $limit);
 
 		if ($fnumsArray !== false) {
 			// On met a jour la liste des fnums traités
@@ -3036,7 +3036,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
 
                     $fnum = explode(',', $fnum);
-                    if ($attachment || !empty($attachment_to_export)) {
+                    if (($attachment || !empty($attachment_to_export)) && count($attachment_to_export) > 0) {
                         $files = $m_files->getFilesByFnums($fnum, $attachment_to_export);
                         $file_ids = array();
 

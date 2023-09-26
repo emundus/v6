@@ -31,7 +31,7 @@ class EmundusHelperMenu {
 			$levels = JAccess::getAuthorisedViewLevels($user->id);
 		}
 
-		$query->select('fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name, CONCAT(menu.link,"&Itemid=",menu.id) AS link, menu.id, menu.title, profile.menutype, fbforms.params')
+		$query->select('fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name, CONCAT(menu.link,"&Itemid=",menu.id) AS link, menu.id, menu.title, profile.menutype, fbforms.params, menu.params as menu_params')
 			->from($db->quoteName('#__menu','menu'))
 			->innerJoin($db->quoteName('#__emundus_setup_profiles','profile').' ON '.$db->quoteName('profile.menutype').' = '.$db->quoteName('menu.menutype') . ' AND ' . $db->quoteName('profile.id') . ' = ' . $db->quote($profile))
 			->innerJoin($db->quoteName('#__fabrik_forms','fbforms').' ON '.$db->quoteName('fbforms.id').' = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)')
@@ -52,7 +52,7 @@ class EmundusHelperMenu {
 			$list = $db->loadObjectList();
 
 			$query->clear()
-				->select('fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name, CONCAT(menu.link,"&Itemid=",menu.id) AS link, menu.id, menu.title, profile.menutype, fbforms.params')
+				->select('fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name, CONCAT(menu.link,"&Itemid=",menu.id) AS link, menu.id, menu.title, profile.menutype, fbforms.params, menu.params as menu_params')
 				->from($db->quoteName('#__menu','menu'))
 				->innerJoin($db->quoteName('#__emundus_setup_profiles','profile').' ON '.$db->quoteName('profile.menutype').' = '.$db->quoteName('menu.menutype') . ' AND ' . $db->quoteName('profile.id') . ' = ' . $db->quote($profile))
 				->innerJoin($db->quoteName('#__fabrik_forms','fbforms').' ON '.$db->quoteName('fbforms.id').' = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)')

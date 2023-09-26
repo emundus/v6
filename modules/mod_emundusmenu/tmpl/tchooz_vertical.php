@@ -99,7 +99,6 @@ defined('_JEXEC') or die;
 
     /*** List style ***/
     #g-navigation .g-main-nav .tchooz-vertical-toplevel > li{
-        width: 50px;
         margin: 5px 10px !important;
         font-family: var(--em-default-font);
     }
@@ -123,10 +122,11 @@ defined('_JEXEC') or die;
         z-index: 2;
         transition: all 0.3s ease-in-out;
     }
-    .tchooz-vertical-item a img{
+    .tchooz-vertical-item a img,
+    .tchooz-vertical-item a span[class*="material-icons"] {
         width: 30px;
         height: 30px;
-        padding: 5px;
+        padding: 3px !important;
     }
 
     .image-title{
@@ -214,6 +214,10 @@ defined('_JEXEC') or die;
        border: solid 2px #fff;
         border-radius: 5px;
         content: "";
+    }
+
+    #g-container-main,#g-footer,#footer-rgpd {
+        padding-left: 76px;
     }
 </style>
 <nav class="g-main-nav <?php echo $class_sfx;?>" data-g-hover-expand="true"
@@ -520,9 +524,9 @@ defined('_JEXEC') or die;
             jQuery(".grey-navbar-icons").css("opacity","1");
             jQuery(".sidebar-formbuilder").css("opacity","0");
             if(window.innerWidth >= 1280) {
-                jQuery("#g-footer").css("padding-left", "300px");
-                jQuery("#footer-rgpd").css("padding-left", "300px");
-                jQuery("#g-container-main").css("padding-left", "180px");
+                jQuery("#g-footer").css("padding-left", "280px");
+                jQuery("#footer-rgpd").css("padding-left", "280px");
+                jQuery("#g-container-main").css("padding-left", "280px");
                 jQuery("#header-a").css("opacity", "1");
             }
             setTimeout(() =>{
@@ -539,9 +543,9 @@ defined('_JEXEC') or die;
             jQuery(".grey-navbar-icons").css("opacity","1");
             jQuery(".sidebar-formbuilder").css("opacity","0");
             if(window.innerWidth >= 1280) {
-                jQuery("#g-footer").css("padding-left", "300px");
-                jQuery("#footer-rgpd").css("padding-left", "300px");
-                jQuery("#g-container-main").css("padding-left", "180px");
+                jQuery("#g-footer").css("padding-left", "280px");
+                jQuery("#footer-rgpd").css("padding-left", "280px");
+                jQuery("#g-container-main").css("padding-left", "280px");
                 jQuery("#header-a").css("opacity", "1");
             }
             setTimeout(() =>{
@@ -560,9 +564,9 @@ defined('_JEXEC') or die;
             jQuery(".sidebar-formbuilder").css("display","block");
             jQuery(".sidebar-formbuilder").css("opacity","1");
             if(window.innerWidth >= 1280) {
-                jQuery("#g-container-main").css("padding-left", "0");
-                jQuery("#g-footer").css("padding-left", "80px");
-                jQuery("#footer-rgpd").css("padding-left", "80px");
+                jQuery("#g-container-main").css("padding-left", "76px");
+                jQuery("#g-footer").css("padding-left", "76px");
+                jQuery("#footer-rgpd").css("padding-left", "76px");
                 jQuery("#header-a").css("opacity", "0");
             }
             setTimeout(() =>{

@@ -860,8 +860,6 @@ class EmundusModelEvaluation extends JModelList {
 
         $query = 'select jecc.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class, sp.code ';
 
-        $group_by = 'GROUP BY jecc.fnum ';
-
 	    $already_joined_tables = [
 		    'jecc' => 'jos_emundus_campaign_candidature',
 		    'ss' => 'jos_emundus_setup_status',
@@ -921,6 +919,8 @@ class EmundusModelEvaluation extends JModelList {
 		    }
 	    }
 
+	    $query .= ', jos_emundus_evaluations.id AS evaluation_id, CONCAT(eue.lastname," ",eue.firstname) AS evaluator';
+
 	    if (!empty($this->_elements_default)) {
 		    $query .= ', '.implode(',', $this->_elements_default);
 	    }
@@ -929,8 +929,7 @@ class EmundusModelEvaluation extends JModelList {
 					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
 					LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
-					LEFT JOIN #__users as u on u.id = jecc.applicant_id
-					LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum LIKE jecc.fnum ';
+					LEFT JOIN #__users as u on u.id = jecc.applicant_id';
         $q = $this->_buildWhere($already_joined_tables);
 
         if (EmundusHelperAccess::isCoordinator($current_user->id)
@@ -956,8 +955,7 @@ class EmundusModelEvaluation extends JModelList {
         $query .= ' AND esc.published = 1 ';
 
         $query .= $q['q'];
-        $query .= ' ' . $group_by;
-
+        
         $query .=  $this->_buildContentOrderBy();
 
         $dbo->setQuery($query);
@@ -3050,7 +3048,11 @@ class EmundusModelEvaluation extends JModelList {
                 foreach ($eval_elements as $key => $elt) {
                     $eval_elements[$key]->label = JText::_($elt->label);
                     if (!in_array($elt->name,['fnum','student_id','campaign_id'])) {
-                        $evaluation->{$elt->name} = $m_application->getValuesByElementAndFnum($file->fnum,$elt->id,$elt->form_id);
+                        if (!EmundusHelperAccess::asAccessAction(5, 'r', $user)) {
+                            $evaluation->{$elt->name} = $m_application->getValuesByElementAndFnum($file->fnum, $elt->id, $elt->form_id, 1, JFactory::getUser()->id);
+                        } else {
+                            $evaluation->{$elt->name} = $m_application->getValuesByElementAndFnum($file->fnum, $elt->id, $elt->form_id);
+                        }
                     }
                 }
 

@@ -247,9 +247,6 @@ JText::script('COM_EMUNDUS_STATE');
 JText::script('COM_EMUNDUS_PROFILE_SWITCH_PROFILE');
 JText::script('COM_EMUNDUS_PROFILE_PROFILE_CHOSEN');
 Jtext::script('COM_EMUNDUS_USERS_ARE_YOU_SURE_TO_REGENERATE_PASSWORD');
-Jtext::script('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_ERROR_TITLE');
-Jtext::script('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_ERROR_TEXT');
-Jtext::script('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_ERROR_UPDATE_TEXT');
 
 //Export Excel
 JText::script('COM_EMUNDUS_ADD_DATA_TO_CSV');
@@ -362,6 +359,10 @@ JText::script('COM_EMUNDUS_APPLICATION_SENT_ON');
 JText::script('DOCUMENT_PRINTED_ON');
 JText::script('COM_EMUNDUS_USERS_ARE_YOU_SURE_TO_DELETE_USERS');
 JText::script('COM_EMUNDUS_USERS_EDIT_PROFILE_NO_FORM_FOUND');
+JText::script('JCANCEL');
+JText::script('JACTION_DELETE');
+JText::script('COM_EMUNDUS_USERS_EDIT_PROFILE_NO_FORM_FOUND');
+JText::script('COM_EMUNDUS_WANT_RESET_PASSWORD');
 
 // Submit application
 JText::script('COM_EMUNDUS_CONGRATULATIONS');
@@ -611,6 +612,19 @@ JText::script('COM_EMUNDUS_EDIT_COMMENT_TITLE');
 JText::script('COM_EMUNDUS_FORM_BUILDER_DELETE_MODEL');
 JText::script('COM_EMUNDUS_FORM_PAGE_MODELS');
 JText::script('COM_EMUNDUS_FORM_MY_FORMS');
+JText::script('COM_EMUNDUS_ONBOARD_PROGRAM_ADDUSER');
+JText::script('COM_EMUNDUS_ACTIONS_EDIT_USER');
+JText::script('COM_EMUNDUS_USERS_ERROR_PLEASE_COMPLETE');
+JText::script('COM_EMUNDUS_USERS_SHOW_USER_RIGHTS');
+JText::script('COM_EMUNDUS_MAILS_SEND_EMAIL');
+JText::script('COM_EMUNDUS_USERS_CREATE_GROUP');
+JText::script('COM_EMUNDUS_USERS_AFFECT_USER');
+JText::script('COM_EMUNDUS_USERS_AFFECT_GROUP_ERROR');
+JText::script('COM_EMUNDUS_ERROR_OCCURED');
+JText::script('COM_EMUNDUS_USERS_CREATE_USER_CONFIRM');
+JText::script('COM_EMUNDUS_USERS_EDIT_USER_CONFIRM');
+JText::script('COM_EMUNDUS_USERS_AFFECT_USER_CONFIRM');
+JText::script('COM_EMUNDUS_MAIL_SEND_NEW');
 
 // PASSWORD CHARACTER VALIDATION
 JText::script('COM_EMUNDUS_PASSWORD_WRONG_FORMAT_TITLE');
@@ -674,7 +688,7 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
     JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
     JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
 
-    JHtml::styleSheet('media/com_emundus/css/reset.css');
+    //JHtml::styleSheet('media/com_emundus/css/reset.css');
     JHtml::styleSheet('media/jui/css/chosen.css');
     JHtml::styleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
     JHtml::styleSheet('media/com_emundus/css/emundus_files.css');
@@ -684,7 +698,9 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
 }
 
 // VUE
-JHTML::script('media/com_emundus_vue/chunk-vendors_emundus.js');
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+JFactory::getDocument()->addScript('media/com_emundus_vue/chunk-vendors_emundus.js?'.$hash);
 JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
 
 // QUILL
@@ -711,7 +727,7 @@ elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller',
 {
     $controller->execute($task);
 }
-elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign' && $json != 'json') && $task != 'passrequest' && $task != 'getusername')
+elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign' && $json != 'json') && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity')
 {
     JPluginHelper::importPlugin('emundus', 'custom_event_handler');
     $app->triggerEvent('callEventHandler', ['onAccessDenied', []]);

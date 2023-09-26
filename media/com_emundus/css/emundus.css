@@ -1082,8 +1082,9 @@ fieldset {
 	transition: background-color 2s, transform 2s;
 }
 
-.em-added-files .em-flex-row a:not(.em-red-500-color) {
-	color: var(--neutral-900);
+#attachment_list_mand fieldset .items-center h4,
+#attachment_list_opt fieldset .items-center h4 {
+	font-family: var(--em-applicant-font);
 }
 
 /*#attachment_list_mand fieldset:hover {

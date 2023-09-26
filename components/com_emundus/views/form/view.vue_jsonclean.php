@@ -203,7 +203,7 @@ class EmundusViewForm extends FabrikViewFormBase
                         //if($o_element->plugin != 'calc') {
                         $el_parmas = json_decode($o_element->params);
 						if($o_element->plugin != 'calc') {
-							$content_element = $element->preRender('0', '1', '_emundus');
+							$content_element = $element->preRender('0', '1', 'emundus');
 						} else {
 							// We build the calc element because we don't want to execute the preRender function
 							$content_element = new stdClass();

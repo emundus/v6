@@ -140,6 +140,10 @@ ul.nav.nav-tabs.nav-stacked {
     margin-bottom: 32px;
 }
 
+.view-login .form-horizontal .control-group:nth-child(2) {
+    margin-bottom: 8px;
+}
+
 .login form.form-horizontal .control-group {
     flex-direction: column;
 }

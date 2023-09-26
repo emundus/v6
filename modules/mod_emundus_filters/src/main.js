@@ -17,5 +17,7 @@ if (modFilters) {
         countFilterValues: modFilters.getAttribute('data-count-filter-values') === '1',
     }).use(Vuex).mixin(translate);
 
+    app.config.productionTip = true;
+    app.config.devtools = false;
     app.mount('#em-filters-vue');
 }

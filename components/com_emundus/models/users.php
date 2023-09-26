@@ -1785,16 +1785,35 @@ class EmundusModelUsers extends JModelList {
 
     public function countUserEvaluations($uid) {
         try {
-            $query = "select count(*) from #__emundus_evaluations
-                      where user = " .$uid;
-            $db = $this->getDbo();
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('COUNT(*)')
+				->from($db->quoteName('#__emundus_evaluations'))
+				->where($db->quoteName('user').' = '.$db->quote($uid));
             $db->setQuery($query);
             return $db->loadResult();
         } catch(Exception $e) {
             error_log($e->getMessage(), 0);
-            return false;
+            return 0;
         }
     }
+
+	public function countUserDecisions($uid) {
+		try {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('COUNT(*)')
+				->from($db->quoteName('#__emundus_final_grade'))
+				->where($db->quoteName('user').' = '.$db->quote($uid));
+			$db->setQuery($query);
+			return $db->loadResult();
+		} catch(Exception $e) {
+			error_log($e->getMessage(), 0);
+			return 0;
+		}
+	}
 
 	/**
 	 * @param $uid Int User id
@@ -2042,36 +2061,40 @@ class EmundusModelUsers extends JModelList {
     }
 
 	/**
-	 * @param $gid
+	 * @param $gids
 	 *
 	 * @return array|bool|mixed
 	 *
 	 * @since version
 	 */
-    public function getGroupsAcl($gid) {
-    	if (!empty($gid)) {
+    public function getGroupsAcl($gids) {
+		$groups_acl = [];
+
+    	if (!empty($gids)) {
+		    $db = $this->getDbo();
+			$query = $db->getQuery(true);
+
+		    if (!is_array($gids)) {
+			    $gids = [$gids];
+		    }
+
+		    $query->select('esa.label, ea.*, esa.c as is_c, esa.r as is_r, esa.u as is_u, esa.d as is_d')
+			    ->from($db->quoteName('#__emundus_acl', 'ea'))
+			    ->leftJoin($db->quoteName('#__emundus_setup_actions', 'esa') . ' ON ' . $db->quoteName('esa.id') . ' = ' . $db->quoteName('ea.action_id'))
+			    ->where($db->quoteName('ea.group_id') . ' IN (' . implode(',', $gids) . ')')
+			    ->where($db->quoteName('esa.status') . ' != 0')
+			    ->order($db->quoteName('esa.ordering') . ' ASC, ' . $db->quoteName('esa.name') . ' ASC');
+
     		try {
-    			if (is_array($gid)) {
-	                $query = "select esa.label, ea.*, esa.c as is_c, esa.r as is_r, esa.u as is_u, esa.d as is_d
-	                      from #__emundus_acl as ea
-	                      left join #__emundus_setup_actions as esa on esa.id = ea.action_id
-	                      where ea.group_id in (" .implode(',', $gid).") order by esa.ordering asc,esa.name asc";
-                } else {
-	                $query = "select esa.label, ea.*, esa.c as is_c, esa.r as is_r, esa.u as is_u, esa.d as is_d
-	                      from #__emundus_acl as ea
-	                      left join #__emundus_setup_actions as esa on esa.id = ea.action_id
-	                      where ea.group_id = " .$gid ." order by esa.ordering asc,esa.name asc";
-                }
-	            $db = $this->getDbo();
 	            $db->setQuery($query);
-	            return $db->loadAssocList();
+			    $groups_acl = $db->loadAssocList();
 	        } catch(Exception $e) {
 	            error_log($e->getMessage(), 0);
-	            return false;
+			    $groups_acl = false;
 	        }
-    	} else {
-    		return array();
     	}
+
+		return $groups_acl;
     }
 
 	/** This function returns the groups which are linked to the fnum's program OR NO PROGRAM AT ALL.
@@ -2312,7 +2335,7 @@ class EmundusModelUsers extends JModelList {
 	 * @throws Exception
 	 * @since  3.9.11
 	 */
-	public function passwordReset($data) {
+	public function passwordReset($data, $subject = 'COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT', $body = 'COM_USERS_EMAIL_PASSWORD_RESET_BODY') {
 
 		$config = JFactory::getConfig();
 
@@ -2406,20 +2429,21 @@ class EmundusModelUsers extends JModelList {
 
 		// Assemble the password reset confirmation link.
 		$mode = $config->get('force_ssl', 0) == 2 ? 1 : (-1);
-		$link = 'index.php?option=com_users&view=reset&layout=confirm&token=' . $token;
+		$link = 'index.php?option=com_users&view=reset&layout=confirm&token=' . $token . '&username=' . $user->get('username');
+		$link = str_replace('+', '%2B', $link);
 
         $mailer = JFactory::getMailer();
 
 		// Put together the email template data.
 		$data = $user->getProperties();
 		$data['sitename'] = $config->get('sitename');
-		$data['link_text'] = JRoute::_($link, false, $mode);
-		$data['link_html'] = '<a href='.JRoute::_($link, true, $mode).'> '.JRoute::_($link, true, $mode).'</a>';
+		$data['link_text'] = JURI::base().$link;
+		$data['link_html'] = '<a href='.JURI::base().$link.'> '.JURI::base().$link.'</a>';
 		$data['token'] = $token;
 
 		// Build the translated email.
-		$subject = JText::sprintf('COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT', $data['sitename']);
-		$body = JText::sprintf('COM_USERS_EMAIL_PASSWORD_RESET_BODY', $data['sitename'], $data['token'], $data['link_html']);
+		$subject = JText::sprintf($subject, $data['sitename']);
+		$body = JText::sprintf($body, $data['sitename'], $data['token'], $data['link_html']);
 
         $post = [
             'USER_NAME' => $user->name,
@@ -2464,6 +2488,14 @@ class EmundusModelUsers extends JModelList {
         $mailer->setBody($body);
 
 		// Send the password reset request email.
+
+		require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+		$custom_email_tag = EmundusHelperEmails::getCustomHeader();
+		if(!empty($custom_email_tag))
+		{
+			$mailer->addCustomHeader($custom_email_tag);
+		}
+
 		$send = $mailer->Send();
 
 		// Check for an error.
@@ -2569,8 +2601,17 @@ class EmundusModelUsers extends JModelList {
             }
         }
 
+        $fullname = $user->firstname.' '.$user->lastname;
+
         try {
-            $query->update($db->quoteName('#__emundus_users'));
+            $query->update($db->quoteName('#__users'))
+                ->set($db->quoteName('name').' = '.$db->quote($fullname))
+                ->where($db->quoteName('id').' = '.$db->quote($uid));
+            $db->setQuery($query);
+            $db->execute();
+
+            $query->clear()
+                ->update($db->quoteName('#__emundus_users'));
             foreach ($columns as $column) {
                 $query->set($db->quoteName($column) . ' = ' . $db->quote($user->{$column}));
             }

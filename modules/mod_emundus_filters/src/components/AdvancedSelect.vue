@@ -1,12 +1,16 @@
 <template>
-	<div class="advanced-search em-w-100">
-		<input type="text" v-model="search" class="em-w-100">
-		<select class="em-w-100 em-mt-8" @change="onChange" v-model="selected">
-			<option value="-1" selected> {{ translate('MOD_EMUNDUS_FILTERS_PLEASE_SELECT') }}</option>
-			<optgroup :label="group.label" v-for="group in groupedFilters" :key="group.id">
-				<option v-for="option in group.options" :key="option.id" :value="option.id"> {{ option.label }}</option>
-			</optgroup>
-		</select>
+	<div id="advanced-select" class="advanced-search em-w-100">
+		<input type="text" v-model="search" class="em-w-100" :placeholder="translate('MOD_EMUNDUS_FILTERS_GLOBAL_SEARCH_PLACEHOLDER')" @focusin="opened = true">
+
+		<ul :class=" {
+			'em-border-radius-8 em-border-neutral-400 em-w-100 em-box-shadow em-white-bg em-mt-4': true,
+			'hidden': opened === false,
+		}">
+			<div v-for="group in groupedFilters" :key="group.id">
+				<li class="em-mt-8 em-mb-8 em-pl-8"> <strong>{{ group.label }}</strong></li>
+				<li v-for="option in group.options" :key="option.id" class="em-mb-8 em-pl-16 em-pointer" @click="onClick(option.id)"> {{ option.label }}</li>
+			</div>
+		</ul>
 	</div>
 </template>
 
@@ -27,16 +31,28 @@ export default {
 		return {
 			groupedOptions: [],
 			search: '',
-			selected: -1
+			selected: -1,
+			opened: false
 		};
 	},
+	mounted() {
+		document.addEventListener('click', this.handleClickOutside);
+	},
+	beforeUnmount() {
+		document.removeEventListener('click', this.handleClickOutside);
+	},
 	methods: {
-		onChange() {
-			if (this.selected !== -1) {
-				this.$emit('filter-selected', this.selected);
-				this.selected = -1;
+		onClick(id) {
+			this.$emit('filter-selected', id);
+			this.opened = false;
+			this.search = '';
+		},
+		handleClickOutside(event) {
+			if (!this.$el.contains(event.target)) {
+				this.opened = false;
+				this.search = '';
 			}
-		}
+		},
 	},
 	computed: {
 		groupedFilters() {
@@ -69,5 +85,13 @@ export default {
 </script>
 
 <style scoped>
+#advanced-select ul{
+	list-style-type: none;
+	max-height: 300px;
+	overflow-y: auto;
+}
 
+#advanced-select ul li.em-pointer:hover{
+	background-color: #E4E4E4;
+}
 </style>
