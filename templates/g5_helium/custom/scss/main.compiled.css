@@ -688,12 +688,12 @@ form.fabrikForm input:not([type='file']), form.fabrikForm select, form.fabrikFor
       border-color: var(--em-form-bc);
       transition: all 0.1s ease-out;
     }
-form.fabrikForm input:not([type='file']):hover:not([type='radio']):not([type='checkbox']), form.fabrikForm select:hover:not([type='radio']):not([type='checkbox']), form.fabrikForm textarea:hover:not([type='radio']):not([type='checkbox']) {
+form.fabrikForm input:not([type='file']):hover:not([type='radio']):not([type='checkbox']):not([readonly="readonly"]), form.fabrikForm select:hover:not([type='radio']):not([type='checkbox']):not([readonly="readonly"]), form.fabrikForm textarea:hover:not([type='radio']):not([type='checkbox']):not([readonly="readonly"]) {
         background-color: var(--em-form-bgc-hover);
         border-color: var(--em-form-bc-hover);
         box-shadow: unset;
       }
-form.fabrikForm input:not([type='file']):focus:not([type='radio']):not([type='checkbox']), form.fabrikForm select:focus:not([type='radio']):not([type='checkbox']), form.fabrikForm textarea:focus:not([type='radio']):not([type='checkbox']) {
+form.fabrikForm input:not([type='file']):focus:not([type='radio']):not([type='checkbox']):not([readonly="readonly"]), form.fabrikForm select:focus:not([type='radio']):not([type='checkbox']):not([readonly="readonly"]), form.fabrikForm textarea:focus:not([type='radio']):not([type='checkbox']):not([readonly="readonly"]) {
         outline: var(--em-form-outline-color-focus) solid var(--em-form-outline-width-focus);
         border-radius: var(--em-form-br-focus);
         outline-offset: var(--em-form-outline-offset-focus);

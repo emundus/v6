@@ -203,13 +203,13 @@
       border-color: var(--em-form-bc);
       transition: all 0.1s ease-out;
 
-      &:hover:not([type='radio']):not([type='checkbox']) {
+      &:hover:not([type='radio']):not([type='checkbox']):not([readonly="readonly"]) {
         background-color: var(--em-form-bgc-hover);
         border-color: var(--em-form-bc-hover);
         box-shadow: unset;
       }
 
-      &:focus:not([type='radio']):not([type='checkbox']) {
+      &:focus:not([type='radio']):not([type='checkbox']):not([readonly="readonly"]) {
         outline: var(--em-form-outline-color-focus) solid var(--em-form-outline-width-focus);
         border-radius: var(--em-form-br-focus);
         outline-offset: var(--em-form-outline-offset-focus);
