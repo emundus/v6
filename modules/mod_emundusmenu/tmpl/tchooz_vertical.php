@@ -642,7 +642,6 @@ defined('_JEXEC') or die;
                 if(label_colors[profile_color] != undefined) {
                     let root = document.querySelector(':root');
                     let css_var = getComputedStyle(root).getPropertyValue(label_colors[profile_color]);
-                    console.log(css_var);
 
                     document.documentElement.style.setProperty("--em-profile-color", css_var);
                 }
