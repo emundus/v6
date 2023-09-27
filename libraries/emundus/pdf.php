@@ -804,8 +804,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	jimport('joomla.html.parameter');
     set_time_limit(0);
     require_once (JPATH_SITE.'/components/com_emundus/helpers/date.php');
-    require_once (JPATH_SITE.'/components/com_emundus/helpers/menu.php');
-
     require_once(JPATH_SITE.'/components/com_emundus/models/application.php');
     require_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
     require_once(JPATH_SITE.'/components/com_emundus/models/files.php');
@@ -813,7 +811,10 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 	$db = JFactory::getDBO();
 	$app = JFactory::getApplication();
-	$current_user = JFactory::getUser();
+
+	if (is_null($options)) {
+		$options = [];
+	}
 
     if (empty($file_lbl)) {
         $file_lbl = "_application";
@@ -821,12 +822,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
     $cTitle = $eMConfig->get('export_application_pdf_title_color', '#000000'); //déclaration couleur principale
-    $profile_color = '#20835F';
 
     $config = JFactory::getConfig();
-    $offset = $config->get('offset');
 
-    $h_menu = new EmundusHelperMenu;
 
     $m_profile = new EmundusModelProfile;
     $m_application = new EmundusModelApplication;
@@ -1222,7 +1220,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	    }
 	    /** END */
 
-        @chdir('tmp');
+        chdir('tmp');
     }
 }
 
