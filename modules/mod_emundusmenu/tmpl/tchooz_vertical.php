@@ -41,7 +41,7 @@ defined('_JEXEC') or die;
     #header-b{
         width: auto;
         position: fixed;
-        background: white;
+        background: var(--neutral-0);
         left: 0;
         top: 0;
         padding: 10px;
@@ -55,14 +55,14 @@ defined('_JEXEC') or die;
         display: none;
     }
     #header-b #em_user_menu li.parent-active:hover a{
-        color: black;
+        color: var(--neutral-900);
     }
 
     #header-b #em_user_menu li:hover a, #header-b #em_user_menu li:active a, #header-b #em_user_menu li:focus a{
-        color: black;
+        color: var(--neutral-900);
     }
     .g-sublevel .g-menu-item-title span:hover,.g-sublevel .g-menu-item-title span:focus,.g-sublevel .g-menu-item-title span:active {
-        color: black;
+        color: var(--neutral-900);
     }
     .g-sublevel-list{
         margin-top: 10px;
@@ -127,6 +127,7 @@ defined('_JEXEC') or die;
         width: 30px;
         height: 30px;
         padding: 3px !important;
+        color: var(--em-profile-color) !important;
     }
 
     .image-title{
@@ -164,7 +165,7 @@ defined('_JEXEC') or die;
         height: auto;
         position: fixed;
         margin-left: 0;
-        color: black;
+        color: var(--neutral-900);
         align-items: center;
         font-weight: 600;
         display: none;
@@ -183,7 +184,7 @@ defined('_JEXEC') or die;
         box-shadow: 0 5px 10px rgb(0 0 0 / 10%);
         padding: 15px;
         border-radius: 5px;
-        background: #fff;
+        background: var(--neutral-0);
     }
     .message-tooltip-block::after{
         content: "";
@@ -196,7 +197,7 @@ defined('_JEXEC') or die;
         border-right-color: transparent;
         border-right-style: solid;
         border-right-width: 10px;
-        border-right: 10px solid #fff;
+        border-right: 10px solid var(--neutral-0);
     }
 
     .g-main-nav .g-standard .g-sublevel .g-menu-item a.g-menu-item-container:hover   {
@@ -211,7 +212,7 @@ defined('_JEXEC') or die;
         height: 110%;
         position: absolute;
         display: block;
-       border: solid 2px #fff;
+       border: solid 2px var(--neutral-0);
         border-radius: 5px;
         content: "";
     }
@@ -597,4 +598,56 @@ defined('_JEXEC') or die;
     window.onload = function () {
         this.enableTitles(localStorage.getItem('menu'));
     }
+
+// get profile color
+    let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=getprofilecolor';
+    fetch(url, {
+        method: 'GET',
+    }).then((response) => {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+    }).then((result) => {
+        if(result.status) {
+
+            let label_colors = {
+                'lightpurple' : '--em-purple-1',
+                'purple' : '--em-purple-2',
+                'darkpurple' : '--em-purple-2',
+                'lightblue' : '--em-light-blue-1',
+                'blue' : '--em-blue-2',
+                'darkblue' : '--em-blue-3',
+                'lightgreen' : '--em-green-1',
+                'green' : '--em-green-2',
+                'darkgreen' : '--em-green-2',
+                'lightyellow' : '--em-yellow-1',
+                'yellow' : '--em-yellow-2',
+                'darkyellow' : '--em-yellow-2',
+                'lightorange' : '--em-orange-1',
+                'orange' : '--em-orange-2',
+                'darkorange' : '--em-orange-2',
+                'lightred' : '--em-red-1',
+                'red' : '--em-red-2',
+                'darkred' : '--em-red-2',
+                'lightpink' : '--em-pink-1',
+                'pink' : '--em-pink-2',
+                'darkpink' : '--em-pink-2',
+            };
+
+            let profile_color = result.class;
+            if(profile_color != '') {
+                profile_color = profile_color.split('-')[1];
+
+                if(label_colors[profile_color] != undefined) {
+                    let root = document.querySelector(':root');
+                    let css_var = getComputedStyle(root).getPropertyValue(label_colors[profile_color]);
+                    console.log(css_var);
+
+                    document.documentElement.style.setProperty("--em-profile-color", css_var);
+                }
+            }
+
+        }
+    });
 </script>
