@@ -42,6 +42,8 @@ JText::script('COM_EMUNDUS_DASHBOARD_2ND_SESSION');
 JText::script('COM_EMUNDUS_DASHBOARD_JUNE_SESSION');
 JText::script('COM_EMUNDUS_DASHBOARD_JULY_SESSION');
 
+JText::script('COM_EMUNDUS_DASHBOARD_AREA');
+
 $user = JFactory::getSession()->get('emundusUser');
 
 $m_profiles = new EmundusModelProfile;

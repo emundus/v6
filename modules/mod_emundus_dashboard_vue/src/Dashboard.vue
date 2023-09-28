@@ -1,4 +1,9 @@
 <template>
+  <div class="profile_widget">
+    <h1>{{ translate('COM_EMUNDUS_DASHBOARD_AREA') }} {{ data.label }}</h1>
+    <p>{{ data.description }}</p>
+  </div>
+
   <div id="app">
     <draggable
         v-model="widgets"
@@ -49,13 +54,18 @@ export default {
         filterByProgram: "",
       },
       status: null,
-      enableDrag: false
+      enableDrag: false,
+      data: {
+        label: "",
+        description: "",
+      }
     }
   },
   created() {
     this.getTranslations();
     this.getWidgets();
     this.getPaletteColors();
+    this.getProfileLabel();
     if(this.programmeFilter == 1){
       this.getProgrammes();
     }
@@ -65,6 +75,7 @@ export default {
       this.translations = {
         all: this.translate("COM_EMUNDUS_DASHBOARD_ALL_PROGRAMMES"),
         filterByProgram: this.translate("COM_EMUNDUS_DASHBOARD_FILTER_BY_PROGRAMMES"),
+        profilArea: this.translate("ok "),
       };
     },
     getWidgets(){
@@ -93,11 +104,41 @@ export default {
         this.programmes = response.data.data;
       });
     },
+
+    getProfileLabel(){
+      let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=getcurrentprofile';
+      fetch(url, {
+        method: 'GET',
+      }).then((response) => {
+
+         if (response.ok) {
+          return response.json();
+        }
+      }).then((result) => {
+        if(result.status) {
+          this.data = {
+            label: result.data.label,
+            description: result.data.description,
+          };
+        }
+      });
+    },
+
   }
 }
 </script>
 
 <style scoped>
+span#profile_label {
+  color: var(--em-default-title-color-1);
+  font-family: var(--em-applicant-font-title);
+  font-size: var(--em-coordinator-h1);
+  font-style: normal;
+  line-height: 28.8px;
+  font-weight: 500;
+}
+
+
 #app > div{
   display: flex;
   flex-wrap: wrap;

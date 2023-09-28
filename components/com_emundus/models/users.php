@@ -444,6 +444,25 @@ class EmundusModelUsers extends JModelList {
         return $db->loadResult();
     }
 
+	function getProfileLabel($profile)
+	{
+		$query = $this->_db->getQuery(true);
+
+		$query->select('id, label,description')
+			->from($this->_db->quoteName('#__emundus_setup_profiles'))
+			->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($profile));
+
+		try {
+			$this->_db->setQuery($query);
+			$profile= $this->_db->loadObject();
+
+		} catch (Exception $e){
+			JLog::add('component/com_emundus/models/users | Error when try to get profile label class : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return  $profile;
+	}
+
     public function changeCurrentUserProfile($uid, $pid) {
         $db = JFactory::getDBO();
         $query = 'UPDATE #__emundus_users SET profile ="'.(int)$pid.'" WHERE user_id='.(int)$uid;

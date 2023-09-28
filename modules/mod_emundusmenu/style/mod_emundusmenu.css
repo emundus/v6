@@ -1,5 +1,5 @@
 /* MENU */
-#header-b #em_user_menu a {
+#header-b #em_user_menu ul.tchooz-vertical-toplevel a {
     color: var(--em-profile-color);
     text-decoration: none;
 }
@@ -174,7 +174,7 @@ ul.g-dropdown.g-dropdown-right.g-fade {
 }
 
 #header-b #em_user_menu a {
-    color: var(--em-profile-color);
+    color: var(--neutral-900);
     text-decoration: none;
 }
 
