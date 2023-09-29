@@ -200,14 +200,14 @@ class EmundusModelFiles extends JModelLegacy
                                   ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
                     } else {
                         if ($attribs->database_join_display_type == "checkbox") {
-
-                            $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
-                            $query = '(
-                                SELECT GROUP_CONCAT('.$t.'.'.$def_elmt->element_name.' SEPARATOR ", ")
-                                FROM '.$t.'
-                                WHERE '.$t.'.parent_id='.$def_elmt->tab_name.'.id
-                                '.$publish_query.'
-                              ) AS `'.$t.'`';
+	                        $t = $def_elmt->table_join;
+	                        $query = '(SELECT GROUP_CONCAT('.$column .')
+                                FROM '.$attribs->join_db_name.'
+                                WHERE `'.$attribs->join_db_name.'`.`'.$attribs->join_key_column.'` IN (
+                                    select `' . $t . '`.`' . $def_elmt->element_name . '`
+                                    from `' . $t . '`
+                                    where `' . $t . '`.parent_id = `'.$def_elmt->join_from_table.'`.id
+                                )) AS `'.$t.'___'. $def_elmt->element_name . '`';
                         } else if( $attribs->database_join_display_type == 'multilist' ) {
 	                        $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
 	                        $query = '(
