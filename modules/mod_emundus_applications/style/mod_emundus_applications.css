@@ -261,6 +261,11 @@ a.btn.btn-success:not(.btn-xs) {
 }
 @media all and (max-width: 479px) {
 
+    .mod_emundus_applications__actions{
+        right: 10px;
+    }
+
+
     #applications_list_view div[id*="group_application_tab"] {
         overflow-x: scroll;
     }
