@@ -596,6 +596,7 @@ footer#g-footer > .g-container {
 
   a {
     color: darken($link-regular, 10%);
+    text-decoration: underline;
 
     &:hover {
       color: $link-hover;
@@ -606,7 +607,6 @@ footer#g-footer > .g-container {
 .em-container-footer-cand .em-col-3-footer a {
   color: $base-text-color !important;
 }
-
 
 /*  FORMULAIRE INSCRIPTION */
 
