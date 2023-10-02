@@ -136,7 +136,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
      * @return array
      * This function is used to retrieve records from FileMaker database
      */
-    public function getRecords($limit, $offset, $admin_step):array
+    public function getRecords($limit, $offset, $admin_step)
     {
         $records = [];
         $file_maker_api = new FileMaker();
