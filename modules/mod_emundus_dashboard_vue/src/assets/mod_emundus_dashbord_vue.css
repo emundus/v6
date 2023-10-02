@@ -160,3 +160,25 @@
 .custom-widget__messages__gestionnaire .tchooz-widget.widget__messages__gestionnaire .section-sub-menu {
     overflow-y: scroll;
 }
+
+/* Widget de bienvenue */
+.profile_widget {
+  background: var(--blue-25);
+  border: 1px solid var(--blue-400);
+  border-radius: 16px;
+  padding: 32px !important;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.profile_widget h1 {
+  color: var(--blue-600);
+  font-size: var(--em-coordinator-h2);
+}
+
+.profile_widget p {
+  color: var(--neutral-600);
+  font-size: var(--em-coordinator-h6);
+}
