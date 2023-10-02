@@ -179,7 +179,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     .view-reset .form-validate.form-horizontal.well,
     .reset-complete .form-validate.form-horizontal.well
     {
-        width: 80%;
+        width: 100%;
     }
 }
 @media all and (max-width: 767px) {
