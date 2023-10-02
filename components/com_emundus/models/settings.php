@@ -505,39 +505,41 @@ class EmundusModelsettings extends JModelList {
             $db->setQuery($query);
             $article = $db->loadObject();
 
-            $query->clear()
-                ->select('value')
-                ->from($db->quoteName('#__falang_content'))
-                ->where(array(
-                    $db->quoteName('reference_id') . ' = ' . $article->id,
-                    $db->quoteName('reference_table') . ' = ' . $db->quote('content'),
-                    $db->quoteName('reference_field') . ' = ' . $db->quote($reference_field),
-                    $db->quoteName('language_id') . ' = ' . $db->quote($lang_id),
-                    $db->quoteName('published') . ' = ' . $db->quote(1)
-                ));
-            $db->setQuery($query);
-            $result = $db->loadResult();
+            if (!empty($article)) {
+                $query->clear()
+                    ->select('value')
+                    ->from($db->quoteName('#__falang_content'))
+                    ->where(array(
+                        $db->quoteName('reference_id') . ' = ' . $article->id,
+                        $db->quoteName('reference_table') . ' = ' . $db->quote('content'),
+                        $db->quoteName('reference_field') . ' = ' . $db->quote($reference_field),
+                        $db->quoteName('language_id') . ' = ' . $db->quote($lang_id),
+                        $db->quoteName('published') . ' = ' . $db->quote(1)
+                    ));
+                $db->setQuery($query);
+                $result = $db->loadResult();
 
-            if (!empty($result)){
-                $article->{$reference_field} = $result;
-            } else {
-	            $currentLang = JFactory::getLanguage();
-				if ($currentLang->lang_code != $lang_code) {
-					$query->clear()
-						->select('title, introtext, alias')
-						->from($db->quoteName('#__content'))
-						->where('id = ' . $article->id);
+                if (!empty($result)){
+                    $article->{$reference_field} = $result;
+                } else {
+                    $currentLang = JFactory::getLanguage();
+                    if ($currentLang->lang_code != $lang_code) {
+                        $query->clear()
+                            ->select('title, introtext, alias')
+                            ->from($db->quoteName('#__content'))
+                            ->where('id = ' . $article->id);
 
-					$db->setQuery($query);
-					$article_content = $db->loadAssoc();
+                        $db->setQuery($query);
+                        $article_content = $db->loadAssoc();
 
-					foreach ($article_content as $key => $content) {
-						$article->{$key} = $content;
-					}
-				}
+                        foreach ($article_content as $key => $content) {
+                            $article->{$key} = $content;
+                        }
+                    }
+                }
+
+                return $article;
             }
-
-            return $article;
         } catch(Exception $e) {
             JLog::add('component/com_emundus/models/settings | Cannot get article ' . $article_id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
