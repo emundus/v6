@@ -83,6 +83,7 @@ defined('_JEXEC') or die;
         content: "";
         position: absolute;
         left: -20px;
+        display: flex;
     }
     .active .item .image-title{
         color: var(--em-coordinator-primary-color);
@@ -99,15 +100,24 @@ defined('_JEXEC') or die;
 
     /*** List style ***/
     #g-navigation .g-main-nav .tchooz-vertical-toplevel > li{
-        margin: 5px 10px !important;
+        margin-inline: 10px;
         font-family: var(--em-default-font);
     }
 
-    .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo > a {
-        margin-bottom: 16px;
+    .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo {
+        order: -1;
+        height: 61px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-bottom: 10px;
+        max-width: 30px;
+        margin: 0 !important;
     }
+
     .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo img {
         width: 30px;
+        height: fit-content;
     }
 
     #g-navigation .g-main-nav .g-sublevel > li:not(:last-child) > .g-menu-item-container{
@@ -155,9 +165,10 @@ defined('_JEXEC') or die;
         margin-left: 10px;
     }
     .burger-button{
-        margin: 0 10px 10px 10px;
+        margin: 0 10px 10px 12px;
         background: transparent;
-        padding: 0;width: 30px
+        padding: 0;width: 30px;
+        order: 0;
     }
     /*** END ***/
     .message-tooltip{
@@ -243,7 +254,7 @@ defined('_JEXEC') or die;
         } else {
             $favicon = JURI::base().'/images/emundus/tchooz_favicon.png';
         }
-        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo" style="height: auto"><a class="item" href="'.$favicon_link.'"><img src="'.$favicon.'" alt="Accueil"></a>
+        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo"><a class="item" href="'.$favicon_link.'"><img src="'.$favicon.'" alt="Accueil"></a>
         </li>';
 
         if ($display_tchooz) :
@@ -529,6 +540,7 @@ defined('_JEXEC') or die;
                 jQuery("#footer-rgpd").css("padding-left", "280px");
                 jQuery("#g-container-main").css("padding-left", "280px");
                 jQuery("#header-a").css("opacity", "1");
+                jQuery(".tchooz-vertical-logo").css("opacity", "0");
             }
             setTimeout(() =>{
                 jQuery(".image-title").css("display","block");
@@ -548,6 +560,7 @@ defined('_JEXEC') or die;
                 jQuery("#footer-rgpd").css("padding-left", "280px");
                 jQuery("#g-container-main").css("padding-left", "280px");
                 jQuery("#header-a").css("opacity", "1");
+                jQuery(".tchooz-vertical-logo").css("opacity", "0");
             }
             setTimeout(() =>{
                 jQuery(".image-title").css("display","block");
@@ -569,6 +582,7 @@ defined('_JEXEC') or die;
                 jQuery("#g-footer").css("padding-left", "76px");
                 jQuery("#footer-rgpd").css("padding-left", "76px");
                 jQuery("#header-a").css("opacity", "0");
+                jQuery(".tchooz-vertical-logo").css("opacity", "1");
             }
             setTimeout(() =>{
                 jQuery(".image-title").css("display","none");

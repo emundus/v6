@@ -436,7 +436,7 @@ div#frame.outline {
 }
 
 #g-navigation .g-main-nav {
-  margin-top: 10px;
+  /*margin-top: 10px;*/
 }
 
 /* HEADER */
@@ -4148,7 +4148,7 @@ screen and (max-height: 769px) {
   }
 
   .gantry #g-navigation .g-main-nav .tchooz-vertical-toplevel > li.g-menu-item {
-    margin: 3px 10px !important;
+    margin: 3px 10px;
   }
 
   hr#menu_separator {
