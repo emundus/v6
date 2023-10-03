@@ -77,6 +77,10 @@ if ($show_registration == 0 || ($show_registration == 1 && $user === null && mod
 $m_profiles = new EmundusModelProfile;
 $app_prof = $m_profiles->getApplicantsProfilesArray();
 
+$user_profile = $m_profiles->getProfileById($user->profile);
+$profile_label = in_array($user->profile, $app_prof) ?  JText::_('APPLICANT') : $user_profile['label'];
+
+
 $user_prof = [];
 foreach ($user->emProfiles as $prof) {
     $user_prof[] = $prof->id;

@@ -843,6 +843,10 @@ input:focus + .em-slider {
   width: max-content;
 }
 
+.em-text-italic {
+  font-style: italic;
+}
+
 .em-text-underline{
   text-decoration: underline;
 }
@@ -851,6 +855,10 @@ input:focus + .em-slider {
 }
 .em-green-color{
   color: var(--em-green);
+}
+
+.em-profile-color{
+  color: var(--em-profile-color);
 }
 
 .em-form-success-color{
@@ -1213,6 +1221,10 @@ input:focus + .em-slider {
 /* Positions */
 .em-flex-start {
   justify-content: flex-start;
+}
+
+.em-flex-align-start {
+  align-items: flex-start;
 }
 
 .em-flex-center {

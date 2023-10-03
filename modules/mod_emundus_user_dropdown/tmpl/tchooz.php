@@ -20,14 +20,16 @@ if ($user != null) {
     include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
     $m_profiles = new EmundusModelProfile();
     $app_prof = $m_profiles->getApplicantsProfilesArray();
+	$user_profile = $m_profiles->getProfileById($user->profile);
 
     $user = JFactory::getSession()->get('emundusUser');
+
     if(in_array($user->profile,$app_prof)){
 
         ?>
         <style>
             .gantry.homepage  #g-page-surround  {
-                background: var(--applicant-background-color);
+                background: var(--em-applicant-bg);
             }
         </style>
 
@@ -138,7 +140,7 @@ if ($user != null) {
             margin: 23px 30px !important;
         }
         .em-user-dropdown-tip{
-            background: white;
+            background: var(--neutral-0);
             position: fixed;
             right: 280px;
             padding: 10px;
@@ -151,6 +153,11 @@ if ($user != null) {
             color: var(--main-500);
             cursor: pointer;
         }
+
+        .em-user-dropdown-icon {
+            color: var(--em-profile-color);
+            font-size: 30px;
+        }
     </style>
 
     <?= $intro; ?>
@@ -162,14 +169,23 @@ if ($user != null) {
          style="background-image:url('<?php echo $profile_picture ?>');">
     </div>
     <?php else : ?>
-    <div class="em-user-dropdown-button <?php if($first_logged) : ?>userDropdownLabel-tip<?php endif; ?>" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
-        <?php if($first_logged) : ?>
-            <div class="em-user-dropdown-tip" id="userDropdownTip">
-                <p><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_TEXT') ?></p><br/>
-                <p class="em-user-dropdown-tip-link" onclick="closeTip()"><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_CLOSE') ?></p>
-            </div>
-        <?php endif ;?>
-        <img src="<?php echo JURI::base()?>images/emundus/menus/user.svg" id="userDropdownIcon" class="<?php if($first_logged) : ?>userDropdownIcon-tip<?php endif; ?>" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">
+    <div class="em-flex-row em-flex-align-start">
+        <div class="em-flex-col mr-4">
+            <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0]. '.';; ?></p>
+            <p class="em-profile-color em-text-italic"><?= $profile_label; ?></p>
+
+        </div>
+        <div class="em-user-dropdown-button <?php if($first_logged) : ?>userDropdownLabel-tip<?php endif; ?>" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
+            <?php if($first_logged) : ?>
+                <div class="em-user-dropdown-tip" id="userDropdownTip">
+                    <p><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_TEXT') ?></p><br/>
+                    <p class="em-user-dropdown-tip-link" onclick="closeTip()"><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_CLOSE') ?></p>
+                </div>
+            <?php endif ;?>
+            <span class="material-icons-outlined em-user-dropdown-icon <?php if($first_logged) : ?>userDropdownIcon-tip<?php endif; ?>" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">account_circle</span>
+        </div>
+
+
     </div>
     <?php endif; ?>
     <input type="hidden" value="<?= $switch_profile_redirect; ?>" id="switch_profile_redirect">
@@ -205,7 +221,7 @@ if ($user != null) {
                     <input onclick="copyTokenToClipBoard()" style="cursor:copy;" class="em-w-100" name="anonym_token" type="text" value="<?= $user->anonym_token; ?>">
                 </div>
             <?php else: ?>
-                <li class="dropdown-header"><?= $user->lastname . ' ' . $user->firstname; ?></li>
+                <li class="dropdown-header"><?= $user->firstname . ' ' . $user->lastname; ?></li>
                 <li class="dropdown-header"><?= $user->email; ?></li>
             <?php endif; ?>
             <?php if ($show_logout == '1') :?>

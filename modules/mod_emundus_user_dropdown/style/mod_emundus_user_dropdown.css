@@ -13,7 +13,7 @@
     display: flex;
     flex-direction: column;
     align-items: start;
-    top: 0;
+    top: 72px;
     position: fixed;
     right: 0 !important;
     width: 300px;
@@ -21,11 +21,12 @@
     margin-top: 0;
     height: 100%;
     border: unset;
+    border-radius: 0;
     box-shadow: unset;
     animation: increase-width 0.3s;
     animation-fill-mode: forwards;
     transition: all 0.3s ease-in-out;
-    padding: var(--p-72) var(--p-32) var(--p-32) var(--p-32);
+    padding: var(--p-32) var(--p-32) var(--p-32) var(--p-32);
 }
 #g-navigation:not(.g-flushed) .header-c .open > .dropdown-menu {
     right: 0;

@@ -1,5 +1,6 @@
 /* MENU */
-#header-b #em_user_menu ul.tchooz-vertical-toplevel a {
+#header-b #em_user_menu ul.tchooz-vertical-toplevel a span.simple-letter,
+#header-b #em_user_menu ul.tchooz-vertical-toplevel a span[class*="material-icon"] {
     color: var(--em-profile-color);
     text-decoration: none;
 }
