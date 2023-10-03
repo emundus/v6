@@ -1203,8 +1203,5 @@ footer#g-footer {
 	#attachment_list .attachment_model.em-flex-row {
 		flex-direction: column;
 		align-items: flex-start;
-		.em-ml-4 {
-			margin-left: 0;
-		}
 	}
 }

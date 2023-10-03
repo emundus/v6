@@ -155,3 +155,14 @@
     }
 }
 
+@media all and (min-width: 480px) and (max-width: 767px){
+    .mod_emundus_checklist #mod_emundus_checklist___expand_icon{
+        display: block;
+    }
+
+    .mod_emundus_checklist___buttons,
+    .mod_emundus_checklist {
+        margin-left: 0;
+    }
+}
+
