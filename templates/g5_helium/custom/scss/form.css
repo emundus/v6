@@ -415,6 +415,23 @@
 
 
     /* YES / NO */
+
+    .row-fluid .plg-yesno.span12 {
+      width: 48.93617021276595%;
+    }
+
+    @media only all and (min-width: 48rem) and (max-width: 59.99rem) {
+      .row-fluid .plg-yesno.span12 {
+        width: 48.6187845304% !important;
+      }
+    }
+
+    @media only all and (max-width: 48rem) {
+      .row-fluid .plg-yesno.span12 {
+        width: 100% !important;
+      }
+    }
+
     .plg-yesno .fabrikSubElementContainer .btn-group {
       display: flex;
       gap: var(--em-form-yesno-gap);
