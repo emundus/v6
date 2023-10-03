@@ -246,7 +246,7 @@ $details_view = array_search('view=details',$url);
     });
 
     document.addEventListener('click', function(e) {
-        if (window.innerWidth < 480 && e.target.closest('.mod_emundus_checklist_expand')) {
+        if (window.innerWidth < 753 && e.target.closest('.mod_emundus_checklist_expand')) {
             expandForms(e);
         }
     });
