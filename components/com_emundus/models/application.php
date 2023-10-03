@@ -3244,7 +3244,7 @@ class EmundusModelApplication extends JModelList
         }
     }
 
-    public function getAttachmentsByFnum($fnum, $ids=null, $attachment_id=null) {
+    public function getAttachmentsByFnum($fnum, $ids=null, $attachment_id=null, $profile=null) {
         try {
             require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'profile.php');
             require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
@@ -3276,7 +3276,12 @@ class EmundusModelApplication extends JModelList
                 $query .= " AND eu.id in ($ids)";
             }
 
-            $query .= " ORDER BY sap.mandatory DESC,sap.ordering";
+	        if(!empty($profile))
+	        {
+		        $query .= " ORDER BY sap.mandatory DESC,sap.ordering,sa.value ASC";
+	        } else {
+		        $query .= " ORDER BY sa.category, sa.ordering, sa.value ASC";
+	        }
 
             $this->_db->setQuery($query);
             $docs = $this->_db->loadObjectList();

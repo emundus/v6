@@ -1160,6 +1160,26 @@
   .chzn-container-multi:not(.chzn-container-active) .chzn-drop {
     display: none;
   }
+
+  /* ADD PIPE */
+  div[id^='recorder-'] {
+    margin-bottom: 12px;
+
+    .pipeRecordRTC {
+      width: 100% !important;
+    }
+
+    div[id^='pipeStartRecording-recorder-'],div[id^='pipe-upload-wrap-recorder-'] {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    div[id^='pipe-upload-wrap-recorder-'] label {
+      margin-left: -10px;
+      font-size: 16px;
+    }
+  }
 }
 
 /* ACTIONS */
