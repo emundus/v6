@@ -48,13 +48,11 @@ $user = JFactory::getSession()->get('emundusUser');
 
 $m_profiles = new EmundusModelProfile;
 $applicant_profiles = $m_profiles->getApplicantsProfilesArray();
-if(!in_array($user->profile, $applicant_profiles)){
-    if($programme_filter) {
-        echo '<div id="em-dashboard-vue" programmeFilter="1"></div>';
-    } else {
-        echo '<div id="em-dashboard-vue" programmeFilter="0"></div>';
-    }
+if(!in_array($user->profile, $applicant_profiles)) {
+    ?>
+    <div id="em-dashboard-vue" programmeFilter="<?= $programme_filter ?>" displayDescription="<?= $display_description ?>"></div>
+
+    <script src="media/mod_emundus_dashboard_vue/app.js"></script>
+	<?php
 }
 ?>
-
-<script src="media/mod_emundus_dashboard_vue/app.js"></script>

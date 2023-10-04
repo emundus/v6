@@ -1,10 +1,11 @@
 <template>
   <div class="profile_widget">
     <h1>{{ translate('COM_EMUNDUS_DASHBOARD_AREA') }} {{ data.label }}</h1>
-    <p>{{ data.description }}</p>
+    <p v-if="displayDescription">{{data.description}}</p>
   </div>
 
   <div id="app">
+
     <draggable
         v-model="widgets"
         :disabled="!enableDrag"
@@ -37,7 +38,8 @@ import Custom from "@/components/Custom";
 export default {
   name: 'App',
   props: {
-    programmeFilter: Number
+    programmeFilter: Number,
+    displayDescription: Number,
   },
   components: {
     Custom,
@@ -58,7 +60,8 @@ export default {
       data: {
         label: "",
         description: "",
-      }
+      },
+      display_description: 1,
     }
   },
   created() {
