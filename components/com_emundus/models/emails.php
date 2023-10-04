@@ -496,7 +496,7 @@ class EmundusModelEmails extends JModelList {
         $base_url = JURI::base();
         if($app->isClient('administrator'))
         {
-            $base_url = substr(JURI::root(),0,-1);
+            $base_url = JURI::root();
         }
 
         if (!empty($params->get('logo')->custom->image)) {
