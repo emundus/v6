@@ -727,7 +727,6 @@ circle.circle {
 
 /* Tuile */
 .mod_emundus_applications___content_app {
-    border: 2px solid cyan !important;
     background-image: url('fond-clair.svg');
     background-position: top -22px right -22px;
     background-repeat: no-repeat;
