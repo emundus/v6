@@ -75,7 +75,7 @@ requirejs(['fab/fabrik'], function () {
     function removeFabrikFormSkeleton() {
         let header = document.querySelector('.page-header');
         if (header) {
-            let headerTitle = document.querySelector('.page-header h1');
+            let headerTitle = document.querySelector('.page-header h2');
             if (headerTitle) {
                 headerTitle.style.opacity = 1;
             }
