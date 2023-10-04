@@ -171,9 +171,12 @@ if ($user != null) {
     <?php else : ?>
     <div class="em-flex-row em-flex-align-start">
         <div class="em-flex-col mr-4">
-            <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0]. '.';; ?></p>
+	        <?php if(!empty($user)) : ?>
+            <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0]. '.'; ?></p>
+	        <?php endif; ?>
+            <?php if(!empty($profile_label)) : ?>
             <p class="em-profile-color em-text-italic"><?= $profile_label; ?></p>
-
+            <?php endif; ?>
         </div>
         <div class="em-user-dropdown-button <?php if($first_logged) : ?>userDropdownLabel-tip<?php endif; ?>" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
             <?php if($first_logged) : ?>
