@@ -242,7 +242,14 @@ defined('_JEXEC') or die;
     ?>>
     <div style="opacity: 0" class="grey-navbar-icons"></div>
     <ul class="g-toplevel tchooz-vertical-toplevel">
-        <button class="g-menu-item g-standard burger-button" onclick="enableTitles()"><img src="<?php echo JURI::base()?>images/emundus/menus/menu.png" style="width: 30px"></button>
+
+        <li class="g-menu-item g-standard tchooz-vertical-item">
+            <a class="item" onclick="enableTitles()">
+                <img src="http://localhost/images/emundus/menus/menu.png" style="width: 30px">
+                <span class="image-title" style="display: block; opacity: 1;"><?php echo JText::_('MOD_EMUNDUSMENU_ITEM_MENU') ?></span>
+            </a>
+        </li>
+
         <?php
 
         $target_dir = "images/custom/";
