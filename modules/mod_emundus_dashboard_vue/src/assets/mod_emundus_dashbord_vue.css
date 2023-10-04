@@ -169,7 +169,7 @@
   padding: 32px !important;
   width: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: column !important;
   gap: 12px;
 }
 

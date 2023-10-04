@@ -1,10 +1,9 @@
 <template>
-  <div class="profile_widget">
-    <h1>{{ translate('COM_EMUNDUS_DASHBOARD_AREA') }} {{ data.label }}</h1>
-    <p v-if="displayDescription">{{data.description}}</p>
-  </div>
-
   <div id="app">
+    <div class="profile_widget mb-4">
+      <h1>{{ translate('COM_EMUNDUS_DASHBOARD_AREA') }} {{ data.label }}</h1>
+      <p v-if="displayDescription == 1">{{data.description}}</p>
+    </div>
 
     <draggable
         v-model="widgets"
@@ -61,7 +60,6 @@ export default {
         label: "",
         description: "",
       },
-      display_description: 1,
     }
   },
   created() {

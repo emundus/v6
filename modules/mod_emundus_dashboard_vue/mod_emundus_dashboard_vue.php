@@ -12,9 +12,8 @@ if(in_array(JFactory::getSession()->get('emundusUser')->profile, $profiles)) {
     $document->addScript('media/mod_emundus_dashboard_vue/chunk-vendors.js');
     $document->addStyleSheet('media/mod_emundus_dashboard_vue/app.css');
 
-    $programme_filter = $params->get('filter_programmes');
-
-	$display_description= $params->get('display_description');
+    $programme_filter = $params->get('filter_programmes', 0);
+	$display_description= $params->get('display_description', 0);
 
     require_once(JPATH_SITE . '/components/com_emundus/models/dashboard.php');
     $m_dashboard = new EmundusModelDashboard;
