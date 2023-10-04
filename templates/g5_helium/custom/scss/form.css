@@ -141,6 +141,25 @@
         border-radius: 0 !important;
       }
     }
+
+    /** AUTOCOMPLETE **/
+    .dropdown-menu {
+      padding: 0;
+      li {
+        a {
+          padding: 4px;
+        }
+      }
+    }
+
+    .dropdown-menu > .active > a, .dropdown-menu > .active > a:hover, .dropdown-menu > .active > a:focus {
+      background-color: var(--blue-500);
+      background-image: unset;
+    }
+
+    .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus, .dropdown-submenu:hover > a, .dropdown-submenu:focus > a {
+        background-color: var(--blue-400);
+    }
   }
 
   form.fabrikForm {
