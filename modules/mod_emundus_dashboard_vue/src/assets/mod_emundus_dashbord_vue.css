@@ -163,8 +163,9 @@
 
 /* Widget de bienvenue */
 .profile_widget {
-  background: var(--blue-25);
-  border: 1px solid var(--blue-400);
+  background: var(--em-tertiary-color);
+  border: 1px solid var(--em-secondary-color);
+  box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
   border-radius: 16px;
   padding: 32px !important;
   width: 100%;
@@ -174,7 +175,7 @@
 }
 
 .profile_widget h1 {
-  color: var(--blue-600);
+  color: var(--em-primary-color);
   font-size: var(--em-coordinator-h2);
 }
 

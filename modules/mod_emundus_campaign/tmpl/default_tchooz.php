@@ -503,6 +503,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
 
                         <div class="mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
+                            <div id="tile-hover-offset-procedure"></div>
                             <?php endif; ?>
 
                             <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">

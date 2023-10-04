@@ -2036,3 +2036,50 @@ button.em-swal-delete-button:hover{
     align-items: start;
   }
 }
+
+/*******************
+ * Peps tuiles
+ *******************/
+
+/* Hover decalage tuile */
+#tile-hover-offset-procedure {
+  background: var(--em-primary-color);
+  position: absolute;
+  height: 345px;
+  width: 100%;
+  border-radius: 16px;
+  z-index: -1;
+  left:0;
+  top: -1px;
+  transform: rotate(4.43deg);
+  transition: transform .3s;
+}
+
+/* Tuile */
+#current .mod_emundus_campaign__list_content {
+  border: 2px solid magenta !important;
+  position: relative;
+  background-image: url('../../../../modules/mod_emundus_campaign/css/fond-clair.svg');
+  background-position: top -22px right -22px;
+  background-repeat: no-repeat;
+  background-size: 125%;
+  transition: background-image .3s;
+}
+
+#current .mod_emundus_campaign__list_content:hover {
+  background-image: url('../../../../modules/mod_emundus_campaign/css/fond-fonce.svg');
+
+  #tile-hover-offset-procedure {
+    transform: rotate(0deg);
+  }
+}
+
+/* Titre dossier */
+#current .mod_emundus_campaign__list_content h4 {
+  color: var(--em-primary-color);
+  font-size: var(--em-applicant-h4);
+}
+
+/*******************
+ * Fin peps tuiles
+ *******************/

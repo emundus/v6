@@ -358,6 +358,7 @@ $current_tab = 0;
                                             <div class="row em-border-neutral-300 mod_emundus_applications___content_app em-pointer"
                                                  id="application_content<?php echo $application->fnum ?>"
                                                  onclick="openFile(event,'<?php echo $first_page_url ?>')">
+                                                <div id="tile-hover-offset-request"></div>
                                                 <div class="em-w-100">
                                                     <div class="em-flex-row em-flex-space-between em-mb-12">
                                                         <div>

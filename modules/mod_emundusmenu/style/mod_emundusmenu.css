@@ -22,12 +22,25 @@
     color: var(--neutral-900);
     opacity: inherit;
 }
+
 #g-navigation .g-main-nav .g-sublevel > li > .g-menu-item-container {
     padding: 5px 10px;
 }
 
 #g-navigation .g-main-nav .g-toplevel > li {
-    margin: 0 0.8rem !important;
+    margin: 0 0.8rem;
+}
+
+#g-navigation .g-main-nav .g-toplevel > li:first-child {
+    margin-bottom: 10px;
+}
+
+#g-navigation .g-main-nav .g-toplevel > li:first-child span {
+    color: var(--neutral-900);
+}
+
+#g-navigation .g-main-nav .g-toplevel > li:nth-child(2) {
+    margin-left: 10px !important;
 }
 
 ul.g-dropdown.g-dropdown-right.g-fade {
