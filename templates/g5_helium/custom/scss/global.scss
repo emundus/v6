@@ -1442,7 +1442,7 @@ footer#g-footer > .g-container {
 
 .table-hover tbody tr:nth-child(2n) > td,
 .table-hover tbody tr:nth-child(2n) > th {
-  background: #F3F3F3 !important;
+  background: var(--neutral-200) !important;
 }
 
 .table-hover tbody tr,
@@ -6300,7 +6300,7 @@ fieldset[disabled] .multiselect {
 
   .em-modal-menu__sidebar {
     width: 15%;
-    background: #F3F3F3;
+    background: var(--neutral-200);
     height: 100%;
     position: fixed;
     left: 0;
@@ -6449,7 +6449,7 @@ tbody .el-table__row:nth-child(even){
   background-color: #fafafa;
 }
 tbody .el-table__row:nth-child(odd){
-  background-color: #F3F3F3;
+  background-color: var(--neutral-200);
 }
 
 .el-table__body tr.hover-row > td.el-table__cell {

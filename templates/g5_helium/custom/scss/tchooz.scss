@@ -515,6 +515,13 @@ input:focus + .em-slider {
   height: 100%;
 }
 
+.em-flex-column-default {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .em-flex-col-start{
   display: flex;
   flex-direction: column;
@@ -1219,6 +1226,10 @@ input:focus + .em-slider {
 
 
 /* Positions */
+.em-flex-important {
+  display: flex !important;
+}
+
 .em-flex-start {
   justify-content: flex-start;
 }
@@ -1793,7 +1804,7 @@ button.em-swal-delete-button:hover{
   }
   .em-modal-menu__sidebar{
     width: 15%;
-    background: #F3F3F3;
+    background: var(--neutral-200);
     height: 100%;
     position: fixed;
     left: 0;
@@ -1847,6 +1858,7 @@ button.em-swal-delete-button:hover{
 /** **/
 
 /** PROFILE UTILITIES **/
+
 .em-profile-picture{
   width: 45px;
   height: 45px;
@@ -1863,6 +1875,20 @@ button.em-swal-delete-button:hover{
     filter: brightness(80%);
   }
 }
+
+.em-profile-picture-modal {
+  width: 72px;
+  height: 72px;
+  min-width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  border: solid 5px white;
+}
+
 .em-profile-picture-big{
   width: 100px;
   height: 100px;

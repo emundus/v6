@@ -54,7 +54,6 @@ if ($user != null) {
             display: block;
             font-size: unset;
             line-height: 1.42857143;
-            color: black;
             white-space: nowrap;
             padding: unset;
         }
@@ -108,10 +107,10 @@ if ($user != null) {
             font-family: var(--em-coordinator-font);
         }
         .select .profile-select:hover{
-            background-color: white !important;
+            background-color: var(--neutral-0) !important;
         }
         .select .profile-select:focus{
-            background-color: white !important;
+            background-color: var(--neutral-0) !important;
         }
         .dropdown-menu > li > a{
             padding: unset;
@@ -131,7 +130,7 @@ if ($user != null) {
             right: 0;
             top: 18px;
             z-index: 999999;
-            background: white;
+            background: var(--neutral-0);
             width: 50px;
             height: 50px;
             border-radius: 50%;
@@ -165,34 +164,65 @@ if ($user != null) {
 <!-- Button which opens up the dropdown menu. -->
 <div class='dropdown <?php if($first_logged) : ?>userDropdown-tip<?php endif; ?>' tabindex="0" id="userDropdown" style="float: right;">
     <?php if(!empty($profile_picture)): ?>
-    <div class="em-profile-picture em-pointer em-user-dropdown-button" id="userDropdownLabel"
-         style="background-image:url('<?php echo $profile_picture ?>');">
-    </div>
-    <?php else : ?>
-    <div class="em-flex-row em-flex-align-start">
-        <div class="em-flex-col mr-4">
-	        <?php if(!empty($user)) : ?>
-            <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0]. '.'; ?></p>
-	        <?php endif; ?>
+    <div class="em-flex-row em-flex-align-start em-profile-container" id="userDropdownLabel">
+        <div class="mr-4">
+            <?php if(!empty($user)) : ?>
+                <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0]. '.'; ?></p>
+            <?php endif; ?>
             <?php if(!empty($profile_label)) : ?>
-            <p class="em-profile-color em-text-italic"><?= $profile_label; ?></p>
+                <p class="em-profile-color em-text-italic"><?= $profile_label; ?></p>
             <?php endif; ?>
         </div>
-        <div class="em-user-dropdown-button <?php if($first_logged) : ?>userDropdownLabel-tip<?php endif; ?>" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
-            <?php if($first_logged) : ?>
-                <div class="em-user-dropdown-tip" id="userDropdownTip">
-                    <p><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_TEXT') ?></p><br/>
-                    <p class="em-user-dropdown-tip-link" onclick="closeTip()"><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_CLOSE') ?></p>
-                </div>
-            <?php endif ;?>
-            <span class="material-icons-outlined em-user-dropdown-icon <?php if($first_logged) : ?>userDropdownIcon-tip<?php endif; ?>" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">account_circle</span>
+        <div class="em-profile-picture em-pointer em-user-dropdown-button"
+             style="background-image:url('<?php echo $profile_picture ?>');">
         </div>
-
-
     </div>
+    <?php else : ?>
+        <div class="em-flex-row em-flex-align-start">
+            <div class="mr-4">
+                <?php if(!empty($user)) : ?>
+                <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0]. '.'; ?></p>
+                <?php endif; ?>
+                <?php if(!empty($profile_label)) : ?>
+                <p class="em-profile-color em-text-italic"><?= $profile_label; ?></p>
+                <?php endif; ?>
+            </div>
+            <div class="em-user-dropdown-button <?php if($first_logged) : ?>userDropdownLabel-tip<?php endif; ?>" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
+                <?php if($first_logged) : ?>
+                    <div class="em-user-dropdown-tip" id="userDropdownTip">
+                        <p><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_TEXT') ?></p><br/>
+                        <p class="em-user-dropdown-tip-link" onclick="closeTip()"><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_CLOSE') ?></p>
+                    </div>
+                <?php endif ;?>
+                <span class="material-icons-outlined em-user-dropdown-icon <?php if($first_logged) : ?>userDropdownIcon-tip<?php endif; ?>" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">account_circle</span>
+            </div>
+
+        </div>
     <?php endif; ?>
     <input type="hidden" value="<?= $switch_profile_redirect; ?>" id="switch_profile_redirect">
     <ul class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">
+	    <?php if ($is_anonym_user): ?>
+            <p><?= JText::_('ANONYM_SESSION') ?></p>
+            <div class=" em-w-100">
+                <label for="anonym_token"><?= JText::_('TOKEN') ?></label>
+                <input onclick="copyTokenToClipBoard()" style="cursor:copy;" class="em-w-100" name="anonym_token" type="text" value="<?= $user->anonym_token; ?>">
+            </div>
+	    <?php else: ?>
+        <div class="em-flex-column-default em-w-100">
+	        <?php if(!empty($profile_picture)): ?>
+            <div class="em-profile-picture-modal" id="userDropdownLabel"
+                 style="background-image:url('<?php echo $profile_picture ?>');">
+            </div>
+	        <?php else : ?>
+            <span class="material-icons-outlined  em-user-dropdown-icon <?php if($first_logged) : ?>userDropdownIcon-tip<?php endif; ?>" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">account_circle</span>
+	        <?php endif; ?>
+            <li class="dropdown-header em-text-align-center em-font-weight-500 em-text-neutral-900"><?= $user->firstname . ' ' . $user->lastname; ?></li>
+            <li class="dropdown-header em-text-align-center em-text-neutral-600"><?= $user->email; ?></li>
+        </div>
+	    <?php endif; ?>
+
+        <hr style="width: 100%">
+
         <?php
             $ids_array = array();
             if (isset($user->fnums) && $user->fnums) {
@@ -202,8 +232,8 @@ if ($user != null) {
             }
 
             if (!empty($user->emProfiles) && sizeof($user->emProfiles) > 1 && (!$only_applicant)) {
-                echo '<h5 style="margin-bottom: 20px">'.JText::_('SELECT_PROFILE').'</h5>';
-                echo '<br/><div class="select">';
+                echo '<h5 class="mb-2">'.JText::_('SELECT_PROFILE').'</h5>';
+                echo '<div class="select">';
                 echo '<select class="profile-select" id="profile" name="profiles" onchange="postCProfile()"> ';
                 foreach ($user->emProfiles as $profile) {
                     if ($profile->published && !$applicant_option) {
@@ -213,26 +243,12 @@ if ($user != null) {
                         echo '<option  value="'.$profile->id.".".'"' .(($user->profile == $profile->id)?'selected="selected"':"").'>'.trim($profile->label).'</option>';
                     }
                 }
-                echo '</select></div><br/><br/>';
+                echo '</select></div><br/>';
             }
             ?>
-            <hr style="width: 100%">
-            <?php if ($is_anonym_user): ?>
-                <p><?= JText::_('ANONYM_SESSION') ?></p>
-                <div class="em-w-100">
-                    <label for="anonym_token"><?= JText::_('TOKEN') ?></label>
-                    <input onclick="copyTokenToClipBoard()" style="cursor:copy;" class="em-w-100" name="anonym_token" type="text" value="<?= $user->anonym_token; ?>">
-                </div>
-            <?php else: ?>
-                <li class="dropdown-header"><?= $user->firstname . ' ' . $user->lastname; ?></li>
-                <li class="dropdown-header"><?= $user->email; ?></li>
-            <?php endif; ?>
-            <?php if ($show_logout == '1') :?>
-                <?= '<li><a class="logout-button-user" href="'.JURI::base().'index.php?option=com_users&task=user.logout&'.JSession::getFormToken().'=1">'.JText::_('LOGOUT').'</a></li>'; ?>
-            <?php endif; ?>
+
             <?php if ($show_update == '1' && !$is_anonym_user) :?>
-                <hr style="width: 100%">
-                <li><a class="edit-button-user" href="<?= $link_edit_profile ?>" style="margin-bottom: 20px;margin-top: 0"><?=JText::_('COM_USERS_PROFILE_DEFAULT_LABEL') ?></a></li>
+                <li><a class="edit-button-user em-flex-row em-flex-important em-flex-center" href="<?= $link_edit_profile ?>" style="margin-top: 0"><span class="material-icons-outlined mr-2">person_outline</span><?=JText::_('COM_USERS_PROFILE_DEFAULT_LABEL') ?></a></li>
             <?php endif; ?>
             <?php if (!empty($custom_actions)) {
                 foreach($custom_actions as $custom_action) {
@@ -244,10 +260,10 @@ if ($user != null) {
                                 case 'button':
                                     echo '<a type="button" onclick="'.$custom_action->onclick.'" class="edit-button-user em-pointer">'.JText::_($custom_action->title).'</a>';
                                     break;
-	                            case 'link':
+                                case 'link':
                                 default:
-		                            echo '<a href="'.$custom_action->link.'" target="_blank" class="edit-button-user em-pointer">'.JText::_($custom_action->title).'</a>';
-		                            break;
+                                    echo '<a href="'.$custom_action->link.'" target="_blank" class="edit-button-user em-pointer">'.JText::_($custom_action->title).'</a>';
+                                    break;
                             }
                             ?>
                         </li>
@@ -255,6 +271,13 @@ if ($user != null) {
                     }
                 }
             } ?>
+
+        <hr style="width: 100%">
+
+        <?php if ($show_logout == '1') :?>
+                <?= '<li><a class="logout-button-user em-flex-important em-flex-row em-flex-center" href="'.JURI::base().'index.php?option=com_users&task=user.logout&'.JSession::getFormToken().'=1"><span class="material-icons-outlined mr-2">logout</span>'.JText::_('LOGOUT').'</a></li>'; ?>
+            <?php endif; ?>
+
         </ul>
     </div>
 

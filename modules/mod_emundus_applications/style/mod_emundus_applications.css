@@ -480,7 +480,7 @@ a.btn.btn-success:not(.btn-xs) {
 }
 
 .mod_emundus_applications___content_app:hover .mod_emundus_applications__container {
-    background: #F3F3F3;
+    background: var(--neutral-200);
     border-radius: var(--em-default-br);
 }
 

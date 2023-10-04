@@ -50,7 +50,6 @@
 
 
 #userDropdownMenu li {
-    text-align: left;
     width: 100%;
     height: auto !important;
     margin: 0 !important;
@@ -76,17 +75,12 @@
 
 
 #userDropdownMenu li.dropdown-header {
-    width: 190px;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
     overflow: hidden;
     word-break: break-all;
     white-space: break-spaces;
-}
-
-#userDropdownMenu li.dropdown-header {
-    color: var(--neutral-600) !important;
 }
 
 #userDropdownMenu li>a:hover,
@@ -247,6 +241,14 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     margin: var(--m-16) 0;
 }
 
+.em-profile-container {
+    padding: 8px;
+}
+#userDropdown:hover .em-profile-container{
+    background: var(--neutral-200);
+    border-radius: var(--em-default-br);
+}
+
 /* CORRECTION  */
 .login .btn, .logout .btn, .registration .btn, .profile-edit .btn, .remind .btn, .reset .btn {
     margin-right: 0 !important;
@@ -258,17 +260,18 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     text-align: center;
     background-color: var(--red-500);
     color: var(--neutral-0) !important;
-    margin-top: var(--m-8);
     letter-spacing: normal;
     line-height: normal !important;
     font-size: var(--em-applicant-font-size);
+    border: 1px solid var(--red-500) !important;
 }
-.logout-button-user:hover{
-    background: var(--red-700) !important;
+.logout-button-user:hover,
+.logout-button-user:focus {
+    border: 1px solid var(--red-500) !important;
+    background-color: var(--neutral-0) !important;
+    color: var(--red-500) !important;
 }
-.logout-button-user:focus{
-    background: var(--red-700) !important;
-}
+
 #header-c #userDropdownMenu a.edit-button-user {
     text-shadow: none;
     text-transform: initial;
