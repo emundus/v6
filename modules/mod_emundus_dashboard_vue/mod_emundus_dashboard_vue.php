@@ -14,6 +14,8 @@ if(in_array(JFactory::getSession()->get('emundusUser')->profile, $profiles)) {
 
     $programme_filter = $params->get('filter_programmes');
 
+	$display_description= $params->get('display_description');
+
     require_once(JPATH_SITE . '/components/com_emundus/models/dashboard.php');
     $m_dashboard = new EmundusModelDashboard;
     $dashboard = $m_dashboard->getDashboard($emundusUser->id);
