@@ -605,7 +605,10 @@ footer#g-footer > .g-container {
 }
 
 .em-container-footer-cand .em-col-3-footer a {
-  color: $base-text-color !important;
+  color: var(--link-regular);
+  &:hover, &:focus, &:active {
+    color: var(--link-hover);
+  }
 }
 
 /*  FORMULAIRE INSCRIPTION */
@@ -2494,8 +2497,8 @@ button#back,
 }
 
 #header-c #userDropdownMenu a.edit-button-user {
-  background: var(--em-primary-color);
-  border: 1px solid var(--em-primary-color);
+  background: var(--em-profile-color);
+  border: 1px solid var(--em-profile-color);
 
   span {
     color: var(--neutral-0);
@@ -2504,10 +2507,10 @@ button#back,
   &:hover,
   &:focus,
   &:active {
-    color: var(--em-primary-color) !important;
-    border: 1px solid var(--em-primary-color);
+    color: var(--em-profile-color) !important;
+    border: 1px solid var(--em-profile-color);
     span {
-      color: var(--em-primary-color) !important;
+      color: var(--em-profile-color) !important;
     }
   }
 }
