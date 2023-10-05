@@ -2067,16 +2067,18 @@ button.em-swal-delete-button:hover{
  * Peps tuiles
  *******************/
 
+//Conteneur tuile et hover
+.hover-and-tile-container {
+
+}
+
 /* Hover decalage tuile */
 #tile-hover-offset-procedure {
   background: var(--em-primary-color);
-  /*position: relative;*/
-  height: 286px;
-  width: 564px;
+  position: absolute;
+  height: 345px;
+  width: 365px;
   border-radius: 16px;
-  /*z-index: -1;*/
-  /*left:0;
-  top: -1px;*/
   transform: rotate(4.43deg);
   transition: transform .3s;
 }

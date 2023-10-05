@@ -505,11 +505,12 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                         <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
 
                                 <?php  else : ?>
+                                <div class="hover-and-tile-container">
+                                     <div id="tile-hover-offset-procedure"></div>
+                                     <div class="mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
+                                         <?php endif; ?>
 
-                                    <div class="mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
-                                        <?php endif; ?>
-
-                                        <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
+                                     <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
                                             <div class="mod_emundus_campaign__list_content_container">
 
                                             <?php
@@ -674,15 +675,18 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                                     <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>                                    </div>
                                             <?php endif; ?>
                                         </div>
-                                    </div>
+                                     </div>
+                                </div>
                                 <?php } } ?>
+
                                 <!--</div>-->
                             <div class="pagination"></div>
                             <?php endif; ?>
-                            <?php endforeach; ?>
-
-                        </div><!-- Close tab-content -->
+                        </div>
                     </div>
+                            <?php endforeach; ?>
+                </div>
+                    <!-- Close tab-content -->
             </div>
             <?php endif; ?>
 </form>

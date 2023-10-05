@@ -713,6 +713,7 @@ circle.circle {
 
 //Conteneur tuile et hover
 .hover-and-tile-container {
+
 }
 
 /* Hover decalage tuile */
@@ -722,9 +723,6 @@ circle.circle {
     height: 286px;
     width: 564px;
     border-radius: 16px;
-    /*z-index: -1;*/
-    /*left:0;
-    top: -1px;*/
     transform: rotate(4.43deg);
     transition: transform .3s;
 }
