@@ -739,12 +739,12 @@ circle.circle {
     position: relative;
 }
 
-.mod_emundus_applications___content_app:hover {
+.hover-and-tile-container:hover > .mod_emundus_applications___content_app  {
     background-image: url('fond-fonce.svg');
+}
 
-    .hover-and-tile-container #tile-hover-offset-request {
-        transform: rotate(0deg);
-    }
+.hover-and-tile-container:hover > #tile-hover-offset-request {
+    transform: rotate(0deg);
 }
 
 /* Titre dossier */

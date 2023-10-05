@@ -2094,12 +2094,12 @@ button.em-swal-delete-button:hover{
 
 }
 
-#current .mod_emundus_campaign__list_content:hover {
+#current .hover-and-tile-container:hover > .mod_emundus_campaign__list_content:hover{
   background-image: url('../../../../modules/mod_emundus_campaign/css/fond-fonce.svg');
+}
 
-  #tile-hover-offset-procedure {
-    transform: rotate(0deg);
-  }
+#current .hover-and-tile-container:hover > #tile-hover-offset-procedure {
+  transform: rotate(0deg);
 }
 
 /* Titre dossier */
