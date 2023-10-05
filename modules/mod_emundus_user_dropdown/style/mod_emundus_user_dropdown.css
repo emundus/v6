@@ -43,6 +43,12 @@
     transition: all 0.3s ease-in-out;
 }
 
+#g-navigation .g-container {
+    background-image: url('fond-formes-header.svg');
+    background-repeat: no-repeat;
+    background-position: right top;
+}
+
 #userDropdownMenu h5  {
     color: var(--neutral-900);
     font-family: var(--em-default-font-title);

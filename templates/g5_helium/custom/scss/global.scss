@@ -474,7 +474,7 @@ div#frame.outline {
   position: sticky;
   max-height: 100px;
   height: 72px;
-  background: transparent;
+  background: var(--neutral-0);
   top: 0;
 
   .g-container {
@@ -482,7 +482,6 @@ div#frame.outline {
     width: 100%;
     position: sticky;
     margin: auto !important;
-    background: white;
   }
 
   #header-a {
