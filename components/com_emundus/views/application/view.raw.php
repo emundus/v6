@@ -103,6 +103,12 @@ class EmundusViewApplication extends JViewLegacy {
 
                     if ($show_related_files || EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) || EmundusHelperAccess::asManagerAccessLevel($this->_user->id)) {
                         $campaignInfo = $m_application->getUserCampaigns($fnumInfos['applicant_id']);
+
+	                    foreach($campaignInfo as $key => $campaign) {
+		                    if (!EmundusHelperAccess::isUserAllowedToAccessFnum($this->_user->id, $campaign->fnum)) {
+			                    unset($campaignInfo[$key]);
+		                    }
+	                    }
                     } else {
                         $campaignInfo = $m_application->getCampaignByFnum($fnum);
                     }
