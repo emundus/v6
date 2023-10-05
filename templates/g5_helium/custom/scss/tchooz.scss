@@ -1869,7 +1869,7 @@ button.em-swal-delete-button:hover{
   border-radius: 50%;
   background-size: cover;
   background-position: center;
-  border: solid 5px white;
+  border: solid 3px var(--neutral-0);
   transition: all 0.3s ease-in-out;
   &:hover{
     filter: brightness(80%);
@@ -1886,7 +1886,7 @@ button.em-swal-delete-button:hover{
   border-radius: 50%;
   background-size: cover;
   background-position: center;
-  border: solid 5px white;
+  margin-bottom: var(--m-16);
 }
 
 .em-profile-picture-big{
@@ -1899,7 +1899,7 @@ button.em-swal-delete-button:hover{
   border-radius: 50%;
   background-size: cover;
   background-position: center;
-  border: solid 5px white;
+  border: solid 5px var(--neutral-0);
   transition: all 0.3s ease-in-out;
   &:hover:not(.no-hover){
     filter: brightness(80%);
