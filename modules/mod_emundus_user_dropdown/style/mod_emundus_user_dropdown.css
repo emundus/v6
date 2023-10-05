@@ -265,10 +265,20 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     font-size: var(--em-applicant-font-size);
     border: 1px solid var(--red-500) !important;
 }
+
+.logout-button-user span {
+    color: var(--neutral-0) !important;
+}
+
 .logout-button-user:hover,
 .logout-button-user:focus {
     border: 1px solid var(--red-500) !important;
     background-color: var(--neutral-0) !important;
+    color: var(--red-500) !important;
+}
+
+.logout-button-user:hover span,
+.logout-button-user:focus span {
     color: var(--red-500) !important;
 }
 

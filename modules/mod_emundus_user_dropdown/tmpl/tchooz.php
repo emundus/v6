@@ -157,6 +157,14 @@ if ($user != null) {
             color: var(--em-profile-color);
             font-size: 30px;
         }
+
+        .em-profile-container p {
+            word-break: break-word;
+            max-width: 170px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
     </style>
 
     <?= $intro; ?>
@@ -164,7 +172,7 @@ if ($user != null) {
 <!-- Button which opens up the dropdown menu. -->
 <div class='dropdown <?php if($first_logged) : ?>userDropdown-tip<?php endif; ?>' tabindex="0" id="userDropdown" style="float: right;">
     <?php if(!empty($profile_picture)): ?>
-    <div class="em-flex-row em-flex-align-start em-profile-container" id="userDropdownLabel">
+    <div class="em-flex-row em-flex-end em-profile-container" id="userDropdownLabel">
         <div class="mr-4">
             <?php if(!empty($user)) : ?>
                 <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0]. '.'; ?></p>
@@ -178,7 +186,7 @@ if ($user != null) {
         </div>
     </div>
     <?php else : ?>
-        <div class="em-flex-row em-flex-align-start">
+        <div class="em-flex-row">
             <div class="mr-4">
                 <?php if(!empty($user)) : ?>
                 <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0]. '.'; ?></p>

@@ -77,7 +77,7 @@ defined('_JEXEC') or die;
 
     /*** Sublevel parent ***/
     ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item::before{
-        background: var(--em-coordinator-primary-color);
+        background: var(--em-profile-color);
         width: 5px;
         height: 100%;
         content: "";
@@ -86,7 +86,7 @@ defined('_JEXEC') or die;
         display: flex;
     }
     .active .item .image-title{
-        color: var(--em-coordinator-primary-color);
+        color: var(--em-profile-color);
     }
     .g-menu-parent-indicator{
         margin-left: 20px;

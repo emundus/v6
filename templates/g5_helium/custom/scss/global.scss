@@ -2497,11 +2497,18 @@ button#back,
   background: var(--em-primary-color);
   border: 1px solid var(--em-primary-color);
 
+  span {
+    color: var(--neutral-0);
+  }
+
   &:hover,
   &:focus,
   &:active {
     color: var(--em-primary-color) !important;
     border: 1px solid var(--em-primary-color);
+    span {
+      color: var(--em-primary-color) !important;
+    }
   }
 }
 
@@ -2775,7 +2782,7 @@ ul.g-dropdown.g-dropdown-right.g-fade {
 }
 
 .g-main-nav .g-standard .g-sublevel .current a span {
-  color: var(--em-coordinator-primary-color);
+  color: var(--em-profile-color);
 }
 
 .g-main-nav .g-toplevel > li.active .g-menu-parent-indicator::after,
