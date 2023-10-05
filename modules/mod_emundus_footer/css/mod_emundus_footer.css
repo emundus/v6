@@ -40,7 +40,6 @@
 }
 
 .em-container-footer-cand .em-col-3-footer a {
-    font-weight: 500 ;
     text-align: end;
 }
 
@@ -114,7 +113,6 @@ hr.footer-separation {
 
 
 .em-container-footer-cand .em-col-3-footer a:hover {
-    font-weight: 500;
     text-decoration: underline !important;
 }
 
