@@ -1,10 +1,11 @@
 <template>
   <div id="app">
-    <div class="profile_widget mb-4">
-      <div class="profile_widget-container">
+    <div class="profile_widget">
+      <div class="profile_widget-text">
         <h1>{{ translate('COM_EMUNDUS_DASHBOARD_AREA') }} {{ data.label }}</h1>
         <p v-if="displayDescription == 1">{{data.description}}</p>
       </div>
+      <div class="profile_widget-container"></div>
     </div>
 
     <draggable
