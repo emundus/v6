@@ -1,8 +1,10 @@
 <template>
   <div id="app">
     <div class="profile_widget mb-4">
-      <h1>{{ translate('COM_EMUNDUS_DASHBOARD_AREA') }} {{ data.label }}</h1>
-      <p v-if="displayDescription == 1">{{data.description}}</p>
+      <div class="profile_widget-container">
+        <h1>{{ translate('COM_EMUNDUS_DASHBOARD_AREA') }} {{ data.label }}</h1>
+        <p v-if="displayDescription == 1">{{data.description}}</p>
+      </div>
     </div>
 
     <draggable
@@ -130,15 +132,6 @@ export default {
 </script>
 
 <style scoped>
-span#profile_label {
-  color: var(--em-default-title-color-1);
-  font-family: var(--em-applicant-font-title);
-  font-size: var(--em-coordinator-h1);
-  font-style: normal;
-  line-height: 28.8px;
-  font-weight: 500;
-}
-
 
 #app > div{
   display: flex;

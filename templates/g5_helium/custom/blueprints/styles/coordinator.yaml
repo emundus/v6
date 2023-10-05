@@ -31,7 +31,7 @@ form:
     title-color:
       type: input.colorpicker
       label: Title color
-      default: "#000000"
+      default: "#0b0c0f"
     family-text:
       type: input.fonts
       label: Body Font
