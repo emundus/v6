@@ -163,8 +163,7 @@
 
 /* Widget de bienvenue */
 .profile_widget {
-  background: var(--em-tertiary-color);
-  border: 1px solid var(--em-secondary-color);
+  border: 1px solid var(--em-profile-color);
   box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
   border-radius: 16px;
   padding: 32px !important;
@@ -174,9 +173,19 @@
   gap: 12px;
 }
 
-.profile_widget h1 {
-  color: var(--em-primary-color);
-  font-size: var(--em-coordinator-h2);
+.profile_widget .profile_widget-container  {
+  filter: brightness(10%);
+  background: var(--em-profile-color);
+}
+
+.profile_widget-container h1 {
+  color: var(--em-coordinator-title-color);
+  font-family: var(--em-coordinator-font-title);
+  font-size: var(--em-coordinator-h1);
+  font-style: normal;
+  line-height: 28.8px;
+  font-weight: 500;
+
 }
 
 .profile_widget p {

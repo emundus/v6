@@ -3257,7 +3257,7 @@ class EmundusHelperUpdate
 				'secondary-color' => '#353544',
 				'tertiary-color' => '#5A5A72',
 				'text-color' => '#4B4B4B',
-				'title-color' => '#000000',
+				'title-color' => '#0b0c0f',
 				'family-text' => 'Inter',
 				'family-title' => 'Inter',
 				'size-h1' => '24px',
