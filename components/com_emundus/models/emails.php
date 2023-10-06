@@ -191,7 +191,7 @@ class EmundusModelEmails extends JModelList {
 
                     if (isset($tmpl['to']['profile'])) {
                         if (count($tmpl['to']['profile']) > 0) {
-                            $where = ' eu.profile IN ('.implode(',', $tmpl['to']['profile']).')';
+                            $where = ' (eu.profile IN ('.implode(',', $tmpl['to']['profile']).') OR eup.profile_id IN ('.implode(',', $tmpl['to']['profile']).'))';
                             $as_where = true;
                         }
                     }
@@ -213,10 +213,11 @@ class EmundusModelEmails extends JModelList {
                     }
 
                     if ($as_where) {
-                        $query = 'SELECT u.id, u.name, u.email, eu.university_id
+                        $query = 'SELECT DISTINCT u.id, u.name, u.email, eu.university_id
                                     FROM #__users as u
                                     LEFT JOIN #__emundus_users as eu on eu.user_id=u.id
                                     LEFT JOIN #__emundus_groups as eg on eg.user_id=u.id
+                                    LEFT JOIN #__emundus_users_profiles as eup on eup.user_id=eu.user_id
                                     WHERE '.$where.'
                                     GROUP BY u.id';
                         $this->_db->setQuery( $query );
