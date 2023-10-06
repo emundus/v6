@@ -178,7 +178,7 @@ if ($user != null) {
                 <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0]. '.'; ?></p>
             <?php endif; ?>
             <?php if(!empty($profile_label)) : ?>
-                <p class="em-profile-color em-text-italic"><?= $profile_label; ?></p>
+                <p class="em-profile-color em-text-italic" title="<?= $profile_label; ?>"><?= $profile_label; ?></p>
             <?php endif; ?>
         </div>
         <div class="em-profile-picture em-pointer em-user-dropdown-button"
@@ -225,7 +225,7 @@ if ($user != null) {
             <span class="material-icons-outlined  em-user-dropdown-icon <?php if($first_logged) : ?>userDropdownIcon-tip<?php endif; ?>" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">account_circle</span>
 	        <?php endif; ?>
             <li class="dropdown-header em-text-align-center em-font-weight-500 em-text-neutral-900"><?= $user->firstname . ' ' . $user->lastname; ?></li>
-            <li class="dropdown-header em-text-align-center em-text-neutral-600"><?= $user->email; ?></li>
+            <li class="dropdown-header em-text-align-center em-text-neutral-600" title="<?= $user->email; ?>"><?= $user->email; ?></li>
         </div>
 	    <?php endif; ?>
 

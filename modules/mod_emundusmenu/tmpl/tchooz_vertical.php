@@ -632,6 +632,9 @@ defined('_JEXEC') or die;
     }).then((result) => {
         if(result.status) {
 
+            let profile_color = result.data[0].class;
+            let profile_state = result.data[0].published;
+
             let label_colors = {
                 'lightpurple' : '--em-purple-1',
                 'purple' : '--em-purple-2',
@@ -656,18 +659,27 @@ defined('_JEXEC') or die;
                 'darkpink' : '--em-pink-2',
             };
 
-            let profile_color = result.class;
-            if(profile_color != '') {
-                profile_color = profile_color.split('-')[1];
+            if(profile_state == 1) { // it's an applicant profile
 
-                if(label_colors[profile_color] != undefined) {
-                    let root = document.querySelector(':root');
-                    let css_var = getComputedStyle(root).getPropertyValue(label_colors[profile_color]);
+                let root = document.querySelector(':root');
+                let css_var = getComputedStyle(root).getPropertyValue("--em-primary-color");
 
-                    document.documentElement.style.setProperty("--em-profile-color", css_var);
+                document.documentElement.style.setProperty("--em-profile-color", css_var);
+
+            } else {    // it's a coordinator profile
+
+                if(profile_color != '') {
+
+                    profile_color = profile_color.split('-')[1];
+
+                    if(label_colors[profile_color] != undefined) {
+                        let root = document.querySelector(':root');
+                        let css_var = getComputedStyle(root).getPropertyValue(label_colors[profile_color]);
+
+                        document.documentElement.style.setProperty("--em-profile-color", css_var);
+                    }
                 }
             }
-
         }
     });
 </script>

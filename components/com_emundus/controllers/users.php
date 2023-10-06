@@ -1192,13 +1192,13 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 	function getprofilecolor()
 	{
-		$response = ['class' => '','msg' => '','status' => true];
+		$response = ['data' => [], 'status' => true, 'msg' => ''];
 
-		$em_user = JFactory::getSession()->get('emundusUser');
+		$em_users = JFactory::getSession()->get('emundusUser');
 		$m_users = $this->getModel('Users');
 
-		if (!empty($em_user->profile)) {
-			$response['class'] = $m_users->getProfileColor($em_user->profile);
+		if (!empty($em_users->profile)) {
+			$response['data'] = $m_users->getProfileColor($em_users->profile);
 		} else {
 			$response['msg'] = 'No profile found';
 			$response['status'] = false;

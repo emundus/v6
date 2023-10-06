@@ -2881,20 +2881,19 @@ class EmundusModelUsers extends JModelList {
 
 	function getProfileColor($profile)
 	{
-		$class = '';
 		$query = $this->_db->getQuery(true);
-		$query->select('class')
+		$query->select('class, published')
 			->from($this->_db->quoteName('#__emundus_setup_profiles'))
 			->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($profile));
 
 		try {
 			$this->_db->setQuery($query);
-			$class = $this->_db->loadResult();
+			$profile_info = $this->_db->loadObjectList();
 		} catch (Exception $e){
-			JLog::add('component/com_emundus/models/users | Error when try to get profile color class : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
+			JLog::add('component/com_emundus/models/users | Error when try to get profile color class of profile state : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
 		}
 
-		return  $class;
+		return  $profile_info;
 	}
 
     public function addApplicantProfile($user_id){
