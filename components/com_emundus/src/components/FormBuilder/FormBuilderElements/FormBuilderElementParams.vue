@@ -26,6 +26,16 @@
         </select>
       </div>
 
+      <!--
+      <div v-else-if="param.type === 'subform'">
+        <button @click=""></button>
+        <a>image2</a>
+        <div>
+        marche mais pas trop <FormBuilderElementParams :element="element" :params="param.subparams" :key="element.id" :databases="databases" />
+        </div>
+      </div>
+      -->
+
       <!-- INPUT (TEXT,NUMBER) -->
       <input v-else :type="param.type" v-model="element.params[param.name]" class="em-w-100" :placeholder="translate(param.placeholder)"/>
 
@@ -135,6 +145,20 @@ export default {
           this.reloadOptionsCascade += 1;
         });
       }
+    },
+
+    subFormAddElement()
+    {
+
+
+
+    },
+
+    subFormDelElement(idElement)
+    {
+
+
+
     },
   },
   computed: {
