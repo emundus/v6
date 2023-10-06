@@ -3,6 +3,7 @@
     <div class="profile_widget">
       <div class="profile_widget-text">
         <h1>{{ translate('COM_EMUNDUS_DASHBOARD_AREA') }} {{ data.label }}</h1>
+        <p v-if="displayName == 1">{{ translate('COM_EMUNDUS_DASHBOARD_HELLO') }} {{name}} {{ translate('COM_EMUNDUS_DASHBOARD_WELCOME') }}</p>
         <p v-if="displayDescription == 1">{{data.description}}</p>
       </div>
       <div class="profile_widget-container"></div>
@@ -42,6 +43,8 @@ export default {
   props: {
     programmeFilter: Number,
     displayDescription: Number,
+    displayName: Number,
+    name: Text,
   },
   components: {
     Custom,

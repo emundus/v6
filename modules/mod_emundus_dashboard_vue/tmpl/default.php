@@ -43,14 +43,17 @@ JText::script('COM_EMUNDUS_DASHBOARD_JUNE_SESSION');
 JText::script('COM_EMUNDUS_DASHBOARD_JULY_SESSION');
 
 JText::script('COM_EMUNDUS_DASHBOARD_AREA');
+JText::script('COM_EMUNDUS_DASHBOARD_HELLO');
+JText::script('COM_EMUNDUS_DASHBOARD_WELCOME');
 
 $user = JFactory::getSession()->get('emundusUser');
 
 $m_profiles = new EmundusModelProfile;
 $applicant_profiles = $m_profiles->getApplicantsProfilesArray();
+
 if(!in_array($user->profile, $applicant_profiles)) {
     ?>
-    <div id="em-dashboard-vue" programmeFilter="<?= $programme_filter ?>" displayDescription="<?= $display_description ?>"></div>
+    <div id="em-dashboard-vue" programmeFilter="<?= $programme_filter ?>" displayDescription="<?= $display_description ?>" name="<?= $name ?>" displayName="<?= $display_name ?>"></div>
 
     <script src="media/mod_emundus_dashboard_vue/app.js"></script>
 	<?php

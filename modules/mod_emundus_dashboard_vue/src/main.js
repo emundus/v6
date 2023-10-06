@@ -29,6 +29,8 @@ if (document.getElementById('em-dashboard-vue')) {
         props: {
           programmeFilter: element.attributes['programmeFilter'].value,
           displayDescription: element.attributes['displayDescription'].value,
+          displayName: element.attributes['displayName'].value,
+          name: element.attributes['name'].value,
         }
       });
     }
