@@ -34,6 +34,7 @@ class EmundusViewApplication extends JViewLegacy {
     var $student = null;
 
     protected $synthesis;
+	protected $header;
 
     function __construct($config = array()) {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
@@ -362,6 +363,7 @@ class EmundusViewApplication extends JViewLegacy {
 
                 case 'form':
                     if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
+	                    $this->header = $jinput->getString('header', 1);
 
                         EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 1, 'r', 'COM_EMUNDUS_ACCESS_FORM_READ');
 
