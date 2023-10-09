@@ -729,18 +729,23 @@ circle.circle {
 
 /* Tuile */
 .mod_emundus_applications___content_app {
-    background-image: url('fond-clair.svg');
+    position: relative;
+    /*background-image: url('fond-clair.svg');
     background-position: top -22px right -22px;
     background-repeat: no-repeat;
-    background-size: 100%;
+    background-size: 100%;*/
     transition: background-image .3s;
     height: 286px;
     z-index: 3;
-    position: relative;
+    overflow: hidden;
 }
 
-.hover-and-tile-container:hover > .mod_emundus_applications___content_app  {
-    background-image: url('fond-fonce.svg');
+/* Image background */
+#background-shapes {
+    position: absolute;
+    z-index: 2;
+    top: -14px;
+    right: -14px;
 }
 
 .hover-and-tile-container:hover > #tile-hover-offset-request {

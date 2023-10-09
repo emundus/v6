@@ -360,6 +360,7 @@ $current_tab = 0;
                                                 <div class="row em-border-neutral-300 mod_emundus_applications___content_app em-pointer"
                                                      id="application_content<?php echo $application->fnum ?>"
                                                      onclick="openFile(event,'<?php echo $first_page_url ?>')">
+                                                    <img id="background-shapes" src="/modules/mod_emundus_campaign/css/fond-clair.svg" alt="Fond formes">
                                                     <div class="em-w-100">
                                                         <div class="em-flex-row em-flex-space-between em-mb-12">
                                                             <div>
