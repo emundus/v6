@@ -135,11 +135,16 @@ class EmundusModelGallery extends JModelList
 		return $result;
 	}
 
-	// TODO: Create Fabrik list
 	private function createFabrikList($label, $user) {
+		$list_id = 0;
+		require_once JPATH_SITE . '/components/com_emundus/helpers/fabrik.php';
+
 		$query = $this->_db->getQuery(true);
 
 		try {
+			$form_id = $this->createFabrikForm($label, $user);
+			$params = EmundusHelperFabrik::prepareListParams();
+
 			$columns = array(
 				$this->_db->quoteName('label'),
 				$this->_db->quoteName('introduction'),
@@ -161,10 +166,55 @@ class EmundusModelGallery extends JModelList
 				$this->_db->quoteName('group_by'),
 				$this->_db->quoteName('params'),
 			);
+
+			$values = array(
+				$this->_db->quote($label),
+				$this->_db->quote(''),
+				$this->_db->quote($form_id),
+				$this->_db->quote('jos_emundus_campaign_candidature'),
+				$this->_db->quote('id'),
+				$this->_db->quote('1'),
+				$this->_db->quote('1'),
+				$this->_db->quote(date('Y-m-d H:i:s')),
+				$this->_db->quote($user->id),
+				$this->_db->quote($user->username),
+				$this->_db->quote('0'),
+				$this->_db->quote('1'),
+				$this->_db->quote('0'),
+				$this->_db->quote('10'),
+				$this->_db->quote('default'),
+				$this->_db->quote('[]'),
+				$this->_db->quote('onchange'),
+				$this->_db->quote(''),
+				$this->_db->quote(json_encode($params)),
+			);
+
+			$query->clear()
+				->insert($this->_db->quoteName('#__fabrik_lists'))
+				->columns($columns)
+				->values(implode(',', $values));
+			$this->_db->setQuery($query);
+			$this->_db->execute();
+			$list_id = $this->_db->insertid();
 		}
 		catch (Exception $e) {
 			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
+
+		return $list_id;
+	}
+
+	private function createFabrikForm($label,$user) {
+		$form_id = 0;
+
+		try {
+			//TODO: Create group and elements
+		}
+		catch (Exception $e) {
+			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+		}
+
+		return $form_id;
 	}
 
 	private function createSQLView($list_id, $campaign_id) {

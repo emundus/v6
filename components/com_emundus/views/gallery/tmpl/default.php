@@ -26,6 +26,8 @@ JText::script('COM_EMUNDUS_ONBOARD_ALL_RESULTS');
 JText::script('COM_EMUNDUS_ONBOARD_SEARCH');
 JText::script('COM_EMUNDUS_CAMPAIGN');
 JText::script('COM_EMUNDUS_ACCESS_CREATE');
+JText::script('COM_EMUNDUS_ONBOARD_LABEL');
+JText::script('COM_EMUNDUS_ONBOARD_ACTIONS');
 
 $lang = JFactory::getLanguage();
 $short_lang = substr($lang->getTag(), 0 , 2);
