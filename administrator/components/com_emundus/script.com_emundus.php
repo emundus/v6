@@ -3301,6 +3301,86 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 					]
 				];
 				$setup_gallery = EmundusHelperUpdate::createTable('jos_emundus_setup_gallery', $columns, $foreign_keys, 'Configuration des galeries de dossiers');
+
+				$query = $db->getQuery(true);
+
+				$query->select($db->quoteName('value'))
+					->from($db->quoteName('#__emundus_setup_config'))
+					->where($db->quoteName('namekey') . ' LIKE ' . $db->quote('onboarding_lists'));
+				$db->setQuery($query);
+				$onboarding_lists = $db->loadResult();
+
+				if(!empty($onboarding_lists))
+				{
+					$onboarding_lists = json_decode($onboarding_lists, true);
+
+					if(!array_key_exists('gallery',$onboarding_lists)) {
+						$onboarding_lists['gallery'] = [];
+						$onboarding_lists['gallery']['title'] = 'COM_EMUNDUS_ONBOARD_GALLERY';
+						$onboarding_lists['gallery']['tabs'] = [];
+						$onboarding_lists['gallery']['tabs'][0]['title'] = 'COM_EMUNDUS_ONBOARD_GALLERY';
+						$onboarding_lists['gallery']['tabs'][0]['key'] = 'gallery';
+						$onboarding_lists['gallery']['tabs'][0]['controller'] = 'gallery';
+						$onboarding_lists['gallery']['tabs'][0]['getter'] = 'getall';
+						$onboarding_lists['gallery']['tabs'][0]['actions'] = [];
+						$onboarding_lists['gallery']['tabs'][0]['actions'][0]['action'] = 'creategallery';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][0]['label'] = 'COM_EMUNDUS_ONBOARD_ADD_GALLERY';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][0]['controller'] = 'gallery';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][0]['name'] = 'add';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][1]['action'] = 'duplicategallery';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][1]['label'] = 'COM_EMUNDUS_ONBOARD_ACTION_DUPLICATE';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][1]['controller'] = 'gallery';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][1]['name'] = 'duplicate';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][2]['action'] = 'index.php?option=com_emundus&view=gallery&layout=add&gid=%id%';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][2]['label'] = 'COM_EMUNDUS_ONBOARD_MODIFY';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][2]['controller'] = 'gallery';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][2]['type'] = 'redirect';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][2]['name'] = 'edit';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][3]['action'] = 'deletegallery';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][3]['label'] = 'COM_EMUNDUS_ONBOARD_ACTION_DELETE';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][3]['controller'] = 'gallery';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][3]['name'] = 'delete';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][3]['confirm'] = 'COM_EMUNDUS_ONBOARD_CAMPDELETE';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][3]['showon']['key'] = 'nb_files';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][3]['showon']['operator'] = '<';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][3]['showon']['value'] = '1';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][4]['action'] = 'unpublishgallery';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][4]['label'] = 'COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][4]['controller'] = 'gallery';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][4]['name'] = 'unpublish';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][4]['showon']['key'] = 'published';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][4]['showon']['operator'] = '=';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][4]['showon']['value'] = '1';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][5]['action'] = 'publishgallery';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][5]['label'] = 'COM_EMUNDUS_ONBOARD_ACTION_PUBLISH';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][5]['controller'] = 'gallery';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][5]['name'] = 'publish';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][5]['showon']['key'] = 'published';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][5]['showon']['operator'] = '=';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][5]['showon']['value'] = '0';
+						$onboarding_lists['gallery']['tabs'][0]['filters'] = [];
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['label'] = 'COM_EMUNDUS_ONBOARD_FILTER_ALL';
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['getter'] = '';
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['controller'] = 'gallery';
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['key'] = 'filter';
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['values'] = [];
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['values'][0]['label'] = 'COM_EMUNDUS_ONBOARD_FILTER_ALL';
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['values'][0]['value'] = 'all';
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['values'][1]['label'] = 'COM_EMUNDUS_ONBOARD_FILTER_PUBLISH';
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['values'][1]['value'] = 'Publish';
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['values'][2]['label'] = 'COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH';
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['values'][2]['value'] = 'Unpublish';
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['default'] = 'Publish';
+
+						$query->clear()
+							->update($db->quoteName('#__emundus_setup_config'))
+							->set($db->quoteName('value') . ' = ' . $db->quote(json_encode($onboarding_lists)))
+							->where($db->quoteName('namekey') . ' LIKE ' . $db->quote('onboarding_lists'));
+						$db->setQuery($query);
+						$db->execute();
+					}
+				}
+
 			}
 		}
 
