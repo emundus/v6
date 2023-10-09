@@ -1951,6 +1951,62 @@ button.em-swal-delete-button:hover{
   MEDIA QUERIES
 **/
 
+/*******************
+ * Peps tuiles
+ *******************/
+
+//Conteneur tuile et hover
+.hover-and-tile-container {
+
+}
+
+/* Hover decalage tuile */
+#tile-hover-offset-procedure {
+  background: var(--em-primary-color);
+  position: absolute;
+  height: 345px;
+  width: 365px;
+  border-radius: 16px;
+  transform: rotate(4.43deg);
+  transition: transform .3s;
+}
+
+/* Tuile */
+#current .mod_emundus_campaign__list_content {
+  position: relative;
+  //background-image: url('../../../../modules/mod_emundus_campaign/css/fond-clair.svg');
+  //background-position: top -22px right -22px;
+  //background-repeat: no-repeat;
+  //background-size: 125%;
+  transition: background-image .3s;
+  overflow: hidden;
+}
+
+/* Fond formes */
+#current .mod_emundus_campaign__list_content #background-shapes {
+  position: absolute;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  top: -62px;
+  right: -14px;
+}
+
+#current .hover-and-tile-container:hover > #tile-hover-offset-procedure {
+  transform: rotate(0deg);
+}
+
+/* Titre dossier */
+#current .mod_emundus_campaign__list_content h4 {
+  color: var(--em-primary-color);
+  font-size: var(--em-applicant-h4);
+}
+
+/*******************
+ * Fin peps tuiles
+ *******************/
+
+/* Tablette */
 @media (max-width: 900px) {
   .em-logo{
     filter: unset;
@@ -2023,8 +2079,15 @@ button.em-swal-delete-button:hover{
     grid-gap: 12px;
     grid-template-columns: repeat(2, 1fr);
   }
+
+  /* Peps */
+  #tile-hover-offset-procedure {
+    width: 365px;
+    background: magenta;
+  }
 }
 
+/* Téléphone */
 @media (max-width: 850px) {
   .em-input-icon {
     left: 85%;
@@ -2068,57 +2131,10 @@ button.em-swal-delete-button:hover{
   .em-small-align-items-start{
     align-items: start;
   }
+
+  /* Peps */
+  #tile-hover-offset-procedure {
+    width: 365px;
+    background: cyan;
+  }
 }
-
-/*******************
- * Peps tuiles
- *******************/
-
-//Conteneur tuile et hover
-.hover-and-tile-container {
-
-}
-
-/* Hover decalage tuile */
-#tile-hover-offset-procedure {
-  background: var(--em-primary-color);
-  position: absolute;
-  height: 345px;
-  width: 365px;
-  border-radius: 16px;
-  transform: rotate(4.43deg);
-  transition: transform .3s;
-}
-
-/* Tuile */
-#current .mod_emundus_campaign__list_content {
-  position: relative;
-  //background-image: url('../../../../modules/mod_emundus_campaign/css/fond-clair.svg');
-  //background-position: top -22px right -22px;
-  //background-repeat: no-repeat;
-  //background-size: 125%;
-  transition: background-image .3s;
-  overflow: hidden;
-}
-
-/* Fond formes */
-#background-shapes {
-  position: absolute;
-  z-index: 2;
-  top: -23px;
-  right: -21px;
-}
-
-#current .hover-and-tile-container:hover > #tile-hover-offset-procedure {
-  transform: rotate(0deg);
-}
-
-/* Titre dossier */
-#current .mod_emundus_campaign__list_content h4 {
-  color: var(--em-primary-color);
-  font-size: var(--em-applicant-h4);
-}
-
-/*******************
- * Fin peps tuiles
- *******************/

@@ -363,7 +363,7 @@ $current_tab = 0;
                                                      id="application_content<?php echo $application->fnum ?>"
                                                      onclick="openFile(event,'<?php echo $first_page_url ?>')">
 											        <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                                                    <img id="background-shapes" src="/modules/mod_emundus_campaign/css/fond-clair.svg" alt="Fond formes">
+                                                        <iframe id="background-shapes" src="/modules/mod_emundus_campaign/css/fond-clair.svg" alt="Fond formes"></iframe>
 											        <?php endif; ?>
                                                     <div class="em-w-100">
                                                         <div class="em-flex-row em-flex-space-between em-mb-12">
@@ -1537,4 +1537,22 @@ $current_tab = 0;
             });
         });
     }
+
+    /* Modification de la couleur du background avec les formes */
+    let iframeElements = document.querySelectorAll("#background-shapes");
+
+    iframeElements.forEach(function(iframeElement) {
+        iframeElement.addEventListener("load", function () {
+            let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
+            let pathElements = iframeDocument.querySelectorAll("path");
+            let emProfileColor = getComputedStyle(document.documentElement).getPropertyValue('--em-profile-color');
+            pathElements.forEach(function(pathElement) {
+                let pathStyle = pathElement.getAttribute("style");
+                pathStyle = pathStyle.replace(/fill:red;/, "fill:" + emProfileColor + ";");
+                pathElement.setAttribute("style", pathStyle);
+            })
+        });
+    });
+
+
 </script>
