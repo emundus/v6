@@ -186,6 +186,7 @@ if ($user != null) {
         </div>
     </div>
     <?php else : ?>
+    <div class="em-flex-row em-flex-end em-profile-container" id="userDropdownLabel">
         <div class="em-flex-row">
             <div class="mr-4">
                 <?php if(!empty($user)) : ?>
@@ -206,6 +207,7 @@ if ($user != null) {
             </div>
 
         </div>
+    </div>
     <?php endif; ?>
     <input type="hidden" value="<?= $switch_profile_redirect; ?>" id="switch_profile_redirect">
     <ul class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">
@@ -222,7 +224,7 @@ if ($user != null) {
                  style="background-image:url('<?php echo $profile_picture ?>');">
             </div>
 	        <?php else : ?>
-            <span class="material-icons-outlined  em-user-dropdown-icon <?php if($first_logged) : ?>userDropdownIcon-tip<?php endif; ?>" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">account_circle</span>
+            <span class="material-icons-outlined em-profile-picture-modal-icon <?php if($first_logged) : ?>userDropdownIcon-tip<?php endif; ?>" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">account_circle</span>
 	        <?php endif; ?>
             <li class="dropdown-header em-text-align-center em-font-weight-500 em-text-neutral-900"><?= $user->firstname . ' ' . $user->lastname; ?></li>
             <li class="dropdown-header em-text-align-center em-text-neutral-600" title="<?= $user->email; ?>"><?= $user->email; ?></li>

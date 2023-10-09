@@ -129,29 +129,25 @@ endforeach;
 
     if(profile_state == 1) { // it's an applicant profile
 
-    console.log('candidat');
+        let root = document.querySelector(':root');
+        let css_var = getComputedStyle(root).getPropertyValue("--em-primary-color");
 
-    let root = document.querySelector(':root');
-    let css_var = getComputedStyle(root).getPropertyValue("--em-primary-color");
+        document.documentElement.style.setProperty("--em-profile-color", css_var);
 
-    document.documentElement.style.setProperty("--em-profile-color", css_var);
+        } else {    // it's a coordinator profile
 
-    } else {    // it's a coordinator profile
+            if(profile_color != '') {
 
-    console.log('gestionnaire');
+            profile_color = profile_color.split('-')[1];
 
-    if(profile_color != '') {
+                  if(label_colors[profile_color] != undefined) {
+                    let root = document.querySelector(':root');
+                    let css_var = getComputedStyle(root).getPropertyValue(label_colors[profile_color]);
 
-    profile_color = profile_color.split('-')[1];
-
-    if(label_colors[profile_color] != undefined) {
-    let root = document.querySelector(':root');
-    let css_var = getComputedStyle(root).getPropertyValue(label_colors[profile_color]);
-
-    document.documentElement.style.setProperty("--em-profile-color", css_var);
-    }
-    }
-    }
-    }
-    });
+                    document.documentElement.style.setProperty("--em-profile-color", css_var);
+                }
+           }
+       }
+}
+});
 </script>

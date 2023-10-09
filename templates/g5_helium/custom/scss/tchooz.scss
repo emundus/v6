@@ -1887,6 +1887,13 @@ button.em-swal-delete-button:hover{
   background-size: cover;
   background-position: center;
   margin-bottom: var(--m-16);
+  color: var(--em-profile-color);
+}
+
+.em-profile-picture-modal-icon {
+  font-size: 72px !important;
+  margin-bottom: var(--m-16);
+  color: var(--em-profile-color);
 }
 
 .em-profile-picture-big{
