@@ -141,6 +141,25 @@
         border-radius: 0 !important;
       }
     }
+
+    /** AUTOCOMPLETE **/
+    .dropdown-menu {
+      padding: 0;
+      li {
+        a {
+          padding: 4px;
+        }
+      }
+    }
+
+    .dropdown-menu > .active > a, .dropdown-menu > .active > a:hover, .dropdown-menu > .active > a:focus {
+      background-color: var(--blue-500);
+      background-image: unset;
+    }
+
+    .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus, .dropdown-submenu:hover > a, .dropdown-submenu:focus > a {
+        background-color: var(--blue-400);
+    }
   }
 
   form.fabrikForm {
@@ -203,13 +222,13 @@
       border-color: var(--em-form-bc);
       transition: all 0.1s ease-out;
 
-      &:hover:not([type='radio']):not([type='checkbox']) {
+      &:hover:not([type='radio']):not([type='checkbox']):not([readonly="readonly"]) {
         background-color: var(--em-form-bgc-hover);
         border-color: var(--em-form-bc-hover);
         box-shadow: unset;
       }
 
-      &:focus:not([type='radio']):not([type='checkbox']) {
+      &:focus:not([type='radio']):not([type='checkbox']):not([readonly="readonly"]) {
         outline: var(--em-form-outline-color-focus) solid var(--em-form-outline-width-focus);
         border-radius: var(--em-form-br-focus);
         outline-offset: var(--em-form-outline-offset-focus);
@@ -415,6 +434,23 @@
 
 
     /* YES / NO */
+
+    .row-fluid .plg-yesno.span12 {
+      width: 48.93617021276595%;
+    }
+
+    @media only all and (min-width: 48rem) and (max-width: 59.99rem) {
+      .row-fluid .plg-yesno.span12 {
+        width: 48.6187845304% !important;
+      }
+    }
+
+    @media only all and (max-width: 48rem) {
+      .row-fluid .plg-yesno.span12 {
+        width: 100% !important;
+      }
+    }
+
     .plg-yesno .fabrikSubElementContainer .btn-group {
       display: flex;
       gap: var(--em-form-yesno-gap);
@@ -1159,6 +1195,26 @@
 
   .chzn-container-multi:not(.chzn-container-active) .chzn-drop {
     display: none;
+  }
+
+  /* ADD PIPE */
+  div[id^='recorder-'] {
+    margin-bottom: 12px;
+
+    .pipeRecordRTC {
+      width: 100% !important;
+    }
+
+    div[id^='pipeStartRecording-recorder-'],div[id^='pipe-upload-wrap-recorder-'] {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    div[id^='pipe-upload-wrap-recorder-'] label {
+      margin-left: -10px;
+      font-size: 16px;
+    }
   }
 }
 

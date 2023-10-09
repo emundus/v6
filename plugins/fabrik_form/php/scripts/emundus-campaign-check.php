@@ -64,12 +64,12 @@ switch ($applicant_can_renew) {
 					FROM #__emundus_setup_campaigns
 					WHERE published = 1
 					AND end_date >= ' . $db->quote($now) .
-					'AND start_date <= ' . $db->quote($now) .
-					'AND id NOT IN (
+					' AND start_date <= ' . $db->quote($now) .
+					' AND id NOT IN (
 						SELECT campaign_id
 						FROM #__emundus_campaign_candidature
 						WHERE applicant_id=' . $user->id .
-                        'AND published <> -1
+                        ' AND published <> -1
 					)';
 
         try {
@@ -94,8 +94,8 @@ switch ($applicant_can_renew) {
 					FROM #__emundus_setup_campaigns
 					WHERE published = 1
 					AND end_date >= ' . $db->quote($now) .
-					'AND start_date <= ' . $db->quote($now) .
-					'AND year NOT IN (
+					' AND start_date <= ' . $db->quote($now) .
+					' AND year NOT IN (
 						select sc.year
 						from #__emundus_campaign_candidature as cc
 						LEFT JOIN #__emundus_setup_campaigns as sc ON sc.id = cc.campaign_id
