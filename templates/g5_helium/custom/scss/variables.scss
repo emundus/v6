@@ -90,7 +90,7 @@
   --bg-3: #C62222;
 
   /* PROFIL */
-  --em-profile-color: #20835F;
+  --em-profile-color: #{$base-primary-color};
 
   /* ALERTS */
   --em-alert-error-bgc: #{$em-alert-error-background-color};
@@ -176,7 +176,6 @@
 
 
   // Spacing
-
   --spacing-2: 8px;
 
   --em-spacing-vertical: #{$em-spacing-vertical};

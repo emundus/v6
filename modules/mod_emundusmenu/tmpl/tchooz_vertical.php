@@ -666,7 +666,8 @@ defined('_JEXEC') or die;
 
                 document.documentElement.style.setProperty("--em-profile-color", css_var);
 
-            } else {    // it's a coordinator profile
+            }
+            else { // it's a coordinator profile
 
                 if(profile_color != '') {
 
@@ -679,6 +680,7 @@ defined('_JEXEC') or die;
                         document.documentElement.style.setProperty("--em-profile-color", css_var);
                     }
                 }
+
             }
         }
     });
