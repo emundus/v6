@@ -50,6 +50,16 @@
 					   description="MOD_EMUNDUS_APPLICATIONS_OVERRIDE_EMPTY_APPLICATION_DESC">
 				</field>
 
+				<field name="mod_em_campaign_display_svg" type="radio" default="1" label="MOD_EM_CAMPAIGN_DISPLAY_SVG" description="MOD_EM_CAMPAIGN_DISPLAY_SVG_DESC" class="btn-group btn-group-yesno">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+
+				<field name="mod_em_campaign_display_hover_offset" type="radio" default="1" label="MOD_EM_CAMPAIGN_DISPLAY_HOVER_OFFSET" description="MOD_EM_CAMPAIGN_DISPLAY_HOVER_OFFSET_DESC" class="btn-group btn-group-yesno" >
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+
 				<field name="show_add_application"
 					   type="radio"
 					   default="0"
