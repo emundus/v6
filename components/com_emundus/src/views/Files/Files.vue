@@ -158,6 +158,7 @@
                 <span v-for="tag in scope.row.tags" :class="tag.class" class="em-status em-mb-4">{{ tag.label }}</span>
               </div>
             </template>
+          </el-table-column>
 
             <el-table-column
               v-else

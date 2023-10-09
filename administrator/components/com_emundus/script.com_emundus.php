@@ -3187,6 +3187,121 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
                     $db->execute();
                 }
             }
+
+			if (version_compare($cache_version, '1.38.0', '<=') || $firstrun) {
+				$columns      = [
+					[
+						'name'    => 'created_at',
+						'type'    => 'datetime',
+						'null'    => 0
+					],
+					[
+						'name'    => 'created_by',
+						'type'    => 'integer',
+						'length'  => 10,
+						'null'    => 0,
+					],
+					[
+						'name'    => 'updated_at',
+						'type'    => 'datetime',
+						'null'    => 1,
+					],
+					[
+						'name'    => 'updated_by',
+						'type'    => 'integer',
+						'length'  => 10,
+						'null'    => 1,
+					],
+					[
+						'name'    => 'list_id',
+						'type'    => 'integer',
+						'length'  => 10,
+						'null'    => 0,
+					],
+					[
+						'name'    => 'is_voting',
+						'type'    => 'tinyint',
+						'length'  => 3,
+						'null'    => 0,
+						'default' => 0,
+					],
+					[
+						'name'    => 'max',
+						'type'    => 'integer',
+						'length'  => 10,
+					],
+					[
+						'name'    => 'title',
+						'type'    => 'varchar',
+						'length'  => 255,
+						'null'    => 0,
+					],
+					[
+						'name'    => 'subtitle',
+						'type'    => 'varchar',
+						'length'  => 255,
+						'null'    => 1,
+					],
+					[
+						'name'    => 'image',
+						'type'    => 'integer',
+						'length'  => 10,
+						'null'    => 1,
+					],
+					[
+						'name'    => 'tags',
+						'type'    => 'varchar',
+						'length'  => 255,
+						'null'    => 1,
+					],
+					[
+						'name'    => 'resume',
+						'type'    => 'varchar',
+						'length'  => 255,
+						'null'    => 1,
+					],
+					[
+						'name'    => 'banner',
+						'type'    => 'integer',
+						'length'  => 10,
+						'null'    => 1,
+					],
+					[
+						'name'    => 'logo',
+						'type'    => 'integer',
+						'length'  => 10,
+						'null'    => 1,
+					],
+					[
+						'name'    => 'start_date',
+						'type'    => 'datetime',
+						'null'    => 1,
+					],
+					[
+						'name'    => 'end_date',
+						'type'    => 'datetime',
+						'null'    => 1,
+					],
+					[
+						'name'    => 'published',
+						'type'    => 'tinyint',
+						'length'  => 3,
+						'default' => 0,
+						'null'    => 0,
+					]
+				];
+				$foreign_keys = [
+					[
+						'name'           => 'jos_fabrik_lists_fk_list_id',
+						'from_column'    => 'list_id',
+						'ref_table'      => 'jos_fabrik_lists',
+						'ref_column'     => 'id',
+						'update_cascade' => true,
+						'delete_cascade' => true,
+					]
+				];
+				$setup_gallery = EmundusHelperUpdate::createTable('jos_emundus_setup_gallery', $columns, $foreign_keys, 'Configuration des galeries de dossiers');
+			}
 		}
 
 		return $succeed;

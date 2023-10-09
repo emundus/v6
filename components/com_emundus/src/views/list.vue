@@ -182,6 +182,7 @@ import Skeleton from '../components/Skeleton.vue';
 
 // Services
 import settingsService from '../services/settings.js';
+import campaignsService from '../services/campaigns.js';
 import client from '../services/axiosClient';
 import Swal from 'sweetalert2';
 
@@ -451,47 +452,93 @@ export default {
 				}
 
 				window.location.href = url;
-			} else {
-				let url = 'index.php?option=com_emundus&controller=' + action.controller + '&task=' + action.action;
+			}
+      else {
+        if(action.action === 'creategallery') {
+          campaignsService.getAllCampaigns('Publish').then((response) => {
+            let campaigns = response.data.datas;
 
-				if (itemId !== null) {
-					if (action.parameters) {
-						let url_parameters = action.parameters;
-						if (item !== null) {
-							Object.keys(item).forEach(key => {
-								url_parameters = url_parameters.replace('%' + key + '%', item[key]);
-							});
-						}
+            let options_html = '<option value=""></option>';
+            campaigns.forEach((campaign) => {
+              options_html += '<option value="' + campaign.id + '">' + campaign.label.fr + '</option>';
+            });
 
-						url += url_parameters;
-					} else {
-						url += '&id=' + itemId;
-					}
-				}
+            Swal.fire({
+              title: this.translate('COM_EMUNDUS_ONBOARD_ADD_GALLERY'),
+              text: 'Créer',
+              html:
+                  '<div class="mb-4"><label>'+this.translate('COM_EMUNDUS_ONBOARD_GALLERY_NAME')+' <span class="em-red-500-color">*</span></label><input id="gallery_name" class="form-control fabrikinput w-full"></div>' +
+                  '<div class="mb-4"><label>'+this.translate('COM_EMUNDUS_CAMPAIGN')+' <span class="em-red-500-color">*</span></label><select id="gallery_campaign" class="form-control fabrikinput w-full">'+options_html+'</select></div>',
+              focusConfirm: false,
+              preConfirm: () => {
+                if (!document.getElementById('gallery_name').value || !document.getElementById('gallery_campaign').value) {Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_USERS_ERROR_PLEASE_COMPLETE'))}
+                return [
+                  document.getElementById('gallery_name').value,
+                  document.getElementById('gallery_campaign').value
+                ]
+              },
+              showCancelButton: true,
+              confirmButtonText: this.translate('COM_EMUNDUS_ACCESS_CREATE'),
+              cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
+              reverseButtons: true,
+              customClass: {
+                title: 'em-swal-title',
+                confirmButton: 'em-swal-confirm-button',
+                cancelButton: 'em-swal-cancel-button',
+                actions: 'em-swal-double-action'
+              }
+            }).then((result) => {
+              if (result.value) {
+                let url = 'index.php?option=com_emundus&controller=' + action.controller + '&task=' + action.action + '&gallery_name=' + result.value[0] + '&campaign_id=' + result.value[1];
 
-				if (action.hasOwnProperty('confirm')) {
-					Swal.fire({
-						type: 'warning',
-						title: action.label,
-						text: action.confirm,
-						showCancelButton: true,
-						confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
-						cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
-						reverseButtons: true,
-						customClass: {
-							title: 'em-swal-title',
-							confirmButton: 'em-swal-confirm-button',
-							cancelButton: 'em-swal-cancel-button',
-							actions: 'em-swal-double-action'
-						}
-					}).then((result) => {
-						if (result.value) {
-							this.executeAction(url);
-						}
-					});
-				} else {
-					this.executeAction(url);
-				}
+                this.executeAction(url);
+              }
+            });
+          })
+        }
+        else {
+
+          let url = 'index.php?option=com_emundus&controller=' + action.controller + '&task=' + action.action;
+
+          if (itemId !== null) {
+            if (action.parameters) {
+              let url_parameters = action.parameters;
+              if (item !== null) {
+                Object.keys(item).forEach(key => {
+                  url_parameters = url_parameters.replace('%' + key + '%', item[key]);
+                });
+              }
+
+              url += url_parameters;
+            } else {
+              url += '&id=' + itemId;
+            }
+          }
+
+          if (action.hasOwnProperty('confirm')) {
+            Swal.fire({
+              type: 'warning',
+              title: action.label,
+              text: action.confirm,
+              showCancelButton: true,
+              confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
+              cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
+              reverseButtons: true,
+              customClass: {
+                title: 'em-swal-title',
+                confirmButton: 'em-swal-confirm-button',
+                cancelButton: 'em-swal-cancel-button',
+                actions: 'em-swal-double-action'
+              }
+            }).then((result) => {
+              if (result.value) {
+                this.executeAction(url);
+              }
+            });
+          } else {
+            this.executeAction(url);
+          }
+        }
 			}
 		},
 		executeAction (url) {
