@@ -6,8 +6,8 @@
         :notifications="notifications"
         @removeNotifications="removeNotifications"
     />
-    <div>
-      <span class="material-icons-outlined em-messages-modal" style="width: 30px; cursor: pointer;" @click="openModal">question_answer</span>
+    <div class="em-messages-container">
+      <span class="material-icons-outlined em-messages-modal" style="cursor: pointer;" @click="openModal">question_answer</span>
       <p v-if="counter > 0" class="notifications__counter">{{counter}}</p>
     </div>
   </div>

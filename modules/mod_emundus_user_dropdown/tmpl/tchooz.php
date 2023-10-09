@@ -155,7 +155,8 @@ if ($user != null) {
 
         .em-user-dropdown-icon {
             color: var(--em-profile-color);
-            font-size: 30px;
+            font-size: 36px;
+            border: solid 3px var(--transparent);
         }
 
         .em-profile-container p {

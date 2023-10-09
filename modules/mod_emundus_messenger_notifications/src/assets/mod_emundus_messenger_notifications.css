@@ -9,7 +9,7 @@
 .notifications__counter{
   position: absolute;
   top: 12px;
-  right: 163px;
+  right: 178px;
   background: var(--red-500);
   padding: 8px;
   border-radius: 50%;
@@ -20,6 +20,16 @@
   justify-content: center;
   align-items: center;
   font-size: 12px;
+}
+
+.em-messages-container {
+  display: flex;
+  align-items: center;
+}
+
+span[class*="material-icons"].em-messages-modal {
+  color: var(--em-profile-color);
+  font-size: 24px;
 }
 
 @media screen and (max-width: 767px) {
