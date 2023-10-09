@@ -2588,7 +2588,7 @@ class EmundusModelFiles extends JModelLegacy
                                     $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_element_table_alias . '.' . $element->element_name . $where_condition . ')';
                                     $databasejoin_sub_query .= ' AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
                                 } else {
-                                    $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $element_table_alias . '.' . $element->element_name . $where_condition . ')';
+                                    $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $element_table_alias . '.' . $element->element_name . $where_condition . ' LIMIT 1)';
                                     $databasejoin_sub_query .= ' AS ' . $element->tab_name . '___' . $element->element_name;
                                 }
                             }
