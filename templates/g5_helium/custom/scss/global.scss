@@ -809,11 +809,11 @@ footer#g-footer > .g-container {
 
     .dropfiles_progress_block .dropfiles_progress_pause:after,
     .dropfiles_progress_block .dropfiles_progress_cancel:after {
-      color: var(--em-coordinator-primary-color);
+      color: var(--em-profile-color);
     }
 
     .dropfiles_progress_block .dropfiles_process_run {
-      background: var(--em-coordinator-primary-color);
+      background: var(--em-profile-color);
     }
 
     #mybootstrap {
@@ -837,7 +837,7 @@ footer#g-footer > .g-container {
         }
 
         tr.file.selected,  tr.file:hover {
-          box-shadow: 0 0 0 1px var(--em-coordinator-primary-color);
+          box-shadow: 0 0 0 1px var(--em-profile-color);
         }
       }
 
@@ -1326,8 +1326,8 @@ footer#g-footer > .g-container {
   }
 
   .fabrik_filter_submit.button {
-    background: var(--em-coordinator-primary-color);
-    border: 1px solid var(--em-coordinator-primary-color);
+    background: var(--em-profile-color);
+    border: 1px solid var(--em-profile-color);
     border-radius: var(--em-coordinator-br) !important;
     font-family: var(--em-coordinator-font);
     font-weight: 400;
@@ -1337,8 +1337,8 @@ footer#g-footer > .g-container {
     height: auto !important;
     &:hover, &:active, &:focus {
       background: var(--neutral-0);
-      border: 1px solid var(--em-coordinator-primary-color) !important;
-      color: var(--em-coordinator-primary-color);
+      border: 1px solid var(--em-profile-color) !important;
+      color: var(--em-profile-color);
       letter-spacing: normal;
       font-style: normal;
       font-size: var(--em-coordinator-font-size);
@@ -1453,7 +1453,7 @@ footer#g-footer > .g-container {
     color: var(--night-blue);
 
     span.icon-edit {
-      color: var(--em-coordinator-primary-color);
+      color: var(--em-profile-color);
     }
   }
 }
@@ -2261,8 +2261,8 @@ p.readmore .btn,
 
   button.btn.btn-success,
   a.btn-success {
-    background: var(--em-coordinator-primary-color);
-    border: 1px solid var(--em-coordinator-primary-color);
+    background: var(--em-profile-color);
+    border: 1px solid var(--em-profile-color);
     border-radius: var(--em-coordinator-br) !important;
     color: var(--neutral-0);
     padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal) !important;
@@ -2271,8 +2271,8 @@ p.readmore .btn,
     &:active,
     :focus {
       background: var(--transparent);
-      border: 1px solid var(--em-coordinator-primary-color);
-      color: var(--em-coordinator-primary-color);
+      border: 1px solid var(--em-profile-color);
+      color: var(--em-profile-color);
     }
   }
 }
@@ -2941,10 +2941,10 @@ ul.unstyled.em-linkForgot li a {
 /* EMAILS */
 
 #emailForm.em-form-message a {
-  color: var(--em-coordinator-primary-color);
+  color: var(--em-profile-color);
 
   &:hover {
-    color: var(--em-coordinator-primary-color);
+    color: var(--em-profile-color);
   }
 }
 
@@ -3075,14 +3075,14 @@ ul.unstyled.em-linkForgot li a {
 
 .form.em-decision-form .btn.btn-success {
   padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
-  border: 1px solid var(--em-coordinator-primary-color);
-  background: var(--em-coordinator-primary-color);
+  border: 1px solid var(--em-profile-color);
+  background: var(--em-profile-color);
   border-radius: var(--em-coordinator-br) !important;
 
   &:hover, &:active, &:focus {
-    border: 1px solid var(--em-coordinator-primary-color) !important;
+    border: 1px solid var(--em-profile-color) !important;
     background: var(--neutral-0);
-    color: var(--em-coordinator-primary-color);
+    color: var(--em-profile-color);
   }
 }
 
@@ -3197,9 +3197,9 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
 #em_adv_filters .em_filters_adv_filter_addColumn button#add-filter {
   margin-top: 10px;
   background: var(--neutral-0);
-  border: 1px solid var(--em-coordinator-primary-color) !important;
+  border: 1px solid var(--em-profile-color) !important;
   width: 100%;
-  color: var(--em-coordinator-primary-color);
+  color: var(--em-profile-color);
   width: -moz-available;
   width: -webkit-fill-available;
   width: fill-available;
@@ -3209,8 +3209,8 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
   &:focus,
   &:hover,
   &:active {
-    background: var(--em-coordinator-primary-color);
-    border-color: var(--em-coordinator-primary-color) !important;
+    background: var(--em-profile-color);
+    border-color: var(--em-profile-color) !important;
     color: var(--neutral-0) !important;
   }
 }
@@ -3361,8 +3361,8 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
 .gantry.g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn.btn-info.btn-sm,
 .gantry.g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn-default.btn-sm {
   height: 36px;
-  background-color: var(--em-coordinator-primary-color);
-  border: 1px solid var(--em-coordinator-primary-color) !important;
+  background-color: var(--em-profile-color);
+  border: 1px solid var(--em-profile-color) !important;
   border-radius: var(--em-coordinator-br) !important;
   padding: 5px 30px !important;
 
@@ -3370,8 +3370,8 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
   &:active,
   &:focus {
     background-color: transparent !important;
-    color: var(--em-coordinator-primary-color);
-    border: 1px solid var(--em-coordinator-primary-color);
+    color: var(--em-profile-color);
+    border: 1px solid var(--em-profile-color);
   }
 
   i {
