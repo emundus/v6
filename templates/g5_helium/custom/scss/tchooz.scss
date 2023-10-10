@@ -1957,15 +1957,15 @@ button.em-swal-delete-button:hover{
 
 //Conteneur tuile et hover
 .hover-and-tile-container {
-
+  position: relative;
 }
 
 /* Hover decalage tuile */
 #tile-hover-offset-procedure {
   background: var(--em-primary-color);
   position: absolute;
-  height: 345px;
-  width: 365px;
+  height: 100%;
+  width: 100%;
   border-radius: 16px;
   transform: rotate(4.43deg);
   transition: transform .3s;
@@ -2007,6 +2007,51 @@ button.em-swal-delete-button:hover{
  *******************/
 
 /* Tablette */
+@media screen and (min-width: 1080px) and (max-width: 1199px) {
+
+  /* Peps */
+  #current .mod_emundus_campaign__list_content #background-shapes {
+    top: -39px;
+    right: -16px;
+  }
+
+}
+
+@media screen and (min-width: 1025px) and (max-width: 1079px) {
+
+  /* Peps */
+  #current .mod_emundus_campaign__list_content #background-shapes {
+    top: -87px;
+    right: -10px;
+  }
+
+}
+
+@media screen and (min-width: 960px) and (max-width: 1024px) {
+
+  /* Peps */
+  .view-featured #current .mod_emundus_campaign__list_content #background-shapes {
+    top: -47px;
+    right: -11px;
+  }
+
+  #current .mod_emundus_campaign__list_content #background-shapes {
+    top: -11px;
+    right: -15px;
+  }
+
+}
+
+@media screen and (min-width: 768px) and (max-width: 959px) {
+
+  /* Peps */
+  #current .mod_emundus_campaign__list_content #background-shapes {
+    top: -11px;
+    right: -46px;
+  }
+
+}
+
 @media (max-width: 900px) {
   .em-logo{
     filter: unset;
@@ -2079,16 +2124,10 @@ button.em-swal-delete-button:hover{
     grid-gap: 12px;
     grid-template-columns: repeat(2, 1fr);
   }
-
-  /* Peps */
-  #tile-hover-offset-procedure {
-    width: 365px;
-    background: magenta;
-  }
 }
 
 /* Téléphone */
-@media (max-width: 850px) {
+@media (max-width: 768px) {
   .em-input-icon {
     left: 85%;
   }
@@ -2133,8 +2172,8 @@ button.em-swal-delete-button:hover{
   }
 
   /* Peps */
-  #tile-hover-offset-procedure {
-    width: 365px;
-    background: cyan;
+  #current .mod_emundus_campaign__list_content #background-shapes {
+    top: -11px;
+    right: -31px;
   }
 }
