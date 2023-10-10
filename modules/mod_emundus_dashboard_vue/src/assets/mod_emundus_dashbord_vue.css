@@ -194,7 +194,8 @@
   margin: 0 !important;
 }
 
-.profile_widget-text h1 {
+.profile_widget-text h1,
+.profile_widget-text h1 span {
   color: var(--em-profile-color);
   font-family: var(--em-coordinator-font-title);
   font-size: var(--em-coordinator-h1);

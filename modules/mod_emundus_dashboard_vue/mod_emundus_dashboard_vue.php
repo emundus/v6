@@ -17,6 +17,9 @@ if(in_array(JFactory::getSession()->get('emundusUser')->profile, $profiles)) {
 	$display_name = $params->get('display_name', 0);
 	$name = JFactory::getSession()->get('emundusUser')->name;
 
+	$current_lang = JFactory::getLanguage()->getTag();
+    $language = $current_lang == 'fr-FR' ? 1 : 0;
+
     require_once(JPATH_SITE . '/components/com_emundus/models/dashboard.php');
     $m_dashboard = new EmundusModelDashboard;
     $dashboard = $m_dashboard->getDashboard($emundusUser->id);
