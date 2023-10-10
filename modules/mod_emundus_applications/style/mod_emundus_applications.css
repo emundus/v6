@@ -741,11 +741,13 @@ circle.circle {
 }
 
 /* Image background */
-#background-shapes {
+.mod_emundus_applications___content_app #background-shapes {
     position: absolute;
     z-index: 2;
-    top: -14px;
-    right: -14px;
+    width: 100%;
+    height: 100%;
+    top: -17px;
+    right: -87px;
 }
 
 .hover-and-tile-container:hover > #tile-hover-offset-request {
@@ -782,6 +784,37 @@ circle.circle {
  * Fin peps tuiles
  *******************/
 
+/* Tablette*/
+@media screen and (min-width: 960px) and (max-width: 1199px) {
+
+    /* Peps */
+    .hover-and-tile-container #tile-hover-offset-request {
+        width: 444px;
+    }
+
+    .mod_emundus_applications___content_app #background-shapes {
+        right: -28px;
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 959px) {
+
+    .view-featured .candidacy-files-list .row {
+        align-items: flex-start;
+    }
+
+    /* Peps */
+    .hover-and-tile-container #tile-hover-offset-request {
+        width: 348px;
+    }
+
+    .mod_emundus_applications___content_app #background-shapes {
+        top: -38px;
+        right: -13px;
+    }
+}
+
+/* Téléphone */
 @media screen and (max-width: 767px) {
 
     .moduletable.list-group.candidacy-files-list > div.em-flex-row.em-flex-space-between.em-mt-16 {
@@ -790,7 +823,7 @@ circle.circle {
     }
 
     .mod_emundus_applications___header .em-flex-row.em-flex-space-between {
-       flex-direction: column;
+        flex-direction: column;
         align-items: flex-start;
     }
 
@@ -810,7 +843,7 @@ circle.circle {
 
 
     span.material-icons-outlined {
-       flex-basis: auto !important;
+        flex-basis: auto !important;
     }
 
     .em-font-size-16 {
@@ -832,12 +865,18 @@ circle.circle {
     .mod_emundus_application_swal_manage_tabs_popup{
         min-width: fit-content;
     }
-}
 
-@media screen and (min-width: 768px) and (max-width: 959px) {
-
-    .view-featured .candidacy-files-list .row {
-        align-items: flex-start;
+    /* Peps */
+    .hover-and-tile-container{
+        position: relative;
     }
 
+    .hover-and-tile-container #tile-hover-offset-request {
+        width: 100%;
+    }
+
+    .mod_emundus_applications___content_app #background-shapes {
+        top: -17px;
+        right: -149px;
+    }
 }
