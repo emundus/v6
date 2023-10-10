@@ -1990,6 +1990,7 @@ button.em-swal-delete-button:hover{
   height: 100%;
   top: -62px;
   right: -14px;
+  pointer-events: none;
 }
 
 #current .hover-and-tile-container:hover > #tile-hover-offset-procedure {

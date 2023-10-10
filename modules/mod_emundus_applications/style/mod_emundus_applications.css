@@ -748,6 +748,7 @@ circle.circle {
     height: 100%;
     top: -17px;
     right: -87px;
+    pointer-events: none;
 }
 
 .hover-and-tile-container:hover > #tile-hover-offset-request {
