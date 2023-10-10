@@ -990,14 +990,34 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
     iframeElements.forEach(function(iframeElement) {
         iframeElement.addEventListener("load", function () {
+
             let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
             let pathElements = iframeDocument.querySelectorAll("path");
             let emProfileColor = getComputedStyle(document.documentElement).getPropertyValue('--em-profile-color');
-            pathElements.forEach(function (pathElement) {
+
+            /* Coloration de tous les éléments "path" */
+            pathElements.forEach(function(pathElement) {
                 let pathStyle = pathElement.getAttribute("style");
-                pathStyle = pathStyle.replace(/fill:red;/, "fill:" + emProfileColor + ";");
+                pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + emProfileColor + ";");
                 pathElement.setAttribute("style", pathStyle);
-            })
+            });
         });
     });
+
+    let divsHover = document.querySelectorAll(".hover-and-tile-container");
+    let iframeElementHover = document.getElementById('background-shapes');
+
+    divsHover.forEach(function(divHover) {
+
+        let iframeElementHover = divHover.querySelector('iframe');
+
+        divHover.addEventListener('mouseover', function() {
+            iframeElementHover.src = '/modules/mod_emundus_campaign/css/fond-fonce.svg';
+        });
+
+        divHover.addEventListener('mouseout', function() {
+            iframeElementHover.src = '/modules/mod_emundus_campaign/css/fond-clair.svg';
+        });
+    })
+
 </script>
