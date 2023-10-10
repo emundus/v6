@@ -41,7 +41,7 @@ if($just_logged && !$only_applicant) {
     }
 
     .swal2-content p.em-text-align-center.em-font-size-24 {
-        color: var(--em-coordinator-primary-color);
+        color: var(--em-profile-color);
     }
 
     @media (max-width: 1368px) {
@@ -56,14 +56,14 @@ if($just_logged && !$only_applicant) {
     }
     .em-switch-profile-card{
         text-align: center;
-        border: solid 1px var(--em-coordinator-primary-color);
+        border: solid 1px var(--em-profile-color);
         display: flex;
         justify-content: center;
         align-items: center;
         border-radius: var(--em-coordinator-br);
         flex-direction: column;
         cursor: pointer;
-        color: var(--em-coordinator-primary-color);
+        color: var(--em-profile-color);
         transition: all 0.3s ease-in-out;
         width: auto;
         margin: 10px;
@@ -71,7 +71,7 @@ if($just_logged && !$only_applicant) {
         font-size: var(--em-coordinator-font-size);
     }
     .em-switch-profile-card:hover {
-        background: var(--em-coordinator-primary-color);
+        background: var(--em-profile-color);
         color: var(--neutral-0);
     }
     .em-switch-profile-card .material-icons-outlined{

@@ -428,7 +428,7 @@ if ($user != null) {
     <script>
         <?php if ($guest): ?>
         document.addEventListener('DOMContentLoaded', function () {
-            document.querySelector('#g-navigation .g-container').style.padding = '16px 72px';
+            document.querySelector('#g-navigation .g-container').style.padding = '20px';
         });
         <?php endif; ?>
     </script>
