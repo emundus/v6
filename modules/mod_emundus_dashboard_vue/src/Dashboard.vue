@@ -1,8 +1,9 @@
-<template>
+<template xmlns="http://www.w3.org/1999/html">
   <div id="app">
     <div class="profile_widget">
       <div class="profile_widget-text">
-        <h1>{{ translate('COM_EMUNDUS_DASHBOARD_AREA') }} {{ data.label }}</h1>
+        <h1 v-if="language == 1">{{ translate('COM_EMUNDUS_DASHBOARD_AREA')}} <span class="em-lowercase">{{ data.label }}</span></h1>
+        <h1 v-else>{{ data.label }} <span class="em-lowercase">{{ translate('COM_EMUNDUS_DASHBOARD_AREA')}}</span></h1>
         <p v-if="displayName == 1">{{ translate('COM_EMUNDUS_DASHBOARD_HELLO') }} {{name}} {{ translate('COM_EMUNDUS_DASHBOARD_WELCOME') }}</p>
         <p v-if="displayDescription == 1">{{data.description}}</p>
       </div>
@@ -45,6 +46,7 @@ export default {
     displayDescription: Number,
     displayName: Number,
     name: Text,
+    language: Number,
   },
   components: {
     Custom,

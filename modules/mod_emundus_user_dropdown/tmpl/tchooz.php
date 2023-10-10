@@ -160,11 +160,11 @@ if ($user != null) {
         }
 
         .em-profile-container p {
-            word-break: break-word;
             max-width: 170px;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
+            padding: 2px;
         }
     </style>
 

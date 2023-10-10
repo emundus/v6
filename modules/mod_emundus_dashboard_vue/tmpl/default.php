@@ -53,7 +53,7 @@ $applicant_profiles = $m_profiles->getApplicantsProfilesArray();
 
 if(!in_array($user->profile, $applicant_profiles)) {
     ?>
-    <div id="em-dashboard-vue" programmeFilter="<?= $programme_filter ?>" displayDescription="<?= $display_description ?>" name="<?= $name ?>" displayName="<?= $display_name ?>"></div>
+    <div id="em-dashboard-vue" programmeFilter="<?= $programme_filter ?>" displayDescription="<?= $display_description ?>" name="<?= $name ?>" language="<?= $language ?>" displayName="<?= $display_name ?>"></div>
 
     <script src="media/mod_emundus_dashboard_vue/app.js"></script>
 	<?php
