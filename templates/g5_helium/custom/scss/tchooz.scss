@@ -1996,7 +1996,7 @@ button.em-swal-delete-button:hover{
   z-index: 2;
   width: 100%;
   height: 100%;
-  top: -62px;
+  top: -66px;
   right: -14px;
   pointer-events: none;
 }
@@ -2022,6 +2022,15 @@ button.em-swal-delete-button:hover{
   font-size: var(--em-applicant-h4);
 }
 
+/* Campagnes clôturées */
+.tile-hover-offset-procedure--closed {
+  background: var(--neutral-500) !important;
+}
+
+.mod_emundus_campaign__list_content--closed .mod_emundus_campaign__campaign_title {
+  color: var(--neutral-600) !important;
+}
+
 /*******************
  * Fin peps tuiles
  *******************/
@@ -2031,7 +2040,7 @@ button.em-swal-delete-button:hover{
 
   /* Peps */
   #current .mod_emundus_campaign__list_content #background-shapes {
-    top: -39px;
+    top: -42px;
     right: -16px;
   }
 
@@ -2045,7 +2054,7 @@ button.em-swal-delete-button:hover{
 
   /* Peps */
   #current .mod_emundus_campaign__list_content #background-shapes {
-    top: -87px;
+    top: -90px;
     right: -10px;
   }
 

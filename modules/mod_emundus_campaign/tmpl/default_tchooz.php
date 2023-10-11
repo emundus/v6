@@ -510,7 +510,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                 <?php if(strtotime($now) > strtotime($result->end_date)) :  ?>
                     <div class="hover-and-tile-container">
 	                    <?php if ($mod_em_campaign_display_hover_offset == 1) : ?>
-                            <div id="tile-hover-offset-procedure"></div>
+                            <div id="tile-hover-offset-procedure" class="tile-hover-offset-procedure--closed"></div>
 	                    <?php endif; ?>
                         <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
 	                        <?php if ($mod_em_campaign_display_svg == 1) : ?>
@@ -990,13 +990,13 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
     /* Modification de la couleur du background avec les formes */
     let iframeElements = document.querySelectorAll("#background-shapes");
+    let emProfileColor = getComputedStyle(document.documentElement).getPropertyValue('--em-profile-color');
 
     iframeElements.forEach(function(iframeElement) {
         iframeElement.addEventListener("load", function () {
 
             let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
             let pathElements = iframeDocument.querySelectorAll("path");
-            let emProfileColor = getComputedStyle(document.documentElement).getPropertyValue('--em-profile-color');
 
             /* Coloration de tous les éléments "path" */
             pathElements.forEach(function(pathElement) {
@@ -1005,6 +1005,26 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                 pathElement.setAttribute("style", pathStyle);
             });
         });
+    });
+
+    /* Couleur des campagnes clôturées */
+    let divElements = document.querySelectorAll(".mod_emundus_campaign__list_content--closed");
+
+    divElements.forEach(function(divElement) {
+        let iframeElement = divElement.querySelector("#background-shapes");
+        iframeElement.onload = function() {
+            let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
+            let pathElements = iframeDocument.querySelectorAll("path");
+            let neutral600 = getComputedStyle(document.documentElement).getPropertyValue('--neutral-600');
+
+            /* Coloration de tous les éléments "path" */
+            pathElements.forEach(function(pathElement) {
+                let pathStyle = pathElement.getAttribute("style");
+                console.log ("test" + pathStyle);
+                pathStyle = pathStyle.replace(/fill:#[0-9A-Fa-f]{6};/, "fill" + neutral600 + ";");
+                pathElement.setAttribute("style", pathStyle);
+            });
+        }
     });
 
     /* changement de couleur des formes au hover de la card */
