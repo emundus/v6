@@ -47,6 +47,7 @@
     background-image: url('fond-formes-header.svg');
     background-repeat: no-repeat;
     background-position: right top;
+    background-color: var(--neutral-0);
 }
 
 #userDropdownMenu h5  {
