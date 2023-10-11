@@ -411,7 +411,7 @@ a.btn.btn-success:not(.btn-xs) {
     display: grid;
     align-items: flex-start;
     padding: 0;
-    gap: var(--p-32);
+    gap: var(--p-48);
     grid-template-columns: repeat(2,1fr);
 }
 .mod_emundus_applications___content_app{
@@ -480,8 +480,16 @@ a.btn.btn-success:not(.btn-xs) {
 }
 
 .mod_emundus_applications___content_app:hover .mod_emundus_applications__container {
-    background: var(--neutral-200);
+    background: var(--em-profile-color);
     border-radius: var(--em-default-br);
+}
+
+.mod_emundus_applications___content_app:hover .material-icons {
+    color: var(--neutral-0);
+}
+
+.mod_emundus_applications__container .material-icons {
+    color: var(--em-profile-color);
 }
 
 .mod_emundus_applications__actions{
@@ -720,8 +728,8 @@ circle.circle {
 .hover-and-tile-container #tile-hover-offset-request {
     background: var(--em-profile-color);
     position: absolute;
-    height: 286px;
-    width: 564px;
+    height: 100%;
+    width: 100%;
     border-radius: 16px;
     transform: rotate(4.43deg);
     transition: transform .3s;
@@ -754,6 +762,9 @@ circle.circle {
 .hover-and-tile-container:hover > #tile-hover-offset-request {
     transform: rotate(0deg);
 }
+
+/* Trois points d'options */
+
 
 /* Titre dossier */
 .mod_emundus_applications___content_app .em-w-100 .mod_emundus_applications___title h5 {

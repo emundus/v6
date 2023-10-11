@@ -428,7 +428,7 @@ a.em-blue-400-color:hover {
     display: grid;
     align-items: flex-start;
     padding: 0;
-    gap: var(--p-32);
+    gap: var(--p-48);
     grid-template-columns: repeat(3,1fr);
 }
 
