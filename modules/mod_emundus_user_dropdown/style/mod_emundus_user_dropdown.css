@@ -347,6 +347,9 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     }
 }
 
+.dropdown #userDropdownLabel {
+    cursor: pointer;
+}
 
 div#userDropdown {
     float: initial !important;
