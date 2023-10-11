@@ -284,67 +284,82 @@ class EmundusHelperAccess {
 		return false;
 	}
 
-	/**
-	 * @param $user_id
-	 * @param $fnum
-	 * @return bool
-	 *
-	 * @since version
-	 */
-	public static function isUserAllowedToAccessFnum($user_id, $fnum) {
-		$allowed = false;
+    /**
+     * @param $user_id
+     * @param $fnum
+     * @return bool
+     *
+     * @since version
+     */
+    public static function isUserAllowedToAccessFnum($user_id, $fnum) {
+        $allowed = false;
 
-		if (empty($user_id)) {
-			$user_id = JFactory::getUser()->id;
-		}
+        if (empty($user_id)) {
+            $user_id = JFactory::getUser()->id;
+        }
 
-		if (!empty($user_id) && !empty($fnum)) {
-			// does user is associated to the fnum directly?
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+        if (!empty($user_id) && !empty($fnum)) {
+            // does user is associated to the fnum directly?
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-			$query->select('id')
-				->from('#__emundus_users_assoc')
-				->where('user_id = '.$db->quote($user_id))
-				->andWhere('fnum = '.$db->quote($fnum))
-				->andWhere('action_id = 1')
-				->andWhere('r = 1');
+            $query->select('id')
+                ->from('#__emundus_users_assoc')
+                ->where('user_id = '.$db->quote($user_id))
+                ->andWhere('fnum = '.$db->quote($fnum))
+                ->andWhere('action_id = 1')
+                ->andWhere('r = 1');
+            $db->setQuery($query);
+            $allowed_to_read = $db->loadResult();
 
-			$db->setQuery($query);
-			$allowed_to_read = $db->loadResult();
+            if ($allowed_to_read) {
+                $allowed = true;
+            } else {
+                // does the user have common groups associated to the fnum?
+                $query->clear()
+                    ->select('group_id')
+                    ->from('#__emundus_groups')
+                    ->where('user_id = '.$db->quote($user_id));
+                $db->setQuery($query);
+                $user_groups = $db->loadColumn();
 
-			if ($allowed_to_read) {
-				$allowed = true;
-			} else {
-				// does the user have common groups associated to the fnum?
-				$query->clear()
-					->select('group_id')
-					->from('#__emundus_groups')
-					->where('user_id = '.$db->quote($user_id));
+                // first, we check groups associated manually to the file
+                $query->clear()
+                    ->select($db->quoteName('group_id'))
+                    ->from($db->quoteName('#__emundus_group_assoc'))
+                    ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum))
+                    ->andWhere($db->quoteName('action_id').' = 1')
+                    ->andWhere($db->quoteName('r').' = 1');
+                $db->setQuery($query);
+                $groups_assoc = $db->loadColumn();
 
-				$db->setQuery($query);
-				$user_groups = $db->loadColumn();
+                $groups_in_both_assoc = array_intersect($user_groups,$groups_assoc);
 
-				require_once (JPATH_ROOT . '/components/com_emundus/models/users.php');
-				$m_users = new EmundusModelUsers();
-				$file_groups = $m_users->getEffectiveGroupsForFnum($user_groups, $fnum, true);
+                if (!empty($groups_in_both_assoc)) {
+                    $allowed = true;
+                } else {
+                    // if there is none, we check files associated to the program
+                    require_once (JPATH_ROOT . '/components/com_emundus/models/users.php');
+                    $m_users = new EmundusModelUsers();
+                    $file_groups = $m_users->getEffectiveGroupsForFnum($user_groups, $fnum, true);
 
-				$groups_in_both = array_intersect($user_groups, $file_groups);
-				if (!empty($groups_in_both)) {
-					$groups_actions = $m_users->getGroupsAcl($groups_in_both);
+                    $groups_in_both_program = array_intersect($user_groups, $file_groups);
+                    if (!empty($groups_in_both_program)) {
+                        $groups_actions = $m_users->getGroupsAcl($groups_in_both_program);
 
-					foreach ($groups_actions as $action) {
-						if ($action['action_id'] == 1 && $action['r'] == 1) {
-							$allowed = true;
-							break;
-						}
-					}
-				}
-			}
-		}
+                        foreach ($groups_actions as $action) {
+                            if ($action['action_id'] == 1 && $action['r'] == 1) {
+                                $allowed = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-		return $allowed;
-	}
+        return $allowed;
+    }
 
 	/**
 	 *
