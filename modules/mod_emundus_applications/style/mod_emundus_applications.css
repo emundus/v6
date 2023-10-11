@@ -718,7 +718,7 @@ circle.circle {
 
 /* Hover decalage tuile */
 .hover-and-tile-container #tile-hover-offset-request {
-    background: var(--em-primary-color);
+    background: var(--em-profile-color);
     position: absolute;
     height: 286px;
     width: 564px;
@@ -757,7 +757,7 @@ circle.circle {
 
 /* Titre dossier */
 .mod_emundus_applications___content_app .em-w-100 .mod_emundus_applications___title h5 {
-    color: var(--em-primary-color);
+    color: var(--em-profile-color);
     font-size: var(--em-applicant-h4);
 }
 

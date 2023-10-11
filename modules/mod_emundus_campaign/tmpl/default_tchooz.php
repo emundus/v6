@@ -131,19 +131,22 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         <?php if ($campaign_pinned && $mod_em_campaign_show_pinned_campaign == 1) : ?>
         <h3><?php echo JText::_('MOD_EM_CAMPAIGN_PINNED_CAMPAIGN') ?></h3>
         <div class="mod_emundus_campaign__pinned_campaign em-mt-32 em-mb-24">
-            <?php if(strtotime($now) > strtotime($campaign_pinned->end_date)) :  ?>
             <div class="hover-and-tile-container">
-	            <?php if ($mod_em_campaign_display_hover_offset == 1) : ?>
-                <div id="tile-hover-offset-procedure"></div>
+
+                <?php if ($mod_em_campaign_display_hover_offset == 1) : ?>
+                    <div id="tile-hover-offset-procedure"></div>
                 <?php endif; ?>
+
+            <?php if(strtotime($now) > strtotime($campaign_pinned->end_date)) :  ?>
+
                 <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
-	                <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                        <iframe id="background-shapes" src="/modules/mod_emundus_campaign/css/fond-clair.svg" alt="Fond formes"></iframe>
-	                <?php endif; ?>
 
                     <?php  else : ?>
-
                     <div class="mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
+                        <?php endif; ?>
+
+                        <?php if ($mod_em_campaign_display_svg == 1) : ?>
+                            <iframe id="background-shapes" src="/modules/mod_emundus_campaign/css/fond-clair.svg" alt="Fond formes"></iframe>
                         <?php endif; ?>
 
                         <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
@@ -1004,6 +1007,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         });
     });
 
+    /* changement de couleur des formes au hover de la card */
     let divsHover = document.querySelectorAll(".hover-and-tile-container");
     let iframeElementHover = document.getElementById('background-shapes');
 

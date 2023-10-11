@@ -1969,7 +1969,7 @@ button.em-swal-delete-button:hover{
 
 /* Hover decalage tuile */
 #tile-hover-offset-procedure {
-  background: var(--em-primary-color);
+  background: var(--em-profile-color);
   position: absolute;
   height: 100%;
   width: 100%;
@@ -1978,13 +1978,14 @@ button.em-swal-delete-button:hover{
   transition: transform .3s;
 }
 
+.mod_emundus_campaign__pinned_campaign #tile-hover-offset-procedure {
+  transform: rotate(3deg);
+}
+
 /* Tuile */
-#current .mod_emundus_campaign__list_content {
+#current .mod_emundus_campaign__list_content,
+.mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content {
   position: relative;
-  //background-image: url('../../../../modules/mod_emundus_campaign/css/fond-clair.svg');
-  //background-position: top -22px right -22px;
-  //background-repeat: no-repeat;
-  //background-size: 125%;
   transition: background-image .3s;
   overflow: hidden;
 }
@@ -2000,13 +2001,24 @@ button.em-swal-delete-button:hover{
   pointer-events: none;
 }
 
-#current .hover-and-tile-container:hover > #tile-hover-offset-procedure {
+.mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content #background-shapes {
+  position: absolute;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  top: -19px;
+  right: -124px;
+  pointer-events: none;
+}
+
+#current .hover-and-tile-container:hover > #tile-hover-offset-procedure,
+.mod_emundus_campaign__pinned_campaign .hover-and-tile-container:hover > #tile-hover-offset-procedure {
   transform: rotate(0deg);
 }
 
 /* Titre dossier */
 #current .mod_emundus_campaign__list_content h4 {
-  color: var(--em-primary-color);
+  color: var(--em-profile-color);
   font-size: var(--em-applicant-h4);
 }
 
@@ -2023,6 +2035,10 @@ button.em-swal-delete-button:hover{
     right: -16px;
   }
 
+  .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content #background-shapes {
+    top: -19px;
+    right: -52px;
+  }
 }
 
 @media screen and (min-width: 1025px) and (max-width: 1079px) {
@@ -2031,6 +2047,11 @@ button.em-swal-delete-button:hover{
   #current .mod_emundus_campaign__list_content #background-shapes {
     top: -87px;
     right: -10px;
+  }
+
+  .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content #background-shapes {
+    top: -20px;
+    right: -51px;
   }
 
 }
@@ -2048,6 +2069,10 @@ button.em-swal-delete-button:hover{
     right: -15px;
   }
 
+  .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content #background-shapes {
+    top: -14px;
+    right: -110px;
+  }
 }
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
@@ -2058,6 +2083,10 @@ button.em-swal-delete-button:hover{
     right: -46px;
   }
 
+  .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content #background-shapes {
+    top: -14px;
+    right: -198px;
+  }
 }
 
 @media (max-width: 900px) {
@@ -2183,5 +2212,10 @@ button.em-swal-delete-button:hover{
   #current .mod_emundus_campaign__list_content #background-shapes {
     top: -11px;
     right: -31px;
+  }
+
+  .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content #background-shapes {
+    top: -14px;
+    right: -165px;
   }
 }

@@ -1557,6 +1557,7 @@ $current_tab = 0;
         });
     });
 
+    /* changement de couleur des formes au hover de la card */
     let divsHover = document.querySelectorAll(".hover-and-tile-container");
     let iframeElementHover = document.getElementById('background-shapes');
 
