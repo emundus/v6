@@ -3036,14 +3036,17 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
 
                     $fnum = explode(',', $fnum);
-                    if (($attachment || !empty($attachment_to_export)) && count($attachment_to_export) > 0) {
+                    if ($attachment || !empty($attachment_to_export)) {
                         $files = $m_files->getFilesByFnums($fnum, $attachment_to_export);
                         $file_ids = array();
 
-                        foreach($files as $file) {
-                            $file_ids[] = $file['attachment_id'];
-                        }
+	                    foreach($files as $file) {
+		                    if (!empty($file['attachment_id'])) {
+			                    $file_ids[] = $file['attachment_id'];
+		                    }
+	                    }
 
+						// TODO: weird to use attachment_to_export here, should be $file_ids instead ? it has been like this for a long time, so I'm not sure
                         $setup_attachments = $m_files->getSetupAttachmentsById($attachment_to_export);
                         if (!empty($setup_attachments) && !empty($files)) {
                             foreach($setup_attachments as $att) {

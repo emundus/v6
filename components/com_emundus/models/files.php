@@ -2892,23 +2892,26 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function getFilesByFnums($fnums, $attachment_ids = null)
     {
-        $db = $this->getDbo();
-        if(!empty($attachment_ids))
-            $query = 'select fu.* from #__emundus_uploads as fu where fu.fnum in ("'.implode('","', $fnums).'") and fu.attachment_id in ("'.implode('","', $attachment_ids).'") order by fu.fnum';
-        else
-            $query = 'select fu.* from #__emundus_uploads as fu where fu.fnum in ("'.implode('","', $fnums).'") order by fu.fnum';
+		$files = false;
 
-        $db->setQuery($query);
-        try
-        {
-            $res = $db->loadAssocList();
-            return $res;
-        }
-        catch(Exception $e)
-        {
-            echo $e;
-            return false;
-        }
+		if (!empty($fnums)) {
+			$db = $this->getDbo();
+			if(!empty($attachment_ids)) {
+				$query = 'select fu.* from #__emundus_uploads as fu where fu.fnum in ("'.implode('","', $fnums).'") and fu.attachment_id in ("'.implode('","', $attachment_ids).'") order by fu.fnum';
+			} else {
+				$query = 'select fu.* from #__emundus_uploads as fu where fu.fnum in ("'.implode('","', $fnums).'") order by fu.fnum';
+			}
+
+			try {
+				$db->setQuery($query);
+				$files = $db->loadAssocList();
+			} catch(Exception $e) {
+				echo $e;
+				JLog::add('Failed to get files by fnum ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $files;
     }
 
     /**
@@ -3459,17 +3462,24 @@ class EmundusModelFiles extends JModelLegacy
     }
 
     public function getSetupAttachmentsById($ids) {
-        $dbo = $this->getDbo();
-        $query = $dbo->getQuery(true);
-        $query->select('*')
-            ->from($dbo->quoteName('#__emundus_setup_attachments'))
-            ->where($dbo->quoteName('id').' IN (' . implode(',', $ids) . ')');
-        try {
-            $dbo->setQuery($query);
-            return $dbo->loadAssocList();
-        } catch(Exception $e) {
-            throw $e;
-        }
+	    $setup_attachments = [];
+
+	    if (!empty($ids)) {
+		    $dbo = $this->getDbo();
+		    $query = $dbo->getQuery(true);
+		    $query->select('*')
+			    ->from($dbo->quoteName('#__emundus_setup_attachments'))
+			    ->where($dbo->quoteName('id').' IN (' . implode(',', $ids) . ')');
+
+		    try {
+			    $dbo->setQuery($query);
+			    $setup_attachments = $dbo->loadAssocList();
+		    } catch(Exception $e) {
+			    JLog::add('Failed to get setup attachment by ids ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		    }
+	    }
+
+	    return $setup_attachments;
     }
 
     /**
