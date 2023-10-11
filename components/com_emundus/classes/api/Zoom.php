@@ -229,7 +229,7 @@ class Zoom
 	public function updateMeetingDuration($meeting_id, $duration = 60) {
 		$response = null;
 
-		if (!empty($meeting_id) && $duration >= 60) {
+		if (!empty($meeting_id) && $duration > 0) {
 			$response = $this->patch('meetings/' . $meeting_id, [
 				'duration' => $duration
 			]);
@@ -240,11 +240,7 @@ class Zoom
 
 	public function getUsers()
 	{
-		$users = null;
-
-		$users = $this->get('users?page_number=1&page_size=10');
-
-		return $users;
+		return $this->get('users?page_number=1&page_size=10');
 	}
 
 	public function getUserMeetings($zoom_user_id)

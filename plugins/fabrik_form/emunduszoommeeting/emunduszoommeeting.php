@@ -185,11 +185,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
                         $host_last_name = $response['last_name'];
                         $host_first_name = $response['first_name'];
-                    } else {
-                        // TODO: handle email not found
                     }
-                } else {
-                    //$zoom->requestErrors();
                 }
             }
         }
@@ -298,8 +294,6 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                 } catch(Exception $e) {
                     JLog::add('Create Zoom meeting failed : ' . $e->getMessage(),JLog::ERROR, 'com_emundus');
                 }
-            } else {
-                //$zoom->requestErrors();
             }
         } else {
 	        $response = $zoom->updateMeeting($meeting_session, $json);
