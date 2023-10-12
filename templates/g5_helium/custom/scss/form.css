@@ -1161,8 +1161,7 @@
         height: auto;
         input[type="text"] {
           outline: none;
-          height: 15px;
-          width: 17vw !important;
+          height: 18px;
         }
       }
     }

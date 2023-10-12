@@ -1615,8 +1615,7 @@ input[type="text"],
       }
 .chzn-container .chzn-single li.search-field input[type="text"], .chzn-container .chzn-choices li.search-field input[type="text"], .chzn-container.chzn-container-multi .chzn-single li.search-field input[type="text"], .chzn-container.chzn-container-multi .chzn-choices li.search-field input[type="text"], .chzn-container.chzn-container-multi.chzn-container-active .chzn-single li.search-field input[type="text"], .chzn-container.chzn-container-multi.chzn-container-active .chzn-choices li.search-field input[type="text"] {
           outline: none;
-          height: 15px;
-          width: 17vw !important;
+          height: 18px;
         }
 .chzn-container .chzn-search, .chzn-container.chzn-container-multi .chzn-search, .chzn-container.chzn-container-multi.chzn-container-active .chzn-search {
       padding: 4px 12px;
