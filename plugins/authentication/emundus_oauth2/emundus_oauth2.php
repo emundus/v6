@@ -121,11 +121,11 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
 		                }
 	                }
 
-                    foreach ($this->attributes->column_name as $key => $column) {
-                        if ($this->attributes->table_name[$key] == 'jos_users') {
-                            $response->{$column} = $body->{$this->attributes->attribute_name[$key]};
-                        }
-                    }
+	                foreach ($this->attributes->column_name as $key => $column) {
+		                if ($this->attributes->table_name[$key] == 'jos_users' || (in_array($column, ['firstname', 'lastname']))) {
+			                $response->{$column} = !empty($body->attributes) && isset($body->attributes->{$this->attributes->attribute_name[$key]}) ? $body->attributes->{$this->attributes->attribute_name[$key]} : $body->{$this->attributes->attribute_name[$key]};
+		                }
+	                }
 					
                     if (!empty($response->username)) {
                         $db = JFactory::getDbo();
