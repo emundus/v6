@@ -4155,4 +4155,32 @@ class EmundusControllerFiles extends JControllerLegacy
         echo json_encode($response);
         exit;
     }
+
+	public function getfiltervalues() {
+		$response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
+		$user = JFactory::getUser();
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+			$jinput = JFactory::getApplication()->input;
+			$element_id = $jinput->getInt('id', 0);
+
+			if (!empty($element_id)) {
+				require_once (JPATH_SITE . '/components/com_emundus/classes/filters/EmundusFilters.php');
+				$filters = new EmundusFilters();
+
+				$response['data'] = $filters->getFabrikElementValuesFromElementId($element_id);
+				$session = JFactory::getSession();
+				$response['all'] = $session->get('em-filters-all-values');
+				$response['status'] = true;
+				$response['code'] = 200;
+				$response['msg'] = JText::_('SUCCESS');
+			} else {
+				$response['msg'] = JText::_('MISSING_PARAMS');
+				$response['code'] = 400;
+			}
+		}
+
+		echo json_encode($response);
+		exit;
+	}
 }
