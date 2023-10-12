@@ -53,9 +53,9 @@ class PlgSystemOauth2 extends JPlugin {
 		} else {
 			$code = JArrayHelper::getValue($queries, 'code', null, 'WORD');
 			$session_state = JArrayHelper::getValue($queries, 'session_state', null, 'WORD');
-			$need_session_state = $this->params->get('need_session_state', 1);
+			$session_state_required = $this->params->get('session_state_required', 1);
 
-			if (!$need_session_state) {
+			if (!$session_state_required) {
 				// make sure that code is the only parameter in the query string
 				if (count($queries) > 1) {
 					return;
