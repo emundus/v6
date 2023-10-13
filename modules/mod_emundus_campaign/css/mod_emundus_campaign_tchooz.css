@@ -609,6 +609,20 @@ a.em-blue-400-color:hover {
     .mod_emundus_campaign__header {
         width: 100%;
     }
+
+    #g-container-main .g-container{
+        width: 44rem;
+    }
+}
+
+@media screen and (min-width: 960px) and (max-width: 1080px) {
+    .mod_emundus_campaign__content .mod_emundus_campaign__list_items {
+        grid-template-columns: repeat(2,1fr);
+    }
+
+    #g-container-main .g-container{
+        width: 60rem;
+    }
 }
 
 @media screen and (min-width: 1081px) and (max-width: 1199px) {
