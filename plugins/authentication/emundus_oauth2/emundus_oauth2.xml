@@ -12,6 +12,8 @@
 	<files>
 		<filename plugin="emundus_oauth2">emundus_oauth2.php</filename>
 		<filename>index.html</filename>
+		<folder>language</folder>
+		<folder>src</folder>
 	</files>
 	<languages>
 		<language tag="en-GB">language/en-GB/en-GB.plg_authentication_emundus_oauth2.ini</language>
@@ -21,7 +23,10 @@
 	</languages>
 	<config>
 		<fields name="params">
-			<fieldset name="basic">
+			<fieldset name="basic" addfieldpath="/plugins/authentication/emundus_oauth2/src/Field">
+				<field name="well_known_url" type="text" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_WELL_KNWON_LABEL"/>
+				<field name="generate_config" type="generateconfig" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_GENERATE_LABEL"/>
+
 				<field name="type" type="text" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_TYPE_LABEL" description="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_TYPE_DESC"/>
 				<field name="client_id" type="text" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CLIENTID_LABEL" description="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CLIENTID_DESC"/>
 				<field name="client_secret" type="text" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CLIENTSECRET_LABEL" description="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CLIENTSECRET_DESC"/>

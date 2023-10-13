@@ -23,8 +23,6 @@ jimport('joomla.plugin.plugin');
  */
 class plgAuthenticationEmundus_Oauth2 extends JPlugin
 {
-
-
     /**
      * @var  string  The authorisation url.
      */
@@ -53,7 +51,7 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
 
     public function __construct(&$subject, $config)
     {
-        parent::__construct($subject, $config);
+		parent::__construct($subject, $config);
         $this->loadLanguage();
 
 		$type = filter_input(INPUT_GET, 'type', FILTER_SANITIZE_STRING);
