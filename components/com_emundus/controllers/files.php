@@ -1432,7 +1432,6 @@ class EmundusControllerFiles extends JControllerLegacy
         $methode    = $jinput->getString('methode', null);
         $objclass   = $jinput->get('objclass', null);
         $excel_file_name = $jinput->get('excelfilename', null);
-
         $opts = $this->getcolumn($opts);
 
 		// TODO: upper-case is mishandled, remove temporarily until fixed
@@ -1458,7 +1457,11 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         //$fnumsArray = $m_files->getFnumArray($fnums, $ordered_elements, $methode, $start, $limit, 0);
-	    $fnumsArray = $m_files->getFnumArray2($fnums, $ordered_elements, $start, $limit);
+	    $not_already_handled_fnums = $fnums;
+	    if ($start > 0) {
+		    $not_already_handled_fnums = $session->get('not_already_handled_fnums');
+	    }
+	    $fnumsArray = $m_files->getFnumArray2($not_already_handled_fnums, $ordered_elements, 0, $limit);
 
 		if ($fnumsArray !== false) {
 			// On met a jour la liste des fnums traités
@@ -1466,6 +1469,8 @@ class EmundusControllerFiles extends JControllerLegacy
 			foreach ($fnumsArray as $fnum) {
 				array_push($fnums, $fnum['fnum']);
 			}
+			$not_already_handled_fnums = array_diff($not_already_handled_fnums, $fnums);
+			$session->set('not_already_handled_fnums', $not_already_handled_fnums);
 
 			foreach ($colsup as $col) {
 				$col = explode('.', $col);

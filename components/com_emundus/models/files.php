@@ -2752,7 +2752,7 @@ class EmundusModelFiles extends JModelLegacy
                 }
             }
 
-            $where = ' WHERE jecc.fnum IN ("' . implode('","', $fnums) . '") ';
+            $where = ' WHERE jecc.fnum IN ("' . implode('","', $fnums) . '") ORDER BY jecc.id';
 
             if (!empty($limit)) {
                 $where .= ' LIMIT ' . $limit . ' OFFSET ' . $start;
@@ -2762,36 +2762,34 @@ class EmundusModelFiles extends JModelLegacy
                 $db = JFactory::getDbo();
                 $db->setQuery($query . $from . $leftJoin . $where);
 
-                $data = $db->loadAssocList();
+                $rows = $db->loadAssocList();
             } catch(Exception $e) {
                 JLog::add('Error trying to generate data for xlsx export ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
 	            return false;
             }
 
-            if (!empty($data)) {
+            if (!empty($rows)) {
                 $data_by_fnums = [];
 
-                foreach($data as $row) {
-                    if (!isset($data_by_fnums[$row['fnum']])) {
-                        if ($row == null) {
-                            $row = '';
-                        }
-                        $data_by_fnums[$row['fnum']] = $row;
-                    } else {
-                        foreach($row as $key => $value) {
-                            if ((!is_array($data_by_fnums[$row['fnum']][$key]) && $row[$key] !== $data_by_fnums[$row['fnum']][$key]) || (is_array($data_by_fnums[$row['fnum']][$key]) && !in_array($row[$key], $data_by_fnums[$row['fnum']][$key]))) {
-                                if (is_array($data_by_fnums[$row['fnum']][$key])) {
-                                    $data_by_fnums[$row['fnum']][$key][] = $row[$key];
-                                } else {
-                                    $data_by_fnums[$row['fnum']][$key] = [$data_by_fnums[$row['fnum']][$key], $row[$key]];
-                                }
-                            }
-                        }
-                    }
+                foreach($rows as $row) {
+	                if (!empty($row)) {
+		                if (!isset($data_by_fnums[$row['fnum']])) {
+			                $data_by_fnums[$row['fnum']] = $row;
+		                } else {
+			                foreach($row as $key => $value) {
+				                if (!isset($data_by_fnums[$row['fnum']][$key])) {
+					                $data_by_fnums[$row['fnum']][$key] = $value;
+								} else if (!is_array($data_by_fnums[$row['fnum']][$key]) && $value !== $data_by_fnums[$row['fnum']][$key]) {
+					                $data_by_fnums[$row['fnum']][$key] = [$data_by_fnums[$row['fnum']][$key], $value];
+				                } else if (is_array($data_by_fnums[$row['fnum']][$key]) && !in_array($value, $data_by_fnums[$row['fnum']][$key])) {
+					                $data_by_fnums[$row['fnum']][$key][] = $value;
+				                }
+			                }
+		                }
+	                }
                 }
 
                 $data = $data_by_fnums;
-
                 foreach ($data as $d_key => $row) {
                     foreach ($row as $r_key => $value) {
                         if (is_null($value)) {
@@ -2803,7 +2801,14 @@ class EmundusModelFiles extends JModelLegacy
                         }
                     }
                 }
-            }
+
+				if (!empty($limit) && count($data) < $limit && count($rows) == $limit) {
+					// it means that we have repeated rows, so we need to retrieve last row all entries, because it may be incomplete (chunked by the limit)
+					$last_row = array_pop($rows);
+					$last_row_data = $this->getFnumArray2($last_row['fnum'], $elements, $start, 0);
+					$data[$last_row['fnum']] = $last_row_data[$last_row['fnum']];
+				}
+			}
         }
 
         return $data;
