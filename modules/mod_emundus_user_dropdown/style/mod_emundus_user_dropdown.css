@@ -346,10 +346,22 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     position: relative;
 }
 
+#g-navigation .g-content .platform-content:nth-child(1){
+    z-index: 2;
+}
+
+#g-navigation .g-content .platform-content:nth-child(2) {
+    z-index: 1;
+}
+
 #userDropdown #background-shapes {
     position: absolute;
-    height: 157%;
-    right: -12px;
+    height: 100%;
+    width: 100%;
+    top: 0px;
+    right: 63px;
+    transform: scale(2);
+    pointer-events: none;
 }
 
 div#userDropdown {
