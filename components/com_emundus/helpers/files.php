@@ -3804,9 +3804,7 @@ class EmundusHelperFiles
                                             $parent_table_alias = '';
                                             $parent_table = $join_informations['join_from_table'];
 
-                                            if (!in_array($parent_table, $already_joined) && !$this->isTableLinkedToCampaignCandidature($parent_table)) {
-                                                // todo: what if column fnum is not in the join table?
-                                            } else {
+                                            if (in_array($parent_table, $already_joined) || !$this->isTableLinkedToCampaignCandidature($parent_table)) {
                                                 if (!in_array($parent_table, $already_joined)) {
                                                     $already_joined[] = $parent_table;
                                                     $where['join'] .= ' LEFT JOIN ' . $db->quoteName($parent_table) . ' ON ' . $parent_table . '.fnum = jecc.fnum ';

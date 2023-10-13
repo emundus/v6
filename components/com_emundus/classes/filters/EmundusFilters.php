@@ -74,7 +74,6 @@ class EmundusFilters
 					case 'radiobutton':
 					case 'databasejoin':
 						$filter['type'] = 'select';
-						$filter['values'] = $this->getFabrikElementValues($element);
 						$filter['values'] = [];
 						break;
 					case 'yesno':

@@ -1535,7 +1535,8 @@ class EmundusController extends JControllerLegacy {
             'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
         );
 
-        $ext = strtolower(array_pop(explode('.',$filename)));
+		$exploded_filename = explode('.',$filename);
+        $ext = strtolower(array_pop($exploded_filename));
         if (array_key_exists($ext, $mime_types)) {
             return $mime_types[$ext];
         }
