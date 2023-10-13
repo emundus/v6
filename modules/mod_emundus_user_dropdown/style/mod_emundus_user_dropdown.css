@@ -43,13 +43,6 @@
     transition: all 0.3s ease-in-out;
 }
 
-#g-navigation .g-container {
-    background-image: url('fond-formes-header.svg');
-    background-repeat: no-repeat;
-    background-position: right top;
-    background-color: var(--neutral-0);
-}
-
 #userDropdownMenu h5  {
     color: var(--neutral-900);
     font-family: var(--em-default-font-title);
@@ -350,6 +343,13 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 
 .dropdown #userDropdownLabel {
     cursor: pointer;
+    position: relative;
+}
+
+#userDropdown #background-shapes {
+    position: absolute;
+    height: 157%;
+    right: -12px;
 }
 
 div#userDropdown {
