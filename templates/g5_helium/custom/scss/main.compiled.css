@@ -1124,14 +1124,6 @@ form.fabrikForm select.input-small {
         background-position-x: 92%;
       }
 /** RADIO **/
-form.fabrikForm .plg-radiobutton .fabrikSubElementContainer {
-        width: -moz-fit-content;
-        width: fit-content;
-        display: flex;
-        flex-wrap: wrap;
-        flex-direction: column;
-        min-width: 40%;
-      }
 @media all and (max-width: 767px) {
       form.fabrikForm .plg-radiobutton .fabrikSubElementContainer {
           width: 100%
@@ -1141,9 +1133,8 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio {
   padding-top: var(--em-spacing-1);
   padding-bottom: var(--em-spacing-1);
   margin-bottom: var(--em-spacing-1);
-          width: 100%;
-          align-items: center;
-          margin-left: 0px;
+  align-items: center;
+  margin-left: 0px;
 }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label {
   margin-bottom: 0px;
@@ -1615,8 +1606,7 @@ input[type="text"],
       }
 .chzn-container .chzn-single li.search-field input[type="text"], .chzn-container .chzn-choices li.search-field input[type="text"], .chzn-container.chzn-container-multi .chzn-single li.search-field input[type="text"], .chzn-container.chzn-container-multi .chzn-choices li.search-field input[type="text"], .chzn-container.chzn-container-multi.chzn-container-active .chzn-single li.search-field input[type="text"], .chzn-container.chzn-container-multi.chzn-container-active .chzn-choices li.search-field input[type="text"] {
           outline: none;
-          height: 15px;
-          width: 17vw !important;
+          height: 18px;
         }
 .chzn-container .chzn-search, .chzn-container.chzn-container-multi .chzn-search, .chzn-container.chzn-container-multi.chzn-container-active .chzn-search {
       padding: 4px 12px;
