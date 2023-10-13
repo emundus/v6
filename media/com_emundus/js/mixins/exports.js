@@ -88,7 +88,7 @@ function export_excel(fnums, letter) {
 
     $.ajax({
         type: 'post',
-        url: 'index.php?option=com_emundus&controller=files&task=getfnums_csv',
+        url: 'index.php?option=com_emundus&controller=files&task=getfnums_csv&Itemid='+itemId,
         dataType: 'JSON',
         data: {fnums: fnums},
         success: function (result) {
