@@ -55,6 +55,21 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
     {
         parent::__construct($subject, $config);
         $this->loadLanguage();
+
+		$type = filter_input(INPUT_GET, 'type', FILTER_SANITIZE_STRING);
+	    if (!empty($type)) {
+			$second_configuration_type = $this->params->get('type_2', '');
+
+		    if (!empty($second_configuration_type) && $type === $second_configuration_type) {
+			    // it means we should use the configuration n°2
+			    $parameters = ['client_id', 'client_secret', 'scopes', 'auth_url', 'token_url', 'redirect_url', 'sso_account_url', 'emundus_profile', 'email_id', 'logout_url', 'platform_redirect_url', 'attributes', 'debug_mode'];
+
+			    foreach ($parameters as $parameter) {
+				    $this->params->set($parameter, $this->params->get($parameter . '_2'));
+			    }
+		    }
+	    }
+
         $this->scopes = explode(',', $this->params->get('scopes', 'openid'));
         $this->authUrl = $this->params->get('auth_url');
         $this->domain = $this->params->get('domain');
