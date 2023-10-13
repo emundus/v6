@@ -174,17 +174,19 @@ if ($user != null) {
 <div class='dropdown <?php if($first_logged) : ?>userDropdown-tip<?php endif; ?>' tabindex="0" id="userDropdown" style="float: right;">
     <iframe id="background-shapes" src="/modules/mod_emundus_user_dropdown/style/fond-formes-header.svg" alt="<?= JText::_('COM_EMUNDUS_USERDROPDOWN_IFRAME') ?>"></iframe>
     <?php if(!empty($profile_picture)): ?>
-    <div class="em-flex-row em-flex-end em-profile-container" id="userDropdownLabel">
-        <div class="mr-4">
-            <?php if(!empty($user)) : ?>
-                <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0]. '.'; ?></p>
-            <?php endif; ?>
-            <?php if(!empty($profile_label)) : ?>
-                <p class="em-profile-color em-text-italic" title="<?= $profile_label; ?>"><?= $profile_label; ?></p>
-            <?php endif; ?>
-        </div>
-        <div class="em-profile-picture em-pointer em-user-dropdown-button"
-             style="background-image:url('<?php echo $profile_picture ?>');">
+    <div id="userDropdownLabel">
+        <div class="em-flex-row em-flex-end em-profile-container">
+            <div class="mr-4">
+		        <?php if(!empty($user)) : ?>
+                    <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0]. '.'; ?></p>
+		        <?php endif; ?>
+		        <?php if(!empty($profile_label)) : ?>
+                    <p class="em-profile-color em-text-italic" title="<?= $profile_label; ?>"><?= $profile_label; ?></p>
+		        <?php endif; ?>
+            </div>
+            <div class="em-profile-picture em-pointer em-user-dropdown-button"
+                 style="background-image:url('<?php echo $profile_picture ?>');">
+            </div>
         </div>
     </div>
     <?php else : ?>

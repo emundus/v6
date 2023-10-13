@@ -245,6 +245,8 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 
 .em-profile-container {
     padding: 8px;
+    position: relative;
+    width: fit-content;
 }
 #userDropdown:hover .em-profile-container{
     background: var(--neutral-200);
@@ -342,6 +344,12 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 }
 
 .dropdown #userDropdownLabel {
+    min-width: 248px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.dropdown #userDropdownLabel div  {
     cursor: pointer;
     position: relative;
 }
