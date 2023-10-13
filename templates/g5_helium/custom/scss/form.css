@@ -612,11 +612,6 @@
     /** RADIO **/
     .plg-radiobutton {
       .fabrikSubElementContainer {
-        width: fit-content;
-        display: flex;
-        flex-wrap: wrap;
-        flex-direction: column;
-        min-width: 40%;
 
         @media all and (max-width: 767px) {
           width: 100%;
@@ -625,7 +620,6 @@
         .fabrikgrid_radio {
           @apply py-1;
           @apply mb-1;
-          width: 100%;
           @apply items-center;
           @apply ml-0;
           label {
