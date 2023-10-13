@@ -2016,10 +2016,44 @@ button.em-swal-delete-button:hover{
   transform: rotate(0deg);
 }
 
-/* Titre dossier */
+.view-featured .mod_emundus_campaign__list_content--default {
+  position: relative;
+  overflow: hidden;
+
+  #background-shapes {
+    position: absolute;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    top: -19px;
+    right: -367px;
+    pointer-events: none;
+  }
+}
+
+.view-article .mod_emundus_campaign__list_content--default {
+  position: relative;
+  overflow: hidden;
+
+  #background-shapes {
+    position: absolute;
+    z-index: 2;
+    width: 100%;
+    height: 300%;
+    top: -19px;
+    right: -362px;
+    pointer-events: none;
+  }
+}
+
+/* Titres */
 #current .mod_emundus_campaign__list_content h4 {
   color: var(--em-profile-color);
   font-size: var(--em-applicant-h4);
+}
+
+.mod_emundus_campaign__list_content--default h3 {
+  color: var(--em-profile-color);
 }
 
 /* Campagnes clôturées */
@@ -2053,6 +2087,18 @@ button.em-swal-delete-button:hover{
     top: -19px;
     right: -52px;
   }
+
+  .mod_emundus_campaign__list_content--default {
+    #background-shapes {
+      right: -232px;
+    }
+  }
+
+  .view-article .mod_emundus_campaign__list_content--default {
+    #background-shapes {
+      right: -242px;
+    }
+  }
 }
 
 @media screen and (min-width: 1025px) and (max-width: 1079px) {
@@ -2066,6 +2112,18 @@ button.em-swal-delete-button:hover{
   .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content #background-shapes {
     top: -20px;
     right: -51px;
+  }
+
+  .mod_emundus_campaign__list_content--default {
+    #background-shapes {
+      right: -233px;
+    }
+  }
+
+  .view-article .mod_emundus_campaign__list_content--default {
+    #background-shapes {
+      right: -242px;
+    }
   }
 
 }
@@ -2087,6 +2145,19 @@ button.em-swal-delete-button:hover{
     top: -14px;
     right: -110px;
   }
+
+  .mod_emundus_campaign__list_content--default {
+    #background-shapes {
+      right: -233px;
+    }
+  }
+
+  .view-article .mod_emundus_campaign__list_content--default {
+    #background-shapes {
+      right: -242px;
+    }
+  }
+
 }
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
@@ -2094,13 +2165,27 @@ button.em-swal-delete-button:hover{
   /* Peps */
   #current .mod_emundus_campaign__list_content #background-shapes {
     top: -11px;
-    right: -46px;
+    right: -232px;
   }
 
   .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content #background-shapes {
     top: -14px;
     right: -198px;
   }
+
+  .mod_emundus_campaign__list_content--default {
+    #background-shapes {
+      top: -22px;
+      right: -111px;
+    }
+  }
+
+  .view-article .mod_emundus_campaign__list_content--default {
+    #background-shapes {
+      right: -146px;
+    }
+  }
+
 }
 
 @media (max-width: 900px) {
@@ -2231,5 +2316,18 @@ button.em-swal-delete-button:hover{
   .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content #background-shapes {
     top: -14px;
     right: -165px;
+  }
+
+  .mod_emundus_campaign__list_content--default {
+    #background-shapes {
+      top: -21px;
+      right: -79px;
+    }
+  }
+
+  .view-article .mod_emundus_campaign__list_content--default {
+    #background-shapes {
+      right: -87px;
+    }
   }
 }

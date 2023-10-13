@@ -276,6 +276,9 @@ $current_tab = 0;
 	<?php if (sizeof($applications) == 0) : ?>
         <hr>
         <div class="mod_emundus_applications__list_content--default mt-2">
+            <?php if ($mod_em_campaign_display_svg == 1) : ?>
+                <iframe id="background-shapes" src="/modules/mod_emundus_campaign/css/fond-clair.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
+            <?php endif; ?>
             <?php if (!empty($override_default_content)) {
                 echo $override_default_content;
             } else {
@@ -363,7 +366,7 @@ $current_tab = 0;
                                                      id="application_content<?php echo $application->fnum ?>"
                                                      onclick="openFile(event,'<?php echo $first_page_url ?>')">
 											        <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                                                        <iframe id="background-shapes" src="/modules/mod_emundus_campaign/css/fond-clair.svg" alt="Fond formes"></iframe>
+                                                        <iframe id="background-shapes" src="/modules/mod_emundus_campaign/css/fond-clair.svg" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></iframe>
 											        <?php endif; ?>
                                                     <div class="em-w-100">
                                                         <div class="em-flex-row em-flex-space-between em-mb-12">
@@ -589,6 +592,9 @@ $current_tab = 0;
 	<?php if (sizeof($applications) == 0) : ?>
         <hr>
         <div class="mod_emundus_applications__list_content--default">
+            <?php if ($mod_em_campaign_display_svg == 1) : ?>
+                <iframe id="background-shapes" src="/modules/mod_emundus_campaign/css/fond-clair.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
+            <?php endif; ?>
             <?php if (!empty($override_default_content)) {
                 echo $override_default_content;
             } else {

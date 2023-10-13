@@ -763,13 +763,30 @@ circle.circle {
     transform: rotate(0deg);
 }
 
-/* Trois points d'options */
+.view-featured .mod_emundus_applications__list_content--default {
+    position: relative;
+    overflow: hidden;
+
+    #background-shapes {
+        position: absolute;
+        z-index: 2;
+        width: 100%;
+        height: 300%;
+        top: -29px;
+        right: -239px;
+        pointer-events: none;
+    }
+}
 
 
-/* Titre dossier */
+/* Titres */
 .mod_emundus_applications___content_app .em-w-100 .mod_emundus_applications___title h5 {
     color: var(--em-profile-color);
     font-size: var(--em-applicant-h4);
+}
+
+.view-featured .mod_emundus_applications__list_content--default .em-applicant-text-color {
+    color: var(--neutral-600);
 }
 
 /* Num dossier */
@@ -807,6 +824,12 @@ circle.circle {
     .mod_emundus_applications___content_app #background-shapes {
         right: -28px;
     }
+
+    .view-featured .mod_emundus_applications__list_content--default {
+        #background-shapes {
+            right: -119px;
+        }
+    }
 }
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
@@ -823,6 +846,13 @@ circle.circle {
     .mod_emundus_applications___content_app #background-shapes {
         top: -38px;
         right: -13px;
+    }
+
+    .view-featured .mod_emundus_applications__list_content--default {
+        #background-shapes {
+            top: -61px;
+            right: -27px;
+        }
     }
 }
 
@@ -890,5 +920,12 @@ circle.circle {
     .mod_emundus_applications___content_app #background-shapes {
         top: -17px;
         right: -149px;
+    }
+
+    .view-featured .mod_emundus_applications__list_content--default {
+        #background-shapes {
+            top: -77px;
+            right: -25px;
+        }
     }
 }
