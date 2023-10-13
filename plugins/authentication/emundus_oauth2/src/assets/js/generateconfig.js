@@ -3,14 +3,8 @@ document.addEventListener('click', function(event) {
         event.stopPropagation();
         event.preventDefault();
 
-        const activeTab = document.querySelector('.tab-pane.active');
-
-        let wellKnownURL = '';
-        if (activeTab.id == 'general') {
-            wellKnownURL = document.querySelector('#jform_params_well_known_url').value;
-        } else {
-            wellKnownURL = document.querySelector('#jform_params_well_known_url_2').value;
-        }
+        //const activeTab = document.querySelector('.tab-pane.active');
+        let wellKnownURL = document.querySelector('#jform_params_well_known_url').value;
 
         if (wellKnownURL == '') {
             alert('Please enter a well-known URL.');
