@@ -354,13 +354,23 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     z-index: 1;
 }
 
-#userDropdown #background-shapes {
+/* Gestionnaire plateforme et programme */
+.moduletable .dropdown #background-shapes {
     position: absolute;
     height: 100%;
     width: 100%;
     top: 0px;
-    right: 63px;
-    transform: scale(2);
+    right: 13px;
+    transform: scale(1.2);
+    pointer-events: none;
+}
+
+/* Déconnecté */
+.moduletable > #background-shapes {
+    position: absolute;
+    height: 100%;
+    top: -4px;
+    right: 0px;
     pointer-events: none;
 }
 
