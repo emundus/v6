@@ -1979,7 +1979,15 @@ button.em-swal-delete-button:hover{
 }
 
 .mod_emundus_campaign__pinned_campaign #tile-hover-offset-procedure {
-  transform: rotate(3deg);
+  transform: rotate(3deg); /* rotation de base des cards longues */
+}
+
+#current .hover-and-tile-container:hover > #tile-hover-offset-procedure {
+  transform: rotate(7deg); /* rotation cards normales */
+}
+
+.mod_emundus_campaign__pinned_campaign .hover-and-tile-container:hover > #tile-hover-offset-procedure {
+  transform: rotate(4deg); /* rotation cards épinglées (longues) */
 }
 
 /* Tuile */
@@ -2009,11 +2017,6 @@ button.em-swal-delete-button:hover{
   top: -19px;
   right: -124px;
   pointer-events: none;
-}
-
-#current .hover-and-tile-container:hover > #tile-hover-offset-procedure,
-.mod_emundus_campaign__pinned_campaign .hover-and-tile-container:hover > #tile-hover-offset-procedure {
-  transform: rotate(0deg);
 }
 
 .view-featured .mod_emundus_campaign__list_content--default {

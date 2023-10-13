@@ -760,7 +760,7 @@ circle.circle {
 }
 
 .hover-and-tile-container:hover > #tile-hover-offset-request {
-    transform: rotate(0deg);
+    transform: rotate(6deg);
 }
 
 .view-featured .mod_emundus_applications__list_content--default {
