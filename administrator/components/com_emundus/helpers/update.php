@@ -1749,7 +1749,7 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addFabrikForm($datas,$params = [], $published = 1) {
+    public static function addFabrikForm($datas,$params = [], $published = 1, $user = null) {
         $result = ['status' => false, 'message' => '', 'id' => 0];
 
         if(empty($datas['label'])){
@@ -1782,8 +1782,8 @@ class EmundusHelperUpdate
                     'error' => $datas['error'] ?: 'FORM_ERROR',
                     'intro' => $datas['intro'] ?: '',
                     'created' => date('Y-m-d H:i:s'),
-                    'created_by' => 62,
-                    'created_by_alias' => 'admin',
+                    'created_by' => !empty($user) ? $user->id : 62,
+                    'created_by_alias' => !empty($user) ? $user->username : 'admin',
                     'modified' => date('Y-m-d H:i:s'),
                     'modified_by' => 0,
                     'checked_out' => 0,
@@ -1793,8 +1793,8 @@ class EmundusHelperUpdate
                     'publish_down' => '2099-01-01 00:00:00',
                     'reset_button_label' => $datas['reset_button_label'] ?: 'RESET',
                     'submit_button_label' => $datas['submit_button_label'] ?: 'SAVE_CONTINUE',
-                    'form_template' => $datas['form_template'] ?: 'bootstrap',
-                    'view_only_template' => $datas['view_only_template'] ?: 'bootstrap',
+                    'form_template' => $datas['form_template'] ?: 'emundus',
+                    'view_only_template' => $datas['view_only_template'] ?: 'emundus',
                     'params' => json_encode($params),
                 ];
 
@@ -1818,7 +1818,7 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addFabrikList($datas,$params = [], $published = 1) {
+    public static function addFabrikList($datas,$params = [], $published = 1, $user = null) {
         $result = ['status' => false, 'message' => '', 'id' => 0];
 
         if(empty($datas['label'])){
@@ -1863,8 +1863,8 @@ class EmundusHelperUpdate
                     'auto_inc' => $datas['auto_inc'] ?: 1,
                     'connection_id' => $datas['connection_id'] ?: 1,
                     'created' => date('Y-m-d H:i:s'),
-                    'created_by' => 62,
-                    'created_by_alias' => 'admin',
+                    'created_by' => !empty($user) ? $user->id : 62,
+                    'created_by_alias' => !empty($user) ? $user->username : 'admin',
                     'modified' => date('Y-m-d H:i:s'),
                     'modified_by' => 0,
                     'checked_out' => 0,
@@ -1903,7 +1903,7 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addFabrikGroup($datas,$params = [], $published = 1, $no_label = false) {
+    public static function addFabrikGroup($datas,$params = [], $published = 1, $no_label = false, $user = null) {
         $result = ['status' => false, 'message' => '', 'id' => 0];
 
         if(empty($datas['name'])){
@@ -1940,8 +1940,8 @@ class EmundusHelperUpdate
                     'css' => $datas['css'] ?: '',
                     'label' => $datas['label'],
                     'created' => date('Y-m-d H:i:s'),
-                    'created_by' => 62,
-                    'created_by_alias' => 'admin',
+                    'created_by' => !empty($user) ? $user->id : 62,
+                    'created_by_alias' => !empty($user) ? $user->username : 'admin',
                     'modified' => date('Y-m-d H:i:s'),
                     'modified_by' => 0,
                     'checked_out' => 0,
@@ -2157,7 +2157,7 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addFabrikElement($datas,$params = []) {
+    public static function addFabrikElement($datas,$params = [],$user = null) {
         $result = ['status' => false, 'message' => ''];
 
         if(empty($datas['name'])){
@@ -2211,10 +2211,10 @@ class EmundusHelperUpdate
                     'checked_out' => 0,
                     'checked_out_time' => date('Y-m-d H:i:s'),
                     'created' => date('Y-m-d H:i:s'),
-                    'created_by' => 62,
-                    'created_by_alias' => 'sysadmin',
+                    'created_by' => !empty($user) ? $user->id : 62,
+                    'created_by_alias' => !empty($user) ? $user->username : 'admin',
                     'modified' => date('Y-m-d H:i:s'),
-                    'modified_by' => 62,
+                    'modified_by' => 0,
                     'width' => $datas['width'] ?: 30,
                     'height' => $datas['height'] ?: 6,
                     'default' => $datas['default'] ?: '',

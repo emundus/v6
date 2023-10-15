@@ -456,44 +456,64 @@ export default {
       else {
         if(action.action === 'creategallery') {
           campaignsService.getAllCampaigns('Publish').then((response) => {
-            let campaigns = response.data.datas;
+            if(typeof response.data.datas != 'undefined') {
+              let campaigns = response.data.datas;
 
-            let options_html = '<option value=""></option>';
-            campaigns.forEach((campaign) => {
-              options_html += '<option value="' + campaign.id + '">' + campaign.label.fr + '</option>';
-            });
+              let options_html = '<option value=""></option>';
+              campaigns.forEach((campaign) => {
+                options_html += '<option value="' + campaign.id + '">' + campaign.label.fr + '</option>';
+              });
 
-            Swal.fire({
-              title: this.translate('COM_EMUNDUS_ONBOARD_ADD_GALLERY'),
-              text: 'Créer',
-              html:
-                  '<div class="mb-4"><label>'+this.translate('COM_EMUNDUS_ONBOARD_GALLERY_NAME')+' <span class="em-red-500-color">*</span></label><input id="gallery_name" class="form-control fabrikinput w-full"></div>' +
-                  '<div class="mb-4"><label>'+this.translate('COM_EMUNDUS_CAMPAIGN')+' <span class="em-red-500-color">*</span></label><select id="gallery_campaign" class="form-control fabrikinput w-full">'+options_html+'</select></div>',
-              focusConfirm: false,
-              preConfirm: () => {
-                if (!document.getElementById('gallery_name').value || !document.getElementById('gallery_campaign').value) {Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_USERS_ERROR_PLEASE_COMPLETE'))}
-                return [
-                  document.getElementById('gallery_name').value,
-                  document.getElementById('gallery_campaign').value
-                ]
-              },
-              showCancelButton: true,
-              confirmButtonText: this.translate('COM_EMUNDUS_ACCESS_CREATE'),
-              cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
-              reverseButtons: true,
-              customClass: {
-                title: 'em-swal-title',
-                confirmButton: 'em-swal-confirm-button',
-                cancelButton: 'em-swal-cancel-button',
-                actions: 'em-swal-double-action'
-              }
-            }).then((result) => {
-              if (result.value) {
-                let url = 'index.php?option=com_emundus&controller=' + action.controller + '&task=' + action.action + '&gallery_name=' + result.value[0] + '&campaign_id=' + result.value[1];
+              Swal.fire({
+                title: this.translate('COM_EMUNDUS_ONBOARD_ADD_GALLERY'),
+                text: 'Créer',
+                html:
+                    '<div class="mb-4"><label>' + this.translate('COM_EMUNDUS_ONBOARD_GALLERY_NAME') + ' <span class="em-red-500-color">*</span></label><input id="gallery_name" class="form-control fabrikinput w-full"></div>' +
+                    '<div class="mb-4"><label>' + this.translate('COM_EMUNDUS_CAMPAIGN') + ' <span class="em-red-500-color">*</span></label><select id="gallery_campaign" class="form-control fabrikinput w-full">' + options_html + '</select></div>',
+                focusConfirm: false,
+                preConfirm: () => {
+                  if (!document.getElementById('gallery_name').value || !document.getElementById('gallery_campaign').value) {
+                    Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_USERS_ERROR_PLEASE_COMPLETE'))
+                  }
+                  return [
+                    document.getElementById('gallery_name').value,
+                    document.getElementById('gallery_campaign').value
+                  ]
+                },
+                showCancelButton: true,
+                confirmButtonText: this.translate('COM_EMUNDUS_ACCESS_CREATE'),
+                cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
+                reverseButtons: true,
+                customClass: {
+                  title: 'em-swal-title',
+                  confirmButton: 'em-swal-confirm-button',
+                  cancelButton: 'em-swal-cancel-button',
+                  actions: 'em-swal-double-action'
+                }
+              }).then((result) => {
+                if (result.value) {
+                  let url = 'index.php?option=com_emundus&controller=' + action.controller + '&task=' + action.action + '&gallery_name=' + result.value[0] + '&campaign_id=' + result.value[1];
 
-                this.executeAction(url);
-              }
-            });
+                  this.executeAction(url);
+                }
+              });
+            } else {
+              Swal.fire({
+                type: 'warning',
+                title: this.translate('COM_EMUNDUS_ONBOARD_GALLERY_NO_CAMPAIGNS'),
+                text: this.translate('COM_EMUNDUS_ONBOARD_GALLERY_NO_CAMPAIGNS_MESSAGE'),
+                showCancelButton: false,
+                showConfirmButton: false,
+                reverseButtons: true,
+                timer: 4000,
+                customClass: {
+                  title: 'em-swal-title',
+                  confirmButton: 'em-swal-confirm-button',
+                  cancelButton: 'em-swal-cancel-button',
+                  actions: 'em-swal-double-action'
+                }
+              });
+            }
           })
         }
         else {
