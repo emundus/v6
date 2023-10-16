@@ -637,6 +637,7 @@ function export_zip(fnums){
             actions: swal_actions_class
         },
     });
+    document.querySelector('.em-swal-confirm-button').style.opacity = '0';
 
     var url = 'index.php?option=com_emundus&controller=files&task=zip&Itemid='+itemId;
     $.ajax({
