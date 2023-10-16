@@ -137,7 +137,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             <div class="hover-and-tile-container">
 
                 <?php if ($mod_em_campaign_display_hover_offset == 1) : ?>
-                    <div id="tile-hover-offset-procedure"></div>
+                    <div id="tile-hover-offset-procedure" class="tile-hover-offset-procedure--pinned-and-closed"></div>
                 <?php endif; ?>
 
             <?php if(strtotime($now) > strtotime($campaign_pinned->end_date)) :  ?>

@@ -1978,6 +1978,11 @@ button.em-swal-delete-button:hover{
   transition: transform .3s;
 }
 
+/* Peps */
+.hover-and-tile-container .tile-hover-offset-procedure--pinned-and-closed {
+  background: var(--neutral-500) !important;
+}
+
 .mod_emundus_campaign__pinned_campaign #tile-hover-offset-procedure {
   transform: rotate(3deg); /* rotation de base des cards longues */
 }
