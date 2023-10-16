@@ -245,8 +245,6 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 
 .em-profile-container {
     padding: 8px;
-    position: relative;
-    width: fit-content;
 }
 #userDropdown:hover .em-profile-container{
     background: var(--neutral-200);
