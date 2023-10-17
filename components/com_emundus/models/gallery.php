@@ -127,7 +127,26 @@ class EmundusModelGallery extends JModelList
 						->columns($columns)
 						->values(implode(',', $values));
 					$this->_db->setQuery($query);
-					$this->_db->execute();
+					if($this->_db->execute()) {
+						$gallery_id = $this->_db->insertid();
+
+						$columns = array(
+							$this->_db->quoteName('parent_id'),
+							$this->_db->quoteName('title'),
+						);
+
+						$values = array(
+							$this->_db->quote($gallery_id),
+							$this->_db->quote('Détails du projet'),
+						);
+
+						$query->clear()
+							->insert($this->_db->quoteName('#__emundus_setup_gallery_detail_tabs'))
+							->columns($columns)
+							->values(implode(',', $values));
+						$this->_db->setQuery($query);
+						$this->_db->execute();
+					}
 				}
 			}
 		}
@@ -144,7 +163,8 @@ class EmundusModelGallery extends JModelList
 
 		try {
             $datas = array(
-                'label' => $label
+                'label' => $label,
+	            'view_only_template' => 'emundus_vote'
             );
             $form_id = EmundusHelperUpdate::addFabrikForm($datas,[],1,$user)['id'];
 
@@ -196,11 +216,24 @@ class EmundusModelGallery extends JModelList
                         $datas = array(
                             'label' => $label,
                             'form_id' => $form_id,
-                            'db_table_name' => 'jos_emundus_gallery'
+                            'db_table_name' => 'jos_emundus_gallery',
+	                        'order_dir' => '["ASC"]',
+	                        'template' => 'emundus_vote',
+	                        'rows_per_page' => 100
                         );
                         $params = array(
                             'group_by_access' => 10,
                             'menu_access_only' => 1,
+	                        'show-table-add' => 0,
+	                        'show-table-nav' => 0,
+	                        'show_displaynum' => 0,
+	                        'csv_import_frontend' => 10,
+	                        'csv_export_frontend' => 10,
+	                        'allow_edit_details' => 10,
+	                        'allow_add' => 10,
+	                        'allow_delete' => 10,
+	                        'allow_drop' => 10,
+	                        'isview' => 1
                         );
                         $list_id = EmundusHelperUpdate::addFabrikList($datas,$params,1,$user)['id'];
 
@@ -214,7 +247,6 @@ class EmundusModelGallery extends JModelList
                             $this->_db->setQuery($query);
                             $this->_db->execute();
 
-                            //TODO: Create public menu linked to this list
 	                        $params = [
 		                        'menutype' => 'topmenu',
 		                        'title' => $label,
@@ -266,4 +298,6 @@ class EmundusModelGallery extends JModelList
 	}
 
     //TODO: Create function to select an element to display (need to manage table join if needed)
+
+	//TODO: Create function to add prefilter to a fabrik list on status
 }
