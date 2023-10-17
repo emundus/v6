@@ -641,7 +641,7 @@ input:focus + .em-slider {
 }
 
 .em-grid-3-2-1{
-  display: grid;
+  display: grid !important;
   grid-gap: 12px;
   grid-template-columns:
     repeat(auto-fill,

@@ -3302,6 +3302,36 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 				];
 				$setup_gallery = EmundusHelperUpdate::createTable('jos_emundus_setup_gallery', $columns, $foreign_keys, 'Configuration des galeries de dossiers');
 
+				$columns      = [
+					[
+						'name'    => 'parent_id',
+						'type'    => 'int',
+						'null'    => 0
+					],
+					[
+						'name'    => 'title',
+						'type'    => 'varchar',
+						'length'  => 255,
+						'null'    => 0,
+					],
+					[
+						'name'    => 'fields',
+						'type'    => 'text',
+						'null'    => 1,
+					],
+				];
+				$foreign_keys = [
+					[
+						'name'           => 'jos_emundus_setup_gallery_fk_parent_id',
+						'from_column'    => 'parent_id',
+						'ref_table'      => 'jos_emundus_setup_gallery',
+						'ref_column'     => 'id',
+						'update_cascade' => true,
+						'delete_cascade' => true,
+					]
+				];
+				$setup_gallery_tabs = EmundusHelperUpdate::createTable('jos_emundus_setup_gallery_detail_tabs', $columns, $foreign_keys, 'Onglets de la vue détails du catalogue');
+
 				$query = $db->getQuery(true);
 
 				$query->select($db->quoteName('value'))
@@ -3380,6 +3410,9 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 						$db->execute();
 					}
 				}
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTING_GO_DETAILS', 'Ce projet m\'intéresse');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTING_GO_DETAILS', 'This project interests me', 'override', null, null, null, 'en-GB');
 
 			}
 		}

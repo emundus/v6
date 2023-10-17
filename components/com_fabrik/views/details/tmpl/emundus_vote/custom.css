@@ -1,0 +1,81 @@
+.row-striped .row-fluid:nth-child(odd) {
+    background-color: #FAFAFB !important;
+    border-radius: 6px !important;
+}
+.form-horizontal .control-label.fabrikLabel{
+    text-align: left;
+}
+
+/* DATAS */
+.view-details .fabrikDetails div.tags ul.fabrikRepeatData{
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    list-style-type: none;
+}
+.view-details .fabrikDetails div.tags ul.fabrikRepeatData li{
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 14px;
+    background: #F0F0F0;
+}
+
+.view-details .fabrikDetails .details-tabs {
+    border-radius: 4px;
+}
+
+.view-details .fabrikDetails .details-tabs p {
+    padding: 14px 28px;
+    color: var(--em-primary-color);
+    border-top: 1px solid #2E404F;
+    border-bottom: 1px solid #2E404F;
+    border-left: 1px solid #2E404F;
+    cursor: pointer;
+}
+
+.view-details .fabrikDetails .details-tabs p.active {
+    background: #2E404F;
+    color: white;
+    font-weight: 600;
+}
+
+.view-details .fabrikDetails .details-tabs p:nth-child(1) {
+    border-radius: 4px 0 0 4px;
+}
+
+.view-details .fabrikDetails .details-tabs p:last-child {
+    border-radius: 0 4px 4px 0;
+    border-right: 1px solid #2E404F;
+}
+
+.voting-pop {
+    position: absolute;
+    top: 25vh;
+    right: 5vw;
+    width: 300px;
+}
+
+.voting-pop .voting-details-block {
+    border-radius: calc(var(--em-form-br-block)/2);
+    background: #F0F0F0;
+}
+
+/** Image field as background */
+.fabrikImageBackground{
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 170px;
+    position: relative;
+    width: 100vw;
+    left: -60px;
+    margin-top: -40px;
+}
+.fabrikImageBackgroundLogo{
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 250px;
+    width: 250px;
+    border-radius: calc(var(--em-form-br-block)/4);
+}
