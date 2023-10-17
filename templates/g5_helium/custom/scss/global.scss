@@ -1481,6 +1481,10 @@ footer#g-footer > .g-container {
   margin-bottom: 8px;
 }
 
+.page-intro * {
+  width: 80%;
+}
+
 .gantry.view-list .dropdown-menu > li > a:hover,
 .gantry.view-list .dropdown-menu > li > a:focus,
 .gantry.view-list .dropdown-submenu:hover > a,
@@ -5075,10 +5079,6 @@ screen and (max-height: 769px) {
   button.save {
     margin-left: 20px !important;
   }
-
-  .gantry:not(.files-board)  #g-container-main {
-    padding: 0 !important;
-  }
 }
 
 
@@ -5302,6 +5302,9 @@ screen and (max-height: 769px) {
 @media all and (max-width: 1024px) {
   #g-container-main {
     padding: 20px 20px 20px 20px;
+  }
+  .gantry.view-form:not(.applicant-form) #g-container-main {
+    padding-right: 0;
   }
 }
 

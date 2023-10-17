@@ -2100,12 +2100,13 @@ class EmundusModelUsers extends JModelList {
 	/** This function returns the groups which are linked to the fnum's program OR NO PROGRAM AT ALL.
 	 * @param $group_ids array
 	 * @param $fnum string
+	 * @param $strict bool if true, only the groups linked to the fnum's program are returned
 	 *
 	 * @return bool|mixed
 	 *
 	 * @since version
 	 */
-	public function getEffectiveGroupsForFnum($group_ids, $fnum) {
+	public function getEffectiveGroupsForFnum($group_ids, $fnum, $strict = false) {
 
 		$db = $this->getDbo();
 		$query = $db->getQuery(true);
@@ -2117,6 +2118,12 @@ class EmundusModelUsers extends JModelList {
 			->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'sc').' ON '.$db->quoteName('sp.code').' = '.$db->quoteName('sc.training'))
 			->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'cc').' ON '.$db->quoteName('cc.campaign_id').' = '.$db->quoteName('sc.id'))
 			->where($db->quoteName('sg.id').' IN ('.implode(',', $group_ids).') AND ('.$db->quoteName('cc.fnum').' LIKE '.$db->quote($fnum).' OR '.$db->quoteName('sp.code').' IS NULL)');
+
+		if ($strict) {
+			$query->where($db->quoteName('sg.id').' IN ('.implode(',', $group_ids).') AND ('.$db->quoteName('cc.fnum').' LIKE '.$db->quote($fnum));
+		} else {
+			$query->where($db->quoteName('sg.id').' IN ('.implode(',', $group_ids).') AND ('.$db->quoteName('cc.fnum').' LIKE '.$db->quote($fnum).' OR '.$db->quoteName('sp.code').' IS NULL)');
+		}
 
 		$db->setQuery($query);
 		try {

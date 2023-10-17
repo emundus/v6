@@ -122,6 +122,7 @@ class PlgFabrik_FormEmundusReferentLetterHopitauxParis extends plgFabrik_Form
         jimport('joomla.log.log');
         JLog::addLogger(['text_file' => 'com_emundus.filerequest.php'], JLog::ALL, ['com_emundus']);
 
+        include_once (JPATH_BASE.'/components/com_emundus/models/application.php');
         include_once (JPATH_BASE.'/components/com_emundus/models/files.php');
         include_once (JPATH_BASE.'/components/com_emundus/models/emails.php');
         include_once (JPATH_BASE.'/components/com_emundus/models/profile.php');
@@ -260,7 +261,14 @@ class PlgFabrik_FormEmundusReferentLetterHopitauxParis extends plgFabrik_Form
                 // Here we call the profile by campaign function, which will get the profile of the campaign's initial phase
                 $profile_id = $m_profile->getProfileByCampaign($campaign_id)['profile_id'];
 
-                application_form_pdf($student->id, $current_user->fnum, true, 1, $formid, null, null, $profile_id);
+                $file_path = application_form_pdf($student->id, $current_user->fnum, false, 1, $formid, null, null, $profile_id);
+
+                $filename = basename($file_path);
+                $keys = array('user_id', 'attachment_id', 'filename', 'description', 'can_be_deleted', 'can_be_viewed', 'campaign_id', 'fnum');
+                $values = array($student->id, 26, $filename, $fnum_detail['training'] . ' ' . date('Y-m-d H:i:s'), 0, 1, $campaign_id, $current_user->fnum);
+                $data = array('key' => $keys, 'value' => $values);
+                $m_application = new EmundusModelApplication();
+                $m_application->uploadAttachment($data);
 
                 $query_pdf = 'SELECT filename
 				FROM #__emundus_uploads
@@ -361,7 +369,7 @@ class PlgFabrik_FormEmundusReferentLetterHopitauxParis extends plgFabrik_Form
                         } else {
 
                             JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_SENT').' : '.$recipient['email'], 'message');
-                            $response = JText::_('SENT_TO'). ' '.$recipient['email'].'<br><a href="index.php?option=com_fabrik&view=details&formid=264&rowid='.$request_id.'&listid=273" target="_blank">'.JText::_('INVITATION_LINK').'</a><br>'.$body;
+                            $response = JText::_('SENT_TO'). ' '.$recipient['email'].'<br><a href="index.php?option=com_fabrik&view=details&formid=733&rowid='.$request_id.'&listid=737" target="_blank">'.JText::_('INVITATION_LINK').'</a><br>'.$body;
 
                             $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
 								VALUES ('62', '-1', ".$db->quote($subject).", ".$db->quote($response).", ".$db->quote($now).")";
@@ -379,6 +387,7 @@ class PlgFabrik_FormEmundusReferentLetterHopitauxParis extends plgFabrik_Form
                 }
             }
         }
+        $app->redirect(JURI::base() . 'index.php');
         return true;
     }
 

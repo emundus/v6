@@ -30,6 +30,9 @@ div.mod-languages a{
     padding: 0;
     align-items: baseline;
     color: black;
+    padding: 0.625rem 0.75rem;
+    text-decoration: none;
+    display: inline-flex;
 }
 
 div.mod-languages form[name="lang"]{
@@ -95,7 +98,6 @@ div.advanced-dropdown span.caret{
 }
 
 .mod_falang_emundus___other_languages span{
-    padding: 0.625rem 0.75rem;
     width: 100%;
     color: #727272;
     cursor: pointer;

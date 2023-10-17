@@ -191,7 +191,7 @@ class EmundusModelEmails extends JModelList {
 
                     if (isset($tmpl['to']['profile'])) {
                         if (count($tmpl['to']['profile']) > 0) {
-                            $where = ' eu.profile IN ('.implode(',', $tmpl['to']['profile']).')';
+                            $where = ' (eu.profile IN ('.implode(',', $tmpl['to']['profile']).') OR eup.profile_id IN ('.implode(',', $tmpl['to']['profile']).'))';
                             $as_where = true;
                         }
                     }
@@ -213,10 +213,11 @@ class EmundusModelEmails extends JModelList {
                     }
 
                     if ($as_where) {
-                        $query = 'SELECT u.id, u.name, u.email, eu.university_id
+                        $query = 'SELECT DISTINCT u.id, u.name, u.email, eu.university_id
                                     FROM #__users as u
                                     LEFT JOIN #__emundus_users as eu on eu.user_id=u.id
                                     LEFT JOIN #__emundus_groups as eg on eg.user_id=u.id
+                                    LEFT JOIN #__emundus_users_profiles as eup on eup.user_id=eu.user_id
                                     WHERE '.$where.'
                                     GROUP BY u.id';
                         $this->_db->setQuery( $query );
@@ -287,12 +288,18 @@ class EmundusModelEmails extends JModelList {
                 'COURSE_NAME' => $campaign['label']
             );
 
+            require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
             require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
+            $h_access = new EmundusHelperAccess();
             $h_emails = new EmundusHelperEmails();
 
             foreach ($trigger_emails as $trigger_email_id => $trigger_email) {
 
                 foreach ($trigger_email[$student->code]['to']['recipients'] as $recipient) {
+                    // Check if the user has access to the file
+                    if ($h_access->asPartnerAccessLevel($recipient['id']) && !$h_access->isUserAllowedToAccessFnum($recipient['id'],$student->fnum)) {
+                        continue;
+                    }
                     if (!$h_emails->assertCanSendMailToUser($recipient['id'])) {
                         continue;
                     }

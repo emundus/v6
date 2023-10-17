@@ -1403,10 +1403,9 @@ class EmundusModelForm extends JModelList {
         $query->select(array(' DISTINCT a.*', 'b.mandatory'))
             ->from($db->quoteName('#__emundus_setup_attachments','a'))
             ->leftJoin($db->quoteName('#__emundus_setup_attachment_profiles', 'b') . ' ON ' . $db->quoteName('b.attachment_id') . ' = ' . $db->quoteName('a.id'))
-            ->where($db->quoteName('a.published') . ' = ' . $db->quote(1))
+            ->where($db->quoteName('a.published') . ' = 1')
+            ->group($db->quoteName('a.id'))
             ->order($db->quoteName('a.value'));
-
-        $db->setQuery($query);
 
         try {
             $db->setQuery($query);
