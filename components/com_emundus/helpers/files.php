@@ -2340,96 +2340,111 @@ class EmundusHelperFiles
     }
 
     // getEvaluation
-    public static function getEvaluation($format='html', $fnums = []) {
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+	public static function getEvaluation($format = 'html', $fnums = [])
+	{
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
 
-        $eMConfig = JComponentHelper::getParams('com_emundus');
-        $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
+		$eMConfig          = JComponentHelper::getParams('com_emundus');
+		$show_empty_fields = $eMConfig->get('show_empty_fields', 1);
 
-        $m_evaluation   = new EmundusModelEvaluation();
-        $m_files        = new EmundusModelFiles;
-        $h_files        = new EmundusHelperFiles;
+		$m_evaluation = new EmundusModelEvaluation();
+		$m_files      = new EmundusModelFiles;
+		$h_files      = new EmundusHelperFiles;
 
-        if (!is_array($fnums)) {
-            $fnumInfo = $m_files->getFnumInfos($fnums);
-            $fnums = array($fnums);
-        } else {
-            $fnumInfo = $m_files->getFnumInfos($fnums[0]);
-        }
+		if (!is_array($fnums))
+		{
+			$fnumInfo = $m_files->getFnumInfos($fnums);
+			$fnums    = array($fnums);
+		}
+		else
+		{
+			$fnumInfo = $m_files->getFnumInfos($fnums[0]);
+		}
 
-        $element_id = $m_evaluation->getAllEvaluationElements(1, $fnumInfo['training']);
-        $elements = $h_files->getElementsName(implode(',',$element_id));
-        $evaluations = $m_files->getFnumArray($fnums, $elements,0,0,0,1);
+		$element_id  = $m_evaluation->getAllEvaluationElements(1, $fnumInfo['training']);
+		$elements    = $h_files->getElementsName(implode(',', $element_id));
+		$evaluations = $m_files->getFnumArray($fnums, $elements, 0, 0, 0, 0);
 
-        $data = array();
-        foreach ($evaluations as $eval) {
+		$data = array();
+		foreach ($evaluations as $eval)
+		{
 
-            if ($eval['jos_emundus_evaluations___user'] > 0 && ($eval['jos_emundus_evaluations___user'] == JFactory::getUser()->id || EmundusHelperAccess::asAccessAction(5,'r'))) {
-                $str = '<br><hr>';
-                $str .= '<p><em style="font-size: 14px">'.JText::_('COM_EMUNDUS_EVALUATION_EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.$fnumInfo['name'].'</em></p>';
-                $str .= '<h2>'.JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR').': '.JFactory::getUser($eval['jos_emundus_evaluations___user'])->name.'</h2>';
-                $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
+			$str = '<br><hr>';
+			$str .= '<p><em style="font-size: 14px">' . JText::_('COM_EMUNDUS_EVALUATION_EVALUATED_ON') . ' : ' . JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')) . ' - ' . $fnumInfo['name'] . '</em></p>';
+			$str .= '<h2>' . JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR') . ': ' . JFactory::getUser($eval['jos_emundus_evaluations___user'])->name . '</h2>';
+			$str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
 
-                foreach ($elements as $element) {
-                    if($element->table_join == null){
-                        $k = $element->tab_name.'___'.$element->element_name;
-                    }
-                    else{
-                        $k = $element->table_join.'___'.$element->element_name;
-                    }
+			foreach ($elements as $element)
+			{
+				if ($element->table_join == null)
+				{
+					$k = $element->tab_name . '___' . $element->element_name;
+				}
+				else
+				{
+					$k = $element->table_join . '___' . $element->element_name;
+				}
 
-                    if ($element->element_name != 'id' &&
-                        $element->element_name != 'time_date' &&
-                        $element->element_name != 'campaign_id' &&
-                        $element->element_name != 'student_id'&&
-                        $element->element_name != 'user' &&
-                        $element->element_name != 'fnum' &&
-                        $element->element_name != 'email' &&
-                        $element->element_name != 'label' &&
-                        $element->element_name != 'code' &&
-                        $element->element_name != 'spacer' &&
-                        $element->element_name != 'parent_id' &&
-                        $element->element_hidden == 0 &&
-                        array_key_exists($k, $eval))
-                    {
-                        if($show_empty_fields == 0 && empty($eval[$k])) {
-                            $str .= '';
-                        } else {
-                            $str .= '<tr>';
-                            if (strpos($element->element_name, 'comment') !== false) {
-                                $str .= '<td colspan="2"><b>'.JText::_(trim($element->element_label)).'</b> <br>'.JText::_($eval[$k]).'</td>';
-                            } else {
-                                $str .= '<td width="30%"><b>'.JText::_(trim($element->element_label)).'</b> </td><td width="70%">'.JText::_($eval[$k]).'</td>';
-                            }
-                            $str .= '</tr>';
-                        }
-                    }
-                }
+				if ($element->element_name != 'id' &&
+					$element->element_name != 'time_date' &&
+					$element->element_name != 'campaign_id' &&
+					$element->element_name != 'student_id' &&
+					$element->element_name != 'user' &&
+					$element->element_name != 'fnum' &&
+					$element->element_name != 'email' &&
+					$element->element_name != 'label' &&
+					$element->element_name != 'code' &&
+					$element->element_name != 'spacer' &&
+					$element->element_name != 'parent_id' &&
+					$element->element_hidden == 0 &&
+					array_key_exists($k, $eval))
+				{
+					if ($show_empty_fields == 0 && empty($eval[$k]))
+					{
+						$str .= '';
+					}
+					else
+					{
+						$str .= '<tr>';
+						if (strpos($element->element_name, 'comment') !== false)
+						{
+							$str .= '<td colspan="2"><b>' . JText::_(trim($element->element_label)) . '</b> <br>' . JText::_($eval[$k]) . '</td>';
+						}
+						else
+						{
+							$str .= '<td width="30%"><b>' . JText::_(trim($element->element_label)) . '</b> </td><td width="70%">' . JText::_($eval[$k]) . '</td>';
+						}
+						$str .= '</tr>';
+					}
+				}
+			}
 
-                $str .= '</table>';
-                $str .= '<p></p><hr>';
+			$str .= '</table>';
+			$str .= '<p></p><hr>';
 
-                if ($format != 'html') {
-                    $str = str_replace('<br>', chr(10), $str);
-                    $str = str_replace('<br />', chr(10), $str);
-                    $str = str_replace('<h1>', '* ', $str);
-                    $str = str_replace('</h1>', ' : ', $str);
-                    $str = str_replace('<b>', chr(10), $str);
-                    $str = str_replace('</b>', ' : ', $str);
-                    $str = str_replace('&nbsp;', ' ', $str);
-                    $str = strip_tags($str, '<h1>');
-                }
+			if ($format != 'html')
+			{
+				$str = str_replace('<br>', chr(10), $str);
+				$str = str_replace('<br />', chr(10), $str);
+				$str = str_replace('<h1>', '* ', $str);
+				$str = str_replace('</h1>', ' : ', $str);
+				$str = str_replace('<b>', chr(10), $str);
+				$str = str_replace('</b>', ' : ', $str);
+				$str = str_replace('&nbsp;', ' ', $str);
+				$str = strip_tags($str, '<h1>');
+			}
 
-                if ($format == "simple") {
-	                $str = $eval['label'].' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.JFactory::getUser($eval['jos_emundus_evaluations___user_raw'])->name;
-                }
+			if ($format == "simple")
+			{
+				$str = $eval['label'] . ' : ' . JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')) . ' - ' . JFactory::getUser($eval['jos_emundus_evaluations___user_raw'])->name;
+			}
 
-                $data[$eval['fnum']][$eval['jos_emundus_evaluations___user']] = $str;
-            }
-        }
-        return $data;
-    }
+			$data[$eval['fnum']][$eval['jos_emundus_evaluations___user']] = $str;
+		}
+
+		return $data;
+	}
 
     // getDecision
     function getDecision($format='html', $fnums = []) {

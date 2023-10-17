@@ -154,7 +154,7 @@
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     max-height: 100px;
-    min-height: 60px;
+    min-height: 53px;
     line-height: 160%;
     font-family: var(--em-applicant-font);
     color: var(--em-default-text-color-1);

@@ -868,7 +868,7 @@ class EmundusModelEvaluation extends JModelList {
 		    'u' => 'jos_users',
 		    'eu' => 'jos_emundus_users',
 		    'eta' => 'jos_emundus_tag_assoc',
-		    'ee' => 'jos_emundus_evaluations'
+		    'jos_emundus_evaluations' => 'jos_emundus_evaluations'
 	    ];
 
 	    $leftJoin = '';

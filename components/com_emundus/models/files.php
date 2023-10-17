@@ -200,14 +200,14 @@ class EmundusModelFiles extends JModelLegacy
                                   ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
                     } else {
                         if ($attribs->database_join_display_type == "checkbox") {
-
-                            $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
-                            $query = '(
-                                SELECT GROUP_CONCAT('.$t.'.'.$def_elmt->element_name.' SEPARATOR ", ")
-                                FROM '.$t.'
-                                WHERE '.$t.'.parent_id='.$def_elmt->tab_name.'.id
-                                '.$publish_query.'
-                              ) AS `'.$t.'`';
+	                        $t = $def_elmt->table_join;
+	                        $query = '(SELECT GROUP_CONCAT('.$column .')
+                                FROM '.$attribs->join_db_name.'
+                                WHERE `'.$attribs->join_db_name.'`.`'.$attribs->join_key_column.'` IN (
+                                    select `' . $t . '`.`' . $def_elmt->element_name . '`
+                                    from `' . $t . '`
+                                    where `' . $t . '`.parent_id = `'.$def_elmt->join_from_table.'`.id
+                                )) AS `'.$t.'___'. $def_elmt->element_name . '`';
                         } else if( $attribs->database_join_display_type == 'multilist' ) {
 	                        $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
 	                        $query = '(
@@ -3934,24 +3934,35 @@ class EmundusModelFiles extends JModelLegacy
 
         $result = [];
         foreach ($group_ids as $group_id) {
-            $query
-                ->clear()
-                ->select($db->quoteName('attachment_id_link'))
-                ->from($db->quoteName('#__emundus_setup_groups_repeat_attachment_id_link'))
-                ->where($db->quoteName('parent_id').' = '.$group_id);
+            $query->clear()
+                ->select($db->quoteName('anonymize'))
+                ->from($db->quoteName('#__emundus_setup_groups'))
+                ->where($db->quoteName('id').' = '.$group_id);
             $db->setQuery($query);
+            $anonymize = $db->loadResult();
 
-            try {
-                $attachments = $db->loadColumn();
+            // If the group has no anonymization, then the user can see all the attachments
+            if ($anonymize == 0) {
+                return true;
+            } else {
+                $query->clear()
+                    ->select($db->quoteName('attachment_id_link'))
+                    ->from($db->quoteName('#__emundus_setup_groups_repeat_attachment_id_link'))
+                    ->where($db->quoteName('parent_id').' = '.$group_id);
+                $db->setQuery($query);
 
-                // In the case of a group having no assigned Fabrik groups, it can get them all.
-                if (empty($attachments)) {
-                    return true;
+                try {
+                    $attachments = $db->loadColumn();
+
+                    // In the case of a group having no assigned Fabrik groups, it can get them all.
+                    if (empty($attachments)) {
+                        return true;
+                    }
+
+                    $result = array_merge($result, $attachments);
+                } catch (Exception $e) {
+                    return false;
                 }
-
-                $result = array_merge($result, $attachments);
-            } catch (Exception $e) {
-                return false;
             }
         }
 

@@ -83,7 +83,7 @@
 						</thead>
 						<tbody>
 							<tr v-for="item in displayedItems" :key="item.id"
-							    class="em-border-cards"
+							    class="em-border-cards list-item"
 							    :class="{'em-card-neutral-100 em-card-shadow em-p-24' : viewType === 'blocs'}"
 							>
 								<td class="cursor-pointer" @click="onClickAction(editAction, item.id)">
@@ -91,11 +91,9 @@
 								</td>
 								<td class="columns" v-for="column in item.additional_columns" :key="column.key" v-if="column.display === viewType || column.display === 'all'">
 									<div v-if="column.type === 'tags'" class="flex flex-wrap" :class="column.classes">
-										<span v-for="tag in column.values" :key="tag.key" class="mr-2 h-max" :class="tag.classes">{{ tag.value }}</span>
+										<span v-for="tag in column.values" :key="tag.key" class="mr-2 h-max" :class="tag.classes" v-html="tag.value"></span>
 									</div>
-									<span v-else class="mt-2 mb-2" :class="column.classes">
-										{{ column.value }}
-									</span>
+									<span v-else class="mt-2 mb-2" :class="column.classes">{{ column.value }}</span>
 								</td>
 								<div>
 									<hr v-if="viewType === 'blocs'" class="w-full mt-1.5 mb-3">

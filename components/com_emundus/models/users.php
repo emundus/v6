@@ -2488,6 +2488,14 @@ class EmundusModelUsers extends JModelList {
         $mailer->setBody($body);
 
 		// Send the password reset request email.
+
+		require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+		$custom_email_tag = EmundusHelperEmails::getCustomHeader();
+		if(!empty($custom_email_tag))
+		{
+			$mailer->addCustomHeader($custom_email_tag);
+		}
+
 		$send = $mailer->Send();
 
 		// Check for an error.

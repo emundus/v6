@@ -57,9 +57,9 @@ $now = $dateTime->format('Y-m-d H:i:s');
         white-space: initial;
     }
 
-    @media all and (max-width: 767px) {
+    @media all and (max-width: 479px) {
         .mod_emundus_flow___intro{
-           flex-direction: column;
+            flex-direction: column;
             justify-content: flex-start;
             align-items: flex-start;
             row-gap: 8px !important;
@@ -74,10 +74,49 @@ $now = $dateTime->format('Y-m-d H:i:s');
             align-items: flex-start;
             row-gap: 8px;
         }
+
+        .view-form #g-utility .g-container,
+        .view-details #g-utility .g-container,
+        .view-checklist #g-utility .g-container {
+            width: 100%;
+        }
+
+        .mod_emundus_flow___container {
+            padding: 0 20px !important;
+        }
+    }
+
+    @media all and (min-width: 480px) and (max-width: 767px) {
+        .mod_emundus_flow___intro{
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            row-gap: 8px !important;
+            display: flex !important;
+        }
+        .mod_emundus_flow___infos div:first-child{
+            margin-bottom: 6px;
+        }
+
+        .mod_emundus_flow___buttons {
+            flex-direction: column;
+            align-items: flex-start;
+            row-gap: 8px;
+        }
+
+        .view-form #g-utility .g-container,
+        .view-details #g-utility .g-container,
+        .view-checklist #g-utility .g-container {
+            width: 100%;
+        }
+
+        .mod_emundus_flow___container {
+            padding: 0 40px !important;
+        }
     }
 </style>
 
-<div style="padding: 0 20px">
+<div class="mod_emundus_flow___container" style="padding: 0 20px">
     <div class="flex justify-between mod_emundus_flow___intro">
         <div class="flex items-center">
             <h1 class="em-mb-0-important"><?php echo $campaign_name ?></h1>

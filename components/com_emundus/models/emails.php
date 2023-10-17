@@ -358,6 +358,12 @@ class EmundusModelEmails extends JModelList {
                     $mailer->Encoding = 'base64';
                     $mailer->setBody($body);
 
+                    $custom_email_tag = EmundusHelperEmails::getCustomHeader();
+                    if(!empty($custom_email_tag))
+                    {
+                        $mailer->addCustomHeader($custom_email_tag);
+                    }
+
                     try {
                         $send = $mailer->Send();
                     } catch (Exception $e) {
@@ -493,24 +499,39 @@ class EmundusModelEmails extends JModelList {
         $params     = $template->params;
         $sitename   = $config->get('sitename');
 
+        $base_url = JURI::base();
+        if($app->isClient('administrator'))
+        {
+            $base_url = JURI::root();
+        }
 
         if (!empty($params->get('logo')->custom->image)) {
             $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-            $logo = !empty($logo['path']) ? JURI::base().$logo['path'] : "";
+            $logo = !empty($logo['path']) ? $base_url.$logo['path'] : "";
 
         } else {
             $logo_module = JModuleHelper::getModuleById('90');
-            preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
-            $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+
+            if(empty($logo_module->content)) {
+                $logo = JURI::root().'images/custom/logo_custom.png';
+                if(!file_exists($logo)) {
+                    $logo = JURI::root().'images/custom/logo.png';
+                }
+            } else
+            {
+                preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
+                $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
         (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
         (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
         (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
 
-            if ((bool) preg_match($pattern, $tab[1])) {
-                $tab[1] = parse_url($tab[1], PHP_URL_PATH);
-            }
+                if ((bool) preg_match($pattern, $tab[1]))
+                {
+                    $tab[1] = parse_url($tab[1], PHP_URL_PATH);
+                }
 
-            $logo = JURI::base().$tab[1];
+                $logo = $base_url . $tab[1];
+            }
         }
 
         $activation = $user->get('activation');
@@ -522,7 +543,7 @@ class EmundusModelEmails extends JModelList {
         );
         $replacements = array(
             $user->id, $user->name, $user->email, $current_user->email, $user->username, $current_user->id, $current_user->name, $current_user->email, ' ', $current_user->username, $passwd,
-            JURI::base()."index.php?option=com_users&task=registration.activate&token=".$activation, "index.php?option=com_users&task=registration.activate&token=".$activation, JURI::base(), $sitename,
+            $base_url."index.php?option=com_users&task=registration.activate&token=".$activation, "index.php?option=com_users&task=registration.activate&token=".$activation, $base_url, $sitename,
             $user->id, $user->name, $user->email, $user->username, JFactory::getDate('now')->format(JText::_('DATE_FORMAT_LC3')), $logo
         );
 
@@ -1094,6 +1115,13 @@ class EmundusModelEmails extends JModelList {
                     }
                 }
 
+                require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+                $custom_email_tag = EmundusHelperEmails::getCustomHeader();
+                if(!empty($custom_email_tag))
+                {
+                    $mailer->addCustomHeader($custom_email_tag);
+                }
+
                 $send = $mailer->Send();
 
                 if ($send !== true) {
@@ -1383,7 +1411,15 @@ class EmundusModelEmails extends JModelList {
                         }
                     }
 
+                    require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+                    $custom_email_tag = EmundusHelperEmails::getCustomHeader();
+                    if(!empty($custom_email_tag))
+                    {
+                        $mailer->addCustomHeader($custom_email_tag);
+                    }
+
                     $send = $mailer->Send();
+
                     if ($send !== true) {
                         $failed[] = $m_to;
                         $print_message .= '<hr>Error sending email: ' . $send;
