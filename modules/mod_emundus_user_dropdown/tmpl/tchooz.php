@@ -224,8 +224,7 @@ if ($user != null) {
 	    <?php else: ?>
         <div class="em-flex-column-default em-w-100">
 	        <?php if(!empty($profile_picture)): ?>
-            <div class="em-profile-picture-modal" id="userDropdownLabel"
-                 style="background-image:url('<?php echo $profile_picture ?>');">
+            <div class="em-profile-picture-modal" style="background-image:url('<?php echo $profile_picture ?>');">
             </div>
 	        <?php else : ?>
             <span class="material-icons-outlined em-profile-picture-modal-icon <?php if($first_logged) : ?>userDropdownIcon-tip<?php endif; ?>" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">account_circle</span>
