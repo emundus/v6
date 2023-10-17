@@ -2079,8 +2079,24 @@ button.em-swal-delete-button:hover{
 }
 
 /*******************
- * Fin peps tuiles
+ *    Peps liste   *
  *******************/
+
+table:nth-child(2) {
+  border-collapse: separate;
+  border-spacing: 0 16px;
+}
+
+#applications_list_view table tbody tr {
+  background: var(--neutral-0);
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+/****************************
+ * Fin peps tuiles et liste *
+ ****************************/
 
 /* Tablette */
 @media screen and (min-width: 1080px) and (max-width: 1199px) {

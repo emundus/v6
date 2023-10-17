@@ -300,20 +300,20 @@ if ($user != null) {
         /* Modification de la couleur du background avec les formes */
         let iframeElements_2 = document.querySelectorAll("#background-shapes");
 
-
         iframeElements_2.forEach(function(iframeElement) {
             iframeElement.addEventListener("load", function () {
 
                 let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
-                let pathElements = iframeDocument.querySelectorAll("path");
-                let emProfileColor = getComputedStyle(document.documentElement).getPropertyValue('--em-profile-color');
+                let styleElement = iframeDocument.querySelector("style");
 
-                /* Coloration de tous les éléments "path" */
-                pathElements.forEach(function(pathElement) {
-                    let pathStyle = pathElement.getAttribute("style");
-                    pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + emProfileColor + ";");
-                    pathElement.setAttribute("style", pathStyle);
-                });
+                if (styleElement) {
+                    let styleContent = styleElement.textContent;
+
+                    styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + emProfileColor + ";");
+
+                    styleElement.textContent = styleContent;
+                }
+
             });
         });
 

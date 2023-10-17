@@ -1004,8 +1004,10 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             /* Coloration de tous les éléments "path" */
             pathElements.forEach(function(pathElement) {
                 let pathStyle = pathElement.getAttribute("style");
-                pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + emProfileColor + ";");
-                pathElement.setAttribute("style", pathStyle);
+                if (pathStyle && pathStyle.includes("fill:grey;")) {
+                    pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + emProfileColor + ";");
+                    pathElement.setAttribute("style", pathStyle);
+                }
             });
         });
     });
@@ -1023,7 +1025,6 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             /* Coloration de tous les éléments "path" */
             pathElements.forEach(function(pathElement) {
                 let pathStyle = pathElement.getAttribute("style");
-                console.log ("test" + pathStyle);
                 pathStyle = pathStyle.replace(/fill:#[0-9A-Fa-f]{6};/, "fill" + neutral600 + ";");
                 pathElement.setAttribute("style", pathStyle);
             });
