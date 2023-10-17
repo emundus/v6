@@ -2426,7 +2426,16 @@ class EmundusModelFiles extends JModelLegacy
 	}
 
 
-    public function getFnumArray2($fnums, $elements, $start = 0, $limit = 0)
+	/**
+	 * @param $fnums
+	 * @param $elements
+	 * @param $start
+	 * @param $limit
+	 * @param $method (0 : regroup all repeat elements in one row, and make values unique ; 1 : Don't regroup repeat elements, make a line for each repeat element ; 2 : regroup all repeat elements in one row, but write all values even if there are duplicates)
+	 *
+	 * @return array|false
+	 */
+    public function getFnumArray2($fnums, $elements, $start = 0, $limit = 0, $method = 0)
     {
         $data = [];
 
@@ -2771,23 +2780,31 @@ class EmundusModelFiles extends JModelLegacy
             if (!empty($rows)) {
                 $data_by_fnums = [];
 
-                foreach($rows as $row) {
-	                if (!empty($row)) {
-		                if (!isset($data_by_fnums[$row['fnum']])) {
-			                $data_by_fnums[$row['fnum']] = $row;
-		                } else {
-			                foreach($row as $key => $value) {
-				                if (!isset($data_by_fnums[$row['fnum']][$key])) {
-					                $data_by_fnums[$row['fnum']][$key] = $value;
-								} else if (!is_array($data_by_fnums[$row['fnum']][$key]) && $value !== $data_by_fnums[$row['fnum']][$key]) {
-					                $data_by_fnums[$row['fnum']][$key] = [$data_by_fnums[$row['fnum']][$key], $value];
-				                } else if (is_array($data_by_fnums[$row['fnum']][$key]) && !in_array($value, $data_by_fnums[$row['fnum']][$key])) {
-					                $data_by_fnums[$row['fnum']][$key][] = $value;
-				                }
-			                }
-		                }
-	                }
-                }
+				if ($method === 1) { // one line per repeat
+					$data_by_fnums = $rows;
+				} else {
+					foreach($rows as $row) {
+						if (!empty($row)) {
+							if (!isset($data_by_fnums[$row['fnum']])) {
+								$data_by_fnums[$row['fnum']] = $row;
+							} else {
+								foreach($row as $key => $value) {
+									if (!isset($data_by_fnums[$row['fnum']][$key])) {
+										$data_by_fnums[$row['fnum']][$key] = $value;
+									} else if (!is_array($data_by_fnums[$row['fnum']][$key])) {
+										if ($method === 2 || $value !== $data_by_fnums[$row['fnum']][$key]) {
+											$data_by_fnums[$row['fnum']][$key] = [$data_by_fnums[$row['fnum']][$key], $value];
+										}
+									} else if (is_array($data_by_fnums[$row['fnum']][$key])) {
+										if ($method === 2 || !in_array($value, $data_by_fnums[$row['fnum']][$key])) {
+											$data_by_fnums[$row['fnum']][$key][] = $value;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
 
                 $data = $data_by_fnums;
                 foreach ($data as $d_key => $row) {
@@ -2805,7 +2822,7 @@ class EmundusModelFiles extends JModelLegacy
 				if (!empty($limit) && count($data) < $limit && count($rows) == $limit) {
 					// it means that we have repeated rows, so we need to retrieve last row all entries, because it may be incomplete (chunked by the limit)
 					$last_row = array_pop($rows);
-					$last_row_data = $this->getFnumArray2($last_row['fnum'], $elements, $start, 0);
+					$last_row_data = $this->getFnumArray2($last_row['fnum'], $elements, $start, 0, $method);
 					$data[$last_row['fnum']] = $last_row_data[$last_row['fnum']];
 				}
 			}
