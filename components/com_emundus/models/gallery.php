@@ -215,6 +215,14 @@ class EmundusModelGallery extends JModelList
                             $this->_db->execute();
 
                             //TODO: Create public menu linked to this list
+	                        $params = [
+		                        'menutype' => 'topmenu',
+		                        'title' => $label,
+		                        'link' => 'index.php?option=com_fabrik&view=list&listid=' . $list_id,
+		                        'component_id' => JComponentHelper::getComponent('com_fabrik')->id,
+		                        'params' => []
+	                        ];
+	                        EmundusHelperUpdate::addJoomlaMenu($params);
                         }
                     }
                 }
