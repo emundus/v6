@@ -26,6 +26,10 @@
     width: 72%;
 }
 
+.mod_emundus_campaign__list_items .pagination {
+    margin: 0;
+}
+
 .mod_emundus_campaign__intro *{
   font-family: var(--em-applicant-font);
 }

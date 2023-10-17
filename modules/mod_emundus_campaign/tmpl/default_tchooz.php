@@ -484,7 +484,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             <!-- LIST OF CAMPAIGNS -->
             <div class="mod_emundus_campaign__list em-mt-32">
                 <?php if (empty($campaigns)) : ?>
-                    <div class="em-mb-24">
+                    <div class="em-mb-48">
                         <h3 class="mod_emundus_campaign__programme_cat_title"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_FOUND') ?></h3>
                         <hr style="margin-top: 8px">
                     </div>
@@ -492,12 +492,12 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
                 <?php foreach ($campaigns as $key => $campaign) : ?>
                 <?php if($key == 'campaigns') : ?>
-                    <div class="em-mb-24">
+                    <div class="em-mb-44">
                         <h3 class="mod_emundus_campaign__programme_cat_title"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_CAMPAIGNS') ?></h3>
                         <hr style="margin-top: 8px">
                     </div>
                 <?php else : ?>
-                    <div class="em-mb-24">
+                    <div class="em-mb-44">
                         <h3 class="mod_emundus_campaign__programme_cat_title"><?php echo $campaign['label'] ?: JText::_('MOD_EM_CAMPAIGN_LIST_CAMPAIGNS') ?></h3>
                         <hr style="margin-top: 8px">
                     </div>
