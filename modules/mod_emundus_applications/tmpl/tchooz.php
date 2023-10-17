@@ -693,6 +693,9 @@ $current_tab = 0;
                                                 id="application_content<?php echo $application->fnum ?>"
                                                 onclick="openFile(event,'<?php echo $first_page_url ?>')">
                                                 <td style="width: 23.75%;">
+                                                    <?php if ($mod_em_campaign_display_svg == 1) : ?>
+                                                        <iframe id="background-shapes" src="/modules/mod_emundus_user_dropdown/style/fond-formes-header.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
+                                                    <?php endif; ?>
 													<?php if (empty($application->name)) : ?>
                                                         <a href="<?= JRoute::_($first_page_url); ?>"
                                                            class="mod_emundus_applications___title em-font-size-14"
@@ -1552,19 +1555,30 @@ $current_tab = 0;
 
             let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
             let pathElements = iframeDocument.querySelectorAll("path");
-            let emProfileColor = getComputedStyle(document.documentElement).getPropertyValue('--em-profile-color');
 
-            /* Coloration de tous les éléments "path" */
-            pathElements.forEach((pathElement) => {
-                let pathStyle = pathElement.getAttribute("style");
-                pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + emProfileColor + ";");
-                pathElement.setAttribute("style", pathStyle);
-            });
+            let styleElement = iframeDocument.querySelector("style");
+
+            if (styleElement) {
+                let styleContent = styleElement.textContent;
+                styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + emProfileColor + ";");
+                styleElement.textContent = styleContent;
+            }
+
+            if(pathElements) {
+                pathElements.forEach((pathElement) => {
+                    let pathStyle = pathElement.getAttribute("style");
+                    if (pathStyle && pathStyle.includes("fill:grey;")) {
+                        pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + emProfileColor + ";");
+                        pathElement.setAttribute("style", pathStyle);
+                    }
+                });
+            }
         });
     });
 
     /* Changement de couleur des formes au hover de la card */
     let divsHover = document.querySelectorAll(".hover-and-tile-container");
+    let trsHover = document.querySelectorAll("table tbody tr");
     let iframeElementHover = document.getElementById('background-shapes');
 
     divsHover.forEach((divHover) => {
@@ -1577,6 +1591,19 @@ $current_tab = 0;
 
         divHover.addEventListener('mouseout', function() {
             iframeElementHover.src = '/modules/mod_emundus_campaign/css/fond-clair.svg';
+        });
+    })
+
+    trsHover.forEach((trHover) => {
+
+        let iframeElementHover = trHover.querySelector('iframe');
+
+        trHover.addEventListener('mouseover', function() {
+            iframeElementHover.src = '/modules/mod_emundus_user_dropdown/style/fond-formes-header-fonce.svg';
+        });
+
+        trHover.addEventListener('mouseout', function() {
+            iframeElementHover.src = '/modules/mod_emundus_user_dropdown/style/fond-formes-header.svg';
         });
     })
 
