@@ -297,8 +297,9 @@ if ($user != null) {
 
     <script>
 
-        /* Modification de la couleur du background avec les formes */
+        /* Modification de la couleur du background avec les formes du header */
         let iframeElements_2 = document.querySelectorAll("#background-shapes");
+        let emProfileColor = getComputedStyle(document.documentElement).getPropertyValue('--em-profile-color');
 
         iframeElements_2.forEach(function(iframeElement) {
             iframeElement.addEventListener("load", function () {
