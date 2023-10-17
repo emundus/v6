@@ -10,3 +10,4 @@ responsive.css
 !scss/*
 !blueprints/*
 !.gitignore
+!particles/*
