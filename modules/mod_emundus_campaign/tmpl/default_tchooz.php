@@ -995,14 +995,14 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     let iframeElements = document.querySelectorAll("#background-shapes");
     let emProfileColor = getComputedStyle(document.documentElement).getPropertyValue('--em-profile-color');
 
-    iframeElements.forEach(function(iframeElement) {
+    iframeElements.forEach((iframeElement) => {
         iframeElement.addEventListener("load", function () {
 
             let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
             let pathElements = iframeDocument.querySelectorAll("path");
 
             /* Coloration de tous les éléments "path" */
-            pathElements.forEach(function(pathElement) {
+            pathElements.forEach((pathElement) =>{
                 let pathStyle = pathElement.getAttribute("style");
                 if (pathStyle && pathStyle.includes("fill:grey;")) {
                     pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + emProfileColor + ";");
@@ -1015,7 +1015,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     /* Couleur des campagnes clôturées */
     let divElements = document.querySelectorAll(".mod_emundus_campaign__list_content--closed");
 
-    divElements.forEach(function(divElement) {
+     divElements.forEach((divElement) => {
         let iframeElement = divElement.querySelector("#background-shapes");
         iframeElement.onload = function() {
             let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
@@ -1023,7 +1023,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             let neutral600 = getComputedStyle(document.documentElement).getPropertyValue('--neutral-600');
 
             /* Coloration de tous les éléments "path" */
-            pathElements.forEach(function(pathElement) {
+           pathElements.forEach((pathElement) => {
                 let pathStyle = pathElement.getAttribute("style");
                 pathStyle = pathStyle.replace(/fill:#[0-9A-Fa-f]{6};/, "fill" + neutral600 + ";");
                 pathElement.setAttribute("style", pathStyle);
@@ -1031,11 +1031,11 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         }
     });
 
-    /* changement de couleur des formes au hover de la card */
+    /* Changement de couleur des formes au hover de la card */
     let divsHover = document.querySelectorAll(".hover-and-tile-container");
     let iframeElementHover = document.getElementById('background-shapes');
 
-    divsHover.forEach(function(divHover) {
+    divsHover.forEach((divHover) => {
 
         let iframeElementHover = divHover.querySelector('iframe');
 

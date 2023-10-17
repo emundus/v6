@@ -1547,7 +1547,7 @@ $current_tab = 0;
     /* Modification de la couleur du background avec les formes */
     let iframeElements = document.querySelectorAll("#background-shapes");
 
-    iframeElements.forEach(function(iframeElement) {
+   iframeElements.forEach((iframeElement) => {
         iframeElement.addEventListener("load", function () {
 
             let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
@@ -1555,7 +1555,7 @@ $current_tab = 0;
             let emProfileColor = getComputedStyle(document.documentElement).getPropertyValue('--em-profile-color');
 
             /* Coloration de tous les éléments "path" */
-            pathElements.forEach(function(pathElement) {
+            pathElements.forEach((pathElement) => {
                 let pathStyle = pathElement.getAttribute("style");
                 pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + emProfileColor + ";");
                 pathElement.setAttribute("style", pathStyle);
@@ -1563,11 +1563,11 @@ $current_tab = 0;
         });
     });
 
-    /* changement de couleur des formes au hover de la card */
+    /* Changement de couleur des formes au hover de la card */
     let divsHover = document.querySelectorAll(".hover-and-tile-container");
     let iframeElementHover = document.getElementById('background-shapes');
 
-    divsHover.forEach(function(divHover) {
+    divsHover.forEach((divHover) => {
 
         let iframeElementHover = divHover.querySelector('iframe');
 
