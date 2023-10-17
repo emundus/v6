@@ -2082,16 +2082,51 @@ button.em-swal-delete-button:hover{
  *    Peps liste   *
  *******************/
 
-table:nth-child(2) {
+#applications_list_view table:first-child thead tr th:first-child {
+  padding-left: 32px;
+}
+
+#applications_list_view table:nth-child(2) {
   border-collapse: separate;
   border-spacing: 0 16px;
 }
 
 #applications_list_view table tbody tr {
   background: var(--neutral-0);
-  overflow: hidden;
+  box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
   border-radius: 8px;
-  margin-bottom: 16px;
+
+  td {
+    padding: var(--p-16) var(--p-32);
+    position:relative;
+
+    a span {
+      color: var(--em-profile-color);
+    }
+
+    p {
+      color: var(--neutral-600);
+    }
+  }
+
+  td:first-child {
+    border-radius: 8px 0 0 8px;
+  }
+
+  td:last-child {
+    border-radius: 0 8px 8px 0;
+  }
+}
+
+/* Fond formes */
+#applications_list_view table tbody tr td #background-shapes {
+  position: absolute;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 906px;
+  pointer-events: none;
 }
 
 /****************************
@@ -2123,6 +2158,11 @@ table:nth-child(2) {
       right: -242px;
     }
   }
+
+  #applications_list_view table tbody tr td #background-shapes {
+    left: 694px;
+    transform: scale(1.15);
+  }
 }
 
 @media screen and (min-width: 1025px) and (max-width: 1079px) {
@@ -2150,6 +2190,10 @@ table:nth-child(2) {
     }
   }
 
+  #applications_list_view table tbody tr td #background-shapes {
+    left: 694px;
+    transform: scale(1.15);
+  }
 }
 
 @media screen and (min-width: 960px) and (max-width: 1024px) {
@@ -2182,6 +2226,11 @@ table:nth-child(2) {
     }
   }
 
+  #applications_list_view table tbody tr td #background-shapes {
+    left: 694px;
+    transform: scale(1.15);
+  }
+
 }
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
@@ -2208,6 +2257,11 @@ table:nth-child(2) {
     #background-shapes {
       right: -146px;
     }
+  }
+
+  #applications_list_view table tbody tr td #background-shapes {
+    left: 510px;
+    transform: scale(1.65);
   }
 
 }
@@ -2353,5 +2407,10 @@ table:nth-child(2) {
     #background-shapes {
       right: -87px;
     }
+  }
+
+  #applications_list_view table tbody tr td #background-shapes {
+    left: 434px;
+    transform: scale(2);
   }
 }

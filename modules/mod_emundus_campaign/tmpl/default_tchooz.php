@@ -993,7 +993,6 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
     /* Modification de la couleur du background avec les formes */
     let iframeElements = document.querySelectorAll("#background-shapes");
-    let emProfileColor = getComputedStyle(document.documentElement).getPropertyValue('--em-profile-color');
 
     iframeElements.forEach((iframeElement) => {
         iframeElement.addEventListener("load", function () {
