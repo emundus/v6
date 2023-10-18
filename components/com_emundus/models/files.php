@@ -4320,9 +4320,11 @@ class EmundusModelFiles extends JModelLegacy
 
         if (!empty($trigger_emails)) {
             include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
-            require_once (JPATH_SITE . '/components/com_emundus/models/application.php');
-            require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
+            require_once (JPATH_SITE.'/components/com_emundus/models/campaign.php');
+            require_once (JPATH_SITE.'/components/com_emundus/models/application.php');
+            require_once(JPATH_ROOT.'/components/com_emundus/helpers/emails.php');
             $m_users = new EmundusModelUsers;
+            $m_campaign = new EmundusModelCampaign();
             $m_application = new EmundusModelApplication();
             $h_emails = new EmundusHelperEmails();
 
@@ -4400,7 +4402,20 @@ class EmundusModelFiles extends JModelLegacy
 
                             $mailer = JFactory::getMailer();
 
-                            $post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['label'], 'CAMPAIGN_END' => JHTML::_('date', $file['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null));
+                            $programme = $m_campaign->getProgrammeByTraining($file['training']);
+
+                            $post = [
+                                'FNUM' => $file['fnum'],
+                                'USER_NAME' => $file['name'],
+                                'COURSE_LABEL' => $programme->label,
+                                'CAMPAIGN_LABEL' => $file['label'],
+                                'CAMPAIGN_YEAR' => $file['year'],
+                                'CAMPAIGN_START' => JHTML::_('date', $file['start_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
+                                'CAMPAIGN_END' => JHTML::_('date', $file['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
+                                'DEADLINE' => JHTML::_('date', $file['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
+                                'SITE_URL' => JURI::base(),
+                                'USER_EMAIL' => $file['email']
+                            ];
                             $tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum'], '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
 
                             $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
