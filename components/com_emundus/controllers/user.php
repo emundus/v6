@@ -50,4 +50,26 @@ class EmundusControllerUser extends JControllerLegacy
         else
             echo JText::_('ACCESS_DENIED');
     }
+
+	public function redirectMeWithMessage()
+	{
+		$input = JFactory::getApplication()->input;
+		$message = $input->getString('message', null);
+
+		$this->setRedirect('/', $message);
+	}
+	
+	public function getpasswordsecurity() {
+		$result = array('rules' => [], 'message' => '');
+		$uConfig = JComponentHelper::getParams('com_users');
+
+		$result['rules']['minimum_length'] = $uConfig->get('minimum_length', 0);
+		$result['rules']['minimum_integers'] = $uConfig->get('minimum_integers', 0);
+		$result['rules']['minimum_symbols'] = $uConfig->get('minimum_symbols', 0);
+		$result['rules']['minimum_uppercase'] = $uConfig->get('minimum_uppercase', 0);
+		$result['rules']['minimum_lowercase'] = $uConfig->get('minimum_lowercase', 0);
+
+		echo json_encode($result);
+		exit;
+	}
 }

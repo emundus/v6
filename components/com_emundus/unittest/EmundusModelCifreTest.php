@@ -41,4 +41,9 @@ class EmundusModelCifreTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_cifre = new EmundusModelCifre;
     }
+
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
 }

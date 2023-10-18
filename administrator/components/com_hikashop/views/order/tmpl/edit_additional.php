@@ -1,40 +1,167 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><h1><?php echo JText::_('ORDER_ADD_INFO'); ?></h1>
 <form action="<?php echo hikashop_completeLink('order&task=save&subtask=additional&tmpl=component'); ?>" name="hikashop_order_additional_form" id="hikashop_order_additional_form" method="post" enctype="multipart/form-data">
-	<dl class="hika_options">
-		<dt class="hikashop_order_additional_subtotal"><label><?php echo JText::_('SUBTOTAL'); ?></label></dt>
-		<dd class="hikashop_order_additional_subtotal"><span><?php echo $this->currencyHelper->format($this->order->order_subtotal,$this->order->order_currency_id); ?></span></dd>
-<?php if(isset($this->edit) && $this->edit === true) { ?>
-		<dt class="hikashop_order_additional_coupon"><label><?php echo JText::_('HIKASHOP_COUPON'); ?></label></dt>
-		<dd class="hikashop_order_additional_coupon">
-			<input type="text" name="data[order][order_discount_code]" value="<?php echo $this->escape(@$this->order->order_discount_code); ?>" /><br/>
-			<input type="text" name="data[order][order_discount_price]" value="<?php echo @$this->order->order_discount_price; ?>" /><br/>
-			<input name="data[order][order_discount_tax]" value="<?php echo @$this->order->order_discount_tax; ?>" />
-			<?php echo $this->ratesType->display( "data[order][order_discount_tax_namekey]" , @$this->order->order_discount_tax_namekey ); ?>
-		</dd>
-<?php } else { ?>
-		<dt class="hikashop_order_additional_coupon"><label><?php echo JText::_('HIKASHOP_COUPON'); ?></label></dt>
-		<dd class="hikashop_order_additional_coupon"><span><?php echo $this->currencyHelper->format($this->order->order_discount_price*-1.0,$this->order->order_currency_id); ?> <?php echo $this->order->order_discount_code; ?></span></dd>
-<?php }
-
-	if(isset($this->edit) && $this->edit === true) { ?>
-		<dt class="hikashop_order_additional_shipping"><label><?php echo JText::_('SHIPPING'); ?></label></dt>
-		<dd class="hikashop_order_additional_shipping">
-<?php if(strpos($this->order->order_shipping_id, ';') === false) { ?>
-			<?php echo $this->shippingPlugins->display('data[order][shipping]',$this->order->order_shipping_method,$this->order->order_shipping_id); ?><br/>
-<?php } ?>
-			<input type="text" name="data[order][order_shipping_price]" value="<?php echo $this->order->order_shipping_price; ?>" /><br/>
-			<input type="text" name="data[order][order_shipping_tax]" value="<?php echo @$this->order->order_shipping_tax; ?>" />
-			<?php echo $this->ratesType->display( "data[order][order_shipping_tax_namekey]" , @$this->order->order_shipping_tax_namekey ); ?><br/>
+<?php 
+	if(isset($this->edit) && $this->edit === true) {
+?>
 <?php
+		if(!empty($this->order->additional)) {
+?>
+	<input type="hidden" name="data[order][additional]" value="1"/>
+<?php
+		}
+?>
+	<table class="hikashop_order_additional_table adminlist table table-striped">
+		<thead>
+			<tr>
+				<th class="title">
+				</th>
+				<th class="title">
+					<?php echo JText::_('INFORMATION'); ?>
+				</th>
+				<th class="title">
+					<?php echo JText::_('PRICE'); ?>
+				</th>
+				<th class="title">
+					<?php echo JText::_('TAXES'); ?>
+				</th>
+				<th class="title">
+					<?php echo JText::_('PRICE_WITH_TAX'); ?>
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="additional_row_title">
+					<?php echo JText::_('SUBTOTAL'); ?>
+				</td>
+				<td>
+				</td>
+				<td>
+				<?php echo $this->currencyHelper->format($this->order->order_subtotal_no_vat,$this->order->order_currency_id); ?>
+				</td>
+				<td>
+				</td>
+				<td>
+					<?php echo $this->currencyHelper->format($this->order->order_subtotal,$this->order->order_currency_id); ?>
+				</td>
+			</tr>
+			<tr>
+				<td class="additional_row_title">
+					<?php echo JText::_('HIKASHOP_COUPON'); ?>
+				</td>
+				<td>
+					<input type="text" name="data[order][order_discount_code]" value="<?php echo $this->escape(@$this->order->order_discount_code); ?>" />
+				</td>
+				<td>
+					<input type="text" id="hikashop_order_discount_price_input" name="hikashop_order_discount_price_without_tax_input" onchange="window.orderMgr.updateAdditionalTaxes(this, 'discount');" value="<?php echo (@$this->order->order_discount_price-@$this->order->order_discount_tax); ?>" />
+				</td>
+				<td>
+					<input type="hidden" id="hikashop_order_discount_tax_input" name="data[order][order_discount_tax]" value="<?php echo @$this->order->order_discount_tax; ?>" />
+					<?php echo str_replace('id="dataorderorder_discount_tax_namekey"', 'id="hikashop_order_discount_tax_namekey"', $this->ratesType->display( "data[order][order_discount_tax_namekey]" , @$this->order->order_discount_tax_namekey, true,'onchange="window.orderMgr.updateAdditionalTaxes(this, \'discount\');"', true )); ?>
+				</td>
+				<td>
+					<input type="text" id="hikashop_order_discount_price_with_tax_input" name="data[order][order_discount_price]" onchange="window.orderMgr.updateAdditionalTaxes(this, 'discount');" value="<?php echo @$this->order->order_discount_price; ?>" />
+				</td>
+			</tr>
+			<tr>
+				<td class="additional_row_title">
+					<?php echo JText::_('SHIPPING'); ?>
+				</td>
+				<td>
+				<?php if(strpos($this->order->order_shipping_id, ';') === false) { ?>
+					<?php echo $this->shippingPlugins->display('data[order][shipping]',$this->order->order_shipping_method,$this->order->order_shipping_id); ?><br/>
+				<?php } ?>
+				</td>
+				<td>
+					<input type="text" id="hikashop_order_shipping_price_input" name="hikashop_order_shipping_price_without_tax_input" value="<?php echo ($this->order->order_shipping_price-@$this->order->order_shipping_tax); ?>" onchange="window.orderMgr.updateAdditionalTaxes(this, 'shipping');" />
+				</td>
+				<td>
+					<input type="hidden" id="hikashop_order_shipping_tax_input" name="data[order][order_shipping_tax]" value="<?php echo @$this->order->order_shipping_tax; ?>" />
+					<?php echo str_replace('id="dataorderorder_shipping_tax_namekey"', 'id="hikashop_order_shipping_tax_namekey"', $this->ratesType->display( "data[order][order_shipping_tax_namekey]" , @$this->order->order_shipping_tax_namekey, true,'onchange="window.orderMgr.updateAdditionalTaxes(this, \'shipping\');"', true )); ?>
+				</td>
+				<td>
+					<input type="text" id="hikashop_order_shipping_price_with_tax_input" name="data[order][order_shipping_price]" onchange="window.orderMgr.updateAdditionalTaxes(this, 'shipping');" value="<?php echo @$this->order->order_shipping_price; ?>" />
+				</td>
+			</tr>
+			<tr>
+				<td class="additional_row_title">
+					<?php echo JText::_('HIKASHOP_PAYMENT'); ?>
+				</td>
+				<td>
+					<?php echo $this->paymentPlugins->display('data[order][payment]',$this->order->order_payment_method,$this->order->order_payment_id); ?>
+				</td>
+				<td>
+					<input type="text" id="hikashop_order_payment_price_input" name="hikashop_order_payment_price_without_tax_input" value="<?php echo ($this->order->order_payment_price-@$this->order->order_payment_tax); ?>" onchange="window.orderMgr.updateAdditionalTaxes(this, 'payment');" />
+				</td>
+				<td>
+					<input type="hidden" id="hikashop_order_payment_tax_input" name="data[order][order_payment_tax]" value="<?php echo @$this->order->order_payment_tax; ?>" />
+					<?php echo str_replace('id="dataorderorder_payment_tax_namekey"', 'id="hikashop_order_payment_tax_namekey"', $this->ratesType->display( "data[order][order_payment_tax_namekey]" , @$this->order->order_payment_tax_namekey, true,'onchange="window.orderMgr.updateAdditionalTaxes(this, \'payment\');"', true )); ?>
+				</td>
+				<td>
+					<input type="text" id="hikashop_order_payment_price_with_tax_input" name="data[order][order_payment_price]" onchange="window.orderMgr.updateAdditionalTaxes(this, 'payment');" value="<?php echo @$this->order->order_payment_price; ?>" />
+				</td>
+			</tr>
+<?php
+	if(!empty($this->order->additional)) {
+		foreach($this->order->additional as $additional) {
+			if(!empty($additional->order_product_price)) {
+				$additional->order_product_price = (float)$additional->order_product_price;
+			}
+			if(!empty($additional->order_product_price) || empty($additional->order_product_options)) {
+				$name = 'order_product_price';
+				$value = $additional->order_product_price;
+			} else {
+				$name = 'order_product_options';
+				$value = $additional->order_product_options;
+			}
+?>
+			<tr>
+				<td class="additional_row_title">
+					<?php echo JText::_($additional->order_product_name); ?>
+					<input type="hidden" name="data[order][product][<?php echo $additional->order_product_name; ?>][order_product_id]" value="<?php echo $additional->order_product_id; ?>"/>
+					<input type="hidden" name="data[order][product][<?php echo $additional->order_product_name; ?>][order_product_code]" value="order additional"/>
+					<input type="hidden" name="data[order][product][<?php echo $additional->order_product_name; ?>][order_product_quantity]" value="0"/>
+				</td>
+				<td>
+				</td>
+				<td>
+				</td>
+				<td>
+				</td>
+				<td>
+					<input type="text" name="data[order][product][<?php echo $additional->order_product_name; ?>][<?php echo $name; ?>]" value="<?php echo $value; ?>"/>
+				</td>
+			</tr>
+<?php
+		}
+	}
+?>
+			<tr>
+				<td class="additional_row_title">
+					<?php echo JText::_('HIKASHOP_TOTAL'); ?>
+				</td>
+				<td>
+				</td>
+				<td>
+				</td>
+				<td>
+				</td>
+				<td>
+					<?php echo $this->currencyHelper->format($this->order->order_full_price,$this->order->order_currency_id); ?>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<?php
 		if(strpos($this->order->order_shipping_id, ';') !== false) {
 ?>
 			<table class="hikam_table table table-striped">
@@ -105,8 +232,13 @@ defined('_JEXEC') or die('Restricted access');
 			</table>
 <?php
 	} ?>
-		</dd>
+	<dl class="hika_options">
 <?php } else { ?>
+	<dl class="hika_options">
+		<dt class="hikashop_order_additional_subtotal"><label><?php echo JText::_('SUBTOTAL'); ?></label></dt>
+		<dd class="hikashop_order_additional_subtotal"><span><?php echo $this->currencyHelper->format($this->order->order_subtotal,$this->order->order_currency_id); ?></span></dd>
+		<dt class="hikashop_order_additional_coupon"><label><?php echo JText::_('HIKASHOP_COUPON'); ?></label></dt>
+		<dd class="hikashop_order_additional_coupon"><span><?php echo $this->currencyHelper->format($this->order->order_discount_price*-1.0,$this->order->order_currency_id); ?> <?php echo $this->order->order_discount_code; ?></span></dd>
 		<dt class="hikashop_order_additional_shipping"><label><?php echo JText::_('SHIPPING'); ?></label></dt>
 		<dd class="hikashop_order_additional_shipping"><span><?php echo $this->currencyHelper->format($this->order->order_shipping_price, $this->order->order_currency_id); ?> - <?php
 			if(empty($this->order->order_shipping_method))
@@ -114,17 +246,6 @@ defined('_JEXEC') or die('Restricted access');
 			else
 				echo $this->order->order_shipping_method;
 			?></span></dd>
-<?php }
-
-	if(isset($this->edit) && $this->edit === true) { ?>
-		<dt class="hikashop_order_additional_payment"><label><?php echo JText::_('HIKASHOP_PAYMENT'); ?></label></dt>
-		<dd class="hikashop_order_additional_payment">
-			<?php echo $this->paymentPlugins->display('data[order][payment]',$this->order->order_payment_method,$this->order->order_payment_id); ?><br/>
-			<input type="text" name="data[order][order_payment_price]" value="<?php echo $this->order->order_payment_price; ?>" /><br/>
-			<input type="text" name="data[order][order_payment_tax]" value="<?php echo @$this->order->order_payment_tax; ?>" />
-			<?php echo $this->ratesType->display( "data[order][order_payment_tax_namekey]" , @$this->order->order_payment_tax_namekey ); ?>
-		</dd>
-<?php } else { ?>
 		<dt class="hikashop_order_additional_payment_fee"><label><?php echo JText::_('HIKASHOP_PAYMENT'); ?></label></dt>
 		<dd class="hikashop_order_additional_payment_fee"><span><?php echo $this->currencyHelper->format($this->order->order_payment_price, $this->order->order_currency_id); ?> - <?php
 			if(empty($this->order->order_payment_method))
@@ -132,37 +253,10 @@ defined('_JEXEC') or die('Restricted access');
 			else
 				echo $this->order->order_payment_method;
 			?></span></dd>
-<?php }
-
-	if(!empty($this->order->additional)) {
-?>
-<input type="hidden" name="data[order][additional]" value="1"/>
-<?php
-		foreach($this->order->additional as $additional) {
-			if(!empty($additional->order_product_price)) {
-				$additional->order_product_price = (float)$additional->order_product_price;
-			}
-			if(!empty($additional->order_product_price) || empty($additional->order_product_options)) {
-				$name = 'order_product_price';
-				$value = $additional->order_product_price;
-			} else {
-				$name = 'order_product_options';
-				$value = $additional->order_product_options;
-			}
-?>
-		<dt class="hikashop_order_additional_additional"><label><?php echo JText::_($additional->order_product_name); ?></label></dt>
-		<dd class="hikashop_order_additional_additional"><span>
-			<input type="text" name="data[order][product][<?php echo $additional->order_product_name; ?>][<?php echo $name; ?>]" value="<?php echo $value; ?>"/>
-			<input type="hidden" name="data[order][product][<?php echo $additional->order_product_name; ?>][order_product_id]" value="<?php echo $additional->order_product_id; ?>"/>
-			<input type="hidden" name="data[order][product][<?php echo $additional->order_product_name; ?>][order_product_code]" value="order additional"/>
-			<input type="hidden" name="data[order][product][<?php echo $additional->order_product_name; ?>][order_product_quantity]" value="0"/>
-		</span></dd>
-<?php
-		}
-	}
-?>
 		<dt class="hikashop_order_additional_total"><label><?php echo JText::_('HIKASHOP_TOTAL'); ?></label></dt>
 		<dd class="hikashop_order_additional_total"><span><?php echo $this->currencyHelper->format($this->order->order_full_price,$this->order->order_currency_id); ?></span></dd>
+<?php }
+?>
 <?php
 	if(!empty($this->extra_data['additional'])) {
 		foreach($this->extra_data['additional'] as $key => $content) {
@@ -226,6 +320,41 @@ window.orderMgr.orderadditional_usermsg_changed = function(el) {
 	var fields = ['hikashop_history_orderadditional_usermsg'], displayValue = '';
 	if(!el.checked) displayValue = 'none';
 	window.hikashop.setArrayDisplay(fields, displayValue);
+}
+window.orderMgr.updateAdditionalTaxes = function(el, type) {
+	var priceInput = document.getElementById('hikashop_order_'+type+'_price_input');
+	var priceWithTaxInput = document.getElementById('hikashop_order_'+type+'_price_with_tax_input');
+	var taxRateSelect = document.getElementById('hikashop_order_'+type+'_tax_namekey');
+	var taxInput = document.getElementById('hikashop_order_'+type+'_tax_input');
+
+	var conversion = 0;
+	var price = priceInput.value;
+	var target = priceInput;
+	if(el.id == priceWithTaxInput.id) {
+		conversion = 1;
+		price = priceWithTaxInput.value;
+	} else {
+		target = priceWithTaxInput;
+	}
+	if(taxRateSelect.value == '-1') {
+		target.value = price;
+		taxInput.value = 0;
+	} else {
+		window.Oby.xRequest(
+			'index.php?option=com_hikashop&tmpl=component&ctrl=product&task=getprice&price='+price+'&rate_namekey='+taxRateSelect.value+'&conversion='+conversion,
+			{ mode: 'GET'},
+			function(result) {
+				if(result.responseText) {
+					target.value = result.responseText;
+					if(conversion)
+						taxInput.value = price-result.responseText;
+					else
+						taxInput.value = result.responseText-price;
+				}
+			}
+		);
+	}
+
 }
 <?php if(!empty($this->extra_data['js'])) { echo $this->extra_data['js']; } ?>
 </script>

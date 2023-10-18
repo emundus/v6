@@ -13,6 +13,8 @@
  */
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
+use Joomla\CMS\Factory;
+
 JText::script('COM_EMUNDUS_FILES_EVALUATION');
 JText::script('COM_EMUNDUS_FILES_TO_EVALUATE');
 JText::script('COM_EMUNDUS_FILES_EVALUATED');
@@ -41,6 +43,7 @@ JText::script('COM_EMUNDUS_FILES_COMMENT_BODY');
 JText::script('COM_EMUNDUS_FILES_VALIDATE_COMMENT');
 JText::script('COM_EMUNDUS_FILES_COMMENT_DELETE');
 JText::script('COM_EMUNDUS_FILES_ASSOCS');
+JText::script('COM_EMUNDUS_FILES_TAGS');
 JText::script('COM_EMUNDUS_FILES_PAGE_ON');
 
 JText::script('COM_EMUNDUS_ERROR_OCCURED');
@@ -49,14 +52,18 @@ JText::script('COM_EMUNDUS_OK');
 
 JHtml::styleSheet('components/com_emundus/src/assets/css/element-ui/theme-chalk/index.css');
 
-$xmlDoc = new DOMDocument();
-if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
-    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
-}
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
 
 $menu = JFactory::getApplication()->getMenu();
 $current_menu = $menu->getActive();
 $params = $menu->getParams($current_menu->id)->get('params');
+if(empty($params->ratio_modal)) {
+    $params->ratio_modal = '66/33';
+}
+
+$app = Factory::getApplication();
+$fnum = $app->input->getString('fnum', '');
 
 JFactory::getSession()->set('current_menu_id',$current_menu->id);
 $user = JFactory::getUser();
@@ -65,9 +72,10 @@ $user = JFactory::getUser();
      user=<?= $user->id ?>
      ratio=<?= $params->ratio_modal ?>
      type="evaluation"
+     fnum=<?= $fnum ?>
 >
 </div>
 
-<script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>
+<script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
 
 

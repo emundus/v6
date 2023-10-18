@@ -9,7 +9,6 @@
 // no direct access
 defined('_JEXEC') or die;
 $document = JFactory::getDocument();
-$document->addStyleSheet('https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined' );
 
 $user = JFactory::getSession()->get('emundusUser');
 if (!$user->just_logged) {

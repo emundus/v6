@@ -61,8 +61,15 @@ class SoapConnect {
     }
 
     public function sendRequest($curl_obj,$fnum) {
+        $app = JFactory::getApplication();
+        $offset = $app->get('offset', 'UTC');
+
+        $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+        $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
+        $now = $dateTime->format('Y-m-d H:i:s');
+
         /// get fnum info
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+        require_once(JPATH_SITE.'/components/com_emundus/models/files.php');
         $_mFile = new EmundusModelFiles;
         $fnum_infos = $_mFile->getFnumInfos($fnum);
 
@@ -88,7 +95,7 @@ class SoapConnect {
 
                 /// insert the status FAILED to table "jos_emundus_apogee_status"
                 $data = array(
-                    'date_time' => date('Y-m-d H:i:s'),
+                    'date_time' => $now,
                     'applicant_id' => $fnum_infos['applicant_id'],
                     'fnum'      => $fnum,
                     'status'    => 0,
@@ -99,14 +106,14 @@ class SoapConnect {
             } else {
                 if($faultString->length == 0) {
                     $data = array(
-                        'date_time' => date('Y-m-d H:i:s'),
+                        'date_time' => $now,
                         'applicant_id' => $fnum_infos['applicant_id'],
                         'fnum' => $fnum,
                         'status' => 1
                     );
                 } else {
                     $data = array(
-                        'date_time' => date('Y-m-d H:i:s'),
+                        'date_time' => $now,
                         'applicant_id' => $fnum_infos['applicant_id'],
                         'fnum'      => $fnum,
                         'status'    => 0,
@@ -120,7 +127,7 @@ class SoapConnect {
         } catch(Exception $e) {
 
             $data = array(
-                'date_time' => date('Y-m-d H:i:s'),
+                'date_time' => $now,
                 'applicant_id' => $fnum_infos['applicant_id'],
                 'fnum'      => $fnum,
                 'status'    => 0,

@@ -1,6 +1,6 @@
 <template>
   <div v-if="params.length > 0">
-    <div v-for="param in displayedParams" class="form-group">
+    <div v-for="param in displayedParams" class="form-group mb-4">
       <label>{{ translate(param.label) }}</label>
 
       <!-- DROPDOWN -->

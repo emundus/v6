@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -42,19 +42,115 @@ class plgHikashopRates extends JPlugin
 
 		if(empty($plugin->params) || !is_array($plugin->params))
 			$plugin->params = array();
-		if($plugin->params['source']=='yahoo'){
-			$this->message = 'Yahoo Finance has been discontinued. Please reconfigure the HikaShop Currency Rates update plugin via the Joomla plugins manager.';
-			$app->enqueueMessage($this->message, 'error' );
-		}if($plugin->params['source']=='openexchangerates'){
-			if(empty($plugin->params['app_id'])) {
-				$this->message = 'If you want to use the Open Exchange Rates service to update your currency rates, you first need to sign up on https://openexchangerates.org/ and then enter your App id in the settings of the HikaShop currency Rates update plugin via the Joomla plugins manager.';
+
+		if(empty($plugin->params['source'])){
+			$plugin->params['source'] = 'ecb';
+		}
+		switch($plugin->params['source']) {
+			case 'yahoo':
+				$this->message = 'Yahoo Finance has been discontinued. Please reconfigure the HikaShop Currency Rates update plugin via the Joomla plugins manager.';
 				$app->enqueueMessage($this->message, 'error' );
+				break;
+			case 'openexchangerates':
+				if(empty($plugin->params['app_id'])) {
+					$this->message = 'If you want to use the Open Exchange Rates service to update your currency rates, you first need to sign up on https://openexchangerates.org/ and then enter your App id in the settings of the HikaShop currency Rates update plugin via the Joomla plugins manager.';
+					$app->enqueueMessage($this->message, 'error' );
+				}else{
+					$this->updateRatesOpenexchangerates($plugin->params['app_id']);
+				}
+				break;
+			case 'cbr':
+				$this->updateRatesCBR();
+				break;
+			case 'ecb':
+			default:
+				$this->updateRatesECB();
+				break;
+		}
+	}
+
+	function updateRatesCBR() {
+
+		if(!function_exists('curl_init')){
+			$app = JFactory::getApplication();
+			$this->message = JText::_( 'The Central Bank of Russia feed requires cURL.' );
+			$app->enqueueMessage($this->message, 'error' );
+			return false;
+		}
+
+		$ch = curl_init();
+		$url = 'https://www.cbr.ru/scripts/XML_daily.asp';
+		curl_setopt ($ch, CURLOPT_URL, $url);
+		curl_setopt ($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_CAINFO, __DIR__ . "/cacert.pem");
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+
+		ob_start();
+
+		curl_exec ($ch);
+		$msg = curl_error($ch);
+		curl_close ($ch);
+		$string = ob_get_clean();
+
+		if(empty($string)){
+			$app = JFactory::getApplication();
+			$this->message = JText::_( 'No valid data in the currencies rate feed of the CBR feed: '.$msg );
+			$app->enqueueMessage($this->message, 'error' );
+			return false;
+		}
+
+		if(!preg_match_all('/<Valute (.*)<\/Valute>/mUs',iconv('Windows-1251','UTF-8//IGNORE',$string), $matches)){
+			$app = JFactory::getApplication();
+			$this->message = JText::_( 'No rates found in the currencies rate feed of the CBR feed: '.$msg );
+			$app->enqueueMessage($this->message, 'error' );
+			return false;
+		}
+		$data = array();
+		foreach($matches[1] as $match) {
+			preg_match('/<CharCode>(.*?)<\/CharCode>/m',$match, $currency_code);
+			preg_match('/<Value>(.*?)<\/Value>/m',$match, $rate);
+			preg_match('/<Nominal>(.*?)<\/Nominal>/m',$match, $nominal);
+			$data[$currency_code[1]] = hikashop_toFloat($rate[1])/(int)$nominal[1];
+		}
+
+		$config = hikashop_config();
+		$main_currency = (int)$config->get('main_currency',1);
+		$currencyClass = hikashop_get('class.currency');
+		$mainCurrencyData = $currencyClass->get($main_currency);
+		if($mainCurrencyData->currency_code!='RUB'){
+			if(in_array($mainCurrencyData->currency_code,array_keys($data))){
+				$rubRate = $data[$mainCurrencyData->currency_code];
+				$newCurrencies = array();
+				foreach($data as $code => $rate){
+					if($code!=$mainCurrencyData->currency_code) $newCurrencies[$code]=$rubRate/$rate;
+				}
+				$newCurrencies[$mainCurrencyData->currency_code]=1;
+				$newCurrencies['RUB']=$rubRate;
+				$data=$newCurrencies;
 			}else{
-				$this->updateRatesOpenexchangerates($plugin->params['app_id']);
+				$app = JFactory::getApplication();
+				$this->message = 'Main currency '.$mainCurrencyData->currency_code.' not supported by CBR feed:'.implode(',',array_keys($data));
+				$app->enqueueMessage($this->message, 'error' );
+				return false;
 			}
 		}else{
-			$this->updateRatesECB();
+			$data['RUB'] = 1;
+			foreach($data as $code => $rate){
+				$data[$code] = 1 / $rate;
+			}
 		}
+
+		$db = JFactory::getDBO();
+		foreach($data as $code => $rate){
+			$currency = null;
+			$query='UPDATE '.hikashop_table('currency').' SET currency_modified='.time().',currency_rate='.$db->Quote($rate).' WHERE currency_code='.$db->Quote($code);
+			$db->setQuery($query);
+			$db->execute();
+		}
+		$app = JFactory::getApplication();
+		$this->message = JText::_( 'RATES_SUCCESSFULLY_UPDATED' );
+		$app->enqueueMessage($this->message );
+		return true;
 	}
 
 	function updateRatesOpenexchangerates($app_id) {

@@ -1,0 +1,14 @@
+name: Links
+description: Links
+type: core
+
+form:
+  fields:
+    regular:
+      type: input.colorpicker
+      label: Link Color
+      default: "#20835F"
+    hover:
+      type: input.colorpicker
+      label: Hover Color
+      default: "#72b19a"

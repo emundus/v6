@@ -1,13 +1,14 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
+$cartimg_style = (!empty($this->element['small_cart']) && (int)$this->element['small_cart'] == 0) ? 'display: none;' : '';
 $minicart_style = (!empty($this->element['small_cart']) && (int)$this->element['small_cart'] == 1) ? 'display: none;' : '';
 $dropdown_style = (empty($this->element['small_cart']) || (int)$this->element['small_cart'] != 2) ? 'display: none;' : '';
 $name_style = (empty($this->element['show_cart_product_name']) || (int)$this->element['show_cart_product_name'] == 0) ? 'display: none;' : '';
@@ -36,6 +37,14 @@ $name_style = (empty($this->element['show_cart_product_name']) || (int)$this->el
 			<dd class="hikashop_option_value"><?php
 				echo JHTML::_('hikaselect.booleanlist', $this->name.'[image_in_cart]', '', @$this->element['image_in_cart']);
 			?></dd>
+		</dl>
+		<dl class="hika_options"  style="<?php echo $cartimg_style; ?>" data-part="img_cart">
+			<dt class="hikashop_option_name">
+				<label><?php echo hikashop_hktooltip(JText::sprintf('HIKA_CART_ICON_TEXT', $this->type), '', JText::_('HIKA_ENTER_ICON_PATH'), '', 0); ?></label>
+			</dt>
+			<dd class="hikashop_option_value">
+				<input name="<?php echo $this->name; ?>[icon]" id="iconpath" type="text" value="<?php echo $this->escape(@$this->element['icon']); ?>"/>
+			</dd>
 		</dl>
 <?php
 	if(!preg_match('/wishlist/', $this->name)) {
@@ -193,6 +202,13 @@ window.hikashop.ready(function(){
 	});
 
 	hkjQuery("[data-control=\'mini_cart\']").change(function(){
+		if(hkjQuery(this).val() == "0")
+			hkjQuery("[data-part=\'img_cart\']").hide();
+		else
+			hkjQuery("[data-part=\'img_cart\']").show();
+	});
+
+	hkjQuery("[data-control=\'mini_cart\']").change(function(){
 		if(hkjQuery(this).val() == "1")
 			hkjQuery("[data-part=\'mini_cart\']").hide();
 		else
@@ -209,6 +225,13 @@ window.hikashop.ready(function(){
 			hkjQuery("[data-part=\'msg\']").show();
 		else
 			hkjQuery("[data-part=\'msg\']").hide();
+	});
+
+	hkjQuery("[data-control=\'hideIcon\']").change(function(){
+		if(hkjQuery(this).val() == "1")
+			hkjQuery("[data-part=\'icon\']").show();
+		else
+			hkjQuery("[data-part=\'icon\']").hide();
 	});
 });
 ';

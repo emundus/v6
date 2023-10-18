@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -80,9 +80,7 @@ defined('_JEXEC') or die('Restricted access');
 <!-- EO VOTE -->
 <!-- PRICE -->
 <?php
-	$itemprop_offer = '';
-	if (!empty($this->element->prices))
-		$itemprop_offer = 'itemprop="offers" itemscope itemtype="https://schema.org/Offer"';
+	$itemprop_offer = 'itemprop="offers" itemscope itemtype="https://schema.org/Offer"';
 ?>
 		<span id="hikashop_product_price_main" class="hikashop_product_price_main" <?php echo $itemprop_offer; ?>>
 <?php
@@ -98,14 +96,16 @@ defined('_JEXEC') or die('Restricted access');
 		$this->row =& $this->element;
 		$this->setLayout('listing_price');
 		echo $this->loadTemplate();
+
+		$price = 0;
 		if (!empty($this->element->prices)) {
-?>
-			<meta itemprop="price" content="<?php echo $this->itemprop_price; ?>" />
-			<meta itemprop="availability" content="https://schema.org/<?php echo ($this->row->product_quantity != 0) ? 'InStock' : 'OutOfstock' ;?>" />
-			<meta itemprop="priceCurrency" content="<?php echo $this->currency->currency_code; ?>" />                                               
-<?php	}
+			$price = $this->itemprop_price;
+		}
 	}
-?>		</span>
+		?>	<meta itemprop="price" content="<?php echo $price; ?>" />
+			<meta itemprop="availability" content="https://schema.org/<?php echo ($this->row->product_quantity != 0) ? 'InStock' : 'OutOfstock' ;?>" />
+			<meta itemprop="priceCurrency" content="<?php echo $this->currency->currency_code; ?>" />
+		</span>
 <!-- EO PRICE -->
 <!-- RIGHT MIDDLE EXTRA DATA -->
 <?php if(!empty($this->element->extraData->rightMiddle)) { echo implode("\r\n",$this->element->extraData->rightMiddle); } ?>

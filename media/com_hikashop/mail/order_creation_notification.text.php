@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -75,7 +75,7 @@ if(!empty($data->cart->billing_address)){
 }
 if(!empty($data->order_shipping_method)) {
 	$currentShipping = hikashop_import('hikashopshipping',$data->order_shipping_method);
-	if(method_exists($currentShipping, 'getShippingAddress')) {
+	if($currentShipping && method_exists($currentShipping, 'getShippingAddress')) {
 		$override = $currentShipping->getShippingAddress($data->order_shipping_id, $data->cart);
 		if($override !== false) {
 			$data->override_shipping_address = $override;

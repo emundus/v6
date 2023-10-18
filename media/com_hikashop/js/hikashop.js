@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.6.2
+ * @version    4.7.4
  * @author     hikashop.com
- * @copyright  (C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 (function() {
@@ -374,6 +374,10 @@ var hikashop = {
 	translations_url: null,
 	submitFct: null,
 	filterRefreshTimer: false,
+
+	setCookie: function (name,value,delay) {
+		document.cookie = name + "=" + (value || "")  +  "; expires=" + delay + "; path=/";
+   	},
 	submitBox: function(data) {
 		var t = this, d = document, w = window;
 		if( t.submitFct ) {
@@ -1025,11 +1029,45 @@ var hikashop = {
 				}
 				parentNode.replaceChild(newElem, currentArea);
 				if( scripts != '' ) {
-					var script = d.createElement('script');
-					script.setAttribute('type', 'text/javascript');
-					script.text = scripts;
-					d.head.appendChild(script);
-					d.head.removeChild(script);
+					new Promise((resolve, reject)=>{
+						var script = d.createElement('script');
+						script.setAttribute('type', 'text/javascript');
+
+						var windowErrorHandler = (event) =>{
+							event.preventDefault();
+							var error = event.error;
+							error.stack = error.stack + '\n\n' + scripts;
+							window.removeEventListener('error', windowErrorHandler);
+							reject(error);
+						};
+						window.addEventListener('error', windowErrorHandler);
+
+						var rejectHandler = (error) =>{
+							window.removeEventListener('error', windowErrorHandler);
+							reject(error);
+						};
+						script.addEventListener('error', rejectHandler);
+						script.addEventListener('abort', rejectHandler);
+						var loadedHandler = ()=>{
+							window.removeEventListener('error', windowErrorHandler);
+							resolve();
+						};
+
+						script.addEventListener('load', loadedHandler);
+						script.text = scripts.replaceAll('let jch_', 'jch_').replaceAll('const jch', 'window.hikashop.jch');
+						try {
+							d.head.appendChild(script);
+							d.head.removeChild(script);
+						} catch (e) {
+							if (e instanceof SyntaxError) {
+							}
+						}
+					})
+					.catch(error => {
+						console.warn('Could not process JavaScript code:\n', error);
+					})
+					.then(()=>{
+					});
 				}
 
 				if(!window.localPage) window.localPage = {};
@@ -1205,14 +1243,14 @@ var hikashop = {
 			el.value = max;
 			if(hkjQuery.notify) {
 				this.translate(['QUANTITY_CHANGE_IMPOSSIBLE', 'MAXIMUM_FOR_PRODUCT_IS_X'], function(trans){
-					hkjQuery(el).notify({title:trans[0],text:trans[1].replace('%s', max), image:'<i class="fa fa-3x fa-exclamation-circle"></i>'},{style:"metro",className:"warning",arrowShow:true});
+					hkjQuery(el).notify({title:trans[0],text:trans[1].replace('%s', max), image:'<i class="fa fa-3x fa-exclamation-circle"></i>'},{style:"metro",className:"warning",arrowShow:true,position:"top left"});
 				});
 			}
 		} else if(value < min) {
 			el.value = min;
 			if(hkjQuery.notify) {
 				this.translate(['QUANTITY_CHANGE_IMPOSSIBLE', 'MINIMUM_FOR_PRODUCT_IS_X'], function(trans){
-					hkjQuery(el).notify({title:trans[0],text:trans[1].replace('%s', min), image:'<i class="fa fa-3x fa-exclamation-circle"></i>'},{style:"metro",className:"warning",arrowShow:true});
+					hkjQuery(el).notify({title:trans[0],text:trans[1].replace('%s', min), image:'<i class="fa fa-3x fa-exclamation-circle"></i>'},{style:"metro",className:"warning",arrowShow:true,position:"top left"});
 				});
 			}
 		}

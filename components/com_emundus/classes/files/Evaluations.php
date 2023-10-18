@@ -52,7 +52,7 @@ class Evaluations extends Files
 			$left_joins = $this->buildLeftJoin($params,$read_status_allowed);
 			$wheres = $this->buildWhere($params);
 
-			parent::setFnums($this->buildQuery($select_all,[],$wheres,$read_access_file,0,0,'column'));
+			parent::setFnums($this->buildQuery($select_all,[],$wheres,$read_access_file,0,0,'column',$params));
 	        parent::setTotal(count($this->getFnums()));
 
 
@@ -78,9 +78,13 @@ class Evaluations extends Files
 		        $files_associated = $this->buildAssocGroups($files_associated);
 	        }
 
+            if(isset($params->display_tag_assoc) && $params->display_tag_assoc == 1 && EmundusHelperAccess::asAccessAction(14,'r',JFactory::getUser()->id)) {
+                $files_associated = $this->buildAssocTags($files_associated);
+            }
 
-			// Get count of differents groups
-	        $total_files_to_evaluate = $this->buildQuery($select_count,[],$wheres_to_evaluate,$read_access_file,0,0,'column');
+
+                // Get count of differents groups
+	        $total_files_to_evaluate = $this->buildQuery($select_count,[],$wheres_to_evaluate,$read_access_file,0,0,'column',$params);
 	        $to_evaluate = $this->getToEvaluate();
 			if(empty($to_evaluate)){
 				$to_evaluate['limit'] = 10;
@@ -89,7 +93,7 @@ class Evaluations extends Files
 	        $to_evaluate['total'] = sizeof($total_files_to_evaluate);
 			$this->setToEvaluate($to_evaluate);
 
-	        $total_files_evaluated = $this->buildQuery($select_count,[],$wheres_evaluated,$read_access_file,0,0,'column');
+	        $total_files_evaluated = $this->buildQuery($select_count,[],$wheres_evaluated,$read_access_file,0,0,'column',$params);
 	        $evaluated = $this->getEvaluated();
 	        if(empty($evaluated)){
 		        $evaluated['limit'] = 10;
@@ -98,7 +102,7 @@ class Evaluations extends Files
 	        $evaluated['total'] = sizeof($total_files_evaluated);
 	        $this->setEvaluated($evaluated);
 
-	        $total_files_all = $this->buildQuery($select_count,[],$wheres,$read_access_file,0,0,'column');
+	        $total_files_all = $this->buildQuery($select_count,[],$wheres,$read_access_file,0,0,'column',$params);
 	        $all = $this->getAll();
 	        if(empty($all)){
 		        $all['limit'] = 10;
@@ -158,7 +162,10 @@ class Evaluations extends Files
 					if(isset($file->assocs)){
 						$evaluation->assocs = $file->assocs;
 					}
-			        if (isset($file->status)) {
+                    if(isset($file->tags)){
+                        $evaluation->tags = $file->tags;
+                    }
+                    if (isset($file->status)) {
 				        $evaluation->status       = $file->status;
 				        $evaluation->status_color = $file->status_color;
 			        }
@@ -213,7 +220,13 @@ class Evaluations extends Files
 		        $assoc_column->show_in_list_summary = 1;
 		        $eval_elements['assocs'] = $assoc_column;
 	        }
-			parent::setColumns($eval_elements);
+            if(isset($params->display_tag_assoc) && $params->display_tag_assoc == 1 && EmundusHelperAccess::asAccessAction(14,'r',JFactory::getUser()->id)) {
+                $tags_column = new stdClass();
+                $tags_column->name = 'tags';
+                $tags_column->show_in_list_summary = 1;
+                $eval_elements['tags'] = $tags_column;
+            }
+                parent::setColumns($eval_elements);
         } catch (Exception $e) {
             JLog::add('Problem to get files associated to user '.$this->current_user->id.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
         }

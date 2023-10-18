@@ -618,7 +618,7 @@ fieldset.row-fluid:before {
 }
 
 .fabrikElement select[multiple], .fabrikElement select[size] {
-    height: auto !important;
+    height: var(--em-form-height) !important;
 }
 
 /** Remove bootstrap textarea fixed height **/

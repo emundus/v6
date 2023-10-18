@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -140,7 +140,7 @@ if(!empty($cart->usable_methods->payment)) {
 <?php
 				} else {
 ?>
-				<span class="hikashop_checkout_payment_card_details"><?php echo $this->escape(@$cc_data->owner); ?></span>
+				<span class="hikashop_checkout_payment_card_details"><?php echo $this->escape((string)@$cc_data->owner); ?></span>
 <?php
 				}
 ?>
@@ -165,7 +165,7 @@ if(!empty($cart->usable_methods->payment)) {
 						if(isset($payment->ask_cctype[@$cc_data->type]))
 							echo $this->escape($payment->ask_cctype[@$cc_data->type]);
 						else
-							echo $this->escape(@$cc_data->type);
+							echo $this->escape((string)@$cc_data->type);
 				?></span>
 <?php
 					}
@@ -182,7 +182,7 @@ if(!empty($cart->usable_methods->payment)) {
 <?php
 			} else {
 ?>
-			<span class="hikashop_checkout_payment_card_details"><?php echo $this->escape(@$cc_data->num); ?></span>
+			<span class="hikashop_checkout_payment_card_details"><?php echo $this->escape((string)@$cc_data->num); ?></span>
 <?php
 			}
 ?>
@@ -198,7 +198,7 @@ if(!empty($cart->usable_methods->payment)) {
 <?php
 			} else {
 ?>
-			<span class="hikashop_checkout_payment_card_details"><?php echo $this->escape(@$cc_data->mm) . '/' . $this->escape(@$cc_data->yy); ?></span>
+			<span class="hikashop_checkout_payment_card_details"><?php echo $this->escape((string)@$cc_data->mm) . '/' . $this->escape((string)@$cc_data->yy); ?></span>
 <?php
 			}
 ?>
@@ -216,7 +216,7 @@ if(!empty($cart->usable_methods->payment)) {
 <?php
 				} else {
 ?>
-				<span class="hikashop_checkout_payment_card_details"><?php echo $this->escape(@$cc_data->ccv); ?></span>
+				<span class="hikashop_checkout_payment_card_details"><?php echo $this->escape((string)@$cc_data->ccv); ?></span>
 <?php
 				}
 ?>

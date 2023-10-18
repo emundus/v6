@@ -1,5 +1,6 @@
 /.gitignore.*
 .idea
+!.idea/runConfigurations
 .scannerwork
 workspace.xml
 /cache/*
@@ -16,9 +17,11 @@ administrator/cache/*
 templates/rt_afterburner2/css/rt_afterburner2-custom.css
 templates/g5_helium/templateDetails.xml
 templates/g5_helium/custom/*
+!templates/g5_helium/custom/particles/*
 !templates/g5_helium/custom/scss/tchooz.scss
 !templates/g5_helium/custom/scss/global.scss
 !templates/g5_helium/custom/scss/variables.scss
+!templates/g5_helium/custom/scss/tchoozy.css
 templates/g5_helium/html/com_eventbooking/*
 templates/g5_helium/html/com_hikashop/*
 templates/emundus_vanilla/*
@@ -34,9 +37,11 @@ templates/LaScala/*
 /templates/LaScala/*
 /images/emundus/files/*
 /images/emundus/letters/*
+/images/emundus/phases/*
 /image/logo.png
 /images/custom/logo.png
 /images/custom/logo_custom.png
+/images/emundus/custom/*
 #_bdd/*
 components/com_emundus.*
 components/com_emundus/*.bak
@@ -67,6 +72,7 @@ administrator/templates/isis/images/joomla.png
 administrator/templates/isis/images/logo.png
 plugins/fabrik_form/php/emundus-csv_import_ehesp.php
 components/com_fabrik/views/details/tmpl/celsa/*
+plugins/fabrik_form/email/tmpl/*
 
 ### macOS ###
 *.DS_Store
@@ -130,3 +136,17 @@ components/com_eventbooking/fields.xml
 /plugins/authentication/miniorangesaml/
 /plugins/system/samlredirect/
 /plugins/user/samllogout/
+
+## FABRIK JS ##
+/components/com_fabrik/js/form_*.js
+/components/com_fabrik/js/list_*.js
+/components/com_fabrik/js/table_*.js
+/components/com_fabrik/js/viz_*.js
+/components/com_fabrik/js/details_*.js
+
+## tailwind ##
+node_modules
+custom_variables.js
+
+## Imt Atlantique Me3+ And Sarena ##
+assessment/

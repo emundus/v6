@@ -207,12 +207,13 @@ class EmundusModelMessages extends JModelList {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
-        $query->select('e.*, et.*, GROUP_CONCAT(etr.tags) as tags, GROUP_CONCAT(ca.candidate_attachment) AS candidate_attachments, GROUP_CONCAT(la.letter_attachment) AS letter_attachments')
+        $query->select('e.*, et.*, GROUP_CONCAT(etr.tags) as tags, GROUP_CONCAT(ca.candidate_attachment) AS candidate_attachments, GROUP_CONCAT(la.letter_attachment) AS letter_attachments, GROUP_CONCAT(r.receivers) AS receivers')
             ->from($db->quoteName('#__emundus_setup_emails','e'))
             ->leftJoin($db->quoteName('#__emundus_email_templates','et').' ON '.$db->quoteName('e.email_tmpl').' = '.$db->quoteName('et.id'))
             ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_tags','etr').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('etr.parent_id'))
             ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment','ca').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('ca.parent_id'))
-            ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment','la').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('la.parent_id'));
+            ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment','la').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('la.parent_id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_receivers','r').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('r.parent_id'));
 
         // Allow the function to dynamically decide if it is getting by ID or label depending on the value submitted.
         if (is_numeric($id)) {
@@ -577,9 +578,9 @@ class EmundusModelMessages extends JModelList {
                 if($gotenberg_activation == 1 && $letter->pdf == 1){
                     //convert to PDF
                     $src = EMUNDUS_PATH_ABS.$fnumsInfos['applicant_id'].DS.$filename;
-                    $dest = str_replace('.docx', '.pdf', $src);
+                    $dest = str_replace('.docx', '', $src);
                     $filename = str_replace('.docx', '.pdf', $filename);
-                    $res = $m_export->toPdf($src, $dest, $fnum);
+                    $res = $m_export->toPdf($src, $dest, null, $fnum);
                 }
 
                 $m_files->addAttachment($fnum, $filename, $fnumsInfos['applicant_id'], $fnumsInfos['campaign_id'], $letter->attachment_id, $attachInfos['description']);

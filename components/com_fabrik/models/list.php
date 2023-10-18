@@ -7837,7 +7837,7 @@ class FabrikFEModelList extends JModelForm
 			}
 		}
 
-		if ($origRowId == '')
+		if (empty($origRowId))
 		{
 			/**
 			 * $$$ rob added test for auto_inc as sugarid key is set from storeDatabaseFormat() and needs to be maintained
@@ -11907,6 +11907,10 @@ class FabrikFEModelList extends JModelForm
 		if (JFile::exists(COM_FABRIK_FRONTEND . '/js/list_' . $this->getId() . '.js'))
 		{
 			$scripts[$scriptKey] = 'components/com_fabrik/js/list_' . $this->getId() . '.js';
+		}
+		elseif (JFile::exists(COM_FABRIK_FRONTEND . '/js/custom_list_'.$this->getTmpl().'.js'))
+		{
+			$scripts[$scriptKey] = 'components/com_fabrik/js/custom_list_'.$this->getTmpl().'.js';
 		}
 	}
 

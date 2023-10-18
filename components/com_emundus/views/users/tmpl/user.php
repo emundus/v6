@@ -9,7 +9,12 @@
 $document = JFactory::getDocument();
 $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 
-require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
+require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
+
+$config = JFactory::getConfig();
+$config_offset = $config->get('offset');
+$offset = $config_offset ?: 'Europe/Paris';
+$timezone = new DateTimeZone($offset);
 ?>
 <style>
     .em-cell .material-icons{
@@ -117,7 +122,6 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
                                         <div class="em-cell" >
                                             <label for = "<?php echo $value?>_check">
                                                 <?php
-                                                $timezone = date_default_timezone_get();
                                                 echo EmundusHelperDate::displayDate($value, 'COM_EMUNDUS_DATE_FORMAT', $timezone === 'UTC' ? 1 : 0);
                                                 ?>
                                             </label>
@@ -127,7 +131,7 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
                                     <?php if ($value == 0 && $user->active != -1) :?>
                                         <td>
                                             <div class="em-cell" >
-                                                <span class="material-icons em-main-500-color" title="<?php echo JText::_('COM_EMUNDUS_USERS_ACTIVATE_ACCOUNT_SINGLE') ?>">verified</span>
+                                                <span class="material-icons" style="color:var(--main-500);" title="<?php echo JText::_('COM_EMUNDUS_USERS_ACTIVATE_ACCOUNT_SINGLE') ?>">verified</span>
                                             </div>
                                         </td>
                                     <?php elseif($user->active == -1):?>

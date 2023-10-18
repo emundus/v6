@@ -18,7 +18,7 @@ $current_user = JFactory::getUser();
                         </div>
                     </div>
                 </div>
-                <span class="em-h3 em-mb-32 em-mt-24"><?= JText::_('COM_EMUNDUS_MAIL_SEND') ?></span>
+                <h3 class="em-mb-32 em-mt-24"><?= JText::_('COM_EMUNDUS_MAIL_SEND') ?></h3>
                 <p class="instructions"><?= JText::sprintf( 'COM_EMUNDUS_ACCESS_PLATFORM', $this->user_email ); ?></p>
                 <div class="resend em-mt-48">
                     <p><?= JText::_('COM_EMUNDUS_MAIL_NOT_RECEIVE_DESC'); ?>
@@ -37,7 +37,10 @@ $current_user = JFactory::getUser();
 
 <script>
     window.addEventListener('DOMContentLoaded', () => {
-        document.getElementsByClassName('em-page-loader')[0].style.display = 'none';
+        const loaders = document.getElementsByClassName('em-page-loader');
+        for(loader of loaders) {
+           loader.style.display = 'none';
+        }
         document.getElementById('g-page-surround').style.background = 'white';
         document.getElementById('g-footer').style.display = 'none';
         document.getElementById('header-c').style.display = 'none';

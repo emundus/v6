@@ -41,4 +41,9 @@ class EmundusModelQcmTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_qcm = new EmundusModelQcm;
     }
+
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
 }

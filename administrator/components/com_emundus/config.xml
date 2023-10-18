@@ -14,7 +14,7 @@
 		-->
 		<field name="log_actions" label="LOG_ACTIONS" default="1,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37" type="field" description="LOG_ACTIONS_DESC"/>
 		<field name="log_actions_exclude" label="LOG_ACTIONS_EXCLUDE" type="field" description="LOG_ACTIONS_EXCLUDE_DESC"/>
-		<field name="log_actions_exclude_user" label="LOG_ACTIONS_EXCLUDE_USER" default="62" type="field" description="LOG_ACTIONS_EXCLUDE_USER_DESC"/>
+		<field name="log_actions_exclude_user" label="LOG_ACTIONS_EXCLUDE_USER" default="" type="field" description="LOG_ACTIONS_EXCLUDE_USER_DESC"/>
 		<field name="log_forms_update" type="radio" default="0" label="COM_EMUNDUS_LOG_FORMS_UPDATE" description="COM_EMUNDUS_LOG_FORMS_UPDATE_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
@@ -65,6 +65,23 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+
+		<field name="use_cdn" label="COM_EMUNDUS_USE_CDN" type="list" default="1" description="">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
+		<field name="display_required_icon" label="COM_EMUNDUS_DISPLAY_REQUIRED_ICON" type="list" default="1" description="COM_EMUNDUS_DISPLAY_REQUIRED_ICON_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
+		<field showon="display_required_icon:1" name="required_icon_position" label="COM_EMUNDUS_REQUIRED_POSITION_ICON" type="list" default="1" description="">
+			<option value="0">COM_EMUNDUS_REQUIRED_POSITION_ICON_BEFORE</option>
+			<option value="1">COM_EMUNDUS_REQUIRED_POSITION_ICON_AFTER</option>
+		</field>
+
+		<field name="repeat_icon" type="text" label="COM_EMUNDUS_REPEAT_GROUP_ICON" default="clear" description="COM_EMUNDUS_REPEAT_GROUP_ICON_DESC" size="60"/>
 
 		<field
 				name="spacer0"
@@ -156,10 +173,26 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+		<field name="copy_application_form_type" showon="copy_application_form:1" menu="hide" type="list" default="0" label="COM_EMUNDUS_COPY_APPLICATION_FORM_TYPE" description="">
+			<option value="0">COM_EMUNDUS_COPY_APPLICATION_FORM_TYPE_EXCLUDE</option>
+			<option value="1">COM_EMUNDUS_COPY_APPLICATION_FORM_TYPE_INCLUDE</option>
+		</field>
+		<field name="copy_include_forms"
+			   label="COM_EMUNDUS_COPY_APPLICATION_FORM_INCLUDE"
+			   description=""
+			   showon="copy_application_form:1[AND]copy_application_form_type:1"
+			   menu="hide"
+			   type="sql"
+			   query="SELECT id, label FROM jos_fabrik_forms WHERE published = 1"
+			   key_field="id"
+			   value_field="label"
+			   multiple="true"
+			   default=""
+		/>
 		<field name="copy_exclude_forms"
 			   label="COM_EMUNDUS_COPY_APPLICATION_FORM_EXCLUDE"
 			   description="COM_EMUNDUS_COPY_APPLICATION_FORM_EXCLUDE_DESC"
-			   showon="copy_application_form:1"
+			   showon="copy_application_form:1[AND]copy_application_form_type:0"
 			   menu="hide"
 			   type="sql"
 			   query="SELECT id, label FROM jos_fabrik_forms WHERE published = 1"
@@ -265,7 +298,53 @@
 		<field name="application_form_order" type="text" size="6" label="COM_EMUNDUS_APPLICATION_FORM_ORDER" description="COM_EMUNDUS_APPLICATION_FORM_ORDER_DESC"/>
 		<field name="attachment_order" type="text" size="6" label="COM_EMUNDUS_CANDIDACY_FORM_ORDER" description="COM_EMUNDUS_CANDIDACY_FORM_ORDER_DESC"/>
 
+		<field
+				name="spacer1"
+				type="spacer"
+				hr="true"
+		/>
+
+		<field name="generate_params" label="COM_EMUNDUS_GENERATE_LETTERS_PARAMETERS" type="note" default="0" description=""></field>
+
 		<field name="export_replace_doc" type="radio" default="0" label="COM_EMUNDUS_EXPORT_REPLACE_DOC" description="COM_EMUNDUS_EXPORT_REPLACE_DOC_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
+		<field name="generate_letter_pdf_margins" type="text" label="COM_EMUNDUS_EXPORT_GENERATE_LETTER_MARGINS" default="5,20,5"/>
+
+		<field name="generate_letter_logo_width" type="text" size="6" label="COM_EMUNDUS_EXPORT_GENERATE_LOGO_WIDTH" default="25"/>
+
+		<field name="generate_letter_display_header" type="radio" default="1" label="COM_EMUNDUS_EXPORT_GENERATE_DISPLAY_HEADER">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
+		<field name="generate_letter_display_footer" type="radio" default="1" label="COM_EMUNDUS_EXPORT_GENERATE_DISPLAY_FOOTER">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
+		<field showon="generate_letter_display_footer:1" name="generate_letter_display_pages_number" type="radio" default="1" label="COM_EMUNDUS_EXPORT_GENERATE_LETTER_DISPLAY_PAGES_NUMBER">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
+		<field name="generate_letter_use_default_font" type="radio" default="0" label="COM_EMUNDUS_EXPORT_GENERATE_USE_DEFAULT_FONT" description="COM_EMUNDUS_EXPORT_GENERATE_USE_DEFAULT_FONT_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
+		<field name="generate_letter_font_size" type="text" size="6" label="COM_EMUNDUS_EXPORT_GENERATE_LETTER_FONT_SIZE" default="10"/>
+
+		<field showon="generate_letter_use_default_font:0" name="generate_letter_font" type="text" label="COM_EMUNDUS_EXPORT_GENERATE_LETTER_FONT" default="helvetica"/>
+
+		<field name="generate_letter_escape_ampersand" type="radio" default="0" label="COM_EMUNDUS_EXPORT_GENERATE_LETTER_ESCAPE_AMPERSAND" description="COM_EMUNDUS_EXPORT_GENERATE_LETTER_ESCAPE_AMPERSAND_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
+		<field name="generate_letter_whitespace_textarea" type="radio" default="0" label="COM_EMUNDUS_EXPORT_GENERATE_LETTER_WHITESPACE_TEXTAREA" description="COM_EMUNDUS_EXPORT_GENERATE_LETTER_WHITESPACE_TEXTAREA_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
@@ -284,6 +363,7 @@
 	<fieldset label="COM_EMUNDUS_EMAIL_REMINDER" name="email" description="COM_EMUNDUS_EMAIL_REMINDER_DESC">
 		<field name="nb_email_per_batch" type="text" size="3" default="50" label="NB_EMAIL_PER_BATCH" description="NB_EMAIL_PER_BATCH_DESC" />
 		<field name="time_sleep_per_batch" type="text" size="6" default="1000" label="TIME_SLEEP_PER_BATCH" description="TIME_SLEEP_PER_BATCH_DESC" />
+		<field name="email_custom_tag" type="text" default="" label="COM_EMUNDUS_EMAIL_CUSTOM_TAG" description="COM_EMUNDUS_EMAIL_CUSTOM_TAG_DESC" />
 		<field
 				name="spacer1"
 				type="spacer"
@@ -363,6 +443,8 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+
+		<field name="api_bearer_token" type="text" label="COM_EMUNDUS_API_BEARER_TOKEN"/>
 
 		<field
 				name="integration_gotenberg"
@@ -540,6 +622,21 @@
 			<field name="smart_agenda_api_key" type="password" label="COM_EMUNDUS_SMART_AGENDA_API_KEY"/>
 			<field name="smart_agenda_base_url" type="text" label="COM_EMUNDUS_SMART_AGENDA_BASE_URL"/>
 			<field name="smart_agenda_ws_base_url" type="text" label="COM_EMUNDUS_SMART_AGENDA_BASE_URL_WS"/>
+		</fieldset>
+
+		<field name="spacer12" type="spacer" hr="true"/>
+		<field name="postgrest" type="note" label="COM_EMUNDUS_POSTGREST_API"/>
+		<fieldset label="COM_EMUNDUS_POSTGREST_API">
+			<field name="postgrest_api_base_url" type="text" label="COM_EMUNDUS_POSTGREST_BASE_URL"/>
+			<field name="postgrest_api_bearer_token" type="text" label="COM_EMUNDUS_POSTGREST_BEARER_TOKEN"/>
+		</fieldset>
+
+		<field name="spacer13" type="spacer" hr="true"/>
+		<field name="glpi" type="note" label="COM_EMUNDUS_GLPI_API"/>
+		<fieldset label="COM_EMUNDUS_GLPI_API">
+			<field name="glpi_api_base_url" type="text" label="COM_EMUNDUS_GLPI_BASE_URL"/>
+			<field name="glpi_api_app_token" type="text" label="COM_EMUNDUS_GLPI_APP_TOKEN"/>
+			<field name="glpi_api_user_token" type="text" label="COM_EMUNDUS_GLPI_USER_TOKEN"/>
 		</fieldset>
 
 	</fieldset>

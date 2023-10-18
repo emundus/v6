@@ -40,16 +40,16 @@ class UpdateCli extends JApplicationCli
         $this->db = JFactory::getDbo();
 
         $short_options = "vhlcu::a";
-        $long_options = ["verbose", "help", "list", "core", "update::", "all","dry-run"];
+        $long_options = ["verbose", "help", "list", "core", "update::", "all", "dry-run"];
         $options = getopt($short_options, $long_options);
         $args = (array)$GLOBALS['argv'];
 
         # Init log files
         $log_files = array(JPATH_BASE . "/logs/update_cli_errors.log", JPATH_BASE . "/logs/update_cli_queries.log");
-        foreach ($log_files AS $file) {
-            if (file_exists($file)){
+        foreach ($log_files as $file) {
+            if (file_exists($file)) {
                 if (!unlink($file)) {
-                    $this->out($this->colorLog("$file log file can't be deleted\n",'e'));
+                    $this->out($this->colorLog("$file log file can't be deleted\n", 'e'));
                 }
             }
         }
@@ -99,46 +99,46 @@ class UpdateCli extends JApplicationCli
         if (isset($options["a"]) || isset($options["all"])) {
             $this->count_exec++;
             $this->updateJoomla();
-            $this->updateComponents(null,$options);
+            $this->updateComponents(null, $options);
         }
         # Update 1 to n components (except Joomla)
         if (isset($options["u"]) || isset($options["update"])) {
             # Execute update for all of components name pass to args
             if (sizeof($args) == 2) {
-                $this->updateComponents(null,$options);
+                $this->updateComponents(null, $options);
             } elseif (sizeof($args) > 2) {
                 $index = 2;
                 while ($index <= sizeof($args) - 1) {
                     $element[] = $args[$index];
                     $index++;
                 }
-                $this->updateComponents($element,$options);
+                $this->updateComponents($element, $options);
             }
         }
 
         if (isset($options["u"]) || isset($options["update"]) || isset($options["a"]) || isset($options["all"]) || isset($options["c"]) || isset($options["core"])) {
             $this->out("###########################################################");
 
-            if ($this->count_fails == 0 ) {
-                $this->out($this->colorLog("$this->count_exec components are up to date",'s'));
+            if ($this->count_fails == 0) {
+                $this->out($this->colorLog("$this->count_exec components are up to date", 's'));
             } else {
-                $this->out($this->colorLog("$this->count_fails components failed to be updated !",'e'));
+                $this->out($this->colorLog("$this->count_fails components failed to be updated !", 'e'));
             }
-            
+
             if ($this->verbose) {
-                $this->out($this->colorLog("  -> $this->count_stmt sql statements executed",'i'));
+                $this->out($this->colorLog("  -> $this->count_stmt sql statements executed", 'i'));
 
                 # Execution time
                 $executionEndTime = microtime(true);
                 $seconds = $executionEndTime - $executionStartTime;
                 $seconds = substr((string)$seconds, 0, 4);
-                $this->out($this->colorLog("\nThis script took $seconds seconds to execute.",'i'));
+                $this->out($this->colorLog("\nThis script took $seconds seconds to execute.", 'i'));
             }
 
-            if ($this->count_fails == 0 ) {
-                $this->out($this->colorLog("\nRESULTS: SUCCESS !",'s'));
+            if ($this->count_fails == 0) {
+                $this->out($this->colorLog("\nRESULTS: SUCCESS !", 's'));
             } else {
-                $this->out($this->colorLog("\nRESULTS: FAILED !",'e'));
+                $this->out($this->colorLog("\nRESULTS: FAILED !", 'e'));
                 $this->out("###########################################################");
                 exit(1);
             }
@@ -157,7 +157,7 @@ class UpdateCli extends JApplicationCli
         # Load Joomla id
         $query = $this->db->getQuery(true);
         $query->select('extension_id')
-            ->where($this->db->quoteName('name') ." = 'files_joomla'" )
+            ->where($this->db->quoteName('name') . " = 'files_joomla'")
             ->from("#__extensions");
         $this->db->setQuery($query);
         $id = $this->db->loadResult("id");
@@ -174,8 +174,13 @@ class UpdateCli extends JApplicationCli
 
         $this->out("*--------------------*\n");
         $this->out("UPDATE Joomla " . $version . " to " . preg_split("/.sql/", end($files))[0]);
-        $this->purgeAndFetchUpdates("joomla");
-        $this->out("-> Finalise...");
+        
+        # Check if update is needed
+        if ($this->purgeAndFetchUpdates("joomla") == 1) {
+            $this->out($this->colorLog("\nJoomla purge and fetch updates failed !",'e'));
+            $this->count_fails++;
+            return;
+        }
 
         # Execute update
         $this->global_logs = $this->db->getLog();
@@ -198,7 +203,7 @@ class UpdateCli extends JApplicationCli
 
         # Log informations according to operation result
         if ($res == 1) {
-            $this->out($this->colorLog("Joomla database update successfully completed",'s'));
+            $this->out($this->colorLog("Joomla database update successfully completed", 's'));
             // $this->out("Joomla database update successfully completed\n");
             if ($this->verbose) {
                 $this->out("    -> " . count($component_logs) . " sql statements executed\n");
@@ -206,7 +211,7 @@ class UpdateCli extends JApplicationCli
 
         } else {
             foreach ($files as $k => $file) {
-                if(is_file($dir . '/' . $file)){
+                if (is_file($dir . '/' . $file)) {
                     $source = file_get_contents($dir . '/' . $file);
                     if (strpos($source, $failed_statement) === false ^ strpos($source, $failed_statement_without_prefix) === false) {
                         # exit_file -> First element for setting schema version. Second element is the file where there is an error
@@ -223,7 +228,7 @@ class UpdateCli extends JApplicationCli
                 $this->updateSchema($id, array($exit_file[0]), "end");
             }
             # Log
-            $this->out($this->colorLog("\nJoomla database update failed...",'e'));
+            $this->out($this->colorLog("\nJoomla database update failed...", 'e'));
             if ($this->verbose) {
                 $this->out("    -> " . count($component_logs) . " sql statements executed");
                 $this->out("-> " . $err_msg);
@@ -245,7 +250,7 @@ class UpdateCli extends JApplicationCli
      * @return false|void
      * @throws Exception
      */
-    private function updateComponents($elements = null,$options = null)
+    private function updateComponents($elements = null, $options = null)
     {
         $installer = JInstaller::getInstance();
         $success = true;
@@ -256,7 +261,8 @@ class UpdateCli extends JApplicationCli
 
         if (empty($elements)) {
             $this->out("Nothing component available for update");
-            return false;$elements = empty($elements) ? array_keys($this->components) : $elements;
+            return false;
+            $elements = empty($elements) ? array_keys($this->components) : $elements;
 
             if (empty($elements)) {
                 $this->out("Nothing component available for update");
@@ -279,7 +285,7 @@ class UpdateCli extends JApplicationCli
                 $xml_file = preg_split("/[_]+/", $elementArr["element"], 2)[1] . '.xml';
             }
             $path = is_dir(JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/') ? JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/' : JPATH_ROOT . '/components/' . $elementArr['element'] . '/';
-            
+
             # Load xml or fail
             $xml_path = $path . $xml_file;
             if ($element == 'com_extplorer' || $element == 'com_dropfiles') {
@@ -315,7 +321,7 @@ class UpdateCli extends JApplicationCli
                     $this->firstrun = true;
                     $this->out("** Script first run **");
 
-                    if(empty($options) || !isset($options['dry-run'])) {
+                    if (empty($options) || !isset($options['dry-run'])) {
                         $this->out('Store translations tags into database for first run');
                         require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
                         EmundusHelperUpdate::languageFileToBase();
@@ -429,7 +435,7 @@ class UpdateCli extends JApplicationCli
                                     if (method_exists($scriptClass, 'update')) {
                                         $updates = $script->update($adapter);
 
-                                        foreach($updates as $update) {
+                                        foreach ($updates as $update) {
                                             if ($update['status'] === false) {
                                                 $success = false;
                                                 $failure_msg .= $update['message'] . "\n";
@@ -442,7 +448,10 @@ class UpdateCli extends JApplicationCli
                                         }
                                     }
                                     if (method_exists($scriptClass, 'postflight')) {
-                                        $script->postflight('update', $adapter);
+                                        $result = $script->postflight('update', $adapter);
+                                        if (!$result) {
+                                            $success = false;
+                                        }
                                     }
 
                                     break;
@@ -483,7 +492,7 @@ class UpdateCli extends JApplicationCli
                         $this->out("-> Scriptfile doesn't exists");
                     }
                 } else {
-                    $this->out($this->colorLog($elementArr['element'] . " component already up-to-date\n",'s'));
+                    $this->out($this->colorLog($elementArr['element'] . " component already up-to-date\n", 's'));
                     $this->updateSchema($elementArr['extension_id'], null, null, $this->manifest_xml->version);
                     continue;
                 }
@@ -510,7 +519,7 @@ class UpdateCli extends JApplicationCli
                     $this->out("    -> " . count($component_logs) . " sql statements executed");
                 }
 
-                if(empty($options) || !isset($options['dry-run'])) {
+                if (empty($options) || !isset($options['dry-run'])) {
                     $manifest_cache['version'] = $this->refreshManifestCache($elementArr['extension_id'], $elementArr['element']);
                 }
 
@@ -519,13 +528,13 @@ class UpdateCli extends JApplicationCli
                     $this->out("-> Schema : " . $this->schema_version);
                     $this->out("-> Manifest cache : " . $manifest_cache['version']);
                     $this->out("-> Manifest : " . $this->manifest_xml->version);
-                    $this->out($this->colorLog("\nFinishing update successfuly with : " . $elementArr['name'] . "\n",'s'));
+                    $this->out($this->colorLog("\nFinishing update successfuly with : " . $elementArr['name'] . "\n", 's'));
                 }
             } else {
-                if(empty($failure_msg)) {
-                    $this->out($this->colorLog("  -> $element component update failed\n",'e'));
+                if (empty($failure_msg)) {
+                    $this->out($this->colorLog("  -> $element component update failed\n", 'e'));
                 } else {
-                    $this->out($this->colorLog("  -> $element component update failed with error : $failure_msg\n",'e'));
+                    $this->out($this->colorLog("  -> $element component update failed with error : $failure_msg\n", 'e'));
                 }
                 $this->count_fails++;
             }
@@ -533,6 +542,7 @@ class UpdateCli extends JApplicationCli
     }
 
     # Utils functions
+
     /**
      * Command Line helper function
      * @return void
@@ -618,8 +628,7 @@ class UpdateCli extends JApplicationCli
             foreach ($logs as $key => $value) {
                 if (strpos($value, "SELECT") !== false ^ strpos($value, "SHOW") !== false) {
                     unset($logs[$key]);
-                }
-                elseif($key < count($this->global_logs)) {
+                } elseif ($key < count($this->global_logs)) {
                     if ($logs[$key] == $this->global_logs[$key]) {
                         unset($logs[$key]);
                     }
@@ -705,13 +714,20 @@ class UpdateCli extends JApplicationCli
         // Purge all updates
         $this->out('-> Purge updates...');
         $model->purge();
+
         // Find all updates
         $this->out('-> Fetching updates...');
-        if ($comp == "joomla") {
-            $model->applyUpdateSite();
-            $model->refreshUpdates();
-        } else {
-            $updater->findUpdates(0, $cache_timeout);
+        try {
+            if ($comp == "joomla") {
+                $model->applyUpdateSite();
+                $model->refreshUpdates();
+            } else {
+                $updater->findUpdates(0, $cache_timeout);
+            }
+            return 0;
+        } catch  (Exception $e) {
+            $this->out('-> Error: ' . $e->getMessage());
+            return 1;
         }
     }
 
@@ -763,7 +779,6 @@ class UpdateCli extends JApplicationCli
             exit();
         }
 
-
         # Prepare files for execution
         if (!empty($files)) {
             $files = str_replace('.sql', '', $files);
@@ -785,9 +800,9 @@ class UpdateCli extends JApplicationCli
             };
             usort($files, $sortFunction);
 
-            if ($this->schema_version < $files[0] and !$this->firstrun) {
+            /*if ($this->schema_version < $files[0] && !$this->firstrun) {
                 throw new Exception("Schema version can't be inferior than the first update file. You need to update version in xml of " . $element);
-            }
+            }*/
 
             while (end($files) > $this->manifest_xml->version and !empty($files)) {
                 array_pop($files);
@@ -796,102 +811,64 @@ class UpdateCli extends JApplicationCli
                 array_shift($files);
             }
         }
-            if (empty($files)) {
-                if ($this->verbose) {
-                    $this->out("-> No SQL Files");
-                }
-                $this->updateSchema($eid, $files, null, $this->manifest_xml->version);
-                return array(0, 0);
+        if (empty($files)) {
+            if ($this->verbose) {
+                $this->out("-> No SQL Files");
             }
-
-
-        # Search matching file with version in schema table
-        try {
-            foreach ($files as $file) {
-                if (strpos($file, $this->schema_version) !== FALSE) {
-                    $key = array_search($file, $files);
-                    break;
-                } elseif (version_compare($file, $this->schema_version) > 0) {
-                    $key = array_search($file, $files);
-                    break;
-                }
-            }
-            # Set starting level for sql update
-            if ($key >= 0) {
-                $begin_update = $files[$key];
-                if ($this->firstrun) {
-                    $begin_update = $this->schema_version;
-                }
-            } elseif ($key === null) {
-                $begin_update = end($files);
-            } else {
-                $begin_update = reset($files);
-            }
-            # Return null & update schema if begin_update not find
-            if ($begin_update === null) {
-                $this->updateSchema($eid, $files, null, $this->manifest_xml->version);
-                return array(0, 0);
-            }
-        } catch (Exception $e) {
-            $this->out("-> " . $e->getMessage());
-            Log::add($e->getMessage(), Log::ERROR, 'error');
-            Log::add($this->db->getQuery(), Log::ERROR, 'error');
-
-            $this->count_fails++;
+            $this->updateSchema($eid, $files, null, $this->manifest_xml->version);
+            return array(0, 0);
         }
 
         # Execute queries
         foreach ($files as $file) {
-            if (version_compare($file, $begin_update) > 0) {
 
-                $buffer = file_get_contents($sqlpath . '/' . $file . '.sql');
-                if (0 == filesize($sqlpath . '/' . $file . '.sql')) {
-                    continue;
+            $buffer = file_get_contents($sqlpath . '/' . $file . '.sql');
+            if (0 == filesize($sqlpath . '/' . $file . '.sql')) {
+                continue;
+            }
+
+            # Graceful exit and rollback if read not successful
+            if ($buffer === false) {
+                Log::add($element . " : " . $file . ".sql  -> Error SQL Read buffer", Log::ERROR, 'error');
+                return array(0, 0);
+            }
+
+            # Create an array of queries from the sql file
+            $queries = \JDatabaseDriver::splitSql($buffer);
+
+            if (count($queries) === 0) {
+                # No queries to process
+                continue;
+            }
+
+            # Process each query in the $queries array (split out of sql file).
+            foreach ($queries as $query) {
+                $db->setQuery($db->convertUtf8mb4QueryToUtf8($query));
+
+                # queryString for query log details
+                $queryString = $db->replacePrefix((string)$query);
+                $queryString = str_replace(array("\r", "\n"), array('', ' '), substr($queryString, 0, 120));
+                $queryString = (string)$query;
+                # Change third parameter of substr for changing length of query log
+                $queryString = str_replace(array("\r", "\n"), array('', ' '), substr($queryString, 0, 120));
+
+                try {
+                    $db->execute();
+                } catch (\JDatabaseExceptionExecuting $e) {
+                    print($queryString);
+                    Log::add("[FAIL] " . $element . " : " . $file . ".sql \n $e->getMessage() \n $this->db->getQuery()", Log::ERROR, 'error');
+                    Log::add($e->getMessage(), Log::ERROR, 'error');
+                    Log::add(str_replace(PHP_EOL, '', $queryString), Log::INFO, 'error');
+
+                    $this->out("-> Error : " . $e->getMessage());
+                    $installer->abort($e->getMessage(), $db->stderr(true));
+                    return false;
                 }
 
-                # Graceful exit and rollback if read not successful
-                if ($buffer === false) {
-                    Log::add($element . " : " . $file . ".sql  -> Error SQL Read buffer", Log::ERROR, 'error');
-                    return array(0, 0);
-                }
+                Log::add("[EXEC] " . $element . " : " . $file . ".sql  ->", Log::INFO, 'update');
+                Log::add(str_replace(PHP_EOL, '', $queryString), Log::INFO, 'update');
 
-                # Create an array of queries from the sql file
-                $queries = \JDatabaseDriver::splitSql($buffer);
-
-                if (count($queries) === 0) {
-                    # No queries to process
-                    continue;
-                }
-
-                # Process each query in the $queries array (split out of sql file).
-                foreach ($queries as $query) {
-                    $db->setQuery($db->convertUtf8mb4QueryToUtf8($query));
-
-                    # queryString for query log details
-                    $queryString = $db->replacePrefix((string)$query);
-                    $queryString = str_replace(array("\r", "\n"), array('', ' '), substr($queryString, 0, 120));
-                    $queryString = (string)$query;
-                    # Change third parameter of substr for changing length of query log
-                    $queryString = str_replace(array("\r", "\n"), array('', ' '), substr($queryString, 0, 120));
-
-                    try {
-                        $db->execute();
-                    } catch (\JDatabaseExceptionExecuting $e) {
-
-                        Log::add("[FAIL] " . $element . " : " . $file . ".sql \n $e->getMessage() \n $this->db->getQuery()", Log::ERROR, 'error');
-                        Log::add($e->getMessage(), Log::ERROR, 'error');
-                        Log::add(str_replace(PHP_EOL, '', $queryString), Log::INFO, 'error');
-
-                        $this->out("-> Error : " . $e->getMessage());
-                        $installer->abort($e->getMessage(), $db->stderr(true));
-                        return false;
-                    }
-
-                    Log::add("[EXEC] " . $element . " : " . $file . ".sql  ->", Log::INFO, 'update');
-                    Log::add(str_replace(PHP_EOL, '', $queryString), Log::INFO, 'update');
-
-                    $update_count++;
-                }
+                $update_count++;
             }
         }
         # Update the database

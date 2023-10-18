@@ -58,7 +58,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     $mod_em_campaign_list_show_programme     = $params->get('mod_em_campaign_show_programme', 1);
     $mod_em_campaign_show_programme_logo     = $params->get('mod_em_campaign_show_programme_logo', 0);
     $mod_em_campaign_show_apply_button       = $params->get('mod_em_campaign_show_apply_button', 0);
-    $mod_em_campaign_show_pinned_campaign    = $params->get('mod_em_campaign_show_pinned_campaign');
+    $mod_em_campaign_show_pinned_campaign    = $params->get('mod_em_campaign_show_pinned_campaign',1);
     $mod_em_campaign_order                   = $params->get('mod_em_campaign_orderby');
     $mod_em_campaign_order_type              = $params->get('mod_em_campaign_order_type');
     $ignored_program_code                    = $params->get('mod_em_ignored_program_code');
@@ -74,7 +74,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     $mod_em_campaign_details_show_programme  = $params->get('mod_em_campaign_details_show_programme', 1);
     $mod_em_campaign_show_filters            = $params->get('mod_em_campaign_show_filters', 0);
     $mod_em_campaign_show_sort               = $params->get('mod_em_campaign_show_sort', 1);
-    $mod_em_campaign_show_filters_list       = $params->get('mod_em_campaign_show_filters_list');
+    $mod_em_campaign_show_filters_list       = $params->get('mod_em_campaign_show_filters_list', []);
     $mod_em_campaign_sort_list               = $params->get('mod_em_campaign_sort_list');
     $mod_em_campaign_groupby                 = $params->get('mod_em_campaign_groupby');
 
@@ -185,17 +185,22 @@ if($user->guest || in_array($e_user->profile,$app_prof))
 
     $condition = '';
     if (!empty($searchword)) {
-        $condition .= ' AND (pr.code LIKE "%"' . $db->quote($searchword) . '"%" OR ca.label LIKE "%"' . $db->quote($searchword) . '"%" OR ca.description LIKE "%"' . $db->quote($searchword) . '"%" OR ca.short_description LIKE "%"' . $db->quote($searchword) . '"%") ';
+        $condition .= ' AND (ca.label LIKE "%"' . $db->quote($searchword) . '"%" OR ca.short_description LIKE "%"' . $db->quote($searchword) . '"%"';
+        if($mod_em_campaign_list_show_programme == 1) {
+            $condition .= ' OR pr.code LIKE "%"' . $db->quote($searchword) . '"%"';
+        }
+        $condition .= ') ';
+
     }
 
     if (!empty($program_code))
     {
-        $condition .= ' AND pr.code IN(' . implode(',', array_map('trim', explode(',', $db->quote($program_code)))) . ')';
+        $condition .= ' AND pr.code IN (' . implode(',', array_map('trim', explode(',', $db->quote($program_code)))) . ')';
     }
 
     if (!empty($codes))
     {
-        $condition .= ' AND pr.code IN(' . implode(',', $db->quote(explode(',', $codes))) . ')';
+        $condition .= ' AND pr.code IN (' . implode(',', $db->quote(explode(',', $codes))) . ')';
     }
     if (!empty($categories_filt))
     {
@@ -205,7 +210,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
 
     if (!empty($ignored_program_code))
     {
-        $condition .= ' AND pr.code NOT IN(' . implode(',', array_map('trim', explode(',', $db->quote($ignored_program_code)))) . ')';
+        $condition .= ' AND pr.code NOT IN (' . implode(',', $db->quote(array_map('trim', explode(',', $ignored_program_code)))) . ')';
     }
 
 // Get single campaign
@@ -243,10 +248,10 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     }
 
     $mod_em_campaign_get_admission_date = ($mod_em_campaign_show_admission_start_date || $mod_em_campaign_show_admission_end_date);
-    $currentCampaign                    = $helper->getCurrent($condition, $mod_em_campaign_get_teaching_unity);
-    $pastCampaign                       = $helper->getPast($condition, $mod_em_campaign_get_teaching_unity);
-    $futurCampaign                      = $helper->getFutur($condition, $mod_em_campaign_get_teaching_unity);
-    $allCampaign                        = $helper->getProgram($condition, $mod_em_campaign_get_teaching_unity);
+    $currentCampaign                    = $helper->getCurrent($condition, $mod_em_campaign_get_teaching_unity, $order);
+    $pastCampaign                       = $helper->getPast($condition, $mod_em_campaign_get_teaching_unity, $order);
+    $futurCampaign                      = $helper->getFutur($condition, $mod_em_campaign_get_teaching_unity, $order);
+    $allCampaign                        = $helper->getProgram($condition, $mod_em_campaign_get_teaching_unity, $order);
 
     if ($params->get('mod_em_campaign_layout') == "single_campaign" || $params->get('mod_em_campaign_layout') == "tchooz_single_campaign" || $params->get('mod_em_campaign_layout') == "institut_fr_single_campaign")
     {

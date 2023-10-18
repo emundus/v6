@@ -1,14 +1,15 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 class plgHikashopGoogle_products extends JPlugin {
+	public $error = '';
 
 	function onHikashopCronTrigger(&$messages) {
 		if(!hikashop_level(1))
@@ -32,8 +33,13 @@ class plgHikashopGoogle_products extends JPlugin {
 		$pluginsClass->save($plugin);
 		$pluginsClass->loadParams($plugin);
 		$xml = $this->generateXML();
-		if(empty($xml))
+		if(empty($xml)) {
+			if(!empty($this->error)) {
+				$messages[] = $this->error;
+				$app->enqueueMessage($this->error, 'error');
+			}
 			return;
+		}
 
 		$app = JFactory::getApplication();
 		if(!empty($plugin->params['local_path'])) {
@@ -79,6 +85,14 @@ class plgHikashopGoogle_products extends JPlugin {
 			return;
 
 		$xml = $this->generateXML();
+
+		if(empty($xml)) {
+			if(!empty($this->error)) {
+				$app->enqueueMessage($this->error, 'error');
+			}
+			return;
+		}
+
 		@ob_clean();
 		header("Pragma: public");
 		header("Expires: 0"); // set expiration time
@@ -101,6 +115,12 @@ class plgHikashopGoogle_products extends JPlugin {
 		$db = JFactory::getDBO();
 		$pluginsClass = hikashop_get('class.plugins');
 		$plugin = $pluginsClass->getByName('hikashop','google_products');
+
+		if(empty($plugin->params)) {
+			$this->error = 'Please configure the Google Products plugin\'s settings and save them before generating the XML feed.';
+			return '';
+		}
+
 		if(empty($plugin->params['condition'])){
 			$plugin->params['condition'] = "new";
 		}
@@ -123,6 +143,26 @@ class plgHikashopGoogle_products extends JPlugin {
 		}
 
 		$query = 'SELECT * FROM '.hikashop_table('product').' WHERE product_published=1 AND product_type=\'main\'';
+
+		if(!empty($plugin->params['categories'])){
+			if(is_string($plugin->params['categories']))
+				$plugin->params['categories'] = explode(',', $plugin->params['categories']);
+			hikashop_toInteger($plugin->params['categories']);
+			$db->setQuery('SELECT category_left, category_right FROM '.hikashop_table('category').' WHERE category_id IN ('.implode(',',$plugin->params['categories']).')');
+			$categories = $db->loadObjectList();
+			if(!empty($categories)) {
+				$filters = array();
+				foreach($categories as $category) {
+					$filters[] = '(category_left >='.$category->category_left.' AND category_right <='.$category->category_right.')';
+				}
+
+				$db->setQuery('SELECT category_id FROM '.hikashop_table('category').' WHERE '.implode(' OR ', $filters));
+				$allCategories = $db->loadColumn();
+				if(!empty($allCategories)) {
+					$query = 'SELECT DISTINCT prod.product_id, prod.* FROM '.hikashop_table('product').' AS prod INNER JOIN '.hikashop_table('product_category').' AS prodcat ON prod.product_id = prodcat.product_id WHERE product_published=1 AND product_type=\'main\' AND prodcat.category_id IN ('.implode(',', $allCategories).')';
+				}
+			}
+		}
 		if(!empty($plugin->params['in_stock_only'])){
 			$query .= ' AND product_quantity!=0';
 		}
@@ -379,7 +419,23 @@ class plgHikashopGoogle_products extends JPlugin {
 				}else{
 					$xml .= "\t".'<g:link><![CDATA[ '.$siteAddress.'index.php?option=com_hikashop&ctrl=product&task=show&cid='.$product->product_id.'&name='.$product->alias.$itemID.' ]]></g:link>'."\n";
 				}
-				$xml .= "\t".'<g:price>'.$price.' '.$currency->currency_code.'</g:price>'."\n";
+				if(!empty($product->discount)) {
+					$xml .= "\t".'<g:sale_price>'.$price.' '.$currency->currency_code.'</g:sale_price>'."\n";
+
+					$price_name = 'price_value_without_discount';
+					if(!empty($plugin->params['taxed_price'])){
+						$price_name = 'price_value_without_discount_with_tax';
+					}
+					if(empty($product->product_min_per_order)){
+						$price = round($product->prices[0]->$price_name, 2);
+					}
+					else{
+						$price = round($product->prices[0]->$price_name, 2)*$product->product_min_per_order;
+					}
+					$xml .= "\t".'<g:price>'.$price.' '.$currency->currency_code.'</g:price>'."\n";
+				} else {
+					$xml .= "\t".'<g:price>'.$price.' '.$currency->currency_code.'</g:price>'."\n";
+				}
 				if(@$plugin->params['preview'] == 'meta') {
 						$xml .= "\t".'<g:description><![CDATA[ '.mb_substr(strip_tags($product->product_meta_description),0,5000).' ]]></g:description>'."\n";
 				} elseif(!empty($product->product_description)){

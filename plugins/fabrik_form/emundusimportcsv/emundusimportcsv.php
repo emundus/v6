@@ -18,7 +18,7 @@ defined('_JEXEC') or die('Restricted access');
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
 
-require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+require_once (JPATH_ROOT.'/components/com_emundus/models/emails.php');
 
 /**
  * Create a Joomla user from the forms data

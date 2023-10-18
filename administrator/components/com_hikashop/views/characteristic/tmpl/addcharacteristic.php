@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 		$id=rand();
 		?>
 		<tr id="characteristic_<?php echo $row->characteristic_id.'_'.$id;?>">
+			<td class="column_move"><img src="../media/com_hikashop/images/move.png" alt=""></td>
 			<td>
 				<?php
 					echo $this->popup->display(
@@ -29,7 +30,7 @@ defined('_JEXEC') or die('Restricted access');
 				<?php echo $row->characteristic_value; ?>
 			</td>
 			<td class="order">
-				0
+			<input type="text" size="3" name="characteristic_ordering[<?php echo $row->characteristic_id;?>]" id="characteristic_ordering[<?php echo $row->characteristic_id;?>][<?php echo $id;?>]" value="<?php echo $row->characteristic_ordering;?>"/>
 			</td>
 			<td class="hk_center">
 				<a href="#" title="<?php echo JText::_('HIKA_DELETE'); ?>" onclick="return deleteRow('characteristic_div_<?php echo $row->characteristic_id.'_'.$id;?>','characteristic[<?php echo $row->characteristic_id;?>][<?php echo $id;?>]','characteristic_<?php echo $row->characteristic_id.'_'.$id;?>');">

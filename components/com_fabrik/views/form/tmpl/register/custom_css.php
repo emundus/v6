@@ -621,7 +621,7 @@ background-position: 50%;
 input[type='radio'],input[type='checkbox'] {
     margin-top:0;
     -webkit-appearance: none;
-    border: 2px solid $base-secondary-color;
+    border: 2px solid var(--em-secondary-color);
     border-radius: 50%;
     width:10px;
     height: 10px;

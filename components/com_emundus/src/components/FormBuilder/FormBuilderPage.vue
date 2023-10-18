@@ -2,29 +2,29 @@
   <div id="form-builder-page">
     <div class="em-flex-row em-flex-space-between">
 	    <span
-			    class="em-font-size-24 em-font-weight-800 editable-data"
+			    class="em-font-size-24 em-font-weight-600 editable-data"
 			    ref="pageTitle"
 			    @focusout="updateTitle"
 			    @keyup.enter="updateTitleKeyup"
-			    @keydown="(event) => checkMaxMinlength(event, 50, 3)"
+			    @keydown="(event) => checkMaxMinlength(event, 50, 0)"
 			    contenteditable="true"
 			    :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
-			    v-html="translate(title)"
-	    ></span>
-	    <span class="material-icons-outlined em-pointer" :title="translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE')" @click="$emit('open-create-model', page.id)">save_as</span>
+			    v-html="translate(title)"></span>
+	    <span class="material-icons-outlined em-pointer"
+						v-if="mode == 'forms'"
+	          :title="translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE')"
+	          @click="$emit('open-create-model', page.id)">post_add</span>
     </div>
-    <span
-      class="description editable-data"
+    <span class="description editable-data"
       id="pageDescription"
       ref="pageDescription"
       v-html="description"
       @focusout="updateDescription"
       contenteditable="true"
-      :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_INTRO_ADD')"
-    ></span>
+      :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_INTRO_ADD')"></span>
 
-    <div class="form-builder-page-sections">
-      <button v-if="sections.length > 0" id="add-section" class="em-secondary-button top" @click="addSection()">
+    <div class="form-builder-page-sections mt-2">
+      <button v-if="sections.length > 0" id="add-section" class="em-primary-button px-6 py-3" @click="addSection()">
         {{ translate('COM_EMUNDUS_FORM_BUILDER_ADD_SECTION') }}
       </button>
       <form-builder-page-section
@@ -45,7 +45,7 @@
       >
       </form-builder-page-section>
     </div>
-    <button id="add-section" class="em-secondary-button" @click="addSection()">
+    <button id="add-section" class="em-primary-button px-6 py-3" @click="addSection()">
       {{ translate('COM_EMUNDUS_FORM_BUILDER_ADD_SECTION') }}
     </button>
 
@@ -77,6 +77,10 @@ export default {
       type: Object,
       default: {}
     },
+	  mode: {
+		  type: String,
+		  default: 'forms'
+	  }
   },
   mixins: [formBuilderMixin, globalMixin, errorMixin],
   data() {
@@ -106,18 +110,7 @@ export default {
           this.sections = groups.filter(group => group.hidden_group != -1);
 	        this.getDescription();
         } else {
-					Swal.fire({
-						title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
-						type: 'error',
-						showCancelButton: false,
-						confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
-						reverseButtons: true,
-						customClass: {
-							title: 'em-swal-title',
-							confirmButton: 'em-swal-confirm-button',
-							actions: 'em-swal-single-action'
-						},
-					});
+					this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
         }
 
 	      this.loading = false;
@@ -141,22 +134,14 @@ export default {
           if (response.status) {
             this.getSections();
             this.updateLastSave();
+          } else {
+            this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_CREATE_SECTION_ERROR'), this.translate(response.msg));
           }
+        }).catch(error => {
+          this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_CREATE_SECTION_ERROR'), error);
         });
       } else {
-        Swal.fire({
-          title: this.translate('COM_EMUNDUS_FORM_BUILDER_MAX_SECTION_TITLE'),
-          text: this.translate('COM_EMUNDUS_FORM_BUILDER_MAX_SECTION_TEXT'),
-          type: 'error',
-          showCancelButton: false,
-          confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
-          reverseButtons: true,
-          customClass: {
-            title: 'em-swal-title',
-            confirmButton: 'em-swal-confirm-button',
-            actions: 'em-swal-single-action'
-          },
-        });
+        this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_MAX_SECTION_TITLE'), this.translate('COM_EMUNDUS_FORM_BUILDER_MAX_SECTION_TEXT'))
       }
     },
     moveSection(sectionId, direction) {
@@ -194,7 +179,6 @@ export default {
     {
       this.fabrikPage.show_title.label[this.shortDefaultLang] = this.$refs.pageTitle.innerText.trim().replace(/[\r\n]/gm, "");
       this.$refs.pageTitle.innerText = this.$refs.pageTitle.innerText.trim().replace(/[\r\n]/gm, "");
-
 
       formBuilderService.updateTranslation(null, this.fabrikPage.show_title.titleraw, this.fabrikPage.show_title.label).then(response => {
         if (response.status) {
@@ -279,13 +263,7 @@ export default {
 
   #add-section {
     width: fit-content;
-    padding: 24px;
     margin: auto;
-    background-color: white;
-
-    &.top {
-      margin-top: 24px !important;
-    }
   }
 }
 </style>

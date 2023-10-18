@@ -63,6 +63,8 @@ class EmundusModelFormTest extends TestCase
 		$this->assertFalse($copy, 'Copy attachments fails because new profile does not exist');
 
 		$fake_new_profile = $this->h_sample->duplicateSampleProfile($base_profile);
+		$this->assertNotEmpty($fake_new_profile, 'Fake new profile created');
+		$this->assertNotSame($fake_new_profile, 64567657, 'Fake new profile is not the same as the fake id');
 		$copy = $this->m_form->copyAttachmentsToNewProfile($base_profile, $fake_new_profile);
 		$this->assertTrue($copy, 'Copy attachments succeeds');
 	}
@@ -77,5 +79,37 @@ class EmundusModelFormTest extends TestCase
 		$this->assertFalse($duplicate, 'Duplicate form requires a valid profile id');
 
 		// TODO: test duplicate form, error coming from cms language
+	}
+
+	public function testcreateFormEval()
+	{
+		$form_id = $this->m_form->createFormEval();
+		$this->assertNotEmpty($form_id, 'Evaluation form creation succeeds');
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('jfe.name, jfe.published')
+			->from($db->quoteName('#__fabrik_elements', 'jfe'))
+			->leftJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON (' . $db->quoteName('jffg.group_id') . ' = ' . $db->quoteName('jfe.group_id') . ')')
+			->where($db->quoteName('jffg.form_id') . ' = ' . $db->quote($form_id));
+
+		$db->setQuery($query);
+		$elements = $db->loadAssocList();
+
+		$this->assertNotEmpty($elements, 'Evaluation form elements are not empty');
+
+		$element_names = array_column($elements, 'name');
+		$this->assertContains('id', $element_names, 'Evaluation form elements contains id');
+		$this->assertContains('time_date', $element_names, 'Evaluation form elements contains time_date');
+		$this->assertContains('fnum', $element_names, 'Evaluation form elements contains fnum');
+		$this->assertContains('user', $element_names, 'Evaluation form elements contains user');
+		$this->assertContains('student_id', $element_names, 'Evaluation form elements contains student_id');
+
+		foreach($elements as $element) {
+			if (in_array($element['name'], ['id', 'time_date', 'fnum', 'user', 'student_id'])) {
+				$this->assertSame(1, intval($element['published']), 'Evaluation default form elements are published');
+			}
+		}
 	}
 }

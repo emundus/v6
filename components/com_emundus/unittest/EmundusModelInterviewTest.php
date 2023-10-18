@@ -41,4 +41,9 @@ class EmundusModelInterviewTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_interview = new EmundusModelInterview;
     }
+
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
 }

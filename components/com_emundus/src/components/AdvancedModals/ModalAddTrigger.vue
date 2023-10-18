@@ -19,9 +19,9 @@
       />
 
       <div class="em-flex-row em-flex-space-between em-mb-16">
-        <span class="em-h4">
+        <h4>
           {{addTrigger}}
-        </span>
+        </h4>
         <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalAddTrigger' + triggerAction)">
           <span class="material-icons-outlined">close</span>
         </button>

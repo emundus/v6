@@ -61,19 +61,16 @@ class EmundusControllerCampaign extends JControllerLegacy {
      * @since v6
      */
     public function addcampaigns(){
-        $data = array();
-        $data['start_date'] = JRequest::getVar('start_date', null, 'POST', 'none',0);
-        $data['end_date'] = JRequest::getVar('end_date', null, 'POST', 'none',0);
-        $data['profile_id'] = JRequest::getVar('profile_id', null, 'POST', 'none',0);
-        $data['year'] = JRequest::getVar('year', null, 'POST', 'none',0);
-        $data['short_description'] = JRequest::getVar('short_description', null, 'POST', 'none',0);
+        $tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
 
-        $m_programme = $this->getModel('programme');
-
-        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+            $data = array();
+            $data['start_date'] = JRequest::getVar('start_date', null, 'POST', 'none',0);
+            $data['end_date'] = JRequest::getVar('end_date', null, 'POST', 'none',0);
+            $data['profile_id'] = JRequest::getVar('profile_id', null, 'POST', 'none',0);
+            $data['year'] = JRequest::getVar('year', null, 'POST', 'none',0);
+            $data['short_description'] = JRequest::getVar('short_description', null, 'POST', 'none',0);
+            $m_programme = $this->getModel('programme');
             $programmes = $m_programme->getProgrammes(1);
 
             if (count($programmes) > 0) {
@@ -98,16 +95,16 @@ class EmundusControllerCampaign extends JControllerLegacy {
      * @since v6
      */
     public function getcampaignsbyprogram(){
-        $jinput = JFactory::getApplication()->input;
-        $course = $jinput->get('course');
+        $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"), 'campaigns' => []);
 
-        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"), 'campaigns' => []);
-        } else {
+        if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+            $jinput = JFactory::getApplication()->input;
+            $course = $jinput->get('course');
+
             $campaigns = $this->m_campaign->getCampaignsByProgram($course);
             $tab = array('status' => true, 'msg' => 'CAMPAIGNS RETRIEVED', 'campaigns' => $campaigns);
         }
+
         echo json_encode((object) $tab);
         exit;
     }
@@ -118,12 +115,10 @@ class EmundusControllerCampaign extends JControllerLegacy {
      * @since version 1.0
      */
     public function getcampaignsbyprogramme() {
+        $tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
             $program = $jinput->get->getInt('pid');
 
@@ -145,34 +140,164 @@ class EmundusControllerCampaign extends JControllerLegacy {
      * @since version 1.0
      */
     public function getallcampaign() {
+        $tab = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
-        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $jinput = JFactory::getApplication()->input;
-
-            $filter = $jinput->getString('filter');
-            $sort = $jinput->getString('sort');
-            $recherche = $jinput->getString('recherche');
-            $lim = $jinput->getInt('lim');
-            $page = $jinput->getInt('page');
-            $program = $jinput->getString('program');
-            $session = $jinput->getString('session');
-
+            $filter = $jinput->getString('filter', '');
+            $sort = $jinput->getString('sort', '');
+            $recherche = $jinput->getString('recherche', '');
+            $lim = $jinput->getInt('lim', 25);
+            $page = $jinput->getInt('page', 0);
+            $program = $jinput->getString('program', 'all');
+            $session = $jinput->getString('session', 'all');
             $campaigns = $this->m_campaign->getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page,$program,$session);
 
             $eMConfig = JComponentHelper::getParams('com_emundus');
             $allow_pinned_campaign = $eMConfig->get('allow_pinned_campaign', 0);
 
             if (count($campaigns) > 0) {
-                $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGNS_RETRIEVED'), 'data' => $campaigns, 'allow_pinned_campaigns' => $allow_pinned_campaign);
+                // this data formatted is used in onboarding lists
+                foreach($campaigns['datas'] as $key => $campaign) {
+                    $campaign->label = ['fr' => $campaign->label, 'en' => $campaign->label];
+
+                    $config = JFactory::getConfig();
+                    $offset = $config->get('offset');
+                    $now_date_time = new DateTime('now', new DateTimeZone($offset));
+                    $now = $now_date_time->format('U');
+                    $start_date = strtotime($campaign->start_date);
+                    $end_date = strtotime($campaign->end_date);
+
+                    if ($now < $start_date) {
+                        $campaign_time_state_label = JText::_('COM_EMUNDUS_CAMPAIGN_YET_TO_COME');
+                        $campaign_time_state_class = 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius';
+                    } else if ($now > $end_date) {
+                        $campaign_time_state_label = JText::_('COM_EMUNDUS_ONBOARD_FILTER_CLOSE');
+                        $campaign_time_state_class = 'label label-black em-p-5-12 em-font-weight-600';
+                    } else {
+                        $campaign_time_state_label = JText::_('COM_EMUNDUS_CAMPAIGN_ONGOING');
+                        $campaign_time_state_class = 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius';
+                    }
+
+                    $start_date = date('d/m/Y H\hi', strtotime($campaign->start_date));
+                    $end_date = date('d/m/Y H\hi', strtotime($campaign->end_date));
+
+                    $state_values = [
+                        [
+                            'key' => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
+                            'value' => $campaign->published ? JText::_('PUBLISHED') : JText::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
+                            'classes' => $campaign->published ? 'em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius' : 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
+                        ],
+                        [
+                            'key' => JText::_('COM_EMUNDUS_ONBOARD_TIME_STATE'),
+                            'value' => $campaign_time_state_label,
+                            'classes' => $campaign_time_state_class
+                        ]
+                    ];
+
+                    $campaign->additional_columns = [
+                        [
+                            'key' => JText::_('COM_EMUNDUS_ONBOARD_START_DATE'),
+                            'value' => $start_date,
+                            'classes' => '',
+                            'display' => 'table'
+                        ],
+                        [
+                            'key' => JText::_('COM_EMUNDUS_ONBOARD_END_DATE'),
+                            'value' => $end_date,
+                            'classes' => '',
+                            'display' => 'table'
+                        ],
+                        [
+                            'key' => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
+                            'type' => 'tags',
+                            'values' => $state_values,
+                            'display' => 'table'
+                        ],
+                        [
+                            'key' => JText::_('COM_EMUNDUS_ONBOARD_NB_FILES'),
+                            'value' => '<a target="_blank" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;">' . $campaign->nb_files . '</a>',
+                            'classes' => 'go-to-campaign-link',
+                            'display' => 'table'
+                        ],
+                        [
+                            'value' => JText::_('COM_EMUNDUS_DASHBOARD_CAMPAIGN_FROM') . ' ' . $start_date . ' ' . JText::_('COM_EMUNDUS_DASHBOARD_CAMPAIGN_TO') . ' ' . $end_date,
+                            'classes' => 'em-font-size-14 em-neutral-700-color',
+                            'display' => 'blocs'
+                        ],
+                        [
+                            'type' => 'tags',
+                            'key' => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
+                            'values' => [
+                                $state_values[0],
+                                $state_values[1],
+                                [
+                                    'key' => JText::_('COM_EMUNDUS_FILES_FILES'),
+                                    'value' => '<a target="_blank" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;">' . $campaign->nb_files . ' ' . ( $campaign->nb_files > 1 ? JText::_('COM_EMUNDUS_FILES_FILES') : JText::_('COM_EMUNDUS_FILES_FILE')) . '</a>',
+                                    'classes' => 'em-p-5-12 em-font-weight-600  em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius go-to-campaign-link',
+                                ]
+                            ],
+                            'classes' => 'em-mt-8 em-mb-8',
+                            'display' => 'blocs'
+                        ]
+                    ];
+                    $campaigns['datas'][$key] = $campaign;
+                }
+
+                $tab = array('status' => true, 'msg' => JText::_('CAMPAIGNS_RETRIEVED'), 'data' => $campaigns, 'allow_pinned_campaigns' => $allow_pinned_campaign);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('NO_CAMPAIGNS'), 'data' => $campaigns, 'allow_pinned_campaigns' => $allow_pinned_campaign);
+                $tab = array('status' => false, 'msg' => JText::_('NO_CAMPAIGNS'), 'data' => $campaigns, 'allow_pinned_campaigns' => $allow_pinned_campaign);
             }
         }
         echo json_encode((object)$tab);
         exit;
+    }
+
+    public function goToCampaign()
+    {
+        $app = JFactory::getApplication();
+        $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+        if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+            $campaign_id = $app->input->getInt('campaign_id', 0);
+
+            // new filters
+            $campaign_filter = [
+                'uid' => 'campaigns',
+                'id' => 'campaigns',
+                'label' => 'Campagnes',
+                'type' => 'select',
+                'value' => !empty($campaign_id) ? [(string)$campaign_id] : [],
+                'default' => true,
+                'available' => true,
+                'operator' => 'IN',
+                'andorOperator' => 'OR'
+            ];
+            $session = JFactory::getSession();
+            $session->set('em-applied-filters', [$campaign_filter]);
+
+            // old filters
+            $session->set('filt_params', [
+                's' => [],
+                'campaign' => !empty($campaign_id) ? [$campaign_id] : [],
+                'schoolyear' => [],
+                'status' => [],
+                'tag' => [],
+                'programme' => ['%'],
+                'published' => 1
+            ]);
+
+            $menu = $app->getMenu();
+            $items = $menu->getItems('link', 'index.php?option=com_emundus&view=files', true);
+            if (!empty($items)) {
+                $app->redirect('/' . $items->alias);
+            } else {
+                $response['msg'] = JText::_('NO_FILES_VIEW_AVAILABLE');
+            }
+        }
+
+        $app->enqueueMessage($response['msg'], 'error');
+        $app->redirect('/');
     }
 
     /**
@@ -181,16 +306,12 @@ class EmundusControllerCampaign extends JControllerLegacy {
      * @since version 1.0
      */
     public function deletecampaign() {
+        $tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
 
-        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $jinput = JFactory::getApplication()->input;
-
             $data = $jinput->getInt('id');
-
-            $result = $this->m_campaign->deleteCampaign($data);
+            $result = $this->m_campaign->deleteCampaign($data, true);
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_DELETED'), 'data' => $result);
@@ -198,6 +319,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
                 $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_DELETE_CAMPAIGN'), 'data' => $result);
             }
         }
+
         echo json_encode((object)$tab);
         exit;
     }
@@ -594,12 +716,14 @@ class EmundusControllerCampaign extends JControllerLegacy {
      * @since version 1.0
      */
     public function updateDocumentFalang(){
-
         $jinput = JFactory::getApplication()->input;
+
         $text = new stdClass;
         $text->fr=$jinput->getString('text_fr');
         $text->en=$jinput->getString('text_en');
         $reference_id=$jinput->getInt('did');
+
+        require_once JPATH_COMPONENT . '/models/falang.php';
         $falang = new EmundusModelFalang();
         $result = $falang->updateFalang($text,$reference_id,'emundus_setup_attachments','value');
 
@@ -619,18 +743,20 @@ class EmundusControllerCampaign extends JControllerLegacy {
      * @since version 1.0
      */
     public function getDocumentFalang()  {
+        $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UPDATE_DOCUMENT'), 'data' => 0);
         $jinput = JFactory::getApplication()->input;
-
         $reference_id = $jinput->getInt('docid');
-        $falang = new EmundusModelFalang();
 
-        $result = $falang->getFalang($reference_id,'emundus_setup_attachments','value');
+        if (!empty($reference_id)) {
+            require_once JPATH_COMPONENT . '/models/falang.php';
+            $falang = new EmundusModelFalang();
+            $result = $falang->getFalang($reference_id,'emundus_setup_attachments','value');
 
-        if ($result) {
-            $tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_UPDATE'), 'data' => $result);
-        } else {
-            $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UPDATE_DOCUMENT'), 'data' => $result);
+            if ($result) {
+                $tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_UPDATE'), 'data' => $result);
+            }
         }
+
         echo json_encode((object)$tab);
         exit;
     }
@@ -827,7 +953,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
             $tab = array('status' => $result, 'msg' => JText::_('ACCESS_DENIED'));
         } else {
             $jinput = JFactory::getApplication()->input;
-            $cid = $jinput->getInt('cid');
+            $cid = $jinput->getInt('id', 0);
 
             $result = $this->m_campaign->pinCampaign($cid);
 
@@ -837,6 +963,26 @@ class EmundusControllerCampaign extends JControllerLegacy {
                 $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_PINNED_CAMPAIGN'), 'data' => $result);
             }
         }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function unpincampaign(){
+        $tab = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+            $jinput = JFactory::getApplication()->input;
+            $cid = $jinput->getInt('id', 0);
+
+            $result = $this->m_campaign->unpinCampaign($cid);
+
+            if ($result) {
+                $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_UNPINNED'), 'data' => $result);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UNPIN_CAMPAIGN'), 'data' => $result);
+            }
+        }
+
         echo json_encode((object)$tab);
         exit;
     }

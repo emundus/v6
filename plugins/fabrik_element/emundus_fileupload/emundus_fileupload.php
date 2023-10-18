@@ -42,6 +42,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $jinput = JFactory::getApplication()->input;
 
         $current_user = JFactory::getSession()->get('emundusUser');
+        $user = (int)$current_user->id;
 
         if (JFactory::getUser()->guest) {
             echo json_encode(['status' => 'false']);
@@ -51,7 +52,6 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $fnum = $jinput->post->get('fnum');
         $name = $jinput->post->get('elementId');
 
-        $user = (int)substr($fnum, -7);
         $db = JFactory::getDBO();
 
         $attachId = $jinput->post->get('attachId');
@@ -73,19 +73,26 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
             $acceptedExt = [];
 
-            if (!file_exists(EMUNDUS_PATH_ABS . $user)) {
+            if (!class_exists('EmundusModelFiles')) {
+                require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+            }
+            $m_files = new EmundusModelFiles();
+
+            $fnumInfos = $m_files->getFnumInfos($fnum);
+
+            if (!file_exists(EMUNDUS_PATH_ABS . $fnumInfos['applicant_id'])) {
                 // An error would occur when the index.html file was missing, the 'Unable to create user file' error appeared yet the folder was created.
                 if (!file_exists(EMUNDUS_PATH_ABS . 'index.html')) {
                     touch(EMUNDUS_PATH_ABS . 'index.html');
                 }
 
-                if (!mkdir(EMUNDUS_PATH_ABS . $user) || !copy(EMUNDUS_PATH_ABS . 'index.html', EMUNDUS_PATH_ABS . $user . DS . 'index.html')) {
-                    $error = JUri::getInstance() . ' :: USER ID : ' . $user . ' -> Unable to create user file';
+                if (!mkdir(EMUNDUS_PATH_ABS . $fnumInfos['applicant_id']) || !copy(EMUNDUS_PATH_ABS . 'index.html', EMUNDUS_PATH_ABS . $fnumInfos['applicant_id'] . DS . 'index.html')) {
+                    $error = JUri::getInstance() . ' :: USER ID : ' . $fnumInfos['applicant_id'] . ' -> Unable to create user file';
                     JLog::add($error, JLog::ERROR, 'com_emundus');
                     return false;
                 }
             }
-            chmod(EMUNDUS_PATH_ABS . $user, 0755);
+            chmod(EMUNDUS_PATH_ABS . $fnumInfos['applicant_id'], 0755);
 
             foreach ($files as $file) {
 
@@ -94,7 +101,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
                 $tmp_name = $file['tmp_name'];
                 $fileSize = $file['size'];
 
-                $target = $this->getPath($user, $fileName);
+                $target = $this->getPath($fnumInfos['applicant_id'], $fileName);
 
                 $extension = explode('.', $fileName);
                 $extensionAttachment = $attachmentResult->allowed_types;
@@ -119,7 +126,10 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
                     $sizeMax = ($postSize >= $iniSize) ? $iniSize : $postSize;
 
                     if (!empty($fileName)) {
-                        $insert[] = $user . ' , ' . $db->quote($fnum) . ' , ' . $cid . ' , ' . $attachId . ' , ' . $db->quote($fileName) . ' , ' . '1' . ' , ' . '1' . ' , ' . $db->quote($file['name']);
+                        require_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
+                        $h_date = new EmundusHelperDate();
+                        $now = $h_date->getNow();
+                        $insert[] = $db->quote($now) . ' , ' . $db->quote($user) . ' , ' . $db->quote($fnum) . ' , ' . $db->quote($cid) . ' , ' . $db->quote($attachId) . ' , ' . $db->quote($fileName) . ' , ' . $db->quote(1) . ' , ' . $db->quote(1) . ' , ' . $db->quote($now) . ' , ' . $db->quote($file['name']);
                     }
 
 
@@ -222,7 +232,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
     }
 
     private function formatBytes($bytes, $precision = 2) {
-        $units = array('KB', 'MB', 'GB', 'TB');
+        $units = array('B', 'KB', 'MB', 'GB', 'TB');
         $bytes = max($bytes, 0);
         $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
         $pow = min($pow, count($units) - 1);
@@ -239,13 +249,13 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $jinput = $this->app->input;
 
         $current_user = JFactory::getSession()->get('emundusUser');
+        $user = (int)$current_user->id;
         if (JFactory::getUser()->guest) {
             echo json_encode(['status' => 'false']);
             return false;
         }
 
         $fnum = $jinput->post->get('fnum');
-        $user = (int)substr($fnum, -7);
 
         $attachId = $jinput->post->get('attachId');
         $cid = $this->getCampaignId($fnum);
@@ -290,7 +300,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
             $fileName = $jinput->post->get('filename');
             $attachId = $jinput->post->get('attachId');
             $fnum = $jinput->post->get('fnum');
-            $user = (int)substr($fnum, -7);
+            $user = (int)$current_user->id;
             $cid = $this->getCampaignId($fnum);
             $uploadResult = $this->getUploads($attachId, $user, $cid, $fnum);
 
@@ -326,8 +336,10 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
     public function dataConsideredEmptyForValidation($data, $repeatCounter) {
         $jinput = JFactory::getApplication()->input;
 
+        $current_user = JFactory::getSession()->get('emundusUser');
+        $user = (int)$current_user->id;
+
         $fnum = $jinput->post->get($this->getTableName().'___fnum');
-        $user = (int)substr($fnum, -7);
 
         $attachId = $this->getAttachId();
         $cid = $this->getCampaignId($fnum);
@@ -557,6 +569,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $bits['class'] .= ' ' . $params->get('text_format');
         $bits['attachmentId'] = $params->get('attachmentId');
         $bits['size'] = $params->get('size');
+        $bits['max_size_txt'] = $this->formatBytes($bits['size']);
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $bits['encrypted'] = ($params->get('encrypt') == 2)?$eMConfig->get('can_submit_encrypted', 1):$params->get('encrypt');
@@ -753,11 +766,10 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
      */
     public function insertFile($values) {
         if (!empty($values)) {
-
-
             $db = JFactory::getDBO();
             $query = $db->getQuery(true);
-            $columns = array('user_id', 'fnum', 'campaign_id', 'attachment_id', 'filename', 'can_be_deleted', 'can_be_viewed','local_filename');
+
+            $columns = array('timedate', 'user_id', 'fnum', 'campaign_id', 'attachment_id', 'filename', 'can_be_deleted', 'can_be_viewed','modified','local_filename');
 
             $query->insert($db->quoteName('#__emundus_uploads'))
                 ->columns($db->quoteName($columns))
@@ -785,9 +797,20 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
+        $current_user = JFactory::getSession()->get('emundusUser');
+        $user = (int)$current_user->id;
+
+        require_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
+        $h_date = new EmundusHelperDate();
+        $now = $h_date->getNow();
+
         $query->update($db->quoteName('#__emundus_uploads'))
-            ->set($db->quoteName('filename') . " = " . $db->quote($fileName))
-            ->where($db->quoteName('campaign_id') . ' = ' . $cid . " AND " . $db->quoteName('attachment_id') . " = " . $attachId . " AND " . $db->quoteName('fnum') . " LIKE " . $db->quote($fnum));
+            ->set($db->quoteName('filename') . ' = ' . $db->quote($fileName))
+            ->set($db->quoteName('modified') . ' = ' . $db->quote($now))
+            ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
+            ->where($db->quoteName('campaign_id') . ' = ' . $db->quote($cid))
+            ->andWhere($db->quoteName('attachment_id') . ' = ' . $db->quote($attachId))
+            ->andWhere($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
         $db->setQuery($query);
 
         try {

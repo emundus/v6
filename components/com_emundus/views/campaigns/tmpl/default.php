@@ -24,10 +24,13 @@ JText::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_DESC');
 JText::script('COM_EMUNDUS_ONBOARD_FILES');
 JText::script('COM_EMUNDUS_ONBOARD_FILE');
 JText::script('COM_EMUNDUS_ONBOARD_CANT_REVERT');
+JText::script('COM_EMUNDUS_ONBOARD_EMPTY_LIST');
+JText::script('COM_EMUNDUS_ONBOARD_LABEL');
 ## END ##
 
 ## ACTIONS ##
 JText::script('COM_EMUNDUS_ONBOARD_ACTION');
+JText::script('COM_EMUNDUS_ONBOARD_ACTIONS');
 JText::script('COM_EMUNDUS_ONBOARD_ACTION_PUBLISH');
 JText::script('COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH');
 JText::script('COM_EMUNDUS_ONBOARD_ACTION_DUPLICATE');
@@ -55,6 +58,7 @@ JText::script('COM_EMUNDUS_ONBOARD_SEARCH');
 ## CAMPAIGN ##
 JText::script('COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN');
 JText::script('COM_EMUNDUS_ONBOARD_NOCAMPAIGN');
+JText::script('COM_EMUNDUS_ONBOARD_NOPROGRAM');
 JText::script('COM_EMUNDUS_ONBOARD_FROM');
 JText::script('COM_EMUNDUS_ONBOARD_TO');
 JText::script('COM_EMUNDUS_ONBOARD_SINCE');
@@ -72,6 +76,9 @@ JTEXT::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM');
 JTEXT::script('COM_EMUNDUS_ONBOARD_OTHERCAMP_PROGRAM');
 JTEXT::script('COM_EMUNDUS_ONBOARD_ALL_PROGRAMS');
 JTEXT::script('COM_EMUNDUS_ONBOARD_ALL_SESSIONS');
+JTEXT::script('COM_EMUNDUS_ONBOARD_PROGRAMS');
+JTEXT::script('COM_EMUNDUS_ONBOARD_PROGRAM');
+JTEXT::script('COM_EMUNDUS_ONBOARD_ALL_PROGRAM_CATEGORIES');
 ## END #
 
 ## TUTORIAL ##
@@ -154,15 +161,13 @@ $user = JFactory::getUser();
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
 $sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
 
-$xmlDoc = new DOMDocument();
-if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
-    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
-}
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 
 <list id="em-component-vue"
-      component="list"
-      type="campaign"
+      component="list_v2"
+      type="campaigns"
       coordinatorAccess="<?= $coordinator_access ?>"
       sysadminAccess="<?= $sysadmin_access ?>"
       shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
@@ -171,4 +176,4 @@ if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml'
 >
 </list>
 
-<script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>
+<script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

@@ -92,9 +92,13 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
 					WHERE ecc.published = 1 AND u.block = 0 AND esc.published = 1 AND ecc.status in ('.$status_for_send.') AND DAY(now()) IN ('.$reminder_deadline.') AND IF((ecw.end_date IS NULL OR ecw.end_date = \'0000-00-00 00:00:00\'), esc.end_date > now(), ecw.end_date > now())';
         }
 
-        if (!empty($reminder_programme_code)) {
-            $query .= ' AND esc.training IN ('.$reminder_programme_code.')';
-        }
+	    if (!empty($reminder_programme_code)) {
+		    $reminder_programme_code = explode(',',$reminder_programme_code);
+		    foreach ($reminder_programme_code as $key => $code) {
+			    $reminder_programme_code[$key] = $db->quote($code);
+		    }
+		    $query .= ' AND esc.training IN ('.implode(',',$reminder_programme_code).')';
+	    }
 
         $db->setQuery($query);
         $applicants = $db->loadObjectList();
@@ -176,9 +180,10 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
                         'user_id_from' => $from_id,
                         'user_id_to' => $to_id,
                         'subject' => $subject,
-                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
+                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body,
+	                    'email_id' => $reminder_mail_id,
                     );
-                    $m_emails->logEmail($message);
+                    $m_emails->logEmail($message, $applicant->fnum);
                     $this->log .= '\n' . JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.' :: '.$body;
                 }
                 // to avoid been considered as a spam process or DDoS

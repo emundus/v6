@@ -785,19 +785,36 @@ function data_to_img($match) {
     return "$img$fn$end";  // new <img> tag
 }
 
+/**
+ * @param $user_id
+ * @param $fnum
+ * @param $output
+ * @param $form_post
+ * @param $form_ids
+ * @param $options
+ * @param $application_form_order
+ * @param $profile_id
+ * @param $file_lbl
+ * @param $elements
+ * @param $attachments
+ * @return false|string|void
+ * @throws Exception
+ */
 function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null, $attachments = true) {
 	jimport('joomla.html.parameter');
     set_time_limit(0);
-    require_once (JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'date.php');
-
-    require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
-    require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
-    require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-    require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'form.php');
+    require_once (JPATH_SITE.'/components/com_emundus/helpers/date.php');
+    require_once(JPATH_SITE.'/components/com_emundus/models/application.php');
+    require_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
+    require_once(JPATH_SITE.'/components/com_emundus/models/files.php');
+    require_once(JPATH_SITE.'/components/com_emundus/models/form.php');
 
 	$db = JFactory::getDBO();
 	$app = JFactory::getApplication();
-	$current_user = JFactory::getUser();
+
+	if (is_null($options)) {
+		$options = [];
+	}
 
     if (empty($file_lbl)) {
         $file_lbl = "_application";
@@ -805,10 +822,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
     $cTitle = $eMConfig->get('export_application_pdf_title_color', '#000000'); //déclaration couleur principale
-    $profile_color = '#20835F';
 
     $config = JFactory::getConfig();
-    $offset = $config->get('offset');
+
 
     $m_profile = new EmundusModelProfile;
     $m_application = new EmundusModelApplication;
@@ -906,7 +922,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
             $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
 
-            if ($options[0] !== "0" && !$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
+            if ($options[0] != "0" && !$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
                 $date_submitted = (!empty($item->date_submitted) && strpos($item->date_submitted, '0000') === false) ? EmundusHelperDate::displayDate($item->date_submitted) : JText::_('NOT_SENT');
 
                 // Create an date object
@@ -924,11 +940,11 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	            if (in_array("afnum", $options)) {
 		            $htmldata .= '<p><b>' . JText::_('FNUM') . ' :</b> ' . $fnum . '</p>';
 	            }
-				$htmldata .= '</td></table><hr/></header>';
+                $htmldata .= '</td></tr></table><hr/></header>';
 
-                $htmldata .= '<table width="100%"><tr>';
+                $htmldata .= '<table width="100%">';
 
-                //$htmldata .= '<td><h3>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . '</h3></td></tr>';
+                //$htmldata .= '<tr><td><h3>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . '</h3></td></tr>';
 				if(!empty($item->avatar) && is_image_ext($item->avatar))
 				{
 					if (file_exists(EMUNDUS_PATH_ABS . @$item->user_id . '/tn_' . @$item->avatar))
@@ -987,12 +1003,14 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                     $htmldata .= '</td></tr></table>';
                 }
                 $htmldata .= '<hr>';
+            } else {
+	            $htmldata .= '</td></table><hr/></header>';
             }
         } catch (Exception $e) {
             JLog::add('SQL error in emundus pdf library at query : ' . $query, JLog::ERROR, 'com_emundus');
         }
 
-        if ($form_post == 1 && (empty($form_ids) || is_null($form_ids)) && !empty($elements) && !is_null($elements)) {
+		if ($form_post == 1 && (empty($form_ids) || is_null($form_ids)) && !empty($elements) && !is_null($elements)) {
             $profile_menu = array_keys($elements);
 
             // Get form HTML
@@ -1017,7 +1035,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	        $forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order, $profile_id, null, $attachments);
         }
 
-        /*** Applicant   ***/
+		/*** Applicant   ***/
 	    $htmldata .= "
 			<style>
 					@page { margin: 130px 25px; }
@@ -1202,7 +1220,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	    }
 	    /** END */
 
-        @chdir('tmp');
+        chdir('tmp');
     }
 }
 
@@ -1219,8 +1237,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 function application_header_pdf($user_id, $fnum = null, $output = true, $options = null) {
     jimport('joomla.html.parameter');
     set_time_limit(0);
-
-    require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'tcpdf' . DS . 'tcpdf.php');
 
     require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
     require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
@@ -1246,7 +1262,6 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     $htmldata = '';
 
     // Create PDF object
-    //$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
     $pdf = new Fpdi();
 
     $pdf->SetCreator(PDF_CREATOR);

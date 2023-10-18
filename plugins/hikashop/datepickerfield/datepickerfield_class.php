@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -600,21 +600,21 @@ window.hikashop.ready(function(){ window.hikashopDatepicker("'.$datepicker_id.'"
 			return $ret;
 
 		$dateValue = $value;
-		if(preg_match('#^([0-9]+)$#', $value)) {
-			if(strlen($value) == 14) {
-				$dateValue = substr($value,0,4) . '/' . substr($value,4,2) . '/' . substr($value,6,2);
+		if(preg_match('#^([0-9]+)$#', (string)$value)) {
+			if(strlen((string)$value) == 14) {
+				$dateValue = substr((string)$value,0,4) . '/' . substr((string)$value,4,2) . '/' . substr((string)$value,6,2);
 			} else {
 				$dateValue = hikashop_getDate($value, '%Y/%m/%d');
 			}
-			list($y,$m,$d) = explode('/', $dateValue, 3);
+			list($y,$m,$d) = explode('/', (string)$dateValue, 3);
 		} else {
 			$y = 0; $m = 0; $d = 0;
-			$timestamp = strtotime(str_replace('/', '-', $value));
+			$timestamp = strtotime(str_replace('/', '-', (string)$value));
 			if($timestamp !== false && $timestamp !== -1 && $timestamp > 0) {
 				$dateValue = date('Y/m/d', $timestamp);
-				list($y,$m,$d) = explode('/', $dateValue, 3);
+				list($y,$m,$d) = explode('/', (string)$dateValue, 3);
 			} else {
-				$v = explode('/', $value, 3);
+				$v = explode('/', (string)$value, 3);
 				if(count($v) == 3)
 					list($y,$m,$d) = $v;
 			}
@@ -879,7 +879,7 @@ window.hikashop.ready(function(){ window.hikashopDatepicker("'.$datepicker_id.'"
 			}
 		}
 
-		if(!$field->field_required || strlen($value) || strlen($oldvalue))
+		if(!$field->field_required || strlen((string)$value) || strlen((string)$oldvalue))
 			return true;
 
 

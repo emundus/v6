@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -14,7 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 				'HIKA_SET_ORDER_ADDITIONALS',
 				hikashop_completeLink('order&task=edit&subtask=additional&cid='.$this->order->order_id, true),
 				'hikashop_editadditional_popup',
-				750, 460, 'onclick="return window.orderMgr.setAdditionals(this);" class="btn btn-primary"', '', 'link'
+				1280, 700, 'onclick="return window.orderMgr.setAdditionals(this);" class="btn btn-primary"', '', 'link'
 			);
 		?></div>
 <script type="text/javascript">
@@ -131,6 +131,19 @@ window.orderMgr.setAdditionals = function(el) {
 		</tr>
 <?php
 		}
+	} else {
+		$taxes = 0.0;
+		foreach($this->order->order_tax_info as $tax){
+				$taxes += $tax->tax_amount;
+		}
+			?>
+					<tr class="hikashop_order_additional_tax">
+						<td class="key"><label><?php echo JText::_('TAXES'); ?></label></td>
+						<td><span><?php
+							echo $this->currencyHelper->format($taxes,$this->order->order_currency_id);
+						?></span></td>
+					</tr>
+			<?php
 	}
 ?>
 		<tr class="hikashop_order_additional_total">
@@ -162,6 +175,15 @@ window.orderMgr.setAdditionals = function(el) {
 		</tr>
 <?php
 	}
+
+
+	if(!empty($this->order->total_number_of_products)) {
+		?>		<tr class="hikashop_order_number_of_products">
+					<td class="key"><label><?php echo JText::_('NUMBER_OF_PRODUCTS'); ?></label></td>
+					<td><?php echo $this->order->total_number_of_products; ?></td>
+				</tr>
+		<?php
+			}
 
 	if(!empty($this->fields['order'])) {
 		foreach($this->fields['order'] as $fieldName => $oneExtraField) {

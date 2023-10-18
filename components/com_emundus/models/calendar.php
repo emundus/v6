@@ -358,11 +358,10 @@ class EmundusModelCalendar extends JModelLegacy {
         $db     = JFactory::getDbo();
 
         require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
-        $h_emails = new EmundusHelperEmails();
+        $h_emails = new EmundusHelperEmails;
         if (!$h_emails->assertCanSendMailToUser($user->id)) {
             return false;
         }
-
         $m_emails = new EmundusModelEmails;
 
         try {
@@ -421,7 +420,8 @@ class EmundusModelCalendar extends JModelLegacy {
             'LINK'          => $category_dp->description
         );
 
-        $from_id = 62;
+        $from_id = JFactory::getUser()->id;
+		$from_id = empty($from_id) ? 62 : JFactory::getUser()->id;
 
         if ($booked) {
             $email = $m_emails->getEmail('booking_created_user');
@@ -480,9 +480,10 @@ class EmundusModelCalendar extends JModelLegacy {
                 'user_id_from' => $from_id,
                 'user_id_to' => $user->id,
                 'subject' => $subject,
-                'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$user->email.'</i><br>'.$body
+                'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$user->email.'</i><br>'.$body,
+	            'email_id' => $email->id
             );
-            $m_emails->logEmail($message);
+            $m_emails->logEmail($message, $user->fnum);
         }
 
         // Part two is sending the email to the coordinators.
@@ -559,9 +560,10 @@ class EmundusModelCalendar extends JModelLegacy {
                         'user_id_from' => $from_id,
                         'user_id_to' => $recipient->id,
                         'subject' => $subject,
-                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$recipient->email.'</i><br>'.$body
+                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$recipient->email.'</i><br>'.$body,
+	                    'email_id' => $email->id
                     );
-                    $m_emails->logEmail($message);
+                    $m_emails->logEmail($message, $user->fnum);
                 }
 
             }

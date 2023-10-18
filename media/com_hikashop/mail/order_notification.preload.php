@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -123,7 +123,7 @@ if(!empty($data->cart->products)){
 		if(!empty($fields)){
 			foreach($fields as $field){
 				$texts['FOOTER_COLSPAN']++;
-				$texts['CUSTOMFIELD_NAME'].='<td style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:left;color:#1c8faf !important;font-size:12px;font-weight:bold;">'.$fieldsClass->getFieldName($field).'</td>';
+				$texts['CUSTOMFIELD_NAME'].='<td class="hika_template_color" style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:left;font-size:12px;font-weight:bold;">'.$fieldsClass->getFieldName($field).'</td>';
 			}
 		}
 	}
@@ -149,8 +149,10 @@ if(!empty($data->cart->products)){
 			if($img->success) {
 				if(substr($img->url, 0, 3) == '../')
 					$image = str_replace('../', HIKASHOP_LIVE, $img->url);
-				else
+				elseif(!$img->external)
 					$image = substr(HIKASHOP_LIVE, 0, strpos(HIKASHOP_LIVE, '/', 9)) . $img->url;
+				else
+					$image = $img->url;
 				$attributes = '';
 				if($img->external)
 					$attributes = ' width="'.$img->req_width.'" height="'.$img->req_height.'"';
@@ -220,7 +222,7 @@ if(!empty($data->cart->products)){
 		$t = '';
 		$statusDownload = explode(',',$config->get('order_status_for_download','confirmed,shipped'));
 		if(!empty($item->files) && in_array($data->cart->order_status, $statusDownload)){
-			$class = 'class="cart_button"';
+			$class = 'class="cart_button hika_template_color"';
 			$t .= '<p>';
 			foreach($item->files as $file){
 				$fileName = empty($file->file_name) ? $file->file_path : $file->file_name;
@@ -314,7 +316,7 @@ if(!empty($data->cart->products)){
 				$t = $additional->order_product_options;
 			}
 			$cartFooters[] = array(
-				'CLASS' => 'additional',
+				'CLASS' => 'additional'.preg_replace('#[^a-z0-9_]#i','', strip_tags($additional->order_product_name)),
 				'NAME' => JText::_($additional->order_product_name),
 				'VALUE' => $t
 			);
@@ -459,7 +461,7 @@ if(in_array($data->cart->order_status, $unpaid_statuses) && !empty($data->cart->
 	if($config->get('force_ssl',0) && strpos('https://', $pay_url) === false) {
 		$pay_url = str_replace('http://', 'https://', $pay_url);
 	}
-	$content .= '<p><a class="cart_button" href="'. $pay_url .'">' . JText::_('PAY_NOW') . '</a></p>';
+	$content .= '<p><a class="cart_button hika_template_color" href="'. $pay_url .'">' . JText::_('PAY_NOW') . '</a></p>';
 	$vars['ORDER_SUMMARY'] .= $content;
 	unset($content);
 }

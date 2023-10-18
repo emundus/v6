@@ -20,7 +20,7 @@ defined('_JEXEC') or die('Restricted access');
 	if(empty($cart->coupon)) {
 		if($cart->full_total->prices[0]->price_value_with_tax > 0.001) {
 ?>
-    <p class="em-h5"><?php echo JText::_('HIKASHOP_COUPON_TITLE') ?></p>
+    <h5><?php echo JText::_('HIKASHOP_COUPON_TITLE') ?></h5>
 	<label for="hikashop_checkout_coupon_input_<?php echo $this->step; ?>_<?php echo $this->module_position; ?>"></label>
 	<div class="em-flex-row">
 		<input class="hikashop_checkout_coupon_field" id="hikashop_checkout_coupon_input_<?php echo $this->step; ?>_<?php echo $this->module_position; ?>" type="text" name="checkout[coupon]" value=""/>

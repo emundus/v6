@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -79,10 +79,20 @@ class UserViewUser extends hikashopView {
 			$searchMap[] = 'huser.'.$field->field_namekey;
 		}
 
+
+		$extrafilters = array();
+		$tables = array();
+		JPluginHelper::importPlugin('hikashop');
+		$app = JFactory::getApplication();
+		$select = 'huser.*, juser.*';
+		$app->triggerEvent('onBeforeUserListing', array($this->paramBase, &$extrafilters, &$pageInfo, &$filters, &$tables, &$searchMap, &$select));
+		$this->assignRef('extrafilters', $extrafilters);
+
+
 		$this->processFilters($filters, $order, $searchMap, $cfg['order_sql_accept']);
 
-		$query = ' FROM '.hikashop_table($cfg['table']).' AS huser LEFT JOIN '.hikashop_table('users', false).' AS juser ON huser.user_cms_id = juser.id '.$filters.$order;
-		$db->setQuery('SELECT huser.*, juser.* '.$query, (int)$pageInfo->limit->start, (int)$pageInfo->limit->value);
+		$query = ' FROM '.hikashop_table($cfg['table']).' AS huser LEFT JOIN '.hikashop_table('users', false).' AS juser ON huser.user_cms_id = juser.id '.implode(' ', $tables). $filters.$order;
+		$db->setQuery('SELECT '.$select.' '.$query, (int)$pageInfo->limit->start, (int)$pageInfo->limit->value);
 		$rows = $db->loadObjectList();
 
 		$fieldsClass->handleZoneListing($fields, $rows);

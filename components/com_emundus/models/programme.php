@@ -52,19 +52,26 @@ class EmundusModelProgramme extends JModelList {
      * @since version v6
      */
     public function getAssociatedProgrammes($user) {
-        $query = 'select DISTINCT sc.training
-                  from #__emundus_users_assoc as ua
-                  LEFT JOIN #__emundus_campaign_candidature as cc ON cc.fnum=ua.fnum
-                  left join #__emundus_setup_campaigns as sc on sc.id = cc.campaign_id
-                  where ua.user_id='.$user;
-        try {
-            $db = JFactory::getDbo();
-            $db->setQuery($query);
-            return $db->loadColumn();
-        } catch(Exception $e) {
-            error_log($e->getMessage(), 0);
-            return false;
-        }
+		$associated_programs = [];
+
+		if (!empty($user)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query->select('DISTINCT sc.training')
+				->from($db->quoteName('#__emundus_users_assoc', 'ua'))
+				->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'cc').' ON '.$db->quoteName('cc.fnum').'='.$db->quoteName('ua.fnum'))
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'sc').' ON '.$db->quoteName('sc.id').'='.$db->quoteName('cc.campaign_id'))
+				->where($db->quoteName('ua.user_id').'='.$user);
+
+			try {
+				$db->setQuery($query);
+				$associated_programs = $db->loadColumn();
+			} catch(Exception $e) {
+				JLog::add('Error getting associated programmes in model/programme at query : '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $associated_programs;
     }
 
     /**
@@ -75,37 +82,41 @@ class EmundusModelProgramme extends JModelList {
      * get list of declared programmes
      */
     public function getProgrammes($published = null, $codeList = array()) {
-        $db = JFactory::getDbo();
+		$programmes = [];
 
-        $query = 'select *
-                  from #__emundus_setup_programmes
-                  WHERE 1 = 1 ';
-        if (isset($published) && !empty($published)) {
-            $query .= ' AND published = '.$published;
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select('*')
+			->from($db->quoteName('#__emundus_setup_programmes'))
+			->where('1 = 1');
+
+        if (isset($published)) {
+	        $query->andWhere('published = '.$published);
         }
 
         if (!empty($codeList)) {
-            if (count($codeList['IN']) > 0) {
-                $query .= ' AND code IN ('.implode(',', $db->Quote($codeList['IN'])).')';
+            if (!empty($codeList['IN'])) {
+	            $query->andWhere('code IN ('.implode(',', $db->quote($codeList['IN'])).')');
             }
-            if (count($codeList['NOT_IN']) > 0) {
-                $query .= ' AND code NOT IN ('.implode(',', $db->Quote($codeList['NOT_IN'])).')';
+            if (!empty($codeList['NOT_IN'])) {
+				$query->andWhere('code NOT IN ('.implode(',', $db->quote($codeList['NOT_IN'])).')');
             }
         }
 
         try {
             $db->setQuery($query);
-            return $db->loadAssocList('code');
+            $programmes = $db->loadAssocList('code');
         } catch(Exception $e) {
             error_log($e->getMessage(), 0);
-            return array();
         }
+
+		return $programmes;
     }
 
     /**
      * @param $published  int     get published or unpublished programme
      * @param $codeList   array   array of IN and NOT IN programme code to get
-     * @return array
+     * @return mixed
      * get list of declared programmes
      * @since version v6
      */
@@ -472,12 +483,18 @@ class EmundusModelProgramme extends JModelList {
                 ->order($sortDb.$sort);
 
             try {
+	            $db->setQuery($query);
+				$all_programs['count'] = count($db->loadObjectList());
+
                 if(empty($lim)) {
                     $db->setQuery($query, $offset);
                 } else {
                     $db->setQuery($query, $offset, $limit);
                 }
-                $all_programs =  $db->loadObjectList();
+
+                $programs = $db->loadObjectList();
+				
+				$all_programs['datas'] = $programs;
             } catch(Exception $e) {
                 JLog::add('component/com_emundus/models/program | Error at getting list of programs : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             }
@@ -635,7 +652,7 @@ class EmundusModelProgramme extends JModelList {
 
                     // Link group with programme
                     $columns = array('parent_id', 'course');
-                    $values = array($group_id, $db->quote($programme->code));
+                    $values = array($db->quote($group_id), $db->quote($programme->code));
 
                     $query->clear()
                         ->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
@@ -757,58 +774,58 @@ class EmundusModelProgramme extends JModelList {
      * @since version 1.0
      */
     public function deleteProgram($data) {
+		$deleted = false;
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        if (count($data) > 0) {
+        if (!empty($data)) {
+			if (!is_array($data)) {
+				$data = [$data];
+			}
 
             // Call plugin event before we delete the programme
             JPluginHelper::importPlugin('emundus');
             $dispatcher = JEventDispatcher::getInstance();
             $dispatcher->trigger('callEventHandler', ['onBeforeProgramDelete', ['data' => $data]]);
 
+
+	        $db = JFactory::getDbo();
+	        $query = $db->getQuery(true);
+
             try {
-                $query->select($db->qn('sc.id'))
-                    ->from($db->qn('#__emundus_setup_campaigns', 'sc'))
-                    ->leftJoin($db->quoteName('#__emundus_setup_programmes', 'sp').' ON '.$db->quoteName('sc.training').' LIKE '.$db->quoteName('sp.code'))
-                    ->where($db->quoteName('sp.id') . ' IN (' . implode(", ", array_values($data)) . ')');
+	            $query->select($db->qn('sc.id'))
+		            ->from($db->qn('#__emundus_setup_campaigns', 'sc'))
+		            ->leftJoin($db->quoteName('#__emundus_setup_programmes', 'sp').' ON '.$db->quoteName('sc.training').' LIKE '.$db->quoteName('sp.code'))
+		            ->where($db->quoteName('sp.id') . ' IN (' . implode(", ", array_values($data)) . ')');
 
-                $db->setQuery($query);
-                $campaigns = $db->loadColumn();
+	            $db->setQuery($query);
+	            $campaigns = $db->loadColumn();
 
-                $m_campaign = new EmundusModelCampaign;
+	            if (!empty($campaigns)) {
+		            require_once (JPATH_SITE. '/components/com_emundus/models/campaign.php');
+		            $m_campaign = new EmundusModelCampaign;
+		            $campaign_deleted = $m_campaign->deleteCampaign($campaigns);
 
-                $m_campaign->deleteCampaign($campaigns);
+		            if (!$campaign_deleted) {
+			            JLog::add('Campaign has not been deleted', JLog::ERROR, 'com_emundus');
+		            }
+	            }
 
-                $conditions = array(
-                    $db->quoteName('id') . ' IN (' . implode(", ",array_values($data)) . ')'
-                );
+	            $query->clear()
+		            ->delete($db->quoteName('#__emundus_setup_programmes'))
+		            ->where(array($db->quoteName('id') . ' IN (' . implode(", ", array_values($data)) . ')'));
 
-                $query->clear()
-                    ->delete($db->quoteName('#__emundus_setup_programmes'))
-                    ->where($conditions);
+	            $db->setQuery($query);
+	            $deleted = $db->execute();
 
-                $db->setQuery($query);
-                $res = $db->execute();
-
-                if ($res) {
-                    // Call plugin event after we delete the programme
-                    $dispatcher = JEventDispatcher::getInstance();
-                    $dispatcher->trigger('callEventHandler', ['onAfterProgramDelete', ['id' => JFactory::getUser()->id, 'data' => $data]]);
-                }
-
-                return $res;
-
+	            if ($deleted) {
+		            $dispatcher = JEventDispatcher::getInstance();
+		            $dispatcher->trigger('callEventHandler', ['onAfterProgramDelete', ['id' => JFactory::getUser()->id, 'data' => $data]]);
+	            }
             } catch(Exception $e) {
-                JLog::add('component/com_emundus/models/program | Error wen delete programs : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-                return $e->getMessage();
+                JLog::add('component/com_emundus/models/program | Error wen delete programs : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
             }
-
-        } else {
-            return false;
         }
+
+		return $deleted;
     }
 
     /**
@@ -900,6 +917,7 @@ class EmundusModelProgramme extends JModelList {
      * @since version 1.0
      */
     public function getProgramCategories() {
+		$categories = [];
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -908,15 +926,23 @@ class EmundusModelProgramme extends JModelList {
             ->from ($db->quoteName('#__emundus_setup_programmes'))
             ->order('id DESC');
 
-        $db->setQuery($query);
-
         try {
             $db->setQuery($query);
-            return $db->loadColumn();
+	        $categories = $db->loadColumn();
+
+
+	        $tmp = [];
+			foreach ($categories as $category) {
+				if (!empty($category)) {
+					$tmp[] = ['value' => $category, 'label' => $category];
+				}
+	        }
+			$categories = $tmp;
         } catch(Exception $e) {
             JLog::add('component/com_emundus/models/program | Error at getting program categories : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
         }
+
+		return $categories;
     }
 
     /**

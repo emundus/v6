@@ -2,6 +2,10 @@
 <form>
 	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
 		<fieldset name="plg-form-emundustriggers" label="PLG_FABRIK_FORM_EMUNDUSTRIGGERS_FIELDS">
+			<field type="radio" name="trigger_confirmpost_display_success_msg" label="PLG_FABRIK_FORM_EMUNDUSTRIGGERS_CONFIRMPOST_DISPLAY_REDIRECT_MSG" default="1">
+				<option value="0">Non</option>
+				<option value="1">Oui</option>
+			</field>
 			<field type="text" name="trigger_confirmpost_success_msg" label="PLG_FABRIK_FORM_EMUNDUSTRIGGERS_CONFIRMPOST_REDIRECT_MSG" default=""></field>
 			<field type="text" name="trigger_confirmpost_redirect_url" label="PLG_FABRIK_FORM_EMUNDUSTRIGGERS_CONFIRMPOST_REDIRECT_URL" default=""></field>
 			<field type="radio" name="trigger_confirmpost_redirect_to_next_step_first_page_url" label="PLG_FABRIK_FORM_EMUNDUSTRIGGERS_CONFIRMPOST_REDIRECT_NEXT_STEP_FIRST_PAGE_URL" default="0">

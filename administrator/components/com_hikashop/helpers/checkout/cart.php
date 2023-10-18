@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -37,6 +37,9 @@ class hikashopCheckoutCartHelper extends hikashopCheckoutHelperInterface {
 			'name' => 'DISPLAY_PRICE',
 			'type' => 'boolean',
 			'default' => 1
+		),
+		'separator' => array(
+			'type' => 'separator',
 		),
 		'price_with_tax' => array(
 			'name' => 'PRICE_WITH_TAX',
@@ -109,6 +112,7 @@ class hikashopCheckoutCartHelper extends hikashopCheckoutHelperInterface {
 
 		$checkoutHelper = hikashopCheckoutHelper::get();
 		$cart = $checkoutHelper->getCart();
+		$oldProducts = hikashop_copy($cart->products);
 
 		$msg_cpt = !empty($cart->messages) ? count($cart->messages) : 0;
 
@@ -135,7 +139,33 @@ class hikashopCheckoutCartHelper extends hikashopCheckoutHelperInterface {
 
 		$cart = $checkoutHelper->getCart(true);
 
+		$oldProductsCounter = count($oldProducts);
+		$ProductsCounter = count($cart->products);
+		$modifiedProduct = array();
+		if($oldProductsCounter == $ProductsCounter) {
+			foreach($cart->products as $c => $c_value) {
+				if($c_value->cart_product_quantity != $oldProducts[$c]->cart_product_quantity) {
+					$modifiedProduct[$c]=$c_value;
+					$modifiedProduct[$c]->old->quantity = $oldProducts[$c]->cart_product_quantity;
+					$modifiedProduct[$c]->action='qty_update';
+				}
+			}                    
+		}elseif($oldProductsCounter > $ProductsCounter && $ProductsCounter > 0) {
+			foreach($oldProducts as $o => $o_value) {
+				if(!isset($cart->products[$o])) {
+					$modifiedProduct[$o] = $o_value;
+					$modifiedProduct[$o]->action = 'removed_product';
+				}
+			}
+		}elseif(!$ProductsCounter) {
+			foreach($oldProducts as $o => $o_value) {
+				$modifiedProduct[$o]=$o_value;
+				$modifiedProduct[$o]->action='last_product';
+			}
+		}
+
 		if(empty($cart->products)) {
+			$checkoutHelper->modifiedProduct = $modifiedProduct;
 			$checkoutHelper->redirectBeforeDisplay = JText::_('CART_EMPTY');
 		}
 
@@ -155,7 +185,7 @@ class hikashopCheckoutCartHelper extends hikashopCheckoutHelperInterface {
 
 		$eventParams = null;
 		if(!empty($params['src']))
-			$eventParams = array('src' => $params['src']);
+			$eventParams = array('src' => $params['src'], 'product' => $modifiedProduct);
 		$checkoutHelper->addEvent('checkout.cart.updated', $eventParams);
 		return true;
 	}

@@ -79,10 +79,12 @@ class EmundusViewApplication extends JViewLegacy {
                         $m_email = new EmundusModelEmails();
                         $tag = array(
                             'FNUM' => $fnum,
-                            'CAMPAIGN_NAME' => $fnum,
-                            'APPLICATION_STATUS' => $fnum,
+                            'CAMPAIGN_NAME' => $fnumInfos['label'],
+                            'CAMPAIGN_LABEL' => $fnumInfos['label'],
+                            'APPLICATION_STATUS' => $fnumInfos['value'],
                             'APPLICATION_TAGS' => $fnum,
-                            'APPLICATION_PROGRESS' => $fnum
+                            'APPLICATION_PROGRESS' => $fnumInfos['form_progress'],
+                            'ATTACHMENT_PROGRESS' => $fnumInfos['attachment_progress']
                         );
 
                         $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum, '', $program->synthesis);
@@ -319,7 +321,7 @@ class EmundusViewApplication extends JViewLegacy {
                         EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 37, 'r', 'COM_EMUNDUS_ACCESS_LOGS_READ');
 						$m_logs = new EmundusModelLogs();
 
-                        $fileLogs = $m_logs->getActionsOnFnum($fnum, null, null, ["c", "u", "d"]);
+                        $fileLogs = $m_logs->getActionsOnFnum($fnum, null, null, ["c", "r", "u", "d"]);
 
                         foreach ($fileLogs as $key => $log) {
                             $log->timestamp = EmundusHelperDate::displayDate($log->timestamp);
@@ -575,6 +577,55 @@ class EmundusViewApplication extends JViewLegacy {
 
                         $this->campaign_id = $fnumInfos['campaign_id'];
                         $this->assignRef('fnum', $fnum);
+                    } else {
+                        echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
+                        exit();
+                    }
+                    break;
+
+                case 'review':
+                    if (EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id, $fnum)) {
+                        require_once JPATH_SITE . '/components/com_emundus/helpers/fabrik.php';
+                        $this->student = JFactory::getUser(intval($fnumInfos['applicant_id']));
+
+                        $workflow_id = $jinput->getInt('workflow_id', null);
+                        $formid 	 = $jinput->getInt('form_id', null);
+                        $table_name  = EmundusHelperFabrik::getTableFromFabrik($formid,'form');
+
+                        require_once(JPATH_SITE.'/components/com_emundus/models/campaign.php');
+                        $mCampaign = new EmundusModelCampaign();
+                        $mEvaluation = new EmundusModelEvaluation();
+                        //$workflow = $mCampaign->getWorkflowById($workflow_id);
+
+                        $this->url_form = '';
+                        if (!empty($formid)) {
+                            $row = $mEvaluation->getRowByFnum($fnum,$table_name);
+
+                            if(!empty($row)) {
+                                if (EmundusHelperAccess::asAccessAction(5, 'u', $this->_user->id, $fnum)) {
+                                    $this->url_form = 'index.php?option=com_fabrik&c=form&view=form&formid=' . $formid . '&rowid='.$row.'&' . $table_name . '___student_id[value]=' . $this->student->id . '&' . $table_name . '___fnum[value]=' . $fnum . '&student_id=' . $this->student->id . '&tmpl=component&iframe=1';
+                                }
+                            } elseif (EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id, $fnum)) {
+                                $this->url_form = 'index.php?option=com_fabrik&c=form&view=form&formid=' . $formid . '&rowid=&' . $table_name . '___student_id[value]=' . $this->student->id . '&' . $table_name . '___fnum[value]=' . $fnum . '&student_id=' . $this->student->id . '&tmpl=component&iframe=1';
+                            } elseif (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id, $fnum)) {
+                                $this->url_form = 'index.php?option=com_fabrik&c=form&view=details&formid=' . $formid . '&rowid=&' . $table_name . '___student_id[value]=' . $this->student->id . '&' . $table_name . '___fnum[value]=' . $fnum . '&student_id=' . $this->student->id . '&tmpl=component&iframe=1';
+                            }
+                        }
+
+                        $this->campaign_id = $fnumInfos['campaign_id'];
+                        $this->assignRef('fnum', $fnum);
+                        //$this->assignRef('workflow', $workflow);
+                        $this->assignRef('form_id', $formid);
+
+                        # ADD 5R HERE
+                        # get FNUM INFO
+                        require_once(JPATH_SITE.'/components/com_emundus/models/files.php');
+                        $mFile = new EmundusModelFiles();
+                        $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+                        // TRACK THE LOGS
+                        require_once(JPATH_SITE.'/components/com_emundus/models/logs.php');
+                        EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 5, 'r', 'COM_EMUNDUS_ACCESS_EVALUATION_READ');
                     } else {
                         echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();

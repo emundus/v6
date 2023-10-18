@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -14,11 +14,11 @@ defined('_JEXEC') or die('Restricted access');
 			<div id="title" style="font-family: Arial, Helvetica, sans-serif;font-size:12px;line-height:18px;">
 
 <img src="{VAR:LIVE_SITE}media/com_hikashop/images/icons/icon-48-order.png" border="0" alt="" style="float:left;margin-right:4px;"/>
-<h1 style="color:#1c8faf !important;font-size:16px;font-weight:bold; border-bottom:1px solid #ddd; padding-bottom:10px">
+<h1 class="hika_template_color" style=font-size:16px;font-weight:bold; border-bottom:1px solid #ddd; padding-bottom:10px">
 	{TXT:ORDER_TITLE}
 </h1>
 
-<h2 style="color:#1c8faf !important;font-size:12px;font-weight:bold; padding-bottom:10px">
+<h2 class="hika_template_color" style="font-size:12px;font-weight:bold; padding-bottom:10px">
 	{TXT:ORDER_CHANGED}
 </h2>
 			</div>
@@ -34,31 +34,31 @@ defined('_JEXEC') or die('Restricted access');
 	{TXT:ORDER_BEGIN_MESSAGE}
 </p>
 
-<h1 style="color:#1c8faf !important;font-size:16px;font-weight:bold;border-bottom:1px solid #ddd;padding-top:10px;padding-bottom:10px;">
+<h1 class="hika_template_color" style="font-size:16px;font-weight:bold;border-bottom:1px solid #ddd;padding-top:10px;padding-bottom:10px;">
 	{TXT:SUMMARY_OF_THE_ORDER}
 </h1>
 <p>
-	<span style="color:#1c8faf !important;font-weight:bold;">{TXT:CUSTOMER} :</span> {VAR:CUSTOMER_DETAILS}
+	<span class="hika_template_color" style="font-weight:bold;">{TXT:CUSTOMER} :</span> {VAR:CUSTOMER_DETAILS}
 </p>
 <p>
-	<span style="color:#1c8faf !important;font-weight:bold;">{TXT:ORDER_NUMBER} :</span> <a href="{VAR:ORDER_LINK}">{VAR:ORDER_NUMBER}</a>
+	<span class="hika_template_color" style="font-weight:bold;">{TXT:ORDER_NUMBER} :</span> <a href="{VAR:ORDER_LINK}">{VAR:ORDER_NUMBER}</a>
 </p>
 <!--{IF:PAYMENT}-->
 <p>
-	<span style="color:#1c8faf !important;font-weight:bold;">{TXT:PAYMENT_METHOD} :</span> {VAR:PAYMENT}
+	<span class="hika_template_color" style="font-weight:bold;">{TXT:PAYMENT_METHOD} :</span> {VAR:PAYMENT}
 </p>
 <!--{ENDIF:PAYMENT}-->
 <!--{IF:CREDIT_CARD}-->
 <p>
-	<span style="color:#1c8faf !important;font-weight:bold;font-size:14px;border-bottom:1px solid #ddd;">{TXT:CUSTOMER_PAID_WITH_CREDIT_CARD}</span>
+	<span class="hika_template_color" style="font-weight:bold;font-size:14px;border-bottom:1px solid #ddd;">{TXT:CUSTOMER_PAID_WITH_CREDIT_CARD}</span>
 </p>
 <p>
 <!--{IF:CREDIT_CARD_OWNER}-->
-	<span style="color:#1c8faf !important;font-weight:bold;">{TXT:CREDIT_CARD_OWNER}</span> {VAR:CREDIT_CARD_OWNER}<br />
+	<span class="hika_template_color" style="font-weight:bold;">{TXT:CREDIT_CARD_OWNER}</span> {VAR:CREDIT_CARD_OWNER}<br />
 <!--{ENDIF:CREDIT_CARD_OWNER}-->
-	<span style="color:#1c8faf !important;font-weight:bold;">{TXT:END_OF_CREDIT_CARD_NUMBER}</span> {VAR:END_OF_CREDIT_CARD_NUMBER}<br />
+	<span class="hika_template_color" style="font-weight:bold;">{TXT:END_OF_CREDIT_CARD_NUMBER}</span> {VAR:END_OF_CREDIT_CARD_NUMBER}<br />
 <!--{IF:CARD_VALIDATION_CODE}-->
-	<span style="color:#1c8faf !important;font-weight:bold;">{TXT:CARD_VALIDATION_CODE}</span> {VAR:CARD_VALIDATION_CODE}<br />
+	<span class="hika_template_color" style="font-weight:bold;">{TXT:CARD_VALIDATION_CODE}</span> {VAR:CARD_VALIDATION_CODE}<br />
 <!--{ENDIF:CARD_VALIDATION_CODE}-->
 	{TXT:CREDITCARD_WARNING}
 </p>
@@ -66,14 +66,14 @@ defined('_JEXEC') or die('Restricted access');
 
 <!--{IF:SHIPPING}-->
 <p>
-	<span style="color:#1c8faf !important;font-weight:bold;">{TXT:HIKASHOP_SHIPPING_METHOD} :</span> {VAR:SHIPPING}
+	<span class="hika_template_color" style="font-weight:bold;">{TXT:HIKASHOP_SHIPPING_METHOD} :</span> {VAR:SHIPPING}
 </p>
 <!--{ENDIF:SHIPPING}-->
 
 <table class="w550" border="0" cellspacing="0" cellpadding="0" width="550" style="margin-top:10px;font-family: Arial, Helvetica, sans-serif;font-size:12px;line-height:18px;">
 		<tr>
-		<!--{IF:BILLING_ADDRESS}--><td style="color:#1c8faf !important;font-size:12px;font-weight:bold;">{TXT:BILLING_ADDRESS}</td><!--{ENDIF:BILLING_ADDRESS}-->
-		<!--{IF:SHIPPING}--><!--{IF:SHIPPING_ADDRESS}--><td style="color:#1c8faf !important;font-size:12px;font-weight:bold;">{TXT:SHIPPING_ADDRESS}</td><!--{ENDIF:SHIPPING_ADDRESS}--><!--{ENDIF:SHIPPING}-->
+		<!--{IF:BILLING_ADDRESS}--><td class="hika_template_color" style="font-size:12px;font-weight:bold;">{TXT:BILLING_ADDRESS}</td><!--{ENDIF:BILLING_ADDRESS}-->
+		<!--{IF:SHIPPING}--><!--{IF:SHIPPING_ADDRESS}--><td class="hika_template_color" style="font-size:12px;font-weight:bold;">{TXT:SHIPPING_ADDRESS}</td><!--{ENDIF:SHIPPING_ADDRESS}--><!--{ENDIF:SHIPPING}-->
 	</tr>
 	<tr>
 		<!--{IF:BILLING_ADDRESS}--><td>{VAR:BILLING_ADDRESS}</td><!--{ENDIF:BILLING_ADDRESS}-->
@@ -84,11 +84,11 @@ defined('_JEXEC') or die('Restricted access');
 <!--{IF:VENDOR_CONTENT}-->{VAR:VENDOR_CONTENT}<!--{ENDIF:VENDOR_CONTENT}-->
 <table class="w550" border="0" cellspacing="0" cellpadding="0" width="550" style="margin-top:10px;margin-bottom:10px;font-family: Arial, Helvetica, sans-serif;font-size:12px;line-height:18px;">
 	<tr>
-		<td style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:left;color:#1c8faf !important;font-size:12px;font-weight:bold;">{TXT:PRODUCT_NAME}</td>
+		<td class="hika_template_color" style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:left;font-size:12px;font-weight:bold;">{TXT:PRODUCT_NAME}</td>
 		{TXT:CUSTOMFIELD_NAME}
-		<td style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:right;color:#1c8faf !important;font-size:12px;font-weight:bold;">{TXT:PRODUCT_PRICE}</td>
-		<td style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:right;color:#1c8faf !important;font-size:12px;font-weight:bold;">{TXT:PRODUCT_QUANTITY}</td>
-		<td style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:right;color:#1c8faf !important;font-size:12px;font-weight:bold;">{TXT:PRODUCT_TOTAL}</td>
+		<td class="hika_template_color" style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:right;font-size:12px;font-weight:bold;">{TXT:PRODUCT_PRICE}</td>
+		<td class="hika_template_color" style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:right;font-size:12px;font-weight:bold;">{TXT:PRODUCT_QUANTITY}</td>
+		<td class="hika_template_color" style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:right;font-size:12px;font-weight:bold;">{TXT:PRODUCT_TOTAL}</td>
 	</tr>
 <!--{START:PRODUCT_LINE}-->
 	<tr>
@@ -106,14 +106,14 @@ defined('_JEXEC') or die('Restricted access');
 <!--{END:PRODUCT_LINE}-->
 <!--{START:ORDER_FOOTER}-->
 	<tr>
-		<td class="{LINEVAR:CLASS}_label" colspan="{TXT:FOOTER_COLSPAN}" style="text-align:right;color:#1c8faf !important;font-size:12px;font-weight:bold;">{LINEVAR:NAME}</td>
+		<td class="hika_template_color" class="{LINEVAR:CLASS}_label" colspan="{TXT:FOOTER_COLSPAN}" style="text-align:right;font-size:12px;font-weight:bold;">{LINEVAR:NAME}</td>
 		<td class="{LINEVAR:CLASS}_value" style="text-align:right">{LINEVAR:VALUE}</td>
 	</tr>
 <!--{END:ORDER_FOOTER}-->
 </table>
 <!--{END:VENDOR_LINE}-->
 <!--{IF:ORDER_SUMMARY}-->
-<h1 style="color:#1c8faf !important;font-size:16px;font-weight:bold;border-bottom:1px solid #ddd;padding-top:10px;padding-bottom:10px;">
+<h1 class="hika_template_color" style="font-size:16px;font-weight:bold;border-bottom:1px solid #ddd;padding-top:10px;padding-bottom:10px;">
 	{TXT:ADDITIONAL_INFORMATION}
 </h1>
 <p style="border-bottom:1px solid #ddd;padding-bottom:10px;">

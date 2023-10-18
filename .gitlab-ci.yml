@@ -15,8 +15,8 @@ stages:
   - build
   - test
   - release
-  - publish
   - deploy
+  - publish
 
 include:
 - project: 'emundus/devops/ci-cd-templates'
@@ -124,6 +124,7 @@ phpunit-job:
     - cp -pr media/com_emundus_vanilla/v6/language/overrides/* language/overrides/
     - cp -pr media/com_emundus_vanilla/v6/templates/g5_helium/* templates/g5_helium/
     - /scripts/entrypoint.sh
+    - cat configuration.php
   script:
     - libraries/emundus/phpunit.phar -c phpunit.xml --coverage-text --colors=never
   only:
@@ -244,11 +245,6 @@ deployer-auto-release:
     DEPLOY_OPTIONS: "env=release --no-hooks -vv"
   rules:
     - if: $CI_COMMIT_BRANCH =~ "/^release\/.*/"
-
-deployer-auto-production:
-  environment: 
-    name: production/auto
-    deployment_tier: production
 
 deployer-manual-eG5NEnlFOzhoskWHOJAdBE9rVfQy9ui1:
   environment: 
@@ -411,3 +407,21 @@ deployer-manual-SN0J72VDeveAkule0zJhV5FqCt9gZJzn:
     - deployer
   variables:
     DEPLOY_OPTIONS: 'id=SN0J72VDeveAkule0zJhV5FqCt9gZJzn -vv'
+
+deployer-manual-aV3qFor36GbzHg7bavbmYuhOdjuEfSct:
+  environment:
+    name: production/manual
+    deployment_tier: production
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: 'id=aV3qFor36GbzHg7bavbmYuhOdjuEfSct -vv'
+
+deployer-manual-K8fHkefVxnoUr8q3Vcr715U6uAdFLNv5:
+  environment:
+    name: production/manual
+    deployment_tier: production
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: 'id=K8fHkefVxnoUr8q3Vcr715U6uAdFLNv5 -vv'

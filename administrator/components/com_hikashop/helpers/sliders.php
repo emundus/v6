@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -57,6 +57,9 @@ class hikashopSlidersHelper {
 				$options = array_merge($options, $this->options);
 			$ret .= JHtml::_('sliders.start', $name, $options);
 		} else {
+			if(HIKASHOP_J40) {
+				\Joomla\CMS\HTML\HTMLHelper::_('bootstrap.collapse', '#'.$name);
+			}
 			if($this->options == null)
 				$this->options = $options;
 			else
@@ -85,10 +88,12 @@ class hikashopSlidersHelper {
 				$ret .= $this->_closePanel();
 
 			$open = '';
+			$linkAttrib = '';
 			$this->options['displayFirst'] = isset($this->options['displayFirst'])?$this->options['displayFirst']:1;
-			if($toOpen || ($this->options['displayFirst'] && (isset($this->options['startOffset']) && $this->options['startOffset'] == $this->count || $this->count == 0)))
-				$open = 'in';
-
+			if($toOpen || ($this->options['displayFirst'] && (isset($this->options['startOffset']) && $this->options['startOffset'] == $this->count || $this->count == 0))) {
+				$open = 'in show';
+				$linkAttrib = ' aria-expanded="true"';
+			}
 			$this->count++;
 
 			$text = trim($text);
@@ -99,12 +104,12 @@ class hikashopSlidersHelper {
 <div class="accordion-group">
 		<div class="accordion-heading '.$child.'">
 			<h4>
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#'.$this->name.'" href="#'.$id.'">
+				<a class="accordion-toggle" data-bs-toggle="collapse" data-toggle="collapse" data-parent="#'.$this->name.'" href="#'.$id.'"'.$linkAttrib.'>
 					'.$text.'
 				</a>
 			</h4>
 		</div>
-		<div id="'.$id.'" class="accordion-body collapse '.$open.'">
+		<div id="'.$id.'" class="accordion-body collapse '.$open.'" data-bs-parent="#'.$this->name.'">
 			<div class="accordion-inner">
 ';
 			$this->openPanel = true;

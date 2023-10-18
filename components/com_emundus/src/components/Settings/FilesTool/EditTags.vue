@@ -17,7 +17,7 @@
             <div style="width: 100%">
               <p class="em-p-8-12 em-editable-content" contenteditable="true" :id="'tag_label_' + tag.id" @focusout="updateTag(tag)" @keyup.enter="manageKeyup(tag)" @keydown="checkMaxlength">{{tag.label}}</p>
             </div>
-            <input type="hidden" :class="tag.class + '-500'">
+            <input type="hidden" :class="tag.class">
           </div>
           <div class="em-flex-row">
             <v-swatches
@@ -78,19 +78,69 @@ export default {
       tags: [],
       show: false,
       actualLanguage : '',
-      swatches: [
-        '#5E6580', '#D444F1', '#7959F8', '#0BA4EB', '#2E90FA', '#2970FE', '#15B79E', '#238C69', '#20835F', '#EAA907',
-        '#F79009', '#EF681F', '#FF4305', '#DB333E', '#EE46BC', '#F53D68'
-      ],
+      swatches: [],
+      colors: [],
+      variables: null,
     };
   },
 
   created() {
+    let root = document.querySelector(':root');
+    this.variables = getComputedStyle(root);
+
+    this.prepareSwatchesColor();
     this.getTags();
     this.actualLanguage = this.$store.getters['global/shortLang'];
   },
 
   methods: {
+    prepareSwatchesColor() {
+      this.swatches.push(this.variables.getPropertyValue('--em-red-1'));
+      this.colors.push({name: 'red-1', value: this.variables.getPropertyValue('--em-red-1')})
+      this.swatches.push(this.variables.getPropertyValue('--em-red-2'));
+      this.colors.push({name: 'red-2', value: this.variables.getPropertyValue('--em-red-2')})
+      this.swatches.push(this.variables.getPropertyValue('--em-pink-1'));
+      this.colors.push({name: 'pink-1', value: this.variables.getPropertyValue('--em-pink-1')})
+      this.swatches.push(this.variables.getPropertyValue('--em-pink-2'));
+      this.colors.push({name: 'pink-2', value: this.variables.getPropertyValue('--em-pink-2')})
+      this.swatches.push(this.variables.getPropertyValue('--em-purple-1'));
+      this.colors.push({name: 'purple-1', value: this.variables.getPropertyValue('--em-purple-1')})
+      this.swatches.push(this.variables.getPropertyValue('--em-purple-2'));
+      this.colors.push({name: 'purple-2', value: this.variables.getPropertyValue('--em-purple-2')})
+      this.swatches.push(this.variables.getPropertyValue('--em-light-blue-1'));
+      this.colors.push({name: 'light-blue-1', value: this.variables.getPropertyValue('--em-light-blue-1')})
+      this.swatches.push(this.variables.getPropertyValue('--em-light-blue-2'));
+      this.colors.push({name: 'light-blue-2', value: this.variables.getPropertyValue('--em-light-blue-2')})
+      this.swatches.push(this.variables.getPropertyValue('--em-blue-1'));
+      this.colors.push({name: 'blue-1', value: this.variables.getPropertyValue('--em-blue-1')})
+      this.swatches.push(this.variables.getPropertyValue('--em-blue-2'));
+      this.colors.push({name: 'blue-2', value: this.variables.getPropertyValue('--em-blue-2')})
+      this.swatches.push(this.variables.getPropertyValue('--em-blue-3'));
+      this.colors.push({name: 'blue-3', value: this.variables.getPropertyValue('--em-blue-3')})
+      this.swatches.push(this.variables.getPropertyValue('--em-green-1'));
+      this.colors.push({name: 'green-1', value: this.variables.getPropertyValue('--em-green-1')})
+      this.swatches.push(this.variables.getPropertyValue('--em-green-2'));
+      this.colors.push({name: 'green-2', value: this.variables.getPropertyValue('--em-green-2')})
+      this.swatches.push(this.variables.getPropertyValue('--em-yellow-1'));
+      this.colors.push({name: 'yellow-1', value: this.variables.getPropertyValue('--em-yellow-1')})
+      this.swatches.push(this.variables.getPropertyValue('--em-yellow-2'));
+      this.colors.push({name: 'yellow-2', value: this.variables.getPropertyValue('--em-yellow-2')})
+      this.swatches.push(this.variables.getPropertyValue('--em-orange-1'));
+      this.colors.push({name: 'orange-1', value: this.variables.getPropertyValue('--em-orange-1')})
+      this.swatches.push(this.variables.getPropertyValue('--em-orange-2'));
+      this.colors.push({name: 'orange-2', value: this.variables.getPropertyValue('--em-orange-2')})
+      this.swatches.push(this.variables.getPropertyValue('--em-beige'));
+      this.colors.push({name: 'beige', value: this.variables.getPropertyValue('--em-beige')})
+      this.swatches.push(this.variables.getPropertyValue('--em-brown'));
+      this.colors.push({name: 'brown', value: this.variables.getPropertyValue('--em-brown')})
+      this.swatches.push(this.variables.getPropertyValue('--em-grey-1'));
+      this.colors.push({name: 'grey-1', value: this.variables.getPropertyValue('--em-grey-1')})
+      this.swatches.push(this.variables.getPropertyValue('--em-grey-2'));
+      this.colors.push({name: 'grey-2', value: this.variables.getPropertyValue('--em-grey-2')})
+      this.swatches.push(this.variables.getPropertyValue('--em-black'));
+      this.colors.push({name: 'black', value: this.variables.getPropertyValue('--em-black')})
+    },
+
     getTags() {
       axios.get("index.php?option=com_emundus&controller=settings&task=gettags")
           .then(response => {
@@ -106,10 +156,11 @@ export default {
     async updateTag(tag) {
       this.$emit('updateSaving',true);
 
+      let index = this.colors.findIndex(item => item.value === tag.class);
       const formData = new FormData();
       formData.append('tag', tag.id);
       formData.append('label', document.getElementById(('tag_label_' + tag.id)).textContent);
-      formData.append('color', tag.class);
+      formData.append('color', this.colors[index].name);
 
       await client().post('index.php?option=com_emundus&controller=settings&task=updatetags',
           formData,
@@ -170,14 +221,8 @@ export default {
     },
 
     getHexColors(element) {
-      let tags_class = document.querySelector('.' + element.class + '-500');
-      let style = getComputedStyle(tags_class);
-      let rgbs = style.backgroundColor.split('(')[1].split(')')[0].split(',');
-      element.class = this.rgbToHex(parseInt(rgbs[0]),parseInt(rgbs[1]),parseInt(rgbs[2]));
-    },
-
-    rgbToHex(r, g, b) {
-      return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+      element.translate = false;
+      element.class = this.variables.getPropertyValue('--em-'+element.class.replace('label-',''));
     },
 
     checkMaxlength(event) {

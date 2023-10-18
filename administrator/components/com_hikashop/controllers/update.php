@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -129,6 +129,9 @@ class updateController extends HikashopBridgeController {
 		$addressState = (!empty($data['address']['address_state'])) ? ($data['address']['address_state']) : '';
 		$shopAddress = hikaInput::get()->getVar('shop_address');
 		$paypalEmail = hikaInput::get()->getVar('paypal_email');
+		$paypal_client_id = hikaInput::get()->getVar('paypal_client_id');
+		$paypal_client_secret = hikaInput::get()->getVar('paypal_client_secret');
+		$paypal_merchant_id = hikaInput::get()->getVar('paypal_merchant_id');
 		$productType = hikaInput::get()->getVar('product_type');
 		$dataExample = hikaInput::get()->getVar('data_sample');
 
@@ -329,6 +332,52 @@ class updateController extends HikashopBridgeController {
 				),
 			);
 			hikaInput::get()->set('name','paypal');
+			hikaInput::get()->set('plugin_type','payment');
+			hikaInput::get()->set('data',$pluginData);
+
+			$pluginsController = hikashop_get('controller.plugins');
+			$pluginsController->store(true);
+		}
+
+		if(!empty($paypal_client_id)) {
+
+		$paypal_client_id = hikaInput::get()->getVar('paypal_client_id');
+		$paypal_client_secret = hikaInput::get()->getVar('paypal_client_secret');
+		$paypal_merchant_id = hikaInput::get()->getVar('paypal_merchant_id');
+			$pluginData = array(
+				'payment' => array(
+					'payment_name' => 'PayPal Checkout',
+					'payment_published' => '1',
+					'payment_images' => 'MasterCard,VISA,Credit_card,PayPal',
+					'payment_price' => '',
+					'payment_params' => array(
+						'sandbox' => 0,
+						'client_id' => $paypal_client_id,
+						'client_secret' => $paypal_client_secret,
+						'merchant_id' => $paypal_merchant_id,
+						'instant_capture' => 1,
+						'landing_page' => 'NO_PREFERENCE',
+						'invalid_status' => 'cancelled',
+						'verified_status' => 'confirmed',
+						'funding' => 'paylater',
+						'layout' => 'vertical',
+						'color' => 'gold',
+						'label' => 'paypal',
+						'shape' => 'rect',
+						'tagline' => '1',
+						'listing_position' => 'bottom',
+						'product_page_position' => 'rightMiddle',
+						'cart_page_position' => 'bottom',
+						'checkout_page_position' => 'bottom',
+						'paylater_messaging_color' => 'black',
+					),
+					'payment_zone_namekey' => '',
+					'payment_access' => 'all',
+					'payment_id' => '0',
+					'payment_type' => 'paypalcheckout',
+				),
+			);
+			hikaInput::get()->set('name','paypalcheckout');
 			hikaInput::get()->set('plugin_type','payment');
 			hikaInput::get()->set('data',$pluginData);
 

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -53,8 +53,14 @@ if((!empty($this->rows) || !$this->module || hikaInput::get()->getVar('hikashop_
 			$this->row =& $row;
 			$link = hikashop_contentLink('product&task=show&cid='.$row->product_id.'&name='.$row->alias.$this->itemid.$this->category_pathway,$row);
 			$this->quantityLayout = $this->getProductQuantityLayout($row);
+			$hk_main_classes = array('hikashop_product_list_item');
+			if(!empty($this->row->categories)) {
+				foreach($this->row->categories as $category) {
+					$hk_main_classes[] = 'hikashop_product_of_category_'.$category->category_id;
+				}
+			}
 ?>
-				<li class="hikashop_product_list_item" <?php echo $width; ?> itemprop="itemList" itemscope="" itemtype="http://schema.org/ItemList">
+				<li class="<?php echo implode(' ', $hk_main_classes); ?>" <?php echo $width; ?> itemprop="itemList" itemscope="" itemtype="http://schema.org/ItemList">
 <!-- NAME -->
 <?php
 			if($this->params->get('link_to_product_page', 0)) { ?>

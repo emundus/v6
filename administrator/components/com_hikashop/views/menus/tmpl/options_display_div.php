@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -47,7 +47,7 @@ if(hikashop_level(2)){
 		$colsNb = @$this->element['columns'];
 		$rowsNb = 0;
 		if(@$this->element['columns'] != 0)
-			$rowsNb = round($this->element['limit'] / $this->element['columns']);
+			$rowsNb = round((int)$this->element['limit'] / (int)$this->element['columns']);
 		for($j = 0; $j < 12; $j++){
 			for($i = 0; $i < 6; $i++){
 				$class = ($i < $colsNb && $j < $rowsNb) ? ' selected' : '';
@@ -125,7 +125,7 @@ if(hikashop_level(2)){
 			</dl>
 			<dl class="hika_options">
 				<dt class="hikashop_option_name">
-					<label><?php echo JText::_('HIKA_LAYOUT_TYPE'); ?></label>
+					<label><?php echo JText::_('IMAGE_X'); ?></label>
 				</dt>
 				<dd class="hikashop_option_value">
 					<input size=12 name="<?php echo $this->name; ?>[image_width]" type="text" value="<?php echo @$this->element['image_width'];?>" /> px

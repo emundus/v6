@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields">
+		<fieldset label="COM_FABRIK_OPTIONS" name="plg-element-emundus_phonenumber">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_FIELD_HELP_SERVER" />
+
+			<field name="hidden"
+				type="radio"
+				default="0"
+				class="btn-group"
+				description="PLG_ELEMENT_FIELD_HIDDEN_DESC"
+				label="PLG_ELEMENT_FIELD_HIDDEN_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+		</fieldset>
+	</fields>
+
+	<fields name="params">
+		<fieldset name="plg-element-emundus_phonenumber-params" label="COM_FABRIK_ADVANCED">
+
+			<field type="helplink"
+				url="PLG_ELEMENT_FIELD_HELP_SERVER" />
+
+			<field name="default_country"
+				   type="sql"
+				   label="PLG_ELEMENT_PHONE_NUMBER_SELECT_COUNTRY"
+				   query="SELECT DISTINCT label_fr, iso2 from data_country"
+				   key_field="iso2"
+				   value_field="label_fr"
+			>
+				<option value=" "></option>
+			</field>
+
+			<field name="countries_options"
+				   type="subform"
+				   multiple="true"
+				   min="0"
+				   label="PLG_ELEMENT_PHONE_NUMBER_OPTIONS"
+			>
+				<form>
+					<field name="country"
+						   type="sql"
+						   label="PLG_ELEMENT_PHONE_NUMBER_SELECT_COUNTRY_OPTION"
+						   query="SELECT DISTINCT label_fr, iso2 from data_country"
+						   key_field="iso2"
+						   value_field="label_fr"
+					>
+						<option value=" "></option>
+					</field>
+				</form>
+			</field>
+
+		</fieldset>
+	</fields>
+</form>

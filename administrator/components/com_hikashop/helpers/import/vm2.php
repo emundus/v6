@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -583,7 +583,7 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 			'SELECT ' . implode(',',$data).' FROM `'.$this->vmprefix.'virtuemart_calcs` vmtr '.
 			"LEFT JOIN `".$this->vmprefix."virtuemart_calc_countries` vmcc ON vmtr.virtuemart_calc_id = vmcc.virtuemart_calc_id " .
 			"LEFT JOIN `".$this->vmprefix."virtuemart_countries` vmcs ON vmcc.virtuemart_country_id = vmcs.virtuemart_country_id ".
-			"LEFT JOIN `".$this->vmprefix."hikashop_zone` hkz ON vmcs.country_3_code = hkz.zone_code_3 AND hkz.zone_type = 'country' ".
+			"LEFT JOIN `#__hikashop_zone` hkz ON vmcs.country_3_code = hkz.zone_code_3 AND hkz.zone_type = 'country' ".
 			"WHERE vmtr.virtuemart_calc_id >" . $this->options->last_vm_taxrate;
 
 		$this->db->setQuery($sql);
@@ -957,11 +957,11 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Total number of added levels through the "virtuemart_category_categories" table : ' . $total . '</p>';
 
 		$query = 'SELECT category_child_id FROM `'. $this->vmprefix .'virtuemart_category_categories` ' .
-				'WHERE category_parent_id IN ('."'".implode("','",$childs)."'".');';
+				'WHERE category_parent_id IN ('."'".implode("','",$childs)."'".') AND level < 1;';
 		$this->db->setQuery($query);
 		$childArray = $this->db->loadRowList();
 
-		if(empty($childArray))
+		if(empty($childArray) || $level > 100)
 			return;
 
 		$childs = array();
@@ -1408,8 +1408,8 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 
 		$sql2_1 = 'INSERT IGNORE INTO `#__hikashop_address` (`'.implode('`,`',array_keys($data)).'`) '.
 			'SELECT '.implode(',',$data).' FROM `'.$this->vmprefix.'virtuemart_order_userinfos` AS vmui '.
-			"INNER JOIN `".$this->vmprefix."virtuemart_states` vms ON vmui.virtuemart_state_id = vms.virtuemart_state_id ".
-			"INNER JOIN `".$this->vmprefix."virtuemart_countries` vmc ON vmui.virtuemart_country_id = vmc.virtuemart_country_id ".
+			"LEFT JOIN `".$this->vmprefix."virtuemart_states` vms ON vmui.virtuemart_state_id = vms.virtuemart_state_id ".
+			"LEFT JOIN `".$this->vmprefix."virtuemart_countries` vmc ON vmui.virtuemart_country_id = vmc.virtuemart_country_id ".
 			'LEFT JOIN `#__hikashop_user` AS hkusr ON vmui.virtuemart_user_id = hkusr.user_cms_id '.
 			'WHERE vmui.virtuemart_order_id > '.$this->options->last_vm_order.' ORDER BY vmui.virtuemart_order_userinfo_id ASC';
 

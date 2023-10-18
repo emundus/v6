@@ -7,7 +7,6 @@ $app = JFactory::getApplication();
 $user = JFactory::getUser();
 $lang = JFactory::getLanguage();
 $locallang = $lang->getTag();
-$document->addStyleSheet("https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined" );
 
 if ($locallang == "fr-FR") {
     setlocale(LC_TIME, 'fr', 'fr_FR', 'french', 'fra', 'fra_FRA', 'fr_FR.ISO_8859-1', 'fra_FRA.ISO_8859-1', 'fr_FR.utf8', 'fr_FR.utf-8', 'fra_FRA.utf8', 'fra_FRA.utf-8');
@@ -29,6 +28,11 @@ $dteDiff  = $dteStart->diff($dteEnd);
 $j = $dteDiff->format("%a");
 $h = $dteDiff->format("%H");
 
+if (empty($currentCampaign)) {
+    $app->enqueueMessage(JText::_('MOD_EM_CAMPAIGN_NOT_ACCESSIBLE'));
+    $app->redirect('index.php');
+}
+
 $can_apply = 0;
 if(strtotime($now) < strtotime($currentCampaign->end_date)  && strtotime($now) > strtotime($currentCampaign->start_date)){
     $can_apply = 1;
@@ -48,15 +52,15 @@ if($currentCampaign->apply_online == 0){
         </div>
         <?php if($mod_em_campaign_details_show_programme == 1) : ?>
             <?php
-            $color = '#1C6EF2';
+            $color = '#0A53CC';
             $background = '#C8E1FE';
             if(!empty($currentCampaign->tag_color)){
                 $color = $currentCampaign->tag_color;
                 switch ($currentCampaign->tag_color) {
-                    case '#20835F':
+                    case '#106949':
                         $background = '#DFF5E9';
                         break;
-                    case '#DB333E':
+                    case '#C31924':
                         $background = '#FFEEEE';
                         break;
                     case '#FFC633':
@@ -65,58 +69,58 @@ if($currentCampaign->apply_online == 0){
                 }
             }
             ?>
-            <p class="em-programme-tag" title="<?php echo $currentCampaign->programme ?>" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
+            <p class="em-programme-tag" title="<?php echo $currentCampaign->programme ?>" style="color: <?php echo $color ?>;">
                 <?php  echo $currentCampaign->programme; ?>
             </p>
         <?php endif; ?>
-        <p class="em-h3 mod_emundus_campaign__campaign_title em-mt-16" style="max-height: unset"><?php echo $currentCampaign->label; ?></p>
-        <div class="em-grid-2 em-mt-24">
+        <h1 class="mod_emundus_campaign__campaign_title em-mt-16" style="max-height: unset"><?php echo $currentCampaign->label; ?></h1>
+        <div class="em-grid-small em-mt-8 em-mt-8">
             <?php if ($mod_em_campaign_show_camp_start_date && $currentCampaign->start_date != '0000-00-00 00:00:00') :?>
             <div class="em-flex-row" style="white-space: nowrap;">
-                <p class="em-applicant-text-color em-flex-row em-applicant-default-font "><span class="material-icons em-mr-8 em-font-size-16">alarm</span> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?></p>
-                <span class="em-applicant-text-color em-ml-4 em-camp-start em-applicant-default-font "><?php echo JFactory::getDate(new JDate($currentCampaign->start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                <p class="em-text-neutral-600 em-flex-row em-applicant-default-font "><span class="material-icons em-mr-8">alarm</span> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?></p>
+                <span class="em-text-neutral-600 em-ml-4 em-camp-start em-applicant-default-font "><?php echo JFactory::getDate(new JDate($currentCampaign->start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
             </div>
             <?php endif; ?>
 
             <?php if ($mod_em_campaign_show_camp_end_date && $currentCampaign->end_date != '0000-00-00 00:00:00') :?>
             <div class="em-flex-row" style="white-space: nowrap;">
-                <p class="em-applicant-text-color em-flex-row em-applicant-default-font "><span class="material-icons em-mr-8 em-font-size-16">schedule</span> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?></p>
-                <span class="em-applicant-text-color em-ml-4 em-camp-end em-applicant-default-font "><?php echo JFactory::getDate(new JDate($currentCampaign->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                <p class="em-text-neutral-600 em-flex-row em-applicant-default-font "><span class="material-icons em-mr-8">schedule</span> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?></p>
+                <span class="em-text-neutral-600 em-ml-4 em-camp-end em-applicant-default-font "><?php echo JFactory::getDate(new JDate($currentCampaign->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
             </div>
             <?php endif; ?>
 
             <?php if ($mod_em_campaign_show_formation_start_date && $currentCampaign->formation_start !== '0000-00-00 00:00:00') :?>
             <div class="em-flex-row" style="white-space: nowrap;">
-                <p class="em-applicant-text-color em-flex-row em-applicant-default-font"><span class="material-icons em-mr-8 em-font-size-16">alarm</span> <?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_START_DATE'); ?>:</p>
-                <span class="em-applicant-text-color em-ml-4 em-formation-start em-applicant-default-font "><?php echo JFactory::getDate(new JDate($currentCampaign->formation_start, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                <p class="em-text-neutral-600 em-flex-row em-applicant-default-font"><span class="material-icons em-mr-8">alarm</span> <?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_START_DATE'); ?>:</p>
+                <span class="em-text-neutral-600 em-ml-4 em-formation-start em-applicant-default-font "><?php echo JFactory::getDate(new JDate($currentCampaign->formation_start, $site_offset))->format($mod_em_campaign_date_format); ?></span>
             </div>
             <?php endif;?>
 
             <?php if ($mod_em_campaign_show_formation_end_date && $currentCampaign->formation_end !== '0000-00-00 00:00:00') :?>
             <div class="em-flex-row" style="white-space: nowrap;">
-                <p class="em-applicant-text-color em-flex-row"><span class="material-icons em-mr-8 em-font-size-16">schedule</span> <?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_END_DATE'); ?>:</p>
+                <p class="em-applicant-text-color em-flex-row"><span class="material-icons em-mr-8">schedule</span> <?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_END_DATE'); ?>:</p>
                 <span class="em-ml-4 em-formation-end"><?php echo JFactory::getDate(new JDate($currentCampaign->formation_end, $site_offset))->format($mod_em_campaign_date_format); ?></span>
             </div>
             <?php endif; ?>
 
             <?php if ($mod_em_campaign_show_admission_start_date && $currentCampaign->admission_start_date !== '0000-00-00 00:00:00') :?>
             <div class="em-flex-row" style="white-space: nowrap;">
-                <p class="em-applicant-text-color em-flex-row"><span class="material-icons em-mr-8 em-font-size-16">alarm</span> <?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_START_DATE'); ?>:</p>
-                <span class="em-applicant-text-color em-ml-4 em-formation-start"><?php echo JFactory::getDate(new JDate($currentCampaign->admission_start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                <p class="em-text-neutral-600 em-flex-row"><span class="material-icons em-mr-8">alarm</span> <?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_START_DATE'); ?>:</p>
+                <span class="em-text-neutral-600 em-ml-4 em-formation-start"><?php echo JFactory::getDate(new JDate($currentCampaign->admission_start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
             </div>
             <?php endif;?>
 
             <?php if ($mod_em_campaign_show_admission_end_date && $currentCampaign->admission_end_date !== '0000-00-00 00:00:00') :?>
             <div class="em-flex-row" style="white-space: nowrap;">
-                <p class="em-applicant-text-color em-flex-row"><span class="material-icons em-mr-8 em-font-size-16">schedule</span> <?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_END_DATE'); ?>:</p>
-                <span class="em-applicant-text-color em-ml-4 em-formation-end"><?php echo JFactory::getDate(new JDate($currentCampaign->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                <p class="em-text-neutral-600 em-flex-row"><span class="material-icons em-mr-8">schedule</span> <?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_END_DATE'); ?>:</p>
+                <span class="em-text-neutral-600 em-ml-4 em-formation-end"><?php echo JFactory::getDate(new JDate($currentCampaign->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
             </div>
             <?php endif; ?>
         </div>
         <?php if (!empty($mod_em_campaign_show_timezone)) : ?>
-            <div class="em-mt-16 em-applicant-text-color em-flex-row em-camp-time-zone">
-                <p class="em-flex-row"><span class="material-icons-outlined em-mr-8 em-font-size-16">public</span></p>
-                <span class="em-applicant-default-font"><?php echo JText::_('MOD_EM_CAMPAIGN_TIMEZONE').$offset ?></span>
+            <div class="em-mt-4 em-text-neutral-600 em-flex-row em-camp-time-zone">
+                <p class="em-flex-row"><span class="material-icons-outlined em-mr-8">public</span></p>
+                <span class="em-text-neutral-600 em-applicant-default-font"><?php echo JText::_('MOD_EM_CAMPAIGN_TIMEZONE').$offset ?></span>
             </div>
         <?php endif; ?>
 
@@ -161,7 +165,7 @@ if($currentCampaign->apply_online == 0){
         <!-- INFO BLOCK -->
         <?php if ($can_apply != 0 || $mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
         <div class="mod_emundus_campaign__details_content em-border-neutral-300 em-mb-24">
-            <p class="em-h6"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_APPLY') ?></p>
+            <h4 class="em-mb-24"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_APPLY') ?></h4>
             <?php if ($mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
             <div class="em-mt-24">
                 <?php $index = 1; ?>
@@ -186,7 +190,7 @@ if($currentCampaign->apply_online == 0){
                     $register_url .= "&redirect=" . $formUrl;
                 }
                 ?>
-                <a class="btn btn-primary em-w-100 em-mt-24 em-applicant-default-font" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+                <a class="btn btn-primary em-w-100 em-applicant-default-font" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
             <?php elseif ($can_apply == -1) : ?>
                 <button class="em-disabled-button em-w-100 em-mt-24" role="button" data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_IS_FINISH'); ?></button>
             <?php endif; ?>
@@ -196,7 +200,7 @@ if($currentCampaign->apply_online == 0){
         <!-- ATTACHMENTS BLOCK -->
         <?php if (!empty($files) && $mod_em_campaign_show_documents == 1) : ?>
         <div class="mod_emundus_campaign__details_content em-border-neutral-300 em-mb-24">
-            <p class="em-h6"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_DOWNLOADS') ?></p>
+            <h4><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_DOWNLOADS') ?></h4>
             <div class="em-mt-24">
                 <?php foreach($files as $file) : ?>
                     <div class="em-flex-row em-mb-16 mod_emundus_campaign__details_file">
@@ -212,7 +216,7 @@ if($currentCampaign->apply_online == 0){
 
         <?php if (!empty($contact) && $mod_em_campaign_show_contact == 1) : ?>
         <div class="mod_emundus_campaign__details_content em-border-neutral-300">
-            <p class="em-h6"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_CONTACT') ?></p>
+            <h4><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_CONTACT') ?></h4>
         </div>
         <?php endif; ?>
     </div>

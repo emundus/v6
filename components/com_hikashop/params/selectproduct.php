@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -19,7 +19,7 @@ class JElementSelectproduct extends JElement {
 			$this->value = reset($this->value);
 
 		$nameboxType = hikashop_get('type.namebox');
-		$select = '<div style="height:130px; margin-left:150px;">' .
+		$select = '<div style="height:130px; position:absolute;">' .
 				$nameboxType->display(
 					'jform[params][product_id]',
 					$this->value,

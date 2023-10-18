@@ -11,7 +11,7 @@
     <div class="span12" style="margin:0px;width: 100%;">
         <form id="payer-infos" class="fabrikForm">
             <fieldset class="fabrikGroup">
-                <p class="em-h3">Régler les frais d'inscriptions</p>
+                <h3>Régler les frais d'inscriptions</h3>
                 <section id="recap_payment" class="em-mt-16">
                     <p class="em-font-weight-600"><?= JText::_('MOD_EMUNDUS_PAYMENT_RECAP_FOR') ?> <b> <?= " " . $campaign->label ?></b></p>
                     <p class="em-mt-8"><?= JText::_('MOD_EMUNDUS_PAYMENT_PRICE') . " : " .  $price . "€" ?></p>

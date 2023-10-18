@@ -15,6 +15,8 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
+
+use Joomla\CMS\Component\ComponentHelper;
 /**
  * Content Component Query Helper
  *
@@ -42,8 +44,8 @@ class EmundusHelperEmails {
 
         $current_user = JFactory::getUser();
         $email = '<div class="em_email_block" id="em_email_block">
-					<input placeholder="'.JText::_('NAME_FROM').'" name="mail_from_name" type="text" class="inputbox input-xlarge" id="mail_from_name" value="'.$current_user->name.'" />
-					<input placeholder="'.JText::_('COM_EMUNDUS_MAILS_EMAIL_FROM').'" name="mail_from" type="text" class="inputbox input-xlarge" id="mail_from" value="'.$current_user->email.'" />
+					<input placeholder="'.JText::_('NAME_FROM').'" name="mail_from_name" type="text" class="inputbox input-xlarge" id="mail_from_name" style="margin-bottom: 16px" value="'.$current_user->name.'" />
+					<input placeholder="'.JText::_('COM_EMUNDUS_MAILS_EMAIL_FROM').'" name="mail_from" type="text" class="inputbox input-xlarge" style="margin-bottom: 16px" id="mail_from" value="'.$current_user->email.'" />
 					<input name="mail_from_id" type="hidden" class="inputbox" id="mail_from_id" value="'.$current_user->id.'" /><br>';
 
         if (in_array('default',$params)) {
@@ -253,14 +255,14 @@ class EmundusHelperEmails {
             $email .= '<div>';
 
             $AllEmail_template = EmundusHelperEmails::getAllEmail(2);
-            $email .= '<select name="select_template" onChange="getTemplate(this);">
+            $email .= '<select name="select_template" onChange="getTemplate(this);" style="margin-bottom: 16px">
 						<option value="%">-- '.JText::_('COM_EMUNDUS_EMAILS_SELECT_TEMPLATE').' --</option>';
             foreach ($AllEmail_template as $email_template) {
                 $email .= '<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
             }
             $email .= '</select>
-						<input placeholder="'.JText::_( 'COM_EMUNDUS_EMAILS_SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />
-						<select name="mail_to[]" type="text" class="inputbox" id="mail_to" size="100" style="width: 100% !important;" multiple="multiple">
+						<input placeholder="'.JText::_( 'COM_EMUNDUS_EMAILS_SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;margin-bottom: 16px" />
+						<select name="mail_to[]" type="text" class="inputbox" id="mail_to" size="100" style="width: 100% !important;margin-bottom: 16px" multiple="multiple">
 							<option value="">'.JText::_('COM_EMUNDUS_EMAILS_EMAIL_TO').'</option>';
             foreach ($users as $expert) {
                 $email .= '<option value="'.$expert['email'].'">'.$expert['first_name'].' '.$expert['last_name'].((!empty($expert['group']))?' ('.JText::_($expert['group']).')':'').'</option>';
@@ -272,7 +274,7 @@ class EmundusHelperEmails {
 						<input name="mail_type" type="hidden" class="inputbox" id="mail_type" value="expert" />
 						<p>
 							<div>
-								<input class="btn btn-large btn-success" type="submit" name="expert" value="'.JText::_( 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL' ).'" >
+								<input class="btn btn-large btn-success" style="margin-top: 16px" type="submit" name="expert" value="'.JText::_( 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL' ).'" >
 							</div>
 						</p>
 						
@@ -692,7 +694,7 @@ class EmundusHelperEmails {
 
             $user = $users[$i];
 
-            $can_send_mail = $this->assertCanSendMailToUser($user->id);
+            $can_send_mail = EmundusHelperEmails::assertCanSendMailToUser($user->id);
             if (!$can_send_mail) {
                 continue;
             }
@@ -852,6 +854,52 @@ class EmundusHelperEmails {
         }
 
         return $is_correct;
+    }
+
+    function getLogo(): string {
+        $logo = '';
+        $app = JFactory::getApplication();
+        $template = $app->getTemplate(true);
+        $config = JFactory::getConfig();
+
+        $params = $template->params;
+
+
+        if (!empty($params->get('logo')->custom->image)) {
+            $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+            $logo = !empty($logo['path']) ? JURI::base().$logo['path'] : "";
+        } else {
+            $logo_module = JModuleHelper::getModuleById('90');
+            preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
+            $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
+        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
+        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
+
+            if (preg_match($pattern, $tab[1])) {
+                $tab[1] = parse_url($tab[1], PHP_URL_PATH);
+            }
+
+            $logo = JURI::base().$tab[1];
+        }
+
+        return $logo;
+    }
+
+    public static function getCustomHeader(): string {
+        $result = '';
+
+        $eMConfig = ComponentHelper::getParams('com_emundus');
+        $custom_email_tag = $eMConfig->get('email_custom_tag', null);
+
+        if(!empty($custom_email_tag))
+        {
+            $custom_email_tag = explode(',', $custom_email_tag);
+
+            $result = $custom_email_tag[0].':'.$custom_email_tag[1];
+        }
+
+        return $result;
     }
 }
 ?>

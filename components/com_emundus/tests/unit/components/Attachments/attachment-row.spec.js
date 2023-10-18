@@ -6,16 +6,15 @@ import translate from '../../../mocks/mixins/translate';
 import mixin from '../../../../src/mixins/mixin';
 
 describe('AttachmentRow.vue', () => {
+	const attachment = mockAttachment.attachments[1];
 	const wrapper = mount(AttachmentRow, {
 		propsData: {
-			attachment: mockAttachment.attachments[1],
-			checkedAttachmentsProp: [mockAttachment.attachments[1].aid],
+			attachment: attachment,
+			checkedAttachmentsProp: [attachment.aid],
 			canUpdate: true,
 		},
 		mixins: [translate, mixin],
-		global: {
-			plugins: ['vue-js-modal']
-		},
+		global: {plugins: ['vue-js-modal']},
 		store
 	});
 
@@ -79,45 +78,41 @@ describe('AttachmentRow.vue', () => {
 });
 
 describe('AttachmentRow.vue but user can not update', () => {
-	const wrapper = mount(AttachmentRow, {
+	const wrapperUpdateRights = mount(AttachmentRow, {
 		propsData: {
 			attachment: mockAttachment.attachments[1],
 			checkedAttachmentsProp: [mockAttachment.attachments[1].aid],
 			canUpdate: false,
 		},
 		mixins: [translate, mixin],
-		global: {
-			plugins: ['vue-js-modal']
-		},
+		global: {plugins: ['vue-js-modal']},
 		store
 	});
 
 	it('should have disabled attribute to true', () => {
-		expect(wrapper.find('.valid-state select').attributes('disabled')).toBe('disabled');
+		expect(wrapperUpdateRights.find('.valid-state select').attributes('disabled')).toBe('disabled');
 	});
 
 	it('onChange select, update-status should not be emitted', () => {
-		wrapper.find('.status select').trigger('change');
-		expect(wrapper.emitted('update-status')).toBeFalsy();
+		wrapperUpdateRights.find('.status select').trigger('change');
+		expect(wrapperUpdateRights.emitted('update-status')).toBeFalsy();
 	});
 
 	it('onClick .visibility-permission should not emit change-permission', () => {
-		wrapper.find('.visibility-permission').trigger('click');
-		expect(wrapper.emitted('change-permission')).toBeFalsy();
+		wrapperUpdateRights.find('.visibility-permission').trigger('click');
+		expect(wrapperUpdateRights.emitted('change-permission')).toBeFalsy();
 	});
 });
 
 describe('Attachment-row anonyme', () => {
-	const wrapper = mount(AttachmentRow, {
+	const wrapperAnonym = mount(AttachmentRow, {
 		propsData: {
 			attachment: mockAttachment.attachments[1],
 			checkedAttachmentsProp: [mockAttachment.attachments[1].aid],
 			canUpdate: true,
 		},
 		mixins: [translate, mixin],
-		global: {
-			plugins: ['vue-js-modal']
-		},
+		global: {plugins: ['vue-js-modal']},
 		store
 	});
 
@@ -127,20 +122,41 @@ describe('Attachment-row anonyme', () => {
 
 	if (store.state.global.anonyme) {
 		it('if anonyme equals true canSee should be false', () => {
-			expect(wrapper.vm.canSee).toBe(false);
+			expect(wrapperAnonym.vm.canSee).toBe(false);
 		});
 
 
 	} else {
 		it('if anonyme equals false canSee should be true', () => {
-			expect(wrapper.vm.canSee).toBe(true);
+			expect(wrapperAnonym.vm.canSee).toBe(true);
 		});
 	}
 
 	it('if anonyme store value changes, canSee should be updated', () => {
 		const newValue = !store.state.global.anonyme;
 		store.dispatch('global/setAnonyme', newValue).then(() => {
-			expect(wrapper.vm.canSee).toBe(!newValue);
+			expect(wrapperAnonym.vm.canSee).toBe(!newValue);
 		});
+	});
+});
+
+describe('Attachment row no profiles', () => {
+	let attachmentWithoutProfiles = mockAttachment.attachments[0];
+	attachmentWithoutProfiles.profiles = [];
+
+	const wrapperNoProfiles = mount(AttachmentRow, {
+		propsData: {
+			attachment: attachmentWithoutProfiles,
+			checkedAttachmentsProp: [attachmentWithoutProfiles.aid],
+			canUpdate: true,
+		},
+		mixins: [translate, mixin],
+		global: {plugins: ['vue-js-modal']},
+		store
+	});
+
+	it('should not have .visibility-permission and .delete-permission', () => {
+		expect(wrapperNoProfiles.find('.visibility-permission').exists()).toBe(false);
+		expect(wrapperNoProfiles.find('.delete-permission').exists()).toBe(false);
 	});
 });

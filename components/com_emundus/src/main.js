@@ -2,7 +2,7 @@ import Vue from 'vue';
 import App from './App.vue';
 
 Vue.config.productionTip = true;
-Vue.config.devtools = true;
+Vue.config.devtools = false;
 
 /** COMPONENTS **/
 import VModal from 'vue-js-modal';
@@ -63,6 +63,11 @@ if (attachmentElement || filesElement) {
         Array.prototype.slice.call(element.attributes).forEach(function (attr) {
             data[attr.name] = attr.value;
         });
+
+        if(data.fnum !== '' && filesElement)
+        {
+            componentName = 'application';
+        }
 
         new Vue({
             el: elementId,

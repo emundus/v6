@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -31,7 +31,7 @@ div, p, a, li, td {-webkit-text-size-adjust:none;}
 h1{color:#1c8faf;font-size:16px;font-weight:bold;border-bottom:1px solid #ddd; padding-bottom:10px;}
 h2{color:#89a9c1;font-size:14px;font-weight:bold;margin-top:20px;margin-bottom:5px;border-bottom:1px solid #d6d6d6;padding-bottom:4px;}
 a:visited{cursor:pointer;color:#2d9cbb;text-decoration:none;border:none;}
-.cart_button{
+.cart_button.hika_template_color{
 	color: #fff!important;
     font-size: 15px;
     font-weight: bold;
@@ -39,7 +39,7 @@ a:visited{cursor:pointer;color:#2d9cbb;text-decoration:none;border:none;}
     border-radius: 5px;
     padding: 5px 10px;
 }
-a.cart_button:hover {
+a.cart_button.hika_template_color:hover {
     background-color: #278392;
     text-decoration: none;
 }

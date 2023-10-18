@@ -64,6 +64,7 @@
         <position>sidebar-c</position>
         <position>top-b</position>
         <position>top-c</position>
+        <position>emundus_filters</position>
     </positions>
 
     <config>

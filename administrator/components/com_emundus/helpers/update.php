@@ -252,7 +252,7 @@ class EmundusHelperUpdate
                     $db->setQuery($query);
                     $installed = $db->execute();
                 } else {
-                    echo "$element already installed.";
+                    echo " - " . $element . " already installed." . PHP_EOL ;
                     $installed = true;
                 }
             } catch (Exception $e) {
@@ -451,45 +451,78 @@ class EmundusHelperUpdate
      *
      * @since version 1.33.0
      */
-    public static function updateYamlVariable($key1,$value,$file,$key2 = null) {
+    public static function updateYamlVariable($key1,$value,$file,$key2 = null,$full_content = null) {
         $yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents($file));
 
-        if(!empty($key2) && isset($yaml[$key1])){
-            if(isset($yaml[$key1][$key2])) {
-                $yaml[$key1][$key2] = $value;
-            }
-        } elseif (isset($yaml[$key1])){
-            $yaml[$key1] = $value;
-        } else {
-            echo ("Key " . $key1 . ' not found in file ' . $file);
-        }
+		if(!empty($full_content)){
+			$content_yaml = \Symfony\Component\Yaml\Yaml::parse($full_content);
+			$yaml = $content_yaml;
+		} else
+		{
+			if (!empty($key2))
+			{
+				$yaml[$key1][$key2] = $value;
+			}
+			elseif (isset($yaml[$key1]))
+			{
+				$yaml[$key1] = $value;
+			}
+			else
+			{
+				echo("Key " . $key1 . ' not found in file ' . $file);
+			}
+		}
 
-        $new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml);
+        $new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml,4,2);
 
         file_put_contents($file, $new_yaml);
     }
 
-    public static function addYamlVariable($key,$value,$file,$parent = null,$breakline = false,$check_existing = false) {
+    public static function addYamlVariable($key,$value,$file,$parent = null,$breakline = false,$check_existing = false,$is_array = true) {
         $yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents($file));
+		$parent_exist = true;
 
-        if (!empty($parent) && isset($yaml[$parent])){
+		if($is_array && (!empty($parent) && !isset($yaml[$parent]))){
+			$parent_exist = false;
+		}
+
+
+        if ($parent_exist){
             $already_exist = false;
 
             if($check_existing) {
-                foreach ($yaml[$parent] as $object) {
-                    if (isset($object[$key]) && $object[$key] == $value) {
-                        $already_exist = true;
-                        break;
-                    }
-                }
+				if($is_array)
+				{
+					foreach ($yaml[$parent] as $object)
+					{
+						if (isset($object[$key]) && $object[$key] == $value)
+						{
+							$already_exist = true;
+							break;
+						}
+					}
+				} else {
+					if (isset($yaml[$parent][$key]))
+					{
+						$already_exist = true;
+					}
+				}
             }
 
             if(!$already_exist) {
-                if ($breakline) {
-                    $yaml[$parent][][$key] = $value;
-                } else {
-                    $yaml[$parent][sizeof($yaml[$parent]) - 1][$key] = $value;
-                }
+	            if($is_array)
+	            {
+		            if ($breakline)
+		            {
+			            $yaml[$parent][][$key] = $value;
+		            }
+		            else
+		            {
+			            $yaml[$parent][sizeof($yaml[$parent]) - 1][$key] = $value;
+		            }
+	            } else {
+		            $yaml[$parent][$key] = $value;
+	            }
             }
         } else {
             echo ("Key " . $parent . ' not found in file ' . $file);
@@ -533,6 +566,9 @@ class EmundusHelperUpdate
                 ->from($db->quoteName('#__emundus_setup_languages'))
                 ->where($db->quoteName('tag') . ' LIKE ' . $db->quote($tag))
                 ->andWhere($db->quoteName('lang_code') . ' LIKE ' . $db->quote($lang));
+			if($type == 'override') {
+				$query->andWhere($db->quoteName('location') . ' LIKE ' . $db->quote($lang . '.override.ini'));
+			}
             $db->setQuery($query);
             $tag_existing = $db->loadResult();
 
@@ -564,6 +600,70 @@ class EmundusHelperUpdate
             return false;
         }
     }
+
+	public static function insertFalangTranslation($lang_id, $reference_id, $reference_table, $reference_field, $value, $update = false) {
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try {
+			$query->clear()
+				->select('id')
+				->from($db->quoteName('#__falang_content'))
+				->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
+				->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
+				->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field));
+			$db->setQuery($query);
+			$translation_id = $db->loadResult();
+
+			if(empty($translation_id))
+			{
+				$columns = [
+					$db->quoteName('reference_id'),
+					$db->quoteName('reference_table'),
+					$db->quoteName('reference_field'),
+					$db->quoteName('value'),
+					$db->quoteName('language_id'),
+					$db->quoteName('published'),
+					$db->quoteName('original_value'),
+					$db->quoteName('original_text'),
+					$db->quoteName('modified'),
+					$db->quoteName('modified_by'),
+				];
+
+				$values = [
+					$db->quote($reference_id),
+					$db->quote($reference_table),
+					$db->quote($reference_field),
+					$db->quote($value),
+					$db->quote($lang_id),
+					$db->quote(1),
+					$db->quote($value),
+					$db->quote($value),
+					$db->quote(date('Y-m-d H:i:s')),
+					$db->quote(62),
+				];
+
+				$query->clear()
+					->insert($db->quoteName('#__falang_content'))
+					->columns($columns)
+					->values(implode(',', $values));
+				$db->setQuery($query);
+				return $db->execute();
+			} else if($update)
+			{
+				$query->clear()
+					->update($db->quoteName('#__falang_content'))
+					->set($db->quoteName('value') . ' = ' . $db->quote($value))
+					->where($db->quoteName('id') . ' = ' . $db->quote($translation_id));
+				$db->setQuery($query);
+				return $db->execute();
+			}
+
+		} catch (Exception $e) {
+			echo $e->getMessage();
+			return false;
+		}
+	}
 
     public static function languageFileToBase() {
         $db = JFactory::getDbo();
@@ -895,7 +995,7 @@ class EmundusHelperUpdate
 					$parsed_file = JLanguageHelper::parseIniFile($file->file);
 
 					if (!empty($parsed_file) && !empty($old_values[$file->language])) {
-						if (!empty($parsed_file[$tag]) && $parsed_file[$tag] == $old_values[$file->language])
+						if (!empty($parsed_file[$tag]) && strip_tags($parsed_file[$tag]) == strip_tags($old_values[$file->language]))
 						{
 							$parsed_file[$tag] = $new_values[$file->language];
 							JLanguageHelper::saveToIniFile($file->file, $parsed_file);
@@ -1477,7 +1577,13 @@ class EmundusHelperUpdate
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
 
-            $alias = $params['alias'] ?: $params['menutype'] . '-' . str_replace(' ','-',strtolower($params['title']));
+			if(empty($params['alias']))
+			{
+				$alias = str_replace("\xc2\xa0", ' ', ($params['menutype'] . '-' . $params['title']));
+				$alias = strtolower(JLanguageTransliterate::utf8_latin_to_ascii(preg_replace('/\s+/', '-', $alias)));
+			} else {
+				$alias = $params['alias'];
+			}
 
             $query->clear()
                 ->select('id')
@@ -1522,7 +1628,7 @@ class EmundusHelperUpdate
                     'img' => $params['img'] ?: ''
                 );
 
-                if ($parent_id <= 0) {
+                if ($parent_id <= 0 || empty($parent_id)) {
                     $parent_id = 1;
                 }
 
@@ -1797,7 +1903,7 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addFabrikGroup($datas,$params = [], $published = 1) {
+    public static function addFabrikGroup($datas,$params = [], $published = 1, $no_label = false) {
         $result = ['status' => false, 'message' => '', 'id' => 0];
 
         if(empty($datas['name'])){
@@ -1820,11 +1926,19 @@ class EmundusHelperUpdate
             $default_params = EmundusHelperFabrik::prepareGroupParams();
             $params = array_merge($default_params, $params);
 
+			if($no_label){
+				$datas['label'] = '';
+			} else {
+				if(empty($datas['label'])){
+					$datas['label'] = $datas['name'];
+				}
+			}
+
             try {
                 $inserting_datas = [
                     'name' => $datas['name'],
                     'css' => $datas['css'] ?: '',
-                    'label' => $datas['label'] ?: $datas['name'],
+                    'label' => $datas['label'],
                     'created' => date('Y-m-d H:i:s'),
                     'created_by' => 62,
                     'created_by_alias' => 'admin',
@@ -1930,7 +2044,7 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addColumn($table,$name,$type = 'VARCHAR',$length = null,$null = 1){
+    public static function addColumn($table,$name,$type = 'VARCHAR',$length = null, $null = 1, $default = null){
         $result = ['status' => false, 'message' => ''];
 
         if (empty($table)) {
@@ -1954,12 +2068,60 @@ class EmundusHelperUpdate
                 if(!empty($length)) {
                     $query .= ' (' . $length . ')';
                 }
+
+				if ($default !== null) {
+					$query .= ' DEFAULT ' . $db->quote($default);
+				}
+
                 $query .= ' ' . $null_query;
                 $db->setQuery($query);
                 $result['status'] = $db->execute();
             } catch (Exception $e) {
                 $result['message'] = 'ADDING COLUMN : Error : ' . $e->getMessage();
             }
+        }
+
+        return $result;
+    }
+
+    public static function alterColumn($table, $name, $type = 'VARCHAR', $length = null, $null = 1, $default = null){
+        $result = ['status' => false, 'message' => ''];
+
+        if (empty($table)) {
+            $result['message'] = 'ALTER COLUMN : Please refer a database table.';
+            return $result;
+        }
+
+        if (empty($name)) {
+            $result['message'] = 'ALTER COLUMN : Please refer a column name.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $db->setQuery('SHOW COLUMNS FROM ' . $table . ' WHERE ' . $db->quoteName('Field') . ' = ' . $db->quote($name));
+        $column_existing = $db->loadResult();
+
+        if (!empty($column_existing)) {
+            $null_query = $null == 0 ? 'NOT NULL' : 'NULL';
+
+            try {
+                $query = 'ALTER TABLE ' . $table . ' MODIFY ' . $db->quoteName($name) . ' ' . $type;
+                if(!empty($length)) {
+                    $query .= ' (' . $length . ')';
+                }
+
+                if ($default !== null) {
+                    $query .= ' DEFAULT ' . $db->quote($default);
+                }
+
+                $query .= ' ' . $null_query;
+                $db->setQuery($query);
+                $result['status'] = $db->execute();
+            } catch (Exception $e) {
+                $result['message'] = 'ADDING COLUMN : Error : ' . $e->getMessage();
+            }
+        } else {
+            $result['message'] = 'ALTER COLUMN : Column not found.';
         }
 
         return $result;
@@ -1995,7 +2157,7 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addFabrikElement($datas,$params = null) {
+    public static function addFabrikElement($datas,$params = []) {
         $result = ['status' => false, 'message' => ''];
 
         if(empty($datas['name'])){
@@ -2263,7 +2425,7 @@ class EmundusHelperUpdate
         return $response;
     }
 
-    public static function createModule($title, $position, $module, $params, $published = 0, $all_pages = 0, $access = 1, $showtitle = 0, $client_id = 0)
+    public static function createModule($title, $position, $module, $params, $published = 0, $page = 0, $access = 1, $showtitle = 0, $client_id = 0)
     {
         $created = false;
 
@@ -2303,16 +2465,20 @@ class EmundusHelperUpdate
                 $db->execute();
                 $module_id = $db->insertid();
 
-                if (!empty($module_id) && $all_pages) {
+                if (!empty($module_id) && !empty($page)) {
                     $query->clear()
                         ->insert($db->quoteName('#__modules_menu'))
-                        ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module_id))
-                        ->set($db->quoteName('menuid') . ' = ' . $db->quote(0));
+                        ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module_id));
+                    if($page == 1) {
+                        $query->set($db->quoteName('menuid') . ' = ' . $db->quote(0));
+                    } else {
+                        $query->set($db->quoteName('menuid') . ' = ' . $db->quote($page));
+                    }
                     $db->setQuery($query);
                     $created = $db->execute();
                 }
             } else {
-                echo "$title module already exists.";
+                echo " - " . $title . " module already exists." . PHP_EOL ;
                 $created = true;
             }
         } catch (Exception $e) {
@@ -2350,32 +2516,32 @@ class EmundusHelperUpdate
         return $module;
     }
 
-	public static function updateEmundusParam($param,$value,$old_value_checking = null){
+	public static function updateExtensionParam($param,$value,$old_value_checking = null,$component = 'com_emundus'){
 		$updated = false;
-		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$config = JComponentHelper::getParams($component);
 
 		if(!empty($old_value_checking)){
-			$old_value = $eMConfig->get($param,'');
+			$old_value = $config->get($param,'');
 			if(empty($old_value) || $old_value == $old_value_checking){
-				$eMConfig->set($param, $value);
+				$config->set($param, $value);
 			}
 		} else{
-			$eMConfig->set($param, $value);
+			$config->set($param, $value);
 		}
 
-		$componentid = JComponentHelper::getComponent('com_emundus')->id;
+		$componentid = JComponentHelper::getComponent($component)->id;
 		$db = JFactory::getDBO();
 		$query = $db->getQuery(true);
 
 		try {
 			$query->update('#__extensions')
-				->set($db->quoteName('params') . ' = ' . $db->quote($eMConfig->toString()))
+				->set($db->quoteName('params') . ' = ' . $db->quote($config->toString()))
 				->where($db->quoteName('extension_id') . ' = ' . $db->quote($componentid));
 			$db->setQuery($query);
 			$updated = $db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('Failed to update emundus parameter '.$param.' with value ' .$value.': '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			JLog::add('Failed to update extension parameter '.$param.' with value ' .$value.': '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
 		}
 
 		return $updated;
@@ -2450,4 +2616,900 @@ class EmundusHelperUpdate
 
         return $result;
     }
+
+	/**
+	 * @param $table
+	 * @param $columns (need to be formatted as object (name,type = 'VARCHAR',length,null)
+	 * @param $foreigns_key (need to be formatted as object (name,from_column,ref_table,ref_column,update_cascade,delete_cascade)
+	 *
+	 * @return array
+	 *
+	 * @since version 1.35.0
+	 */
+	public static function createTable($table,$columns = [],$foreigns_key = [], $comment = ''){
+		$result = ['status' => false, 'message' => ''];
+
+		if (empty($table)) {
+			$result['message'] = 'CREATE TABLE : Please refer a database name.';
+			return $result;
+		}
+
+		try {
+			$db = JFactory::getDbo();
+			$table_existing = $db->setQuery('SHOW TABLE STATUS WHERE Name LIKE ' . $db->quote($table))->loadResult();
+
+			if (empty($table_existing)) {
+				$query = 'CREATE TABLE ' . $table . '(';
+				$query .= 'id INT AUTO_INCREMENT PRIMARY KEY';
+				if(!empty($columns)) {
+					foreach ($columns as $column) {
+						$query_column = ',' . $column['name'];
+						if (!empty($column['type'])) {
+							$query_column .= ' ' . $column['type'];
+						}
+						else {
+							$query_column .= ' VARCHAR';
+						}
+						if (!empty($column['length'])) {
+							$query_column .= '(' . $column['length'] . ')';
+						}
+						if (!empty($column['default'])) {
+							$query_column .= ' DEFAULT ' . $column['default'];
+						}
+						if ($column['null'] == 1) {
+							$query_column .= ' NULL';
+						}
+						else {
+							$query_column .= ' NOT NULL';
+						}
+
+						$query .= $query_column;
+					}
+				}
+				if(!empty($foreigns_key)) {
+					foreach ($foreigns_key as $fk) {
+						if(!empty($fk['name']) && !empty($fk['from_column']) && !empty($fk['ref_table']) && !empty($fk['ref_column'])) {
+							$query .= ',CONSTRAINT ' . $fk['name'] . ' FOREIGN KEY (' . $fk['from_column'] . ') REFERENCES ' . $fk['ref_table'] . '(' . $fk['ref_column'] . ')';
+						}
+						if(!empty($fk['update_cascade'])){
+							$query .= ' ON UPDATE CASCADE';
+						}
+						if(!empty($fk['delete_cascade'])){
+							$query .= ' ON DELETE CASCADE';
+						}
+					}
+				}
+				$query .= ')';
+				if(!empty($comment)){
+					$query .= ' COMMENT ' . $db->quote($comment);
+				}
+				$db->setQuery($query);
+				$result['status'] = $db->execute();
+			}
+		} catch (Exception $e) {
+			$result['message'] = 'ADDING TABLE : Error : ' . $e->getMessage();
+		}
+
+		return $result;
+	}
+
+	public static function executeSQlFile($file){
+		$result = ['status' => false, 'message' => ''];
+		$db = JFactory::getDbo();
+
+		try
+		{
+			$queries = $db->splitSql(file_get_contents(JPATH_ROOT . '/administrator/components/com_emundus/sql/updates/mysql/'.$file.'.sql'));
+
+			foreach ($queries as $query){
+				if(!empty($query)){
+					$db->setQuery($query);
+					$db->execute();
+				}
+			}
+
+			$result['status'] = true;
+		}
+		catch (Exception $e)
+		{
+			$result['message'] = 'UPDATE FLAGS : Error : ' . $e->getMessage();
+
+		}
+
+		return $result;
+	}
+
+	public static function createJoomlaArticle($data, $category_alias = null){
+		$result = ['status' => false, 'message' => '', 'article_id' => 0];
+		$db = JFactory::getDbo();
+
+		try
+		{
+			$query = $db->getQuery(true);
+			$publish_up = new DateTime();
+			$publish_up->modify('-1 day');
+
+			$query->select('id')
+			       ->from($db->quoteName('#__content'))
+				   ->where('alias = ' . $db->quote($data['alias']));
+			$db->setQuery($query);
+			$article_id = $db->loadResult();
+
+			if(empty($article_id)) {
+
+				if(!empty($category_alias)){
+					$query->clear();
+					$query->select('id')->from($db->quoteName('#__categories'))->where('alias = ' . $db->quote($category_alias));
+					$db->setQuery($query);
+					$category_id = $db->loadResult();
+				}
+				else{
+					$category_id = 1;
+				}
+				$db_columns = array('title', 'alias', 'introtext', 'fulltext', 'state', 'catid', 'created', 'created_by', 'modified', 'modified_by', 'checked_out', 'checked_out_time', 'publish_up', 'publish_down', 'images', 'urls', 'attribs', 'version', 'metakey', 'metadesc', 'access', 'metadata', 'language');
+				foreach ($db_columns as $index => $column) {
+					$db_columns[$index] = $db->quoteName($column);
+				}
+				$values = array(
+					$db->quote($data['title']),
+					$db->quote($data['alias']),
+					$db->quote($data['introtext']),
+					$db->quote($data['fulltext']),
+					$db->quote($data['state']),
+					$db->quote($category_id),
+					$db->quote(date('Y-m-d H:i:s')),
+					$db->quote(62),
+					$db->quote(date('Y-m-d H:i:s')),
+					$db->quote(62),
+					$db->quote(0),
+					$db->quote(date('Y-m-d H:i:s')),
+					$db->quote($publish_up->format('Y-m-d H:i:s')),
+					$db->quote(date('Y-m-d H:i:s', strtotime('2099-12-31 23:59:59'))),
+					$db->quote('{}'),
+					$db->quote('{}'),
+					$db->quote($data['attribs']),
+					$db->quote(1),
+					$db->quote(''),
+					$db->quote(''),
+					$db->quote(1),
+					$db->quote(''),
+					$db->quote('*')
+				);
+
+				$query
+					->clear()
+					->insert($db->quoteName('jos_content'))
+					->columns($db_columns)
+					->values(implode(',', $values));
+				$db->setQuery($query);
+				$result['status'] = $db->execute();
+
+				$result['id'] = $db->insertid();
+			} else {
+				$result['status'] = true;
+				$result['id'] = $article_id;
+			}
+		}
+		catch (Exception $e)
+		{
+			$result['message'] = 'CREATE JOOMLA ARTICLE : Error : ' . $e->getMessage();
+		}
+
+		return $result;
+	}
+
+	public static function updateProfileMenu()
+	{
+		$result = ['status' => false, 'message' => ''];
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try
+		{
+			$query->select('form_id')
+				->from($db->quoteName('#__emundus_setup_formlist'))
+				->where($db->quoteName('type') . ' LIKE ' . $db->quote('profile'));
+			$db->setQuery($query);
+			$form_id = $db->loadResult();
+
+			if(!empty($form_id))
+			{
+				$query->clear()
+					->update($db->quoteName('#__fabrik_forms'))
+					->set($db->quoteName('publish_down') . ' = ' . $db->quote('2099-12-31 00:00:00'))
+					->where($db->quoteName('id') . ' = ' . $db->quote($form_id));
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->select('extension_id')
+					->from($db->quoteName('#__extensions'))
+					->where($db->quoteName('name') . ' LIKE ' . $db->quote('com_fabrik'));
+				$db->setQuery($query);
+				$extension_id = $db->loadResult();
+
+				$query->clear()
+					->select('id')
+					->from($db->quoteName('#__menu'))
+					->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_emundus&view=users&layout=edit'));
+				$db->setQuery($query);
+				$menu_id = $db->loadResult();
+
+				if(!empty($menu_id))
+				{
+					$menu_params = [
+						"rowid"                 => -1,
+						"usekey"                => 'user_id',
+						"random"                => 0,
+						"fabriklayout"          => '',
+						"extra_query_string"    => '',
+						"menu-anchor_title"     => '',
+						"menu-anchor_css"       => '',
+						"menu_image"            => '',
+						"menu_image_css"        => '',
+						"menu_text"             => 1,
+						"menu_show"             => 0,
+						"page_title"            => '',
+						"show_page_heading"     => '',
+						"page_heading"          => '',
+						"pageclass_sfx"         => 'mon-profil',
+						"menu-meta_description" => '',
+						"menu-meta_keywords"    => '',
+						"robots"                => '',
+						"secure"                => 0,
+					];
+
+					$query->clear()
+						->update($db->quoteName('#__menu'))
+						->set($db->quoteName('link') . ' = ' . $db->quote('index.php?option=com_fabrik&view=form&formid=' . $form_id))
+						->set($db->quoteName('component_id') . ' = ' . $db->quote($extension_id))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($menu_params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($menu_id));
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				$query->clear()
+					->select('group_id')
+					->from($db->quoteName('#__fabrik_formgroup'))
+					->where($db->quoteName('form_id') . ' = ' . $db->quote($form_id));
+				$db->setQuery($query);
+				$groups = $db->loadColumn();
+
+				$query->clear()
+					->select('id')
+					->from($db->quoteName('#__fabrik_elements'))
+					->where($db->quoteName('group_id') . ' IN (' . implode(',',$groups) .')')
+					->where($db->quoteName('name') . ' LIKE ' . $db->quote('user_id'));
+				$db->setQuery($query);
+				$userid_elt = $db->loadResult();
+
+				if(empty($userid_elt))
+				{
+					$datas = array(
+						'name' => 'user_id',
+						'group_id' => $groups[0],
+						'plugin' => 'field',
+						'label' => 'Utilisateur Joomla',
+						'hidden' => 1
+					);
+					EmundusHelperUpdate::addFabrikElement($datas);
+				}
+
+				$query->clear()
+					->select('params')
+					->from($db->quoteName('#__fabrik_lists'))
+					->where($db->quoteName('form_id') . ' = ' . $db->quote($form_id));
+				$db->setQuery($query);
+				$list_params = $db->loadResult();
+
+				$list_params = json_decode($list_params, true);
+				$list_params['allow_edit_details'] = 10;
+				$list_params['allow_add'] = 10;
+				$list_params['allow_delete'] = 10;
+				$list_params['allow_drop'] = 10;
+				$list_params['allow_edit_details2'] = "jos_emundus_users.user_id";
+				$list_params['menu_access_only'] = 1;
+
+				$query->clear()
+					->update($db->quoteName('#__fabrik_lists'))
+					->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($list_params)))
+					->where($db->quoteName('form_id') . ' = ' . $db->quote($form_id));
+				$db->setQuery($query);
+				$result['status'] = $db->execute();
+
+				EmundusHelperUpdate::installExtension('MOD_EMUNDUS_PROFILE','mod_emundus_profile','{"name":"MOD_EMUNDUS_PROFILE","type":"module","creationDate":"April 2023","author":"Brice Hubinet","copyright":"Copyright (C) 2023 eMundus. All rights reserved.","authorEmail":"brice.hubinet@emundus.fr","authorUrl":"www.emundus.fr","version":"1.36.0","description":"MOD_EMUNDUS_PROFILE_DESC","group":"","filename":"mod_emundus_profile"}','module',1,'','{"show_profile_picture":"1","update_profile_picture":"1","show_name":"1","show_account_edit_button":"1","intro":""}');
+
+				// We create the module and link it to the menu
+				EmundusHelperUpdate::createModule('Edit my profile', 'content-top-a', 'mod_emundus_profile', '{"show_profile_picture":"1","update_profile_picture":"1","show_name":"1","show_account_edit_button":"1","intro":"\u00c9ditez votre photo de profil et vos informations personnelles. Attention votre photo de profil sera visible sur tous vos dossiers de candidature.","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}', 1, $menu_id, 1);
+			}
+		}
+		catch (Exception $e)
+		{
+			$result['message'] = 'UPDATE PROFILE MENU : Error : ' . $e->getMessage();
+		}
+
+		return $result;
+	}
+
+    /**
+     * Inserts content into a file if it doesn't already exist.
+     *
+     * @param string $file   The path to the file.
+     * @param string $insertLines The content to insert.
+     * @param string $insertBeforeLine The line before which the content should be inserted.
+     *
+     * @return bool True if insertion is successful or the content already exists, false otherwise.
+     *
+     * @since version 1.37.0
+     */
+    public static function insertIntoFile($file, $insertLines, $insertBeforeLine = false)
+    {
+        if (empty($file)) {
+            echo "ERROR: Please specify a file." . PHP_EOL;
+            return false;
+        } elseif (!file_exists($file)) {
+            echo "ERROR: The file {$file} does not exist." . PHP_EOL;
+            return false; 
+        } elseif (!is_writable($file)) {
+            echo "ERROR: Please specify a writable file ({$file})" . PHP_EOL;
+            return false;
+        } elseif (empty($insertLines)) {
+            echo "ERROR: Please specify an insert." . PHP_EOL;
+            return false;
+        }
+    
+        $file_content = file_get_contents($file);
+    
+        // if the content doesn't already exist in the file, insert it in end of file
+        if ($insertBeforeLine === false) {
+            if (strpos($file_content, $insertLines) === false) {
+                echo " - Update {$file} file with this content: " . PHP_EOL . $insertLines . PHP_EOL;
+                $file_content .= PHP_EOL . $insertLines;
+                if (file_put_contents($file, $file_content) !== false) {
+                    return true;
+                } else {
+                    echo "ERROR: Failed to write content to the file." . PHP_EOL;
+                    return false;
+                }
+            }
+        } else {
+            if (strpos($file_content, $insertLines) === false && strpos($file_content, $insertBeforeLine) !== false) {
+                $buffer = array();
+    
+                $file_handle = fopen($file, 'r');
+                if ($file_handle === false) {
+                    echo "ERROR: Failed to open the file for reading." . PHP_EOL;
+                    return false;
+                }
+    
+                // Read the file line by line and write it to the buffer, inserting the new content when we've reached the line before which we want to insert
+                while (($line = fgets($file_handle)) !== false) {
+                    if (trim($line) === $insertBeforeLine) {
+                        $buffer[] = $insertLines . PHP_EOL;
+                    }
+                    $buffer[] = $line;
+                }
+                fclose($file_handle);
+    
+                // Open the file again for writing line by line
+                $file_handle = fopen($file, 'w');
+                if ($file_handle === false) {
+                    echo "ERROR: Failed to open the file for writing." . PHP_EOL;
+                    return false;
+                }
+                foreach ($buffer as $line) {
+                    fwrite($file_handle, $line);
+                }
+                fclose($file_handle);
+
+                echo " - Update {$file} file with this content: " . PHP_EOL . $insertLines . PHP_EOL;
+                return true;
+
+            } else {
+                echo " - {$file} file is already up to date or matching line not found" . PHP_EOL;
+                return true;
+            }
+        }
+
+        echo " - {$file} file is already up to date" . PHP_EOL;
+        return true;
+    }
+
+	public static function updateNewColors() {
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$colors = [
+			'lightpurple' => 'purple-1',
+			'purple' => 'purple-2',
+			'darkpurple' => 'purple-2',
+			'lightblue' => 'light-blue-1',
+			'blue' => 'blue-2',
+			'darkblue' => 'blue-3',
+			'lightgreen' => 'green-1',
+			'green' => 'green-2',
+			'darkgreen' => 'green-2',
+			'lightyellow' => 'yellow-1',
+			'yellow' => 'yellow-2',
+			'darkyellow' => 'yellow-2',
+			'lightorange' => 'orange-1',
+			'orange' => 'orange-2',
+			'darkorange' => 'orange-2',
+			'lightred' => 'red-1',
+			'red' => 'red-2',
+			'darkred' => 'red-2',
+			'lightpink' => 'pink-1',
+			'pink' => 'pink-2',
+			'darkpink' => 'pink-2',
+		];
+
+		foreach ($colors as $key => $color) {
+			$query->clear()
+				->update('#__falang_content')
+				->set($db->quoteName('value') . ' = ' . $db->quote($color))
+				->where(array(
+					$db->quoteName('value') . ' = ' . $db->quote($key),
+					$db->quoteName('reference_table') . ' = ' . $db->quote('emundus_setup_status'),
+					$db->quoteName('reference_field') . ' = ' . $db->quote('class'),
+					$db->quoteName('language_id') . ' = 2'
+				));
+			$db->setQuery($query);
+			$db->execute();
+
+			$query->clear()
+				->update($db->quoteName('#__emundus_setup_status'))
+				->set($db->quoteName('class') . ' = ' . $db->quote($color))
+				->where($db->quoteName('class') . ' = ' . $db->quote($key));
+			$db->setQuery($query);
+			$db->execute();
+
+			$query->clear()
+				->update($db->quoteName('#__emundus_setup_action_tag'))
+				->set($db->quoteName('class') . ' = ' . $db->quote('label-'.$color))
+				->where($db->quoteName('class') . ' = ' . $db->quote('label-'.$key));
+			$db->setQuery($query);
+			$db->execute();
+
+			$query->clear()
+				->update($db->quoteName('#__emundus_setup_groups'))
+				->set($db->quoteName('class') . ' = ' . $db->quote('label-'.$color))
+				->where($db->quoteName('class') . ' = ' . $db->quote('label-'.$key));
+			$db->setQuery($query);
+			$db->execute();
+		}
+	}
+
+	public static function initNewVariables() {
+		$file = JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml';
+		$datas = [
+			'base' => [
+				'title-color' => '#000000',
+				'tertiary-color' => '#5c5c5c',
+			],
+			'accent' => [
+				'red-1' => '#eb0000',
+				'red-2' => '#c00016',
+				'pink-1' => '#ff78d1',
+				'pink-2' => '#e0008a',
+				'purple-1' => '#d292ef',
+				'purple-2' => '#9600c7',
+				'light-blue-1' => '#35d7d2',
+				'light-blue-2' => '#308281',
+				'blue-1' => '#64d8ff',
+				'blue-2' => '#0073e5',
+				'blue-3' => '#0644ae',
+				'green-1' => '#98d432',
+				'green-2' => '#008a35',
+				'yellow-1' => '#ffe014',
+				'yellow-2' => '#ffae00',
+				'orange-1' => '#ff6900',
+				'orange-2' => '#cc4b00',
+				'beige' => '#ffc285',
+				'brown' => '#8b511f',
+				'grey-1' => '#b4b4b4',
+				'grey-2' => '#757575',
+				'black' => '#1e1e1e',
+			],
+			'font' => [
+				'size-h1' => '24px',
+				'size-h2' => '22px',
+				'size-h3' => '20px',
+				'size-h4' => '18px',
+				'size-h5' => '16px',
+				'size-h6' => '14px',
+				'font-size' => '16px',
+				'xxs-size' => '10px',
+			],
+			'em-alert' => [
+				'error-background-color' => '#fae9e9',
+				'error-color' => '#520105',
+				'error-icon-color' => '#a60e15',
+				'error-border-width' => '1px',
+				'error-border-color' => 'rgba(255, 255, 255, 0)',
+				'warning-background-color' => '#fff6de',
+				'warning-color' => '#563a04',
+				'warning-icon-color' => '#b38405',
+				'warning-border-width' => '1px',
+				'warning-border-color' => 'rgba(255, 255, 255, 0)',
+				'info-background-color' => '#ebeefa',
+				'info-color' => '#232b4f',
+				'info-icon-color' => '#525b85',
+				'info-border-width' => '1px',
+				'info-border-color' => 'rgba(255, 255, 255, 0)',
+				'success-background-color' => '#eaf3e8',
+				'success-color' => '#02300c',
+				'success-icon-color' => '#2d871d',
+				'success-border-width' => '1px',
+				'success-border-color' => 'rgba(255, 255, 255, 0)',
+				'modal-padding' => '32px',
+			],
+			'em-border-radius' => [
+				'default' => '8px',
+				'applicant' => '8px',
+				'cards' => '16px',
+				'status' => '8px',
+			],
+			'em-box-shadow' => [
+				'x-1' => '0px',
+				'y-1' => '1px',
+				'blur-1' => '1px',
+				'color-1' => 'rgba(5, 47, 55, 0.07)',
+				'x-2' => '0px',
+				'y-2' => '1px',
+				'blur-2' => '1px',
+				'color-2' => 'rgba(5, 47, 55, 0.07)',
+				'x-3' => '0px',
+				'y-3' => '1px',
+				'blur-3' => '1px',
+				'color-3' => 'rgba(5, 47, 55, 0.07)',
+			],
+			'em-form' => [
+				'success-color' => '#20835F',
+				'error-color' => '#F04437',
+				'border-radius-block' => '16px',
+				'label-color' => '#000000',
+				'label-margin-bottom' => '6px',
+				'field-margin-bottom' => '24px',
+				'label-size' => '16px',
+				'label-weight' => '500',
+				'height' => '40px',
+				'font-size' => '15px',
+				'tip-color' => '#5c5c5c',
+				'border-radius' => '4px',
+				'border-color' => '#e0e0e5',
+				'background-color' => '#ffffff',
+				'border-radius-focus' => '6px',
+				'border-color-focus' => '#a7a7a7',
+				'background-color-focus' => '#ffffff',
+				'outline-width-focus' => '1px',
+				'outline-color-focus' => '#007bff',
+				'outline-offset-focus' => '2px',
+				'background-color-hover' => '#ededed',
+				'border-color-hover' => '#2E404F',
+				'border-color-error' => '#f04437',
+				'label-color-error' => '#000000',
+				'element-color-error' => '#f04437',
+				'after-border-height' => '0px',
+				'radio-padding' => '8px 12px 8px 8px',
+				'radio-border-width' => '1px',
+				'radio-border-color' => '#A4A4A4',
+				'radio-border-radius' => '4px',
+				'radio-width' => '16px',
+				'radio-height' => '16px',
+				'radio-margin-right' => '8px',
+				'radio-color-checked' => '#007BFF',
+				'radio-background-color-checked' => '#EDEDED',
+				'radio-border-color-checked' => '#2B2B2B',
+				'yesno-border-width' => '1px',
+				'yesno-border-radius' => '4px',
+				'yesno-width' => '50%',
+				'yesno-height' => '48px',
+				'yesno-gap' => '20px',
+				'yesno-color-not-active' => '#171717',
+				'yesno-background-color-not-active' => '#ffffff',
+				'yesno-border-color-not-active' => '#a4a4a4',
+				'yesno-color-not-active-hover' => '#2b2b2b',
+				'yesno-background-color-not-active-hover' => '#ffffff',
+				'yesno-border-color-not-active-hover' => '#a7a7a7',
+				'yesno-color-yes' => '#171717',
+				'yesno-background-color-yes' => '#ededed',
+				'yesno-border-color-yes' => '#171717',
+				'yesno-color-yes-hover' => '#2e404f',
+				'yesno-background-color-yes-hover' => '#ededed',
+				'yesno-border-color-yes-hover' => '#2e404f',
+				'yesno-color-no' => '#171717',
+				'yesno-background-color-no' => '#ededed',
+				'yesno-border-color-no' => '#2e404f',
+				'yesno-color-no-hover' => '#171717',
+				'yesno-background-color-no-hover' => '#ededed',
+				'yesno-border-color-no-hover' => '#2e404f',
+				'checkbox-border-width' => '0px',
+				'checkbox-border-color' => '#a7a7a7',
+				'checkbox-padding' => '12px',
+				'checkbox-scale' => '1.3',
+				'checkbox-input-margin' => '12px',
+				'checkbox-color-checked' => '#007bff',
+				'checkbox-border-color-error' => '#F04437',
+				'fileupload-padding' => '12px 8px',
+				'fileupload-background-color' => '#f0f0f0',
+			],
+			'em-spacing' => [
+				'1' => '4px',
+				'2' => '8px',
+				'3' => '12px',
+				'4' => '16px',
+				'5' => '20px',
+				'6' => '24px',
+				'7' => '28px',
+				'8' => '32px',
+				'9' => '36px',
+				'10' => '40px',
+				'11' => '44px',
+				'12' => '48px',
+				'vertical' => '8px',
+				'horizontal' => '12px',
+			],
+			'coordinator' => [
+				'background' => '#f8f8f8',
+				'interface' => '#353544',
+				'primary-color' => '#20835F',
+				'secondary-color' => '#353544',
+				'tertiary-color' => '#5A5A72',
+				'text-color' => '#4B4B4B',
+				'title-color' => '#000000',
+				'family-text' => 'Inter',
+				'family-title' => 'Inter',
+				'size-h1' => '24px',
+				'size-h2' => '22px',
+				'size-h3' => '20px',
+				'size-h4' => '18px',
+				'size-h5' => '16px',
+				'size-h6' => '14px',
+				'font-size' => '16px',
+				'border-radius' => '8px',
+				'border-color' => '#cccccc',
+				'form-height' => '40px',
+				'form-border-radius' => '4px',
+				'vertical' => '8px',
+				'horizontal' => '12px',
+				'border-radius-cards' => '16px',
+			]
+		];
+
+		foreach ($datas as $key => $data) {
+			foreach ($data as $variable => $value) {
+				self::addYamlVariable($variable, $value, $file, $key, false, true, false);
+			}
+		}
+	}
+
+	public static function checkHealth()
+	{
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		// Check back button
+		$query->select('id,content')
+			->from($db->quoteName('#__modules'))
+			->where($db->quoteName('title') . ' LIKE ' . $db->quote('eMundus - Back button'))
+			->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_custom'));
+		$db->setQuery($query);
+		$back_button = $db->loadObject();
+
+		$back_button->content = str_replace('https://vanilla.tchooz.io/','/',$back_button->content);
+		$back_button->content = str_replace(JURI::base().'/','/',$back_button->content);
+
+		$query->clear()
+			->update($db->quoteName('#__modules'))
+			->set($db->quoteName('content') . ' = ' . $db->quote($back_button->content))
+			->where($db->quoteName('id') . ' = ' . $db->quote($back_button->id));
+		$db->setQuery($query);
+		$db->execute();
+		//
+
+		// Remove appli emundus yaml assets
+		$file = JPATH_ROOT . '/templates/g5_helium/custom/config/24/page/assets.yaml';
+		unlink($file);
+		//
+
+		// Remove ajax_validation on registration form
+		$query->clear()
+			->select('id,params')
+			->from($db->quoteName('#__fabrik_forms'))
+			->where($db->quoteName('id') . ' = 307');
+		$db->setQuery($query);
+		$registration_form = $db->loadObject();
+
+		$params = json_decode($registration_form->params, true);
+		$params['ajax_validations'] = 0;
+
+		$query->clear()
+			->update($db->quoteName('#__fabrik_forms'))
+			->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+			->where($db->quoteName('id') . ' = ' . $db->quote($registration_form->id));
+		$db->setQuery($query);
+		$db->execute();
+		//
+
+		// Check if profile menu translations is good
+		$query->clear()
+			->select('form_id')
+			->from($db->quoteName('#__emundus_setup_formlist'))
+			->where($db->quoteName('type') . ' LIKE ' . $db->quote('profile'));
+		$db->setQuery($query);
+		$form_id = $db->loadResult();
+
+		if(!empty($form_id))
+		{
+			$query->clear()
+				->select('id,params')
+				->from($db->quoteName('#__menu'))
+				->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_fabrik&view=form&formid=' . $form_id));
+			$db->setQuery($query);
+			$menu = $db->loadObject();
+
+			if(!empty($menu->id))
+			{
+				$query->clear()
+					->update($db->quoteName('#__falang_content'))
+					->set($db->quoteName('value') . ' = ' . $db->quote('index.php?option=com_fabrik&view=form&formid=' . $form_id))
+					->where($db->quoteName('reference_table') . ' = ' . $db->quote('menu'))
+					->where($db->quoteName('reference_field') . ' = ' . $db->quote('link'))
+					->where($db->quoteName('reference_id') . ' = ' . $db->quote($menu->id));
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->update($db->quoteName('#__falang_content'))
+					->set($db->quoteName('value') . ' = ' . $db->quote($menu->params))
+					->where($db->quoteName('reference_table') . ' = ' . $db->quote('menu'))
+					->where($db->quoteName('reference_field') . ' = ' . $db->quote('params'))
+					->where($db->quoteName('reference_id') . ' = ' . $db->quote($menu->id));
+				$db->setQuery($query);
+				$db->execute();
+			}
+		}
+		//
+
+		// Check if emundus event handler is enabled
+		$query->clear()
+			->select('extension_id')
+			->from($db->quoteName('#__extensions'))
+			->where($db->quoteName('element') . ' LIKE ' . $db->quote('custom_event_handler'));
+		$db->setQuery($query);
+		$custom_event_handler = $db->loadResult();
+
+		if(empty($custom_event_handler))
+		{
+			EmundusHelperUpdate::installExtension('PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE', 'custom_event_handler', '{"name":"PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE","type":"plugin","creationDate":"18 August 2021","author":"James Dean","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"james@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"1.22.1","description":"PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE_DESC","group":"","filename":"custom_event_handler"}', 'plugin', 1, 'emundus');
+		} else {
+			$query->clear()
+				->update($db->quoteName('#__extensions'))
+				->set($db->quoteName('enabled') . ' = 1')
+				->where($db->quoteName('extension_id') . ' = ' . $db->quote($custom_event_handler));
+			$db->setQuery($query);
+			$db->execute();
+		}
+		//
+
+		// Check if emundus send zip file to user is enabled and delete_file email is here
+		$query->clear()
+			->select('extension_id')
+			->from($db->quoteName('#__extensions'))
+			->where($db->quoteName('element') . ' LIKE ' . $db->quote('send_file_archive'));
+		$db->setQuery($query);
+		$send_file_archive = $db->loadResult();
+
+		if(empty($send_file_archive))
+		{
+			EmundusHelperUpdate::installExtension('Emundus - Send ZIP file to user.', 'send_file_archive', '{"name":"Emundus - Send ZIP file to user.","type":"plugin","creationDate":"19 July 2019","author":"eMundus","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"6.9.10","description":"This plugin sends a ZIP of the file when it is changed to a certain status or when it is deleted.","group":"","filename":"send_file_archive"}', 'plugin', 1, 'emundus', '{"delete_email":"delete_file"}');
+		} else {
+			$query->clear()
+				->update($db->quoteName('#__extensions'))
+				->set($db->quoteName('enabled') . ' = 1')
+				->where($db->quoteName('extension_id') . ' = ' . $db->quote($send_file_archive));
+			$db->setQuery($query);
+			$db->execute();
+		}
+
+		$query->clear()
+			->select('id')
+			->from($db->quoteName('#__emundus_setup_emails'))
+			->where($db->quoteName('lbl') . ' LIKE ' . $db->quote('delete_file'));
+		$db->setQuery($query);
+		$delete_file_email = $db->loadResult();
+
+		if(empty($delete_file_email))
+		{
+			$columns = [
+				$db->quoteName('lbl'),
+				$db->quoteName('subject'),
+				$db->quoteName('message'),
+				$db->quoteName('type'),
+				$db->quoteName('category'),
+			];
+			$values = [
+				$db->quote('delete_file'),
+				$db->quote('Application file deleted / Dossier supprimé'),
+				$db->quote('<p>Dear [NAME],</p>
+<p>Your application file <strong><em>[FNUM]</em></strong> has been deleted.</p>
+<p>A zip file containing the data deleted is attached to this email.</p>
+<hr />
+<p>Bonjour [NAME],</p>
+<p>Votre dossier de candidature <strong><em>[FNUM]</em></strong> vient d\'&ecirc;tre supprim&eacute;.</p>
+<p>Ci-joint, une archive des informations qui ont &eacute;t&eacute; supprim&eacute;es.</p>'),
+				$db->quote(1),
+				$db->quote('Système'),
+			];
+			$query->clear()
+				->insert($db->quoteName('#__emundus_setup_emails'))
+				->columns($columns)
+				->values(implode(',', $values));
+			$db->setQuery($query);
+			$db->execute();
+		}
+		//
+
+		// Check if dropfiles plugin is enabled
+		$query->clear()
+			->select('extension_id')
+			->from($db->quoteName('#__extensions'))
+			->where($db->quoteName('element') . ' LIKE ' . $db->quote('setup_category'))
+			->where($db->quoteName('folder') . ' LIKE ' . $db->quote('emundus'));
+		$db->setQuery($query);
+		$emundus_dropfiles_plugin = $db->loadResult();
+
+		if(empty($emundus_dropfiles_plugin))
+		{
+			EmundusHelperUpdate::installExtension('Emundus - Create new dropfiles category', 'setup_category', '{"name":"Emundus - Create new dropfiles category","type":"plugin","creationDate":"July 2020","author":"eMundus","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"6.9.10","description":"PLG_EMUNDUS_SETUP_CATEGORY_DESCRIPTION","group":"","filename":"setup_category"}', 'plugin', 1, 'emundus');
+		} else {
+			$query->clear()
+				->update($db->quoteName('#__extensions'))
+				->set($db->quoteName('enabled') . ' = 1')
+				->where($db->quoteName('extension_id') . ' = ' . $db->quote($emundus_dropfiles_plugin));
+			$db->setQuery($query);
+			$db->execute();
+		}
+		//
+
+		return true;
+	}
+
+	public static function updateComponentParameter($component,$key,$value,$old_value = null)
+	{
+		$update = true;
+		$result = ['status' => true, 'message' => ''];
+
+		$params = JComponentHelper::getParams($component);
+		if(!empty($old_value))
+		{
+			$current_value = $params->get($key);
+			if($current_value != $old_value)
+			{
+				$update = false;
+			}
+		}
+
+		if($update){
+			$params->set($key,$value);
+		}
+
+		$componentid = JComponentHelper::getComponent($component)->id;
+		$table = JTable::getInstance('extension');
+		$table->load($componentid);
+		$table->bind(array('params' => $params->toString()));
+
+		if (!$table->check()) {
+			$result['message'] = $table->getError();
+			$result['status'] = false;
+		}
+
+		if (!$table->store()) {
+			$result['message'] = $table->getError();
+			$result['status'] = false;
+		}
+
+		return $result;
+	}
 }

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -74,7 +74,10 @@ class hikashopShippingPlugin extends hikashopPlugin {
 				$rate->shipping_price = $rate->shipping_price + $price * $rate->shipping_params->shipping_percentage / 100;
 			}
 			if(!empty($rate->shipping_params->shipping_formula)) {
-				$formula = str_replace(array('{price}', '{volume}', '{weight}', '{quantity}'), array($price, $shipping_prices->volume, $shipping_prices->weight, $total_quantity), $rate->shipping_params->shipping_formula);
+				$tags = array('{price}', '{volume}', '{weight}', '{quantity}');
+				$values = array($price, $shipping_prices->volume, $shipping_prices->weight, $total_quantity);
+				$this->onCalculateShippingFormula($order, $rate, $tags, $values, $rate->shipping_params->shipping_formula);
+				$formula = str_replace($tags, $values, $rate->shipping_params->shipping_formula);
 				$e = hikashop_get('inc.expression');
 				try {
 					$result = $e->evaluate($formula);
@@ -87,34 +90,34 @@ class hikashopShippingPlugin extends hikashopPlugin {
 
 			$rate->shipping_price = $currencyClass->round($rate->shipping_price, $currencyClass->getRounding($rate->shipping_currency_id, true));
 
-			if(!empty($rate->shipping_params->shipping_min_price) && bccomp((float)hikashop_toFloat($rate->shipping_params->shipping_min_price), (float)$price, 5) == 1)
+			if(!empty($rate->shipping_params->shipping_min_price) && bccomp(sprintf('%F',$rate->shipping_params->shipping_min_price), sprintf('%F',$price), 5) == 1)
 				$rate->errors['min_price'] = (hikashop_toFloat($rate->shipping_params->shipping_min_price) - $price);
 
-			if(!empty($rate->shipping_params->shipping_max_price) && bccomp((float)hikashop_toFloat($rate->shipping_params->shipping_max_price), (float)$price, 5) == -1)
+			if(!empty($rate->shipping_params->shipping_max_price) && bccomp(sprintf('%F',$rate->shipping_params->shipping_max_price), sprintf('%F',$price), 5) == -1)
 				$rate->errors['max_price'] = ($price - hikashop_toFloat($rate->shipping_params->shipping_max_price));
 
-			if(!empty($rate->shipping_params->shipping_max_volume) && bccomp((float)@$rate->shipping_params->shipping_max_volume, 0, 3)) {
+			if(!empty($rate->shipping_params->shipping_max_volume) && bccomp(sprintf('%F',@$rate->shipping_params->shipping_max_volume), 0, 3)) {
 				$rate->shipping_params->shipping_max_volume_orig = $rate->shipping_params->shipping_max_volume;
 				$rate->shipping_params->shipping_max_volume = $this->volumeHelper->convert($rate->shipping_params->shipping_max_volume, @$rate->shipping_params->shipping_size_unit);
 				if(bccomp(sprintf('%.10F',$rate->shipping_params->shipping_max_volume), sprintf('%.10F',$shipping_prices->volume), 10) == -1)
 					$rate->errors['max_volume'] = ($rate->shipping_params->shipping_max_volume - $shipping_prices->volume);
 			}
 
-			if(!empty($rate->shipping_params->shipping_min_volume) && bccomp((float)@$rate->shipping_params->shipping_min_volume, 0, 3)) {
+			if(!empty($rate->shipping_params->shipping_min_volume) && bccomp(sprintf('%F',@$rate->shipping_params->shipping_min_volume), 0, 3)) {
 				$rate->shipping_params->shipping_min_volume_orig = $rate->shipping_params->shipping_min_volume;
 				$rate->shipping_params->shipping_min_volume = $this->volumeHelper->convert($rate->shipping_params->shipping_min_volume, @$rate->shipping_params->shipping_size_unit);
 				if(bccomp(sprintf('%.10F',$rate->shipping_params->shipping_min_volume), sprintf('%.10F',$shipping_prices->volume), 10) == 1)
 					$rate->errors['min_volume'] = ($shipping_prices->volume - $rate->shipping_params->shipping_min_volume);
 			}
 
-			if(!empty($rate->shipping_params->shipping_max_weight) && bccomp((float)@$rate->shipping_params->shipping_max_weight, 0, 3)) {
+			if(!empty($rate->shipping_params->shipping_max_weight) && bccomp(sprintf('%F',@$rate->shipping_params->shipping_max_weight), 0, 3)) {
 				$rate->shipping_params->shipping_max_weight_orig = $rate->shipping_params->shipping_max_weight;
 				$rate->shipping_params->shipping_max_weight = $this->weightHelper->convert($rate->shipping_params->shipping_max_weight, @$rate->shipping_params->shipping_weight_unit);
 				if(bccomp(sprintf('%.3F',$rate->shipping_params->shipping_max_weight), sprintf('%.3F',$shipping_prices->weight), 3) == -1)
 					$rate->errors['max_weight'] = ($rate->shipping_params->shipping_max_weight - $shipping_prices->weight);
 			}
 
-			if(!empty($rate->shipping_params->shipping_min_weight) && bccomp((float)@$rate->shipping_params->shipping_min_weight,0,3)){
+			if(!empty($rate->shipping_params->shipping_min_weight) && bccomp(sprintf('%F',@$rate->shipping_params->shipping_min_weight),0,3)){
 				$rate->shipping_params->shipping_min_weight_orig = $rate->shipping_params->shipping_min_weight;
 				$rate->shipping_params->shipping_min_weight = (float)$this->weightHelper->convert($rate->shipping_params->shipping_min_weight, @$rate->shipping_params->shipping_weight_unit);
 				if(bccomp(sprintf('%.3F',$rate->shipping_params->shipping_min_weight), sprintf('%.3F',$shipping_prices->weight), 3) == 1)
@@ -257,6 +260,10 @@ class hikashopShippingPlugin extends hikashopPlugin {
 			$this->setShippingCache($order, $local_cache_shipping, $local_cache_errors);
 
 		return true;
+	}
+
+	function onCalculateShippingFormula(&$order, &$rate, &$tags, &$values, &$formula) {
+
 	}
 
 	public function onShippingSave(&$cart, &$methods, &$shipping_id, $warehouse_id = null) {
@@ -423,7 +430,7 @@ class hikashopShippingPlugin extends hikashopPlugin {
 	public function getOrderPackage(&$order, $options = array()) {
 		$ret = array();
 		if(empty($order->products))
-			return array('w' => 0, 'x' => 0, 'y' => 0, 'z' => 0);
+			return array('w' => 0, 'x' => 0, 'y' => 0, 'z' => 0, 'price' => 0);
 
 		$weight_unit = !empty($order->weight_unit) ? $order->weight_unit : 'lb';
 		$volume_unit = !empty($order->volume_unit) ? $order->volume_unit : 'in';
@@ -433,7 +440,7 @@ class hikashopShippingPlugin extends hikashopPlugin {
 		if(!empty($options['volume_unit']))
 			$volume_unit = $options['volume_unit'];
 
-		$current = array('w' => 0, 'x' => 0, 'y' => 0, 'z' => 0);
+		$current = array('w' => 0, 'x' => 0, 'y' => 0, 'z' => 0, 'price' => 0);
 		$error = false;
 		foreach($order->products as $k => $product) {
 			$qty = 1;
@@ -462,6 +469,10 @@ class hikashopShippingPlugin extends hikashopPlugin {
 			$w = (float)hikashop_toFloat($product->product_width);
 			$h = (float)hikashop_toFloat($product->product_height);
 			$l = (float)hikashop_toFloat($product->product_length);
+			$price = 0;
+			if(isset($product->prices[0]->unit_price->price_value))
+				$price = (float)$product->prices[0]->unit_price->price_value;
+
 			if($product->product_dimension_unit !== $volume_unit) {
 				if(empty($this->volumeHelper))
 					$this->volumeHelper = hikashop_get('helper.volume');
@@ -479,7 +490,8 @@ class hikashopShippingPlugin extends hikashopPlugin {
 				'w' => $weight,
 				'x' => $d[0],
 				'y' => $d[1],
-				'z' => $d[2]
+				'z' => $d[2],
+				'price' => $price,
 			);
 
 			if(!empty($options['required_dimensions'])) {
@@ -510,7 +522,7 @@ class hikashopShippingPlugin extends hikashopPlugin {
 
 						$ret[] = $current;
 						$total_quantity = $qty;
-						$current = array('w' => 0, 'x' => 0, 'y' => 0, 'z' => 0);
+						$current = array('w' => 0, 'x' => 0, 'y' => 0, 'z' => 0, 'price' => 0);
 					} else if($total_quantity < $qty) {
 						$factor = 1;
 						if(empty($current['w']) && empty($current['x']) && empty($current['y']) && empty($current['z']) && $total_quantity*2 <= $qty)
@@ -520,13 +532,14 @@ class hikashopShippingPlugin extends hikashopPlugin {
 						$current['x'] += ($d[0] * $total_quantity);
 						$current['y'] = max($current['y'], $d[1]);
 						$current['z'] = max($current['z'], $d[2]);
+						$current['price'] += $price * $total_quantity;
 						$ret[] = $current;
 
 						for($i = 1; $i < $factor; $i++) {
 							$ret[] = $current;
 						}
 
-						$current = array('w' => 0, 'x' => 0, 'y' => 0, 'z' => 0);
+						$current = array('w' => 0, 'x' => 0, 'y' => 0, 'z' => 0, 'price' => 0);
 						$qty -= $total_quantity * $factor;
 						$total_quantity = $qty;
 					} else
@@ -538,6 +551,7 @@ class hikashopShippingPlugin extends hikashopPlugin {
 				$current['x'] += ($d[0] * $qty);
 				$current['y'] = max($current['y'], $d[1]);
 				$current['z'] = max($current['z'], $d[2]);
+				$current['price'] += $price * $qty;
 			}
 		}
 		if($error)
