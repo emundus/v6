@@ -12,8 +12,8 @@
 					<p class="em-ml-8">{{ translate('BACK') }}</p>
 				</div>
 				<div class="em-flex-row em-mt-16">
-					<h2 v-if="menuHighlight != -1">{{this.translate(formCategories[menuHighlight])}}</h2>
-					<h2 v-if="menuHighlightProg != -1">{{this.translate(formPrograms[menuHighlightProg])}}</h2>
+					<h1 v-if="menuHighlight != -1">{{this.translate(formCategories[menuHighlight])}}</h1>
+					<h1 v-if="menuHighlightProg != -1">{{this.translate(formPrograms[menuHighlightProg])}}</h1>
 				</div>
 				<p v-if="menuHighlight != -1" v-html="this.translate(formCategoriesDesc[menuHighlight])" style="margin-top: 20px"></p>
 				<p v-if="menuHighlightProg != -1" v-html="this.translate(formProgramsDesc[menuHighlightProg])" style="margin-top: 20px"></p>
@@ -22,7 +22,7 @@
 
       <div class="em-flex-row em-mb-32">
         <p>
-          <b style="color: var(--main-500); font-weight: 700 !important;"> {{form.label}}</b>
+          <b style="color: var(--em-coordinator-primary-color); font-weight: 700 !important;"> {{form.label}}</b>
           {{translations.From}}
           <strong>{{ form.start_date }}</strong>
           {{translations.To}}
@@ -58,7 +58,7 @@
 
 				<div v-if="menuHighlightProg != -1" class="warning-message-program mb-1">
 					<p class="em-red-500-color em-flex-row"><span class="material-icons-outlined em-mr-8 em-red-500-color">warning_amber</span>{{translations.ProgramWarning}}</p>
-					<ul v-if="campaignsByProgram.length > 0" class="em-mt-8 em-mb-32">
+					<ul v-if="campaignsByProgram.length > 0" class="em-mt-8 em-mb-32 em-pl-16">
 						<li v-for="(campaign, index) in campaignsByProgram" :key="'camp_progs_' + index">{{campaign.label}}</li>
 					</ul>
 				</div>
@@ -116,7 +116,6 @@
 
 <script>
 import mixin from '../mixins/mixin';
-import moment from "moment";
 import axios from "axios";
 
 import addCampaign from "@/views/addCampaign";
@@ -125,7 +124,6 @@ import AddDocumentsDropfiles from "@/components/FunnelFormulaire/addDocumentsDro
 import addEmail from "@/components/FunnelFormulaire/addEmail";
 import addFormulaire from "@/components/FunnelFormulaire/addFormulaire";
 import AddEvaluationGrid from "@/components/FunnelFormulaire/addEvaluationGrid";
-import {global} from "../store/global";
 import Swal from "sweetalert2";
 
 const qs = require("qs");
@@ -208,11 +206,11 @@ export default {
     },
 
     translations: {
-      DATE_FORMAT: "DATE_FORMAT_JS_LC2",
-      From: "COM_EMUNDUS_ONBOARD_FROM",
-      To: "COM_EMUNDUS_ONBOARD_TO",
-      chooseProfileWarning: "COM_EMUNDUS_ONBOARD_CHOOSE_PROFILE_WARNING",
-      ProgramWarning: "COM_EMUNDUS_ONBOARD_PROGRAM_WARNING",
+      DATE_FORMAT: 'DATE_FORMAT_JS_LC2',
+      From: 'COM_EMUNDUS_ONBOARD_FROM',
+      To: 'COM_EMUNDUS_ONBOARD_TO',
+      chooseProfileWarning: 'COM_EMUNDUS_ONBOARD_CHOOSE_PROFILE_WARNING',
+      ProgramWarning: 'COM_EMUNDUS_ONBOARD_PROGRAM_WARNING',
     },
   }),
 
@@ -268,11 +266,21 @@ export default {
     initDates(campaign){
       this.form.start_date = campaign.start_date;
       this.form.end_date = campaign.end_date;
-      this.form.start_date = this.formattedDate(this.form.start_date, 'LLL');
-      if (this.form.end_date === "0000-00-00 00:00:00") {
+
+	    let currentLanguage = this.$store.getters['global/currentLanguage'];
+			if (currentLanguage === '' || currentLanguage === undefined) {
+				currentLanguage = 'fr-FR';
+			}
+
+			const dateOptions = { dateStyle: 'long', timeStyle: 'short' };
+	    const startDate = new Date(campaign.start_date);
+	    this.form.start_date = new Intl.DateTimeFormat(currentLanguage, dateOptions).format(startDate);
+
+      if (this.form.end_date === '0000-00-00 00:00:00') {
         this.form.end_date = null;
       } else {
-        this.form.end_date = this.formattedDate(this.form.end_date, 'LLL');
+        const endDate = new Date(campaign.end_date);
+				this.form.end_date = new Intl.DateTimeFormat(currentLanguage, dateOptions).format(endDate);
       }
     },
 
@@ -350,15 +358,9 @@ export default {
     setProfileId(prid) {
       this.profileId = prid;
     },
-
-    moment(date) {
-      return moment(date);
-    },
-
     next() {
       if (this.menuHighlight < 2) {
         let index = this.menuHighlight + 1;
-        console.log(index);
         this.changeToCampMenu(index)
       } else if(this.menuHighlightProg < 1) {
         this.changeToProgMenu(0)
@@ -412,11 +414,11 @@ export default {
 }
 
 .w--current:hover{
-  color: var(--main-500);
+  color: var(--em-coordinator-primary-color);
 }
 
 .em-pointer:hover{
-  color: var(--main-500);
+  color: var(--em-coordinator-primary-color);
 }
 
 .em-w-custom {

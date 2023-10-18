@@ -56,9 +56,9 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/profile/style/com_u
 					<?php // If the fieldset has a label set, display it as the legend. ?>
 					<?php if (isset($fieldset->label)) : ?>
                         <div class="em-heading-form">
-						<legend>
+						<h1>
 							<?php echo JText::_($fieldset->label); ?>
-						</legend>
+						</h1>
                         </div>
 					<?php endif; ?>
 					<?php if (isset($fieldset->description) && trim($fieldset->description)) : ?>
@@ -160,7 +160,7 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/profile/style/com_u
 		<?php endif; ?>
 		<div class="control-group">
 			<div class="controls">
-				<a class="btn" href="index.php" title="<?php echo JText::_('JCANCEL'); ?>">
+				<a class="btn" href="/mon-profil" title="<?php echo JText::_('JCANCEL'); ?>">
 					<?php echo JText::_('JCANCEL'); ?>
 				</a>
                 <button type="submit" class="btn btn-primary validate">

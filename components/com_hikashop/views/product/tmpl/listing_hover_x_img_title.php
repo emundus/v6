@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -57,10 +57,17 @@ if ($img_nb > 1) {
 $link = hikashop_contentLink('product&task=show&cid=' . (int)$this->row->product_id . '&name=' . $this->row->alias . $this->itemid . $this->category_pathway, $this->row);
 $this->haveLink = (int)$this->params->get('link_to_product_page', 1);
 
+$hk_main_classes = array('hikashop_listing_img_title');
+if(!empty($this->row->categories)) {
+	foreach($this->row->categories as $category) {
+		$hk_main_classes[] = 'hikashop_product_of_category_'.$category->category_id;
+	}
+}
+
 if(!empty($this->row->extraData->top)) { echo implode("\r\n",$this->row->extraData->top); }
 
 ?>
-<div class="hikashop_listing_img_title" id="div_<?php echo $mainDivName.'_'.$this->row->product_id; ?>">
+<div class="<?php echo implode(' ', $hk_main_classes); ?>" id="div_<?php echo $mainDivName.'_'.$this->row->product_id; ?>">
 <?php
 if($this->config->get('thumbnail', 1)) {
 	$extra_class = '';
@@ -79,8 +86,8 @@ if($this->config->get('thumbnail', 1)) {
 	);
 	if($img->success) {
 		$html = '<img class="hikashop_product_listing_image hikashop_img_hidden_0"' .
-		'title="'.$this->escape(@$this->row->file_description).'" '.
-		'alt="'.$this->escape(@$this->row->file_name).'" src="'.$img->url.'"/>';
+		'title="'.$this->escape((string)@$this->row->file_description).'" '.
+		'alt="'.$this->escape((string)@$this->row->file_name).'" src="'.$img->url.'"/>';
 		if($this->config->get('add_webp_images', 1) && function_exists('imagewebp') && !empty($img->webpurl)) {
 			$html = ''.
 			'<picture>
@@ -100,8 +107,8 @@ if($this->config->get('thumbnail', 1)) {
 			$k = $k + 1;
 			$full_html .= '<div class="hikashop_div_hidden_'.$k.' hikashop_img_curr_final" style="top:-'.$height * $k.'px;">'.
 			'<img class="hikashop_product_listing_image hikashop_img_hidden_'.$k.'"' .
-				'title="'.$this->escape(@$this->row->file_description).'" '.
-				'alt="'.$this->escape(@$this->row->file_name).'" src="'.$img->url.'"/>'.
+				'title="'.$this->escape((string)@$this->row->file_description).'" '.
+				'alt="'.$this->escape((string)@$this->row->file_name).'" src="'.$img->url.'"/>'.
 			'</div>';
 		}
 		else {
@@ -324,6 +331,10 @@ if(isset($this->rows[0]) && $this->rows[0]->product_id == $this->row->product_id
 
 	function getElementHeight(mainDivs) {
 		var first_img = mainDivs[0].querySelector('.hikashop_div_hidden_0');
+
+		if(!first_img.complete)
+			return 0;
+
 		var ref_height = first_img.offsetHeight;
 		return ref_height;
 	};

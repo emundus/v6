@@ -13,8 +13,10 @@ defined('_JEXEC') or die('Restricted Access');
 JText::script('COM_EMUNDUS_ONBOARD_ADD_EMAIL');
 JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_CHOOSETYPE');
 JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_NAME');
+JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_SENDER_EMAIL');
 JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_RECEIVER');
 JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESS');
+JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESTIP');
 JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER');
 JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION');
 JText::script('COM_EMUNDUS_ONBOARD_CHOOSECATEGORY');
@@ -83,6 +85,8 @@ JText::script('COM_EMUNDUS_ONBOARD_PLACEHOLDER_CANDIDAT_ATTACHMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_ERROR');
 JText::script('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE');
 JText::script('COM_EMUNDUS_ONBOARD_OK');
+JText::script('COM_EMUNDUS_FORM_BUILDER_NEW_VALUE');
+JText::script('COM_EMUNDUS_FORM_BUILDER_EXISTING_VALUE');
 
 $lang = JFactory::getLanguage();
 $short_lang = substr($lang->getTag(), 0 , 2);
@@ -98,10 +102,8 @@ $user = JFactory::getUser();
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
 $sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
 
-$xmlDoc = new DOMDocument();
-if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
-    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
-}
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 
 <div id="em-component-vue"
@@ -113,4 +115,4 @@ if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml'
      manyLanguages="<?= $many_languages ?>">
 ></div>
 
-<script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>
+<script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

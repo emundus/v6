@@ -24,20 +24,20 @@ jimport('joomla.application.component.helper');
  * @since 1.5
  */
 class EmundusHelperAccess {
-	
+
 	static function isAllowed($usertype, $allowed) {
 		return in_array($usertype, $allowed);
 	}
-	
+
 	static function isAllowedAccessLevel($user_id, $current_menu_access) {
 		$user_access_level = JAccess::getAuthorisedViewLevels($user_id);
 		return in_array($current_menu_access, $user_access_level);
 	}
-	
+
 	static function asAdministratorAccessLevel($user_id) {
 		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 8);
 	}
-	
+
 	static function asCoordinatorAccessLevel($user_id) {
 		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 7);
 	}
@@ -49,18 +49,18 @@ class EmundusHelperAccess {
     static function asPartnerAccessLevel($user_id) {
         return EmundusHelperAccess::isAllowedAccessLevel($user_id, 6);
     }
-	
+
 	static function asEvaluatorAccessLevel($user_id) {
 		return (EmundusHelperAccess::isAllowedAccessLevel($user_id, 5) ||
                 EmundusHelperAccess::isAllowedAccessLevel($user_id, 3) ||
                 EmundusHelperAccess::isAllowedAccessLevel($user_id, 12) ||
                 EmundusHelperAccess::isAllowedAccessLevel($user_id, 13));
 	}
-	
+
 	static function asApplicantAccessLevel($user_id) {
 		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 4);
 	}
-	
+
 	static function asPublicAccessLevel($user_id) {
 		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 1);
 	}
@@ -82,7 +82,7 @@ class EmundusHelperAccess {
 	static function isAdministrator($user_id) {
 		return EmundusHelperAccess::check_group($user_id, 8, false);
 	}
-	
+
 	static function isCoordinator($user_id) {
 		return EmundusHelperAccess::check_group($user_id, 7, false);
 	}
@@ -95,12 +95,12 @@ class EmundusHelperAccess {
 	static function isExpert($user_id) {
 		return (EmundusHelperAccess::check_group($user_id, 14, false));
 	}
-	
+
 	static function isEvaluator($user_id) {
 		return (EmundusHelperAccess::check_group($user_id, 3, false) ||
                 EmundusHelperAccess::check_group($user_id, 13, false));
 	}
-	
+
 	static function isApplicant($user_id) {
 		return (EmundusHelperAccess::check_group($user_id, 2, false) ||
                 EmundusHelperAccess::check_group($user_id, 11, true));
@@ -109,7 +109,7 @@ class EmundusHelperAccess {
 	static function isPublic($user_id) {
 		return EmundusHelperAccess::check_group($user_id, 1, false);
 	}
-	
+
 	/**
 	 * Get the eMundus groups for a user.
 	 *
@@ -119,7 +119,7 @@ class EmundusHelperAccess {
 	 * @return	array	The array of groups for user.
 	 * @since	4.0
 	*/
-	function getProfileAccess($user) {
+	static function getProfileAccess($user) {
 		$db = JFactory::getDBO();
 		$query = 'SELECT esg.profile_id FROM #__emundus_setup_groups as esg
 					LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
@@ -201,7 +201,7 @@ class EmundusHelperAccess {
 			}
 		} else {
 			$groupsActions = $m_users->getGroupsAcl($gids);
-            if (count($groupsActions) > 0) {
+            if (!empty($groupsActions)) {
                 foreach ($groupsActions as $action) {
                     if ($action['action_id'] == $action_id && $action[$crud] == 1) {
                         return true;

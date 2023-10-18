@@ -16,10 +16,12 @@ JHtml::_('bootstrap.tooltip');
 ?>
 <div class="container-module-cas">
     <div class="sous-container-module-cas">
-        <ul>
-            <li id="onglet-connexion" onclick="Connexion()"><?= JText::_('MOD_EM_CAS_SUBMENU1') ?></li>
-            <li id="onglet-inscription" class="couleurFoncee" onclick="Inscription()"><?= JText::_('MOD_EM_CAS_SUBMENU2') ?></li>
-        </ul>
+	    <?php if ($mod_emundus_cas_tab2_display == 1): ?>
+            <ul>
+                <li id="onglet-connexion" onclick="Connexion()"><?= JText::_('MOD_EM_CAS_SUBMENU1') ?></li>
+                <li id="onglet-inscription" class="couleurFoncee" onclick="Inscription()"><?= JText::_('MOD_EM_CAS_SUBMENU2') ?></li>
+            </ul>
+	    <?php endif; ?>
 
 
         <div id="connexion">
@@ -51,15 +53,13 @@ JHtml::_('bootstrap.tooltip');
 
         <div id="inscription" class="invisible">
             <?php if(!empty($mod_emundus_cas_url2_desc) || !empty($mod_emundus_cas_url2)) :?>
-                <div class="container">
+                <div class="container em-grid-2">
                     <p><?= $mod_emundus_cas_url2_desc; ?></p>
-                    <p><a href="<?= $mod_emundus_cas_url2; ?>" class="btn btn-primary"><?= $mod_emundus_cas_btn2; ?></a></p><br/>
+                    <p><a href="<?= $mod_emundus_cas_url2; ?>" class="btn btn-primary"><?= $mod_emundus_cas_btn2; ?></a></p>
                 </div>
             <?php endif; ?>
 
             <div class="formulaire">
-                <p><?php echo JText::_('MOD_EMUNDUS_CAS_OR_LOGIN'); ?></p>
-                <br />
                 <form action="<?php echo JRoute::_('index.php', true, $params->get('usesecure', 0)); ?>" method="post"
                       id="login-form" class="form-inline">
                     <?php if ($params->get('pretext')) : ?>

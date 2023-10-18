@@ -65,8 +65,8 @@ class EmundusControllerAmetys extends EmundusController {
         $data['year'] = JRequest::getVar('year', null, 'POST', 'none',0);
         $data['short_description'] = JRequest::getVar('short_description', null, 'POST', 'none',0);
 
-        $mcampaign = $this->getModel('campaign');
-        $mprogramme = $this->getModel('programme');
+        $mcampaign = new EmundusModelCampaign();
+        $mprogramme = new EmundusModelProgramme();
 
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;

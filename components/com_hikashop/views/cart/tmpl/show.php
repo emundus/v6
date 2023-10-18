@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -17,7 +17,7 @@ defined('_JEXEC') or die('Restricted access');
 <dl class="hika_options">
 	<dt><label for="cart_name"><?php echo JText::_('HIKASHOP_CART_NAME'); ?></label></dt>
 	<dd>
-		<input type="text" id="cart_name" name="data[cart_name]" class="inputbox" value="<?php echo $this->escape($this->cart->cart_name); ?>"/>
+		<input type="text" id="cart_name" name="data[cart_name]" class="<?php echo HK_FORM_CONTROL_CLASS; ?>" value="<?php echo $this->escape($this->cart->cart_name); ?>"/>
 	</dd>
 </dl>
 <?php
@@ -32,7 +32,7 @@ defined('_JEXEC') or die('Restricted access');
 <dl class="hika_options">
 	<dt><label for="cart_name"><?php echo JText::_('HIKASHOP_WISHLIST_NAME'); ?></label></dt>
 	<dd>
-		<input type="text" id="cart_name" name="data[cart_name]" class="inputbox" value="<?php echo $this->escape($this->cart->cart_name); ?>"/>
+		<input type="text" id="cart_name" name="data[cart_name]" class="<?php echo HK_FORM_CONTROL_CLASS; ?>" value="<?php echo $this->escape($this->cart->cart_name); ?>"/>
 	</dd>
 	<dt><label for="cart_share"><?php echo JText::_('SHARE'); ?></label></dt>
 	<dd><?php
@@ -204,7 +204,7 @@ defined('_JEXEC') or die('Restricted access');
 			$attributes = '';
 			if($img->external)
 				$attributes = ' width="'.$img->req_width.'" height="'.$img->req_height.'"';
-			echo '<img class="hikashop_cart_product_image" title="'.$this->escape(@$product->images[0]->file_description).'" alt="'.$this->escape(@$product->images[0]->file_name).'" src="'.$img->url.'" style="float:left; margin-right:3px;" '.$attributes.' />';
+			echo '<img class="hikashop_cart_product_image" title="'.$this->escape((string)@$product->images[0]->file_description).'" alt="'.$this->escape((string)@$product->images[0]->file_name).'" src="'.$img->url.'" style="float:left; margin-right:3px;" '.$attributes.' />';
 		}
 
 ?>

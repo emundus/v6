@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -1642,6 +1642,8 @@ class hikashopImportHelper
 							$key =  preg_replace('#[^A-Z_0-9]#','',strtoupper($product->$field));
 							if((empty($key) || $config->get('non_latin_translation_keys', 0)) && !empty($product->$field)) {
 								$key = 'T'.strtoupper(sha1($product->$field));
+							}elseif(is_numeric($key)) {
+								$key = 'T'.$key;
 							}
 
 							$overrides[$key] = $translation->value;
@@ -1652,7 +1654,9 @@ class hikashopImportHelper
 
 					$data = '';
 					foreach($overrides as $k => $v) {
-						$data .= $k.'="'.$v.'"'."\r\n";
+						if(empty($k))
+							continue;
+						$data .= $k.'="'.str_replace(array('"',"\r\n","\r","\n"),array('\"','','',''),$v).'"'."\r\n";
 					}
 					file_put_contents($override_file_path, $data);
 				}

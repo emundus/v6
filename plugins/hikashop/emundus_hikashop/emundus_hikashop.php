@@ -380,6 +380,8 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
     public function onCheckoutStepList(&$list)
     {
         $list['emundus_return'] = array('name' => 'eMundus - Retour au dossier', 'params' => array('reset_session' => ['name' => JText::_('COM_EMUNDUS_RESET_SESSION_ON_QUIT'), 'type' => 'boolean', 'default' => 0]));
+	    JPluginHelper::importPlugin('emundus','custom_event_handler');
+	    \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopCheckoutStepList', ['list' => &$list]]);
     }
 
     public function onCheckoutStepDisplay($layoutName, &$html, &$view, $pos = null, $options = null)
@@ -403,6 +405,9 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         }
 
         $html .= $layout;
+
+	    JPluginHelper::importPlugin('emundus','custom_event_handler');
+	    \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopCheckoutStepDisplay', ['layoutName' => $layoutName, 'html' => &$html]]);
     }
 
     public function onAfterCheckoutStep($controllerName, &$go_back, $original_go_back, &$controller) {

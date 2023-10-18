@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -60,14 +60,16 @@ class AffiliateViewAffiliate extends HikaShopView {
 		$this->assignRef('partner_info',$partner_info);
 		$allow_currency_selection = $config->get('allow_currency_selection');
 		$this->assignRef('allow_currency_selection',$allow_currency_selection);
+		global $Itemid;
+		$url_itemid='';
+		if(!empty($Itemid))
+			$url_itemid = '&Itemid='.$Itemid;
+		$this->assignRef('url_itemid', $url_itemid);
+
 		if(empty($this->user->user_id)){
 			$app = JFactory::getApplication();
-			global $Itemid;
-			$url = '';
-			if(!empty($Itemid)){
-				$url='&Itemid='.$Itemid;
-			}
-			$url = 'index.php?option=com_users&view=login'.$url;
+
+			$url = 'index.php?option=com_users&view=login'.$url.$this->url_itemid;
 			$url = JRoute::_($url.'&return='.urlencode(base64_encode(hikashop_currentUrl('',false))));
 			$app->enqueueMessage( '<a href="'.$url.'">'.JText::_('PLEASE_LOGIN_FIRST').'</a>');
 		}
@@ -107,17 +109,28 @@ class AffiliateViewAffiliate extends HikaShopView {
 			if(empty($title))
 				$title = $menu->title;
 			hikashop_setPageTitle($title);
+
+			$robots = $params->get('robots');
+			if (!$robots) {
+				$jconfig = JFactory::getConfig();
+				$robots = $jconfig->get('robots', '');
+			}
+			if($robots) {
+				$doc = JFactory::getDocument();
+				$doc->setMetadata('robots', $robots);
+			}
+
 		} else {
 			if($show_page_heading)
 				$this->title = JText::_('AFFILIATE');
 			hikashop_setPageTitle('AFFILIATE');
 			$pathway = $app->getPathway();
-			$pathway->addItem(JText::_('AFFILIATE'), hikashop_completeLink('affiliate&Itemid='.$Itemid));
+			$pathway->addItem(JText::_('AFFILIATE'), hikashop_completeLink('affiliate'.$this->url_itemid));
 
 			$this->toolbar['back'] = array(
 				'icon' => 'back',
 				'name' => JText::_('HIKA_BACK'),
-				'url' => hikashop_completeLink('user&task=cpanel&Itemid='.$Itemid),
+				'url' => hikashop_completeLink('user&task=cpanel'.$this->url_itemid),
 				'fa' => array('html' => '<i class="fas fa-arrow-circle-left"></i>')
 			);
 		} 
@@ -202,6 +215,12 @@ class AffiliateViewAffiliate extends HikaShopView {
 		$this->assignRef('pagination',$pagination);
 		$currencyClass = hikashop_get('class.currency');
 		$this->assignRef('currencyHelper',$currencyClass);
+
+		global $Itemid;
+		$url_itemid='';
+		if(!empty($Itemid))
+			$url_itemid = '&Itemid='.$Itemid;
+		$this->assignRef('url_itemid', $url_itemid);
 	}
 
 	function clicks(){
@@ -258,6 +277,12 @@ class AffiliateViewAffiliate extends HikaShopView {
 		$this->assignRef('pagination',$pagination);
 		$currencyClass = hikashop_get('class.currency');
 		$this->assignRef('currencyHelper',$currencyClass);
+
+		global $Itemid;
+		$url_itemid='';
+		if(!empty($Itemid))
+			$url_itemid = '&Itemid='.$Itemid;
+		$this->assignRef('url_itemid', $url_itemid);
 	}
 
 	function leads(){
@@ -317,6 +342,12 @@ class AffiliateViewAffiliate extends HikaShopView {
 		$this->assignRef('pagination',$pagination);
 		$currencyClass = hikashop_get('class.currency');
 		$this->assignRef('currencyHelper',$currencyClass);
+
+		global $Itemid;
+		$url_itemid='';
+		if(!empty($Itemid))
+			$url_itemid = '&Itemid='.$Itemid;
+		$this->assignRef('url_itemid', $url_itemid);
 	}
 
 }

@@ -1,3 +1,4 @@
+/* jshint esversion: 8 */
 import client from './axiosClient';
 
 export default {
@@ -30,11 +31,12 @@ export default {
         }
     },
 
-    async getEvaluationFormByFnum(fnum) {
+    async getEvaluationFormByFnum(fnum,type) {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=file&task=getevaluationformbyfnum', {
                 params: {
-                    fnum: fnum
+                    fnum: fnum,
+                    type: type,
                 }
             });
 
@@ -157,11 +159,12 @@ export default {
         }
     },
 
-    async getFile(fnum){
+    async getFile(fnum,type = 'default') {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=file&task=getfile', {
                 params: {
-                    fnum: fnum
+                    fnum: fnum,
+                    type: type,
                 }
             });
 
@@ -200,9 +203,37 @@ export default {
                 }
             });
 
-            return response.data;
+            // make sure that response.data.data is an array and that every element has id property
+            if (Array.isArray(response.data.data)) {
+                const correctResponse = response.data.data.every((comment) => {
+                    if (!comment.hasOwnProperty('id')) {
+                        return false;
+                    }
+
+                    return true;
+                });
+
+                if (correctResponse) {
+                    return response.data;
+                } else {
+                    return {
+                        data: [],
+                        status: false,
+                        msg: 'Invalid response'
+                    };
+                }
+            } else {
+                return {
+                    data: [],
+                    status: false,
+                    msg: 'Invalid response'
+                };
+            }
         } catch (e) {
-            return false;
+            return {
+                status: false,
+                msg: e.message
+            };
         }
     },
 

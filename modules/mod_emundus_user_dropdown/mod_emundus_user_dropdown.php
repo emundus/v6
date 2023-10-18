@@ -34,12 +34,35 @@ $link_register = $params->get('link_register', 'index.php?option=com_fabrik&view
 $link_forgotten_password = $params->get('link_forgotten_password', 'index.php?option=com_users&view=reset&Itemid=2833');
 $show_registration = $params->get('show_registration', '0');
 $link_edit_profile = JRoute::_('index.php?Itemid=' . $params->get('link_edit_profile', 2805));
+$custom_actions = $params->get('custom_actions', []);
+
+if (!empty($custom_actions) && !empty($user->id)) {
+	foreach ($custom_actions as $key => $action) {
+        $pass = true;
+
+        if (!empty($action->condition)) {
+            try {
+                $pass = eval($action->condition);
+            } catch (Exception $e) {
+                $pass = false;
+            }
+        }
+
+        if (!$pass) {
+	        unset($custom_actions->$key);
+            continue;
+        }
+
+        if (!empty($action->link) && strpos($action->link, '{fnum}') !== false) {
+            $action->link = str_replace('{fnum}', $user->fnum, $action->link);
+        }
+    }
+}
 
 $document = JFactory::getDocument();
-$document->addStyleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css');
 
 if ($jooomla_menu_name !== 0 || $jooomla_menu_name !== '0') {
-	$list = modEmundusUserDropdownHelper::getList($jooomla_menu_name);
+    $list = modEmundusUserDropdownHelper::getList($jooomla_menu_name);
 }
 
 if ($show_registration == 0 || ($show_registration == 1 && $user === null && modEmundusUserDropdownHelper::isCampaignActive())) {
@@ -77,6 +100,14 @@ if(!$only_applicant) {
 $profile_picture = '';
 if($show_profile_picture){
     $profile_picture = modEmundusUserDropdownHelper::getProfilePicture();
+}
+
+// Vérifier si il s'agit d'une session  anonyme et ci celles ci sont autorisés
+$eMConfig = JComponentHelper::getParams('com_emundus');
+$is_anonym_user = $user->anonym;
+$allow_anonym_files = $eMConfig->get('allow_anonym_files', false);
+if ($is_anonym_user && !$allow_anonym_files) {
+    return;
 }
 
 require JModuleHelper::getLayoutPath('mod_emundus_user_dropdown', $layout);

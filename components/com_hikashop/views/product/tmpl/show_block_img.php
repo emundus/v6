@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -110,7 +110,7 @@ if(!$this->config->get('thumbnail')) {
 			$attributes = 'style="margin-top:10px;margin-bottom:10px;display:inline-block;vertical-align:middle"';
 			if($img->external && $img->req_width && $img->req_height)
 				$attributes .= ' width="'.$img->req_width.'" height="'.$img->req_height.'"';
-			$html = '<img id="hikashop_main_image'.$variant_name.'" '.$attributes.' title="'.$this->escape(@$image->file_description).'" alt="'.$this->escape(@$image->file_name).'" src="'.$img->url.'"/>';
+			$html = '<img id="hikashop_main_image'.$variant_name.'" '.$attributes.' title="'.$this->escape((string)@$image->file_description).'" alt="'.$this->escape((string)@$image->file_name).'" src="'.$img->url.'"/>';
 			if($this->config->get('add_webp_images', 1) && function_exists('imagewebp') && !empty($img->webpurl)) {
 				$html = '
 				<picture>
@@ -124,7 +124,7 @@ if(!$this->config->get('thumbnail')) {
 			if(!empty($this->element->badges))
 				$html .= $this->classbadge->placeBadges($this->image, $this->element->badges, array('vertical' => 0, 'horizontal' => 0, 'thumbnail' => $img, 'echo' => false));
 
-			$attr = 'title="'.$this->escape(@$image->file_description).'"';
+			$attr = 'title="'.$this->escape((string)@$image->file_description).'"';
 			if (!empty ($this->element->images) && count($this->element->images) > 1)
 				$attr .= ' onclick="return window.localPage.openImage(\'hikashop_main_image'.$variant_name.'\', \''.$variant_name.'\', event);"';
 			echo $this->popup->image($html, $img->origin_url, null, $attr);
@@ -186,10 +186,10 @@ if(!$this->config->get('thumbnail')) {
 			if($img->external && $img->req_width && $img->req_height)
 				$main_image_size = $img->req_width.', '.$img->req_height;
 
-			$attr = $thumbnail_class.' title="'.$this->escape(@$image->file_description).'" onmouseover="return window.localPage.changeImage('
+			$attr = $thumbnail_class.' title="'.$this->escape((string)@$image->file_description).'" onmouseover="return window.localPage.changeImage('
 				. 'this, \'hikashop_main_image'.$variant_name.'\', \''.$img->url.'\', '.$main_image_size.', \''.str_replace(array("'", '"'),
 				array("\'", '&quot;'),@$image->file_description).'\', \''.str_replace(array("'", '"'),array("\'", '&quot;'),@$image->file_name).'\', '.$key.');"';
-			$html = '<img class="'.$classname.'" title="'.$this->escape(@$image->file_description).'" alt="'.$this->escape(@$image->file_name).'" src="'.$img->url.'"/>';
+			$html = '<img class="'.$classname.'" title="'.$this->escape((string)@$image->file_description).'" alt="'.$this->escape((string)@$image->file_name).'" src="'.$img->url.'"/>';
 			if($this->config->get('add_webp_images', 1) && function_exists('imagewebp') && !empty($img->webpurl)) {
 				$html = '
 				<picture>

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -39,7 +39,7 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 	<div class="hkform-group control-group hikashop_login_username_line">
 		<label for="username" class="<?php echo $labelcolumnclass;?> hkcontrol-label"><?php echo JText::_('HIKA_USERNAME') ?></label>
 		<div class="<?php echo $inputcolumnclass;?>">
-			<input type="text" id="username" name="login[username]" class="inputbox" alt="<?php echo JText::_('HIKA_USERNAME') ?>" size="18" />
+			<input type="text" id="username" name="login[username]" class="<?php echo HK_FORM_CONTROL_CLASS; ?>" alt="<?php echo JText::_('HIKA_USERNAME') ?>" size="18" />
 		</div>
 	</div>
 <!-- EO OLD USERNAME -->
@@ -47,7 +47,29 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 	<div class="hkform-group control-group hikashop_login_password_line">
 		<label for="passwd" class="<?php echo $labelcolumnclass;?> hkcontrol-label"><?php echo JText::_('HIKA_PASSWORD') ?></label>
 		<div class="<?php echo $inputcolumnclass;?>">
-			<input type="password" id="passwd" name="login[passwd]" class="inputbox" size="18" alt="<?php echo JText::_('HIKA_PASSWORD') ?>" />
+		<?php
+	if(HIKASHOP_J40) {
+		$layout = new JLayoutFile('joomla.form.field.password');
+		echo $layout->render(array(
+			'meter' => false,
+			'class' => '',
+			'forcePassword' => true,
+			'lock' => false,
+			'rules' => false,
+			'hint' => JText::_('HIKA_PASSWORD'),
+			'readonly' => false,
+			'disabled' => false,
+			'required' => true,
+			'autofocus' => false,
+			'dataAttribute' => 'autocomplete="current-password"',
+			'name' => 'login[passwd]',
+			'id' => 'passwd',
+			'value' => '',
+		));
+	} else {
+?>
+			<input type="password" id="passwd" name="login[passwd]" class="<?php echo HK_FORM_CONTROL_CLASS; ?>" size="18" alt="<?php echo JText::_('HIKA_PASSWORD') ?>" />
+<?php }  ?>
 		</div>
 	</div>
 <!-- EO OLD PASSWORD -->

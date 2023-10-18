@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -181,8 +181,8 @@ class hikashopCartClass extends hikashopClass {
 			self::$cache['get'][$element]->cart_params = new stdClass();
 
 		JPluginHelper::importPlugin('hikashop');
-		JPluginHelper::importPlugin('hikashoppayment');
 		JPluginHelper::importPlugin('hikashopshipping');
+		JPluginHelper::importPlugin('hikashoppayment');
 		$this->app->triggerEvent('onBeforeCartLoad', array( &self::$cache['get'][$element], &$options ) );
 
 		if(!hikashop_isClient('administrator') && empty($options['skip_user_check'])) {
@@ -264,6 +264,7 @@ class hikashopCartClass extends hikashopClass {
 				else
 					self::$cache['get'][$element]->cart_products[$k] =& $product;
 			}
+
 			unset($product);
 			$this->app->triggerEvent('onAfterCartLoad', array( &self::$cache['get'][$element], &$options ) );
 		}
@@ -866,8 +867,8 @@ class hikashopCartClass extends hikashopClass {
 		hikashop_addACLFilters($filters, 'product_access', 'product');
 
 		JPluginHelper::importPlugin('hikashop');
-		JPluginHelper::importPlugin('hikashoppayment');
 		JPluginHelper::importPlugin('hikashopshipping');
+		JPluginHelper::importPlugin('hikashoppayment');
 		$this->app->triggerEvent('onBeforeCartProductsLoad', array( &$cart, &$options, &$filters) );
 
 		$query = 'SELECT cart_product.cart_product_id, cart_product.cart_product_quantity, cart_product.cart_product_option_parent_id, cart_product.cart_product_parent_id, cart_product.cart_product_wishlist_id, product.* '.
@@ -2610,43 +2611,7 @@ class hikashopCartClass extends hikashopClass {
 
 		$addressClass = hikashop_get('class.address');
 		$addr = $addressClass->get($address_id);
-		if(empty($addr->address_published) || $addr->address_user_id != $cart->user_id)
-			return false;
-
-
-		$null = null;
-		$fieldClass = hikashop_get('class.field');
-		$field_type = $addr->address_type;
-		if(!empty($field_type))
-			$field_type .= '_address';
-
-		if(empty($addr->address_state) && !empty($addr->address_country)) {
-			$zoneClass = hikashop_get('class.zone');
-			$states = $zoneClass->getChildren($addr->address_country);
-			if(empty($states)) {
-				$addr->address_state = 'no_state_found';
-			} else {
-				$zones_pulished = $zoneClass->getZones($states, 'zone_published', 'zone_namekey', true);
-				if(empty($zones_pulished)) {
-					$addr->address_state = 'no_state_found';
-				} else {
-					$published = false;
-					foreach($zones_pulished as $zone_published) {
-						if($zone_published)
-							$published = true;
-					}
-					if(!$published) {
-						$addr->address_state = 'no_state_found';
-					}
-				}
-			}
-		}
-
-		$data = array($field_type => get_object_vars($addr));
-		$address = $fieldClass->getFilteredInput($field_type, $null, 'ret', $data, false, 'frontcomp');
-
-		$ret = true;
-		if(empty($address)) {
+		if(!$addressClass->isAddressValid($addr, array('user_id' => $cart->user_id))) {
 			$this->app->enqueueMessage(JText::_('THE_'.strtoupper($addr->address_type).'_ADDRESS_YOU_SELECTED_CANNOT_BE_USED_AS_SOME_INFORMATION_IS_MISSING'), 'error');
 			return false;
 		}
@@ -3410,11 +3375,18 @@ class hikashopCartClass extends hikashopClass {
 					$msg = JText::sprintf('PRODUCT_NOT_AVAILABLE', $id);
 				}
 				if(empty($msg) && !in_array($product['data']->parent_product_access, array('', 'all')) && hikashop_level(2)) {
-					$userClass = hikashop_get('class.user');
-					$user_groups = $userClass->getGroups( (int)$cart->user_id );
-					$parent_product_groups = explode(',', $product['data']->parent_product_access);
-					hikashop_toInteger($parent_product_groups);
-					$intersect = array_intersect($user_groups, $parent_product_groups);
+					if(!empty($cart->user_id)) {
+						$user_id = $cart->user_id;
+					} elseif(empty($cart->cart_id)) {
+						$user_id = hikashop_loadUser();
+					}
+					if(!empty($user_id)) {
+						$userClass = hikashop_get('class.user');
+						$user_groups = $userClass->getGroups( (int)$user_id );
+						$parent_product_groups = explode(',', $product['data']->parent_product_access);
+						hikashop_toInteger($parent_product_groups);
+						$intersect = array_intersect($user_groups, $parent_product_groups);
+					}
 					if(empty($intersect))
 						$msg = JText::sprintf('PRODUCT_NOT_AVAILABLE', $id);
 				}
@@ -4190,7 +4162,7 @@ class hikashopCartClass extends hikashopClass {
 		return $status;
 	}
 
-	protected function generateHash(&$cart_products, $zone_id) {
+	public function generateHash(&$cart_products, $zone_id) {
 		$remove_columns = array('cart_modified', 'cart_coupon', 'product_hit', 'product_sales', 'product_modified', 'variants', 'characteristics', 'wanted_quantity');
 		$products = array();
 		foreach($cart_products as $cart_product) {
@@ -4443,6 +4415,11 @@ window.hikashop.ready(function(){
 				$ret['products'][] = $data;
 			}
 		}
+
+		JPluginHelper::importPlugin('hikashop');
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onGetCartProductsInfo', array(&$cart, &$ret) );
+
 		return $ret;
 	}
 

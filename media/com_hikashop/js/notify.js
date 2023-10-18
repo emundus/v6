@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.6.2
+ * @version    4.7.4
  * @author     hikashop.com
- * @copyright  (C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 /* Notify.js - http://notifyjs.com/ Copyright (c) 2015 MIT */
@@ -64,7 +64,7 @@
 	var coreStyle = {
 		name: "core",
 		html: "<div class=\"" + pluginClassName + "-wrapper\"><div class=\"" + pluginClassName + "-arrow\"></div><div class=\"" + pluginClassName + "-container\"></div></div>",
-		css: "." + pluginClassName + "-corner {position: fixed;margin: 5px;z-index: 10050;\n}\n." + pluginClassName + "-corner ." + pluginClassName + "-wrapper,\n." + pluginClassName + "-corner ." + pluginClassName + "-container {position:relative;display:block;height:inherit;width:inherit;margin:3px;}\n." + pluginClassName + "-wrapper{z-index:1;position:absolute;display:inline-block;height:0;width:0;}\n." + pluginClassName + "-container{display:none;z-index:1;position:absolute;}\n." + pluginClassName + "-hidable{cursor:pointer;}\n[data-notify-text],[data-notify-html] {position:relative;}\n." + pluginClassName + "-arrow {position:absolute;z-index:2;width:0;height:0;}"
+		css: "." + pluginClassName + "-corner {position: fixed;margin: 5px;z-index: 10050;\n}\n." + pluginClassName + "-corner ." + pluginClassName + "-wrapper,\n." + pluginClassName + "-corner ." + pluginClassName + "-container {position:relative;display:block;height:inherit;width:inherit;margin:3px;}\n." + pluginClassName + "-wrapper{z-index:10050;position:absolute;display:inline-block;height:0;width:0;}\n." + pluginClassName + "-container{display:none;z-index:10050;position:absolute;}\n." + pluginClassName + "-hidable{cursor:pointer;}\n[data-notify-text],[data-notify-html] {position:relative;}\n." + pluginClassName + "-arrow {position:absolute;z-index:10051;width:0;height:0;}"
 	};
 
 	var stylePrefixes = {
@@ -609,6 +609,35 @@
 				"border": "1px solid #000"
 			},
 			white: {
+				"background-color": "#f1f1f1",
+				"border": "1px solid #ddd"
+			},
+			error: {
+				"color": "#a94442 !important",
+				"background-color": "#f2dede",
+				"border": "1px solid #ebccd1"
+			},
+			wishlist_success: {
+				"color": "#3c763d !important",
+				"background-color": "#dff0d8",
+				"border": "1px solid #d6e9c6"
+			},
+			wishlist_info: {
+				"color": "#31708f !important",
+				"background-color": "#d9edf7",
+				"border": "1px solid #bce8f1"
+			},
+			wishlist_warning: {
+				"color": "#8a6d3b !important",
+				"background-color": "#fcf8e3",
+				"border": "1px solid #faebcc"
+			},
+			wishlist_black: {
+				"color": "#fafafa !important",
+				"background-color": "#333",
+				"border": "1px solid #000"
+			},
+			wishlist_white: {
 				"background-color": "#f1f1f1",
 				"border": "1px solid #ddd"
 			}

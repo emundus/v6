@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -18,7 +18,8 @@ class plgFinderHikashop extends plgFinderHikashopBridge {
 		}
 
 		$registry = new JRegistry;
-		$registry->loadString($item->params);
+		if(!empty($item->params))
+			$registry->loadString($item->params);
 		$item->params = JComponentHelper::getParams('com_hikashop', true);
 		$item->params->merge($registry);
 
@@ -67,9 +68,18 @@ class plgFinderHikashop extends plgFinderHikashopBridge {
 
 		$item->addInstruction(FinderIndexer::META_CONTEXT, 'metakey');
 		$item->addInstruction(FinderIndexer::META_CONTEXT, 'metadesc');
-		$item->addInstruction(FinderIndexer::META_CONTEXT, 'metaauthor');
-		$item->addInstruction(FinderIndexer::META_CONTEXT, 'author');
 		$item->addInstruction(FinderIndexer::META_CONTEXT, 'created_by_alias');
+
+		$fields = $this->params->get('fields');
+		if(!is_array($fields)){
+			$fields = explode(',',(string)$fields);
+		}
+		if(!empty($fields) && count($fields)) {
+			foreach($fields as $field) {
+				if(!in_array($field, array('product_name', 'product_description', 'product_keywords', 'product_meta_description')))
+					$item->addInstruction(FinderIndexer::META_CONTEXT, $field);
+			}
+		}
 
 		$this->item = $item;
 		$item->state = $this->translateState($item->state, $item->cat_state);

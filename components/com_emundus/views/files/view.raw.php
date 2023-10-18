@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpMultipleClassDeclarationsInspection */
 /**
  * Created by eMundus.
  * User: brivalland
@@ -24,8 +24,40 @@ jimport('joomla.application.component.view');
  */
 class EmundusViewFiles extends JViewLegacy
 {
-	//protected $itemId;
-	protected $actions;
+	protected $itemId;
+	protected $cfnum;
+
+	protected JPagination $pagination;
+	protected string $pageNavigation;
+
+	protected array $lists;
+	protected array $actions;
+	protected array $users;
+	protected $datas;
+	protected string $delayAct;
+	protected string $submitForm;
+	protected array $accessObj;
+	protected array $colsSup;
+
+	protected array $groups;
+	protected array $groupFnum;
+	protected array $evalFnum;
+	protected array $evals;
+	protected object $actions_evaluators;
+	protected string $hide_default_actions;
+
+	protected array $items;
+	protected string $display;
+	protected string $fnum;
+
+	protected array $code;
+	protected array $fnum_assoc;
+	protected string $filters;
+	protected bool $use_module_for_filters;
+
+	protected array $docs;
+	protected array $prgs;
+	protected string $fnums;
 
 	public function __construct($config = array())
 	{
@@ -34,10 +66,18 @@ class EmundusViewFiles extends JViewLegacy
 		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'export.php');
 		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'users.php');
 		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'evaluation.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+
+
+		$menu = JFactory::getApplication()->getMenu();
+		$current_menu = $menu->getActive();
+		$menu_params = $menu->getParams(@$current_menu->id);
+		$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
 
 		parent::__construct($config);
 	}
 
+	/** @noinspection PhpInconsistentReturnPointsInspection */
 	public function display($tpl = null)
 	{
 		$current_user = JFactory::getUser();
@@ -56,12 +96,10 @@ class EmundusViewFiles extends JViewLegacy
 		$this->cfnum = $app->input->getString('cfnum', null);
 		$layout = $app->input->getString('layout', null);
 
-		$m_files = $this->getModel('Files');
+		$m_files = new EmundusModelFiles();
 		$h_files->setMenuFilter();
 
 		switch ($layout) {
-
-				// get access list for application file
 			case 'access':
 				$fnums = $app->input->getString('users', null);
 				$fnums_obj = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
@@ -82,17 +120,16 @@ class EmundusViewFiles extends JViewLegacy
 				$actions = $m_files->getAllActions();
 				$actions_evaluators = json_decode($default_actions);
 
-				$this->assignRef('groups', $evalGroups['groups']);
-				$this->assignRef('groupFnum', $groupFnum);
-				$this->assignRef('evalFnum', $evalFnum);
-				$this->assignRef('users', $users);
-				$this->assignRef('evals', $evalGroups['users']);
-				$this->assignRef('actions', $actions);
-				$this->assignRef('actions_evaluators', $actions_evaluators);
-				$this->assignRef('hide_actions', $hide_default_actions);
+				$this->groups = $evalGroups['groups'];
+				$this->groupFnum = $groupFnum;
+				$this->evalFnum = $evalFnum;
+				$this->users = $users;
+				$this->evals = $evalGroups['users'];
+				$this->actions = $actions;
+				$this->actions_evaluators = $actions_evaluators;
+				$this->hide_default_actions = $hide_default_actions;
 				break;
 
-				// get Menu actions
 			case 'menuactions':
 				$fnum = $app->input->getString("fnum", "0");
 
@@ -112,9 +149,9 @@ class EmundusViewFiles extends JViewLegacy
 						$items = $h_files->getMenuList($params, $fnum);
 					}
 
-					$this->assignRef('items', $items);
-					$this->assignRef('display', $display);
-					$this->assignRef('fnum', $fnum);
+					$this->items = $items;
+					$this->display = $display;
+					$this->fnum = $fnum;
 				} else {
 					echo JText::_('ERROR_MENU_ID_NOT_FOUND');
 					return false;
@@ -122,48 +159,64 @@ class EmundusViewFiles extends JViewLegacy
 				break;
 
 			case 'filters':
-				$m_user = new EmundusModelUsers();
+				if (!$this->use_module_for_filters) {
+					$m_user = new EmundusModelUsers();
+					$m_files->code = $m_user->getUserGroupsProgrammeAssoc($current_user->id);
 
-				$m_files->code = $m_user->getUserGroupsProgrammeAssoc($current_user->id);
+					// get all fnums manually associated to user
+					$groups = $m_user->getUserGroups($current_user->id, 'Column');
+					$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
+					$fnum_assoc = $m_user->getApplicantsAssoc($current_user->id);
+					$m_files->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
 
-				// get all fnums manually associated to user
-				$groups = $m_user->getUserGroups($current_user->id, 'Column');
-				$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
-				$fnum_assoc = $m_user->getApplicantsAssoc($current_user->id);
-				$m_files->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
+					$this->code = $m_files->code;
+					$this->fnum_assoc = $m_files->fnum_assoc;
 
-				$this->assignRef('code', $m_files->code);
-				$this->assignRef('fnum_assoc', $m_files->fnum_assoc);
-
-				// reset filter
-				$filters = $h_files->resetFilter();
-				$this->assignRef('filters', $filters);
+					$filters = $h_files->resetFilter();
+					$this->filters = $filters;
+				}
 				break;
 
-			case 'docs':
-				$fnumsObj = $app->input->getString('fnums', "");
-				$fnumsObj = json_decode(stripslashes($fnumsObj), false, 512, JSON_BIGINT_AS_STRING);
-				$fnums = array();
-				foreach ($fnumsObj as $fObj) {
-					if (EmundusHelperAccess::asAccessAction(27, 'c', JFactory::getUser()->id, $fObj->fnum)) {
-						$fnums[] = $fObj->fnum;
-					}
-				}
-				if (!empty($fnums)) {
-					$prgs = $m_files->getProgByFnums($fnums);
-					$docs = $m_files->getDocsByProg(key($prgs));
-				} else {
-					echo JText::_('ACCESS_DENIED');
-					exit();
-				}
+            case 'docs':
+                $fnumsObj = $app->input->getString('fnums', "");
 
-				$this->assignRef('docs', $docs);
-				$this->assignRef('prgs', $prgs);
-				$fnums_array = implode(',', $fnums);
-				$this->assignRef('fnums', $fnums_array);
-				break;
+                if (!empty($fnumsObj)) {
+                    $fnums = array();
+	                if ($fnumsObj == 'all') {
+		                $fnums = $m_files->getAllFnums();
+	                }
+					else
+	                {
+		                $fnumsObj = json_decode(stripslashes($fnumsObj), false, 512, JSON_BIGINT_AS_STRING);
 
-				// get list of application files
+		                foreach ($fnumsObj as $fObj)
+		                {
+			                if (EmundusHelperAccess::asAccessAction(27, 'c', JFactory::getUser()->id, $fObj->fnum))
+			                {
+				                $fnums[] = $fObj->fnum;
+			                }
+		                }
+	                }
+                    if (!empty($fnums)) {
+                        $prgs = $m_files->getProgByFnums($fnums);
+                        $docs = $m_files->getDocsByProg(key($prgs));
+                    } else {
+                        echo JText::_('ACCESS_DENIED');
+                        exit();
+                    }
+
+                    $this->assignRef('docs', $docs);
+                    $this->assignRef('prgs', $prgs);
+                    $fnums_array = implode(',', $fnums);
+                    $this->assignRef('fnums', $fnums_array);
+                } else {
+                    echo JText::_('COM_EMUNDUS_ONBOARD_NOFILES');
+                    exit();
+                }
+
+                break;
+
+			// Get list of application files
 			default:
 				$menu = $app->getMenu();
 				$current_menu = $menu->getActive();
@@ -187,7 +240,7 @@ class EmundusViewFiles extends JViewLegacy
 				$this->assignRef('fnum_assoc', $m_files->fnum_assoc);
 
 				// get applications files
-				$users = $this->get('Users');
+				$users = $m_files->getUsers();
 
 				// Get elements from model and proccess them to get an easy to use array containing the element type
 				$elements = $m_files->getElementsVar();
@@ -212,13 +265,16 @@ class EmundusViewFiles extends JViewLegacy
 			    $data = array(array('check' => '#', 'name' => JText::_('COM_EMUNDUS_FILES_APPLICATION_FILES'), 'status' => JText::_('COM_EMUNDUS_STATUS')));
 				$fl = array();
 				if (count($defaultElements) > 0) {
-					foreach ($defaultElements as $key => $elt) {
+					foreach ($defaultElements as $elt) {
 						$fl[$elt->tab_name . '___' . $elt->element_name] = $elt->element_label;
 					}
 				}
 
 				$data[0] = array_merge($data[0], $fl);
-				$fnumArray = array();
+				$fnumArray = [];
+				$objAccess = [];
+				$colsSup = [];
+
 				if (!empty($users)) {
 					$i = 1;
 					$taggedFile = array();
@@ -253,12 +309,14 @@ class EmundusViewFiles extends JViewLegacy
 								$data[0]['attachment_progress'] = JText::_('COM_EMUNDUS_ATTACHMENT_PROGRESS');
 								$colsSup['attachment_progress'] = array();
 								break;
-
                             case 'unread_messages':
                                 $data[0]['unread_messages'] = JText::_('COM_EMUNDUS_UNREAD_MESSAGES');
                                 $colsSup['unread_messages'] = array();
                                 break;
-
+                            case 'commentaire':
+                                $data[0]['commentaire'] = JText::_('COM_EMUNDUS_COMMENTAIRE');
+                                $colsSup['commentaire'] = array();
+                                break;
                             case 'module':
 								// Get every module without a positon.
 								$mod_emundus_custom = array();
@@ -299,10 +357,10 @@ class EmundusViewFiles extends JViewLegacy
 								if ($displayPhoto) {
 									$userObj->photo = $h_files->getPhotos($value);
 								}
-								$userObj->user = JFactory::getUser((int)substr($value, -7));
+                                $userObj->user = JFactory::getUser((int)$user['applicant_id']);
 								$userObj->user->name = $user['name'];
 								$line['fnum'] = $userObj;
-							} elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'applicant_id' || $key == 'campaign_id' || $key == 'unread_messages') {
+							} elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'applicant_id' || $key == 'campaign_id' || $key == 'unread_messages' || $key == 'commentaire') {
 								continue;
 							} elseif (isset($elements) && in_array($key, array_keys($elements))) {
 								$userObj->val 			= $value;
@@ -385,6 +443,12 @@ class EmundusViewFiles extends JViewLegacy
                         }
                     }
 
+                    if(isset($colsSup['commentaire'])) {
+                        foreach($fnumArray as $fnum) {
+                            $notifications_comments = sizeof($m_files->getCommentsByFnum([$fnum]));
+                            $colsSup['commentaire'][$fnum] = '<p class="messenger__notifications_counter">'. $notifications_comments .'</p> ';
+                        }
+                    }
 
 					if (!empty($mod_emundus_custom)) {
 						foreach ($mod_emundus_custom as $key => $module) {
@@ -400,21 +464,16 @@ class EmundusViewFiles extends JViewLegacy
 				/* Get the values from the state object that were inserted in the model's construct function */
 				$lists['order_dir'] = JFactory::getSession()->get('filter_order_Dir');
 				$lists['order'] = JFactory::getSession()->get('filter_order');
-				$this->assignRef('lists', $lists);
-				$this->assignRef('actions', $actions);
-				$pagination = $this->get('Pagination');
-				$this->assignRef('pagination', $pagination);
-				$pageNavigation = $this->get('PageNavigation');
-				$this->assignRef('pageNavigation', $pageNavigation);
-				$this->assignRef('users', $users);
-				$this->assignRef('datas', $data);
+				$this->lists = $lists;
+				$this->pagination = $m_files->getPagination();
+				$this->pageNavigation = $m_files->getPageNavigation();
+				$this->users = $users;
+				$this->datas = $data;
 
-				$submitForm = EmundusHelperJavascript::onSubmitForm();
-				$delayAct = EmundusHelperJavascript::delayAct();
-				$this->assignRef('delayAct', $delayAct);
-				$this->assignRef('submitForm', $submitForm);
-				$this->assignRef('accessObj', $objAccess);
-				$this->assignRef('colsSup', $colsSup);
+				$this->submitForm = EmundusHelperJavascript::onSubmitForm();
+				$this->delayAct = EmundusHelperJavascript::delayAct();
+				$this->accessObj = $objAccess;
+				$this->colsSup = $colsSup;
 				break;
 		}
 

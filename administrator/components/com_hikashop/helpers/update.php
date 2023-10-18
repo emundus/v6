@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -123,7 +123,7 @@ class hikashopUpdateHelper{
 			,'plg_hikashoppayment_paygate' => array('HikaShop PayGate payment plugin',0,0)
 			,'plg_hikashoppayment_payjunction' => array('HikaShop PayJunction payment plugin',0,0)
 			,'plg_hikashoppayment_paymentexpress' => array('HikaShop Payment Express PxPost payment plugin',0,0)
-			,'plg_hikashoppayment_paypal' => array('HikaShop Paypal payment plugin',0,0)
+			,'plg_hikashoppayment_paypal' => array('HikaShop Paypal (legacy) payment plugin',0,0)
 			,'plg_hikashoppayment_paypaladvanced' => array('HikaShop Paypal Advanced payment plugin',0,0)
 			,'plg_hikashoppayment_paypalcheckout' => array('HikaShop Paypal Checkout payment plugin',0,0)
 			,'plg_hikashoppayment_paypalexpress' => array('HikaShop Paypal Express Checkout payment plugin',0,0)
@@ -155,7 +155,7 @@ class hikashopUpdateHelper{
 			,'plg_system_custom_price' => array('HikaShop Donation plugin',0,0)
 			,'plg_system_hikashopaffiliate' => array('HikaShop affiliate plugin',0,1)
 			,'plg_system_hikashopanalytics' => array('HikaShop Google Analytics plugin',0,0)
-			,'plg_system_hikashopgeolocation' => array('HikaShop geolocation plugin',0,1)
+			,'plg_system_hikashopgeolocation' => array('HikaShop geolocation plugin',0,0)
 			,'plg_system_hikashopmassaction' => array('HikaShop massaction plugin',0,1)
 			,'plg_system_hikashoppayment' => array ('HikaShop Payment Notification plugin',0,1)
 			,'plg_system_hikashopproductinsert' => array('HikaShop product tag translation plugin',0,1)
@@ -210,6 +210,19 @@ class hikashopUpdateHelper{
 			$queryExtensions = 'INSERT INTO `#__extensions` ('.implode(',', $ext_fields).') VALUES ';
 
 			foreach($extensions as $oneExt) {
+				$extensionData = new stdClass();
+				$extensionData->name = $oneExt->name;
+				$extensionData->type = $oneExt->type;
+				$extensionData->creationDate = date('d m Y');
+				$extensionData->author = 'HikaShop';
+				$extensionData->copyright = '(C) 2011-'.date('Y').' HIKARI SOFTWARE. All rights reserved.';
+				$extensionData->authorEmail = 'contact@hikashop.com';
+				$extensionData->authorUrl = 'https://www.hikashop.com';
+				$extensionData->version = '4.7.4';
+				$extensionData->description = $oneExt->name;
+				$extensionData->group = '';
+				$extensionData->filename = $oneExt->element;
+				$manifest = json_encode($extensionData);
 				$data = array(
 					$this->db->Quote($oneExt->name),
 					$this->db->Quote($oneExt->element),
@@ -221,7 +234,7 @@ class hikashopUpdateHelper{
 					(int)@$oneExt->client_id,
 				);
 				if(HIKASHOP_J40)
-					$data = array_merge($data, array("''", "''"));
+					$data = array_merge($data, array($this->db->Quote($manifest), "''"));
 
 				$queryExtensions .= '('. implode(',', $data) . '),';
 				if($oneExt->type != 'module') {
@@ -271,6 +284,9 @@ class hikashopUpdateHelper{
 
 		$pluginsClass = hikashop_get('class.plugins');
 		$pluginsClass->cleanPluginCache();
+
+		if(JFolder::exists($path))
+			JFolder::delete($path);
 
 		if(!empty($success) && $install == false)
 			hikashop_display($success,'success');
@@ -477,7 +493,7 @@ class hikashopUpdateHelper{
 		$content = file_get_contents($path);
 		if(empty($content)) return;
 
-		$menuFileContent = 'COM_HIKASHOP="HikaShop"'."\r\n".'HIKASHOP="HikaShop"'."\r\n";
+		$menuFileContent = 'COM_HIKASHOP="HikaShop"'."\r\n".'HIKASHOP="HikaShop"'."\r\n".'COM_HIKASHOP_DASHBOARD_VIEW_TITLE="DASHBOARD"'."\r\n";
 		$menuStrings = array('PRODUCTS','CATEGORIES','USERS','ORDERS','CONFIGURATION','DISCOUNTS','HELP','UPDATE_ABOUT');
 		foreach($menuStrings as $oneString){
 			preg_match('#(\n|\r)(HIKA_)?'.$oneString.'="(.*)"#i',$content,$matches);
@@ -750,7 +766,8 @@ class hikashopUpdateHelper{
 (3, 'cancelled', 'When an order is cancelled before receiving a payment', 1, 3, 'cancelled', '', ''),
 (4, 'refunded', 'When an order is cancelled after receiving a payment', 1, 4, 'refunded', '', ''),
 (5, 'shipped', 'When an order has been shipped', 1, 5, 'shipped', '', ''),
-(6, 'pending', 'When an order is created and the payment is still pending', 1, 6, 'pending', '', '');";
+(6, 'pending', 'When an order is created and the payment is still pending', 1, 6, 'pending', '', ''),
+(7, 'returned', 'When an order is returned by the user', 1, 7, 'pending', '', '');";
 		$this->db->setQuery($query);
 		$this->db->execute();
 

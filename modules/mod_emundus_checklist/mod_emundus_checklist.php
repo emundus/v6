@@ -46,13 +46,17 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $show_mandatory_documents = $params->get('show_mandatory_documents', 1);
     $show_optional_documents = $params->get('show_optional_documents', 0);
     $show_duplicate_documents = $params->get('show_duplicate_documents', 1);
-    $forms_title = $params->get('forms_title', JText::_('FORMS'));
+	$show_preliminary_documents = $params->get('show_preliminary_documents', 0);
+	$forms_title = $params->get('forms_title', JText::_('FORMS'));
     $mandatory_documents_title = $params->get('mandatory_documents_title', JText::_('MANDATORY_DOCUMENTS'));
     $optional_documents_title = $params->get('optional_documents_title', JText::_('OPTIONAL_DOCUMENTS'));
-    $admission = $params->get('admission', 0);
+	$preliminary_documents_title = $params->get('preliminary_documents_title', JText::_('PRELIMINARY_DOCUMENTS'));
+	$admission = $params->get('admission', 0);
     $show_send = $params->get('showsend', 1);
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
+    $id_applicants = $eMConfig->get('id_applicants', '0');
+    $exceptions = explode(',',$id_applicants);
     $applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
     $application_fee = $eMConfig->get('application_fee', 0);
 
@@ -175,6 +179,18 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     }
 
     $forms = @EmundusHelperMenu::buildMenuQuery($user->profile);
+	$keys_to_remove = array();
+	foreach($forms as $key => $form) {
+		$m_params = json_decode($form->menu_params, true);
+		if(isset($m_params['menu_show']) && $m_params['menu_show'] == 0)
+		{
+			$keys_to_remove[] = $key;
+		}
+	}
+	foreach($keys_to_remove as $key) {
+		unset($forms[$key]);
+	}
+	$forms = array_values($forms);
 
     // Prepare display of send button
     $application = @modEmundusChecklistHelper::getApplication($user->fnum);
@@ -212,8 +228,8 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     }
     if (!empty($current_phase)) {
         $is_app_sent = !in_array($user->status, $current_phase->entry_status);
-
         $status_for_send = array_merge($status_for_send, $current_phase->entry_status);
+		$show_preliminary_documents = $show_preliminary_documents && $current_phase->display_preliminary_documents;
     } elseif (!empty($user->status)) {
         $is_app_sent = $user->status != 0;
     }
@@ -231,6 +247,17 @@ if (isset($user->fnum) && !empty($user->fnum)) {
         $paid = !empty($order);
     }
     //
+
+	if ($show_preliminary_documents) {
+		include_once(JPATH_BASE . '/modules/mod_emundus_campaign_dropfiles/helper.php');
+		$dropfiles_helper = new modEmundusCampaignDropfilesHelper();
+
+		if (!empty($current_phase) && $current_phase->specific_documents) {
+			$preliminary_documents = $dropfiles_helper->getFiles(null, $user->campaign_id, $user->fnum);
+		} else {
+			$preliminary_documents = $dropfiles_helper->getFiles(null, $user->campaign_id);
+		}
+	}
 
     require(JModuleHelper::getLayoutPath('mod_emundus_checklist'));
 }

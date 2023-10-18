@@ -1,22 +1,32 @@
-name: Base Styles Emundus
-description: Base styles for the Helium theme
+name: Colors
+description: Colors
 type: core
 
 form:
   fields:
     background:
       type: input.colorpicker
-      label: Base Background
-      default: "#ffffff"
+      label: Background color
+      default: "#f8f8f8"
     text-color:
       type: input.colorpicker
-      label: Base Text Color
-      default: "#424753"
+      label: Text color
+      default: "#4B4B4B"
+    title-color:
+        type: input.colorpicker
+        label: Title color
+        default: "#000000"
     primary-color:
       type: input.colorpicker
       label: Primary color
       default: "#1b1f3c"
+      description: Primary button color
     secondary-color:
       type: input.colorpicker
       label: Secondary color
       default: "#de6339"
+      description: Secondary button color
+    tertiary-color:
+        type: input.colorpicker
+        label: Tertiary color
+        default: "#bd5631"

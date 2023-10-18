@@ -260,18 +260,24 @@ class EmundusControllerFile extends JControllerLegacy
 	}
 
 	public function savecomment(){
-		$results = ['status' => 1, 'msg' => '', 'data' => []];
+		$results = ['status' => 0, 'msg' => JText::_('ACCESS_DENIED'), 'data' => []];
 		$jinput = JFactory::getApplication()->input;
-		$fnum = $jinput->getString('fnum','');
+		$fnum = $jinput->getString('fnum', '');
 
-		if(!empty($fnum) && EmundusHelperAccess::asAccessAction(10,'c',JFactory::getUser()->id,$fnum)){
+		if (!empty($fnum) && EmundusHelperAccess::asAccessAction(10,'c',JFactory::getUser()->id,$fnum)){
 			$reason = $jinput->getString('reason','');
 			$comment_body = $jinput->getString('comment_body','');
 
-			$results['data'] = $this->files->saveComment($fnum,$reason,$comment_body);
-		} else {
-			$results['status'] = 0;
-			$results['msg'] = JText::_('ACCESS_DENIED');
+			$comment = $this->files->saveComment($fnum,$reason,$comment_body);
+
+			if (!empty($comment->id)) {
+				$results['status'] = 1;
+				$results['msg'] = '';
+				$results['data'] = $comment;
+			} else {
+				$results['msg'] = JText::_('COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS');
+				$results['status'] = 0;
+			}
 		}
 
 		echo json_encode((object)$results);

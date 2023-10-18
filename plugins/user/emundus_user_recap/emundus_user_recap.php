@@ -76,9 +76,19 @@ class plgUserEmundus_user_recap extends JPlugin {
 		    $zip_name = $c_files->export_zip($fnums);
 		    $file = JPATH_BASE.DS.'tmp'.DS.$zip_name;
 
-		    $post = [
-		    	'FILES_DELETED' => (empty($fnums))?JText::_('PLG_USER_RECAP_NO_FILES_DELETED'):JText::sprintf('PLG_USER_RECAP_FILES_DELETED', sizeof($fnums))
-		    ];
+            if (empty($fnums)) {
+                $tag_content = JText::_('PLG_USER_RECAP_NO_FILES_DELETED');
+            } else {
+                if (count($fnums) == 1) {
+                    $tag_content = JText::sprintf('PLG_USER_RECAP_ONE_FILE_DELETED', 1);
+                } else {
+                    $tag_content = JText::sprintf('PLG_USER_RECAP_FILES_DELETED', sizeof($fnums));
+                }
+            }
+
+            $post = [
+                'FILES_DELETED' => $tag_content
+            ];
 
 		    $c_messages->sendEmailNoFnum($user['email'], $email, $post, $user['id'], $file);
 

@@ -16,15 +16,14 @@ $table = JTable::getInstance('user', 'JTable');
 $table->load($user->id);
 
 $user_params = new JRegistry($table->params);
+$yousignSession = JFactory::getSession()->get('YousignSession');
 
 // Do not redirect the user if the param is not 'true'.
-if (!empty($user_params->get('yousignMemberId'))) {
-	$yousign_member_id = $user_params->get('yousignMemberId');
-} elseif ($session->has('youSignTmp')) {
-	$yousign_member_id = $session->get('youSignTmp');
+if (empty($yousignSession) && !empty($user_params->get('yousign_signer_id'))) {
+    $yousignSession = [];
+    $yousignSession['iframe_url'] = $user_params->get('yousign_url');
 }
 
-if (!empty($yousign_member_id)) {
-	$signature_ui = $params->get('signature_ui');
-	require JModuleHelper::getLayoutPath('mod_emundus_yousign_embed', 'default');
+if (!empty($yousignSession['iframe_url'])) {
+    require JModuleHelper::getLayoutPath('mod_emundus_yousign_embed', 'default');
 }

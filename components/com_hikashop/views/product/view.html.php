@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -61,6 +61,8 @@ class ProductViewProduct extends HikaShopView {
 		$task = hikaInput::get()->getVar('task','listing');
 		global $Itemid;
 
+		$listingQueriesToLoad = false;
+
 		if(empty($this->params)) {
 			$module_id = hikaInput::get()->getInt('module_id');
 			if($module_id) {
@@ -78,8 +80,10 @@ class ProductViewProduct extends HikaShopView {
 					$task = hikaInput::get()->getVar('from_task');
 					$Itemid = hikaInput::get()->getVar('from_itemid');
 				}
-				if(!empty($_SESSION['com_hikashop.listingQuery']))
+				if(!empty($_SESSION['com_hikashop.listingQuery'])) {
 					$this->listingQuery = $_SESSION['com_hikashop.listingQuery'];
+					$listingQueriesToLoad = true;
+				}
 			} else {
 				$this->params = new HikaParameter();
 			}
@@ -120,59 +124,58 @@ class ProductViewProduct extends HikaShopView {
 			$scrollToTop = $this->params->get('scroll_to_top', 0);
 
 			$cid = 0;
-			if(!$this->params->get('force_redirect',0)) {
-				if($option == 'com_hikashop') {
-					$cid = hikaInput::get()->getInt('cid');
-					if($cid){
-						if($ctrl != 'product') {
-							if($ctrl != 'category' || $task != 'listing') {
-								$cid = 0;
-							}
-						}elseif($task != 'listing'){
+
+			if($option == 'com_hikashop') {
+				$cid = hikaInput::get()->getInt('cid');
+				if($cid){
+					if($ctrl != 'product') {
+						if($ctrl != 'category' || $task != 'listing') {
 							$cid = 0;
 						}
-					}elseif(in_array($ctrl, array('product','category')) && $task == 'listing') {
-						global $Itemid;
-						$app = JFactory::getApplication();
-						$menus	= $app->getMenu();
-						$menu	= $menus->getActive();
-						if(empty($menu)){
-							if(!empty($Itemid)){
-								$menus->setActive($Itemid);
-								$menu	= $menus->getItem($Itemid);
-							}
+					}elseif($task != 'listing'){
+						$cid = 0;
+					}
+				}elseif(in_array($ctrl, array('product','category')) && $task == 'listing') {
+					global $Itemid;
+					$app = JFactory::getApplication();
+					$menus	= $app->getMenu();
+					$menu	= $menus->getActive();
+					if(empty($menu)){
+						if(!empty($Itemid)){
+							$menus->setActive($Itemid);
+							$menu	= $menus->getItem($Itemid);
 						}
-						if(!empty($menu->id)){
-							if(isset($menu->params)){
-								$hkParams = $menu->params->get('hk_category',false);
+					}
+					if(!empty($menu->id)){
+						if(isset($menu->params)){
+							$hkParams = $menu->params->get('hk_category',false);
+							if(!empty($hkParams->category))
+								$cid = (int)$hkParams->category;
+							else{
+								$hkParams = $menu->params->get('hk_product',false);
 								if(!empty($hkParams->category))
 									$cid = (int)$hkParams->category;
-								else{
-									$hkParams = $menu->params->get('hk_product',false);
-									if(!empty($hkParams->category))
-										$cid = (int)$hkParams->category;
-								}
 							}
-							if(empty($cid)){
-								$menuClass = hikashop_get('class.menus');
-								$menuData = $menuClass->get($menu->id);
-								if(@$menuData->hikashop_params['content_type']=='manufacturer'){
-									$new_id = 'manufacturer';
-									$class = hikashop_get('class.category');
-									$class->getMainElement($new_id);
-									$menuData->hikashop_params['selectparentlisting']=$new_id;
-								}
-								if(!empty($menuData->hikashop_params['selectparentlisting'])){
-									$cid = $menuData->hikashop_params['selectparentlisting'];
-								}
+						}
+						if(empty($cid)){
+							$menuClass = hikashop_get('class.menus');
+							$menuData = $menuClass->get($menu->id);
+							if(@$menuData->hikashop_params['content_type']=='manufacturer'){
+								$new_id = 'manufacturer';
+								$class = hikashop_get('class.category');
+								$class->getMainElement($new_id);
+								$menuData->hikashop_params['selectparentlisting']=$new_id;
+							}
+							if(!empty($menuData->hikashop_params['selectparentlisting'])){
+								$cid = $menuData->hikashop_params['selectparentlisting'];
 							}
 						}
 					}
 				}
+			}
 
-				if(empty($cid)) {
-					$ajax = false;
-				}
+			if(empty($cid)) {
+				$ajax = false;
 			}
 		} else {
 			if($config->get('ajax_filters', 1)) {
@@ -215,6 +218,19 @@ class ProductViewProduct extends HikaShopView {
 
 		if(!isset($this->listingQuery) && $config->get('hikashopListingQuery','') != '') {
 			$this->listingQuery = $config->get('hikashopListingQuery', '');
+			foreach($this->filters as $k => $filter) {
+				if($config->get('hikashopListingQuery_'.$filter->filter_namekey,'') != '') {
+					$this->filters[$k]->queryBeforeFiltering = $config->get('hikashopListingQuery_'.$filter->filter_namekey,'');
+				}
+			}
+		}
+
+		if($listingQueriesToLoad) {
+			foreach($this->filters as $k => $filter) {
+				if(!empty($_SESSION['com_hikashop.listingQuery_'.$filter->filter_namekey])) {
+					$this->filters[$k]->queryBeforeFiltering = $_SESSION['com_hikashop.listingQuery_'.$filter->filter_namekey];
+				}
+			}
 		}
 
 	}
@@ -920,8 +936,24 @@ class ProductViewProduct extends HikaShopView {
 		}
 		$select2='';
 		if(hikashop_level(2) && hikaInput::get()->getVar('hikashop_front_end_main',0) && (hikaInput::get()->getVar('task','listing') != 'show' || hikaInput::get()->getVar('force_using_filters', 0) === 1)) {
-			foreach($this->filters as $uniqueFitler){
-				$this->filterClass->addFilter($uniqueFitler, $filters,$select,$select2, $a, $b, $on, $order, $this, $this->params->get('main_div_name'));
+			$queryWithoutwithoutCurrentFilter = new stdClass();
+			$queryWithoutwithoutCurrentFilter->filters = hikashop_copy($filters);
+			$queryWithoutwithoutCurrentFilter->select = hikashop_copy($select);
+			$queryWithoutwithoutCurrentFilter->select2 = hikashop_copy($select2);
+			$queryWithoutwithoutCurrentFilter->a = hikashop_copy($a);
+			$queryWithoutwithoutCurrentFilter->b = hikashop_copy($b);
+			$queryWithoutwithoutCurrentFilter->on = hikashop_copy($on);
+			$queryWithoutwithoutCurrentFilter->order = hikashop_copy($order);
+			foreach($this->filters as $k => $uniqueFilter) {
+				if(count($this->filters) > 1) {
+					$this->filters[$k]->queryWithoutwithoutCurrentFilter = hikashop_copy($queryWithoutwithoutCurrentFilter);
+					foreach($this->filters as $k2 => $uniqueFilter2) {
+						if($k != $k2) {
+							$this->filterClass->addFilter($uniqueFilter2, $this->filters[$k]->queryWithoutwithoutCurrentFilter->filters,$this->filters[$k]->queryWithoutwithoutCurrentFilter->select,$this->filters[$k]->queryWithoutwithoutCurrentFilter->select2, $this->filters[$k]->queryWithoutwithoutCurrentFilter->a, $this->filters[$k]->queryWithoutwithoutCurrentFilter->b, $this->filters[$k]->queryWithoutwithoutCurrentFilter->on, $this->filters[$k]->queryWithoutwithoutCurrentFilter->order, $this, $this->params->get('main_div_name'));
+						}
+					}
+				}
+				$this->filterClass->addFilter($uniqueFilter, $filters,$select,$select2, $a, $b, $on, $order, $this, $this->params->get('main_div_name'));
 			}
 		}
 
@@ -993,6 +1025,15 @@ class ProductViewProduct extends HikaShopView {
 		if(hikashop_level(2) && hikaInput::get()->getVar('hikashop_front_end_main',0) && hikaInput::get()->getVar('task','listing')!='show'){
 			$config->set('hikashopListingQuery', $query);
 			$this->assignRef('listingQuery', $query);
+
+			foreach($this->filters as $k => $filter) {
+				if(!empty($filter->queryWithoutwithoutCurrentFilter)) {
+					$this->filters[$k]->queryBeforeFiltering = $filter->queryWithoutwithoutCurrentFilter->select2.' FROM '.$filter->queryWithoutwithoutCurrentFilter->b.$filter->queryWithoutwithoutCurrentFilter->a.$filter->queryWithoutwithoutCurrentFilter->on.' WHERE ('.implode(') AND (',$filter->queryWithoutwithoutCurrentFilter->filters).')';
+					$config->set('hikashopListingQuery_'.$filter->filter_namekey, $this->filters[$k]->queryBeforeFiltering);
+					$this->assignRef('hikashopListing_'.$filter->filter_namekey, $this->filters[$k]->queryBeforeFiltering);
+					$_SESSION['com_hikashop.listingQuery_'.$filter->filter_namekey] = $this->filters[$k]->queryBeforeFiltering;
+				}
+			}
 		}
 
 
@@ -1305,6 +1346,9 @@ class ProductViewProduct extends HikaShopView {
 		if(empty($variants) || !count($variants))
 			return;
 
+		$database->setQuery('SELECT * FROM #__hikashop_variant WHERE variant_characteristic_id IN ('.implode(',', array_keys($this->characteristicsToBeDisplayed)).') AND variant_product_id IN ('.implode(',',$product_ids).') ORDER BY ordering ASC');
+		$links = $database->loadObjectList();
+
 		$database->setQuery('SELECT * FROM #__hikashop_variant AS v LEFT JOIN #__hikashop_characteristic AS c ON v.variant_characteristic_id=c.characteristic_id WHERE characteristic_parent_id IN ('.implode(',', array_keys($this->characteristicsToBeDisplayed)).') AND variant_product_id IN ('.implode(',',array_keys($variants)).') ORDER BY c.characteristic_ordering ASC');
 		$values = $database->loadObjectList();
 
@@ -1314,15 +1358,29 @@ class ProductViewProduct extends HikaShopView {
 		foreach($values as $value) {
 			foreach($this->rows as $k => $row) {
 				if($variants[$value->variant_product_id]->product_parent_id == $row->product_id) {
+					$ordering = 0;
+					foreach($links as $link) {
+						if($link->variant_product_id == $row->product_id && $link->variant_characteristic_id == $value->characteristic_parent_id) {
+							$ordering = $link->ordering;
+							break;
+						}
+					}
+					if(empty($ordering))
+						$ordering = $value->characteristic_ordering.'_'.$value->characteristic_parent_id;
 					if(!isset($this->rows[$k]->characteristics))
 						$this->rows[$k]->characteristics = array();
-					if(!isset($this->rows[$k]->characteristics[$value->characteristic_parent_id]))
-						$this->rows[$k]->characteristics[$value->characteristic_parent_id] = hikashop_copy($this->characteristicsToBeDisplayed[$value->characteristic_parent_id]);
-					if(!isset($this->rows[$k]->characteristics[$value->characteristic_parent_id]->availableValues))
-						$this->rows[$k]->characteristics[$value->characteristic_parent_id]->availableValues = array();
-					$this->rows[$k]->characteristics[$value->characteristic_parent_id]->availableValues[$value->characteristic_id] = $value;
+					if(!isset($this->rows[$k]->characteristics[$ordering]))
+						$this->rows[$k]->characteristics[$ordering] = hikashop_copy($this->characteristicsToBeDisplayed[$value->characteristic_parent_id]);
+					if(!isset($this->rows[$k]->characteristics[$ordering]->availableValues))
+						$this->rows[$k]->characteristics[$ordering]->availableValues = array();
+					$this->rows[$k]->characteristics[$ordering]->availableValues[$value->characteristic_id] = $value;
 					break;
 				}
+			}
+		}
+		foreach($this->rows as $k => $row) {
+			if(isset($this->rows[$k]->characteristics)) {
+				ksort($this->rows[$k]->characteristics);
 			}
 		}
 	}
@@ -1376,13 +1434,6 @@ class ProductViewProduct extends HikaShopView {
 
 		$moduleHelper = hikashop_get('helper.module');
 		$this->modules = $moduleHelper->setModuleData($config->get('product_show_modules', ''));
-		if(!empty($this->modules)) {
-			$app->triggerEvent('onPrepareModuleList', array(&$this->modules));
-
-			$app->triggerEvent('onAfterModuleList', array(&$this->modules));
-
-			$app->triggerEvent('onAfterCleanModuleList', array(&$this->modules));
-		}
 
 		$currencyClass = hikashop_get('class.currency');
 		$this->assignRef('currencyHelper',$currencyClass);
@@ -1696,6 +1747,7 @@ class ProductViewProduct extends HikaShopView {
 		if(!empty($tmpl))
 			$url_itemid = '&tmpl='.$tmpl;
 		$this->assignRef('url_itemid', $url_itemid);
+		$this->assignRef('itemid', $url_itemid);
 
 		if(empty($menu) || !(strpos($menu->link,'option='.HIKASHOP_COMPONENT) !== false && strpos($menu->link,'view=product') !== false && strpos($menu->link,'layout=show') !== false)) {
 			$pathway = $app->getPathway();
@@ -2623,6 +2675,18 @@ class ProductViewProduct extends HikaShopView {
 		$menu = $app->getMenu()->getActive();
 		if(!empty($menu) && method_exists($menu, 'getParams') && $menu->getParams()->get('show_page_heading'))
 			$this->title = $menu->getParams()->get('page_heading');
+		if(!empty($menu) && method_exists($menu, 'getParams')) {
+			$params = $menu->getParams();
+			$robots = $params->get('robots');
+			if (!$robots) {
+				$jconfig = JFactory::getConfig();
+				$robots = $jconfig->get('robots', '');
+			}
+			if($robots) {
+				$doc = JFactory::getDocument();
+				$doc->setMetadata('robots', $robots);
+			}
+		}
 
 		$imageHelper = hikashop_get('helper.image');
 		$this->assignRef('imageHelper',$imageHelper);
@@ -2846,6 +2910,7 @@ window.hikashop.ready(function(){
 			$main->variants =array($element);
 			$element = $main;
 			$product_id = $element->product_id;
+			$element->variants[0]->characteristics = array();
 
 			$ids = array((int)$element->variants[0]->product_id, (int)$product_id);
 			$query = 'SELECT a.*,b.* FROM '.hikashop_table('variant').' AS a LEFT JOIN '.hikashop_table('characteristic').' AS b ON a.variant_characteristic_id=b.characteristic_id WHERE a.variant_product_id IN ('.implode(',',$ids).') ORDER BY a.ordering ASC, b.characteristic_value ASC';
@@ -2857,6 +2922,9 @@ window.hikashop.ready(function(){
 				foreach($characteristics as $characteristic){
 					if($product_id==$characteristic->variant_product_id){
 						$mainCharacteristics[$product_id][$characteristic->characteristic_parent_id][$characteristic->characteristic_id]=$characteristic;
+					}
+					if($element->variants[0]->product_id==$characteristic->variant_product_id){
+						$element->variants[0]->characteristics[]=$characteristic;
 					}
 				}
 				$cartClass = hikashop_get('class.cart');

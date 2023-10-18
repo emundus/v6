@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -118,7 +118,7 @@ else {
 	if(@$this->field->field_categories == 'all') $this->field->field_categories = '';
 	echo  $this->nameboxType->display(
 		'category',
-		explode(',',trim(@$this->field->field_categories,',')),
+		explode(',',trim((string)@$this->field->field_categories,',')),
 		hikashopNameboxType::NAMEBOX_MULTIPLE,
 		'category',
 		array(
@@ -144,7 +144,7 @@ else {
 		<dd<?php echo $displayBlock; ?>><?php
 	echo  $this->nameboxType->display(
 		'data[field][field_products]',
-		explode(',',trim(@$this->field->field_products,',')),
+		explode(',',trim((string)@$this->field->field_products,',')),
 		hikashopNameboxType::NAMEBOX_MULTIPLE,
 		'product',
 		array(
@@ -178,7 +178,7 @@ else {
 	if(@$this->field->field_shipping_id == 'all') $this->field->field_shipping_id = '';
 	echo  $this->nameboxType->display(
 		'data[field][field_shipping_id]',
-		explode(',',trim(@$this->field->field_shipping_id,',')),
+		explode(',',trim((string)@$this->field->field_shipping_id,',')),
 		hikashopNameboxType::NAMEBOX_MULTIPLE,
 		'shipping_methods',
 		array(
@@ -195,7 +195,7 @@ else {
 	if(@$this->field->field_payment_id == 'all') $this->field->field_payment_id = '';
 	echo  $this->nameboxType->display(
 		'data[field][field_payment_id]',
-		explode(',',trim(@$this->field->field_payment_id,',')),
+		explode(',',trim((string)@$this->field->field_payment_id,',')),
 		hikashopNameboxType::NAMEBOX_MULTIPLE,
 		'payment_methods',
 		array(
@@ -405,6 +405,14 @@ else {
 		?></label></dt>
 		<dd data-hk-display="size" class="input_large">
 			<input type="text" id="field_size" name="field_options[size]" value="<?php echo $this->escape(@$this->field->field_options['size']); ?>"/>
+		</dd>
+
+
+		<dt data-hk-display="display_format"><label for="display_format"><?php
+			echo JText::_('FORMAT');
+		?></label></dt>
+		<dd data-hk-display="display_format" class="input_large">
+			<input type="text" id="display_format" placeholder="{value}" name="field_options[display_format]" value="<?php echo $this->escape(@$this->field->field_options['display_format']); ?>"/>
 		</dd>
 
 		<dt data-hk-display="format"><label for="field_format"><?php

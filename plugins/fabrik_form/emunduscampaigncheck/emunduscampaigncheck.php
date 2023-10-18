@@ -125,10 +125,21 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
 
             // Cannot create new campaigns at all.
             case 0:
-                JLog::add('User: '.$user->id.' already has a file.', JLog::ERROR, 'com_emundus.campaign-check');
-                $this->getModel()->formErrorMsg = '';
-                $this->getModel()->getForm()->error = JText::_('CANNOT_HAVE_MULTI_FILE');
-	            $app->redirect('index.php', JText::_('CANNOT_HAVE_MULTI_FILE'));
+                $query->select('COUNT('.$db->quoteName('id').')')
+                    ->from($db->quoteName('#__emundus_campaign_candidature'))
+                    ->where($db->quoteName('applicant_id') . ' = ' . $user->id)
+                    ->andWhere($db->quoteName('published').' <> '.$db->quote('-1'));
+
+                $db->setQuery($query);
+                $files = $db->loadResult();
+
+                if ($files > 0) {
+                    JLog::add('User: '.$user->id.' already has a file.', JLog::ERROR, 'com_emundus.campaign-check');
+                    $this->getModel()->formErrorMsg = '';
+                    $this->getModel()->getForm()->error = JText::_('CANNOT_HAVE_MULTI_FILE');
+                    $app->redirect('index.php', JText::_('CANNOT_HAVE_MULTI_FILE'));
+                }
+
                 break;
 
             // If the applicant can only have one file per campaign.
@@ -141,15 +152,16 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
                 $query
                     ->select($db->quoteName('campaign_id'))
                     ->from($db->quoteName('#__emundus_campaign_candidature'))
-                    ->where($db->quoteName('applicant_id') . ' = ' . $user->id);
-
+                    ->where($db->quoteName('applicant_id') . ' = ' . $user->id)
+                    ->andWhere($db->quoteName('published').' <> '.$db->quote('-1'))
+                    ->andWhere($db->quoteName('campaign_id') . ' = ' . $campaign_id);
                 try {
 
                     $db->setQuery($query);
 
                     $user_campaigns = $db->loadColumn();
 
-                    $query
+                    /*$query
                         ->clear()
                         ->select($db->quoteName('id'))
                         ->from($db->quoteName('#__emundus_setup_campaigns'))
@@ -158,8 +170,8 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
                         ->andWhere($db->quoteName('start_date') . ' <= ' . $db->quote($now))
                         ->andWhere($db->quoteName('id') . ' NOT IN (' . implode(',', $user_campaigns). ')');
 
-                    $db->setQuery($query);
-                    if (!in_array($campaign_id, $db->loadColumn())) {
+                    $db->setQuery($query);*/
+                    if (!empty($user_campaigns)) {
                         JLog::add('User: '.$user->id.' already has a file for campaign id: '.$campaign_id, JLog::ERROR, 'com_emundus.campaign-check');
                         $this->getModel()->formErrorMsg = '';
                         $this->getModel()->getForm()->error = JText::_('USER_HAS_FILE_FOR_CAMPAIGN');

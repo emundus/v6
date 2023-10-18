@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -145,6 +145,8 @@ class CartViewCart extends HikaShopView {
 				$cart = $this->cartClass->getFullCart($cart_id);
 		} else
 			$cart = $this->cartClass->getFullCart($cart_id);
+		if(!empty($cart) && !empty($cart->cart_type))
+			$type = $cart->cart_type;
 
 		$this->assignRef('cart', $cart);
 
@@ -168,6 +170,17 @@ class CartViewCart extends HikaShopView {
 			if(empty($title))
 				$title = $menu->title;
 			hikashop_setPageTitle($title);
+
+			$robots = $params->get('robots');
+			if (!$robots) {
+				$jconfig = JFactory::getConfig();
+				$robots = $jconfig->get('robots', '');
+			}
+			if($robots) {
+				$doc = JFactory::getDocument();
+				$doc->setMetadata('robots', $robots);
+			}
+
 		} else {
 			if($show_page_heading)
 				$this->title = JText::_($title);
@@ -611,6 +624,16 @@ class CartViewCart extends HikaShopView {
 			if(empty($title))
 				$title = $menu->title;
 			hikashop_setPageTitle($title);
+			$robots = $params->get('robots');
+			if (!$robots) {
+				$jconfig = JFactory::getConfig();
+				$robots = $jconfig->get('robots', '');
+			}
+			if($robots) {
+				$doc = JFactory::getDocument();
+				$doc->setMetadata('robots', $robots);
+			}
+
 		} else {
 			$title = ($cart_type == 'wishlist') ? 'WISHLISTS': 'CARTS';
 			if($show_page_heading)

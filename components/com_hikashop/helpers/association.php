@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -72,7 +72,8 @@ class HikashopHelperAssociation {
 						$p = $params->get('hk_category');
 						if(empty($p->selectparentlisting) && !empty($p->category))
 							$p->selectparentlisting = $p->category;
-						$cid_in_menu_item = $p->selectparentlisting;
+						if(!empty($p->selectparentlisting))
+							$cid_in_menu_item = $p->selectparentlisting;
 						if(!empty($cid_in_menu_item) && $cid_in_menu_item == $cid) {
 							$add_cid = false;
 						}
@@ -101,7 +102,8 @@ class HikashopHelperAssociation {
 							$p = $params->get('hk_category');
 							if(empty($p->selectparentlisting) && !empty($p->category))
 								$p->selectparentlisting = $p->category;
-							$cid_in_menu_item = $p->selectparentlisting;
+							if(!empty($p->selectparentlisting))
+								$cid_in_menu_item = $p->selectparentlisting;
 						}
 						if(!empty($cid_in_menu_item) && $cid_in_menu_item == $cid) {
 							$add_cid = false;
@@ -139,7 +141,11 @@ class HikashopHelperAssociation {
 					$lang_url .= '&name='.$name;
 				}
 			}
-			$result[$language->lang_code] = $lang_url . (!empty($item_id) ? '&Itemid='.$item_id : ''). '&lang='.substr($language->lang_code, 0,2);
+			$sef = substr($language->lang_code, 0,2);
+			if(!empty($language->sef))
+				$sef = $language->sef;
+
+			$result[$language->lang_code] = $lang_url . (!empty($item_id) ? '&Itemid='.$item_id : ''). '&lang='.$sef;
 		}
 
 		return $result;

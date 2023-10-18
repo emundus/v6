@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -105,14 +105,8 @@ class ProductController extends hikashopController {
 	}
 
 	public function updatecart() {
-		$product_id = hikaInput::get()->getInt('cid');
-		$productClass = hikashop_get('class.product');
-		$product = $productClass->get($product_id);
-		$menusClass = hikashop_get('class.menus');
-		$id = $menusClass->loadAMenuItemId('','');
-		if(!empty($id))
-			$id = '&Itemid='.$id;
-		echo '<textarea style="width:100%" rows="5"><a class="hikashop_html_add_to_cart_link" href="'. hikashop_completeLink('product&task=updatecart&quantity=1&cid='.$product_id.$id, false, false, false, true).'">'.JText::_('ADD_TO_CART').'</a></textarea>';
+		hikaInput::get()->set('layout', 'updatecart');
+		parent::display();
 	}
 
 	public function save() {
@@ -588,12 +582,19 @@ class ProductController extends hikashopController {
 		$price = hikaInput::get()->getVar('price');
 		$price=hikashop_toFloat($price);
 		$tax_id = hikaInput::get()->getInt('tax_id');
+		$rate_namekey = hikaInput::get()->getString('rate_namekey');
 		$conversion = hikaInput::get()->getInt('conversion');
 		$currency = hikaInput::get()->getInt('currency');
 		$currencyClass = hikashop_get('class.currency');
-		$config =& hikashop_config();
+		$config = hikashop_config();
 		$main_tax_zone = explode(',',$config->get('main_tax_zone',1346));
 		$newprice = $price;
+		if(empty($tax_id) && !empty($rate_namekey)) {
+			$taxClass = hikashop_get('class.tax');
+			$tax = $taxClass->get($rate_namekey);
+			if($tax)
+				$tax_id = array($tax);
+		}
 		if(count($main_tax_zone)&&!empty($tax_id)&&!empty($price)&&!empty($main_tax_zone)){
 			$function = 'getTaxedPrice';
 			if($conversion) {

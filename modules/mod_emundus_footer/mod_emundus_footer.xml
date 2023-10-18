@@ -98,6 +98,15 @@
 					<option value="1">JYES</option>
 					<option value="0">JNO</option>
 				</field>
+				<field name="mod_emundus_footer_legal_info_alias"
+						type="sql"
+						query="SELECT id, title, alias FROM #__menu WHERE menutype = 'topmenu' AND published = 1"
+						default='mentions-legales'
+						label="MOD_EM_FOOTER_LEGAL_INFO_LINK"
+						showon="mod_emundus_footer_legal_info:1"
+						key_field="alias"
+						value_field="title">
+				</field>
 
 				<field
 						name="mod_emundus_footer_data_privacy"
@@ -109,6 +118,15 @@
 						filter="integer">
 					<option value="1">JYES</option>
 					<option value="0">JNO</option>
+				</field>
+				<field name="mod_emundus_footer_data_privacy_alias"
+					   type="sql"
+					   query="SELECT id, title, alias FROM #__menu WHERE menutype = 'topmenu' AND published = 1"
+					   default='politique-de-confidentialite-des-donnees'
+					   label="MOD_EM_FOOTER_DATA_PRIVACY_LINK"
+					   showon="mod_emundus_footer_data_privacy:1"
+					   key_field="alias"
+					   value_field="title">
 				</field>
 
 				<field
@@ -122,6 +140,15 @@
 					<option value="1">JYES</option>
 					<option value="0">JNO</option>
 				</field>
+				<field name="mod_emundus_footer_rights_alias"
+					   type="sql"
+					   query="SELECT id, title, alias FROM #__menu WHERE menutype = 'topmenu' AND published = 1"
+					   default='gestion-des-droits'
+					   label="MOD_EM_FOOTER_RIGHTS_LINK"
+					   showon="mod_emundus_footer_rights:1"
+					   key_field="alias"
+					   value_field="title">
+				</field>
 
 				<field
 						name="mod_emundus_footer_cookies"
@@ -133,6 +160,36 @@
 						filter="integer">
 					<option value="1">JYES</option>
 					<option value="0">JNO</option>
+				</field>
+				<field name="mod_emundus_footer_cookies_alias"
+					   type="sql"
+					   query="SELECT id, title, alias FROM #__menu WHERE menutype = 'topmenu' AND published = 1"
+					   default='gestion-des-cookies'
+					   label="MOD_EM_FOOTER_COOKIES_LINK"
+					   showon="mod_emundus_footer_cookies:1"
+					   key_field="alias"
+					   value_field="title">
+				</field>
+
+				<field
+						name="mod_emundus_footer_accessibility"
+						type="radio"
+						label="MOD_EM_FOOTER_RGAA_LINK_SWITCH"
+						description="MOD_EM_FOOTER_RGAA_LINK_SWITCH"
+						class="btn-group btn-group-yesno"
+						default="0"
+						filter="integer">
+					<option value="1">JYES</option>
+					<option value="0">JNO</option>
+				</field>
+				<field name="mod_emundus_footer_accessibility_alias"
+					   type="sql"
+					   query="SELECT id, title, alias FROM #__menu WHERE menutype = 'topmenu' AND published = 1"
+					   default='accessibilite'
+					   label="MOD_EM_FOOTER_RGAA_LINK"
+					   showon="mod_emundus_footer_accessibility:1"
+					   key_field="alias"
+					   value_field="title">
 				</field>
 
 			</fieldset>

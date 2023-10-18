@@ -1,1 +1,0 @@
--- ALTER TABLE `#__miniorange_saml_config` ADD COLUMN IF NOT EXISTS `user_field_attributes` VARCHAR(255) NOT NULL;

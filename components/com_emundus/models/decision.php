@@ -39,6 +39,10 @@ class EmundusModelDecision extends JModelList
 
 		parent::__construct();
 
+		if(!class_exists('EmundusModelFiles')) {
+			include_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+		}
+
 		$this->_files = new EmundusModelFiles;
         $db = JFactory::getDbo();
 		$mainframe = JFactory::getApplication();
@@ -203,24 +207,55 @@ class EmundusModelDecision extends JModelList
                     $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
                     $this->_elements_default[] = $query;
 
-		        }elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton') {
+		        } elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'checkbox') {
+					if (@$group_params->repeat_group_button == 1) {
+						$element_attribs = json_decode($def_elmt->element_attribs);
+						$select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
+						foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+							$select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+						}
+						$select = str_replace($def_elmt->tab_name . '.' . $def_elmt->element_name,'GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.' SEPARATOR ", ")',$select);
 
-		        	if (@$group_params->repeat_group_button == 1) {
-                        $this->_elements_default[] = '(
-                                    SELECT  GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.' SEPARATOR ", ")
+						$this->_elements_default[] = '(
+                                    SELECT ' . $select . '
                                     FROM '.$def_elmt->table_join.'
                                     WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
                                   ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
-                    } else {
-                        $element_attribs = json_decode($def_elmt->element_attribs);
-                        $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
-                        foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-                            $select = 'REPLACE(' . $select . ', "' . $value . '", "' .
-                                $element_attribs->sub_options->sub_labels[$key] . '")';
-                        }
-                        $this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
-                    }
+					} else {
+						$element_attribs = json_decode($def_elmt->element_attribs);
+						$select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
+						foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+							$select = 'REPLACE(' . $select . ', "' . $value . '", "' .
+								JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+						}
+						$this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
+					}
+				} elseif ($def_elmt->element_plugin == 'radiobutton') {
+					if (!empty($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
+						$element_attribs = json_decode($def_elmt->element_attribs);
+						$select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
+						foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+							$select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+						}
+						$select = str_replace($def_elmt->tab_name . '.' . $def_elmt->element_name,'GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.' SEPARATOR ", ")',$select);
+						$this->_elements_default[] = '(
+                                    SELECT ' . $select . '
+                                    FROM '.$def_elmt->table_join.'
+                                    WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
+                                  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
+					} else {
+						$element_attribs = json_decode($def_elmt->element_attribs);
 
+						$element_replacement = $def_elmt->tab_name . '___' . $def_elmt->element_name;
+						$select = $def_elmt->tab_name . '.' . $def_elmt->element_name . ' AS ' . $db->quote($element_replacement) . ', CASE ';
+						foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+							$select .= ' WHEN ' . $def_elmt->tab_name . '.' . $def_elmt->element_name . ' = ' . $db->quote($value) . ' THEN ' .  $db->quote(JText::_(addslashes($element_attribs->sub_options->sub_labels[$key]))) ;
+						}
+						$select .= ' ELSE ' . $def_elmt->tab_name . '.' . $def_elmt->element_name;
+						$select .= ' END AS ' . $db->quote($element_replacement);
+
+						$this->_elements_default[] = $select;
+					}
 				} elseif ($def_elmt->element_plugin == 'yesno') {
 					if (@$group_params->repeat_group_button == 1) {
 						$this->_elements_default[] = '(
@@ -1349,6 +1384,107 @@ class EmundusModelDecision extends JModelList
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
     }
+
+	public function getDecisionUrl($fnum, $formid, $rowid = 0, $student_id = 0, $redirect = 0, $view = 'form') {
+		$url = 'index.php';
+		$message = '';
+
+		try {
+			$app = JFactory::getApplication();
+			$db = JFactory::getDBO();
+			$query = $db->getQuery(true);
+			$user =  JFactory::getUser();
+
+			if(is_array($fnum)){
+				$fnum = $fnum['value'];
+			}
+			if(is_array($student_id)){
+				$student_id = $student_id['value'];
+			}
+
+			$create_access = EmundusHelperAccess::asAccessAction(29, 'c', $user->id, $fnum);
+			$update_access = EmundusHelperAccess::asAccessAction(29, 'u', $user->id, $fnum);
+			$read_access = EmundusHelperAccess::asAccessAction(29, 'r', $user->id, $fnum);
+
+			$offset = $app->get('offset', 'UTC');
+			$date_time = new DateTime(gmdate('Y-m-d H:i:s'), new DateTimeZone('UTC'));
+			$date_time = $date_time->setTimezone(new DateTimeZone($offset));
+			$now = $date_time->format('Y-m-d H:i:s');
+
+			$params = JComponentHelper::getParams('com_emundus');
+
+			$query->select('ecc.campaign_id,ecc.applicant_id as student_id')
+				->from($db->quoteName('#__emundus_campaign_candidature','ecc'))
+				->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
+			$db->setQuery($query);
+			$decision_details = $db->loadObject();
+
+			if(empty($student_id)) {
+				$student_id = $decision_details->student_id;
+			}
+
+			// If we try to open an decision with rowid in url
+			if(!empty($rowid) ) {
+				// If we open an decision
+				$query->clear()
+					->select('id,user')
+					->from($db->quoteName('#__emundus_final_grade'))
+					->where($db->quoteName('id') . ' = ' . $db->quote($rowid));
+			}
+			else {
+				$query->clear()
+					->select('id,user')
+					->from($db->quoteName('#__emundus_final_grade'))
+					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+			}
+			$db->setQuery($query);
+			$decision = $db->loadObject();
+
+			$form_url = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&jos_emundus_final_grade___student_id[value]='.$student_id.'&jos_emundus_final_grade___campaign_id[value]='.$decision_details->campaign_id.'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$student_id.'&tmpl=component&iframe=1';
+			$details_url = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&jos_emundus_final_grade___student_id[value]='.$student_id.'&jos_emundus_final_grade___campaign_id[value]='.$decision_details->campaign_id.'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$student_id.'&tmpl=component&iframe=1';
+
+			if(!empty($decision)) {
+				$form_url = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&jos_emundus_final_grade___student_id[value]='.$student_id.'&jos_emundus_final_grade___campaign_id[value]='.$decision_details->campaign_id.'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$student_id.'&tmpl=component&iframe=1&rowid='.$decision->id;
+				$details_url = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&jos_emundus_final_grade___student_id[value]='.$student_id.'&jos_emundus_final_grade___campaign_id[value]='.$decision_details->campaign_id.'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$student_id.'&tmpl=component&iframe=1&rowid='.$decision->id;
+
+				if ($update_access || ($create_access && $decision->user == $user->id)) {
+					$url = $view == 'form' ? $form_url : $details_url;
+				}
+				elseif ($read_access){
+					$url = $details_url;
+				}
+				// If we do not have any rights on decision
+				else {
+					$message = 'COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS';
+					$url = '';
+				}
+			}
+			// If no decision found but period is not started or passed
+			if($create_access) {
+				$url = $view == 'form' ? $form_url : $details_url;
+			}
+			elseif ($read_access) {
+				$url = $details_url;
+			}
+			// I don't have rights to do anything
+			else {
+				$message = 'COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS';
+				$url = '';
+			}
+		} catch (Exception $e) {
+			$message = 'COM_EMUNDUS_ERROR';
+			$url = '';
+			JLog::add('Cannot get decision URL with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
+
+		if(!empty($url)){
+			if($redirect === 1) {
+				$url .= '&r=1';
+			}
+		}
+
+		return ['url' => $url, 'message' => $message];
+	}
 }
 
 ?>

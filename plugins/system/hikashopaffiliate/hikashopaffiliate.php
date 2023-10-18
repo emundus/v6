@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -114,6 +114,24 @@ class plgSystemHikashopaffiliate extends JPlugin {
 
 		if(!empty($latest))
 			$user->user_params->partner_click_fee = 0;
+
+
+		if(bccomp(sprintf('%F',$user->user_params->partner_click_fee),0,5) && $config->get('provide_points_instead_of_fees',0)) {
+			$plugin = hikashop_import('hikashop', 'userpoints');
+			$ids = array();
+			$plugin->listPlugins($plugin->name, $ids, false, $partner_id);
+			foreach($ids as $id) {
+				$plugin->pluginParams($id);
+				$points = round($user->user_params->partner_click_fee);
+				$order = new stdClass();
+				$order->order_user_id = $partner_id;
+				$data = JTex::_('PARTNER_CLICK_FEE').' ( '.JText::_('HKASHOP_USER_ID').': '.$partner_id.' )';
+				if($plugin->addPoints($points, $order, $data, null)) {
+					$user->user_params->partner_click_fee = 0;
+					break;
+				}
+			}
+		}
 
 		$click = new stdClass();
 		$click->click_partner_id = $partner_id;
@@ -246,6 +264,24 @@ class plgSystemHikashopaffiliate extends JPlugin {
 
 			$order->order_partner_price = $fees + $user->user_params->partner_flat_fee;
 			$order->order_partner_currency_id = $user->user_currency_id;
+
+
+			if(bccomp(sprintf('%F',$order->order_partner_price),0,5) && $config->get('provide_points_instead_of_fees',0)) {
+				$plugin = hikashop_import('hikashop', 'userpoints');
+				$ids = array();
+				$plugin->listPlugins($plugin->name, $ids, false, $partner_id);
+				foreach($ids as $id) {
+					$plugin->pluginParams($id);
+					$points = round($order->order_partner_price);
+					$pointsOrder = new stdClass();
+					$pointsOrder->order_user_id = $partner_id;
+					$data = JTex::_('PARTNER_CLICK_FEE').' ( '.JText::_('HKASHOP_USER_ID').': '.$partner_id.' )';
+					if($plugin->addPoints($points, $pointsOrder, $data, null)) {
+						$order->order_partner_price = 0;
+						break;
+					}
+				}
+			}
 		}
 
 		return true;
@@ -323,7 +359,7 @@ class plgSystemHikashopaffiliate extends JPlugin {
 		if(empty($partner->user_partner_activated))
 			return true;
 
-		$config =& hikashop_config();
+		$config = hikashop_config();
 		if(empty($partner->user_params->user_custom_fee)) {
 			$partner->user_params->partner_lead_fee = $config->get('partner_lead_fee',0);
 			$partner->user_params->partner_fee_currency = $config->get('partner_currency',1);
@@ -342,7 +378,26 @@ class plgSystemHikashopaffiliate extends JPlugin {
 		$latest = $clickClass->getLatest($partner_id,$ip,$config->get('lead_min_delay',24));
 
 		if($config->get('add_partner_to_user_account',0) || (empty($latest) && bccomp(sprintf('%F',$partner->user_params->partner_lead_fee),0,5))) {
+
 			$userDataInDb = $userClass->get($user_id,'cms');
+
+			if(!empty($userDataInDb->user_id)&& bccomp(sprintf('%F',$partner->user_params->partner_lead_fee),0,5) && $config->get('provide_points_instead_of_fees',0)) {
+				$plugin = hikashop_import('hikashop', 'userpoints');
+				$ids = array();
+				$plugin->listPlugins($plugin->name, $ids, false, $userDataInDb->user_id);
+				foreach($ids as $id) {
+					$plugin->pluginParams($id);
+					$points = round($partner->user_params->partner_lead_fee);
+					$order = new stdClass();
+					$order->order_user_id = $userDataInDb->user_id;
+					$data = JTex::_('PARTNER_LEAD_FEE').' ( '.JText::_('HKASHOP_USER_ID').': '.$userDataInDb->user_id.' )';
+					if($plugin->addPoints($points, $order, $data, null)) {
+						$partner->user_params->partner_lead_fee = 0;
+						break;
+					}
+				}
+			}
+
 			$userData = new stdClass();
 			$userData->user_id = @$userDataInDb->user_id;
 			$userData->user_cms_id = $user_id;

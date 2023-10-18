@@ -102,43 +102,47 @@ class EmundusModelChecklist extends JModelList
 	}
 
 	function getAttachmentsList() {
+		$attachments = [];
 
-        if (!empty($this->_user->campaign_id)) {
-			$query = 'SELECT attachments.*, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, profiles.mandatory as mandatory, profiles.duplicate as duplicate
+		if (!empty($this->_user->profile)) {
+			if (!empty($this->_user->campaign_id)) {
+				$query = 'SELECT attachments.*, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, profiles.mandatory as mandatory, profiles.duplicate as duplicate, profiles.has_sample, profiles.sample_filepath
 					FROM #__emundus_setup_attachments AS attachments
 						INNER JOIN #__emundus_setup_attachment_profiles AS profiles ON attachments.id = profiles.attachment_id
 						LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.user_id = '.$this->_user->id.'  AND fnum like '.$this->_db->Quote($this->_user->fnum).'
 					WHERE (profiles.campaign_id = '.$this->_user->campaign_id.' OR profiles.profile_id ='.$this->_user->profile.') AND profiles.displayed = 1
 					GROUP BY attachments.id
 					ORDER BY profiles.mandatory DESC, profiles.ordering ASC';
-            $this->_db->setQuery($query);
-            $attachments = $this->_db->loadObjectList();
-        }
+				$this->_db->setQuery($query);
+				$attachments = $this->_db->loadObjectList();
+			}
 
-        if (empty($attachments)) {
-            $query = 'SELECT attachments.id, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, attachments.nbmax, attachments.value, attachments.lbl, attachments.description, attachments.allowed_types, profiles.mandatory, profiles.duplicate
+			if (empty($attachments)) {
+				$query = 'SELECT attachments.id, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, attachments.nbmax, attachments.value, attachments.lbl, attachments.description, attachments.allowed_types, profiles.mandatory, profiles.duplicate,  profiles.has_sample, profiles.sample_filepath
 					FROM #__emundus_setup_attachments AS attachments
 						INNER JOIN #__emundus_setup_attachment_profiles AS profiles ON attachments.id = profiles.attachment_id
 						LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.user_id = '.$this->_user->id.'  AND fnum like '.$this->_db->Quote($this->_user->fnum).'
 					WHERE profiles.profile_id = '.$this->_user->profile.' AND profiles.displayed = 1 AND profiles.campaign_id IS NULL
 					GROUP BY attachments.id
 					ORDER BY profiles.mandatory DESC, attachments.ordering ASC';
-            $this->_db->setQuery($query);
-            $attachments = $this->_db->loadObjectList();
-        }
-
-		foreach ($attachments as $attachment) {
-			if ($attachment->nb > 0) {
-
-				$query = 'SELECT * FROM #__emundus_uploads WHERE user_id = '.$this->_user->id.' AND attachment_id = '.$attachment->id. ' AND fnum like '.$this->_db->Quote($this->_user->fnum);
 				$this->_db->setQuery($query);
-				$attachment->liste = $this->_db->loadObjectList();
+				$attachments = $this->_db->loadObjectList();
+			}
 
-			} elseif ($attachment->mandatory == 1) {
-				$this->_attachments = 1;
-				$this->_need = $this->_forms=1?1:0;
+			foreach ($attachments as $attachment) {
+				if ($attachment->nb > 0) {
+
+					$query = 'SELECT * FROM #__emundus_uploads WHERE user_id = '.$this->_user->id.' AND attachment_id = '.$attachment->id. ' AND fnum like '.$this->_db->Quote($this->_user->fnum);
+					$this->_db->setQuery($query);
+					$attachment->liste = $this->_db->loadObjectList();
+
+				} elseif ($attachment->mandatory == 1) {
+					$this->_attachments = 1;
+					$this->_need = $this->_forms=1?1:0;
+				}
 			}
 		}
+
 		return $attachments;
 	}
 
@@ -233,43 +237,6 @@ class EmundusModelChecklist extends JModelList
 		} catch (Exception $e) {
 			JLog::add('Error in model/checklist at query : '.$query, JLog::ERROR, 'com_emundus');
 		}
-	}
-
-	/**
-	 * Set filename for uploaded attachment send by applicant
-     * @param string $file filename received
-     * @param string $lbl system name defined in emundus_setup_attachments
-     * @param array $fnumInfos infos from fnum
-     * @return string
-     */
-	function setAttachmentName(string $file, string $lbl, array $fnumInfos): string {
-
-		$file_array = explode(".", $file);
-
-		$eMConfig = JComponentHelper::getParams('com_emundus');
-		$applicant_file_name = $eMConfig->get('applicant_file_name', null);
-
-		if (!empty($applicant_file_name)) {
-
-			require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-			$m_emails = new EmundusModelEmails;
-
-			$tags = $m_emails->setTags($fnumInfos['applicant_id'], null, $fnumInfos['fnum'], '', $applicant_file_name);
-			$application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $applicant_file_name);
-			$application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnumInfos['fnum']));
-
-			// Format filename
-			$application_form_name = $m_emails->stripAccents($application_form_name);
-			$application_form_name = preg_replace('/[^A-Za-z0-9 _.-]/','', $application_form_name);
-			$application_form_name = preg_replace('/\s/', '_', $application_form_name);
-			$application_form_name = strtolower($application_form_name);
-			$filename = $application_form_name.'_'.trim($lbl, ' _').'-'.rand().'.'.end($file_array);
-
-		} else {
-			$filename = $fnumInfos['applicant_id'].'-'.$fnumInfos['id'].'-'.trim($lbl, ' _').'-'.rand().'.'.end($file_array);
-		}
-
-		return $filename;
 	}
 
 

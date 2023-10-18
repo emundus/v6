@@ -1,3 +1,4 @@
+/* jshint esversion: 8 */
 import client from './axiosClient';
 import axios from 'axios';
 import qs from 'qs';
@@ -152,7 +153,7 @@ export default {
     }
   },
 
-  async updateTranslations(value,type,lang_to,reference_id,field,reference_table){
+  async updateTranslations(value,type,lang_to,reference_id,field,reference_table,reference_field){
     switch(type){
       case 'falang':
         try {
@@ -186,6 +187,7 @@ export default {
           formData.append('tag', field);
           formData.append('reference_table', reference_table);
           formData.append('reference_id', reference_id);
+          formData.append('reference_field', reference_field);
 
           return await client().post(`index.php?option=com_emundus&controller=translations&task=updatetranslation`,
               formData,

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -55,6 +55,16 @@ class OrderViewOrder extends hikashopView {
 			if(empty($title))
 				$title = $menu->title;
 			hikashop_setPageTitle($title);
+
+			$robots = $params->get('robots');
+			if (!$robots) {
+				$jconfig = JFactory::getConfig();
+				$robots = $jconfig->get('robots', '');
+			}
+			if($robots) {
+				$doc = JFactory::getDocument();
+				$doc->setMetadata('robots', $robots);
+			}
 		} else {
 			if($show_page_heading)
 				$this->title = JText::_('ORDERS');
@@ -455,6 +465,19 @@ class OrderViewOrder extends hikashopView {
 		$title = JText::_('HIKASHOP_ORDER').':'.$this->element->order_number;
 		$pathway->addItem($title, hikashop_completeLink('order&task=show&order_id=' . $this->element->order_id . '&Itemid=' . $Itemid));
 		hikashop_setPageTitle($title);
+
+		if(!empty($menu) && method_exists($menu, 'getParams')) {
+			$params = $menu->getParams();
+			$robots = $params->get('robots');
+			if (!$robots) {
+				$jconfig = JFactory::getConfig();
+				$robots = $jconfig->get('robots', '');
+			}
+			if($robots) {
+				$doc = JFactory::getDocument();
+				$doc->setMetadata('robots', $robots);
+			}
+		}
 		if($this->invoice_type == 'order' || empty($this->element->order_invoice_number))
 			$this->title = JText::_('HIKASHOP_ORDER').': '.$this->element->order_number;
 		else
@@ -479,6 +502,18 @@ class OrderViewOrder extends hikashopView {
 		$menu = $app->getMenu()->getActive();
 		if(!empty($menu) && method_exists($menu, 'getParams') && $menu->getParams()->get('show_page_heading'))
 			$this->title = $menu->getParams()->get('page_heading');
+		if(!empty($menu) && method_exists($menu, 'getParams')) {
+			$params = $menu->getParams();
+			$robots = $params->get('robots');
+			if (!$robots) {
+				$jconfig = JFactory::getConfig();
+				$robots = $jconfig->get('robots', '');
+			}
+			if($robots) {
+				$doc = JFactory::getDocument();
+				$doc->setMetadata('robots', $robots);
+			}
+		}
 
 		$element = null;
 		if(!empty($order_id)) {
@@ -757,7 +792,10 @@ window.hikashop.ready(function(){
 				unset($product);
 			}
 		}
-		$image_address_path = hikashop_cleanURL(trim((string)$config->get('image_address_path')));
+		$image_address_path = trim((string)$config->get('image_address_path'));
+		if (!empty($image_address_path))
+			$image_address_path = hikashop_cleanURL($image_address_path);
+
 		$img_style_css = strip_tags(trim((string)$config->get('img_style_css')));
 
 		$this->assignRef('image_address_path',$image_address_path);
@@ -778,14 +816,13 @@ window.hikashop.ready(function(){
 		$this->assignRef('currentShipping',$currentShipping);
 		$fields = array();
 		if(hikashop_level(2)){
-			$null = null;
-			$fields['entry'] = $fieldsClass->getFields('frontcomp',$null,'entry');
-			$fields['item'] = $fieldsClass->getFields('frontcomp',$null,'item');
+			$fields['entry'] = $fieldsClass->getFields('frontcomp',$order,'entry');
+			$fields['item'] = $fieldsClass->getFields('frontcomp',$order,'item');
 
 			if($type=='invoice')
-				$fields['order'] = $fieldsClass->getFields('display:invoice=1',$null,'order');
+				$fields['order'] = $fieldsClass->getFields('display:invoice=1',$order,'order');
 			else
-				$fields['order'] = $fieldsClass->getFields('display:front_order=1',$null,'order');
+				$fields['order'] = $fieldsClass->getFields('display:front_order=1',$order,'order');
 		}
 		$this->assignRef('fields',$fields);
 		return $order;

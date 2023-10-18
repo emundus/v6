@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -17,13 +17,14 @@ if(isset($this->params->address_id) || $tmpl == 'component') {
 $labelcolumnclass = 'hkc-sm-4';
 $inputcolumnclass = 'hkc-sm-8';
 
-$show_url = 'address&task=listing';
-$save_url = 'address&task=save&cid='.(int)@$this->address->address_id;
-$update_url = 'address&task=edit&cid='.(int)@$this->address->address_id.'&address_type='.$this->address->address_type;
-$delete_url = 'address&task=delete&cid='.(int)@$this->address->address_id;
+$show_url = 'address&task=listing'.$this->url_itemid;
+$save_url = 'address&task=save&cid='.(int)@$this->address->address_id.$this->url_itemid;
+
 $dest = 'hikashop_user_addresses_show';
 
 if(!isset($this->edit) || $this->edit !== true ) {
+	$update_url = 'address&task=edit&cid='.(int)@$this->address->address_id.'&address_type='.$this->address->address_type.$this->url_itemid;
+	$delete_url = 'address&task=delete&cid='.(int)@$this->address->address_id.$this->url_itemid;
 ?>
 		<div class="hika_edit">
 			<a href="<?php echo hikashop_completeLink($update_url, 'ajax');?>" onclick="return window.addressMgr.get(this,'<?php echo $dest; ?>');">
@@ -77,7 +78,7 @@ if(isset($this->edit) && $this->edit === true) {
 			@$this->address->$fieldname,
 			'data[address]['.$fieldname.']',
 			false,
-			' ' . $onWhat . '="window.hikashop.toggleField(this.value,\''.$fieldname.'\',\'address\',0);"',
+			' class="'.HK_FORM_CONTROL_CLASS.'" ' . $onWhat . '="window.hikashop.toggleField(this.value,\''.$fieldname.'\',\'address\',0);"',
 			false,
 			$this->fields,
 			$this->address,

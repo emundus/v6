@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.6.2
+ * @version    4.7.4
  * @author     hikashop.com
- * @copyright  (C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 @keyframes vex-fadein { 0% {opacity:0;} 100% {opacity:1;} }
@@ -559,6 +559,7 @@ body.vex-open {
 	font-size: 0.8em;
 	line-height: 1em;
 	padding: 0.75em 2em;
+	margin-top: 5px;
 }
 .vex.vex-theme-default .vex-dialog-button.vex-last { margin-left: 0; }
 .vex.vex-theme-default .vex-dialog-button:focus {
@@ -583,6 +584,9 @@ body.vex-open {
 .vex.vex-theme-default .vex-dialog-button.vex-dialog-button-primary {
 	background: #3288e6;
 	color: #fff;
+}
+.vex.vex-theme-default .vex-dialog-button.vex-first {
+	background: darkblue;
 }
 .vex.vex-theme-default .vex-dialog-button.vex-dialog-button-secondary {
 	background: #e0e0e0;

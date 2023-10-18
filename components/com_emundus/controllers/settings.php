@@ -24,6 +24,7 @@ jimport('joomla.application.component.controller');
 class EmundusControllersettings extends JControllerLegacy {
 
     var $m_settings = null;
+
     public function __construct($config = array()) {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         parent::__construct($config);
@@ -231,6 +232,24 @@ class EmundusControllersettings extends JControllerLegacy {
         exit;
     }
 
+	public function publisharticle() {
+        $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+		$user = JFactory::getUser();
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$jinput = JFactory::getApplication()->input;
+
+			$publish = $jinput->getInt('publish', 1);
+			$article_id = $jinput->getString('article_id', 0);
+			$article_alias = $jinput->getString('article_alias', '');
+
+            $response = $this->m_settings->publishArticle($publish, $article_id, $article_alias);
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
     public function getfooterarticles() {
         $user = JFactory::getUser();
 
@@ -366,6 +385,10 @@ class EmundusControllersettings extends JControllerLegacy {
                 $target_file = $target_dir . basename('favicon.' . $ext);
 
                 if (move_uploaded_file($image["tmp_name"], $target_file)) {
+	                require_once (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'update.php');
+
+	                EmundusHelperUpdate::updateYamlVariable('favicon', 'gantry-media://custom/favicon.' . $ext, JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml');
+
 	                $cache = JCache::getInstance('callback');
 	                $cache->clean(null, 'notgroup');
 
@@ -781,7 +804,8 @@ class EmundusControllersettings extends JControllerLegacy {
             echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
         } else {
 
-            $m_campaign = $this->getModel('campaign');
+	        require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
+            $m_campaign = new EmundusModelCampaign();
 
             $jinput = JFactory::getApplication()->input;
             $file = $jinput->files->get('file');
@@ -814,98 +838,6 @@ class EmundusControllersettings extends JControllerLegacy {
             }
             exit;
         }
-    }
-
-    public function uploadformdoc() {
-        $user = JFactory::getUser();
-
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
-        } else {
-
-            $jinput = JFactory::getApplication()->input;
-            $file = $jinput->files->get('file');
-            $pid = $jinput->get('pid');
-
-            if(isset($file)) {
-                $config = JFactory::getConfig();
-
-                /* Clean sitename for folder */
-                $m_formbuilder = $this->getModel('formbuilder');
-
-                $sitename = strtolower(str_replace(array('\\','=','&',',','#','_','*',';','!','?',':','+','$','\'',' ','£',')','(','@','%'),'_',$config->get('sitename')));
-                $sitename = $m_formbuilder->replaceAccents($sitename);
-
-
-                $path = $file["name"];
-                $ext = pathinfo($path, PATHINFO_EXTENSION);
-                $filename = pathinfo($path, PATHINFO_FILENAME);
-
-
-                $target_root = "images/custom/" . $sitename . "/";
-                $target_dir = $target_root . "form_documents/";
-                if(!file_exists($target_root)){
-                    mkdir($target_root);
-                }
-                if(!file_exists($target_dir)){
-                    mkdir($target_dir);
-                }
-
-                do{
-                    $target_file = $target_dir . rand(1000,90000) . '.' . $ext;
-                } while (file_exists($target_file));
-
-                if (move_uploaded_file($file["tmp_name"], $target_file)) {
-                    $this->m_settings->addDocumentToForm(pathinfo($target_file,PATHINFO_BASENAME),$filename,$target_dir,$pid);
-                    $doc = new stdClass;
-                    $doc->name = $filename;
-                    $doc->link = $target_file;
-                    $doc->id = explode('.',pathinfo($target_file,PATHINFO_BASENAME))[0];
-                    echo json_encode($doc);
-                } else {
-                    echo json_encode(array('msg' => 'ERROR WHILE UPLOADING YOUR DOCUMENT'));
-                }
-            } else {
-                echo json_encode(array('msg' => 'ERROR WHILE UPLOADING YOUR DOCUMENT'));
-            }
-            exit;
-        }
-    }
-
-    public function rewindtutorial() {
-        $user = JFactory::getUser();
-
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
-        } else {
-            $table = JTable::getInstance('user', 'JTable');
-            $table->load($user->id);
-
-            $user->setParam('first_login', true);
-            $user->setParam('first_campaign', true);
-            $user->setParam('first_form', true);
-            $user->setParam('first_formbuilder', true);
-            $user->setParam('first_documents', true);
-            $user->setParam('first_databasejoin', true);
-            $user->setParam('first_program', true);
-
-            // Get the raw User Parameters
-            $params = $user->getParameters();
-
-            // Set the user table instance to include the new token.
-            $table->params = $params->toString();
-
-            // Save user data
-            if (!$table->store()) {
-                JLog::add('Error saving params : '.$table->getError(), JLog::ERROR, 'com_emundus');
-                echo json_encode(array('status' => true));
-            }
-
-            echo json_encode(array('status' => true));
-        }
-        exit;
     }
 
     public function getemundusparams(){
@@ -1053,10 +985,6 @@ class EmundusControllersettings extends JControllerLegacy {
 
 	public function updatebanner() {
 		$user = JFactory::getUser();
-		$results = [
-			'status' => false,
-			'msg' => ''
-		];
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$results['status'] = false;
@@ -1082,6 +1010,78 @@ class EmundusControllersettings extends JControllerLegacy {
 				$results['msg'] = JText::_('IMAGE_NOT_FOUND');
 			}
 		}
+
+		echo json_encode((object)$results);
+		exit;
+	}
+
+	public function getonboardinglists() {
+		$user = JFactory::getUser();
+		$results = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$results['status'] = true;
+			$results['msg'] = JText::_('ONBOARDING_LISTS');
+			$results['data'] = $this->m_settings->getOnboardingLists();
+		}
+
+		echo json_encode((object)$results);
+		exit;
+	}
+
+    public function getOffset() {
+        $user = JFactory::getUser();
+        $results = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+            $jinput = JFactory::getApplication()->input;
+            // get input format, second, minutes or hours
+            $format = $jinput->getString('format', 'hours');
+
+            $config = JFactory::getConfig();
+            $offset = $config->get('offset');
+
+            $dateTZ = new DateTimeZone($offset);
+            $date = new DateTime('now', $dateTZ);
+            $offset = $dateTZ->getOffset($date);
+            if (!empty($offset)) {
+                if ($format == 'hours') {
+                    $offset = $offset / 3600;
+                } elseif ($format == 'minutes') {
+                    $offset = $offset / 60;
+                }
+            }
+
+            $results = ['status' => true, 'msg' => '' , 'data' => $offset];
+        }
+
+        echo json_encode((object)$results);
+        exit;
+    }
+
+	public function getemailsender() {
+		$config = JFactory::getConfig();
+		$mailfrom = $config->get('mailfrom');
+
+		$results = ['status' => true, 'msg' => '' , 'data' => $mailfrom];
+
+		echo json_encode((object)$results);
+		exit;
+	}
+
+	public function gethomearticle() {
+		$results['status'] = true;
+		$results['msg'] = 'Home article';
+		$results['data'] = $this->m_settings->getHomeArticle();
+
+		echo json_encode((object)$results);
+		exit;
+	}
+
+	public function getrgpdarticles() {
+		$results['status'] = true;
+		$results['msg'] = 'RGPD Articles';
+		$results['data'] = $this->m_settings->getRgpdArticles();
 
 		echo json_encode((object)$results);
 		exit;

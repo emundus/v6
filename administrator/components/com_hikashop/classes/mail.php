@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -705,7 +705,7 @@ class hikashopMailClass {
 				}
 			}else{
 				$addedName = $config->get('add_names',true) ? $this->cleanText(@$mail->dst_name) : '';
-				$this->mailer->AddAddress($this->cleanText($mail->dst_email),$addedName);
+				$this->mailer->AddAddress($this->cleanText($mail->dst_email),(string)$addedName);
 			}
 		}
 		if(!empty($mail->cc_email)) {
@@ -824,8 +824,8 @@ class hikashopMailClass {
 		}
 
 		JPluginHelper::importPlugin('hikashop');
-		JPluginHelper::importPlugin('hikashoppayment');
 		JPluginHelper::importPlugin('hikashopshipping');
+		JPluginHelper::importPlugin('hikashoppayment');
 		$app = JFactory::getApplication();
 		$app->triggerEvent('onBeforeMailSend', array(&$mail, &$this->mailer) );
 	}
@@ -838,8 +838,8 @@ class hikashopMailClass {
 
 		$do = true;
 		JPluginHelper::importPlugin('hikashop');
-		JPluginHelper::importPlugin('hikashoppayment');
 		JPluginHelper::importPlugin('hikashopshipping');
+		JPluginHelper::importPlugin('hikashoppayment');
 		$app = JFactory::getApplication();
 		$mail->mail_success = false;
 		$app->triggerEvent('onBeforeMailPrepare', array(&$mail, &$this->mailer, &$do) );

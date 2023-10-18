@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -71,7 +71,7 @@ if(!empty($this->product->product_id)) {
 				<label for="data[contact][name]"><?php echo JText::_( 'HIKA_USER_NAME' ); ?> <span class="hikashop_field_required_label">*</span></label>
 			</dt>
 			<dd id="hikashop_contact_value_name" class="hikashop_contact_item_value">
-				<input id="hikashop_contact_name" type="text" name="data[contact][name]" size="40" value="<?php echo $this->escape(@$formData->name);?>" />
+				<input id="hikashop_contact_name" type="text" name="data[contact][name]" size="40" class="<?php echo HK_FORM_CONTROL_CLASS; ?>" value="<?php echo $this->escape((string)@$formData->name);?>" />
 			</dd>
 <!-- EO NAME -->
 <!-- EMAIL -->
@@ -79,7 +79,7 @@ if(!empty($this->product->product_id)) {
 				<label for="data[contact][email]"><?php echo JText::_( 'HIKA_EMAIL' ); ?> <span class="hikashop_field_required_label">*</span></label>
 			</dt>
 			<dd id="hikashop_contact_value_email" class="hikashop_contact_item_value">
-				<input id="hikashop_contact_email" type="text" name="data[contact][email]" size="40" value="<?php echo $this->escape(@$formData->email);?>" />
+				<input id="hikashop_contact_email" type="text" name="data[contact][email]" size="40" class="<?php echo HK_FORM_CONTROL_CLASS; ?>" value="<?php echo $this->escape((string)@$formData->email);?>" />
 			</dd>
 <!-- EO EMAIL -->
 <!-- CUSTOM CONTACT FIELDS -->
@@ -99,7 +99,7 @@ if(!empty($this->product->product_id)) {
 				$oneExtraField,$itemData,
 				'data[contact]['.$oneExtraField->field_namekey.']',
 				false,
-				' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'contact\',0);"',
+				' class="'.HK_FORM_CONTROL_CLASS.'" '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'contact\',0);"',
 				false,
 				null,
 				null,

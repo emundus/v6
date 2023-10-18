@@ -6,7 +6,7 @@
 				<section v-for="(group, index) in formData.groups" :key="group.id" class="em-mb-8 form-builder-page-section">
 					<div class="section-card em-flex-column">
 						<div class="section-identifier em-bg-main-500 em-flex-row">
-							<span>{{ translate('COM_EMUNDUS_FORM_BUILDER_SECTION') }} {{ index + 1 }} / {{ formData.groups.length }}</span>
+							<span class="text-xxs">{{ translate('COM_EMUNDUS_FORM_BUILDER_SECTION') }} {{ index + 1 }} / {{ formData.groups.length }}</span>
 						</div>
 						<div class="section-content em-w-100">
 							<p class="em-font-size-8 em-w-100 em-text-align-left">{{ group.label.replace('Model - ', '') }}</p>
@@ -21,12 +21,11 @@
 
 <script>
 import formService from '../../services/form';
-import Section from '../Users/Section';
 import Skeleton from '../Skeleton';
 
 export default {
 	name: "FormBuilderPreviewForm",
-	components: {Skeleton, Section},
+	components: {Skeleton},
 	props: {
 		form_id: {
 			type: Number,

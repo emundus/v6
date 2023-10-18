@@ -30,7 +30,7 @@ if(!function_exists('com_install')) {
 
 class hikashopInstall {
 	var $level = 'Business';
-	var $version = '4.6.2';
+	var $version = '4.7.4';
 	var $freshinstall = true;
 	var $update = false;
 	var $fromLevel = '';
@@ -908,7 +908,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 			'embed_images' => 0,
 			'embed_files' => 1,
 			'multiple_part' => 1,
-			'allowedfiles' => 'zip,doc,docx,pdf,xls,txt,gz,gzip,rar,jpg,gif,tar.gz,xlsx,pps,csv,bmp,epg,ico,odg,odp,ods,odt,png,ppt,swf,xcf,wmv,avi,mkv,mp3,ogg,flac,wma,fla,flv,mp4,wav,aac,mov,epub',
+			'allowedfiles' => 'zip,doc,docx,pdf,xls,txt,gz,gzip,rar,jpg,jpeg,gif,tar.gz,xlsx,pps,csv,bmp,epg,ico,odg,odp,ods,odt,png,svg,webp,ppt,xcf,wmv,avi,mkv,mp3,ogg,flac,wma,fla,flv,mp4,wav,aac,mov,epub',
 			'allowedimages' => 'gif,jpg,jpeg,png,svg,webp',
 			'uploadfolder' => 'images/com_hikashop/upload/',
 			'uploadsecurefolder' => 'media/com_hikashop/upload/safe/',

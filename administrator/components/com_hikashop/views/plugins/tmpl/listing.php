@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -28,9 +28,11 @@ defined('_JEXEC') or die('Restricted access');
 		echo $this->pulbishedType->display('filter_published',$this->pageInfo->filter->published);
 	?></div>
 </div>
-
-<?php $cols = 7; ?>
-<table class="adminlist table table-striped" cellpadding="1">
+<?php 
+	$cols = 7; 
+	echo $this->loadHkLayout('columns', array()); 
+?>
+<table id="hikashop_plugins_listing" class="adminlist table table-striped" cellpadding="1">
 	<thead>
 		<tr>
 			<th class="title titlenum"><?php echo JText::_('HIKA_NUM');?></th>

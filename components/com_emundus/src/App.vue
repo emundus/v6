@@ -1,5 +1,5 @@
 <template>
-	<div class="com_emundus_vue em-flex-column em-flex-col-center">
+	<div class="com_emundus_vue em-flex-col-center">
 		<Attachments
 			v-if="component === 'attachments'"
 			:fnum="data.fnum"
@@ -14,6 +14,14 @@
         :ratio="data.ratio"
     ></Files>
 
+    <ApplicationSingle
+        v-else-if="component === 'application'"
+        :file="data.fnum"
+        :type="data.type"
+        :user="data.user"
+        :ratio="data.ratio"
+    ></ApplicationSingle>
+
     <transition v-else name="slide-right">
       <component v-bind:is="$props.component"/>
     </transition>
@@ -27,16 +35,17 @@ import Attachments from "./views/Attachments.vue";
 import Files from './views/Files/Files.vue';
 
 import fileService from "./services/file.js";
-import list from "./views/list";
+import list_v2 from "./views/list.vue";
 import addcampaign from "./views/addCampaign"
 import addemail from "./views/addEmail"
 import addformnextcampaign from "./views/addFormNextCampaign"
 import formbuilder from "./views/formBuilder"
-import evaluationbuilder from "./views/evaluationBuilder"
 import settings from "./views/globalSettings"
 import messagescoordinator from "./components/Messages/MessagesCoordinator";
 import messages from "./components/Messages/Messages";
-import editprofile from "./views/Users/Edit";
+
+import settingsService from "./services/settings.js";
+import ApplicationSingle from "@/components/Files/ApplicationSingle.vue";
 
 export default {
 	props: {
@@ -60,18 +69,17 @@ export default {
 		},
 	},
 	components: {
+    ApplicationSingle,
 		Attachments,
-    list,
     addcampaign,
     addformnextcampaign,
     addemail,
     formbuilder,
-    evaluationbuilder,
     settings,
     messagescoordinator,
     messages,
-    editprofile,
-    Files
+    Files,
+		list_v2
 	},
 
   created() {
@@ -95,6 +103,7 @@ export default {
 	    moment.locale(this.$store.state.global.currentLanguage);
     } else {
 	    this.$store.commit('global/initCurrentLanguage', 'fr');
+      moment.locale('fr');
     }
     if (typeof this.$props.shortLang != 'undefined') {
       this.$store.commit('global/initShortLang', this.$props.shortLang);
@@ -111,6 +120,12 @@ export default {
     if (typeof this.$props.coordinatorAccess != 'undefined') {
       this.$store.commit("global/initSysadminAccess", this.$props.sysadminAccess);
     }
+
+    settingsService.getOffset().then(response => {
+      if (response.status !== false) {
+        this.$store.commit("global/initOffset", response.data.data);
+      }
+    });
   },
 
   mounted() {
@@ -129,7 +144,7 @@ export default {
   input {
     display: block;
     margin-bottom: 10px;
-    padding: 8px 12px;
+    padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
     border: 1px solid #cccccc;
     border-radius: 4px;
     -webkit-transition: border-color 200ms linear;
@@ -160,29 +175,24 @@ export default {
 }
 
 .view-campaigns.no-layout #g-container-main .g-container,
+.view-campaigns.layout-addnextcampaign #g-container-main .g-container,
+.view-campaigns.layout-add #g-container-main .g-container,
+.view-emails.layout-add #g-container-main .g-container,
 .view-emails.no-layout #g-container-main .g-container,
 .view-form #g-container-main .g-container,
-.view-settings #g-container-main .g-container,
-.view-file #g-container-main .g-container,
-.view-users #g-container-main .g-container{
-  width: 75rem;
+.view-settings #g-container-main .g-container {
+  width: auto;
+  position: relative;
 }
 
-@media all and (max-width: 1366px) {
-  .view-campaigns #g-container-main .g-container,
-  .view-emails #g-container-main .g-container,
-  .view-form #g-container-main .g-container,
-  .view-file #g-container-main .g-container,
-  .view-users #g-container-main .g-container{
-    width: 95%;
-  }
-
-  .view-campaigns.layout-addnextcampaign #g-container-main .g-container,
-  .view-emails.layout-add #g-container-main .g-container,
-  .view-settings.no-layout #g-container-main .g-container {
-    width: calc(95% - 150px);
-  }
+.view-campaigns.no-layout #g-container-main,
+.view-campaigns.layout-addnextcampaign #g-container-main,
+.view-campaigns.layout-add #g-container-main,
+.view-emails.layout-add #g-container-main,
+.view-emails.no-layout #g-container-main,
+.view-form #g-container-main,
+.view-settings #g-container-main {
+  padding-left: 76px;
 }
-
 
 </style>

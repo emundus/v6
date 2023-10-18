@@ -21,24 +21,41 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 
 <div class="container-fluid">
 	<div class="row">
-		<div class="col-md-3 side-panel">
+		<div class="col-md-3 side-panel" style="height: calc(100vh - 72px);overflow-y: auto;">
 			<div class="panel panel-info em-containerFilter" id="em-files-filters">
 				<div class="panel-heading em-containerFilter-heading">
 					<div>
 						<h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_FILTERS')?></h3> &ensp;&ensp;
 					</div>
-					<div class="buttons" style="float:right; margin-top:0px">
-                        <label for="clear-search">
-                            <img src="<?= JURI::base() ;?>media/com_emundus/images/icones/clear-filters.png" style="width: 25px;filter: invert(1);"/>
-                        </label>
-
-                        <input type="button" style="display: none" id="clear-search" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN');?>"/>
-					</div>
+                    <div class="buttons" style="float:right; margin-top:0px">
+                        <div class="em-flex-row">
+                            <?php
+                                if ($this->use_module_for_filters) {
+                                    ?>
+                                    <label for="save-filter" class="em-mr-8 em-flex-row" style="margin-bottom: 0;">
+                                        <span class="material-icons-outlined em-pointer em-color-white" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_SAVE_BTN');?>">save</span>
+                                    </label>
+                                    <input type="button" style="display: none" id="save-filter" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_SAVE_BTN');?>"/>
+	                                <?php
+                                }
+                            ?>
+                            <label for="clear-search" class="em-flex-row">
+                                <span class="material-icons-outlined em-pointer em-color-white" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN');?>">filter_alt_off</span>
+                            </label>
+                            <input type="button" style="display: none" id="clear-search" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN');?>"/>
+                        </div>
+                    </div>
 				</div>
 
 				<div class="panel-body em-containerFilter-body">
-					<?php echo @$this->filters; ?>
-				</div>
+					<?php
+                    if (!$this->use_module_for_filters) {
+						echo @$this->filters;
+					} else {
+						echo JHtml::_('content.prepare', '{loadposition emundus_filters}');
+                    }
+                    ?>
+                </div>
 			</div>
 
 			<div class="panel panel-info em-hide" id="em-appli-menu">

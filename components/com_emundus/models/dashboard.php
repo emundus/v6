@@ -146,9 +146,18 @@ class EmundusModelDashboard extends JModelList
         $query = $this->_db->getQuery(true);
 
         $profile = JFactory::getSession()->get('emundusUser')->profile;
+		if(empty($profile))
+		{
+			$query->select('profile')
+				->from($this->_db->quoteName('#__emundus_users'))
+				->where($this->_db->quoteName('user_id') . ' = ' . $user_id);
+			$this->_db->setQuery($query);
+			$profile = $this->_db->loadResult();
+		}
 
         try {
-            $query->select('ew.id,ew.name,ew.label,ew.params,ew.size,ew.size_small,ew.type,ew.class,esdr.position,ew.chart_type,ew.article_id')
+            $query->clear()
+	            ->select('ew.id,ew.name,ew.label,ew.params,ew.size,ew.size_small,ew.type,ew.class,esdr.position,ew.chart_type,ew.article_id')
                 ->from($this->_db->quoteName('#__emundus_setup_dashbord_repeat_widgets','esdr'))
                 ->leftJoin($this->_db->quoteName('#__emundus_setup_dashboard','esd').' ON '.$this->_db->quoteName('esd.id').' = '.$this->_db->quoteName('esdr.parent_id'))
                 ->leftJoin($this->_db->quoteName('#__emundus_widgets','ew').' ON '.$this->_db->quoteName('ew.id').' = '.$this->_db->quoteName('esdr.widget'))
@@ -156,7 +165,7 @@ class EmundusModelDashboard extends JModelList
                 ->andWhere($this->_db->quoteName('esd.profile') . ' = ' . $this->_db->quote($profile))
                 ->order('esdr.position');
             $this->_db->setQuery($query);
-            $widgets = $this->_db->loadObjectList();
+	        $widgets = $this->_db->loadObjectList();
 
             if(empty($widgets)) {
                 $query->clear()

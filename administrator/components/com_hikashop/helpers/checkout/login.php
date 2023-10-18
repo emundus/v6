@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -12,17 +12,40 @@ include_once HIKASHOP_HELPER . 'checkout.php';
 
 class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 	protected $params = array(
+		'override_registration' => array(
+			'name' => 'OVERRIDE_REGISTRATION',
+			'type' => 'boolean',
+			'default' => 0,
+			'tooltip' => 'override_registration',
+		),
+		'text' => array(
+			'name' => 'CONTENT',
+			'type' => 'textarea',
+			'default' => '',
+			'showon' => array(
+				'key' => 'override_registration',
+				'values' => array(1)
+			)
+		),
 		'show_submit' =>  array(
 			'name' => 'SHOW_SUBMIT_BUTTON',
 			'type' => 'boolean',
 			'default' => 1,
 			'tooltip' => 'login_submit',
+			'showon' => array(
+				'key' => 'override_registration',
+				'values' => array(0)
+			)
 		),
 		'address_on_registration' =>  array(
 			'name' => 'ASK_ADDRESS_ON_REGISTRATION',
 			'type' => 'boolean',
 			'default' => 1,
 			'tooltip' => 'address_on_registration',
+			'showon' => array(
+				'key' => 'override_registration',
+				'values' => array(0)
+			)
 		),
 		'same_address' =>  array(
 			'name' => 'SHOW_SHIPPING_SAME_ADDRESS_CHECKBOX',
@@ -43,6 +66,11 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 			)
 		),
 	);
+
+	public function getParams() {
+		$this->params['text']['attributes'] = 'rows="3" cols="30" placeholder="'.htmlentities(JText::_('WRITE_TEXT_HTML_HERE'), ENT_COMPAT, 'UTF-8').'"';
+		return parent::getParams();
+	}
 
 
 	public function check(&$controller, &$params) {
@@ -305,8 +333,8 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 				$locale = strtolower(substr($lang->get('tag'), 0, 2));
 				global $Itemid;
 				$url_itemid = '';
-				if(!empty($menu_id))
-					$url_itemid = '&Itemid=' . $menu_id;
+				if(!empty($Itemid))
+					$url_itemid = '&Itemid=' . $Itemid;
 				$url = 'checkout&task=activate_page&lang='.$locale.$url_itemid;
 				$tmpl = hikaInput::get()->getString('tmpl');
 				if(in_array($tmpl, array('raw', 'component'))) {
@@ -428,6 +456,8 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 			$params['default_registration_view'] = $view->config->get('default_registration_view', '');
 		if(!isset($params['show_submit']))
 			$params['show_submit'] = 1;
+		if(!isset($params['override_registration']))
+			$params['override_registration'] = 0;
 
 		if(!isset($params['address_on_registration']))
 			$params['address_on_registration'] = $view->config->get('address_on_registration', 1);

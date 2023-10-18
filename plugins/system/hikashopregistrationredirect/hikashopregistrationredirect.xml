@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="system">
 	<name>Hikashop Registration Redirect Plugin</name>
-	<creationDate>25 septembre 2022</creationDate>
-	<version>4.6.2</version>
+	<creationDate>26 juin 2023</creationDate>
+	<version>4.7.4</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<copyright>(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-	<description>This plugin enables you to handle redirect to HikaShop registration page</description>
+	<description>This plugin enables you to redirect the user to the HikaShop registration page</description>
 	<files>
 		<filename plugin="hikashopregistrationredirect">hikashopregistrationredirect.php</filename>
 	</files>
 	<params addpath="/components/com_hikashop/params">
-		<param name="item_id" type="text" size="5" default="" label="HIKA_ITEMID_FOR_REGISTRATION" description="ITEMID_FOR_REGISTRATION"/>
+		<param name="item_id" type="menuitem" default="0" label="HIKA_ITEMID_FOR_REGISTRATION" description="ITEMID_FOR_REGISTRATION" client_id="0"/>
 	</params>
 	<config>
 		<fields name="params" addfieldpath="/components/com_hikashop/fields">
 			<fieldset name="basic">
-				<field name="item_id" type="text" size="5" default="" label="HIKA_ITEMID_FOR_REGISTRATION" description="ITEMID_FOR_REGISTRATION"/>
+				<field name="item_id" type="menuitem" default="0" label="HIKA_ITEMID_FOR_REGISTRATION" description="ITEMID_FOR_REGISTRATION" client_id="0"/>
 			</fieldset>
 		</fields>
 	</config>

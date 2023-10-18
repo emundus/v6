@@ -1,3 +1,4 @@
+/* jshint esversion: 8 */
 import client from './axiosClient';
 
 export default {
@@ -13,11 +14,11 @@ export default {
                 formData
             );
 
-            return response;
+            return response.data;
         } catch (e) {
             return {
                 status: false,
-                message: e.message
+                msg: e.message
             };
         }
     },
@@ -49,14 +50,23 @@ export default {
             formData.append('fid', fid);
             formData.append('label', JSON.stringify(label));
 
-            return await client().post(
+            const response = await client().post(
                 'index.php?option=com_emundus&controller=formbuilder&task=createsimplegroup',
                 formData
             );
+
+            if (typeof response.data !== 'object') {
+                return {
+                    status: false,
+                    msg: 'COM_EMUNDUS_FORM_BUILDER_REQUEST_ERROR'
+                };
+            } else {
+                return response.data;
+            }
         } catch (e) {
             return {
                 status: false,
-                message: e.message
+                msg: e.message
             };
         }
     },
@@ -300,11 +310,20 @@ export default {
       }
     },
     async updateDocument(data) {
+        if (data.document_id == undefined || data.profile_id == undefined || data.document == undefined) {
+            return {
+                status: false,
+                msg: 'Missing data'
+            };
+        }
+
         const formData = new FormData();
         formData.append('document_id', data.document_id);
         formData.append('profile_id', data.profile_id);
         formData.append('document', data.document);
         formData.append('types', data.types);
+        formData.append('file', data.sample);
+        formData.append('has_sample', data.has_sample);
 
         try {
             const response = await client().post(
@@ -412,10 +431,7 @@ export default {
         });
 
         try {
-            return await client().post(
-                'index.php?option=com_emundus&controller=formbuilder&task=createmenu',
-                formData
-            );
+            return await client().post('index.php?option=com_emundus&controller=formbuilder&task=createMenu', formData);
         } catch (e) {
             return {
                 status: false,
@@ -728,5 +744,55 @@ export default {
         } else {
             return {status: false, message: 'MISSING_PARAMS'};
         }
+    },
+    async getDocumentSample(documentId, profileId) {
+        if (documentId > 0 && profileId > 0) {
+            try {
+                const response = await client().get(
+                    'index.php?option=com_emundus&controller=formbuilder&task=getdocumentsample',
+                    {
+                        params: {
+                            document_id: documentId,
+                            profile_id: profileId
+                        }
+                    }
+                );
+
+                return response.data;
+            } catch (e) {
+                return {status: false, message: e.message};
+            }
+        } else {
+            return {status: false, message: 'MISSING_PARAMS'};
+        }
+
+    },
+
+    async checkIfModelTableIsUsedInForm(modelId, profileId) {
+        let response = {
+            status: false,
+            msg: 'MISSING_PARAMS'
+        };
+
+        if (modelId > 0 && profileId > 0) {
+
+            try {
+                const result = await client().get(
+                    'index.php?option=com_emundus&controller=formbuilder&task=checkifmodeltableisusedinform',
+                    {
+                        params: {
+                            model_id: modelId,
+                            profile_id: profileId
+                        }
+                    }
+                );
+
+                response = result.data;
+            } catch (e) {
+                response.msg = e.message;
+            }
+        }
+
+        return response;
     }
 };

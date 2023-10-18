@@ -70,25 +70,35 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
         // Get list of applicants to notify
         $db = FabrikWorker::getDbo();
         if($reminder_choice == 1){
-            $query = 'SELECT u.id, u.email, eu.firstname, eu.lastname, ecc.fnum, esc.start_date, esc.end_date, esc.label, DATEDIFF( esc.end_date , now()) as left_days
-					FROM #__emundus_campaign_candidature as ecc
-					LEFT JOIN #__users as u ON u.id=ecc.applicant_id
-					LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
-					LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id
-					WHERE ecc.published = 1 AND u.block = 0 AND esc.published = 1 AND ecc.status in ('.$status_for_send.') AND DATEDIFF( esc.end_date , now()) IN ('.$reminder_deadline.')';
+            $query = 'SELECT u.id, u.email, eu.firstname, eu.lastname, ecc.fnum, ecc.status, esc.start_date as start_date_campaign, esc.end_date as end_date_campaign, ecw.start_date as start_date_phase, ecw.end_date as end_date_phase, esc.label
+                    FROM #__emundus_campaign_candidature as ecc
+                    LEFT JOIN #__users as u ON u.id=ecc.applicant_id
+                    LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
+                    LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id
+                    LEFT JOIN #__emundus_campaign_workflow_repeat_campaign ecwrc on ecwrc.campaign = ecc.campaign_id
+                    LEFT JOIN #__emundus_campaign_workflow_repeat_entry_status ecwres on ecwres.parent_id = ecwrc.parent_id AND ecwres.entry_status = ecc.status
+                    LEFT JOIN #__emundus_campaign_workflow ecw ON ecw.id = ecwres.parent_id
+					WHERE ecc.published = 1 AND u.block = 0 AND esc.published = 1 AND ecc.status in ('.$status_for_send.') AND IF((ecw.end_date IS NULL OR ecw.end_date = \'0000-00-00 00:00:00\'), DATEDIFF(esc.end_date, now()) IN ('.$reminder_deadline.'), DATEDIFF(ecw.end_date, now()) IN ('.$reminder_deadline.'))';
         }
         else{
-            $query = 'SELECT u.id, u.email, eu.firstname, eu.lastname, ecc.fnum, esc.start_date, esc.end_date, esc.label, DAY(now()) as dayOfMonth
-					FROM #__emundus_campaign_candidature as ecc
-					LEFT JOIN #__users as u ON u.id=ecc.applicant_id
-					LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
-					LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id
-					WHERE ecc.published = 1 AND u.block = 0 AND esc.published = 1 AND ecc.status in ('.$status_for_send.') AND DAY(now()) IN ('.$reminder_deadline.') AND esc.end_date > NOW()';
+            $query = 'SELECT u.id, u.email, eu.firstname, eu.lastname, ecc.fnum, ecc.status, esc.start_date as start_date_campaign, esc.end_date as end_date_campaign, ecw.start_date as start_date_phase, ecw.end_date as end_date_phase, esc.label
+                    FROM #__emundus_campaign_candidature as ecc
+                    LEFT JOIN #__users as u ON u.id=ecc.applicant_id
+                    LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
+                    LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id
+                    LEFT JOIN #__emundus_campaign_workflow_repeat_campaign ecwrc on ecwrc.campaign = ecc.campaign_id
+                    LEFT JOIN #__emundus_campaign_workflow_repeat_entry_status ecwres on ecwres.parent_id = ecwrc.parent_id AND ecwres.entry_status = ecc.status
+                    LEFT JOIN #__emundus_campaign_workflow ecw ON ecw.id = ecwres.parent_id
+					WHERE ecc.published = 1 AND u.block = 0 AND esc.published = 1 AND ecc.status in ('.$status_for_send.') AND DAY(now()) IN ('.$reminder_deadline.') AND IF((ecw.end_date IS NULL OR ecw.end_date = \'0000-00-00 00:00:00\'), esc.end_date > now(), ecw.end_date > now())';
         }
 
-        if (!empty($reminder_programme_code)) {
-            $query .= ' AND esc.training IN ('.$reminder_programme_code.')';
-        }
+	    if (!empty($reminder_programme_code)) {
+		    $reminder_programme_code = explode(',',$reminder_programme_code);
+		    foreach ($reminder_programme_code as $key => $code) {
+			    $reminder_programme_code[$key] = $db->quote($code);
+		    }
+		    $query .= ' AND esc.training IN ('.implode(',',$reminder_programme_code).')';
+	    }
 
         $db->setQuery($query);
         $applicants = $db->loadObjectList();
@@ -104,15 +114,25 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
             foreach ($applicants as $applicant) {
                 $mailer = JFactory::getMailer();
 
-				$post = array(
-					'FNUM' => $applicant->fnum,
-	                'DEADLINE' => JHTML::_('date', $applicant->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
-	                'CAMPAIGN_LABEL' => $applicant->label,
-	                'CAMPAIGN_START' => JHTML::_('date', $applicant->start_date, JText::_('DATE_FORMAT_OFFSET1'), null),
-	                'CAMPAIGN_END' => JHTML::_('date', $applicant->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
-	                'FIRSTNAME' => $applicant->firstname,
-	                'LASTNAME' => strtoupper($applicant->lastname)
-				);
+                $start_date = $applicant->start_date_campaign;
+                $end_date = $applicant->end_date_campaign;
+
+                if (!empty($applicant->start_date_phase) && $applicant->start_date_phase !== '0000-00-00 00:00:00') {
+                    $start_date = $applicant->start_date_phase;
+                }
+                if (!empty($applicant->end_date_phase) && $applicant->end_date_phase !== '0000-00-00 00:00:00') {
+                    $end_date = $applicant->end_date_phase;
+                }
+
+                $post = array(
+                    'FNUM' => $applicant->fnum,
+                    'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($end_date)),
+                    'CAMPAIGN_LABEL' => $applicant->label,
+                    'CAMPAIGN_START' => $start_date,
+                    'CAMPAIGN_END' => $end_date,
+                    'FIRSTNAME' => $applicant->firstname,
+                    'LASTNAME' => strtoupper($applicant->lastname)
+                );
                 $tags = $m_emails->setTags($applicant->id, $post, $applicant->fnum, '', $email->emailfrom.$email->name.$email->subject.$email->message);
 
                 $from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
@@ -160,9 +180,10 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
                         'user_id_from' => $from_id,
                         'user_id_to' => $to_id,
                         'subject' => $subject,
-                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
+                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body,
+	                    'email_id' => $reminder_mail_id,
                     );
-                    $m_emails->logEmail($message);
+                    $m_emails->logEmail($message, $applicant->fnum);
                     $this->log .= '\n' . JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.' :: '.$body;
                 }
                 // to avoid been considered as a spam process or DDoS

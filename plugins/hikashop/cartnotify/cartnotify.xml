@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="hikashop">
 	<name>Hikashop Cart notification Plugin</name>
-	<creationDate>25 septembre 2022</creationDate>
-	<version>4.6.2</version>
+	<creationDate>26 juin 2023</creationDate>
+	<version>4.7.4</version>
 	<author>Obsidev</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>(C) 2011-2022 OBSIDEV. All rights reserved.</copyright>
+	<copyright>(C) 2011-2023 OBSIDEV. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>This plugin display notifications when a product is added to the cart</description>
 	<files>
