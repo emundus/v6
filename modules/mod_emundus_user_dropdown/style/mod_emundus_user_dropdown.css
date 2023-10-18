@@ -364,7 +364,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 .moduletable .dropdown #background-shapes {
     position: absolute;
     height: 100%;
-    width: 100%;
+    width: 250px;
     top: 0px;
     right: 13px;
     transform: scale(1.2);
