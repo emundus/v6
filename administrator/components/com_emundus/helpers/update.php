@@ -3253,7 +3253,6 @@ class EmundusHelperUpdate
 			'coordinator' => [
 				'background' => '#f8f8f8',
 				'interface' => '#353544',
-				'primary-color' => '#20835F',
 				'secondary-color' => '#353544',
 				'tertiary-color' => '#5A5A72',
 				'text-color' => '#4B4B4B',
