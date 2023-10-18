@@ -342,7 +342,6 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 }
 
 .dropdown #userDropdownLabel {
-    min-width: 248px;
     display: flex;
     justify-content: flex-end;
 }
@@ -366,8 +365,8 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     height: 100%;
     width: 250px;
     top: 0px;
-    right: 13px;
-    transform: scale(1.2);
+    right: 53px;
+    transform: scale(1.8);
     pointer-events: none;
     z-index: -1;
 }
