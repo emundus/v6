@@ -8,9 +8,6 @@
 
 // No direct access.
 defined('_JEXEC') or die;
-$doc = JFactory::getDocument();
-$doc->addScript(JUri::base().'modules/mod_emundusmenu/assets/helper.js');
-
 // Note. It is important to remove spaces between elements.
 ?>
 <ul class="<?php echo $class_sfx;?>"<?php
