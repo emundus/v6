@@ -257,6 +257,7 @@ a.btn.btn-success:not(.btn-xs) {
 
 .view-featured .candidacy-files-list .row {
    position: relative;
+    height: 100%;
 }
 @media all and (max-width: 479px) {
 
@@ -781,6 +782,7 @@ circle.circle {
 .mod_emundus_applications___content_app .em-w-100 .mod_emundus_applications___title h5 {
     color: var(--em-profile-color);
     font-size: var(--em-applicant-h4);
+    line-height: 24px;
 }
 
 .view-featured .mod_emundus_applications__list_content--default .em-applicant-text-color {

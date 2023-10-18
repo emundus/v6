@@ -302,7 +302,17 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
      background: transparent !important;
  }
 
-@media all and (max-width: 767px) {
+@media all and (max-width: 479px) {
+
+    #g-navigation .header-c .open > .dropdown-menu {
+        top: 255px;
+    }
+}
+@media all and (min-width: 480px) and (max-width: 767px) {
+    #g-navigation .header-c .open > .dropdown-menu {
+        top: 190px;
+    }
+
     .header-right {
         text-align: center !important;
         margin-top: var(--m-8);
@@ -360,11 +370,11 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 }
 
 /* Gestionnaire plateforme et programme */
-.moduletable .dropdown #background-shapes {
+.dropdown #background-shapes {
     position: absolute;
     height: 100%;
     width: 250px;
-    top: 0px;
+    top: 0;
     right: 53px;
     transform: scale(1.8);
     pointer-events: none;
@@ -372,11 +382,11 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 }
 
 /* Déconnecté */
-.moduletable > #background-shapes {
+ #background-shapes {
     position: absolute;
     height: 100%;
     top: -4px;
-    right: 0px;
+    right: 0;
     pointer-events: none;
     z-index: -1;
 }
@@ -386,14 +396,18 @@ div#userDropdown {
 }
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
-    .moduletable > #background-shapes {
+     #background-shapes {
         top: 0;
         right: -4px;
+    }
+
+    #g-navigation .header-c .open > .dropdown-menu {
+        top: 172px;
     }
 }
 
 @media (max-width: 768px) {
-    .moduletable > #background-shapes {
+    #background-shapes {
         display: none;
     }
 }
