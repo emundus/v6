@@ -3226,6 +3226,12 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 						'default' => 0,
 					],
 					[
+						'name'    => 'voting_access',
+						'type'    => 'int',
+						'default' => 1,
+						'null'    => 0,
+					],
+					[
 						'name'    => 'max',
 						'type'    => 'integer',
 						'length'  => 10,
@@ -3332,6 +3338,79 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 				];
 				$setup_gallery_tabs = EmundusHelperUpdate::createTable('jos_emundus_setup_gallery_detail_tabs', $columns, $foreign_keys, 'Onglets de la vue détails du catalogue');
 
+				$columns      = [
+					[
+						'name'    => 'time_date',
+						'type'    => 'datetime',
+						'null'    => 0
+					],
+					[
+						'name'    => 'ccid',
+						'type'    => 'int',
+						'null'    => 1,
+					],
+					[
+						'name'    => 'user',
+						'type'    => 'int',
+						'null'    => 1,
+					],
+					[
+						'name'    => 'firstname',
+						'type'    => 'varchar(255)',
+						'null'    => 1,
+					],
+					[
+						'name'    => 'lastname',
+						'type'    => 'varchar(255)',
+						'null'    => 1,
+					],
+					[
+						'name'    => 'email',
+						'type'    => 'varchar(255)',
+						'null'    => 1,
+					],
+					[
+						'name'    => 'ip',
+						'type'    => 'varchar(20)',
+						'null'    => 1,
+					],
+				];
+				$foreign_keys = [
+					[
+						'name'           => 'jos_emundus_cmapaign_candidature_fk_ccid',
+						'from_column'    => 'ccid',
+						'ref_table'      => 'jos_emundus_campaign_candidature',
+						'ref_column'     => 'id',
+						'update_cascade' => true,
+						'delete_cascade' => true,
+					]
+				];
+				$vota_table = EmundusHelperUpdate::createTable('jos_emundus_vote', $columns, $foreign_keys, 'Vote des dossiers');
+				if(!$vota_table['status']) {
+					EmundusHelperUpdate::addColumn('jos_emundus_vote', 'time_date', 'DATETIME',null,0);
+					EmundusHelperUpdate::addColumn('jos_emundus_vote', 'ccid', 'INT');
+					EmundusHelperUpdate::addColumn('jos_emundus_vote', 'user', 'INT');
+					EmundusHelperUpdate::addColumn('jos_emundus_vote', 'firstname', 'VARCHAR', 255);
+					EmundusHelperUpdate::addColumn('jos_emundus_vote', 'lastname', 'VARCHAR', 255);
+					EmundusHelperUpdate::addColumn('jos_emundus_vote', 'email', 'VARCHAR', 255);
+					EmundusHelperUpdate::addColumn('jos_emundus_vote', 'ip', 'VARCHAR', 20);
+				}
+
+				$column_existing = $db->setQuery('SHOW COLUMNS FROM jos_emundus_vote WHERE ' . $db->quoteName('Field') . ' = ' . $db->quote('thematique'))->loadResult();
+				if (!empty($column_existing)) {
+					$db->setQuery('ALTER TABLE jos_emundus_vote MODIFY thematique INT NULL');
+					$db->execute();
+				}
+
+				$column_existing = $db->setQuery('SHOW COLUMNS FROM jos_emundus_vote WHERE ' . $db->quoteName('Field') . ' = ' . $db->quote('fnum'))->loadResult();
+				if (!empty($column_existing)) {
+					$db->setQuery('ALTER TABLE jos_emundus_vote MODIFY fnum VARCHAR(28) NULL');
+					$db->execute();
+				}
+
+				$db->setQuery('ALTER TABLE jos_emundus_vote MODIFY ' . $db->quoteName('user') . ' INT NULL');
+				$db->execute();
+
 				$query = $db->getQuery(true);
 
 				$query->select($db->quoteName('value'))
@@ -3413,6 +3492,27 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 
 				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTING_GO_DETAILS', 'Ce projet m\'intéresse');
 				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTING_GO_DETAILS', 'This project interests me', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE', 'Je donne mon coup de coeur !');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE', 'I give my favourite!', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_TEXT', '<p>Vous vous apprêtez à voter pour ce projet.</p><p>Êtes-vous sûre de votre choix ? (une fois le coup de coeur attribué, vous ne pourrez plus le retirer)</p>');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_TEXT', '<p>You are about to vote for this project.</p><p>Are you sure of your choice? (once the "coup de coeur" has been awarded, you will not be able to withdraw it)</p>', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_YES', 'Oui, je vote !');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_YES', 'Yes, I vote!', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_NO', 'Non, retour aux projets');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_NO', 'No, back to projects', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_ERROR_PLEASE_COMPLETE_EMAIL', 'Veuillez saisir une adresse email afin de soumettre votre vote');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_ERROR_PLEASE_COMPLETE_EMAIL', 'Please enter an email address to submit your vote', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_ALREADY_VOTED', 'Coup de coeur attribué à ce projet !');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_ALREADY_VOTED', 'You have voted for this project!', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_ALREADY_VOTED_FOR_OTHER', 'Vous avez déjà donné votre coup de coeur');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_ALREADY_VOTED_FOR_OTHER', 'You\'ve already given us your favourite', 'override', null, null, null, 'en-GB');
 
 			}
 		}

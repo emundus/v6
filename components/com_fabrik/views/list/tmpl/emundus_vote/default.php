@@ -16,6 +16,14 @@ $pageClass = $this->params->get('pageclass_sfx', '');
 
 $listid = $this->table->id;
 
+JText::script('COM_FABRIK_VOTE_MODAL_TEXT');
+JText::script('COM_FABRIK_ERROR_PLEASE_COMPLETE_EMAIL');
+JText::script('COM_FABRIK_VOTE_MODAL_YES');
+JText::script('COM_FABRIK_VOTE_MODAL_NO');
+JText::script('COM_FABRIK_VOTE_MODAL_SUCCESS_TITLE');
+JText::script('COM_FABRIK_VOTE_MODAL_SUCCESS_TEXT');
+JText::script('COM_FABRIK_VOTE_MODAL_ERROR_TITLE');
+JText::script('COM_FABRIK_VOTE_MODAL_ERROR_TEXT');
 
 if ($pageClass !== '') :
 	echo '<div class="' . $pageClass . '">';

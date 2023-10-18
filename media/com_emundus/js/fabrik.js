@@ -388,3 +388,82 @@ function checkPasswordSymbols(element) {
         element.set('');
     }
 }
+
+function vote(guest,listid,id,email) {
+    let html = Joomla.JText._('COM_FABRIK_VOTE_MODAL_TEXT');
+
+    if(guest != 1) {
+        html += '<div class="mt-4 hidden"><label for"email">Adresse email</label><input id="vote_email" type="email" value="' + email + '"/></div>';
+    } else {
+        html += '<div class="mt-4"><label for"email">Adresse email</label><input id="vote_email" type="email"/></div>';
+    }
+
+    //TODO: Check voting access to redirect to login page if needed
+    Swal.fire({
+        html: html,
+        focusConfirm: false,
+        preConfirm: () => {
+            if (!document.getElementById('vote_email').value) {
+                Swal.showValidationMessage(Joomla.JText._('COM_FABRIK_ERROR_PLEASE_COMPLETE_EMAIL'))
+            }
+            return [
+                document.getElementById('vote_email').value
+            ]
+        },
+        showCancelButton: true,
+        confirmButtonText: Joomla.JText._('COM_FABRIK_VOTE_MODAL_YES'),
+        cancelButtonText: Joomla.JText._('COM_FABRIK_VOTE_MODAL_NO'),
+        reverseButtons: true,
+        customClass: {
+            cancelButton: 'em-swal-cancel-button',
+            confirmButton: 'em-swal-confirm-button',
+        },
+    }).then(function (result) {
+        if (result.value) {
+            console.log('vote');
+
+            let url = 'index.php?option=com_emundus&controller=vote&task=vote';
+
+            let formData = new FormData();
+            formData.append('listid', listid);
+            formData.append('email', result.value[0]);
+            formData.append('ccid', id);
+
+            fetch(url, {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: Joomla.JText._('COM_FABRIK_VOTE_MODAL_SUCCESS_TITLE'),
+                            text: Joomla.JText._('COM_FABRIK_VOTE_MODAL_SUCCESS_TEXT'),
+                            showConfirmButton: false,
+                            timer: 2000
+                        }).then(() => {
+                            window.location.reload();
+                        })
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: Joomla.JText._('COM_FABRIK_VOTE_MODAL_ERROR_TITLE'),
+                            text: Joomla.JText._('COM_FABRIK_VOTE_MODAL_ERROR_TEXT'),
+                            showConfirmButton: false,
+                            timer: 2000
+                        })
+                    }
+                })
+                .catch((error) => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: Joomla.JText._('COM_FABRIK_VOTE_MODAL_ERROR_TITLE'),
+                        text: Joomla.JText._('COM_FABRIK_VOTE_MODAL_ERROR_TEXT'),
+                        showConfirmButton: false,
+                        timer: 2000
+                    })
+                });
+        }
+    });
+}

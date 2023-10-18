@@ -89,6 +89,44 @@ class EmundusModelGallery extends JModelList
 		return $all_galleries;
 	}
 
+	public function getGalleryByList($listid)
+	{
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'cache.php');
+
+		$cache = new EmundusHelperCache('com_emundus');
+		$cacheId = 'gallery_' . $listid;
+
+		$gallery = $cache->get($cacheId);
+
+		try {
+			$query = $this->_db->getQuery(true);
+
+			if(empty($gallery)) {
+				$query->select('*')
+					->from($this->_db->quoteName('#__emundus_setup_gallery'))
+					->where($this->_db->quoteName('list_id') . ' = ' . $this->_db->quote($listid));
+				$this->_db->setQuery($query);
+				$gallery = $this->_db->loadObject();
+
+				if(!empty($gallery)) {
+					$query->clear()
+						->select('title,fields')
+						->from($this->_db->quoteName('#__emundus_setup_gallery_detail_tabs'))
+						->where($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($gallery->id));
+					$this->_db->setQuery($query);
+					$gallery->tabs = $this->_db->loadObjectList();
+				}
+
+				$cache->set($cacheId, $gallery);
+			}
+		}
+		catch (Exception $e) {
+			JLog::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $gallery;
+	}
+
 	public function createGallery($data, $user = null)
     {
 		$result = array();

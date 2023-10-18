@@ -131,6 +131,25 @@ input.fabrik_filter_submit.button {
 	border-radius: 4px;
 }
 
+button.em-applicant-primary-button[disabled] {
+	border: solid 1px #757575 !important;
+	background-color: transparent !important;
+	color: #757575;
+	white-space: normal;
+}
+
+.heart-voted-icon {
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	background: white;
+	border-radius: 50%;
+	color: var(--red-500);
+	display: flex;
+	align-items: center;
+	padding: 6px;
+}
+
 /* */
 
 

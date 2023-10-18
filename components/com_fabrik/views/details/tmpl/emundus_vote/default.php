@@ -72,37 +72,16 @@ endif;
 	<?php
 	endforeach;
 
-	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
+	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'gallery.php');
+    $m_gallery = new EmundusModelGallery();
 
 	$listid = explode('_', $this->form->db_table_name);
 	$listid = $listid[sizeof($listid) - 1];
 
-	$cache   = new EmundusHelperCache('com_emundus', '', '5');
-	$cacheId = 'gallery_' . $listid;
-
-	$gallery = $cache->get($cacheId);
+	$gallery = $m_gallery->getGalleryByList($listid);
 
 	$db    = JFactory::getDbo();
 	$query = $db->getQuery(true);
-
-	if (empty($gallery)) {
-		$query->select('*')
-			->from($db->quoteName('#__emundus_setup_gallery'))
-			->where($db->quoteName('list_id') . ' = ' . $db->quote($listid));
-		$db->setQuery($query);
-		$gallery = $db->loadObject();
-
-        if(!empty($gallery)) {
-            $query->clear()
-                ->select('title,fields')
-                ->from($db->quoteName('#__emundus_setup_gallery_detail_tabs'))
-                ->where($db->quoteName('parent_id') . ' = ' . $db->quote($gallery->id));
-            $db->setQuery($query);
-            $gallery->tabs = $db->loadObjectList();
-        }
-
-		$result = $cache->set($cacheId, $gallery);
-	}
 	?>
 
     <div style="max-width: 60vw">
