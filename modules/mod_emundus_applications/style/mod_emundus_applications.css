@@ -629,6 +629,11 @@ a.btn.btn-success:not(.btn-xs) {
     border-bottom: 1px solid var(--neutral-300);
 }
 
+#applications_list_view table tbody tr:hover .mod_emundus_applications__container .material-icons {
+    background: var(--em-profile-color);
+    border-radius: var(--em-default-br);
+    color: var(--neutral-0);
+}
 
 #applications_list_view .mod_emundus_applications__container span{
     padding: 4px;
