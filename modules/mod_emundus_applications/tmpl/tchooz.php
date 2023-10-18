@@ -451,7 +451,7 @@ $current_tab = 0;
                                                                         <a class="em-red-500-color em-flex-row em-pointer"
                                                                            onclick="deletefile('<?php echo $application->fnum; ?>');"
                                                                            id="actions_block_delete_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                                            <span class="material-icons-outlined em-mr-8">delete</span>
+                                                                            <span class="material-icons-outlined em-red-500-color em-mr-8">delete</span>
                                                                             <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
                                                                         </a>
                                                                     <?php endif; ?>
@@ -813,7 +813,7 @@ $current_tab = 0;
                                                                 <a class="em-red-500-color em-flex-row em-pointer"
                                                                    onclick="deletefile('<?php echo $application->fnum; ?>');"
                                                                    id="actions_block_delete_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
-                                                                    <span class="material-icons-outlined em-mr-8">delete</span>
+                                                                    <span class="material-icons-outlined em-red-500-color em-mr-8">delete</span>
 																	<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
                                                                 </a>
 															<?php endif; ?>
