@@ -32,6 +32,7 @@ include:
   ref: main
   file: '.release.yml'
 - template: Security/Secret-Detection.gitlab-ci.yml
+- template: Security/Dependency-Scanning.gitlab-ci.yml
 
 check-tchooz-version-job:
   stage: prepare
