@@ -1547,8 +1547,9 @@ $current_tab = 0;
         });
     }
 
-    /* Modification de la couleur du background avec les formes */
+    /* Modification de la couleur du background avec les formes dans les cards et le header */
     let iframeElements = document.querySelectorAll("#background-shapes");
+    let emProfileColor3 = getComputedStyle(document.documentElement).getPropertyValue('--em-profile-color');
 
    iframeElements.forEach((iframeElement) => {
         iframeElement.addEventListener("load", function () {
@@ -1560,7 +1561,7 @@ $current_tab = 0;
 
             if (styleElement) {
                 let styleContent = styleElement.textContent;
-                styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + emProfileColor + ";");
+                styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + emProfileColor3 + ";");
                 styleElement.textContent = styleContent;
             }
 
@@ -1568,7 +1569,7 @@ $current_tab = 0;
                 pathElements.forEach((pathElement) => {
                     let pathStyle = pathElement.getAttribute("style");
                     if (pathStyle && pathStyle.includes("fill:grey;")) {
-                        pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + emProfileColor + ";");
+                        pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + emProfileColor3 + ";");
                         pathElement.setAttribute("style", pathStyle);
                     }
                 });
@@ -1594,6 +1595,7 @@ $current_tab = 0;
         });
     })
 
+    /* Changement de couleur des formes au hover de la ligne de la liste */
     trsHover.forEach((trHover) => {
 
         let iframeElementHover = trHover.querySelector('iframe');

@@ -298,7 +298,7 @@ if ($user != null) {
 
         /* Modification de la couleur du background avec les formes du header */
         let iframeElements_2 = document.querySelectorAll("#background-shapes");
-        let emProfileColor = getComputedStyle(document.documentElement).getPropertyValue('--em-profile-color');
+        let emProfileColor2 = getComputedStyle(document.documentElement).getPropertyValue('--em-profile-color');
 
         iframeElements_2.forEach(function(iframeElement) {
             iframeElement.addEventListener("load", function () {
@@ -309,7 +309,7 @@ if ($user != null) {
                 if (styleElement) {
                     let styleContent = styleElement.textContent;
 
-                    styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + emProfileColor + ";");
+                    styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + emProfileColor2 + ";");
 
                     styleElement.textContent = styleContent;
                 }

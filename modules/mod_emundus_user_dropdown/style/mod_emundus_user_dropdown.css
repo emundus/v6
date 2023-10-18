@@ -369,6 +369,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     right: 13px;
     transform: scale(1.2);
     pointer-events: none;
+    z-index: -1;
 }
 
 /* Déconnecté */
@@ -378,8 +379,22 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     top: -4px;
     right: 0px;
     pointer-events: none;
+    z-index: -1;
 }
 
 div#userDropdown {
     float: initial !important;
+}
+
+@media screen and (min-width: 768px) and (max-width: 959px) {
+    .moduletable > #background-shapes {
+        top: 0;
+        right: -4px;
+    }
+}
+
+@media (max-width: 768px) {
+    .moduletable > #background-shapes {
+        display: none;
+    }
 }

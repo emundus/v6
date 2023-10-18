@@ -993,6 +993,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
     /* Modification de la couleur du background avec les formes */
     let iframeElements = document.querySelectorAll("#background-shapes");
+    let emProfileColor1 = getComputedStyle(document.documentElement).getPropertyValue('--em-profile-color');
 
     iframeElements.forEach((iframeElement) => {
         iframeElement.addEventListener("load", function () {
@@ -1000,14 +1001,23 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
             let pathElements = iframeDocument.querySelectorAll("path");
 
-            /* Coloration de tous les éléments "path" */
-            pathElements.forEach((pathElement) =>{
-                let pathStyle = pathElement.getAttribute("style");
-                if (pathStyle && pathStyle.includes("fill:grey;")) {
-                    pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + emProfileColor + ";");
-                    pathElement.setAttribute("style", pathStyle);
-                }
-            });
+            let styleElement = iframeDocument.querySelector("style");
+
+            if (styleElement) {
+                let styleContent = styleElement.textContent;
+                styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + emProfileColor1 + ";");
+                styleElement.textContent = styleContent;
+            }
+
+            if(pathElements) {
+                pathElements.forEach((pathElement) => {
+                    let pathStyle = pathElement.getAttribute("style");
+                    if (pathStyle && pathStyle.includes("fill:grey;")) {
+                        pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + emProfileColor1 + ";");
+                        pathElement.setAttribute("style", pathStyle);
+                    }
+                });
+            }
         });
     });
 
