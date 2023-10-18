@@ -414,8 +414,12 @@ class EmundusFiltersFiles extends EmundusFilters
 									$new_default_filter['value'] = $new_default_filter['type'] === 'select' ? ['all'] : '';
 								}
 								$new_default_filter['andorOperator'] = 'OR';
-								$new_default_filter['operator'] = $filter['type'] === 'select' ? 'IN' : '=';
+								$new_default_filter['operator'] = '=';
 
+								if ($new_default_filter['type'] === 'select') {
+									$new_default_filter['operator'] = 'IN';
+									$new_default_filter['values'] =  $this->getFabrikElementValuesFromElementId($filter['id']);
+								}
 								$found = true;
 								break;
 							}
@@ -445,8 +449,13 @@ class EmundusFiltersFiles extends EmundusFilters
 										$new_default_filter['value'] = $new_default_filter['type'] === 'select' ? ['all'] : '';
 									}
 									$new_default_filter['andorOperator'] = 'OR';
-									$new_default_filter['operator'] = $new_default_filter['type'] === 'select' ? 'IN' : '=';
-                                }
+									$new_default_filter['operator'] = '=';
+
+									if ($new_default_filter['type'] === 'select') {
+										$new_default_filter['operator'] =  'IN';
+										$new_default_filter['values'] =  $this->getFabrikElementValuesFromElementId($element['id']);
+									}
+								}
                                 $new_default_filter['plugin'] = $element['plugin'];
                             }
 						}
