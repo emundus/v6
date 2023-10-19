@@ -1048,11 +1048,11 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
         let iframeElementHover = divHover.querySelector('iframe');
 
-        divHover.addEventListener('mouseover', function() {
+        divHover.addEventListener('mouseenter', function() {
             iframeElementHover.src = '/modules/mod_emundus_campaign/css/fond-fonce.svg';
         });
 
-        divHover.addEventListener('mouseout', function() {
+        divHover.addEventListener('mouseleave', function() {
             iframeElementHover.src = '/modules/mod_emundus_campaign/css/fond-clair.svg';
         });
     })
