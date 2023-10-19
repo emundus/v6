@@ -53,6 +53,10 @@ class EmundusControllerVote extends JControllerLegacy
 				if(count($votes) >= $gallery->max) {
 					$can_vote = false;
 				}
+
+				if($gallery->voting_access != 1 && $this->_user->guest == 1) {
+					$can_vote = false;
+				}
 			}
 
 			if($can_vote) {
@@ -62,6 +66,38 @@ class EmundusControllerVote extends JControllerLegacy
 				}
 
 				$result['status'] = $m_vote->vote($email, $ccid, $uid);
+			}
+		}
+
+		echo json_encode($result);
+		exit;
+	}
+
+	public function checkaccess()
+	{
+		$gallery_url = $this->input->server->getString('HTTP_REFERER','index.php');
+
+		$result = array(
+			'status' => false,
+			'access' => false,
+			'message' => JText::_('COM_EMUNDUS_ERROR_OCCURED'),
+			'login_url' => JRoute::_('index.php?option=com_users&view=login&return=' . base64_encode($gallery_url))
+		);
+
+		$m_gallery = $this->getModel('gallery');
+
+		$listid = $this->input->getInt('listid', 0);
+
+		if(!empty($listid)) {
+			$gallery = $m_gallery->getGalleryByList($listid);
+
+			if(!empty($gallery)) {
+				$result['message'] = '';
+				$result['status'] = true;
+
+				if(($gallery->voting_access != 1 && $this->_user->guest != 1) || $gallery->voting_access == 1) {
+					$result['access'] = true;
+				}
 			}
 		}
 

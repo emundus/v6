@@ -3514,6 +3514,18 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_ALREADY_VOTED_FOR_OTHER', 'Vous avez déjà donné votre coup de coeur');
 				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_ALREADY_VOTED_FOR_OTHER', 'You\'ve already given us your favourite', 'override', null, null, null, 'en-GB');
 
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_SUCCESS_TITLE', 'Vote soumis !');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_SUCCESS_TITLE', 'Vote submitted!', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_SUCCESS_TEXT', 'Votre vote a bien été pris en compte ! Merci de votre participation.');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_SUCCESS_TEXT', 'Your vote has been taken into account! Thank you for your participation.', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_ERROR_TITLE', 'Une erreur est survenue');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_ERROR_TITLE', 'An error has occurred', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_ERROR_TEXT', 'Votre vote n\'as pas pu être pris en compte. Veuillez réessayer plus tard.');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_ERROR_TEXT', 'Your vote could not be taken into account. Please try again later.', 'override', null, null, null, 'en-GB');
+
 			}
 		}
 

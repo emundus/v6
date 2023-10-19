@@ -728,7 +728,7 @@ elseif ($user->guest
         (($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw')
         && ($secret === $token || $webhook_token == JApplicationHelper::getHash($token))
         || $task == 'getfilereferent'
-        || $task == 'vote'
+        || $app->input->get('controller', '', 'WORD') === 'vote'
     ))
 {
     $controller->execute($task);

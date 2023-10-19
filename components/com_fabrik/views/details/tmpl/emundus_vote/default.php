@@ -12,9 +12,35 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Factory;
+
 $form  = $this->form;
 $model = $this->getModel();
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'gallery.php');
+require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'vote.php');
+$m_gallery = new EmundusModelGallery();
+$m_vote    = new EmundusModelVote();
+
+JText::script('COM_FABRIK_VOTE_MODAL_TEXT');
+JText::script('COM_FABRIK_ERROR_PLEASE_COMPLETE_EMAIL');
+JText::script('COM_FABRIK_VOTE_MODAL_YES');
+JText::script('COM_FABRIK_VOTE_MODAL_NO');
+JText::script('COM_FABRIK_VOTE_MODAL_SUCCESS_TITLE');
+JText::script('COM_FABRIK_VOTE_MODAL_SUCCESS_TEXT');
+JText::script('COM_FABRIK_VOTE_MODAL_ERROR_TITLE');
+JText::script('COM_FABRIK_VOTE_MODAL_ERROR_TEXT');
+
+$listid = explode('_', $this->form->db_table_name);
+$listid = $listid[sizeof($listid) - 1];
+
+$gallery = $m_gallery->getGalleryByList($listid);
+$votes   = $m_vote->getVotesByUser();
+
+$user = Factory::getApplication()->getIdentity();
+
+$db    = Factory::getDbo();
+$query = $db->getQuery(true);
 
 if ($this->params->get('show_page_heading', 1)) : ?>
     <div class="componentheading<?php echo $this->params->get('pageclass_sfx') ?>">
@@ -72,19 +98,15 @@ endif;
 	<?php
 	endforeach;
 
-	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'gallery.php');
-    $m_gallery = new EmundusModelGallery();
-
-	$listid = explode('_', $this->form->db_table_name);
-	$listid = $listid[sizeof($listid) - 1];
-
-	$gallery = $m_gallery->getGalleryByList($listid);
-
-	$db    = JFactory::getDbo();
-	$query = $db->getQuery(true);
+	$voted = false;
+	foreach ($votes as $vote) {
+		if ($vote->ccid == $this->elements['id']->value) {
+			$voted = true;
+		}
+	}
 	?>
 
-    <div style="max-width: 60vw">
+    <div class="voting-details-group">
 		<?php if (!empty($gallery->banner)) : ?>
 			<?php
 			$filename = '';
@@ -109,121 +131,159 @@ endif;
 						}
 						copy($filename_applicant, JPATH_ROOT . '/images/emundus/gallery/' . $file->applicant_id . '/' . $file->filename);
 					}
-				}
+				} else {
+                    $filename = JUri::base() . 'media/com_emundus/images/gallery/default_banner.png';
+                }
 				?>
 
                 <div class="fabrikImageBackground" style="background-image: url('<?php echo $filename; ?>')"></div>
 			<?php } ?>
 		<?php endif; ?>
 
-		<?php if (!empty($gallery->title)) : ?>
-			<?php
-			$elt = explode('___', $gallery->title)[1];
-			?>
-			<?php if (isset($this->elements[$elt])) : ?>
-                <h2 class="line-clamp-2 h-14 mt-10">
-					<?php echo $this->elements[$elt]->element_ro; ?>
-                </h2>
-			<?php endif; ?>
-		<?php endif; ?>
+        <div class="p-8">
+            <?php if (!empty($gallery->title)) : ?>
+                <?php
+                $elt = explode('___', $gallery->title)[1];
+                ?>
+                <?php if (isset($this->elements[$elt])) : ?>
+                    <h2 class="line-clamp-2 h-14 mt-10">
+                        <?php echo $this->elements[$elt]->element_ro; ?>
+                    </h2>
+                <?php endif; ?>
+            <?php endif; ?>
 
-		<?php if (!empty($gallery->tags)) : ?>
-			<?php
-			$elt = explode('___', $gallery->tags)[1];
-			?>
-			<?php if (isset($this->elements[$elt])) : ?>
-                <div class="mb-3 tags" style="min-height: 30px">
-					<?php echo $this->elements[$elt]->element_ro; ?>
-                </div>
-			<?php endif; ?>
-		<?php endif; ?>
+            <?php if (!empty($gallery->tags)) : ?>
+                <?php
+                $elt = explode('___', $gallery->tags)[1];
+                ?>
+                <?php if (isset($this->elements[$elt])) : ?>
+                    <div class="mb-3 tags" style="min-height: 30px">
+                        <?php echo $this->elements[$elt]->element_ro; ?>
+                    </div>
+                <?php endif; ?>
+            <?php endif; ?>
 
-		<?php if (!empty($gallery->tabs)) : ?>
-            <div class="details-tabs mt-10 flex items-center mb-8">
-				<?php
-				?>
-				<?php foreach ($gallery->tabs as $key => $tab) : ?>
-                    <p <?php if($key == 0) : ?>class="active"<?php endif; ?>><?php echo $tab->title ?></p>
-				<?php endforeach; ?>
-            </div>
-			<?php foreach ($gallery->tabs as $key => $tab) : ?>
-                <div id="tab_<?php echo $key ?>" <?php if($key > 0) : ?>style="display: none"<?php endif; ?>>
+            <?php if (!empty($gallery->tabs)) : ?>
+                <div class="details-tabs mt-10 flex items-center mb-8">
                     <?php
-                        $fields = explode(';', $tab->fields);
                     ?>
-                    <?php foreach ($fields as $field) : ?>
-	                    <?php
-	                    $elt = explode('___', $field)[1];
-	                    ?>
-	                    <?php if (isset($this->elements[$elt])) : ?>
-                            <h3 class="mb-3"><?php echo $this->elements[$elt]->label_raw ?></h3>
-                            <div class="mb-5">
-			                    <?php echo $this->elements[$elt]->element_ro; ?>
-                            </div>
-	                    <?php endif; ?>
+                    <?php foreach ($gallery->tabs as $key => $tab) : ?>
+                        <p <?php if ($key == 0) : ?>class="active"<?php endif; ?>><?php echo $tab->title ?></p>
                     <?php endforeach; ?>
                 </div>
-			<?php endforeach; ?>
-		<?php endif; ?>
+                <?php foreach ($gallery->tabs as $key => $tab) : ?>
+                    <div id="tab_<?php echo $key ?>" <?php if ($key > 0) : ?>style="display: none"<?php endif; ?>>
+                        <?php
+                        $fields = explode(';', $tab->fields);
+                        ?>
+                        <?php foreach ($fields as $field) : ?>
+                            <?php
+                            $elt = explode('___', $field)[1];
+                            ?>
+                            <?php if (isset($this->elements[$elt])) : ?>
+                                <h3 class="mb-3"><?php echo $this->elements[$elt]->label_raw ?></h3>
+                                <div class="mb-5">
+                                    <?php echo $this->elements[$elt]->element_ro; ?>
+                                </div>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
 
-	    <?php if ($gallery->is_voting == 1) : ?>
+		<?php if ($gallery->is_voting == 1) : ?>
             <div class="voting-pop em-repeat-card" style="padding: unset">
-                <?php if(!empty($gallery->logo)) : ?>
-	                <?php
-	                $filename = '';
-	                $fnum     = $this->elements['fnum']->value;
+				<?php if (!empty($gallery->logo)) : ?>
+					<?php
+					$filename = '';
+					$fnum     = $this->elements['fnum']->value;
 
-	                if (!empty($fnum)) {
-		                $query->clear()
-			                ->select('ecc.applicant_id,eu.filename')
-			                ->from($db->quoteName('#__emundus_uploads', 'eu'))
-			                ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ecc.fnum') . ' = ' . $db->quoteName('eu.fnum'))
-			                ->where($db->quoteName('ecc.fnum') . ' = ' . $db->quote($fnum))
-			                ->where($db->quoteName('eu.attachment_id') . ' = ' . $db->quote($gallery->logo));
-		                $db->setQuery($query);
-		                $file = $db->loadObject();
+					if (!empty($fnum)) {
+						$query->clear()
+							->select('ecc.applicant_id,eu.filename')
+							->from($db->quoteName('#__emundus_uploads', 'eu'))
+							->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ecc.fnum') . ' = ' . $db->quoteName('eu.fnum'))
+							->where($db->quoteName('ecc.fnum') . ' = ' . $db->quote($fnum))
+							->where($db->quoteName('eu.attachment_id') . ' = ' . $db->quote($gallery->logo));
+						$db->setQuery($query);
+						$file = $db->loadObject();
 
-		                if (!empty($file->filename)) {
-			                $filename_applicant = JPATH_ROOT . '/images/emundus/files/' . $file->applicant_id . '/' . $file->filename;
-			                $filename           = JUri::base() . 'images/emundus/gallery/' . $file->applicant_id . '/' . $file->filename;
-			                if (!file_exists($filename)) {
-				                if (!is_dir(JPATH_ROOT . '/images/emundus/gallery/' . $file->applicant_id)) {
-					                mkdir(JPATH_ROOT . '/images/emundus/gallery/' . $file->applicant_id, 0777, true);
-				                }
-				                copy($filename_applicant, JPATH_ROOT . '/images/emundus/gallery/' . $file->applicant_id . '/' . $file->filename);
-			                }
-		                }
-		                ?>
+						if (!empty($file->filename)) {
+							$filename_applicant = JPATH_ROOT . '/images/emundus/files/' . $file->applicant_id . '/' . $file->filename;
+							$filename           = JUri::base() . 'images/emundus/gallery/' . $file->applicant_id . '/' . $file->filename;
+							if (!file_exists($filename)) {
+								if (!is_dir(JPATH_ROOT . '/images/emundus/gallery/' . $file->applicant_id)) {
+									mkdir(JPATH_ROOT . '/images/emundus/gallery/' . $file->applicant_id, 0777, true);
+								}
+								copy($filename_applicant, JPATH_ROOT . '/images/emundus/gallery/' . $file->applicant_id . '/' . $file->filename);
+							}
+						}
+						?>
 
-                        <div class="p-4"><div class="fabrikImageBackgroundLogo" style="background-image: url('<?php echo $filename; ?>')"></div></div>
-	                <?php } ?>
-                <?php endif; ?>
+                        <div class="p-4">
+                            <div class="fabrikImageBackgroundLogo"
+                                 style="background-image: url('<?php echo $filename; ?>')"></div>
+                        </div>
+					<?php } ?>
+				<?php endif; ?>
 
                 <div class="p-4 voting-details-block">
-                    <?php if (!empty($gallery->title)) : ?>
-                        <?php
-                        $elt = explode('___', $gallery->title)[1];
-                        ?>
-                        <?php if (isset($this->elements[$elt])) : ?>
+					<?php if (!empty($gallery->title)) : ?>
+						<?php
+						$elt = explode('___', $gallery->title)[1];
+						?>
+						<?php if (isset($this->elements[$elt])) : ?>
                             <h2 class="line-clamp-2">
-                                <?php echo $this->elements[$elt]->element_ro; ?>
+								<?php echo $this->elements[$elt]->element_ro; ?>
                             </h2>
-                        <?php endif; ?>
-                    <?php endif; ?>
+						<?php endif; ?>
+					<?php endif; ?>
 
-                    <?php if (!empty($gallery->subtitle)) : ?>
-                        <?php
-                        $elt = explode('___', $gallery->subtitle)[1];
-                        ?>
-                        <?php if (isset($this->elements[$elt])) : ?>
+					<?php if (!empty($gallery->subtitle)) : ?>
+						<?php
+						$elt = explode('___', $gallery->subtitle)[1];
+						?>
+						<?php if (isset($this->elements[$elt])) : ?>
                             <p class="em-caption mb-3" style="min-height: 15px">
-                                <?php echo $this->elements[$elt]->element_ro; ?>
+								<?php echo $this->elements[$elt]->element_ro; ?>
                             </p>
-                        <?php endif; ?>
-                    <?php endif; ?>
+						<?php endif; ?>
+					<?php endif; ?>
+
+					<?php if (empty($votes)) : ?>
+                        <button onclick="vote('<?php echo $user->guest ?>','<?php echo $listid ?>','<?php echo $this->elements['id']->value ?>','<?php echo $user->email ?>')"
+                                type="button"
+                                class="em-applicant-primary-button w-full mt-3"
+                                style="text-transform: unset">
+							<?php echo JText::_('COM_FABRIK_VOTE') ?>
+                        </button>
+					<?php else : ?>
+						<?php if (!$voted) : ?>
+                            <button
+								<?php if (count($votes) < $gallery->max) : ?>onclick="vote('<?php echo $user->guest ?>','<?php echo $listid ?>','<?php echo $this->elements['id']->value ?>','<?php echo $user->email ?>')"
+								<?php else : ?>disabled<?php endif; ?>
+                                type="button"
+                                class="em-applicant-primary-button w-full mt-3"
+                                style="text-transform: unset">
+								<?php if (count($votes) < $gallery->max) : ?>
+									<?php echo JText::_('COM_FABRIK_VOTE') ?>
+								<?php else: ?>
+									<?php echo JText::_('COM_FABRIK_ALREADY_VOTED_FOR_OTHER') ?>
+								<?php endif; ?>
+                            </button>
+						<?php else : ?>
+                            <button disabled
+                                    type="button"
+                                    class="em-applicant-primary-button w-full mt-3"
+                                    style="text-transform: unset">
+								<?php echo JText::_('COM_FABRIK_ALREADY_VOTED') ?>
+                            </button>
+						<?php endif; ?>
+					<?php endif; ?>
                 </div>
             </div>
-        <?php endif; ?>
+		<?php endif; ?>
     </div>
 
 	<?php
@@ -234,9 +294,9 @@ endif;
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         let tabs = document.querySelector('.details-tabs');
-        if(tabs) {
+        if (tabs) {
             tabs.querySelectorAll('p').forEach((tab, index) => {
                 tab.addEventListener('click', () => {
                     tabs.querySelectorAll('p').forEach((tab) => {

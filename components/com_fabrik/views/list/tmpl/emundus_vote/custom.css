@@ -20,7 +20,7 @@ a.advanced-search-link-NOT {
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-position: center;
-	height: 170px;
+	height: 192px;
 }
 
 .list-footer{
@@ -220,6 +220,14 @@ button.em-applicant-primary-button[disabled] {
 	.fabrikDataContainer{
 		flex: 0 0 100%;
 	}
+}
+
+.view-list:not(.g-back-office-emundus-tableau) #g-container-main {
+	padding-left: 0 !important;
+}
+
+#g-container-main .g-container {
+	max-width: 1366px;
 }
 
 @media only screen and (min-device-width: 500px)

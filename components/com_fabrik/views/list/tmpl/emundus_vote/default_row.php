@@ -29,16 +29,15 @@ $user = Factory::getApplication()->getIdentity();
 $db    = Factory::getDbo();
 $query = $db->getQuery(true);
 
+$voted = false;
+foreach ($votes as $vote) {
+	if ($vote->ccid == $this->_row->data->{$db_table_name . '___id'}) {
+		$voted = true;
+	}
+}
+
 ?>
 <div id="<?php echo $this->_row->id; ?>" class="<?php echo $this->_row->class; ?> em-repeat-card-no-padding em-pb-24 relative">
-	<?php
-	$voted = false;
-	foreach ($votes as $vote) {
-		if ($vote->ccid == $this->_row->data->{$db_table_name . '___id'}) {
-			$voted = true;
-		}
-	}
-	?>
 
 	<?php if (!empty($gallery->image)) : ?>
 		<?php
@@ -65,6 +64,8 @@ $query = $db->getQuery(true);
 					}
 					copy($filename_applicant, JPATH_ROOT . '/images/emundus/gallery/' . $file->applicant_id . '/' . $file->filename);
 				}
+			} else {
+				$filename = JUri::base() . 'media/com_emundus/images/gallery/default_card.png';
 			}
 		}
 		?>
@@ -103,7 +104,7 @@ $query = $db->getQuery(true);
 
 		<?php if ($gallery->is_voting == 1) : ?>
 			<?php if (empty($votes)) : ?>
-                <button onclick="vote('<?php echo $user->guest ?>','<?php echo $listid ?>','<?php echo $this->_row->data->{$db_table_name . '___id'} ?>','<?php echo $this->user->email ?>')"
+                <button onclick="vote('<?php echo $user->guest ?>','<?php echo $listid ?>','<?php echo $this->_row->data->{$db_table_name . '___id'} ?>','<?php echo $user->email ?>')"
                         type="button"
                         class="em-applicant-primary-button w-full mt-3"
                         style="text-transform: unset">
@@ -111,7 +112,7 @@ $query = $db->getQuery(true);
                 </button>
             <?php else : ?>
                 <?php if (!$voted) : ?>
-                    <button <?php if(count($votes) < $gallery->max) : ?>onclick="vote('<?php echo $user->guest ?>','<?php echo $listid ?>','<?php echo $this->_row->data->{$db_table_name . '___id'} ?>','<?php echo $this->user->email ?>')"<?php else : ?>disabled<?php endif; ?>
+                    <button <?php if(count($votes) < $gallery->max) : ?>onclick="vote('<?php echo $user->guest ?>','<?php echo $listid ?>','<?php echo $this->_row->data->{$db_table_name . '___id'} ?>','<?php echo $user->email ?>')"<?php else : ?>disabled<?php endif; ?>
                             type="button"
                             class="em-applicant-primary-button w-full mt-3"
                             style="text-transform: unset">

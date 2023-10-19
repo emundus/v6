@@ -60,15 +60,22 @@
     background: #F0F0F0;
 }
 
+button.em-applicant-primary-button[disabled] {
+    border: solid 1px #757575 !important;
+    background-color: transparent !important;
+    color: #757575;
+    white-space: normal;
+}
+
 /** Image field as background */
 .fabrikImageBackground{
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    height: 170px;
+    height: 310px;
     position: relative;
     width: 100vw;
-    left: -60px;
+    left: 0;
     margin-top: -40px;
 }
 .fabrikImageBackgroundLogo{
@@ -78,4 +85,39 @@
     height: 250px;
     width: 250px;
     border-radius: calc(var(--em-form-br-block)/4);
+}
+
+#g-container-main .g-container {
+    width: 100%;
+    padding: 0 !important;
+}
+
+
+.voting-details-group {
+    max-width: 60vw;
+}
+
+@media (max-width: 1024px) {
+    #g-container-main {
+        padding: 20px 0 0 0 !important;
+    }
+}
+
+@media all and (min-width: 1600px) {
+    .voting-pop {
+        top: 20vh;
+    }
+}
+
+@media all and (max-width: 767px) {
+    .voting-pop {
+        position: static;
+        margin: 0 auto;
+    }
+    .voting-details-group {
+        max-width: 100%;
+    }
+    .details-tabs {
+        justify-content: center;
+    }
 }

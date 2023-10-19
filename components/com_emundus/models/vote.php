@@ -57,7 +57,7 @@ class EmundusModelVote extends JModelList
 			$ip = $_SERVER['REMOTE_ADDR'];
 
 			try {
-				$query->select('v.*')
+				$query->select('v.id,v.user,v.ccid,v.firstname,v.lastname,v.email,v.ip')
 					->from($this->_db->quoteName('#__emundus_vote', 'v'));
 				if ($user->guest == 1) {
 					$query->where($this->_db->quoteName('v.ip') . ' = ' . $this->_db->quote($ip));

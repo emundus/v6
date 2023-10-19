@@ -399,71 +399,75 @@ function vote(guest,listid,id,email) {
     }
 
     //TODO: Check voting access to redirect to login page if needed
-    Swal.fire({
-        html: html,
-        focusConfirm: false,
-        preConfirm: () => {
-            if (!document.getElementById('vote_email').value) {
-                Swal.showValidationMessage(Joomla.JText._('COM_FABRIK_ERROR_PLEASE_COMPLETE_EMAIL'))
-            }
-            return [
-                document.getElementById('vote_email').value
-            ]
-        },
-        showCancelButton: true,
-        confirmButtonText: Joomla.JText._('COM_FABRIK_VOTE_MODAL_YES'),
-        cancelButtonText: Joomla.JText._('COM_FABRIK_VOTE_MODAL_NO'),
-        reverseButtons: true,
-        customClass: {
-            cancelButton: 'em-swal-cancel-button',
-            confirmButton: 'em-swal-confirm-button',
-        },
-    }).then(function (result) {
-        if (result.value) {
-            console.log('vote');
-
-            let url = 'index.php?option=com_emundus&controller=vote&task=vote';
-
-            let formData = new FormData();
-            formData.append('listid', listid);
-            formData.append('email', result.value[0]);
-            formData.append('ccid', id);
-
-            fetch(url, {
-                method: 'POST',
-                body: formData,
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: Joomla.JText._('COM_FABRIK_VOTE_MODAL_SUCCESS_TITLE'),
-                            text: Joomla.JText._('COM_FABRIK_VOTE_MODAL_SUCCESS_TEXT'),
-                            showConfirmButton: false,
-                            timer: 2000
-                        }).then(() => {
-                            window.location.reload();
-                        })
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: Joomla.JText._('COM_FABRIK_VOTE_MODAL_ERROR_TITLE'),
-                            text: Joomla.JText._('COM_FABRIK_VOTE_MODAL_ERROR_TEXT'),
-                            showConfirmButton: false,
-                            timer: 2000
-                        })
+    fetch('index.php?option=com_emundus&controller=vote&task=checkaccess&listid=' + listid).then(response => response.json()).then(data => {
+        if(!data.access) {
+            window.location.href = data.login_url;
+        } else {
+            Swal.fire({
+                html: html,
+                focusConfirm: false,
+                preConfirm: () => {
+                    if (!document.getElementById('vote_email').value) {
+                        Swal.showValidationMessage(Joomla.JText._('COM_FABRIK_ERROR_PLEASE_COMPLETE_EMAIL'))
                     }
-                })
-                .catch((error) => {
-                    Swal.fire({
-                        icon: 'error',
-                        title: Joomla.JText._('COM_FABRIK_VOTE_MODAL_ERROR_TITLE'),
-                        text: Joomla.JText._('COM_FABRIK_VOTE_MODAL_ERROR_TEXT'),
-                        showConfirmButton: false,
-                        timer: 2000
+                    return [
+                        document.getElementById('vote_email').value
+                    ]
+                },
+                showCancelButton: true,
+                confirmButtonText: Joomla.JText._('COM_FABRIK_VOTE_MODAL_YES'),
+                cancelButtonText: Joomla.JText._('COM_FABRIK_VOTE_MODAL_NO'),
+                reverseButtons: true,
+                customClass: {
+                    cancelButton: 'em-swal-cancel-button',
+                    confirmButton: 'em-swal-confirm-button',
+                },
+            }).then(function (result) {
+                if (result.value) {
+                    let url = 'index.php?option=com_emundus&controller=vote&task=vote';
+
+                    let formData = new FormData();
+                    formData.append('listid', listid);
+                    formData.append('email', result.value[0]);
+                    formData.append('ccid', id);
+
+                    fetch(url, {
+                        method: 'POST',
+                        body: formData,
                     })
-                });
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: Joomla.JText._('COM_FABRIK_VOTE_MODAL_SUCCESS_TITLE'),
+                                    text: Joomla.JText._('COM_FABRIK_VOTE_MODAL_SUCCESS_TEXT'),
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                }).then(() => {
+                                    window.location.reload();
+                                })
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: Joomla.JText._('COM_FABRIK_VOTE_MODAL_ERROR_TITLE'),
+                                    text: Joomla.JText._('COM_FABRIK_VOTE_MODAL_ERROR_TEXT'),
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                })
+                            }
+                        })
+                        .catch((error) => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: Joomla.JText._('COM_FABRIK_VOTE_MODAL_ERROR_TITLE'),
+                                text: Joomla.JText._('COM_FABRIK_VOTE_MODAL_ERROR_TEXT'),
+                                showConfirmButton: false,
+                                timer: 2000
+                            })
+                        });
+                }
+            });
         }
     });
 }
