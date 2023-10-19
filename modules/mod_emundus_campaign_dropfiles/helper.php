@@ -71,6 +71,7 @@ class modEmundusCampaignDropfilesHelper {
                     ->andWhere([$db->quoteName('df.publish_down') . ' >= ' . $db->quote($now), $db->quoteName('df.publish_down') . ' = ' . $query->quote('0000-00-00 00:00:00')])
                     ->andWhere($db->quoteName('df.state') . ' = 1')
                     ->andWhere($db->quoteName('cat.extension') . ' = ' . $db->quote('com_dropfiles'))
+	                ->andWhere('json_valid(`cat`.`params`)')
                     ->andWhere('json_extract(`cat`.`params`, "$.idCampaign") LIKE ' . $db->quote('"' . $id . '"'))
                     ->andWhere($db->quoteName('cat.access') . ' IN (' . implode(' , ', $groupUser) . ')')
                     ->group('df.ordering');

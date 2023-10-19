@@ -73,19 +73,26 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
             $acceptedExt = [];
 
-            if (!file_exists(EMUNDUS_PATH_ABS . $user)) {
+            if (!class_exists('EmundusModelFiles')) {
+                require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+            }
+            $m_files = new EmundusModelFiles();
+
+            $fnumInfos = $m_files->getFnumInfos($fnum);
+
+            if (!file_exists(EMUNDUS_PATH_ABS . $fnumInfos['applicant_id'])) {
                 // An error would occur when the index.html file was missing, the 'Unable to create user file' error appeared yet the folder was created.
                 if (!file_exists(EMUNDUS_PATH_ABS . 'index.html')) {
                     touch(EMUNDUS_PATH_ABS . 'index.html');
                 }
 
-                if (!mkdir(EMUNDUS_PATH_ABS . $user) || !copy(EMUNDUS_PATH_ABS . 'index.html', EMUNDUS_PATH_ABS . $user . DS . 'index.html')) {
-                    $error = JUri::getInstance() . ' :: USER ID : ' . $user . ' -> Unable to create user file';
+                if (!mkdir(EMUNDUS_PATH_ABS . $fnumInfos['applicant_id']) || !copy(EMUNDUS_PATH_ABS . 'index.html', EMUNDUS_PATH_ABS . $fnumInfos['applicant_id'] . DS . 'index.html')) {
+                    $error = JUri::getInstance() . ' :: USER ID : ' . $fnumInfos['applicant_id'] . ' -> Unable to create user file';
                     JLog::add($error, JLog::ERROR, 'com_emundus');
                     return false;
                 }
             }
-            chmod(EMUNDUS_PATH_ABS . $user, 0755);
+            chmod(EMUNDUS_PATH_ABS . $fnumInfos['applicant_id'], 0755);
 
             foreach ($files as $file) {
 
@@ -94,7 +101,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
                 $tmp_name = $file['tmp_name'];
                 $fileSize = $file['size'];
 
-                $target = $this->getPath($user, $fileName);
+                $target = $this->getPath($fnumInfos['applicant_id'], $fileName);
 
                 $extension = explode('.', $fileName);
                 $extensionAttachment = $attachmentResult->allowed_types;

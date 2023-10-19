@@ -46,4 +46,14 @@ class EmundusModelProgrammeTest extends TestCase
 	{
 		$this->assertTrue(true);
 	}
+
+	public function testGetProgrammes()
+	{
+		$this->assertIsArray($this->m_programme->getProgrammes());
+		$this->assertIsArray($this->m_programme->getProgrammes(0));
+		$this->assertIsArray($this->m_programme->getProgrammes(0, [
+			'IN' => ['code_1'],
+			'NOT_IN' => ['code_2'],
+		]));
+	}
 }

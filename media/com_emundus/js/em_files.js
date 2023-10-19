@@ -6480,20 +6480,17 @@ $(document).ready(function() {
     });
 });
 
-function updateProfileForm(){
-    /* get the selected profile id*/
-    var profile = $('#select_profile').val();
+function updateProfileForm(profile){
+    document.querySelector('.em-light-selected-tab p').classList.remove('em-neutral-900-color');
+    document.querySelector('.em-light-selected-tab p').classList.add('em-neutral-600-color');
+    document.querySelector('.em-light-selected-tab').classList.remove('em-light-selected-tab');
+
+    document.querySelector('#tab_link_'+profile).classList.add('em-light-selected-tab');
+    document.querySelector('#tab_link_'+profile+' p').classList.remove('em-neutral-600-color');
+    document.querySelector('#tab_link_'+profile+' p').classList.add('em-neutral-900-color');
 
     $('#show_profile').empty();
     $('#show_profile').before('<div id="loading"><img src="'+loading+'" alt="loading"/></div>');
-
-    /* all other options will be normal */
-    $('#select_profile option').each(function() {
-        if($(this).attr('value') !== profile) {
-            $(this).prop('disabled', false);
-            $(this).css('font-style', 'unset');
-        }
-    })
 
     /* call to ajax */
     $.ajax({
