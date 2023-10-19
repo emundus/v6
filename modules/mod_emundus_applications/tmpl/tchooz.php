@@ -1600,11 +1600,11 @@ $current_tab = 0;
 
         let iframeElementHover = trHover.querySelector('iframe');
 
-        trHover.addEventListener('mouseover', function() {
+        trHover.addEventListener('mouseenter', function() {
             iframeElementHover.src = '/modules/mod_emundus_user_dropdown/style/fond-formes-header-fonce.svg';
         });
 
-        trHover.addEventListener('mouseout', function() {
+        trHover.addEventListener('mouseleave', function() {
             iframeElementHover.src = '/modules/mod_emundus_user_dropdown/style/fond-formes-header.svg';
         });
     })
