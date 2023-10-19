@@ -14,16 +14,19 @@ JHtml::_('behavior.formvalidator');
 
 $document = JFactory::getDocument();
 $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_users_reset.css");
+$username = JFactory::getApplication()->input->getString('username');
+
+$this->form->setValue('username', '', $username);
 
 ?>
 <div class="reset-confirm<?php echo $this->pageclass_sfx; ?>">
 
 		<div class="page-header">
             <?php if (file_exists('images/custom/favicon.png')) : ?>
-                <a href="/" class="em-profile-picture em-mb-32" style="width: 50px;height: 50px;background-image: url('images/custom/favicon.png')">
+                <a href="index.php" alt="Logo" class="em-profile-picture em-mb-32" style="width: 50px;height: 50px;background-image: url('images/custom/favicon.png')">
                 </a>
             <?php endif; ?>
-            <h1 class="em-mb-8 em-h1">
+            <h1 class="em-mb-8">
                 <?php echo $this->escape($this->params->get('page_heading')); ?>
             </h1>
 		</div>
@@ -32,7 +35,7 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_use
             <?php foreach ($this->form->getFieldsets() as $fieldset) : ?>
                 <fieldset>
                     <?php if (isset($fieldset->label)) : ?>
-                        <p><?php echo JText::_($fieldset->label); ?></p>
+                        <p class="mb-4"><?php echo JText::_($fieldset->label); ?></p>
                     <?php endif; ?>
                     <?php echo $this->form->renderFieldset($fieldset->name); ?>
                 </fieldset>

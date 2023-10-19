@@ -1,0 +1,25 @@
+{
+  "name": "tchooz",
+  "version": "1.37.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "postcss templates/g5_helium/custom/scss/main.css -o templates/g5_helium/custom/scss/main.compiled.css",
+    "dev": "postcss templates/g5_helium/custom/scss/main.css -w -o templates/g5_helium/custom/scss/main.compiled.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@git.emundus.io:2617/emundus/cms/core.git"
+  },
+  "author": "dev@emundus.io",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "autoprefixer": "^10.4.14",
+    "cssnano": "^6.0.1",
+    "postcss": "^8.4.24",
+    "postcss-cli": "^10.1.0",
+    "postcss-import": "^15.1.0",
+    "tailwindcss": "^3.3.2"
+  }
+}

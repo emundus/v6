@@ -83,7 +83,7 @@ div.advanced-dropdown span.caret{
     align-items: center;
     justify-content: center;
     background-color: transparent;
-    font-family: var(--font);
+    font-family: var(--em-default-font);
 }
 
 .mod_falang_emundus___other_languages{

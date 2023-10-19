@@ -100,17 +100,19 @@ export default {
     {
         if (id > 0) {
             try {
-                return await client().get(baseUrl + '&task=getDocuments', {params: {pid: id}});
+                const response = await client().get(baseUrl + '&task=getDocuments', {params: {pid: id}});
+
+                return response.data;
             } catch (error) {
                 return {
                     status: false,
-                    error: error
+                    msg: error
                 };
             }
         } else {
             return {
                 status: false,
-                error: 'Missing parameter'
+                msg: 'Missing parameter'
             };
         }
     },
@@ -266,11 +268,16 @@ export default {
             const response = await client().get(
                 'index.php?option=com_emundus&view=form&formid=' + formId + '&format=vue_jsonclean'
             );
+
+            if (typeof response.data !== 'object') {
+                throw 'COM_EMUNDUS_FORM_BUILDER_FAILED_TO_LOAD_FORM';
+            }
+
             return response;
         } catch (error) {
             return {
                 status: false,
-                error:error
+                msg: error
             };
         }
     },

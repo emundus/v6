@@ -358,6 +358,12 @@ class EmundusModelEmails extends JModelList {
                     $mailer->Encoding = 'base64';
                     $mailer->setBody($body);
 
+                    $custom_email_tag = EmundusHelperEmails::getCustomHeader();
+                    if(!empty($custom_email_tag))
+                    {
+                        $mailer->addCustomHeader($custom_email_tag);
+                    }
+
                     try {
                         $send = $mailer->Send();
                     } catch (Exception $e) {
@@ -493,24 +499,39 @@ class EmundusModelEmails extends JModelList {
         $params     = $template->params;
         $sitename   = $config->get('sitename');
 
+        $base_url = JURI::base();
+        if($app->isClient('administrator'))
+        {
+            $base_url = JURI::root();
+        }
 
         if (!empty($params->get('logo')->custom->image)) {
             $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-            $logo = !empty($logo['path']) ? JURI::base().$logo['path'] : "";
+            $logo = !empty($logo['path']) ? $base_url.$logo['path'] : "";
 
         } else {
             $logo_module = JModuleHelper::getModuleById('90');
-            preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
-            $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+
+            if(empty($logo_module->content)) {
+                $logo = JURI::root().'images/custom/logo_custom.png';
+                if(!file_exists($logo)) {
+                    $logo = JURI::root().'images/custom/logo.png';
+                }
+            } else
+            {
+                preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
+                $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
         (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
         (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
         (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
 
-            if ((bool) preg_match($pattern, $tab[1])) {
-                $tab[1] = parse_url($tab[1], PHP_URL_PATH);
-            }
+                if ((bool) preg_match($pattern, $tab[1]))
+                {
+                    $tab[1] = parse_url($tab[1], PHP_URL_PATH);
+                }
 
-            $logo = JURI::base().$tab[1];
+                $logo = $base_url . $tab[1];
+            }
         }
 
         $activation = $user->get('activation');
@@ -522,7 +543,7 @@ class EmundusModelEmails extends JModelList {
         );
         $replacements = array(
             $user->id, $user->name, $user->email, $current_user->email, $user->username, $current_user->id, $current_user->name, $current_user->email, ' ', $current_user->username, $passwd,
-            JURI::base()."index.php?option=com_users&task=registration.activate&token=".$activation, "index.php?option=com_users&task=registration.activate&token=".$activation, JURI::base(), $sitename,
+            $base_url."index.php?option=com_users&task=registration.activate&token=".$activation, "index.php?option=com_users&task=registration.activate&token=".$activation, $base_url, $sitename,
             $user->id, $user->name, $user->email, $user->username, JFactory::getDate('now')->format(JText::_('DATE_FORMAT_LC3')), $logo
         );
 
@@ -744,7 +765,7 @@ class EmundusModelEmails extends JModelList {
      * @since version v6
      */
     public function setTagsFabrik($str, $fnums = array(), $raw = false) {
-        require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        require_once(JPATH_SITE.'/components/com_emundus/models/files.php');
         $m_files = new EmundusModelFiles();
 
         $jinput = JFactory::getApplication()->input;
@@ -1094,6 +1115,13 @@ class EmundusModelEmails extends JModelList {
                     }
                 }
 
+                require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+                $custom_email_tag = EmundusHelperEmails::getCustomHeader();
+                if(!empty($custom_email_tag))
+                {
+                    $mailer->addCustomHeader($custom_email_tag);
+                }
+
                 $send = $mailer->Send();
 
                 if ($send !== true) {
@@ -1383,7 +1411,15 @@ class EmundusModelEmails extends JModelList {
                         }
                     }
 
+                    require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+                    $custom_email_tag = EmundusHelperEmails::getCustomHeader();
+                    if(!empty($custom_email_tag))
+                    {
+                        $mailer->addCustomHeader($custom_email_tag);
+                    }
+
                     $send = $mailer->Send();
+
                     if ($send !== true) {
                         $failed[] = $m_to;
                         $print_message .= '<hr>Error sending email: ' . $send;
@@ -1730,7 +1766,7 @@ class EmundusModelEmails extends JModelList {
         $query->select('*')
             ->from($this->_db->quoteName('#__emundus_setup_emails', 'se'))
             ->where($filterDate)
-            ->where($fullRecherche)
+            ->andWhere($fullRecherche)
 
             ->group($sortDb)
             ->order($sortDb.$sort);
@@ -1748,14 +1784,19 @@ class EmundusModelEmails extends JModelList {
             if (!empty($emails)) {
                 foreach ($emails as $key => $email) {
                     $email->label = ['fr' => $email->subject, 'en' => $email->subject];
-                    $email->additional_columns = [
-                        [
-                            'key' => JText::_('COM_EMUNDUS_ONBOARD_CATEGORY'),
-                            'value' => $email->category,
-                            'classes' => 'em-mt-8 em-mb-8 label label-default em-p-5-12 em-font-weight-600',
-                            'display' => 'all'
-                        ],
-                    ];
+
+                    if (!empty($email->category)) {
+                        $email->additional_columns = [
+                            [
+                                'key' => JText::_('COM_EMUNDUS_ONBOARD_CATEGORY'),
+                                'value' => $email->category,
+                                'classes' => 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
+                                'display' => 'all'
+                            ],
+                        ];
+                    } else {
+                        $email->additional_columns = [['key' => JText::_('COM_EMUNDUS_ONBOARD_CATEGORY'), 'value' => '', 'classes' => '', 'display' => 'all']];
+                    }
 
                     $emails[$key] = $email;
                 }

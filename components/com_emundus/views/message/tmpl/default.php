@@ -31,6 +31,7 @@ $_mEval = new EmundusModelEvaluation;
 $_applicant_letters = $_mEval->getLettersByFnums(implode(',', $this->fnums), false);
 
 $email_list = array();
+$name_list = array();
 
 $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($current_user->id);
 if ($allowed_attachments !== true) {
@@ -47,33 +48,39 @@ if ($allowed_attachments !== true) {
     #emailForm #mceu_15 {
         display: none;
     }
+
+    #emailForm .selectize-input {
+        overflow: auto;
+    }
+
     .ql-editor{
         height: 300px !important;
         overflow-y: scroll;
     }
     .form-group .email-input-block{
-        height: 45px;
+        height: var(--em-coordinator-form-height);
         display: flex;
         align-items: center;
-        padding: 0 12px;
-        border: solid 1px #ccc;
-        border-radius: 8px;
+        padding: 0 var(--p-12);
+        border: solid 1px var(--em-coordinator-bc);
+        border-radius: var(--em-coordinator-form-br);
+        background: var(--neutral-0);
     }
     .cc-bcc-mails .items{
-        border: 1px solid #ccc;
-        border-radius: 8px;
+        border: 1px solid var(--em-coordinator-bc);
+        border-radius: var(--em-coordinator-form-br);
     }
     .cc-bcc-mails .items div[data-value]{
         background: #EBECF0;
         border: unset;
-        border-radius: 4px !important;
+        border-radius: var(--em-coordinator-form-br);
         box-shadow: unset !important;
-        padding: 4px 8px;
+        padding: var(--p-4) var(--p-8);
     }
     .cc-bcc-mails .items div[data-value] .remove{
         font-size: 16px;
         border: unset;
-        padding-right: 12px;
+        padding-right: var(--p-12);
     }
     .ql-editor .mention{
         background: unset;
@@ -82,27 +89,57 @@ if ($allowed_attachments !== true) {
         height: 6px;
     }
     div#mail_from_name,div#mail_subject{
-        border-radius: 4px;
+        border-radius: var(--em-coordinator-br);
         border: solid 2px transparent;
     }
     div#mail_from_name:focus,div#mail_subject:focus,div#reply_to_from:focus {
         outline-color: #2E90FA;
     }
-    div#mail_from_name:hover,div#mail_subject:hover,div#reply_to_from:hover{
-        border-radius: 4px;
-        border: solid 2px #ccc;
+    div#mail_from_name:hover,div#mail_subject:hover{
+        border-radius: var(--em-coordinator-br);
+        border: solid 2px var(--em-coordinator-bc);
     }
     #cc-box-label,#bcc-box-label,#replyto-box-label{
-        border-radius: 4px;
+        border-radius: var(--em-coordinator-br);
         width: fit-content;
-        padding: 4px 6px;
-        margin-left: -4px;
+        padding: var(--p-4) var(--p-8) 5px 0;
+        margin-left: 0;
     }
-    #cc-box-label:hover,#bcc-box-label:hover,#replyto-box-label:hover {
-        background: #e5e5e5;
+    #cc-box-label:hover,#bcc-box-label:hover {
+        background: var(--neutral-300);
     }
+
     #reply_to_from,#emailForm div#mail_subject{
         min-width: 100%;
+    }
+
+    #mail_from_block {
+        width: 90%;
+    }
+
+    .em-form-recipients {
+        height: 44px;
+        display: flex !important;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .email-list-modal {
+        width: 50%;
+        position: absolute;
+        left: 0;
+        right: 0;
+        margin-left: auto;
+        margin-right: auto;
+        background: white;
+        padding: 24px;
+        box-shadow: 0 0 0 50vmax rgba(0,0,0,.5);
+        border-radius: 8px;
+    }
+
+    .em-email-label {
+        color: var(--neutral-800);
+        background-color: var(--neutral-300) !important;
     }
 
 </style>
@@ -114,7 +151,7 @@ if ($allowed_attachments !== true) {
     <img class="em-sending-email-img" id="em-sending-email-img" src="media/com_emundus/images/sending-email.gif">
 </div>
 
-<form id="emailForm" class="em-form-message" name="emailForm" style="padding:0px 15px;">
+<form id="emailForm" class="em-form-message" name="emailForm">
     <div class="em_email_block" id="em_email_block">
 
         <div class="form-inline row">
@@ -150,7 +187,8 @@ if ($allowed_attachments !== true) {
                     <?php endif; ?>
                 </select>
                 <a class="em-font-size-14 em-pointer" href="emails"
-                   target="_blank"><?= JText::_('COM_EMUNDUS_EMAILS_ADD_TEMPLATE'); ?></a>
+                   target="_blank"><?= JText::_('COM_EMUNDUS_EMAILS_ADD_TEMPLATE'); ?>
+                </a>
             </div>
         </div>
 
@@ -161,21 +199,96 @@ if ($allowed_attachments !== true) {
         <input name="mail_body" type="hidden" class="inputbox" id="mail_body" value=""/>
 
         <!-- FROM -->
-        <div class="form-group em-form-sender em-mt-12">
-            <label class='em-mr-8' for="mail_from"><?= JText::_('FROM'); ?> :</label>
-            <div id="mail_from_block" class="em-border-radius-8 em-mb-4 email-input-block">
-                <div id="mail_from_name" class="em-p-4-6" contenteditable="true"><?= JFactory::getConfig()->get('fromname') ?></div>
-                <div id="mail_from" class="em-ml-4" contenteditable="false">
-                    <em class="em-font-size-14">&lt;<?= JFactory::getConfig()->get('mailfrom') ?>&gt;</em>
+        <div class="form-inline row">
+            <div class="form-group em-form-sender em-mt-12 col-md-6 col-sm-6">
+                <div class="flex items-center">
+                    <label class='em-mr-8' for="mail_from"><?= JText::_('FROM'); ?> :</label>
+                    <div id="mail_from_block" class="em-border-radius-8 em-mb-4 email-input-block">
+                        <div id="mail_from_name" class="em-p-4-6" contenteditable="true"><?= JFactory::getConfig()->get('fromname') ?></div>
+                        <div id="mail_from" class="em-ml-4" contenteditable="false">
+                            <em class="em-font-size-14">&lt;<?= JFactory::getConfig()->get('mailfrom') ?>&gt;</em>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <span class="em-font-size-12"><?= JText::_('COM_EMUNDUS_FROM_HELP_TEXT') ?></span>
 
+                <span class="em-font-size-14"><?= JText::_('COM_EMUNDUS_FROM_HELP_TEXT') ?></span>
+
+            </div>
+
+            <div class="form-group em-form-recipients em-mt-12 col-md-6 col-sm-6" style="position:static;">
+
+                <div class="email-list-modal hidden" id="email-list-modal">
+                    <div class="flex justify-between mb-3">
+                        <h3><?= JText::_('COM_EMUNDUS_EMAILS_TO_LIST') ?></h3>
+                        <span class="material-icons-outlined pointer" onclick="showEmailList()">close</span>
+                    </div>
+
+                    <div class="flex items-center gap-2 flex-wrap" style="max-height: 150px; overflow-y: auto;">
+                        <?php foreach ($this->users as $user) : ?>
+                            <?php if (!empty($user['email']) && !in_array($user['email'], $email_list)) : ?>
+                                <?php $email_list[] = $user['email']; ?>
+                                <?php $name_list[] = $user['name']; ?>
+
+                                <span class="label label-default em-mr-8 em-email-label">
+                                    <?= $user['email'] . ' <em class="em-font-size-14">&lt;' . $user['name'] . '&gt;</em>'; ?>
+                                </span>
+
+                                <input type="hidden" name="ud[]" id="ud" value="<?= $user['id']; ?>"/>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <!-- List of users / their emails, gotten from the fnums selected. -->
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <label class='em-mr-8 em-cursor-text mb-0'><?= JText::_('COM_EMUNDUS_TO'); ?> :</label>
+
+                        <div class="em-border-radius-8">
+                            <span class="label label-default em-mr-8 em-email-label">
+                                <?= $email_list[0] . ' <em class="em-font-size-14">&lt;' . $name_list[0] . '&gt;</em>'; ?>
+                            </span>
+
+
+		                    <?php if(count($email_list) > 1) : ?>
+                                <span class="label label-default em-mr-8 em-email-label pointer" onclick="showEmailList()">
+                                    +<?= count($email_list)-1 ?>
+                                </span>
+		                    <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center">
+                        <div id="cc-box-label" class="em-flex-row em-pointer" onclick="openCC()">
+                            <label class="em-mb-0-important"><?= JText::_('COM_EMUNDUS_EMAILS_CC_LABEL'); ?></label>
+                            <span id="cc-icon" class="material-icons-outlined">chevron_right</span>
+                        </div>
+
+                        <div id="bcc-box-label" class="em-flex-row em-pointer" onclick="openBCC()">
+                            <label class="em-mb-0-important"><?= JText::_('COM_EMUNDUS_EMAILS_BCC_LABEL'); ?></label>
+                            <span id="bcc-icon" class="material-icons-outlined">chevron_right</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Add current user to Cc -->
+        <div id="cc-box" class="input-group form-inline col-md-12 em-mt-12">
+            <label for="select_action_tags" class="cc-box-label"><?= JText::_('COM_EMUNDUS_EMAILS_CC_LABEL'); ?></label>
+            <input type="text" id="cc-mails" class="cc-bcc-mails">
+        </div>
+
+        <!-- Add current user to Bcc -->
+        <div id="bcc-box" class="input-group form-inline col-md-12 em-mt-12">
+            <label for="select_action_tags" class="bcc-box-label"><?= JText::_('COM_EMUNDUS_EMAILS_BCC_LABEL'); ?></label>
+            <input type="text" id="bcc-mails" class="cc-bcc-mails">
         </div>
 
         <!-- REPLY TO -->
         <div id="replyto-box" class="form-group em-form-sender em-mt-12">
-            <div id="replyto-box-label" class="em-flex-row em-mb-4 em-pointer" onclick="openReplyTo()">
+            <div id="replyto-box-label" class="em-flex-row em-pointer" onclick="openReplyTo()">
                 <label class="em-mb-0-important" for="reply_to_from"><?= JText::_('COM_EMUNDUS_EMAILS_FROM_REPLY_TO'); ?></label>
                 <span id="replyto-icon" class="material-icons-outlined">chevron_right</span>
             </div>
@@ -183,47 +296,10 @@ if ($allowed_attachments !== true) {
                 <div id="reply_to_block" class="em-border-radius-8 em-mb-4 email-input-block em-cursor-text">
                     <div id="reply_to_from" class="em-p-4-6 em-cursor-text" contenteditable="true"></div>
                 </div>
-                <span class="em-font-size-12"><?= JText::_('COM_EMUNDUS_EMAILS_REPLY_TO_HELP_TEXT') ?></span>
+                <span class="em-font-size-14"><?= JText::_('COM_EMUNDUS_EMAILS_REPLY_TO_HELP_TEXT') ?></span>
             </div>
         </div>
 
-        <div class="form-group em-form-recipients em-mt-12">
-            <!-- List of users / their emails, gotten from the fnums selected. -->
-            <label class='em-mr-8 em-cursor-text'><?= JText::_('COM_EMUNDUS_TO'); ?> :</label>
-
-            <div class="em-border-radius-8" id="em-recipitents">
-			    <?php foreach ($this->users as $user) : ?>
-
-				    <?php if (!empty($user['email']) && !in_array($user['email'], $email_list)) : ?>
-					    <?php $email_list[] = $user['email']; ?>
-                        <span class="label label-default em-mr-8 em-email-label">
-                            <?= $user['name'] . ' <em class="em-font-size-14">&lt;' . $user['email'] . '&gt;</em>'; ?>
-                        </span>
-
-                        <input type="hidden" name="ud[]" id="ud" value="<?= $user['id']; ?>"/>
-				    <?php endif; ?>
-
-			    <?php endforeach; ?>
-            </div>
-        </div>
-
-        <!-- Add current user to Cc -->
-        <div id="cc-box" class="input-group form-inline col-md-12 em-mt-12">
-            <div id="cc-box-label" class="em-flex-row em-mb-4 em-pointer" onclick="openCC()">
-                <label for="select_action_tags" class="em-mb-0-important"><?= JText::_('COM_EMUNDUS_EMAILS_CC_LABEL'); ?></label>
-                <span id="cc-icon" class="material-icons-outlined">chevron_right</span>
-            </div>
-            <input type="text" id="cc-mails" class="cc-bcc-mails">
-        </div>
-
-        <!-- Add current user to Bcc -->
-        <div id="bcc-box" class="input-group form-inline col-md-12 em-mt-12">
-            <div id="bcc-box-label" class="em-flex-row em-mb-4 em-pointer" onclick="openBCC()">
-                <label for="select_action_tags" class="em-mb-0-important"><?= JText::_('COM_EMUNDUS_EMAILS_BCC_LABEL'); ?></label>
-                <span id="bcc-icon" class="material-icons-outlined">chevron_right</span>
-            </div>
-            <input type="text" id="bcc-mails" class="cc-bcc-mails">
-        </div>
 
         <div class="form-group em-form-subject em-mt-12">
             <label class='em-mr-8' for="mail_from"><?= JText::_('COM_EMUNDUS_EMAILS_SUBJECT'); ?> :</label>
@@ -233,12 +309,15 @@ if ($allowed_attachments !== true) {
                      contenteditable="true"><?= JFactory::getConfig()->get('sitename'); ?></div>
             </div>
 
+
+
+
             <!-- Email WYSIWYG -->
             <div id="editor">
             </div>
 
             <!-- TIP -->
-            <p class="em-text-neutral-600 em-mt-8">
+            <p class="em-text-neutral-600 em-mt-8 em-font-size-14t">
                 <?= JText::_('COM_EMUNDUS_ONBOARD_VARIABLESTIP'); ?>
             </p>
         </div>
@@ -322,7 +401,6 @@ if ($allowed_attachments !== true) {
         </div>
     </div>
     <br>
-    <hr>
     <div class="form-group attachment em-form-attachments-location">
         <ul class="list-group" id="em-attachment-list">
             <!-- Files to be attached will be added here. -->
@@ -383,6 +461,15 @@ if ($allowed_attachments !== true) {
                     '</div>';
             }
         },
+        onItemAdd: function(value, $item) {
+            let email = value.substring(value.indexOf(":") + 1);
+            email = email.trim();
+
+            const regex = /^\S{1,64}@\S{1,255}\.\S{1,255}$/;
+            if (!regex.test(email)) {
+                this.removeItem(value);
+            }
+        }
     });
 
     // add bcc
@@ -401,6 +488,15 @@ if ($allowed_attachments !== true) {
                     '</div>';
             }
         },
+        onItemAdd: function(value, $item) {
+            let email = value.substring(value.indexOf(":") + 1);
+            email = email.trim();
+
+            const regex = /^\S{1,64}@\S{1,255}\.\S{1,255}$/;
+            if (!regex.test(email)) {
+                this.removeItem(value);
+            }
+        }
     });
 
     // get attachments by profiles (fnums)
@@ -437,7 +533,8 @@ if ($allowed_attachments !== true) {
         }
     })
 
-    $('.cc-bcc-mails').css('display', 'none');
+    $('#cc-box').css('display', 'none');
+    $('#bcc-box').css('display', 'none');
 
 
     // Editor loads disabled by default, we apply must toggle it active on page load.
@@ -464,26 +561,45 @@ if ($allowed_attachments !== true) {
         $("#em-progress-wrp .status").text(0 + "%");
     });
 
+    function showEmailList() {
+        document.querySelector('#email-list-modal').classList.toggle('hidden');
+
+        if(document.querySelector('#email-list-modal').classList.contains('hidden')){
+            document.querySelector('.ql-container.ql-snow').style.position = 'relative';
+            document.querySelector('.em-form-attachments .form-group').style.position = 'relative';
+        } else {
+            document.querySelector('.ql-container.ql-snow').style.position = 'static';
+            document.querySelector('.em-form-attachments .form-group').style.position = 'static';
+        }
+
+    }
+
     function openCC()
     {
-        let cc = $('#cc-box .selectize-control');
+        let cc = $('#cc-box');
+        let cc_input = $('#cc-box .selectize-control');
         if(cc.css('display') === 'block') {
             cc.css('display', 'none');
+            cc_input.css('display', 'none');
             $('#cc-icon').css('transform', 'rotate(0deg)');
         } else {
             cc.css('display', 'block');
+            cc_input.css('display', 'block');
             $('#cc-icon').css('transform', 'rotate(90deg)');
         }
     }
 
     function openBCC()
     {
-        let bcc = $('#bcc-box .selectize-control');
+        let bcc = $('#bcc-box');
+        let bcc_input = $('#bcc-box .selectize-control');
         if(bcc.css('display') === 'block') {
             bcc.css('display', 'none');
+            bcc_input.css('display', 'none');
             $('#bcc-icon').css('transform', 'rotate(0deg)');
         } else {
             bcc.css('display', 'block');
+            bcc_input.css('display', 'block');
             $('#bcc-icon').css('transform', 'rotate(90deg)');
         }
     }
@@ -1120,4 +1236,5 @@ if ($allowed_attachments !== true) {
         $("#em-progress-wrp .progress-bar").css("width", +percent + "%");
         $("#em-progress-wrp .status").text(percent + "%");
     };
+
 </script>

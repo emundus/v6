@@ -119,6 +119,7 @@ export default {
 
   methods:{
     beforeOpen(){
+      document.querySelector('body.layout-evaluation').style.overflow= 'hidden';
       var r = document.querySelector(':root');
       let ratio_array = this.$props.ratio.split('/');
       r.style.setProperty('--attachment-width', ratio_array[0]+'%');

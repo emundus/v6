@@ -46,7 +46,7 @@
 						<option value="1">JYES</option>
 					</field>
 
-					<field type="list" name="mod_em_campaign_show_camp_start_date" label="MOD_EM_CAMPAIGN_SHOW_CAMP_START_DATE" description="MOD_EM_CAMPAIGN_SHOW_CAMP_START_DATE_DESC" default="1">
+					<field type="list" showon="mod_em_campaign_layout!:default_tchooz" name="mod_em_campaign_show_camp_start_date" label="MOD_EM_CAMPAIGN_SHOW_CAMP_START_DATE" description="MOD_EM_CAMPAIGN_SHOW_CAMP_START_DATE_DESC" default="1">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
@@ -66,12 +66,12 @@
 						<option value="1">JYES</option>
 					</field>
 
-					<field type="list" name="mod_em_campaign_show_admission_start_date" label="MOD_EM_CAMPAIGN_SHOW_ADMISSION_START_DATE" description="MOD_EM_CAMPAIGN_SHOW_ADMISSION_START_DATE_DESC" default="0">
+					<field type="list" showon="mod_em_campaign_layout!:default_tchooz" name="mod_em_campaign_show_admission_start_date" label="MOD_EM_CAMPAIGN_SHOW_ADMISSION_START_DATE" description="MOD_EM_CAMPAIGN_SHOW_ADMISSION_START_DATE_DESC" default="0">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
 
-					<field type="list" name="mod_em_campaign_show_admission_end_date" label="MOD_EM_CAMPAIGN_SHOW_ADMISSION_END_DATE" description="MOD_EM_CAMPAIGN_SHOW_ADMISSION_END_DATE_DESC" default="0">
+					<field type="list" showon="mod_em_campaign_layout!:default_tchooz" name="mod_em_campaign_show_admission_end_date" label="MOD_EM_CAMPAIGN_SHOW_ADMISSION_END_DATE" description="MOD_EM_CAMPAIGN_SHOW_ADMISSION_END_DATE_DESC" default="0">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
@@ -109,7 +109,7 @@
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
-					<field type="list" name="mod_em_campaign_show_results" label="MOD_EM_CAMPAIGN_SHOW_RESULTS" default="1">
+					<field type="list" showon="mod_em_campaign_layout!:default_tchooz" name="mod_em_campaign_show_results" label="MOD_EM_CAMPAIGN_SHOW_RESULTS" default="1">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>

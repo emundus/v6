@@ -104,11 +104,8 @@ class EmundusModelSettingsTest extends TestCase
 	public function testupdateTags() {
 		$tag = $this->m_settings->createTag();
 		$label = 'Nouvelle étiquette modifiée';
-		$colors = $this->m_settings->getColorClasses();
-		$color = current($colors);
-		$color_key = array_search($color, $colors);
 
-		$update = $this->m_settings->updateTags($tag->id, $label, $color);
+		$update = $this->m_settings->updateTags($tag->id, $label, 'lightblue');
 		$this->assertTrue($update, 'La modification d\'une étiquette fonctionne');
 
 		$tags = $this->m_settings->getTags();
@@ -118,7 +115,7 @@ class EmundusModelSettingsTest extends TestCase
 		$tag_found = current($tags_found);
 
 		$this->assertSame($label, $tag_found->label, 'Le titre de l\'étiquette a été modifié');
-		$this->assertSame('label-' . $color_key, $tag_found->class, 'Le titre de l\'étiquette a été modifié');
+		$this->assertSame('label-lightblue', $tag_found->class, 'Le titre de l\'étiquette a été modifié');
 	}
 
 	public function testdeleteTag() {
@@ -141,10 +138,25 @@ class EmundusModelSettingsTest extends TestCase
 
 		$this->assertNotEmpty($articles, 'La récupération des articles RGPD fonctionne');
 
-		$this->assertSame(5, count($articles), 'Je récupère 5 articles RGPD');
+		$this->assertSame(4, count($articles), 'Je récupère 4 articles RGPD. (Cookies, mentions légales, politique de confidentialité et conditions générales d\'utilisation et Gestion des droits)');
 
 		if(empty($articles[0]->id)){
 			$this->assertNotEmpty($articles[0]->alias, 'Si le paramètre du module n\'est pas défini on récupère un alias par défaut');
+		}
+	}
+
+	public function testpublishArticle() {
+		$articles = $this->m_settings->getRgpdArticles();
+
+		foreach ($articles as $article) {
+			if(empty($article->id))
+			{
+				$publish = $this->m_settings->publishArticle(0, $article->alias);
+				$this->assertTrue($publish, 'La dépublication d\'un article RGPD fonctionne');
+			} else {
+				$publish = $this->m_settings->publishArticle(0, $article->id);
+				$this->assertTrue($publish, 'La dépublication d\'un article RGPD fonctionne');
+			}
 		}
 	}
 }

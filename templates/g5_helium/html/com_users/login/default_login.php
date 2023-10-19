@@ -23,10 +23,10 @@ if(!empty($this->campaign)){
     <?php if ($this->params->get('show_page_heading')) : ?>
         <div class="page-header">
             <?php if (file_exists('images/custom/favicon.png')) : ?>
-                <a href="/" class="em-profile-picture em-mb-32" style="width: 50px;height: 50px;background-image: url('images/custom/favicon.png')">
+                <a href="index.php" alt="Logo" class="em-profile-picture mb-8" style="width: 50px;height: 50px;background-image: url('images/custom/favicon.png')">
                 </a>
             <?php endif; ?>
-            <h1 class="em-mb-8 em-h1">
+            <h1 class="em-mb-8">
                 <?php echo JText::_('JLOGIN'); ?>
             </h1>
             <p class="em-applicant-text-color em-applicant-default-font"><?php echo JText::_('JLOGIN_DESC'); ?></p>
@@ -48,14 +48,14 @@ if(!empty($this->campaign)){
         <fieldset>
             <?php foreach ($this->form->getFieldset('credentials') as $field) : ?>
                 <?php if (!$field->hidden) : ?>
-                    <div class="control-group em-mb-32">
+                    <div class="control-group mb-8">
                         <div class="control-label">
                             <?php echo $field->label; ?>
                         </div>
                         <div class="controls" style="<?= $field->type === "Password" ? 'position:relative; ' : '' ?>">
                             <?php echo $field->input; ?>
                             <?php if ($eMConfig["reveal_password"] && $field->type === "Password"): ?>
-                                <span id="toggle-password-visibility" class="material-icons-outlined em-pointer" style="position: absolute;top: 25px;right: 10px;opacity: 0.3;user-select: none;">visibility_off</span>
+                                <span id="toggle-password-visibility" class="material-icons-outlined em-pointer" style="position: absolute;margin-top: 4px;right: 10px;opacity: 0.3;user-select: none;">visibility_off</span>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -96,7 +96,7 @@ if(!empty($this->campaign)){
             </div>
             <div class="control-group em-w-100">
                 <div class="controls">
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="em-applicant-primary-button w-full em-applicant-border-radius">
                         <?php echo JText::_('JLOGIN'); ?>
                     </button>
                 </div>

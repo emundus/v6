@@ -103,6 +103,38 @@
 	display:block !important;
 	padding-left:30px;
 }*/
+
+
+/* MODULE EMUNDUS FLOW */
+.view-form .ui.attached.segment,
+.view-checklist .ui.attached.segment,
+.view-details .ui.attached.segment {
+	background:var(--em-secondary-color);
+	border: var(--em-secondary-color);
+	color: var(--neutral-0);
+}
+
+.view-form .platform-content .ui.tablet.attached .step i,
+.view-form .platform-content .ui.tablet.attached .description {
+	color: var(--em-primary-color);
+}
+
+.view-form .platform-content .ui.tablet.attached .step i.arrow.left,
+.view-details .platform-content .ui.tablet.attached .step i.arrow.left {
+	color: var(--em-secondary-color);
+}
+
+.ui.yellow.segment:not(.inverted) {
+	border-top: 2px solid var(--em-secondary-color);
+}
+
+.step.completed i.icon.file.text.outline::before,
+.step.completed i.icon.attach::before,
+.step.completed i.icon.add.to.cart::before,
+.step.completed i.icon.time::before {
+	color: var(--main-500);
+}
+
 /******************COORDONEES PERSO*************/
 #g-utility #drawer .moduletable {
 	padding: 0 !important;
@@ -125,7 +157,7 @@
 .ui.bottom.attached.steps {
 	display: flex;
 	justify-content: space-around;
-	background: #fff;
+	background: var(--neutral-0);
 }
 
 .ui.steps .step {
@@ -140,7 +172,7 @@
 
 .ui.steps .step .description {
 	font-size: 12px;
-	font-family: var(--font);
+	font-family: var(--em-default-font);
 }
 
 .step i.arrow {
@@ -152,7 +184,7 @@
 }
 
 .ui.steps .step > .icon ~ .content {
-	padding-top: 10px;
+	padding-top: var(--p-8);
 }
 
 .ui.bottom.attached.steps .step:first-child {
@@ -162,7 +194,7 @@
 
 .ui.bottom.attached.steps .step:first-child a {
 	color: var(--neutral-800);
-	font-family: var(--font);
+	font-family: var(--em-default-font);
 }
 
 .registration form > div {
@@ -186,8 +218,8 @@
 }
 
 .view-form .attached p, .view-details .attached p, .view-checklist .attached p {
-	color: white;
-	font-family: var(--font);
+	color: var(--neutral-0);
+	font-family: var(--em-default-font);
 }
 @media all and (max-width: 767px) {
 	 .ui.attached.segment p {

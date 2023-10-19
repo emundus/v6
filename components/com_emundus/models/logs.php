@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+require_once (JPATH_SITE.'/components/com_emundus/helpers/date.php');
 class EmundusModelLogs extends JModelList {
 
 	// Add Class variables.
@@ -23,7 +24,6 @@ class EmundusModelLogs extends JModelList {
 	 */
 	public function __construct() {
 		parent::__construct();
-		require_once (JPATH_SITE.'/components/com_emundus/helpers/date.php');
 
 		// Assign values to class variables.
 		$this->user = JFactory::getUser();
@@ -195,9 +195,9 @@ class EmundusModelLogs extends JModelList {
         $db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-        $user_from = implode(',', $user_from);
-        $action = implode(',', $action);
-        $crud = implode(',', $db->quote($crud));
+        $user_from = is_array($user_from) ? implode(',', $user_from) : $user_from;
+        $action = is_array($action) ? implode(',', $action) : $action;
+        $crud = is_array($crud) ? implode(',', $db->quote($crud)) : $crud;
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $showTimeFormat = $eMConfig->get('log_show_timeformat', 0);
@@ -297,8 +297,8 @@ class EmundusModelLogs extends JModelList {
 		$query->select('label')
 			->from($db->quoteName('#__emundus_setup_actions'))
 			->where($db->quoteName('id').' = '.$db->quote($action));
-		$db->setQuery($query);
 
+        $db->setQuery($query);
 		$action_category = $db->loadResult();
 
 		// Decode the json params string
@@ -315,9 +315,12 @@ class EmundusModelLogs extends JModelList {
                 $action_name = $action_category . '_CREATE';
                 foreach ($params->created as $value) {
                     if(is_object($value)) {
-                        $action_details .= '<span style="margin-bottom: 0.5rem"><b>' . (!empty($value->element) ? $value->element : JText::_('UNKNOWN')) . '</b></span>';
-                        $action_details .= '<div class="em-flex-row"><span class="em-red-500-color">' . (!empty($value->details) ? $value->details : JText::_('UNKNOWN')) . '&nbsp</span>&nbsp';
-                        $action_details .= '</div>';
+                        if (!empty($value->element)) {
+                            $action_details .= '<span style="margin-bottom: 0.5rem"><b>' . $value->element . '</b></span>';
+                        }
+                        if (!empty($value->details)) {
+                            $action_details .= '<div class="em-flex-row"><span class="em-red-500-color">' . $value->details . '</span></div>';
+                        }
                     } else {
                         $action_details .= '<p>' . $value . '</p>';
                     }
@@ -328,9 +331,10 @@ class EmundusModelLogs extends JModelList {
                 break;
             case ('u'):
                 $action_name = $action_category . '_UPDATE';
-                $action_details = '<b>' . reset($params->updated)->description . '</b>';
 
                 if (!empty($params->updated)) {
+                    $action_details = '<b>' . reset($params->updated)->description . '</b>';
+
                     foreach ($params->updated as $value) {
                         $action_details .= '<div class="em-flex-row"><span>' . $value->element . '&nbsp</span>&nbsp';
                         $value->old = !empty($value->old) ? $value->old : '';
@@ -366,9 +370,12 @@ class EmundusModelLogs extends JModelList {
                 $action_name = $action_category . '_DELETE';
                 foreach ($params->deleted as $value) {
                     if(is_object($value)) {
-                        $action_details .= '<span style="margin-bottom: 0.5rem"><b>' . (!empty($value->element) ? $value->element : JText::_('UNKNOWN')) . '</b></span>';
-                        $action_details .= '<div class="em-flex-row"><span class="em-red-500-color">' . (!empty($value->details) ? $value->details : JText::_('UNKNOWN')) . '&nbsp</span>&nbsp';
-                        $action_details .= '</div>';
+                        if (!empty($value->element)) {
+                            $action_details .= '<span style="margin-bottom: 0.5rem"><b>' . $value->element . '</b></span>';
+                        }
+                        if (!empty($value->details)) {
+                            $action_details .= '<div class="em-flex-row"><span class="em-red-500-color">' . $value->details . '</span></div>';
+                        }
                     } else {
                         $action_details .= '<p>' . $value . '</p>';
                     }

@@ -149,6 +149,7 @@ p.description {
 #attachment_list {
 	margin-bottom: 1em;
 	/*width:100%;*/
+	border-radius: var(--em-form-br) !important;
 }
 
 #attachment_list_mand {
@@ -500,9 +501,8 @@ h1 a {
 .modal {
 	background-color: #F0F0F0;
 	border-radius: 5px;
-	border-radius: 5px;
 	padding: 5px 2px 5px 2px;
-	margin: 1px
+	margin: 1px;
 }
 
 .modal.clean {
@@ -689,7 +689,7 @@ input.btnhov {
 	text-align: center;
 	background-color: #E0E0E0;
 	font-weight: bold;
-	font-family: Arial;
+	font-family: 'Arial', sans-serif;
 	font-size: 105%;
 }
 
@@ -761,7 +761,7 @@ input.btnhov {
 
 .em_actions {
 	display: inline-block;
-	min-width: 30px
+	min-width: 30px;
 }
 
 .em_upload,
@@ -778,7 +778,7 @@ input.btnhov {
 
 .em_attachments,
 .em_forms {
-	margin: 0px 3px 0px 3px;
+	margin: 0 3px 0 3px;
 	float: right;
 }
 
@@ -803,12 +803,12 @@ input.btnhov {
 #em_comments_action {
 	display: inline;
 	/*float:right;*/
-	padding: 8px
+	padding: 8px;
 }
 
 #user_campaign a {
 	background-color: #E1F1F8;
-	padding: 1px 5px 0px 5px;
+	padding: 1px 5px 0 5px;
 	-moz-border-radius: 7px;
 	-webkit-border-radius: 7px;
 	border-radius: 7px;
@@ -841,7 +841,7 @@ input.btnhov {
 
 #emundus_elements label {
 	display: inline;
-	margin: 0 10px 5px 0px !important;
+	margin: 0 10px 5px 0 !important;
 }
 
 /* template rt_afterburner 2  */
@@ -1008,16 +1008,10 @@ fieldset {
 	border-top-style: solid;
 	border-top-width: 1px;
 	font-weight: bold;
-	margin-bottom: 9px;
-	margin-left: 10px;
-	margin-right: 10px;
-	margin-top: 0;
+	margin: 0 10px 9px 10px;
 	max-width: 448px;
 	overflow-y: hidden;
-	padding-bottom: 4px;
-	padding-left: 8px;
-	padding-right: 4px;
-	padding-top: 4px;
+	padding: 4px 4px 4px 8px;
 }
 
 .em_email_icon {
@@ -1038,10 +1032,7 @@ fieldset {
 	max-width: 315px;
 	overflow-x: hidden;
 	overflow-y: hidden;
-	padding-bottom: 3px;
-	padding-left: 0;
-	padding-right: 0;
-	padding-top: 3px;
+	padding: 3px 0 3px 0;
 	text-overflow: ellipsis;
 	vertical-align: bottom;
 	white-space: nowrap;
@@ -1050,10 +1041,7 @@ fieldset {
 .vJ {
 	color: #777777;
 	display: inline-block;
-	padding-bottom: 3px;
-	padding-left: 0;
-	padding-right: 0;
-	padding-top: 3px;
+	padding: 3px 0 3px 0;
 }
 
 /* helper list : affect to evaluator(s) */
@@ -1081,8 +1069,9 @@ fieldset {
 	transition: background-color 2s, transform 2s;
 }
 
-.em-added-files .em-flex-row a:not(.em-red-500-color) {
-	color: var(--neutral-900);
+#attachment_list_mand fieldset .items-center h4,
+#attachment_list_opt fieldset .items-center h4 {
+	font-family: var(--em-applicant-font);
 }
 
 /*#attachment_list_mand fieldset:hover {
@@ -1114,7 +1103,7 @@ fieldset {
 }
 
 .em_list_email {
-	color: #666666
+	color: #666666;
 }
 
 /* SWITCH PROFILE SELECT BOX*/
@@ -1144,7 +1133,7 @@ fieldset {
 	margin-bottom: 15px;
 	width: 100%;
 }    .select select {
-		 font-family: 'Arial';
+		 font-family: 'Arial', sans-serif;
 		 display: inline-block;
 		 width: 100%;
 		 height:45px;
@@ -1175,8 +1164,8 @@ fieldset {
 	position: absolute;
 	top: 16px;
 	right: 15px;
-	width: 0px;
-	height: 0px;
+	width: 0;
+	height: 0;
 	border: solid #7B7B7B;
 	border-width: 0 3px 3px 0;
 	display: inline-block;
@@ -1208,4 +1197,11 @@ footer#g-footer {
 		.view-featured #em-panel .ui.grid .column.element_home_emundus {
 			width: 100%;
 		}
+}
+
+@media all and (max-width:  959px) {
+	#attachment_list .attachment_model.em-flex-row {
+		flex-direction: column;
+		align-items: flex-start;
+	}
 }

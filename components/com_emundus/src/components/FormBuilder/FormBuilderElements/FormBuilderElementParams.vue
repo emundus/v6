@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-for="param in params" v-if="(param.published && !param.sysadmin_only) || (sysadmin && param.sysadmin_only && param.published)" class="form-group em-mb-8">
+    <div v-for="param in params" v-if="(param.published && !param.sysadmin_only) || (sysadmin && param.sysadmin_only && param.published)" class="form-group mb-4">
       <label>{{ translate(param.label) }}</label>
 
       <!-- DROPDOWN -->
@@ -65,6 +65,7 @@ export default {
     reloadOptions: 0,
     reloadOptionsCascade: 0,
 
+    idElement: 0,
     loading: false,
   }),
   created() {
@@ -134,7 +135,7 @@ export default {
           this.reloadOptionsCascade += 1;
         });
       }
-    }
+    },
   },
   computed: {
     sysadmin: function(){
@@ -143,7 +144,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

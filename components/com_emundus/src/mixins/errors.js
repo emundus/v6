@@ -9,14 +9,20 @@ var errors = {
                 type: type,
                 showCancelButton: showCancelButton,
                 confirmButtonText: this.translate(confirm),
-                cancelButtonText: this.translate(cancel),
                 reverseButtons: true,
                 customClass: {
                     title: 'em-swal-title',
-                    cancelButton: 'em-swal-cancel-button',
                     confirmButton: 'em-swal-confirm-button',
                 },
             };
+
+            if (showCancelButton) {
+                options.cancelButtonText = this.translate(cancel);
+                options.customClass.cancelButton = 'em-swal-cancel-button';
+            } else {
+                options.customClass.actions = 'em-swal-single-action';
+            }
+
             if(html){
                 options.html = text;
             } else {

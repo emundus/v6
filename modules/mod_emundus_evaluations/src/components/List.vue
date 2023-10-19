@@ -10,7 +10,7 @@
     </div>
 
     <div v-if="campaigns.length === 0 && !loading">
-      <p class="em-h5" style="text-align: center;margin-top: 32px">{{ translate('MOD_EMUNDUS_EVALUATIONS_NO_FILE') }}</p>
+      <h5 style="text-align: center;margin-top: 32px">{{ translate('MOD_EMUNDUS_EVALUATIONS_NO_FILE') }}</h5>
     </div>
 
     <div v-if="!loading" class="em-mt-16">

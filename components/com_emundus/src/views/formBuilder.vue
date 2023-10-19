@@ -17,7 +17,9 @@
       />
       <header class="em-flex-row em-flex-space-between">
         <div class="right-actions">
-          <span id="go-back" class="material-icons-outlined em-p-12-16 em-pointer" onclick="history.go(-1)">
+          <span id="go-back"
+                class="material-icons-outlined em-p-12-16 em-pointer"
+                @click="clickGoBack">
             navigate_before
           </span>
         </div>
@@ -67,6 +69,7 @@
               :key="currentPage.id"
               :profile_id="parseInt(profile_id)"
               :page="currentPage"
+              :mode="mode"
               @open-element-properties="onOpenElementProperties"
               @open-section-properties="onOpenSectionProperties"
               @open-create-model="onOpenCreateModel"
@@ -429,6 +432,13 @@ export default {
         window.open(baseUrl + url, '_blank');
       } else {
         window.location.href = baseUrl + url;
+      }
+    },
+    clickGoBack() {
+      if (this.principalContainer === 'create-page') {
+        this.onCloseCreatePage({reload: false});
+      } else {
+        window.history.go(-1);
       }
     }
   },

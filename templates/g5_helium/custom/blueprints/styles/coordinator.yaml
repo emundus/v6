@@ -1,0 +1,99 @@
+name: Coordinator
+description: Coordinator
+type: core
+
+form:
+  fields:
+    background:
+      type: input.colorpicker
+      label: Background color
+      default: "#f8f8f8"
+    interface:
+      type: input.colorpicker
+      label: Files view color
+      default: "#353544"
+    primary-color:
+      type: input.colorpicker
+      label: Primary color
+      default: "#20835F"
+    secondary-color:
+      type: input.colorpicker
+      label: Secondary color
+      default: "#353544"
+    tertiary-color:
+      type: input.colorpicker
+      label: Tertiary color
+      default: "#5A5A72"
+    text-color:
+      type: input.colorpicker
+      label: Text color
+      default: "#4B4B4B"
+    title-color:
+      type: input.colorpicker
+      label: Title color
+      default: "#000000"
+    family-text:
+      type: input.fonts
+      label: Body Font
+      default: 'Inter'
+    family-title:
+      type: input.fonts
+      label: Title Font
+      default: 'Inter'
+    size-h1:
+      type: input.text
+      label: H1 font size
+      default: '24px'
+    size-h2:
+      type: input.text
+      label: H2 font size
+      default: '22px'
+    size-h3:
+      type: input.text
+      label: H3 font size
+      default: '20px'
+    size-h4:
+      type: input.text
+      label: H4 font size
+      default: '18px'
+    size-h5:
+      type: input.text
+      label: H5 font size
+      default: '16px'
+    size-h6:
+      type: input.text
+      label: H6 font size
+      default: '14px'
+    font-size:
+      type: input.text
+      label: Font size
+      default: '16px'
+    border-radius:
+      type: input.text
+      label: Buttons border radius
+      default: '8px'
+    border-color:
+      type: input.colorpicker
+      label: Border color
+      default: "#cccccc"
+    form-height:
+      type: input.text
+      label: Input height
+      default: '40px'
+    form-border-radius:
+      type: input.text
+      label: Input border radius
+      default: '4px'
+    vertical:
+      type: input.text
+      label: Vertical padding
+      default: '8px'
+    horizontal:
+      type: input.text
+      label: Horizontal padding
+      default: '12px'
+    border-radius-cards:
+      type: input.text
+      label: Cards border radius
+      default: '16px'
+

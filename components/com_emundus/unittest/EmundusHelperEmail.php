@@ -12,6 +12,7 @@ include_once ( JPATH_BASE . 'includes/defines.php' );
 include_once ( JPATH_BASE . 'includes/framework.php' );
 include_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
 include_once (JPATH_SITE . '/components/com_emundus/helpers/emails.php');
+include_once (JPATH_SITE . '/administrator/components/com_emundus/helpers/update.php');
 
 jimport('joomla.user.helper');
 jimport( 'joomla.application.application' );
@@ -121,4 +122,15 @@ class EmundusHelperEmail extends TestCase
             $db->execute();
         }
     }
+
+	public function testGetCustomHeader()
+	{
+		// By default we doesn't have custom header
+		$this->assertSame('',EmundusHelperEmails::getCustomHeader());
+
+		// Add a custom header to emundus component
+		EmundusHelperUpdate::updateComponentParameter('com_emundus', 'email_custom_tag', 'X-Mailin-Tag,emundus');
+
+		$this->assertSame('X-Mailin-Tag:emundus',EmundusHelperEmails::getCustomHeader());
+	}
 }

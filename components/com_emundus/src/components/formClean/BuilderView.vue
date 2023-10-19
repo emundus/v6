@@ -8,7 +8,7 @@
          v-html="object_json.show_page_heading.page_heading"
     />
     <div class="em-flex-row em-flex-space-between page-header" v-if="eval == 0 && !updatePage">
-      <h3 v-if="object_json.show_title" class="em-mr-8 em-h3" @click="enableUpdatingPage(object_json)" v-html="object_json.show_title.value" />
+      <h3 v-if="object_json.show_title" class="em-mr-8" @click="enableUpdatingPage(object_json)" v-html="object_json.show_title.value" />
       <span @click="$emit('modalOpen');$modal.show('modalSide' + object.rgt)" :title="translations.Edit" class="material-icons-outlined em-pointer">edit</span>
     </div>
 

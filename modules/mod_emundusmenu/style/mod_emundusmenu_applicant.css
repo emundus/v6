@@ -6,7 +6,7 @@
 }
 #em_user_menu li{
     padding: 6px 12px;
-    border-radius: 8px;
+    border-radius: var(--em-default-br);
 }
 #em_user_menu li.active{
     background: #F3F3F3;

@@ -115,11 +115,8 @@ export default {
 <style scoped>
 .autocomplete {
   position: relative;
-  min-height: 50px;
   width: 100%;
   display: block;
-  height: 50px;
-  margin-bottom: 10px;
   font-size: 14px;
   line-height: 1.428571429;
   color: #333333;

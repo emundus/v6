@@ -232,6 +232,24 @@ class EmundusControllersettings extends JControllerLegacy {
         exit;
     }
 
+	public function publisharticle() {
+        $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+		$user = JFactory::getUser();
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$jinput = JFactory::getApplication()->input;
+
+			$publish = $jinput->getInt('publish', 1);
+			$article_id = $jinput->getString('article_id', 0);
+			$article_alias = $jinput->getString('article_alias', '');
+
+            $response = $this->m_settings->publishArticle($publish, $article_id, $article_alias);
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
     public function getfooterarticles() {
         $user = JFactory::getUser();
 

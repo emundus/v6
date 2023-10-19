@@ -456,7 +456,7 @@ export default {
 	  onSampleFileInputChange(event) {
 		  const files = event.target.files || [];
 		  if (files.length > 0) {
-			  const allowedExtensions = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'];
+			  const allowedExtensions = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'xls', 'xlsx'];
 				const fileExtension = files[0].name.split('.').pop().toLowerCase();
 				if (!allowedExtensions.includes(fileExtension)) {
 					Swal.fire({

@@ -12,7 +12,7 @@ $document = JFactory::getDocument();
 $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.css");
 ?>
 <div>
-    <div class="em-container-profile-view-pict em-flex-row em-flex-space-between em-small-flex-column em-small-align-items-start em-mt-32 em-mb-16">
+    <div class="em-container-profile-view-pict em-flex-row em-flex-space-between em-small-flex-column em-small-align-items-start em-mb-16">
         <div class="em-flex-row em-small-flex-column em-small-align-items-start em-w-100">
             <?php if ($show_profile_picture == 1) : ?>
                 <div id="pp_profile_background"
@@ -44,7 +44,7 @@ $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.
         </div>
     </div>
 
-    <p class="em-neutral-700-color em-ml-12 em-font-size-14"><?php echo JText::_($intro) ?></p>
+    <p class="em-neutral-700-color em-mb-8 em-font-size-16"><?php echo JText::_($intro) ?></p>
 </div>
 
 <div class="em-page-loader" style="display: none"></div>
@@ -52,7 +52,6 @@ $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.
 <script>
     <?php if($update_profile_picture == 1) : ?>
     function displayEdit(state) {
-        console.log('here')
         document.querySelector('#pp_edit_icon').style.display = state;
     }
 
@@ -79,10 +78,10 @@ $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.
 
             if (error) {
                 Swal.fire({
-                    title: this.translate(title),
-                    text: this.translate(text),
+                    title: Joomla.JText._(title),
+                    text: Joomla.JText._(text),
                     type: "error",
-                    confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+                    confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
                     timer: 4000,
                     customClass: {
                         title: 'em-swal-title',

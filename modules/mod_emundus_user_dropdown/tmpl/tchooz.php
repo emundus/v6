@@ -39,7 +39,7 @@ if ($user != null) {
         ?>
         <style>
             .gantry.homepage  #g-page-surround  {
-                background: var(--background-color);
+                background: var(--em-coordinator-bg);
             }
         </style>
 
@@ -62,19 +62,12 @@ if ($user != null) {
             left: auto;
         }
 
-        #userDropdownIcon {
-            background-color: #<?= $primary_color; ?>;
-            border: solid 1px white;
-            color: #<?= $secondary_color; ?>;
-        }
-
         #userDropdownIcon:hover,
         #userDropdownIcon.active {
             border: 1px solid;
             box-shadow: inset 0 0 20px rgba(255, 255, 255, .5), 0 0 20px rgba(255, 255, 255, .2);
             outline-color: rgba(255, 255, 255, 0);
             outline-offset: 15px;
-            background-color: #<?= $secondary_color; ?>;
             color: #fff;
         }
 
@@ -110,7 +103,7 @@ if ($user != null) {
             width: 100%;
             color: #353544;
             background-color: var( --neutral-50);
-            font-family: var(--font);
+            font-family: var(--em-coordinator-font);
         }
         .select .profile-select:hover{
             background-color: white !important;
@@ -216,7 +209,7 @@ if ($user != null) {
                 <li class="dropdown-header"><?= $user->email; ?></li>
             <?php endif; ?>
             <?php if ($show_logout == '1') :?>
-                <?= '<li><a class="logout-button-user" href="/index.php?option=com_users&task=user.logout&'.JSession::getFormToken().'=1">'.JText::_('LOGOUT').'</a></li>'; ?>
+                <?= '<li><a class="logout-button-user" href="'.JURI::base().'index.php?option=com_users&task=user.logout&'.JSession::getFormToken().'=1">'.JText::_('LOGOUT').'</a></li>'; ?>
             <?php endif; ?>
             <?php if ($show_update == '1' && !$is_anonym_user) :?>
                 <hr style="width: 100%">
