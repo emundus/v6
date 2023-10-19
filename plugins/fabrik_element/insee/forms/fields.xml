@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields">
+		<fieldset label="COM_FABRIK_OPTIONS" name="plg-element-insee">
+
+			<field name="hidden"
+				type="radio"
+				default="0"
+				class="btn-group"
+				description="PLG_ELEMENT_INSEE_HIDDEN_DESC"
+				label="PLG_ELEMENT_INSEE_HIDDEN_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+		</fieldset>
+	</fields>
+
+	<fields name="params">
+		<fieldset name="plg-element-insee-params" label="COM_FABRIK_ADVANCED">
+			<field name="insee_api_base_url" type="text" label="PLG_ELEMENT_INSEE_BASE_URL" default="https://api.insee.fr"/>
+			<field name="insee_api_consumer_key" type="text" label="PLG_ELEMENT_INSEE_CONSUMER_KEY"/>
+			<field name="insee_api_consumer_secret" type="text" label="PLG_ELEMENT_INSEE_CONSUMER_SECRET"/>
+
+			<field name="insee_property_to_check"
+				   type="list"
+				   label="PLG_ELEMENT_INSEE_PROPERTY_TO_CHECK_LABEL"
+				   description="PLG_ELEMENT_INSEE_PROPERTY_TO_CHECK_DESC"
+				   default="siret"
+			>
+				<option value="siret">PLG_ELEMENT_INSEE_PROPERTY_TO_CHECK_SIRET_NUMBER</option>
+				<option value="siren">PLG_ELEMENT_INSEE_PROPERTY_TO_CHECK_SIREN_NUMBER</option>
+			</field>
+
+			<field name="form_mapping"
+				   type="subform"
+				   multiple="true"
+				   min="1"
+				   label="PLG_ELEMENT_INSEE_MAPPING_LABEL"
+			>
+				<form>
+					<field name="insee_property"
+						   type="text"
+						   class="span10"
+						   label="PLG_ELEMENT_INSEE_API_PROPERTY_LABEL"
+						   description="PLG_ELEMENT_INSEE_API_PROPERTY_DESC"
+						   default=""
+					/>
+
+					<field name="insee_fabrik_element"
+						   type="text"
+						   class="span10"
+						   label="PLG_ELEMENT_INSEE_FABRIK_ELEMENT_LABEL"
+						   description="PLG_ELEMENT_INSEE_FABRIK_ELEMENT_DESC"
+						   default=""
+					/>
+
+					<field name="insee_property_type"
+						   type="list"
+						   label="PLG_ELEMENT_INSEE_PROPERTY_TYPE_LABEL"
+						   description="PLG_ELEMENT_INSEE_PROPERTY_TYPE_DESC"
+						   default="text"
+						   class="span10"
+					>
+						<option value="text">PLG_ELEMENT_INSEE_PROPERTY_TYPE_TEXT</option>
+						<option value="date">PLG_ELEMENT_INSEE_PROPERTY_TYPE_DATE</option>
+						<option value="tva">PLG_ELEMENT_INSEE_PROPERTY_TYPE_TVA</option>
+					</field>
+
+					<field name="insee_property_date_format"
+						   type="text"
+						   class="span10"
+						   label="PLG_ELEMENT_INSEE_DATE_FORMAT_LABEL"
+						   description="PLG_ELEMENT_INSEE_DATE_FORMAT_DESC"
+						   default=""
+						   showon="insee_property_type:date"
+					/>
+				</form>
+			</field>
+		</fieldset>
+	</fields>
+</form>
