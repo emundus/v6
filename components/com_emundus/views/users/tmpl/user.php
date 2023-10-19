@@ -9,7 +9,12 @@
 $document = JFactory::getDocument();
 $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 
-require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
+require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
+
+$config = JFactory::getConfig();
+$config_offset = $config->get('offset');
+$offset = $config_offset ?: 'Europe/Paris';
+$timezone = new DateTimeZone($offset);
 ?>
 <style>
     .em-cell .material-icons{
@@ -44,15 +49,15 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
                         </div>
 
                         <div class="selectAll" id="selectAll">
-                            <label for="em-check-all">
+                            <label for="em-check-all" class="em-w-100">
                                 <input value="-1" id="em-check-all" type="checkbox" class="em-check" />
                                 <span id="span-check-all"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL');?></span>
                             </label>
-                            <label class="em-check-all-all" for="em-check-all-all">
+                            <label class="em-check-all-all em-w-100" for="em-check-all-all">
                                 <input value="all" id="em-check-all-all" type="checkbox" class="em-check-all-all" />
                                 <span id="span-check-all-all"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL_ALL'); ?></span>
                             </label>
-                            <label class="em-check-none" for="em-check-none">
+                            <label class="em-check-none em-w-100" for="em-check-none">
                                 <span id="span-check-none"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_NONE'); ?></span>
                             </label>
                         </div>
@@ -117,7 +122,7 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
                                         <div class="em-cell" >
                                             <label for = "<?php echo $value?>_check">
                                                 <?php
-                                                echo EmundusHelperDate::displayDate($value, 'COM_EMUNDUS_DATE_FORMAT', 0);
+                                                echo EmundusHelperDate::displayDate($value, 'COM_EMUNDUS_DATE_FORMAT', $timezone === 'UTC' ? 1 : 0);
                                                 ?>
                                             </label>
                                         </div>
@@ -126,7 +131,7 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
                                     <?php if ($value == 0 && $user->active != -1) :?>
                                         <td>
                                             <div class="em-cell" >
-                                                <span class="material-icons em-main-500-color" title="<?php echo JText::_('COM_EMUNDUS_USERS_ACTIVATE_ACCOUNT_SINGLE') ?>">verified</span>
+                                                <span class="material-icons" style="color:var(--main-500);" title="<?php echo JText::_('COM_EMUNDUS_USERS_ACTIVATE_ACCOUNT_SINGLE') ?>">verified</span>
                                             </div>
                                         </td>
                                     <?php elseif($user->active == -1):?>

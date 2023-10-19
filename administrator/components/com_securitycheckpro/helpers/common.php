@@ -8,8 +8,14 @@ use Joomla\CMS\Component\ComponentHelper as JComponentHelper;
 if (version_compare(JVERSION, '3.20', 'lt') ) {
     // Bootstrap core CSS-->
     echo '<link href="' . JURI::root() .'media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">';
+	// Eliminamos la carga de las librerías mootools. Con esto evitamos que desaparezca el menú izquierdo si se carga la librería "behaviour.modal" en cualquier plugin
+	$document = JFactory::getDocument();
+	$rootPath = JURI::root(true);
+	$arrHead = $document->getHeadData();
+	unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-core.js']);
+	unset($arrHead['scripts'][$rootPath.'/media/system/js/mootools-more.js']);
+	$document->setHeadData($arrHead);
 } else
-
 { 
     echo '<link href="' . JURI::root() .'media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap_j4.css" rel="stylesheet">';
 

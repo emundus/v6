@@ -5,7 +5,7 @@
 			<p>{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_INTRO') }}</p>
 			<section id="new-page">
 				<div class="em-mt-16 em-mb-16 card-wrapper" :class="{selected: -1 === selected}" @click="selected = -1;">
-					<div class="card em-shadow-cards em-pointer em-flex-row">
+					<div class="card em-shadow-cards em-pointer em-flex-row" @dblclick="createPage">
 						<span class="add_circle material-icons-outlined em-main-500-color">add_circle</span>
 					</div>
 					<input
@@ -24,12 +24,21 @@
 				<div class="line em-bg-main-500"></div>
 			</div>
 			<section id="models" class="em-flex-row em-w-100">
-				<p v-if="models.length < 1 && !loading" class="em-w-100 em-text-align-center empty-model-message">{{ translate('COM_EMUNDUS_FORM_BUILDER_EMPTY_PAGE_MODELS') }}</p>
 				<div v-if="!loading" class="em-w-100">
 					<div id="search-model-wrapper">
 						<input id="search-model" class="em-mt-16" type="text" v-model="search" placeholder="Rechercher"/>
 						<span class="reset-search material-icons-outlined em-pointer" @click="search = ''">close</span>
 					</div>
+					<section id="structure-options">
+						<div class="em-flex-row">
+							<input type="radio" id="new-structure" name="structure" value="new" v-model="structure"/>
+							<label for="new-structure">{{ translate('COM_EMUNDUS_FORM_BUILDER_NEW_STRUCTURE') }}</label>
+						</div>
+						<div class="em-flex-row" :class="{'disabled': !canUseInitialStructure }">
+							<input type="radio" id="initial-structure" name="structure" value="initial" v-model="structure"/>
+							<label for="initial-structure">{{ translate('COM_EMUNDUS_FORM_BUILDER_INITIAL_STRUCTURE') }}</label>
+						</div>
+					</section>
 					<div class="models-card em-flex-row">
 						<div
 							v-for="model in models" :key="model.id"
@@ -37,6 +46,7 @@
 							:class="{selected: model.id === selected, hidden: !model.displayed}"
 							:title="model.label[shortDefaultLang]"
 							@click="selected = model.id"
+							@dblclick="createPage"
 						>
 							<form-builder-preview-form
 								:form_id="Number(model.form_id)"
@@ -73,9 +83,9 @@
 				</div>
 			</section>
 		</div>
-		<div class="actions em-flex-row-justify-end em-w-100">
-			<button class="em-secondary-button em-w-max-content em-white-bg" @click="close(false)">{{ translate('COM_EMUNDUS_FORM_BUILDER_CANCEL') }}</button>
-			<button class="em-primary-button em-w-max-content em-ml-8" @click="createPage">{{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_CREATE_SAVE') }}</button>
+		<div class="actions em-flex-space-between em-flex-row em-w-100">
+			<button class="em-secondary-button em-w-auto em-white-bg" @click="close(false)">{{ translate('COM_EMUNDUS_FORM_BUILDER_CANCEL') }}</button>
+			<button class="em-primary-button em-w-auto em-ml-8" @click="createPage">{{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_CREATE_SAVE') }}</button>
 		</div>
 	</div>
 </template>
@@ -114,7 +124,9 @@ export default {
 				prid: this.profile_id,
 				template: 0,
 			},
-			search: ''
+			search: '',
+			structure: 'new', // new | initial, structure means data structure, to know if we keep same database tables or not
+			canUseInitialStructure: true
 		};
 	},
 	created() {
@@ -157,9 +169,13 @@ export default {
 					this.page.label = found_model.label;
 					this.page.intro = found_model.intro;
 				}
+
+				if (this.structure !== 'new' && !this.canUseInitialStructure) {
+					this.structure = 'new';
+				}
 			}
 
-			const data = {...this.page, modelid: model_form_id};
+			const data = {...this.page, modelid: model_form_id, keep_structure: this.structure === 'initial'};
 			formBuilderService.addPage(data).then(response => {
 				if (!response.status) {
 					Swal.fire({
@@ -184,6 +200,39 @@ export default {
 				'reload': reload,
 				'newSelected': newSelected
 			});
+		},
+		isInitialStructureAlreadyUsed() {
+			let used = false;
+
+			if (this.selected !== -1) {
+				const found_model = this.models.find((model) => {
+					return model.id === this.selected;
+				});
+
+				if (found_model) {
+					formBuilderService.checkIfModelTableIsUsedInForm(found_model.form_id, this.profile_id).then((response) => {
+						if (response.status) {
+							used = response.data;
+						}
+
+						if (used) {
+							this.structure = 'new';
+							this.canUseInitialStructure = false;
+						} else {
+							this.canUseInitialStructure = true;
+						}
+
+						return used;
+					}).catch(() => {
+            this.canUseInitialStructure = false; // if error, we can't use initial structure, in doubt
+            return true;
+          });
+				} else {
+					return used;
+				}
+			} else {
+				return used;
+			}
 		}
 	},
 	computed: {
@@ -198,6 +247,11 @@ export default {
 			this.models.forEach((model) => {
 				model.displayed = model.label[this.shortDefaultLang].toLowerCase().includes(this.search.toLowerCase().trim());
 			});
+		},
+		selected: function() {
+			if (this.selected !== -1) {
+				this.isInitialStructureAlreadyUsed();
+			}
 		}
 	}
 }
@@ -277,6 +331,7 @@ export default {
 	#models .models-card {
 		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 		margin-bottom: 64px;
+		flex-wrap: wrap;
 	}
 
 	#search-model-wrapper {
@@ -284,8 +339,8 @@ export default {
 
 		.reset-search {
 			position: absolute;
-			top: 25px;
-			left: 180px;
+			top: 27px;
+			right: 10px;
 		}
 	}
 
@@ -303,6 +358,28 @@ export default {
 		right: 0;
 		padding: 16px 32px;
 		background: linear-gradient(to top, white, transparent);
+	}
+}
+
+#structure-options {
+	transition: all .3s;
+
+	input {
+		margin: 0;
+		height: auto;
+	}
+
+	label {
+		margin: 0 0 0 8px;
+	}
+
+	.disabled {
+		opacity: .5;
+		cursor: not-allowed;
+
+		input, label {
+			pointer-events: none;
+		}
 	}
 }
 </style>

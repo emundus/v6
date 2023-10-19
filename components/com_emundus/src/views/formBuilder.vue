@@ -17,7 +17,9 @@
       />
       <header class="em-flex-row em-flex-space-between">
         <div class="right-actions">
-          <span id="go-back" class="material-icons-outlined em-p-12-16 em-pointer" onclick="history.go(-1)">
+          <span id="go-back"
+                class="material-icons-outlined em-p-12-16 em-pointer"
+                @click="clickGoBack">
             navigate_before
           </span>
         </div>
@@ -67,6 +69,7 @@
               :key="currentPage.id"
               :profile_id="parseInt(profile_id)"
               :page="currentPage"
+              :mode="mode"
               @open-element-properties="onOpenElementProperties"
               @open-section-properties="onOpenSectionProperties"
               @open-create-model="onOpenCreateModel"
@@ -83,56 +86,61 @@
             ></form-builder-document-list>
           </transition>
         </section>
-        <aside class="right-panel em-flex-column em-h-100">
-          <transition name="fade" mode="out-in">
-            <div id="form-hierarchy" v-if="showInRightPanel === 'hierarchy'" class="em-w-100">
-              <form-builder-pages
-                  :pages="pages"
-                  :selected="parseInt(selectedPage)"
-                  :profile_id="parseInt(profile_id)"
-                  @select-page="selectPage($event)"
-                  @add-page="getPages(currentPage.id)"
-                  @delete-page="selectedPage = pages[0].id;"
-                  @open-page-create="principalContainer = 'create-page';"
-              ></form-builder-pages>
-              <hr>
-              <form-builder-documents
-                  ref="formBuilderDocuments"
-                  :profile_id="parseInt(profile_id)"
-                  :campaign_id="parseInt(campaign_id)"
-                  @show-documents="setSectionShown('documents')"
-                  @open-create-document="onOpenCreateDocument"
-              ></form-builder-documents>
-            </div>
-            <form-builder-element-properties
-                v-if="showInRightPanel === 'element-properties'"
-                @close="onCloseElementProperties"
-                :element="selectedElement"
-                :profile_id="parseInt(profile_id)"
-            ></form-builder-element-properties>
-            <form-builder-section-properties
-                v-if="showInRightPanel === 'section-properties'"
-                @close="onCloseSectionProperties"
-                :section_id="selectedSection.group_id"
-                :profile_id="parseInt(profile_id)"
-            ></form-builder-section-properties>
-	          <form-builder-create-model
-			          v-if="showInRightPanel === 'create-model'"
-			          :page="selectedPage"
-			          @close="showInRightPanel = 'hierarchy';"
-	          ></form-builder-create-model>
-            <form-builder-create-document
-                v-if="showInRightPanel === 'create-document'"
-                ref="formBuilderCreateDocument"
-                :profile_id="parseInt(profile_id)"
-                :current_document="selectedDocument ? selectedDocument : null"
-                :mandatory="createDocumentMandatory"
-                :mode="createDocumentMode"
-                @close="showInRightPanel = 'hierarchy'"
-                @documents-updated="onUpdateDocument"
-            ></form-builder-create-document>
-          </transition>
-        </aside>
+	      <transition name="slide-fade" mode="out-in">
+		      <aside v-if="rightPanel.tabs.includes(showInRightPanel)" class="right-panel em-flex-column em-h-100">
+	          <transition name="fade" mode="out-in">
+	            <div id="form-hierarchy" v-if="showInRightPanel === 'hierarchy' && rightPanel.tabs.includes('hierarchy')" class="em-w-100">
+	              <form-builder-pages
+	                  :pages="pages"
+	                  :selected="parseInt(selectedPage)"
+	                  :profile_id="parseInt(profile_id)"
+	                  @select-page="selectPage($event)"
+	                  @add-page="getPages(currentPage.id)"
+	                  @delete-page="selectedPage = pages[0].id;"
+	                  @open-page-create="principalContainer = 'create-page';"
+	                  @reorder-pages="onReorderedPages"
+	                  @open-create-model="onOpenCreateModel"
+	              ></form-builder-pages>
+	              <hr>
+	              <form-builder-documents
+	                  ref="formBuilderDocuments"
+	                  :profile_id="parseInt(profile_id)"
+	                  :campaign_id="parseInt(campaign_id)"
+	                  @show-documents="setSectionShown('documents')"
+	                  @open-create-document="onOpenCreateDocument"
+	              ></form-builder-documents>
+	            </div>
+	            <form-builder-element-properties
+	                v-if="showInRightPanel === 'element-properties'"
+	                @close="onCloseElementProperties"
+	                :element="selectedElement"
+	                :profile_id="parseInt(profile_id)"
+	            ></form-builder-element-properties>
+	            <form-builder-section-properties
+	                v-if="showInRightPanel === 'section-properties'"
+	                @close="onCloseSectionProperties"
+	                :section_id="selectedSection.group_id"
+	                :profile_id="parseInt(profile_id)"
+	            ></form-builder-section-properties>
+		          <form-builder-create-model
+				          v-if="showInRightPanel === 'create-model'"
+				          :page="selectedPage"
+				          @close="showInRightPanel = 'hierarchy';"
+		          ></form-builder-create-model>
+	            <form-builder-create-document
+	                v-if="showInRightPanel === 'create-document' && rightPanel.tabs.includes('create-document')"
+	                ref="formBuilderCreateDocument"
+	                :key="formBuilderCreateDocumentKey"
+	                :profile_id="parseInt(profile_id)"
+	                :current_document="selectedDocument ? selectedDocument : null"
+	                :mandatory="createDocumentMandatory"
+	                :mode="createDocumentMode"
+	                @close="showInRightPanel = 'hierarchy'"
+	                @documents-updated="onUpdateDocument"
+	            ></form-builder-create-document>
+	          </transition>
+	        </aside>
+	      </transition>
       </div>
 	    <div v-else-if="principalContainer === 'create-page'">
 		    <form-builder-create-page :profile_id="parseInt(profile_id)" @close="onCloseCreatePage"></form-builder-create-page>
@@ -175,7 +183,9 @@ export default {
   },
   data() {
     return {
+			mode: 'forms',
       profile_id: 0,
+	    form_id: 0,
       campaign_id: 0,
       title: '',
       pages: [],
@@ -186,6 +196,15 @@ export default {
       selectedElement: null,
       optionsSelectedElement: false,
       selectedDocument: null,
+	    rightPanel: {
+				tabs: [
+						'hierarchy',
+						'element-properties',
+						'section-properties',
+						'create-model',
+						'create-document',
+				]
+	    },
       showInRightPanel: 'hierarchy',
       createDocumentMandatory: true,
       lastSave: null,
@@ -212,14 +231,28 @@ export default {
           },
         ],
       },
+	    formBuilderCreateDocumentKey: 0,
+	    createDocumentMode: 'create'
     }
   },
   created() {
-    if(parseInt(this.$store.state.global.manyLanguages) === 0){
-      this.leftPanel.tabs[2].displayed = false;
-    }
-    this.profile_id = this.$store.state.global.datas.prid.value;
-    this.campaign_id = this.$store.state.global.datas.cid.value;
+	  const data = this.$store.getters['global/datas'];
+	  if(parseInt(this.$store.state.global.manyLanguages) === 0){
+		  this.leftPanel.tabs[2].displayed = false;
+	  }
+	  this.profile_id = data.prid.value;
+	  this.campaign_id = data.cid.value;
+
+		if (data && data.mode && data.mode.value) {
+			this.mode = data.mode.value;
+
+			if (this.mode === 'eval' || this.mode == 'models') {
+				this.rightPanel.tabs = this.rightPanel.tabs.filter(tab => tab !== 'hierarchy' && tab !== 'create-document');
+				this.leftPanel.tabs = this.leftPanel.tabs.filter(tab => tab.title != 'Documents');
+				this.form_id = this.profile_id;
+				this.profile_id = 0;
+			}
+		}
 
     this.getFormTitle();
     this.getPages();
@@ -229,52 +262,63 @@ export default {
   },
   methods: {
     getFormTitle() {
-      formService.getProfileLabelByProfileId(this.profile_id).then(response => {
-        if (response.status !== false) {
-          this.title = response.data.data.label;
-        }
-      });
+			if (this.profile_id) {
+				formService.getProfileLabelByProfileId(this.profile_id).then(response => {
+					if (response.status !== false) {
+						this.title = response.data.data.label;
+					}
+				});
+			}
     },
     updateFormTitle()
     {
       this.title = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, " ");
       this.$refs.formTitle.innerText = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, " ");
-      formService.updateFormLabel({
-        label: this.title,
-        prid: this.profile_id,
-      });
+      formService.updateFormLabel({label: this.title, prid: this.profile_id, form_id: this.form_id});
     },
     updateFormTitleKeyup() {
       document.activeElement.blur();
     },
     getPages(page_id = 0) {
-      formService.getFormsByProfileId(this.profile_id).then(response => {
-        this.pages = response.data.data;
+			if (this.profile_id) {
+				formService.getFormsByProfileId(this.profile_id).then(response => {
+					this.pages = response.data.data;
 
-        if (page_id === 0) {
-	        this.selectPage(this.pages[0].id);
-        } else {
-	        this.selectPage(String(page_id));
-        }
-	      this.principalContainer = 'default';
+					if (page_id === 0) {
+						this.selectPage(this.pages[0].id);
+					} else {
+						this.selectPage(String(page_id));
+					}
+					this.principalContainer = 'default';
 
-	      formService.getSubmissionPage(this.profile_id).then(response => {
-          const formId = response.data.link.match(/formid=(\d+)/)[1];
-          if (formId) {
-            // check if the form is already in the pages
-            const page = this.pages.find(page => page.id === formId);
-            if (!page) {
-              this.pages.push({
-                id: formId,
-                label: this.translate('COM_EMUNDUS_FORM_BUILDER_SUBMISSION_PAGE'),
-                type: 'submission',
-                elements: [],
-              });
-            }
-          }
-        });
-      });
+					formService.getSubmissionPage(this.profile_id).then(response => {
+						const formId = response.data.link.match(/formid=(\d+)/)[1];
+						if (formId) {
+							// check if the form is already in the pages
+							const page = this.pages.find(page => page.id === formId);
+							if (!page) {
+								this.pages.push({
+									id: formId,
+									label: this.translate('COM_EMUNDUS_FORM_BUILDER_SUBMISSION_PAGE'),
+									type: 'submission',
+									elements: [],
+								});
+							}
+						}
+					});
+				});
+			} else if (this.form_id) {
+				formService.getFormByFabrikId(this.form_id).then(response => {
+					this.title = response.data.data.label;
+					this.pages = [response.data.data];
+					this.selectPage(this.pages[0].id);
+					this.principalContainer = 'default';
+				});
+			}
     },
+	  onReorderedPages(reorderedPages) {
+		  this.pages = reorderedPages;
+	  },
     onElementCreated(elementIndex) {
       this.$refs.formBuilderPage.getSections(elementIndex);
     },
@@ -330,31 +374,26 @@ export default {
 			if (pageId > 0) {
 				this.selectedPage = pageId;
 				this.showInRightPanel = 'create-model';
+			} else {
+				console.error('No page id provided');
 			}
 	  },
-    onOpenCreateDocument(mandatory = "1")
+    onOpenCreateDocument(mandatory = '1')
     {
       this.selectedDocument = null;
-	    if (this.$refs.formBuilderCreateDocument) {
-		    this.$refs.formBuilderCreateDocument.document.mandatory = mandatory;
-		    this.$refs.formBuilderCreateDocument.mode = 'create';
-	    } else {
-		    this.createDocumentMandatory = mandatory;
-		    this.createDocumentMode = 'create';
-
-	    }
+	    this.createDocumentMandatory = mandatory;
+	    this.createDocumentMode = 'create';
+	    this.formBuilderCreateDocumentKey++;
 	    this.showInRightPanel = 'create-document';
 	    this.setSectionShown('documents');
     },
     onEditDocument(document)
     {
-			if (this.$refs.formBuilderCreateDocument) {
-				this.$refs.formBuilderCreateDocument.mode = 'update';
-			}
-
-      this.selectedDocument = document;
-      this.showInRightPanel = 'create-document';
+	    this.selectedDocument = document;
 	    this.createDocumentMode = 'update';
+	    this.createDocumentMandatory = document.mandatory;
+	    this.formBuilderCreateDocumentKey++;
+	    this.showInRightPanel = 'create-document';
 	    this.setSectionShown('documents');
     },
     onDeleteDocument(){
@@ -393,6 +432,13 @@ export default {
         window.open(baseUrl + url, '_blank');
       } else {
         window.location.href = baseUrl + url;
+      }
+    },
+    clickGoBack() {
+      if (this.principalContainer === 'create-page') {
+        this.onCloseCreatePage({reload: false});
+      } else {
+        window.history.go(-1);
       }
     }
   },
@@ -443,6 +489,10 @@ export default {
     aside, section {
       justify-content: flex-start;
     }
+
+	  aside {
+			transition: all .3s;
+	  }
 
     section {
       overflow-y: auto;

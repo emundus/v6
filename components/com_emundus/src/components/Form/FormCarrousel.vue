@@ -9,10 +9,10 @@
 
       <div class="em-flex-column em-align-start em-mt-48">
         <div class="em-mb-16">
-          <p class="em-h4">
+          <h4>
             <span class="material-icons-outlined">article</span>
             {{ Form }}
-          </p>
+          </h4>
           <div v-for="(value, index) in formNameArray" :key="index" class="MenuForm em-mb-8">
             <a @click="ChangeIndex(index)"
                class="em-pointer em-text-neutral-900"
@@ -23,10 +23,10 @@
         </div>
 
         <div>
-          <p class="em-h4">
+          <h4>
             <span class="material-icons-outlined">folder</span>
             {{ Documents }}
-          </p>
+          </h4>
           <div v-for="(doc, index) in documentsList" :key="index" class="MenuForm em-mb-8">
             <p class="em-text-neutral-900">{{doc.label}}</p>
           </div>

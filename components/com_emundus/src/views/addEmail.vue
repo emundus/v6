@@ -8,11 +8,11 @@
         :classes="'vue-notification-custom'"
     />
     <div>
-      <form @submit.prevent="submit">
+      <form @submit.prevent="submit" class="fabrikForm emundus-form">
         <div>
-          <span class="em-red-500-color em-mb-8">{{translations.RequiredFieldsIndicate}}</span>
-          <div class="em-mb-16">
-            <h2>{{ translations.Informations }}</h2>
+          <div class="mb-4">
+            <h1>{{ translate('COM_EMUNDUS_ONBOARD_ADD_EMAIL') }}</h1>
+            <span class="em-red-500-color em-mb-8">{{translations.RequiredFieldsIndicate}}</span>
           </div>
 
           <div>
@@ -20,80 +20,89 @@
               <label>{{translations.emailName}} <span style="color: #E5283B">*</span></label>
               <input
                   type="text"
-                  class="em-w-100"
+                  class="w-full"
                   v-model="form.subject"
                   :class="{ 'is-invalid': errors.subject}"
               />
             </div>
-            <span v-if="errors.subject" class="em-red-500-color em-mb-8">
+            <span v-if="errors.subject" class="em-red-500-color mb-2">
               <span class="em-red-500-color">{{translations.SubjectRequired}}</span>
             </span>
 
-            <div class="em-mb-16">
+            <div class="mb-4">
               <label>{{translations.emailBody}} <span style="color: #E5283B">*</span></label>
-              <editor
-                  v-if="dynamicComponent"
-                  v-model="form.message"
-                  :id="'email'"
-                  :class="{ 'is-invalid': errors.message}"
-                  :height="'30em'"
+              <editor-quill
+                  style="height: 30em"
                   :text="form.message"
-                  :lang="actualLanguage"
+                  v-model="form.message"
                   :enable_variables="true"
                   :placeholder="translations.EmailResume"
+                  :id="'email'"
+                  :key="dynamicComponent"
+                  :class="{ 'is-invalid': errors.message}"
               >
-              </editor>
-              <div class="em-mt-8">
+              </editor-quill>
+              <div class="mt-12">
                 <a href="component/emundus/?view=export_select_columns&format=html&layout=all_programs&Itemid=1173" class="em-main-500-color em-hover-main-600" target="_blank">{{ translate('COM_EMUNDUS_EMAIL_SHOW_TAGS') }}</a>
               </div>
             </div>
-            <p v-if="errors.message" class="em-red-500-color em-mb-8">
+            <p v-if="errors.message" class="em-red-500-color mb-2">
               <span class="em-red-500-color">{{translations.BodyRequired}}</span>
             </p>
+
+            <div class="form-group">
+              <label>{{ translations.emailCategory }}</label>
+              <incremental-select
+                  v-if="categories.length > 0"
+                  :options="this.categoriesList"
+                  :defaultValue="incSelectDefaultValue"
+                  :locked="mode != 'create'"
+                  @update-value="updateCategorySelectedValue"
+              >
+              </incremental-select>
+            </div>
           </div>
         </div>
 
         <hr/>
 
         <div>
-          <div class="em-flex-row em-mb-16">
-            <p class="em-h4 em-pointer" @click="displayAdvanced">{{ translations.Advanced }}</p>
-            <button :title="translations.Advanced" type="button" class="em-transparent-button em-flex-column" @click="displayAdvanced" v-show="!displayAdvancedParameters">
+          <div class="flex items-center mb-4 gap-1">
+            <h3 class="cursor-pointer em-mb-0-important" @click="displayAdvanced">{{ translations.Advanced }}</h3>
+            <button :title="translations.Advanced" type="button" class="em-transparent-button flex flex-col" @click="displayAdvanced" v-show="!displayAdvancedParameters">
               <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
             </button>
-            <button :title="translations.Advanced" type="button" @click="displayAdvanced" class="em-transparent-button em-flex-column" v-show="displayAdvancedParameters">
+            <button :title="translations.Advanced" type="button" @click="displayAdvanced" class="em-transparent-button flex flex-col" v-show="displayAdvancedParameters">
               <span class="material-icons-outlined em-main-500-color">remove_circle_outline</span>
             </button>
           </div>
           <div id="email-advanced-parameters" v-if="displayAdvancedParameters">
-            <div class="form-group">
+            <div class="form-group mb-4">
+              <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_SENDER_EMAIL') }}</label>
+              <span>{{email_sender}}</span>
+            </div>
+
+            <div class="form-group mb-4">
               <label>{{translations.receiverName}}</label>
               <input
                   type="text"
-                  class="em-w-100"
+                  class="w-full fabrikinput"
                   v-model="form.name"
               />
             </div>
 
-            <div class="form-group">
+            <div class="form-group mb-4">
               <label>{{translations.emailAddress}}</label>
               <input
                   type="text"
-                  class="em-w-100"
+                  class="w-full fabrikinput"
                   v-model="form.emailfrom"
+                  placeholder="reply-to@tchooz.io"
               />
+              <p class="em-font-size-12 em-neutral-700-color">{{translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESTIP')}}</p>
             </div>
 
-            <div class="form-group">
-              <label>{{ translations.emailCategory }}</label>
-              <autocomplete
-                  @searched="onSearchCategory"
-                  :items="this.categories"
-                  :year="this.form.category"
-              />
-            </div>
-
-            <div class="form-group em-mb-8" id="receivers_cc">
+            <div class="form-group mb-4" id="receivers_cc">
               <label>{{ translations.ReceiversCC }}</label>
               <multiselect
                   v-model="selectedReceiversCC"
@@ -106,7 +115,6 @@
                   select-label=""
                   selected-label=""
                   deselect-label=""
-                  :placeholder="translations.ReceiversCCPlaceHolder"
                   @tag="addNewCC"
                   :close-on-select="false"
                   :clear-on-select="false"
@@ -114,7 +122,7 @@
             </div>
 
             <!-- Email -- BCC (in form of email adress or fabrik element -->
-            <div class="form-group em-mb-8" id="receivers_bcc">
+            <div class="form-group mb-4" id="receivers_bcc">
               <label>{{ translations.ReceiversBCC }}</label>
               <multiselect
                   v-model="selectedReceiversBCC"
@@ -127,7 +135,6 @@
                   select-label=""
                   selected-label=""
                   deselect-label=""
-                  :placeholder="translations.ReceiversBCCPlaceHolder"
                   @tag="addNewBCC"
                   :close-on-select="false"
                   :clear-on-select="false">
@@ -135,7 +142,7 @@
             </div>
 
             <!-- Email -- Associated letters (in form of email adress or fabrik element -->
-            <div class="form-group em-mb-8" id="attached_letters" v-if="attached_letters">
+            <div class="form-group mb-4" id="attached_letters" v-if="attached_letters">
               <label>{{ translations.Letters }}</label>
               <multiselect
                   v-model="selectedLetterAttachments"
@@ -154,7 +161,7 @@
             </div>
 
             <!-- Email -- Action tags -->
-            <div class="form-group em-mb-8" v-if="tags">
+            <div class="form-group mb-4" v-if="tags">
               <label>{{ translations.Tags }}</label>
               <multiselect
                   v-model="selectedTags"
@@ -173,7 +180,7 @@
             </div>
 
             <!-- Email -- Candidat attachments -->
-            <div class="form-group em-mb-8">
+            <div class="form-group mb-4">
               <label>{{ translations.CandidateAttachments }}</label>
               <multiselect
                   v-model="selectedCandidateAttachments"
@@ -193,7 +200,7 @@
           </div>
         </div>
 
-        <div class="em-flex-row em-flex-space-between em-mt-16">
+        <div class="flex justify-between mt-4">
           <button
               type="button"
               class="em-secondary-button em-w-auto"
@@ -214,9 +221,9 @@
 <script>
 import Autocomplete from "../components/autocomplete";
 import axios from "axios";
-import Editor from "../components/editor";
+import EditorQuill from "../components/editorQuill";
 import Multiselect from 'vue-multiselect';
-import {global} from "../store/global";
+import IncrementalSelect from "@/components/IncrementalSelect.vue";
 
 const qs = require("qs");
 
@@ -224,9 +231,16 @@ export default {
   name: "addEmail",
 
   components: {
-    Editor,
+    IncrementalSelect,
+    EditorQuill,
     Autocomplete,
     Multiselect
+  },
+  props: {
+    mode: {
+      type: String,
+      default: "create"
+    }
   },
 
   data: () => ({
@@ -313,6 +327,7 @@ export default {
 
     selectedTags: [],
     selectedCandidateAttachments: [],
+    selectedCategory: 0,
 
     form: {
       lbl: "",
@@ -356,10 +371,12 @@ export default {
 
     action_tags: [],
     candidate_attachments: [],
+    email_sender: '',
   }),
   created() {
     this.loading = true;
 
+    this.getEmailSender();
     this.getAllAttachments();
     this.getAllTags();
     this.getAllDocumentLetter();
@@ -509,6 +526,12 @@ export default {
       axios.get("index.php?option=com_emundus&controller=programme&task=searchuserbytermwithoutapplicants&term=" + this.searchTerm)
           .then(response => {
             this.users = response.data.data;
+          });
+    },
+    getEmailSender() {
+      axios.get("index.php?option=com_emundus&controller=settings&task=getemailsender")
+          .then(response => {
+            this.email_sender = response.data.data;
           });
     },
 
@@ -710,13 +733,46 @@ export default {
         console.log(error);
       })
     },
+
+    updateCategorySelectedValue(category)
+    {
+      if (category.label) {
+        this.form.category = category.label;
+      } else {
+        this.selectedCategory = null;
+        this.form.category = '';
+      }
+    },
   },
+
+  computed: {
+    categoriesList() {
+      return this.categories.map((category,index) => {
+        return {
+          id: index+1,
+          label: category
+        };
+      });
+    },
+
+    incSelectDefaultValue() {
+      let defaultValue = null;
+      if (this.form && (this.form.category)) {
+        this.categories.forEach((category, index) => {
+          if (category === this.form.category) {
+            defaultValue = index + 1;
+          }
+        });
+      }
+      return defaultValue;
+    },
+  }
 };
 </script>
 
 <style scoped>
 .emails__add-email{
-  width: calc(100% - 75px) !important;
+  width: 100%;
   margin-left: auto;
 }
 </style>

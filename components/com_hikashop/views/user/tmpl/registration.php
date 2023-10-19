@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -25,7 +25,7 @@ if($this->display_method == 1) {
 		<?php echo JText::_( 'HIKA_USER_NAME' ).'*'; ?>
 	</label>
 	<div class="hkc-sm-8">
-		<input type="text" name="data[register][name]" id="register_name" value="<?php echo $this->escape($this->mainUser->get( 'name' ));?>" class="inputbox hkform-control validate-username required" maxlength="50" />
+		<input type="text" name="data[register][name]" id="register_name" value="<?php echo $this->escape($this->mainUser->get( 'name' ));?>" class="<?php echo HK_FORM_CONTROL_CLASS; ?> validate-username required" maxlength="50" />
 	</div>
 </div>
 <!-- EO NAME -->
@@ -35,7 +35,7 @@ if($this->display_method == 1) {
 		<?php echo JText::_( 'HIKA_USERNAME' ).'*'; ?>
 	</label>
 	<div class="hkc-sm-8">
-		<input type="text" id="register_username" name="data[register][username]" value="<?php echo $this->escape($this->mainUser->get( 'username' ));?>" class="inputbox hkform-control required validate-username" maxlength="25" />
+		<input type="text" id="register_username" name="data[register][username]" value="<?php echo $this->escape($this->mainUser->get( 'username' ));?>" class="<?php echo HK_FORM_CONTROL_CLASS; ?> required validate-username" maxlength="25" />
 	</div>
 </div>
 <!-- EO USERNAME -->
@@ -48,7 +48,7 @@ if($this->display_method == 1) {
 		<?php echo JText::_( 'HIKA_EMAIL' ).'*'; ?>
 	</label>
 	<div class="hkc-sm-8">
-		<input<?php if($this->config->get('show_email_confirmation_field',0)){echo ' autocomplete="off"';} ?> type="text" id="register_email" name="data[register][email]" value="<?php echo $this->escape($this->mainUser->get( 'email' ));?>" class="inputbox hkform-control required validate-email" maxlength="100" />
+		<input <?php if($this->config->get('show_email_confirmation_field',0)){echo ' autocomplete="off"';} ?> type="text" id="register_email" name="data[register][email]" value="<?php echo $this->escape($this->mainUser->get( 'email' ));?>" class="<?php echo HK_FORM_CONTROL_CLASS; ?> required validate-email" maxlength="100" />
 	</div>
 </div>
 <!-- EO EMAIL -->
@@ -61,7 +61,7 @@ if($this->display_method == 1) {
 		<?php echo JText::_( 'HIKA_EMAIL_CONFIRM' ).'*'; ?>
 	</label>
 	<div class="hkc-sm-8">
-		<input autocomplete="off" type="text" id="register_email_confirm" name="data[register][email_confirm]" value="<?php echo $this->escape($this->mainUser->get( 'email' ));?>" class="inputbox hkform-control required validate-email" maxlength="100" onchange="if(this.value!=document.getElementById('register_email').value){alert('<?php echo JText::_('THE_CONFIRMATION_EMAIL_DIFFERS_FROM_THE_EMAIL_YOUR_ENTERED',true); ?>'); this.value = '';}" />
+		<input autocomplete="off" type="text" id="register_email_confirm" name="data[register][email_confirm]" value="<?php echo $this->escape($this->mainUser->get( 'email' ));?>" class="<?php echo HK_FORM_CONTROL_CLASS; ?> required validate-email" maxlength="100" onchange="if(this.value!=document.getElementById('register_email').value){alert('<?php echo JText::_('THE_CONFIRMATION_EMAIL_DIFFERS_FROM_THE_EMAIL_YOUR_ENTERED',true); ?>'); this.value = '';}" />
 	</div>
 </div>
 <?php
@@ -82,7 +82,43 @@ if($this->display_method == 1) {
 		<?php echo JText::_( 'HIKA_PASSWORD' ).'*'; ?>
 	</label>
 	<div class="hkc-sm-8">
-		<input autocomplete="off" class="inputbox hkform-control required  validate-password" type="password" id="register_password" name="data[register][password]" value="" />
+	<?php
+	if(HIKASHOP_J40) {
+		$com_usersParams = \Joomla\CMS\Component\ComponentHelper::getParams('com_users');
+		$minLength    = (int) $com_usersParams->get('minimum_length', 12);
+		$minIntegers  = (int) $com_usersParams->get('minimum_integers', 0);
+		$minSymbols   = (int) $com_usersParams->get('minimum_symbols', 0);
+		$minUppercase = (int) $com_usersParams->get('minimum_uppercase', 0);
+		$minLowercase = (int) $com_usersParams->get('minimum_lowercase', 0);
+		$rules = $minLowercase > 0 || $minUppercase > 0 || $minSymbols > 0 || $minIntegers > 0 || $minLength > 0;
+		$layout = new JLayoutFile('joomla.form.field.password');
+		echo $layout->render(array(
+			'meter' => true,
+			'class' => 'validate-password',
+			'forcePassword' => true,
+			'lock' => false,
+			'rules' => $rules,
+			'hint' => '',
+			'readonly' => false,
+			'disabled' => false,
+			'required' => true,
+			'autofocus' => false,
+			'dataAttribute' => 'autocomplete="new-password"',
+			'name' => 'data[register][password]',
+			'id' => 'register_password',
+			'minLength' => $minLength,
+			'minIntegers' => $minIntegers,
+			'minSymbols' => $minSymbols,
+			'minUppercase' => $minUppercase,
+			'minLowercase' => $minLowercase,
+			'value' => '',
+		));
+	} else {
+?>
+		<input autocomplete="off" class="<?php echo HK_FORM_CONTROL_CLASS; ?> required  validate-password" type="password" id="register_password" name="data[register][password]" value="" />
+<?php 
+	}
+?>
 	</div>
 </div>
 <div class="hkform-group control-group hikashop_registration_password2_line" id="hikashop_registration_password2_line">
@@ -90,7 +126,31 @@ if($this->display_method == 1) {
 		<?php echo JText::_( 'HIKA_VERIFY_PASSWORD' ).'*'; ?>
 	</label>
 	<div class="hkc-sm-8">
-		<input autocomplete="off" class="inputbox hkform-control required  validate-passverify" type="password" id="register_password2" name="data[register][password2]" value="" />
+<?php
+	if(HIKASHOP_J40) {
+		$layout = new JLayoutFile('joomla.form.field.password');
+		echo $layout->render(array(
+			'meter' => false,
+			'class' => 'validate-password',
+			'forcePassword' => true,
+			'lock' => false,
+			'rules' => false,
+			'hint' => '',
+			'readonly' => false,
+			'disabled' => false,
+			'required' => true,
+			'autofocus' => false,
+			'dataAttribute' => 'autocomplete="new-password"',
+			'name' => 'data[register][password2]',
+			'id' => 'register_password2',
+			'value' => '',
+		));
+	} else {
+?>
+		<input autocomplete="off" class="<?php echo HK_FORM_CONTROL_CLASS; ?> required  validate-passverify" type="password" id="register_password2" name="data[register][password2]" value="" />
+<?php 
+	}
+?>
 	</div>
 </div>
 <?php

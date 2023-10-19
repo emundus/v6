@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="1.5" method="upgrade" group="hikashop">
 	<name>Hikashop Google Products Plugin</name>
-	<creationDate>25 septembre 2022</creationDate>
-	<version>4.6.2</version>
+	<creationDate>26 juin 2023</creationDate>
+	<version>4.7.4</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<copyright>(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-	<description>This plugin enables you to get a Google Product feed</description>
+	<description>This plugin enables you to generate a Google Product feed in order to import it manually or automatically to Google Merchant</description>
 	<files>
 		<filename plugin="google_products">google_products.php</filename>
 	</files>
@@ -36,6 +36,7 @@
 			<option value="1">HIKASHOP_YES</option>
 		</param>
 		<param name="brand" type="text" size="50" default="" label="HIKA_BRAND_OVERRIDE" description="BRAND_OVERRIDE" />
+		<param name="categories" multiple="true" namebox_type="category" type="hikanamebox" default="" label="PRODUCT_CATEGORIES" description="GOOGLE_PRODUCTS_CATEGORIES" />
 		<param name="category" type="text" size="50" default="" label="CATEGORY" description="GOOGLE_PRODUCTS_CATEGORY" />
 		<param name="price_displayed" type="list" default="0" label="HIKA_PRICE_DISPLAYED" description="PRICE_DISPLAYED">
 			<option value="cheapest">CHEAPEST_PRICE_DISPLAYED</option>
@@ -58,7 +59,7 @@
 			<option value="meta">USE_META_DESCRIPTION</option>
 		</param>
 		<param name="message" type="text" size="50" default="No description" label="HIKA_MESSAGE_IF_NO_DEDSCRIPTION" description="MESSAGE_IF_NO_DEDSCRIPTION" />
-		<param name="item_id" type="text" size="50" default="" label="HIKA_ITEM_ID" description="GOOGLE_PRODUCTS_ITEMID" />
+		<param name="item_id" type="menuitem" size="50" default="" label="HIKA_ITEM_ID" description="GOOGLE_PRODUCTS_ITEMID" />
 		<param name="add_code" type="radio" default="0" label="ADD_PRODUCT_CODE_MPN" description="ADD_PRODUCT_CODE">
 			<option value="0">HIKASHOP_NO</option>
 			<option value="1">HIKASHOP_YES</option>
@@ -150,6 +151,7 @@
 					<option value="1">HIKASHOP_YES</option>
 				</field>
 				<field name="brand" type="text" size="50" default="" label="HIKA_BRAND_OVERRIDE" description="BRAND_OVERRIDE" />
+				<field name="categories" multiple="true" namebox_type="category" type="hikanamebox" default="" label="PRODUCT_CATEGORIES" description="GOOGLE_PRODUCTS_CATEGORIES" />
 				<field name="category" type="text" size="50" default="" label="GOOGLE_PRODUCT_CATEGORY" description="GOOGLE_PRODUCTS_CATEGORY" />
 				<field name="price_displayed" type="list" default="0" label="HIKA_PRICE_DISPLAYED" description="PRICE_DISPLAYED">
 					<option value="cheapest">CHEAPEST_PRICE_DISPLAYED</option>
@@ -179,7 +181,7 @@
 					<option value="meta">USE_META_DESCRIPTION</option>
 				</field>
 				<field name="message" type="text" size="50" default="No description" label="HIKA_MESSAGE_IF_NO_DEDSCRIPTION" description="MESSAGE_IF_NO_DEDSCRIPTION" />
-				<field name="item_id" type="text" size="50" default="" label="HIKA_ITEM_ID" description="GOOGLE_PRODUCTS_ITEMID" />
+				<field name="item_id" type="menuitem" size="50" default="" label="HIKA_ITEM_ID" description="GOOGLE_PRODUCTS_ITEMID" />
 				<field name="add_code" type="radio" default="0" label="ADD_PRODUCT_CODE_MPN" description="ADD_PRODUCT_CODE" class="btn-group btn-group-yesno">
 					<option value="0">HIKASHOP_NO</option>
 					<option value="1">HIKASHOP_YES</option>

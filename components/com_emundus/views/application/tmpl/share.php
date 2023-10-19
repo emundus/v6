@@ -28,7 +28,7 @@
                                 <th></th>
                             </tr>
                             <tr>
-                                <th><?= JText::_('Groups')?></th>
+                                <th><?= JText::_('COM_EMUNDUS_ACCESS_GROUPS')?></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -153,7 +153,7 @@
 					<th></th>
 				</tr>
 				<tr>
-					<th><?= JText::_('Users')?></th>
+					<th><?= JText::_('COM_EMUNDUS_ACCESS_USER')?></th>
 				</tr>
 				</thead>
 				<tbody>

@@ -59,7 +59,7 @@ export default {
       currentMenu: 1,
       menus: [
         {
-          title: "COM_EMUNDUS_ONBOARD_STYLE_TOOL_GENERAL",
+          title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_STYLE",
           index: 1
         },
       ],

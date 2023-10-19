@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -380,6 +380,8 @@ class hikashopFilterClass extends hikashopClass {
 	}
 
 	function displayFilter($filter, $divName, &$parent, $datas=''){
+		if(isset($filter->datas))
+			$datas = $filter->datas;
 		$html ='';
 		if($filter->filter_type=='text' || $filter->filter_type=='singledropdown' || $filter->filter_type=='multipledropdown' || $filter->filter_type=='radio' || $filter->filter_type=='list' || $filter->filter_type=='checkbox' || $filter->filter_type=='cursor' || $filter->filter_type=='instockcheckbox'){
 			$classType = 'hikashop'.ucfirst($filter->filter_type).'Class';
@@ -424,13 +426,20 @@ class hikashopFilterClass extends hikashopClass {
 		return $html;
 	}
 
-	function getProductList(&$parent, $filters){
-		$fields=array();
+	function getProductList(&$parent, &$filters, $currentFilter = null){
+		$fields = array();
 		$fieldsLimits = array();
 		$datas = array();
 		$copy_query = $parent->listingQuery;
+		if(!is_null($currentFilter) && isset($filters[$currentFilter]) && !empty($filters[$currentFilter]->queryBeforeFiltering)) {
+			$copy_query = $filters[$currentFilter]->queryBeforeFiltering;
+		}
 		if(!empty($filters)){
-			foreach($filters as $filter){
+			foreach($filters as $k => $filter){
+				if(!is_null($currentFilter) && isset($filters[$currentFilter])) {
+					if($currentFilter != $k)
+						continue;
+				}
 				$fields[$filter->filter_namekey]=$this->getFieldToLoad($filter, $parent->params->get('main_div_name'), $parent);
 				if($filter->filter_data=='category' && strpos($copy_query,' '.hikashop_table('product_category').' AS a')===false){
 					$p = strrpos($copy_query, 'WHERE');
@@ -501,6 +510,9 @@ class hikashopFilterClass extends hikashopClass {
 		$query='SELECT DISTINCT b.product_id'.$fieldsLimits.' '.$copy_query;
 		$database->setQuery($query);
 		$datas['limits']=$database->loadObject();
+
+		if(!is_null($currentFilter) && isset($filters[$currentFilter]))
+			$filters[$currentFilter]->datas = $datas;
 		return $datas;
 	}
 
@@ -593,12 +605,13 @@ class hikashopFilterTypeClass extends hikashopClass {
 	var $parent = null;
 	var $canBeUsed = true;
 
-	function display($filter, $divName, &$parent, $completion=''){
+	function display(&$filter, $divName, &$parent, $datas = ''){
 		$this->parent = $parent;
 		$app = JFactory::getApplication();
 		$cid = hikaInput::get()->getInt("cid",'itemid_'.hikaInput::get()->getInt("Itemid",0));
-		if(!is_string($completion))
-			$completion = '';
+		$filter->page_key = 'page_'.$cid;
+
+		$completion = '';
 		if(hikaInput::get()->getVar('reseted')==1){
 			$app->setUserState('com_hikashop.'.$cid.'_filter_'.$filter->filter_namekey.$completion, '');
 			return array();
@@ -698,6 +711,7 @@ class hikashopFilterTypeClass extends hikashopClass {
 		}
 
 		$cid = hikaInput::get()->getInt("cid",'itemid_'.hikaInput::get()->getInt("Itemid",0));
+		$filter->page_key = 'page_'.$cid;
 		if(hikaInput::get()->getVar('filtered')==1 || $config->get('redirect_post',0)){
 			$infoGet = hikaInput::get()->getVar('filter_'.$filter->filter_namekey);
 			$app->setUserState('com_hikashop.'.$cid.'_filter_'.$filter->filter_namekey, $infoGet);
@@ -707,6 +721,7 @@ class hikashopFilterTypeClass extends hikashopClass {
 
 		if(hikaInput::get()->getVar('reseted')==1 || (is_string($infoGet) && $infoGet=='filter_'.$filter->filter_namekey) || (isset($infoGet[0]) && $infoGet[0]=='filter_'.$filter->filter_namekey)){
 			$app->setUserState('com_hikashop.'.$cid.'_filter_'.$filter->filter_namekey, '');
+			unset($_SESSION['hk_filter'][$filter->filter_id][$filter->page_key]);
 			return array();
 		}
 
@@ -725,6 +740,16 @@ class hikashopFilterTypeClass extends hikashopClass {
 
 		if($filter->filter_type=='instockcheckbox' && $infoGet[0]=='in_stock'){
 			$filters[]=' b.product_quantity!=0 ';
+
+			$query = 'SELECT pr.product_id'.
+			' FROM '.hikashop_table('product_related').' AS pr '.
+			' INNER JOIN '.hikashop_table('product').' AS p ON pr.product_related_id = p.product_id '.
+			' WHERE pr.product_related_type = ' . $this->db->Quote('bundle') . ' AND (p.product_quantity = 0 OR p.product_quantity < pr.product_related_quantity)';
+			$database->setQuery($query);
+			$out_of_stock_bundled_products = $database->loadObjectList('product_id');
+			if(!empty($out_of_stock_bundled_products) && count($out_of_stock_bundled_products)) {
+				$filters[]=' b.product_id NOT IN ('.implode(',', array_keys($out_of_stock_bundled_products)).')';
+			}
 			return true;
 		}
 
@@ -1063,6 +1088,7 @@ class hikashopFilterTypeClass extends hikashopClass {
 				if(in_array($sort_by, array('price', 'price--lth', 'price--htl')))
 					$sort_by_price = true;
 			}
+			$sort_by_price = $sort_by_price && ($infos[0] == 'price');
 		}
 		if(isset($infos[1]) && ($filter->filter_data=='sort' && $sort_by_price && (($infos[1]=='lth') || ($infos[1]=='htl')))|| $filter->filter_data=='price'){
 			$subfilters = array();
@@ -1098,21 +1124,23 @@ class hikashopFilterTypeClass extends hikashopClass {
 
 		if($filter->filter_data=='manufacturers'){
 			if(!(in_array($infoGet[0],array($filter->filter_namekey,0)) && count($infoGet)==1)){
-				$manufacturerList='';
+				$manufacturerList=array();
 
 				foreach($infoGet as $manufacturer_id){
 					$manufacturer_id = explode('::',$manufacturer_id);
 					foreach($manufacturer_id as $id){
 						$id = trim($id);
-						if(empty($id))
+						if(empty($id) || $id == 'none')
 							continue;
-						$manufacturerList.=(int)$id.',';
+							$manufacturerList[]=(int)$id;
 					}
 				}
 
-				$manufacturerList=substr($manufacturerList,0,-1);
-				$filter->filter_namekey = str_replace('-', '_', $filter->filter_namekey);
-				$on.=' INNER JOIN  '.hikashop_table('category').' AS '.$filter->filter_namekey.$i.' ON '.$filter->filter_namekey.$i.'.category_id=b.product_manufacturer_id AND b.product_manufacturer_id IN ('.$manufacturerList.') ';
+				if(count($manufacturerList)) {
+					$manufacturerList=implode(',', $manufacturerList);
+					$filter->filter_namekey = str_replace('-', '_', $filter->filter_namekey);
+					$on.=' INNER JOIN  '.hikashop_table('category').' AS '.$filter->filter_namekey.$i.' ON '.$filter->filter_namekey.$i.'.category_id=b.product_manufacturer_id AND b.product_manufacturer_id IN ('.$manufacturerList.') ';
+				}
 			}
 		}
 
@@ -1209,7 +1237,7 @@ class hikashopFilterTypeClass extends hikashopClass {
 		if($filter->filter_data=='category'){
 			$categories_name=$this->getCategories($filter);
 			$val='';
-			if(empty($categories_name)) {
+			if(empty($categories_name) || !count($categories_name)) {
 				$this->canBeUsed = false;
 			} else {
 				foreach($categories_name as $cat){
@@ -1226,7 +1254,7 @@ class hikashopFilterTypeClass extends hikashopClass {
 			if($this->checkCurrency($filter)==false){ return false;}
 			$size=count($filter->filter_value);
 			$val='';
-			if(empty($filter->filter_value)) {
+			if(empty($filter->filter_value) || !count($filter->filter_value)) {
 				$this->canBeUsed = false;
 			} else {
 				foreach($filter->filter_value as $key => $value){
@@ -1251,7 +1279,7 @@ class hikashopFilterTypeClass extends hikashopClass {
 			$characteristic_values=$this->getCharacteristics($filter);
 			$values='';
 
-			if(empty($characteristic_values)) {
+			if(empty($characteristic_values) || !count($characteristic_values)) {
 				$this->canBeUsed = false;
 			} else {
 				foreach($characteristic_values as $val){
@@ -1267,7 +1295,7 @@ class hikashopFilterTypeClass extends hikashopClass {
 		if($filter->filter_data=='manufacturers'){
 			$manufacturers=$this->getManufacturers($filter);
 			$val='';
-			if(empty($manufacturers)) {
+			if(empty($manufacturers) || !count($manufacturers)) {
 				$this->canBeUsed = false;
 			} else {
 				foreach($manufacturers as $manufacturer){
@@ -1284,7 +1312,7 @@ class hikashopFilterTypeClass extends hikashopClass {
 			$field=$this->getFields($filter);
 			if(is_array($field)) $field=reset($field);
 			$values='';
-			if(isset($field->field_value) && is_array($field->field_value)){
+			if(isset($field->field_value) && is_array($field->field_value) && count($field->field_value)){
 				if(!empty($selected) && is_array($selected) && count($selected) == 1 && strpos($selected[0], '::'))
 					$selected = explode('::', $selected[0]);
 				$html = '<ul class="hikashop_filter_selected_list">';
@@ -1549,6 +1577,9 @@ class hikashopFilterTypeClass extends hikashopClass {
 	}
 
 	function getCategories($filter, $datas=''){
+		if(!empty($filter->filterActive) && !empty($_SESSION['hk_filter'][$filter->filter_id][$filter->page_key])) {
+			return $_SESSION['hk_filter'][$filter->filter_id][$filter->page_key];
+		}
 		$left='';
 		$filters = array('a.category_published=1');
 		if(!empty($datas['products'])){
@@ -1587,10 +1618,15 @@ class hikashopFilterTypeClass extends hikashopClass {
 		foreach($categories_name as $k => $category_name) {
 			$categories_name[$k]->category_name = hikashop_translate($category_name->category_name);
 		}
+		if(!empty($datas))
+			$this->storeValuesInSession($filter, $categories_name);
 		return $categories_name;
 	}
 
 	function getCharacteristics($filter, $datas=''){
+		if(!empty($filter->filterActive) && !empty($_SESSION['hk_filter'][$filter->filter_id][$filter->page_key])) {
+			return $_SESSION['hk_filter'][$filter->filter_id][$filter->page_key];
+		}
 		$filters = array('characteristic_parent_id='.$filter->filter_options['filter_charac']);
 		$left='';
 		$database = JFactory::getDBO();
@@ -1633,10 +1669,23 @@ class hikashopFilterTypeClass extends hikashopClass {
 		foreach($characteristic_values as $k => $characteristic_value) {
 			$characteristic_values[$k]->characteristic_value = hikashop_translate($characteristic_value->characteristic_value);
 		}
+		if(!empty($datas))
+			$this->storeValuesInSession($filter, $characteristic_values);
 		return $characteristic_values;
 	}
 
+	function storeValuesInSession(&$filter, $values) {
+		if(!isset($_SESSION['hk_filter']))
+			$_SESSION['hk_filter'] = array();
+		if(!isset($_SESSION['hk_filter'][$filter->filter_id]))
+			$_SESSION['hk_filter'][$filter->filter_id] = array();
+		$_SESSION['hk_filter'][$filter->filter_id][$filter->page_key] = $values;
+	}
+
 	function getManufacturers($filter, $datas=''){
+		if(!empty($filter->filterActive) && !empty($_SESSION['hk_filter'][$filter->filter_id][$filter->page_key])) {
+			return $_SESSION['hk_filter'][$filter->filter_id][$filter->page_key];
+		}
 		$optionElement = ''; $left='';
 		if(!empty($datas['products'])){
 			$optionElement = array();
@@ -1663,10 +1712,15 @@ class hikashopFilterTypeClass extends hikashopClass {
 		foreach($manufacturers as $k => $manufacturer) {
 			$manufacturers[$k]->category_name = hikashop_translate($manufacturer->category_name);
 		}
+		if(!empty($datas))
+			$this->storeValuesInSession($filter, $manufacturers);
 		return $manufacturers;
 	}
 
 	function getFields($filter, $datas=''){
+		if(!empty($filter->filterActive) && !empty($_SESSION['hk_filter'][$filter->filter_id][$filter->page_key])) {
+			return $_SESSION['hk_filter'][$filter->filter_id][$filter->page_key];
+		}
 		$fieldClass = hikashop_get('class.field');
 		$field = $fieldClass->getField($filter->filter_options['custom_field'], 'product');
 
@@ -1714,7 +1768,8 @@ class hikashopFilterTypeClass extends hikashopClass {
 				}
 			}
 		}
-
+		if(!empty($datas))
+			$this->storeValuesInSession($filter, $field);
 		return $field;
 	}
 
@@ -1752,7 +1807,7 @@ class hikashopTextClass extends hikashopFilterTypeClass{
 		return '';
 	}
 
-	function display($filter, $divName, &$parent, $datas=''){
+	function display(&$filter, $divName, &$parent, $datas=''){
 		$html='';
 		$name='';
 		$selected=parent::display($filter, $divName, $parent);
@@ -1794,7 +1849,7 @@ class hikashopTextClass extends hikashopFilterTypeClass{
 		if($filter->filter_options['title_position']=='inside' && empty($name)){
 			$attributes .= ' placeholder="'.strip_tags($this->trans($filter->filter_name)).'"';
 		}
-		$html = '<input name="filter_'.$filter->filter_namekey.'"'.$attributes.' type="text" id="filter_text_'.$filter->filter_namekey.'" value="'.$name.'">';
+		$html = '<input class="'.HK_FORM_CONTROL_CLASS.'" name="filter_'.$filter->filter_namekey.'"'.$attributes.' type="text" id="filter_text_'.$filter->filter_namekey.'" value="'.$name.'">';
 		$html = '<span id="filter_values_container_'.$filter->filter_namekey.'_'.$divName.'" class="filter_values_container">'.$html.'</span>';
 		$html=parent::titlePosition($filter, $html);
 		return $html;
@@ -1803,7 +1858,7 @@ class hikashopTextClass extends hikashopFilterTypeClass{
 
 class hikashopSingledropdownClass extends hikashopFilterTypeClass{
 
-	function display($filter, $divName, &$parent, $datas='', $multiple='', $tab=''){
+	function display(&$filter, $divName, &$parent, $datas='', $multiple='', $tab=''){
 		$selected=parent::display($filter, $divName, $parent);
 		if(!is_array($selected)){
 			$selected=array($selected);
@@ -1834,7 +1889,7 @@ class hikashopSingledropdownClass extends hikashopFilterTypeClass{
 		if(!empty($tab)){
 			$html.= '<input type="hidden" name="filter_'.$filter->filter_namekey.'_'.$divName.'" value=" "/>';
 		}
-		$html.='<SELECT '.$multiple.$onClick.' size='.$filter->filter_options['filter_size'].' name="filter_'.$filter->filter_namekey.$tab.'" id="filter_'.$filter->filter_namekey.'_'.$divName.$tab.'">';
+		$html.='<SELECT class="'.HK_FORM_SELECT_CLASS.'" '.$multiple.$onClick.' size='.$filter->filter_options['filter_size'].' name="filter_'.$filter->filter_namekey.$tab.'" id="filter_'.$filter->filter_namekey.'_'.$divName.$tab.'">';
 
 		if($filter->filter_options['title_position']=='inside'){
 			$html.='<OPTION VALUE="none">'.$this->trans($filter->filter_name).'</OPTION>';
@@ -1844,7 +1899,7 @@ class hikashopSingledropdownClass extends hikashopFilterTypeClass{
 
 		if($filter->filter_data=='category'){
 			$categories_name=parent::getCategories($filter, $datas);
-			if(!empty($categories_name)){
+			if(!empty($categories_name) && count($categories_name)){
 				foreach($categories_name as $cat){
 					$selectedItem='';
 					if(!empty($selected) && in_array($cat->category_id, $selected)){
@@ -1860,7 +1915,7 @@ class hikashopSingledropdownClass extends hikashopFilterTypeClass{
 		if(($filter->filter_data=='price' || $filter->filter_data=='information' || $filter->filter_data=='custom_field') && !empty($filter->filter_value)){
 			if(parent::checkCurrency($filter)==false){ return false;}
 			$size=count($filter->filter_value);
-			if($size){
+			if($size && count($filter->filter_value)){
 				foreach($filter->filter_value as $key => $value){
 					$selectedItem='';
 					list($formatVal, $oldVal)=parent::formatUnits($filter, $key, $value);
@@ -1894,7 +1949,7 @@ class hikashopSingledropdownClass extends hikashopFilterTypeClass{
 
 		if($filter->filter_data=='characteristic'){
 			$characteristic_values=parent::getCharacteristics($filter, $datas);
-			if(!empty($characteristic_values)){
+			if(!empty($characteristic_values) && count($characteristic_values)){
 				foreach($characteristic_values as $val){
 					$selectedItem='';
 					if(!empty($selected) && in_array($val->characteristic_id, $selected)){
@@ -1909,7 +1964,7 @@ class hikashopSingledropdownClass extends hikashopFilterTypeClass{
 
 		if($filter->filter_data=='manufacturers'){
 			$manufacturers=parent::getManufacturers($filter, $datas);
-			if(!empty($manufacturers)){
+			if(!empty($manufacturers) && count($manufacturers)){
 				foreach($manufacturers as $manufacturer){
 					$selectedItem='';
 					if(!empty($selected) && in_array($manufacturer->category_id, $selected)){
@@ -1924,7 +1979,7 @@ class hikashopSingledropdownClass extends hikashopFilterTypeClass{
 
 		if($filter->filter_data=='custom_field'){
 			$field = parent::getFields($filter, $datas);
-			if(isset($field->field_value) && is_array($field->field_value)){
+			if(isset($field->field_value) && is_array($field->field_value) && count($field->field_value)){
 				foreach($field->field_value as $val){
 					$selectedItem='';
 					if(!empty($selected) && in_array($val[0], $selected)){
@@ -1950,7 +2005,7 @@ class hikashopSingledropdownClass extends hikashopFilterTypeClass{
 				$filter->filter_options['sort_by'] = array();
 				$filter->filter_options['sort_by'][] = $temp;
 			}
-			if(empty($filter->filter_options['sort_by'])) {
+			if(empty($filter->filter_options['sort_by']) || !count($filter->filter_options['sort_by'])) {
 				$this->canBeUsed = false;
 			} else {
 				foreach($filter->filter_options['sort_by'] as $theType){
@@ -2002,7 +2057,7 @@ class hikashopSingledropdownClass extends hikashopFilterTypeClass{
 
 class hikashopRadioClass extends hikashopFilterTypeClass{
 
-	function display($filter, $divName, &$parent, $datas='', $type='radio', $tab=''){
+	function display(&$filter, $divName, &$parent, $datas='', $type='radio', $tab=''){
 		$selected=parent::display($filter, $divName, $parent);
 
 		if(!($filter->filter_dynamic)){
@@ -2038,7 +2093,7 @@ class hikashopRadioClass extends hikashopFilterTypeClass{
 		}
 		if($filter->filter_data=='category'){
 			$categories_name=parent::getCategories($filter, $datas);
-			if(!empty($categories_name)){
+			if(!empty($categories_name) && count($categories_name)){
 				foreach($categories_name as $cat){
 					$checked='';$deleteButton='';
 					if(!empty($selected) && is_array($selected) && (in_array($cat->category_id, $selected) || strpos($selected[0], (string)$cat->category_id) !== false)) {
@@ -2100,7 +2155,7 @@ class hikashopRadioClass extends hikashopFilterTypeClass{
 
 		if($filter->filter_data=='characteristic'){
 			$characteristic_values=parent::getCharacteristics($filter, $datas);
-			if(!empty($characteristic_values)){
+			if(!empty($characteristic_values) && count($characteristic_values)){
 				foreach($characteristic_values as $val){
 					$checked=''; $deleteButton='';
 					if(!empty($selected) && is_array($selected) && in_array($val->characteristic_id, $selected)){
@@ -2116,7 +2171,7 @@ class hikashopRadioClass extends hikashopFilterTypeClass{
 
 		if($filter->filter_data=='manufacturers'){
 			$manufacturers=parent::getManufacturers($filter, $datas);
-			if(!empty($manufacturers)){
+			if(!empty($manufacturers) && count($manufacturers)){
 				foreach($manufacturers as $manufacturer){
 					$checked=''; $deleteButton='';
 					if(!empty($selected) && is_array($selected) && in_array($manufacturer->category_id, $selected)){
@@ -2132,7 +2187,7 @@ class hikashopRadioClass extends hikashopFilterTypeClass{
 
 		if($filter->filter_data == 'custom_field' && empty($filter->filter_value)) {
 			$field = parent::getFields($filter, $datas);
-			if(!empty($field) && is_array($field->field_value)) {
+			if(!empty($field) && is_array($field->field_value) && count($field->field_value)) {
 				foreach($field->field_value as $key => $val) {
 					$checked = '';
 					$deleteButton = '';
@@ -2164,7 +2219,7 @@ class hikashopRadioClass extends hikashopFilterTypeClass{
 				$filter->filter_options['sort_by'] = array();
 				$filter->filter_options['sort_by'][] = $temp;
 			}
-			if(empty($filter->filter_options['sort_by'])) {
+			if(empty($filter->filter_options['sort_by']) || !count($filter->filter_options['sort_by'])) {
 				$this->canBeUsed = false;
 			} else {
 				foreach($filter->filter_options['sort_by'] as $theType){
@@ -2217,7 +2272,7 @@ class hikashopRadioClass extends hikashopFilterTypeClass{
 
 class hikashopListClass extends hikashopFilterTypeClass{
 
-	function display($filter, $divName, &$parent, $datas=''){
+	function display(&$filter, $divName, &$parent, $datas=''){
 		$selected=parent::display($filter, $divName, $parent);
 
 		if(!($filter->filter_dynamic)){
@@ -2242,7 +2297,7 @@ class hikashopListClass extends hikashopFilterTypeClass{
 		}
 		if($filter->filter_data=='category'){
 			$categories_name=parent::getCategories($filter, $datas);
-			if(!empty($categories_name)){
+			if(!empty($categories_name) && count($categories_name)){
 				foreach($categories_name as $cat){
 					if(!empty($selected) &&  (is_numeric($selected)&&$cat->category_id==$selected) ||(is_array($selected) && in_array($cat->category_id, $selected))){
 						$html.='<li><a class="hikashop_filter_list_selected" style="font-weight:bold">'.$cat->category_name.'</a>';
@@ -2294,7 +2349,7 @@ class hikashopListClass extends hikashopFilterTypeClass{
 
 		if($filter->filter_data=='characteristic'){
 			$characteristic_values=parent::getCharacteristics($filter, $datas);
-			if(!empty($characteristic_values)){
+			if(!empty($characteristic_values) && count($characteristic_values)){
 				if(!is_array($selected))
 					$selected = array($selected);
 				foreach($characteristic_values as $val){
@@ -2312,7 +2367,7 @@ class hikashopListClass extends hikashopFilterTypeClass{
 
 		if($filter->filter_data=='manufacturers'){
 			$manufacturers=parent::getManufacturers($filter, $datas);
-			if(!empty($manufacturers)){
+			if(!empty($manufacturers) && count($manufacturers)){
 				if(!is_array($selected))
 					$selected = array($selected);
 				foreach($manufacturers as $manufacturer){
@@ -2330,7 +2385,7 @@ class hikashopListClass extends hikashopFilterTypeClass{
 
 		if($filter->filter_data=='custom_field'){
 			$field=parent::getFields($filter, $datas);
-			if(is_array($field->field_value)){
+			if(is_array($field->field_value) && count($field->field_value)){
 				if(!is_array($selected))
 					$selected = array($selected);
 				foreach($field->field_value as $key => $val){
@@ -2354,7 +2409,7 @@ class hikashopListClass extends hikashopFilterTypeClass{
 				$filter->filter_options['sort_by'] = array();
 				$filter->filter_options['sort_by'][] = $temp;
 			}
-			if(empty($filter->filter_options['sort_by'])) {
+			if(empty($filter->filter_options['sort_by']) || !count($filter->filter_options['sort_by'])) {
 				$this->canBeUsed = false;
 			} else {
 				foreach($filter->filter_options['sort_by'] as $theType){
@@ -2418,7 +2473,7 @@ class hikashopListClass extends hikashopFilterTypeClass{
 
 class hikashopCursorClass extends hikashopFilterTypeClass{
 
-	function display($filter, $divName, &$parent, $datas=''){
+	function display(&$filter, $divName, &$parent, $datas=''){
 		$selected = parent::display($filter, $divName, $parent);
 
 		if(!empty($selected) && !empty($selected[0]) && $selected != ' '){
@@ -2446,19 +2501,25 @@ class hikashopCursorClass extends hikashopFilterTypeClass{
 		$after_input = '';
 
 		if(!empty($datas) && $filter->filter_dynamic){
-			$nameMax='max_'.$filter->filter_namekey;
-			$nameMin='min_'.$filter->filter_namekey;
-			$array = $datas['limits'];
+			if(!empty($filter->filterActive) && !empty($_SESSION['hk_filter'][$filter->filter_id][$filter->page_key])) {
+				$cursorMin = $_SESSION['hk_filter'][$filter->filter_id][$filter->page_key][0];
+				$cursorMax = $_SESSION['hk_filter'][$filter->filter_id][$filter->page_key][1];
+			} else {
+				$nameMax='max_'.$filter->filter_namekey;
+				$nameMin='min_'.$filter->filter_namekey;
+				$array = $datas['limits'];
 
-			if(!empty($array->$nameMax)){
-				$cursorMax=(float)$array->$nameMax;
-			}else{
-				$cursorMax=1000;
-			}
-			if(!empty($array->$nameMin)){
-				$cursorMin=(float)$array->$nameMin;
-			}else{
-				$cursorMin=0;
+				if(!empty($array->$nameMax)){
+					$cursorMax=(float)$array->$nameMax;
+				}else{
+					$cursorMax=1000;
+				}
+				if(!empty($array->$nameMin)){
+					$cursorMin=(float)$array->$nameMin;
+				}else{
+					$cursorMin=0;
+				}
+				$this->storeValuesInSession($filter, array($cursorMin, $cursorMax));
 			}
 		}
 
@@ -2788,7 +2849,7 @@ $html;
 }
 
 class hikashopMultipledropdownClass extends hikashopSingledropdownClass{
-	function display($filter, $divName, &$parent, $datas='', $multiple='', $tab=''){
+	function display(&$filter, $divName, &$parent, $datas='', $multiple='', $tab=''){
 		$multiple='multiple="multiple" size="5" data-placeholder="'.$filter->filter_name.'"';
 		$tab='[]';
 		return parent::display($filter, $divName, $parent, $datas, $multiple, $tab);
@@ -2796,7 +2857,7 @@ class hikashopMultipledropdownClass extends hikashopSingledropdownClass{
 }
 
 class hikashopCheckboxClass extends hikashopRadioClass{
-	function display($filter, $divName, &$parent, $datas='', $type='',$tab=''){
+	function display(&$filter, $divName, &$parent, $datas='', $type='',$tab=''){
 		$type='checkbox';
 		$tab='[]';
 		return parent::display($filter, $divName, $parent, $datas, $type,$tab);
@@ -2809,7 +2870,7 @@ class hikashopInStockCheckboxClass extends hikashopFilterTypeClass{
 		return '';
 	}
 
-	function display($filter, $divName, &$parent, $datas='', $type='',$tab=''){
+	function display(&$filter, $divName, &$parent, $datas='', $type='',$tab=''){
 		$html = '';
 		$selected = parent::display($filter, $divName, $parent);
 		$checked = '';

@@ -1,0 +1,292 @@
+emundus:
+  image: 'gantry-admin://images/preset1.png'
+  description: Thème par défaut
+  colors:
+    - '#1b1f3c'
+    - '#de6339'
+  styles:
+    base:
+      background: '#f8f8f8'
+      text-color: '#000000'
+      title-color: '#000000'
+      primary-color: '#1b1f3c'
+      secondary-color: '#de6339'
+      tertiary-color: '#bd5631'
+      background-coordinator: '#f8f8f8'
+      text-color-coordinator: '#4b4b4b'
+      title-color-coordinator: '#000000'
+    accent:
+      color-1: '#000000'
+      color-2: '#c62222'
+    font:
+      family-text: Inter
+      family-title: Inter
+      coordinator-family-text: Inter
+      coordinator-family-title: Inter
+    em-alert:
+      error-background-color: '#fae9e9'
+      error-color: '#520105'
+      error-icon-color: '#a60e15'
+      error-border-width: 0px
+      error-border-color: 'rgba(255, 255, 255, 0)'
+      warning-background-color: '#fff6de'
+      warning-color: '#563a04'
+      warning-icon-color: '#b38405'
+      warning-border-width: 1px
+      warning-border-color: 'rgba(255, 255, 255, 0)'
+      info-background-color: '#ebeefa'
+      info-color: '#232b4f'
+      info-icon-color: '#525b85'
+      info-border-width: 1px
+      info-border-color: 'rgba(255, 255, 255, 0)'
+      success-background-color: '#eaf3e8'
+      success-color: '#02300c'
+      success-icon-color: '#2d871d'
+      success-border-width: 1px
+      success-border-color: 'rgba(255, 255, 255, 0)'
+    em-border-radius:
+      default: 8px
+      applicant: 8px
+      coordinator: 8px
+      cards: 16px
+      coordinator-cards: 16px
+    em-form:
+      border-radius-block: 16px
+      label-color: '#000000'
+      label-margin-bottom: 6px
+      height: 40px
+      tip-color: '#5c5c5c'
+      border-radius: 4px
+      background-color: '#ffffff'
+      border-radius-focus: 6px
+      border-color-focus: '#a7a7a7'
+      background-color-focus: '#ffffff'
+      outline-width-focus: 1px
+      outline-color-focus: '#007bff'
+      outline-offset-focus: 2px
+      background-color-hover: 'rgba(225, 231, 239, 0)'
+      border-color-hover: '#a7a7a7'
+      border-color-error: '#c62222'
+      label-color-error: '#000000'
+      element-color-error: '#a60e15'
+      after-border-height: 0px
+      radio-padding: 8px
+      radio-border-width: 0px
+      radio-border-color: '#a7a7a7'
+      radio-border-radius: 4px
+      radio-width: 16px
+      radio-height: 16px
+      radio-margin-right: 8px
+      radio-color-checked: '#2d871d'
+      radio-background-color-checked: '#e1e7ef'
+      radio-border-color-checked: '#2e404f'
+      checkbox-border-width: 0px
+      checkbox-border-color: '#a7a7a7'
+      checkbox-padding: 12px
+      checkbox-scale: '1.3'
+      checkbox-input-margin: 12px
+      checkbox-color-checked: '#2d871d'
+      checkbox-border-color-error: '#c62222'
+      fileupload-padding: '12px 8px'
+      fileupload-background-color: '#f0f0f0'
+      coordinator-form-height: 40px
+    em-tchooz:
+      red-800: '#c62222'
+      neutral-500: '#cfcfcf'
+    link:
+      regular: '#000000'
+      hover: '#c62222'
+      xxs-size: 10px
+    navigation:
+      background: '#ffffff'
+      text-color: '#2a363b'
+    header:
+      background: '#ffffff'
+      background-image: ''
+      background-overlay: disabled
+      text-color: '#2a363b'
+    intro:
+      background: '#ffffff'
+      text-color: '#2a363b'
+    features:
+      background: '#ffffff'
+      text-color: '#2a363b'
+    utility:
+      background: '#ffffff'
+      text-color: '#2a363b'
+    above:
+      background: '#ffffff'
+      text-color: '#2a363b'
+    testimonials:
+      background: '#ffffff'
+      background-image: ''
+      background-overlay: disabled
+      text-color: '#eceeef'
+    expanded:
+      background: '#ffffff'
+      text-color: '#2a363b'
+    footer:
+      background: '#eeeeee'
+      text-color: '#2a363b'
+    offcanvas:
+      background: '#4e5b6d'
+      text-color: '#ffffff'
+      toggle-color: '#4e5b6d'
+      toggle-visibility: '1'
+      width: 16rem
+    breakpoints:
+      large-desktop-container: 75rem
+      desktop-container: 60rem
+      tablet-container: 48rem
+      large-mobile-container: 30rem
+      mobile-menu-breakpoint: 48rem
+    menu:
+      col-width: 11rem
+      animation: g-fade
+      hide-on-mobile: '0'
+
+maif:
+  image: 'gantry-admin://images/preset1.png'
+  description: Thème de la MAIF
+  colors:
+    - '#2e404f'
+    - '#c62222'
+  styles:
+    base:
+      background: '#f8f8f8'
+      text-color: '#000000'
+      title-color: '#000000'
+      primary-color: '#2e404f'
+      secondary-color: '#c62222'
+      tertiary-color: '#bd5631'
+      background-coordinator: '#f8f8f8'
+      text-color-coordinator: '#4b4b4b'
+      title-color-coordinator: '#000000'
+    accent:
+      color-1: '#000000'
+      color-2: '#c62222'
+    font:
+      family-text: Inter
+      family-title: Inter
+      coordinator-family-text: Inter
+      coordinator-family-title: Inter
+    em-alert:
+      error-background-color: '#fae9e9'
+      error-color: '#520105'
+      error-icon-color: '#a60e15'
+      error-border-width: 0px
+      error-border-color: 'rgba(255, 255, 255, 0)'
+      warning-background-color: '#fff6de'
+      warning-color: '#563a04'
+      warning-icon-color: '#b38405'
+      warning-border-width: 1px
+      warning-border-color: 'rgba(255, 255, 255, 0)'
+      info-background-color: '#ebeefa'
+      info-color: '#232b4f'
+      info-icon-color: '#525b85'
+      info-border-width: 1px
+      info-border-color: 'rgba(255, 255, 255, 0)'
+      success-background-color: '#eaf3e8'
+      success-color: '#02300c'
+      success-icon-color: '#2d871d'
+      success-border-width: 1px
+      success-border-color: 'rgba(255, 255, 255, 0)'
+    em-border-radius:
+      default: 4px
+      applicant: 4px
+      coordinator: 4px
+      cards: 4px
+      coordinator-cards: 4px
+    em-form:
+      required-icon-order: '1'
+      border-radius-block: 0px
+      label-color: '#000000'
+      label-margin-bottom: 8px
+      height: 48px
+      tip-color: '#5c5c5c'
+      border-radius: 0px
+      background-color: '#ffffff'
+      border-radius-focus: 6px
+      border-color-focus: '#a7a7a7'
+      background-color-focus: '#ffffff'
+      outline-width-focus: 1px
+      outline-color-focus: '#007bff'
+      outline-offset-focus: 2px
+      background-color-hover: 'rgba(225, 231, 239, 0)'
+      border-color-hover: '#a7a7a7'
+      border-color-error: '#c62222'
+      label-color-error: '#000000'
+      element-color-error: '#a60e15'
+      after-border-height: 3px
+      radio-padding: 12px
+      radio-border-width: 1px
+      radio-border-color: '#a7a7a7'
+      radio-border-radius: 4px
+      radio-width: 16px
+      radio-height: 16px
+      radio-margin-right: 8px
+      radio-color-checked: '#2d871d'
+      radio-background-color-checked: '#e1e7ef'
+      radio-border-color-checked: '#2e404f'
+      checkbox-border-width: 0px
+      checkbox-border-color: '#a7a7a7'
+      checkbox-padding: 12px
+      checkbox-scale: '1.7'
+      checkbox-input-margin: 12px
+      checkbox-color-checked: '#2d871d'
+      checkbox-border-color-error: '#c62222'
+    em-tchooz:
+      red-800: '#c62222'
+      neutral-500: '#cfcfcf'
+    link:
+      regular: '#000000'
+      hover: '#c62222'
+      xxs-size: 10px
+    navigation:
+      background: '#ffffff'
+      text-color: '#2a363b'
+    header:
+      background: '#ffffff'
+      background-image: ''
+      background-overlay: disabled
+      text-color: '#2a363b'
+    intro:
+      background: '#ffffff'
+      text-color: '#2a363b'
+    features:
+      background: '#ffffff'
+      text-color: '#2a363b'
+    utility:
+      background: '#ffffff'
+      text-color: '#2a363b'
+    above:
+      background: '#ffffff'
+      text-color: '#2a363b'
+    testimonials:
+      background: '#ffffff'
+      background-image: ''
+      background-overlay: disabled
+      text-color: '#eceeef'
+    expanded:
+      background: '#ffffff'
+      text-color: '#2a363b'
+    footer:
+      background: '#eeeeee'
+      text-color: '#2a363b'
+    offcanvas:
+      background: '#4e5b6d'
+      text-color: '#ffffff'
+      toggle-color: '#4e5b6d'
+      toggle-visibility: '1'
+      width: 16rem
+    breakpoints:
+      large-desktop-container: 75rem
+      desktop-container: 60rem
+      tablet-container: 48rem
+      large-mobile-container: 30rem
+      mobile-menu-breakpoint: 48rem
+    menu:
+      col-width: 11rem
+      animation: g-fade
+      hide-on-mobile: '0'
+

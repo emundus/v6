@@ -15,9 +15,7 @@
     <folder>language</folder>
     <config>
         <fields name="params" addfieldpath="/administrator/components/com_fabrik/models/fields">
-
             <fieldset name="basic">
-
                 <field name="event_handlers"
                        type="subform"
                        label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_LABEL"
@@ -35,6 +33,12 @@
                                query="SELECT label FROM #__emundus_plugin_events where published"
                                label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_EVENT_LABEL" description="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_EVENT_DESC"
                                class="sql_event_handler__event"
+                               size="1"
+                        />
+                        <field name="description"
+                               type="text"
+                               label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_DESCRIPTION"
+                               size="1"
                         />
                         <field name="code"
                                type="textarea"
@@ -45,10 +49,13 @@
                                filter="raw"
                                class="textarea_event_handler__code"
                         />
+                        <field name="published" type="list" label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_PUBLISHED" default="1" size="1">
+                            <option value="0">Non</option>
+                            <option value="1">Oui</option>
+                        </field>
                     </form>
                 </field>
             </fieldset>
         </fields>
-
     </config>
 </extension>

@@ -17,6 +17,14 @@ $user = $this->userid;
 
 <style type="text/css">
     .group-result { color: #16afe1 !important; }
+
+     .profile_tab p {
+         overflow: hidden;
+         white-space: nowrap;
+         text-overflow: ellipsis;
+         max-width: 200px;
+     }
+
 </style>
 
 <div class="row">
@@ -36,34 +44,65 @@ $user = $this->userid;
                 <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span></button>
             </div>
         </div>
+	    <?php if (!EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)) : ?>
+            <div class="em-flex-row em-mt-16">
+                <div class="em-flex-row em-small-flex-column em-small-align-items-start">
+                    <div class="em-profile-picture-big no-hover"
+					    <?php if(empty($this->applicant->profile_picture)) :?>
+                            style="background-image:url(<?php echo JURI::base() ?>/media/com_emundus/images/profile/default-profile.jpg)"
+					    <?php else : ?>
+                            style="background-image:url(<?php echo JURI::base() ?>/<?php echo $this->applicant->profile_picture ?>)"
+					    <?php endif; ?>
+                    >
+                    </div>
+                </div>
+                <div class="em-ml-24 ">
+                    <p class="em-font-weight-500">
+					    <?php echo $this->applicant->lastname . ' ' . $this->applicant->firstname; ?>
+                    </p>
+                    <p><?php echo $this->fnum ?></p>
+                </div>
+            </div>
+	    <?php endif; ?>
+
         <div class="panel-body Marginpanel-body em-container-form-body">
             <input type="hidden" id="dpid_hidden" value="<?php echo $defaultpid->pid ?>"/>
 
-            <div id="em-switch-profiles">
+            <div id="em-switch-profiles" <?php if(sizeof($pids) < 1): ?>style="display: none"<?php endif; ?>>
+
                 <div class="em_label">
-                    <label class="control-label em-filter-label"><?= JText::_('PROFILE_FORM'); ?></label>
+                    <label class="control-label em-filter-label em-font-size-14" style="margin-left: 0 !important;"><?= JText::_('PROFILE_FORM'); ?></label>
                 </div>
 
-                <select class="chzn-select em-chosen-select" id="select_profile">
-                    <option value="<?= $defaultpid->pid; ?>" selected style=""> <?= $defaultpid->label; ?></option>
-                    <?php foreach($pids as $pid) : ?>
-                        <optgroup class="step_group_profile" label ="<?= strtoupper($pid->lbl) ?>" style="">
-                            <?php if(is_array($pid->data)) : ?>
-                                <?php foreach($pid->data as $data) : ?>
-                                    <?php if($data->pid != $defaultpid->pid): ?>
-                                        <?php if($data->step !== null) : ?>
-                                            <option style="" value="<?= $data->pid; ?>"> <?= $data->label; ?></option>
-                                        <?php else: ?>
-                                            <option style="" value="<?= $data->pid; ?>"><?= $data->label; ?></option>
-                                        <?php endif ?>
-                                    <?php endif ?>
-                                <?php endforeach; ?>
-                            <?php else : ?>
-                                <option style="" value="<?= $pid->data->pid; ?>"> <?= $pid->data->label; ?></option>
-                            <?php endif;?>
-                        </optgroup>
-                    <?php endforeach; ?>
-                </select>
+                <div class="em-flex-row em-border-bottom-neutral-300" style="overflow:hidden; overflow-x: auto;">
+
+                    <div id="tab_link_<?php echo $defaultpid->pid; ?>" onclick="updateProfileForm(<?php echo $defaultpid->pid ?>)" class="em-mr-16 em-flex-row em-light-tabs profile_tab em-pointer em-light-selected-tab mb-2">
+                        <p class="em-font-size-14 em-neutral-900-color" title="<?= $defaultpid->label; ?>" style="white-space: nowrap"> <?= $defaultpid->label; ?></p>
+                    </div>
+
+	                <?php foreach($pids as $pid) : ?>
+	                   <?php if(is_array($pid->data)) : ?>
+	                     <?php foreach($pid->data as $data) : ?>
+	                      <?php if($data->pid != $defaultpid->pid): ?>
+	                          <?php if($data->step !== null) : ?>
+                                <div id="tab_link_<?php echo $data->pid; ?>" onclick="updateProfileForm(<?php echo $data->pid ?>)" class="em-mr-16 em-flex-row profile_tab em-light-tabs em-pointer mb-2">
+                                    <p class="em-font-size-14 em-neutral-600-color" title="<?php echo $data->label; ?>" style="white-space: nowrap"><?php echo $data->label; ?></p>
+                                </div>
+				                <?php else: ?>
+                                   <div id="tab_link_<?php echo $data->pid; ?>" onclick="updateProfileForm(<?php echo $data->pid ?>)" class="em-mr-16 profile_tab em-flex-row em-light-tabs em-pointer mb-2">
+                                       <p class="em-font-size-14 em-neutral-600-color" title="<?php echo $data->label; ?>" style="white-space: nowrap"><?php echo $data->label; ?></p>
+                                   </div>
+				                <?php endif ?>
+                          <?php endif ?>
+		                <?php endforeach; ?>
+                        <?php else : ?>
+                                <div id="tab_link_<?php echo $pid->data->pid; ?>" onclick="updateProfileForm(<?php echo $data->pid ?>)" class="em-mr-16 profile_tab em-flex-row em-light-tabs em-pointer mb-2">
+                                    <p class="em-font-size-14 em-neutral-600-color" title="<?php echo $pid->data->label; ?>" style="white-space: nowrap"> <?php echo $pid->data->label; ?></p>
+                                </div>
+                        <?php endif;?>
+	                <?php endforeach; ?>
+                </div>
+
             </div>
 
             <div class="active content" id="show_profile">
@@ -85,42 +124,5 @@ $user = $this->userid;
 
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
-    })
-
-    $('#select_profile').on('change', function() {
-        /* get the selected profile id*/
-        var profile = $(this).val();      /* or just $(this).val() */
-
-        $('#show_profile').empty();
-        $('#show_profile').before('<div id="loading"><img src="'+loading+'" alt="loading"/></div>');
-
-        /* all other options will be normal */
-        $('#select_profile option').each(function() {
-            if($(this).attr('value') !== profile) {
-                $(this).prop('disabled', false);
-                $(this).css('font-style', 'unset');
-            }
-        })
-
-        /* call to ajax */
-        $.ajax({
-            type: 'post',
-            url: 'index.php?option=com_emundus&controller=application&task=getform',
-            dataType: 'json',
-            data: { profile: profile, user: $('#user_hidden').attr('value'), fnum: $('#fnum_hidden').attr('value') },
-            success: function(result) {
-                var form = result.data;
-
-                $('#loading').remove();
-
-                if(form) {
-                    $('#show_profile').append(form.toString());
-                    $('#download-pdf').attr('href', 'index.php?option=com_emundus&task=pdf&user=' + $('#user_hidden').attr('value') + '&fnum=' + $('#fnum_hidden').attr('value') + '&profile=' + profile);
-                }
-
-            }, error: function(jqXHR) {
-                console.log(jqXHR.responseText);
-            }
-        })
     })
 </script>

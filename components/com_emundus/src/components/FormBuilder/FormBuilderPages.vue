@@ -2,20 +2,20 @@
   <div id="form-builder-pages">
     <p class="form-builder-title em-flex-row em-s-justify-content-center em-flex-space-between em-p-16">
       <span>{{ translate('COM_EMUNDUS_FORM_BUILDER_EVERY_PAGE') }}</span>
-      <span class="material-icons em-pointer" @click="$emit('open-page-create')"> add </span>
+      <span id="add-page" class="material-icons em-pointer" @click="$emit('open-page-create')"> add </span>
     </p>
     <draggable v-model="pages" group="form-builder-pages" :sort="true" class="draggables-list" @end="onDragEnd">
       <transition-group>
         <div
             class="em-font-weight-500 em-pointer"
-            v-for="page in formPages"
+            v-for="(page, index) in formPages"
             :key="page.id"
             :class="{selected: page.id === selected}"
         >
           <div class="em-flex-row em-flex-space-between" @mouseover="pageOptionsShown = page.id" @mouseleave="pageOptionsShown = 0">
-            <p @click="selectPage(page.id)" class="em-w-100 em-p-16">{{ translate(page.label) }}</p>
+            <p @click="selectPage(page.id)" class="em-w-100 em-p-16 form-builder-page-label">{{ page.label !== '' ? translate(page.label) : (translate('COM_EMUNDUS_FILES_PAGE') + ' ' + (index+1)) }}</p>
             <div class="em-flex-row em-p-16" :style="pageOptionsShown === page.id ? 'opacity:1' : 'opacity: 0'">
-	            <v-popover :popoverArrowClass="'custom-popover-arraow'">
+	            <v-popover :popoverArrowClass="'custom-popover-arraow'" :open-class="'form-builder-pages-popover'" :placement="'left'">
                 <span class="material-icons">more_horiz</span>
 
                 <template slot="popover">
@@ -25,6 +25,9 @@
                         <p @click="deletePage(page)" class="em-p-8-12 em-w-100 em-red-500-color">
                           {{ translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE') }}
                         </p>
+	                      <p @click="createModelFrom(page)" class="em-p-8-12 em-w-100">
+		                      {{ translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE') }}
+	                      </p>
                       </nav>
                     </div>
                   </transition>
@@ -54,7 +57,6 @@
 <script>
 import formBuilderService from '../../services/formbuilder';
 import formBuilderMixin from '../../mixins/formbuilder';
-import formService from '../../services/form';
 import draggable from "vuedraggable";
 import Swal from "sweetalert2";
 
@@ -95,8 +97,8 @@ export default {
           text: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE_CONFIRMATION_TEXT'),
           type: "warning",
           showCancelButton: true,
-          confirmButtonText: this.translate("COM_EMUNDUS_ACTIONS_DELETE"),
-          cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
+          confirmButtonText: this.translate('COM_EMUNDUS_ACTIONS_DELETE'),
+          cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
           reverseButtons: true,
           customClass: {
             title: 'em-swal-title',
@@ -121,9 +123,9 @@ export default {
         Swal.fire({
           title: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE_ERROR'),
           text: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE_ERROR_TEXT'),
-          type: "error",
+          type: 'error',
           showCancelButton: false,
-          confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+          confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
           reverseButtons: true,
           customClass: {
             title: 'em-swal-title',
@@ -133,15 +135,32 @@ export default {
         });
       }
     },
+	  createModelFrom(page) {
+	    // @click="$emit('open-create-model', page.id)"
+		  this.$emit('open-create-model', page.id);
+	  },
     onDragEnd() {
-      const newOrder = this.pages.map((page, index) => {
-        return {
-          rgt: index,
-          link: page.link
-        };
-      });
+      const newOrder = this.pages.map((page, index) => {return {rgt: index, link: page.link};});
 
-      formBuilderService.reorderMenu(newOrder,this.$props.profile_id);
+      formBuilderService.reorderMenu(newOrder, this.$props.profile_id).then((response) => {
+				if (response.status == 200 && response.data.status) {
+					this.$emit('reorder-pages', this.pages);
+				} else {
+					Swal.fire({
+						title: this.translate('COM_EMUNDUS_FORM_BUILDER_UPDATE_ORDER_PAGE_ERROR'),
+						text: result.msg,
+						type: 'error',
+						showCancelButton: false,
+						confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
+						reverseButtons: true,
+						customClass: {
+							title: 'em-swal-title',
+							confirmButton: 'em-swal-confirm-button',
+							actions: "em-swal-single-action",
+						},
+					});
+				}
+      });
     }
   },
   computed: {

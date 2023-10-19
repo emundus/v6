@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -36,9 +36,10 @@ foreach($data->cart->products as $product){
 		if($img->success) {
 			if(substr($img->url, 0, 3) == '../')
 				$image = str_replace('../', HIKASHOP_LIVE, $img->url);
-			else
+			elseif(!$img->external)
 				$image = substr(HIKASHOP_LIVE, 0, strpos(HIKASHOP_LIVE, '/', 9)) . $img->url;
-
+			else
+				$image = $img->url;
 			$attributes = '';
 			if($img->external)
 				$attributes = ' width="'.$img->req_width.'" height="'.$img->req_height.'"';

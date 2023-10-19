@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -431,7 +431,7 @@ class PluginsViewPlugins extends hikashopView{
 
 		$currencies = hikashop_get('type.currency');
 		$column_name = $type.'_currency';
-		$this->element->$column_name = explode(',',trim(@$this->element->$column_name,','));
+		$this->element->$column_name = explode(',',trim((string)@$this->element->$column_name,','));
 		$this->assignRef('currencies',$currencies);
 
 		if($type == 'payment')
@@ -631,6 +631,10 @@ class PluginsViewPlugins extends hikashopView{
 				} else {
 					$label = JText::_($value[0]);
 				}
+				if(!empty($value['tooltip'])) {
+					hikashop_loadJslib('tooltip');
+					$label = hikashop_hktooltip(JText::_($value['tooltip']), '', $label, '');
+				}
 				if(isset($value[3]))
 					$options = $value[3];
 				else
@@ -639,7 +643,7 @@ class PluginsViewPlugins extends hikashopView{
 				switch ($value[1]) {
 					case 'input':
 						$html .= '<tr><td class="key"><label for="data_'.$type.'_'.$paramsType.'_'.$key.'">'.$label.'</label></td><td>';
-						$html .= '<input type="text" id="data_'.$type.'_'.$paramsType.'_'.$key.'" name="data['.$type.']['.$paramsType.']['.$key.']" value="'.htmlentities(@$this->element->$paramsType->$key, ENT_COMPAT, 'UTF-8').'"/>';
+						$html .= '<input type="text" id="data_'.$type.'_'.$paramsType.'_'.$key.'" name="data['.$type.']['.$paramsType.']['.$key.']" value="'.htmlentities((string)@$this->element->$paramsType->$key, ENT_COMPAT, 'UTF-8').'"/>';
 						break;
 
 					case 'textarea':
@@ -680,6 +684,8 @@ class PluginsViewPlugins extends hikashopView{
 						foreach($value[2] as $listKey => $listData){
 							$checked = '';
 							if(!empty($this->element->$paramsType->$key)){
+								if(is_string($this->element->$paramsType->$key))
+									$this->element->$paramsType->$key = explode(',', $this->element->$paramsType->$key);
 								if(in_array($listKey, $this->element->$paramsType->$key))
 									$checked = 'checked="checked"';
 							}

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="hikashop">
 	<name>Hikashop WaitList notification Plugin</name>
-	<creationDate>25 septembre 2022</creationDate>
-	<version>4.6.2</version>
+	<creationDate>26 juin 2023</creationDate>
+	<version>4.7.4</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<copyright>(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>This plugin enables you to notify some customers when produts are not more out of stock.</description>
 	<files>

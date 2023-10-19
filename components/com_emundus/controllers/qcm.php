@@ -36,12 +36,15 @@ class EmundusControllerQcm extends JControllerLegacy {
     }
 
     public function getQuestions() {
-        $m_qcm = $this->model;
-
+	    $results = [];
         $jinput = JFactory::getApplication()->input;
         $questions = $jinput->getString('questions');
 
-        $results = $m_qcm->getQuestions($questions);
+		// todo: check user is inside qcm environment ?
+		if (!empty($questions)) {
+			$m_qcm = $this->model;
+			$results = $m_qcm->getQuestions($questions);
+		}
 
         echo json_encode((object)$results);
         exit;

@@ -1,0 +1,23 @@
+name: Border radius (button, module, ...)
+description: Border radius
+type: core
+
+form:
+  fields:
+
+    default:
+      type: input.text
+      label: Border radius by default
+      default: '8px'
+    applicant:
+      type: input.text
+      label: Border radius for Applicant
+      default: '8px'
+    cards:
+      type: input.text
+      label: Border radius for Applicant cards
+      default: '16px'
+    status:
+      type: input.text
+      label: Border radius for Status, tags, groups
+      default: '8px'

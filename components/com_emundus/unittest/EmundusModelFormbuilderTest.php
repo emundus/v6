@@ -45,7 +45,6 @@ class EmundusModelFormbuilderTest extends TestCase
         $this->m_formbuilder = new EmundusModelFormbuilder;
         $this->m_translations = new EmundusModelTranslations;
         $this->h_sample = new EmundusUnittestHelperSamples;
-
     }
 
     public function testFoo()
@@ -87,7 +86,7 @@ class EmundusModelFormbuilderTest extends TestCase
     public function testFormsTradUndefined()
     {
         $override_original_file_size = filesize(JPATH_SITE . '/language/overrides/fr-FR.override.ini');
-        $new_trad = "Mon élément modifié";
+        $new_trad = 'Mon élément modifié';
         $reference_id = 999999;
 
         $this->m_translations->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', $reference_id);
@@ -100,7 +99,8 @@ class EmundusModelFormbuilderTest extends TestCase
 
         $query->select('override')
             ->from('#__emundus_setup_languages')
-            ->where('reference_id = ' . $reference_id);
+            ->where('reference_id = ' . $reference_id)
+            ->andWhere('lang_code = ' . $db->quote('fr-FR'));
 
         $db->setQuery($query);
         $override = $db->loadResult();
@@ -169,7 +169,7 @@ class EmundusModelFormbuilderTest extends TestCase
 
         if (!empty($group['group_id'])) {
             $this->assertGreaterThan(0, $group['group_id'], 'Le groupe a bien été créé.');
-            $this->m_formbuilder->updateGroupParams($group['group_id'], ['is_sample' => true]);
+            $this->m_formbuilder->updateGroupParams($group['group_id'], ['is_sample' => true, 'repeat_group_button' => 0]);
 
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
@@ -206,7 +206,7 @@ class EmundusModelFormbuilderTest extends TestCase
 
 
             $new_intro = 'Mon introduction';
-            $this->m_formbuilder->updateGroupParams($group['group_id'], ['intro' => $new_intro, 'is_sample' => true], 'fr');
+            $this->m_formbuilder->updateGroupParams($group['group_id'], ['intro' => $new_intro, 'is_sample' => true, 'repeat_group_button' => 0], 'fr');
 
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
@@ -306,4 +306,172 @@ class EmundusModelFormbuilderTest extends TestCase
             JLog::add('Failed to insert model for unit tests ' . $e->getMessage(), JLog::ERROR, 'com_emundus.tests');
         }
     }
+
+	public function testgetDocumentSample() {
+		$document = $this->m_formbuilder->getDocumentSample(0, 0);
+		$this->assertEmpty($document, 'Le document de test est vide si aucun identifiant de document et/ou profile n\'est donné');
+
+		$document = $this->m_formbuilder->getDocumentSample(9999999, 0);
+		$this->assertEmpty($document, 'Le document de test est vide si aucun identifiant de profile n\'est donné');
+
+		$document = $this->m_formbuilder->getDocumentSample(0, 9999999);
+		$this->assertEmpty($document, 'Le document de test est vide si aucun identifiant de document n\'est donné');
+
+		// Création d'un document de test
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('id')
+			->from('#__emundus_setup_attachments')
+			->order('id DESC')
+			->setLimit(1);
+
+		$db->setQuery($query);
+		$attachment_id = $db->loadResult();
+
+		$query->clear()
+			->insert('#__emundus_setup_attachment_profiles')
+			->columns(['profile_id', 'campaign_id', 'attachment_id', 'displayed', 'mandatory', 'ordering', 'published', 'bank_needed', 'duplicate', 'sample_filepath', 'has_sample'])
+			->values('1, null, ' . $attachment_id . ', 1, 1, 1, 1, null, 0, null, 0');
+		$db->setQuery($query);
+		$db->execute();
+
+		$document = $this->m_formbuilder->getDocumentSample($attachment_id, 1);
+		$this->assertNotEmpty($document, 'Le document de test est bien renvoyé');
+	}
+
+	public function testaddFormModel()
+	{
+		$created = $this->m_formbuilder->addFormModel(0, 'Test Unitaire - ');
+		$this->assertFalse($created, 'addFormModel returns false if no form id given');
+
+		$created = $this->m_formbuilder->addFormModel(9999999, 'Test Unitaire - ');
+		$this->assertFalse($created, 'addFormModel returns false if no form does not exists');
+	}
+
+	/*
+	 * @covers EmundusModelFormbuilder::createSimpleElement
+	 */
+	public function testcreateSimpleElement() {
+		$this->assertFalse($this->m_formbuilder->createSimpleElement(0, ''), 'createSimpleElement returns false if no group id nor plugin given');
+		$this->assertFalse($this->m_formbuilder->createSimpleElement(1, ''), 'createSimpleElement returns false if no plugin given');
+		$this->assertFalse($this->m_formbuilder->createSimpleElement(0, 'field'), 'createSimpleElement returns false if no group id given');
+
+		$group_eval_id = 551;
+		$new_element_id = $this->m_formbuilder->createSimpleElement($group_eval_id, 'field');
+		$this->assertGreaterThan(0, $new_element_id, 'createSimpleElement returns the id of the created element');
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('plugin')
+			->from('#__fabrik_elements')
+			->where('id = ' . $new_element_id);
+
+		$db->setQuery($query);
+		$plugin = $db->loadResult();
+		$this->assertSame('field', $plugin, 'createSimpleElement creates the element with the correct plugin');
+
+		$new_email_element = $this->m_formbuilder->createSimpleElement($group_eval_id, 'email', 0, 1);
+		$query->clear()
+			->select('name, plugin')
+			->from('#__fabrik_elements')
+			->where('id = ' . $new_email_element);
+		$db->setQuery($query);
+		$element_data = $db->loadAssoc();
+		$this->assertSame('field', $element_data['plugin'], 'createSimpleElement creates the element with the field plugin for email');
+
+		// if evaluation $element_data['name'] should start with 'criteria'
+		$this->assertStringStartsWith('criteria', $element_data['name'], 'createSimpleElement creates the element with the correct name for evaluation');
+	}
+
+	public function testcheckIfModelTableIsUsedInForm() {
+		$used = $this->m_formbuilder->checkIfModelTableIsUsedInForm(0, 0);
+		$this->assertFalse($used, 'checkIfModelTableIsUsedInForm returns false if no model id nor profile id given');
+
+		$used = $this->m_formbuilder->checkIfModelTableIsUsedInForm(1, 0);
+		$this->assertFalse($used, 'checkIfModelTableIsUsedInForm returns false if no profile id given');
+
+		$used = $this->m_formbuilder->checkIfModelTableIsUsedInForm(0, 1);
+		$this->assertFalse($used, 'checkIfModelTableIsUsedInForm returns false if no model id given');
+
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select('id')
+			->from('#__emundus_setup_profiles')
+			->where('published = 1')
+			->andWhere('label != "noprofile"')
+			->order('id ASC');
+		$db->setQuery($query);
+		$profile_id = $db->loadResult();
+
+		if (!empty($profile_id)) {
+			$used = $this->m_formbuilder->checkIfModelTableIsUsedInForm(9999999, $profile_id);
+			$this->assertFalse($used, 'checkIfModelTableIsUsedInForm returns false if no model does not exists');
+
+			require_once JPATH_ROOT . '/components/com_emundus/models/form.php';
+			$m_form = new EmundusModelForm();
+			$forms = $m_form->getFormsByProfileId($profile_id);
+
+			if (!empty($forms)) {
+				$model_id = $forms[0]->id;
+
+				$used = $this->m_formbuilder->checkIfModelTableIsUsedInForm($model_id, 9999999);
+				$this->assertFalse($used, 'checkIfModelTableIsUsedInForm returns false if no profile does not exists');
+
+				$used = $this->m_formbuilder->checkIfModelTableIsUsedInForm($model_id, $profile_id);
+				$this->assertTrue($used, 'checkIfModelTableIsUsedInForm returns true if model is used in form');
+			}
+		}
+	}
+
+	public function testcreateDatabaseTableFromTemplate() {
+		$new_table_name = $this->m_formbuilder->createDatabaseTableFromTemplate('', 0);
+		$this->assertEmpty($new_table_name, 'createDatabaseTableFromTemplate returns empty string if no model id nor profile id given');
+
+		$new_table_name = $this->m_formbuilder->createDatabaseTableFromTemplate('', 1);
+		$this->assertEmpty($new_table_name, 'createDatabaseTableFromTemplate returns empty string if no model id given');
+
+		$new_table_name = $this->m_formbuilder->createDatabaseTableFromTemplate('test', 0);
+		$this->assertEmpty($new_table_name, 'createDatabaseTableFromTemplate returns empty string if no profile id given');
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select('id')
+			->from('#__emundus_setup_profiles')
+			->where('published = 1')
+			->andWhere('label != "noprofile"')
+			->order('id ASC');
+		$db->setQuery($query);
+		$profile_id = $db->loadResult();
+
+		if (!empty($profile_id)) {
+			$new_table_name = $this->m_formbuilder->createDatabaseTableFromTemplate('test', $profile_id);
+			$this->assertEmpty($new_table_name, '"test" table does not exists in database');
+
+			require_once JPATH_ROOT . '/components/com_emundus/models/form.php';
+			$m_form = new EmundusModelForm();
+			$forms = $m_form->getFormsByProfileId($profile_id);
+
+			if (!empty($forms)) {
+				$form_id = $forms[0]->id;
+				$query->clear()
+					->select('db_table_name')
+					->from('#__fabrik_lists')
+					->where('form_id = ' . $form_id);
+
+				$db->setQuery($query);
+				$table_name = $db->loadResult();
+				$new_table_name = $this->m_formbuilder->createDatabaseTableFromTemplate($table_name, $profile_id);
+				$this->assertNotEmpty($new_table_name, 'createDatabaseTableFromTemplate returns the new table name');
+
+				// check that the new table exists
+				$query = 'SHOW TABLES LIKE "' . $new_table_name . '"';
+				$db->setQuery($query);
+				$table_exists = $db->loadResult();
+				$this->assertNotEmpty($table_exists, 'createDatabaseTableFromTemplate truly creates the new table');
+			}
+		}
+	}
 }

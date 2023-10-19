@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -18,7 +18,7 @@ if(empty($this->ajax)) {
 echo $this->toolbarHelper->process($this->toolbar, $this->title);
 ?>
 <div class="hikashop_address_listing_div">
-<form action="<?php echo hikashop_completeLink('address'); ?>" name="hikashop_user_address" method="post">
+<form action="<?php echo hikashop_completeLink('address'.$this->url_itemid); ?>" name="hikashop_user_address" method="post">
 
 <div id="hikashop_user_addresses_default">
 	<div class="hikashop_checkout_loading_elem"></div>
@@ -44,7 +44,7 @@ echo $this->toolbarHelper->process($this->toolbar, $this->title);
 			}
 			if(empty($values))
 				$values = array(JHTML::_('select.option', '', JText::_('HIKA_NO_ADDRESS')));
-			echo JHTML::_('select.genericlist', $values, 'data[user][default_billing]', 'class="hikashop_default_address_dropdown" onchange="window.addressMgr.setDefault(this, \'billing\');"', 'value', 'text', $current, 'hikashop_default_billing_address_selector');
+			echo JHTML::_('select.genericlist', $values, 'data[user][default_billing]', 'class="'.HK_FORM_SELECT_CLASS.' hikashop_default_address_dropdown" onchange="window.addressMgr.setDefault(this, \'billing\');"', 'value', 'text', $current, 'hikashop_default_billing_address_selector');
 		?></dd>
 	</dl>
 	<dl class="hika_options large hikashop_default_shipping_address">
@@ -68,7 +68,7 @@ echo $this->toolbarHelper->process($this->toolbar, $this->title);
 			}
 			if(empty($values))
 				$values = array(JHTML::_('select.option', '', JText::_('HIKA_NO_ADDRESS')));
-			echo JHTML::_('select.genericlist', $values, 'data[user][default_shipping]', 'class="hikashop_default_address_dropdown" onchange="window.addressMgr.setDefault(this, \'shipping\');"', 'value', 'text', $current, 'hikashop_default_shipping_address_selector');
+			echo JHTML::_('select.genericlist', $values, 'data[user][default_shipping]', 'class="'.HK_FORM_SELECT_CLASS.' hikashop_default_address_dropdown" onchange="window.addressMgr.setDefault(this, \'shipping\');"', 'value', 'text', $current, 'hikashop_default_shipping_address_selector');
 		?></dd>
 	</dl>
 </div>
@@ -205,7 +205,7 @@ window.addressMgr.get = function(elem, target) {
 window.addressMgr.setDefault = function(elem, type) {
 	var t = this;
 	t.loading(true, 'hikashop_user_addresses_default');
-	window.hikashop.xRequest('<?php echo hikashop_completeLink('address&task=setdefault', 'ajax'); ?>', {mode: 'POST', data: 'address_default=' + elem.options[elem.selectedIndex].value + '&address_type=' + type + '&<?php echo hikashop_getFormToken(); ?>=1'}, function(){
+	window.hikashop.xRequest('<?php echo hikashop_completeLink('address&task=setdefault'.$this->url_itemid, 'ajax'); ?>', {mode: 'POST', data: 'address_default=' + elem.options[elem.selectedIndex].value + '&address_type=' + type + '&<?php echo hikashop_getFormToken(); ?>=1'}, function(){
 		t.loading(false, 'hikashop_user_addresses_default');
 	});
 	return false;
@@ -223,7 +223,7 @@ window.addressMgr.new = function(type) {
 	var t = this, w = window, o = w.Oby;
 	t.loading();
 	var data = o.encodeFormData({'address_type': type});
-	window.hikashop.xRequest('<?php echo hikashop_completeLink('address&task=edit&cid=0', 'ajax'); ?>', {update: 'hikashop_user_addresses_show', mode: 'POST', data: data}, function(){
+	window.hikashop.xRequest('<?php echo hikashop_completeLink('address&task=edit&cid=0'.$this->url_itemid, 'ajax'); ?>', {update: 'hikashop_user_addresses_show', mode: 'POST', data: data}, function(){
 		t.loading(false);
 	});
 	document.getElementById('hikashop_address_listing').scrollIntoView();

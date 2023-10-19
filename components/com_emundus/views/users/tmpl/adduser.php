@@ -6,70 +6,74 @@
  * Time: 10:30
  */
 
-$limitstart = JRequest::getVar('limitstart', null, 'GET', 'none',0);
+$jinput = JFactory::getApplication()->input;
+$limitstart = $jinput->getString('limitstart', null);
 
-$s = JRequest::getVar( 's', null, 'get', 'none',0 );
+$s = JRequest::getVar( 's', null, 'get', 'none',0);
 if ($s == '') {
-	$s = JRequest::getVar('lastname', null, 'post', 'none', 0);
+	$s = $jinput->getString('lastname' , null);
 }
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
-
 $applicant_option = false;
 $applicant_option_others = false;
 
-require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
+require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
 ?>
 <style>
+    form {
+        margin: 0;
+    }
     #campaigns_chosen{
         max-width: 62em;
     }
+    .form-group {
+        margin-bottom: 10px;
+    }
+    .em-addUser-groups .chzn-container .chzn-drop,.em-addUser-campaign .chzn-container .chzn-drop {
+        top: auto;
+        bottom: 100%;
+        box-shadow: 0 -4px 5px rgba(0, 0, 0, 0.15);
+    }
 </style>
-<form action = "<?= ($this->edit == 1)?"index.php?option=com_emundus&controller=users&task=edituser":"index.php?option=com_emundus&controller=users&task=adduser"; ?>" id="em-add-user" class="em-addUser" role="form" method="post">
-	<h3>
-		<?php
-			if ($this->edit == 1) {
-				echo JText::_('COM_EMUNDUS_ACTIONS_EDIT_USER');
-			} else {
-				echo JText::_('COM_EMUNDUS_ACTIONS_ADD_USER');
-			}
-		?>
-	</h3>
-
+<form action="index.php?option=com_emundus&controller=users&task=<?= ($this->edit == 1)? 'edituser' : 'adduser'; ?>" id="em-add-user" class="em-addUser" role="form" method="post">
 	<fieldset class="em-addUser-detail">
 		<?php if (JPluginHelper::getPlugin('authentication','ldap') && $this->edit == 0) :?>
-			<div class="form-group em-addUser-detail-ldap">
+			<div class="form-group em-addUser-detail-ldap flex items-center">
 				<input type="checkbox" id="ldap" name="ldap" style="margin-bottom:5px;" />
-				<label class="control-label" for="ldap">LDAP</label>
+				<label class="control-label mb-0" for="ldap">LDAP</label>
 			</div>
 		<?php endif; ?>
 		<div id="user-information" class="em-addUser-detail-info">
-			<div class="form-group em-addUser-detail-info-firstname">
-				<label class="control-label" for="fname"><?= JText::_('COM_EMUNDUS_FORM_FIRST_NAME'); ?></label>
-				<input type="text" class="em-w-100" id="fname" name="firstname" <?= ($this->edit == 1)?'value="'.$this->user['firstname'].'"':''; ?>/>
-			</div>
-			<div class="form-group em-addUser-detail-info-lastname">
-				<label class="control-label" for="lname"><?= JText::_('COM_EMUNDUS_FORM_LAST_NAME'); ?></label>
-				<input type="text" class="em-w-100" id="lname" name = "lastname" <?= ($this->edit == 1)?'value="'.$this->user['lastname'].'"':''; ?>/>
-			</div>
+            <div class="grid grid-cols-2 gap-2">
+                <div class="form-group em-addUser-detail-info-lastname">
+                    <label class="control-label" for="lname"><?= JText::_('COM_EMUNDUS_FORM_LAST_NAME'); ?></label>
+                    <input type="text" class="em-w-100" id="lname" name = "lastname" <?= ($this->edit == 1)?'value="'.$this->user['lastname'].'"':''; ?>/>
+                </div>
+                <div class="form-group em-addUser-detail-info-firstname">
+                    <label class="control-label" for="fname"><?= JText::_('COM_EMUNDUS_FORM_FIRST_NAME'); ?></label>
+                    <input type="text" class="em-w-100" id="fname" name="firstname" <?= ($this->edit == 1)?'value="'.$this->user['firstname'].'"':''; ?>/>
+                </div>
+            </div>
+
 			<div class="form-group em-addUser-detail-info-mail">
 				<label class="control-label" for="mail"><?= JText::_('COM_EMUNDUS_EMAIL'); ?></label>
 				<input type="text" class="em-w-100" id="mail" name="email" <?= $this->edit == 1?'value="'.$this->user['email'].'"':''; ?>/>
 			</div>
-            <div class="form-group em-addUser-detail-info-same-login">
-                <input type="checkbox" id="same_login_email" name="same_login_email" <?= ($this->user['email'] == $this->user['login'])?"checked":''; ?> style="margin-bottom: 5px; width: 20px !important">
-                <label for="same_login_email"><?= JText::_('COM_EMUNDUS_USERS_LOGIN_SAME_EMAIL'); ?></label>
+            <div class="form-group em-addUser-detail-info-same-login flex items-center">
+                <input type="checkbox" id="same_login_email" name="same_login_email" style="margin-bottom: 5px; outline-offset: 1px;" <?= ($this->user['email'] == $this->user['login']) ? 'checked' : ''; ?>>
+                <label for="same_login_email" class="mb-0"><?= JText::_('COM_EMUNDUS_USERS_LOGIN_SAME_EMAIL'); ?></label>
             </div>
             <div class="form-group em-addUser-detail-info-id" id="login_field">
                 <label class="control-label" for="login"><?= JText::_('COM_EMUNDUS_USERS_LOGIN_FORM'); ?></label>
-                <input type="text" class="em-w-100"  id="login" name="login" <?= ($this->edit == 1)?'value="'.$this->user['login'].'"':''; ?> />
+                <input type="text" class="em-w-100"  id="login" name="login" <?= ($this->edit == 1) ? 'value="'.$this->user['login'].'"' : ''; ?> />
             </div>
 		</div>
 	</fieldset>
     <?php
     $other_profiles_applicant = false;
-    if(sizeof(array_intersect(array_keys($this->uOprofiles),$this->app_prof)) > 0){
+    if(!empty($this->uOprofiles) && sizeof(array_intersect(array_keys($this->uOprofiles),$this->app_prof)) > 0){
         $other_profiles_applicant = true;
     }
     ?>
@@ -88,8 +92,8 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
                 <option id="<?= $profile->acl_aro_groups; ?>" value="<?= $profile->id; ?>"  pub="<?= $profile->published; ?>" <?php if(($this->edit == 1) && ($profile->id == $this->user['profile'])){echo 'selected="true"';}?>><?= trim($profile->label); ?></option>
 				<?php } } ?>
 			</select>
-			<br/><br/>
-			<div class="em-addUser-profil-selectProfil-multiple">
+
+			<div class="em-addUser-profil-selectProfil-multiple mt-3">
 				<label for="oprofiles"><?= JText::_('COM_EMUNDUS_USERS_ALL_PROFILES'); ?></label>
 				<select id="oprofiles" name="otherprofiles" size="5" multiple="multiple" class="em-chosen em-mt-4">
 					<option value="0" disabled="disabled"><?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
@@ -149,8 +153,6 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
 				<?php endforeach;?>
 			</select>
 		</div>
-		<!--<input type="checkbox" id="news" name="news" <?/*= (($this->edit == 1) && ($this->user['newsletter']== '"1"'))?"checked":''; */?> style="margin-bottom: 5px; width: 20px !important">
-		<label for="news"><?/*= JText::_('COM_EMUNDUS_USERS_NEWSLETTER'); */?></label>-->
 
 		<!-- LDAP registration will go inside the div -->
 		<div id="ldap-form" class="em-addUser-searchLdap" style="display : none;">
@@ -165,9 +167,9 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
 	window.onunload = function() {
 		window.opener.location.reload();
 	};
-	$(document).ready(function() {
+
+    $(document).ready(function () {
 		var edit = '<?php echo $this->edit?>';
-		$('form').css({padding:"26px"});
 		$('alertes-details').css({padding:"30px"});
 		$('.em-chosen').chosen({width:'100%'});
 
@@ -233,7 +235,7 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php')
                             } else if (result.count == 0) {
                                 ldapResult.html("<span class='alert alert-error'> <?php echo JText::_('COM_EMUNDUS_LDAP_NO_RESULT'); ?> </span>")
                             } else {
-								ldapResult.html("");
+								ldapResult.html('');
 								// Foreach user
 								result.ldapUsers.forEach(function(user) {
 

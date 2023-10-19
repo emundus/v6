@@ -41,4 +41,19 @@ class EmundusModelProgrammeTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_programme = new EmundusModelProgramme;
     }
+
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
+
+	public function testGetProgrammes()
+	{
+		$this->assertIsArray($this->m_programme->getProgrammes());
+		$this->assertIsArray($this->m_programme->getProgrammes(0));
+		$this->assertIsArray($this->m_programme->getProgrammes(0, [
+			'IN' => ['code_1'],
+			'NOT_IN' => ['code_2'],
+		]));
+	}
 }

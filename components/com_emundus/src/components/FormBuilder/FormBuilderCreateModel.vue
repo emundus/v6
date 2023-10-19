@@ -6,19 +6,22 @@
 				<span class="material-icons-outlined em-pointer" @click="$emit('close')">close</span>
 			</div>
 
-			<div id="model-properties" class="em-flex-column em-flex-start em-p-16 em-text-align-left">
+			<div  v-if="!loading" id="model-properties" class="em-flex-column em-flex-start em-p-16 em-text-align-left">
 				<p class="em-main-500-color">{{ translate('COM_EMUNDUS_FORM_BUILDER_MODEL_PROPERTIES_INTRO') }}</p>
 				<label for="page-model-title" class="em-mt-16 em-text-align-left em-w-100">{{ translate('COM_EMUNDUS_FORM_BUILDER_MODEL_INPUT_LABEL')  }}</label>
 				<input id="page-model-title" class="em-w-100 em-mb-16" type="text" v-model="modelTitle"/>
 				<p v-if="alreadyExists" class="em-red-500-color">{{ translate('COM_EMUNDUS_FORM_BUILDER_MODEL_WITH_SAME_TITLE_EXISTS') }}</p>
+			</div>
+			<div v-else class="em-w-100 em-flex-row em-flex-center">
+				<div class="em-loader"></div>
 			</div>
 		</div>
 		<div class="em-flex-row em-flex-space-between actions em-w-100">
 			<button
 				class="em-primary-button em-m-16"
 				@click="addFormModel()"
-				:disabled="modelTitle.length < 1"
-				:class="{'em-gray-bg': modelTitle.length < 1,'em-color-white': modelTitle.length < 1}"
+				:disabled="modelTitle.length < 1 || loading"
+				:class="{'em-color-white em-gray-bg em-w-100 em-p-8-12 em-border-radius': modelTitle.length < 1 || loading,}"
 			>
 				{{ translate('COM_EMUNDUS_FORM_BUILDER_SECTION_PROPERTIES_SAVE') }}
 			</button>
@@ -41,7 +44,8 @@ export default {
 		return {
 			modelTitle: '',
 			models: [],
-			alreadyExists: false
+			alreadyExists: false,
+			loading: false
 		}
 	},
 	mounted() {
@@ -63,6 +67,7 @@ export default {
 			this.alreadyExists = modelExists.length > 0;
 		},
 		addFormModel() {
+			this.loading = true;
 			this.modelTitle = this.modelTitle.trim();
 
 			if (this.modelTitle.length < 1) {
@@ -73,10 +78,11 @@ export default {
 					customClass: {
 						title: 'em-swal-title',
 						confirmButton: 'em-swal-confirm-button',
-						actions: "em-swal-single-action",
+						actions: 'em-swal-single-action',
 					}
 				});
 
+				this.loading = false;
 				return;
 			}
 
@@ -89,19 +95,20 @@ export default {
 			if (!this.alreadyExists) {
 				formBuilderService.addFormModel(this.page, this.modelTitle).then((response) => {
 					if (!response.status) {
+						this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_FAILURE'), response.msg);
+					} else {
 						Swal.fire({
-							type: 'warning',
-							title: this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_FAILURE'),
-							text: response.msg,
+							type: 'success',
+							title: this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_SUCCESS'),
 							reverseButtons: true,
 							customClass: {
 								title: 'em-swal-title',
 								confirmButton: 'em-swal-confirm-button',
-								actions: "em-swal-single-action",
+								actions: 'em-swal-single-action',
 							}
 						});
 					}
-
+					this.loading = false;
 					this.$emit('close');
 				});
 			} else {
@@ -111,17 +118,7 @@ export default {
 		replaceFormModel(model_id, label) {
 			formBuilderService.addFormModel(this.page, label).then((response) => {
 				if (!response.status) {
-					Swal.fire({
-						type: 'warning',
-						title: this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_FAILURE'),
-						text: response.msg,
-						reverseButtons: true,
-						customClass: {
-							title: 'em-swal-title',
-							confirmButton: 'em-swal-confirm-button',
-							actions: "em-swal-single-action",
-						}
-					});
+					this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_FAILURE'), response.msg);
 
 					this.$emit('close');
 				} else {
@@ -129,6 +126,10 @@ export default {
 					formBuilderService.deleteFormModelFromId(modelIds).then(() => {
 						this.$emit('close');
 					})
+				}
+
+				if (this.loading) {
+					this.loading = false;
 				}
 			});
 		}
@@ -152,9 +153,9 @@ export default {
 	.em-primary-button:disabled {
 		cursor: not-allowed;
 		border-color: var(--grey-color);
+		background: var(--grey-color);
 
 		&:hover {
-			background: var(--grey-color);
 			color: white;
 		}
 	}

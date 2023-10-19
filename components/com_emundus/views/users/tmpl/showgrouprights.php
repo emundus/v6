@@ -9,22 +9,40 @@
 span:hover {
     cursor: pointer;
 }
+#em-modal-action-table thead tr th{
+	text-align: center;
+}
+#em-modal-action-table thead tr th:first-child {
+    border-top-left-radius: 8px;
+}
+#em-modal-action-table thead tr th:last-child {
+    border-top-right-radius: 8px;
+}
+#em-modal-action-table .em-actions-table-line td {
+	padding: 12px;
+}
+#em-modal-action-table .em-actions-table-line td.action{
+	text-align: center;
+}
 </style>
 
-<h3><?= JText::_('COM_EMUNDUS_GROUPS_SHOW_RIGHTS'); ?></h3>
+<h2><?= JText::_('COM_EMUNDUS_GROUPS_SHOW_RIGHTS'); ?></h2>
+
 <?php foreach($this->groups as $k => $g) :?>
 	<fieldset id="<?= $k; ?>" class="em-showgroupright">
-		<h5>
+		<h3>
 			<?= $g['label']; ?>
-		</h5>
+		</h3>
+
         <?php if (!empty($g['progs'])) :?>
-            <ul class="em-showgroupright-program">
-                <strong><?= JText::_('COM_EMUNDUS_GROUPS_PROGRAM'); ?></strong>
+            <ul class="em-showgroupright-program mt-3">
+                <h4 class="mb-2"><?= JText::_('COM_EMUNDUS_GROUPS_PROGRAM'); ?></h4>
                 <?php foreach ($g['progs'] as $p) :?>
-                    <li><?= $p['label']; ?></li>
+                    <p><?= $p['label']; ?></p>
                 <?php endforeach;?>
             </ul>
         <?php endif; ?>
+
 		<?php if (!empty($g['acl'])) :?>
 			<table id="em-modal-action-table" class="table table-hover em-showgroupright-table" style="color:black !important;">
 				<thead>
@@ -44,7 +62,7 @@ span:hover {
 					</th>
 				</tr>
 				</thead>
-				<tbody size="<?= count(@$this->actions); ?>">
+				<tbody>
 				<?php
 				foreach ($g['acl'] as $l => $action) :?>
 
@@ -113,7 +131,7 @@ span:hover {
 			</ul>
 		<?php endif;?>
         <div class="modal-footer">
-            <button type="button" class="btn btn-success" onclick="history.go(-1)"><?php echo JText::_('COM_EMUNDUS_OK');?></button>
+            <button type="button" class="btn em-primary-button em-w-auto" onclick="history.go(-1)"><?php echo JText::_('COM_EMUNDUS_OK');?></button>
         </div>
 	</fieldset>
 <?php endforeach;?>

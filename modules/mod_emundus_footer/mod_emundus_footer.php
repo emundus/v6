@@ -20,16 +20,28 @@ include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 $params->def('greeting', 1);
 
 //Footer
+$mod_emundus_footer_merge_two_columns=$params->get('mod_emundus_footer_merge_two_columns',0);
 $mod_emundus_footer_texte_col_1=$params->get('mod_emundus_footer_texte_col_1', '');
 $mod_emundus_footer_texte_col_2=$params->get('mod_emundus_footer_texte_col_2', '');
 $mod_emundus_footer_display_tchooz_logo=$params->get('mod_emundus_footer_display_tchooz_logo',0);
+$mod_emundus_footer_display_powered_by=$params->get('mod_emundus_footer_display_powered_by',1);
 $mod_emundus_footer_client_link=$params->get('mod_emundus_footer_client_link','');
 
 // Gdpr articles
 $mod_emundus_footer_legal_info=$params->get('mod_emundus_footer_legal_info', '1');
+$mod_emundus_footer_legal_info_alias=$params->get('mod_emundus_footer_legal_info_alias', 'mentions-legales');
+
 $mod_emundus_footer_data_privacy=$params->get('mod_emundus_footer_data_privacy', '1');
+$mod_emundus_footer_data_privacy_alias=$params->get('mod_emundus_footer_data_privacy_alias', 'politique-de-confidentialite-des-donnees');
+
 $mod_emundus_footer_rights=$params->get('mod_emundus_footer_rights', '1');
+$mod_emundus_footer_rights_alias=$params->get('mod_emundus_footer_rights_alias', 'gestion-des-droits');
+
 $mod_emundus_footer_cookies=$params->get('mod_emundus_footer_cookies', '1');
+$mod_emundus_footer_cookies_alias=$params->get('mod_emundus_footer_cookies_alias', 'gestion-des-cookies');
+
+$mod_emundus_footer_accessibility=$params->get('mod_emundus_footer_accessibility', '0');
+$mod_emundus_footer_accessibility_alias=$params->get('mod_emundus_footer_accessibility_alias', 'accessibilite');
 
 $type             = ModLoginHelper::getType();
 $return           = ModLoginHelper::getReturnUrl($params, $type);

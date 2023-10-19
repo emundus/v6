@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="em-h4 em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS') }}</h2>
+    <h1 class="em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS') }}</h1>
     <p class="em-font-size-14 em-mb-24 em-h-25">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE') }}</p>
 
     <p class="em-font-size-14 em-mb-24 em-h-25" v-if="availableLanguages.length === 0 && !loading">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_NO_LANGUAGES_AVAILABLE') }}</p>
@@ -62,7 +62,7 @@
             :placeholder="translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT')"
             :close-on-select="true"
             :clear-on-select="false"
-            :searchable="false"
+            :searchable="true"
             :allow-empty="true"
         ></multiselect>
       </div>
@@ -82,7 +82,7 @@
             :placeholder="translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT')"
             :close-on-select="true"
             :clear-on-select="false"
-            :searchable="false"
+            :searchable="true"
             :allow-empty="true"
         ></multiselect>
       </div>
@@ -92,13 +92,16 @@
 
     <div class="col-md-12">
       <div v-if="lang === '' || lang == null || object === '' || object == null || init_translations === false" class="text-center em-mt-80">
-        <p class="em-h5 em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TITLE') }}</p>
+        <h5 class="em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TITLE') }}</h5>
         <p class="em-font-size-14 em-text-neutral-600">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TEXT') }}</p>
       </div>
 
       <div v-else>
+        <button v-if="object.table.name === 'emundus_setup_profiles'" class="float-right" @click="exportToCsv">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_EXPORT') }}</button>
+
         <div v-for="section in object.fields.Sections" class="em-mb-32">
-          <h4>{{section.Label}}</h4>
+          <h4 class="mb-2">{{section.Label}}</h4>
+
           <TranslationRow :section="section" :translations="translations" @saveTranslation="saveTranslation"/>
         </div>
       </div>
@@ -266,10 +269,14 @@ export default {
 
     async saveTranslation({value,translation}){
       this.$emit('updateSaving',true);
-      translationsService.updateTranslations(value,this.object.table.type,this.lang.lang_code,translation.reference_id,translation.tag,translation.reference_table).then((response) => {
+      translationsService.updateTranslations(value,this.object.table.type,this.lang.lang_code,translation.reference_id,translation.tag,translation.reference_table,translation.reference_field).then((response) => {
         this.$emit('updateLastSaving',this.formattedDate('','LT'));
         this.$emit('updateSaving',false);
       });
+    },
+
+    async exportToCsv() {
+      window.open('index.php?option=com_emundus&controller=translations&task=export&profile='+this.data.id, '_blank');
     }
   },
 

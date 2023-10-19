@@ -14,7 +14,7 @@
 
 // Check to ensure this file is within the rest of the framework
 defined('_JEXEC') or die('Restricted access');
- 
+
 jimport('joomla.form.formfield');
 jimport('joomla.application.component.controller');
 
@@ -35,17 +35,17 @@ class JFormFieldGroup extends JFormField
 	 * @var		string
 	 */
 	protected $type = 'Group';
-	
+
 	public function getLabel() {
 	// code that returns HTML that will be shown as the label
 		 return '<span style="text-decoration: underline;">' . parent::getLabel() . '</span>';
 	}
- 
+
 	public function getInput() {
 	// code that returns HTML that will be shown as the form field
      	$class = '';
 		$options = '';
-		$db	= & JFactory::getDBO();
+		$db	= JFactory::getDBO();
 
 		$query = 'SELECT esg.id, esg.label  
 		FROM #__emundus_setup_groups esg
@@ -54,7 +54,7 @@ class JFormFieldGroup extends JFormField
 		$db->setQuery($query);
 		$groups = $db->loadObjectList();
 
-		foreach($groups as $group) { 
+		foreach($groups as $group) {
 			$options .= '<label><input type="checkbox" name="'.$this->name.'" value="'.$group->id.'" ';
 			/*if($edit==1) {
 				foreach($this->users_groups as $users_groups) {
@@ -63,8 +63,8 @@ class JFormFieldGroup extends JFormField
 				}
 			}*/
 			$options .= ' />'.$group->label.'</label><br />';
-		} 
-			
+		}
+
 		return $options;
 	}
 

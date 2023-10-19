@@ -104,142 +104,150 @@ class EmundusModelList extends JModelList
     }
 
 
-    public function getList($listId, $listParticularConditionalColumn, $listParticularConditionalColumnValues)
-    {
-        $data = [];
+	public function getList($listId, $listParticularConditionalColumn, $listParticularConditionalColumnValues)
+	{
+		$data = [];
 
-        if (!empty($listId)) {
-            $query = $this->db->getQuery(true);
-            $query->select('DISTINCT jfe.name as column_name, jfe.plugin, jfe.filter_type, jfe.params, jfe.label,jfe.id, jfl.db_table_name as db_table_name')
-                ->from($this->db->quoteName('#__fabrik_lists', 'jfl'))
-                ->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $this->db->quoteName('jfl.form_id') . ' = ' . $this->db->quoteName('jffg.form_id'))
-                ->leftJoin($this->db->quoteName('#__fabrik_groups', 'jfg') . ' ON ' . $this->db->quoteName('jffg.group_id') . ' = ' . $this->db->quoteName('jfg.id'))
-                ->leftJoin($this->db->quoteName('#__fabrik_elements', 'jfe') . ' ON ' . $this->db->quoteName('jfe.group_id') . ' = ' . $this->db->quoteName('jffg.group_id'))
-                ->where($this->db->quoteName('jfl.id') . ' = ' . $listId)
-                ->andWhere($this->db->quoteName('jfe.show_in_list_summary') . ' = 1 OR jfe.name IN (' .$this->db->quote('id') . ',' . $this->db->quote("fnum") . ')')
-                ->andWhere($this->db->quoteName('jfe.published') . ' = ' . 1)
-                ->order($this->db->quoteName('jfe.ordering').' ASC');
-            $this->db->setQuery($query);
+		if (!empty($listId)) {
+			$query = $this->db->getQuery(true);
+			$query->select('DISTINCT jfe.name as column_name, jfe.plugin, jfe.filter_type, jfe.params, jfe.label,jfe.id, jfl.db_table_name as db_table_name')
+				->from($this->db->quoteName('#__fabrik_lists', 'jfl'))
+				->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $this->db->quoteName('jfl.form_id') . ' = ' . $this->db->quoteName('jffg.form_id'))
+				->leftJoin($this->db->quoteName('#__fabrik_groups', 'jfg') . ' ON ' . $this->db->quoteName('jffg.group_id') . ' = ' . $this->db->quoteName('jfg.id'))
+				->leftJoin($this->db->quoteName('#__fabrik_elements', 'jfe') . ' ON ' . $this->db->quoteName('jfe.group_id') . ' = ' . $this->db->quoteName('jffg.group_id'))
+				->where($this->db->quoteName('jfl.id') . ' = ' . $listId)
+				->andWhere($this->db->quoteName('jfe.show_in_list_summary') . ' = 1 OR jfe.name IN (' .$this->db->quote('id') . ',' . $this->db->quote("fnum") . ')')
+				->andWhere($this->db->quoteName('jfe.published') . ' = ' . 1)
+				->order($this->db->quoteName('jfe.ordering').' ASC');
+			$this->db->setQuery($query);
 
-            try {
-                $result = $this->db->loadAssocList();
-            } catch (Exception $e) {
-                JLog::add('component/com_emundus/models/list | Cannot getting the list colunmns and data table name: ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-            }
+			try {
+				$result = $this->db->loadAssocList();
+			} catch (Exception $e) {
+				JLog::add('component/com_emundus/models/list | Cannot getting the list colunmns and data table name: ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
 
-            if (!empty($result)) {
-                $dbTableName = $result[0]["db_table_name"];
-                $listColumns = [];
-                $databaseJoinsKeysAndColumns = [];
+			if (!empty($result)) {
+				$dbTableName = $result[0]["db_table_name"];
+				$listColumns = [];
+				$databaseJoinsKeysAndColumns = [];
 
-                foreach ($result as list('column_name' => $column_name, 'plugin' => $plugin, 'id' => $id,'params'=> $params)) {
-                    if ($plugin == "databasejoin") {
-                        $response = $this->retrieveDataBasePluginElementJoinKeyColumnAndTable($id);
+				foreach ($result as list('column_name' => $column_name, 'plugin' => $plugin, 'id' => $id,'params'=> $params)) {
+					if ($plugin == "databasejoin") {
+						$response = $this->retrieveDataBasePluginElementJoinKeyColumnAndTable($id);
 
-                        if (!empty($response)) {
-                            $params = json_decode($response->params, true);
+						if (!empty($response)) {
+							$params = json_decode($response->params, true);
 
-                            if (!empty($params["join-label"])) {
-                                $response->column_real_name = $column_name;
-                                $column = $response->table_join . '.' . $params["join-label"];
-                                $databaseJoinsKeysAndColumns[] = $response;
-                                $listColumns[] = $column;
-                                $listColumns[] = $params["pk"] . 'AS ' . $params["join-label"] . '_pk';
-                            }
-                        }
-                    } else {
-                        $listColumns[] = $dbTableName . '.' . $column_name;
-                    }
-                }
+							if (!empty($params["join-label"])) {
+								$response->column_real_name = $column_name;
+								$column = $response->table_join . '.' . $params["join-label"];
+								$databaseJoinsKeysAndColumns[] = $response;
+								$listColumns[] = $column;
+								$listColumns[] = $params["pk"] . 'AS ' . $params["join-label"] . '_pk';
+							}
+						}
+					} else {
+						$listColumns[] = $dbTableName . '.' . $column_name;
+					}
+				}
 
-                $query->clear()
-                    ->select("DISTINCT " . implode(',', $listColumns))
-                    ->from($this->db->quoteName($dbTableName));
+				$query->clear()
+					->select("DISTINCT " . implode(',', $listColumns))
+					->from($this->db->quoteName($dbTableName));
 
-                if (!empty($databaseJoinsKeysAndColumns)) {
-                    foreach ($databaseJoinsKeysAndColumns as $data) {
-                        $query->join($data->join_type, $this->db->quoteName($data->table_join) . ' ON ' . $this->db->quoteName($data->table_join . '.' . $data->table_join_key) . ' = ' . $this->db->quoteName($dbTableName . '.' . $data->table_key));
-                    }
-                }
+				if (!empty($databaseJoinsKeysAndColumns)) {
+					foreach ($databaseJoinsKeysAndColumns as $data) {
+						$query->join($data->join_type, $this->db->quoteName($data->table_join) . ' ON ' . $this->db->quoteName($data->table_join . '.' . $data->table_join_key) . ' = ' . $this->db->quoteName($dbTableName . '.' . $data->table_key));
+					}
+				}
 
-                $firstWhere = true;
+				$firstWhere = true;
 
-                /*** The code below before the try catch is used to get data from table with specific where clause column define in module configuration ******/
-                foreach ($listParticularConditionalColumn as $column) {
-                    $values = explode(',', $column);
-                    $values = '"' . join('", "', $values) . '"';
+				/*** The code below before the try catch is used to get data from table with specific where clause column define in module configuration ******/
+				foreach ($listParticularConditionalColumn as $column) {
+					$values = explode(',', $column);
+					$values = '"' . join('", "', $values) . '"';
 
-                    if (!empty($column)) {
-                        if ($firstWhere) {
-                            $query->where($this->db->quoteName($column) . ' IN (' .$values. ')');
-                            $firstWhere = false;
-                        } else {
-                            $query->andWhere($this->db->quoteName($column) . ' IN (' . $values . ')');
-                        }
-                    }
-                }
+					if (!empty($column)) {
+						if ($firstWhere) {
+							$query->where($this->db->quoteName($column) . ' IN (' .$values. ')');
+							$firstWhere = false;
+						} else {
+							$query->andWhere($this->db->quoteName($column) . ' IN (' . $values . ')');
+						}
+					}
+				}
 
 
-                $this->db->setQuery($query);
-                try {
-                    $listDataResult = $this->db->loadObjectList();
-                } catch (Exception $e) {
-                    JLog::add('component/com_emundus/models/list | Cannot getting the list data table content: ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-                    return 0;
-                }
+				$this->db->setQuery($query);
+				try {
+					$listDataResult = $this->db->loadObjectList();
+				} catch (Exception $e) {
+					JLog::add('component/com_emundus/models/list | Cannot getting the list data table content: ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+					return 0;
+				}
 
-                require_once (JPATH_ROOT .'/components/com_emundus/models/users.php');
-                require_once (JPATH_ROOT .'/components/com_emundus/models/profile.php');
-                $m_users = new EmundusModelUsers();
-                $m_profile = new EmundusModelProfile();
-                $user_id = JFactory::getUser()->id;
-                $user_programs = $m_users->getUserGroupsProgramme($user_id);
-                $groups = $m_users->getUserGroups($user_id, 'Column');
-                $fnum_assoc_to_groups = $m_users->getApplicationsAssocToGroups($groups);
-                $fnum_assoc = $m_users->getApplicantsAssoc($user_id);
+				require_once (JPATH_ROOT .'/components/com_emundus/models/users.php');
+				require_once (JPATH_ROOT .'/components/com_emundus/models/profile.php');
+				$m_users = new EmundusModelUsers();
+				$m_profile = new EmundusModelProfile();
+				$user_id = JFactory::getUser()->id;
+				$user_programs = $m_users->getUserGroupsProgramme($user_id);
+				$groups = $m_users->getUserGroups($user_id, 'Column');
+				$fnum_assoc_to_groups = $m_users->getApplicationsAssocToGroups($groups);
+				$fnum_assoc = $m_users->getApplicantsAssoc($user_id);
 
-                foreach($listDataResult as $index => $listResult) {
-                    $query->clear()
-                        ->select('training')
-                        ->from('#__emundus_setup_campaigns as jesc')
-                        ->leftJoin('#__emundus_campaign_candidature as jecc ON jecc.campaign_id = jesc.id')
-                        ->where('jecc.fnum LIKE ' .  $this->db->quote($listResult->fnum));
-                    $this->db->setQuery($query);
-                    $program = $this->db->loadResult();
+				$index_to_remove = [];
+				foreach($listDataResult as $index => $listResult) {
+					$query->clear()
+						->select('training')
+						->from('#__emundus_setup_campaigns as jesc')
+						->leftJoin('#__emundus_campaign_candidature as jecc ON jecc.campaign_id = jesc.id')
+						->where('jecc.fnum LIKE ' .  $this->db->quote($listResult->fnum));
+					$this->db->setQuery($query);
+					$program = $this->db->loadResult();
 
-                    if (!in_array($listResult->fnum, $fnum_assoc_to_groups) && !in_array($listResult->fnum, $fnum_assoc) && !in_array($program, $user_programs)) {
-                        unset($listDataResult[$index]);
-                    } elseif (!empty($listResult->num_signalement)) {
-                        $emundusUser = JFactory::getSession()->get('emundusUser');
-                        $profile_id = $emundusUser->profile;
-                        $files_menu_path = $m_profile->getFilesMenuPathByProfile($profile_id);
-                        $listDataResult[$index]->num_signalement = '<div class="em-flex-row">
+					if (!in_array($listResult->fnum, $fnum_assoc_to_groups) && !in_array($listResult->fnum, $fnum_assoc) && !in_array($program, $user_programs)) {
+						$index_to_remove[] = $index;
+					} elseif (!empty($listResult->num_signalement)) {
+						$emundusUser = JFactory::getSession()->get('emundusUser');
+						$profile_id = $emundusUser->profile;
+						$files_menu_path = $m_profile->getFilesMenuPathByProfile($profile_id);
+						$listDataResult[$index]->num_signalement = '<div class="em-flex-row">
                             <span>' . $listResult->num_signalement . '</span>
                             <a class="em-ml-8" target="_blank" href="' . $files_menu_path .  '#' . $listResult->fnum . '|open"><span class="material-icons-outlined">open_in_new</span></a>
                             </div>';
-                    }
-                }
+					}
+				}
 
-                foreach ($result as $key => $res) {
-                    $result[$key]['label'] = JText::_($res['label']);
-                    $result[$key]['display_type'] = $res['column_name'] === 'num_signalement' ? 'html' : 'text';
-                }
+				foreach ($index_to_remove as $index)
+				{
+					unset($listDataResult[$index]);
+				}
+				$listDataResult = array_values($listDataResult);
 
-                $listData = $this->removeForeignKeyValueFormDataLoadedIfExistingDatabaseJoinElementInList($databaseJoinsKeysAndColumns, $listDataResult);
-                $data = ['listColumns' => $result, 'listData' => $listData];
-            }
-        }
 
-        foreach($data['listColumns'] as $key => $column) {
-            if ($column['column_name'] == 'fnum') {
-                unset($data['listColumns'][$key]);
-                $data['listColumns'] = array_values($data['listColumns']);
-                break;
-            }
-        }
+				foreach ($result as $key => $res) {
+					$result[$key]['label'] = JText::_($res['label']);
+					$result[$key]['display_type'] = $res['column_name'] === 'num_signalement' ? 'html' : 'text';
+				}
 
-        return $data;
-    }
+				$listData = $this->removeForeignKeyValueFormDataLoadedIfExistingDatabaseJoinElementInList($databaseJoinsKeysAndColumns, $listDataResult);
+				$data = ['listColumns' => $result, 'listData' => $listData];
+			}
+		}
+
+		foreach($data['listColumns'] as $key => $column) {
+			if ($column['column_name'] == 'fnum') {
+				unset($data['listColumns'][$key]);
+				$data['listColumns'] = array_values($data['listColumns']);
+				break;
+			}
+		}
+
+		return $data;
+	}
 
     public function retrieveDataBasePluginElementJoinKeyColumnAndTable($elementId)
     {
@@ -307,7 +315,8 @@ class EmundusModelList extends JModelList
 
             foreach ($rows as $row) {
                 if (preg_match('/.*-action-([0-9]+)-([0-9]+)/', $row['id'], $match)) {
-                    $numeroSignalement = $row['num_signalement'];
+	                $result = explode("\n",$row['num_signalement']);
+	                $numeroSignalement = preg_replace('/[^a-zA-Z0-9-_\.]/','', $result[1]);
                     $actionId = $match[1];
                     $userId = $match[2];
 

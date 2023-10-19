@@ -1,0 +1,282 @@
+name: Forms
+description: Style for forms
+type: core
+
+form:
+  fields:
+    success-color:
+      type: input.colorpicker
+      label: Success color
+      default: '#20835F'
+    error-color:
+      type: input.colorpicker
+      label: Error/Close color
+      default: '#F04437'
+    border-radius-block:
+      type: input.text
+      label: Border radius of blocks
+      default: '16px'
+    label-color:
+      type: input.colorpicker
+      label: Label color
+      default: '#000000'
+    label-margin-bottom:
+      type: input.text
+      label: Label margin bottom
+      default: '6px'
+    field-margin-bottom:
+      type: input.text
+      label: Field margin bottom
+      default: '24px'
+    label-size:
+      type: input.text
+      label: Label font size
+      default: '14px'
+    label-weight:
+      type: input.text
+      label: Label font weight
+      default: '500'
+    height:
+      type: input.text
+      label: Height of fields
+      default: '40px'
+    font-size:
+      type: input.text
+      label: Font size of fields
+      default: '15px'
+    tip-color:
+      type: input.colorpicker
+      label: Tip color
+      default: '#5C5C5C'
+    border-radius:
+      type: input.text
+      label: Border radius of fields
+      default: '4px'
+    border-color:
+      type: input.colorpicker
+      label: Border color of fields
+      default: '#a7a7a7'
+    background-color:
+      type: input.colorpicker
+      label: Background color of fields
+      default: '#FFFFFF'
+    border-radius-focus:
+      type: input.text
+      label: Border radius of fields when focused
+      default: '4px'
+    border-color-focus:
+      type: input.colorpicker
+      label: Border color of fields when focused
+      default: '#A7A7A7'
+    background-color-focus:
+      type: input.colorpicker
+      label: Background color of fields when focused
+      default: '#FFFFFF'
+    outline-width-focus:
+      type: input.text
+      label: Outline width of fields when focused
+      default: '1px'
+    outline-color-focus:
+      type: input.colorpicker
+      label: Outline color of fields when focused
+      default: '#007BFF'
+    outline-offset-focus:
+      type: input.text
+      label: Outline offset of fields when focused
+      default: '2px'
+    background-color-hover:
+      type: input.colorpicker
+      label: Background color of fields when hovered
+      default: '#ededed'
+    border-color-hover:
+      type: input.colorpicker
+      label: Border color of fields when hovered
+      default: '#2E404F'
+    border-color-error:
+      type: input.colorpicker
+      label: Border color of fields when error
+      default: '#f04437'
+    label-color-error:
+      type: input.colorpicker
+      label: Label color of fields when error
+      default: '#000000'
+    element-color-error:
+      type: input.colorpicker
+      label: Color of fields when error
+      default: '#f04437'
+    after-border-height:
+      type: input.text
+      label: After border height
+      default: '0px'
+    radio-padding:
+      type: input.text
+      label: Radio padding
+      default: '8px 12px 8px 8px'
+    radio-border-width:
+      type: input.text
+      label: Radio border width
+      default: '1px'
+    radio-border-color:
+        type: input.colorpicker
+        label: Radio border color
+        default: '#A4A4A4'
+    radio-border-radius:
+        type: input.text
+        label: Radio border radius
+        default: '4px'
+    radio-width:
+        type: input.text
+        label: Radio width
+        default: '16px'
+    radio-height:
+        type: input.text
+        label: Radio height
+        default: '16px'
+    radio-margin-right:
+        type: input.text
+        label: Radio margin right
+        default: '8px'
+    radio-color-checked:
+        type: input.colorpicker
+        label: Radio color checked
+        default: '#007BFF'
+    radio-background-color-checked:
+        type: input.colorpicker
+        label: Radio background color checked
+        default: '#EDEDED'
+    radio-border-color-checked:
+        type: input.colorpicker
+        label: Radio border color checked
+        default: '#2B2B2B'
+    yesno-border-width:
+      type: input.text
+      label: Yes/No border width
+      default: '1px'
+    yesno-border-radius:
+      type: input.text
+      label: Yes/No border radius
+      default: '4px'
+    yesno-width:
+      type: input.text
+      label: Yes/No width
+      default: '50%'
+    yesno-height:
+      type: input.text
+      label: Yes/No height
+      default: '48px'
+    yesno-gap:
+      type: input.text
+      label: Yes/No gap between buttons
+      default: '20px'
+    yesno-color-not-active:
+      type: input.colorpicker
+      label: Yes/No color not active
+      default: '#171717'
+    yesno-background-color-not-active:
+      type: input.colorpicker
+      label: Yes/No background color not active
+      default: '#ffffff'
+    yesno-border-color-not-active:
+      type: input.colorpicker
+      label: Yes/No border color not active
+      default: '#a4a4a4'
+    yesno-color-not-active-hover:
+      type: input.colorpicker
+      label: Yes/No color not active hover
+      default: '#2b2b2b'
+    yesno-background-color-not-active-hover:
+      type: input.colorpicker
+      label: Yes/No background color not active hover
+      default: '#ffffff'
+    yesno-border-color-not-active-hover:
+      type: input.colorpicker
+      label: Yes/No border color not active hover
+      default: '#a7a7a7'
+    yesno-color-yes:
+      type: input.colorpicker
+      label: Yes/No color for the "yes"
+      default: '#171717'
+    yesno-background-color-yes:
+      type: input.colorpicker
+      label: Yes/No background color for the "yes"
+      default: '#ededed'
+    yesno-border-color-yes:
+      type: input.colorpicker
+      label: Yes/No border color for the "yes"
+      default: '#171717'
+    yesno-color-yes-hover:
+      type: input.colorpicker
+      label: Yes/No color for the "yes" hover
+      default: '#2e404f'
+    yesno-background-color-yes-hover:
+      type: input.colorpicker
+      label: Yes/No background color for the "yes" hover
+      default: '#ededed'
+    yesno-border-color-yes-hover:
+      type: input.colorpicker
+      label: Yes/No border color for the "yes" hover
+      default: '#2e404f'
+    yesno-color-no:
+      type: input.colorpicker
+      label: Yes/No color for the "no"
+      default: '#171717'
+    yesno-background-color-no:
+      type: input.colorpicker
+      label: Yes/No background color for the "no"
+      default: '#ededed'
+    yesno-border-color-no:
+      type: input.colorpicker
+      label: Yes/No border color for the "no"
+      default: '#2e404f'
+    yesno-color-no-hover:
+      type: input.colorpicker
+      label: Yes/No color for the "no" hover
+      default: '#171717'
+    yesno-background-color-no-hover:
+      type: input.colorpicker
+      label: Yes/No background color for the "no" hover
+      default: '#ededed'
+    yesno-border-color-no-hover:
+      type: input.colorpicker
+      label: Yes/No border color for the "no" hover
+      default: '#2e404f'
+    checkbox-border-width:
+        type: input.text
+        label: Checkbox border width
+        default: '0px'
+    checkbox-border-color:
+        type: input.colorpicker
+        label: Checkbox border color
+        default: '#A7A7A7'
+    checkbox-padding:
+        type: input.text
+        label: Checkbox padding
+        default: '12px'
+    checkbox-scale:
+        type: input.text
+        label: Checkbox scale
+        default: '1.3'
+    checkbox-input-margin:
+        type: input.text
+        label: Checkbox input margin
+        default: '12px'
+    checkbox-color-checked:
+        type: input.colorpicker
+        label: Checkbox color checked
+        default: '#007bff'
+    checkbox-border-color-error:
+        type: input.colorpicker
+        label: Checkbox border color error
+        default: '#f04437'
+    fileupload-padding:
+        type: input.text
+        label: Fileupload padding
+        default: '12px 8px'
+    fileupload-background-color:
+        type: input.colorpicker
+        label: Fileupload background color
+        default: '#F0F0F0'
+
+
+
+

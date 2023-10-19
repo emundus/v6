@@ -3,9 +3,9 @@
     <p id="form-builder-document-title" class="em-text-align-center em-w-100 em-p-16">
       {{ translate('COM_EMUNDUS_FORM_BUILDER_FORMATS') }}
     </p>
-	  <input id="search" v-model="search" type="text" class="em-mt-16 em-w-100" placeholder=""/>
+	  <input v-if="formats.length > 0" id="search" v-model="search" type="text" class="em-mt-16 em-w-100" placeholder=""/>
     <draggable
-        v-model="formats"
+        v-model="displayedFormats"
         class="draggables-list"
         :group="{ name: 'form-builder-documents', pull: 'clone', put: false }"
         :sort="false"
@@ -28,10 +28,9 @@
 </template>
 
 <script>
-import draggable from "vuedraggable";
-import campaignService from "../../services/campaign";
-import formBuilderMixin from "../../mixins/formbuilder";
-import formService from "../../services/form";
+import draggable from 'vuedraggable';
+import formBuilderMixin from '../../mixins/formbuilder';
+import formService from '../../services/form';
 
 export default {
   components: {
@@ -71,15 +70,14 @@ export default {
 		    return;
 	    }
 
-			this.cloneFormat.mandatory = to.id == "required-documents" ? "1" : "0";
-
+			this.cloneFormat.mandatory = to.id == 'required-documents' ? '1' : '0';
 			this.$emit('open-create-document', this.cloneFormat);
     }
   },
   computed: {
 	  displayedFormats() {
 			return this.formats.filter((format) => {
-				return format.name[this.shortDefaultLang].toLowerCase().includes(this.search.toLowerCase());
+				return this.search.length > 0 && this.formats.length > 0 ? format.name[this.shortDefaultLang].toLowerCase().includes(this.search.toLowerCase()) : true;
 			});
 	  }
   }

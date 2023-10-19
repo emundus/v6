@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -439,12 +439,15 @@ class orderController extends hikashopController {
 		if(empty($order_id))
 			return false;
 
+		global $Itemid;
+		$url_itemid=(!empty($Itemid)?'&Itemid='.$Itemid:'');
+
 		$orderClass = hikashop_get('class.order');
 		$order = $orderClass->loadFullOrder($order_id);
 
 		if(empty($order) || empty($order->order_id)) {
 			$app->enqueueMessage(JText::sprintf('ORDER_X_NOT_FOUND', $order_id), 'error');
-			$app->redirect( hikashop_completeLink('order&task=listing', false, true) );
+			$app->redirect( hikashop_completeLink('order&task=listing'.$url_itemid, false, true) );
 			return false;
 		}
 
@@ -452,18 +455,18 @@ class orderController extends hikashopController {
 			$token = hikaInput::get()->getVar('order_token');
 			if(empty($order->order_token) || $token != $order->order_token){
 				$app->enqueueMessage(JText::sprintf('ORDER_X_NOT_FOUND', $order_id), 'error');
-				$app->redirect( hikashop_completeLink('order&task=listing', false, true) );
+				$app->redirect( hikashop_completeLink('order&task=listing'.$url_itemid, false, true) );
 				return false;
 			}
 		}elseif($order->order_user_id != $user_id){
 			$app->enqueueMessage(JText::sprintf('ORDER_X_NOT_FOUND', $order_id), 'error');
-			$app->redirect( hikashop_completeLink('order&task=listing', false, true) );
+			$app->redirect( hikashop_completeLink('order&task=listing'.$url_itemid, false, true) );
 		}
 
 		$unpaid_statuses = explode(',', $config->get('order_unpaid_statuses', 'created'));
 		if(!in_array($order->order_status, $unpaid_statuses)) {
 			$app->enqueueMessage(JText::sprintf('ORDER_X_NOT_PAID_ANYMORE', $order->order_number));
-			$app->redirect( hikashop_completeLink('order&task=listing', false, true) );
+			$app->redirect( hikashop_completeLink('order&task=listing'.$url_itemid, false, true) );
 			return false;
 		}
 
@@ -575,7 +578,7 @@ class orderController extends hikashopController {
 		if(!$do) {
 			hikashop_writeToLog();
 			$app->enqueueMessage(JText::_('PAYMENT_REFUSED'), 'error');
-			$app->redirect( hikashop_completeLink('order&task=listing', false, true) );
+			$app->redirect( hikashop_completeLink('order&task=listing'.$url_itemid, false, true) );
 			return false;
 		}
 
@@ -587,7 +590,7 @@ class orderController extends hikashopController {
 			$html = ob_get_clean();
 			if(empty($html)) {
 				$app->enqueueMessage('The payment method '.$order->order_payment_method.' does not handle payments after the order has been created');
-				$app->redirect( hikashop_completeLink('order&task=listing', false, true) );
+				$app->redirect( hikashop_completeLink('order&task=listing'.$url_itemid, false, true) );
 				return false;
 			}
 		}
@@ -619,7 +622,7 @@ class orderController extends hikashopController {
 		$token = hikaInput::get()->getVar('order_token');
 		if(!empty($token))
 			$params .= '&order_token=' . $token;
-		$app->redirect( hikashop_completeLink('checkout&task=after_end'.$params, false, true) );
+		$app->redirect( hikashop_completeLink('checkout&task=after_end'.$params.$url_itemid, false, true) );
 
 		return false;
 	}

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -19,7 +19,7 @@ $inputcolumnclass = 'hkc-sm-8';
 			<div class="hkform-group control-group hikashop_registration_name_line" id="hikashop_registration_name_line">
 				<label id="namemsg" for="register_name" class="<?php echo $labelcolumnclass;?> hkcontrol-label" title=""><?php echo JText::_('HIKA_USER_NAME'); ?>*</label>
 				<div class="<?php echo $inputcolumnclass;?>">
-					<input type="text" name="data[register][name]" id="register_name" value="<?php echo $this->escape(@$this->user->name);?>" class="hkform-control" size="30" maxlength="50"/>
+					<input type="text" name="data[register][name]" id="register_name" value="<?php echo $this->escape((string)@$this->user->name);?>" class="<?php echo HK_FORM_CONTROL_CLASS; ?>" size="30" maxlength="50"/>
 				</div>
 			</div>
 <!-- EO NAME -->
@@ -27,7 +27,7 @@ $inputcolumnclass = 'hkc-sm-8';
 			<div class="hkform-group control-group hikashop_registration_username_line" id="hikashop_registration_username_line">
 				<label id="usernamemsg" for="register_username" class="<?php echo $labelcolumnclass;?> hkcontrol-label" title=""><?php echo JText::_('HIKA_USERNAME'); ?>*</label>
 				<div class="<?php echo $inputcolumnclass;?>">
-					<input type="text" name="data[register][username]" id="register_username" value="<?php echo $this->escape(@$this->user->username);?>" class="hkform-control validate-username" maxlength="25" size="30" />
+					<input type="text" name="data[register][username]" id="register_username" value="<?php echo $this->escape((string)@$this->user->username);?>" class="<?php echo HK_FORM_CONTROL_CLASS; ?> validate-username" maxlength="25" size="30" />
 				</div>
 			</div>
 <!-- EO USERNAME -->
@@ -35,7 +35,43 @@ $inputcolumnclass = 'hkc-sm-8';
 			<div class="hkform-group control-group hikashop_registration_password_line" id="hikashop_registration_password_line">
 				<label id="pwmsg" for="register_password" class="<?php echo $labelcolumnclass;?> hkcontrol-label" title=""><?php echo JText::_('HIKA_PASSWORD'); ?>*</label>
 				<div class="<?php echo $inputcolumnclass;?>">
-					<input autocomplete="off" type="password" name="data[register][password]" id="register_password" value="" class="hkform-control validate-password" size="30" >
+<?php
+	if(HIKASHOP_J40) {
+		$com_usersParams = \Joomla\CMS\Component\ComponentHelper::getParams('com_users');
+		$minLength    = (int) $com_usersParams->get('minimum_length', 12);
+		$minIntegers  = (int) $com_usersParams->get('minimum_integers', 0);
+		$minSymbols   = (int) $com_usersParams->get('minimum_symbols', 0);
+		$minUppercase = (int) $com_usersParams->get('minimum_uppercase', 0);
+		$minLowercase = (int) $com_usersParams->get('minimum_lowercase', 0);
+		$rules = $minLowercase > 0 || $minUppercase > 0 || $minSymbols > 0 || $minIntegers > 0 || $minLength > 0;
+		$layout = new JLayoutFile('joomla.form.field.password');
+		echo $layout->render(array(
+			'meter' => true,
+			'class' => 'validate-password',
+			'forcePassword' => true,
+			'lock' => false,
+			'rules' => $rules,
+			'hint' => '',
+			'readonly' => false,
+			'disabled' => false,
+			'required' => true,
+			'autofocus' => false,
+			'dataAttribute' => 'autocomplete="new-password"',
+			'name' => 'data[register][password]',
+			'id' => 'register_password',
+			'minLength' => $minLength,
+			'minIntegers' => $minIntegers,
+			'minSymbols' => $minSymbols,
+			'minUppercase' => $minUppercase,
+			'minLowercase' => $minLowercase,
+			'value' => '',
+		));
+	} else {
+?>
+					<input autocomplete="off" type="password" name="data[register][password]" id="register_password" value="" class="<?php echo HK_FORM_CONTROL_CLASS; ?> validate-password" size="30" >
+<?php 
+	}
+?>
 				</div>
 			</div>
 <!-- EO PASSWORD -->
@@ -43,7 +79,31 @@ $inputcolumnclass = 'hkc-sm-8';
 			<div class="hkform-group control-group hikashop_registration_password2_line" id="hikashop_registration_password2_line">
 				<label id="pw2msg" for="register_password2" class="<?php echo $labelcolumnclass;?> hkcontrol-label" title=""><?php echo JText::_('HIKA_VERIFY_PASSWORD'); ?>*</label>
 				<div class="<?php echo $inputcolumnclass;?>">
-					<input autocomplete="off" type="password" name="data[register][password2]" id="register_password2" value="" class="hkform-control validate-password" size="30" >
+<?php
+	if(HIKASHOP_J40) {
+		$layout = new JLayoutFile('joomla.form.field.password');
+		echo $layout->render(array(
+			'meter' => false,
+			'class' => 'validate-password',
+			'forcePassword' => true,
+			'lock' => false,
+			'rules' => false,
+			'hint' => '',
+			'readonly' => false,
+			'disabled' => false,
+			'required' => true,
+			'autofocus' => false,
+			'dataAttribute' => 'autocomplete="new-password"',
+			'name' => 'data[register][password2]',
+			'id' => 'register_password2',
+			'value' => '',
+		));
+	} else {
+?>
+					<input autocomplete="off" type="password" name="data[register][password2]" id="register_password2" value="" class="<?php echo HK_FORM_CONTROL_CLASS; ?> validate-password" size="30" >
+<?php 
+	}
+?>
 				</div>
 			</div>
 <!-- EO VERIFY PASSWORD -->

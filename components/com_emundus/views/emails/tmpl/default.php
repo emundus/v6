@@ -25,10 +25,13 @@ JText::script('COM_EMUNDUS_ONBOARD_EMAILS_DESC');
 JText::script('COM_EMUNDUS_ONBOARD_EMAIL_PREVIEWMODEL');
 JText::script('COM_EMUNDUS_ONBOARD_CATEGORIES');
 JText::script('COM_EMUNDUS_ONBOARD_CANT_REVERT');
+JText::script('COM_EMUNDUS_ONBOARD_EMPTY_LIST');
+JText::script('COM_EMUNDUS_ONBOARD_LABEL');
 ## END ##
 
 ## ACTIONS ##
 JText::script('COM_EMUNDUS_ONBOARD_ACTION');
+JText::script('COM_EMUNDUS_ONBOARD_ACTIONS');
 JText::script('COM_EMUNDUS_ONBOARD_ACTION_PUBLISH');
 JText::script('COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH');
 JText::script('COM_EMUNDUS_ONBOARD_ACTION_DUPLICATE');
@@ -171,19 +174,17 @@ $lang = JFactory::getLanguage();
 $short_lang = substr($lang->getTag(), 0 , 2);
 $current_lang = $lang->getTag();
 
-$xmlDoc = new DOMDocument();
-if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
-    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
-}
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 
 <list id="em-component-vue"
-      component="list"
-      type="email"
+      component="list_v2"
+      type="emails"
       coordinatorAccess="<?= $coordinator_access ?>"
       sysadminAccess="<?= $sysadmin_access ?>"
       shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
       manyLanguages="<?= $many_languages ?>">
 </list>
 
-<script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>
+<script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

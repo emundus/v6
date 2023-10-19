@@ -292,11 +292,51 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
     }
 
 
-    public function onCheckoutWorkflowLoad(&$checkout_workflow, &$shop_closed, $cart_id) {
-        JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopCheckoutWorkflowLoad',
-            ['checkout_workflow' => $checkout_workflow, 'shop_closed' => $shop_closed, 'cart_id' => $cart_id]
-        ]);
+    public function onCheckoutWorkflowLoad(&$checkout_workflow, &$shop_closed, $cart_id)
+    {
+	    JPluginHelper::importPlugin('emundus', 'custom_event_handler');
+	    \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopCheckoutWorkflowLoad',
+		    ['checkout_workflow' => $checkout_workflow, 'shop_closed' => $shop_closed, 'cart_id' => $cart_id]
+	    ]);
+
+	    $eMConfig = JComponentHelper::getParams('com_emundus');
+	    if ($eMConfig->get('hikashop_session')) {
+		    $session = JFactory::getSession()->get('emundusUser');
+
+		    if (!empty($session) && !empty($session->fnum)) {
+			    $app = JFactory::getApplication();
+			    $itemId = $app->input->get('Itemid', null,'int');
+
+			    $db = JFactory::getDBO();
+			    $query = $db->getQuery(true);
+
+			    $query->select('menutype')
+				    ->from('jos_menu')
+				    ->where('id = ' . $itemId);
+
+			    try {
+				    $db->setQuery($query);
+				    $menutype = $db->loadResult();
+
+				    if (!empty($menutype)) {
+					    require_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
+					    $m_profile = new EmundusModelProfile();
+					    $current_profile = $m_profile->getProfileByFnum($session->fnum);
+
+					    if (strpos($menutype, 'menu-profile') !== false && $menutype !== 'menu-profile'.$current_profile) {
+						    JLog::add('FNUM ' . $session->fnum  . ' tried to pay product of menu ' . $menutype . ' but its current profile is ' . $current_profile  , JLog::WARNING, 'com_emundus.emundus_hikashop_plugin');
+						    $app->enqueueMessage(JText::_('COM_EMUNDUS_WRONG_PRODUCT_FOR_CAMPAIGN'), 'warning');
+						    $app->redirect('/');
+					    } else {
+						    // TODO: is correct product ??
+					    }
+				    }
+
+			    } catch (Exception $e) {
+				    JLog::add('Failed to get menu type associated to user profile ' .  $e->getMessage(), JLog::ERROR, 'com_emundus.emundus_hikashop_plugin');
+			    }
+		    }
+	    }
     }
 
     public function onBeforeProductListingLoad(&$filters,&$order,&$parent, &$select, &$select2, &$a, &$b, &$on) {
@@ -335,6 +375,8 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
     public function onCheckoutStepList(&$list)
     {
         $list['emundus_return'] = array('name' => 'eMundus - Retour au dossier', 'params' => array('reset_session' => ['name' => JText::_('COM_EMUNDUS_RESET_SESSION_ON_QUIT'), 'type' => 'boolean', 'default' => 0]));
+	    JPluginHelper::importPlugin('emundus','custom_event_handler');
+	    \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopCheckoutStepList', ['list' => &$list]]);
     }
 
     public function onCheckoutStepDisplay($layoutName, &$html, &$view, $pos = null, $options = null)
@@ -358,6 +400,9 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         }
 
         $html .= $layout;
+
+	    JPluginHelper::importPlugin('emundus','custom_event_handler');
+	    \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopCheckoutStepDisplay', ['layoutName' => $layoutName, 'html' => &$html]]);
     }
 
     public function onAfterCheckoutStep($controllerName, &$go_back, $original_go_back, &$controller) {

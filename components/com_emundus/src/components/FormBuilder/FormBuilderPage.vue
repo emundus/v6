@@ -2,29 +2,29 @@
   <div id="form-builder-page">
     <div class="em-flex-row em-flex-space-between">
 	    <span
-			    class="em-font-size-24 em-font-weight-800 editable-data"
+			    class="em-font-size-24 em-font-weight-600 editable-data"
 			    ref="pageTitle"
 			    @focusout="updateTitle"
 			    @keyup.enter="updateTitleKeyup"
-			    @keydown="(event) => checkMaxMinlength(event, 50, 3)"
+			    @keydown="(event) => checkMaxMinlength(event, 50, 0)"
 			    contenteditable="true"
 			    :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
-			    v-html="translate(title)"
-	    ></span>
-	    <span class="material-icons-outlined em-pointer" :title="translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE')" @click="$emit('open-create-model', page.id)">save_as</span>
+			    v-html="translate(title)"></span>
+	    <span class="material-icons-outlined em-pointer"
+						v-if="mode == 'forms'"
+	          :title="translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE')"
+	          @click="$emit('open-create-model', page.id)">post_add</span>
     </div>
-    <span
-      class="description editable-data"
+    <span class="description editable-data"
       id="pageDescription"
       ref="pageDescription"
       v-html="description"
       @focusout="updateDescription"
       contenteditable="true"
-      :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_INTRO_ADD')"
-    ></span>
+      :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_INTRO_ADD')"></span>
 
-    <div class="form-builder-page-sections">
-      <button v-if="sections.length > 0" id="add-section" class="em-secondary-button top" @click="addSection()">
+    <div class="form-builder-page-sections mt-2">
+      <button v-if="sections.length > 0" id="add-section" class="em-primary-button px-6 py-3" @click="addSection()">
         {{ translate('COM_EMUNDUS_FORM_BUILDER_ADD_SECTION') }}
       </button>
       <form-builder-page-section
@@ -45,7 +45,7 @@
       >
       </form-builder-page-section>
     </div>
-    <button id="add-section" class="em-secondary-button" @click="addSection()">
+    <button id="add-section" class="em-primary-button px-6 py-3" @click="addSection()">
       {{ translate('COM_EMUNDUS_FORM_BUILDER_ADD_SECTION') }}
     </button>
 
@@ -58,10 +58,11 @@ import formService from '../../services/form';
 import formBuilderService from '../../services/formbuilder';
 import translationService from '../../services/translations';
 
-import FormBuilderPageSection from "./FormBuilderPageSection";
-import formBuilderMixin from "../../mixins/formbuilder";
-import globalMixin from "../../mixins/mixin";
-import Swal from "sweetalert2";
+import FormBuilderPageSection from './FormBuilderPageSection';
+import formBuilderMixin from '../../mixins/formbuilder';
+import globalMixin from '../../mixins/mixin';
+import errorMixin from '../../mixins/errors';
+import Swal from 'sweetalert2';
 
 export default {
   components: {
@@ -76,8 +77,12 @@ export default {
       type: Object,
       default: {}
     },
+	  mode: {
+		  type: String,
+		  default: 'forms'
+	  }
   },
-  mixins: [formBuilderMixin, globalMixin],
+  mixins: [formBuilderMixin, globalMixin, errorMixin],
   data() {
     return {
       fabrikPage: {},
@@ -105,18 +110,7 @@ export default {
           this.sections = groups.filter(group => group.hidden_group != -1);
 	        this.getDescription();
         } else {
-					Swal.fire({
-						title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
-						type: 'error',
-						showCancelButton: false,
-						confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
-						reverseButtons: true,
-						customClass: {
-							title: 'em-swal-title',
-							confirmButton: 'em-swal-confirm-button',
-							actions: 'em-swal-single-action'
-						},
-					});
+					this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
         }
 
 	      this.loading = false;
@@ -140,22 +134,14 @@ export default {
           if (response.status) {
             this.getSections();
             this.updateLastSave();
+          } else {
+            this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_CREATE_SECTION_ERROR'), this.translate(response.msg));
           }
+        }).catch(error => {
+          this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_CREATE_SECTION_ERROR'), error);
         });
       } else {
-        Swal.fire({
-          title: this.translate('COM_EMUNDUS_FORM_BUILDER_MAX_SECTION_TITLE'),
-          text: this.translate('COM_EMUNDUS_FORM_BUILDER_MAX_SECTION_TEXT'),
-          type: 'error',
-          showCancelButton: false,
-          confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
-          reverseButtons: true,
-          customClass: {
-            title: 'em-swal-title',
-            confirmButton: 'em-swal-confirm-button',
-            actions: 'em-swal-single-action'
-          },
-        });
+        this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_MAX_SECTION_TITLE'), this.translate('COM_EMUNDUS_FORM_BUILDER_MAX_SECTION_TEXT'))
       }
     },
     moveSection(sectionId, direction) {
@@ -194,7 +180,6 @@ export default {
       this.fabrikPage.show_title.label[this.shortDefaultLang] = this.$refs.pageTitle.innerText.trim().replace(/[\r\n]/gm, "");
       this.$refs.pageTitle.innerText = this.$refs.pageTitle.innerText.trim().replace(/[\r\n]/gm, "");
 
-
       formBuilderService.updateTranslation(null, this.fabrikPage.show_title.titleraw, this.fabrikPage.show_title.label).then(response => {
         if (response.status) {
           translationService.updateTranslations(this.fabrikPage.show_title.label[this.shortDefaultLang],'falang', this.shortDefaultLang, this.fabrikPage.menu_id,'title','menu');
@@ -227,17 +212,37 @@ export default {
       });
     },
     updateElementsOrder(event, fromGroup, toGroup) {
-      const sectionFrom = this.sections.find(section => section.group_id === fromGroup);
-      const fromElements = Object.values(sectionFrom.elements);
-      const movedElement = fromElements[event.oldIndex];
-      const toElements = this.$refs['section-'+toGroup][0].elements.map((element, index) => {
-        return { id: element.id, order: index + 1 };
-      });
+			let updated = false;
 
-      if (movedElement.id) {
-        formBuilderService.updateOrder(toElements, toGroup, movedElement);
-        this.updateLastSave();
-      }
+			if (fromGroup > 0 && toGroup > 0 && fromGroup != toGroup) {
+				const sectionFrom = this.sections.find(section => section.group_id === fromGroup);
+				const fromElements = Object.values(sectionFrom.elements);
+				const movedElement = fromElements[event.oldIndex];
+
+				if (movedElement !== undefined && movedElement !== null && movedElement.id) {
+					const foundElement = this.$refs['section-'+toGroup][0].elements.find(element => element.id === movedElement.id);
+
+					if (foundElement == undefined || foundElement == null) {
+						this.$refs['section-'+toGroup][0].elements.splice(event.newIndex, 0, movedElement);
+					}
+
+					const toElements = this.$refs['section-'+toGroup][0].elements.map((element, index) => {
+						return { id: element.id, order: index + 1 };
+					});
+					formBuilderService.updateOrder(toElements, toGroup, movedElement).then((response) => {
+						updated = response.data.status;
+
+						if (!updated) {
+							this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED');
+						}
+					});
+					this.updateLastSave();
+				} else {
+					this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED');
+				}
+      } else {
+				this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED');
+			}
     },
     deleteSection(sectionId) {
       this.sections = this.sections.filter(section => section.group_id !== sectionId);
@@ -258,13 +263,7 @@ export default {
 
   #add-section {
     width: fit-content;
-    padding: 24px;
     margin: auto;
-    background-color: white;
-
-    &.top {
-      margin-top: 24px !important;
-    }
   }
 }
 </style>

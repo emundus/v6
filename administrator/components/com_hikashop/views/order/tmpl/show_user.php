@@ -1,21 +1,32 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><legend><?php echo JText::_('CUSTOMER')?></legend>
 <div class="hika_edit">
 <?php
+if(hikashop_level(1)) {
+	echo $this->popup->display(
+		'<i class="fas fa-plus"></i> ' . JText::_('NEW_GUEST_USER'),
+		'NEW_GUEST_USER',
+		hikashop_completeLink('order&task=add_guest&order_id='.$this->order->order_id, true),
+		'hikashop_setguestcustomer_popup',
+		750, 460, 'onclick="return window.orderMgr.setCustomer(this);" style="margin-right:10px" class="btn btn-primary" title="'. JText::_('NEW_GUEST_USER') .'"', '', 'link'
+	);
+}
+?>
+<?php
 echo $this->popup->display(
-	'<i class="fas fa-pen"></i> ' . JText::_('HIKA_EDIT'),
+	'<i class="fas fa-pen"></i> ' . JText::_('SELECT_ANOTHER_USER'),
 	'HIKA_SET_ORDER_CUSTOMER',
 	hikashop_completeLink('user&task=selection&single=1&confirm=0&after=order|customer_set&afterParams=order_id|'.$this->order->order_id, true),
 	'hikashop_setcustomer_popup',
-	750, 460, 'onclick="return window.orderMgr.setCustomer(this);" class="btn btn-primary" title="'. JText::_('HIKA_EDIT') .'"', '', 'link'
+	750, 460, 'onclick="return window.orderMgr.setCustomer(this);" class="btn btn-primary" title="'. JText::_('SELECT_ANOTHER_USER') .'"', '', 'link'
 );
 ?>
 </div>

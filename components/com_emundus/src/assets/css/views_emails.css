@@ -457,7 +457,7 @@ body.view-reset label#jform_username-lbl::after {
 }
 
 .view-reset .btn {
-  padding: 8px 12px !important;
+  padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
 }
 
 .view-registration tr {
@@ -1003,7 +1003,7 @@ a#em-doc-zip:focus,
   background-color: #4e5b6d;
   border: 1px solid #4e5b6d;
   border-radius: 0 !important;
-  padding: 8px 12px !important;
+  padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
 }
 .span4.offset1 > .btn-group > button.button:hover {
   background-color: transparent;

@@ -27,15 +27,15 @@ class plgUserEmundus extends JPlugin
      * Method is called after user data is deleted from the database
      *
      * @param   array    $user    Holds the user data
-     * @param   boolean  $succes  True if user was succesfully stored in the database
+     * @param   boolean  $success  True if user was succesfully stored in the database
      * @param   string   $msg     Message
      *
      * @return  boolean
      * @throws Exception
      * @since   1.6
      */
-    public function onUserAfterDelete($user, $succes, $msg) {
-        if (!$succes) {
+    public function onUserAfterDelete($user, $success, $msg) {
+        if (!$success) {
             return false;
         }
 
@@ -72,6 +72,7 @@ class plgUserEmundus extends JPlugin
                 continue;
             }
         }
+
         $dir = EMUNDUS_PATH_ABS.$user['id'].DS;
         if (!$dh = @opendir($dir))
             return false;
@@ -85,14 +86,17 @@ class plgUserEmundus extends JPlugin
 
 	    // Send email to inform applicant
 	    if($this->params->get('send_email_delete', 0) == 1) {
-		    require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
-		    $c_messages = new EmundusControllerMessages();
+		    require_once(JPATH_SITE . '/components/com_emundus/controllers/messages.php');
+            require_once (JPATH_SITE.'/components/com_emundus/helpers/emails.php');
+
+            $c_messages = new EmundusControllerMessages();
 		    $post       = [
-			    'NAME' => $user['name']
+			    'NAME' => $user['name'],
+                'LOGO' => EmundusHelperEmails::getLogo(),
+                'SITE_NAME' => JFactory::getConfig()->get('sitename'),
 		    ];
 		    $c_messages->sendEmailNoFnum($user['email'], 'delete_user', $post);
-	    }
-	    //
+        }
 
         return true;
     }
@@ -112,6 +116,7 @@ class plgUserEmundus extends JPlugin
         $app = JFactory::getApplication();
         $jinput = $app->input;
         $fabrik = $jinput->post->get('listid', null);
+
 
         // In case we are signing up a new user via Fabrik, check that the profile ID is either an applicant, or one of the allowed non-applicant profiles.
         if ($isnew && !empty($fabrik)) {
@@ -171,6 +176,7 @@ class plgUserEmundus extends JPlugin
         $option = $jinput->get->get('option', null);
         $controller = $jinput->get->get('controller', null);
         $task = $jinput->get->get('task', null);
+
 
         $profile = 0;
 
@@ -259,7 +265,7 @@ class plgUserEmundus extends JPlugin
             }
         }
 
-        if (is_array($details) && count($details) > 0) {
+        if (is_array($details) && count($details) > 0 && $task != 'reset.complete') {
             $campaign_id = @isset($details['emundus_profile']['campaign'])?$details['emundus_profile']['campaign']:@$details['campaign'];
             $lastname = @isset($details['emundus_profile']['lastname'])?$details['emundus_profile']['lastname']:@$details['name'];
             $firstname = @isset($details['emundus_profile']['firstname'])?$details['emundus_profile']['firstname']:@$details['firstname'];
@@ -346,17 +352,18 @@ class plgUserEmundus extends JPlugin
                         $db->execute();
                     }
 
-                    if(!empty($email)) {
-                        $db->setQuery('UPDATE #__emundus_users SET email=' . $db->quote($email) . ' WHERE user_id=' . $user['id']);
+                    if(!empty($details['email1'])) {
+                        $db->setQuery('UPDATE #__emundus_users SET email=' . $db->quote($details['email1']) . ' WHERE user_id=' . $user['id']);
                         $db->execute();
+
+	                    $e_session = JFactory::getSession()->get('emundusUser');
+	                    $e_session->email = $details['email1'];
+						JFactory::getSession()->set('emundusUser', $e_session);
                     }
+					
                 } catch (Exception $e) {
                     JLog::add('Error at line ' . __LINE__ . ' of file ' . __FILE__ . ' : ' . '. Error is : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
                 }
-
-                /*if (!in_array($task, ["passrequest", "reset.complete"])) {
-                    JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_USERS_EDIT_PROFILE_SAVE_SUCCESS_TEXT'));
-                }*/
 
                 $this->onUserLogin($user);
             }
@@ -571,6 +578,14 @@ class plgUserEmundus extends JPlugin
 
             if ($options['redirect'] === 0) {
                 $previous_url = '';
+            } else {
+				if ($user->activation != -1) {
+					$cid_session = JFactory::getSession()->get('login_campaign_id');
+					if (!empty($cid_session)){
+						$previous_url = 'index.php?option=com_fabrik&view=form&formid=102&cid='.$cid_session;
+						JFactory::getSession()->clear('login_campaign_id');
+					}
+				}
             }
 
             JPluginHelper::importPlugin('emundus', 'custom_event_handler');

@@ -41,4 +41,9 @@ class EmundusModelFalangTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_falang = new EmundusModelFalang;
     }
+
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
 }

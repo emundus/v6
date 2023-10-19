@@ -4,21 +4,16 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit7c845154b423844d5f35db2057893c89
+class ComposerStaticInita630d70f349917b86402eea08130995c
 {
     public static $files = array (
         'ec07570ca5a812141189b1fa81503674' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
-        'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
-        'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
-        '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
-        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
-        'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
+        '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
+        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
-        '9c67151ae59aff4788964ce8eb2a0f43' => __DIR__ . '/..' . '/clue/stream-filter/src/functions_include.php',
         '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
-        '8cff32064859f4559445b89279f3199c' => __DIR__ . '/..' . '/php-http/message/src/filters.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -31,6 +26,10 @@ class ComposerStaticInit7c845154b423844d5f35db2057893c89
         array (
             'phpDocumentor\\Reflection\\' => 25,
         ),
+        'l' => 
+        array (
+            'libphonenumber\\' => 15,
+        ),
         'Z' => 
         array (
             'ZipStream\\' => 10,
@@ -39,15 +38,11 @@ class ComposerStaticInit7c845154b423844d5f35db2057893c89
         array (
             'Webmozart\\Assert\\' => 17,
         ),
-        'T' => 
-        array (
-            'TheCodingMachine\\Gotenberg\\' => 27,
-        ),
         'S' => 
         array (
-            'Symfony\\Polyfill\\Php72\\' => 23,
-            'Symfony\\Polyfill\\Intl\\Normalizer\\' => 33,
-            'Symfony\\Polyfill\\Intl\\Idn\\' => 26,
+            'Symfony\\Polyfill\\Mbstring\\' => 26,
+            'Svg\\' => 4,
+            'Sabberworm\\CSS\\' => 15,
         ),
         'P' => 
         array (
@@ -58,11 +53,13 @@ class ComposerStaticInit7c845154b423844d5f35db2057893c89
             'PhpParser\\' => 10,
             'PhpOffice\\PhpWord\\' => 18,
             'PhpOffice\\PhpSpreadsheet\\' => 25,
+            'PHPStan\\PhpDocParser\\' => 21,
         ),
         'M' => 
         array (
             'MyCLabs\\Enum\\' => 13,
             'Matrix\\' => 7,
+            'Masterminds\\' => 12,
         ),
         'L' => 
         array (
@@ -71,26 +68,32 @@ class ComposerStaticInit7c845154b423844d5f35db2057893c89
         'H' => 
         array (
             'Http\\Promise\\' => 13,
-            'Http\\Message\\' => 13,
             'Http\\Discovery\\' => 15,
             'Http\\Client\\' => 12,
-            'Http\\Adapter\\Guzzle6\\' => 21,
+            'Http\\Adapter\\Guzzle7\\' => 21,
         ),
         'G' => 
         array (
             'GuzzleHttp\\Psr7\\' => 16,
             'GuzzleHttp\\Promise\\' => 19,
             'GuzzleHttp\\' => 11,
+            'Gotenberg\\' => 10,
+            'Giggsey\\Locale\\' => 15,
+        ),
+        'F' => 
+        array (
+            'FontLib\\' => 8,
         ),
         'D' => 
         array (
+            'Dompdf\\' => 7,
             'Doctrine\\Instantiator\\' => 22,
+            'Doctrine\\Deprecations\\' => 22,
             'DeepCopy\\' => 9,
         ),
         'C' => 
         array (
             'Complex\\' => 8,
-            'Clue\\StreamFilter\\' => 18,
         ),
     );
 
@@ -109,6 +112,10 @@ class ComposerStaticInit7c845154b423844d5f35db2057893c89
             1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
             2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
         ),
+        'libphonenumber\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/giggsey/libphonenumber-for-php/src',
+        ),
         'ZipStream\\' => 
         array (
             0 => __DIR__ . '/..' . '/maennchen/zipstream-php/src',
@@ -117,21 +124,17 @@ class ComposerStaticInit7c845154b423844d5f35db2057893c89
         array (
             0 => __DIR__ . '/..' . '/webmozart/assert/src',
         ),
-        'TheCodingMachine\\Gotenberg\\' => 
+        'Symfony\\Polyfill\\Mbstring\\' => 
         array (
-            0 => __DIR__ . '/..' . '/thecodingmachine/gotenberg-php-client/src',
+            0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
-        'Symfony\\Polyfill\\Php72\\' => 
+        'Svg\\' => 
         array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-php72',
+            0 => __DIR__ . '/..' . '/phenx/php-svg-lib/src/Svg',
         ),
-        'Symfony\\Polyfill\\Intl\\Normalizer\\' => 
+        'Sabberworm\\CSS\\' => 
         array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer',
-        ),
-        'Symfony\\Polyfill\\Intl\\Idn\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-intl-idn',
+            0 => __DIR__ . '/..' . '/sabberworm/php-css-parser/src',
         ),
         'Psr\\SimpleCache\\' => 
         array (
@@ -162,6 +165,10 @@ class ComposerStaticInit7c845154b423844d5f35db2057893c89
         array (
             0 => __DIR__ . '/..' . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet',
         ),
+        'PHPStan\\PhpDocParser\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpstan/phpdoc-parser/src',
+        ),
         'MyCLabs\\Enum\\' => 
         array (
             0 => __DIR__ . '/..' . '/myclabs/php-enum/src',
@@ -169,6 +176,10 @@ class ComposerStaticInit7c845154b423844d5f35db2057893c89
         'Matrix\\' => 
         array (
             0 => __DIR__ . '/..' . '/markbaker/matrix/classes/src',
+        ),
+        'Masterminds\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/masterminds/html5/src',
         ),
         'Laminas\\Escaper\\' => 
         array (
@@ -178,11 +189,6 @@ class ComposerStaticInit7c845154b423844d5f35db2057893c89
         array (
             0 => __DIR__ . '/..' . '/php-http/promise/src',
         ),
-        'Http\\Message\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/php-http/message/src',
-            1 => __DIR__ . '/..' . '/php-http/message-factory/src',
-        ),
         'Http\\Discovery\\' => 
         array (
             0 => __DIR__ . '/..' . '/php-http/discovery/src',
@@ -191,9 +197,9 @@ class ComposerStaticInit7c845154b423844d5f35db2057893c89
         array (
             0 => __DIR__ . '/..' . '/php-http/httplug/src',
         ),
-        'Http\\Adapter\\Guzzle6\\' => 
+        'Http\\Adapter\\Guzzle7\\' => 
         array (
-            0 => __DIR__ . '/..' . '/php-http/guzzle6-adapter/src',
+            0 => __DIR__ . '/..' . '/php-http/guzzle7-adapter/src',
         ),
         'GuzzleHttp\\Psr7\\' => 
         array (
@@ -207,9 +213,29 @@ class ComposerStaticInit7c845154b423844d5f35db2057893c89
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
         ),
+        'Gotenberg\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/gotenberg/gotenberg-php/src',
+        ),
+        'Giggsey\\Locale\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/giggsey/locale/src',
+        ),
+        'FontLib\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phenx/php-font-lib/src/FontLib',
+        ),
+        'Dompdf\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/dompdf/dompdf/src',
+        ),
         'Doctrine\\Instantiator\\' => 
         array (
             0 => __DIR__ . '/..' . '/doctrine/instantiator/src/Doctrine/Instantiator',
+        ),
+        'Doctrine\\Deprecations\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/deprecations/lib/Doctrine/Deprecations',
         ),
         'DeepCopy\\' => 
         array (
@@ -218,10 +244,6 @@ class ComposerStaticInit7c845154b423844d5f35db2057893c89
         'Complex\\' => 
         array (
             0 => __DIR__ . '/..' . '/markbaker/complex/classes/src',
-        ),
-        'Clue\\StreamFilter\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/clue/stream-filter/src',
         ),
     );
 
@@ -245,8 +267,8 @@ class ComposerStaticInit7c845154b423844d5f35db2057893c89
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Datamatrix' => __DIR__ . '/..' . '/tecnickcom/tcpdf/include/barcodes/datamatrix.php',
+        'Dompdf\\Cpdf' => __DIR__ . '/..' . '/dompdf/dompdf/lib/Cpdf.php',
         'FPDF' => __DIR__ . '/..' . '/setasign/fpdf/fpdf.php',
-        'Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
         'PDF417' => __DIR__ . '/..' . '/tecnickcom/tcpdf/include/barcodes/pdf417.php',
         'PHPUnit\\Exception' => __DIR__ . '/..' . '/phpunit/phpunit/src/Exception.php',
         'PHPUnit\\Framework\\ActualValueIsNotAnObjectException' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Exception/ActualValueIsNotAnObjectException.php',
@@ -889,10 +911,10 @@ class ComposerStaticInit7c845154b423844d5f35db2057893c89
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit7c845154b423844d5f35db2057893c89::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit7c845154b423844d5f35db2057893c89::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit7c845154b423844d5f35db2057893c89::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit7c845154b423844d5f35db2057893c89::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInita630d70f349917b86402eea08130995c::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInita630d70f349917b86402eea08130995c::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInita630d70f349917b86402eea08130995c::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInita630d70f349917b86402eea08130995c::$classMap;
 
         }, null, ClassLoader::class);
     }

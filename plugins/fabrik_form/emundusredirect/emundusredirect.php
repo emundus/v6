@@ -101,7 +101,27 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 		$user = JFactory::getSession()->get('emundusUser');
 		$db = JFactory::getDBO();
 
-		include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
+		if (isset($user->fnum)) {
+			try {
+				$query = $db->getQuery(true);
+
+                require_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
+                $h_date = new EmundusHelperDate();
+                $now = $h_date->getNow();
+
+				$query->update($db->quoteName('#__emundus_campaign_candidature'))
+					->set($db->quoteName('updated') . ' = ' . $db->quote($now))
+					->set($db->quoteName('updated_by') . ' = ' . JFactory::getUser()->id)
+					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($user->fnum));
+				$db->setQuery($query);
+				$db->execute();
+			} catch (Exception $e) {
+				$error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+				JLog::add($error, JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		require_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
 		$m_profile = new EmundusModelProfile();
 		$applicant_profiles = $m_profile->getApplicantsProfilesArray();
 
@@ -376,7 +396,7 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 								SELECT menu.lft
 								FROM `#__menu` AS menu
 								WHERE menu.published=1 AND menu.parent_id>1 AND menu.menutype="'.$user->menutype.'"
-								AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)='.$formid.')';
+								AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)='.$formid.')';
 
 				$db->setQuery($query);
 				$link = $db->loadResult();
@@ -398,7 +418,7 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 								SELECT menu.lft
 								FROM `#__menu` AS menu
 								WHERE menu.published=1 AND menu.parent_id>1 AND menu.menutype="'.$user->menutype.'"
-								AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)='.$formid.')';
+								AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)='.$formid.')';
 
 					$db->setQuery($query);
 					$link = $db->loadResult();

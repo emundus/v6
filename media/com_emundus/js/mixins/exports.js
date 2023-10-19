@@ -84,6 +84,7 @@ function export_excel(fnums, letter) {
             actions: swal_actions_class
         },
     });
+    document.querySelector('.em-swal-confirm-button').style.opacity = '0';
 
     $.ajax({
         type: 'post',
@@ -167,7 +168,7 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter) {
                         $('#datasbs').replaceWith('<div id="datasbs" data-start="' + result.json.start + '"><p>' + result.json.start + '</p></div>');
 
                     }
-                    if (start != json.start) {
+                    if (start != json.start && totalfile > json.start) {
                         generate_csv(json, eltJson, objJson, options, objclass, letter);
                     } else {
                         $('#extractstep').replaceWith('<div id="extractstep"><p>' + Joomla.JText._('COM_EMUNDUS_XLS_GENERATION') + '</p></div>');
@@ -212,6 +213,7 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter) {
                                                                 $('#loadingimg').empty();
                                                                 $('#extractstep').replaceWith('<div><p class="em-main-500-color">'+Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED')+'</p></div>');
                                                                 $('.swal2-confirm').replaceWith('<a class="em-primary-button em-w-auto" title="' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '" href="index.php?option=com_emundus&controller=' + $('#view').val() + '&task=download&format=xls&name=' + filename + '"><span>' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '</span></a>');
+                                                                document.querySelector('.em-swal-confirm-button').style.opacity = '1';
                                                             }, error: function(jqXHR) {
                                                                 console.log(jqXHR.responseText);
                                                             }
@@ -236,6 +238,8 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter) {
                                 }
                             });
                     }
+                } else {
+                    document.querySelector('#extractstep').replaceWith(result.msg);
                 }
             },
             error: function (jqXHR) {
@@ -390,6 +394,7 @@ function export_pdf(fnums,ids) {
             actions: swal_actions_class
         },
     });
+    document.querySelector('.em-swal-confirm-button').style.opacity = '0';
 
     $.ajax({
         type: 'post',
@@ -479,7 +484,6 @@ function generate_pdf(json,pdf_elements= null) {
 
     $('#extractstep').replaceWith('<div id="extractstep" class="em-flex-column"><p>' + Joomla.JText._('COM_EMUNDUS_EXPORTS_PDF_GENERATION') + '</p><div class="em-loader em-mt-8"></div></div>');
 
-
     if (start+limit < maxfiles) {
         /// call to ajax
         if(pdf_elements !== null && pdf_elements !== undefined) {
@@ -514,6 +518,7 @@ function generate_pdf(json,pdf_elements= null) {
                 success: function (result) {
                     $('#extractstep').replaceWith('<div><p class="em-main-500-color">'+Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED')+'</p></div>');
                     $('.swal2-confirm').replaceWith('<a class="em-primary-button em-w-auto" title="' + Joomla.JText._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '" href="' +result.json.path+ 'tmp/' + result.json.file + '" target="_blank"><span>' + Joomla.JText._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '</span></a>');
+                    document.querySelector('.em-swal-confirm-button').style.opacity = '1';
                 }, error: function (jqXHR) {
                     $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">!!' + jqXHR.responseText + '</div>');
                     $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
@@ -542,6 +547,7 @@ function generate_pdf(json,pdf_elements= null) {
                 success: function (result) {
                     $('#extractstep').replaceWith('<div><p class="em-main-500-color">'+Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED')+'</p></div>');
                     $('.swal2-confirm').replaceWith('<a class="em-primary-button em-w-auto" title="' + Joomla.JText._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '" href="' +result.json.path+ 'tmp/' + result.json.file + '" target="_blank"><span>' + Joomla.JText._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '</span></a>');
+                    document.querySelector('.em-swal-confirm-button').style.opacity = '1';
                 }, error: function (jqXHR) {
                     $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">!!' + jqXHR.responseText + '</div>');
                     $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
@@ -552,7 +558,6 @@ function generate_pdf(json,pdf_elements= null) {
     } else if (start+limit> maxfiles) {
         $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">'+Joomla.JText._('COM_EMUNDUS_ERROR_NBFILES_CAPACITY')+'</div>');
         $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
-        exit();
 
     } else if (start+limit <= maxfiles) {
         $('#extractstep').replaceWith('<div><p class="em-main-500-color">'+Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED')+'</p></div>');
@@ -721,10 +726,10 @@ function generate_letter() {
                 /// render recapitulatif
                 var recal = result.data.recapitulatif_count;
                 var table =
-                    "<h4>" +
+                    "<p class='em-h4'>" +
                     Joomla.JText._('AFFECTED_CANDIDATS') + result.data.affected_users +
-                    "</h4>" +
-                    "<table class='table table-striped' id='em-generated-docs' style='border: 1px solid #c1c7d0'>" +
+                    "</p>" +
+                    "<table class='table table-striped em-mt-12' id='em-generated-docs' style='border: 1px solid #c1c7d0'>" +
                     "<thead>" +
                     "<th>" + Joomla.JText._('GENERATED_DOCUMENTS_LABEL') + "</th>" +
                     "<th>" + Joomla.JText._('GENERATED_DOCUMENTS_COUNT') + "</th>" +
@@ -744,13 +749,13 @@ function generate_letter() {
                 if (showMode == 0) {
                     var zip = result.data.zip_data_by_candidat;
 
-                    table += "<h3>" +
+                    table += "<p class='em-h4'>" +
                         Joomla.JText._('CANDIDAT_GENERATED') +
-                        "</h3>" +
-                        "<table class='table table-striped' id='em-generated-docs'>" +
+                        "</p>" +
+                        "<table class='table table-striped em-mt-12' id='em-generated-docs' style='border: 1px solid #c1c7d0'>" +
                         "<thead>" +
                         "<tr>" +
-                        "<th>" + Joomla.JText._('CANDIDATE_NAME') + "</th>" +
+                        "<th>" + Joomla.JText._('CANDIDATE') + "</th>" +
                         "</tr>" +
                         "</thead>" +
                         "<tbody>";
@@ -759,8 +764,8 @@ function generate_letter() {
                         zip.forEach(file => {
                             table += "<tr>" +
                                 "<td>" + file.applicant_name +
-                                "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + file.zip_url + "'>" +
-                                "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
+                                "<a id='em_zip_download' target='_blank' class='em-float-right' href='" + file.zip_url + "'>" +
+                                "<span class='material-icons'>file_download</span>" +
                                 "</a>" +
                                 "</td>" +
                                 "</tr>";
@@ -770,8 +775,8 @@ function generate_letter() {
                         zip.forEach(file => {
                             table += "<tr>" +
                                 "<td>" + file.applicant_name +
-                                "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + file.merge_zip_url + "'>" +
-                                "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
+                                "<a id='em_zip_download' target='_blank' class='em-float-right' href='" + file.merge_zip_url + "'>" +
+                                "<span class='material-icons'>file_download</span>" +
                                 "</a>" +
                                 "</td>" +
                                 "</tr>";
@@ -785,10 +790,10 @@ function generate_letter() {
                     var letters = result.data.letter_dir;
 
                     table +=
-                        "<h3>" +
+                        "<p class='em-h4'>" +
                         Joomla.JText._('DOCUMENT_GENERATED') +
-                        "</h3>" +
-                        "<table class='table table-striped' id='em-generated-docs'>" +
+                        "</p>" +
+                        "<table class='table table-striped em-mt-12' id='em-generated-docs' style='border: 1px solid #c1c7d0'>" +
                         "<thead>" +
                         "<tr>" +
                         "<th>" + Joomla.JText._('DOCUMENT_NAME') + "</th>" +
@@ -801,8 +806,8 @@ function generate_letter() {
                             table +=
                                 "<tr>" +
                                 "<td>" + letter.letter_name +
-                                "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + letter.zip_dir + "'>" +
-                                "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
+                                "<a id='em_zip_download' target='_blank' class='em-float-right' href='" + letter.zip_dir + "'>" +
+                                "<span class='material-icons'>file_download</span>" +
                                 "</a>" +
                                 "</td>" +
                                 "</tr>";
@@ -812,8 +817,8 @@ function generate_letter() {
                             table +=
                                 "<tr>" +
                                 "<td>" + letter.letter_name +
-                                "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + letter.zip_merge_dir + "'>" +
-                                "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
+                                "<a id='em_zip_download' target='_blank' class='em-float-right' href='" + letter.zip_merge_dir + "'>" +
+                                "<span class='material-icons'>file_download</span>" +
                                 "</a>" +
                                 "</td>" +
                                 "</tr>";
@@ -827,8 +832,8 @@ function generate_letter() {
                     var files = result.data.files;
                     if (files && files.length > 0) {
                         var zipUrl = 'index.php?option=com_emundus&controller=files&task=exportzipdoc&ids=';
-                        table += '<p class="em-h5">' + Joomla.JText._('COM_EMUNDUS_LETTERS_FILES_GENERATED') + '</p>' +
-                            '<table class="table table-striped" id="em-generated-docs">' +
+                        table += '<p class="em-h4">' + Joomla.JText._('COM_EMUNDUS_LETTERS_FILES_GENERATED') + '</p>' +
+                            '<table class="table table-striped em-mt-12" id="em-generated-docs" style="border: 1px solid #c1c7d0">' +
                             '<thead>' +
                             '<tr>' +
                             '<th>' + Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_FILE_NAME') + '</th>' +
@@ -848,12 +853,11 @@ function generate_letter() {
 
                         table += "</tbody></table>";
 
-                        var href_collections = $('[id^=em_download_doc_]');
-                        var href_array = Array.prototype.slice.call(href_collections);
                         var urls = [];
-                        href_array.forEach(url => {
-                            urls.push(url.id.split('em_download_doc_')[1]);
+                        files.forEach(file => {
+                            urls.push(file.upload);
                         })
+                        console.log(urls);
 
                         $('#em-download-all').attr('href', zipUrl + urls.toString());
                     }
@@ -888,7 +892,7 @@ function generate_trombinoscope(fnums, data)
         type: 'POST',
         url: 'index.php?option=com_emundus&controller=trombinoscope&task=generate_pdf',
         async: false,
-        dataType: "json",
+        dataType: 'json',
         data : {
             string_fnums: string_fnums,
             gridL: data.selected_grid_width,
@@ -904,15 +908,28 @@ function generate_trombinoscope(fnums, data)
             headerHeight : data.header_height
         },
         success: function (data) {
-            Swal.fire({
-                title: Joomla.JText._('COM_EMUNDUS_TROMBI_DOWNLOAD'),
-                html: '<a href="' +data.pdf_url + '" target="_blank">Télécharger le fichier</a>',
-                customClass: {
-                    title: 'em-swal-title',
-                    confirmButton: 'em-swal-confirm-button',
-                    actions: 'em-swal-single-action'
-                },
-            })
+            if (data.status && data.pdf_url !== undefined && data.pdf_url !== null) {
+                Swal.fire({
+                    title: Joomla.JText._('COM_EMUNDUS_TROMBI_DOWNLOAD'),
+                    html: Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED'),
+                    customClass: {
+                        title: 'em-swal-title',
+                        actions: 'em-swal-single-action'
+                    },
+                });
+                $('.swal2-confirm').replaceWith('<a class="em-primary-button em-w-auto" href="' +data.pdf_url + '" target="_blank">Télécharger le fichier</a>')
+            } else {
+                Swal.fire({
+                    title: Joomla.JText._('COM_EMUNDUS_ERROR'),
+                    text: Joomla.JText._('COM_EMUNDUS_TROMBINOSCOPE_GENERATE_FAILED'),
+                    type: 'error',
+                    customClass: {
+                        title: 'em-swal-title',
+                        confirmButton: 'em-swal-confirm-button',
+                        actions: 'em-swal-single-action'
+                    },
+                });
+            }
             removeLoader();
         },
         error: function (xhr) {

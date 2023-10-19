@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -93,7 +93,8 @@ defined('_JEXEC') or die('Restricted access');
 		}
 	</script>';
 
-	echo
+	if(count($columnsData)) {
+		echo
 	'<script type="text/javascript">
 		if(!this.columnsData){
 			columnsData = new Array();
@@ -244,6 +245,7 @@ defined('_JEXEC') or die('Restricted access');
 			window.hikashop.xRequest(url, {update: target, mode: \'POST\', data: data});
 		}
 	</script>';
+	}
 ?>
 <div style="overflow:auto">
 	<table id="hikashop_massaction_results" class="adminlist table-hover table table-bordered" cellpadding="1">

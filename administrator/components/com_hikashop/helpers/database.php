@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -273,8 +273,14 @@ class hikashopDatabaseHelper {
 				);
 
 				$msg = '';
+
+				$query = 'ALTER TABLE ' . $oneTableName . ' ADD ';
+				if(strpos($this->structure[$oneTableName][$oneField], $oneField) === false) {
+					$query .= '`'.$oneField.'` ';
+				}
+				$query .= $this->structure[$oneTableName][$oneField];
 				try{
-					$this->db->setQuery('ALTER TABLE ' . $oneTableName . ' ADD ' . $this->structure[$oneTableName][$oneField]);
+					$this->db->setQuery($query);
 					$isError = $this->db->execute();
 				} catch(Exception $e) {
 					$isError = null;
@@ -289,7 +295,7 @@ class hikashopDatabaseHelper {
 						'error',
 						sprintf('Could not add the field "%s" in the table "%s"', $oneField, $table_name)
 					);
-					$ret[] = array('error_msg', $msg);
+					$ret[] = array('error_msg', $msg.' for the MySQL query : '.$query);
 				} else {
 					$ret[] = array(
 						'success',

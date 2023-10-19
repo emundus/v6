@@ -27,6 +27,7 @@ JText::script('COM_EMUNDUS_ONBOARD_ADD_NEW_DOCUMENT');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_BUILD_YOUR_FORM');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU_ACTION');
 JText::script('COM_EMUNDUS_ADD_SECTION');
+JText::script('COM_EMUNDUS_FILES_PAGE');
 ## END ##
 
 ## FIELDS ##
@@ -273,6 +274,11 @@ JText::script('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE');
 JText::script('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_INTRO');
 JText::script('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_FROM_MODEL');
 JText::script('COM_EMUNDUS_FORM_BUILDER_PAGE_CREATE_SAVE');
+JText::script('COM_EMUNDUS_FORM_BUILDER_ELEMENT_MANDATORY');
+JText::script('COM_EMUNDUS_FORM_BUILDER_ELEMENT_NOT_MANDATORY');
+JText::script('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED');
+JText::script('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_PLEASE_FILL_TYPE');
+JText::script('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_PLEASE_FILL_FORMAT');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_TEXT');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_PHONE');
@@ -352,6 +358,21 @@ JText::script('COM_EMUNDUS_FORM_BUILDER_MODEL_INPUT_LABEL');
 JText::script('COM_EMUNDUS_FORM_BUILDER_MODEL_WITH_SAME_TITLE_EXISTS');
 JText::script('COM_EMUNDUS_FORM_BUILDER_MODEL_MUST_HAVE_TITLE');
 JText::script('COM_EMUNDUS_FORM_BUILDER_EMPTY_PAGE_MODELS');
+JText::script('COM_EMUNDUS_FORM_BUILDER_UPDATE_ORDER_PAGE_ERROR');
+JText::script('COM_EMUNDUS_FORM_BUILDER_CREATE_SECTION_ERROR');
+JText::script('COM_EMUNDUS_FORM_BUILDER_REQUEST_ERROR');
+JText::script('COM_EMUNDUS_FORM_BUILDER_FAILED_TO_LOAD_FORM');
+JText::script('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_TITLE');
+JText::script('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_GIVE_MODEL');
+JText::script('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_ADD');
+JText::script('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_EDIT');
+JText::script('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_CURRENT_MODEL');
+JText::script('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_DOWNLOAD_SAMPLE');
+JText::script('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_SAMPLE_WRONG_FORMAT');
+JText::script('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_FILE_UPLOADED');
+JText::script('COM_EMUNDUS_FORM_BUILDER_NEW_STRUCTURE');
+JText::script('COM_EMUNDUS_FORM_BUILDER_INITIAL_STRUCTURE');
+JText::script('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_SUCCESS');
 ## END ##
 
 ## TUTORIAL ##
@@ -419,10 +440,10 @@ $sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
 
 $component = JFactory::getApplication()->input->get('evaluation') ? 'evaluationbuilder' : 'formbuilder';
 
-$xmlDoc = new DOMDocument();
-if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
-    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
-}
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+
+$mode = JFactory::getApplication()->input->get('mode', '');
 
 ?>
 
@@ -431,12 +452,14 @@ if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml'
      prid="<?= JFactory::getApplication()->input->get('prid') ?>"
      index="<?= JFactory::getApplication()->input->get('index') ?>"
      cid="<?= JFactory::getApplication()->input->get('cid') ?>"
-     eval="<?= JFactory::getApplication()->input->get('evaluation') ?>"
      shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
      manyLanguages="<?= $many_languages ?>"
      defaultLang="<?= $default_lang ?>"
      coordinatorAccess="<?= $coordinator_access ?>"
      sysadminAccess="<?= $sysadmin_access ?>"
+     <?php if (!empty($mode)) : ?>
+        mode="<?= $mode ?>"
+     <?php endif; ?>
 ></div>
 
-<script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>
+<script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

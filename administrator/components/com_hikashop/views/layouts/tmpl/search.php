@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -42,9 +42,9 @@ if(!empty($value)) {
 }
 ?>
 <div class="input-group hikashop_search_listing">
-	<input type="text" name="<?php echo $map; ?>" id="<?php echo $id; ?>" value="<?php echo $this->escape($value);?>" class="<?php echo $class; ?>" placeholder="<?php echo JText::_('HIKA_SEARCH'); ?>" onchange="this.form.submit();" />
+	<input type="text" name="<?php echo $map; ?>" id="<?php echo $id; ?>" value="<?php echo $this->escape($value);?>" class="<?php echo $class; ?>" placeholder="<?php echo JText::_('HIKA_SEARCH'); ?>" onchange="this.form.task='';this.form.submit();" />
 	<span class="input-group-append hikashop_search_btn">
-		<button class="btn btn-primary" onclick="this.form.limitstart.value=0;this.form.submit();"><i class="fa fa-search"></i></button>
+		<button class="btn btn-primary" onclick="this.form.limitstart.value=0;this.form.task='';this.form.submit();"><i class="fa fa-search"></i></button>
 	</span>
 <?php
 if(!empty($this->searchOptions)) {

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -1220,6 +1220,8 @@ class hikashopMassactionClass extends hikashopClass{
 
 
 	function displayByType($types,$element,$column,$format=null, $export = false){
+		if(!isset($element->$column))
+			return '';
 		$square = '';
 		foreach($types as $key => $type){
 			if($key === $column && isset($type->type)){
@@ -1476,6 +1478,10 @@ class hikashopMassactionClass extends hikashopClass{
 		$query->select = 'hk_'.$table.'.*';
 		$query->from = '#__hikashop_'.$table.' as hk_'.$table;
 
+		$do = true;
+		$app->triggerEvent('onBeforeMassactionFilter', array(&$massaction, &$elements, $this->report, $do));
+		if(!$do) return false;
+
 		$oldElement = $elements;
 		if(!empty($massaction->massaction_filters)){
 			foreach($massaction->massaction_filters as $k => $filter){
@@ -1496,6 +1502,11 @@ class hikashopMassactionClass extends hikashopClass{
 			$query->select = array($query->select);
 			$elements = $query->execute();
 		}
+
+
+		$do = true;
+		$app->triggerEvent('onBeforeMassactionProcess', array(&$massaction, &$elements, $this->report, $do));
+		if(!$do) return false;
 
 		if(is_array($elements) && count($elements) && !empty($massaction->massaction_actions)){
 			foreach($massaction->massaction_actions as $k => $action){

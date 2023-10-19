@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 	<div class="hikashop_checkout_loading_elem"></div>
 	<div class="hikashop_checkout_loading_spinner"></div>
 
-    <p class="em-h5"><?php echo JText::_('HIKA_BILLING') ?></p>
+    <h5><?php echo JText::_('HIKA_BILLING') ?></h5>
     <!-- TODO: Afficher le contexte du dossier -->
     <p class="em-text-neutral-600 em-mt-4"><?php echo JText::_('HIKA_BILLING_DESCRIPTION') ?></p>
 <!-- PROGRESS BAR -->

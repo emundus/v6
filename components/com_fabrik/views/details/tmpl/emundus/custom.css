@@ -1,0 +1,7 @@
+.row-striped .row-fluid:nth-child(odd) {
+    background-color: #FAFAFB !important;
+    border-radius: 6px !important;
+}
+.form-horizontal .control-label.fabrikLabel{
+    text-align: left;
+}

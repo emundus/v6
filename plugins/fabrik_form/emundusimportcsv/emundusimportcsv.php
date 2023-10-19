@@ -17,6 +17,9 @@ defined('_JEXEC') or die('Restricted access');
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
+
+require_once (JPATH_ROOT.'/components/com_emundus/models/emails.php');
+
 /**
  * Create a Joomla user from the forms data
  *
@@ -48,6 +51,7 @@ class PlgFabrik_FormEmundusimportcsv extends plgFabrik_Form {
 			$csv = $formModel->formData['jos_emundus_setup_csv_import___csv_file_raw'];
 			$campaign_id = $formModel->formData['jos_emundus_setup_csv_import___campaign_raw'][0];
 			$create_new_fnum = $formModel->formData['jos_emundus_setup_csv_import___create_new_fnum'];
+			$send_email = $formModel->formData['jos_emundus_setup_csv_import___send_email_raw'][0];
 
 			// Check if the file is a file on the server and in the right format.
 			if (!is_file(JPATH_ROOT.$csv)) {
@@ -385,6 +389,7 @@ class PlgFabrik_FormEmundusimportcsv extends plgFabrik_Form {
 
 			// Handle parsed data insertion
 			foreach ($parsed_data as $row_id => $insert_row) {
+				$new_user = false;
 				$user_id = 0;
 
 				if (isset($username_row[$row_id])) {
@@ -438,10 +443,12 @@ class PlgFabrik_FormEmundusimportcsv extends plgFabrik_Form {
 					include_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 					$m_users = new EmundusModelUsers();
 
+					$password = JUserHelper::genRandomPassword(8);
+
 					$query->clear()
 						->insert('#__users')
 						->columns('name, username, email, password')
-						->values($db->quote($lastname_row[$row_id] . ' ' . $firstname_row[$row_id]) . ', ' . $db->quote($username) . ', ' . $db->quote($email_row[$row_id]) . ',' . $db->quote(JUserHelper::hashPassword(JUserHelper::genRandomPassword(8))));
+						->values($db->quote($lastname_row[$row_id] . ' ' . $firstname_row[$row_id]) . ', ' . $db->quote($username) . ', ' . $db->quote($email_row[$row_id]) . ',' . $db->quote(JUserHelper::hashPassword($password)));
 
 						try {
 							$db->setQuery($query);
@@ -470,6 +477,8 @@ class PlgFabrik_FormEmundusimportcsv extends plgFabrik_Form {
 							$other_param['news']         = '';
 							$m_users->addEmundusUser($user_id, $other_param);
 						}
+
+					$new_user = true;
 				}
 
 				$fnum = '';
@@ -624,6 +633,70 @@ class PlgFabrik_FormEmundusimportcsv extends plgFabrik_Form {
 								}
 							}
 						}
+					}
+				}
+
+				if ($new_user && !empty($send_email) && $send_email == 1) {
+					// Send email indicating account creation.
+					$m_emails = new EmundusModelEmails();
+					$tags = array('patterns' => [], 'replacements' => []);
+
+					$totals['user']++;
+					$email = $m_emails->getEmail('new_account');
+					try {
+						$tags = $m_emails->setTags($user_id, null, $fnum, $password, $email->emailfrom.$email->name.$email->subject.$email->message);
+					} catch(Exception $e) {
+						JLog::add('ERROR setting tags in query : error text -> '.$e->getMessage(), JLog::ERROR, 'com_emundus.csvimport');
+					}
+
+					$mailer = JFactory::getMailer();
+					$from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
+					$fromname = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
+					$subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
+					$body = $email->message;
+
+					if (!empty($email->Template)) {
+						$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $email->Template);
+					}
+					$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+					$body = $m_emails->setTagsFabrik($body, [$fnum]);
+
+					$mail_from_address = $email_from_sys;
+
+					$sender = [
+						$mail_from_address,
+						$fromname
+					];
+
+					$mailer->setSender($sender);
+					$mailer->addReplyTo($email->emailfrom, $email->name);
+					$mailer->addRecipient($email_row[$row_id]);
+					$mailer->setSubject($email->subject);
+					$mailer->isHTML(true);
+					$mailer->Encoding = 'base64';
+					$mailer->setBody($body);
+
+					try {
+						$send = $mailer->Send();
+
+						if ($send === false) {
+							JLog::add('No email configuration!', JLog::ERROR, 'com_emundus.csvimport');
+						} else {
+
+                            JLog::add('Email account sent: ' . $email_row[$row_id], JLog::INFO, 'com_emundus.csvimport');
+
+                            if (JComponentHelper::getParams('com_emundus')->get('logUserEmail', '0') == '1') {
+                                $message = array(
+                                    'user_id_to' => $user_id,
+                                    'subject' => $email->subject,
+                                    'message' => $body
+                                );
+                                $m_emails->logEmail($message);
+                            }
+                        }
+
+					} catch (Exception $e) {
+						JLog::add('ERROR: Could not send email to user : '.$user_id, JLog::ERROR, 'com_emundus.csvimport');
 					}
 				}
 			}

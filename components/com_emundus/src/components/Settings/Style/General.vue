@@ -4,25 +4,26 @@
         @UpdateColors="updateColors"
     />
 
-    <h2 style="margin-top: 0">{{ translate('COM_EMUNDUS_ONBOARD_STYLE_TOOL_GENERAL') }}</h2>
-
     <!-- LOGO -->
-    <div class="em-grid-2">
-      <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
+    <div class="em-grid-2" v-show="!loading">
+      <div class="em-style-options em-mb-32">
         <div class="em-flex-row">
           <div>
-            <h3 class="em-text-neutral-800" style="margin: 0">Logo</h3>
-            <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, png, gif, svg</em></span>
+            <h4 class="em-text-neutral-800 em-flex-row em-mb-8">
+              Logo
+              <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayLogoTip">help_outline</span>
+            </h4>
+            <p><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, jpg, png, gif, svg</em></p>
+            <p><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_LOGO_RECOMMENDED') }}</em></p>
           </div>
-          <span class="material-icons em-pointer" style="margin-left: 125px" v-if="logo_updating" @click="logo_updating = !logo_updating">close</span>
         </div>
 
-        <div class="em-logo-box pointer em-mt-16" @click="logo_updating = !logo_updating" v-if="!logo_updating">
-          <img class="logo-settings" :src="imageLink" :srcset="'/'+imageLink" :alt="InsertLogo">
+        <div class="em-logo-box pointer em-mt-16" v-if="!logo_updating">
+          <img class="logo-settings" v-if="!hideLogo" :src="imageLink" :srcset="'/'+imageLink"  @error="hideLogo = true">
+          <p v-if="hideLogo">{{ translate('COM_EMUNDUS_ONBOARD_INSERT_LOGO') }}</p>
         </div>
-        <div class="em-mt-16">
+        <div class="em-mt-16" v-if="logo_updating">
           <vue-dropzone
-              v-if="logo_updating"
               ref="dropzone"
               id="customdropzone"
               :include-styling="false"
@@ -38,24 +39,32 @@
             </div>
           </vue-dropzone>
         </div>
+
+        <button @click="logo_updating = !logo_updating" class="em-mt-8 em-primary-button">
+          <span v-if="!logo_updating">{{ translate("COM_EMUNDUS_ONBOARD_UPDATE_LOGO") }}</span>
+          <span v-else>{{ translate('COM_EMUNDUS_ONBOARD_CANCEL') }}</span>
+        </button>
       </div>
 
       <!-- FAVICON -->
-      <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
+      <div class="em-style-options em-mb-32">
         <div class="em-flex-row">
           <div>
-            <h3 class="em-text-neutral-800" style="margin: 0">{{ translate("COM_EMUNDUS_ONBOARD_ICON") }}</h3>
-            <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, png</em></span>
+            <h4 class="em-text-neutral-800 em-flex-row em-mb-8">
+              {{ translate("COM_EMUNDUS_ONBOARD_ICON") }}
+              <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayFaviconTip">help_outline</span>
+            </h4>
+            <p><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, jpg, png</em></p>
+            <p><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ICON_RECOMMENDED') }}</em></p>
           </div>
-          <span class="material-icons em-pointer" style="margin-left: 125px" v-if="favicon_updating" @click="favicon_updating = !favicon_updating">close</span>
         </div>
 
-        <div class="em-logo-box pointer em-mt-16" @click="favicon_updating = !favicon_updating" v-if="!favicon_updating">
-          <img class="logo-settings" :src="iconLink" :srcset="'/'+iconLink" :alt="InsertIcon">
+        <div class="em-logo-box pointer em-mt-16" v-if="!favicon_updating">
+          <img class="logo-settings" v-if="!hideIcon" :src="iconLink" :srcset="iconLink" @error="hideIcon = true">
+          <p v-if="hideIcon">{{ translate('COM_EMUNDUS_ONBOARD_INSERT_ICON') }}</p>
         </div>
-        <div class="em-mt-16">
+        <div class="em-mt-16" v-if="favicon_updating">
           <vue-dropzone
-              v-if="favicon_updating"
               ref="dropzone"
               id="customdropzone"
               :include-styling="false"
@@ -71,37 +80,52 @@
             </div>
           </vue-dropzone>
         </div>
+
+        <button @click="favicon_updating = !favicon_updating" class="em-mt-8 em-primary-button">
+          <span v-if="!favicon_updating">{{ translate("COM_EMUNDUS_ONBOARD_UPDATE_ICON") }}</span>
+          <span v-else>{{ translate('COM_EMUNDUS_ONBOARD_CANCEL') }}</span>
+        </button>
       </div>
 
       <!-- COLORS -->
-      <div class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
-        <div class="em-flex-row" style="margin-bottom: 52px">
-            <h3 class="em-text-neutral-800" style="margin: 0">{{ translate("COM_EMUNDUS_ONBOARD_COLORS") }}</h3>
+      <div class="em-style-options em-mb-32">
+        <div>
+          <h4 class="em-text-neutral-800 em-flex-row em-mb-8">
+            {{ translate("COM_EMUNDUS_ONBOARD_COLORS") }}
+            <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayColorsTip">help_outline</span>
+          </h4>
+          <span style="opacity: 0">Colors</span><br/>
+          <span style="opacity: 0">Colors</span>
         </div>
 
-        <div class="em-logo-box pointer em-mt-16" @click="$modal.show('modalUpdateColors')">
+        <div class="em-logo-box pointer em-mt-16">
           <div class="color-preset" :style="'background-color:' + primary + ';border-right: 25px solid' + secondary">
           </div>
         </div>
+
+        <button class="em-mt-8 em-primary-button" @click="$modal.show('modalUpdateColors')">
+          <span>{{ translate("COM_EMUNDUS_ONBOARD_UPDATE_COLORS") }}</span>
+        </button>
       </div>
 
       <!-- BANNER -->
       <div v-if="bannerLink" class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
         <div class="em-flex-row">
           <div>
-            <h3 class="em-text-neutral-800" style="margin: 0">{{ translate("COM_EMUNDUS_ONBOARD_BANNER") }}</h3>
+            <h4 class="em-text-neutral-800 em-mb-8 em-flex-row">
+              {{ translate("COM_EMUNDUS_ONBOARD_BANNER") }}
+              <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayBannerTip">help_outline</span>
+            </h4>
             <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, png</em></span><br/>
             <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_RECOMMENDED_SIZE') }} : 1440x200px</em></span>
           </div>
-          <span class="material-icons em-pointer" style="margin-left: 125px" v-if="banner_updating" @click="banner_updating = !banner_updating">close</span>
         </div>
 
-        <div class="em-logo-box pointer em-mt-16" @click="banner_updating = !banner_updating" v-if="!banner_updating">
-          <img class="logo-settings" :src="bannerLink" :srcset="'/'+bannerLink" :alt="InsertBanner">
+        <div class="em-logo-box pointer em-mt-16" v-if="!banner_updating">
+          <img class="logo-settings" style="width: 180px" :src="bannerLink" :srcset="'/'+bannerLink" :alt="InsertBanner">
         </div>
-        <div class="em-mt-16">
+        <div class="em-mt-16" v-if="banner_updating">
           <vue-dropzone
-              v-if="banner_updating"
               ref="dropzone"
               id="customdropzone"
               :include-styling="false"
@@ -117,7 +141,13 @@
             </div>
           </vue-dropzone>
         </div>
+
+        <button @click="banner_updating = !banner_updating" class="em-mt-8 em-primary-button">
+          <span v-if="!banner_updating">{{ translate("COM_EMUNDUS_ONBOARD_UPDATE_BANNER") }}</span>
+          <span v-else>{{ translate('COM_EMUNDUS_ONBOARD_CANCEL') }}</span>
+        </button>
       </div>
+
     </div>
 
     <div class="em-page-loader" v-if="loading"></div>
@@ -159,11 +189,13 @@ export default {
       banner_updating: false,
 
       imageLink: '',
-      iconLink: 'images/custom/favicon.png',
+      iconLink: window.location.origin + '//images/custom/favicon.png' + '?' + new Date().getTime(),
       bannerLink: null,
       primary: '',
       secondary: '',
       changes: false,
+      hideIcon: false,
+      hideLogo: false,
       InsertLogo: this.translate("COM_EMUNDUS_ONBOARD_INSERT_LOGO"),
       InsertIcon: this.translate("COM_EMUNDUS_ONBOARD_INSERT_ICON"),
       InsertBanner: this.translate("COM_EMUNDUS_ONBOARD_INSERT_BANNER"),
@@ -236,13 +268,40 @@ export default {
       if(rep.data.filename == null){
         this.imageLink = 'images/custom/logo.png';
       } else {
-        this.imageLink = 'images/custom/' + rep.data.filename;
+        this.imageLink = 'images/custom/' + rep.data.filename + '?' + new Date().getTime();
       }
 
       setTimeout(() => {
         this.changes = true;
       },1000);
-      this.loading = false;
+    });
+
+    axios({
+      method: "get",
+      url: 'index.php?option=com_emundus&controller=settings&task=getfavicon',
+    }).then((rep) => {
+      if(rep.data.filename == null){
+        this.iconLink = 'images/custom/favicon.png';
+      } else {
+        this.iconLink = rep.data.filename + '?' + new Date().getTime();
+      }
+
+      setTimeout(() => {
+        this.changes = true;
+      },1000);
+    });
+
+    axios({
+      method: "get",
+      url: 'index.php?option=com_emundus&controller=settings&task=getbanner',
+    }).then((rep) => {
+      if(rep.data.filename != null){
+        this.bannerLink = rep.data.filename;
+      }
+
+      setTimeout(() => {
+        this.changes = true;
+      },1000);
     });
 
     axios({
@@ -273,12 +332,21 @@ export default {
   },
 
   methods:{
-    updateView(ext = 'png') {
-      this.imageLink = 'images/custom/logo_custom.'+ext+'?' + new Date().getTime();
+    updateView(response) {
+      this.hideLogo = false;
+      this.imageLink = 'images/custom/'+response.filename+'?' + new Date().getTime();
+      document.querySelector('img[src="/images/custom/'+response.old_logo+'"]').src = '/images/custom/'+response.filename+'?' + new Date().getTime();
       this.$forceUpdate();
     },
-    updateIcon() {
-      this.iconLink = 'images/custom/favicon.png?' + new Date().getTime();
+    updateIcon(response) {
+      this.hideIcon = false;
+      this.iconLink = window.location.origin + '//images/custom/'+response.filename+'?' + new Date().getTime();
+      document.querySelector('link[type="image/x-icon"]').href = window.location.origin + '//images/custom/'+response.filename+'?' + new Date().getTime();
+      document.querySelector('.tchooz-vertical-logo a img').src = window.location.origin + '//images/custom/'+response.filename+'?' + new Date().getTime();
+      this.$forceUpdate();
+    },
+    updateBanner(ext = 'png') {
+      this.bannerLink = 'images/custom/default_banner.'+ext+'?' + new Date().getTime();
       this.$forceUpdate();
     },
     updateBanner() {
@@ -289,40 +357,6 @@ export default {
       this.primary = colors.primary;
       this.secondary = colors.secondary;
     },
-    removeIcon() {
-      Swal.fire({
-        title: this.translate("COM_EMUNDUS_ONBOARD_REMOVE_ICON"),
-        text: this.translate("COM_EMUNDUS_ONBOARD_REMOVE_ICON_TEXT"),
-        type: "warning",
-        showCancelButton: true,
-        confirmButtonColor: '#12db42',
-        confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
-        cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-        reverseButtons: true
-      }).then(result => {
-        if (result.value) {
-          axios({
-            method: "post",
-            url:
-                "index.php?option=com_emundus&controller=settings&task=removeicon",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-          }).then((rep) => {
-            this.iconLink = '';
-            this.$forceUpdate();
-          });
-        }
-      });
-    },
-
-    imageExists(url, callback) {
-      var img = new Image();
-      img.onload = function() { callback(true); };
-      img.onerror = function() { callback(false); };
-      img.src = url;
-    },
-
     beforeClose(event) {
     },
     beforeOpen(event) {
@@ -332,7 +366,9 @@ export default {
     },
     afterRemoved() {
       if(this.$refs.dropzone.getAcceptedFiles().length === 0){
-        document.getElementById('dropzone-message').style.display = 'block';
+        if(this.banner_updating || this.logo_updating || this.favicon_updating) {
+          document.getElementById('dropzone-message').style.display = 'block';
+        }
       }
     },
     onComplete: function(response){
@@ -340,11 +376,15 @@ export default {
       if(response.status == 'success'){
         if(this.logo_updating) {
           this.logo_updating = false;
-          this.updateView(ext);
+          this.updateView(JSON.parse(response.xhr.response));
         }
         if(this.favicon_updating) {
           this.favicon_updating = false;
-          this.updateIcon();
+          this.updateIcon(JSON.parse(response.xhr.response));
+        }
+        if(this.banner_updating) {
+          this.banner_updating = false;
+          this.updateBanner(ext);
         }
         if(this.banner_updating) {
           this.banner_updating = false;
@@ -382,6 +422,97 @@ export default {
     },
     uploadNewLogo() {
       this.$refs.dropzone.processQueue();
+    },
+
+    displayFaviconTip() {
+      Swal.fire({
+        title: this.translate("COM_EMUNDUS_ONBOARD_ICON"),
+        text: this.translate("COM_EMUNDUS_ONBOARD_ICON_TIP_TEXT"),
+        showCancelButton: false,
+        confirmButtonText: this.translate("COM_EMUNDUS_SWAL_OK_BUTTON"),
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          confirmButton: 'em-swal-confirm-button',
+          actions: "em-swal-single-action",
+        },
+      }).then(result => {
+
+      });
+    },
+
+    displayLogoTip() {
+      Swal.fire({
+        title: 'Logo',
+        text: this.translate("COM_EMUNDUS_ONBOARD_LOGO_TIP_TEXT"),
+        showCancelButton: false,
+        confirmButtonText: this.translate("COM_EMUNDUS_SWAL_OK_BUTTON"),
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          confirmButton: 'em-swal-confirm-button',
+          actions: "em-swal-single-action",
+        },
+      });
+    },
+
+    displayBannerTip() {
+      Swal.fire({
+        title: this.translate('COM_EMUNDUS_ONBOARD_BANNER'),
+        text: this.translate("COM_EMUNDUS_ONBOARD_BANNER_TIP_TEXT"),
+        showCancelButton: false,
+        confirmButtonText: this.translate("COM_EMUNDUS_SWAL_OK_BUTTON"),
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          confirmButton: 'em-swal-confirm-button',
+          actions: "em-swal-single-action",
+        },
+      });
+    },
+
+    displayColorsTip() {
+      Swal.fire({
+        title: this.translate('COM_EMUNDUS_ONBOARD_COLORS'),
+        text: this.translate("COM_EMUNDUS_FORM_BUILDER_COLORS_RECOMMENDED"),
+        showCancelButton: false,
+        confirmButtonText: this.translate("COM_EMUNDUS_SWAL_OK_BUTTON"),
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          confirmButton: 'em-swal-confirm-button',
+          actions: "em-swal-single-action",
+        },
+      });
+    },
+
+    openFileInput(){
+      setTimeout(() => {
+        document.getElementsByClassName('dz-clickable')[0].click();
+      }, 300);
+    }
+  },
+  watch: {
+    logo_updating: function(value){
+      if(value){
+        this.favicon_updating = false;
+        this.banner_updating = false;
+        this.openFileInput();
+      }
+    },
+    favicon_updating: function(value){
+      if(value){
+        this.logo_updating = false;
+        this.banner_updating = false;
+        this.openFileInput();
+      }
+    },
+    banner_updating: function(value){
+      if(value){
+        this.favicon_updating = false;
+        this.logo_updating = false;
+        this.openFileInput();
+      }
     }
   }
 }
@@ -392,5 +523,11 @@ export default {
   height: 50px;
   border-radius: 50%;
   width: 50px;
+}
+
+.em-style-options {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 </style>

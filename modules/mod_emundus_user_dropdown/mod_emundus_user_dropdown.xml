@@ -47,7 +47,18 @@
 				<field name="link_login" type="text" default="index.php?option=com_users&amp;view=login&amp;Itemid=1135" size="5" label="COM_EMUNDUS_USERDROPDOWN_LINK_LOGIN" description="COM_EMUNDUS_USERDROPDOWN_LINK_LOGIN_DESC" />
 				<field name="link_register" type="text" default="index.php?option=com_fabrik&amp;view=form&amp;formid=307&amp;Itemid=1136" size="5" label="COM_EMUNDUS_USERDROPDOWN_LINK_REGISTER" description="COM_EMUNDUS_USERDROPDOWN_LINK_REGISTER_DESC" />
 				<field name="link_forgotten_password" type="text" default="index.php?option=com_users&amp;view=reset&amp;Itemid=2833" size="5" label="COM_EMUNDUS_USERDROPDOWN_LINK_FORGOTTEN_PASSWORD" description="COM_EMUNDUS_USERDROPDOWN_LINK_FORGOTTEN_PASSWORD_DESC" />
-
+				<field name="link_edit_profile" type="text" default="index.php?option=com_emundus&amp;view=users&amp;layout=edit&amp;Itemid=2805" size="5" label="COM_EMUNDUS_USERDROPDOWN_LINK_EDIT_PROFILE" />
+				<field
+						label="COM_EMUNDUS_USERDROPDOWN_LINK_EDIT_PROFILE"
+						name="link_edit_profile"
+						query="SELECT jm.id, CONCAT(jmt.title, ' - ', jm.title) as label
+                            FROM jos_menu jm
+                            RIGHT JOIN jos_menu_types jmt on jm.menutype = jmt.menutype
+                            WHERE jm.menutype = 'usermenu' AND jm.published = 1 order by jm.menutype, jm.title"
+						type="sql"
+						key_field="id"
+						value_field="label"
+				></field>
 				<field name="show_registration" type="radio" default="0" label="COM_EMUNDUS_USERDROPDOWN_SHOW_REGISTRATION" description="COM_EMUNDUS_USERDROPDOWN_SHOW_REGISTRATION_DESC">
 					<option value="0">JNo</option>
 					<option value="1">JYes</option>
@@ -60,6 +71,57 @@
 				</field>
 
 				<field name="switch_profile_redirect" type="text" default="index.php" size="5" label="COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_REDIRECT" description="COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_REDIRECT_DESC" />
+
+				<field
+						name="custom_actions"
+						type="subform"
+						label="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS"
+						description="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_DESC"
+						multiple="true"
+						layout="joomla.form.field.subform.repeatable-table">
+					<form>
+						<field
+								name="title"
+								type="text"
+								label="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_TITLE"
+								description="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_TITLE_DESC"
+								size="5"
+						/>
+						<field
+								name="type"
+								type="list"
+								label="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_TYPE"
+								description="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_TYPE_DESC"
+								size="5"
+						>
+							<option value="link">Link</option>
+							<option value="button">Button</option>
+						</field>
+						<field
+								showon="type:link"
+								name="link"
+								type="text"
+								label="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_LINK"
+								description="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_LINK_DESC"
+								size="5"
+						/>
+						<field
+							showon="type:button"
+							name="onclick"
+							type="text"
+							label="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_ONCLICK"
+							description="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_ONCLICK_DESC"
+							size="5"
+						/>
+						<field
+								name="condition"
+								type="textarea"
+								label="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_CONDITION"
+								description="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_CONDITION_DESC"
+								size="5"
+						/>
+					</form>
+				</field>
 			</fieldset>
 		</fields>
 	</config>

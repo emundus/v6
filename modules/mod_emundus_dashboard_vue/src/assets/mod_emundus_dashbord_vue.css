@@ -140,15 +140,23 @@
 
 .widget-files-status-number .widget-files-status-number-block p {
  color: var(--neutral-600);
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font);
 }
 
 .widget-files-status-number h1 {
   color: var(--neutral-900);
-  font-family: var(--font);
+  font-family: var(--em-coordinator-font-title);
 }
 
 #g-container-main .g-container{
   width: 100%;
-  padding-left: 100px !important;
+}
+
+.tchooz-widget__select {
+  width: 220px !important;
+}
+
+.custom-widget__messages-gestionnaire .tchooz-widget.widget__messages-gestionnaire .section-sub-menu,
+.custom-widget__messages__gestionnaire .tchooz-widget.widget__messages__gestionnaire .section-sub-menu {
+    overflow-y: scroll;
 }

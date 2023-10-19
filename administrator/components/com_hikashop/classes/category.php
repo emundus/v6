@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -561,6 +561,8 @@ class hikashopCategoryClass extends hikashopClass {
 		if(!empty($this->type)) {
 			if($this->type == 'product')
 				$filters[] = '(a.category_type = '.$this->database->Quote($this->type).' OR a.category_type = '.$this->database->Quote('vendor').')';
+			elseif($this->type == 'vendor')
+				$filters[] = '(a.category_type = '.$this->database->Quote($this->type).' OR a.category_type = '.$this->database->Quote('product').')';
 			else
 				$filters[] = 'a.category_type = '.$this->database->Quote($this->type);
 		}

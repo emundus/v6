@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -43,19 +43,24 @@ defined('_JEXEC') or die('Restricted access');
 		</dd>
 		<dt class="hikashop_order_product_price"><label><?php echo JText::_('UNIT_PRICE'); ?></label></dt>
 		<dd class="hikashop_order_product_price">
-			<input type="text" id="hikashop_order_product_price_input" name="data[order][product][order_product_price]" value="<?php echo @$this->orderProduct->order_product_price; ?>" />
+			<input type="text" id="hikashop_order_product_price_input" onchange="window.orderMgr.updateTaxes(this);" name="data[order][product][order_product_price]" value="<?php echo @$this->orderProduct->order_product_price; ?>" />
 		</dd>
 
 		<dt class="hikashop_order_product_vat"><label><?php echo JText::_('VAT'); ?></label></dt>
 		<dd class="hikashop_order_product_vat">
-			<input type="text" name="data[order][product][order_product_tax]" value="<?php echo @$this->orderProduct->order_product_tax; ?>" />
+			<input type="hidden" id="hikashop_order_product_tax_input" name="data[order][product][order_product_tax]" value="<?php echo @$this->orderProduct->order_product_tax; ?>" />
 			<?php
 			$tax = null;
 			if(!empty($this->orderProduct->order_product_tax_info)) {
 				$tax = reset($this->orderProduct->order_product_tax_info)->tax_namekey;
 			}
-			echo $this->ratesType->display( "data[order][product][tax_namekey]" , $tax); ?>
+			echo $this->ratesType->display( "data[order][product][tax_namekey]" , $tax, true,'onchange="window.orderMgr.updateTaxes(this);"', true ); ?>
 		</dd>
+		<dt class="hikashop_order_product_price"><label><?php echo JText::_('PRICE_WITH_TAX'); ?></label></dt>
+		<dd class="hikashop_order_product_price">
+			<input type="text" id="hikashop_order_product_price_with_tax_input" onchange="window.orderMgr.updateTaxes(this);" name="order_product_price_with_tax" value="<?php echo (@$this->orderProduct->order_product_price + @$this->orderProduct->order_product_tax); ?>" />
+		</dd>
+
 		<dt class="hikashop_order_product_weight"><label><?php echo JText::_('PRODUCT_WEIGHT'); ?></label></dt>
 		<dd class="hikashop_order_product_weight">
 			<input type="text" id="hikashop_order_product_weight_input" style="width:120px;" name="data[order][product][order_product_weight]" value="<?php echo @$this->orderProduct->order_product_weight; ?>" />
@@ -121,6 +126,7 @@ defined('_JEXEC') or die('Restricted access');
 <script type="text/javascript">
 if(!window.orderMgr)
 	window.orderMgr = {};
+	dataorderproducttax_namekey
 window.orderMgr.recalculatePrice = function(el) {
 	var qty = parseInt(el.value);
 	if (isNaN(qty))
@@ -143,8 +149,44 @@ window.orderMgr.recalculatePrice = function(el) {
 			priceToUse = price[1];
 		}
 	}
-	if(priceToUse)
+	if(priceToUse) {
 		priceInput.value = priceToUse;
+		priceInput.dispatchEvent(new Event('change'));
+	}
+}
+window.orderMgr.updateTaxes = function(el) {
+	var priceInput = document.getElementById('hikashop_order_product_price_input');
+	var priceWithTaxInput = document.getElementById('hikashop_order_product_price_with_tax_input');
+	var taxRateSelect = document.getElementById('dataorderproducttax_namekey');
+	var taxInput = document.getElementById('hikashop_order_product_tax_input');
+
+	var conversion = 0;
+	var price = priceInput.value;
+	var target = priceInput;
+	if(el.id == priceWithTaxInput.id) {
+		conversion = 1;
+		price = priceWithTaxInput.value;
+	} else {
+		target = priceWithTaxInput;
+	}
+	if(taxRateSelect.value == '-1') {
+		target.value = price;
+		taxInput.value = 0;
+	} else {
+		window.Oby.xRequest(
+			'index.php?option=com_hikashop&tmpl=component&ctrl=product&task=getprice&price='+price+'&rate_namekey='+taxRateSelect.value+'&conversion='+conversion,
+			{ mode: 'GET'},
+			function(result) {
+				if(result.responseText) {
+					target.value = result.responseText;
+					if(conversion)
+						taxInput.value = price-result.responseText;
+					else
+						taxInput.value = result.responseText-price;
+				}
+			}
+		);
+	}
 }
 window.orderMgr.orderproduct_history_changed = function(el) {
 	var fields = ['hikashop_history_orderproduct_msg'], displayValue = '';

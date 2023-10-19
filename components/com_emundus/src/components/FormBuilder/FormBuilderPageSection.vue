@@ -227,9 +227,12 @@ export  default {
 	computed: {
 		publishedElements() {
 			return this.elements && this.elements.length > 0 ? this.elements.filter((element) => {
-				return element.publish === true;
+				return element.publish === true && (element.hidden === false || this.sysadmin);
 			}) : [];
-		}
+		},
+		sysadmin: function(){
+			return parseInt(this.$store.state.global.sysadminAccess);
+		},
 	}
 }
 </script>
@@ -250,7 +253,7 @@ export  default {
     }
 
     .section-content {
-      border-top: 4px solid var(--main-500);
+      border-top: 4px solid var(--em-coordinator-primary-color);
       background-color: white;
       transition: all 0.3s ease-in-out;
 

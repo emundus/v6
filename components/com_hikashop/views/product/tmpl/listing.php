@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -122,9 +122,16 @@ window.Oby.registerAjax('compare.updated', function(evt){
 });
 //-->
 </script>
+<!-- TOP EXTRA DATA -->
+<?php if(!empty($this->element->extraData->top)) { echo implode("\r\n",$this->element->extraData->top); } ?>
+<!-- EO TOP EXTRA DATA -->
 <?php }
 
 ob_start();
+
+?>
+<!-- CATEGORY TITLE -->
+<?php
 $title_key = 'show_page_heading';
 $titleType = 'h1';
 if($this->module) {
@@ -151,8 +158,10 @@ if(!empty($title) && hikaInput::get()->getVar('hikashop_front_end_main', 0) && (
 	</<?php echo $titleType; ?>>
 <?php
 }
-
-
+?>
+<!-- EO CATEGORY TITLE -->
+<!-- CATEGORY DESCRIPTION -->
+<?php
 $val = hikaInput::get()->getVar('hikashop_front_end_main',0);
 hikaInput::get()->set('hikashop_front_end_main',0);
 
@@ -164,7 +173,7 @@ if(($this->params->get('show_image') && !empty($this->element->file_path)) || ($
 		jimport('joomla.filesystem.file');
 		if(JFile::exists($this->image->getPath($this->element->file_path,false))){
 ?>
-			<img src="<?php echo $this->image->getPath($this->element->file_path); ?>" class="hikashop_category_image" title="<?php echo $this->escape(@$this->element->file_description); ?>" alt="<?php echo $this->escape(@$this->element->file_name); ?>"/>
+			<img src="<?php echo $this->image->getPath($this->element->file_path); ?>" class="hikashop_category_image" title="<?php echo $this->escape((string)@$this->element->file_description); ?>" alt="<?php echo $this->escape((string)@$this->element->file_name); ?>"/>
 <?php
 		}
 	}
@@ -179,6 +188,10 @@ if(($this->params->get('show_image') && !empty($this->element->file_path)) || ($
 		</div>
 <?php
 }
+?>
+<!-- EO CATEGORY DESCRIPTION -->
+<!-- CATEGORY FIELDS -->
+<?php
 
 if(!empty($this->fields)) {
 	ob_start();
@@ -213,6 +226,12 @@ if(!empty($this->fields)) {
 <?php
 	}
 }
+?>
+<!-- CATEGORY FIELDS -->
+<!-- MIDDLE EXTRA DATA -->
+<?php if(!empty($this->element->extraData->middle)) { echo implode("\r\n",$this->element->extraData->middle); } ?>
+<!-- EO MIDDLE EXTRA DATA -->
+<?php
 hikaInput::get()->set('hikashop_front_end_main',$val);
 
 $mainInfo = ob_get_clean();
@@ -386,7 +405,11 @@ if($filter_type !== 3) {
 	</form>
 <?php }
 }
-
+?>
+<!-- BOTTOM EXTRA DATA -->
+<?php if(!empty($this->element->extraData->bottom)) { echo implode("\r\n",$this->element->extraData->bottom); } ?>
+<!-- EO BOTTOM EXTRA DATA -->
+<?php
 $html = ob_get_clean();
 if(!empty($html) || hikaInput::get()->getVar('hikashop_front_end_main',0)) {
 ?>

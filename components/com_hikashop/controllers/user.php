@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -149,7 +149,9 @@ class userController extends hikashopController {
 
 		$user = JFactory::getUser();
 		if(!$user->guest) {
-			$app->redirect(hikashop_completeLink('user&task=cpanel', false, true));
+			global $Itemid;
+			$url_itemid=(!empty($Itemid)?'&Itemid='.$Itemid:'');
+			$app->redirect(hikashop_completeLink('user&task=cpanel'.$url_itemid, false, true));
 			return false;
 		}
 
@@ -203,10 +205,13 @@ class userController extends hikashopController {
 		$app = JFactory::getApplication();
 		$config = hikashop_config();
 		$url = $config->get('redirect_url_when_registration_form_access_while_already_logged', '');
-		if(empty($url))
-			$url = hikashop_completeLink('user&task=cpanel', false, true);
-		else
+		if(empty($url)) {
+			global $Itemid;
+			$url_itemid=(!empty($Itemid)?'&Itemid='.$Itemid:'');
+			$url = hikashop_completeLink('user&task=cpanel'.$url_itemid, false, true);
+		} else {
 			$url = hikashop_cleanURL($url);
+		}
 		$app->redirect($url);
 		return false;
 	}

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -20,7 +20,7 @@ if(!empty($this->product->translations)) {
 	<dl class="hika_options">
 <?php if(hikashop_acl('product/edit/name')) { ?>
 		<dt class="hikashop_product_name"><label><?php echo JText::_('HIKA_NAME'); ?></label></dt>
-		<dd class="hikashop_product_name"><input type="text" name="translation[product_name][<?php echo $language_id; ?>]" value="<?php echo @$translation->product_name->value; ?>"/></dd>
+		<dd class="hikashop_product_name"><input type="text" name="translation[product_name][<?php echo $language_id; ?>]" value="<?php echo $this->escape(@$translation->product_name->value); ?>"/></dd>
 
 <?php } else { ?>
 		<dt class="hikashop_product_name"><label><?php echo JText::_('HIKA_NAME'); ?></label></dt>

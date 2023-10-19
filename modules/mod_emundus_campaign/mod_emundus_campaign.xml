@@ -46,7 +46,7 @@
 						<option value="1">JYES</option>
 					</field>
 
-					<field type="list" name="mod_em_campaign_show_camp_start_date" label="MOD_EM_CAMPAIGN_SHOW_CAMP_START_DATE" description="MOD_EM_CAMPAIGN_SHOW_CAMP_START_DATE_DESC" default="1">
+					<field type="list" showon="mod_em_campaign_layout!:default_tchooz" name="mod_em_campaign_show_camp_start_date" label="MOD_EM_CAMPAIGN_SHOW_CAMP_START_DATE" description="MOD_EM_CAMPAIGN_SHOW_CAMP_START_DATE_DESC" default="1">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
@@ -66,12 +66,12 @@
 						<option value="1">JYES</option>
 					</field>
 
-					<field showon="mod_em_campaign_layout!:default_tchooz" type="list" name="mod_em_campaign_show_admission_start_date" label="MOD_EM_CAMPAIGN_SHOW_ADMISSION_START_DATE" description="MOD_EM_CAMPAIGN_SHOW_ADMISSION_START_DATE_DESC" default="0">
+					<field type="list" showon="mod_em_campaign_layout!:default_tchooz" name="mod_em_campaign_show_admission_start_date" label="MOD_EM_CAMPAIGN_SHOW_ADMISSION_START_DATE" description="MOD_EM_CAMPAIGN_SHOW_ADMISSION_START_DATE_DESC" default="0">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
 
-					<field showon="mod_em_campaign_layout!:default_tchooz" type="list" name="mod_em_campaign_show_admission_end_date" label="MOD_EM_CAMPAIGN_SHOW_ADMISSION_END_DATE" description="MOD_EM_CAMPAIGN_SHOW_ADMISSION_END_DATE_DESC" default="0">
+					<field type="list" showon="mod_em_campaign_layout!:default_tchooz" name="mod_em_campaign_show_admission_end_date" label="MOD_EM_CAMPAIGN_SHOW_ADMISSION_END_DATE" description="MOD_EM_CAMPAIGN_SHOW_ADMISSION_END_DATE_DESC" default="0">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
@@ -84,9 +84,7 @@
 
 				<fieldset name="list" label="Paramètres de la liste">
 					<field showon="mod_em_campaign_layout:default_tchooz" type="checkboxes" name="mod_em_campaign_list_sections" label="MOD_EM_CAMPAIGN_LIST_SECTIONS" description="MOD_EM_CAMPAIGN_LIST_SECTIONS_DESC">
-						<option checked="true" value="intro">MOD_EM_CAMPAIGN_LIST_SECTIONS_INTROTEXT</option>
-						<option checked="true" value="filters">MOD_EM_CAMPAIGN_LIST_SECTIONS_FILTERS</option>
-						<option checked="true" value="campaigns">MOD_EM_CAMPAIGN_LIST_SECTIONS_CAMPAIGNS</option>
+						<option value="intro">MOD_EM_CAMPAIGN_LIST_SECTIONS_INTROTEXT</option>
 					</field>
 
 					<field
@@ -111,7 +109,7 @@
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
-					<field type="list" name="mod_em_campaign_show_results" label="MOD_EM_CAMPAIGN_SHOW_RESULTS" default="1">
+					<field type="list" showon="mod_em_campaign_layout!:default_tchooz" name="mod_em_campaign_show_results" label="MOD_EM_CAMPAIGN_SHOW_RESULTS" default="1">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
@@ -130,6 +128,7 @@
 					<field showon="mod_em_campaign_show_sort:1" type="checkboxes" name="mod_em_campaign_sort_list" label="MOD_EM_CAMPAIGN_SORT_LIST">
 						<option checked="true" value="programme">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_PROGRAMME</option>
 						<option checked="false" value="category">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_CATEGORY</option>
+						<option checked="false" value="month">MOD_EM_CAMPAIGN_GROUP_MONTH</option>
 					</field>
 
 					<field
@@ -172,14 +171,13 @@
                         <option value="">MOD_EM_CAMPAIGN_GROUP_NONE</option>
                         <option value="month">MOD_EM_CAMPAIGN_GROUP_MONTH</option>
                         <option value="program">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_PROGRAMME</option>
-						<option value="ordering">MOD_EM_CAMPAIGN_GROUP_MONTH_ORDERING</option>
 						<option value="category">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_CATEGORY</option>
                     </field>
 					<field type="list" name="mod_em_campaign_orderby" default="start_date" label="MOD_EM_CAMPAIGN_ORDER" description="MOD_EM_CAMPAIGN_ORDER_DESC">
 						<option value="start_date">MOD_EM_CAMPAIGN_LIST_DATE_START</option>
 						<option value="end_date">MOD_EM_CAMPAIGN_LIST_DATE_END</option>
-						<option value="formation_start">MOD_EM_CAMPAIGN_LIST_FORMATION_DATE_START</option>
-						<option value="formation_end">MOD_EM_CAMPAIGN_LIST_FORMATION_DATE_END</option>
+						<option showon="mod_em_campaign_layout:nantes" value="formation_start">MOD_EM_CAMPAIGN_LIST_FORMATION_DATE_START</option>
+						<option showon="mod_em_campaign_layout:nantes" value="formation_end">MOD_EM_CAMPAIGN_LIST_FORMATION_DATE_END</option>
 					</field>
 					<field type="list" name="mod_em_campaign_order_type" default="" label="MOD_EM_CAMPAIGN_ORDER_TYPE" description="MOD_EM_CAMPAIGN_ORDER_TYPE_DESC">
 						<option value="asc">MOD_EM_CAMPAIGN_LIST_ASC</option>

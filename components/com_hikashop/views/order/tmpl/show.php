@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -53,7 +53,7 @@ if($this->invoice_type == 'order') {
 <!-- EO INVOICE NUMBER -->
 				</div>
 				<div id="hikashop_order_left_part" class="hikashop_order_left_part">
-<!-- IMAGE ADDRESS -->
+<!-- STORE LOGO -->
 <?php
 		if (!empty($this->image_address_path) && $this->invoice_type != 'order') {
 ?>					<div class="hika_invoice_img">
@@ -62,6 +62,7 @@ if($this->invoice_type == 'order') {
 <?php
 		}
 ?>
+<!-- EO STORE LOGO -->
 <!-- STORE ADDRESS -->
 <?php
 					echo $this->store_address;
@@ -255,7 +256,7 @@ if($this->invoice_type == 'order') {
 		$image_path = (!empty($product->images) ? @$product->images[0]->file_path : '');
 		$img = $imageHelper->getThumbnail($image_path, array('width' => $width, 'height' => $height), $image_options);
 		if($img->success) {
-			echo '<img class="hikashop_order_item_image" title="'.$this->escape(@$product->images[0]->file_description).'" alt="'.$this->escape(@$product->images[0]->file_name).'" src="'.$img->url.'"/>';
+			echo '<img class="hikashop_order_item_image" title="'.$this->escape((string)@$product->images[0]->file_description).'" alt="'.$this->escape((string)@$product->images[0]->file_name).'" src="'.$img->url.'"/>';
 		}
 ?>
 								</td>

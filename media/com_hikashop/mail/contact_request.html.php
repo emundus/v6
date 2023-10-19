@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -14,11 +14,11 @@ defined('_JEXEC') or die('Restricted access');
 			<div id="title" style="font-family: Arial, Helvetica, sans-serif;font-size:12px;line-height:18px;">
 
 <img src="{VAR:LIVE_SITE}media/com_hikashop/images/icons/icon-48-forum.png" border="0" alt="" style="float:left;margin-right:4px;"/>
-<h1 style="color:#1c8faf !important;font-size:16px;font-weight:bold; border-bottom:1px solid #ddd; padding-bottom:10px">
+<h1 style="font-size:16px;font-weight:bold; border-bottom:1px solid #ddd; padding-bottom:10px">
 	{TXT:CONTACT_TITLE}
 </h1>
 <!--{IF:PRODUCT}-->
-<h2 style="color:#1c8faf !important;font-size:12px;font-weight:bold; padding-bottom:10px">
+<h2 style="font-size:12px;font-weight:bold; padding-bottom:10px">
 	{TXT:FOR_PRODUCT}
 </h2>
 <!--{ENDIF:PRODUCT}-->
@@ -38,19 +38,19 @@ defined('_JEXEC') or die('Restricted access');
 <table class="w550" border="0" cellspacing="0" cellpadding="0" width="550" style="margin-top:10px;font-family: Arial, Helvetica, sans-serif;font-size:12px;line-height:18px;">
 <!--{IF:USER}-->
 	<tr>
-		<td style="color:#1c8faf !important;font-size:12px;font-weight:bold;">{TXT:USER}</td>
+		<td style="font-size:12px;font-weight:bold;">{TXT:USER}</td>
 		<td>{VAR:USER_DETAILS}</td>
 	</tr>
 <!--{ENDIF:USER}-->	
 <!--{IF:PRODUCT}-->
 	<tr>
-		<td style="color:#1c8faf !important;font-size:12px;font-weight:bold;">{TXT:PRODUCT}</td>
+		<td style="font-size:12px;font-weight:bold;">{TXT:PRODUCT}</td>
 		<td>{VAR:PRODUCT_DETAILS}</td>
 	</tr>
 <!--{ENDIF:PRODUCT}-->
 </table>
 <!--{IF:MESSAGE}-->
-<h1 style="color:#1c8faf !important;font-size:16px;font-weight:bold;border-top:1px solid #ddd;border-bottom:1px solid #ddd;padding-top:10px;padding-bottom:10px;">
+<h1 style="font-size:16px;font-weight:bold;border-top:1px solid #ddd;border-bottom:1px solid #ddd;padding-top:10px;padding-bottom:10px;">
 	{TXT:USER_MESSAGE}
 </h1>
 <p>

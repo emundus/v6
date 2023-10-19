@@ -60,7 +60,6 @@ defined('_JEXEC') or die;
 
     #header-b #em_user_menu li:hover a, #header-b #em_user_menu li:active a, #header-b #em_user_menu li:focus a{
         color: black;
-        filter: brightness(90%);
     }
     .g-sublevel .g-menu-item-title span:hover,.g-sublevel .g-menu-item-title span:focus,.g-sublevel .g-menu-item-title span:active {
         color: black;
@@ -78,7 +77,7 @@ defined('_JEXEC') or die;
 
     /*** Sublevel parent ***/
     ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item::before{
-        background: #12DB42;
+        background: var(--em-coordinator-primary-color);
         width: 5px;
         height: 100%;
         content: "";
@@ -86,7 +85,7 @@ defined('_JEXEC') or die;
         left: -20px;
     }
     .active .item .image-title{
-        color: #12DB42;
+        color: var(--em-coordinator-primary-color);
     }
     .g-menu-parent-indicator{
         margin-left: 20px;
@@ -100,9 +99,8 @@ defined('_JEXEC') or die;
 
     /*** List style ***/
     #g-navigation .g-main-nav .tchooz-vertical-toplevel > li{
-        width: 50px;
         margin: 5px 10px !important;
-        font-family: var(--font);
+        font-family: var(--em-default-font);
     }
 
     .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo > a {
@@ -124,10 +122,11 @@ defined('_JEXEC') or die;
         z-index: 2;
         transition: all 0.3s ease-in-out;
     }
-    .tchooz-vertical-item a img{
+    .tchooz-vertical-item a img,
+    .tchooz-vertical-item a span[class*="material-icons"] {
         width: 30px;
         height: 30px;
-        padding: 5px;
+        padding: 3px !important;
     }
 
     .image-title{
@@ -161,7 +160,7 @@ defined('_JEXEC') or die;
     }
     /*** END ***/
     .message-tooltip{
-        width: 20rem;
+        width: auto;
         height: auto;
         position: fixed;
         margin-left: 0;
@@ -201,8 +200,8 @@ defined('_JEXEC') or die;
     }
 
     .g-main-nav .g-standard .g-sublevel .g-menu-item a.g-menu-item-container:hover   {
-        background: #eeeeee;
-        border-radius: 5px;
+        background: #EBECF0 !important;
+        border-radius: var(--em-default-br) !important;
     }
 
     .g-sublevel{
@@ -215,6 +214,10 @@ defined('_JEXEC') or die;
        border: solid 2px #fff;
         border-radius: 5px;
         content: "";
+    }
+
+    #g-container-main,#g-footer,#footer-rgpd {
+        padding-left: 76px;
     }
 </style>
 <nav class="g-main-nav <?php echo $class_sfx;?>" data-g-hover-expand="true"
@@ -230,12 +233,16 @@ defined('_JEXEC') or die;
         <button class="g-menu-item g-standard burger-button" onclick="enableTitles()"><img src="<?php echo JURI::base()?>images/emundus/menus/menu.png" style="width: 30px"></button>
         <?php
 
-        if(file_exists(JPATH_SITE . '/images/custom/favicon.png')){
-            $favicon = JURI::base().'/images/custom/favicon.png';
+        $target_dir = "images/custom/";
+        $filename = 'favicon';
+        $favicon = glob("{$target_dir}{$filename}.*");
+
+        if(file_exists(JPATH_SITE . '/' . $favicon[0])){
+            $favicon = JURI::base().'/' . $favicon[0];
         } else {
             $favicon = JURI::base().'/images/emundus/tchooz_favicon.png';
         }
-        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo" style="height: auto"><a class="item" href="/"><img src="'.$favicon.'" alt="Accueil"></a>
+        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo" style="height: auto"><a class="item" href="'.$favicon_link.'"><img src="'.$favicon.'" alt="Accueil"></a>
         </li>';
 
         if ($display_tchooz) :
@@ -302,7 +309,7 @@ defined('_JEXEC') or die;
             endforeach;
 
             if(sizeof($tchooz_list) > 0) :
-                echo '<hr id="menu_separator">';
+                echo '<hr id="menu_separator" class="mb-4 mt-4">';
             endif;
         endif;
 
@@ -517,9 +524,9 @@ defined('_JEXEC') or die;
             jQuery(".grey-navbar-icons").css("opacity","1");
             jQuery(".sidebar-formbuilder").css("opacity","0");
             if(window.innerWidth >= 1280) {
-                jQuery("#g-footer").css("padding-left", "300px");
-                jQuery("#footer-rgpd").css("padding-left", "300px");
-                jQuery("#g-container-main").css("padding-left", "180px");
+                jQuery("#g-footer").css("padding-left", "280px");
+                jQuery("#footer-rgpd").css("padding-left", "280px");
+                jQuery("#g-container-main").css("padding-left", "280px");
                 jQuery("#header-a").css("opacity", "1");
             }
             setTimeout(() =>{
@@ -536,9 +543,9 @@ defined('_JEXEC') or die;
             jQuery(".grey-navbar-icons").css("opacity","1");
             jQuery(".sidebar-formbuilder").css("opacity","0");
             if(window.innerWidth >= 1280) {
-                jQuery("#g-footer").css("padding-left", "300px");
-                jQuery("#footer-rgpd").css("padding-left", "300px");
-                jQuery("#g-container-main").css("padding-left", "180px");
+                jQuery("#g-footer").css("padding-left", "280px");
+                jQuery("#footer-rgpd").css("padding-left", "280px");
+                jQuery("#g-container-main").css("padding-left", "280px");
                 jQuery("#header-a").css("opacity", "1");
             }
             setTimeout(() =>{
@@ -557,9 +564,9 @@ defined('_JEXEC') or die;
             jQuery(".sidebar-formbuilder").css("display","block");
             jQuery(".sidebar-formbuilder").css("opacity","1");
             if(window.innerWidth >= 1280) {
-                jQuery("#g-container-main").css("padding-left", "0");
-                jQuery("#g-footer").css("padding-left", "80px");
-                jQuery("#footer-rgpd").css("padding-left", "80px");
+                jQuery("#g-container-main").css("padding-left", "76px");
+                jQuery("#g-footer").css("padding-left", "76px");
+                jQuery("#footer-rgpd").css("padding-left", "76px");
                 jQuery("#header-a").css("opacity", "0");
             }
             setTimeout(() =>{

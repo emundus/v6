@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="1.0.0" client="site" method="upgrade">
+    <name>eMundus - Filtres avancés [mod_emundus_filters]</name>
+    <author>LEGENDRE Jérémy</author>
+    <creationDate>May 2022</creationDate>
+    <copyright>Copyright (C) 2022 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>jeremy.legendre@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>1.0.0</version>
+    <description></description>
+    <files>
+        <filename module="mod_emundus_filters" label="MOD_EMUNDUS_FILTERS">mod_emundus_filters.php</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+        <filename>mod_emundus_filters.xml</filename>
+    </files>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field type="list" name="filter_on_fnums" label="MOD_EMUNDUS_FILTER_FILTER_ON_FNUM" default="1">
+                    <option value="1">JYES</option>
+                    <!--<option value="0">JNO</option>-->
+                </field>
+                <field showon="filter_on_fnums:0" type="text" name="element_id" label="MOD_EM_FILTER_FABRIK_ELEMENT_ID" description="MOD_EM_FILTER_FABRIK_ELEMENT_ID_DESC" default="0"/>
+                <field showon="filter_on_fnums:0"
+                       name="default_filter_element_ids"
+                       type="subform"
+                       label="MOD_EM_FILTER_DEFAULT_ELEMENTS"
+                       description="MOD_EM_FILTER_DEFAULT_ELEMENTS_DESC"
+                       multiple="true"
+                       min="1"
+                       max="20"
+                       filter="raw"
+                       layout="joomla.form.field.subform.repeatable-table"
+                >
+                    <form>
+                        <field type="text" name="id" label="MOD_EM_FILTER_DEFAULT_ELEMENT_ID" description="MOD_EM_FILTER_DEFAULT_ELEMENT_ID_DESC" default="0"/>
+                        <field type="text" name="join_table" label="MOD_EM_FILTER_DEFAULT_ELEMENT_JOIN_TABLE" default=""/>
+                        <field type="text" name="join_column_from" label="MOD_EM_FILTER_DEFAULT_ELEMENT_JOIN_COLUMN_FROM" default=""/>
+                        <field type="text" name="join_column_to" label="MOD_EM_FILTER_DEFAULT_ELEMENT_JOIN_COLUMN_TO" default=""/>
+                    </form>
+                </field>
+
+                <!-- fields shown on fnum context -->
+                <fieldset showon="filter_on_fnum=1">
+                    <field type="checkbox" name="count_filter_values" label="MOD_EMUNDUS_FILTER_COUNT_FILTER_VALUES" description="MOD_EMUNDUS_FILTER_COUNT_FILTER_VALUES_DESC" default="0"/>
+                    <field type="list" name="filter_status" label="FILTER_ON_STATUS">
+                        <option value="0">JNO</option>
+                        <option value="1">JYES</option>
+                    </field>
+                    <field
+                        type="text"
+                        name="filter_status_order"
+                        label="FILTER_ORDER"
+                        description="FILTER_ORDER_DESC"
+                        default="0"
+                    />
+                    <field type="list" name="filter_campaign" label="FILTER_ON_CAMPAIGN">
+                        <option value="0">JNO</option>
+                        <option value="1">JYES</option>
+                    </field>
+                    <field
+                            type="text"
+                            name="filter_campaigns_order"
+                            label="FILTER_ORDER"
+                            description="FILTER_ORDER_DESC"
+                            default="0"
+                    />
+                    <field type="list" name="filter_programs" label="FILTER_ON_PROGRAM">
+                        <option value="0">JNO</option>
+                        <option value="1">JYES</option>
+                    </field>
+                    <field
+                            type="text"
+                            name="filter_programs_order"
+                            label="FILTER_ORDER"
+                            description="FILTER_ORDER_DESC"
+                            default="0"
+                    />
+                    <field type="list" name="filter_years" label="FILTER_ON_YEAR">
+                        <option value="0">JNO</option>
+                        <option value="1">JYES</option>
+                    </field>
+                    <field
+                            type="text"
+                            name="filter_years_order"
+                            label="FILTER_ORDER"
+                            description="FILTER_ORDER_DESC"
+                            default="0"
+                    />
+                    <field type="list" name="filter_tags" label="FILTER_ON_TAGS">
+                        <option value="0">JNO</option>
+                        <option value="1">JYES</option>
+                    </field>
+                    <field
+                            type="text"
+                            name="filter_tags_order"
+                            label="FILTER_ORDER"
+                            description="FILTER_ORDER_DESC"
+                            default="0"
+                    />
+                    <field type="list" name="filter_published" label="FILTER_ON_PUBLISHED_STATE">
+                        <option value="0">JNO</option>
+                        <option value="1">JYES</option>
+                    </field>
+                    <field
+                            type="text"
+                            name="filter_published_order"
+                            label="FILTER_ORDER"
+                            description="FILTER_ORDER_DESC"
+                            default="0"
+                    />
+                    <!-- repeatable field -->
+                    <field name="more_filter_elements"
+                           type="repeatable"
+                           icon="list"
+                           description=""
+                           label="Filtres supplémentaires"
+                    >
+                        <field name="fabrik_element_id"
+                               type="text"
+                               label="MOD_EM_FILTER_FABRIK_ELEMENT_ID"
+                               description="MOD_EM_FILTER_FABRIK_ELEMENT_ID_DESC"
+                        />
+                        <field name="order" type="text" label="MOD_EM_FILTER_ORDER" description="MOD_EM_FILTER_ORDER_DESC" default="0"/>
+                    </field>
+
+                    <field name="more_fabrik_forms"
+                           type="sql"
+                           label="MOD_EM_FILTER_MORE_FABRIK_FORMS"
+                           description="MOD_EM_FILTER_MORE_FABRIK_FORMS_DESC"
+                           query="SELECT id, CONCAT(label, ' (', id , ')') as label_concat FROM jos_fabrik_forms WHERE published = 1"
+                           key_field="id"
+                           value_field="label_concat"
+                           multiple="true"
+                    />
+                </fieldset>
+            </fieldset>
+            <fieldset name="advanced">
+                <field name="layout"
+                       type="modulelayout"
+                       label="JFIELD_ALT_LAYOUT_LABEL"
+                       description="JFIELD_ALT_MODULE_LAYOUT_DESC"
+                       default="vue"
+                />
+            </fieldset>
+        </fields>
+    </config>
+</extension>

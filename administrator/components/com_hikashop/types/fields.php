@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -24,7 +24,7 @@ class hikashopFieldsType {
 		$this->allValues = array(
 			'text' => array(
 				'name' => JText::_('FIELD_TEXT'),
-				'options' => array('size','required','default','columnname','filtering','maxlength','readonly','placeholder','translatable','attribute','regex')
+				'options' => array('size','required','default','columnname','filtering','maxlength','readonly','placeholder','translatable','attribute','regex', 'display_format')
 			),
 			'link' => array(
 				'name' => JText::_('LINK'),
@@ -32,11 +32,11 @@ class hikashopFieldsType {
 			),
 			'textarea' => array(
 				'name' => JText::_('FIELD_TEXTAREA'),
-				'options' => array('cols','rows','required','default','columnname','filtering','readonly','maxlength','placeholder','translatable','attribute','regex')
+				'options' => array('cols','rows','required','default','columnname','filtering','readonly','maxlength','placeholder','translatable','attribute','regex', 'display_format')
 			),
 			'wysiwyg' => array(
 				'name' => JText::_('WYSIWYG'),
-				'options' => array('cols','rows','required','default','columnname','filtering','translatable','regex')
+				'options' => array('cols','rows','required','default','columnname','filtering','translatable','regex', 'display_format')
 			),
 			'radio' => array(
 				'name' => JText::_('FIELD_RADIO'),

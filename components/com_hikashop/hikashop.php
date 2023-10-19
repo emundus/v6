@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -49,7 +49,7 @@ if(empty($Itemid)) {
 $view = hikaInput::get()->getCmd('view');
 if(!empty($view) && !hikaInput::get()->getCmd('ctrl')) {
 	hikaInput::get()->set('ctrl', $view);
-	$layout = hikaInput::get()->getCmd('layout');
+	$layout = hikaInput::get()->getString('layout');
 	if(!empty($layout)){
 		hikaInput::get()->set('task', $layout);
 	}
@@ -85,7 +85,7 @@ if(empty($classGroup)) {
 
 hikaInput::get()->set('view', $classGroup->getName() );
 
-$classGroup->execute(hikaInput::get()->getCmd('task'));
+$classGroup->execute(hikaInput::get()->getString('task'));
 
 $classGroup->redirect();
 if(hikaInput::get()->getString('tmpl') !== 'component'){

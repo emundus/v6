@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/**
+ * Copyright © Lyra Network.
+ * This file is part of Sogecommerce plugin for HikaShop. See COPYING.md for license details.
+ *
+ * @author    Lyra Network (https://www.lyra.com/)
+ * @copyright Lyra Network
+ * @license   http://www.gnu.org/licenses/gpl.html GNU General Public License (GPL v3)
+ */
+-->
+
+<extension type="component" version="2.5" method="upgrade">
+    <name><![CDATA[sogecommerce]]></name>
+    <creationDate>July</creationDate>
+    <version>2.1.5</version>
+    <author>Lyra Network</author>
+    <authorEmail>support@sogecommerce.societegenerale.eu</authorEmail>
+    <authorUrl>https://www.lyra.com/</authorUrl>
+    <copyright>Copyright (C) 2013-2020 Lyra Network. All rights reserved.</copyright>
+    <license>http://www.gnu.org/licenses/gpl.html GNU General Public License (GPL v3)</license>
+    <description><![CDATA[This component enables you to setup Sogecommerce standard payment and payment in installments plugins for HikaShop.]]></description>
+
+    <scriptfile>script.install.php</scriptfile>
+    <administration>
+        <files >
+            <folder>plg_hikashoppayment_sogecommerce</folder>
+            <folder>plg_hikashoppayment_sogecommercemulti</folder>
+            <folder>classes</folder>
+            <folder>images</folder>
+            <folder>installation_doc</folder>
+            <filename>CHANGELOG.md</filename>
+            <filename>COPYING.md</filename>
+            <filename>README.md</filename>
+            <filename>LICENSE.txt</filename>
+        </files>
+    </administration>
+</extension>

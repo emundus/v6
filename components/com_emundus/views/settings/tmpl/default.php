@@ -23,6 +23,8 @@ JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM');
 JText::script('COM_EMUNDUS_ONBOARD_SELECT_ALL');
 JText::script('COM_EMUNDUS_ONBOARD_MODIFY');
 JText::script('COM_EMUNDUS_ONBOARD_UPDATE_ICON');
+JText::script('COM_EMUNDUS_SWAL_OK_BUTTON');
+JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_CONTENT_PUBLISH');
 
 // MENUS
 JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_MENU_STYLE');
@@ -137,6 +139,13 @@ JText::script('COM_EMUNDUS_ONBOARD_DELETE_STATUS');
 JText::script('COM_EMUNDUS_ONBOARD_INSERT_HEADER_IMAGE');
 JText::script('COM_EMUNDUS_ONBOARD_INSERT_LOGO');
 JText::script('COM_EMUNDUS_ONBOARD_INSERT_ICON');
+JText::script('COM_EMUNDUS_ONBOARD_ICON_TIP_TEXT');
+JText::script('COM_EMUNDUS_FORM_BUILDER_ICON_RECOMMENDED');
+JText::script('COM_EMUNDUS_FORM_BUILDER_LOGO_RECOMMENDED');
+JText::script('COM_EMUNDUS_ONBOARD_LOGO_TIP_TEXT');
+JText::script('COM_EMUNDUS_FORM_BUILDER_COLORS_RECOMMENDED');
+JText::script('COM_EMUNDUS_ONBOARD_BANNER_TIP_TEXT');
+JText::script('COM_EMUNDUS_ONBOARD_UPDATE_BANNER');
 ## END ##
 
 ## eMUNDUS CONFIG ##
@@ -185,6 +194,7 @@ JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_MENU_CONTENT_DESC');
 JText::script('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_ORPHANS_CONGRATULATIONS');
 JText::script('COM_EMUNDUS_ONBOARD_BANNER');
 JText::script('COM_EMUNDUS_FORM_BUILDER_RECOMMENDED_SIZE');
+JText::script('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_EXPORT');
 ## END ##
 
 ## CONTENTELEMENT ##
@@ -251,10 +261,8 @@ $user = JFactory::getUser();
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
 $sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
 
-$xmlDoc = new DOMDocument();
-if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
-    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
-}
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 
 <div id="em-component-vue"
@@ -266,4 +274,4 @@ if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml'
      manyLanguages="<?= $many_languages ?>"
 ></div>
 
-<script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>
+<script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

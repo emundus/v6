@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.7.4
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -61,7 +61,7 @@ if(hikashop_loadUser() == null) {
 				<?php echo JText::_('HIKA_USERNAME'); ?>:
 			</td>
 			<td>
-				<input  type='text' name="pseudo_comment" id='pseudo_comment' />
+				<input  type='text' name="pseudo_comment" id='pseudo_comment' class="<?php echo HK_FORM_CONTROL_CLASS; ?>" />
 			</td>
 		</tr>
 <?php
@@ -72,7 +72,7 @@ if(hikashop_loadUser() == null) {
 				<?php echo JText::_('HIKA_EMAIL'); ?>:
 			</td>
 			<td>
-				<input  type='text' name="email_comment" id='email_comment' value=''/>
+				<input  type='text' name="email_comment" id='email_comment' value='' class="<?php echo HK_FORM_CONTROL_CLASS; ?>"/>
 			</td>
 		</tr>
 <?php
