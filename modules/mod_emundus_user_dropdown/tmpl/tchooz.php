@@ -364,7 +364,6 @@ if ($user != null) {
 
                             document.documentElement.style.setProperty("--em-profile-color", css_var);
 
-                            console.log(css_var);
                         }
                     }
 
@@ -380,8 +379,6 @@ if ($user != null) {
 
         iframeElements_2.forEach((iframeElement) => {
 
-            console.log(emProfileColor2);
-
             iframeElement.addEventListener("load", function () {
 
                 let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
@@ -394,7 +391,6 @@ if ($user != null) {
 
                     styleElement.textContent = styleContent;
 
-                    console.log(styleElement);
                 }
 
             });
