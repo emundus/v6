@@ -52,13 +52,7 @@ endif;
 ?>
 
 <div id="fabrikDetailsContainer_<?php echo $form->id ?>" class="mb-12">
-	<?php if ($this->params->get('show-title', 1)) : ?>
-        <div class="page-header em-mb-12 em-flex-row em-flex-space-between">
-            <h1><?php echo $form->label; ?></h1>
-        </div>
 	<?php
-	endif;
-
 	echo $form->intro;
 	if ($this->isMambot) :
 		echo '<div class="fabrikForm fabrikDetails fabrikIsMambot" id="' . $form->formid . '">';

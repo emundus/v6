@@ -3240,7 +3240,7 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 						'name'    => 'title',
 						'type'    => 'varchar',
 						'length'  => 255,
-						'null'    => 0,
+						'null'    => 1,
 					],
 					[
 						'name'    => 'subtitle',

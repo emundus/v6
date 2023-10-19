@@ -40,14 +40,14 @@ endif;
 
 if ($this->showTitle == 1) : ?>
     <div class="page-header em-flex-row em-flex-space-between emundus-list-page-header">
-        <h1><?php echo $this->table->label; ?></h1>
+        <h1 class="after-em-border after:bg-red-800"><?php echo $this->table->label; ?></h1>
     </div>
 <?php
 endif;
 
 // Intro outside of form to allow for other lists/forms to be injected.
 ?>
-<div class="page-intro <?php if ($this->showTitle != 1) : ?>em-mt-32<?php endif; ?>">
+<div class="page-intro mt-4">
 	<?php echo $this->table->intro; ?>
 </div>
 
