@@ -1934,6 +1934,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .w-full {
   width: 100%;
 }
+.w-2\/4 {
+  width: 50%;
+}
 .flex-shrink {
   flex-shrink: 1;
 }
@@ -2009,6 +2012,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .gap-2 {
   gap: var(--em-spacing-2);
+}
+.gap-4 {
+  gap: var(--em-spacing-4);
+}
+.gap-8 {
+  gap: var(--em-spacing-8);
 }
 .overflow-hidden {
   overflow: hidden;

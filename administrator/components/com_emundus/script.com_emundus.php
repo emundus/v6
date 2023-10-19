@@ -3440,7 +3440,7 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 						$onboarding_lists['gallery']['tabs'][0]['actions'][1]['label'] = 'COM_EMUNDUS_ONBOARD_ACTION_DUPLICATE';
 						$onboarding_lists['gallery']['tabs'][0]['actions'][1]['controller'] = 'gallery';
 						$onboarding_lists['gallery']['tabs'][0]['actions'][1]['name'] = 'duplicate';
-						$onboarding_lists['gallery']['tabs'][0]['actions'][2]['action'] = 'index.php?option=com_emundus&view=gallery&layout=add&gid=%id%';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][2]['action'] = 'index.php?option=com_emundus&view=gallery&layout=edit&gid=%id%';
 						$onboarding_lists['gallery']['tabs'][0]['actions'][2]['label'] = 'COM_EMUNDUS_ONBOARD_MODIFY';
 						$onboarding_lists['gallery']['tabs'][0]['actions'][2]['controller'] = 'gallery';
 						$onboarding_lists['gallery']['tabs'][0]['actions'][2]['type'] = 'redirect';
