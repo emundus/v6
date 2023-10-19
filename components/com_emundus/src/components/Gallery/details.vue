@@ -14,15 +14,10 @@ export default {
 
   components: {},
 
-  directives: { focus: {
-      inserted: function (el) {
-        el.focus()
-      }
-    }
-  },
+  directives: {},
 
   props: {
-    gallery: Number,
+    gallery: Object,
   },
 
   data: () => ({}),

@@ -59,7 +59,9 @@ class EmundusModelGallery extends JModelList
 				$this->_db->quote('%' . $recherche . '%') . ')';
 		}
 
-		$query->select('*')->from($this->_db->quoteName('#__emundus_setup_gallery'));
+		$query->select('esg.*,fl.label')
+			->from($this->_db->quoteName('#__emundus_setup_gallery','esg'))
+			->leftJoin($this->_db->quoteName('#__fabrik_lists','fl').' ON '.$this->_db->quoteName('fl.id').' = '.$this->_db->quoteName('esg.list_id'));
 
 		if (!empty($filterDate)) {
 			$query->where($filterDate);
@@ -118,6 +120,35 @@ class EmundusModelGallery extends JModelList
 				}
 
 				$cache->set($cacheId, $gallery);
+			}
+		}
+		catch (Exception $e) {
+			JLog::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $gallery;
+	}
+
+	public function getGalleryById($id)
+	{
+		try {
+			$query = $this->_db->getQuery(true);
+
+			if(empty($gallery)) {
+				$query->select('*')
+					->from($this->_db->quoteName('#__emundus_setup_gallery'))
+					->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($id));
+				$this->_db->setQuery($query);
+				$gallery = $this->_db->loadObject();
+
+				if(!empty($gallery)) {
+					$query->clear()
+						->select('title,fields')
+						->from($this->_db->quoteName('#__emundus_setup_gallery_detail_tabs'))
+						->where($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($gallery->id));
+					$this->_db->setQuery($query);
+					$gallery->tabs = $this->_db->loadObjectList();
+				}
 			}
 		}
 		catch (Exception $e) {
@@ -333,6 +364,18 @@ class EmundusModelGallery extends JModelList
 		}
 
 		return $result;
+	}
+
+	public function getElements($cid)
+	{
+		//TODO: Get elements from profiles of the campaign_id
+
+		//TODO: Sort elements by gallery property (all,title,subtitle,tags,resume), store in cache (need to be clear when open formbuilder)
+	}
+
+	public function getImageAttachments($cid)
+	{
+		//TODO: Get image attachments from profiles of the campaign_id
 	}
 
     //TODO: Create function to select an element to display (need to manage table join if needed)

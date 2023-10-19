@@ -1,7 +1,7 @@
 <template>
   <div id="gallery-display">
     <div>
-      <h2>Vignettes</h2>
+      <h2>{{ translate('COM_EMUNDUS_GALLERY_VIGNETTES') }}</h2>
       <p>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_INTRO') }}</p>
     </div>
 
@@ -9,27 +9,27 @@
       <div class="flex mt-4 gap-8">
         <div class="w-2/4">
           <div class="mb-4 mt-2">
-            <label>Titre</label>
+            <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_TITLE') }}</label>
             <select class="w-full"></select>
           </div>
 
           <div class="mb-4">
-            <label>Sous-titre</label>
+            <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_SUBTITLE') }}</label>
             <select class="w-full"></select>
           </div>
 
           <div class="mb-4">
-            <label>Étiquettes</label>
+            <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_TAGS') }}</label>
             <select class="w-full"></select>
           </div>
 
           <div class="mb-4">
-            <label>Description</label>
+            <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_RESUME') }}</label>
             <select class="w-full"></select>
           </div>
 
           <div class="mb-4">
-            <label>Image</label>
+            <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_IMAGE') }}</label>
             <select class="w-full"></select>
           </div>
         </div>
@@ -38,21 +38,21 @@
           <div class="fabrikImageBackground" style="background-image: url('/media/com_emundus/images/gallery/default_card.png')"></div>
           <div class="p-4">
             <h2 class="line-clamp-2 h-14">
-              Titre de la vignette
+              {{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_TITLE') }}
             </h2>
             <div class="mb-3">
               <p class="em-caption" style="min-height: 15px">
-                Sous-titre
+                {{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_SUBTITLE') }}
               </p>
             </div>
             <div class="mb-3 tags" style="min-height: 30px">
               <ul>
-                <li>Étiquette 1</li>
-                <li>Étiquette 2</li>
+                <li>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_TAG') }} 1</li>
+                <li>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_TAG') }} 2</li>
               </ul>
             </div>
             <p class="mb-3 line-clamp-4 h-20">
-              Lorem ipsum
+              Lorem ipsum dolor sit amet, consectetur adi elit, sed do eiusmod tempor incididunt ut labLorem ipsum dolor sitermina erts
             </p>
           </div>
         </div>
@@ -69,20 +69,26 @@ export default {
 
   components: {},
 
-  directives: { focus: {
-      inserted: function (el) {
-        el.focus()
-      }
-    }
-  },
+  directives: {},
 
   props: {
-    gallery: Number,
+    gallery: Object,
   },
 
-  data: () => ({}),
+  data: () => ({
+    elements: [],
+  }),
 
-  created() {},
+  created() {
+    // get elements from gallery campaign_id attribute
+    let campaign_id = this.$props.gallery.campaign_id;
+    fetch('index.php?option=com_emundus&controller=gallery&task=getelements&campaign_id='+campaign_id)
+        .then(response => response.json())
+        .then(data => {
+          this.elements = data;
+          console.log(this.elements);
+        });
+  },
   methods: {},
 
   watch: {}

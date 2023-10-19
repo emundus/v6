@@ -56,7 +56,7 @@ class EmundusControllerGallery extends JControllerLegacy
 			if (count($galleries) > 0) {
 				// this data formatted is used in onboarding lists
 				foreach($galleries['datas'] as $key => $gallery) {
-					$gallery->label = ['fr' => $gallery->title, 'en' => $gallery->title];
+					$gallery->label = ['fr' => $gallery->label, 'en' => $gallery->label];
 
 					$start_date = date('d/m/Y H\hi', strtotime($gallery->start_date));
 					$end_date = date('d/m/Y H\hi', strtotime($gallery->end_date));
@@ -99,6 +99,26 @@ class EmundusControllerGallery extends JControllerLegacy
 		exit;
 	}
 
+	public function getgallery()
+	{
+		$response = array('status' => 1, 'msg' => '', 'data' => []);
+
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$response['status'] = 0;
+			$response['msg'] = JText::_('ACCESS_DENIED');
+		}
+		else {
+			$id = $this->input->getInt('id', 0);
+
+			if(!empty($id)) {
+				$response['data'] = $this->_model->getGalleryById($id);
+			}
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
 	public function creategallery()
 	{
 		$response = array('status' => 1, 'msg' => JText::_('GALLERY_ADDED'), 'data' => []);
@@ -111,6 +131,26 @@ class EmundusControllerGallery extends JControllerLegacy
 			$data = $this->input->getArray();
 
 			$response['data'] = $this->_model->createGallery($data, $this->_user);
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
+	public function getelements()
+	{
+		$response = array('status' => 1, 'msg' => '', 'data' => []);
+
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$response['status'] = 0;
+			$response['msg'] = JText::_('ACCESS_DENIED');
+		}
+		else {
+			$cid = $this->input->getInt('campaign_id', 0);
+
+			if(!empty($id)) {
+				$response['data'] = $this->_model->getElements($cid);
+			}
 		}
 
 		echo json_encode((object)$response);

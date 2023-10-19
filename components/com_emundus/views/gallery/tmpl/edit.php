@@ -17,6 +17,15 @@ Text::script('COM_EMUNDUS_GALLERY_DISPLAY');
 Text::script('COM_EMUNDUS_GALLERY_DETAILS');
 Text::script('COM_EMUNDUS_GALLERY_SETTINGS');
 Text::script('COM_EMUNDUS_GALLERY_DISPLAY_INTRO');
+Text::script('COM_EMUNDUS_ONBOARD_EDIT_GALLERY');
+Text::script('COM_EMUNDUS_ONBOARD_EDIT_PREVIEW');
+Text::script('COM_EMUNDUS_GALLERY_VIGNETTES');
+Text::script('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_TITLE');
+Text::script('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_SUBTITLE');
+Text::script('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_TAG');
+Text::script('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_TAGS');
+Text::script('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_RESUME');
+Text::script('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_IMAGE');
 
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 
@@ -38,6 +47,8 @@ $user = Factory::getApplication()->getIdentity();
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
 $sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
 
+$id = Factory::getApplication()->input->getInt('gid', 0);
+
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 ?>
@@ -45,7 +56,7 @@ $hash = EmundusHelperCache::getCurrentGitHash();
 
 <div id="em-component-vue"
      component="editgallery"
-     gallery="<?= $this->id ;?>"
+     gallery="<?= $id ;?>"
      shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
      defaultLang="<?= $default_lang ?>"
      manyLanguages="<?= $many_languages ?>"

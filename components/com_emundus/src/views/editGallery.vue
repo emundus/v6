@@ -6,10 +6,10 @@
     </div>
 
     <div>
-      <h1 class="mt-3">Modifier la catalogue </h1>
+      <h1 class="mt-3">{{ translate('COM_EMUNDUS_ONBOARD_EDIT_GALLERY') }}</h1>
       <button class="mt-2 em-tertiary-button flex em-w-auto p-0 items-center gap-2" type="button">
         <span class="material-icons-outlined">visibility</span>
-        Prévisualiser
+        {{ translate('COM_EMUNDUS_ONBOARD_EDIT_PREVIEW') }}
       </button>
     </div>
 
@@ -30,6 +30,7 @@
     <transition>
       <display
           v-if="selectedMenu === 0"
+          :gallery="gallery"
       ></display>
       <gallery-details
           v-if="selectedMenu === 1"
@@ -57,16 +58,9 @@ export default {
 
   components: {galleryDetails, Settings, Display},
 
-  directives: { focus: {
-      inserted: function (el) {
-        el.focus()
-      }
-    }
-  },
+  directives: {},
 
-  props: {
-    gallery: Number,
-  },
+  props: {},
 
   data: () => ({
     selectedMenu: 0,
@@ -75,9 +69,22 @@ export default {
       'COM_EMUNDUS_GALLERY_DETAILS',
       'COM_EMUNDUS_GALLERY_SETTINGS'
     ],
+
+    gallery: null,
   }),
 
-  created() {},
+  created() {
+    let gid = this.$store.getters['global/datas'].gallery.value;
+    console.log(gid);
+    fetch('index.php?option=com_emundus&controller=gallery&task=getgallery&id='+gid)
+        .then(response => response.json())
+        .then(data => {
+          this.gallery = data.data;
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+  },
   methods: {
     redirectJRoute(link) {
       window.location.href = link

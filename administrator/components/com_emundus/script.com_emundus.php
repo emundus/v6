@@ -3213,6 +3213,12 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 						'null'    => 1,
 					],
 					[
+						'name'    => 'campaign_id',
+						'type'    => 'integer',
+						'length'  => 10,
+						'null'    => 0,
+					],
+					[
 						'name'    => 'list_id',
 						'type'    => 'integer',
 						'length'  => 10,
