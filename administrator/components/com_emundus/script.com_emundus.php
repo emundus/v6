@@ -3362,6 +3362,42 @@ structure:
 				EmundusHelperUpdate::addYamlVariable('groups', 'url("/media/com_emundus/images/tchoozy/objects-illustrations/groups.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
 				EmundusHelperUpdate::addYamlVariable('profiles', 'url("/media/com_emundus/images/tchoozy/objects-illustrations/profiles.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
 				EmundusHelperUpdate::addYamlVariable('hiding', 'url("/media/com_emundus/images/tchoozy/complex-illustrations/hiding.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
+
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature', 'copy_users_assoc', 'INT');
+				$datas = array(
+					'name' => 'copy_users_assoc',
+					'group_id' => 254,
+					'plugin' => 'radiobutton',
+					'label' => 'COPY_USERS_ASSOC'
+				);
+				$params = array(
+					'sub_options' => array(
+						'sub_values' => array(0,1),
+						'sub_labels' => array('JNO','JYES'),
+						'sub_initial_selection' => array('0')
+					)
+				);
+				EmundusHelperUpdate::addFabrikElement($datas,$params);
+				EmundusHelperUpdate::insertTranslationsTag('COPY_USERS_ASSOC', 'Copier les utilisateurs associés', 'override', null, 'fabrik_elements', 'label');
+				EmundusHelperUpdate::insertTranslationsTag('COPY_USERS_ASSOC', 'Copy associated users', 'override', null, 'fabrik_elements', 'label', 'en-GB');
+
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature', 'copy_groups_assoc', 'INT');
+				$datas = array(
+					'name' => 'copy_groups_assoc',
+					'group_id' => 254,
+					'plugin' => 'radiobutton',
+					'label' => 'COPY_GROUPS_ASSOC',
+				);
+				$params = array(
+					'sub_options' => array(
+						'sub_values' => array(0,1),
+						'sub_labels' => array('JNO','JYES'),
+						'sub_initial_selection' => array('0'),
+					)
+				);
+				EmundusHelperUpdate::addFabrikElement($datas,$params);
+				EmundusHelperUpdate::insertTranslationsTag('COPY_GROUPS_ASSOC', 'Copier les groupes associés', 'override', null, 'fabrik_elements', 'label');
+				EmundusHelperUpdate::insertTranslationsTag('COPY_GROUPS_ASSOC', 'Copy associated groups', 'override', null, 'fabrik_elements', 'label', 'en-GB');
 			}
 		}
 
