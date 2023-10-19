@@ -4046,7 +4046,7 @@ class EmundusModelApplication extends JModelList
      * @param $pid Int the profile_id to get list of forms
      * @return bool
      */
-    public function copyApplication($fnum_from, $fnum_to, $pid = null, $copy_attachment = 0, $campaign_id = null, $copy_tag = 0, $move_hikashop_command = 0, $delete_from_file = 0, $params = array(), $copyUsersAssoc=0, $copyGroupsAssoc=0) {
+    public function copyApplication($fnum_from, $fnum_to, $pid = null, $copy_attachment = 0, $campaign_id = null, $copy_tag = 0, $move_hikashop_command = 0, $delete_from_file = 0, $params = array(), $copyUsersAssoc = 0, $copyGroupsAssoc = 0) {
         $db = JFactory::getDbo();
         $pids = [];
 
@@ -4359,18 +4359,17 @@ class EmundusModelApplication extends JModelList
         return true;
     }
 
-    public function copyUsersAssoc($fnum_from, $fnum_to) {
-        $db = JFactory::getDbo();
+    public function copyUsersAssoc($fnum_from, $fnum_to)
+    {
+        $query = $this->_db->getQuery(true);
 
         try {
+			$query->select('eua.*')
+				->from($this->_db->quoteName('#__emundus_users_assoc', 'eua'))
+				->where($this->_db->quoteName('eua.fnum') . ' LIKE ' . $this->_db->quote($fnum_from));
 
-            // 1. get list of user assoc for previous file defined as duplicated
-            $query = 'SELECT eua.*
-                        FROM #__emundus_users_assoc as eua
-                        WHERE eua.fnum like '.$db->Quote($fnum_from);
-
-            $db->setQuery($query);
-            $users_assoc = $db->loadAssocList();
+	        $this->_db->setQuery($query);
+            $users_assoc = $this->_db->loadAssocList();
 
             if (count($users_assoc) > 0) {
                 // 2. copy DB définition and duplicate files in applicant directory
@@ -4379,9 +4378,12 @@ class EmundusModelApplication extends JModelList
                     unset($user['id']);
 
                     try {
-                        $query = 'INSERT INTO #__emundus_users_assoc (`'.implode('`,`', array_keys($user)).'`) VALUES('.implode(',', $db->Quote($user)).')';
-                        $db->setQuery($query);
-                        $db->execute();
+						$query->clear()
+							->insert($this->_db->quoteName('#__emundus_users_assoc'))
+							->columns(array_keys($user))
+							->values(implode(", ", $this->_db->quote($user)));
+	                    $this->_db->setQuery($query);
+	                    $this->_db->execute();
                     } catch (Exception $e) {
                         $error = JUri::getInstance().' :: USER ID : '.$user['user_id'].' -> '.$e->getMessage();
                         JLog::add($error, JLog::ERROR, 'com_emundus');
@@ -4396,18 +4398,17 @@ class EmundusModelApplication extends JModelList
 
         return true;
     }
-    public function copyGroupsAssoc($fnum_from, $fnum_to) {
-        $db = JFactory::getDbo();
+
+    public function copyGroupsAssoc($fnum_from, $fnum_to)
+    {
+	    $query = $this->_db->getQuery(true);
 
         try {
-
-            // 1. get list of usser assoc for previous file defined as duplicated
-            $query = 'SELECT ega.*
-                        FROM #__emundus_group_assoc as ega
-                        WHERE ega.fnum like '.$db->Quote($fnum_from);
-
-            $db->setQuery($query);
-            $groups_assoc = $db->loadAssocList();
+			$query->select('ega.*')
+				->from($this->_db->quoteName('#__emundus_group_assoc', 'ega'))
+				->where($this->_db->quoteName('ega.fnum') . ' LIKE ' . $this->_db->quote($fnum_from));
+	        $this->_db->setQuery($query);
+            $groups_assoc = $this->_db->loadAssocList();
 
             if (count($groups_assoc) > 0) {
                 // 2. copy DB définition and duplicate files in applicant directory
@@ -4416,9 +4417,12 @@ class EmundusModelApplication extends JModelList
                     unset($group['id']);
 
                     try {
-                        $query = 'INSERT INTO #__emundus_group_assoc (`'.implode('`,`', array_keys($group)).'`) VALUES('.implode(',', $db->Quote($group)).')';
-                        $db->setQuery($query);
-                        $db->execute();
+						$query->clear()
+							->insert($this->_db->quoteName('#__emundus_group_assoc'))
+							->columns(array_keys($group))
+							->values(implode(", ", $this->_db->quote($group)));
+	                    $this->_db->setQuery($query);
+	                    $this->_db->execute();
                     } catch (Exception $e) {
                         $error = JUri::getInstance().' :: fnum : '.$group['user_id'].' :: group : '.$group['group_id'].' -> '.$e->getMessage();
                         JLog::add($error, JLog::ERROR, 'com_emundus');
