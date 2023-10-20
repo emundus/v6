@@ -3417,11 +3417,15 @@ class EmundusModelFiles extends JModelLegacy
      * @return int
      */
     public function addAttachment($fnum, $name, $uid, $cid, $attachment_id, $desc, $canSee = 0) {
-        $dbo = $this->getDbo();
-        $query = "insert into jos_emundus_uploads (user_id, fnum, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id) values ({$uid}, {$dbo->quote($fnum)}, {$attachment_id}, {$dbo->quote($name)}, {$dbo->quote($desc)}, 0, {$canSee}, {$cid})";
-        $dbo->setQuery($query);
-        $dbo->execute();
-        return $dbo->insertid();
+        $now = EmundusHelperDate::getNow();
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+        $query->insert($db->quoteName('#__emundus_uploads'))
+            ->columns($db->quoteName(array('timedate', 'user_id', 'fnum', 'attachment_id', 'filename', 'description', 'can_be_deleted', 'can_be_viewed', 'campaign_id')))
+            ->values($db->quote($now).', '.$db->quote($uid).', '.$db->quote($fnum).', '.$db->quote($attachment_id).', '.$db->quote($name).', '.$db->quote($desc).', 0, '.$db->quote($canSee).', '.$db->quote($cid));
+        $db->setQuery($query);
+        $db->execute();
+        return $db->insertid();
     }
 
     /**
