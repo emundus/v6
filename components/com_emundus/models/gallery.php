@@ -438,7 +438,56 @@ class EmundusModelGallery extends JModelList
 		//TODO: Get image attachments from profiles of the campaign_id
 	}
 
-    //TODO: Create function to select an element to display (need to manage table join if needed)
+	public function updateAttribute($gid,$attribute,$value)
+	{
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'fabrik.php');
+
+		$added = false;
+
+		$query = $this->_db->getQuery(true);
+		$gallery = $this->getGalleryById($gid);
+
+		try {
+			$query->update($this->_db->quoteName('#__emundus_setup_gallery'))
+				->set($this->_db->quoteName($attribute) . ' = ' . $this->_db->quote($value))
+				->where($this->_db->quoteName('id') .' = ' . $gid);
+			$this->_db->setQuery($query);
+
+			if($this->_db->execute()) {
+				$table_to_join = explode('___',$value)[0];
+				$tables_joined = [];
+				$joins = EmundusHelperFabrik::getFabrikJoins($gallery->list_id);
+				foreach ($joins as $join) {
+					$tables_joined[] = $join->table_join;
+				}
+				
+				if(!in_array($table_to_join,$tables_joined)) {
+					$query->clear()
+						->select('db_table_name')
+						->from($this->_db->quoteName('#__fabrik_lists'))
+						->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($gallery->list_id));
+					$this->_db->setQuery($query);
+					$db_table_name = $this->_db->loadResult();
+
+					//TODO: Need to return more details like group_id
+					$joined = EmundusHelperFabrik::createFabrikJoin($db_table_name,$table_to_join,$gallery->list_id);
+
+					if($joined) {
+						//TODO: Create element selected in group created with join
+					}
+				}
+			}
+
+			//TODO: Get list_id from gallery object and check joins
+
+			//TODO: If table of element not in joins add it to fabrik list
+		}
+		catch (Exception $e) {
+			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+		}
+
+		return $added;
+	}
 
 	//TODO: Create function to add prefilter to a fabrik list on status
 }

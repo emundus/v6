@@ -183,4 +183,24 @@ class EmundusControllerGallery extends JControllerLegacy
 		echo json_encode((object)$response);
 		exit;
 	}
+
+	public function updateattribute()
+	{
+		$response = array('status' => 1, 'msg' => '', 'data' => []);
+
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$response['status'] = 0;
+			$response['msg'] = JText::_('ACCESS_DENIED');
+		}
+		else {
+			$gid = $this->input->getInt('gallery_id', 0);
+			$attribute = $this->input->getString('attribute', '');
+			$value = $this->input->getString('value', '');
+
+			$response['data'] = $this->_model->updateAttribute($gid,$attribute,$value);
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
 }
