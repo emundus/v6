@@ -99,7 +99,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         <hr>
         <div class="mod_emundus_campaign__list_content--default">
             <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                <iframe id="background-shapes" src="/modules/mod_emundus_campaign/css/fond-clair.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
+                <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
             <?php endif; ?>
             <h2 class="em-applicant-title-font em-mb-16"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN') ?></h2>
             <?php if(JFactory::getUser()->guest) : ?>
@@ -149,7 +149,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                         <?php endif; ?>
 
                         <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                            <iframe id="background-shapes" src="/modules/mod_emundus_campaign/css/fond-clair.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
+                            <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
                         <?php endif; ?>
 
                         <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
@@ -517,7 +517,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 	                    <?php endif; ?>
                         <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
 	                        <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                                <iframe id="background-shapes" src="/modules/mod_emundus_campaign/css/fond-clair.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
+                                <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
 	                        <?php endif; ?>
 
                                 <?php  else : ?>
@@ -528,7 +528,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 	                                <?php endif; ?>
                                      <div class="mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
 	                                     <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                                             <iframe id="background-shapes" src="/modules/mod_emundus_campaign/css/fond-clair.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
+                                             <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
 	                                     <?php endif; ?>
 
                                          <?php endif; ?>
@@ -1049,11 +1049,11 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         let iframeElementHover = divHover.querySelector('iframe');
 
         divHover.addEventListener('mouseenter', function() {
-            iframeElementHover.src = '/modules/mod_emundus_campaign/css/fond-fonce.svg';
+            iframeElementHover.src = '/modules/mod_emundus_campaign/assets/fond-fonce.svg';
         });
 
         divHover.addEventListener('mouseleave', function() {
-            iframeElementHover.src = '/modules/mod_emundus_campaign/css/fond-clair.svg';
+            iframeElementHover.src = '/modules/mod_emundus_campaign/assets/fond-clair.svg';
         });
     })
 

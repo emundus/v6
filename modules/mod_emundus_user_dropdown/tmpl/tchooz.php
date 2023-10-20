@@ -181,7 +181,7 @@ if ($user != null) {
 
 <!-- Button which opens up the dropdown menu. -->
 <div class='dropdown <?php if($first_logged) : ?>userDropdown-tip<?php endif; ?>' tabindex="0" id="userDropdown" style="float: right;">
-    <iframe id="background-shapes" src="/modules/mod_emundus_user_dropdown/style/fond-formes-header.svg" alt="<?= JText::_('COM_EMUNDUS_USERDROPDOWN_IFRAME') ?>"></iframe>
+    <iframe id="background-shapes" src="/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg" alt="<?= JText::_('COM_EMUNDUS_USERDROPDOWN_IFRAME') ?>"></iframe>
     <?php if(!empty($profile_picture)): ?>
     <div id="userDropdownLabel">
         <div class="em-flex-row em-flex-end em-profile-container">
@@ -522,7 +522,7 @@ if ($user != null) {
         }
     </script>
 <?php } else { ?>
-    <iframe id="background-shapes" src="/modules/mod_emundus_user_dropdown/style/fond-formes-header.svg" alt="<?= JText::_('COM_EMUNDUS_USERDROPDOWN_IFRAME') ?>"></iframe>
+    <iframe id="background-shapes" src="/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg" alt="<?= JText::_('COM_EMUNDUS_USERDROPDOWN_IFRAME') ?>"></iframe>
     <div class="header-right" style="text-align: right;">
         <?php if ($show_registration) { ?>
             <a class="btn btn-danger" href="<?= $link_register; ?>" data-toggle="sc-modal"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
