@@ -321,27 +321,25 @@ if ($user != null) {
                 let profile_state = result.data.published;
 
                 let label_colors = {
-                    'lightpurple' : '--em-purple-1',
+                    'lightpurple' : '--em-purple-2',
                     'purple' : '--em-purple-2',
                     'darkpurple' : '--em-purple-2',
-                    'lightblue' : '--em-light-blue-1',
+                    'lightblue' : '--em-light-blue-2',
                     'blue' : '--em-blue-2',
                     'darkblue' : '--em-blue-3',
-                    'lightgreen' : '--em-green-1',
+                    'lightgreen' : '--em-green-2',
                     'green' : '--em-green-2',
                     'darkgreen' : '--em-green-2',
-                    'lightyellow' : '--em-yellow-1',
+                    'lightyellow' : '--em-yellow-2',
                     'yellow' : '--em-yellow-2',
                     'darkyellow' : '--em-yellow-2',
-                    'lightorange' : '--em-orange-1',
+                    'lightorange' : '--em-orange-2',
                     'orange' : '--em-orange-2',
                     'darkorange' : '--em-orange-2',
                     'lightred' : '--em-red-1',
                     'red' : '--em-red-2',
                     'darkred' : '--em-red-2',
-                    'lightpink' : '--em-pink-1',
-                    'pink' : '--em-pink-2',
-                    'darkpink' : '--em-pink-2',
+                    'default' : '--neutral-600',
                 };
 
                 if(profile_state == 1) { // it's an applicant profile
