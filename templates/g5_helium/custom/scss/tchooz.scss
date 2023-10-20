@@ -2408,4 +2408,12 @@ button.em-swal-delete-button:hover{
     left: 434px;
     transform: scale(2);
   }
+
+  #applications_list_view table:first-child thead tr th:first-child {
+    padding-left: 16px;
+  }
+
+  #applications_list_view table tbody tr td {
+    padding: var(--p-16);
+  }
 }
