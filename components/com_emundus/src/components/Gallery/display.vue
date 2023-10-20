@@ -10,22 +10,90 @@
         <div class="w-2/4">
           <div class="mb-4 mt-2">
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_TITLE') }}</label>
-            <select class="w-full"></select>
+            <multiselect
+                v-if="simple_fields"
+                v-model="form.title"
+                label="label"
+                track-by="fullname"
+                :options="simple_fields"
+                group-values="elements"
+                group-label="label"
+                :group-select="false"
+                :multiple="false"
+                :searchable="true"
+                :taggable="false"
+                select-label=""
+                selected-label=""
+                deselect-label=""
+                :close-on-select="true"
+                :clear-on-select="false"
+            ></multiselect>
           </div>
 
           <div class="mb-4">
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_SUBTITLE') }}</label>
-            <select class="w-full"></select>
+            <multiselect
+                v-if="simple_fields"
+                v-model="form.subtitle"
+                label="label"
+                track-by="fullname"
+                :options="simple_fields"
+                group-values="elements"
+                group-label="label"
+                :group-select="false"
+                :multiple="false"
+                :searchable="true"
+                :taggable="false"
+                select-label=""
+                selected-label=""
+                deselect-label=""
+                :close-on-select="true"
+                :clear-on-select="false"
+            ></multiselect>
           </div>
 
           <div class="mb-4">
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_TAGS') }}</label>
-            <select class="w-full"></select>
+            <multiselect
+                v-if="choices_fields"
+                v-model="form.tags"
+                label="label"
+                track-by="fullname"
+                :options="choices_fields"
+                group-values="elements"
+                group-label="label"
+                :group-select="false"
+                :multiple="false"
+                :searchable="true"
+                :taggable="false"
+                select-label=""
+                selected-label=""
+                deselect-label=""
+                :close-on-select="true"
+                :clear-on-select="false"
+            ></multiselect>
           </div>
 
           <div class="mb-4">
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_RESUME') }}</label>
-            <select class="w-full"></select>
+            <multiselect
+                v-if="description_fields"
+                v-model="form.resume"
+                label="label"
+                track-by="fullname"
+                :options="description_fields"
+                group-values="elements"
+                group-label="label"
+                :group-select="false"
+                :multiple="false"
+                :searchable="true"
+                :taggable="false"
+                select-label=""
+                selected-label=""
+                deselect-label=""
+                :close-on-select="true"
+                :clear-on-select="false"
+            ></multiselect>
           </div>
 
           <div class="mb-4">
@@ -63,11 +131,12 @@
 
 <script>
 import Swal from "sweetalert2";
+import Multiselect from "vue-multiselect";
 
 export default {
   name: "display",
 
-  components: {},
+  components: {Multiselect},
 
   directives: {},
 
@@ -77,21 +146,70 @@ export default {
 
   data: () => ({
     elements: [],
+    simple_fields: [],
+    choices_fields: [],
+    description_fields: [],
+    form: {
+      title: '',
+      subtitle: '',
+      tags: [],
+      resume: '',
+      image: '',
+    },
   }),
 
   created() {
-    // get elements from gallery campaign_id attribute
-    let campaign_id = this.$props.gallery.campaign_id;
-    fetch('index.php?option=com_emundus&controller=gallery&task=getelements&campaign_id='+campaign_id)
-        .then(response => response.json())
-        .then(data => {
-          this.elements = data;
-          console.log(this.elements);
-        });
+    this.getElements();
   },
-  methods: {},
+  methods: {
+    getElements() {
+      fetch('index.php?option=com_emundus&controller=gallery&task=getelements&campaign_id='+this.gallery.campaign_id+'&list_id='+this.gallery.list_id)
+          .then(response => response.json())
+          .then(data => {
+            this.elements = data.data.elements;
+            this.simple_fields = Object.values(data.data.simple_fields);
+            this.choices_fields = data.data.choices_fields;
+            this.description_fields = data.data.description_fields;
 
-  watch: {}
+            this.elements.forEach((element) => {
+              element.elements.forEach((field) => {
+                if(field.fullname === this.gallery.title) {
+                  this.form.title = field;
+                }
+
+                if(field.fullname === this.gallery.subtitle) {
+                  this.form.subtitle = field;
+                }
+
+                if(field.fullname === this.gallery.tags) {
+                  this.form.tags = field;
+                }
+
+                if(field.fullname === this.gallery.resume) {
+                  this.form.resume = field;
+                }
+              });
+            });
+          });
+    },
+
+    updateAttribute(attribute,value) {
+      fetch('index.php?option=com_emundus&controller=gallery&task=updateattribute&gallery_id='+this.gallery.id+'&attribute='+attribute+'&value='+value)
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+          });
+    }
+  },
+
+  watch: {
+    'form.title' : function(val,oldVal) {
+      //TODO: Update card title (do not forget joins on list) -> Check if joins already exist and if all joins are used
+      if(oldVal !== '') {
+        this.updateAttribute('title', val.fullname);
+      }
+    }
+  }
 };
 </script>
 

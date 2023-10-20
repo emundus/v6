@@ -29,7 +29,7 @@
 
     <transition>
       <display
-          v-if="selectedMenu === 0"
+          v-if="selectedMenu === 0 && gallery"
           :gallery="gallery"
       ></display>
       <gallery-details
@@ -75,7 +75,6 @@ export default {
 
   created() {
     let gid = this.$store.getters['global/datas'].gallery.value;
-    console.log(gid);
     fetch('index.php?option=com_emundus&controller=gallery&task=getgallery&id='+gid)
         .then(response => response.json())
         .then(data => {

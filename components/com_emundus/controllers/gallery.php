@@ -146,10 +146,37 @@ class EmundusControllerGallery extends JControllerLegacy
 			$response['msg'] = JText::_('ACCESS_DENIED');
 		}
 		else {
+			$lid = $this->input->getInt('list_id', 0);
 			$cid = $this->input->getInt('campaign_id', 0);
 
-			if(!empty($id)) {
-				$response['data'] = $this->_model->getElements($cid);
+			if(!empty($cid)) {
+				$response['data']['elements'] = $this->_model->getElements($cid,$lid);
+
+				if(!empty($response['data'])) {
+					$response['data']['simple_fields'] = [];
+					$response['data']['choices_fields'] = [];
+					$response['data']['description_fields'] = [];
+
+					foreach ($response['data']['elements'] as $key => $element) {
+						$response['data']['simple_fields'][$key]['label'] = $element['label'];
+						$response['data']['choices_fields'][$key]['label'] = $element['label'];
+						$response['data']['description_fields'][$key]['label'] = $element['label'];
+
+						foreach ($element['elements'] as $elt) {
+							if (!in_array($elt->plugin, ['checkbox'])) {
+								$response['data']['simple_fields'][$key]['elements'][] = $elt;
+							}
+
+							if (in_array($elt->plugin, ['checkbox', 'dropdown', 'radiobutton', 'databasejoin'])) {
+								$response['data']['choices_fields'][$key]['elements'][] = $elt;
+							}
+
+							if (in_array($elt->plugin, ['textarea', 'field'])) {
+								$response['data']['description_fields'][$key]['elements'][] = $elt;
+							}
+						}
+					}
+				}
 			}
 		}
 

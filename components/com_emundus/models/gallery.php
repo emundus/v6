@@ -366,11 +366,71 @@ class EmundusModelGallery extends JModelList
 		return $result;
 	}
 
-	public function getElements($cid)
+	public function getElements($cid,$lid)
 	{
-		//TODO: Get elements from profiles of the campaign_id
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'cache.php');
 
-		//TODO: Sort elements by gallery property (all,title,subtitle,tags,resume), store in cache (need to be clear when open formbuilder)
+		$cache = new EmundusHelperCache('com_emundus');
+		$cacheId = 'gallery_' . $cid . '_elements';
+
+		$elements = $cache->get($cacheId);
+
+		if(empty($elements)) {
+			$elements = [];
+			$query = $this->_db->getQuery(true);
+
+			try {
+				require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
+				require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'form.php');
+				$m_profile = new EmundusModelProfile();
+				$m_form    = new EmundusModelForm();
+
+				$pids = $m_profile->getProfilesIDByCampaign([$cid]);
+
+				$query->select('db_table_name')
+					->from($this->_db->quoteName('#__fabrik_lists'))
+					->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($lid));
+				$this->_db->setQuery($query);
+				$db_table_name = $this->_db->loadResult();
+
+				foreach ($pids as $pid) {
+					$forms = $m_form->getFormsByProfileId($pid);
+
+					foreach ($forms as $form) {
+						$elts_by_form = [
+							'label' => $form->label,
+						];
+
+						$query->clear()
+							->select('fe.id,concat(fl.db_table_name,"___",fe.name) as fullname,fe.label,fe.plugin')
+							->from($this->_db->quoteName('#__fabrik_elements', 'fe'))
+							->leftJoin($this->_db->quoteName('#__fabrik_groups', 'fg') . ' ON ' . $this->_db->quoteName('fg.id') . ' = ' . $this->_db->quoteName('fe.group_id'))
+							->leftJoin($this->_db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $this->_db->quoteName('ffg.group_id') . ' = ' . $this->_db->quoteName('fg.id'))
+							->leftJoin($this->_db->quoteName('#__fabrik_lists','fl').' ON '.$this->_db->quoteName('fl.form_id').' = '.$this->_db->quoteName('ffg.form_id'))
+							->where($this->_db->quoteName('ffg.form_id') . ' = ' . $this->_db->quote($form->id))
+							->where($this->_db->quoteName('fe.published') . ' = ' . $this->_db->quote(1))
+							->where($this->_db->quoteName('fe.hidden') . ' = ' . $this->_db->quote(0))
+							->where('JSON_VALID(`fg`.`params`)')
+							->where('JSON_EXTRACT(`fg`.`params`, "$.repeat_group_show_first") <> "-1"');
+						$this->_db->setQuery($query);
+						$elts_by_form['elements'] = $this->_db->loadObjectList();
+
+						array_map(function ($elt) use ($db_table_name) {
+							$elt->label    = JText::_($elt->label);
+						}, $elts_by_form['elements']);
+
+						$elements[] = $elts_by_form;
+					}
+				}
+
+				$cache->set($cacheId, $elements);
+			}
+			catch (Exception $e) {
+				JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $elements;
 	}
 
 	public function getImageAttachments($cid)
