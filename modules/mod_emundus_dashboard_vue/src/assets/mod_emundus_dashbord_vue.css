@@ -179,7 +179,7 @@
   border-radius: 16px;
   position: absolute;
   z-index: 2;
-  height: -webkit-fill-available;
+  height: 100%;
 }
 
 .profile_widget .profile_widget-text  {
@@ -192,6 +192,7 @@
   border: 1px solid var(--em-profile-color);
   border-radius: 16px;
   margin: 0 !important;
+
 }
 
 .profile_widget-text h1,
