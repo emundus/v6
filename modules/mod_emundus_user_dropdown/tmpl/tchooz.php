@@ -351,6 +351,22 @@ if ($user != null) {
 
                     document.documentElement.style.setProperty("--em-profile-color", css_var);
 
+                    // header background color
+                    let iframeElements_2 = document.querySelectorAll("#background-shapes");
+                    iframeElements_2.forEach((iframeElement) => {
+
+                    let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
+                    let styleElement = iframeDocument.querySelector("style");
+
+                            if (styleElement) {
+                                let styleContent = styleElement.textContent;
+
+                                styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + css_var + ";");
+
+                                styleElement.textContent = styleContent;
+
+                            }
+                    });
                 }
                 else  { // it's a coordinator profile
 
@@ -364,36 +380,27 @@ if ($user != null) {
 
                             document.documentElement.style.setProperty("--em-profile-color", css_var);
 
+                            // header background color
+                            var iframeElements_2 = document.querySelectorAll("#background-shapes");
+                            iframeElements_2.forEach((iframeElement) => {
+
+                                let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
+                                let styleElement = iframeDocument.querySelector("style");
+
+                                if (styleElement) {
+                                    let styleContent = styleElement.textContent;
+
+                                    styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + css_var + ";");
+
+                                    styleElement.textContent = styleContent;
+
+                                }
+                            });
+
                         }
                     }
-
                 }
             }
-        });
-
-
-        /* Modification de la couleur du background avec les formes du header */
-        let iframeElements_2 = document.querySelectorAll("#background-shapes");
-        let root = document.querySelector(':root');
-        let emProfileColor2 = getComputedStyle(root).getPropertyValue("--em-primary-color");
-
-        iframeElements_2.forEach((iframeElement) => {
-
-            iframeElement.addEventListener("load", function () {
-
-                let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
-                let styleElement = iframeDocument.querySelector("style");
-
-                if (styleElement) {
-                    let styleContent = styleElement.textContent;
-
-                    styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + emProfileColor2 + ";");
-
-                    styleElement.textContent = styleContent;
-
-                }
-
-            });
         });
 
         <?php if($first_logged) : ?>
