@@ -199,7 +199,7 @@ if ($user != null) {
         </div>
     </div>
     <?php else : ?>
-    <div class="em-flex-row em-flex-end em-profile-container" id="userDropdownLabel">
+    <div class="em-flex-row em-flex-end em-profile-container" id="userDropdownLabel" onclick="manageHeight()">
         <div class="em-flex-row">
             <div class="mr-4">
                 <?php if(!empty($user)) : ?>
