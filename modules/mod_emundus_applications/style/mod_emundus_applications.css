@@ -655,6 +655,7 @@ a.btn.btn-success:not(.btn-xs) {
     width: 38px;
     align-items: center;
     justify-content: center;
+    background: var(--neutral-0);
 }
 .mod_emundus_application___buttons_switch_view_disabled{
     color: var(--neutral-600);
