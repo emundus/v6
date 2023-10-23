@@ -1712,7 +1712,7 @@ class EmundusModelEmails extends JModelList {
      *
      * @since version 1.0
      */
-    function getAllEmails($lim, $page, $filter, $sort, $recherche) {
+    function getAllEmails($lim, $page, $filter, $sort, $recherche, $category = '') {
         $query = $this->_db->getQuery(true);
 
         if (empty($lim)) {
@@ -1752,9 +1752,13 @@ class EmundusModelEmails extends JModelList {
         $query->select('*')
             ->from($this->_db->quoteName('#__emundus_setup_emails', 'se'))
             ->where($filterDate)
-            ->andWhere($fullRecherche)
+            ->andWhere($fullRecherche);
 
-            ->group($sortDb)
+        if (!empty($category)) {
+            $query->andWhere($this->_db->quoteName('se.category') . ' = ' . $this->_db->quote($category));
+        }
+
+        $query->group($sortDb)
             ->order($sortDb.$sort);
 
         try {

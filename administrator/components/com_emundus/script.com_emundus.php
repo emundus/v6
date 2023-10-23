@@ -3187,6 +3187,45 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
                     $db->execute();
                 }
             }
+
+            if (version_compare($cache_version, '1.37.7', '<=') || $firstrun) {
+                $query->clear()
+                    ->select('value')
+                    ->from('#__emundus_setup_config')
+                    ->where('namekey = ' . $db->quote('onboarding_lists'));
+
+                $db->setQuery($query);
+                $onboarding_lists = $db->loadResult();
+                $onboarding_lists = json_decode($onboarding_lists, true);
+
+                if (!empty($onboarding_lists)) {
+                    $something_to_update = false;
+
+                    foreach ($onboarding_lists as $l_key => $list) {
+                        if ($l_key === 'emails') {
+                            foreach($list['tabs'] as $t_key => $tab) {
+                                if($tab['getter'] === 'getallemail') {
+                                    if ($tab['filters'][0]['key'] !== 'category') {
+                                        $tab['filters'][0]['key'] = 'category';
+                                        $onboarding_lists[$l_key]['tabs'][$t_key] = $tab;
+                                        $something_to_update = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if ($something_to_update) {
+                        $query->clear()
+                            ->update('#__emundus_setup_config')
+                            ->set('value = ' . $db->quote(json_encode($onboarding_lists)))
+                            ->where('namekey = ' . $db->quote('onboarding_lists'));
+
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
+            }
 		}
 
 		return $succeed;
