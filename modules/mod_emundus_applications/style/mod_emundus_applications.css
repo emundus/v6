@@ -502,6 +502,7 @@ a.btn.btn-success:not(.btn-xs) {
     z-index: 9999;
     margin-top: 34px;
     width: max-content;
+    right: 20px;
 }
 
 .mod_emundus_applications__actions a:hover,
@@ -863,6 +864,10 @@ circle.circle {
 
 /* Téléphone */
 @media screen and (max-width: 767px) {
+
+    #applications_list_view table tbody tr td {
+        position: inherit !important;
+    }
 
     .moduletable.list-group.candidacy-files-list > div.em-flex-row.em-flex-space-between.em-mt-16 {
         flex-wrap: wrap;
