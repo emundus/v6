@@ -625,6 +625,7 @@ a.btn.btn-success:not(.btn-xs) {
 #applications_list_view table thead tr th,#applications_list_view table tbody tr td{
     background: var(--transparent);
     padding: var(--p-16) var(--p-8) var(--p-16) var(--p-8);
+    height: 74px;
 }
 #applications_list_view table tr {
     border-bottom: 1px solid var(--neutral-300);
