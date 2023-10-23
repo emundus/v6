@@ -184,7 +184,7 @@ if ($user != null) {
     <iframe id="background-shapes" src="/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg" alt="<?= JText::_('COM_EMUNDUS_USERDROPDOWN_IFRAME') ?>"></iframe>
     <?php if(!empty($profile_picture)): ?>
     <div id="userDropdownLabel">
-        <div class="em-flex-row em-flex-end em-profile-container">
+        <div class="em-flex-row em-flex-end em-profile-container" onclick="manageHeight()">
             <div class="mr-4">
 		        <?php if(!empty($user)) : ?>
                     <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0]. '.'; ?></p>
@@ -516,6 +516,12 @@ if ($user != null) {
                 }, 300);
             }
         });
+
+        function manageHeight() {
+                let elmnt = document.getElementById("g-navigation");
+                let hauteurTotaleElem = elmnt.offsetHeight;
+                jQuery("#userDropdownMenu").css("top", hauteurTotaleElem + 'px');
+        }
 
         function copyTokenToClipBoard() {
             const tokenInput = document.querySelector('input[name="anonym_token"]');

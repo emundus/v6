@@ -13,7 +13,6 @@
     display: flex;
     flex-direction: column;
     align-items: start;
-    top: 72px;
     position: fixed;
     right: 0 !important;
     width: 300px;
@@ -302,16 +301,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
      background: transparent !important;
  }
 
-@media all and (max-width: 479px) {
-
-    #g-navigation .header-c .open > .dropdown-menu {
-        top: 255px;
-    }
-}
 @media all and (min-width: 480px) and (max-width: 767px) {
-    #g-navigation .header-c .open > .dropdown-menu {
-        top: 190px;
-    }
 
     .header-right {
         text-align: center !important;
@@ -401,9 +391,6 @@ div#userDropdown {
         right: -4px;
     }
 
-    #g-navigation .header-c .open > .dropdown-menu {
-        top: 172px;
-    }
 }
 
 @media (max-width: 768px) {
