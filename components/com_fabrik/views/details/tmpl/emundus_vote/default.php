@@ -140,9 +140,20 @@ endif;
                 $elt = explode('___', $gallery->title)[1];
                 ?>
                 <?php if (isset($this->elements[$elt])) : ?>
-                    <h2 class="line-clamp-2 h-14 mt-10">
+                    <h2 class="mt-10">
                         <?php echo $this->elements[$elt]->element_ro; ?>
                     </h2>
+                <?php endif; ?>
+            <?php endif; ?>
+
+            <?php if (!empty($gallery->resume)) : ?>
+                <?php
+                $elt = explode('___', $gallery->resume)[1];
+                ?>
+                <?php if (isset($this->elements[$elt])) : ?>
+                    <p class="mb-3">
+                        <?php echo $this->elements[$elt]->element_ro; ?>
+                    </p>
                 <?php endif; ?>
             <?php endif; ?>
 
