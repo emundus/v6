@@ -131,6 +131,10 @@
 /** END **/
 
 /** Files by status - number **/
+.widget-files-status-number .section-sub-menu {
+  overflow: scroll;
+}
+
 .widget-files-status-number .widget-files-status-number-block{
   display: flex;
   align-items: center;
