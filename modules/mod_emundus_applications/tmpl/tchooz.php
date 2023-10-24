@@ -283,7 +283,7 @@ $current_tab = 0;
                 echo $override_default_content;
             } else {
                 ?>
-                <h2 class="em-text-neutral-900 em-applicant-title-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE') ?></h2>
+                <h2 class="em-applicant-title-font em-profile-color"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE') ?></h2>
                 <p class="em-text-neutral-900 em-default-font em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT') ?></p>
                 <p class="em-applicant-text-color em-default-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT_2') ?></p>
                 <?php
