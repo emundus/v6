@@ -2286,6 +2286,10 @@ button.em-swal-delete-button:hover{
     border-bottom-right-radius: 26px;
   }
 
+  .mod_emundus_campaign__details_content #background-shapes {
+    left: 190px;
+  }
+
 }
 
 @media (max-width: 900px) {
@@ -2442,5 +2446,9 @@ button.em-swal-delete-button:hover{
 
   #applications_list_view table tbody tr td {
     padding: var(--p-16);
+  }
+
+  .mod_emundus_campaign__details_content #background-shapes {
+    display: none;
   }
 }
