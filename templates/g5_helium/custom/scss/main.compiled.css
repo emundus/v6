@@ -2826,6 +2826,7 @@ button.swal2-cancel.goback-btn:hover,
 .label-grey-1 {
         background-color: var(--em-grey-1);
         text-shadow: none;
+        color: var(--neutral-900);
     }
 .label-text-grey-1 {
         color: var(--em-grey-1);
