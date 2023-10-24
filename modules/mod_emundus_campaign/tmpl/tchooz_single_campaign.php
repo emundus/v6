@@ -165,6 +165,11 @@ if($currentCampaign->apply_online == 0){
         <!-- INFO BLOCK -->
         <?php if ($can_apply != 0 || $mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
         <div class="mod_emundus_campaign__details_content em-border-neutral-300 em-mb-24">
+
+            <?php if ($mod_em_campaign_display_svg == 1) : ?>
+                <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
+            <?php endif; ?>
+
             <h4 class="em-mb-24"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_APPLY') ?></h4>
             <?php if ($mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
             <div class="em-mt-24">
@@ -200,6 +205,11 @@ if($currentCampaign->apply_online == 0){
         <!-- ATTACHMENTS BLOCK -->
         <?php if (!empty($files) && $mod_em_campaign_show_documents == 1) : ?>
         <div class="mod_emundus_campaign__details_content em-border-neutral-300 em-mb-24">
+
+            <?php if ($mod_em_campaign_display_svg == 1) : ?>
+                <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
+            <?php endif; ?>
+
             <h4><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_DOWNLOADS') ?></h4>
             <div class="em-mt-24">
                 <?php foreach($files as $file) : ?>
@@ -268,6 +278,57 @@ if($currentCampaign->apply_online == 0){
         section.style.display === 'none' ? tab_div.classList.add('current-tab') : '';
         section.style.display === 'none' ? section.style.display = 'flex' : '';
     }
+
+    /* Modification de la couleur du background avec les formes des cards "candidater" */
+    let iframeElements = document.querySelectorAll("#background-shapes");
+    let emProfileColor1 = getComputedStyle(document.documentElement).getPropertyValue('--em-profile-color');
+
+    iframeElements.forEach((iframeElement) => {
+        iframeElement.addEventListener("load", function () {
+
+            let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
+            let pathElements = iframeDocument.querySelectorAll("path");
+
+            let styleElement = iframeDocument.querySelector("style");
+
+            if (styleElement) {
+                let styleContent = styleElement.textContent;
+                styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + emProfileColor1 + ";");
+                styleElement.textContent = styleContent;
+            }
+
+            if(pathElements) {
+                pathElements.forEach((pathElement) => {
+                    let pathStyle = pathElement.getAttribute("style");
+                    if (pathStyle && pathStyle.includes("fill:grey;")) {
+                        pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + emProfileColor1 + ";");
+                        pathElement.setAttribute("style", pathStyle);
+                    }
+                });
+            }
+        });
+    });
+
+    /* Couleur des cards "candidater" des campagnes clôturées */
+    let buttonElement = document.querySelector(".mod_emundus_campaign__details_content button");
+
+    if(buttonElement.classList.contains("em-disabled-button")) {
+        let iframeElement = document.querySelector(".mod_emundus_campaign__details_content #background-shapes");
+        console.log("testouille" + iframeElement.outerHTML);
+        iframeElement.onload = function() {
+            let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
+            let pathElements = iframeDocument.querySelectorAll("path");
+            let neutral600 = getComputedStyle(document.documentElement).getPropertyValue('--neutral-600');
+
+            /* Coloration de tous les éléments "path" */
+            pathElements.forEach((pathElement) => {
+                let pathStyle = pathElement.getAttribute("style");
+                pathStyle = pathStyle.replace(/fill:#[0-9A-Fa-f]{6};/, "fill :" + neutral600 + ";");
+                pathElement.setAttribute("style", pathStyle);
+            });
+        }
+    }
+
 </script>
 
 
