@@ -3834,6 +3834,38 @@ div#em-appli-block {
   display: none;
 }
 
+.mon-profil .p-6 {
+  position: relative;
+  overflow: hidden;
+
+  #background-shapes {
+    position: absolute;
+    z-index: 0;
+    width: 100%;
+    height: 50%;
+    top: -30px;
+    left: 231px;
+    pointer-events: none;
+    border-bottom-right-radius: 14px;
+  }
+}
+
+.applicant-form .p-6 {
+  position: relative;
+  overflow: hidden;
+
+  #background-shapes {
+    position: absolute;
+    z-index: 0;
+    width: 100%;
+    height: 30%;
+    top: -27px;
+    left: 80px;
+    pointer-events: none;
+    border-bottom-right-radius: 14px;
+  }
+}
+
 /* VIEW FORM - FORMULAIRE */
 
 .view-form:not(.com_emundus),
@@ -6661,4 +6693,8 @@ tbody .el-table__row:nth-child(odd){
   .swal2-header {
     display: none;
   }
+}
+
+.emundus-form .p-6 {
+  background: magenta !important;
 }
