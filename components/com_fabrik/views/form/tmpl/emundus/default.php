@@ -22,6 +22,10 @@ $display_required_icon = $eMConfig->get('display_required_icon', 1);
 
 $pageClass = $this->params->get('pageclass_sfx', '');
 
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+$m_users = new EmundusModelUsers();
+$profile_form = $m_users->getProfileForm();
+
 JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TITLE');
 JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TEXT');
 JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CONFIRM');
@@ -43,7 +47,10 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 endif;
 ?>
 <div class="emundus-form p-6">
+
+<?php if($form->id == $profile_form) : ?>
     <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
+<?php endif; ?>
     <div class="mb-0 fabrikMainError alert alert-error fabrikError<?php echo $active ?>">
         <span class="material-icons">cancel</span>
 		<?php echo $form->error; ?>
