@@ -526,11 +526,12 @@
 
     .sticker {
         border: solid 1px;
-        border-radius: 4px 8px 4px 8px;
+        border-radius: 4px 8px 8px 4px;
         padding: 4px 8px;
         margin: 4px 0;
         font-size: 14px;
         max-width: 200px;
+        white-space: break-spaces;
     }
 
 

@@ -2108,7 +2108,7 @@ class EmundusModelApplication extends JModelList
                                                     JLog::add('component/com_emundus/models/application | Error at getting emundus_fileupload for applicant ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
                                                     $elt = '';
                                                 }
-                                            } 
+                                            }
 											elseif ($element->plugin == 'emundus_phonenumber') {
                                                 $elt = substr($element->content, 2, strlen($element->content));
                                             }
@@ -3244,7 +3244,7 @@ class EmundusModelApplication extends JModelList
         }
     }
 
-    public function getAttachmentsByFnum($fnum, $ids=null, $attachment_id=null) {
+    public function getAttachmentsByFnum($fnum, $ids=null, $attachment_id=null, $profile=null) {
         try {
             require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'profile.php');
             require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
@@ -3276,7 +3276,12 @@ class EmundusModelApplication extends JModelList
                 $query .= " AND eu.id in ($ids)";
             }
 
-            $query .= " ORDER BY sap.mandatory DESC,sap.ordering";
+	        if(!empty($profile))
+	        {
+		        $query .= " ORDER BY sap.mandatory DESC,sap.ordering,sa.value ASC";
+	        } else {
+		        $query .= " ORDER BY sa.category, sa.ordering, sa.value ASC";
+	        }
 
             $this->_db->setQuery($query);
             $docs = $this->_db->loadObjectList();
@@ -4041,7 +4046,7 @@ class EmundusModelApplication extends JModelList
      * @param $pid Int the profile_id to get list of forms
      * @return bool
      */
-    public function copyApplication($fnum_from, $fnum_to, $pid = null, $copy_attachment = 0, $campaign_id = null, $copy_tag = 0, $move_hikashop_command = 0, $delete_from_file = 0, $params = array()) {
+    public function copyApplication($fnum_from, $fnum_to, $pid = null, $copy_attachment = 0, $campaign_id = null, $copy_tag = 0, $move_hikashop_command = 0, $delete_from_file = 0, $params = array(), $copyUsersAssoc = 0, $copyGroupsAssoc = 0) {
         $db = JFactory::getDbo();
         $pids = [];
 
@@ -4251,6 +4256,12 @@ class EmundusModelApplication extends JModelList
                 $db->setQuery($query);
                 $db->execute();
             }
+            if($copyUsersAssoc){
+                $this->copyUsersAssoc($fnum_from,$fnum_to);
+            }
+            if($copyGroupsAssoc){
+                $this->copyGroupsAssoc($fnum_from,$fnum_to);
+            }
         } catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$q.' :: '.$query, JLog::ERROR, 'com_emundus');
@@ -4335,6 +4346,85 @@ class EmundusModelApplication extends JModelList
                         }
                     } catch (Exception $e) {
                         $error = JUri::getInstance().' :: USER ID : '.$row['user_id'].' -> '.$e->getMessage();
+                        JLog::add($error, JLog::ERROR, 'com_emundus');
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+        return true;
+    }
+
+    public function copyUsersAssoc($fnum_from, $fnum_to)
+    {
+        $query = $this->_db->getQuery(true);
+
+        try {
+			$query->select('eua.*')
+				->from($this->_db->quoteName('#__emundus_users_assoc', 'eua'))
+				->where($this->_db->quoteName('eua.fnum') . ' LIKE ' . $this->_db->quote($fnum_from));
+
+	        $this->_db->setQuery($query);
+            $users_assoc = $this->_db->loadAssocList();
+
+            if (count($users_assoc) > 0) {
+                // 2. copy DB définition and duplicate files in applicant directory
+                foreach ($users_assoc as $user) {
+                    $user['fnum'] = $fnum_to;
+                    unset($user['id']);
+
+                    try {
+						$query->clear()
+							->insert($this->_db->quoteName('#__emundus_users_assoc'))
+							->columns(array_keys($user))
+							->values(implode(", ", $this->_db->quote($user)));
+	                    $this->_db->setQuery($query);
+	                    $this->_db->execute();
+                    } catch (Exception $e) {
+                        $error = JUri::getInstance().' :: USER ID : '.$user['user_id'].' -> '.$e->getMessage();
+                        JLog::add($error, JLog::ERROR, 'com_emundus');
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+        return true;
+    }
+
+    public function copyGroupsAssoc($fnum_from, $fnum_to)
+    {
+	    $query = $this->_db->getQuery(true);
+
+        try {
+			$query->select('ega.*')
+				->from($this->_db->quoteName('#__emundus_group_assoc', 'ega'))
+				->where($this->_db->quoteName('ega.fnum') . ' LIKE ' . $this->_db->quote($fnum_from));
+	        $this->_db->setQuery($query);
+            $groups_assoc = $this->_db->loadAssocList();
+
+            if (count($groups_assoc) > 0) {
+                // 2. copy DB définition and duplicate files in applicant directory
+                foreach ($groups_assoc as $group) {
+                    $group['fnum'] = $fnum_to;
+                    unset($group['id']);
+
+                    try {
+						$query->clear()
+							->insert($this->_db->quoteName('#__emundus_group_assoc'))
+							->columns(array_keys($group))
+							->values(implode(", ", $this->_db->quote($group)));
+	                    $this->_db->setQuery($query);
+	                    $this->_db->execute();
+                    } catch (Exception $e) {
+                        $error = JUri::getInstance().' :: fnum : '.$group['user_id'].' :: group : '.$group['group_id'].' -> '.$e->getMessage();
                         JLog::add($error, JLog::ERROR, 'com_emundus');
                     }
                 }

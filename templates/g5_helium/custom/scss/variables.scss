@@ -348,6 +348,32 @@
   --em-spacing-10: #{$em-spacing-10};
   --em-spacing-11: #{$em-spacing-11};
   --em-spacing-12: #{$em-spacing-12};
+
+  // TCHOOZY - Accueil
+  --display-wide-background: #{$tchoozy-wide-background};
+  --display-demonstration: #{$tchoozy-demonstration};
+
+  //TCHOOZY - Connexion
+  --display-corner-bottom-left-background: #{$tchoozy-corner-bottom-left-background};
+  --display-corner-top-right-background: #{$tchoozy-corner-top-right-background};
+  --display-candidate-button: #{$tchoozy-candidate-button};
+  --display-digital-testing: #{$tchoozy-digital-testing};
+
+  //TCHOOZY - Page settings
+  --display-corner-bottom-right-background: #{$tchoozy-corner-bottom-right-background};
+  --display-setting-tools: #{$tchoozy-setting-tools};
+
+  //TCHOOZY - Historique des emails
+  --display-email-history: #{$tchoozy-email-history};
+
+  //TCHOOZY - Groupes
+  --display-groups: #{$tchoozy-groups};
+
+  //TCHOOZY - Profils
+  --display-profiles: #{$tchoozy-profiles};
+
+  //TCHOOZY - Easter egg
+  --display-hiding: #{$tchoozy-hiding};
 }
 
 

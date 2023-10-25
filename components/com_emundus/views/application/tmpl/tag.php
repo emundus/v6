@@ -47,7 +47,9 @@ JFactory::getSession()->set('application_layout', 'tag');
 					{
 						$i = 0;
 						foreach ($this->tags as $tag)
-						{ ?>
+						{
+                            $color = str_replace('label-', '', $tag['class']);
+                            ?>
                             <li class="list-group-item" id="<?php echo $tag['id_tag']; ?>"
                                 fnum="<?php echo $this->fnum; ?>">
                                 <div class="row">
@@ -57,19 +59,21 @@ JFactory::getSession()->set('application_layout', 'tag');
                                             <div class="mic-info em-tags-date">
                                                 <a href="#"><?php echo $tag['name']; ?></a>
                                                 - <?php echo JHtml::_('date', $tag['date_time'], JText::_('DATE_FORMAT_LC2')); ?>
-                                            </div>
-                                        </div>
-                                        <div class="comment-text em-tags-action">
-                                            <h2><span class="label <?php echo $tag['class']; ?>"
-                                                      style="float:unset"><?php echo $tag['label']; ?></span>
-												<?php if ($this->_user->id == $tag['user_id'] || EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $this->fnum)): ?>
+	                                            <?php if ($this->_user->id == $tag['user_id'] || EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $this->fnum)): ?>
                                                     <button type="button" class="btn btn-danger btn-xs"
                                                             onclick="deleteTag('<?php echo $tag['id_tag'] ?>', '<?php echo $this->fnum; ?>' )"
                                                             title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_DELETE'); ?>">
                                                         <span class="material-icons">delete_outline</span>
                                                     </button>
-												<?php endif; ?>
-                                            </h2>
+	                                            <?php endif; ?>
+                                            </div>
+                                        </div>
+                                        <div class="comment-text em-tags-action">
+                                                <div class="flex sticker label-border-<?php echo $color ?>">
+                                                    <span class="circle label-<?php echo $color ?>"></span>
+                                                    <span class="label-text-<?php echo $color; ?>"
+                                                          style="float:unset"><?php echo $tag['label']; ?></span>
+                                                </div>
                                         </div>
 
                                     </div>
