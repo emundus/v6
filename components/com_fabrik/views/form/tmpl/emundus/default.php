@@ -224,7 +224,7 @@ endif;
         }
     });
 
-    /* Modification de la couleur du background avec les formes */
+    /* Modification de la couleur du background avec les formes
     let iframeElements = document.querySelectorAll("#background-shapes");
     let emProfileColor2 = getComputedStyle(document.documentElement).getPropertyValue('--em-profile-color');
 
@@ -252,5 +252,5 @@ endif;
                 });
             }
         });
-    });
+    });*/
 </script>
