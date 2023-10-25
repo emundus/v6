@@ -47,10 +47,9 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 endif;
 ?>
 <div class="emundus-form p-6">
-
-
-        <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
-
+    <?php if($form->id == $profile_form) : ?>
+        <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
+    <?php endif; ?>
     <div class="mb-0 fabrikMainError alert alert-error fabrikError<?php echo $active ?>">
         <span class="material-icons">cancel</span>
 		<?php echo $form->error; ?>
@@ -223,34 +222,4 @@ endif;
             elt.classList.add('skeleton');
         }
     });
-
-    /* Modification de la couleur du background avec les formes
-    let iframeElements = document.querySelectorAll("#background-shapes");
-    let emProfileColor2 = getComputedStyle(document.documentElement).getPropertyValue('--em-profile-color');
-
-    iframeElements.forEach((iframeElement) => {
-        iframeElement.addEventListener("load", function () {
-
-            let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
-            let pathElements = iframeDocument.querySelectorAll("path");
-
-            let styleElement = iframeDocument.querySelector("style")
-
-            if (styleElement) {
-                let styleContent = styleElement.textContent;
-                styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + emProfileColor2 + ";");
-                styleElement.textContent = styleContent;
-            }
-
-            if(pathElements) {
-                pathElements.forEach((pathElement) => {
-                    let pathStyle = pathElement.getAttribute("style");
-                    if (pathStyle && pathStyle.includes("fill:grey;")) {
-                        pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + emProfileColor2 + ";");
-                        pathElement.setAttribute("style", pathStyle);
-                    }
-                });
-            }
-        });
-    });*/
 </script>

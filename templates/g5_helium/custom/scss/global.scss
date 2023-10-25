@@ -3898,6 +3898,11 @@ div#em-appli-block {
   }
 }
 
+.applicant-form #attachment_list .alert-info {
+  position: relative;
+  z-index: 1;
+}
+
 /* VIEW FORM - FORMULAIRE */
 
 .view-form:not(.com_emundus),

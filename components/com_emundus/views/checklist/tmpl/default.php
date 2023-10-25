@@ -68,6 +68,9 @@ function return_bytes($val) {
 	return $val;
 }
 
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+$m_users = new EmundusModelUsers();
+$profile_form = $m_users->getProfileForm();
 
 if (!empty($this->custom_title)) :?>
     <h1 class="em-checklist-title"><?= $this->custom_title; ?></h1>
@@ -104,6 +107,9 @@ if (!empty($this->custom_title)) :?>
 <?php if (count($this->attachments) > 0) :?>
 
     <div id="attachment_list" class="em-attachmentList em-repeat-card p-6">
+        <?php if($form->id == $profile_form) : ?>
+            <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
+        <?php endif; ?>
         <h2 class="after-em-border after:bg-red-800 mb-4"><?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_TITLE') ?></h2>
         <div class="alert alert-info flex items-center gap-1 mt-1">
             <span class="material-icons">info</span>
