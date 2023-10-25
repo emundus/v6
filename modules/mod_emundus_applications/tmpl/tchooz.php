@@ -277,7 +277,7 @@ $current_tab = 0;
         <hr>
         <div class="mod_emundus_applications__list_content--default mt-2">
             <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
+                <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></iframe>
             <?php endif; ?>
             <?php if (!empty($override_default_content)) {
                 echo $override_default_content;
@@ -593,7 +593,7 @@ $current_tab = 0;
         <hr>
         <div class="mod_emundus_applications__list_content--default">
             <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
+                <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></iframe>
             <?php endif; ?>
             <?php if (!empty($override_default_content)) {
                 echo $override_default_content;
@@ -694,7 +694,7 @@ $current_tab = 0;
                                                 onclick="openFile(event,'<?php echo $first_page_url ?>')">
                                                 <td style="width: 23.75%;">
                                                     <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                                                        <iframe id="background-shapes" src="/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
+                                                        <iframe id="background-shapes" src="/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></iframe>
                                                     <?php endif; ?>
 													<?php if (empty($application->name)) : ?>
                                                         <a href="<?= JRoute::_($first_page_url); ?>"

@@ -3858,9 +3858,41 @@ div#em-appli-block {
     position: absolute;
     z-index: 0;
     width: 100%;
-    height: 30%;
+    height: 450px;
     top: -27px;
     left: 80px;
+    pointer-events: none;
+    border-bottom-right-radius: 14px;
+  }
+}
+
+.groups-setup-page .p-6 {
+  position: relative;
+  overflow: hidden;
+
+  #background-shapes {
+    position: absolute;
+    z-index: 0;
+    width: 100%;
+    height: 40%;
+    top: -24px;
+    left: 35%;
+    pointer-events: none;
+    border-bottom-right-radius: 14px;
+  }
+}
+
+.users-profile-setup-page .p-6 {
+  position: relative;
+  overflow: hidden;
+
+  #background-shapes {
+    position: absolute;
+    z-index: 0;
+    width: 100%;
+    height: 50%;
+    top: -24px;
+    left: 38%;
     pointer-events: none;
     border-bottom-right-radius: 14px;
   }
@@ -4196,6 +4228,47 @@ screen and (max-height: 769px) {
 
   hr#menu_separator {
     margin: 15px 0;
+  }
+}
+
+/* TABLETTE */
+@media screen and (max-width: 1366px),
+screen and (max-height: 1200px) {
+  .mon-profil .p-6 #background-shapes {
+    left: 230px;
+  }
+}
+
+@media screen and (max-width: 1199px),
+screen and (max-height: 960px) {
+  .mon-profil .p-6 #background-shapes {
+    left: 110px;
+  }
+
+  .applicant-form .p-6 #background-shapes {
+      top: -41px;
+      left: 23px;
+  }
+}
+
+@media screen and (max-width: 959px),
+screen and (max-height: 768px) {
+  .mon-profil .p-6 #background-shapes {
+    left: 27px;
+    top: -38px;
+  }
+
+  .applicant-form .p-6 #background-shapes {
+    left: 17px;
+    top: -79px;
+  }
+
+  .groups-setup-page .p-6 #background-shapes {
+    left: 19%;
+  }
+
+  .users-profile-setup-page .p-6 #background-shapes {
+    left: 23.5%;
   }
 }
 
