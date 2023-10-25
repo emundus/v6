@@ -101,7 +101,7 @@ if (!empty($this->custom_title)) :?>
     <?php endif; ?>
 <?php endif; ?>
 
-<?php if (count($this->attachments) > 0 && false) :?>
+<?php if (count($this->attachments) > 0) :?>
 
     <div id="attachment_list" class="em-attachmentList em-repeat-card p-6">
         <h2 class="after-em-border after:bg-red-800 mb-4"><?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_TITLE') ?></h2>
