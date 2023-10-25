@@ -71,7 +71,7 @@ button.em-applicant-primary-button[disabled] {
 .fabrikImageBackground{
     background-size: cover;
     background-repeat: no-repeat;
-    background-position: center;
+    background-position: center 20%;
     height: 310px;
     position: relative;
     width: 100vw;
@@ -85,6 +85,7 @@ button.em-applicant-primary-button[disabled] {
     height: 250px;
     width: 250px;
     border-radius: calc(var(--em-form-br-block)/4);
+    margin: 0 auto;
 }
 
 #g-container-main .g-container {
