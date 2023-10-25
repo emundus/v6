@@ -14,6 +14,11 @@ a.advanced-search-link-NOT {
 }
 
 /** Image field as background */
+
+.fabrikDataContainer .em-repeat-card-no-padding {
+	border-radius: 8px !important;
+}
+
 .fabrikImageBackground{
 	border-top-left-radius: 8px;
 	border-top-right-radius: 8px;
