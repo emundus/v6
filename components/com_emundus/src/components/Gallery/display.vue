@@ -204,9 +204,26 @@ export default {
 
   watch: {
     'form.title' : function(val,oldVal) {
-      //TODO: Update card title (do not forget joins on list) -> Check if joins already exist and if all joins are used
       if(oldVal !== '') {
         this.updateAttribute('title', val.fullname);
+      }
+    },
+
+    'form.subtitle' : function(val,oldVal) {
+      if(oldVal !== '') {
+        this.updateAttribute('subtitle', val.fullname);
+      }
+    },
+
+    'form.tags' : function(val,oldVal) {
+      if(oldVal !== '') {
+        this.updateAttribute('tags', val.fullname);
+      }
+    },
+
+    'form.resume' : function(val,oldVal) {
+      if(oldVal !== '') {
+        this.updateAttribute('resume', val.fullname);
       }
     }
   }

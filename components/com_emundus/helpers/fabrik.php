@@ -1058,7 +1058,7 @@ die("<script>
 				->from($db->quoteName('#__fabrik_joins'))
 				->where($db->quoteName('list_id') . ' = ' . $lid);
 			$db->setQuery($query);
-			$fabrik_joins = $db->loadObjectList();
+			$fabrik_joins = $db->loadObjectList('table_join');
 		}
 		catch (Exception $e) {
 			JLog::add('component/com_emundus/helpers/fabrik | Cannot get fabrik joins : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
@@ -1069,7 +1069,7 @@ die("<script>
 
 	static function createFabrikJoin($join_from_table, $table_join, $lid = 0, $eid = 0, $table_key = 'fnum', $table_join_key = 'fnum', $join_type = 'left', $group_id = 0, $params = [])
 	{
-		$joined = false;
+		$joined = ['status' => false, 'group_id' => $group_id, 'list_id' => $lid];
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
@@ -1081,18 +1081,21 @@ die("<script>
 			}
 
 			if(empty($group_id) && !empty($lid)) {
-				$query->select('label')
+				$query->select('label,form_id')
 					->from($db->quoteName('#__fabrik_lists'))
-					->where($db->quoteName('db_table_name') . ' = ' . $db->quote($table_join));
+					->where($db->quoteName('id') . ' = ' . $db->quote($lid));
 				$db->setQuery($query);
-				$group_label = $db->loadResult();
+				$list = $db->loadObject();
 				$datas = [
-					'name' => $group_label,
+					'name' => $list->label . '- ['.$table_join.']',
 					'is_join' => 1
 				];
-				$created_group = EmundusHelperFabrik::addFabrikGroup($datas);
+				$created_group = EmundusHelperFabrik::addFabrikGroup($datas,[],1,true);
 				if($created_group) {
 					$group_id = $created_group['id'];
+					$joined['group_id'] = $group_id;
+
+					EmundusHelperFabrik::joinFormGroup($list->form_id,[$group_id]);
 				}
 			}
 
@@ -1114,7 +1117,7 @@ die("<script>
 				->values(implode(',', $db->quote(array_values($data))));
 			$db->setQuery($query);
 
-			$joined = $db->execute();
+			$joined['status'] = $db->execute();
 		}
 		catch (Exception $e) {
 			JLog::add('component/com_emundus/helpers/fabrik | Cannot check fabrik joins for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
@@ -1185,6 +1188,40 @@ die("<script>
 			}
 		} else {
 			$result['id'] = $is_existing;
+		}
+
+		$result['status'] = true;
+		return $result;
+	}
+
+	public static function joinFormGroup($form_id,$groups_id) {
+		$result = ['status' => false, 'message' => ''];
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try {
+			foreach ($groups_id as $group){
+				$query->clear()
+					->select('id')
+					->from($db->quoteName('#__fabrik_formgroup'))
+					->where($db->quoteName('form_id') . ' = ' . $form_id)
+					->andWhere($db->quoteName('group_id') . ' = ' . $group);
+				$db->setQuery($query);
+				$is_existing = $db->loadResult();
+
+				if(!$is_existing){
+					$query->clear()
+						->insert($db->quoteName('#__fabrik_formgroup'))
+						->set($db->quoteName('form_id') . ' = ' . $db->quote($form_id))
+						->set($db->quoteName('group_id') . ' = ' . $db->quote($group));
+					$db->setQuery($query);
+					$db->execute();
+				}
+			}
+		} catch (Exception $e) {
+			$result['message'] = 'JOIN FABRIK FORM WITH GROUPS : Error : ' . $e->getMessage();
+			return $result;
 		}
 
 		$result['status'] = true;

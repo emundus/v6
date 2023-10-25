@@ -455,11 +455,11 @@ class EmundusModelGallery extends JModelList
 
 			if($this->_db->execute()) {
 				$table_to_join = explode('___',$value)[0];
-				$tables_joined = [];
+				$elt_name = explode('___',$value)[1];
+				$group_id = 0;
+
 				$joins = EmundusHelperFabrik::getFabrikJoins($gallery->list_id);
-				foreach ($joins as $join) {
-					$tables_joined[] = $join->table_join;
-				}
+				$tables_joined = array_keys($joins);
 				
 				if(!in_array($table_to_join,$tables_joined)) {
 					$query->clear()
@@ -469,18 +469,58 @@ class EmundusModelGallery extends JModelList
 					$this->_db->setQuery($query);
 					$db_table_name = $this->_db->loadResult();
 
-					//TODO: Need to return more details like group_id
 					$joined = EmundusHelperFabrik::createFabrikJoin($db_table_name,$table_to_join,$gallery->list_id);
 
-					if($joined) {
-						//TODO: Create element selected in group created with join
+					if($joined['status']) {
+						$group_id = $joined['group_id'];
+					}
+				} else {
+					$group_id = $joins[$table_to_join]->group_id;
+				}
+
+				if(!empty($group_id)) {
+					$query->clear()
+						->select('fe.id')
+						->from($this->_db->quoteName('#__fabrik_elements', 'fe'))
+						->where($this->_db->quoteName('fe.group_id') . ' = ' . $this->_db->quote($group_id))
+						->where($this->_db->quoteName('fe.name') . ' = ' . $this->_db->quote($elt_name));
+					$this->_db->setQuery($query);
+					$element_id = $this->_db->loadResult();
+
+					if(empty($element_id)) {
+						$query->clear()
+							->select('fe.*')
+							->from($this->_db->quoteName('#__fabrik_elements', 'fe'))
+							->leftJoin($this->_db->quoteName('#__fabrik_formgroup', 'ff') . ' ON ' . $this->_db->quoteName('ff.group_id') . ' = ' . $this->_db->quoteName('fe.group_id'))
+							->leftJoin($this->_db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $this->_db->quoteName('fl.form_id') . ' = ' . $this->_db->quoteName('ff.form_id'))
+							->where($this->_db->quoteName('fl.db_table_name') . ' = ' . $this->_db->quote($table_to_join))
+							->where($this->_db->quoteName('fe.name') . ' = ' . $this->_db->quote($elt_name));
+						$this->_db->setQuery($query);
+						$element = $this->_db->loadAssoc();
+
+						unset($element['id']);
+
+						$columns = array_map(function ($column) {
+							return $this->_db->quoteName($column);
+						}, array_keys($element));
+
+						$element['group_id'] = $group_id;
+						$element['show_in_list_summary'] = $group_id;
+						$values = array_map(function ($value) {
+							return $this->_db->quote($value);
+						}, array_values($element));
+
+						$query->clear()
+							->insert($this->_db->quoteName('#__fabrik_elements'))
+							->columns($columns)
+							->values(implode(',', $values));
+						$this->_db->setQuery($query);
+						$added = $this->_db->execute();
+					} else {
+						$added = true;
 					}
 				}
 			}
-
-			//TODO: Get list_id from gallery object and check joins
-
-			//TODO: If table of element not in joins add it to fabrik list
 		}
 		catch (Exception $e) {
 			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');

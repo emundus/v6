@@ -117,6 +117,9 @@ input.fabrik_filter_submit.button {
 	border-radius: 14px;
 	background: #F0F0F0;
 }
+.em-caption {
+	color: var(--neutral-600);
+}
 
 /* HEADER */
 .view-list .span12 div.page-header{

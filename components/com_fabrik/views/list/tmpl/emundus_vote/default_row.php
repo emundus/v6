@@ -84,9 +84,12 @@ foreach ($votes as $vote) {
             </h2>
 		<?php endif; ?>
 		<?php if (!empty($gallery->subtitle)) : ?>
-            <p class="em-caption mb-3" style="min-height: 15px">
-				<?php echo isset($this->_row->data) ? $this->_row->data->{$gallery->subtitle} : ''; ?>
-            </p>
+                <p class="em-caption mb-3 flex items-center" style="min-height: 15px">
+	                <?php if (!empty($gallery->subtitle_icon)) : ?>
+                        <span class="material-icons-outlined mr-2"><?php echo $gallery->subtitle_icon; ?></span>
+	                <?php endif; ?>
+		            <?php echo isset($this->_row->data) ? $this->_row->data->{$gallery->subtitle} : ''; ?>
+                </p>
 		<?php endif; ?>
 		<?php if (!empty($gallery->tags)) : ?>
             <div class="mb-3 tags" style="min-height: 30px">

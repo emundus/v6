@@ -3255,6 +3255,12 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 						'null'    => 1,
 					],
 					[
+						'name'    => 'subtitle_icon',
+						'type'    => 'varchar',
+						'length'  => 50,
+						'null'    => 1,
+					],
+					[
 						'name'    => 'image',
 						'type'    => 'integer',
 						'length'  => 10,
