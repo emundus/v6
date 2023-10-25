@@ -7,6 +7,10 @@
 }
 
 /* DATAS */
+.em-caption {
+    color: var(--neutral-600);
+}
+
 .view-details .fabrikDetails div.tags ul.fabrikRepeatData{
     display: flex;
     gap: 8px;

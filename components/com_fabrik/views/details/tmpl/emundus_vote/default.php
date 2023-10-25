@@ -250,8 +250,11 @@ endif;
 						$elt = explode('___', $gallery->subtitle)[1];
 						?>
 						<?php if (isset($this->elements[$elt])) : ?>
-                            <p class="em-caption mb-3" style="min-height: 15px">
-								<?php echo $this->elements[$elt]->element_ro; ?>
+                            <p class="em-caption mb-3 flex items-center" style="min-height: 15px">
+								<?php if (!empty($gallery->subtitle_icon)) : ?>
+                                    <span class="material-icons-outlined mr-2"><?php echo $gallery->subtitle_icon; ?></span>
+								<?php endif; ?>
+	                            <?php echo $this->elements[$elt]->element_ro; ?>
                             </p>
 						<?php endif; ?>
 					<?php endif; ?>
