@@ -47,9 +47,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 endif;
 ?>
 <div class="emundus-form p-6">
-    <?php if($form->id == $profile_form) : ?>
-        <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
-    <?php endif; ?>
+    <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
     <div class="mb-0 fabrikMainError alert alert-error fabrikError<?php echo $active ?>">
         <span class="material-icons">cancel</span>
 		<?php echo $form->error; ?>
