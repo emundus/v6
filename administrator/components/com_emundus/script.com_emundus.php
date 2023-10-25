@@ -3225,6 +3225,28 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
                         $db->execute();
                     }
                 }
+
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_elements'))
+					->where($db->quoteName('plugin') . ' LIKE ' . $db->quote('textarea'));
+				$db->setQuery($query);
+				$textarea_elts = $db->loadObjectList();
+
+				foreach ($textarea_elts as $textarea_elt) {
+					$params = json_decode($textarea_elt->params, true);
+
+					if($params['bootstrap_class'] == 'input-medium') {
+						$params['bootstrap_class'] = 'input-xlarge';
+
+						$query->clear()
+							->update($db->quoteName('#__fabrik_elements'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+							->where($db->quoteName('id') . ' = ' . $db->quote($textarea_elt->id));
+						$db->setQuery($query);
+						$db->execute();
+					}
+				}
             }
 		}
 
