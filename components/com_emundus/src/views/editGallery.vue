@@ -7,7 +7,7 @@
 
     <div>
       <h1 class="mt-3">{{ translate('COM_EMUNDUS_ONBOARD_EDIT_GALLERY') }}</h1>
-      <a class="mt-2 em-tertiary-button flex em-w-auto p-0 items-center justify-start gap-2 hover:no-underline" target="_blank" :href="'/index.php?option=com_fabrik&view=list&listid='+gallery.list_id">
+      <a v-if="gallery" class="mt-2 em-tertiary-button flex em-w-auto p-0 items-center justify-start gap-2 hover:no-underline" target="_blank" :href="'/index.php?option=com_fabrik&view=list&listid='+gallery.list_id">
         <span class="material-icons-outlined">visibility</span>
         {{ translate('COM_EMUNDUS_ONBOARD_EDIT_PREVIEW') }}
       </a>
@@ -93,8 +93,6 @@ export default {
     },
 
     updateAttribute(attribute,value) {
-      console.log(attribute);
-      console.log(value);
       fetch('index.php?option=com_emundus&controller=gallery&task=updateattribute&gallery_id='+this.gallery.id+'&attribute='+attribute+'&value='+value)
           .then(response => response.json())
           .then(data => {

@@ -2,7 +2,7 @@ import Vue from 'vue';
 import App from './App.vue';
 
 Vue.config.productionTip = true;
-Vue.config.devtools = true;
+Vue.config.devtools = false;
 
 /** COMPONENTS **/
 import VModal from 'vue-js-modal';

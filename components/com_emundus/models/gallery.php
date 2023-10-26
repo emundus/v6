@@ -194,14 +194,18 @@ class EmundusModelGallery extends JModelList
 						$this->_db->quoteName('created_at'),
 						$this->_db->quoteName('created_by'),
 						$this->_db->quoteName('list_id'),
-						$this->_db->quoteName('title'),
+						$this->_db->quoteName('campaign_id'),
+						$this->_db->quoteName('image'),
+						$this->_db->quoteName('max'),
 					);
 
 					$values = array(
 						$this->_db->quote(date('Y-m-d H:i:s')),
 						$this->_db->quote($user->id),
 						$this->_db->quote($list_id),
-						$this->_db->quote($data['gallery_name']),
+						$this->_db->quote($data['campaign_id']),
+						$this->_db->quote(0),
+						$this->_db->quote(1),
 					);
 
 					$query->clear()

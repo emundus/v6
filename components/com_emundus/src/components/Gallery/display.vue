@@ -231,9 +231,11 @@ export default {
   }),
 
   created() {
-    this.form.subtitle_icon = this.subtitle_icons.find(icon => {
-      return icon.code == this.gallery.subtitle_icon;
-    });
+    if(this.gallery.subtitle_icon) {
+      this.form.subtitle_icon = this.subtitle_icons.find(icon => {
+        return icon.code == this.gallery.subtitle_icon;
+      });
+    }
 
     this.getElements();
     this.getAttachments();
@@ -295,37 +297,37 @@ export default {
 
   watch: {
     'form.title' : function(val,oldVal) {
-      if(oldVal !== '' && val != oldVal) {
+      if(val != oldVal) {
         this.$emit('updateAttribute', 'title',val.fullname);
       }
     },
 
     'form.subtitle' : function(val,oldVal) {
-      if(oldVal !== '' && val != oldVal) {
+      if(val != oldVal) {
         this.$emit('updateAttribute', 'subtitle',val.fullname);
       }
     },
 
     'form.subtitle_icon' : function(val,oldVal) {
-      if(oldVal !== '' && val != oldVal) {
+      if(val != oldVal) {
         this.$emit('updateAttribute', 'subtitle_icon',val.code);
       }
     },
 
     'form.tags' : function(val,oldVal) {
-      if(oldVal !== '' && val != oldVal) {
+      if(val != oldVal) {
         this.$emit('updateAttribute', 'tags',val.fullname);
       }
     },
 
     'form.resume' : function(val,oldVal) {
-      if(oldVal !== '' && val != oldVal) {
+      if(val != oldVal) {
         this.$emit('updateAttribute', 'resume',val.fullname);
       }
     },
 
     'form.image': function(val,oldVal) {
-      if (oldVal !== '' && val != oldVal) {
+      if (val != oldVal) {
         this.$emit('updateAttribute', 'image',val.id);
       }
     }
