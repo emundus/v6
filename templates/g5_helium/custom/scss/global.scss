@@ -1901,6 +1901,26 @@ tr.fabrikFilterContainer {
     height: 100%;
     margin: auto;
   }
+
+  #g-navigation #background-shapes {
+    position: absolute;
+    height: 100%;
+    top: -4px;
+    right: 0;
+    pointer-events: none;
+    z-index: -1;
+    border: none;
+  }
+
+  #g-navigation #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte) {
+    border-radius: var(--em-applicant-br) !important;
+    margin-bottom: 0 !important;
+    line-height: normal;
+    letter-spacing: normal;
+    color: var(--em-secondary-color);
+    background: var(--neutral-0);
+    border: 1px solid var(--em-secondary-color);
+  }
 }
 
 body.error-page .container-404 p {
