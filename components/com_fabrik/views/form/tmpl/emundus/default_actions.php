@@ -27,6 +27,9 @@ if ( $form->prevButton || $form->nextButton ) {
     $countActions++;
 }
 
+// preg_replace onclick action to add a confirm dialog
+$form->gobackButton = preg_replace('/onclick="([^"]*)"/', '', $form->gobackButton);
+
 if ($this->hasActions) : ?>
 <div class="fabrikActions form-actions p-0 m-0">
 	<div
@@ -78,5 +81,13 @@ if ($this->hasActions) : ?>
 		<?php endif; ?>
 	</div>
 </div>
+
+<script>
+    document.querySelector(".em-goback-btn button").addEventListener("click", goBack);
+
+    function goBack() {
+        window.history.back();
+    }
+</script>
 <?php
 endif;
