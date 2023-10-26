@@ -72,7 +72,7 @@
               <template slot="singleLabel" slot-scope="props">
                 <div class="flex items-center gap-2">
                   <span class="material-icons-outlined">{{ props.option.code }}</span>
-                  <span class="option__title">{{ props.option.label }}</span>
+                  <span class="option__title">{{ translate(props.option.label) }}</span>
                 </div>
               </template>
               <template slot="option" slot-scope="props">
@@ -131,7 +131,7 @@
           <div class="mb-4">
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_IMAGE') }}</label>
             <multiselect
-                :key="form.image"
+                :key="attachments_update"
                 v-if="image_attachments"
                 v-model="form.image"
                 label="value"
@@ -150,7 +150,7 @@
         </div>
 
         <div class="em-repeat-card-no-padding em-pb-24 relative card-preview">
-          <div class="fabrikImageBackground" style="background-image: url('/media/com_emundus/images/gallery/default_card.png')"></div>
+          <div v-if="form.image && form.image.id != 0" class="fabrikImageBackground" style="background-image: url('/media/com_emundus/images/gallery/default_card.png')"></div>
           <div class="p-4">
             <h2 class="line-clamp-2 h-14">
               {{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_TITLE') }}
@@ -222,10 +222,12 @@ export default {
       title: '',
       subtitle: '',
       subtitle_icon: '',
-      tags: [],
+      tags: '',
       resume: '',
       image: '',
     },
+
+    attachments_update: 0,
   }),
 
   created() {
@@ -277,7 +279,8 @@ export default {
             this.form.image = this.image_attachments.find(attachment => {
               return attachment.id == this.gallery.image;
             });
-            //this.image_attachments = Object.values(data.data);
+
+            this.attachments_update++;
           });
     },
 
@@ -292,38 +295,38 @@ export default {
 
   watch: {
     'form.title' : function(val,oldVal) {
-      if(oldVal !== '') {
-        this.updateAttribute('title', val.fullname);
+      if(oldVal !== '' && val != oldVal) {
+        this.$emit('updateAttribute', 'title',val.fullname);
       }
     },
 
     'form.subtitle' : function(val,oldVal) {
-      if(oldVal !== '') {
-        this.updateAttribute('subtitle', val.fullname);
+      if(oldVal !== '' && val != oldVal) {
+        this.$emit('updateAttribute', 'subtitle',val.fullname);
       }
     },
 
     'form.subtitle_icon' : function(val,oldVal) {
-      if(oldVal !== '') {
-        this.updateAttribute('subtitle_icon', val.code);
+      if(oldVal !== '' && val != oldVal) {
+        this.$emit('updateAttribute', 'subtitle_icon',val.code);
       }
     },
 
     'form.tags' : function(val,oldVal) {
-      if(oldVal !== '') {
-        this.updateAttribute('tags', val.fullname);
+      if(oldVal !== '' && val != oldVal) {
+        this.$emit('updateAttribute', 'tags',val.fullname);
       }
     },
 
     'form.resume' : function(val,oldVal) {
-      if(oldVal !== '') {
-        this.updateAttribute('resume', val.fullname);
+      if(oldVal !== '' && val != oldVal) {
+        this.$emit('updateAttribute', 'resume',val.fullname);
       }
     },
 
     'form.image': function(val,oldVal) {
-      if (oldVal !== '') {
-        this.updateAttribute('image', val.id);
+      if (oldVal !== '' && val != oldVal) {
+        this.$emit('updateAttribute', 'image',val.id);
       }
     }
   }
@@ -335,6 +338,7 @@ export default {
   width: 400px;
   transform: scale(0.7);
   transform-origin: top left;
+  height: fit-content;
 }
 .fabrikImageBackground{
   border-top-left-radius: 8px;

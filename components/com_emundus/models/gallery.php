@@ -135,13 +135,26 @@ class EmundusModelGallery extends JModelList
 			$query = $this->_db->getQuery(true);
 
 			if(empty($gallery)) {
-				$query->select('*')
-					->from($this->_db->quoteName('#__emundus_setup_gallery'))
-					->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($id));
+				$query->select('sg.*,fl.label,fl.introduction,fl.params,fl.db_table_name')
+					->from($this->_db->quoteName('#__emundus_setup_gallery','sg'))
+					->leftJoin($this->_db->quoteName('#__fabrik_lists','fl').' ON '.$this->_db->quoteName('fl.id').' = '.$this->_db->quoteName('sg.list_id'))
+					->where($this->_db->quoteName('sg.id') . ' = ' . $this->_db->quote($id));
 				$this->_db->setQuery($query);
 				$gallery = $this->_db->loadObject();
-
+				
 				if(!empty($gallery)) {
+					$gallery->status = 1;
+
+					$list_params = json_decode($gallery->params,true);
+					if(!empty($list_params['filter-fields'])) {
+						$status_filter = array_search($gallery->db_table_name.'.status_raw',$list_params['filter-fields']);
+
+						if($status_filter !== false) {
+							$gallery->status = $list_params['filter-value'][$status_filter];
+						}
+					}
+
+					
 					$query->clear()
 						->select('title,fields')
 						->from($this->_db->quoteName('#__emundus_setup_gallery_detail_tabs'))
@@ -572,5 +585,68 @@ class EmundusModelGallery extends JModelList
 		return $added;
 	}
 
+	public function updateList($lid,$attribute,$value)
+	{
+		$updated = false;
+
+		$query = $this->_db->getQuery(true);
+
+		try {
+			$query->update($this->_db->quoteName('#__fabrik_lists'))
+				->set($this->_db->quoteName($attribute) . ' = ' . $this->_db->quote($value))
+				->where($this->_db->quoteName('id') .' = ' . $lid);
+			$this->_db->setQuery($query);
+
+			$updated = $this->_db->execute();
+		}
+		catch (Exception $e) {
+			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+		}
+	}
+
 	//TODO: Create function to add prefilter to a fabrik list on status
+	public function editPrefilter($lid,$value)
+	{
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'fabrik.php');
+
+		$updated = false;
+
+		try {
+			$query = $this->_db->getQuery(true);
+
+			if(empty($gallery)) {
+				$query->select('fl.params,fl.db_table_name')
+					->from($this->_db->quoteName('#__fabrik_lists','fl'))
+					->where($this->_db->quoteName('fl.id') . ' = ' . $this->_db->quote($lid));
+				$this->_db->setQuery($query);
+				$list = $this->_db->loadObject();
+
+				if(!empty($list)) {
+					$params = json_decode($list->params,true);
+
+					if(!empty($params['filter-fields'])) {
+						$status_filter = array_search($list->db_table_name.'.status_raw',$params['filter-fields']);
+
+						if($status_filter !== false) {
+							$params['filter-value'][$status_filter] = $value;
+						}
+
+						$query->clear()
+							->update($this->_db->quoteName('#__fabrik_lists'))
+							->set($this->_db->quoteName('params') . ' = ' . $this->_db->quote(json_encode($params)))
+							->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($lid));
+						$this->_db->setQuery($query);
+						$updated = $this->_db->execute();
+					} else {
+						$updated = EmundusHelperFabrik::createPrefilterList($lid,'status_raw',$value);
+					}
+				}
+			}
+		}
+		catch (Exception $e) {
+			JLog::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $updated;
+	}
 }

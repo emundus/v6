@@ -3757,6 +3757,9 @@ label{
           transform: scale(0.7);
   -webkit-transform-origin: top left;
           transform-origin: top left;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
 }
 .fabrikImageBackground[data-v-125ccaf6]{
   border-top-left-radius: 8px;

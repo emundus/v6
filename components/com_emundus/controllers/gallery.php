@@ -204,6 +204,26 @@ class EmundusControllerGallery extends JControllerLegacy
 		exit;
 	}
 
+	public function updategallerylist()
+	{
+		$response = array('status' => 1, 'msg' => '', 'data' => []);
+
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$response['status'] = 0;
+			$response['msg'] = JText::_('ACCESS_DENIED');
+		}
+		else {
+			$lid = $this->input->getInt('list_id', 0);
+			$attribute = $this->input->getString('attribute', '');
+			$value = $this->input->getString('value', '');
+
+			$response['data'] = $this->_model->updateList($lid,$attribute,$value);
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
 	public function getattachments()
 	{
 		$response = array('status' => 1, 'msg' => '', 'data' => []);
@@ -218,6 +238,25 @@ class EmundusControllerGallery extends JControllerLegacy
 			if(!empty($cid)) {
 				$response['data'] = $this->_model->getAttachments($cid);
 			}
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
+	public function editprefilter()
+	{
+		$response = array('status' => 1, 'msg' => '', 'data' => []);
+
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$response['status'] = 0;
+			$response['msg'] = JText::_('ACCESS_DENIED');
+		}
+		else {
+			$lid = $this->input->getInt('list_id', 0);
+			$value = $this->input->getString('value', '');
+
+			$response['data'] = $this->_model->editPrefilter($lid,$value);
 		}
 
 		echo json_encode((object)$response);

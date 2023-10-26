@@ -1227,4 +1227,38 @@ die("<script>
 		$result['status'] = true;
 		return $result;
 	}
+	
+	public static function createPrefilterList($lid,$elt_name,$value,$condition = 'equals',$eval = 0,$grouped = 0,$access = 1)
+	{
+		$created = false;
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		
+		$query->select('fl.params,fl.db_table_name')
+			->from($db->quoteName('#__fabrik_lists','fl'))
+			->where($db->quoteName('fl.id') . ' = ' . $db->quote($lid));
+		$db->setQuery($query);
+		$list = $db->loadObject();
+
+		if(!empty($list)) {
+			$params = json_decode($list->params,true);
+
+			$params['filter-fields'][] = $list->db_table_name.'.'.$elt_name;
+			$params['filter-conditions'][] = $condition;
+			$params['filter-eval'][] = $eval;
+			$params['filter-value'][] = $value;
+			$params['filter-access'][] = $access;
+			$params['filter-grouped'][] = $grouped;
+
+			$query->clear()
+				->update($db->quoteName('#__fabrik_lists'))
+				->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+				->where($db->quoteName('id') . ' = ' . $db->quote($lid));
+			$db->setQuery($query);
+			$created = $db->execute();
+		}
+
+		return $created;
+	}
 }
