@@ -224,7 +224,6 @@ endif;
     });
 
     let displayTchoozy = getComputedStyle(document.documentElement).getPropertyValue('--display-profiles');
-
     if (displayTchoozy !== 'block') {
         document.querySelector('#background-shapes').style.display = 'none';
     }

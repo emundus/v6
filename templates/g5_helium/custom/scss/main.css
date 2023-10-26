@@ -97,10 +97,10 @@ body {
 
 /* Connexion */
 .login > #g-page-surround {
-    background-image: var(--display-digital-testing), var(--display-corner-bottom-left-background), var(--display-candidate-button), var(--display-corner-top-right-background);
-    background-position: top 120px left 20px, bottom left, bottom 50px right 20px, top right;
-    background-repeat : no-repeat, no-repeat, no-repeat, no-repeat;
-    background-size : 25%, 50%, 25%, 50%;
+    background-image: var(--display-digital-testing), var(--display-candidate-button);
+    background-position: top 120px left 20px, bottom 50px right 20px;
+    background-repeat : no-repeat, no-repeat;
+    background-size : 25%, 25%;
 }
 
 .login #g-navigation .g-container {

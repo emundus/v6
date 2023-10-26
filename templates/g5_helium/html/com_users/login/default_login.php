@@ -20,6 +20,10 @@ if(!empty($this->campaign)){
 }
 ?>
 <div class="login<?php echo $this->pageclass_sfx; ?>">
+
+    <iframe id="background-shaped-bottom" src="/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
+    <iframe id="background-shaped-top" src="/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
+
     <?php if ($this->params->get('show_page_heading')) : ?>
         <div class="page-header">
             <?php if (file_exists('images/custom/favicon.png')) : ?>
@@ -141,4 +145,11 @@ if(!empty($this->campaign)){
             }
         <?php endif; ?>
     });
+
+    let displayTchoozy = getComputedStyle(document.documentElement).getPropertyValue('--display-corner-bottom-left-background');
+    let displayTchoozy2 = getComputedStyle(document.documentElement).getPropertyValue('--display-corner-top-right-background');
+    if (displayTchoozy !== 'block' || displayTchoozy2 !== 'block') {
+        document.querySelector('#background-shaped-bottom').style.display = 'none';
+        document.querySelector('#background-shaped-top').style.display = 'none';
+    }
 </script>
