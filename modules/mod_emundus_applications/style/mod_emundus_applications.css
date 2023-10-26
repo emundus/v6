@@ -770,6 +770,7 @@ circle.circle {
     top: -17px;
     right: -95px;
     pointer-events: none;
+    transition: transform .3s;
 }
 
 .hover-and-tile-container:hover > #tile-hover-offset-request {
