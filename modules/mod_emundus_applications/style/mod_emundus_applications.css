@@ -458,7 +458,6 @@ a.btn.btn-success:not(.btn-xs) {
     font-weight: 600;
 }
 .mod_emundus_applications___title{
-    //margin-bottom: var(--m-8) !important;
     color: var(--em-default-title-color-1) !important;
     -webkit-line-clamp: 2;
     overflow: hidden;
@@ -732,11 +731,6 @@ circle.circle {
  * Peps tuiles
  *******************/
 
-//Conteneur tuile et hover
-.hover-and-tile-container {
-
-}
-
 /* Hover decalage tuile */
 .hover-and-tile-container #tile-hover-offset-request {
     background: var(--em-profile-color);
@@ -751,10 +745,6 @@ circle.circle {
 /* Tuile */
 .mod_emundus_applications___content_app {
     position: relative;
-    /*background-image: url('fond-clair.svg');
-    background-position: top -22px right -22px;
-    background-repeat: no-repeat;
-    background-size: 100%;*/
     transition: background-image .3s;
     height: 286px;
     z-index: 3;
