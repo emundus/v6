@@ -53,6 +53,38 @@
           </div>
 
           <div class="mb-4">
+            <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_SUBTITLE_ICON') }}</label>
+            <multiselect
+                v-if="subtitle_icons"
+                v-model="form.subtitle_icon"
+                label="label"
+                track-by="code"
+                :options="subtitle_icons"
+                :multiple="false"
+                :searchable="true"
+                :taggable="false"
+                select-label=""
+                selected-label=""
+                deselect-label=""
+                :close-on-select="true"
+                :clear-on-select="false"
+            >
+              <template slot="singleLabel" slot-scope="props">
+                <div class="flex items-center gap-2">
+                  <span class="material-icons-outlined">{{ props.option.code }}</span>
+                  <span class="option__title">{{ props.option.label }}</span>
+                </div>
+              </template>
+              <template slot="option" slot-scope="props">
+                <div class="flex items-center gap-2">
+                  <span class="material-icons-outlined">{{ props.option.code }}</span>
+                  <span class="option__title">{{ translate(props.option.label) }}</span>
+                </div>
+              </template>
+            </multiselect>
+          </div>
+
+          <div class="mb-4">
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_TAGS') }}</label>
             <multiselect
                 v-if="choices_fields"
@@ -92,13 +124,28 @@
                 selected-label=""
                 deselect-label=""
                 :close-on-select="true"
-                :clear-on-select="false"
-            ></multiselect>
+                :clear-on-select="false">
+            </multiselect>
           </div>
 
           <div class="mb-4">
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_IMAGE') }}</label>
-            <select class="w-full"></select>
+            <multiselect
+                :key="form.image"
+                v-if="image_attachments"
+                v-model="form.image"
+                label="value"
+                track-by="id"
+                :options="image_attachments"
+                :multiple="false"
+                :searchable="true"
+                :taggable="false"
+                select-label=""
+                selected-label=""
+                deselect-label=""
+                :close-on-select="true"
+                :clear-on-select="false"
+            ></multiselect>
           </div>
         </div>
 
@@ -109,7 +156,8 @@
               {{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_TITLE') }}
             </h2>
             <div class="mb-3">
-              <p class="em-caption" style="min-height: 15px">
+              <p class="em-caption flex items-center" style="min-height: 15px">
+                <span class="material-icons-outlined mr-2">{{ form.subtitle_icon.code }}</span>
                 {{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_SUBTITLE') }}
               </p>
             </div>
@@ -149,9 +197,31 @@ export default {
     simple_fields: [],
     choices_fields: [],
     description_fields: [],
+    image_attachments: [
+      {allowed_types: '',id:0,value:'Aucune image'}
+    ],
+    subtitle_icons: [
+      {
+        code: '',
+        label: 'COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_SUBTITLE_ICON_NO_ICON',
+      },
+      {
+        code: 'location_on',
+        label: '',
+      },
+      {
+        code: 'sell',
+        label: '',
+      },
+      {
+        code: 'lightbulb',
+        label: '',
+      }
+    ],
     form: {
       title: '',
       subtitle: '',
+      subtitle_icon: '',
       tags: [],
       resume: '',
       image: '',
@@ -159,7 +229,12 @@ export default {
   }),
 
   created() {
+    this.form.subtitle_icon = this.subtitle_icons.find(icon => {
+      return icon.code == this.gallery.subtitle_icon;
+    });
+
     this.getElements();
+    this.getAttachments();
   },
   methods: {
     getElements() {
@@ -193,13 +268,26 @@ export default {
           });
     },
 
+    getAttachments() {
+      fetch('index.php?option=com_emundus&controller=gallery&task=getattachments&campaign_id='+this.gallery.campaign_id)
+          .then(response => response.json())
+          .then(data => {
+            Array.prototype.push.apply(this.image_attachments,Object.values(data.data));
+
+            this.form.image = this.image_attachments.find(attachment => {
+              return attachment.id == this.gallery.image;
+            });
+            //this.image_attachments = Object.values(data.data);
+          });
+    },
+
     updateAttribute(attribute,value) {
       fetch('index.php?option=com_emundus&controller=gallery&task=updateattribute&gallery_id='+this.gallery.id+'&attribute='+attribute+'&value='+value)
           .then(response => response.json())
           .then(data => {
             console.log(data);
           });
-    }
+    },
   },
 
   watch: {
@@ -215,6 +303,12 @@ export default {
       }
     },
 
+    'form.subtitle_icon' : function(val,oldVal) {
+      if(oldVal !== '') {
+        this.updateAttribute('subtitle_icon', val.code);
+      }
+    },
+
     'form.tags' : function(val,oldVal) {
       if(oldVal !== '') {
         this.updateAttribute('tags', val.fullname);
@@ -224,6 +318,12 @@ export default {
     'form.resume' : function(val,oldVal) {
       if(oldVal !== '') {
         this.updateAttribute('resume', val.fullname);
+      }
+    },
+
+    'form.image': function(val,oldVal) {
+      if (oldVal !== '') {
+        this.updateAttribute('image', val.id);
       }
     }
   }

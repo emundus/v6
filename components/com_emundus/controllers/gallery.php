@@ -203,4 +203,24 @@ class EmundusControllerGallery extends JControllerLegacy
 		echo json_encode((object)$response);
 		exit;
 	}
+
+	public function getattachments()
+	{
+		$response = array('status' => 1, 'msg' => '', 'data' => []);
+
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$response['status'] = 0;
+			$response['msg'] = JText::_('ACCESS_DENIED');
+		}
+		else {
+			$cid = $this->input->getInt('campaign_id', 0);
+
+			if(!empty($cid)) {
+				$response['data'] = $this->_model->getAttachments($cid);
+			}
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
 }

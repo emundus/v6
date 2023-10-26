@@ -433,9 +433,42 @@ class EmundusModelGallery extends JModelList
 		return $elements;
 	}
 
-	public function getImageAttachments($cid)
+	public function getAttachments($cid)
 	{
-		//TODO: Get image attachments from profiles of the campaign_id
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'cache.php');
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+
+		$cache = new EmundusHelperCache('com_emundus');
+		$cacheId = 'gallery_' . $cid . '_attachments';
+
+		$attachments = $cache->get($cacheId);
+
+		if(empty($attachments)) {
+			$query = $this->_db->getQuery(true);
+
+			try {
+				$m_profile = new EmundusModelProfile();
+				$pids = $m_profile->getProfilesIDByCampaign((array) $cid);
+
+				$query->select('esa.id,esa.value,esa.allowed_types')
+					->from($this->_db->quoteName('#__emundus_setup_attachments','esa'))
+					->leftJoin($this->_db->quoteName('#__emundus_setup_attachment_profiles','esap').' ON '.$this->_db->quoteName('esap.attachment_id').' = '.$this->_db->quoteName('esa.id'))
+					->where($this->_db->quoteName('esap.profile_id').' IN ('.implode(',',$pids).')');
+				$this->_db->setQuery($query);
+				$attachments = $this->_db->loadObjectList();
+
+				$attachments = array_filter($attachments, function ($attachment) {
+					$image_types = ['jpg','jpeg','png','svg','gif'];
+					$allowed_types = explode(';',$attachment->allowed_types);
+					return !empty(array_intersect($image_types,$allowed_types));
+				});
+			}
+			catch (Exception $e) {
+				JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $attachments;
 	}
 
 	public function updateAttribute($gid,$attribute,$value)
@@ -447,77 +480,87 @@ class EmundusModelGallery extends JModelList
 		$query = $this->_db->getQuery(true);
 		$gallery = $this->getGalleryById($gid);
 
+		$fabrik_attributes = ['title','subtitle','tags','resume'];
+
 		try {
 			$query->update($this->_db->quoteName('#__emundus_setup_gallery'))
 				->set($this->_db->quoteName($attribute) . ' = ' . $this->_db->quote($value))
 				->where($this->_db->quoteName('id') .' = ' . $gid);
 			$this->_db->setQuery($query);
 
-			if($this->_db->execute()) {
-				$table_to_join = explode('___',$value)[0];
-				$elt_name = explode('___',$value)[1];
-				$group_id = 0;
+			if(!in_array($attribute,$fabrik_attributes)) {
+				$added = $this->_db->execute();
+			}
+			else {
 
-				$joins = EmundusHelperFabrik::getFabrikJoins($gallery->list_id);
-				$tables_joined = array_keys($joins);
-				
-				if(!in_array($table_to_join,$tables_joined)) {
-					$query->clear()
-						->select('db_table_name')
-						->from($this->_db->quoteName('#__fabrik_lists'))
-						->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($gallery->list_id));
-					$this->_db->setQuery($query);
-					$db_table_name = $this->_db->loadResult();
+				if ($this->_db->execute()) {
+					$table_to_join = explode('___', $value)[0];
+					$elt_name      = explode('___', $value)[1];
+					$group_id      = 0;
 
-					$joined = EmundusHelperFabrik::createFabrikJoin($db_table_name,$table_to_join,$gallery->list_id);
+					$joins         = EmundusHelperFabrik::getFabrikJoins($gallery->list_id);
+					$tables_joined = array_keys($joins);
 
-					if($joined['status']) {
-						$group_id = $joined['group_id'];
-					}
-				} else {
-					$group_id = $joins[$table_to_join]->group_id;
-				}
-
-				if(!empty($group_id)) {
-					$query->clear()
-						->select('fe.id')
-						->from($this->_db->quoteName('#__fabrik_elements', 'fe'))
-						->where($this->_db->quoteName('fe.group_id') . ' = ' . $this->_db->quote($group_id))
-						->where($this->_db->quoteName('fe.name') . ' = ' . $this->_db->quote($elt_name));
-					$this->_db->setQuery($query);
-					$element_id = $this->_db->loadResult();
-
-					if(empty($element_id)) {
+					if (!in_array($table_to_join, $tables_joined)) {
 						$query->clear()
-							->select('fe.*')
+							->select('db_table_name')
+							->from($this->_db->quoteName('#__fabrik_lists'))
+							->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($gallery->list_id));
+						$this->_db->setQuery($query);
+						$db_table_name = $this->_db->loadResult();
+
+						$joined = EmundusHelperFabrik::createFabrikJoin($db_table_name, $table_to_join, $gallery->list_id);
+
+						if ($joined['status']) {
+							$group_id = $joined['group_id'];
+						}
+					}
+					else {
+						$group_id = $joins[$table_to_join]->group_id;
+					}
+
+					if (!empty($group_id)) {
+						$query->clear()
+							->select('fe.id')
 							->from($this->_db->quoteName('#__fabrik_elements', 'fe'))
-							->leftJoin($this->_db->quoteName('#__fabrik_formgroup', 'ff') . ' ON ' . $this->_db->quoteName('ff.group_id') . ' = ' . $this->_db->quoteName('fe.group_id'))
-							->leftJoin($this->_db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $this->_db->quoteName('fl.form_id') . ' = ' . $this->_db->quoteName('ff.form_id'))
-							->where($this->_db->quoteName('fl.db_table_name') . ' = ' . $this->_db->quote($table_to_join))
+							->where($this->_db->quoteName('fe.group_id') . ' = ' . $this->_db->quote($group_id))
 							->where($this->_db->quoteName('fe.name') . ' = ' . $this->_db->quote($elt_name));
 						$this->_db->setQuery($query);
-						$element = $this->_db->loadAssoc();
+						$element_id = $this->_db->loadResult();
 
-						unset($element['id']);
+						if (empty($element_id)) {
+							$query->clear()
+								->select('fe.*')
+								->from($this->_db->quoteName('#__fabrik_elements', 'fe'))
+								->leftJoin($this->_db->quoteName('#__fabrik_formgroup', 'ff') . ' ON ' . $this->_db->quoteName('ff.group_id') . ' = ' . $this->_db->quoteName('fe.group_id'))
+								->leftJoin($this->_db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $this->_db->quoteName('fl.form_id') . ' = ' . $this->_db->quoteName('ff.form_id'))
+								->where($this->_db->quoteName('fl.db_table_name') . ' = ' . $this->_db->quote($table_to_join))
+								->where($this->_db->quoteName('fe.name') . ' = ' . $this->_db->quote($elt_name));
+							$this->_db->setQuery($query);
+							$element = $this->_db->loadAssoc();
 
-						$columns = array_map(function ($column) {
-							return $this->_db->quoteName($column);
-						}, array_keys($element));
+							unset($element['id']);
 
-						$element['group_id'] = $group_id;
-						$element['show_in_list_summary'] = $group_id;
-						$values = array_map(function ($value) {
-							return $this->_db->quote($value);
-						}, array_values($element));
+							$columns = array_map(function ($column) {
+								return $this->_db->quoteName($column);
+							}, array_keys($element));
 
-						$query->clear()
-							->insert($this->_db->quoteName('#__fabrik_elements'))
-							->columns($columns)
-							->values(implode(',', $values));
-						$this->_db->setQuery($query);
-						$added = $this->_db->execute();
-					} else {
-						$added = true;
+							$element['group_id']             = $group_id;
+							$element['show_in_list_summary'] = $group_id;
+							$values                          = array_map(function ($value) {
+								return $this->_db->quote($value);
+							}, array_values($element));
+
+							$query->clear()
+								->insert($this->_db->quoteName('#__fabrik_elements'))
+								->columns($columns)
+								->values(implode(',', $values));
+							$this->_db->setQuery($query);
+							$added = $this->_db->execute();
+						}
+						else {
+							$added = true;
+						}
 					}
 				}
 			}
