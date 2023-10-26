@@ -537,8 +537,15 @@ if ($user != null) {
 
         function manageHeight() {
                 let elmnt = document.getElementById("g-navigation");
-                let hauteurTotaleElem = elmnt.offsetHeight;
-                jQuery("#userDropdownMenu").css("top", hauteurTotaleElem + 'px');
+                let elmnt2 = document.getElementById("g-top");
+                if(elmnt2 !== null) {
+                    let hauteurTotaleElem = elmnt.offsetHeight + elmnt2.offsetHeight;
+                    jQuery("#userDropdownMenu").css("top", hauteurTotaleElem + 'px');
+                }else {
+                    let hauteurTotaleElem = elmnt.offsetHeight ;
+                    jQuery("#userDropdownMenu").css("top", hauteurTotaleElem + 'px');
+                }
+
         }
 
         function copyTokenToClipBoard() {
