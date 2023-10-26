@@ -86,18 +86,13 @@ body {
  ***********/
 
 /* Accueil */
-.view-featured.homepage #g-page-surround {
-    background-image: var(--display-wide-background);
-    background-size: 60%;
-    background-repeat: repeat;
-    background-position: 60vw 120px;
-}
-
-.homepage #g-container-main .g-container {
+.homepage #g-container-main .g-container .mod_emundus_campaign__intro {
     background-image: var(--display-demonstration);
     background-size: 250px;
     background-repeat: no-repeat;
-    background-position: top right 30px;
+    background-position: top -6px right 30px;
+    width: 100%;
+    padding-right: 28%;
 }
 
 /* Connexion */
@@ -128,14 +123,6 @@ body {
     background-position: bottom 65px right, bottom 60px right ;
     background-repeat : no-repeat, no-repeat ;
     background-size :  30%, 50% ;
-}
-
-/* Coin haut droite des pages mentions légales, cookies, indicateurs, groupes, campagnes... */
-.view-article #g-page-surround, .view-list #g-page-surround, .view-form #g-page-surround, .view-emails #g-page-surround, .view-campaigns #g-page-surround, .view-form.mon-profil #g-page-surround {
-    background-image: var(--display-corner-top-right-background);
-    background-position: top 70px right;
-    background-repeat: no-repeat;
-    background-size: 50%;
 }
 
 /* Historique des emails */
