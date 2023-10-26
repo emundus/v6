@@ -1538,7 +1538,6 @@ footer#g-footer > .g-container {
 }
 
 .view-list:not(.g-back-office-emundus-tableau) #g-container-main .g-container {
-  width: auto;
   position: relative;
   width: calc(100% - 76px);
 }
@@ -3786,9 +3785,9 @@ div#em-appli-block {
       font-weight: 600;
 
       a {
-        background-color: var(--em-secondary-color);
+        background-color: var(--em-profile-color);
         color: var(--neutral-0);
-        border: 1px solid var(--em-secondary-color);
+        border: 1px solid var(--em-profile-color);
         padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
         border-radius: var(--em-applicant-br);
         font-size: var(--em-applicant-font-size);
@@ -3797,9 +3796,9 @@ div#em-appli-block {
         &:active,
         &:focus {
           background-color: transparent;
-          color: var(--em-secondary-color);
+          color: var(--em-profile-color);
           text-decoration: none;
-          border: 1px solid var(--em-secondary-color);
+          border: 1px solid var(--em-profile-color);
         }
       }
     }
