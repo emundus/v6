@@ -103,10 +103,10 @@ form:
     profiles:
       type: select.select
       label: Profiles illustration
-      default: url("/media/com_emundus/images/tchoozy/objects-illustrations/profiles.svg")
+      default: block
       description: Illustration profils
       options:
-        url("/media/com_emundus/images/tchoozy/objects-illustrations/profiles.svg"): Enabled
+        block: Enabled
         none: Disabled
 
     #Easter egg

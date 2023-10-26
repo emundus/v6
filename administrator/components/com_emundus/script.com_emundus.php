@@ -3360,7 +3360,7 @@ structure:
 				EmundusHelperUpdate::addYamlVariable('corner-bottom-right-background', 'url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-right-background.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
 				EmundusHelperUpdate::addYamlVariable('setting-tools', 'url("/media/com_emundus/images/tchoozy/complex-illustrations/setting-tools.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
 				EmundusHelperUpdate::addYamlVariable('groups', 'url("/media/com_emundus/images/tchoozy/objects-illustrations/groups.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
-				EmundusHelperUpdate::addYamlVariable('profiles', 'url("/media/com_emundus/images/tchoozy/objects-illustrations/profiles.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
+				EmundusHelperUpdate::addYamlVariable('profiles', 'block', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
 				EmundusHelperUpdate::addYamlVariable('hiding', 'url("/media/com_emundus/images/tchoozy/complex-illustrations/hiding.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
 
 				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature', 'copy_users_assoc', 'INT');
