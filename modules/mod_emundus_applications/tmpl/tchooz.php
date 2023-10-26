@@ -49,7 +49,7 @@ if (!empty($groups) && !empty($tmp_applications)) {
 	if (!empty($missing_status)) {
 		$groups->{'mod_em_application_group' . $groups_count}                                      = new stdClass();
 		$groups->{'mod_em_application_group' . $groups_count}->{'mod_em_application_group_status'} = implode(',', $missing_status);
-		$groups->{'mod_em_application_group' . $groups_count}->{'mod_em_application_group_title'}  = $title_other_section;
+		$groups->{'mod_em_application_group' . $groups_count}->{'mod_em_application_group_title'}  = JText::_($title_other_section);
 	}
 
 	foreach ($groups as $key => $group) {
@@ -309,7 +309,7 @@ $current_tab = 0;
 	<?php else : ?>
 		<?php foreach ($applications as $key => $group) : ?>
 			<?php foreach ($group as $g_key => $sub_group) : ?>
-				<?php if (sizeof($sub_group['applications']) > 0) : ?>
+				<?php if (sizeof($sub_group['applications'][0]) > 0) : ?>
                     <div id="group_application_tab_<?php echo $key ?>"
                          class="em-mb-44 <?php if ($key != $current_tab) : ?>em-display-none<?php endif; ?>">
                         <?php if (isset($sub_group['label'])) : ?>
@@ -618,10 +618,14 @@ $current_tab = 0;
 	<?php else : ?>
 		<?php foreach ($applications as $key => $group) : ?>
 			<?php foreach ($group as $g_key => $sub_group) : ?>
-				<?php if (sizeof($sub_group['applications']) > 0) : ?>
+				<?php if (sizeof($sub_group['applications'][0]) > 0) : ?>
                     <div id="group_application_tab_<?php echo $key ?>"
                          class="em-mb-44 <?php if ($key != $current_tab) : ?>em-display-none<?php endif; ?>">
 
+	                    <?php if (isset($sub_group['label'])) : ?>
+                            <h3 class="em-ml-8"><?php echo $sub_group['label'] ?></h3>
+                            <hr/>
+	                    <?php endif; ?>
                         <table class="em-mb-12">
                             <thead>
                             <tr>
@@ -637,13 +641,13 @@ $current_tab = 0;
                             </thead>
                         </table>
 						<?php foreach ($sub_group['applications'] as $f_key => $files) : ?>
-							<?php if (!is_integer($f_key) || $order_by_session == 'years') : ?>
+							<?php if ($order_by_session == 'years') : ?>
                                 <div class="em-mt-12 em-flex-row em-white-bg em-applicant-border-radius em-p-6-12">
                                     <span class="material-icons-outlined em-mr-8">expand_more</span>
                                     <h2 style="margin-top: 0"><?php echo $f_key ?></h2>
                                 </div>
 							<?php endif; ?>
-                            <table class="em-ml-12">
+                            <table class="em-ml-12" style="border-collapse: separate;border-spacing: 0 6px;">
                                 <tbody>
 								<?php foreach ($files as $application) : ?>
 
