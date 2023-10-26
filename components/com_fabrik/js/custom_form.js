@@ -49,6 +49,10 @@ requirejs(['fab/fabrik'], function () {
                     }).then((result) => {
                         if(result.value)
                         {
+                            if(e.srcElement.classList.contains('goback-btn')) {
+                                window.history.back();
+                            }
+
                             let href = window.location.origin+'/index.php';
                             // If click event target is a direct link
                             if(typeof e.target.href !== 'undefined')
@@ -72,6 +76,10 @@ requirejs(['fab/fabrik'], function () {
                             window.location.href = href;
                         }
                     });
+                } else {
+                    if(e.srcElement.classList.contains('goback-btn')) {
+                        window.history.back();
+                    }
                 }
             }
         }
