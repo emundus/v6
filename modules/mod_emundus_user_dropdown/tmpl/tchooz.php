@@ -181,7 +181,9 @@ if ($user != null) {
 
 <!-- Button which opens up the dropdown menu. -->
 <div class='dropdown <?php if($first_logged) : ?>userDropdown-tip<?php endif; ?>' tabindex="0" id="userDropdown" style="float: right;">
+	<?php if ($display_svg == 1) : ?>
     <iframe id="background-shapes" src="/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg" alt="<?= JText::_('COM_EMUNDUS_USERDROPDOWN_IFRAME') ?>"></iframe>
+	<?php endif; ?>
     <?php if(!empty($profile_picture)): ?>
     <div id="userDropdownLabel">
         <div class="em-flex-row em-flex-end em-profile-container" onclick="manageHeight()">
@@ -558,7 +560,9 @@ if ($user != null) {
         }
     </script>
 <?php } else { ?>
+	<?php if ($display_svg == 1) : ?>
     <iframe id="background-shapes" src="/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg" alt="<?= JText::_('COM_EMUNDUS_USERDROPDOWN_IFRAME') ?>"></iframe>
+	<?php endif; ?>
     <div class="header-right" style="text-align: right;">
         <?php if ($show_registration) { ?>
             <a class="btn btn-danger" href="<?= $link_register; ?>" data-toggle="sc-modal"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
@@ -568,7 +572,7 @@ if ($user != null) {
     <script>
         <?php if ($guest): ?>
         document.addEventListener('DOMContentLoaded', function () {
-            document.querySelector('#g-navigation .g-container').style.padding = '20px';
+            document.querySelector('#g-navigation .g-container').style.padding = '16px 12px';
         });
         <?php endif; ?>
     </script>

@@ -22,6 +22,7 @@ $switch_profile_redirect = $params->get('switch_profile_redirect', 'index.php');
 
 $primary_color = $params->get('primary_color', 'ECF0F1');
 $secondary_color = $params->get('secondary_color', 'F89406');
+$display_svg  = $params->get('display_svg', 1);
 $icon = $params->get('icon', 'big circular user outline icon');
 $show_logout = $params->get('show_logout', '1');
 $show_update = $params->get('show_update', '1');
