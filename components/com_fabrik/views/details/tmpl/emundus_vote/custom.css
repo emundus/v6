@@ -22,6 +22,8 @@
     padding: 6px 12px;
     border-radius: 14px;
     background: #F0F0F0;
+    color: #666666;
+    box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
 }
 
 .view-details .fabrikDetails .details-tabs {
@@ -86,10 +88,10 @@ button.em-applicant-primary-button[disabled] {
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    height: 250px;
-    width: 250px;
-    border-radius: calc(var(--em-form-br-block)/4);
-    margin: 0 auto;
+    height: 200px;
+    width: 200px;
+    border-radius: 12px;
+    margin: 25px;
 }
 
 #g-container-main .g-container {
@@ -99,7 +101,7 @@ button.em-applicant-primary-button[disabled] {
 
 
 .voting-details-group {
-    max-width: 60vw;
+    max-width: 65vw;
 }
 
 @media (max-width: 1024px) {

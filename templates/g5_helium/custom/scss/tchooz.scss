@@ -31,7 +31,7 @@
   font-size: var(--em-applicant-font-size);
 
   &:hover, &:active, &:focus {
-    background-color: var(--neutral-0) !important;
+    background-color: transparent !important;
     color: var(--em-primary-color);
     border: 1px solid var(--em-primary-color);
     text-decoration: none;
@@ -1569,11 +1569,12 @@ input:focus + .em-slider {
 
 .em-repeat-card{
   box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
-  border-radius: calc(var(--em-form-br-block)/2) !important;
+  border-radius: 12px;
   padding: 24px;
   height: auto;
   background: #fff;
   border: 1px solid var(--neutral-200);
+  position: fixed;
 }
 
 .em-repeat-card-no-padding{
@@ -1679,16 +1680,17 @@ button.em-swal-confirm-button{
   width: auto !important;
   padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal) !important;
   border-radius: var(--em-coordinator-br) !important;
-  border: 1px solid var(--em-coordinator-primary-color) !important;
+  border: 1px solid var(--em-primary-color) !important;
   color: var(--neutral-0) !important;
-  background-color: var(--em-coordinator-primary-color) !important;
+  background-color: var(--em-primary-color) !important;
   font-size: var(--em-coordinator-font-size) !important;
 }
 
 button.em-swal-confirm-button:hover{
-  color: var(--em-coordinator-primary-color) !important;
+  color: var(--em-primary-color) !important;
   background-color: var(--neutral-0) !important;
-  border: 1px solid var(--em-coordinator-primary-color) !important;
+  opacity: 1;
+  border: 1px solid var(--em-primary-color) !important;
 }
 
 .swal2-actions.swal2-loading{
@@ -1703,17 +1705,17 @@ button.em-swal-cancel-button{
   padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal) !important;
   border-radius: var(--em-coordinator-br) !important;
   background: var(--neutral-0) !important;
-  color: var(--em-coordinator-secondary-color) !important;
-  border: 1px solid var(--em-coordinator-secondary-color) !important;
+  color: var(--em-primary-color) !important;
+  border: 1px solid var(--em-primary-color) !important;
   font-size: var(--em-coordinator-font-size) !important;
   &:focus{
     box-shadow: unset !important;
   }
 
   &:hover {
-    background: var(--em-coordinator-secondary-color) !important;
+    background: var(--em-primary-color) !important;
     color: var(--neutral-0) !important;
-    border: 1px solid var(--em-coordinator-secondary-color) !important;
+    border: 1px solid var(--em-primary-color) !important;
   }
 }
 button.em-swal-delete-button{
@@ -2026,4 +2028,38 @@ button.em-swal-delete-button:hover{
   .em-small-align-items-start{
     align-items: start;
   }
+}
+
+/* DETAILS PROJET */
+
+.view-details .voting-pop .voting-details-block {
+  border-radius: 12px 12px 0 0;
+}
+
+.view-list .p-4 .material-icons-outlined,
+.view-details .voting-details-block .material-icons-outlined {
+  font-size: 15px;
+  margin-right: 3px;
+}
+
+.view-details .voting-details-group .p-8 {
+  padding-left: 142px;
+}
+
+.view-details .voting-details-group .p-8 h2 {
+  font-size: var(--em-coordinator-h1);
+}
+
+.view-details .voting-details-group .p-8 p {
+  font-size: var(--em-coordinator-h4);
+}
+
+.view-details .voting-details-group div.tags ul.fabrikRepeatData li {
+  box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+}
+
+/* MODALE */
+
+.swal2-modal .swal2-actions {
+  gap: 20px;
 }

@@ -121,6 +121,7 @@ input.fabrik_filter_submit.button {
 	padding: 6px 12px;
 	border-radius: 14px;
 	background: #F0F0F0;
+	color: #666666
 }
 .em-caption {
 	color: var(--neutral-600);
@@ -282,22 +283,6 @@ button.em-applicant-primary-button[disabled] {
 	gap: 12px;
 }
 
-.p-4 .material-icons-outlined {
-	font-size: 15px;
-	margin-right: 3px;
-}
-
-.p-4 .superior-infos-container {
-
-}
-
 .h-14 {
 	height: auto !important;
-}
-
-/* DÉTAILS PROJET */
-
-.voting-details-group {
-	font-size: var(--em-coordinator-h1);
-	background: magenta !important;
 }
