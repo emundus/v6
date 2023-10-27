@@ -283,50 +283,58 @@ if($currentCampaign->apply_online == 0){
     let iframeElements = document.querySelectorAll("#background-shapes");
     let emProfileColor1 = getComputedStyle(document.documentElement).getPropertyValue('--em-profile-color');
 
-    iframeElements.forEach((iframeElement) => {
-        iframeElement.addEventListener("load", function () {
+    if(iframeElements !== null) {
+        iframeElements.forEach((iframeElement) => {
+            iframeElement.addEventListener("load", function () {
 
-            let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
-            let pathElements = iframeDocument.querySelectorAll("path");
+                let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
+                let pathElements = iframeDocument.querySelectorAll("path");
 
-            let styleElement = iframeDocument.querySelector("style");
+                let styleElement = iframeDocument.querySelector("style");
 
-            if (styleElement) {
-                let styleContent = styleElement.textContent;
-                styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + emProfileColor1 + ";");
-                styleElement.textContent = styleContent;
-            }
+                if (styleElement) {
+                    let styleContent = styleElement.textContent;
+                    styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + emProfileColor1 + ";");
+                    styleElement.textContent = styleContent;
+                }
 
-            if(pathElements) {
-                pathElements.forEach((pathElement) => {
-                    let pathStyle = pathElement.getAttribute("style");
-                    if (pathStyle && pathStyle.includes("fill:grey;")) {
-                        pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + emProfileColor1 + ";");
-                        pathElement.setAttribute("style", pathStyle);
-                    }
-                });
-            }
+                if (pathElements) {
+                    pathElements.forEach((pathElement) => {
+                        let pathStyle = pathElement.getAttribute("style");
+                        if (pathStyle && pathStyle.includes("fill:grey;")) {
+                            pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + emProfileColor1 + ";");
+                            pathElement.setAttribute("style", pathStyle);
+                        }
+                    });
+                }
+            });
         });
-    });
+    }
 
     /* Couleur des cards "candidater" des campagnes clôturées */
     let buttonElement = document.querySelector(".mod_emundus_campaign__details_content button");
 
-    if(buttonElement.classList.contains("em-disabled-button")) {
-        let iframeElement = document.querySelector(".mod_emundus_campaign__details_content #background-shapes");
-        console.log("testouille" + iframeElement.outerHTML);
-        iframeElement.onload = function() {
-            let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
-            let pathElements = iframeDocument.querySelectorAll("path");
-            let neutral600 = getComputedStyle(document.documentElement).getPropertyValue('--neutral-600');
+    if(buttonElement !== null) {
 
-            /* Coloration de tous les éléments "path" */
-            pathElements.forEach((pathElement) => {
-                let pathStyle = pathElement.getAttribute("style");
-                pathStyle = pathStyle.replace(/fill:#[0-9A-Fa-f]{6};/, "fill :" + neutral600 + ";");
-                pathElement.setAttribute("style", pathStyle);
-            });
+    if(buttonElement.classList.contains("em-disabled-button")) {
+
+      let iframeElement = document.querySelector(".mod_emundus_campaign__details_content #background-shapes");
+
+      if(iframeElement !== null) {
+          iframeElement.onload = function () {
+              let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
+              let pathElements = iframeDocument.querySelectorAll("path");
+              let neutral600 = getComputedStyle(document.documentElement).getPropertyValue('--neutral-600');
+
+              /* Coloration de tous les éléments "path" */
+              pathElements.forEach((pathElement) => {
+                  let pathStyle = pathElement.getAttribute("style");
+                  pathStyle = pathStyle.replace(/fill:#[0-9A-Fa-f]{6};/, "fill :" + neutral600 + ";");
+                  pathElement.setAttribute("style", pathStyle);
+              });
+          }
         }
+      }
     }
 
 </script>

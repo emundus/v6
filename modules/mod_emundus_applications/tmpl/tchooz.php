@@ -1551,62 +1551,68 @@ $current_tab = 0;
     let iframeElements = document.querySelectorAll("#background-shapes");
     let emProfileColor3 = getComputedStyle(document.documentElement).getPropertyValue('--em-profile-color');
 
-    iframeElements.forEach((iframeElement) => {
-        iframeElement.addEventListener("load", function () {
+    if(iframeElements !== null) {
 
-            let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
-            let pathElements = iframeDocument.querySelectorAll("path");
+        iframeElements.forEach((iframeElement) => {
+            iframeElement.addEventListener("load", function () {
 
-            let styleElement = iframeDocument.querySelector("style");
+                let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
+                let pathElements = iframeDocument.querySelectorAll("path");
 
-            if (styleElement) {
-                let styleContent = styleElement.textContent;
-                styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + emProfileColor3 + ";");
-                styleElement.textContent = styleContent;
-            }
+                let styleElement = iframeDocument.querySelector("style");
 
-            if(pathElements) {
-                pathElements.forEach((pathElement) => {
-                    let pathStyle = pathElement.getAttribute("style");
-                    if (pathStyle && pathStyle.includes("fill:grey;")) {
-                        pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + emProfileColor3 + ";");
-                        pathElement.setAttribute("style", pathStyle);
-                    }
-                });
-            }
+                if (styleElement) {
+                    let styleContent = styleElement.textContent;
+                    styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + emProfileColor3 + ";");
+                    styleElement.textContent = styleContent;
+                }
+
+                if (pathElements) {
+                    pathElements.forEach((pathElement) => {
+                        let pathStyle = pathElement.getAttribute("style");
+                        if (pathStyle && pathStyle.includes("fill:grey;")) {
+                            pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + emProfileColor3 + ";");
+                            pathElement.setAttribute("style", pathStyle);
+                        }
+                    });
+                }
+            });
         });
-    });
+    }
 
     /* Changement de couleur des formes au hover de la card */
     let divsHover = document.querySelectorAll(".hover-and-tile-container");
     let trsHover = document.querySelectorAll("table tbody tr");
     let iframeElementHover = document.getElementById('background-shapes');
 
-    divsHover.forEach((divHover) => {
+    if(iframeElementHover !== null) {
 
-        let iframeElementHover = divHover.querySelector('iframe');
+        divsHover.forEach((divHover) => {
 
-        divHover.addEventListener('mouseenter', function() {
-            iframeElementHover.src = '/modules/mod_emundus_campaign/assets/fond-fonce.svg';
-        });
+            let iframeElementHover = divHover.querySelector('iframe');
 
-        divHover.addEventListener('mouseleave', function() {
-            iframeElementHover.src = '/modules/mod_emundus_campaign/assets/fond-clair.svg';
-        });
-    })
+            divHover.addEventListener('mouseenter', function () {
+                iframeElementHover.src = '/modules/mod_emundus_campaign/assets/fond-fonce.svg';
+            });
 
-    /* Changement de couleur des formes au hover de la ligne de la liste */
-    trsHover.forEach((trHover) => {
+            divHover.addEventListener('mouseleave', function () {
+                iframeElementHover.src = '/modules/mod_emundus_campaign/assets/fond-clair.svg';
+            });
+        })
 
-        let iframeElementHover = trHover.querySelector('iframe');
+        /* Changement de couleur des formes au hover de la ligne de la liste */
+        trsHover.forEach((trHover) => {
 
-        trHover.addEventListener('mouseenter', function() {
-            iframeElementHover.src = '/modules/mod_emundus_user_dropdown/assets/fond-formes-header-fonce.svg';
-        });
+            let iframeElementHover = trHover.querySelector('iframe');
 
-        trHover.addEventListener('mouseleave', function() {
-            iframeElementHover.src = '/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg';
-        });
-    })
+            trHover.addEventListener('mouseenter', function () {
+                iframeElementHover.src = '/modules/mod_emundus_user_dropdown/assets/fond-formes-header-fonce.svg';
+            });
+
+            trHover.addEventListener('mouseleave', function () {
+                iframeElementHover.src = '/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg';
+            });
+        })
+    }
 
 </script>

@@ -354,28 +354,30 @@ if ($user != null) {
                     // header background color
                     let iframeElements_2 = document.querySelectorAll("#background-shapes");
 
-                    iframeElements_2.forEach((iframeElement) => {
-                        let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
-                        let styleElement = iframeDocument.querySelector("style");
-                        let pathElements = iframeDocument.querySelectorAll("path");
+                    if(iframeElements_2 !== null) {
+                        iframeElements_2.forEach((iframeElement) => {
+                            let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
+                            let styleElement = iframeDocument.querySelector("style");
+                            let pathElements = iframeDocument.querySelectorAll("path");
 
-                        if (styleElement) {
-                            let styleContent = styleElement.textContent;
-                            styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + css_var + ";");
-                            styleElement.textContent = styleContent;
-                        }
+                            if (styleElement) {
+                                let styleContent = styleElement.textContent;
+                                styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + css_var + ";");
+                                styleElement.textContent = styleContent;
+                            }
 
-                        if(pathElements) {
-                            pathElements.forEach((pathElement) => {
-                                let pathStyle = pathElement.getAttribute("style");
-                                if (pathStyle && pathStyle.includes("fill:grey;")) {
-                                    pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + css_var + ";");
-                                    pathElement.setAttribute("style", pathStyle);
+                            if (pathElements) {
+                                pathElements.forEach((pathElement) => {
+                                    let pathStyle = pathElement.getAttribute("style");
+                                    if (pathStyle && pathStyle.includes("fill:grey;")) {
+                                        pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + css_var + ";");
+                                        pathElement.setAttribute("style", pathStyle);
 
-                                }
-                            });
-                        }
-                    });
+                                    }
+                                });
+                            }
+                        });
+                    }
                 }
                 else  { // it's a coordinator profile
 
@@ -391,29 +393,30 @@ if ($user != null) {
 
                             // header background color
                             let iframeElements_2 = document.querySelectorAll("#background-shapes");
+                            if(iframeElements_2 !== null) {
+                                iframeElements_2.forEach((iframeElement) => {
+                                    let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
+                                    let styleElement = iframeDocument.querySelector("style");
+                                    let pathElements = iframeDocument.querySelectorAll("path");
 
-                            iframeElements_2.forEach((iframeElement) => {
-                                let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
-                                let styleElement = iframeDocument.querySelector("style");
-                                let pathElements = iframeDocument.querySelectorAll("path");
+                                    if (styleElement) {
+                                        let styleContent = styleElement.textContent;
+                                        styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + css_var + ";");
+                                        styleElement.textContent = styleContent;
+                                    }
 
-                                if (styleElement) {
-                                    let styleContent = styleElement.textContent;
-                                    styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + css_var + ";");
-                                    styleElement.textContent = styleContent;
-                                }
+                                    if (pathElements) {
+                                        pathElements.forEach((pathElement) => {
+                                            let pathStyle = pathElement.getAttribute("style");
+                                            if (pathStyle && pathStyle.includes("fill:grey;")) {
+                                                pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + css_var + ";");
+                                                pathElement.setAttribute("style", pathStyle);
 
-                                if(pathElements) {
-                                     pathElements.forEach((pathElement) => {
-                                        let pathStyle = pathElement.getAttribute("style");
-                                        if (pathStyle && pathStyle.includes("fill:grey;")) {
-                                            pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + css_var + ";");
-                                            pathElement.setAttribute("style", pathStyle);
-
-                                        }
-                                    });
-                                }
-                            });
+                                            }
+                                        });
+                                    }
+                                });
+                            }
 
                         }
                     }

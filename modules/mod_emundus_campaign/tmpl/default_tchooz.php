@@ -992,7 +992,8 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     });
 
     /* Modification de la couleur du background avec les formes */
-    let iframeElements = document.querySelectorAll("#background-shapes");
+    iframeElements = document.querySelectorAll("#background-shapes");
+    if(iframeElements !== null) {
     let emProfileColor1 = getComputedStyle(document.documentElement).getPropertyValue('--em-profile-color');
 
     iframeElements.forEach((iframeElement) => {
@@ -1020,24 +1021,28 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             }
         });
     });
+    }
 
     /* Couleur des campagnes clôturées */
     let divElements = document.querySelectorAll(".mod_emundus_campaign__list_content--closed");
 
      divElements.forEach((divElement) => {
         let iframeElement = divElement.querySelector("#background-shapes");
-        iframeElement.onload = function() {
-            let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
-            let pathElements = iframeDocument.querySelectorAll("path");
-            let neutral600 = getComputedStyle(document.documentElement).getPropertyValue('--neutral-600');
 
-            /* Coloration de tous les éléments "path" */
-           pathElements.forEach((pathElement) => {
-                let pathStyle = pathElement.getAttribute("style");
-                pathStyle = pathStyle.replace(/fill:#[0-9A-Fa-f]{6};/, "fill" + neutral600 + ";");
-                pathElement.setAttribute("style", pathStyle);
-            });
-        }
+         if(iframeElement !== null) {
+             iframeElement.onload = function () {
+                 let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
+                 let pathElements = iframeDocument.querySelectorAll("path");
+                 let neutral600 = getComputedStyle(document.documentElement).getPropertyValue('--neutral-600');
+
+                 /* Coloration de tous les éléments "path" */
+                 pathElements.forEach((pathElement) => {
+                     let pathStyle = pathElement.getAttribute("style");
+                     pathStyle = pathStyle.replace(/fill:#[0-9A-Fa-f]{6};/, "fill" + neutral600 + ";");
+                     pathElement.setAttribute("style", pathStyle);
+                 });
+             }
+         }
     });
 
     /* Changement de couleur des formes au hover de la card */
@@ -1047,14 +1052,16 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     divsHover.forEach((divHover) => {
 
         let iframeElementHover = divHover.querySelector('iframe');
+        if(iframeElementHover !== null) {
 
-        divHover.addEventListener('mouseenter', function() {
-            iframeElementHover.src = '/modules/mod_emundus_campaign/assets/fond-fonce.svg';
-        });
+            divHover.addEventListener('mouseenter', function () {
+                iframeElementHover.src = '/modules/mod_emundus_campaign/assets/fond-fonce.svg';
+            });
 
-        divHover.addEventListener('mouseleave', function() {
-            iframeElementHover.src = '/modules/mod_emundus_campaign/assets/fond-clair.svg';
-        });
+            divHover.addEventListener('mouseleave', function () {
+                iframeElementHover.src = '/modules/mod_emundus_campaign/assets/fond-clair.svg';
+            });
+        }
     })
 
 </script>
