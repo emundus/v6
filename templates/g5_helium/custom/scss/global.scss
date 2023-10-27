@@ -3870,7 +3870,7 @@ div#em-appli-block {
   display: none;
 }
 
-.mon-profil .p-6 {
+.mon-profil .emundus-form  {
   position: relative;
   overflow: hidden;
 
@@ -3886,7 +3886,7 @@ div#em-appli-block {
   }
 }
 
-.applicant-form .p-6 {
+.applicant-form .emundus-form {
   position: relative;
   overflow: hidden;
 
@@ -3896,42 +3896,14 @@ div#em-appli-block {
     width: 100%;
     height: 450px;
     top: -27px;
-    left: 80px;
+    left: 127px;
     pointer-events: none;
     border-bottom-right-radius: 14px;
   }
 }
 
-.groups-setup-page .p-6 {
-  position: relative;
-  overflow: hidden;
-
-  #background-shapes {
-    position: absolute;
-    z-index: 0;
-    width: 100%;
-    height: 40%;
-    top: -24px;
-    left: 35%;
-    pointer-events: none;
-    border-bottom-right-radius: 14px;
-  }
-}
-
-.users-profile-setup-page .p-6 {
-  position: relative;
-  overflow: hidden;
-
-  #background-shapes {
-    position: absolute;
-    z-index: 0;
-    width: 100%;
-    height: 50%;
-    top: -24px;
-    left: 38%;
-    pointer-events: none;
-    border-bottom-right-radius: 14px;
-  }
+view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes {
+  display: none;
 }
 
 .applicant-form #attachment_list .alert-info {
@@ -4274,41 +4246,34 @@ screen and (max-height: 769px) {
 
 /* TABLETTE */
 @media screen and (max-width: 1366px) {
-  .mon-profil .p-6 #background-shapes {
+  .mon-profil .emundus-form #background-shapes {
     left: 237px;
   }
 }
 
 @media screen and (max-width: 1199px) {
-  .mon-profil .p-6 #background-shapes {
+  .mon-profil .emundus-form #background-shapes {
     left: 118px;
     top: -29px;
   }
 
-  .applicant-form .p-6 #background-shapes {
+  .applicant-form .emundus-form #background-shapes {
       top: -41px;
       left: 23px;
   }
 }
 
 @media screen and (max-width: 959px) {
-  .mon-profil .p-6 #background-shapes {
+  .mon-profil .emundus-form #background-shapes {
     left: 28px;
     top: -32px;
   }
 
-  .applicant-form .p-6 #background-shapes {
+  .applicant-form .emundus-form #background-shapes {
     left: 17px;
     top: -79px;
   }
 
-  .groups-setup-page .p-6 #background-shapes {
-    left: 19%;
-  }
-
-  .users-profile-setup-page .p-6 #background-shapes {
-    left: 23.5%;
-  }
 }
 
 /* MOBILE */
