@@ -6,6 +6,10 @@
       <h4>{{ translate('COM_EMUNDUS_FILES_'+type.toUpperCase()) }}</h4>
     </div>
 
+	  <div v-if="error.displayed" class="alert">
+		  <p>{{ error.message }}</p>
+	  </div>
+
     <div v-if="files">
       <div class="em-flex-row em-flex-space-between em-mb-16">
         <div class="em-flex-row">
@@ -271,6 +275,10 @@ export default {
 	  openedFilters: false,
     currentFile: null,
     rows_selected: [],
+	  error: {
+		  displayed: false,
+		  message: ''
+	  }
   }),
   created(){
 		this.addKeyupEnterEventlistener();
@@ -321,6 +329,8 @@ export default {
     getFiles(refresh = false){
       document.querySelector('body.layout-evaluation').style.overflow= 'visible';
       this.loading = true;
+	    this.error.displayed = false;
+			this.error.message = '';
 
       let fnum = window.location.href.split('#')[1];
       if(typeof fnum == 'undefined'){
@@ -360,7 +370,9 @@ export default {
 
           } else {
             this.loading = false;
-            this.displayError('COM_EMUNDUS_ERROR_OCCURED',files.msg);
+            this.displayError('COM_EMUNDUS_ERROR_OCCURED', files.msg);
+						this.error.displayed = true;
+						this.error.message = files.msg;
           }
         });
       }
