@@ -10,6 +10,7 @@
 // No direct access
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 //use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
@@ -1456,12 +1457,12 @@ class EmundusControllerFiles extends JControllerLegacy
             $ordered_elements[$c] = $elements[$c];
         }
 
-        $fnumsArray = $m_files->getFnumArray($fnums, $ordered_elements, $methode, $start, $limit, 0);
+        //$fnumsArray = $m_files->getFnumArray($fnums, $ordered_elements, $methode, $start, $limit, 0);
 	    $not_already_handled_fnums = $fnums;
 	    if ($start > 0) {
 		    $not_already_handled_fnums = $session->get('not_already_handled_fnums');
 	    }
-	    //$fnumsArray = $m_files->getFnumArray2($not_already_handled_fnums, $ordered_elements, 0, $limit);
+	    $fnumsArray = $m_files->getFnumArray2($not_already_handled_fnums, $ordered_elements, 0, $limit, $methode);
 
 		if ($fnumsArray !== false) {
 			// On met a jour la liste des fnums traités
@@ -2446,9 +2447,9 @@ class EmundusControllerFiles extends JControllerLegacy
         require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
         $jinput = JFactory::getApplication()->input;
-        $csv = $jinput->getVar('csv', null);
-        $nbcol = $jinput->getVar('nbcol', 0);
-        $nbrow = $jinput->getVar('start', 0);
+        $csv = $jinput->getString('csv', null);
+        $nbcol = $jinput->getInt('nbcol', 0);
+        $nbrow = $jinput->getInt('start', 0);
         $excel_file_name = $jinput->getVar('excelfilename', null);
         $objReader =\PhpOffice\PhpSpreadsheet\IOFactory::createReader("Csv");
         $objReader->setDelimiter("\t");
@@ -2523,7 +2524,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $i++;
 
         for ($i; $i<$nbcol; $i++) {
-            $value = $objPHPExcel->getActiveSheet()->getCellByColumnAndRow($i, 1)->getValue();
+            $value = $objPHPExcel->getActiveSheet()->getCell(Coordinate::stringFromColumnIndex($i) . '1')->getValue();
 
             if ($value=="forms(%)" || $value=="attachment(%)") {
                 $conditionalStyles = $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i].'1')->getConditionalStyles();
