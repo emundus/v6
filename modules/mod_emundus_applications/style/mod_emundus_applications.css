@@ -486,6 +486,7 @@ a.btn.btn-success:not(.btn-xs) {
 .mod_emundus_applications___content_app:hover .mod_emundus_applications__container {
     background: var(--em-profile-color);
     border-radius: var(--em-default-br);
+    transition: transform .3s;
 }
 
 .mod_emundus_applications___content_app:hover .material-icons {
@@ -639,6 +640,16 @@ a.btn.btn-success:not(.btn-xs) {
     background: var(--em-profile-color);
     border-radius: var(--em-default-br);
     color: var(--neutral-0);
+    transition: transform .3s;
+}
+
+#applications_list_view table tbody tr #background-shapes {
+ opacity: 0.5;
+ transition: ease-out .3s;
+}
+
+#applications_list_view table tbody tr:hover #background-shapes {
+  opacity: 1;
 }
 
 #applications_list_view .mod_emundus_applications__container span{
@@ -761,6 +772,15 @@ circle.circle {
     right: -103px;
     pointer-events: none;
     transition: transform .3s;
+}
+
+.mod_emundus_applications___content_app #background-shapes {
+    opacity: 0.5;
+    transition: ease-out .5s;
+}
+
+.mod_emundus_applications___content_app:hover #background-shapes {
+    opacity: 1;
 }
 
 .hover-and-tile-container:hover > #tile-hover-offset-request {

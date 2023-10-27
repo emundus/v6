@@ -277,7 +277,7 @@ $current_tab = 0;
         <hr>
         <div class="mod_emundus_applications__list_content--default mt-2">
             <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></iframe>
+                <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-fonce.svg" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></iframe>
             <?php endif; ?>
             <?php if (!empty($override_default_content)) {
                 echo $override_default_content;
@@ -366,7 +366,7 @@ $current_tab = 0;
                                                      id="application_content<?php echo $application->fnum ?>"
                                                      onclick="openFile(event,'<?php echo $first_page_url ?>')">
 											        <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                                                        <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></iframe>
+                                                        <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-fonce.svg" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></iframe>
 											        <?php endif; ?>
                                                     <div class="em-w-100">
                                                         <div class="em-flex-row em-flex-space-between em-mb-12">
@@ -593,7 +593,7 @@ $current_tab = 0;
         <hr>
         <div class="mod_emundus_applications__list_content--default">
             <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></iframe>
+                <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-formes-header-fonce.svg" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></iframe>
             <?php endif; ?>
             <?php if (!empty($override_default_content)) {
                 echo $override_default_content;
@@ -694,7 +694,7 @@ $current_tab = 0;
                                                 onclick="openFile(event,'<?php echo $first_page_url ?>')">
                                                 <td style="width: 23.75%;">
                                                     <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                                                        <iframe id="background-shapes" src="/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></iframe>
+                                                        <iframe id="background-shapes" src="/modules/mod_emundus_user_dropdown/assets/fond-formes-header-fonce.svg" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></iframe>
                                                     <?php endif; ?>
 													<?php if (empty($application->name)) : ?>
                                                         <a href="<?= JRoute::_($first_page_url); ?>"
@@ -1578,41 +1578,6 @@ $current_tab = 0;
                 }
             });
         });
-    }
-
-    /* Changement de couleur des formes au hover de la card */
-    let divsHover = document.querySelectorAll(".hover-and-tile-container");
-    let trsHover = document.querySelectorAll("table tbody tr");
-    let iframeElementHover = document.getElementById('background-shapes');
-
-    if(iframeElementHover !== null) {
-
-        divsHover.forEach((divHover) => {
-
-            let iframeElementHover = divHover.querySelector('iframe');
-
-            divHover.addEventListener('mouseenter', function () {
-                iframeElementHover.src = '/modules/mod_emundus_campaign/assets/fond-fonce.svg';
-            });
-
-            divHover.addEventListener('mouseleave', function () {
-                iframeElementHover.src = '/modules/mod_emundus_campaign/assets/fond-clair.svg';
-            });
-        })
-
-        /* Changement de couleur des formes au hover de la ligne de la liste */
-        trsHover.forEach((trHover) => {
-
-            let iframeElementHover = trHover.querySelector('iframe');
-
-            trHover.addEventListener('mouseenter', function () {
-                iframeElementHover.src = '/modules/mod_emundus_user_dropdown/assets/fond-formes-header-fonce.svg';
-            });
-
-            trHover.addEventListener('mouseleave', function () {
-                iframeElementHover.src = '/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg';
-            });
-        })
     }
 
 </script>
