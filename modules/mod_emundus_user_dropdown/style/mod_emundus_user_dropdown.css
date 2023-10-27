@@ -375,7 +375,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 #g-navigation #background-shapes {
     position: absolute;
     height: 100%;
-    top: -4px;
+    top: 0;
     right: 0;
     pointer-events: none;
     z-index: -1;

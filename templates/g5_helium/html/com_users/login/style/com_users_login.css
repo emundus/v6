@@ -70,6 +70,8 @@ button.btn-primary:hover{
     width: 50%;
     margin-left: auto;
     margin-right: auto;
+    z-index: 10;
+    position: relative;
 }
 
 #g-container-main div.login .control-group .controls button.btn.btn-primary {
@@ -162,6 +164,7 @@ ul.nav.nav-tabs.nav-stacked {
     height: 57%;
     top: 44px;
     right: -382px;
+    z-index: 0;
 }
 
 .background-shaped-bottom {
@@ -171,6 +174,7 @@ ul.nav.nav-tabs.nav-stacked {
     bottom: -29px;
     left: -375px;
     transform: rotate(180deg);
+    z-index: 0;
 }
 
 footer div{

@@ -19,11 +19,10 @@ if(!empty($this->campaign)){
 	JFactory::getSession()->clear('login_campaign_id');
 }
 ?>
+<iframe id="background-shapes2" class="background-shaped-top" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
+<iframe id="background-shapes2" class="background-shaped-bottom" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
+
 <div class="login<?php echo $this->pageclass_sfx; ?>">
-
-    <iframe id="background-shapes2" class="background-shaped-top" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
-    <iframe id="background-shapes2" class="background-shaped-bottom" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
-
     <?php if ($this->params->get('show_page_heading')) : ?>
         <div class="page-header">
             <?php if (file_exists('images/custom/favicon.png')) : ?>
