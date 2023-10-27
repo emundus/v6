@@ -37,7 +37,7 @@ foreach ($votes as $vote) {
 }
 
 ?>
-<div id="<?php echo $this->_row->id; ?>" class="<?php echo $this->_row->class; ?> em-repeat-card-no-padding em-pb-24 relative">
+<div id="<?php echo $this->_row->id; ?>" class="<?php echo $this->_row->class; ?> em-repeat-card-no-padding relative">
 
 	<?php if (!empty($gallery->image)) : ?>
 		<?php
@@ -78,62 +78,67 @@ foreach ($votes as $vote) {
         <div class="fabrikImageBackground" style="background-image: url('<?php echo $filename; ?>')"></div>
 	<?php endif; ?>
     <div class="p-4">
-		<?php if (!empty($gallery->title)) : ?>
-            <h2 class="line-clamp-2 h-14">
-				<?php echo isset($this->_row->data) ? $this->_row->data->{$gallery->title} : ''; ?>
-            </h2>
-		<?php endif; ?>
-		<?php if (!empty($gallery->subtitle)) : ?>
-                <p class="em-caption mb-3 flex items-center" style="min-height: 15px">
-	                <?php if (!empty($gallery->subtitle_icon)) : ?>
-                        <span class="material-icons-outlined mr-2"><?php echo $gallery->subtitle_icon; ?></span>
-	                <?php endif; ?>
-		            <?php echo isset($this->_row->data) ? $this->_row->data->{$gallery->subtitle} : ''; ?>
+
+        <div class="superior-infos-container">
+            <?php if (!empty($gallery->title)) : ?>
+                <h2 class="line-clamp-2 h-14">
+                    <?php echo isset($this->_row->data) ? $this->_row->data->{$gallery->title} : ''; ?>
+                </h2>
+            <?php endif; ?>
+            <?php if (!empty($gallery->subtitle)) : ?>
+                    <p class="em-caption mb-3 flex items-center" style="min-height: 15px">
+                        <?php if (!empty($gallery->subtitle_icon)) : ?>
+                            <span class="material-icons-outlined mr-2"><?php echo $gallery->subtitle_icon; ?></span>
+                        <?php endif; ?>
+                        <?php echo isset($this->_row->data) ? $this->_row->data->{$gallery->subtitle} : ''; ?>
+                    </p>
+            <?php endif; ?>
+            <?php if (!empty($gallery->tags)) : ?>
+                <div class="mb-3 tags" style="min-height: 30px">
+                    <?php echo isset($this->_row->data) ? $this->_row->data->{$gallery->tags} : ''; ?>
+                </div>
+            <?php endif; ?>
+            <?php if (!empty($gallery->resume)) : ?>
+                <p class="mb-3 line-clamp-4 h-20">
+                    <?php echo isset($this->_row->data) ? $this->_row->data->{$gallery->resume} : ''; ?>
                 </p>
-		<?php endif; ?>
-		<?php if (!empty($gallery->tags)) : ?>
-            <div class="mb-3 tags" style="min-height: 30px">
-				<?php echo isset($this->_row->data) ? $this->_row->data->{$gallery->tags} : ''; ?>
-            </div>
-		<?php endif; ?>
-		<?php if (!empty($gallery->resume)) : ?>
-            <p class="mb-3 line-clamp-4 h-20">
-				<?php echo isset($this->_row->data) ? $this->_row->data->{$gallery->resume} : ''; ?>
-            </p>
-		<?php endif; ?>
+            <?php endif; ?>
+        </div>
 
-        <a href="<?php echo $this->_row->data->fabrik_view_url ?>" class="em-applicant-secondary-button w-full"
-           style="text-transform: unset"><?php echo JText::_('COM_FABRIK_VOTING_GO_DETAILS') ?></a>
+        <div class="inferior-infos-container">
+            <a href="<?php echo $this->_row->data->fabrik_view_url ?>" class="em-applicant-secondary-button w-full"
+               style="text-transform: unset"><?php echo JText::_('COM_FABRIK_VOTING_GO_DETAILS') ?></a>
 
-		<?php if ($gallery->is_voting == 1) : ?>
-			<?php if (empty($votes)) : ?>
-                <button onclick="vote('<?php echo $user->guest ?>','<?php echo $listid ?>','<?php echo $this->_row->data->{$db_table_name . '___id'} ?>','<?php echo $user->email ?>')"
-                        type="button"
-                        class="em-applicant-primary-button w-full mt-3"
-                        style="text-transform: unset">
-                    <?php echo JText::_('COM_FABRIK_VOTE') ?>
-                </button>
-            <?php else : ?>
-                <?php if (!$voted) : ?>
-                    <button <?php if(count($votes) < $gallery->max) : ?>onclick="vote('<?php echo $user->guest ?>','<?php echo $listid ?>','<?php echo $this->_row->data->{$db_table_name . '___id'} ?>','<?php echo $user->email ?>')"<?php else : ?>disabled<?php endif; ?>
+            <?php if ($gallery->is_voting == 1) : ?>
+                <?php if (empty($votes)) : ?>
+                    <button onclick="vote('<?php echo $user->guest ?>','<?php echo $listid ?>','<?php echo $this->_row->data->{$db_table_name . '___id'} ?>','<?php echo $user->email ?>')"
                             type="button"
                             class="em-applicant-primary-button w-full mt-3"
                             style="text-transform: unset">
-					<?php if(count($votes) < $gallery->max) : ?>
-						<?php echo JText::_('COM_FABRIK_VOTE') ?>
-                    <?php else: ?>
-						<?php echo JText::_('COM_FABRIK_ALREADY_VOTED_FOR_OTHER') ?>
-                    <?php endif; ?>
+                        <?php echo JText::_('COM_FABRIK_VOTE') ?>
                     </button>
                 <?php else : ?>
-                    <button disabled
-                            type="button"
-                            class="em-applicant-primary-button w-full mt-3"
-                            style="text-transform: unset">
-                        <?php echo JText::_('COM_FABRIK_ALREADY_VOTED') ?>
-                    </button>
+                    <?php if (!$voted) : ?>
+                        <button <?php if(count($votes) < $gallery->max) : ?>onclick="vote('<?php echo $user->guest ?>','<?php echo $listid ?>','<?php echo $this->_row->data->{$db_table_name . '___id'} ?>','<?php echo $user->email ?>')"<?php else : ?>disabled<?php endif; ?>
+                                type="button"
+                                class="em-applicant-primary-button w-full mt-3"
+                                style="text-transform: unset">
+                        <?php if(count($votes) < $gallery->max) : ?>
+                            <?php echo JText::_('COM_FABRIK_VOTE') ?>
+                        <?php else: ?>
+                            <?php echo JText::_('COM_FABRIK_ALREADY_VOTED_FOR_OTHER') ?>
+                        <?php endif; ?>
+                        </button>
+                    <?php else : ?>
+                        <button disabled
+                                type="button"
+                                class="em-applicant-primary-button w-full mt-3"
+                                style="text-transform: unset">
+                            <?php echo JText::_('COM_FABRIK_ALREADY_VOTED') ?>
+                        </button>
+                    <?php endif; ?>
                 <?php endif; ?>
-			<?php endif; ?>
-		<?php endif; ?>
+            <?php endif; ?>
+        </div>
     </div>
 </div>

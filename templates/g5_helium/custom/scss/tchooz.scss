@@ -22,7 +22,7 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
+  padding: var(--em-spacing-vertical) 55px;
   border-radius: var(--em-applicant-br);
   border: unset;
   color: var(--neutral-0);
@@ -53,7 +53,7 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
+  padding: var(--em-coordinator-vertical) 55px;
   border-radius: var(--em-coordinator-br);
   border: solid 1px var(--em-coordinator-secondary-color);
   background: transparent;
@@ -75,14 +75,14 @@
   width: 100%;
   padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
   border-radius: var(--em-applicant-br);
-  border: solid 1px var(--em-secondary-color);
+  border: solid 1px var(--em-primary-color);
   background: transparent;
-  color: var(--em-secondary-color);
+  color: var(--em-primary-color);
 
   &:hover {
-    background-color: var(--em-secondary-color) !important;
+    background-color: var(--em-primary-color) !important;
     color: var(--neutral-0);
-    border: 1px solid var(--em-secondary-color);
+    border: 1px solid var(--em-primary-color);
     text-decoration: none;
   }
 }
