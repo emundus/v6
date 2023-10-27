@@ -1176,7 +1176,7 @@ class EmundusModelFiles extends JModelLegacy
 	        if ($shared) {
 				// log
 		        $query->clear()
-			        ->select('label')
+			        ->select('CONCAT("Groupe ", label)')
 			        ->from($db->quoteName('#__emundus_setup_groups'))
 			        ->where($db->quoteName('id') . ' IN (' . implode(',', $groups) . ')');
 				$db->setQuery($query);
