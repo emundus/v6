@@ -10,6 +10,7 @@
 defined('_JEXEC') or die;
 // Note. It is important to remove spaces between elements.
 ?>
+<link rel="stylesheet" href="modules/mod_emundusmenu/style/mod_emundusmenu_applicant.css" type="text/css" />
 <ul class="<?php echo $class_sfx;?>"<?php
 	$tag = '';
 	if ($params->get('tag_id')!=NULL) {
