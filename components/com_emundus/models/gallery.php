@@ -156,7 +156,7 @@ class EmundusModelGallery extends JModelList
 
 					
 					$query->clear()
-						->select('title,fields')
+						->select('id,title,fields')
 						->from($this->_db->quoteName('#__emundus_setup_gallery_detail_tabs'))
 						->where($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($gallery->id));
 					$this->_db->setQuery($query);
@@ -197,6 +197,8 @@ class EmundusModelGallery extends JModelList
 						$this->_db->quoteName('campaign_id'),
 						$this->_db->quoteName('image'),
 						$this->_db->quoteName('max'),
+						$this->_db->quoteName('logo'),
+						$this->_db->quoteName('banner'),
 					);
 
 					$values = array(
@@ -206,6 +208,8 @@ class EmundusModelGallery extends JModelList
 						$this->_db->quote($data['campaign_id']),
 						$this->_db->quote(0),
 						$this->_db->quote(1),
+						$this->_db->quote(0),
+						$this->_db->quote(0),
 					);
 
 					$query->clear()
@@ -309,7 +313,6 @@ class EmundusModelGallery extends JModelList
                         );
                         $params = array(
                             'group_by_access' => 10,
-                            'menu_access_only' => 1,
 	                        'show-table-add' => 0,
 	                        'show-table-nav' => 0,
 	                        'show_displaynum' => 0,
@@ -608,7 +611,6 @@ class EmundusModelGallery extends JModelList
 		}
 	}
 
-	//TODO: Create function to add prefilter to a fabrik list on status
 	public function editPrefilter($lid,$value)
 	{
 		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'fabrik.php');
@@ -646,6 +648,25 @@ class EmundusModelGallery extends JModelList
 					}
 				}
 			}
+		}
+		catch (Exception $e) {
+			JLog::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $updated;
+	}
+
+	public function updateTabTitle($tab_id,$title)
+	{
+		$updated = false;
+		$query = $this->_db->getQuery(true);
+
+		try {
+			$query->update($this->_db->quoteName('#__emundus_setup_gallery_detail_tabs'))
+				->set($this->_db->quoteName('title') . ' = ' . $this->_db->quote($title))
+				->where($this->_db->quoteName('id') .' = ' . $tab_id);
+			$this->_db->setQuery($query);
+			$updated = $this->_db->execute();
 		}
 		catch (Exception $e) {
 			JLog::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');

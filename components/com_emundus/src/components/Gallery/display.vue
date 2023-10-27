@@ -11,6 +11,7 @@
           <div class="mb-4 mt-2">
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_TITLE') }}</label>
             <multiselect
+                :key="fields_update"
                 v-if="simple_fields"
                 v-model="form.title"
                 label="label"
@@ -33,6 +34,7 @@
           <div class="mb-4">
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_SUBTITLE') }}</label>
             <multiselect
+                :key="fields_update"
                 v-if="simple_fields"
                 v-model="form.subtitle"
                 label="label"
@@ -55,6 +57,7 @@
           <div class="mb-4">
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_SUBTITLE_ICON') }}</label>
             <multiselect
+                :key="fields_update"
                 v-if="subtitle_icons"
                 v-model="form.subtitle_icon"
                 label="label"
@@ -87,6 +90,7 @@
           <div class="mb-4">
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_TAGS') }}</label>
             <multiselect
+                :key="fields_update"
                 v-if="choices_fields"
                 v-model="form.tags"
                 label="label"
@@ -109,6 +113,7 @@
           <div class="mb-4">
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_RESUME') }}</label>
             <multiselect
+                :key="fields_update"
                 v-if="description_fields"
                 v-model="form.resume"
                 label="label"
@@ -190,16 +195,14 @@ export default {
 
   props: {
     gallery: Object,
-  },
-
-  data: () => ({
     elements: [],
     simple_fields: [],
     choices_fields: [],
     description_fields: [],
-    image_attachments: [
-      {allowed_types: '',id:0,value:'Aucune image'}
-    ],
+    image_attachments: [],
+  },
+
+  data: () => ({
     subtitle_icons: [
       {
         code: '',
@@ -219,73 +222,58 @@ export default {
       }
     ],
     form: {
-      title: '',
-      subtitle: '',
-      subtitle_icon: '',
-      tags: '',
-      resume: '',
-      image: '',
+      title: null,
+      subtitle: null,
+      subtitle_icon: null,
+      tags: null,
+      resume: null,
+      image: null,
     },
 
+    fields_update: 0,
     attachments_update: 0,
   }),
 
   created() {
+    this.$emit('updateLoader',true);
+
     if(this.gallery.subtitle_icon) {
       this.form.subtitle_icon = this.subtitle_icons.find(icon => {
         return icon.code == this.gallery.subtitle_icon;
       });
     }
 
-    this.getElements();
-    this.getAttachments();
+    this.elements.forEach((element) => {
+      element.elements.forEach((field) => {
+        if(field.fullname === this.gallery.title) {
+          this.form.title = field;
+        }
+
+        if(field.fullname === this.gallery.subtitle) {
+          this.form.subtitle = field;
+        }
+
+        if(field.fullname === this.gallery.tags) {
+          this.form.tags = field;
+        }
+
+        if(field.fullname === this.gallery.resume) {
+          this.form.resume = field;
+        }
+
+        this.fields_update++;
+      });
+    });
+
+    this.form.image = this.image_attachments.find(attachment => {
+      return attachment.id == this.gallery.image;
+    });
+
+    this.attachments_update++;
+
+    this.$emit('updateLoader');
   },
   methods: {
-    getElements() {
-      fetch('index.php?option=com_emundus&controller=gallery&task=getelements&campaign_id='+this.gallery.campaign_id+'&list_id='+this.gallery.list_id)
-          .then(response => response.json())
-          .then(data => {
-            this.elements = data.data.elements;
-            this.simple_fields = Object.values(data.data.simple_fields);
-            this.choices_fields = data.data.choices_fields;
-            this.description_fields = data.data.description_fields;
-
-            this.elements.forEach((element) => {
-              element.elements.forEach((field) => {
-                if(field.fullname === this.gallery.title) {
-                  this.form.title = field;
-                }
-
-                if(field.fullname === this.gallery.subtitle) {
-                  this.form.subtitle = field;
-                }
-
-                if(field.fullname === this.gallery.tags) {
-                  this.form.tags = field;
-                }
-
-                if(field.fullname === this.gallery.resume) {
-                  this.form.resume = field;
-                }
-              });
-            });
-          });
-    },
-
-    getAttachments() {
-      fetch('index.php?option=com_emundus&controller=gallery&task=getattachments&campaign_id='+this.gallery.campaign_id)
-          .then(response => response.json())
-          .then(data => {
-            Array.prototype.push.apply(this.image_attachments,Object.values(data.data));
-
-            this.form.image = this.image_attachments.find(attachment => {
-              return attachment.id == this.gallery.image;
-            });
-
-            this.attachments_update++;
-          });
-    },
-
     updateAttribute(attribute,value) {
       fetch('index.php?option=com_emundus&controller=gallery&task=updateattribute&gallery_id='+this.gallery.id+'&attribute='+attribute+'&value='+value)
           .then(response => response.json())
@@ -297,36 +285,60 @@ export default {
 
   watch: {
     'form.title' : function(val,oldVal) {
+      if (oldVal === null) {
+        return
+      }
+
       if(val != oldVal) {
         this.$emit('updateAttribute', 'title',val.fullname);
       }
     },
 
     'form.subtitle' : function(val,oldVal) {
+      if (oldVal === null) {
+        return
+      }
+
       if(val != oldVal) {
         this.$emit('updateAttribute', 'subtitle',val.fullname);
       }
     },
 
     'form.subtitle_icon' : function(val,oldVal) {
+      if (oldVal === null) {
+        return
+      }
+
       if(val != oldVal) {
         this.$emit('updateAttribute', 'subtitle_icon',val.code);
       }
     },
 
     'form.tags' : function(val,oldVal) {
+      if (oldVal === null) {
+        return
+      }
+
       if(val != oldVal) {
         this.$emit('updateAttribute', 'tags',val.fullname);
       }
     },
 
     'form.resume' : function(val,oldVal) {
+      if (oldVal === null) {
+        return
+      }
+
       if(val != oldVal) {
         this.$emit('updateAttribute', 'resume',val.fullname);
       }
     },
 
     'form.image': function(val,oldVal) {
+      if (oldVal === null) {
+        return
+      }
+
       if (val != oldVal) {
         this.$emit('updateAttribute', 'image',val.id);
       }

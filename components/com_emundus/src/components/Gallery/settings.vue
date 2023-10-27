@@ -131,6 +131,7 @@ export default {
   }),
 
   created() {
+    this.$emit('updateLoader',true);
     this.getStatus();
 
     this.form.label = this.gallery.label;
@@ -148,6 +149,8 @@ export default {
           .then(response => response.json())
           .then(data => {
             this.status = data.data;
+
+            this.$emit('updateLoader');
           });
     },
     updateGalleryList(attribute,value) {

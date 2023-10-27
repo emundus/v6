@@ -7,7 +7,7 @@
 
     <div>
       <h1 class="mt-3">{{ translate('COM_EMUNDUS_ONBOARD_EDIT_GALLERY') }}</h1>
-      <a v-if="gallery" class="mt-2 em-tertiary-button flex em-w-auto p-0 items-center justify-start gap-2 hover:no-underline" target="_blank" :href="'/index.php?option=com_fabrik&view=list&listid='+gallery.list_id">
+      <a v-if="gallery" class="mt-2 em-tertiary-button flex w-min p-0 items-center justify-start gap-2 hover:no-underline" target="_blank" :href="'/index.php?option=com_fabrik&view=list&listid='+gallery.list_id">
         <span class="material-icons-outlined">visibility</span>
         {{ translate('COM_EMUNDUS_ONBOARD_EDIT_PREVIEW') }}
       </a>
@@ -29,19 +29,36 @@
 
     <transition>
       <display
-          v-if="selectedMenu === 0 && gallery"
+          v-if="selectedMenu === 0 && gallery && elements && simple_fields && choices_fields && image_attachments && description_fields"
           :gallery="gallery"
+          :elements="elements"
+          :simple_fields="simple_fields"
+          :choices_fields="choices_fields"
+          :description_fields="description_fields"
+          :image_attachments="image_attachments"
           @updateAttribute="updateAttribute"
+          @updateLoader="updateLoading"
       ></display>
       <gallery-details
-          v-if="selectedMenu === 1 && gallery"
+          v-if="selectedMenu === 1 && gallery && elements && simple_fields && choices_fields && image_attachments && description_fields"
+          :gallery="gallery"
+          :elements="elements"
+          :simple_fields="simple_fields"
+          :choices_fields="choices_fields"
+          :description_fields="description_fields"
+          :image_attachments="image_attachments"
+          @updateAttribute="updateAttribute"
+          @updateLoader="updateLoading"
       ></gallery-details>
       <settings
           v-if="selectedMenu === 2 && gallery"
           :gallery="gallery"
           @updateAttribute="updateAttribute"
+          @updateLoader="updateLoading"
       ></settings>
     </transition>
+
+    <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
 
@@ -50,7 +67,7 @@ import Swal from "sweetalert2";
 
 import Display from "@/components/Gallery/display.vue";
 import Settings from "@/components/Gallery/settings.vue";
-import galleryDetails from "@/components/Gallery/details.vue";
+import galleryDetails from "@/components/Gallery/details_setup.vue";
 
 /** SERVICES **/
 
@@ -66,6 +83,8 @@ export default {
   props: {},
 
   data: () => ({
+    loading: false,
+
     selectedMenu: 0,
     menus: [
       'COM_EMUNDUS_GALLERY_DISPLAY',
@@ -74,14 +93,26 @@ export default {
     ],
 
     gallery: null,
+    elements: null,
+    simple_fields: null,
+    choices_fields: null,
+    description_fields: null,
+    image_attachments: [
+      {allowed_types: '',id:0,value:'Aucune image'}
+    ],
   }),
 
-  created() {
+  async created() {
+    this.loading = true;
     let gid = this.$store.getters['global/datas'].gallery.value;
+
     fetch('index.php?option=com_emundus&controller=gallery&task=getgallery&id='+gid)
         .then(response => response.json())
         .then(data => {
           this.gallery = data.data;
+
+          this.getElements();
+          this.getAttachments();
         })
         .catch((error) => {
           console.error('Error:', error);
@@ -92,6 +123,25 @@ export default {
       window.location.href = link
     },
 
+    async getElements() {
+      fetch('index.php?option=com_emundus&controller=gallery&task=getelements&campaign_id='+this.gallery.campaign_id+'&list_id='+this.gallery.list_id)
+          .then(response => response.json())
+          .then(data => {
+            this.elements = data.data.elements;
+            this.simple_fields = Object.values(data.data.simple_fields);
+            this.choices_fields = data.data.choices_fields;
+            this.description_fields = data.data.description_fields;
+          });
+    },
+
+    async getAttachments() {
+      fetch('index.php?option=com_emundus&controller=gallery&task=getattachments&campaign_id='+this.gallery.campaign_id)
+          .then(response => response.json())
+          .then(data => {
+            Array.prototype.push.apply(this.image_attachments,Object.values(data.data));
+          });
+    },
+
     updateAttribute(attribute,value) {
       fetch('index.php?option=com_emundus&controller=gallery&task=updateattribute&gallery_id='+this.gallery.id+'&attribute='+attribute+'&value='+value)
           .then(response => response.json())
@@ -99,6 +149,10 @@ export default {
             console.log(data);
           });
     },
+
+    updateLoading(state) {
+      this.loading = Boolean(state);
+    }
   },
 
   watch: {}

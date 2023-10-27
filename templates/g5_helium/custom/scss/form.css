@@ -967,6 +967,29 @@
         background-color: var(--em-form-bgc-focus);
       }
     }
+
+    /** MULTISELECT **/
+    .multiselect {
+      .multiselect__input:focus {
+        outline: unset !important;
+      }
+      .multiselect__single {
+        color: var(--neutral-900);
+      }
+
+      .multiselect__content {
+        .multiselect__element {
+          .multiselect__option {
+            span {
+              color: var(--neutral-900);
+            }
+            &:not(.multiselect__option--group) {
+              padding-left: var(--em-spacing-4);
+            }
+          }
+        }
+      }
+    }
   }
 
   input[type="text"],
