@@ -159,8 +159,8 @@ body {
 
     /* Connexion */
     .login > #g-page-surround {
-        background-position: top 120px left 20px, bottom left, top 500px right 20px, top 72px right;
-        background-size : 25%, 50%, 25%, 50%;
+        background-position: top 120px left 20px, top 500px right 20px;
+        background-size : 25%, 25%;
     }
 
     /* Page settings */
@@ -202,8 +202,8 @@ body {
 
     /* Connexion */
     .login > #g-page-surround {
-        background-image : none, var(--display-corner-bottom-left-background), none, var(--display-corner-top-right-background);
-        background-size : 80%, 80%, 80%, 80%;
+        background-image : none, none;
+        background-size : 80%, 80%;
     }
 
     /* Page settings */

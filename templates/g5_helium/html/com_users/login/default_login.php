@@ -21,8 +21,8 @@ if(!empty($this->campaign)){
 ?>
 <div class="login<?php echo $this->pageclass_sfx; ?>">
 
-    <iframe id="background-shaped-bottom" src="/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
-    <iframe id="background-shaped-top" src="/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
+    <iframe id="background-shapes2" class="background-shaped-top" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
+    <iframe id="background-shapes2" class="background-shaped-bottom" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
 
     <?php if ($this->params->get('show_page_heading')) : ?>
         <div class="page-header">
@@ -146,10 +146,43 @@ if(!empty($this->campaign)){
         <?php endif; ?>
     });
 
+    /* Modification de la couleur du background avec les formes */
+    let emProfileColor1 = getComputedStyle(document.documentElement).getPropertyValue('--em-profile-color');
+    let iframeElements = document.querySelectorAll("#background-shapes2");
+
+    if(iframeElements !== null) {
+        iframeElements.forEach((iframeElement) => {
+            iframeElement.addEventListener("load", function () {
+
+                let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
+                let pathElements = iframeDocument.querySelectorAll("path");
+
+                let styleElement = iframeDocument.querySelector("style");
+
+                if (styleElement) {
+                    let styleContent = styleElement.textContent;
+                    styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + emProfileColor1 + ";");
+                    styleElement.textContent = styleContent;
+                }
+
+                if (pathElements) {
+                    pathElements.forEach((pathElement) => {
+                        let pathStyle = pathElement.getAttribute("style");
+                        if (pathStyle && pathStyle.includes("fill:grey;")) {
+                            pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + emProfileColor1 + ";");
+                            pathElement.setAttribute("style", pathStyle);
+                        }
+                    });
+                }
+            });
+        });
+    }
+
     let displayTchoozy = getComputedStyle(document.documentElement).getPropertyValue('--display-corner-bottom-left-background');
     let displayTchoozy2 = getComputedStyle(document.documentElement).getPropertyValue('--display-corner-top-right-background');
-    if (displayTchoozy !== 'block' || displayTchoozy2 !== 'block') {
-        document.querySelector('#background-shaped-bottom').style.display = 'none';
-        document.querySelector('#background-shaped-top').style.display = 'none';
+    if (displayTchoozy == 'none' || displayTchoozy2 == 'none') {
+        document.querySelector(".background-shaped-top").style.display = 'none';
+        document.querySelector(".background-shaped-bottom").style.display = 'none';
     }
+
 </script>
