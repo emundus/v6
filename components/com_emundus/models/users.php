@@ -2120,13 +2120,11 @@ class EmundusModelUsers extends JModelList {
 			->where($db->quoteName('sg.id').' IN ('.implode(',', $group_ids).') AND ('.$db->quoteName('cc.fnum').' LIKE '.$db->quote($fnum).' OR '.$db->quoteName('sp.code').' IS NULL)');
 
 		if ($strict) {
-			$query->where($db->quoteName('sg.id').' IN ('.implode(',', $group_ids).') AND ('.$db->quoteName('cc.fnum').' LIKE '.$db->quote($fnum));
-		} else {
-			$query->where($db->quoteName('sg.id').' IN ('.implode(',', $group_ids).') AND ('.$db->quoteName('cc.fnum').' LIKE '.$db->quote($fnum).' OR '.$db->quoteName('sp.code').' IS NULL)');
+			$query->where($db->quoteName('sg.id').' IN ('.implode(',', $group_ids).') AND ('.$db->quoteName('cc.fnum').' LIKE '.$db->quote($fnum) . ')');
 		}
 
-		$db->setQuery($query);
 		try {
+			$db->setQuery($query);
 			return $db->loadColumn();
 		} catch(Exception $e) {
 			error_log($e->getMessage(), 0);
