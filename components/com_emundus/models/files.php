@@ -2440,6 +2440,8 @@ class EmundusModelFiles extends JModelLegacy
         $data = [];
 
         if (!empty($fnums) && !empty($elements)) {
+	        $method = (int) $method;
+
             $h_files = new EmundusHelperFiles;
             $current_lang = substr(JFactory::getLanguage()->getTag(), 0,  2);
             if (empty($current_lang)) {
