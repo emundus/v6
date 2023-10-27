@@ -180,7 +180,7 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter) {
                                 data: {
                                     csv: file,
                                     nbcol: nbcol,
-                                    start: start,
+                                    start: json.start,
                                     excelfilename: result.json.excelfilename
                                 },
                                 success: function (result) {
