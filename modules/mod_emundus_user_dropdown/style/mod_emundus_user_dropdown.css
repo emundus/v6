@@ -372,7 +372,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 }
 
 /* Déconnecté */
-#g-navigation #background-shapes {
+#background-shapes {
     position: absolute;
     height: 100%;
     top: 0;
