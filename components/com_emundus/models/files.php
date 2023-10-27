@@ -1147,51 +1147,53 @@ class EmundusModelFiles extends JModelLegacy
     public function shareGroups($groups, $actions, $fnums) {
 		$shared = false;
 
-        try {
-            $db = $this->getDbo();
-            $insert = [];
+		if (!empty($groups) && !empty($fnums)) {
+			try {
+				$db = $this->getDbo();
+				$insert = [];
 
-            foreach ($fnums as $fnum) {
-                foreach($groups as $group) {
-                    foreach ($actions as $action) {
-                        $ac = (array) $action;
-                        $insert[] = $group.','.$ac['id'].','.$ac['c'].','.$ac['r'].','.$ac['u'].','.$ac['d'].','.$db->quote($fnum);
-                    }
-                }
-            }
+				foreach ($fnums as $fnum) {
+					foreach($groups as $group) {
+						foreach ($actions as $action) {
+							$ac = (array) $action;
+							$insert[] = $group.','.$ac['id'].','.$ac['c'].','.$ac['r'].','.$ac['u'].','.$ac['d'].','.$db->quote($fnum);
+						}
+					}
+				}
 
-            $query = $db->getQuery(true);
-            $query->delete($db->quoteName('#__emundus_group_assoc'))
-                ->where($db->quoteName('group_id').' IN ('.implode(',',$groups).') AND '.$db->quoteName('fnum').' IN ("'.implode('","',$fnums).'")');
-            $db->setQuery($query);
-            $db->execute();
-
-            $query->clear()
-                ->insert($db->quoteName('#__emundus_group_assoc'))
-                ->columns($db->quoteName(['group_id', 'action_id', 'c', 'r', 'u', 'd', 'fnum']))
-                ->values($insert);
-            $db->setQuery($query);
-            $shared = $db->execute();
-
-	        if ($shared) {
-				// log
-		        $query->clear()
-			        ->select('CONCAT("Groupe ", label)')
-			        ->from($db->quoteName('#__emundus_setup_groups'))
-			        ->where($db->quoteName('id') . ' IN (' . implode(',', $groups) . ')');
+				$query = $db->getQuery(true);
+				$query->delete($db->quoteName('#__emundus_group_assoc'))
+					->where($db->quoteName('group_id').' IN ('.implode(',',$groups).') AND '.$db->quoteName('fnum').' IN ("'.implode('","',$fnums).'")');
 				$db->setQuery($query);
-				$group_labels = $db->loadColumn();
+				$db->execute();
 
-		        foreach ($fnums as $fnum) {
-			        $logsParams = array('created' => array_unique($group_labels, SORT_REGULAR));
-			        EmundusModelLogs::log(JFactory::getUser()->id, '' , $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
-		        }
-	        }
-		} catch (Exception $e) {
-            $error = JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.'\n -> '.$e->getMessage();
-            JLog::add($error, JLog::ERROR, 'com_emundus');
-	        $shared = false;
-        }
+				$query->clear()
+					->insert($db->quoteName('#__emundus_group_assoc'))
+					->columns($db->quoteName(['group_id', 'action_id', 'c', 'r', 'u', 'd', 'fnum']))
+					->values($insert);
+				$db->setQuery($query);
+				$shared = $db->execute();
+
+				if ($shared) {
+					// log
+					$query->clear()
+						->select('CONCAT("Groupe ", label)')
+						->from($db->quoteName('#__emundus_setup_groups'))
+						->where($db->quoteName('id') . ' IN (' . implode(',', $groups) . ')');
+					$db->setQuery($query);
+					$group_labels = $db->loadColumn();
+
+					foreach ($fnums as $fnum) {
+						$logsParams = array('created' => array_unique($group_labels, SORT_REGULAR));
+						EmundusModelLogs::log(JFactory::getUser()->id, '' , $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+					}
+				}
+			} catch (Exception $e) {
+				$error = JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.'\n -> '.$e->getMessage();
+				JLog::add($error, JLog::ERROR, 'com_emundus');
+				$shared = false;
+			}
+		}
 
         return $shared;
     }
@@ -1204,54 +1206,56 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function shareUsers($users, $actions, $fnums) {
         $error = null;
-        try {
 
-            $db = $this->getDbo();
-            $insert = [];
-
-            foreach ($fnums as $fnum) {
-                foreach($users as $user) {
-                    foreach ($actions as $action) {
-                        $ac = (array) $action;
-                        $insert[] = $user.','.$ac['id'].','.$ac['c'].','.$ac['r'].','.$ac['u'].','.$ac['d'].','.$db->quote($fnum);
-                    }
-                }
-            }
-
-            $query = $db->getQuery(true);
-            $query->delete($db->quoteName('#__emundus_users_assoc'))
-                ->where($db->quoteName('user_id').' IN ('.implode(',',$users).') AND '.$db->quoteName('fnum').' IN ("'.implode('","',$fnums).'")');
-            $db->setQuery($query);
-            $db->execute();
-
-            $query->clear()
-                ->insert($db->quoteName('#__emundus_users_assoc'))
-                ->columns($db->quoteName(['user_id', 'action_id', 'c', 'r', 'u', 'd', 'fnum']))
-                ->values($insert);
-            $db->setQuery($query);
-            $shared = $db->execute();
-
-			if ($shared) {
-				$query->clear()
-					->select('name')
-					->from($db->quoteName('#__users'))
-					->where($db->quoteName('id') . ' IN (' . implode(',', $users) . ')');
-
-				$db->setQuery($query);
-				$user_names = $db->loadColumn();
+		if (!empty($users) && !empty($fnums)) {
+			try {
+				$db = $this->getDbo();
+				$insert = [];
 
 				foreach ($fnums as $fnum) {
-					$logsParams = array('created' => array_unique($user_names, SORT_REGULAR));
-					EmundusModelLogs::log(JFactory::getUser()->id, '', $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+					foreach($users as $user) {
+						foreach ($actions as $action) {
+							$ac = (array) $action;
+							$insert[] = $user.','.$ac['id'].','.$ac['c'].','.$ac['r'].','.$ac['u'].','.$ac['d'].','.$db->quote($fnum);
+						}
+					}
 				}
-			}
-        } catch (Exception $e) {
-            $error = JUri::getInstance().' :: USER ID : '. JFactory::getUser()->id . ' -> ' . $e->getMessage();
-            JLog::add($error, JLog::ERROR, 'com_emundus');
-            return false;
-        }
 
-        return true;
+				$query = $db->getQuery(true);
+				$query->delete($db->quoteName('#__emundus_users_assoc'))
+					->where($db->quoteName('user_id').' IN ('.implode(',',$users).') AND '.$db->quoteName('fnum').' IN ("'.implode('","',$fnums).'")');
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->insert($db->quoteName('#__emundus_users_assoc'))
+					->columns($db->quoteName(['user_id', 'action_id', 'c', 'r', 'u', 'd', 'fnum']))
+					->values($insert);
+				$db->setQuery($query);
+				$shared = $db->execute();
+
+				if ($shared) {
+					$query->clear()
+						->select('name')
+						->from($db->quoteName('#__users'))
+						->where($db->quoteName('id') . ' IN (' . implode(',', $users) . ')');
+
+					$db->setQuery($query);
+					$user_names = $db->loadColumn();
+
+					foreach ($fnums as $fnum) {
+						$logsParams = array('created' => array_unique($user_names, SORT_REGULAR));
+						EmundusModelLogs::log(JFactory::getUser()->id, '', $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+					}
+				}
+			} catch (Exception $e) {
+				$error = JUri::getInstance().' :: USER ID : '. JFactory::getUser()->id . ' -> ' . $e->getMessage();
+				JLog::add($error, JLog::ERROR, 'com_emundus');
+				$shared = false;
+			}
+		}
+
+        return $shared;
     }
 
     /**
