@@ -1145,6 +1145,8 @@ class EmundusModelFiles extends JModelLegacy
      * @return bool|mixed
      */
     public function shareGroups($groups, $actions, $fnums) {
+		$shared = false;
+
         try {
             $db = $this->getDbo();
             $insert = [];
@@ -1169,14 +1171,29 @@ class EmundusModelFiles extends JModelLegacy
                 ->columns($db->quoteName(['group_id', 'action_id', 'c', 'r', 'u', 'd', 'fnum']))
                 ->values($insert);
             $db->setQuery($query);
-            $db->execute();
-        } catch (Exception $e) {
+            $shared = $db->execute();
+
+	        if ($shared) {
+				// log
+		        $query->clear()
+			        ->select('label')
+			        ->from($db->quoteName('#__emundus_setup_groups'))
+			        ->where($db->quoteName('id') . ' IN (' . implode(',', $groups) . ')');
+				$db->setQuery($query);
+				$group_labels = $db->loadColumn();
+
+		        foreach ($fnums as $fnum) {
+			        $logsParams = array('created' => array_unique($group_labels, SORT_REGULAR));
+			        EmundusModelLogs::log(JFactory::getUser()->id, '' , $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+		        }
+	        }
+		} catch (Exception $e) {
             $error = JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.'\n -> '.$e->getMessage();
             JLog::add($error, JLog::ERROR, 'com_emundus');
-
-            return false;
+	        $shared = false;
         }
-        return true;
+
+        return $shared;
     }
 
     /**
@@ -1212,29 +1229,22 @@ class EmundusModelFiles extends JModelLegacy
                 ->columns($db->quoteName(['user_id', 'action_id', 'c', 'r', 'u', 'd', 'fnum']))
                 ->values($insert);
             $db->setQuery($query);
-            $db->execute();
+            $shared = $db->execute();
 
-	        foreach ($fnums as $fnum) {
-		        foreach ($users as $user) {
+			if ($shared) {
+				$query->clear()
+					->select('name')
+					->from($db->quoteName('#__users'))
+					->where($db->quoteName('id') . ' IN (' . implode(',', $users) . ')');
 
-			        $query->clear()
-				        ->select('name')
-				        ->from($db->quoteName('#__users'))
-				        ->where($db->quoteName('id') . ' = ' . $user);
-			        $db->setQuery($query);
-			        $user_name = $db->loadResult();
+				$db->setQuery($query);
+				$user_names = $db->loadColumn();
 
-			        $logsStd = new stdClass();
-			        $logsStd->details = $user_name;
-			        $logger[] = $logsStd;
-
-			        if (!empty($logger)) {
-				        $logsParams = array('created' => array_unique($logger, SORT_REGULAR));
-				        EmundusModelLogs::log(JFactory::getUser()->id, (int) $user, $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
-			        }
-		        }
-	        }
-
+				foreach ($fnums as $fnum) {
+					$logsParams = array('created' => array_unique($user_names, SORT_REGULAR));
+					EmundusModelLogs::log(JFactory::getUser()->id, '', $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+				}
+			}
         } catch (Exception $e) {
             $error = JUri::getInstance().' :: USER ID : '. JFactory::getUser()->id . ' -> ' . $e->getMessage();
             JLog::add($error, JLog::ERROR, 'com_emundus');
