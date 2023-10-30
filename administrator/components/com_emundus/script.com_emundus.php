@@ -3247,6 +3247,13 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 						$db->execute();
 					}
 				}
+
+				// Add exception rules in .htaccess file for session cookie security
+				$file = JPATH_ROOT . '/.htaccess';
+				$insertLines = "# Tchooz session cookie security" . PHP_EOL .
+			"php_value session.cookie_secure On" . PHP_EOL .
+			"php_value session.cookie_samesite Strict" . PHP_EOL;
+				$succeed['add_htaccess_exeption'] = EmundusHelperUpdate::insertIntoFile($file, $insertLines);
             }
 		}
 
