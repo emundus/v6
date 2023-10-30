@@ -3247,6 +3247,9 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 						$db->execute();
 					}
 				}
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_USERS_LOGIN_SHOW_PASSWORD','Afficher le mot de passe');
+				EmundusHelperUpdate::insertTranslationsTag('COM_USERS_LOGIN_SHOW_PASSWORD','Display password', 'override', null, null, null, 'en-GB');
             }
 		}
 

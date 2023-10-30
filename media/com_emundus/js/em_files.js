@@ -10,6 +10,8 @@ var loading;
 var moduleFilters = null;
 var refreshModuleFiltersEvent = new Event('refresh-emundus-module-filters');
 
+var $ = jQuery;
+
 // to abort all AJAX query at once
 $.ajaxQ = (function(){
     var id = 0, Q = {};

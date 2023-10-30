@@ -55,7 +55,7 @@ if(!empty($this->campaign)){
                         <div class="controls" style="<?= $field->type === "Password" ? 'position:relative; ' : '' ?>">
                             <?php echo $field->input; ?>
                             <?php if ($eMConfig["reveal_password"] && $field->type === "Password"): ?>
-                                <span id="toggle-password-visibility" class="material-icons-outlined em-pointer" style="position: absolute;margin-top: 4px;right: 10px;opacity: 0.3;user-select: none;">visibility_off</span>
+                                <button type="button" title="<?php echo JText::_('COM_USERS_LOGIN_SHOW_PASSWORD'); ?>" id="toggle-password-visibility" class="material-icons-outlined em-pointer" aria-pressed="false" style="position: absolute;margin-top: 4px;right: 10px;opacity: 0.3;user-select: none;">visibility_off</button>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -120,6 +120,19 @@ if(!empty($this->campaign)){
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        let username_field = document.querySelector('#username');
+        if(username_field) {
+            username_field.setAttribute('placeholder', 'example@domain.com');
+            username_field.setAttribute('aria-describedby', 'alert-message-text');
+            username_field.setAttribute('autocomplete', 'email');
+            username_field.focus();
+        }
+        let password_field = document.querySelector('#password');
+        if(password_field) {
+            password_field.setAttribute('aria-describedby', 'alert-message-text');
+            password_field.setAttribute('autocomplete', 'current-password');
+        }
+
         document.querySelector('#header-a img').style.display = 'none';
 
         <?php if ($eMConfig['reveal_password']): ?>
@@ -130,9 +143,11 @@ if(!empty($this->campaign)){
                 spanVisibility.addEventListener('click', function () {
                     if (spanVisibility && inputPassword) {
                         if (spanVisibility.innerText == "visibility") {
+                            spanVisibility.setAttribute('aria-pressed', 'false');
                             spanVisibility.innerText = "visibility_off";
                             inputPassword.type = "password";
                         } else {
+                            spanVisibility.setAttribute('aria-pressed', 'true');
                             spanVisibility.innerText = "visibility";
                             inputPassword.type = "text";
                         }
