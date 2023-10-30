@@ -122,7 +122,7 @@ if(!empty($this->campaign)){
     document.addEventListener("DOMContentLoaded", function() {
         let username_field = document.querySelector('#username');
         if(username_field) {
-            username_field.setAttribute('placeholder', 'example@domain.com');
+            username_field.setAttribute('placeholder', '<?php echo JText::_('COM_USERS_LOGIN_EMAIL_PLACEHOLDER'); ?>');
             username_field.setAttribute('aria-describedby', 'alert-message-text');
             username_field.setAttribute('autocomplete', 'email');
             username_field.focus();

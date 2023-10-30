@@ -154,7 +154,8 @@ class EmundusViewEvaluation extends JViewLegacy
 
 				$fnumArray = array();
 
-			    $this->assignRef('form_url_edit', '');
+				$form_url_edit = '';
+			    $this->assignRef('form_url_edit', $form_url_edit);
 
 				if (!empty($users)) {
 
@@ -333,7 +334,7 @@ class EmundusViewEvaluation extends JViewLegacy
 				} else {
 					$datas = JText::_('COM_EMUNDUS_NO_RESULT');
 				}
-
+				
 				/* Get the values from the state object that were inserted in the model's construct function */
 			    $lists['order_dir'] = JFactory::getSession()->get( 'filter_order_Dir' );
 				$lists['order']     = JFactory::getSession()->get( 'filter_order' );
