@@ -32,6 +32,11 @@ if($just_logged && !$only_applicant) {
         margin-bottom: 8px;
         margin-top: 8px;
     }
+
+    .em-switch-profile-swal-container h1,  .em-switch-profile-swal-container h2 {
+        font-family: var(--em-coordinator-font-title);
+    }
+
     .em-switch-profile-swal-container .swal2-modal {
         width: 40vw;
     }
