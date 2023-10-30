@@ -1625,16 +1625,16 @@ class EmundusModelFiles extends JModelLegacy
             // Log the update in the eMundus logging system.
             // Get the old publish status
             $query = $db->getQuery(true);
-            $query->select($db->quoteName(array('id','published')))
+            $query->select($db->quoteName('published'))
                 ->from($db->quoteName('#__emundus_campaign_candidature'))
                 ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
             $db->setQuery($query);
-            $old_publish = $db->loadObject();
+            $old_publish = $db->loadResult();
 
-            if (!empty($old_publish->id)) {
+            if (isset($old_publish)) {
                 // Before logging, translate the publish id to corresponding label
                 // Old publish status
-                switch ($old_publish->published) {
+                switch ($old_publish) {
                     case(1):
                         $old_publish = JText::_('PUBLISHED');
                         break;
