@@ -1460,12 +1460,21 @@ class EmundusControllerFiles extends JControllerLegacy
             $ordered_elements[$c] = $elements[$c];
         }
 
-        //$fnumsArray = $m_files->getFnumArray($fnums, $ordered_elements, $methode, $start, $limit, 0);
-	    $not_already_handled_fnums = $fnums;
-	    if ($start > 0) {
-		    $not_already_handled_fnums = $session->get('not_already_handled_fnums');
-	    }
-	    $fnumsArray = $m_files->getFnumArray2($not_already_handled_fnums, $ordered_elements, 0, $limit, $methode);
+		$failed_with_old_method = false;
+		if ($methode == 2) {
+			$fnumsArray = $m_files->getFnumArray($fnums, $ordered_elements, $methode, $start, $limit, 0);
+			if ($fnumsArray === false) {
+				$failed_with_old_method = true;
+			}
+		}
+
+		if ($methode != 2 || $failed_with_old_method) {
+			$not_already_handled_fnums = $fnums;
+			if ($start > 0) {
+				$not_already_handled_fnums = $session->get('not_already_handled_fnums');
+			}
+			$fnumsArray = $m_files->getFnumArray2($not_already_handled_fnums, $ordered_elements, 0, $limit, $methode);
+		}
 
 		if ($fnumsArray !== false) {
 			// On met a jour la liste des fnums traités
