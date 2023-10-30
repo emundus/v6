@@ -1134,10 +1134,13 @@ class EmundusControllerFiles extends JControllerLegacy
         $profile = $jinput->getVar('profile', null);
 
         $defaultElements    = $m_files->getDefaultElements();
-        $defaultElements  =  array_map(function($value) {
-            $value->element_label = JText::_($value->element_label);
-            return $value;
-        }, $defaultElements);
+		if(!empty($defaultElements)) {
+			$defaultElements = array_map(function ($value) {
+				$value->element_label = JText::_($value->element_label);
+
+				return $value;
+			}, $defaultElements);
+		}
 
         $elements           = $h_files->getElements($code, $camp, [], $profile);
 

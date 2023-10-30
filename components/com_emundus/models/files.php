@@ -1617,21 +1617,21 @@ class EmundusModelFiles extends JModelLegacy
      * @return bool|mixed
      */
     public function updatePublish($fnums, $publish) {
-        $res = false;
 
         $dispatcher = JEventDispatcher::getInstance();
 
         $db = $this->getDbo();
         foreach ($fnums as $fnum) {
-            if ($fnum <> 'em-check-all') {
-                // Log the update in the eMundus logging system.
-                // Get the old publish status
-                $query = $db->getQuery(true);
-                $query->select($db->quoteName('published'))
-                    ->from($db->quoteName('#__emundus_campaign_candidature'))
-                    ->where($db->quoteName('fnum').' = '.$fnum);
-                $db->setQuery($query);
-                $old_publish = $db->loadResult();
+            // Log the update in the eMundus logging system.
+            // Get the old publish status
+            $query = $db->getQuery(true);
+            $query->select($db->quoteName('published'))
+                ->from($db->quoteName('#__emundus_campaign_candidature'))
+                ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
+            $db->setQuery($query);
+            $old_publish = $db->loadResult();
+
+            if (isset($old_publish)) {
                 // Before logging, translate the publish id to corresponding label
                 // Old publish status
                 switch ($old_publish) {
@@ -1660,12 +1660,21 @@ class EmundusModelFiles extends JModelLegacy
                 // Log the update
                 $logsParams = array('updated' => []);
                 array_push($logsParams['updated'], ['old' => $old_publish, 'new' => $new_publish]);
-                EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 28, 'u', 'COM_EMUNDUS_PUBLISH_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+                $query->clear()
+                    ->select($db->quoteName('applicant_id'))
+                    ->from($db->quoteName('#__emundus_campaign_candidature'))
+                    ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
+                $db->setQuery($query);
+                $applicant_id = $db->loadResult();
+                EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 28, 'u', 'COM_EMUNDUS_PUBLISH_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
                 // Update publish
                 $dispatcher->trigger('onBeforePublishChange', [$fnum, $publish]);
                 $dispatcher->trigger('callEventHandler', ['onBeforePublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
-                $query = 'update #__emundus_campaign_candidature set published = '.$publish.' WHERE fnum like '.$db->Quote($fnum) ;
+                $query->clear()
+                    ->update($db->quoteName('#__emundus_campaign_candidature'))
+                    ->set($db->quoteName('published').' = '.$db->quote($publish))
+                    ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
                 $db->setQuery($query);
                 try {
                     $res = $db->execute();
