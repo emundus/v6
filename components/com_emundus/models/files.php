@@ -1623,60 +1623,58 @@ class EmundusModelFiles extends JModelLegacy
 
         $db = $this->getDbo();
         foreach ($fnums as $fnum) {
-            if ($fnum <> 'em-check-all') {
-                // Log the update in the eMundus logging system.
-                // Get the old publish status
-                $query = $db->getQuery(true);
-                $query->select($db->quoteName('published'))
-                    ->from($db->quoteName('#__emundus_campaign_candidature'))
-                    ->where($db->quoteName('fnum').' = '.$fnum);
-                $db->setQuery($query);
-                $old_publish = $db->loadResult();
-                // Before logging, translate the publish id to corresponding label
-                // Old publish status
-                switch ($old_publish) {
-                    case(1):
-                        $old_publish = JText::_('PUBLISHED');
-                        break;
-                    case(0):
-                        $old_publish = JText::_('ARCHIVED');
-                        break;
-                    case(-1):
-                        $old_publish = JText::_('TRASHED');
-                        break;
-                }
-                // New publish status
-                switch ($publish) {
-                    case(1):
-                        $new_publish = JText::_('PUBLISHED');
-                        break;
-                    case(0):
-                        $new_publish = JText::_('ARCHIVED');
-                        break;
-                    case(-1):
-                        $new_publish = JText::_('TRASHED');
-                        break;
-                }
-                // Log the update
-                $logsParams = array('updated' => []);
-                array_push($logsParams['updated'], ['old' => $old_publish, 'new' => $new_publish]);
-                EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 28, 'u', 'COM_EMUNDUS_PUBLISH_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
-
-                // Update publish
-                $dispatcher->trigger('onBeforePublishChange', [$fnum, $publish]);
-                $dispatcher->trigger('callEventHandler', ['onBeforePublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
-                $query = 'update #__emundus_campaign_candidature set published = '.$publish.' WHERE fnum like '.$db->Quote($fnum) ;
-                $db->setQuery($query);
-                try {
-                    $res = $db->execute();
-                } catch (Exception $e) {
-                    echo $e->getMessage();
-                    JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-                    return false;
-                }
-                $dispatcher->trigger('onAfterPublishChange', [$fnum, $publish]);
-                $dispatcher->trigger('callEventHandler', ['onAfterPublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
+            // Log the update in the eMundus logging system.
+            // Get the old publish status
+            $query = $db->getQuery(true);
+            $query->select($db->quoteName('published'))
+                ->from($db->quoteName('#__emundus_campaign_candidature'))
+                ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
+            $db->setQuery($query);
+            $old_publish = $db->loadResult();
+            // Before logging, translate the publish id to corresponding label
+            // Old publish status
+            switch ($old_publish) {
+                case(1):
+                    $old_publish = JText::_('PUBLISHED');
+                    break;
+                case(0):
+                    $old_publish = JText::_('ARCHIVED');
+                    break;
+                case(-1):
+                    $old_publish = JText::_('TRASHED');
+                    break;
             }
+            // New publish status
+            switch ($publish) {
+                case(1):
+                    $new_publish = JText::_('PUBLISHED');
+                    break;
+                case(0):
+                    $new_publish = JText::_('ARCHIVED');
+                    break;
+                case(-1):
+                    $new_publish = JText::_('TRASHED');
+                    break;
+            }
+            // Log the update
+            $logsParams = array('updated' => []);
+            array_push($logsParams['updated'], ['old' => $old_publish, 'new' => $new_publish]);
+            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 28, 'u', 'COM_EMUNDUS_PUBLISH_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+
+            // Update publish
+            $dispatcher->trigger('onBeforePublishChange', [$fnum, $publish]);
+            $dispatcher->trigger('callEventHandler', ['onBeforePublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
+            $query = 'update #__emundus_campaign_candidature set published = '.$publish.' WHERE fnum like '.$db->Quote($fnum) ;
+            $db->setQuery($query);
+            try {
+                $res = $db->execute();
+            } catch (Exception $e) {
+                echo $e->getMessage();
+                JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                return false;
+            }
+            $dispatcher->trigger('onAfterPublishChange', [$fnum, $publish]);
+            $dispatcher->trigger('callEventHandler', ['onAfterPublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
         }
         return $res;
     }
