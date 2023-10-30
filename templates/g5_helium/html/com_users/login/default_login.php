@@ -55,7 +55,8 @@ if(!empty($this->campaign)){
                         <div class="controls" style="<?= $field->type === "Password" ? 'position:relative; ' : '' ?>">
                             <?php echo $field->input; ?>
                             <?php if ($eMConfig["reveal_password"] && $field->type === "Password"): ?>
-                                <button type="button" title="<?php echo JText::_('COM_USERS_LOGIN_SHOW_PASSWORD'); ?>" id="toggle-password-visibility" aria-hidden=”true” class="material-icons-outlined em-pointer" aria-pressed="false" style="position: absolute;margin-top: 4px;right: 10px;opacity: 0.3;user-select: none;">visibility_off</button>
+                                <button type="button" title="<?php echo JText::_('COM_USERS_LOGIN_SHOW_PASSWORD'); ?>" id="toggle-password-visibility" class="material-icons-outlined em-pointer" aria-pressed="false" style="position: absolute;margin-top: 4px;right: 10px;opacity: 0.3;user-select: none;">visibility_off</button>
+                                <div aria-live="polite" aria-atomic="true" style="display: none" id="show_password_text"><p>Le mot de passe est masqué</p></div>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -138,6 +139,7 @@ if(!empty($this->campaign)){
         <?php if ($eMConfig['reveal_password']): ?>
             const spanVisibility = document.querySelector('#toggle-password-visibility');
             const inputPassword = document.querySelector('.controls #password');
+            const showPasswordText = document.querySelector('#show_password_text');
 
             if (spanVisibility && inputPassword) {
                 spanVisibility.addEventListener('click', function () {
@@ -146,10 +148,12 @@ if(!empty($this->campaign)){
                             spanVisibility.setAttribute('aria-pressed', 'false');
                             spanVisibility.innerText = "visibility_off";
                             inputPassword.type = "password";
+                            showPasswordText.innerHTML = "<p>Le mot de passe est masqué</p>";
                         } else {
                             spanVisibility.setAttribute('aria-pressed', 'true');
                             spanVisibility.innerText = "visibility";
                             inputPassword.type = "text";
+                            showPasswordText.innerHTML = "<p>Le mot de passe est affiché</p>";
                         }
                     }
                 });
