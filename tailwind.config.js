@@ -50,7 +50,7 @@ module.exports = {
                     fontSize: 'var(--em-coordinator-h1)',
                     fontStyle: 'normal',
                     lineHeight: '28.8px',
-                    fontWeight: 500,
+                    fontWeight: 'var(--em-font-weight-500)',
                 },
                 '.em-default-title-2': {
                     color: 'var(--em-default-title-color-1)',
@@ -58,7 +58,7 @@ module.exports = {
                     fontSize: 'var(--em-coordinator-h2)',
                     fontStyle: 'normal',
                     lineHeight: '26.4px',
-                    fontWeight: 500,
+                    fontWeight: 'var(--em-font-weight-500)',
                 },
                 '.em-default-title-3': {
                     color: 'var(--em-default-title-color-1)',
@@ -66,7 +66,7 @@ module.exports = {
                     fontSize: 'var(--em-coordinator-h3)',
                     fontStyle: 'normal',
                     lineHeight: '24.2px',
-                    fontWeight: 500,
+                    fontWeight: 'var(--em-font-weight-500)',
                 }
             })
         })

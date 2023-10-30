@@ -34,6 +34,10 @@
   font-family: var(--em-applicant-font);
 }
 
+.mod_emundus_campaign__intro h1{
+    font-family: var(--em-applicant-font-title);
+}
+
 .mod_emundus_campaign__intro p{
     line-height: 150%;
     color: var(--em-default-text-color-1);
