@@ -161,7 +161,7 @@ ul.nav.nav-tabs.nav-stacked {
 .background-shaped-top {
     position: absolute;
     top: 163px;
-    right: 1vw;
+    right: 5.5vw;
     z-index: 0;
     transform: scale(2.5);
 }
@@ -467,6 +467,14 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     }
     .view-login #g-page-surround {
         width: 100%;
+    }
+}
+
+@media all and (min-width: 1200px) and (max-width: 1650px) {
+
+    .background-shaped-top {
+        top: 164px;
+        left: 75.5vw;
     }
 }
 
