@@ -168,10 +168,11 @@ ul.nav.nav-tabs.nav-stacked {
 
 .background-shaped-bottom {
     position: relative;
-    bottom: -320px;
-    left: -242px;
+    bottom: -322px;
+    left: 11px;
     z-index: 0;
     transform: scale(2.5);
+    rotate: 180deg;
 }
 
 .view-login #g-container-main {
