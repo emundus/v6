@@ -159,17 +159,17 @@ ul.nav.nav-tabs.nav-stacked {
 }
 
 .background-shaped-top {
-    position: relative;
-    top: 50px;
-    right: -65vw;
+    position: absolute;
+    top: 163px;
+    right: 1vw;
     z-index: 0;
     transform: scale(2.5);
 }
 
 .background-shaped-bottom {
-    position: relative;
-    bottom: -322px;
-    left: 11px;
+    position: absolute;
+    bottom: 92px;
+    left: 107px;
     z-index: 0;
     transform: scale(2.5);
     rotate: 180deg;
@@ -399,13 +399,13 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 @media screen and (min-width: 768px) and (max-width: 959px) {
 
     .background-shaped-top {
-        top: 52px;
-        right: -437px;
+        top: 174px;
+        right: 106px;
     }
 
     .background-shaped-bottom {
-        bottom: -487px;
-        left: -159px;
+        bottom: 90px;
+        left: 106px;
     }
 
     .login form {
@@ -451,13 +451,13 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     }
 
     .background-shaped-top {
-        top: 50px;
-        right: -653px;
+        top: 163px;
+        right: 106px;
     }
 
     .background-shaped-bottom {
-        bottom: -550px;
-        left: -167px;
+        bottom: 90px;
+        left: 107px;
     }
 }
 
