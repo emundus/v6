@@ -48,7 +48,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     $mod_em_campaign_display_svg          = $params->get('mod_em_campaign_display_svg', 1);
     $mod_em_campaign_display_hover_offset = $params->get('mod_em_campaign_display_hover_offset', 1);
     $mod_em_campaign_show_timezone        = $params->get('mod_em_campaign_show_timezone', 1);
-    $mod_em_campaign_list_sections        = $params->get('mod_em_campaign_list_sections');
+    $mod_em_campaign_list_sections        = $params->get('mod_em_campaign_list_sections', []);
     $mod_em_campaign_intro                = $params->get('mod_em_campaign_intro', null);
     if (empty($mod_em_campaign_intro) && $params->get('mod_em_campaign_layout') == 'default_tchooz')
     {
