@@ -4986,7 +4986,6 @@ class EmundusModelApplication extends JModelList
     {
         $preview = [
             'status' => true,
-            'content' => '',
             'overflowX' => false,
             'overflowY' => false,
             'style' => '',

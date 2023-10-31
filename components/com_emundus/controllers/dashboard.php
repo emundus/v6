@@ -14,6 +14,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Factory;
+
 /**
  * Campaign Controller
  *
@@ -118,46 +120,6 @@ class EmundusControllerDashboard extends JControllerLegacy
         exit;
     }
 
-    public function getfilescountbystatus(){
-        try {
-            $results = $this->model->getfilescountbystatus();
-
-            $tab = array('msg' => 'success', 'files' => $results['files'], 'status' => $results['status']);
-        } catch (Exception $e) {
-            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
-
-    public function getfilesbycampaign(){
-        $jinput = JFactory::getApplication()->input;
-
-        $cid = $jinput->getInt('cid');
-
-        try {
-            $files = $this->model->getfilesbycampaign($cid);
-
-            $tab = array('msg' => 'success', 'data' => $files);
-        } catch (Exception $e) {
-            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
-
-    public function getusersbyday(){
-        try {
-            $results = $this->model->getusersbyday();
-
-            $tab = array('msg' => 'success', 'users' => $results['users'], 'days' => $results['days'], 'total' => $results['total']);
-        } catch (Exception $e) {
-            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
-
     public function getfirstcoordinatorconnection(){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -230,99 +192,23 @@ class EmundusControllerDashboard extends JControllerLegacy
         exit;
     }
 
-    public function geteval(){
-        try {
-            $jinput = JFactory::getApplication()->input;
-            $widget = $jinput->getInt('widget');
+    public function geteval() {
+		$response = ['status' => 0, 'msg' => JText::_('ACCESS_DENIED')];
+		$user_id = Factory::getApplication()->getIdentity()->id;
 
-            $results = $this->model->renderchartbytag($widget);
+		if (EmundusHelperAccess::asPartnerAccessLevel($user_id)) {
+			try {
+				$jinput = JFactory::getApplication()->input;
+				$widget = $jinput->getInt('widget');
 
-            $tab = array('msg' => 'success', 'data' => $results);
-        } catch (Exception $e) {
-            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
-        }
-        echo json_encode((object)$tab);
+				$results = $this->model->renderchartbytag($widget);
+				$response = array('msg' => 'success', 'data' => $results, 'status' => 1);
+			} catch (Exception $e) {
+				$response['msg'] = $e->getMessage();
+			}
+		}
+
+        echo json_encode((object)$response);
         exit;
     }
-
-
-    /** Sciences PO */
-    public function getfilescountbystatusgroupbydate(){
-        try {
-            $jinput = JFactory::getApplication()->input;
-
-            $program = $jinput->getString('program');
-
-            $results = $this->model->getfilescountbystatusgroupbydate($program);
-
-            $tab = array('msg' => 'success', 'dataset' => $results['dataset'], 'category' => $results['category']);
-        } catch (Exception $e) {
-            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
-
-    public function getfilescountbystatusandsession(){
-        try {
-            $jinput = JFactory::getApplication()->input;
-
-            $program = $jinput->getString('program');
-
-            $results = $this->model->getfilescountbystatusandsession($program);
-
-            $tab = array('msg' => 'success', 'dataset' => $results['dataset'], 'category' => $results['category']);
-        } catch (Exception $e) {
-            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
-
-    public function getfilescountbystatusandcourses(){
-        try {
-            $jinput = JFactory::getApplication()->input;
-            $program = $jinput->getString('program');
-            $session = $jinput->getString('session');
-
-            $results = $this->model->getfilescountbystatusandcourses($program,$session);
-
-            $tab = array('msg' => 'success', 'dataset' => $results['dataset'], 'category' => $results['category']);
-        } catch (Exception $e) {
-            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
-
-    public function getfilescountbystatusandcoursesprecollege(){
-        try {
-            $jinput = JFactory::getApplication()->input;
-            $session = $jinput->getString('session');
-
-            $results = $this->model->getfilescountbystatusandcoursesprecollege($session);
-
-            $tab = array('msg' => 'success', 'dataset' => $results['dataset'], 'category' => $results['category']);
-        } catch (Exception $e) {
-            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
-
-    public function getfilescountbynationalities(){
-        try {
-            $jinput = JFactory::getApplication()->input;
-            $program = $jinput->getString('program');
-
-            $results = $this->model->getfilescountbynationalities($program);
-
-            $tab = array('msg' => 'success', 'dataset' => $results['dataset'], 'category' => $results['category']);
-        } catch (Exception $e) {
-            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
-    /** END **/
 }

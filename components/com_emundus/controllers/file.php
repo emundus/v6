@@ -36,7 +36,14 @@ class EmundusControllerFile extends JControllerLegacy
 		}
 
 		if(empty($this->files->getTotal()) || $refresh == true) {
-			$this->files->setFiles();
+			try {
+				$this->files->setFiles();
+			} catch (Exception $e) {
+				if ($e->getMessage() === 'COM_EMUNDUS_ERROR_NO_EVALUATION_GROUP') {
+					echo json_encode(['status' => false, 'msg' => JText::_($e->getMessage())]);
+					exit;
+				}
+			}
 		}
 
 	    JFactory::getSession()->set('files', serialize($this->files));
@@ -285,15 +292,12 @@ class EmundusControllerFile extends JControllerLegacy
 	}
 
 	public function deletecomment(){
-		$results = ['status' => 1, 'msg' => ''];
+		$results = ['status' => 0, 'msg' => JText::_('ACCESS_DENIED')];
 		$jinput = JFactory::getApplication()->input;
 		$cid = $jinput->getString('cid','');
 
-		if(!empty($cid) && EmundusHelperAccess::asAccessAction(10,'c',JFactory::getUser()->id)){
+		if(!empty($cid) && EmundusHelperAccess::asAccessAction(10,'c',JFactory::getUser()->id)) {
 			$results['status'] = $this->files->deleteComment($cid);
-		} else {
-			$results['status'] = 0;
-			$results['msg'] = JText::_('ACCESS_DENIED');
 		}
 
 		echo json_encode((object)$results);

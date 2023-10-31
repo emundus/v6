@@ -132,75 +132,79 @@ class Evaluations extends Files
 			        return !empty($value);
 		        });
 
-		        $query->clear()
-			        ->select('fe.id, fe.name, fe.label, fe.show_in_list_summary, fe.plugin, ffg.form_id')
-			        ->from($db->quoteName('#__fabrik_elements', 'fe'))
-			        ->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
-			        ->where($db->quoteName('fe.group_id') . ' IN (' . implode(',', $eval_groups) . ')');
-		        if (isset($params->more_elements) && $params->more_elements !== '') {
-			        $query->orWhere($db->quoteName('fe.id') . ' IN (' . $params->more_elements . ')');
-		        }
-		        $query->andWhere($db->quoteName('fe.published') . ' = 1');
-		        $db->setQuery($query);
-		        $eval_elements = $db->loadObjectList('name');
-
-		        $evaluations               = array();
-		        $more_elements_by_campaign = new stdClass;
-		        if (isset($params->more_elements_campaign)) {
-			        $more_elements_by_campaign = json_decode($params->more_elements_campaign);
-		        }
-
-		        foreach ($files_associated as $file) {
-			        $evaluation                 = new stdClass;
-			        $evaluation->fnum           = $file->fnum;
-			        $evaluation->student_id     = $file->applicant_id;
-			        $evaluation->campaign       = $file->campaign;
-			        $evaluation->applicant_name = '';
-			        if(!EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)) {
-				        $evaluation->applicant_name = $file->applicant_name;
-			        }
-					if(isset($file->assocs)){
-						$evaluation->assocs = $file->assocs;
+				if (empty($eval_groups)) {
+					throw new ErrorException('COM_EMUNDUS_ERROR_NO_EVALUATION_GROUP');
+				} else {
+					$query->clear()
+						->select('fe.id, fe.name, fe.label, fe.show_in_list_summary, fe.plugin, ffg.form_id')
+						->from($db->quoteName('#__fabrik_elements', 'fe'))
+						->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
+						->where($db->quoteName('fe.group_id') . ' IN (' . implode(',', $eval_groups) . ')');
+					if (isset($params->more_elements) && $params->more_elements !== '') {
+						$query->orWhere($db->quoteName('fe.id') . ' IN (' . $params->more_elements . ')');
 					}
-                    if(isset($file->tags)){
-                        $evaluation->tags = $file->tags;
-                    }
-                    if (isset($file->status)) {
-				        $evaluation->status       = $file->status;
-				        $evaluation->status_color = $file->status_color;
-			        }
+					$query->andWhere($db->quoteName('fe.published') . ' = 1');
+					$db->setQuery($query);
+					$eval_elements = $db->loadObjectList('name');
 
-			        $key = false;
-			        if (!empty($more_elements_by_campaign->campaign)) {
-				        $key = array_search($file->campaign, $more_elements_by_campaign->campaign);
-			        }
+					$evaluations               = array();
+					$more_elements_by_campaign = new stdClass;
+					if (isset($params->more_elements_campaign)) {
+						$more_elements_by_campaign = json_decode($params->more_elements_campaign);
+					}
 
-			        if ($key !== false) {
-				        $query->clear()
-					        ->select('fe.id, fe.name, fe.label, fe.show_in_list_summary, fe.plugin, ffg.form_id')
-					        ->from($db->quoteName('#__fabrik_elements', 'fe'))
-					        ->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
-					        ->where($db->quoteName('fe.id') . ' IN (' . $more_elements_by_campaign->elements[$key] . ')');
-				        $db->setQuery($query);
-				        $more_elements = $db->loadObjectList('name');
+					foreach ($files_associated as $file) {
+						$evaluation                 = new stdClass;
+						$evaluation->fnum           = $file->fnum;
+						$evaluation->student_id     = $file->applicant_id;
+						$evaluation->campaign       = $file->campaign;
+						$evaluation->applicant_name = '';
+						if(!EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)) {
+							$evaluation->applicant_name = $file->applicant_name;
+						}
+						if(isset($file->assocs)){
+							$evaluation->assocs = $file->assocs;
+						}
+						if(isset($file->tags)){
+							$evaluation->tags = $file->tags;
+						}
+						if (isset($file->status)) {
+							$evaluation->status       = $file->status;
+							$evaluation->status_color = $file->status_color;
+						}
 
-				        $eval_elements = array_merge($eval_elements, $more_elements);
-			        }
+						$key = false;
+						if (!empty($more_elements_by_campaign->campaign)) {
+							$key = array_search($file->campaign, $more_elements_by_campaign->campaign);
+						}
 
-			        foreach ($eval_elements as $elt) {
-				        $elt->label = JText::_($elt->label);
-				        if (!in_array($elt->name, ['fnum', 'student_id', 'campaign'])) {
-					        $evaluation->{$elt->name} = $m_application->getValuesByElementAndFnum($file->fnum, $elt->id, $elt->form_id, 0);
-				        }
-			        }
+						if ($key !== false) {
+							$query->clear()
+								->select('fe.id, fe.name, fe.label, fe.show_in_list_summary, fe.plugin, ffg.form_id')
+								->from($db->quoteName('#__fabrik_elements', 'fe'))
+								->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
+								->where($db->quoteName('fe.id') . ' IN (' . $more_elements_by_campaign->elements[$key] . ')');
+							$db->setQuery($query);
+							$more_elements = $db->loadObjectList('name');
 
-			        $evaluations[] = $evaluation;
-		        }
+							$eval_elements = array_merge($eval_elements, $more_elements);
+						}
 
-		        $evaluations                = $h_array->removeDuplicateObjectsByProperty($evaluations, 'fnum');
-		        $final_evaluations          = [];
-		        $final_evaluations['fnums'] = $this->getFnums();
-		        $final_evaluations['all']   = $evaluations;
+						foreach ($eval_elements as $elt) {
+							$elt->label = JText::_($elt->label);
+							if (!in_array($elt->name, ['fnum', 'student_id', 'campaign'])) {
+								$evaluation->{$elt->name} = $m_application->getValuesByElementAndFnum($file->fnum, $elt->id, $elt->form_id, 0);
+							}
+						}
+
+						$evaluations[] = $evaluation;
+					}
+
+					$evaluations                = $h_array->removeDuplicateObjectsByProperty($evaluations, 'fnum');
+					$final_evaluations          = [];
+					$final_evaluations['fnums'] = $this->getFnums();
+					$final_evaluations['all']   = $evaluations;
+				}
 	        } else {
 		        $final_evaluations          = [];
 		        $final_evaluations['fnums'] = $this->getFnums();
@@ -229,6 +233,11 @@ class Evaluations extends Files
                 parent::setColumns($eval_elements);
         } catch (Exception $e) {
             JLog::add('Problem to get files associated to user '.$this->current_user->id.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
+
+			if ($e->getMessage() === 'COM_EMUNDUS_ERROR_NO_EVALUATION_GROUP') {
+				// throw the error, it has to be displayed to the user
+				throw $e;
+			}
         }
     }
 
