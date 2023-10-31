@@ -112,7 +112,7 @@ class EmundusModelFiles extends JModelLegacy
         }
 
         if (!$session->has('limit')) {
-            $limit = $mainframe->getCfg('list_limit');
+            $limit = $mainframe->get('list_limit');
             $limitstart = 0;
             $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
@@ -4276,7 +4276,7 @@ class EmundusModelFiles extends JModelLegacy
         $msg = '';
 
         $app = JFactory::getApplication();
-        $email_from_sys = $app->getCfg('mailfrom');
+        $email_from_sys = $app->get('mailfrom');
         $fnumsInfos = $this->getFnumsInfos($fnums);
         $status = $this->getStatus();
 
