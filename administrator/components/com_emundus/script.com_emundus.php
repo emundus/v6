@@ -3187,6 +3187,74 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
                     $db->execute();
                 }
             }
+
+            if (version_compare($cache_version, '1.37.7', '<=') || $firstrun) {
+                $query->clear()
+                    ->select('value')
+                    ->from('#__emundus_setup_config')
+                    ->where('namekey = ' . $db->quote('onboarding_lists'));
+
+                $db->setQuery($query);
+                $onboarding_lists = $db->loadResult();
+                $onboarding_lists = json_decode($onboarding_lists, true);
+
+                if (!empty($onboarding_lists)) {
+                    $something_to_update = false;
+
+                    foreach ($onboarding_lists as $l_key => $list) {
+                        if ($l_key === 'emails') {
+                            foreach($list['tabs'] as $t_key => $tab) {
+                                if($tab['getter'] === 'getallemail') {
+                                    if ($tab['filters'][0]['key'] !== 'category') {
+                                        $tab['filters'][0]['key'] = 'category';
+                                        $onboarding_lists[$l_key]['tabs'][$t_key] = $tab;
+                                        $something_to_update = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if ($something_to_update) {
+                        $query->clear()
+                            ->update('#__emundus_setup_config')
+                            ->set('value = ' . $db->quote(json_encode($onboarding_lists)))
+                            ->where('namekey = ' . $db->quote('onboarding_lists'));
+
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
+
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_elements'))
+					->where($db->quoteName('plugin') . ' LIKE ' . $db->quote('textarea'));
+				$db->setQuery($query);
+				$textarea_elts = $db->loadObjectList();
+
+				foreach ($textarea_elts as $textarea_elt) {
+					$params = json_decode($textarea_elt->params, true);
+
+					if($params['bootstrap_class'] == 'input-medium') {
+						$params['bootstrap_class'] = 'input-xlarge';
+
+						$query->clear()
+							->update($db->quoteName('#__fabrik_elements'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+							->where($db->quoteName('id') . ' = ' . $db->quote($textarea_elt->id));
+						$db->setQuery($query);
+						$db->execute();
+					}
+				}
+
+				// Add exception rules in .htaccess file for session cookie security
+				$file = JPATH_ROOT . '/.htaccess';
+				$insertLines = "# Tchooz session cookie security" . PHP_EOL .
+			"php_value session.cookie_secure On" . PHP_EOL .
+			"php_value session.cookie_samesite Strict" . PHP_EOL;
+				$succeed['add_htaccess_exeption'] = EmundusHelperUpdate::insertIntoFile($file, $insertLines);
+            }
 		}
 
 		return $succeed;
@@ -3305,6 +3373,8 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 		$db->execute();
 
 		EmundusHelperUpdate::checkHealth();
+
+		EmundusHelperUpdate::checkPageClass();
 
 		if(file_exists(JPATH_SITE.'/.git') && file_exists(JPATH_SITE . '/administrator/components/com_emundus/scripts/pre-commit'))
 		{

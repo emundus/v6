@@ -161,7 +161,12 @@
 					<option value="1">JYES</option>
 				</field>
 
-				<field showon="layout:_:tchooz"
+				<field showon="layout:_:tchooz" name="mod_em_applications_show_tabs" type="radio" default="1" label="MOD_EMUNDUS_APPLICATIONS_SHOW_TABS" description="MOD_EMUNDUS_APPLICATIONS_SHOW_TABS_DESC">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+
+				<field showon="layout:_:tchooz[AND]mod_em_applications_show_tabs:0"
 					   name="mod_em_application_group"
 					   type="subform"
 					   label="MOD_EM_APPLICATION_GROUP"
@@ -202,11 +207,6 @@
 				</field>
 
 				<field showon="layout:_:tchooz" name="mod_em_applications_show_hello_text" type="radio" default="1" label="MOD_EMUNDUS_APPLICATIONS_SHOW_HELLO_TEXT" description="MOD_EMUNDUS_APPLICATIONS_SHOW_HELLO_TEXT_DESC">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
-
-				<field showon="layout:_:tchooz" name="mod_em_applications_show_tabs" type="radio" default="1" label="MOD_EMUNDUS_APPLICATIONS_SHOW_TABS" description="MOD_EMUNDUS_APPLICATIONS_SHOW_TABS_DESC">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
 				</field>

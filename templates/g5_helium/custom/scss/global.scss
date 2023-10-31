@@ -3297,11 +3297,11 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
   }
 }
 
-/* LISTE EVALUATION TCHOOZ
+/* LISTE EVALUATION TCHOOZ */
 
-.gantry.view-file.layout-evaluation {
-  overflow: hidden;
-}*/
+.gantry.view-file.layout-evaluation #g-container-main .g-container {
+  width: 100%;
+}
 
 /* SUPPRIMER EVAL */
 .g-back-office-emundus-tableau .panel-heading.em-container-evaluation-heading #em_delete_evals.btn.btn-danger.btn-xs.btn-attach {
@@ -4144,6 +4144,19 @@ div#em-appli-block {
 }
 
 /******************************* RESPONSIVE ***********************************/
+
+@media screen and (min-width: 1367px) and (max-width: 1919px)  {
+  .view-form.com_fabrik:not(.applicant-form):not(.mon-profil):not(.view-registration) #g-container-main .g-container {
+    max-width: 70%;
+  }
+}
+
+@media screen and (min-width: 1920px) {
+  .view-form.com_fabrik:not(.applicant-form):not(.mon-profil):not(.view-registration) #g-container-main .g-container {
+    max-width: 50%;
+  }
+}
+
 /* LAPTOP  MENU TCHO0Z */
 @media screen and (max-width: 1366px),
 screen and (max-height: 769px) {
@@ -6532,6 +6545,14 @@ tbody .el-table__row:nth-child(odd){
 @media screen and (max-width: 1366px){
   .selected-rows-tip{
     bottom: 10%;
+  }
+
+  .view-form.com_fabrik:not(.applicant-form):not(.mon-profil):not(.view-registration) #g-container-main .g-container {
+      width: 90%;
+  }
+
+  .view-form.com_fabrik:not(.applicant-form):not(.mon-profil):not(.view-registration) #g-container-main {
+    padding: 0 0 0 76px;
   }
 }
 
