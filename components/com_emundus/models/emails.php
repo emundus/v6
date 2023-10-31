@@ -365,6 +365,12 @@ class EmundusModelEmails extends JModelList {
                     $mailer->Encoding = 'base64';
                     $mailer->setBody($body);
 
+                    $custom_email_tag = EmundusHelperEmails::getCustomHeader();
+                    if(!empty($custom_email_tag))
+                    {
+                        $mailer->addCustomHeader($custom_email_tag);
+                    }
+
                     try {
                         $send = $mailer->Send();
                     } catch (Exception $e) {
@@ -1116,6 +1122,13 @@ class EmundusModelEmails extends JModelList {
                     }
                 }
 
+                require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+                $custom_email_tag = EmundusHelperEmails::getCustomHeader();
+                if(!empty($custom_email_tag))
+                {
+                    $mailer->addCustomHeader($custom_email_tag);
+                }
+
                 $send = $mailer->Send();
 
                 if ($send !== true) {
@@ -1405,7 +1418,15 @@ class EmundusModelEmails extends JModelList {
                         }
                     }
 
+                    require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+                    $custom_email_tag = EmundusHelperEmails::getCustomHeader();
+                    if(!empty($custom_email_tag))
+                    {
+                        $mailer->addCustomHeader($custom_email_tag);
+                    }
+
                     $send = $mailer->Send();
+
                     if ($send !== true) {
                         $failed[] = $m_to;
                         $print_message .= '<hr>Error sending email: ' . $send;

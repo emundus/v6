@@ -151,10 +151,11 @@ requirejs(['fab/fabrik'], function () {
             repeat_groups.forEach(function (repeatGroupsMarked, group) {
                 if(repeatGroupsMarked !== 0) {
                     let maxRepeat = form.options.maxRepeat[group];
+                    let minRepeat = form.options.minRepeat[group];
 
                     let deleteButtons = document.querySelectorAll('#group' + group + ' .fabrikGroupRepeater.pull-right');
 
-                    if (repeatGroupsMarked > 1) {
+                    if (repeatGroupsMarked > 1 || minRepeat === 0) {
                         deleteButtons.forEach(function (button, index) {
                             button.show();
                         })

@@ -769,8 +769,15 @@ class EmundusControllerMessages extends JControllerLegacy {
 
             $mailer->addAttachment(array_unique($toAttach));
 
+	        $custom_email_tag = EmundusHelperEmails::getCustomHeader();
+	        if(!empty($custom_email_tag))
+	        {
+		        $mailer->addCustomHeader($custom_email_tag);
+	        }
+
             // Send and log the email.
             $send = $mailer->Send();
+
             if ($send !== true) {
                 $failed[] = $fnum->email;
                 echo 'Error sending email: ' . $send->__toString();
@@ -963,8 +970,15 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 			$mailer->addAttachment($toAttach);
 
+			$custom_email_tag = EmundusHelperEmails::getCustomHeader();
+			if(!empty($custom_email_tag))
+			{
+				$mailer->addCustomHeader($custom_email_tag);
+			}
+
 			// Send and log the email.
 			$send = $mailer->Send();
+
 			if ($send !== true) {
 				$failed[] = $user->email;
 				echo 'Error sending email: ' . $send->__toString();
@@ -1036,16 +1050,12 @@ class EmundusControllerMessages extends JControllerLegacy {
 	    $programme = $m_campaign->getProgrammeByTraining($fnum['training']);
 
 	    // In case no post value is supplied
-	    if (empty($post)) {
-		    $post = [
-			    'FNUM'           => $fnum['fnum'],
-			    'USER_NAME'      => $fnum['name'],
-			    'COURSE_LABEL'   => $programme->label,
-			    'CAMPAIGN_LABEL' => $fnum['label'],
-			    'SITE_URL'       => JURI::base(),
-			    'USER_EMAIL'     => $fnum['email']
-		    ];
-	    }
+	    $post['FNUM'] = !isset($post['FNUM']) ? $fnum['fnum'] : $post['FNUM'];
+	    $post['USER_NAME'] = !isset($post['USER_NAME']) ? $fnum['name'] : $post['USER_NAME'];
+	    $post['COURSE_LABEL'] = !isset($post['COURSE_LABEL']) ? $programme->label : $post['COURSE_LABEL'];
+	    $post['CAMPAIGN_LABEL'] = !isset($post['CAMPAIGN_LABEL']) ? $fnum['label'] : $post['CAMPAIGN_LABEL'];
+	    $post['SITE_URL'] = !isset($post['SITE_URL']) ? JURI::base() : $post['SITE_URL'];
+	    $post['USER_EMAIL'] = !isset($post['USER_EMAIL']) ? $fnum['email'] : $post['USER_EMAIL'];
 	    $tags = $m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum'], '', $template->emailfrom.$template->name.$template->subject.$template->message);
 
 	    // Get default mail sender info
@@ -1202,6 +1212,13 @@ class EmundusControllerMessages extends JControllerLegacy {
         if (!empty($toAttach)) {
 	        $mailer->addAttachment($toAttach);
         }
+
+	    $custom_email_tag = EmundusHelperEmails::getCustomHeader();
+	    if(!empty($custom_email_tag))
+	    {
+		    $mailer->addCustomHeader($custom_email_tag);
+	    }
+
 	    // Send and log the email.
         $send = $mailer->Send();
 
@@ -1355,7 +1372,15 @@ class EmundusControllerMessages extends JControllerLegacy {
 			$mailer->addAttachment($toAttach);
 		}
 
+		require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+		$custom_email_tag = EmundusHelperEmails::getCustomHeader();
+		if(!empty($custom_email_tag))
+		{
+			$mailer->addCustomHeader($custom_email_tag);
+		}
+
 		$send = $mailer->Send();
+
 		if ($send !== true) {
 			if ($send === false) {
 				JLog::add('Tried sending email with mailer disabled in site settings.', JLog::ERROR, 'com_emundus');

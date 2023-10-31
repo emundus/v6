@@ -2108,6 +2108,8 @@ class EmundusModelUsers extends JModelList {
 	 */
 	public function getEffectiveGroupsForFnum($group_ids, $fnum, $strict = false) {
 
+		$groups = [];
+
 		$db = $this->getDbo();
 		$query = $db->getQuery(true);
 
@@ -2125,11 +2127,12 @@ class EmundusModelUsers extends JModelList {
 
 		try {
 			$db->setQuery($query);
-			return $db->loadColumn();
+			$groups = $db->loadColumn();
 		} catch(Exception $e) {
-			error_log($e->getMessage(), 0);
-			return false;
+			JLog::add('Error getting effective groups for fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 		}
+
+		return $groups;
 	}
 
 	/**
@@ -2493,6 +2496,14 @@ class EmundusModelUsers extends JModelList {
         $mailer->setBody($body);
 
 		// Send the password reset request email.
+
+		require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+		$custom_email_tag = EmundusHelperEmails::getCustomHeader();
+		if(!empty($custom_email_tag))
+		{
+			$mailer->addCustomHeader($custom_email_tag);
+		}
+
 		$send = $mailer->Send();
 
 		// Check for an error.

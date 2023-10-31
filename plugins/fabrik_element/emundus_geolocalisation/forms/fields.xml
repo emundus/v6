@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+    <fields name="params">
+        <fieldset label="COM_FABRIK_OPTIONS" name="plg-element-emundus_geolocalisation">
+            <field type="text" name="default_lng" label="PLUGIN_EMUNDUS_GEOLOC_DEFAULT_LONG" hint="2.3488"/>
+            <field type="text" name="default_lat" label="PLUGIN_EMUNDUS_GEOLOC_DEFAULT_LAT" hint="48.85341"/>
+            <field type="integer" name="default_zoom"
+                   label="PLUGIN_EMUNDUS_GEOLOC_DEFAULT_ZOOM"
+                   description="PLUGIN_EMUNDUS_GEOLOC_DEFAULT_ZOOM_DESC"
+                   default="13"
+                   first="1"
+                   last="20"
+                   step="1"
+            >
+            </field>
+
+            <field name="get_location" type="radio" default="0" class="btn-group"
+                   description="PLUGIN_EMUNDUS_GEOLOC_GET_LOCATION_DESC"
+                   label="PLUGIN_EMUNDUS_GEOLOC_GET_LOCATION_LABEL"
+            >
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+        </fieldset>
+    </fields>
+</form>
