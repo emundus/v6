@@ -88,7 +88,7 @@ function export_excel(fnums, letter) {
 
     $.ajax({
         type: 'post',
-        url: 'index.php?option=com_emundus&controller=files&task=getfnums_csv',
+        url: 'index.php?option=com_emundus&controller=files&task=getfnums_csv&Itemid='+itemId,
         dataType: 'JSON',
         data: {fnums: fnums},
         success: function (result) {
@@ -180,7 +180,7 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter) {
                                 data: {
                                     csv: file,
                                     nbcol: nbcol,
-                                    start: start,
+                                    start: json.start,
                                     excelfilename: result.json.excelfilename
                                 },
                                 success: function (result) {
@@ -637,6 +637,7 @@ function export_zip(fnums){
             actions: swal_actions_class
         },
     });
+    document.querySelector('.em-swal-confirm-button').style.opacity = '0';
 
     var url = 'index.php?option=com_emundus&controller=files&task=zip&Itemid='+itemId;
     $.ajax({

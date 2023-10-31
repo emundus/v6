@@ -49,6 +49,10 @@ requirejs(['fab/fabrik'], function () {
                     }).then((result) => {
                         if(result.value)
                         {
+                            if(e.srcElement.classList.contains('goback-btn')) {
+                                window.history.back();
+                            }
+
                             let href = window.location.origin+'/index.php';
                             // If click event target is a direct link
                             if(typeof e.target.href !== 'undefined')
@@ -72,6 +76,10 @@ requirejs(['fab/fabrik'], function () {
                             window.location.href = href;
                         }
                     });
+                } else {
+                    if(e.srcElement.classList.contains('goback-btn')) {
+                        window.history.back();
+                    }
                 }
             }
         }
@@ -94,7 +102,9 @@ requirejs(['fab/fabrik'], function () {
     function removeFabrikFormSkeleton() {
         let header = document.querySelector('.page-header');
         if(header) {
-            document.querySelector('.page-header h2').style.opacity = 1;
+            if(header.querySelector('h2')) {
+                document.querySelector('.page-header h2').style.opacity = 1;
+            }
             header.classList.remove('skeleton');
         }
         let intro = document.querySelector('.em-form-intro');
@@ -141,10 +151,11 @@ requirejs(['fab/fabrik'], function () {
             repeat_groups.forEach(function (repeatGroupsMarked, group) {
                 if(repeatGroupsMarked !== 0) {
                     let maxRepeat = form.options.maxRepeat[group];
+                    let minRepeat = form.options.minRepeat[group];
 
                     let deleteButtons = document.querySelectorAll('#group' + group + ' .fabrikGroupRepeater.pull-right');
 
-                    if (repeatGroupsMarked > 1) {
+                    if (repeatGroupsMarked > 1 || minRepeat === 0) {
                         deleteButtons.forEach(function (button, index) {
                             button.show();
                         })

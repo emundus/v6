@@ -27,9 +27,11 @@ div.mod-languages ul.lang-inline li{
 
 div.mod-languages a{
     width: 100%;
-    padding: 0;
     align-items: baseline;
     color: var(--neutral-900);
+    padding: 0.625rem 0.75rem;
+    text-decoration: none;
+    display: inline-flex;
 }
 
 div.mod-languages form[name="lang"]{
@@ -100,7 +102,6 @@ div.advanced-dropdown span.caret{
 }
 
 .mod_falang_emundus___other_languages span{
-    padding: 0.625rem 0.75rem;
     width: 100%;
     color: var(--neutral-600);
     cursor: pointer;
