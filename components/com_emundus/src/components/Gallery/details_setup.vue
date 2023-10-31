@@ -108,11 +108,39 @@
         <div class="em-grid-2">
           <div>
             <h3>Contenu disponible</h3>
-            <div></div>
+            <div class="p-4 elements-block mt-2">
+              <fieldset v-for="element in elements" class="mb-8">
+                <h4 class="mb-6">{{ element.label }}</h4>
+                <div class="pl-3">
+                  <div v-for="elt in element.elements" class="flex justify-between pb-2 mb-3 border-b border-neutral-400">
+                    <h5>{{ elt.label }}</h5>
+                    <span class="material-icons-outlined cursor-pointer" @click="addField(elt)">east</span>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
           </div>
           <div>
             <h3>Contenu affiché</h3>
-            <div></div>
+            <div class="px-4 py-8 elements-block mt-2 min-h-[100px]">
+              <draggable
+                  v-model="form.fields"
+                  group="fields-list"
+                  class="draggables-list"
+                  @end="onDragEnd"
+                  handle=".handle"
+              >
+                <transition-group>
+                  <div v-for="(field, index) in form.fields" :key="'field_'+field.id" class="flex justify-between items-center pb-2 mb-3 border-b border-neutral-400">
+                    <div class="flex items-center">
+                      <span class="material-icons-outlined handle em-grab mr-2">drag_indicator</span>
+                      <h5>{{ field.label }}</h5>
+                    </div>
+                    <span class="material-icons-outlined cursor-pointer" @click="removeField(index,field)">west</span>
+                  </div>
+                </transition-group>
+              </draggable>
+            </div>
           </div>
         </div>
       </div>
@@ -124,11 +152,12 @@
 <script>
 import Swal from "sweetalert2";
 import Multiselect from "vue-multiselect";
+import draggable from "vuedraggable";
 
 export default {
   name: "details_setup",
 
-  components: {Multiselect},
+  components: {draggable, Multiselect},
 
   directives: {},
 
@@ -145,7 +174,10 @@ export default {
     form: {
       banner: null,
       logo: null,
+      fields: [],
     },
+
+    drag: false,
 
     attachments_update: 0,
     active_tab: 0
@@ -188,10 +220,57 @@ export default {
               console.log(data);
             });
       }, 1500);
-    }
+    },
+
+    addField(field) {
+      this.form.fields.push(field);
+
+      let formData = new FormData();
+      formData.append('tab_id', this.gallery.tabs[this.active_tab].id);
+      formData.append('field', field.fullname);
+
+      fetch('index.php?option=com_emundus&controller=gallery&task=addfield', {
+        method: 'POST',
+        body: formData,
+      })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+          });
+    },
+
+    removeField(index,field) {
+      this.form.fields.splice(index, 1);
+
+      let formData = new FormData();
+      formData.append('tab_id', this.gallery.tabs[this.active_tab].id);
+      formData.append('field', field.fullname);
+
+      fetch('index.php?option=com_emundus&controller=gallery&task=removefield', {
+        method: 'POST',
+        body: formData,
+      })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+          });
+    },
+
+    onDragEnd(e) {
+      console.log(e);
+    },
   },
 
-  watch: {}
+  watch: {
+    /*'form.fields': {
+      handler(newValue) {
+        console.log(newValue);
+        const fields = newValue.map((value) => value.fullname)
+        console.log(fields);
+      },
+      deep: true
+    }*/
+  }
 };
 </script>
 
@@ -270,5 +349,10 @@ export default {
 .voting-pop .voting-details-block {
   border-radius: calc(var(--em-form-br-block)/2);
   background: #F0F0F0;
+}
+
+.elements-block {
+  border-radius: var(--em-coordinator-br);
+  background: var(--neutral-400);
 }
 </style>

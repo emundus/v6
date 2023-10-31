@@ -239,7 +239,7 @@ export default {
 
     if(this.gallery.subtitle_icon) {
       this.form.subtitle_icon = this.subtitle_icons.find(icon => {
-        return icon.code == this.gallery.subtitle_icon;
+        return icon.code === this.gallery.subtitle_icon;
       });
     }
 

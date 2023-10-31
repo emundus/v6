@@ -153,29 +153,64 @@ class EmundusControllerGallery extends JControllerLegacy
 				$response['data']['elements'] = $this->_model->getElements($cid,$lid);
 
 				if(!empty($response['data'])) {
+					$keys_to_remove = [];
+
 					$response['data']['simple_fields'] = [];
 					$response['data']['choices_fields'] = [];
 					$response['data']['description_fields'] = [];
 
 					foreach ($response['data']['elements'] as $key => $element) {
-						$response['data']['simple_fields'][$key]['label'] = $element['label'];
-						$response['data']['choices_fields'][$key]['label'] = $element['label'];
-						$response['data']['description_fields'][$key]['label'] = $element['label'];
 
-						foreach ($element['elements'] as $elt) {
+						$elts_to_remove = [];
+						foreach ($element['elements'] as $index => $elt) {
+							if(empty($elt->label)) {
+								$elts_to_remove[] = $index;
+								continue;
+							}
+
 							if (!in_array($elt->plugin, ['checkbox'])) {
+
+								if(!isset($response['data']['simple_fields'][$key]['label'])) {
+									$response['data']['simple_fields'][$key]['label'] = $element['label'];
+								}
 								$response['data']['simple_fields'][$key]['elements'][] = $elt;
 							}
 
 							if (in_array($elt->plugin, ['checkbox', 'dropdown', 'radiobutton', 'databasejoin'])) {
+								if(!isset($response['data']['choices_fields'][$key]['label'])) {
+									$response['data']['choices_fields'][$key]['label'] = $element['label'];
+								}
 								$response['data']['choices_fields'][$key]['elements'][] = $elt;
 							}
 
 							if (in_array($elt->plugin, ['textarea', 'field'])) {
+								if(!isset($response['data']['description_fields'][$key]['label'])) {
+									$response['data']['description_fields'][$key]['label'] = $element['label'];
+								}
 								$response['data']['description_fields'][$key]['elements'][] = $elt;
 							}
 						}
+
+						foreach ($elts_to_remove as $elt) {
+							unset($response['data']['elements'][$key]['elements'][$elt]);
+						}
+
+						if(empty($response['data']['elements'][$key]['elements'])) {
+							$keys_to_remove[] = $key;
+						}
+
+
+						$response['data']['elements'][$key]['elements'] = array_values($response['data']['elements'][$key]['elements']);
 					}
+
+					foreach ($keys_to_remove as $key) {
+						unset($response['data']['elements'][$key]);
+					}
+
+					$response['data']['elements'] = array_values($response['data']['elements']);
+					$response['data']['description_fields'] = array_values($response['data']['description_fields']);
+					$response['data']['choices_fields'] = array_values($response['data']['choices_fields']);
+					$response['data']['simple_fields'] = array_values($response['data']['simple_fields']);
 				}
 			}
 		}
@@ -276,6 +311,44 @@ class EmundusControllerGallery extends JControllerLegacy
 			$title = $this->input->getString('title', '');
 
 			$response['status'] = $this->_model->updateTabTitle($tab_id,$title);
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
+	public function addfield()
+	{
+		$response = array('status' => 1, 'msg' => '');
+
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$response['status'] = 0;
+			$response['msg'] = JText::_('ACCESS_DENIED');
+		}
+		else {
+			$tab_id = $this->input->getInt('tab_id', 0);
+			$field = $this->input->getString('field', '');
+
+			$response['status'] = $this->_model->addField($tab_id,$field);
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
+	public function removefield()
+	{
+		$response = array('status' => 1, 'msg' => '');
+
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$response['status'] = 0;
+			$response['msg'] = JText::_('ACCESS_DENIED');
+		}
+		else {
+			$tab_id = $this->input->getInt('tab_id', 0);
+			$field = $this->input->getString('field', '');
+
+			$response['status'] = $this->_model->removeField($tab_id,$field);
 		}
 
 		echo json_encode((object)$response);

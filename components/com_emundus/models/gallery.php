@@ -674,4 +674,80 @@ class EmundusModelGallery extends JModelList
 
 		return $updated;
 	}
+
+	public function addField($tab_id,$field)
+	{
+		$added = false;
+		$query = $this->_db->getQuery(true);
+
+		try {
+			$query->select('fields')
+				->from($this->_db->quoteName('#__emundus_setup_gallery_detail_tabs'))
+				->where($this->_db->quoteName('id') .' = ' . $tab_id);
+			$this->_db->setQuery($query);
+			$fields = $this->_db->loadResult();
+
+			if(empty($fields)) {
+				$fields = [];
+			} else {
+				$fields = explode(',',$fields);
+			}
+
+			if(!in_array($field,$fields)) {
+				$fields[] = $field;
+				$fields = implode(',',$fields);
+
+				$query->clear()
+					->update($this->_db->quoteName('#__emundus_setup_gallery_detail_tabs'))
+					->set($this->_db->quoteName('fields') . ' = ' . $this->_db->quote($fields))
+					->where($this->_db->quoteName('id') .' = ' . $tab_id);
+				$this->_db->setQuery($query);
+				$added = $this->_db->execute();
+			}
+		}
+		catch (Exception $e) {
+			JLog::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $added;
+	}
+
+	public function removeField($tab_id,$field)
+	{
+		$removed = false;
+		$query = $this->_db->getQuery(true);
+
+		try {
+			$query->select('fields')
+				->from($this->_db->quoteName('#__emundus_setup_gallery_detail_tabs'))
+				->where($this->_db->quoteName('id') .' = ' . $tab_id);
+			$this->_db->setQuery($query);
+			$fields = $this->_db->loadResult();
+
+			if(empty($fields)) {
+				$fields = [];
+				$removed = true;
+			} else {
+				$fields = explode(',',$fields);
+			}
+
+			if(in_array($field,$fields)) {
+				$index = array_search($field,$fields);
+				unset($fields[$index]);
+				$fields = implode(',',$fields);
+
+				$query->clear()
+					->update($this->_db->quoteName('#__emundus_setup_gallery_detail_tabs'))
+					->set($this->_db->quoteName('fields') . ' = ' . $this->_db->quote($fields))
+					->where($this->_db->quoteName('id') .' = ' . $tab_id);
+				$this->_db->setQuery($query);
+				$removed = $this->_db->execute();
+			}
+		}
+		catch (Exception $e) {
+			JLog::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $removed;
+	}
 }

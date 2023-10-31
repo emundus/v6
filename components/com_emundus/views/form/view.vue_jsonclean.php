@@ -338,7 +338,11 @@ class EmundusViewForm extends FabrikViewFormBase
                 $returnObject->pluginbottom = $this->pluginbottom;
             endif;
 
+			ob_get_clean();
+			ob_flush();
+
             echo json_encode($returnObject);
+			exit;
         } catch(Exception $e){
             JLog::add('component/com_emundus/views/view.vue_jsonclean | Cannot getting the form datas : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return 0;
