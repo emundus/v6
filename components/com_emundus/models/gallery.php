@@ -656,6 +656,27 @@ class EmundusModelGallery extends JModelList
 		return $updated;
 	}
 
+	public function addTab($gallery_id,$title)
+	{
+		$created = 0;
+		$query = $this->_db->getQuery(true);
+
+		try {
+			$query->insert($this->_db->quoteName('#__emundus_setup_gallery_detail_tabs'))
+				->set($this->_db->quoteName('title') . ' = ' . $this->_db->quote($title))
+				->set($this->_db->quoteName('parent_id') .' = ' . $gallery_id);
+			$this->_db->setQuery($query);
+			if($this->_db->execute()) {
+				$created = $this->_db->insertid();
+			}
+		}
+		catch (Exception $e) {
+			JLog::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $created;
+	}
+
 	public function updateTabTitle($tab_id,$title)
 	{
 		$updated = false;
@@ -749,5 +770,24 @@ class EmundusModelGallery extends JModelList
 		}
 
 		return $removed;
+	}
+
+	public function updateFieldsOrder($tab_id,$fields)
+	{
+		$updated = false;
+		$query = $this->_db->getQuery(true);
+
+		try {
+			$query->update($this->_db->quoteName('#__emundus_setup_gallery_detail_tabs'))
+				->set($this->_db->quoteName('fields') . ' = ' . $this->_db->quote($fields))
+				->where($this->_db->quoteName('id') .' = ' . $tab_id);
+			$this->_db->setQuery($query);
+			$updated = $this->_db->execute();
+		}
+		catch (Exception $e) {
+			JLog::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $updated;
 	}
 }

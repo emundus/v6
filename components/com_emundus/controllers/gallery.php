@@ -298,6 +298,25 @@ class EmundusControllerGallery extends JControllerLegacy
 		exit;
 	}
 
+	public function addtab()
+	{
+		$response = array('status' => 1, 'msg' => '', 'data' => 0);
+
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$response['status'] = 0;
+			$response['msg'] = JText::_('ACCESS_DENIED');
+		}
+		else {
+			$gallery_id = $this->input->getInt('gallery_id', 0);
+			$title = $this->input->getString('title', '');
+
+			$response['data'] = $this->_model->addTab($gallery_id,$title);
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
 	public function updatetabtitle()
 	{
 		$response = array('status' => 1, 'msg' => '');
@@ -349,6 +368,25 @@ class EmundusControllerGallery extends JControllerLegacy
 			$field = $this->input->getString('field', '');
 
 			$response['status'] = $this->_model->removeField($tab_id,$field);
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
+	public function updatefieldsorder()
+	{
+		$response = array('status' => 1, 'msg' => '');
+
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$response['status'] = 0;
+			$response['msg'] = JText::_('ACCESS_DENIED');
+		}
+		else {
+			$tab_id = $this->input->getInt('tab_id', 0);
+			$fields = $this->input->getString('fields', '');
+
+			$response['status'] = $this->_model->updateFieldsOrder($tab_id,$fields);
 		}
 
 		echo json_encode((object)$response);

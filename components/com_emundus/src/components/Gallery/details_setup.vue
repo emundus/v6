@@ -49,13 +49,15 @@
         </div>
 
         <div class="details-preview">
-          <div v-if="form.banner && form.banner.id != 0" class="fabrikImageBackground" style="background-image: url('/media/com_emundus/images/gallery/default_card.png')"></div>
+          <div v-if="form.banner && form.banner.id != 0" class="fabrikImageBackground"
+               style="background-image: url('/media/com_emundus/images/gallery/default_card.png')"></div>
           <div class="p-8" style="max-width: 50%">
             <h2 class="line-clamp-2 h-14">
               {{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_TITLE') }}
             </h2>
             <div class="mb-3">
-              Lorem ipsum dolor sit amet, consectetur adi elit, sed do eiusmod tempor incididunt ut labLorem ipsum dolor sitermina erts
+              Lorem ipsum dolor sit amet, consectetur adi elit, sed do eiusmod tempor incididunt ut labLorem ipsum dolor
+              sitermina erts
             </div>
             <div class="mb-3 tags" style="min-height: 30px">
               <ul>
@@ -66,16 +68,18 @@
 
             <div class="details-tabs mt-10 flex items-center mb-8">
               <div v-for="(tab,index) in gallery.tabs">
-                <p :class="{ 'active': index == 0}">{{tab.title}}</p>
-                <div class="mb-5 mt-3">
-                  Lorem ipsum dolor sit amet, consectetur adi elit, sed do eiusmod tempor incididunt ut labLorem ipsum dolor sitermina erts
-                </div>
+                <p :class="{ 'active': index == 0}">{{ tab.title }}</p>
               </div>
+            </div>
+            <div class="mb-5 mt-3">
+              Lorem ipsum dolor sit amet, consectetur adi elit, sed do eiusmod tempor incididunt ut labLorem ipsum dolor
+              sitermina erts
             </div>
           </div>
 
           <div class="voting-pop em-repeat-card" style="padding: unset">
-            <div v-if="form.logo && form.logo.id != 0" class="fabrikImageBackground" style="background-image: url('/media/com_emundus/images/gallery/default_card.png')"></div>
+            <div v-if="form.logo && form.logo.id != 0" class="fabrikImageBackground"
+                 style="background-image: url('/media/com_emundus/images/gallery/default_card.png')"></div>
 
             <div class="p-4 voting-details-block">
               <h2 class="line-clamp-2 h-14">
@@ -95,14 +99,19 @@
       <div>
         <div class="details-tabs mt-10 flex items-center mb-8">
           <div v-for="(tab,index) in gallery.tabs">
-            <p :class="{ 'active': index == active_tab}" contenteditable="true" onkeypress="return (this.innerText.length <= 20)" @keydown.enter.prevent @input="udpateTabTitle($event,tab)">{{tab.title}}</p>
+            <p :class="{ 'active': index == active_tab}" @click="active_tab = index">{{ tab.title }}</p>
           </div>
           <div>
-            <p class="flex">
+            <p class="flex" @click="addTab">
               <span class="material-icons-outlined mr-2">add</span>
               Ajouter un onglet
             </p>
           </div>
+        </div>
+
+        <div class="mb-4">
+          <label for="tab_title" class="w-max">Nom de l'onglet</label>
+          <input type="text" maxlength="255" style="width: 50%" id="tab_title" v-model="form.tabs[active_tab].title" @focusout="udpateTabTitle"/>
         </div>
 
         <div class="em-grid-2">
@@ -112,7 +121,8 @@
               <fieldset v-for="element in elements" class="mb-8">
                 <h4 class="mb-6">{{ element.label }}</h4>
                 <div class="pl-3">
-                  <div v-for="elt in element.elements" class="flex justify-between pb-2 mb-3 border-b border-neutral-400">
+                  <div v-for="elt in element.elements"
+                       class="flex justify-between pb-2 mb-3 border-b border-neutral-400">
                     <h5>{{ elt.label }}</h5>
                     <span class="material-icons-outlined cursor-pointer" @click="addField(elt)">east</span>
                   </div>
@@ -124,14 +134,15 @@
             <h3>Contenu affiché</h3>
             <div class="px-4 py-8 elements-block mt-2 min-h-[100px]">
               <draggable
-                  v-model="form.fields"
+                  v-model="form.tabs[active_tab].fields"
                   group="fields-list"
                   class="draggables-list"
                   @end="onDragEnd"
                   handle=".handle"
               >
                 <transition-group>
-                  <div v-for="(field, index) in form.fields" :key="'field_'+field.id" class="flex justify-between items-center pb-2 mb-3 border-b border-neutral-400">
+                  <div v-for="(field, index) in form.tabs[active_tab].fields" :key="'field_'+field.id"
+                       class="flex justify-between items-center pb-2 mb-3 border-b border-neutral-400">
                     <div class="flex items-center">
                       <span class="material-icons-outlined handle em-grab mr-2">drag_indicator</span>
                       <h5>{{ field.label }}</h5>
@@ -174,7 +185,7 @@ export default {
     form: {
       banner: null,
       logo: null,
-      fields: [],
+      tabs: [],
     },
 
     drag: false,
@@ -196,34 +207,69 @@ export default {
       }
     });
 
+    this.gallery.tabs.forEach((tab) => {
+      if (tab.fields) {
+        const fields = tab.fields.split(',');
+        tab.fields = [];
+        fields.forEach((field) => {
+          this.elements.forEach((element) => {
+            element.elements.forEach((elt) => {
+              if (elt.fullname == field) {
+                tab.fields.push(elt);
+              }
+            })
+          })
+        })
+      } else {
+        tab.fields = [];
+      }
+
+      this.form.tabs.push(tab);
+    })
+
     this.attachments_update++;
     this.$emit('updateLoader');
   },
   methods: {
-    udpateTabTitle(e, tab) {
-      if (this.timer) {
-        clearTimeout(this.timer)
-      }
+    addTab() {
+      let new_gallery = {
+        id: 0,
+        title: 'Nouvel onglet',
+        fields: '',
+      };
 
-      this.timer = setTimeout(() => {
-        tab.title = e.target.innerText;
+      let formData = new FormData();
+      formData.append('gallery_id', this.gallery.id);
+      formData.append('title', 'Nouvel onglet');
 
-        let formData = new FormData();
-        formData.append('tab_id', tab.id);
-        formData.append('title', tab.title);
-        fetch('index.php?option=com_emundus&controller=gallery&task=updatetabtitle', {
-          method: 'POST',
-          body: formData,
-        })
-            .then(response => response.json())
-            .then(data => {
-              console.log(data);
-            });
-      }, 1500);
+      fetch('index.php?option=com_emundus&controller=gallery&task=addtab', {
+        method: 'POST',
+        body: formData,
+      })
+          .then(response => response.json())
+          .then(data => {
+            new_gallery.id = data.data;
+
+            this.gallery.tabs.push(new_gallery);
+          });
+    },
+
+    udpateTabTitle() {
+      let formData = new FormData();
+      formData.append('tab_id', this.gallery.tabs[this.active_tab].id);
+      formData.append('title', this.form.tabs[this.active_tab].title);
+      fetch('index.php?option=com_emundus&controller=gallery&task=updatetabtitle', {
+        method: 'POST',
+        body: formData,
+      })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+          });
     },
 
     addField(field) {
-      this.form.fields.push(field);
+      this.form.tabs[this.active_tab].fields.push(field);
 
       let formData = new FormData();
       formData.append('tab_id', this.gallery.tabs[this.active_tab].id);
@@ -239,8 +285,8 @@ export default {
           });
     },
 
-    removeField(index,field) {
-      this.form.fields.splice(index, 1);
+    removeField(index, field) {
+      this.form.tabs[this.active_tab].fields.splice(index, 1);
 
       let formData = new FormData();
       formData.append('tab_id', this.gallery.tabs[this.active_tab].id);
@@ -257,7 +303,18 @@ export default {
     },
 
     onDragEnd(e) {
-      console.log(e);
+      let formData = new FormData();
+      formData.append('tab_id', this.gallery.tabs[this.active_tab].id);
+      formData.append('fields', this.form.tabs[this.active_tab].fields.map((field) => field.fullname).join(','));
+
+      fetch('index.php?option=com_emundus&controller=gallery&task=updatefieldsorder', {
+        method: 'POST',
+        body: formData,
+      })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+          });
     },
   },
 
@@ -283,7 +340,8 @@ export default {
   top: -50px;
   height: 230px;
 }
-.fabrikImageBackground{
+
+.fabrikImageBackground {
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   background-size: cover;
@@ -299,7 +357,7 @@ export default {
   align-items: center;
 }
 
-.tags ul li{
+.tags ul li {
   font-size: 12px;
   padding: 6px 12px;
   border-radius: 14px;
@@ -347,7 +405,7 @@ export default {
 }
 
 .voting-pop .voting-details-block {
-  border-radius: calc(var(--em-form-br-block)/2);
+  border-radius: calc(var(--em-form-br-block) / 2);
   background: #F0F0F0;
 }
 
