@@ -16,6 +16,7 @@ $fnum = JFactory::getApplication()->input->getString('fnum', 0);
         border-radius: var(--em-coordinator-br);
         margin-top: 0;
         align-items: start;
+        background: var(--neutral-300);
     }
 
     .em-container-mail-content-body {
@@ -24,13 +25,17 @@ $fnum = JFactory::getApplication()->input->getString('fnum', 0);
 
     div.em-container-mail-content-heading.panel-heading small {
         font-size: 12px;
-        color: var(--neutral-500);
+        color: var(--neutral-800);
     }
 
     div.em-container-mail-content-heading.panel-heading small a {
         font-size: 12px;
         color: var(--main-500);
         text-decoration: underline;
+    }
+
+    div#em-appli-block .em-container-mail-content-heading h3 {
+        color: var(--neutral-900) !important;
     }
 </style>
 
@@ -59,9 +64,8 @@ $fnum = JFactory::getApplication()->input->getString('fnum', 0);
                     <h3> <?= JText::_('COM_EMUNDUS_EMAILS_NO_MESSAGES_FOUND'); ?> </h3>
 				<?php else : ?>
 
-                <div class="em-flex-row em-border-bottom-neutral-300" style="overflow:hidden; overflow-x: auto;">
-
-                <div id="tab_link_file" onclick="filterMessages('file')" class="em-mr-16 em-flex-row em-light-tabs profile_tab em-pointer em-light-selected-tab mb-2">
+                <div class="em-flex-row em-border-bottom-neutral-300 mb-3" style="overflow:hidden; overflow-x: auto;">
+                    <div id="tab_link_file" onclick="filterMessages('file')" class="em-mr-16 em-flex-row em-light-tabs profile_tab em-pointer em-light-selected-tab mb-2">
                         <p class="em-font-size-14 em-neutral-900-color" title="<?= JText::_('COM_EMUNDUS_EMAIL_CURRENT_FILE') ?>" style="white-space: nowrap"><?= JText::_('COM_EMUNDUS_EMAIL_CURRENT_FILE') ?></p>
                     </div>
                     <div id="tab_link_all" onclick="filterMessages('all')" class="em-mr-16 em-flex-row em-light-tabs profile_tab em-pointer mb-2">
