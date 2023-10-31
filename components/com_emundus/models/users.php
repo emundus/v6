@@ -2108,6 +2108,8 @@ class EmundusModelUsers extends JModelList {
 	 */
 	public function getEffectiveGroupsForFnum($group_ids, $fnum, $strict = false) {
 
+		$groups = [];
+
 		$db = $this->getDbo();
 		$query = $db->getQuery(true);
 
@@ -2125,11 +2127,12 @@ class EmundusModelUsers extends JModelList {
 
 		try {
 			$db->setQuery($query);
-			return $db->loadColumn();
+			$groups = $db->loadColumn();
 		} catch(Exception $e) {
-			error_log($e->getMessage(), 0);
-			return false;
+			JLog::add('Error getting effective groups for fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 		}
+
+		return $groups;
 	}
 
 	/**
