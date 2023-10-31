@@ -325,7 +325,7 @@
   background : gray;
   border: 3px solid yellow;
 }*/
-/* ! tailwindcss v3.3.2 | MIT License | https://tailwindcss.com */
+/* ! tailwindcss v3.3.3 | MIT License | https://tailwindcss.com */
 /*
 1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
 2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
@@ -465,6 +465,8 @@ optgroup,
 select,
 textarea {
   font-family: inherit; /* 1 */
+  font-feature-settings: inherit; /* 1 */
+  font-variation-settings: inherit; /* 1 */
   font-size: 100%; /* 1 */
   font-weight: inherit; /* 1 */
   line-height: inherit; /* 1 */
@@ -574,6 +576,12 @@ ul,
 menu {
   list-style: none;
   margin: 0;
+  padding: 0;
+}
+/*
+Reset default styling for dialogs.
+*/
+dialog {
   padding: 0;
 }
 /*
@@ -2017,9 +2025,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .end-2 {
   inset-inline-end: var(--em-spacing-2);
 }
-.left-1 {
-  left: var(--em-spacing-1);
-}
 .start-1 {
   inset-inline-start: var(--em-spacing-1);
 }
@@ -2069,8 +2074,7 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   margin-bottom: var(--em-spacing-8);
 }
 .me-1 {
-  -webkit-margin-end: var(--em-spacing-1);
-          margin-inline-end: var(--em-spacing-1);
+  margin-inline-end: var(--em-spacing-1);
 }
 .ml-0 {
   margin-left: 0px;
@@ -2345,9 +2349,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .p-2 {
   padding: var(--em-spacing-2);
 }
-.p-3 {
-  padding: var(--em-spacing-3);
-}
 .p-4 {
   padding: var(--em-spacing-4);
 }
@@ -2426,11 +2427,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .subpixel-antialiased {
   -webkit-font-smoothing: auto;
   -moz-osx-font-smoothing: auto;
-}
-.\!shadow {
-  --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1) !important;
-  --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color) !important;
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
 }
 .shadow {
   --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
@@ -2887,18 +2883,6 @@ button.swal2-cancel.goback-btn:hover,
         right: unset;
         background: transparent;
     }
-.alert .\!close {
-        font-size: xx-large !important;
-        opacity: 1 !important;
-        top: unset !important;
-        left: unset !important;
-        width: auto !important;
-        display: block !important;
-        position: relative !important;
-        float: right !important;
-        right: unset !important;
-        background: transparent !important;
-    }
 .alert h4 {
         font-weight: 500;
     }
@@ -2918,10 +2902,6 @@ button.swal2-cancel.goback-btn:hover,
     .has-error .radio-inline,
     .has-error .checkbox-inline {
         color: #b94a48;
-    }
-
-    .has-error .\!checkbox {
-        color: #b94a48 !important;
     }
 .has-error .form-control {
         border-color: #b94a48;
@@ -3219,9 +3199,6 @@ button.swal2-cancel.goback-btn:hover,
     }
 .\!\[a-zA-Z\:_\] {
   a-z-a--z:  !important;
-}
-.\[-a-zA-Z\:0-9_\.\] {
-  -a-z-a--z: 0-9 .;
 }
 .\[_errors\:protected\] {
   _errors: protected;
