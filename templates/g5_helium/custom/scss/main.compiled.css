@@ -514,7 +514,7 @@ video {
   line-height: 28.8px;
   font-weight: 500;
 }
-.emundus-form .em-form-intro p {
+.emundus-form .em-form-intro * {
         color: var(--neutral-600);
       }
 .emundus-form .groupintro {
@@ -678,8 +678,10 @@ form.fabrikForm .fabrikElementTip {
       font-weight: 400;
       font-family: var(--em-applicant-font);
       font-style: normal;
-      display: flex;
     }
+form.fabrikForm .fabrikElementTip * {
+        color: var(--em-form-tip-color);
+      }
 form.fabrikForm .fabrikElementTip i.icon-question-sign  {
         display: none;
       }
@@ -2149,6 +2151,7 @@ hr {
     }
 ul {
         list-style: initial;
+        padding-left: 20px;
     }
 legend {
         margin: 10px 0 20px 0;
