@@ -1148,6 +1148,7 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio la
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label input {
               accent-color: var(--em-form-radio-color-checked);
               width: var(--em-form-radio-width);
+              min-width: var(--em-form-radio-width);
               height: var(--em-form-radio-height);
               margin-right: var(--em-form-radio-margin-right);
               margin-left: 0;
@@ -1319,9 +1320,16 @@ form.fabrikForm .currencyElement input:focus + select,form.fabrikForm .currencyE
 form.fabrikForm .control-group.error label {
         color: var(--em-form-label-color-error);
       }
+form.fabrikForm .control-group.\!error label {
+        color: var(--em-form-label-color-error) !important;
+      }
 form.fabrikForm .control-group.error input,form.fabrikForm .control-group.error textarea,form.fabrikForm .control-group.error select {
         border-color: var(--em-form-bc-error);
         color: var(--em-default-text-color-1);
+      }
+form.fabrikForm .control-group.\!error input,form.fabrikForm .control-group.\!error textarea,form.fabrikForm .control-group.\!error select {
+        border-color: var(--em-form-bc-error) !important;
+        color: var(--em-default-text-color-1) !important;
       }
 form.fabrikForm .fabrikError.plg-checkbox .fabrikElement .fabrikSubElementContainer {
           border-color: var(--em-form-checkbox-bc-error);
@@ -1659,6 +1667,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .sticky {
   position: sticky;
 }
+.isolate {
+  isolation: isolate;
+}
 .float-right {
   float: right;
 }
@@ -1770,6 +1781,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .inline-block {
   display: inline-block;
+}
+.\!inline {
+  display: inline !important;
 }
 .inline {
   display: inline;

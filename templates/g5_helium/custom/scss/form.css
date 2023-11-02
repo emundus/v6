@@ -638,6 +638,7 @@
             input {
               accent-color: var(--em-form-radio-color-checked);
               width: var(--em-form-radio-width);
+              min-width: var(--em-form-radio-width);
               height: var(--em-form-radio-height);
               margin-right: var(--em-form-radio-margin-right);
               margin-left: 0;
