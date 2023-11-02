@@ -2,8 +2,8 @@
   <div class="ml-8 em-files">
     <Application v-if="currentFile" :file="currentFile" :type="$props.type" :user="$props.user" :ratio="$props.ratio" @getFiles="getFiles(true)" />
 
-    <div class="mb-4 flex items-center justify-between">
-      <h4>{{ translate('COM_EMUNDUS_FILES_'+type.toUpperCase()) }}</h4>
+    <div class="mb-4 mt-4 flex items-center justify-between">
+      <h1>{{ translate('COM_EMUNDUS_FILES_'+type.toUpperCase()) }}</h1>
     </div>
 
 	  <div v-if="error.displayed" class="alert">
