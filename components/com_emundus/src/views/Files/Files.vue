@@ -118,10 +118,12 @@
         <el-table-column
             :label="translate('COM_EMUNDUS_ONBOARD_FILE')"
             width="270"
-            prop="file">
+            prop="file"
+            sortable
+            :sort-method="(a, b) => sortBy(a, b, 'file')">
           <template slot-scope="scope">
             <div @click="openApplication(scope.row)" class="em-pointer">
-              <p class="em-font-weight-500">{{ scope.row.applicant_name }}</p>
+              <p class="em-font-weight-500">{{ scope.row.applicant_name.charAt(0).toUpperCase() + scope.row.applicant_name.slice(1) }}</p>
               <span class="em-text-neutral-500 em-font-size-14">{{ scope.row.fnum }}</span>
             </div>
           </template>
@@ -170,13 +172,14 @@
             <el-table-column
               v-else
               min-width="180"
-              prop="column.name"
-            sortable>
+              :prop="column.name"
+            sortable
+            :sort-method="(a, b) => sortBy(a, b, column.name)">
             <template slot="header" slot-scope="scope" >
               <span :title="column.label" class="em-neutral-700-color">{{column.label}}</span>
             </template>
             <template slot-scope="scope">
-              <p v-html="scope.row[column.name]"></p>
+              <p v-html="formatter(scope.row[column.name],column)"></p>
             </template>
           </el-table-column>
         </template>
@@ -306,6 +309,29 @@ export default {
 
   },
   methods: {
+    formatter(row, column) {
+      if(typeof row == 'string'){
+        return row.charAt(0).toUpperCase() + row.slice(1);
+      } else {
+        return row;
+      }
+    },
+
+    sortBy(a,b, prop) {
+      if(prop === 'file') {
+        if (a.applicant_name.toUpperCase() < b.applicant_name.toUpperCase()) return -1;
+        if (a.applicant_name.toUpperCase() > b.applicant_name.toUpperCase()) return 1;
+      }
+
+      if(typeof a[prop] === 'string') {
+        if (a[prop].toUpperCase() < b[prop].toUpperCase()) return -1;
+        if (a[prop].toUpperCase() > b[prop].toUpperCase()) return 1;
+      }
+
+      if (a[prop] < b[prop]) return -1;
+      if (a[prop] > b[prop]) return 1;
+    },
+
 	  addKeyupEnterEventlistener(){
 		  window.document.addEventListener('keyup', (e) => {
 			  if (e.key === 'Enter'){
