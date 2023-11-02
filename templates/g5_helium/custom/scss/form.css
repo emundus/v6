@@ -6,7 +6,7 @@
       @apply em-default-title-1;
     }
     .em-form-intro {
-      p {
+      * {
         color: var(--neutral-600);
       }
     }
