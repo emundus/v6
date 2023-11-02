@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-cron-emundusupdatestatusendcampaign" label="COM_FABRIK_OPTIONS">
+
+			<field name="exclude_campaigns"
+				   type="text"
+				   description="PLG_CRON_EXCLUDE_CAMPAIGNS_DESC"
+				   label="PLG_CRON_EXCLUDE_CAMPAIGNS"
+				   size="30"
+				   default="" />
+
+			<field name="end_offset"
+				   type="text"
+				   description="PLG_CRON_END_OFFSET_DESC"
+				   label="PLG_CRON_END_OFFSET"
+				   size="30"
+				   default="0" />
+
+			<field name="statuses"
+					type="subform"
+					label="PLG_CRON_STATUSES"
+					description="PLG_CRON_STATUSES_DESC"
+					multiple="true"
+					layout="joomla.form.field.subform.repeatable-table">
+				<form>
+					<field name="entry_status"
+							type="sql"
+							query="SELECT step, value FROM #__emundus_setup_status"
+							default=''
+							key_field="step"
+							value_field="value"
+							label="PLG_CRON_ENTRY_STATUSES"
+							description="PLG_CRON_ENTRY_STATUSES_DESC"
+					/>
+					<field name="output_status"
+							type="sql"
+							query="SELECT step, value FROM #__emundus_setup_status"
+							default=''
+							key_field="step"
+							value_field="value"
+							label="PLG_CRON_OUTPUT_STATUSES"
+							description="PLG_CRON_OUTPUT_STATUSES_DESC"
+					/>
+				</form>
+			</field>
+
+			<field name="archived_files" menu="hide" type="list" default="0" label="PLG_CRON_ARCHIVED_FILES" description="PLG_CRON_ARCHIVED_FILES_DESC">
+				<option value="0">PLG_CRON_ARCHIVED_FILES_NO</option>
+				<option value="1">PLG_CRON_ARCHIVED_FILES_YES</option>
+			</field>
+
+			<field name="deleted_files" menu="hide" type="list" default="0" label="PLG_CRON_DELETED_FILES" description="PLG_CRON_DELETED_FILES_DESC">
+				<option value="0">PLG_CRON_DELETED_FILES_NO</option>
+				<option value="1">PLG_CRON_DELETED_FILES_YES</option>
+			</field>
+
+		</fieldset>
+
+	</fields>
+</form>
