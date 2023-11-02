@@ -1226,6 +1226,8 @@ form.fabrikForm .currencyElement select .chzn-single, form.fabrikForm .currencyE
           border-top-left-radius: 0 !important;
           border-bottom-left-radius: 0 !important;
           border-color: var(--em-form-bc);
+          background-image: none !important;
+          padding-right: 1em !important;
         }
 form.fabrikForm .currencyElement select .chzn-single span,form.fabrikForm .currencyElement .chzn-container .chzn-single span{
             font-size: 16px;

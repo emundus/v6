@@ -740,6 +740,8 @@
           border-top-left-radius: 0 !important;
           border-bottom-left-radius: 0 !important;
           border-color: var(--em-form-bc);
+          background-image: none !important;
+          padding-right: 1em !important;
           span{
             font-size: 16px;
             margin-right: 16px;
