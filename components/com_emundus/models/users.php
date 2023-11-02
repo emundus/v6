@@ -210,7 +210,7 @@ class EmundusModelUsers extends JModelList {
             $query .= 'LEFT JOIN #__emundus_final_grade AS efg ON u.id = efg.student_id ';
         }
 
-        $query .= ' where 1=1 AND u.id NOT IN (1,62) ';
+        $query .= ' where 1=1 AND u.id NOT IN (1,2,62) ';
 
         if (isset($programme) && !empty($programme) && $programme[0] != '%') {
             $query .= ' AND ( esc.training IN ("'.implode('","', $programme).'")

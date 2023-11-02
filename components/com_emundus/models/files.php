@@ -1516,7 +1516,7 @@ class EmundusModelFiles extends JModelLegacy
      * @param $state
      * @return bool|mixed
      */
-    public function updateState($fnums, $state) {
+    public function updateState($fnums, $state, $user_id = null) {
         $res = false;
 
         if (!empty($fnums) && isset($state)) {
@@ -1543,8 +1543,11 @@ class EmundusModelFiles extends JModelLegacy
                 }
 
                 $all_status = $this->getStatus();
-                $user = JFactory::getUser();
-                $user_id = !empty($user->id) ? $user->id : 62;
+
+                if (empty($user_id)) {
+                    $user = JFactory::getUser();
+                    $user_id = !empty($user->id) ? $user->id : 62;
+                }
 
                 foreach ($fnums as $fnum) {
                     $query->clear()
@@ -1574,12 +1577,21 @@ class EmundusModelFiles extends JModelLegacy
                     $res = $db->execute();
 
                     $old_status_lbl = $all_status[$old_status_step]['value'];
+
+                    // get the applicant id
+                    $query->clear()
+                        ->select($db->quoteName('applicant_id'))
+                        ->from($db->quoteName('#__emundus_campaign_candidature'))
+                        ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
+                    $db->setQuery($query);
+                    $applicant_id = $db->loadResult();
+
                     if ($res) {
                         $logs_params = ['updated' => [['old' => $old_status_lbl, 'new' => $all_status[$state]['value'], 'old_id' => $old_status_step, 'new_id' => $state]]];
-                        EmundusModelLogs::log($user_id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+                        EmundusModelLogs::log($user_id, $applicant_id, $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
                     } else {
                         $logs_params = ['updated' => [['old' => $old_status_lbl, 'new' => $all_status[$state]['value'], 'old_id' => $old_status_step, 'new_id' => $state]]];
-                        EmundusModelLogs::log($user_id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE_FAILED', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+                        EmundusModelLogs::log($user_id, $applicant_id, $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE_FAILED', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
                     }
 
                     $dispatcher->trigger('onAfterStatusChange', [$fnum, $state]);
@@ -1616,7 +1628,7 @@ class EmundusModelFiles extends JModelLegacy
      * @param $publish
      * @return bool|mixed
      */
-    public function updatePublish($fnums, $publish) {
+    public function updatePublish($fnums, $publish, $user_id = null) {
 
         $dispatcher = JEventDispatcher::getInstance();
 
@@ -1636,37 +1648,45 @@ class EmundusModelFiles extends JModelLegacy
                 // Old publish status
                 switch ($old_publish) {
                     case(1):
-                        $old_publish = JText::_('PUBLISHED');
+                        $old_publish_lbl = JText::_('PUBLISHED');
                         break;
                     case(0):
-                        $old_publish = JText::_('ARCHIVED');
+                        $old_publish_lbl = JText::_('ARCHIVED');
                         break;
                     case(-1):
-                        $old_publish = JText::_('TRASHED');
+                        $old_publish_lbl = JText::_('TRASHED');
                         break;
                 }
                 // New publish status
                 switch ($publish) {
                     case(1):
-                        $new_publish = JText::_('PUBLISHED');
+                        $new_publish_lbl = JText::_('PUBLISHED');
                         break;
                     case(0):
-                        $new_publish = JText::_('ARCHIVED');
+                        $new_publish_lbl = JText::_('ARCHIVED');
                         break;
                     case(-1):
-                        $new_publish = JText::_('TRASHED');
+                        $new_publish_lbl = JText::_('TRASHED');
                         break;
                 }
+
                 // Log the update
-                $logsParams = array('updated' => []);
-                array_push($logsParams['updated'], ['old' => $old_publish, 'new' => $new_publish]);
+                $logsParams = ['updated' => [['old' => $old_publish_lbl, 'new' => $new_publish_lbl, 'old_id' => $old_publish, 'new_id' => $publish]]];
+
+                if (empty($user_id)) {
+                    $user = JFactory::getUser();
+                    $user_id = !empty($user->id) ? $user->id : 62;
+                }
+
+                // get the applicant id
                 $query->clear()
                     ->select($db->quoteName('applicant_id'))
                     ->from($db->quoteName('#__emundus_campaign_candidature'))
                     ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
                 $db->setQuery($query);
                 $applicant_id = $db->loadResult();
-                EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 28, 'u', 'COM_EMUNDUS_PUBLISH_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+
+                EmundusModelLogs::log($user_id, $applicant_id, $fnum, 28, 'u', 'COM_EMUNDUS_PUBLISH_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
                 // Update publish
                 $dispatcher->trigger('onBeforePublishChange', [$fnum, $publish]);
