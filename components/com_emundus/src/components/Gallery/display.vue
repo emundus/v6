@@ -1,7 +1,7 @@
 <template>
   <div id="gallery-display">
     <div>
-      <h2>{{ translate('COM_EMUNDUS_GALLERY_VIGNETTES') }}</h2>
+      <h2 class="mb-2">{{ translate('COM_EMUNDUS_GALLERY_VIGNETTES') }}</h2>
       <p>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_INTRO') }}</p>
     </div>
 
@@ -275,7 +275,7 @@ export default {
   },
   methods: {
     updateAttribute(attribute,value) {
-      fetch('index.php?option=com_emundus&controller=gallery&task=updateattribute&gallery_id='+this.gallery.id+'&attribute='+attribute+'&value='+value)
+      fetch('/index.php?option=com_emundus&controller=gallery&task=updateattribute&gallery_id='+this.gallery.id+'&attribute='+attribute+'&value='+value)
           .then(response => response.json())
           .then(data => {
             console.log(data);

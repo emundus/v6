@@ -1,6 +1,6 @@
 <template>
   <div id="edit-gallery">
-    <div class="flex items-center em-pointer w-min" @click="redirectJRoute('index.php?option=com_emundus&view=gallery')">
+    <div class="flex items-center em-pointer w-min" @click="redirectJRoute('/index.php?option=com_emundus&view=gallery')">
       <span class="material-icons-outlined">arrow_back</span>
       <p class="ml-2">{{ translate('BACK') }}</p>
     </div>
@@ -27,9 +27,11 @@
       </ul>
     </div>
 
-    <transition>
+    <transition-group name="fade">
       <display
-          v-if="selectedMenu === 0 && gallery && elements && simple_fields && choices_fields && image_attachments && description_fields"
+          :key="0"
+          v-if="gallery && elements && simple_fields && choices_fields && image_attachments && description_fields"
+          v-show="selectedMenu === 0"
           :gallery="gallery"
           :elements="elements"
           :simple_fields="simple_fields"
@@ -40,7 +42,9 @@
           @updateLoader="updateLoading"
       ></display>
       <gallery-details
-          v-if="selectedMenu === 1 && gallery && elements && simple_fields && choices_fields && image_attachments && description_fields"
+          :key="1"
+          v-if="gallery && elements && simple_fields && choices_fields && image_attachments && description_fields"
+          v-show="selectedMenu === 1"
           :gallery="gallery"
           :elements="elements"
           :simple_fields="simple_fields"
@@ -51,12 +55,14 @@
           @updateLoader="updateLoading"
       ></gallery-details>
       <settings
-          v-if="selectedMenu === 2 && gallery"
+          :key="2"
+          v-if="gallery"
+          v-show="selectedMenu === 2"
           :gallery="gallery"
           @updateAttribute="updateAttribute"
           @updateLoader="updateLoading"
       ></settings>
-    </transition>
+    </transition-group>
 
     <div class="em-page-loader" v-if="loading"></div>
   </div>
@@ -106,7 +112,7 @@ export default {
     this.loading = true;
     let gid = this.$store.getters['global/datas'].gallery.value;
 
-    fetch('index.php?option=com_emundus&controller=gallery&task=getgallery&id='+gid)
+    fetch('/index.php?option=com_emundus&controller=gallery&task=getgallery&id='+gid)
         .then(response => response.json())
         .then(data => {
           this.gallery = data.data;
@@ -124,7 +130,7 @@ export default {
     },
 
     async getElements() {
-      fetch('index.php?option=com_emundus&controller=gallery&task=getelements&campaign_id='+this.gallery.campaign_id+'&list_id='+this.gallery.list_id)
+      fetch('/index.php?option=com_emundus&controller=gallery&task=getelements&campaign_id='+this.gallery.campaign_id+'&list_id='+this.gallery.list_id)
           .then(response => response.json())
           .then(data => {
             this.elements = data.data.elements;
@@ -135,7 +141,7 @@ export default {
     },
 
     async getAttachments() {
-      fetch('index.php?option=com_emundus&controller=gallery&task=getattachments&campaign_id='+this.gallery.campaign_id)
+      fetch('/index.php?option=com_emundus&controller=gallery&task=getattachments&campaign_id='+this.gallery.campaign_id)
           .then(response => response.json())
           .then(data => {
             Array.prototype.push.apply(this.image_attachments,Object.values(data.data));
@@ -143,7 +149,7 @@ export default {
     },
 
     updateAttribute(attribute,value) {
-      fetch('index.php?option=com_emundus&controller=gallery&task=updateattribute&gallery_id='+this.gallery.id+'&attribute='+attribute+'&value='+value)
+      fetch('/index.php?option=com_emundus&controller=gallery&task=updateattribute&gallery_id='+this.gallery.id+'&attribute='+attribute+'&value='+value)
           .then(response => response.json())
           .then(data => {
             console.log(data);

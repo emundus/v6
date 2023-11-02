@@ -3397,8 +3397,8 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 						'delete_cascade' => true,
 					]
 				];
-				$vota_table = EmundusHelperUpdate::createTable('jos_emundus_vote', $columns, $foreign_keys, 'Vote des dossiers');
-				if(!$vota_table['status']) {
+				$vote_table = EmundusHelperUpdate::createTable('jos_emundus_vote', $columns, $foreign_keys, 'Vote des dossiers');
+				if(!$vote_table['status']) {
 					EmundusHelperUpdate::addColumn('jos_emundus_vote', 'time_date', 'DATETIME',null,0);
 					EmundusHelperUpdate::addColumn('jos_emundus_vote', 'ccid', 'INT');
 					EmundusHelperUpdate::addColumn('jos_emundus_vote', 'user', 'INT');
@@ -3422,6 +3422,37 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 
 				$db->setQuery('ALTER TABLE jos_emundus_vote MODIFY ' . $db->quoteName('user') . ' INT NULL');
 				$db->execute();
+
+				$datas = [
+					'menutype'     => 'onboardingmenu',
+					'title'        => 'Catalogues',
+					'alias'        => 'gallery',
+					'path'         => 'gallery',
+					'link'         => 'index.php?option=com_emundus&view=gallery',
+					'type'         => 'component',
+					'access' 	   => 6,
+					'component_id' => JComponentHelper::getComponent('com_emundus')->id,
+					'params'       => [
+						'menu_show' => 1,
+						'menu_image_css' => 'collections'
+					]
+				];
+				EmundusHelperUpdate::addJoomlaMenu($datas);
+
+				$datas = [
+					'menutype'     => 'onboardingmenu',
+					'title'        => 'Modifier un catalogue',
+					'alias'        => 'edit-gallery',
+					'path'         => 'edit-gallery',
+					'link'         => 'index.php?option=com_emundus&view=gallery&layout=edit',
+					'type'         => 'component',
+					'access' 	   => 6,
+					'component_id' => JComponentHelper::getComponent('com_emundus')->id,
+					'params'       => [
+						'menu_show' => 0
+					]
+				];
+				EmundusHelperUpdate::addJoomlaMenu($datas);
 
 				$query = $db->getQuery(true);
 
@@ -3452,7 +3483,7 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 						$onboarding_lists['gallery']['tabs'][0]['actions'][1]['label'] = 'COM_EMUNDUS_ONBOARD_ACTION_DUPLICATE';
 						$onboarding_lists['gallery']['tabs'][0]['actions'][1]['controller'] = 'gallery';
 						$onboarding_lists['gallery']['tabs'][0]['actions'][1]['name'] = 'duplicate';
-						$onboarding_lists['gallery']['tabs'][0]['actions'][2]['action'] = 'index.php?option=com_emundus&view=gallery&layout=edit&gid=%id%';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][2]['action'] = 'edit-gallery?gid=%id%';
 						$onboarding_lists['gallery']['tabs'][0]['actions'][2]['label'] = 'COM_EMUNDUS_ONBOARD_MODIFY';
 						$onboarding_lists['gallery']['tabs'][0]['actions'][2]['controller'] = 'gallery';
 						$onboarding_lists['gallery']['tabs'][0]['actions'][2]['type'] = 'redirect';

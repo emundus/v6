@@ -145,7 +145,7 @@ export default {
   },
   methods: {
     getStatus() {
-      fetch('index.php?option=com_emundus&controller=settings&task=getstatus')
+      fetch('/index.php?option=com_emundus&controller=settings&task=getstatus')
           .then(response => response.json())
           .then(data => {
             this.status = data.data;
@@ -154,14 +154,14 @@ export default {
           });
     },
     updateGalleryList(attribute,value) {
-      fetch('index.php?option=com_emundus&controller=gallery&task=updategallerylist&list_id='+this.gallery.list_id+'&attribute='+attribute+'&value='+value)
+      fetch('/index.php?option=com_emundus&controller=gallery&task=updategallerylist&list_id='+this.gallery.list_id+'&attribute='+attribute+'&value='+value)
           .then(response => response.json())
           .then(data => {
             console.log(data);
           });
     },
     updateStatus(value) {
-      fetch('index.php?option=com_emundus&controller=gallery&task=editprefilter&list_id='+this.gallery.list_id+'&value='+value)
+      fetch('/index.php?option=com_emundus&controller=gallery&task=editprefilter&list_id='+this.gallery.list_id+'&value='+value)
           .then(response => response.json())
           .then(data => {
             console.log(data);

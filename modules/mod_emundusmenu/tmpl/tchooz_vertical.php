@@ -247,6 +247,7 @@ defined('_JEXEC') or die;
 
         if ($display_tchooz) :
             foreach ($tchooz_list as $i => &$item) :
+             if($item->alias != 'homepage' && $item->params->get('menu_show') != 0) :
                 $item->anchor_css="item";
                 $class = 'item-'.$item->id.' g-standard';
                 if ($item->id == $active_id) {
@@ -306,6 +307,7 @@ defined('_JEXEC') or die;
                     echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><div class="message-tooltip-block"><a class class="'.$class.'" href="'. $item->flink . '"> '.$item->title.'</a></div></div>';
                     echo '</li>';
                 }
+                endif;
             endforeach;
 
             if(sizeof($tchooz_list) > 0) :

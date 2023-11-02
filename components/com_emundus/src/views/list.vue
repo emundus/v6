@@ -733,6 +733,8 @@ export default {
         return this.translate('COM_EMUNDUS_ONBOARD_NOEMAIL');
       } else if (this.type === "forms") {
         return this.translate('COM_EMUNDUS_ONBOARD_NOFORM');
+      } else if (this.type === "gallery") {
+        return this.translate('COM_EMUNDUS_ONBOARD_NOGALLERY');
       }
     },
 	},

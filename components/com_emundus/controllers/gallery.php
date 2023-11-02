@@ -317,6 +317,23 @@ class EmundusControllerGallery extends JControllerLegacy
 		exit;
 	}
 
+	public function deletetab()
+	{
+		$response = array('status' => false, 'msg' => '');
+
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$response['msg'] = JText::_('ACCESS_DENIED');
+		}
+		else {
+			$tab_id = $this->input->getInt('tab_id', 0);
+
+			$response['status'] = $this->_model->deleteTab($tab_id);
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
 	public function updatetabtitle()
 	{
 		$response = array('status' => 1, 'msg' => '');
