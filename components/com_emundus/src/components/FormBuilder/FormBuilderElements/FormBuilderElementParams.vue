@@ -26,15 +26,14 @@
         </select>
       </div>
 
-      <!--
+      <!-- SUBFORM -->
       <div v-else-if="param.type === 'subform'">
-        <button @click=""></button>
-        <a>image2</a>
-        <div>
-        marche mais pas trop <FormBuilderElementParams :element="element" :params="param.subparams" :key="element.id" :databases="databases" />
+        <div v-for="rows in subform.subformRepeatArray">
+          <button @click="subFormAddRepeatElement">add</button>
+          <button @click="subFormDelRepeatElement(rows.name)">delete</button>
+          <FormBuilderElementParams :element="rows.element" :params="subform.subformTemplate" :key="rows.name" :databases="databases" />
         </div>
       </div>
-      -->
 
       <!-- INPUT (TEXT,NUMBER) -->
       <input v-else :type="param.type" v-model="element.params[param.name]" class="em-w-100" :placeholder="translate(param.placeholder)"/>
@@ -74,12 +73,21 @@ export default {
     databasejoin_description: null,
     reloadOptions: 0,
     reloadOptionsCascade: 0,
-
-    idElement: 0,
     loading: false,
+
+    subform: {
+      id: 0,
+      param: Object,
+      subformTemplate: [],
+      subformRepeatArray: [],
+    }
   }),
   created() {
     this.params.forEach((param) => {
+      if (param.type === 'subform'){
+        this.subformLoad(param);
+      }
+
       if(param.type === 'databasejoin'){
         if(this.sysadmin){
           this.loading = true;
@@ -101,7 +109,7 @@ export default {
     })
   },
   methods: {
-    updateDatabasejoinParams(){
+    updateDatabasejoinParams() {
       if (!this.sysadmin) {
         const index = this.databases.map(e => e.database_name).indexOf(this.element.params['join_db_name']);
 
@@ -126,19 +134,19 @@ export default {
           this.params[index].options.push(new_option);
           setTimeout(() => {
             document.getElementById('join_db_name').disabled = true;
-          },500)
+          }, 500)
         }
       } else {
         formBuilderService.getDatabaseJoinOrderColumns(this.element.params['join_db_name']).then((response) => {
           let index = this.params.map(e => e.name).indexOf('join_key_column');
           this.params[index].options = response.data.data;
-          if(this.element.params['join_key_column'] == '') {
+          if (this.element.params['join_key_column'] == '') {
             this.element.params['join_key_column'] = this.params[index].options[0].COLUMN_NAME;
           }
 
           index = this.params.map(e => e.name).indexOf('join_val_column');
           this.params[index].options = response.data.data;
-          if(this.element.params['join_val_column'] == '') {
+          if (this.element.params['join_val_column'] == '') {
             this.element.params['join_val_column'] = this.params[index].options[0].COLUMN_NAME;
           }
 
@@ -147,18 +155,56 @@ export default {
       }
     },
 
-    subFormAddElement()
-    {
+    subformLoad(param) {
 
+      this.subform.param = param;
+      this.subform.subformTemplate = param.subparams;
+      const paramElements = this.element.params[param.name];
 
-
+      for (const subParamElementName in paramElements) {
+        let object = {
+          name: subParamElementName,
+          element: this.subformGetElement(param.name, subParamElementName),
+        }
+        this.subform.id = subParamElementName.replace(param.name, ''); // get last id for futur new element
+        this.subform.subformRepeatArray.push(object);
+      }
     },
 
-    subFormDelElement(idElement)
-    {
+    subformGetElement(paramElementName, subParamElementName) {
+      const element = structuredClone(this.element);
+      const elements = element.params[paramElementName][subParamElementName];
+      for (const value in elements) {
+        element.params[value] = elements[value];
+      }
+      return element;
+    },
 
+    subFormAddRepeatElement() {
+      const element = structuredClone(this.element);
+      this.subform.id++;
 
+      this.subform.subformTemplate.forEach((param) => {
+        const newParamDefault = param.default;
+        element.params[param.name] = newParamDefault === undefined ? "" : newParamDefault;
+      });
 
+      let object = {
+        name: this.subform.param.name + this.subform.id,
+        element: element,
+      }
+
+      this.subform.subformRepeatArray.push(object);
+    },
+
+    subFormDelRepeatElement(repeatName) {
+      if (this.subform.param.min < this.subform.subformRepeatArray.length) {
+        for (let i = this.subform.subformRepeatArray.length - 1; i >= 0; i--) {
+          if (this.subform.subformRepeatArray[i].name === repeatName) {
+            this.subform.subformRepeatArray.splice(i, 1);
+          }
+        }
+      }
     },
   },
   computed: {
