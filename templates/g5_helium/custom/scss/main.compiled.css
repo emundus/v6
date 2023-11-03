@@ -514,7 +514,7 @@ video {
   line-height: 28.8px;
   font-weight: 500;
 }
-.emundus-form .em-form-intro p {
+.emundus-form .em-form-intro * {
         color: var(--neutral-600);
       }
 .emundus-form .groupintro {
@@ -678,8 +678,10 @@ form.fabrikForm .fabrikElementTip {
       font-weight: 400;
       font-family: var(--em-applicant-font);
       font-style: normal;
-      display: flex;
     }
+form.fabrikForm .fabrikElementTip * {
+        color: var(--em-form-tip-color);
+      }
 form.fabrikForm .fabrikElementTip i.icon-question-sign  {
         display: none;
       }
@@ -1148,6 +1150,7 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio la
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label input {
               accent-color: var(--em-form-radio-color-checked);
               width: var(--em-form-radio-width);
+              min-width: var(--em-form-radio-width);
               height: var(--em-form-radio-height);
               margin-right: var(--em-form-radio-margin-right);
               margin-left: 0;
@@ -1771,6 +1774,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .inline-block {
   display: inline-block;
 }
+.\!inline {
+  display: inline !important;
+}
 .inline {
   display: inline;
 }
@@ -2135,6 +2141,7 @@ hr {
     }
 ul {
         list-style: initial;
+        padding-left: 20px;
     }
 legend {
         margin: 10px 0 20px 0;
