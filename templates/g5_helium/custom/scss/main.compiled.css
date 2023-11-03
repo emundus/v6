@@ -1688,8 +1688,8 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .end-2 {
   inset-inline-end: var(--em-spacing-2);
 }
-.left-1 {
-  left: var(--em-spacing-1);
+.end-7 {
+  inset-inline-end: var(--em-spacing-7);
 }
 .start-1 {
   inset-inline-start: var(--em-spacing-1);
@@ -1708,6 +1708,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .m-1 {
   margin: var(--em-spacing-1);
+}
+.m-10 {
+  margin: var(--em-spacing-10);
+}
+.m-48 {
+  margin: 12rem;
 }
 .mb-0 {
   margin-bottom: 0px;
@@ -2013,6 +2019,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .p-1 {
   padding: var(--em-spacing-1);
 }
+.p-14 {
+  padding: 3.5rem;
+}
+.p-16 {
+  padding: 4rem;
+}
 .p-2 {
   padding: var(--em-spacing-2);
 }
@@ -2024,6 +2036,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .p-6 {
   padding: var(--em-spacing-6);
+}
+.p-8 {
+  padding: var(--em-spacing-8);
 }
 .px-2 {
   padding-left: var(--em-spacing-2);
@@ -2098,11 +2113,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   -webkit-font-smoothing: auto;
   -moz-osx-font-smoothing: auto;
 }
-.\!shadow {
-  --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1) !important;
-  --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color) !important;
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
-}
 .shadow {
   --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
@@ -2145,6 +2155,13 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .backdrop-filter {
   -webkit-backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
           backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
+}
+.\!transition {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter !important;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter !important;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter !important;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition-duration: 150ms !important;
 }
 .transition {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
@@ -2558,18 +2575,6 @@ button.swal2-cancel.goback-btn:hover,
         right: unset;
         background: transparent;
     }
-.alert .\!close {
-        font-size: xx-large !important;
-        opacity: 1 !important;
-        top: unset !important;
-        left: unset !important;
-        width: auto !important;
-        display: block !important;
-        position: relative !important;
-        float: right !important;
-        right: unset !important;
-        background: transparent !important;
-    }
 .alert h4 {
         font-weight: 500;
     }
@@ -2589,10 +2594,6 @@ button.swal2-cancel.goback-btn:hover,
     .has-error .radio-inline,
     .has-error .checkbox-inline {
         color: #b94a48;
-    }
-
-    .has-error .\!checkbox {
-        color: #b94a48 !important;
     }
 .has-error .form-control {
         border-color: #b94a48;
@@ -2891,11 +2892,11 @@ button.swal2-cancel.goback-btn:hover,
 .\!\[a-zA-Z\:_\] {
   a-z-a--z:  !important;
 }
-.\[-a-zA-Z\:0-9_\.\] {
-  -a-z-a--z: 0-9 .;
-}
 .\[_errors\:protected\] {
   _errors: protected;
+}
+.\[a-zA-Z-\:\#\] {
+  a-z-a--z-: #;
 }
 .\[contenthash\:8\] {
   contenthash: 8;

@@ -4168,9 +4168,17 @@ class EmundusHelperFiles
 					switch ($operator) {
 						case '=':
 							$query = $element . ' = ' . $db->quote($from);
+
+							if ($type === 'date' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $from)) {
+								$query = $element . ' LIKE ' . $db->quote($from . '%');
+							}
 							break;
 						case '!=':
 							$query = $element . ' != ' . $db->quote($from);
+
+							if ($type === 'date' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $from)) {
+								$query = $element . ' NOT LIKE ' . $db->quote($from . '%');
+							}
 							break;
 						case 'superior':
 							$query = $element . ' > ' . $db->quote($from);
@@ -4183,6 +4191,10 @@ class EmundusHelperFiles
 							break;
 						case 'inferior_or_equal':
 							$query = $element . ' <= ' . $db->quote($from);
+
+							if ($type === 'date' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $from)) {
+								$query = '(' . $element . ' < ' .$db->quote($from) . ' OR ' . $element . ' LIKE ' . $db->quote($from . '%') . ')';
+							}
 							break;
 						case 'between':
 							if (!empty($to)) {
