@@ -3468,6 +3468,57 @@ structure:
 				EmundusHelperUpdate::insertTranslationsTag('COPY_GROUPS_ASSOC', 'Copy associated groups', 'override', null, 'fabrik_elements', 'label', 'en-GB');
 
 				EmundusHelperUpdate::installExtension('plg_fabrik_element_insee', 'insee', '{"name":"plg_fabrik_element_insee","type":"plugin","creationDate":"August 2023","author":"eMundus","copyright":"Copyright (C) 2005-2023 eMundus - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"3.10","description":"PLG_ELEMENT_INSEE_DESCRIPTION","group":"","filename":"insee"}', 'plugin', 1, 'fabrik_element');
+
+				//Remove some colors from fabrik element
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_elements'))
+					->where($db->quoteName('name') . ' LIKE ' . $db->quote('class'))
+					->where($db->quoteName('plugin') . ' LIKE ' . $db->quote('dropdown'))
+					->where($db->quoteName('group_id') . ' = 112');
+				$db->setQuery($query);
+				$class_elt = $db->loadObject();
+
+				if($class_elt) {
+					$params = json_decode($class_elt->params, true);
+
+					if(!empty($params['sub_options'])) {
+
+							$colors_to_remove = ['label-lightblue', 'label-lightyellow', 'label-yellow', 'label-darkyellow', 'label-lightgreen', 'label-darkgreen', 'label-lightgreen', 'label-darkgreen', 'label-lightorange', 'label-darkorange', 'label-lightred', 'label-darkred', 'label-lightpurple', 'label-darkpurple'];
+							foreach ($colors_to_remove as $color_to_remove) {
+								$index = array_search($color_to_remove, $params['sub_options']['sub_values']);
+								if($index !== false) {
+									unset($params['sub_options']['sub_values'][$index]);
+									unset($params['sub_options']['sub_labels'][$index]);
+								}
+
+							}
+
+						$params['sub_options']['sub_values'] = array_values($params['sub_options']['sub_values']);
+						$params['sub_options']['sub_labels'] = array_values($params['sub_options']['sub_labels']);
+
+						if(!in_array('label-pink', $params['sub_options']['sub_values'])) {
+							$params['sub_options']['sub_values'][] = 'label-pink';
+							$params['sub_options']['sub_labels'][] = 'Pink';
+						}
+
+					}
+				}
+
+				$query->clear()
+					->update($db->quoteName('#__emundus_setup_profiles'))
+					->set($db->quoteName('class') . ' = "label-default"')
+					->where($db->quoteName('class') . 'IN ('.implode(',',$db->quote($colors_to_remove)).')');
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->update($db->quoteName('#__fabrik_elements'))
+					->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+					->where($db->quoteName('id') . ' = ' . $db->quote($class_elt->id));
+				$db->setQuery($query);
+				$db->execute();
+
 			}
 		}
 

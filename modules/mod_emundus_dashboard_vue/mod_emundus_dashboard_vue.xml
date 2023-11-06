@@ -41,7 +41,7 @@
                     <option value="1">JYes</option>
                 </field>
 
-                <field name="display_description" type="radio" default="1" label="COM_EMUNDUS_DASHBOARD_WELCOME_DESCRIPTION" description="COM_EMUNDUS_DASHBOARD_WELCOME_DESCRIPTION_DESC" class="btn-group btn-group-yesno">
+                <field name="display_description" type="radio" default="0" label="COM_EMUNDUS_DASHBOARD_WELCOME_DESCRIPTION" description="COM_EMUNDUS_DASHBOARD_WELCOME_DESCRIPTION_DESC" class="btn-group btn-group-yesno">
                     <option value="0">JNo</option>
                     <option value="1">JYes</option>
                 </field>

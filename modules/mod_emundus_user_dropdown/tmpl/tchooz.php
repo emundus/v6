@@ -343,6 +343,7 @@ if ($user != null) {
                     'lightred' : '--em-red-1',
                     'red' : '--em-red-2',
                     'darkred' : '--em-red-2',
+                    'pink' : '--em-pink-2',
                     'default' : '--neutral-600',
                 };
 
