@@ -325,7 +325,7 @@
   background : gray;
   border: 3px solid yellow;
 }*/
-/* ! tailwindcss v3.3.3 | MIT License | https://tailwindcss.com */
+/* ! tailwindcss v3.3.2 | MIT License | https://tailwindcss.com */
 /*
 1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
 2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
@@ -465,8 +465,6 @@ optgroup,
 select,
 textarea {
   font-family: inherit; /* 1 */
-  font-feature-settings: inherit; /* 1 */
-  font-variation-settings: inherit; /* 1 */
   font-size: 100%; /* 1 */
   font-weight: inherit; /* 1 */
   line-height: inherit; /* 1 */
@@ -576,12 +574,6 @@ ul,
 menu {
   list-style: none;
   margin: 0;
-  padding: 0;
-}
-/*
-Reset default styling for dialogs.
-*/
-dialog {
   padding: 0;
 }
 /*
@@ -841,7 +833,7 @@ video {
   line-height: 28.8px;
   font-weight: 500;
 }
-.emundus-form .em-form-intro p {
+.emundus-form .em-form-intro * {
         color: var(--neutral-600);
       }
 .emundus-form .groupintro {
@@ -1005,8 +997,10 @@ form.fabrikForm .fabrikElementTip {
       font-weight: 400;
       font-family: var(--em-applicant-font);
       font-style: normal;
-      display: flex;
     }
+form.fabrikForm .fabrikElementTip * {
+        color: var(--em-form-tip-color);
+      }
 form.fabrikForm .fabrikElementTip i.icon-question-sign  {
         display: none;
       }
@@ -1475,6 +1469,7 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio la
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label input {
               accent-color: var(--em-form-radio-color-checked);
               width: var(--em-form-radio-width);
+              min-width: var(--em-form-radio-width);
               height: var(--em-form-radio-height);
               margin-right: var(--em-form-radio-margin-right);
               margin-left: 0;
@@ -2023,7 +2018,8 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   margin-bottom: var(--em-spacing-8);
 }
 .me-1 {
-  margin-inline-end: var(--em-spacing-1);
+  -webkit-margin-end: var(--em-spacing-1);
+          margin-inline-end: var(--em-spacing-1);
 }
 .ml-0 {
   margin-left: 0px;
@@ -2467,6 +2463,7 @@ hr {
     }
 ul {
         list-style: initial;
+        padding-left: 20px;
     }
 legend {
         margin: 10px 0 20px 0;

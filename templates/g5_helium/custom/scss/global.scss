@@ -709,7 +709,9 @@ footer#g-footer > .g-container {
 #attachment_list #legend p,
 #attachment_list > p,
 #attachment_list_mand .em-fieldset-attachment p:not(.em-h5),
-#attachment_list_opt .em-fieldset-attachment p:not(.em-h5) {
+#attachment_list_opt .em-fieldset-attachment p:not(.em-h5),
+#attachment_list_mand .em-fieldset-attachment ul,
+#attachment_list_opt .em-fieldset-attachment ul{
   color: var(--neutral-800);
   font-family: var(--em-coordinator-font);
 }
