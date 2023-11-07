@@ -182,6 +182,7 @@ class EmundusModelEmailsTest extends TestCase
 			'message'       => 'Corps du message',
 			'type'          => 1,
 			'email_id'      => 1,
+			'email_cc' => '',
 		];
 		$this->m_emails->logEmail($log,$fnum);
 
