@@ -3255,6 +3255,11 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 			"php_value session.cookie_samesite Strict" . PHP_EOL;
 				$succeed['add_htaccess_exception'] = EmundusHelperUpdate::insertIntoFile($file, $insertLines);
             }
+
+			if (version_compare($cache_version, '1.37.9', '<=') || $firstrun) {
+				EmundusHelperUpdate::installExtension('plg_extension_emundus', 'emundus', '{"name":"plg_extension_emundus","type":"plugin","creationDate":"November 2023","author":"J\u00e9r\u00e9my LEGENDRE","copyright":"(C) 2010 Open Source Matters, Inc.","authorEmail":"jeremy.legendre@emundus.fr","authorUrl":"www.emundus.fr","version":"1.0.0","description":"PLG_EXTENSION_EMUNDUS_XML_DESCRIPTION","group":"","filename":"emundus"}', 'plugin', 1, 'extension', '{}');
+				EmundusHelperUpdate::enableEmundusPlugins('plg_extension_emundus');
+			}
 		}
 
 		return $succeed;
