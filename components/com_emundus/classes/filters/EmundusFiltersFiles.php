@@ -112,7 +112,7 @@ class EmundusFiltersFiles extends EmundusFilters
 		$this->filters = $this->createFiltersFromFabrikElements($elements);
 	}
 
-	protected function getAllAssociatedElements()
+	protected function getAllAssociatedElements($element_id = null)
 	{
 		$elements = [];
 		$profiles = $this->getProfiles();
@@ -414,8 +414,12 @@ class EmundusFiltersFiles extends EmundusFilters
 									$new_default_filter['value'] = $new_default_filter['type'] === 'select' ? ['all'] : '';
 								}
 								$new_default_filter['andorOperator'] = 'OR';
-								$new_default_filter['operator'] = $filter['type'] === 'select' ? 'IN' : '=';
+								$new_default_filter['operator'] = '=';
 
+								if ($new_default_filter['type'] === 'select') {
+									$new_default_filter['operator'] = 'IN';
+									$new_default_filter['values'] =  $this->getFabrikElementValuesFromElementId($filter['id']);
+								}
 								$found = true;
 								break;
 							}
@@ -445,8 +449,13 @@ class EmundusFiltersFiles extends EmundusFilters
 										$new_default_filter['value'] = $new_default_filter['type'] === 'select' ? ['all'] : '';
 									}
 									$new_default_filter['andorOperator'] = 'OR';
-									$new_default_filter['operator'] = $new_default_filter['type'] === 'select' ? 'IN' : '=';
-                                }
+									$new_default_filter['operator'] = '=';
+
+									if ($new_default_filter['type'] === 'select') {
+										$new_default_filter['operator'] =  'IN';
+										$new_default_filter['values'] =  $this->getFabrikElementValuesFromElementId($element['id']);
+									}
+								}
                                 $new_default_filter['plugin'] = $element['plugin'];
                             }
 						}
@@ -498,9 +507,14 @@ class EmundusFiltersFiles extends EmundusFilters
 
 			if (!$found) {
 				// find filter in filters
-				foreach ($this->filters as $filter) {
+				foreach ($this->filters as $i_filter => $filter) {
 					if ($filter['id'] == $session_filter['id']) {
+						if ($filter['type'] == 'select' && empty($filter['values'])) {
+							$filter['values'] = $this->getFabrikElementValuesFromElementId($filter['id']);
+							$this->filters[$i_filter] = $filter;
+						}
 						$new_filter = $filter;
+
 						$new_filter['value'] = $session_filter['value'];
 						$new_filter['operator'] = $session_filter['operator'];
 						$new_filter['andorOperator'] = $session_filter['andorOperator'];
@@ -602,22 +616,5 @@ class EmundusFiltersFiles extends EmundusFilters
         }
 
         return $element_ids;
-    }
-
-    private function saveFiltersAllValues() {
-        $filters_all_values = [];
-
-        foreach($this->filters as $filter) {
-            $filters_all_values[$filter['id']] = $filter['values'];
-        }
-
-        foreach($this->applied_filters as $filter) {
-            if (!isset($filters_all_values[$filter['id']])) {
-                $filters_all_values[$filter['id']] = $filter['values'];
-            }
-        }
-
-        $session = JFactory::getSession();
-        $session->set('em-filters-all-values', $filters_all_values);
     }
 }

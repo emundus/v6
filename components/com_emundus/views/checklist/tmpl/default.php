@@ -68,7 +68,6 @@ function return_bytes($val) {
 	return $val;
 }
 
-
 if (!empty($this->custom_title)) :?>
     <h1 class="em-checklist-title"><?= $this->custom_title; ?></h1>
 <?php endif; ?>
@@ -104,6 +103,7 @@ if (!empty($this->custom_title)) :?>
 <?php if (count($this->attachments) > 0) :?>
 
     <div id="attachment_list" class="em-attachmentList em-repeat-card p-6">
+        <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
         <h2 class="after-em-border after:bg-red-800 mb-4"><?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_TITLE') ?></h2>
         <div class="alert alert-info flex items-center gap-1 mt-1">
             <span class="material-icons">info</span>
@@ -385,191 +385,190 @@ if (!empty($this->custom_title)) :?>
                 $div .= '</div>';
 
                 $div .= '<script>
-                var maxFilesize = "'.ini_get("upload_max_filesize").'";
-
-    Dropzone.options.formA'.$attachment->id.' =  {
-        maxFiles: '.$attachment->nbmax .',
-        maxFilesize: maxFilesize.substr(0, maxFilesize.length-1), // MB
-        dictDefaultMessage: "'.JText::_('COM_EMUNDUS_ATTACHMENTS_UPLOAD_DROP_FILE_OR_CLICK').'",
-        dictInvalidFileType: "'. JText::_('COM_EMUNDUS_WRONG_FORMAT').' '.$attachment->allowed_types.'",
-        url: "index.php?option=com_emundus&task=upload&duplicate='.$attachment->duplicate.'&Itemid='.$itemid.'&format=raw",
-
-        accept: function(file, done) {
-            var sFileName = file.name;
-            var sFileExtension = sFileName.split(".")[sFileName.split(".").length - 1].toLowerCase();
-
-            if (sFileExtension == "php") {
-              done("'.JText::_('COM_EMUNDUS_WRONG_FORMAT').' '.$attachment->allowed_types.'");
-            } else {
-                var allowedExtension = "'.$attachment->allowed_types.'";
-                var n = allowedExtension.indexOf(sFileExtension);
+                    var maxFilesize = "'.ini_get("upload_max_filesize").'";
+                    Dropzone.options.formA'.$attachment->id.' =  {
+                        maxFiles: '.$attachment->nbmax .',
+                        maxFilesize: maxFilesize.substr(0, maxFilesize.length-1), // MB
+                        dictDefaultMessage: "'.JText::_('COM_EMUNDUS_ATTACHMENTS_UPLOAD_DROP_FILE_OR_CLICK').'",
+                        dictInvalidFileType: "'. JText::_('COM_EMUNDUS_WRONG_FORMAT').' '.$attachment->allowed_types.'",
+                        url: "index.php?option=com_emundus&task=upload&duplicate='.$attachment->duplicate.'&Itemid='.$itemid.'&format=raw",
                 
-                var required_desc =  document.querySelector("#form-a'.$attachment->id.' input[name=\'required_desc\']").value;
-                if (document.querySelector("#form-a'.$attachment->id.' input[name=\'description\']") && required_desc == 1) {
-                    var desc =  document.querySelector("#form-a'.$attachment->id.' input[name=\'description\']").value;
-                }
+                        accept: function(file, done) {
+                            var sFileName = file.name;
+                            var sFileExtension = sFileName.split(".")[sFileName.split(".").length - 1].toLowerCase();
                 
-                if (n >= 0) {
-                    if (required_desc == 1 && desc.trim() === "") {
-                        Swal.fire({
-                            position: "top",
-                            type: "warning",
-                            title: "'.JText::_("COM_EMUNDUS_ERROR_DESCRIPTION_REQUIRED").'",
-                            confirmButtonText: "'.JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
-                            showCancelButton: false,
-                            customClass: {
-                              title: "em-swal-title",
-                              confirmButton: "em-swal-confirm-button",
-                              actions: "em-flex-center",
-                            },
-                        });
-                        done("'.JText::_('COM_EMUNDUS_ERROR_DESCRIPTION_REQUIRED').'");
-                        this.removeFile(file);
-                    } else {
-                        done();
-                    }
-                } else {           
-                    Swal.fire({
-                            position: "top",
-                            type: "warning",
-                            title: "'. JText::_("COM_EMUNDUS_WRONG_FORMAT").' '.$attachment->allowed_types.'",
-                            confirmButtonText: "'. JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
-                            showCancelButton: false,
-                            customClass: {
-                              title: "em-swal-title",
-                              confirmButton: "em-swal-confirm-button",
-                              actions: "em-flex-center",
-                            },
-                        });
-                    done("'. JText::_('COM_EMUNDUS_WRONG_FORMAT').' '.$attachment->allowed_types.'");
-                    this.removeFile(file);
-                }
-            }
-        },
-
-        init: function() {
-
-          this.on("maxfilesexceeded", function(file) {
-            this.removeFile(file);
-            alert("'. JText::_('COM_EMUNDUS_ATTACHMENTS_NO_MORE').' : '.$attachment->value .'. '.JText::_('COM_EMUNDUS_ATTACHMENTS_MAX_ALLOWED').' '.$attachment->nbmax .'");
-          });
-
-          this.on("success", function(file, responseText) {
-          var profile_attachments_not_uploaded = "'. $this->profile_attachments_not_uploaded_ids.'";
-          profile_attachments_not_uploaded = profile_attachments_not_uploaded.split(",");
-            // Handle the responseText here. For example, add the text to the preview element:
-            var response = JSON.parse(responseText);
-            var id = response["id"];
-            var attachment_id = "'.$attachment->id.'";
-                        
-            if (!response["status"]) {
-                // Remove the file preview.
-                this.removeFile(file);
-                Swal.fire({
-                    position: "top",
-                    type: "warning",
-                    title: response["message"],
-                    confirmButtonText: "'.JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
-                    showCancelButton: false,
-                    customClass: {
-                       title: "em-swal-title",
-                       confirmButton: "em-swal-confirm-button",
-                       actions: "em-flex-center",
-                    },
-                });
-            } else {
-                if(profile_attachments_not_uploaded.includes(attachment_id)) {
-                    Swal.fire({
-                        position: "top",
-                        type: "info",
-                        title: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND") . '",
-                        text: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_TEXT") . '",
-                        confirmButtonText: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_UPDATE") . '",
-                        showCancelButton: true,
-                        cancelButtonText: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_CONTINUE_WITHOUT_UPDATE") . '",
-                        reverseButtons: true,
-                        customClass: {
-                           title: "em-swal-title",
-                           confirmButton: "em-swal-confirm-button",
-                           cancelButton: "em-swal-cancel-button",
+                            if (sFileExtension == "php") {
+                              done("'.JText::_('COM_EMUNDUS_WRONG_FORMAT').' '.$attachment->allowed_types.'");
+                            } else {
+                                var allowedExtension = "'.$attachment->allowed_types.'";
+                                var n = allowedExtension.indexOf(sFileExtension);
+                                
+                                var required_desc =  document.querySelector("#form-a'.$attachment->id.' input[name=\'required_desc\']").value;
+                                if (document.querySelector("#form-a'.$attachment->id.' input[name=\'description\']") && required_desc == 1) {
+                                    var desc =  document.querySelector("#form-a'.$attachment->id.' input[name=\'description\']").value;
+                                }
+                                
+                                if (n >= 0) {
+                                    if (required_desc == 1 && desc.trim() === "") {
+                                        Swal.fire({
+                                            position: "top",
+                                            type: "warning",
+                                            title: "'.JText::_("COM_EMUNDUS_ERROR_DESCRIPTION_REQUIRED").'",
+                                            confirmButtonText: "'.JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
+                                            showCancelButton: false,
+                                            customClass: {
+                                              title: "em-swal-title",
+                                              confirmButton: "em-swal-confirm-button",
+                                              actions: "em-flex-center",
+                                            },
+                                        });
+                                        done("'.JText::_('COM_EMUNDUS_ERROR_DESCRIPTION_REQUIRED').'");
+                                        this.removeFile(file);
+                                    } else {
+                                        done();
+                                    }
+                                } else {           
+                                    Swal.fire({
+                                            position: "top",
+                                            type: "warning",
+                                            title: "'. JText::_("COM_EMUNDUS_WRONG_FORMAT").' '.$attachment->allowed_types.'",
+                                            confirmButtonText: "'. JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
+                                            showCancelButton: false,
+                                            customClass: {
+                                              title: "em-swal-title",
+                                              confirmButton: "em-swal-confirm-button",
+                                              actions: "em-flex-center",
+                                            },
+                                        });
+                                    done("'. JText::_('COM_EMUNDUS_WRONG_FORMAT').' '.$attachment->allowed_types.'");
+                                    this.removeFile(file);
+                                }
+                            }
                         },
-                    }).then(confirm => {
-                        if (confirm.value) {
-                            uploadintoprofile(attachment_id);
-                        } else{
-                            document.location.reload(true);
+                
+                        init: function() {
+                
+                          this.on("maxfilesexceeded", function(file) {
+                            this.removeFile(file);
+                            alert("'. JText::_('COM_EMUNDUS_ATTACHMENTS_NO_MORE').' : '.$attachment->value .'. '.JText::_('COM_EMUNDUS_ATTACHMENTS_MAX_ALLOWED').' '.$attachment->nbmax .'");
+                          });
+                
+                          this.on("success", function(file, responseText) {
+                          var profile_attachments_not_uploaded = "'. $this->profile_attachments_not_uploaded_ids.'";
+                          profile_attachments_not_uploaded = profile_attachments_not_uploaded.split(",");
+                            // Handle the responseText here. For example, add the text to the preview element:
+                            var response = JSON.parse(responseText);
+                            var id = response["id"];
+                            var attachment_id = "'.$attachment->id.'";
+                                        
+                            if (!response["status"]) {
+                                // Remove the file preview.
+                                this.removeFile(file);
+                                Swal.fire({
+                                    position: "top",
+                                    type: "warning",
+                                    title: response["message"],
+                                    confirmButtonText: "'.JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
+                                    showCancelButton: false,
+                                    customClass: {
+                                       title: "em-swal-title",
+                                       confirmButton: "em-swal-confirm-button",
+                                       actions: "em-flex-center",
+                                    },
+                                });
+                            } else {
+                                if(profile_attachments_not_uploaded.includes(attachment_id)) {
+                                    Swal.fire({
+                                        position: "top",
+                                        type: "info",
+                                        title: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND") . '",
+                                        text: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_TEXT") . '",
+                                        confirmButtonText: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_UPDATE") . '",
+                                        showCancelButton: true,
+                                        cancelButtonText: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_CONTINUE_WITHOUT_UPDATE") . '",
+                                        reverseButtons: true,
+                                        customClass: {
+                                           title: "em-swal-title",
+                                           confirmButton: "em-swal-confirm-button",
+                                           cancelButton: "em-swal-cancel-button",
+                                        },
+                                    }).then(confirm => {
+                                        if (confirm.value) {
+                                            uploadintoprofile(attachment_id);
+                                        } else{
+                                            document.location.reload(true);
+                                        }
+                                    });
+                                } else {
+                                    document.location.reload(true);
+                                }
+                    
+                                // Change icon on fieldset
+                                document.getElementById("l'.$attachment->id.'").className = "need_ok";
+                                document.getElementById("'.$attachment->id.'").className = "need_ok";
+                    
+                                // Create the remove button
+                                var removeButton = Dropzone.createElement("<button>X</button>");
+                    
+                                // Capture the Dropzone instance as closure.
+                                var _this = this;
+                    
+                                // Listen to the click event
+                                removeButton.addEventListener("click", function(e) {
+                                  // Make sure the button click does not submit the form:
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                    
+                                  // Remove the file preview.
+                                  _this.removeFile(file);
+                                  // If you want to the delete the file on the server as well,
+                                  // you can do the AJAX request here.
+                                  $.ajax({
+                                    type: "GET",
+                                    dataType: "json",
+                                    url: "index.php?option=com_emundus&task=delete&uid="+id+"&aid='.$attachment->id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'&format=raw",
+                                    data: ({
+                                        format: "raw"
+                                    }),
+                                    success: function(result) {
+                                        if (result.status) { 
+                                            // Change icon on fieldset
+                                            document.getElementById("l'.$attachment->id.'").className = "";
+                                            document.getElementById("'.$attachment->id.'").className = "";
+                                            alert("'.JText::_('COM_EMUNDUS_ATTACHMENTS_DELETED').'");
+                                        }
+                    
+                                    },
+                                    error: function(jqXHR, textStatus, errorThrown) {
+                                        console.log(jqXHR.responseText);
+                                    }
+                                  });
+                                });
+                                // Add the button to the file preview element.
+                                file.previewElement.appendChild(removeButton);
+                            }
+                          });
+                          this.on("error", function(file, responseText) {
+                              this.removeFile(file);
+                              Swal.fire({
+                                    position: "top",
+                                    type: "warning",
+                                    text: responseText,
+                                    confirmButtonText: "'.JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
+                                    showCancelButton: false,
+                                    customClass: {
+                                       title: "em-swal-title",
+                                       confirmButton: "em-swal-confirm-button",
+                                       actions: "em-flex-center",
+                                    },
+                                });
+                          });
                         }
-                    });
-                } else {
-                    document.location.reload(true);
-                }
-    
-                // Change icon on fieldset
-                document.getElementById("l'.$attachment->id.'").className = "need_ok";
-                document.getElementById("'.$attachment->id.'").className = "need_ok";
-    
-                // Create the remove button
-                var removeButton = Dropzone.createElement("<button>X</button>");
-    
-                // Capture the Dropzone instance as closure.
-                var _this = this;
-    
-                // Listen to the click event
-                removeButton.addEventListener("click", function(e) {
-                  // Make sure the button click does not submit the form:
-                  e.preventDefault();
-                  e.stopPropagation();
-    
-                  // Remove the file preview.
-                  _this.removeFile(file);
-                  // If you want to the delete the file on the server as well,
-                  // you can do the AJAX request here.
-                  $.ajax({
-                    type: "GET",
-                    dataType: "json",
-                    url: "index.php?option=com_emundus&task=delete&uid="+id+"&aid='.$attachment->id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'&format=raw",
-                    data: ({
-                        format: "raw"
-                    }),
-                    success: function(result) {
-                        if (result.status) { 
-                            // Change icon on fieldset
-                            document.getElementById("l'.$attachment->id.'").className = "";
-                            document.getElementById("'.$attachment->id.'").className = "";
-                            alert("'.JText::_('COM_EMUNDUS_ATTACHMENTS_DELETED').'");
-                        }
-    
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        console.log(jqXHR.responseText);
                     }
-                  });
-                });
-                // Add the button to the file preview element.
-                file.previewElement.appendChild(removeButton);
-            }
-          });
-          this.on("error", function(file, responseText) {
-              this.removeFile(file);
-              Swal.fire({
-                    position: "top",
-                    type: "warning",
-                    text: responseText,
-                    confirmButtonText: "'.JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
-                    showCancelButton: false,
-                    customClass: {
-                       title: "em-swal-title",
-                       confirmButton: "em-swal-confirm-button",
-                       actions: "em-flex-center",
-                    },
-                });
-          });
-        }
-    }
-    </script>';
+                    </script>';
                     $div .= '</form>';
                 }
-                    $div .= '</td>
+                $div .= '</td>
                 </tr>
                 <tr class="em-allowed-files">
                     <td>
@@ -577,21 +576,15 @@ if (!empty($this->custom_title)) :?>
                     <p style="word-break: break-all;" class="text-neutral-600">'. JText::_('COM_EMUNDUS_ATTACHMENTS_PLEASE_ONLY').' '.$attachment->allowed_types.'</p>
                     <div class="em-flex-row em-flex-space-between">';
                    if (!empty($this->attachments_to_upload) && in_array($attachment->id,$this->attachments_to_upload)) {
-                        $div .= '<button class="btn btn-danger btn-xs em-pointer" onclick="uploadfromprofile('."$attachment->id".')">'.JText::_('COM_EMUNDUS_USERS_MY_DOCUMENTS_LOAD').'</button>';
-                    }
+                       $div .= '<button class="btn btn-danger btn-xs em-pointer" onclick="uploadfromprofile('."$attachment->id".')">'.JText::_('COM_EMUNDUS_USERS_MY_DOCUMENTS_LOAD').'</button>';
+                   }
 
-                    $div .= '</div></div></td>';
+                   $div .= '</div></div></td>';
 
-                $div .= '</tr>';
+                   $div .= '</tr>';
                 } else {
-                    /*$div .= '
-                <tr class="em-no-more-files">
-                    <td>
-                    <span class="em-red-500-color">'. JText::_('COM_EMUNDUS_ATTACHMENTS_NO_MORE').'</span>
-                    </td>
-                </tr>';*/
 
-                $div .= '</tbody>';
+                    $div .= '</tbody>';
                 }
             } else {
                 if ($this->isLimitObtained === true) {
@@ -660,7 +653,6 @@ if (!empty($this->custom_title)) :?>
             </div>
         </div>
     </div>
-    <?php endif; ?>
 </div>
 
 <script>
@@ -704,27 +696,6 @@ function toggleVisu(baliseId) {
         }
     }
 }
-/*
-<?php foreach($this->attachments as $attachment) { ?>
-  document.getElementById('<?= $attachment->id; ?>').style.visibility='<?= ($attachment->mandatory && $attachment->nb==0)?'visible':'hidden'; ?>';
-  document.getElementById('<?= $attachment->id; ?>').style.display='<?= ($attachment->mandatory && $attachment->nb==0)?'block':'none'; ?>';
-<?php } ?>
-
-function OnSubmitForm() {
-    var btn = document.getElementsByName(document.pressed);
-    for(i=0 ; i<btn.length ; i++) {
-        btn[i].disabled="disabled";
-        btn[i].value="<?= JText::_('COM_EMUNDUS_ATTACHMENTS_SENDING_ATTACHMENT'); ?>";
-    }
-    switch(document.pressed) {
-        case 'sendAttachment':
-            document.checklistForm.action ="index.php?option=com_emundus&task=upload&Itemid=<?= $itemid; ?>";
-        break;
-        default: return false;
-    }
-    return true;
-}
-*/
 
 function OnSubmitForm() {
     var btn = document.getElementsByName(document.pressed);
@@ -742,13 +713,6 @@ function OnSubmitForm() {
     }
     return true;
 }
-
-
-
-/*var hash = window.location.hash;
-if (hash != '') {
-    $(hash).addClass("ui warning message");
-}*/
 
 function processSelectedFiles(fileInput) {
     var files = fileInput.files;
@@ -912,3 +876,10 @@ function uploadintoprofile(aid) {
 }
 
 </script>
+
+<?php else: ?>
+    <div id="attachment_list" class="em-attachmentList em-repeat-card em-w-100">
+        <h3><?= JText::_('COM_EMUNDUS_CHECKLIST_NO_DOCUMENTS_ASSOCIATED_TO_FORM') ?></h3>
+        <p class="em-mt-16"><?= JText::_('COM_EMUNDUS_CHECKLIST_NO_DOCUMENTS_ASSOCIATED_TO_FORM_DESC') ?></p>
+    </div>
+<?php endif; ?>

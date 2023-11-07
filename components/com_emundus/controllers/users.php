@@ -1190,7 +1190,6 @@ class EmundusControllerUsers extends JControllerLegacy {
 		exit;
 	}
 
-
     public function activation()
     {
         require_once(JPATH_COMPONENT . '/models/user.php');
@@ -1390,4 +1389,24 @@ class EmundusControllerUsers extends JControllerLegacy {
         echo json_encode($currentUser);
         exit;
     }
+
+	function getcurrentprofile()
+	{
+		$response = ['data' => [], 'status' => true, 'msg' => ''];
+
+		$em_users = JFactory::getSession()->get('emundusUser');
+		$m_users = $this->getModel('Users');
+
+		if (!empty($em_users->profile)) {
+			$response['data'] = $m_users->getProfileDetails($em_users->profile);
+
+		} else {
+			$response['msg'] = 'No profile found';
+			$response['status'] = false;
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
 }

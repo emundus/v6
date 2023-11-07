@@ -27,19 +27,19 @@ form:
     corner-bottom-left-background:
       type: select.select
       label: Login page background (bottom left)
-      default: url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg")
+      default: block
       description: Fond formes coin bas gauche
       options:
-        url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg"): Enabled
+        block: Enabled
         none: Disabled
 
     corner-top-right-background:
       type: select.select
       label: Login page background (top right)
-      default: url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg")
+      default: block
       description: Fond formes coin haut droite
       options:
-        url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg"): Enabled
+        block: Enabled
         none: Disabled
 
     candidate-button:
@@ -103,10 +103,10 @@ form:
     profiles:
       type: select.select
       label: Profiles illustration
-      default: url("/media/com_emundus/images/tchoozy/objects-illustrations/profiles.svg")
+      default: block
       description: Illustration profils
       options:
-        url("/media/com_emundus/images/tchoozy/objects-illustrations/profiles.svg"): Enabled
+        block: Enabled
         none: Disabled
 
     #Easter egg

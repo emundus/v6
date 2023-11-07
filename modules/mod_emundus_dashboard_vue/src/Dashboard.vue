@@ -1,5 +1,15 @@
 <template>
   <div id="app">
+    <div class="profile_widget">
+      <div class="profile_widget-text">
+        <h1 v-if="language == 1">{{ translate('COM_EMUNDUS_DASHBOARD_AREA')}} <span class="em-lowercase" v-if="data.label !== ''">{{ data.label }}</span><span v-else>{{ translate('COM_EMUNDUS_DASHBOARD_EMPTY_LABEL')}}</span></h1>
+        <h1 v-else><span v-if="data.label !== ''">{{ data.label }}</span><span v-else>{{ translate('COM_EMUNDUS_DASHBOARD_EMPTY_LABEL')}}</span> <span class="em-lowercase">{{ translate('COM_EMUNDUS_DASHBOARD_AREA')}}</span></h1>
+        <p v-if="displayName == 1">{{ translate('COM_EMUNDUS_DASHBOARD_HELLO') }} {{name}} {{ translate('COM_EMUNDUS_DASHBOARD_WELCOME') }}</p>
+        <p v-if="displayDescription == 1">{{data.description}}</p>
+      </div>
+      <div class="profile_widget-container"></div>
+    </div>
+
     <draggable
         v-model="widgets"
         :disabled="!enableDrag"
@@ -32,7 +42,11 @@ import Custom from "@/components/Custom";
 export default {
   name: 'App',
   props: {
-    programmeFilter: Number
+    programmeFilter: Number,
+    displayDescription: Number,
+    displayName: Number,
+    name: Text,
+    language: Number,
   },
   components: {
     Custom,
@@ -49,13 +63,17 @@ export default {
         filterByProgram: "",
       },
       status: null,
-      enableDrag: false
+      enableDrag: false,
+      data: {
+        label: "",
+        description: "",
+      },
     }
   },
   created() {
     this.getTranslations();
     this.getWidgets();
-    this.getPaletteColors();
+    this.getProfileDetails();
     if(this.programmeFilter == 1){
       this.getProgrammes();
     }
@@ -65,6 +83,7 @@ export default {
       this.translations = {
         all: this.translate("COM_EMUNDUS_DASHBOARD_ALL_PROGRAMMES"),
         filterByProgram: this.translate("COM_EMUNDUS_DASHBOARD_FILTER_BY_PROGRAMMES"),
+        profilArea: this.translate("COM_EMUNDUS_DASHBOARD_OK "),
       };
     },
     getWidgets(){
@@ -76,15 +95,6 @@ export default {
       });
     },
 
-    getPaletteColors(){
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus&controller=dashboard&task=getpalettecolors",
-      }).then(response => {
-        this.colors = response.data.data;
-      });
-    },
-
     getProgrammes(){
       axios({
         method: "get",
@@ -93,11 +103,31 @@ export default {
         this.programmes = response.data.data;
       });
     },
+
+    getProfileDetails(){
+      let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=getcurrentprofile';
+      fetch(url, {
+        method: 'GET',
+      }).then((response) => {
+
+         if (response.ok) {
+          return response.json();
+        }
+      }).then((result) => {
+        if(result.status) {
+          this.data = {
+            label: result.data.label,
+            description: result.data.description,
+          };
+        }
+      });
+    },
   }
 }
 </script>
 
 <style scoped>
+
 #app > div{
   display: flex;
   flex-wrap: wrap;

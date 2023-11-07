@@ -198,8 +198,8 @@ export default {
       padding: 12px;
       box-shadow: none;
       cursor: pointer;
-      border: 1px solid var(--em-coordinator-primary-color);
-      background: var(--em-coordinator-primary-color);
+      border: 1px solid var(--em-profile-color);
+      background: var(--em-profile-color);
       border-radius: var(--em-coordinator-br) !important;
       width: 100% !important;
       max-width: 250px;
@@ -240,7 +240,7 @@ export default {
   }
 
   &:hover {
-    border: 2px solid var(--em-coordinator-primary-color);
+    border: 2px solid var(--em-profile-color);
 
     #element-action-icons {
       opacity: 1;

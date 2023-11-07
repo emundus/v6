@@ -444,6 +444,29 @@ class EmundusModelUsers extends JModelList {
         return $db->loadResult();
     }
 
+	function getProfileDetails($profile_id)
+	{
+		$profile_info = null;
+
+		if (!empty($profile_id)) {
+			$query = $this->_db->getQuery(true);
+
+			$query->select('id,label,description,class,published')
+				->from($this->_db->quoteName('#__emundus_setup_profiles'))
+				->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($profile_id));
+
+			try {
+				$this->_db->setQuery($query);
+				$profile_info = $this->_db->loadObject();
+
+			} catch (Exception $e){
+				JLog::add('component/com_emundus/models/users | Error when try to get profile details : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return  $profile_info;
+	}
+
     public function changeCurrentUserProfile($uid, $pid) {
         $db = JFactory::getDBO();
         $query = 'UPDATE #__emundus_users SET profile ="'.(int)$pid.'" WHERE user_id='.(int)$uid;
@@ -2100,12 +2123,15 @@ class EmundusModelUsers extends JModelList {
 	/** This function returns the groups which are linked to the fnum's program OR NO PROGRAM AT ALL.
 	 * @param $group_ids array
 	 * @param $fnum string
+	 * @param $strict bool if true, only the groups linked to the fnum's program are returned
 	 *
 	 * @return bool|mixed
 	 *
 	 * @since version
 	 */
-	public function getEffectiveGroupsForFnum($group_ids, $fnum) {
+	public function getEffectiveGroupsForFnum($group_ids, $fnum, $strict = false) {
+
+		$groups = [];
 
 		$db = $this->getDbo();
 		$query = $db->getQuery(true);
@@ -2118,13 +2144,18 @@ class EmundusModelUsers extends JModelList {
 			->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'cc').' ON '.$db->quoteName('cc.campaign_id').' = '.$db->quoteName('sc.id'))
 			->where($db->quoteName('sg.id').' IN ('.implode(',', $group_ids).') AND ('.$db->quoteName('cc.fnum').' LIKE '.$db->quote($fnum).' OR '.$db->quoteName('sp.code').' IS NULL)');
 
-		$db->setQuery($query);
-		try {
-			return $db->loadColumn();
-		} catch(Exception $e) {
-			error_log($e->getMessage(), 0);
-			return false;
+		if ($strict) {
+			$query->where($db->quoteName('sg.id').' IN ('.implode(',', $group_ids).') AND ('.$db->quoteName('cc.fnum').' LIKE '.$db->quote($fnum) . ')');
 		}
+
+		try {
+			$db->setQuery($query);
+			$groups = $db->loadColumn();
+		} catch(Exception $e) {
+			JLog::add('Error getting effective groups for fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $groups;
 	}
 
 	/**
