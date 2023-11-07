@@ -508,23 +508,18 @@ class EmundusModelProfile extends JModelList {
         }
     }
 
-    // TODO: if it is used, update
-    function getProfileByStep($fnum, $step){
+    function getProfileByStep($step){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         try {
             $query->select('esp.id AS profile')
-                ->from($this->_db->quoteName('jos_emundus_campaign_candidature', 'cc'))
-                ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' = ' . $this->_db->quoteName('cc.applicant_id'))
-                ->leftJoin($this->_db->quoteName('jos_emundus_campaign_workflow', 'ecw') . ' ON ' . $this->_db->quoteName('ecw.campaign') . ' = ' . $this->_db->quoteName('cc.campaign_id'))
-                ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp') . ' ON ' . $this->_db->quoteName('esp.id') . ' = ' . $this->_db->quoteName('ecw.profile'))
-                ->where($this->_db->quoteName('cc.fnum') . ' LIKE ' . $fnum)
-                ->andWhere($this->_db->quoteName('ecw.step') . ' = ' . $step);
-
+                ->from($this->_db->quoteName('jos_emundus_campaign_workflow', 'ecw'))
+                ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('ecw.profile'))
+                ->where($this->_db->quoteName('ecw.step').' = '.$this->_db->quote($step));
             $this->_db->setQuery( $query );
-            return $this->_db->loadResult();
+            return $this->_db->loadColumn();
         } catch(Exception $e) {
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.', error on query '.$query.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
             return false;
         }
     }

@@ -61,6 +61,7 @@ class EmundusViewApplication extends JViewLegacy {
         $fnum 	= $jinput->getString('fnum', null);
         $layout = $jinput->getString('layout', 0);
         $Itemid = $jinput->get('Itemid', 0);
+        $step = $jinput->getString('step', null);
 
         $m_profiles = new EmundusModelProfile();
         $fnumInfos = $m_profiles->getFnumDetails($fnum);
@@ -369,16 +370,16 @@ class EmundusViewApplication extends JViewLegacy {
 
                 case 'form':
                     if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
-	                    $this->header = $jinput->getString('header', 1);
+                        $this->header = $jinput->getString('header', 1);
 
                         EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 1, 'r', 'COM_EMUNDUS_ACCESS_FORM_READ');
 
                         $m_campaign = new EmundusModelCampaign;
-	                    $m_user = new EmundusModelUsers;
-	                    $applicant = $m_user->getUserById($fnumInfos['applicant_id']);
-						if(!isset($applicant[0]->profile_picture) || empty($applicant[0]->profile_picture)){
-							$applicant[0]->profile_picture = $m_user->getIdentityPhoto($fnum,$fnumInfos['applicant_id']);
-						}
+                        $m_user = new EmundusModelUsers;
+                        $applicant = $m_user->getUserById($fnumInfos['applicant_id']);
+                        if(!isset($applicant[0]->profile_picture) || empty($applicant[0]->profile_picture)){
+                            $applicant[0]->profile_picture = $m_user->getIdentityPhoto($fnum,$fnumInfos['applicant_id']);
+                        }
 
                         /* detect user_id from fnum */
                         $userId = $fnumInfos['applicant_id'];
@@ -392,10 +393,21 @@ class EmundusViewApplication extends JViewLegacy {
                         /* get all profiles (order by step) by campaign */
                         $pidsRaw = $m_profiles->getProfilesIDByCampaign([$campaignsRaw->id],'object');
 
+                        $pidsStep = [];
+                        if (!empty($step)) {
+                            $pidsStep = $m_profiles->getProfileByStep($step);
+                        }
+
                         $noPhasePids = array();
                         $hasPhasePids = array();
 
                         foreach($pidsRaw as $pidRaw) {
+                            if (count($pidsStep) > 0) {
+                                if (!in_array($pidRaw->pid, $pidsStep)) {
+                                    continue;
+                                }
+                            }
+
                             if($pidRaw->pid === $pid) {
                                 $dpid = $pidRaw;
                             }
@@ -407,6 +419,9 @@ class EmundusViewApplication extends JViewLegacy {
                                 }
                             } else {
                                 $hasPhasePids[] = $pidRaw;
+                                if (empty($dpid)) {
+                                    $dpid = $pidRaw;
+                                }
                             }
                         }
 
@@ -414,7 +429,7 @@ class EmundusViewApplication extends JViewLegacy {
 
                         /* group profiles by phase */
                         foreach($hasPhasePids as $ppid) {
-                            $profiles_by_phase['step_' . $ppid->phase]['lbl'] = $ppid->lbl;
+                            $profiles_by_phase['step_' . $ppid->phase]['lbl'] = $ppid->label;
                             $profiles_by_phase['step_' . $ppid->phase]['data'][] = $ppid;
                         }
 
@@ -430,7 +445,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $formsProgress = $m_application->getFormsProgress($fnum);
                         $this->assignRef('formsProgress', $formsProgress);
 
-                        $forms = $m_application->getForms(intval($fnumInfos['applicant_id']), $fnum, $pid);
+                        $forms = $m_application->getForms(intval($fnumInfos['applicant_id']), $fnum, $dpid->pid);
                         $this->assignRef('forms', $forms);
                         $this->assignRef('applicant', $applicant[0]);
 
