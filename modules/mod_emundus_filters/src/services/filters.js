@@ -112,5 +112,19 @@ export default {
                 message: 'Error'
             };
         });
+    },
+    async getFilterValues(filterId) {
+        let values = [];
+
+        return client.get('getfiltervalues', {id: filterId}).then(data => {
+            if (data.status) {
+                values = data.data;
+            }
+
+            return values;
+        }).catch(error => {
+            console.log(error);
+            return values;
+        });
     }
 };

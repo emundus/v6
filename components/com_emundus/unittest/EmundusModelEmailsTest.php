@@ -129,7 +129,6 @@ class EmundusModelEmailsTest extends TestCase
 		$params = [
 			'mail_from' => '',
 			'mail_from_name' => '',
-			'mail_to' => [],
 			'mail_subject' => '',
 			'mail_body' => '',
 			'fnums' => []

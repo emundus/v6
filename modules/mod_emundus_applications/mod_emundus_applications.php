@@ -85,6 +85,8 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $mod_emundus_applications_show_programme = $params->get('mod_emundus_applications_show_programme',1);
     $mod_emundus_applications_show_end_date = $params->get('mod_emundus_applications_show_end_date',1);
     $show_add_application = $params->get('show_add_application', 1);
+	$mod_em_campaign_display_svg = $params->get('mod_em_campaign_display_svg', 1);
+	$mod_em_campaign_display_hover_offset = $params->get('mod_em_campaign_display_hover_offset', 1);
     $show_show_campaigns = $params->get('show_show_campaigns', 0);
     $campaigns_list_url = $params->get('show_campaigns_url', 'liste-des-campagnes');
     $position_add_application = (int)$params->get('position_add_application', 0);

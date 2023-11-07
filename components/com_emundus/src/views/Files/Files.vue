@@ -1,22 +1,26 @@
 <template>
-  <div class="em-ml-32 em-files">
+  <div class="ml-8 em-files">
     <Application v-if="currentFile" :file="currentFile" :type="$props.type" :user="$props.user" :ratio="$props.ratio" @getFiles="getFiles(true)" />
 
-    <div class="em-mb-12 em-flex-row em-flex-space-between">
-      <h4>{{ translate('COM_EMUNDUS_FILES_'+type.toUpperCase()) }}</h4>
+    <div class="mb-4 mt-4 flex items-center justify-between">
+      <h1>{{ translate('COM_EMUNDUS_FILES_'+type.toUpperCase()) }}</h1>
     </div>
 
+	  <div v-if="error.displayed" class="alert">
+		  <p>{{ error.message }}</p>
+	  </div>
+
     <div v-if="files">
-      <div class="em-flex-row em-flex-space-between em-mb-16">
-        <div class="em-flex-row">
-          <div class="em-flex-row">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center">
+          <div class="flex items-center">
             <span>{{ translate('COM_EMUNDUS_FILES_TOTAL') }}</span>
-            <span class="em-ml-4">{{ total_count }}</span>
+            <span class="ml-1">{{ total_count }}</span>
           </div>
-          <span class="em-ml-8 em-mr-8">|</span>
+          <span class="ml-3 mr-3">|</span>
           <div class="em-flex-row">
             <span>{{ translate('COM_EMUNDUS_FILES_DISPLAY_PAGE') }}</span>
-            <select class="em-select-no-border em-ml-8" style="width: max-content; height: fit-content;" v-model="limit">
+            <select class="em-select-no-border ml-3" style="width: max-content; height: fit-content;" v-model="limit">
               <option>10</option>
               <option>25</option>
               <option>50</option>
@@ -25,13 +29,13 @@
           </div>
         </div>
         <template v-if="pages !== null">
-          <div class="em-flex-row" v-if="pages.length > 1">
+          <div class="flex items-center" v-if="pages.length > 1">
             <span>{{ translate('COM_EMUNDUS_FILES_PAGE') }}</span>
-            <select class="em-select-no-border em-ml-8" style="width: 40px;height: 20px;" v-model="page">
+            <select class="em-select-no-border ml-3" style="width: 40px;" v-model="page">
               <option v-for="no_page in pages" :value="no_page">{{ displayPage(no_page) }}</option>
             </select>
-            <span class="em-ml-8">{{ translate('COM_EMUNDUS_FILES_PAGE_ON') }}</span>
-            <span class="em-ml-8 em-mr-8">{{ pages.length }}</span>
+            <span class="ml-3">{{ translate('COM_EMUNDUS_FILES_PAGE_ON') }}</span>
+            <span class="ml-3 mr-3">{{ pages.length }}</span>
           </div>
         </template>
       </div>
@@ -41,21 +45,21 @@
       <tabs v-if="$props.type === 'evaluation'" :tabs="tabs" @updateTab="updateTab"></tabs>
       <hr/>
 
-	    <div v-if="!filtersLoading" class="em-flex-row em-flex-space-between em-mb-16">
-		    <div id="filters" class="em-flex-row-start">
-			    <div id="default-filters" v-if="defaultFilters.length > 0" v-click-outside="onDefaultFiltersClickOutside">
-				    <div class="em-tabs em-pointer em-flex-row em-s-justify-content-center" @click="openedFilters = !openedFilters">
+	    <div v-if="!filtersLoading" class="flex justify-between items-start mb-4">
+		    <div id="filters" class="flex flex-col">
+			    <div id="default-filters" class="mb-4" v-if="defaultFilters.length > 0" v-click-outside="onDefaultFiltersClickOutside">
+				    <div class="em-tabs cursor-pointer flex items-center em-s-justify-content-center" @click="openedFilters = !openedFilters">
 					    <span>{{ translate('COM_EMUNDUS_FILES_FILTER') }}</span>
-					    <span class="material-icons-outlined">filter_list</span>
+					    <span class="material-icons-outlined ml-3">filter_list</span>
 				    </div>
 				    <ul :class="{'hidden': !openedFilters, 'em-input': true}">
 					    <li v-for="filter in defaultFilters" :key="filter.id" @click="addFilter(filter)" class="em-pointer">{{ filter.label }}</li>
 				    </ul>
 			    </div>
-			    <div id="applied-filters" v-if="filters.length > 0" class="em-flex-row">
-				    <div v-for="filter in filters" :key="filter.key" class="applied-filter em-ml-8 em-flex-row">
-					    <label class="filter-label em-mr-8" :for="filter.id + '-' + filter.key" :title="filter.label">{{ filter.label }}</label>
-					    <select class="em-mr-8" v-model="filter.selectedOperator">
+			    <div id="applied-filters" v-if="filters.length > 0" class="flex items-center">
+				    <div v-for="filter in filters" :key="filter.key" class="applied-filter ml-3 flex items-center">
+					    <label class="filter-label mr-3" :for="filter.id + '-' + filter.key" :title="filter.label">{{ filter.label }}</label>
+					    <select class="mr-3" v-model="filter.selectedOperator">
 							    <option v-for="operator in filter.operators" :key="operator.value" :value="operator.value">{{ operator.label }}</option>
 					    </select>
 					    <input v-if="filter.type == 'field'" :name="filter.id + '-' + filter.key" type="text" :placeholder="filter.label" v-model="filter.selectedValue"/>
@@ -78,13 +82,13 @@
 							  :allow-empty="true"
 							  width="250px"
 					    ></multiselect>
-					    <span class="material-icons-outlined em-pointer em-red-500-color" @click="removeFilter(filter)">close</span>
+					    <span class="material-icons-outlined cursor-pointer em-red-500-color ml-3" @click="removeFilter(filter)">close</span>
 				    </div>
 			    </div>
 		    </div>
-		    <div v-if="defaultFilters.length > 0" class="em-flex-row">
-			    <span class="material-icons-outlined em-mr-16 em-red-500-color" :class="{'em-pointer': filters.length > 0, 'em-pointer-disbabled': filters.length < 1 }" :alt="translate('COM_EMUNDUS_FILES_RESET_FILTERS')" @click="resetFilters">filter_alt_off</span>
-			    <button class="em-primary-button em-pointer" @click="applyFilters">{{ translate('COM_EMUNDUS_FILES_APPLY_FILTER') }}</button>
+		    <div v-if="defaultFilters.length > 0" class="flex items-center">
+			    <span class="material-icons-outlined mr-4 em-red-500-color" :class="{'em-pointer': filters.length > 0, 'em-pointer-disbabled': filters.length < 1 }" :alt="translate('COM_EMUNDUS_FILES_RESET_FILTERS')" @click="resetFilters">filter_alt_off</span>
+			    <button class="em-primary-button cusor-pointer" @click="applyFilters">{{ translate('COM_EMUNDUS_FILES_APPLY_FILTER') }}</button>
 		    </div>
 	    </div>
 	    <div v-else class="em-flex-row em-flex-space-between em-mb-16">
@@ -95,7 +99,7 @@
 
     <div class="em-flex-row em-align-start" v-if="files && columns && files.length > 0" :key="reloadFiles">
       <div id="table_columns_move_right" :class="moveRight ? '' : 'em-disabled-state'" class="table-columns-move em-flex-column em-mr-4" @click="scrollToRight">
-        <span class="material-icons-outlined em-pointer" style="font-size: 16px">arrow_back</span>
+        <span class="material-icons-outlined cursor-pointer" style="font-size: 16px">arrow_back</span>
       </div>
 
       <el-table
@@ -103,20 +107,23 @@
           style="width: 100%"
           height="calc(100vh - 250px)"
           :data="files"
+          :default-sort = "{prop: 'file', order: 'ascending'}"
+          :key="reloadFiles"
           @select-all="selectRow"
           @select="selectRow">
         <el-table-column
-            fixed
             type="selection"
             width="55">
         </el-table-column>
         <el-table-column
-            fixed
             :label="translate('COM_EMUNDUS_ONBOARD_FILE')"
-            width="270">
+            width="270"
+            prop="file"
+            sortable
+            :sort-method="(a, b) => sortBy(a, b, 'file')">
           <template slot-scope="scope">
             <div @click="openApplication(scope.row)" class="em-pointer">
-              <p class="em-font-weight-500">{{ scope.row.applicant_name }}</p>
+              <p class="em-font-weight-500">{{ scope.row.applicant_name.charAt(0).toUpperCase() + scope.row.applicant_name.slice(1) }}</p>
               <span class="em-text-neutral-500 em-font-size-14">{{ scope.row.fnum }}</span>
             </div>
           </template>
@@ -125,6 +132,8 @@
         <template v-for="column in columns" v-if="column.show_in_list_summary == 1">
           <el-table-column
               v-if="column.name === 'status'"
+              prop="status"
+              sortable
               min-width="180">
             <template slot="header" slot-scope="scope" >
               <span :title="translate('COM_EMUNDUS_ONBOARD_STATUS')" class="em-neutral-700-color">{{translate('COM_EMUNDUS_ONBOARD_STATUS')}}</span>
@@ -158,15 +167,19 @@
                 <span v-for="tag in scope.row.tags" :class="tag.class" class="em-status em-mb-4">{{ tag.label }}</span>
               </div>
             </template>
+          </el-table-column>
 
             <el-table-column
               v-else
-              min-width="180">
+              min-width="180"
+              :prop="column.name"
+              sortable
+              :sort-method="(a, b) => sortBy(a, b, column.name)">
             <template slot="header" slot-scope="scope" >
               <span :title="column.label" class="em-neutral-700-color">{{column.label}}</span>
             </template>
             <template slot-scope="scope">
-              <p v-html="scope.row[column.name]"></p>
+              <p v-html="formatter(scope.row[column.name],column)"></p>
             </template>
           </el-table-column>
         </template>
@@ -271,6 +284,10 @@ export default {
 	  openedFilters: false,
     currentFile: null,
     rows_selected: [],
+	  error: {
+		  displayed: false,
+		  message: ''
+	  }
   }),
   created(){
 		this.addKeyupEnterEventlistener();
@@ -292,6 +309,30 @@ export default {
 
   },
   methods: {
+
+    formatter(row, column) {
+      if(typeof row == 'string'){
+        return row.charAt(0).toUpperCase() + row.slice(1);
+      } else {
+        return row;
+      }
+    },
+
+    sortBy(a,b, prop) {
+      if(prop === 'file') {
+        if (a.applicant_name.toUpperCase() < b.applicant_name.toUpperCase()) return -1;
+        if (a.applicant_name.toUpperCase() > b.applicant_name.toUpperCase()) return 1;
+      }
+
+      if(typeof a[prop] === 'string') {
+        if (a[prop].toUpperCase() < b[prop].toUpperCase()) return -1;
+        if (a[prop].toUpperCase() > b[prop].toUpperCase()) return 1;
+      }
+
+      if (a[prop] < b[prop]) return -1;
+      if (a[prop] > b[prop]) return 1;
+    },
+
 	  addKeyupEnterEventlistener(){
 		  window.document.addEventListener('keyup', (e) => {
 			  if (e.key === 'Enter'){
@@ -321,6 +362,8 @@ export default {
     getFiles(refresh = false){
       document.querySelector('body.layout-evaluation').style.overflow= 'visible';
       this.loading = true;
+	    this.error.displayed = false;
+			this.error.message = '';
 
       let fnum = window.location.href.split('#')[1];
       if(typeof fnum == 'undefined'){
@@ -360,7 +403,9 @@ export default {
 
           } else {
             this.loading = false;
-            this.displayError('COM_EMUNDUS_ERROR_OCCURED',files.msg);
+            this.displayError('COM_EMUNDUS_ERROR_OCCURED', files.msg);
+						this.error.displayed = true;
+						this.error.message = files.msg;
           }
         });
       }
@@ -586,7 +631,11 @@ select.em-select-no-border{
 	#applied-filters {
 		max-width: 90%;
 		flex-wrap: wrap;
-		row-gap: 16px;
+
+    .applied-filter {
+      padding: 8px 0 8px 0;
+      border-bottom: solid 1px var(--neutral-400);
+    }
 
 		.multiselect {
 			height: 40px !important;

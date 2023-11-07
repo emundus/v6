@@ -174,7 +174,7 @@ class EmundusModelProfile extends JModelList {
 	}
 
     function getProfileById($id) {
-        $query = 'SELECT label, menutype, acl_aro_groups from jos_emundus_setup_profiles
+        $query = 'SELECT label, menutype, acl_aro_groups, id from jos_emundus_setup_profiles
 						WHERE id ='.$id;
 
         try {
@@ -975,7 +975,7 @@ class EmundusModelProfile extends JModelList {
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
 					LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status
 					LEFT JOIN #__emundus_personal_detail as epd on epd.fnum = ecc.fnum
-					WHERE ecc.fnum like '.$this->_db->Quote($fnum);
+					WHERE ecc.fnum LIKE '.$this->_db->quote($fnum);
         try {
             $this->_db->setQuery($query);
             $res = $this->_db->loadAssoc();
@@ -985,7 +985,7 @@ class EmundusModelProfile extends JModelList {
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
 					LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status
 					LEFT JOIN #__emundus_personal_detail as epd on epd.fnum = ecc.fnum
-					WHERE ecc.fnum like '.$this->_db->Quote($fnum);
+					WHERE ecc.fnum LIKE '.$this->_db->quote($fnum);
             try {
                 $this->_db->setQuery($query);
                 $res = $this->_db->loadAssoc();

@@ -88,4 +88,13 @@ class EmundusModelUsersTest extends TestCase
 		$nonApplicantIds = $this->m_users->getNonApplicantId($user_id);
 		$this->assertTrue($this->m_users->affectToGroups($nonApplicantIds, [1]), 'Affect user to group, using getNonApplicantId result should return true');
 	}
+
+	public function testgetProfileDetails() {
+
+		$this->assertEmpty($this->m_users->getProfileDetails(0), 'Passing an incorrect user id should return false');
+		$profile = $this->m_users->getProfileDetails(9);
+		$this->assertNotEmpty($profile, 'Passing a correct user id should return an array of profile details');
+		$this->assertObjectHasAttribute('label', $profile, 'Profile details should contain label');
+		$this->assertObjectHasAttribute('class', $profile, 'Profile details should contain class');
+	}
 }
