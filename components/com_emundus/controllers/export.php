@@ -21,6 +21,8 @@ use TheCodingMachine\Gotenberg\Request;
 use TheCodingMachine\Gotenberg\RequestException;
 use GuzzleHttp\Psr7\LazyOpenStream;
 
+use Joomla\CMS\Factory;
+
 /**
  * Custom report controller
  * @package     Emundus
@@ -28,6 +30,17 @@ use GuzzleHttp\Psr7\LazyOpenStream;
 class EmundusControllerExport extends JControllerLegacy
 {
 	protected $app;
+
+	private $_user;
+
+	public function __construct($config = array())
+	{
+
+		$this->app = Factory::getApplication();
+		$this->_user = $this->app->getIdentity();
+
+		parent::__construct($config);
+	}
 
     public function display($cachable = false, $urlparams = false) {
         // Set a default view if none exists

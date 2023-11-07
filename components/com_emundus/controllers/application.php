@@ -466,12 +466,6 @@ class EmundusControllerApplication extends JControllerLegacy
                 $m_application->deleteAttachment($id);
             }
 
-            // TRACK THE LOGS
-            # get fnum                  $fnum
-            # get the logged user id    JFactory::getUser()->id
-            # get the applicant id      $applicant_id
-            # $applicant_id = $jinput->getString('student_id', null);
-
             require_once(JPATH_SITE.'/components/com_emundus/models/logs.php');
             $user = $this->app->getSession()->get('emundusUser');     # logged user #
 

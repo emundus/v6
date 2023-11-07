@@ -17,12 +17,18 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Factory;
+
 
 class EmundusControllerStats extends JControllerLegacy {
 
+	protected $app;
+
     public function __construct($config = array()) {
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'stats.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'stats.php');
         parent::__construct($config);
+
+		$this->app = Factory::getApplication();
     }
 
 
@@ -33,11 +39,11 @@ class EmundusControllerStats extends JControllerLegacy {
 
         $count = 0;
 
-        $jinput = JFactory::getApplication()->input;
-        $val = $jinput->post->get('chosenvalue', null);
-        $periode = $jinput->post->get('periode', null);
+        
+        $val = $this->input->post->get('chosenvalue', null);
+        $periode = $this->input->post->get('periode', null);
 
-        $m_stats = new EmundusModelStats();
+        $m_stats = $this->getModel('Stats');
         $getAccountType = $m_stats->getAccountType($val, $periode);
 
         foreach ($getAccountType as $users) {
@@ -62,11 +68,11 @@ class EmundusControllerStats extends JControllerLegacy {
         $countArray = [];
         $count = 0;
 
-        $jinput = JFactory::getApplication()->input;
-        $val = $jinput->post->get('chosenvalue', null);
-        $periode = $jinput->post->get('periode', null);
+        
+        $val = $this->input->post->get('chosenvalue', null);
+        $periode = $this->input->post->get('periode', null);
 
-	    $m_stats = new EmundusModelStats();
+	    $m_stats = $this->getModel('Stats');
         $getConsultations = $m_stats->consultationOffres($val, $periode);
 
         foreach ($getConsultations as $bars) {
@@ -89,10 +95,10 @@ class EmundusControllerStats extends JControllerLegacy {
 
     public function getoffres() {
 
-        $jinput = JFactory::getApplication()->input;
-        $periode = $jinput->post->get('periode', null);
+        
+        $periode = $this->input->post->get('periode', null);
 
-        $m_stats = new EmundusModelStats();
+        $m_stats = $this->getModel('Stats');
 
 	    echo json_encode((object)[
 	        'status' => true,
@@ -107,11 +113,11 @@ class EmundusControllerStats extends JControllerLegacy {
         $nbArray = [];
         $count = 0;
 
-        $jinput = JFactory::getApplication()->input;
-        //$val = $jinput->post->get('chosenvalue', null);
-        $periode = $jinput->post->get('periode', null);
+        
+        //$val = $this->input->post->get('chosenvalue', null);
+        $periode = $this->input->post->get('periode', null);
 
-	    $m_stats = new EmundusModelStats();
+	    $m_stats = $this->getModel('Stats');
         $getCandidatures = $m_stats->candidatureOffres($periode);
         foreach ($getCandidatures as $cand) {
                 $candArray[] = $cand['titre'];
@@ -133,10 +139,10 @@ class EmundusControllerStats extends JControllerLegacy {
         $countArray = [];
         $count = 0;
 
-        $jinput = JFactory::getApplication()->input;
-        $periode = $jinput->post->get('periode', null);
+        
+        $periode = $this->input->post->get('periode', null);
 
-	    $m_stats = new EmundusModelStats();
+	    $m_stats = $this->getModel('Stats');
         $getConnections = $m_stats->getConnections($periode);
 
 
@@ -160,10 +166,10 @@ class EmundusControllerStats extends JControllerLegacy {
         $countArray = [];
         $count = 0;
 
-        $jinput = JFactory::getApplication()->input;
-        $periode = $jinput->post->get('periode', null);
+        
+        $periode = $this->input->post->get('periode', null);
 
-	    $m_stats = new EmundusModelStats();
+	    $m_stats = $this->getModel('Stats');
         $getNbRelations = $m_stats->getNbRelations($periode);
 
         foreach ($getNbRelations as $rel) {
@@ -182,7 +188,7 @@ class EmundusControllerStats extends JControllerLegacy {
     }
 
     public function getgender() {
-        $m_stats = new EmundusModelStats();
+        $m_stats = $this->getModel('Stats');
         $male = $m_stats->getMale();
         $female = $m_stats->getFemale();
         if($male == null)
@@ -201,7 +207,7 @@ class EmundusControllerStats extends JControllerLegacy {
         $nbArray = [];
         $natArray = [];
 
-        $m_stats = new EmundusModelStats();
+        $m_stats = $this->getModel('Stats');
         $nationality = $m_stats->getNationality();
 
         foreach ($nationality as $nat) {
@@ -221,7 +227,7 @@ class EmundusControllerStats extends JControllerLegacy {
         $nbArray = [];
         $natArray = [];
 
-        $m_stats = new EmundusModelStats();
+        $m_stats = $this->getModel('Stats');
         $ages = $m_stats->getAge();
 
         foreach ($ages as $age) {
@@ -239,7 +245,7 @@ class EmundusControllerStats extends JControllerLegacy {
 
     public function getfiles() {
         $array = [];
-        $m_stats = new EmundusModelStats();
+        $m_stats = $this->getModel('Stats');
         $files = $m_stats->getFiles();
         foreach ($files as $file) {
             $array[$file['value']] += $file['nb'];
@@ -253,9 +259,9 @@ class EmundusControllerStats extends JControllerLegacy {
     }
 
     public function addview() {
-        $m_stats = new EmundusModelStats();
-        $jinput = JFactory::getApplication()->input;
-        $view = $jinput->post->get('view', null);
+        $m_stats = $this->getModel('Stats');
+        
+        $view = $this->input->post->get('view', null);
         $addView = $m_stats->addView($view);
         if($addView != 0) {
             echo json_encode((object) [
@@ -274,10 +280,10 @@ class EmundusControllerStats extends JControllerLegacy {
 
     public function linkfabrik() {
 
-        $m_stats = new EmundusModelStats();
-        $jinput = JFactory::getApplication()->input;
-        $listId = $jinput->post->get('listid', null);
-        $view = $jinput->post->get('view', null);
+        $m_stats = $this->getModel('Stats');
+        
+        $listId = $this->input->post->get('listid', null);
+        $view = $this->input->post->get('view', null);
 
         echo json_encode((object)[
             'status' => $m_stats->linkToFabrik($view, $listId),

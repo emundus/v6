@@ -16,17 +16,31 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport( 'joomla.application.component.model' );
 
+use Joomla\CMS\Factory;
+
 class EmundusModelControlfiles extends JModelList
 {
+	private $db;
+	private $app;
+
 	function __construct()
 	{
 		parent::__construct();
 		global $option;
 
-		$mainframe = JFactory::getApplication();
+		$this->app = Factory::getApplication();
 
-		$filter_order     = $mainframe->getUserStateFromRequest(  $option.'filter_order', 'filter_order', 'lastname', 'cmd' );
-        $filter_order_Dir = $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'asc', 'word' );
+		if (version_compare(JVERSION, '4.0', '>'))
+		{
+			$this->db = Factory::getContainer()->get('DatabaseDriver');
+		}
+		else
+		{
+			$this->db = JFactory::getDBO();
+		}
+
+		$filter_order     = $this->app->getUserStateFromRequest($option . 'filter_order', 'filter_order', 'lastname', 'cmd');
+		$filter_order_Dir = $this->app->getUserStateFromRequest($option . 'filter_order_Dir', 'filter_order_Dir', 'asc', 'word');
 
         $this->setState('filter_order', $filter_order);
         $this->setState('filter_order_Dir', $filter_order_Dir);
@@ -37,8 +51,6 @@ class EmundusModelControlfiles extends JModelList
 	function _buildContentOrderBy()
 	{
         global $option;
-
-		$mainframe = JFactory::getApplication();
 
                 $orderby = '';
                 $filter_order     = $this->getState('filter_order');
@@ -55,7 +67,6 @@ class EmundusModelControlfiles extends JModelList
 
 	  function getTotal()
   {
-        // Load the content if it doesn't already exist
         if (empty($this->_total)) {
             $query = $this->_buildQuery();
             $this->_total = $this->_getListCount($query);
@@ -65,17 +76,20 @@ class EmundusModelControlfiles extends JModelList
 
 	function _buildQuery()
 	{
-		$query = 'SELECT * FROM #__emundus_uploads as eu 
-			LEFT JOIN #__emundus_users as u ON u.user_id=eu.user_id 
-			WHERE u.schoolyear="'.$this->getCampaign().'"';
+		$query = $this->db->getQuery(true);
+
+		$query->select('*')
+			->from($this->db->quoteName('#__emundus_uploads', 'eu'))
+			->leftJoin($this->db->quoteName('#__emundus_users', 'u') . ' ON ' . $this->db->quoteName('u.user_id') . ' = ' . $this->db->quoteName('eu.user_id'))
+			->where($this->db->quoteName('u.schoolyear') . ' = ' . $this->db->quote($this->getCampaign()));
+
 		return $query;
 	}
 
 	function getFiles()
 	{
-		// Lets load the data if it doesn't already exist
-		$query = $this->_buildQuery(); //die(print_r(count($this->_getList($query ,$this->getState('limitstart'), $this->getState('limit')))));
-		//return $this->_getList($query ,$this->getState('limitstart'), $this->getState('limit'));
+		$query = $this->_buildQuery();
+
 		return $this->_getList($query);
 
 	}
@@ -84,12 +98,13 @@ class EmundusModelControlfiles extends JModelList
 	/**
 	 * Calls a function for every file in a folder.
 	 *
-	 * @author Vasil Rangelov a.k.a. boen_robot
-	 *
 	 * @param string $dir The directory to traverse.
 	 * @param array $types The file types to call the function for. Leave as NULL to match all types.
 	 * @param bool $recursive Whether to list subfolders as well.
 	 * @param string $baseDir String to append at the beginning of every filepath that the callback will receive.
+	 *
+	 * @author Vasil Rangelov a.k.a. boen_robot
+	 *
 	 */
 	function dir_walk($dir, $recursive, $baseDir, $tabfile, $firstuserid) {
 		if ($dh = @opendir($baseDir.$dir)) {
@@ -103,12 +118,14 @@ class EmundusModelControlfiles extends JModelList
 				if (is_file($baseDir.$dir.DS.$file) && $dir != 'files'.DS) {
 					$tval['id'] = $dir;
 					$tval['file'] = $file;
-				/* 	array_push($tabfile['id'], $dir);*/
 					if($dir >= $firstuserid)
+					{
 						array_push($tabfile, $tval);
+					}
 
-				} elseif($recursive && is_dir($baseDir.$dir.$file)) {
-				//print_r($tabfile);
+				}
+				elseif ($recursive && is_dir($baseDir . $dir . $file))
+				{
 					$tabfile = $this->dir_walk($file, $recursive, $baseDir.$dir, $tabfile, $firstuserid);
 				}
 			}
@@ -119,19 +136,26 @@ class EmundusModelControlfiles extends JModelList
 
 	function getCampaign()
 	{
-		$db = JFactory::getDBO();
-		$query = 'SELECT year as schoolyear FROM #__emundus_setup_campaigns WHERE published=1';
-		$db->setQuery( $query );
-		$syear = $db->loadRow();
+		$query = $this->db->getQuery(true);
+
+		$query->select('year')
+			->from($this->db->quoteName('#__emundus_setup_campaigns'))
+			->where($this->db->quoteName('published') . ' = 1');
+		$this->db->setQuery($query);
+		$syear = $this->db->loadRow();
 
 		return $syear[0];
 	}
 
-	function _getFirstUserId () {
-		$db = JFactory::getDBO();
-		$query = 'SELECT min(user_id) FROM #__emundus_users WHERE schoolyear = "'.$this->getCampaign().'"';
-		$db->setQuery( $query );
-		$firstid = $db->loadRow();
+	function _getFirstUserId()
+	{
+		$query = $this->db->getQuery(true);
+
+		$query->select('min(user_id)')
+			->from($this->db->quoteName('#__emundus_users'))
+			->where($this->db->quoteName('schoolyear') . ' = ' . $this->db->quote($this->getCampaign()));
+		$this->db->setQuery($query);
+		$firstid = $this->db->loadRow();
 
 		return $firstid[0];
 	}

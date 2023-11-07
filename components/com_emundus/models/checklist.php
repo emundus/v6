@@ -15,13 +15,17 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport( 'joomla.application.component.model' );
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\User\UserFactoryInterface;
+
 class EmundusModelChecklist extends JModelList
 {
-	var $_user = null;
-	var $_db = null;
-	var $_need = 0;
-	var $_forms = 0;
-	var $_attachments = 0;
+	private $app;
+	private $_user;
+	protected $_db;
+	private $_need = 0;
+	protected $_forms = 0;
+	private $_attachments = 0;
 
 	function __construct()
 	{
@@ -30,14 +34,35 @@ class EmundusModelChecklist extends JModelList
 		JLog::addLogger(['text_file' => 'com_emundus.checklist.php'], JLog::ALL, array('com_emundus.checklist'));
 
 		require_once (JPATH_SITE.'/components/com_emundus/helpers/menu.php');
-		$this->_db = JFactory::getDBO();
-		$app =  JFactory::getApplication();
-		$student_id = $app->input->getInt('sid');
-		$current_user = JFactory::getUser()->id;
+
+		$this->app =  Factory::getApplication();
+		$student_id = $this->app->input->getInt('sid');
+
+		if (version_compare(JVERSION, '4.0', '>'))
+		{
+			$this->_db = Factory::getContainer()->get('DatabaseDriver');
+			$current_user = $this->app->getIdentity()->id;
+
+			if(!empty($student_id)) {
+				$this->_user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($student_id);
+			} else {
+				$this->_user = $this->app->getSession()->get('emundusUser');
+			}
+		} else {
+			$this->_db = Factory::getDBO();
+			$current_user = Factory::getUser()->id;
+
+			if(!empty($student_id)) {
+				$this->_user = Factory::getUser($student_id);
+			} else {
+				$this->_user = Factory::getSession()->get('emundusUser');
+			}
+		}
+
 
 		if (!empty($student_id)) {
 			if (EmundusHelperAccess::asPartnerAccessLevel($current_user)) {
-				$this->_user = JFactory::getUser($student_id);
+
 				if (!empty($this->_user->id)) {
 					$query = $this->_db->getQuery(true);
 
@@ -57,15 +82,13 @@ class EmundusModelChecklist extends JModelList
 					}
 				} else {
 					JLog::add('User ' . $current_user .  ' tried to read checklist of user ' . $student_id . ' but user does not exists.', JLog::INFO, 'com_emundus.checklist');
-					$app->enqueueMessage(JText::_('COM_USERS_USER_NOT_FOUND'), 'warning');
+					$this->app->enqueueMessage(JText::_('COM_USERS_USER_NOT_FOUND'), 'warning');
 				}
 			} else {
 				JLog::add('[' . $_SERVER['REMOTE_ADDR'] . '] User ' . $current_user .  ' tried to read checklist of user ' . $student_id . ' but does not have the rights to do it.', JLog::WARNING, 'com_emundus.checklist');
-				$app->enqueueMessage(JText::_('ACCESS_DENIED'), 'warning');
-				$app->redirect('/checklist');
+				$this->app->enqueueMessage(JText::_('ACCESS_DENIED'), 'warning');
+				$this->app->redirect('/checklist');
 			}
-		} else {
-			$this->_user = JFactory::getSession()->get('emundusUser');
 		}
 	}
 
@@ -81,16 +104,26 @@ class EmundusModelChecklist extends JModelList
 	}
 
 	function getInstructions() {
-		$query = 'SELECT id, title, text FROM #__emundus_setup_checklist WHERE page = "instructions"';
+		$query = $this->_db->getQuery(true);
+
+		$query->select('id, title, text')
+			->from($this->_db->quoteName('#__emundus_setup_checklist'))
+			->where($this->_db->quoteName('page') . ' = ' . $this->_db->quote('instructions'));
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObject();
 	}
 
 	function getFormsList()
 	{
-		$forms = @EmundusHelperMenu::buildMenuQuery($this->_user->profile);
+		$forms = EmundusHelperMenu::buildMenuQuery($this->_user->profile);
+
 		foreach ($forms as $form) {
-			$query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE user = '.$this->_user->id.' AND fnum like '.$this->_db->Quote($this->_user->fnum);
+			$query = $this->_db->getQuery(true);
+
+			$query->select('COUNT(*)')
+				->from($this->_db->quoteName($form->db_table_name))
+				->where($this->_db->quoteName('user') . ' = ' . $this->_db->quote($this->_user->id))
+				->andWhere($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($this->_user->fnum));
 			$this->_db->setQuery( $query );
 			$form->nb = $this->_db->loadResult();
 			if ($form->nb==0) {
@@ -104,27 +137,34 @@ class EmundusModelChecklist extends JModelList
 	function getAttachmentsList() {
 		$attachments = [];
 
+		$query = $this->_db->getQuery(true);
+
 		if (!empty($this->_user->profile)) {
 			if (!empty($this->_user->campaign_id)) {
-				$query = 'SELECT attachments.*, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, profiles.mandatory as mandatory, profiles.duplicate as duplicate, profiles.has_sample, profiles.sample_filepath
-					FROM #__emundus_setup_attachments AS attachments
-						INNER JOIN #__emundus_setup_attachment_profiles AS profiles ON attachments.id = profiles.attachment_id
-						LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.user_id = '.$this->_user->id.'  AND fnum like '.$this->_db->Quote($this->_user->fnum).'
-					WHERE (profiles.campaign_id = '.$this->_user->campaign_id.' OR profiles.profile_id ='.$this->_user->profile.') AND profiles.displayed = 1
-					GROUP BY attachments.id
-					ORDER BY profiles.mandatory DESC, profiles.ordering ASC';
+
+				$query->select('attachments.*, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, profiles.mandatory as mandatory, profiles.duplicate as duplicate, profiles.has_sample, profiles.sample_filepath')
+					->from($this->_db->quoteName('#__emundus_setup_attachments', 'attachments'))
+					->innerJoin($this->_db->quoteName('#__emundus_setup_attachment_profiles', 'profiles') . ' ON ' . $this->_db->quoteName('attachments.id') . ' = ' . $this->_db->quoteName('profiles.attachment_id'))
+					->leftJoin($this->_db->quoteName('#__emundus_uploads', 'uploads') . ' ON ' . $this->_db->quoteName('uploads.attachment_id') . ' = ' . $this->_db->quoteName('profiles.attachment_id') . ' AND ' . $this->_db->quoteName('uploads.user_id') . ' = ' . $this->_db->quote($this->_user->id) . ' AND ' . $this->_db->quoteName('uploads.fnum') . ' like ' . $this->_db->quote($this->_user->fnum))
+					->where('(' . $this->_db->quoteName('profiles.campaign_id') . ' = ' . $this->_db->quote($this->_user->campaign_id) . ' OR ' . $this->_db->quoteName('profiles.profile_id') . ' = ' . $this->_db->quote($this->_user->profile) . ')')
+					->andWhere($this->_db->quoteName('profiles.displayed') . ' = 1')
+					->group($this->_db->quoteName('attachments.id'))
+					->order($this->_db->quoteName('profiles.mandatory') . ' DESC, ' . $this->_db->quoteName('profiles.ordering') . ' ASC');
 				$this->_db->setQuery($query);
 				$attachments = $this->_db->loadObjectList();
 			}
 
 			if (empty($attachments)) {
-				$query = 'SELECT attachments.id, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, attachments.nbmax, attachments.value, attachments.lbl, attachments.description, attachments.allowed_types, profiles.mandatory, profiles.duplicate,  profiles.has_sample, profiles.sample_filepath
-					FROM #__emundus_setup_attachments AS attachments
-						INNER JOIN #__emundus_setup_attachment_profiles AS profiles ON attachments.id = profiles.attachment_id
-						LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.user_id = '.$this->_user->id.'  AND fnum like '.$this->_db->Quote($this->_user->fnum).'
-					WHERE profiles.profile_id = '.$this->_user->profile.' AND profiles.displayed = 1 AND profiles.campaign_id IS NULL
-					GROUP BY attachments.id
-					ORDER BY profiles.mandatory DESC, attachments.ordering ASC';
+				$query->clear()
+					->select('attachments.id, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, attachments.nbmax, attachments.value, attachments.lbl, attachments.description, attachments.allowed_types, profiles.mandatory, profiles.duplicate,  profiles.has_sample, profiles.sample_filepath')
+					->from($this->_db->quoteName('#__emundus_setup_attachments', 'attachments'))
+					->innerJoin($this->_db->quoteName('#__emundus_setup_attachment_profiles', 'profiles') . ' ON ' . $this->_db->quoteName('attachments.id') . ' = ' . $this->_db->quoteName('profiles.attachment_id'))
+					->leftJoin($this->_db->quoteName('#__emundus_uploads', 'uploads') . ' ON ' . $this->_db->quoteName('uploads.attachment_id') . ' = ' . $this->_db->quoteName('profiles.attachment_id') . ' AND ' . $this->_db->quoteName('uploads.user_id') . ' = ' . $this->_db->quote($this->_user->id) . ' AND ' . $this->_db->quoteName('uploads.fnum') . ' like ' . $this->_db->quote($this->_user->fnum))
+					->where($this->_db->quoteName('profiles.profile_id') . ' = ' . $this->_db->quote($this->_user->profile))
+					->andWhere($this->_db->quoteName('profiles.displayed') . ' = 1')
+					->andWhere($this->_db->quoteName('profiles.campaign_id') . ' IS NULL')
+					->group($this->_db->quoteName('attachments.id'))
+					->order($this->_db->quoteName('profiles.mandatory') . ' DESC, ' . $this->_db->quoteName('profiles.ordering') . ' ASC');
 				$this->_db->setQuery($query);
 				$attachments = $this->_db->loadObjectList();
 			}
@@ -132,13 +172,18 @@ class EmundusModelChecklist extends JModelList
 			foreach ($attachments as $attachment) {
 				if ($attachment->nb > 0) {
 
-					$query = 'SELECT * FROM #__emundus_uploads WHERE user_id = '.$this->_user->id.' AND attachment_id = '.$attachment->id. ' AND fnum like '.$this->_db->Quote($this->_user->fnum);
+					$query->clear()
+						->select('*')
+						->from($this->_db->quoteName('#__emundus_uploads'))
+						->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($this->_user->id))
+						->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($attachment->id))
+						->andWhere($this->_db->quoteName('fnum') . ' like ' . $this->_db->quote($this->_user->fnum));
 					$this->_db->setQuery($query);
 					$attachment->liste = $this->_db->loadObjectList();
 
 				} elseif ($attachment->mandatory == 1) {
 					$this->_attachments = 1;
-					$this->_need = $this->_forms=1?1:0;
+					$this->_need = $this->_forms=1?:0;
 				}
 			}
 		}
@@ -151,16 +196,24 @@ class EmundusModelChecklist extends JModelList
 	}
 
 	function getSent() {
-		$query = 'SELECT submitted
-					FROM #__emundus_campaign_candidature
-					WHERE applicant_id = '.$this->_user->id.' AND fnum like '.$this->_db->Quote($this->_user->fnum);
+		$query = $this->_db->getQuery(true);
+
+		$query->select('submitted')
+			->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+			->where($this->_db->quoteName('applicant_id') . ' = ' . $this->_db->quote($this->_user->id))
+			->andWhere($this->_db->quoteName('fnum') . ' like ' . $this->_db->quote($this->_user->fnum));
 		$this->_db->setQuery( $query );
 		$res = $this->_db->loadResult();
 		return $res>0;
 	}
 
 	function getResult() {
-		$query = 'SELECT final_grade FROM #__emundus_final_grade WHERE student_id = '.$this->_user->id.' AND fnum like '.$this->_db->Quote($this->_user->fnum);
+		$query = $this->_db->getQuery(true);
+
+		$query->select('final_grade')
+			->from($this->_db->quoteName('#__emundus_final_grade'))
+			->where($this->_db->quoteName('student_id') . ' = ' . $this->_db->quote($this->_user->id))
+			->andWhere($this->_db->quoteName('fnum') . ' like ' . $this->_db->quote($this->_user->fnum));
 		$this->_db->setQuery( $query );
 		return $this->_db->loadResult();
 	}
@@ -175,14 +228,14 @@ class EmundusModelChecklist extends JModelList
 	}
 
 	function getIsOtherActiveCampaign() {
-		$query='SELECT count(id) as cpt
-				FROM #__emundus_setup_campaigns
-				WHERE id NOT IN (
-								select campaign_id FROM #__emundus_campaign_candidature WHERE applicant_id='.$this->_user->id.'
-								)';
+		$query = $this->_db->getQuery(true);
+
+		$query->select('COUNT(id) as cpt')
+			->from($this->_db->quoteName('#__emundus_setup_campaigns'))
+			->where($this->_db->quoteName('id') . ' NOT IN (SELECT campaign_id FROM #__emundus_campaign_candidature WHERE applicant_id = ' . $this->_user->id . ')');
 		$this->_db->setQuery($query);
 		$cpt = $this->_db->loadResult();
-		return $cpt>0?true:false;
+		return $cpt>0;
 	}
 
 	function getConfirmUrl($profile = null) {
@@ -192,20 +245,19 @@ class EmundusModelChecklist extends JModelList
         }
 
 		if (!empty($profile)) {
-			$db = JFactory::getDBO();
+			$query = $this->_db->getQuery(true);
 
-			$query = $db->getQuery(true);
 			$query->select('CONCAT(m.link,"&Itemid=", m.id) as link')
-				->from('#__emundus_setup_profiles as esp')
-				->leftJoin('#__menu as m on m.menutype = esp.menutype')
-				->where('esp.id = ' . $profile)
+				->from($this->_db->quoteName('#__emundus_setup_profiles','esp'))
+				->leftJoin($this->_db->quoteName('#__menu','m').' ON '.$this->_db->quoteName('m.menutype').' = '.$this->_db->quoteName('esp.menutype'))
+				->where($this->_db->quoteName('esp.id') . ' = ' . $profile)
 				->andWhere('m.published > 0')
 				->andWhere('m.level = 1')
 				->order('m.lft DESC');
 
 			try {
-				$db->setQuery($query);
-				$confirm_url = $db->loadResult();
+				$this->_db->setQuery($query);
+				$confirm_url = $this->_db->loadResult();
 			} catch(Exception $e) {
 				JLog::add('Failed to get confirm url from profile ' . $profile . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.checklist');
 			}
@@ -219,21 +271,31 @@ class EmundusModelChecklist extends JModelList
 
 	function setDelete($status = 0, $student = null) {
 
-		$db = JFactory::getDBO();
-
 		if (empty($student)) {
-            $student = JFactory::getSession()->get('emundusUser');
+			if (version_compare(JVERSION, '4.0', '>'))
+			{
+				$session = $this->app->getSession();
+			} else {
+				$session = Factory::getSession();
+			}
+
+            $student = $session->get('emundusUser');
         }
 
 		if ($status > 1) {
             $status = 1;
         }
 
-		$query = 'UPDATE #__emundus_uploads SET can_be_deleted = '.$status.' WHERE user_id = '.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
-		$db->setQuery($query);
+		$query = $this->_db->getQuery(true);
+
+		$query->update($this->_db->quoteName('#__emundus_uploads'))
+			->set($this->_db->quoteName('can_be_deleted') . ' = ' . $this->_db->quote($status))
+			->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($student->id))
+			->andWhere($this->_db->quoteName('fnum') . ' like ' . $this->_db->quote($student->fnum));
+		$this->_db->setQuery($query);
 
 		try {
-			$db->execute();
+			$this->_db->execute();
 		} catch (Exception $e) {
 			JLog::add('Error in model/checklist at query : '.$query, JLog::ERROR, 'com_emundus');
 		}

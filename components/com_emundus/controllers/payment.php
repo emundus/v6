@@ -14,11 +14,17 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Factory;
+
 class EmundusControllerPayment extends JControllerLegacy
 {
+	protected $app;
+
     public function __construct()
     {
         parent::__construct();
+
+		$this->app = Factory::getApplication();
 
         // Attach logging system.
         jimport('joomla.log.log');
@@ -31,15 +37,15 @@ class EmundusControllerPayment extends JControllerLegacy
     public function getFlywireConfig()
     {
         $emundusUser = JFactory::getSession()->get('emundusUser');
-        $jinput = JFactory::getApplication()->input;
-        $format = $jinput->get('format', '');
+        
+        $format = $this->input->get('format', '');
         $fnum = $emundusUser->fnum;
         $body = file_get_contents('php://input');
         $body = json_decode($body, true);
 
         if (!empty($fnum)) {
             $params = JComponentHelper::getParams('com_emundus');
-            $model = new EmundusModelPayment();
+            $model = $this->getModel('Payment');
             $model->createPaymentOrder($fnum, 'flywire');
 
             $response = array(
@@ -68,7 +74,7 @@ class EmundusControllerPayment extends JControllerLegacy
 
             require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
             require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-            $m_files = new EmundusModelFiles;
+            $m_files = $this->getModel('Files');
             $fnumInfos = $m_files->getFnumInfos($fnum);
 
             EmundusModelLogs::log(95, $fnumInfos['applicant_id'], $fnum, 38, 'u', 'COM_EMUNDUS_PAYMENT_INITIALISATION', json_encode($response['data']));
@@ -85,16 +91,16 @@ class EmundusControllerPayment extends JControllerLegacy
     public function updateFlywirePaymentInfos()
     {
         $data = [];
-        $jinput = JFactory::getApplication()->input;
-        $data['status'] = $jinput->get('status', '');
-        $data['amount'] = $jinput->get('amount', '');
-        $data['at'] = $jinput->get('at', '');
-        $data['id'] = $jinput->get('id', '');
-        $data['callback_id'] = $jinput->get('callback_id', '');
-        $fnum = $jinput->get('fnum', '');
+        
+        $data['status'] = $this->input->get('status', '');
+        $data['amount'] = $this->input->get('amount', '');
+        $data['at'] = $this->input->get('at', '');
+        $data['id'] = $this->input->get('id', '');
+        $data['callback_id'] = $this->input->get('callback_id', '');
+        $fnum = $this->input->get('fnum', '');
 
         if (!empty($fnum) && !empty($data['callback_id'])) {
-            $model = new EmundusModelPayment();
+            $model = $this->getModel('Payment');
             $model->updateFlywirePaymentInfos($fnum, $data['callback_id'], $data);
         } else {
             JLog::add('Can not update payment infos : fnum or callback_id is empty, received : ' . json_encode($data), JLog::WARNING, 'com_emundus.payment');
@@ -105,7 +111,7 @@ class EmundusControllerPayment extends JControllerLegacy
     {
         $emundusUser = JFactory::getSession()->get('emundusUser');
 
-        $model = new EmundusModelPayment();
+        $model = $this->getModel('Payment');
         $updated = $model->updateFileTransferPayment($emundusUser);
 
         echo json_encode(array('status' => $updated));
@@ -114,14 +120,14 @@ class EmundusControllerPayment extends JControllerLegacy
 
     public function resetpaymentsession()
     {
-        $app = JFactory::getApplication();
-        $jinput = $app->input;
-        $redirect = $jinput->get('redirect', false);
+
+
+        $redirect = $this->input->get('redirect', false);
         $model = $this->getModel('payment');
         $model->resetPaymentSession();
 
         if ($redirect) {
-            $app->redirect('/');
+            $this->app->redirect('/');
         }
     }
 
@@ -129,9 +135,9 @@ class EmundusControllerPayment extends JControllerLegacy
     public function checkpaymentsession()
     {
         $is_valid = true;
-        $app = JFactory::getApplication();
-        $jinput = $app->input;
-        $fnum = $jinput->get('fnum', false);
+
+
+        $fnum = $this->input->get('fnum', false);
 
         if (!empty($fnum)) {
             $model = $this->getModel('payment');

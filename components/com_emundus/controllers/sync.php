@@ -14,20 +14,25 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Factory;
+
 class EmundusControllerSync extends JControllerLegacy
 {
-    private $_user = null;
-    private $m_sync = null;
+	protected $app;
+
+    private $_user;
+    private $m_sync;
 
     public function __construct($config = array())
     {
         parent::__construct($config);
 
-        require_once(JPATH_COMPONENT . DS . 'models' . DS . 'sync.php');
-        require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'sync.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'access.php');
 
-        $this->_user = JFactory::getSession()->get('emundusUser');
-        $this->m_sync = new EmundusModelSync();
+		$this->app = Factory::getApplication();
+        $this->_user = $this->app->getSession()->get('emundusUser');
+        $this->m_sync = $this->getModel('Sync');
     }
 
     public function getconfig()
@@ -36,8 +41,8 @@ class EmundusControllerSync extends JControllerLegacy
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_('ACCESS_DENIED'));
         } else {
-            $jinput = JFactory::getApplication()->input;
-            $type = $jinput->getString('type', null);
+            
+            $type = $this->input->getString('type', null);
 
             if (!empty($type)) {
                 $config = $this->m_sync->getConfig($type);
@@ -56,9 +61,9 @@ class EmundusControllerSync extends JControllerLegacy
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
-            $config = $jinput->getString('config', null);
-            $type = $jinput->getString('type', null);
+            
+            $config = $this->input->getString('config', null);
+            $type = $this->input->getString('type', null);
 
             $saved = $this->m_sync->saveConfig($config, $type);
 
@@ -164,9 +169,9 @@ class EmundusControllerSync extends JControllerLegacy
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
-            $did = $jinput->getString('did', null);
-            $sync = $jinput->getString('sync', null);
+            
+            $did = $this->input->getString('did', null);
+            $sync = $this->input->getString('sync', null);
 
             $updated = $this->m_sync->updateDocumentSync($did, $sync);
 
@@ -182,9 +187,9 @@ class EmundusControllerSync extends JControllerLegacy
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
-            $did = $jinput->getString('did', null);
-            $sync_method = $jinput->getString('sync_method', null);
+            
+            $did = $this->input->getString('did', null);
+            $sync_method = $this->input->getString('sync_method', null);
 
             $updated = $this->m_sync->updateDocumentSyncMethod($did, $sync_method);
 
@@ -205,7 +210,7 @@ class EmundusControllerSync extends JControllerLegacy
 
     public function getsynctype(): string
     {
-        $upload_id = JFactory::getApplication()->input->getInt('upload_id', null);
+        $upload_id = $this->input->getInt('upload_id', null);
         $tab = array(
             'status' => 1,
             'msg' => JText::_('SYNC_TYPE_FOUND'),
@@ -231,7 +236,7 @@ class EmundusControllerSync extends JControllerLegacy
 
     public function getsynchronizestate()
     {
-        $upload_id = JFactory::getApplication()->input->getInt('upload_id', null);
+        $upload_id = $this->input->getInt('upload_id', null);
         $tab = array(
             'status' => 0,
             'msg' => JText::_('SYNC_STATE_NOT_FOUND'),
@@ -252,7 +257,7 @@ class EmundusControllerSync extends JControllerLegacy
     public function synchronizeattachments()
     {
         $updated = array();
-        $upload_ids = JFactory::getApplication()->input->get('upload_ids', array(), 'array');
+        $upload_ids = $this->input->get('upload_ids', array(), 'array');
         $upload_ids = json_decode($upload_ids[0]);
 
         if (!empty($upload_ids) && is_array($upload_ids)) {
@@ -268,7 +273,7 @@ class EmundusControllerSync extends JControllerLegacy
 
     public function deleteattachments()
     {
-        $upload_ids = JFactory::getApplication()->input->get('upload_ids', array(), 'array');
+        $upload_ids = $this->input->get('upload_ids', array(), 'array');
         $upload_ids = json_decode($upload_ids[0]);
 
         if (!empty($upload_ids) && is_array($upload_ids)) {
@@ -284,7 +289,7 @@ class EmundusControllerSync extends JControllerLegacy
 
     public function checkattachmentsexists()
     {
-        $upload_ids = JFactory::getApplication()->input->get('upload_ids', array(), 'array');
+        $upload_ids = $this->input->get('upload_ids', array(), 'array');
         $upload_ids = json_decode($upload_ids[0]);
 
         if (!empty($upload_ids)) {
@@ -306,7 +311,7 @@ class EmundusControllerSync extends JControllerLegacy
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
         } else {
-            $attachmentId = JFactory::getApplication()->input->getInt('attachmentId', 0);
+            $attachmentId = $this->input->getInt('attachmentId', 0);
 
             if (!empty($attachmentId)) {
                 $tab = array('status' => 1, 'msg' => JText::_('ATTACHMENT_ASPECTS_CONFIG_FOUND'));
@@ -327,8 +332,8 @@ class EmundusControllerSync extends JControllerLegacy
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
         } else {
-            $attachmentId = JFactory::getApplication()->input->getInt('attachmentId', 0);
-            $config = JFactory::getApplication()->input->getString('config', '');
+            $attachmentId = $this->input->getInt('attachmentId', 0);
+            $config = $this->input->getString('config', '');
 
             if (!empty($attachmentId)) {
                 $tab = array('status' => 1, 'msg' => JText::_('ATTACHMENT_ASPECTS_CONFIG_SAVED'));
@@ -348,7 +353,7 @@ class EmundusControllerSync extends JControllerLegacy
         $user = JFactory::getUser();
 
         if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $upload_id = JFactory::getApplication()->input->getInt('uploadId', 0);
+            $upload_id = $this->input->getInt('uploadId', 0);
 
             if (!empty($upload_id)) {
                 $node_id = $this->m_sync->getNodeId($upload_id);

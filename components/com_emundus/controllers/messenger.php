@@ -14,6 +14,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Factory;
+
 /**
  * Campaign Controller
  *
@@ -23,13 +25,15 @@ jimport('joomla.application.component.controller');
  */
 class EmundusControllerMessenger extends JControllerLegacy
 {
+	protected $app;
 
-    var $m_messenger = null;
+    private $m_messenger;
 
     public function __construct($config = array())
     {
         parent::__construct($config);
         $this->m_messenger = $this->getModel('messenger');
+		$this->app = Factory::getApplication();
     }
 
     /**
@@ -48,18 +52,18 @@ class EmundusControllerMessenger extends JControllerLegacy
     public function getmessagesbyfnum(){
 		$response = ['data' => null, 'status' => false, 'msg' => JText::_('BAD_REQUEST'), 'code' => 403];
 
-        $jinput = JFactory::getApplication()->input;
-	    $fnum = $jinput->getString('fnum');
+        
+	    $fnum = $this->input->getString('fnum');
 	    $current_user = JFactory::getUser();
 
 		if (!empty($fnum) && !empty($current_user->id)) {
 			require_once (JPATH_ROOT . '/components/com_emundus/models/profile.php');
-			$m_profile = new EmundusModelProfile();
+			$m_profile = $this->getModel('Profile');
 			$current_user_fnums = array_keys($m_profile->getApplicantFnums($current_user->id));
 			$response['msg'] = JText::_('ACCESS_DENIED');
 
 			if (EmundusHelperAccess::asAccessAction(36, 'c', $current_user->id, $fnum) || in_array($fnum, $current_user_fnums)) {
-				$offset = $jinput->getString('offset',0);
+				$offset = $this->input->getString('offset',0);
 
 				$response['data'] = $this->m_messenger->getMessagesByFnum($fnum,$offset);
 				if (!empty($response['data'])) {
@@ -78,15 +82,15 @@ class EmundusControllerMessenger extends JControllerLegacy
 
     public function sendmessage(){
 	    $response = ['data' => null, 'status' => false, 'msg' => JText::_('BAD_REQUEST'), 'code' => 403];
-        $jinput = JFactory::getApplication()->input;
-        $message = $jinput->getString('message');
-        $fnum = $jinput->getString('fnum');
+        
+        $message = $this->input->getString('message');
+        $fnum = $this->input->getString('fnum');
 
 		if (!empty($fnum) && !empty($message)) {
 			$response['msg'] = JText::_('ACCESS_DENIED');
 			$current_user = JFactory::getUser();
 			require_once (JPATH_ROOT . '/components/com_emundus/models/profile.php');
-			$m_profile = new EmundusModelProfile();
+			$m_profile = $this->getModel('Profile');
 			$current_user_fnums = array_keys($m_profile->getApplicantFnums($current_user->id));
 
 			if (EmundusHelperAccess::asAccessAction(36, 'c', $current_user->id, $fnum) || in_array($fnum, $current_user_fnums)) {
@@ -109,8 +113,8 @@ class EmundusControllerMessenger extends JControllerLegacy
 
 	public function getnotifications() {
 		$response = ['data' => null, 'status' => false, 'msg' => JText::_('BAD_REQUEST'), 'code' => 403];
-		$jinput = JFactory::getApplication()->input;
-		$user = $jinput->getInt('user');
+		
+		$user = $this->input->getInt('user');
 
 		if (!empty($user)) {
 			$response['msg'] = JText::_('ACCESS_DENIED');
@@ -130,15 +134,15 @@ class EmundusControllerMessenger extends JControllerLegacy
 
     public function getnotificationsbyfnum(){
 	    $response = ['data' => null, 'status' => false, 'msg' => JText::_('BAD_REQUEST'), 'code' => 403];
-	    $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->getString('fnum');
+	    
+        $fnum = $this->input->getString('fnum');
 
 		if (!empty($fnum)) {
 			$response['msg'] = JText::_('ACCESS_DENIED');
 
 			$current_user = JFactory::getUser();
 			require_once (JPATH_ROOT . '/components/com_emundus/models/profile.php');
-			$m_profile = new EmundusModelProfile();
+			$m_profile = $this->getModel('Profile');
 			$current_user_fnums = array_keys($m_profile->getApplicantFnums($current_user->id));
 
 			if(EmundusHelperAccess::asAccessAction(36, 'c', $current_user->id, $fnum) || in_array($fnum, $current_user_fnums)) {
@@ -153,9 +157,9 @@ class EmundusControllerMessenger extends JControllerLegacy
     }
 
     public function markasread(){
-        $jinput = JFactory::getApplication()->input;
+        
 
-        $fnum = $jinput->getString('fnum');
+        $fnum = $this->input->getString('fnum');
 
         $messages_readed = $this->m_messenger->markAsRead($fnum);
 
@@ -168,20 +172,20 @@ class EmundusControllerMessenger extends JControllerLegacy
     public function uploaddocument(){
 		$response = ['status' => false, 'code' => 403, 'msg' => JText::_('BAD_REQUEST'), 'data' => null];
 
-        $jinput = JFactory::getApplication()->input;
-        $file = $jinput->files->get('file');
+        
+        $file = $this->input->files->get('file');
 
 		if (!empty($file)) {
-			$fnum = $jinput->get('fnum');
+			$fnum = $this->input->get('fnum');
 
 			if (!empty($fnum)) {
 				$response['msg'] = JText::_('ACCESS_DENIED');
-				$message_input = $jinput->getString('message');
-				$applicant = $jinput->getBool('applicant');
-				$attachment = $jinput->getInt('attachment');
+				$message_input = $this->input->getString('message');
+				$applicant = $this->input->getBool('applicant');
+				$attachment = $this->input->getInt('attachment');
 
 				require_once(JPATH_SITE .  '/components/com_emundus/models/files.php');
-				$m_files = new EmundusModelFiles();
+				$m_files = $this->getModel('Files');
 				$fnumInfos = $m_files->getFnumInfos($fnum);
 				$applicant_id = $fnumInfos['applicant_id'];
 				$current_user = JFactory::getUser();
@@ -245,10 +249,10 @@ class EmundusControllerMessenger extends JControllerLegacy
     }
 
     public function getdocumentsbycampaign(){
-        $jinput = JFactory::getApplication()->input;
+        
 
-        $fnum = $jinput->getString('fnum');
-        $applicant = $jinput->getVar('applicant');
+        $fnum = $this->input->getString('fnum');
+        $applicant = $this->input->getVar('applicant');
 
         $messages_readed = $this->m_messenger->getDocumentsByCampaign($fnum, $applicant);
 
@@ -259,11 +263,11 @@ class EmundusControllerMessenger extends JControllerLegacy
     }
 
     public function askattachment(){
-        $jinput = JFactory::getApplication()->input;
+        
 
-        $fnum = $jinput->getString('fnum');
-        $attachment = $jinput->getString('attachment');
-        $message = $jinput->getString('message');
+        $fnum = $this->input->getString('fnum');
+        $attachment = $this->input->getString('attachment');
+        $message = $this->input->getString('message');
 
         $new_message = $this->m_messenger->askAttachment($fnum,$attachment,$message);
 

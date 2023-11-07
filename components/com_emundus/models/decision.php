@@ -13,13 +13,19 @@
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
-include_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'files.php');
-include_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'list.php');
-include_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
-include_once(JPATH_COMPONENT . DS . 'models' . DS . 'files.php');
+
+use Joomla\CMS\Factory;
+
+include_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'files.php');
+include_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'list.php');
+include_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'access.php');
+include_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
 
 class EmundusModelDecision extends JModelList
 {
+	private $app;
+	private $db;
+
 	private $_total = null;
 	private $_pagination = null;
 	private $_applicants = array();
@@ -40,21 +46,25 @@ class EmundusModelDecision extends JModelList
 		parent::__construct();
 
 		if(!class_exists('EmundusModelFiles')) {
-			include_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+			include_once(JPATH_BASE . '/components/com_emundus/models/files.php');
 		}
 
 		$this->_files = new EmundusModelFiles;
-        $db = JFactory::getDbo();
-		$mainframe = JFactory::getApplication();
 
-		// Get current menu parameters
-		$menu = @JFactory::getApplication()->getMenu();
+		$this->app = Factory::getApplication();
+		if (version_compare(JVERSION, '4.0', '>'))
+		{
+			$this->db = Factory::getContainer()->get('DatabaseDriver');
+			$current_user = $this->app->getIdentity();
+			$session = $this->app->getSession();
+		} else {
+			$this->db = JFactory::getDbo();
+			$current_user = JFactory::getUser();
+			$session = JFactory::getSession();
+		}
+
+		$menu = $this->app->getMenu();
 		$current_menu = $menu->getActive();
-
-		$current_user = JFactory::getUser();
-		/*
-		** @TODO : gestion du cas Itemid absent à prendre en charge dans la vue
-		*/
 
         if (empty($current_menu)) {
             return false;
@@ -62,7 +72,6 @@ class EmundusModelDecision extends JModelList
 
 		$menu_params = $menu->getParams($current_menu->id);
 		$em_other_columns = explode(',', $menu_params->get('em_other_columns'));
-		$session = JFactory::getSession();
 
 		if (!$session->has('filter_order') || $session->get('filter_order') == 'c.id') {
 
@@ -80,7 +89,7 @@ class EmundusModelDecision extends JModelList
         }
 
 		if (!$session->has('limit')) {
-			$limit = $mainframe->getCfg('list_limit');
+			$limit = $this->app->get('list_limit');
 			$limitstart = 0;
 			$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
@@ -142,8 +151,8 @@ class EmundusModelDecision extends JModelList
 					$join_val_column = (!empty($join_val_column_concat) && $join_val_column_concat!='')?'CONCAT('.$join_val_column_concat.')':$attribs->join_val_column;
 
                     // Check if the db table has a published column. So we don't get the unpublished value
-                    $db->setQuery("SHOW COLUMNS FROM $attribs->join_db_name LIKE 'published'");
-                    $publish_query = ($db->loadResult()) ? " AND $attribs->join_db_name.published = 1 " : '';
+                    $this->db->setQuery("SHOW COLUMNS FROM $attribs->join_db_name LIKE 'published'");
+                    $publish_query = ($this->db->loadResult()) ? " AND $attribs->join_db_name.published = 1 " : '';
 
 					if ($group_params->repeat_group_button == 1) {
 						$query = '(
@@ -247,12 +256,12 @@ class EmundusModelDecision extends JModelList
 						$element_attribs = json_decode($def_elmt->element_attribs);
 
 						$element_replacement = $def_elmt->tab_name . '___' . $def_elmt->element_name;
-						$select = $def_elmt->tab_name . '.' . $def_elmt->element_name . ' AS ' . $db->quote($element_replacement) . ', CASE ';
+						$select = $def_elmt->tab_name . '.' . $def_elmt->element_name . ' AS ' . $this->db->quote($element_replacement) . ', CASE ';
 						foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-							$select .= ' WHEN ' . $def_elmt->tab_name . '.' . $def_elmt->element_name . ' = ' . $db->quote($value) . ' THEN ' .  $db->quote(JText::_(addslashes($element_attribs->sub_options->sub_labels[$key]))) ;
+							$select .= ' WHEN ' . $def_elmt->tab_name . '.' . $def_elmt->element_name . ' = ' . $this->db->quote($value) . ' THEN ' .  $this->db->quote(JText::_(addslashes($element_attribs->sub_options->sub_labels[$key]))) ;
 						}
 						$select .= ' ELSE ' . $def_elmt->tab_name . '.' . $def_elmt->element_name;
-						$select .= ' END AS ' . $db->quote($element_replacement);
+						$select .= ' END AS ' . $this->db->quote($element_replacement);
 
 						$this->_elements_default[] = $select;
 					}
@@ -379,13 +388,18 @@ class EmundusModelDecision extends JModelList
 	 * @throws Exception
 	 */
     public function getAllDecisionElements($show_in_list_summary=1, $programme_code) {
-        $session = JFactory::getSession();
+	    if (version_compare(JVERSION, '4.0', '>'))
+	    {
+		    $session = $this->app->getSession();
+	    } else {
+			$session = Factory::getSession();
+	    }
 
         if ($session->has('filt_params')) {
             $elements_id = array();
 			$filt_params = $session->get('filt_params');
 
-            if (is_array(@$filt_params['programme']) && $filt_params['programme'][0] != '%') {
+            if (is_array($filt_params['programme']) && $filt_params['programme'][0] != '%') {
                 foreach ($filt_params['programme'] as $value) {
                     if ($value == $programme_code) {
                         $groups = $this->getGroupsDecisionByProgramme($value);
@@ -411,7 +425,8 @@ class EmundusModelDecision extends JModelList
                 }
             }
         }
-        return @$elements_id;
+
+        return $elements_id;
     }
 
 	/**
@@ -511,12 +526,11 @@ class EmundusModelDecision extends JModelList
 	 * @since version
 	 */
 	public function getProfileAcces($user) {
-		$db = JFactory::getDBO();
 		$query = 'SELECT esg.profile_id FROM #__emundus_setup_groups as esg
 					LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
 					WHERE esg.published=1 AND eg.user_id=' . $user;
-		$db->setQuery($query);
-		return $db->loadResultArray();
+		$this->db->setQuery($query);
+		return $this->db->loadResultArray();
 	}
 
 	/**
@@ -528,12 +542,10 @@ class EmundusModelDecision extends JModelList
 	 * @since version
 	 */
 	public function setSubQuery($tab, $elem) {
-		$search = JRequest::getVar('elements', NULL, 'POST', 'array', 0);
-		$search_values = JRequest::getVar('elements_values', NULL, 'POST', 'array', 0);
-		$search_other = JRequest::getVar('elements_other', NULL, 'POST', 'array', 0);
-		$search_values_other = JRequest::getVar('elements_values_other', NULL, 'POST', 'array', 0);
-
-		$db = JFactory::getDBO();
+		$search = JFactory::getApplication()->input->get('elements', NULL, 'POST', 'array', 0);
+		$search_values = JFactory::getApplication()->input->get('elements_values', NULL, 'POST', 'array', 0);
+		$search_other = JFactory::getApplication()->input->get('elements_other', NULL, 'POST', 'array', 0);
+		$search_values_other = JFactory::getApplication()->input->get('elements_values_other', NULL, 'POST', 'array', 0);
 
 		$query = 'SELECT DISTINCT(#__emundus_users.user_id), ' . $tab . '.' . $elem . ' AS ' . $tab . '__' . $elem;
 		$query .= '	FROM #__emundus_campaign_candidature
@@ -553,8 +565,8 @@ class EmundusModelDecision extends JModelList
 		$query = @EmundusHelperFiles::setWhere($search_other, $search_values_other, $query);
 		$query = @EmundusHelperFiles::setWhere($this->_elements_default, $this->elements_values, $query);
 
-		$db->setQuery($query);
-		$obj = $db->loadObjectList();
+		$this->db->setQuery($query);
+		$obj = $this->db->loadObjectList();
 		$list = array();
 		$tmp = '';
 		foreach ($obj as $unit) {
@@ -816,18 +828,21 @@ class EmundusModelDecision extends JModelList
 	 * @since version
 	 */
 	public function getUsers($current_fnum = null) {
-		$session = JFactory::getSession();
+		if (version_compare(JVERSION, '4.0', '>'))
+		{
+			$session = $this->app->getSession();
+		} else {
+			$session = Factory::getSession();
+		}
 
-		$app = JFactory::getApplication();
-		$current_menu = $app->getMenu()->getActive();
+		$current_menu = $this->app->getMenu()->getActive();
 		if (!empty($current_menu)) {
-			$menu_params      = $current_menu->params;
+			$menu_params      = $current_menu->getParams();
 			$em_other_columns = explode(',', $menu_params->get('em_other_columns'));
 		} else {
 			$em_other_columns = array();
 		}
 
-		$dbo = $this->getDbo();
 		$query = 'select jecc.fnum, ss.step, ss.value as status, ss.class as status_class, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name';
 
 		// prevent double left join on query
@@ -885,15 +900,15 @@ class EmundusModelDecision extends JModelList
 		$query .= ' WHERE u.block=0 ' . $q['q'];
 
 		if (isset($current_fnum) && !empty($current_fnum)) {
-			$query .= ' AND jecc.fnum like '.$dbo->Quote($current_fnum);
+			$query .= ' AND jecc.fnum like '.$this->db->Quote($current_fnum);
 		}
 
 		$query .= ' GROUP BY jecc.fnum';
 		$query .= $this->_buildContentOrderBy();
-		$dbo->setQuery($query);
+		$this->db->setQuery($query);
 
 		try {
-			$res = $dbo->loadAssocList();
+			$res = $this->db->loadAssocList();
 			$this->_applicants = $res;
 
 			$limit = $session->get('limit');
@@ -903,8 +918,8 @@ class EmundusModelDecision extends JModelList
 				$query .= " limit $limitStart, $limit ";
 			}
 
-			$dbo->setQuery($query);
-			return $dbo->loadAssocList();
+			$this->db->setQuery($query);
+			return $this->db->loadAssocList();
 
 		} catch (Exception $e) {
 			echo $e->getMessage();
@@ -912,8 +927,6 @@ class EmundusModelDecision extends JModelList
 		}
 	}
 
-	// get elements by groups
-	// @params string List of Fabrik groups comma separated
 	function getElementsByGroups($groups, $show_in_list_summary=1, $hidden=0){
 		return @EmundusHelperFilters::getElementsByGroups($groups, $show_in_list_summary, $hidden);
 	}
@@ -1083,13 +1096,12 @@ class EmundusModelDecision extends JModelList
 
     // get string of fabrik group ID use for evaluation form
     public function getGroupsEvalByProgramme($code){
-        $db = $this->getDbo();
-        $query = 'select fabrik_group_id from #__emundus_setup_programmes where code like '.$db->Quote($code);
+        $query = 'select fabrik_group_id from #__emundus_setup_programmes where code like '.$this->db->Quote($code);
         try
         {
             if(!empty($code)) {
-                $db->setQuery($query);
-                return $db->loadResult();
+                $this->db->setQuery($query);
+                return $this->db->loadResult();
             } else return null;
         }
         catch(Exception $e)
@@ -1099,23 +1111,27 @@ class EmundusModelDecision extends JModelList
 
     }
 
-
-    // get string of fabrik group ID use for evaluation form
     public function getGroupsDecisionByProgramme($code){
-        $db = $this->getDbo();
-        $query = 'select fabrik_decision_group_id from #__emundus_setup_programmes where code like '.$db->Quote($code);
+	    $group_decision = null;
+        $query = $this->db->getQuery(true);
+
+		$query->select('fabrik_decision_group_id')
+			->from('#__emundus_setup_programmes')
+			->where('code = '.$this->db->quote($code));
+
         try
         {
             if(!empty($code)) {
-                $db->setQuery($query);
-                return $db->loadResult();
-            } else return null;
+                $this->db->setQuery($query);
+	            $group_decision = $this->db->loadResult();
+            }
         }
         catch(Exception $e)
         {
             throw $e;
         }
 
+		return $group_decision;
     }
 
 	public function getSchoolyears()
@@ -1352,31 +1368,32 @@ class EmundusModelDecision extends JModelList
         }
     }
 
-    /*
-* 	Get Decision form ID By programme code
-*	@param code 		code of the programme
-* 	@return int
-*/
     function getDecisionFormByProgramme($code=null) {
+	    if (version_compare(JVERSION, '4.0', '>'))
+	    {
+		    $session = $this->app->getSession();
+	    } else {
+		    $session = Factory::getSession();
+		}
+
         if ($code === NULL) {
-            $session = JFactory::getSession();
             if ($session->has('filt_params'))
             {
                 $filt_params = $session->get('filt_params');
-                if (count(@$filt_params['programme'])>0) {
+                if (count($filt_params['programme'])>0) {
                     $code = $filt_params['programme'][0];
                 }
             }
         }
         try {
-            $query = 'SELECT ff.form_id
-					FROM #__fabrik_formgroup ff
-					WHERE ff.group_id IN (SELECT fabrik_decision_group_id FROM #__emundus_setup_programmes WHERE code like ' .
-                $this->_db->Quote($code) . ')';
-//die(str_replace('#_', 'jos', $query));
-            $this->_db->setQuery($query);
+			$query = $this->db->getQuery(true);
 
-            return $this->_db->loadResult();
+			$query->select('ff.form_id')
+				->from($this->db->quoteName('#__fabrik_formgroup', 'ff'))
+				->where('ff.group_id IN (SELECT fabrik_decision_group_id FROM #__emundus_setup_programmes WHERE code like ' . $this->db->quote($code) . ')');
+            $this->db->setQuery($query);
+
+            return $this->db->loadResult();
         }
         catch(Exception $e)
         {
@@ -1391,8 +1408,7 @@ class EmundusModelDecision extends JModelList
 
 		try {
 			$app = JFactory::getApplication();
-			$db = JFactory::getDBO();
-			$query = $db->getQuery(true);
+			$query = $this->db->getQuery(true);
 			$user =  JFactory::getUser();
 
 			if(is_array($fnum)){
@@ -1414,10 +1430,10 @@ class EmundusModelDecision extends JModelList
 			$params = JComponentHelper::getParams('com_emundus');
 
 			$query->select('ecc.campaign_id,ecc.applicant_id as student_id')
-				->from($db->quoteName('#__emundus_campaign_candidature','ecc'))
-				->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
-			$db->setQuery($query);
-			$decision_details = $db->loadObject();
+				->from($this->db->quoteName('#__emundus_campaign_candidature','ecc'))
+				->where($this->db->quoteName('ecc.fnum') . ' LIKE ' . $this->db->quote($fnum));
+			$this->db->setQuery($query);
+			$decision_details = $this->db->loadObject();
 
 			if(empty($student_id)) {
 				$student_id = $decision_details->student_id;
@@ -1428,17 +1444,17 @@ class EmundusModelDecision extends JModelList
 				// If we open an decision
 				$query->clear()
 					->select('id,user')
-					->from($db->quoteName('#__emundus_final_grade'))
-					->where($db->quoteName('id') . ' = ' . $db->quote($rowid));
+					->from($this->db->quoteName('#__emundus_final_grade'))
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($rowid));
 			}
 			else {
 				$query->clear()
 					->select('id,user')
-					->from($db->quoteName('#__emundus_final_grade'))
-					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+					->from($this->db->quoteName('#__emundus_final_grade'))
+					->where($this->db->quoteName('fnum') . ' LIKE ' . $this->db->quote($fnum));
 			}
-			$db->setQuery($query);
-			$decision = $db->loadObject();
+			$this->db->setQuery($query);
+			$decision = $this->db->loadObject();
 
 			$form_url = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&jos_emundus_final_grade___student_id[value]='.$student_id.'&jos_emundus_final_grade___campaign_id[value]='.$decision_details->campaign_id.'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$student_id.'&tmpl=component&iframe=1';
 			$details_url = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&jos_emundus_final_grade___student_id[value]='.$student_id.'&jos_emundus_final_grade___campaign_id[value]='.$decision_details->campaign_id.'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$student_id.'&tmpl=component&iframe=1';

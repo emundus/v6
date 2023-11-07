@@ -15,6 +15,8 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Factory;
+
 /**
  * List Controller
  *
@@ -23,11 +25,16 @@ jimport('joomla.application.component.controller');
  */
 class EmundusControllerList extends JControllerLegacy {
 
-    var $m_list = null;
+	protected $app;
+
+    private $m_list;
+
     public function __construct($config = array()) {
         parent::__construct($config);
 
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+
+		$this->app = Factory::getApplication();
         $this->m_list = $this->getModel('list');
     }
 
@@ -36,10 +43,10 @@ class EmundusControllerList extends JControllerLegacy {
         $user = JFactory::getUser();
 
         if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            $jinput = JFactory::getApplication()->input;
-            $listId = $jinput->getInt('listId');
-            $listParticularConditionalColumn = json_decode($jinput->getString('listParticularConditionalColumn'));
-            $listParticularConditionalColumnValues = json_decode($jinput->getString('listParticularConditionalColumnValues'));
+            
+            $listId = $this->input->getInt('listId');
+            $listParticularConditionalColumn = json_decode($this->input->getString('listParticularConditionalColumn'));
+            $listParticularConditionalColumnValues = json_decode($this->input->getString('listParticularConditionalColumnValues'));
 
             if (!empty($listId)) {
                 $listData = $this->m_list->getList($listId, $listParticularConditionalColumn, $listParticularConditionalColumnValues);
@@ -62,9 +69,9 @@ class EmundusControllerList extends JControllerLegacy {
         $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
 
         if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            $jinput = JFactory::getApplication()->input;
-            $listId = $jinput->getInt('listId');
-            $lisActionColumnId=  $jinput->getInt('listActionColumnId');
+            
+            $listId = $this->input->getInt('listId');
+            $lisActionColumnId=  $this->input->getInt('listActionColumnId');
             $listData = $this->m_list->getListActions($listId,$lisActionColumnId,);
 
             if (!empty($listData)) {
@@ -83,11 +90,11 @@ class EmundusControllerList extends JControllerLegacy {
         $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
 
         if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            $jinput = JFactory::getApplication()->input;
-            $rowId = $jinput->getString('row_id');
-            $value = $jinput->getString('value');
-            $columnName = $jinput->getString('column_name');
-            $dbTablename = $jinput->getString('db_table_name');
+            
+            $rowId = $this->input->getString('row_id');
+            $value = $this->input->getString('value');
+            $columnName = $this->input->getString('column_name');
+            $dbTablename = $this->input->getString('db_table_name');
             $updated = $this->m_list->actionSetColumnValueAs($rowId,$value,$dbTablename,$columnName);
 
             if ($updated) {
@@ -107,9 +114,9 @@ class EmundusControllerList extends JControllerLegacy {
         $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
 
         if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            $jinput = JFactory::getApplication()->input;
-            $newValue = $jinput->getString('newValue');
-            $rows = json_decode($jinput->getString('rows'), true);
+            
+            $newValue = $this->input->getString('newValue');
+            $rows = json_decode($this->input->getString('rows'), true);
 
             if (!empty($newValue) && !empty($rows)) {
                 $updated = $this->m_list->updateActionState($newValue, $rows);

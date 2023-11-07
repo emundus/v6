@@ -13,6 +13,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Factory;
 
 /**
  * users Controller
@@ -23,15 +24,18 @@ jimport('joomla.application.component.controller');
  */
 class EmundusControllerUser extends JControllerLegacy
 {
-    private $_user = null;
-    private $m_user = null;
+	protected $app;
+
+    private $_user;
+	private $m_user;
 
     public function __construct($config = array())
     {
         require_once(JPATH_COMPONENT . DS . 'models' . DS . 'user.php');
 
-        $this->_user = JFactory::getSession()->get('emundusUser');
-        $this->m_user = new EmundusModelUser();
+		$this->app = Factory::getApplication();
+        $this->_user = $this->app->getSession()->get('emundusUser');
+        $this->m_user = $this->getModel('User');
 
         parent::__construct($config);
     }
@@ -40,9 +44,9 @@ class EmundusControllerUser extends JControllerLegacy
     public function display($cachable = false, $urlparams = false)
     {
         // Set a default view if none exists
-        if (!JRequest::getCmd('view')) {
+        if (!$this->input->get('view')) {
             $default = 'user';
-            JRequest::setVar('view', $default);
+            $this->input->set('view', $default);
         }
 
         if ($this->_user->guest == 0)
@@ -53,7 +57,7 @@ class EmundusControllerUser extends JControllerLegacy
 
 	public function redirectMeWithMessage()
 	{
-		$input = JFactory::getApplication()->input;
+		$input = $this->input;
 		$message = $input->getString('message', null);
 
 		$this->setRedirect('/', $message);

@@ -12,6 +12,8 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Factory;
+
 /**
  * eMundus Component Controller
  *
@@ -21,8 +23,8 @@ jimport('joomla.application.component.controller');
 
 class EmundusControllerFormations extends JControllerLegacy {
 
-    // Initialize class variables
-    var $user = null;
+    protected $app;
+    private $user;
 
 
     public function __construct(array $config = array()) {
@@ -31,7 +33,8 @@ class EmundusControllerFormations extends JControllerLegacy {
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'formations.php');
 
         // Load class variables
-        $this->user = JFactory::getSession()->get('emundusUser');
+	    $this->app = Factory::getApplication();
+        $this->user = $this->app->getSession()->get('emundusUser');
 
         parent::__construct($config);
     }
@@ -39,10 +42,10 @@ class EmundusControllerFormations extends JControllerLegacy {
 
     public function deletecompany() {
 
-        $jinput = JFactory::getApplication()->input;
-        $id = $jinput->post->get('id', null);
 
-        $m_formations = new EmundusModelFormations();
+        $id = $this->input->post->get('id', null);
+
+        $m_formations = $this->getModel('Formations');
 
         $isHR = $m_formations->checkHR($id, $this->user->id);
         if (!empty($isHR)) {
@@ -58,11 +61,11 @@ class EmundusControllerFormations extends JControllerLegacy {
 
 
     public function deleteassociate() {
-        $jinput = JFactory::getApplication()->input;
-        $id = $jinput->post->get('id', null);
-        $cid = $jinput->post->get('cid', null);
 
-        $m_formations = new EmundusModelFormations();
+        $id = $this->input->post->get('id', null);
+        $cid = $this->input->post->get('cid', null);
+
+        $m_formations = $this->getModel('Formations');
 
         echo json_encode((object)[
             'status' => $m_formations->deleteAssociate($id, $cid, $this->user->id)

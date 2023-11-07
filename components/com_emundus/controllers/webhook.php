@@ -27,24 +27,19 @@ use GuzzleHttp\Client as GuzzleClient;
 
 class EmundusControllerWebhook extends JControllerLegacy {
 
+	protected $app;
+
 	private $m_files;
-	private $c_emundus;
 
 	public function __construct(array $config = array()) {
-		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'controller.php');
+		parent::__construct($config);
 
-		$this->m_files = new EmundusModelFiles;
-		$this->controller = new EmundusController;
+		$this->m_files = $this->getModel('Files');
+		$this->app = Factory::getApplication();
 
 		// Attach logging system.
 		jimport('joomla.log.log');
 		JLog::addLogger(['text_file' => 'com_emundus.webhook.php'], JLog::ALL, array('com_emundus.webhook'));
-
-		parent::__construct($config);
-        // Attach logging system.
-        jimport('joomla.log.log');
-        JLog::addLogger(['text_file' => 'com_emundus.webhook.php'], JLog::ALL, array('com_emundus.webhook'));
 	}
 
 	public function callback(){
@@ -70,8 +65,8 @@ class EmundusControllerWebhook extends JControllerLegacy {
 		}
 
 		if($allowed) {
-			$jinput = JFactory::getApplication()->input;
-			$type   = $jinput->getString('type');
+			
+			$type   = $this->input->getString('type');
 
 			$payload       = !empty($_POST["payload"]) ? $_POST["payload"] : file_get_contents("php://input");
 			$webhook_datas = json_decode($payload, true);
@@ -281,7 +276,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
 		$ftp_path 	= $eMConfig->get('addpipe_path_ftp', null);
 		$secret 	= JFactory::getConfig()->get('secret');
-		$token 		= JFactory::getApplication()->input->get('token', '', 'ALNUM');
+		$token 		= $this->input->get('token', '', 'ALNUM');
 
 		if ($token != $secret) {
 			JLog::add('Bad token sent.', JLog::ERROR, 'com_emundus.webhook');
@@ -424,10 +419,10 @@ class EmundusControllerWebhook extends JControllerLegacy {
 	   	$user 		= JFactory::getSession()->get('emundusUser');
 
 		//$secret 	= JFactory::getConfig()->get('secret');
-		//$token 		= JFactory::getApplication()->input->get('token', '', 'ALNUM');
-		//$fnum 		= JFactory::getApplication()->input->get('fnum', '', 'STRING');
-		$aid = JFactory::getApplication()->input->get('aid', '', 'ALNUM');
-		$applicant_id = JFactory::getApplication()->input->get('applicant_id', '', 'ALNUM');
+		//$token 		= $this->input->get('token', '', 'ALNUM');
+		//$fnum 		= $this->input->get('fnum', '', 'STRING');
+		$aid = $this->input->get('aid', '', 'ALNUM');
+		$applicant_id = $this->input->get('applicant_id', '', 'ALNUM');
 
 		if ($user->id != $applicant_id) {
 			JLog::add('Curent user and fnum does not match.', JLog::ERROR, 'com_emundus.webhook');
@@ -508,21 +503,22 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
     /**
      *
-     * @return csv file of all sent application files
+     * @return false|void
      *
+     * @throws Exception
+     * @since version
      */
     public function export_siscole(){
 
-        $mainframe = JFactory::getApplication();
         $eMConfig 	= JComponentHelper::getParams('com_emundus');
         $filtre_ip  = $eMConfig->get('filtre_ip');
         $filtre_ip  = explode(',',$filtre_ip);
         $secret 	= JFactory::getConfig()->get('secret');
-        $token 		= JFactory::getApplication()->input->get('token');
-        $fnum 		= JFactory::getApplication()->input->get('rowid');
+        $token 		= $this->input->get('token');
+        $fnum 		= $this->input->get('rowid');
         $filename   = $eMConfig->get('filename');
         $url        = 'images'.DS.'emundus'.DS.'files'.DS.'archives';
-        $file       = JPATH_BASE.DS.$url.DS.$filename.'.csv';
+        $file       = JPATH_SITE.DS.$url.DS.$filename.'.csv';
         $date = date('Y-m-d');
         //$time_date = date('Y-m-d H:i:s');
         $offset = $mainframe->get('offset', 'UTC');
@@ -648,7 +644,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
         $mFile = new EmundusModelFiles;
 
-        $banner_limit = JFactory::getApplication()->input->get('limit', 100);
+        $banner_limit = $this->input->get('limit', 100);
 
         $db = JFactory::getDbo();
         $res = new stdClass();
@@ -729,8 +725,8 @@ class EmundusControllerWebhook extends JControllerLegacy {
     public function process_banner() {
 //        $request = file_get_contents('php://input');        /// POST method
 
-        $cand_num 		= JFactory::getApplication()->input->get('noClientemundus');
-        $cand_idBanner  = JFactory::getApplication()->input->get('IDBanner');
+        $cand_num 		= $this->input->get('noClientemundus');
+        $cand_idBanner  = $this->input->get('IDBanner');
 
         header('Content-type: application/json');
 
@@ -781,8 +777,8 @@ class EmundusControllerWebhook extends JControllerLegacy {
     /* get zoom session by id */
     public function getzoomsession() {
         $tab = array('status' => false, 'msg' => JText::_('ZOOM_SESION_RETRIEVED_FAILED'), 'data' => null);
-        $jinput = JFactory::getApplication()->input;
-        $zid = $jinput->getString('zid', null);
+        
+        $zid = $this->input->getString('zid', null);
 
         if (!empty($zid)) {
             $db = JFactory::getDbo();
@@ -823,7 +819,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
         if (!empty($data['callback_id']) && !empty($data['status']) && !empty($data['amount'])) {
             require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'payment.php');
-            $m_payment = new EmundusModelPayment;
+            $m_payment = $this->getModel('Payment');
             $status = $m_payment->updateFlywirePaymentInfos($data['callback_id'], $data);
 
             if ($status) {
@@ -877,7 +873,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
             if (!empty($TransID) && !empty($Status) && !empty($PayID)) {
                 require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'payment.php');
-                $m_payment = new EmundusModelPayment();
+                $m_payment = $this->getModel('Payment');
                 $status = $m_payment->updateAxeptaPaymentInfos($TransID,$Status,$PayID);
 
                 if ($status) {
@@ -927,7 +923,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 				if(!empty($uid))
 				{
 					require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'dashboard.php');
-					$m_dashboard = new EmundusModelDashboard;
+					$m_dashboard = $this->getModel('Dashboard');
 					$widgets = $m_dashboard->getwidgets($uid);
 
 					$result['status'] = true;

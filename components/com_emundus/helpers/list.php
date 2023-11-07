@@ -137,7 +137,6 @@ class EmundusHelperList{
 			WHERE ege.applicant_id = '.$user_id.'
 			AND ege.campaign_id='.$campaign_id;
         $db->setQuery( $query );
-        // var_dump($query);
         return $db->loadObjectList('id');
     }
 
@@ -273,7 +272,7 @@ class EmundusHelperList{
     // @param   boolean checklevel : if true will check J! Access Level of logged user
     // @return  array Menu links of all forms needed to apply
     static function getFormsListByProfileID($profile_id, $checklevel=true){
-        require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
         return EmundusHelperMenu::buildMenuQuery($profile_id, null, $checklevel);
     }
 
@@ -365,8 +364,8 @@ class EmundusHelperList{
     ** @return array Array of HTML to display in page for action block indexed by user ID.
     */
     function createActionsBlock($users, $params){
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none', 0);
-        $s = JRequest::getVar('s', null, 'POST', 'none', 0);
+        $itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none', 0);
+        $s = JFactory::getApplication()->input->get('s', null, 'POST', 'none', 0);
         $actions = array();
         $ids = array();
 
@@ -502,7 +501,7 @@ class EmundusHelperList{
     ** @return array Arary of HTML to display in page for action block indexed by user ID.
     */
     function createValidateBlock($users, $params){
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+        $itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
         $validate = array();
 //echo '<hr>';
         $validate_details = EmundusHelperList::getElementsDetailsByID('"'.implode('","', $params).'"');
@@ -536,7 +535,7 @@ class EmundusHelperList{
     // @param 	array Array of user id
     // @return 	array Array of HTML to display in page
     function createSelectionBlock($users){
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+        $itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
         $selection = array();
         //final grade
         $final_grade = @EmundusHelperFilters::getFinal_grade();
@@ -577,7 +576,7 @@ class EmundusHelperList{
     // Create icone for evaluation
     function createEvaluationBlock($users, $params){
         $baseurl = rtrim(JURI::root(), '/');
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+        $itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
         $eval = array();
         $current_user = JFactory::getUser();
         $ids = array();
@@ -658,10 +657,10 @@ class EmundusHelperList{
 
 
     function createEvaluatorBlock($users, $params){
-        $limitstart = JRequest::getVar('limitstart', null, 'GET', 'none',0);
-        $filter_order = JRequest::getVar('filter_order', null, 'GET', 'none',0);
-        $filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', 'none',0);
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+        $limitstart = JFactory::getApplication()->input->get('limitstart', null, 'GET', 'none',0);
+        $filter_order = JFactory::getApplication()->input->get('filter_order', null, 'GET', 'none',0);
+        $filter_order_Dir = JFactory::getApplication()->input->get('filter_order_Dir', null, 'GET', 'none',0);
+        $itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
         $evaluator = array();
         $ids = array();
         $current_user = JFactory::getUser();
@@ -718,7 +717,6 @@ class EmundusHelperList{
     */
     function createFilesRequestBlock($users) {
         $baseurl = rtrim(JURI::root(), '/');
-        //$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
         $actions = array();
         //$ids = array();
         foreach ($users as $user) {
@@ -753,7 +751,7 @@ class EmundusHelperList{
     /**/
     function createCommentBlock($users) {
         $baseurl = rtrim(JURI::root(), '/');
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+        $itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
         $comment = array();
         $ids = array();
         //$val = $user['user_id'].",".@$user['user'].",".@$user['campaign_id'];
@@ -794,8 +792,8 @@ class EmundusHelperList{
 
     //get the Confirm by applicant column
     function getEngaged($users){
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-        $view = JRequest::getVar('view', null, 'GET', 'none',0);
+        $itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
+        $view = JFactory::getApplication()->input->get('view', null, 'GET', 'none',0);
         $engaged = array();
         foreach($users as $user){
             @$engaged[$user['user_id']][$user['campaign_id']] .= '';
@@ -878,7 +876,7 @@ class EmundusHelperList{
     }
 
     function createShowCommentBlock(){
-        $filter_comment = JRequest::getVar('comments', null, 'POST', 'none', 0);
+        $filter_comment = JFactory::getApplication()->input->get('comments', null, 'POST', 'none', 0);
         // Starting a session.
         $session = JFactory::getSession();
         if(empty($filter_comment) && $session->has( 'comments' )) $filter_comment = $session->get( 'comments' );

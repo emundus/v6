@@ -9,6 +9,8 @@
 // No direct access
 defined( '_JEXEC' ) or die( 'Restricted access' );
 jimport('joomla.application.component.controller');
+
+use Joomla\CMS\Factory;
 /**
  * eMundus Component Controller
  *
@@ -20,12 +22,15 @@ jimport('joomla.application.component.controller');
  */
 class EmundusControllerTrombinoscope extends EmundusController {
 
+	protected $app;
 
     /**
      * @param array $config
      */
     public function __construct($config = array()) {
         parent::__construct($config);
+
+		$this->app = Factory::getApplication();
     }
 
 
@@ -64,16 +69,16 @@ class EmundusControllerTrombinoscope extends EmundusController {
 	 * @since version
 	 */
     public function generate_preview() {
-        $jinput = JFactory::getApplication()->input;
-        $gridL = $jinput->get('gridL');
-        $gridH = $jinput->get('gridH');
-        $margin = $jinput->get('margin');
-        $template = $jinput->post->get('template', null, 'raw');
-        $string_fnums = $jinput->post->get('string_fnums', null, 'raw');
-        $generate = $jinput->get('generate');
-        $border = $jinput->get('border');
+        
+        $gridL = $this->input->get('gridL');
+        $gridH = $this->input->get('gridH');
+        $margin = $this->input->get('margin');
+        $template = $this->input->post->get('template', null, 'raw');
+        $string_fnums = $this->input->post->get('string_fnums', null, 'raw');
+        $generate = $this->input->get('generate');
+        $border = $this->input->get('border');
         $fnums = $this->fnums_json_decode($string_fnums);
-        $headerHeight = $jinput->get('headerHeight');
+        $headerHeight = $this->input->get('headerHeight');
         // Génération du HTML
         $html_content = $this->generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, false, false, $generate, false, false, $border, $headerHeight);
         $value =  array(
@@ -107,7 +112,7 @@ class EmundusControllerTrombinoscope extends EmundusController {
      */
     public function generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $templHeader, $templFooter,  $generate, $preview = false, $checkHeader = false, $border = null, $headerHeight = null) {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-        $m_files = new EmundusModelFiles();
+        $m_files = $this->getModel('Files');
         // Traitement du nombre de colonnes max par ligne
         $nb_col_max = $gridL;
         $nb_li_max = $gridH;
@@ -132,7 +137,7 @@ class EmundusControllerTrombinoscope extends EmundusController {
         // Génération du HTML
         include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
 
-        $emails = new EmundusModelEmails();
+        $emails = $this->getModel('Emails');
         $body = '';
         $nb_cell = 0;
         $tab_body = array();
@@ -162,8 +167,8 @@ class EmundusControllerTrombinoscope extends EmundusController {
             $tab_body[] = $body_tmp;
             $nb_cell++;
         }
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'trombinoscope.php');
-        $trombi = new EmundusModelTrombinoscope();
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'trombinoscope.php');
+        $trombi = $this->getModel('Trombinoscope');
         $programme = $trombi->getProgByFnum($post['FNUM']);
         // Marge gauche + droite
         $marge_x = $trombi->pdf_margin_left + $trombi->pdf_margin_right;
@@ -191,7 +196,7 @@ class EmundusControllerTrombinoscope extends EmundusController {
         } else {
             $borderCSS = '0';
         }
-        $trombi = new EmundusModelTrombinoscope();
+        $trombi = $this->getModel('Trombinoscope');
         $htmlLetters = $trombi->selectHTMLLetters();
         $templ = [];
         foreach ($htmlLetters as $letter){
@@ -306,30 +311,30 @@ footer {
 
 		if (EmundusHelperAccess::asAccessAction(31, 'c', $current_user->id)) {
 			$response['msg'] = JText::_('BAD_REQUEST');
-			$jinput = JFactory::getApplication()->input;
-			$format = $jinput->get('format');
+			
+			$format = $this->input->get('format');
 
 			if (!empty($format)) {
-				$string_fnums = $jinput->post->get('string_fnums', null, 'raw');
+				$string_fnums = $this->input->post->get('string_fnums', null, 'raw');
 				$fnums = $this->fnums_json_decode($string_fnums);
 
 				if (!empty($fnums)) {
-					$gridL = $jinput->get('gridL');
-					$gridH = $jinput->get('gridH');
-					$margin = $jinput->get('margin');
-					$template = $jinput->post->get('template', '', 'raw');
-					$header = $jinput->post->get('header', '', 'raw');
-					$footer = $jinput->post->get('footer', '', 'raw');
-					$generate = $jinput->get('generate');
-					$checkHeader = $jinput->get('checkHeader');
-					$format = $jinput->get('format');
-					$border = $jinput->get('border');
-					$headerHeight = $jinput->get('headerHeight');
+					$gridL = $this->input->get('gridL');
+					$gridH = $this->input->get('gridH');
+					$margin = $this->input->get('margin');
+					$template = $this->input->post->get('template', '', 'raw');
+					$header = $this->input->post->get('header', '', 'raw');
+					$footer = $this->input->post->get('footer', '', 'raw');
+					$generate = $this->input->get('generate');
+					$checkHeader = $this->input->get('checkHeader');
+					$format = $this->input->get('format');
+					$border = $this->input->get('border');
+					$headerHeight = $this->input->get('headerHeight');
 					$html_content = $this->generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $header, $footer, $generate, false, $checkHeader, $border, $headerHeight);
 
 					if (!empty($html_content)) {
-						require_once (JPATH_COMPONENT.'/models/trombinoscope.php');
-						$m_trombinoscrope = new EmundusModelTrombinoscope();
+						require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.'/models/trombinoscope.php');
+						$m_trombinoscrope = $this->getModel('Trombinoscope');
 						$response['pdf_url'] = $m_trombinoscrope->generate_pdf($html_content, $format);
 						$response['status'] = true;
 						$response['code'] = 200;

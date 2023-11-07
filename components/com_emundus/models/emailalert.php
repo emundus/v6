@@ -111,7 +111,7 @@ class EmundusModelEmailalert extends JModelList{
 		$cfromname = $conf->getValue('config.fromname');
 		$date = date('Y-m-d G:i:s');
 
-		require_once(JPATH_COMPONENT.DS.'models'.DS.'check.php');
+		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'check.php');
 		$model = new EmundusModelCheck;
 
 		$insert = $this->getMailtosend();
@@ -158,7 +158,7 @@ class EmundusModelEmailalert extends JModelList{
 	}
 
 	function getKey(){
-		$key = JRequest::getVar('keyid', null, 'GET');
+		$key = JFactory::getApplication()->input->get('keyid', null, 'GET');
 		$p_key = $this->_eMConfig->get('keyid', '100');
 
 		if($key == $p_key) return true;

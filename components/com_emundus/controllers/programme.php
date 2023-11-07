@@ -14,6 +14,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Factory;
+
 /**
  * campaign Controller
  *
@@ -22,23 +24,25 @@ jimport('joomla.application.component.controller');
  * @since      5.0.0
  */
 class EmundusControllerProgramme extends JControllerLegacy {
-    var $_user = null;
-    var $_db = null;
-    var $m_programme = null;
+	protected $app;
+
+    private $_user;
+	private $m_programme;
 
     function __construct($config = array()){
         parent::__construct($config);
 
-        $this->_user = JFactory::getUser();
-        $this->_db = JFactory::getDBO();
+		$this->app = Factory::getApplication();
+		$this->_user = $this->app->getIdentity();
+
         $this->m_programme = $this->getModel('programme');
     }
 
     function display($cachable = false, $urlparams = false) {
         // Set a default view if none exists
-        if ( ! JRequest::getCmd( 'view' ) ) {
+        if ( ! $this->input->get( 'view' ) ) {
             $default = 'programme';
-            JRequest::setVar('view', $default );
+            $this->input->set('view', $default );
         }
         parent::display();
     }
@@ -61,7 +65,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function addprogrammes(){
-        $data = JRequest::getVar('data', null, 'POST', 'none',0);
+        $data = $this->input->get('data', null, 'POST', 'none',0);
 
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $result = 0;
@@ -80,7 +84,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function editprogrammes() {
-        $data = JRequest::getVar('data', null, 'POST', 'none',0);
+        $data = $this->input->get('data', null, 'POST', 'none',0);
 
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $result = 0;
@@ -100,10 +104,10 @@ class EmundusControllerProgramme extends JControllerLegacy {
 
 
     public function favorite() {
-    	$jinput = JFactory::getApplication()->input;
+    	
 
-    	$pid = $jinput->post->getInt('programme_id');
-    	$uid = $jinput->post->getInt('user_id');
+    	$pid = $this->input->post->getInt('programme_id');
+    	$uid = $this->input->post->getInt('user_id');
 
     	if (empty($uid)) {
             $uid = $this->_user->id;
@@ -125,9 +129,9 @@ class EmundusControllerProgramme extends JControllerLegacy {
 
 
 	public function unfavorite() {
-		$jinput = JFactory::getApplication()->input;
-		$pid = $jinput->post->getInt('programme_id');
-		$uid = $jinput->post->getInt('user_id');
+		
+		$pid = $this->input->post->getInt('programme_id');
+		$uid = $this->input->post->getInt('user_id');
 
 		if (empty($uid)) {
             $uid = $this->_user->id;
@@ -175,13 +179,13 @@ class EmundusControllerProgramme extends JControllerLegacy {
 	    $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
 	    if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $jinput = JFactory::getApplication()->input;
+            
 
-            $filter = $jinput->getString('filter');
-            $sort = $jinput->getString('sort');
-            $recherche = $jinput->getString('recherche');
-            $lim = $jinput->getInt('lim');
-            $page = $jinput->getInt('page');
+            $filter = $this->input->getString('filter');
+            $sort = $this->input->getString('sort');
+            $recherche = $this->input->getString('recherche');
+            $lim = $this->input->getInt('lim');
+            $page = $this->input->getInt('page');
 
             $programs = $this->m_programme->getAllPrograms($lim, $page, $filter, $sort, $recherche);
 
@@ -276,10 +280,10 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
+            
 
-            $filterCount = $jinput->getString('filterCount');
-            $rechercheCount = $jinput->getString('rechercheCount');
+            $filterCount = $this->input->getString('filterCount');
+            $rechercheCount = $this->input->getString('rechercheCount');
 
             $programs = $this->m_programme->getProgramCount($filterCount, $rechercheCount);
 
@@ -294,9 +298,9 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
+            
 
-            $id = $jinput->getInt('id');
+            $id = $this->input->getInt('id');
 
             $program = $this->m_programme->getProgramById($id);
 
@@ -315,9 +319,9 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
+            
 
-            $data = $jinput->getRaw('body');
+            $data = $this->input->getRaw('body');
 
             $result = $this->m_programme->addProgram($data);
 
@@ -336,10 +340,10 @@ class EmundusControllerProgramme extends JControllerLegacy {
         $tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
 
         if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $jinput = JFactory::getApplication()->input;
+            
 
-            $data = $jinput->getRaw('body');
-            $id = $jinput->getString('id');
+            $data = $this->input->getRaw('body');
+            $id = $this->input->getString('id');
 
             if (!empty($id) && !empty($data)) {
                 $result = $this->m_programme->updateProgram($id, $data);
@@ -362,8 +366,8 @@ class EmundusControllerProgramme extends JControllerLegacy {
 	    $response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
 
 	    if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $jinput = JFactory::getApplication()->input;
-            $data = $jinput->getInt('id');
+            
+            $data = $this->input->getInt('id');
             $result = $this->m_programme->deleteProgram($data);
 
             if ($result) {
@@ -381,8 +385,8 @@ class EmundusControllerProgramme extends JControllerLegacy {
 	    $response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
 
 	    if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $jinput = JFactory::getApplication()->input;
-            $data = $jinput->getInt('id');
+            
+            $data = $this->input->getInt('id');
             $result = $this->m_programme->unpublishProgram($data);
 
             if ($result) {
@@ -399,8 +403,8 @@ class EmundusControllerProgramme extends JControllerLegacy {
 	    $response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
 
 	    if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $jinput = JFactory::getApplication()->input;
-            $data = $jinput->getInt('id');
+            
+            $data = $this->input->getInt('id');
 
             $result = $this->m_programme->publishProgram($data);
 
@@ -435,9 +439,9 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
+            
 
-            $group = $jinput->getInt('group');
+            $group = $this->input->getInt('group');
 
             $this->_users = $this->m_programme->getuserstoaffect($group);
 
@@ -456,10 +460,10 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
+            
 
-            $group = $jinput->getInt('group');
-            $term = $jinput->getString('term');
+            $group = $this->input->getInt('group');
+            $term = $this->input->getString('term');
 
             $this->_users = $this->m_programme->getuserstoaffectbyterm($group,$term);
 
@@ -478,9 +482,9 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
+            
 
-            $group = $jinput->getInt('group');
+            $group = $this->input->getInt('group');
 
             $managers = $this->m_programme->getManagers($group);
 
@@ -500,9 +504,9 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
 
-            $jinput = JFactory::getApplication()->input;
+            
 
-            $group = $jinput->getInt('group');
+            $group = $this->input->getInt('group');
 
             $evaluators = $this->m_programme->getEvaluators($group);
 
@@ -521,11 +525,11 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
+            
 
-            $group = $jinput->getInt('group');
-            $prog_group = $jinput->getInt('prog_group');
-            $email = $jinput->getString('email');
+            $group = $this->input->getInt('group');
+            $prog_group = $this->input->getInt('prog_group');
+            $email = $this->input->getString('email');
 
             $changeresponse = $this->m_programme->affectusertogroups($group, $email, $prog_group);
         }
@@ -538,11 +542,11 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
+            
 
-            $group = $jinput->getInt('group');
-            $prog_group = $jinput->getInt('prog_group');
-            $managers = $jinput->getRaw('users');
+            $group = $this->input->getInt('group');
+            $prog_group = $this->input->getInt('prog_group');
+            $managers = $this->input->getRaw('users');
 
             $changeresponse = $this->m_programme->affectuserstogroup($group, $managers, $prog_group);
         }
@@ -555,11 +559,11 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
+            
 
-            $user_id = $jinput->getInt('id');
-            $group = $jinput->getInt('group');
-            $prog_group = $jinput->getInt('prog_group');
+            $user_id = $this->input->getInt('id');
+            $group = $this->input->getInt('group');
+            $prog_group = $this->input->getInt('prog_group');
 
             $changeresponse = $this->m_programme->removefromgroup($user_id, $group, $prog_group);
         }
@@ -572,10 +576,10 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
+            
 
-            $filters = $jinput->getRaw('filters');
-            $page = $jinput->getRaw('page');
+            $filters = $this->input->getRaw('filters');
+            $page = $this->input->getRaw('page');
 
             $user_ids = $this->m_programme->getusers($filters,$page['page']);
 
@@ -611,9 +615,9 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
+            
 
-            $term = $jinput->getString('term');
+            $term = $this->input->getString('term');
 
             $user_ids = $this->m_programme->searchuserbytermwithoutapplicants($term);
             if (!empty($this->_users)) {
@@ -631,11 +635,11 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
+            
 
-            $visibility = $jinput->getBool('visibility');
-            $cid = $jinput->getInt('cid');
-            $gid = $jinput->getInt('gid');
+            $visibility = $this->input->getBool('visibility');
+            $cid = $this->input->getInt('cid');
+            $gid = $this->input->getInt('gid');
 
             $changeresponse = $this->m_programme->updateVisibility($cid,$gid,$visibility);
         }
@@ -648,9 +652,9 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
+            
 
-            $pid = $jinput->getInt('pid');
+            $pid = $this->input->getInt('pid');
 
             $grid = $this->m_programme->getEvaluationGrid($pid);
 
@@ -688,13 +692,13 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
+            
 
-            $label = $jinput->getString('label');
-            $intro = $jinput->getString('intro');
-            $modelid = $jinput->getInt('modelid');
-            $template = $jinput->getBool('template');
-            $pid = $jinput->getInt('pid');
+            $label = $this->input->getString('label');
+            $intro = $this->input->getString('intro');
+            $modelid = $this->input->getInt('modelid');
+            $template = $this->input->getBool('template');
+            $pid = $this->input->getInt('pid');
 
             if ($modelid != -1) {
                 $changeresponse = $this->m_programme->createGridFromModel($label, $intro, $modelid, $pid);
@@ -711,10 +715,10 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
+            
 
-            $grid = $jinput->getInt('grid');
-            $pid = $jinput->getInt('pid');
+            $grid = $this->input->getInt('grid');
+            $pid = $this->input->getInt('pid');
 
             $changeresponse = $this->m_programme->deleteGrid($grid,$pid);
         }
@@ -727,10 +731,10 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
+            
 
-            $group = $jinput->getInt('group');
-            $pid = $jinput->getInt('pid');
+            $group = $this->input->getInt('group');
+            $pid = $this->input->getInt('pid');
 
             $changeresponse = $this->m_programme->affectGroupToProgram($group, $pid);
         }
@@ -743,10 +747,10 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
+            
 
-            $group = $jinput->getInt('group');
-            $pid = $jinput->getInt('pid');
+            $group = $this->input->getInt('group');
+            $pid = $this->input->getInt('pid');
 
             $changeresponse = $this->m_programme->deleteGroupFromProgram($group, $pid);
         }
@@ -759,9 +763,9 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
+            
 
-            $programs = $jinput->getRaw('programs');
+            $programs = $this->input->getRaw('programs');
 
             $groups = $this->m_programme->getGroupsByPrograms($programs);
 
@@ -776,9 +780,9 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
+            
 
-            $program = $jinput->getInt('pid');
+            $program = $this->input->getInt('pid');
 
             $campaigns = $this->m_programme->getCampaignsByProgram($program);
 

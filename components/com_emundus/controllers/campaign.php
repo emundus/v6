@@ -40,6 +40,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 		$this->m_campaign = $this->getModel('Campaign');
     }
+
     function display($cachable = false, $urlparams = false) {
         // Set a default view if none exists
 		if (!$this->input->get('view')) {

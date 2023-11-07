@@ -14,6 +14,8 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Factory;
+
 /**
  * eMundus Component Controller
  *
@@ -22,7 +24,9 @@ jimport('joomla.application.component.controller');
  */
 class EmundusControllerQcm extends JControllerLegacy {
 
-    var $model = null;
+	protected $app;
+
+    private $model;
 
     /**
      * Constructor
@@ -32,13 +36,15 @@ class EmundusControllerQcm extends JControllerLegacy {
     function __construct($config = array()) {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'qcm.php');
 	    parent::__construct($config);
+
+		$this->app = Factory::getApplication();
         $this->model = $this->getModel('qcm');
     }
 
     public function getQuestions() {
 	    $results = [];
-        $jinput = JFactory::getApplication()->input;
-        $questions = $jinput->getString('questions');
+        
+        $questions = $this->input->getString('questions');
 
 		// todo: check user is inside qcm environment ?
 		if (!empty($questions)) {
@@ -56,11 +62,11 @@ class EmundusControllerQcm extends JControllerLegacy {
 
         $m_qcm = $this->model;
 
-        $jinput = JFactory::getApplication()->input;
-        $answers = $jinput->getRaw('answer');
-        $question = $jinput->getString('question');
-        $formid = $jinput->getString('formid');
-        $module = $jinput->getInt('module');
+        
+        $answers = $this->input->getRaw('answer');
+        $question = $this->input->getString('question');
+        $formid = $this->input->getString('formid');
+        $module = $this->input->getInt('module');
 
         $results = $m_qcm->saveAnswer($question,$answers,$current_user,$formid,$module);
 
@@ -74,9 +80,9 @@ class EmundusControllerQcm extends JControllerLegacy {
 
         $m_qcm = $this->model;
 
-        $jinput = JFactory::getApplication()->input;
-        $pending = $jinput->getInt('pending');
-        $formid = $jinput->getInt('formid');
+        
+        $pending = $this->input->getInt('pending');
+        $formid = $this->input->getInt('formid');
 
         $results = $m_qcm->updatePending($pending,$current_user, $formid);
 
@@ -87,8 +93,8 @@ class EmundusControllerQcm extends JControllerLegacy {
     public function getintro() {
         $m_qcm = $this->model;
 
-        $jinput = JFactory::getApplication()->input;
-        $module = $jinput->getInt('module');
+        
+        $module = $this->input->getInt('module');
 
         $results = $m_qcm->getIntro($module);
 

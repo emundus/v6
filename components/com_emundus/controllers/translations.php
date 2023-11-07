@@ -14,6 +14,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Factory;
+
 /**
  * campaign Controller
  *
@@ -23,13 +25,17 @@ jimport('joomla.application.component.controller');
  */
 class EmundusControllerTranslations extends JControllerLegacy {
 
-    var $model = null;
+	protected $app;
+
+    private $model;
 
     public function __construct($config = array()) {
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'translations.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'translations.php');
         parent::__construct($config);
-        $this->model = new EmundusModelTranslations;
+
+		$this->app = Factory::getApplication();
+        $this->model = $this->getModel('Translations');
     }
 
     public function checksetup() {
@@ -91,10 +97,10 @@ class EmundusControllerTranslations extends JControllerLegacy {
             die(JText::_("ACCESS_DENIED"));
         }
 
-        $jinput = JFactory::getApplication()->input;
-        $published = $jinput->getInt('published', 1);
-        $lang_code = $jinput->getString('lang_code', null);
-        $default = $jinput->getInt('default_lang', 0);
+        
+        $published = $this->input->getInt('published', 1);
+        $lang_code = $this->input->getString('lang_code', null);
+        $default = $this->input->getInt('default_lang', 0);
 
         $result = $this->model->updateLanguage($lang_code,$published,$default);
         $default_language = $this->model->getDefaultLanguage();
@@ -134,11 +140,11 @@ class EmundusControllerTranslations extends JControllerLegacy {
             die(JText::_("ACCESS_DENIED"));
         }
 
-        $jinput = JFactory::getApplication()->input;
-        $table = $jinput->get->getString('table', null);
-        $reference_id = $jinput->get->getString('reference_id', null);
-        $label = $jinput->get->getString('label', null);
-        $filters = $jinput->get->getString('filters', null);
+        
+        $table = $this->input->get->getString('table', null);
+        $reference_id = $this->input->get->getString('reference_id', null);
+        $label = $this->input->get->getString('label', null);
+        $filters = $this->input->get->getString('filters', null);
 
         $result = $this->model->getDatas($table,$reference_id,$label,$filters);
 
@@ -153,10 +159,10 @@ class EmundusControllerTranslations extends JControllerLegacy {
             die(JText::_("ACCESS_DENIED"));
         }
 
-        $jinput = JFactory::getApplication()->input;
-        $table = $jinput->get->getString('table', null);
-        $reference_id = $jinput->get->getInt('reference_id', null);
-        $label = $jinput->get->getString('label', null);
+        
+        $table = $this->input->get->getString('table', null);
+        $reference_id = $this->input->get->getInt('reference_id', null);
+        $label = $this->input->get->getString('label', null);
 
         $result = $this->model->getChildrens($table,$reference_id,$label);
 
@@ -171,11 +177,11 @@ class EmundusControllerTranslations extends JControllerLegacy {
             die(JText::_('ACCESS_DENIED'));
         }
 
-        $jinput = JFactory::getApplication()->input;
-        $default_lang = $jinput->get->getString('default_lang', null);
-        $lang_to = $jinput->get->getString('lang_to', null);
-        $references_table = $jinput->get->get('reference_table', null);
-        $reference_id = $jinput->get->getString('reference_id', null);
+        
+        $default_lang = $this->input->get->getString('default_lang', null);
+        $lang_to = $this->input->get->getString('lang_to', null);
+        $references_table = $this->input->get->get('reference_table', null);
+        $reference_id = $this->input->get->getString('reference_id', null);
 
         $translations = array();
 
@@ -219,13 +225,13 @@ class EmundusControllerTranslations extends JControllerLegacy {
             die(JText::_("ACCESS_DENIED"));
         }
 
-        $jinput = JFactory::getApplication()->input;
+        
 
-        $override = $jinput->getString('value', null);
-        $lang_to = $jinput->getString('lang_to', null);
-        $reference_table = $jinput->getString('reference_table', null);
-        $reference_id = $jinput->getInt('reference_id', 0);
-        $tag = $jinput->getString('tag', null);
+        $override = $this->input->getString('value', null);
+        $lang_to = $this->input->getString('lang_to', null);
+        $reference_table = $this->input->getString('reference_table', null);
+        $reference_id = $this->input->getInt('reference_id', 0);
+        $tag = $this->input->getString('tag', null);
 
         $result = $this->model->insertTranslation($tag,$override,$lang_to,'','override',$reference_table,$reference_id);
 
@@ -240,14 +246,14 @@ class EmundusControllerTranslations extends JControllerLegacy {
             die(JText::_("ACCESS_DENIED"));
         }
 
-        $jinput = JFactory::getApplication()->input;
+        
 
-        $override = $jinput->getString('value', null);
-        $lang_to = $jinput->getString('lang_to', null);
-        $reference_table = $jinput->getString('reference_table', null);
-        $reference_id = $jinput->getInt('reference_id', 0);
-        $reference_field = $jinput->getString('reference_field', null);
-        $tag = $jinput->getString('tag', null);
+        $override = $this->input->getString('value', null);
+        $lang_to = $this->input->getString('lang_to', null);
+        $reference_table = $this->input->getString('reference_table', null);
+        $reference_id = $this->input->getInt('reference_id', 0);
+        $reference_field = $this->input->getString('reference_field', null);
+        $tag = $this->input->getString('tag', null);
 
         $result = $this->model->updateTranslation($tag,$override,$lang_to,'override',$reference_table,$reference_id,$reference_field);
 
@@ -262,12 +268,12 @@ class EmundusControllerTranslations extends JControllerLegacy {
             die(JText::_("ACCESS_DENIED"));
         }
 
-        $jinput = JFactory::getApplication()->input;
-        $default_lang = $jinput->get->getString('default_lang', null);
-        $lang_to = $jinput->get->getString('lang_to', null);
-        $reference_table = $jinput->get->getString('reference_table', null);
-        $reference_id = $jinput->get->getString('reference_id', null);
-        $fields = $jinput->get->getString('fields', null);
+        
+        $default_lang = $this->input->get->getString('default_lang', null);
+        $lang_to = $this->input->get->getString('lang_to', null);
+        $reference_table = $this->input->get->getString('reference_table', null);
+        $reference_id = $this->input->get->getString('reference_id', null);
+        $fields = $this->input->get->getString('fields', null);
 
         $result = $this->model->getTranslationsFalang($default_lang,$lang_to,$reference_id,$fields,$reference_table);
 
@@ -282,13 +288,13 @@ class EmundusControllerTranslations extends JControllerLegacy {
             die(JText::_("ACCESS_DENIED"));
         }
 
-        $jinput = JFactory::getApplication()->input;
+        
 
-        $value = $jinput->getString('value', null);
-        $lang_to = $jinput->getString('lang_to', null);
-        $reference_table = $jinput->getString('reference_table', null);
-        $reference_id = $jinput->getInt('reference_id', 0);
-        $field = $jinput->getString('field', null);
+        $value = $this->input->getString('value', null);
+        $lang_to = $this->input->getString('lang_to', null);
+        $reference_table = $this->input->getString('reference_table', null);
+        $reference_id = $this->input->getInt('reference_id', 0);
+        $field = $this->input->getString('field', null);
 
         $result = $this->model->updateFalangTranslation($value,$lang_to,$reference_table,$reference_id,$field);
 
@@ -303,10 +309,10 @@ class EmundusControllerTranslations extends JControllerLegacy {
             die(JText::_("ACCESS_DENIED"));
         }
 
-        $jinput = JFactory::getApplication()->input;
+        
 
-        $default_lang = $jinput->getString('default_lang', null);
-        $lang_to = $jinput->getString('lang_to', null);
+        $default_lang = $this->input->getString('default_lang', null);
+        $lang_to = $this->input->getString('lang_to', null);
 
         $result = $this->model->getOrphelins($default_lang,$lang_to);
 
@@ -321,10 +327,10 @@ class EmundusControllerTranslations extends JControllerLegacy {
             die(JText::_("ACCESS_DENIED"));
         }
 
-        $jinput = JFactory::getApplication()->input;
+        
 
-        $language = $jinput->getString('suggest_language', null);
-        $comment = $jinput->getString('comment', null);
+        $language = $this->input->getString('suggest_language', null);
+        $comment = $this->input->getString('comment', null);
 
         $result = $this->model->sendPurposeNewLanguage($language,$comment);
 
@@ -339,8 +345,8 @@ class EmundusControllerTranslations extends JControllerLegacy {
 			die(JText::_("ACCESS_DENIED"));
 		}
 
-		$jinput = JFactory::getApplication()->input;
-		$profile = $jinput->getString('profile', null);
+		
+		$profile = $this->input->getString('profile', null);
 
 		$reference_ids = [];
 		if(!empty($profile))

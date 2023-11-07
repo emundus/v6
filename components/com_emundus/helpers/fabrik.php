@@ -809,7 +809,8 @@ die("<script>
             $params['validations']['must_validate'][] = '0';
             $params['validations']['show_icon'][] = '1';
 
-            $query->update($db->quoteName('#__fabrik_elements'))
+            $query->clear()
+	            ->update($db->quoteName('#__fabrik_elements'))
                 ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($eid));
             $db->setQuery($query);

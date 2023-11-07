@@ -348,7 +348,7 @@ class EmundusModelCifre extends JModelList {
 	function createContactRequest($user_to, $user_from, $fnum_to, $fnum_from = null, $message = null, $motivation  = null, $cv  = null, $doc  = null) {
 
 		JPluginHelper::importPlugin('emundus');
-		$dispatcher = JEventDispatcher::getInstance();
+
 
 		$query = $this->db->getQuery(true);
 
@@ -367,13 +367,13 @@ class EmundusModelCifre extends JModelList {
 		$this->db->setQuery($query);
 		try {
 
-			$dispatcher->trigger('onBeforeNewContactRequest', [$user_to, $user_from, $fnum_to, $fnum_from]);
-            $dispatcher->trigger('onCallEventHandler', ['onBeforeNewContactRequest', ['user_to' => $user_to, 'user_from' => $user_from, 'fnum_to' => $fnum_to, 'fnum_from' => $fnum_from]]);
+			JFactory::getApplication()->triggerEvent('onBeforeNewContactRequest', [$user_to, $user_from, $fnum_to, $fnum_from]);
+            JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeNewContactRequest', ['user_to' => $user_to, 'user_from' => $user_from, 'fnum_to' => $fnum_to, 'fnum_from' => $fnum_from]]);
 
             $this->db->execute();
 
-			$dispatcher->trigger('onAfterNewContactRequest', [$user_to, $user_from, $fnum_to, $fnum_from]);
-            $dispatcher->trigger('onCallEventHandler', ['onAfterNewContactRequest', ['user_to' => $user_to, 'user_from' => $user_from, 'fnum_to' => $fnum_to, 'fnum_from' => $fnum_from]]);
+			JFactory::getApplication()->triggerEvent('onAfterNewContactRequest', [$user_to, $user_from, $fnum_to, $fnum_from]);
+            JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterNewContactRequest', ['user_to' => $user_to, 'user_from' => $user_from, 'fnum_to' => $fnum_to, 'fnum_from' => $fnum_from]]);
 
             return true;
 		} catch (Exception $e) {
@@ -421,7 +421,7 @@ class EmundusModelCifre extends JModelList {
 	function acceptContactRequest($user1, $user2, $fnum) {
 
 		JPluginHelper::importPlugin('emundus');
-		$dispatcher = JEventDispatcher::getInstance();
+
 
 		$query = $this->db->getQuery(true);
 
@@ -431,13 +431,13 @@ class EmundusModelCifre extends JModelList {
 
 		$this->db->setQuery($query);
 		try {
-			$dispatcher->trigger('onBeforeAcceptContactRequest', [$user1, $user2, $fnum]);
-            $dispatcher->trigger('onCallEventHandler', ['onBeforeAcceptContactRequest', ['user1' => $user1, 'user2' => $user2, 'fnum' => $fnum]]);
+			JFactory::getApplication()->triggerEvent('onBeforeAcceptContactRequest', [$user1, $user2, $fnum]);
+            JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeAcceptContactRequest', ['user1' => $user1, 'user2' => $user2, 'fnum' => $fnum]]);
 
             $this->db->execute();
 
-			$dispatcher->trigger('onAfterAcceptContactRequest', [$user1, $user2, $fnum]);
-            $dispatcher->trigger('onCallEventHandler', ['onAfterAcceptContactRequest', ['user1' => $user1, 'user2' => $user2, 'fnum' => $fnum]]);
+			JFactory::getApplication()->triggerEvent('onAfterAcceptContactRequest', [$user1, $user2, $fnum]);
+            JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterAcceptContactRequest', ['user1' => $user1, 'user2' => $user2, 'fnum' => $fnum]]);
 
             return true;
 		} catch (Exception $e) {
@@ -457,7 +457,7 @@ class EmundusModelCifre extends JModelList {
 	function deleteContactRequest($user1, $user2, $fnum) {
 
 		JPluginHelper::importPlugin('emundus');
-		$dispatcher = JEventDispatcher::getInstance();
+
 
 		$query = $this->db->getQuery(true);
 
@@ -467,12 +467,12 @@ class EmundusModelCifre extends JModelList {
 		$this->db->setQuery($query);
 
 		try {
-			$dispatcher->trigger('onBeforeDeleteContactRequest', [$user1, $user2, $fnum]);
-            $dispatcher->trigger('onCallEventHandler', ['onBeforeDeleteContactRequest', ['user1' => $user1, 'user2' => $user2, 'fnum' => $fnum]]);
+			JFactory::getApplication()->triggerEvent('onBeforeDeleteContactRequest', [$user1, $user2, $fnum]);
+            JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeDeleteContactRequest', ['user1' => $user1, 'user2' => $user2, 'fnum' => $fnum]]);
 
             $this->db->execute();
-			$dispatcher->trigger('onAfterDeleteContactRequest', [$user1, $user2, $fnum]);
-            $dispatcher->trigger('onCallEventHandler', ['onAfterDeleteContactRequest', ['user1' => $user1, 'user2' => $user2, 'fnum' => $fnum]]);
+			JFactory::getApplication()->triggerEvent('onAfterDeleteContactRequest', [$user1, $user2, $fnum]);
+            JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterDeleteContactRequest', ['user1' => $user1, 'user2' => $user2, 'fnum' => $fnum]]);
 
             return true;
 		} catch (Exception $e) {

@@ -604,10 +604,10 @@ class EmundusModelAdmission extends JModelList
     }
 
     public function setSubQuery($tab, $elem) {
-        $search = JRequest::getVar('elements', NULL, 'POST', 'array', 0);
-        $search_values = JRequest::getVar('elements_values', NULL, 'POST', 'array', 0);
-        $search_other = JRequest::getVar('elements_other', NULL, 'POST', 'array', 0);
-        $search_values_other = JRequest::getVar('elements_values_other', NULL, 'POST', 'array', 0);
+        $search = JFactory::getApplication()->input->get('elements', NULL, 'POST', 'array', 0);
+        $search_values = JFactory::getApplication()->input->get('elements_values', NULL, 'POST', 'array', 0);
+        $search_other = JFactory::getApplication()->input->get('elements_other', NULL, 'POST', 'array', 0);
+        $search_values_other = JFactory::getApplication()->input->get('elements_values_other', NULL, 'POST', 'array', 0);
 
         $db = JFactory::getDBO();
 
@@ -840,7 +840,7 @@ class EmundusModelAdmission extends JModelList
     }
 
     public function getUsers($current_fnum = null) {
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 
         $app 		= JFactory::getApplication();
         $session 	= JFactory::getSession();
@@ -848,7 +848,7 @@ class EmundusModelAdmission extends JModelList
         $eMConfig 	= JComponentHelper::getParams('com_emundus');
 
         $current_menu = $app->getMenu()->getActive();
-        $menu_params = $current_menu->params;
+        $menu_params = $current_menu->getParams();
         $em_blocks_names = explode(',', $menu_params->get('em_blocks_names'));
 
         $query = 'select jecc.fnum, ss.step, ss.value as status, ss.class as status_class, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name ';

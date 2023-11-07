@@ -25,19 +25,19 @@ class EmundusControllerJob extends EmundusController {
      */
     public function apply()
     {
-        $app = JFactory::getApplication();
+
         $user = JFactory::getSession()->get('emundusUser');
 
         // Get the previous edit id (if any) and the current edit id.
         //$previousId = (int) $app->getUserState('com_emundus.edit.job.id');
-        $jobId = $app->input->getInt('id', null, 'array');
-        $Itemid = $app->input->getInt('Itemid', null, 'int');
+        $jobId = $this->input->getInt('id', null, 'array');
+        $Itemid = $this->input->getInt('Itemid', null, 'int');
 
         // Set the user id for the user to edit in the session.
-        $app->setUserState('com_emundus.apply.job.id', $jobId);
+        $this->app->setUserState('com_emundus.apply.job.id', $jobId);
 
         // Get the model.
-        $model = $this->getModel('Job', 'EmundusModel');
+        $model = $this->getModel('Job');
         $fnum = $model->apply($user->id, $jobId);
         if ($fnum) {
             // Redirect to the edit screen.
@@ -56,14 +56,14 @@ class EmundusControllerJob extends EmundusController {
      */
     public function display($cachable = false, $urlparams = false)
     {
-        $app = JFactory::getApplication();
+
         $user = JFactory::getSession()->get('emundusUser');
 
-        $jobId = $app->input->getInt('id', null, 'array');
-        $fnum = $app->input->get('fnum', null, 'ALNUM');
+        $jobId = $this->input->getInt('id', null, 'array');
+        $fnum = $this->input->get('fnum', null, 'ALNUM');
 
         // Set the user id for the user to edit in the session.
-        $app->setUserState('com_emundus.display.job.id', $jobId);
+        $this->app->setUserState('com_emundus.display.job.id', $jobId);
 
         $user->fnum = $fnum;
         $redirect = 'index.php?option=com_fabrik&view=form&formid=205&Itemid=1465';
@@ -79,17 +79,17 @@ class EmundusControllerJob extends EmundusController {
      */
     public function cancel()
     {
-        $app = JFactory::getApplication();
+
         $user = JFactory::getSession()->get('emundusUser');
 
-        $jobId = $app->input->getInt('id', null, 'array');
-        $fnum = $app->input->get('fnum', null, 'ALNUM');
+        $jobId = $this->input->getInt('id', null, 'array');
+        $fnum = $this->input->get('fnum', null, 'ALNUM');
 
         // Set the user id for the user to edit in the session.
-        $app->setUserState('com_emundus.cancel.job.id', $jobId);
+        $this->app->setUserState('com_emundus.cancel.job.id', $jobId);
 
         // Get the model.
-        $model = $this->getModel('Job', 'EmundusModel');
+        $model = $this->getModel('Job');
 
         if ($model->cancel($user->id, $fnum))
             $this->setMessage(JText::_('COM_EMUNDUS_JOBS_DELETED'));
@@ -104,17 +104,17 @@ class EmundusControllerJob extends EmundusController {
      * @since   1.6
      */
     public function edit() {
-        $app = JFactory::getApplication();
+
 
         // Get the previous edit id (if any) and the current edit id.
-        $previousId = (int) $app->getUserState('com_emundus.edit.job.id');
-        $editId = JFactory::getApplication()->input->getInt('id', null, 'array');
+        $previousId = (int) $this->app->getUserState('com_emundus.edit.job.id');
+        $editId = $this->input->getInt('id', null, 'array');
 
         // Set the user id for the user to edit in the session.
-        $app->setUserState('com_emundus.edit.job.id', $editId);
+        $this->app->setUserState('com_emundus.edit.job.id', $editId);
 
         // Get the model.
-        $model = $this->getModel('Job', 'EmundusModel');
+        $model = $this->getModel('Job');
 
         // Check out the item
         if ($editId)
@@ -136,7 +136,7 @@ class EmundusControllerJob extends EmundusController {
      */
     public function publish() {
         // Initialise variables.
-        $app = JFactory::getApplication();
+
 
         //Checking if the user can remove object
         $user = JFactory::getSession()->get('emundusUser');
@@ -144,8 +144,8 @@ class EmundusControllerJob extends EmundusController {
             $model = $this->getModel('Job', 'EmundusModel');
 
             // Get the user data.
-            $id = $app->input->getInt('id', 0);
-            $state = $app->input->getInt('state', 1);
+            $id = $this->input->getInt('id', 0);
+            $state = $this->input->getInt('state', 1);
 
             // Attempt to save the data.
             $return = $model->publish($id, $state);
@@ -155,14 +155,14 @@ class EmundusControllerJob extends EmundusController {
                 $this->setMessage(JText::sprintf('Save failed: %s', $model->getError()), 'warning');
 
             // Clear the profile id from the session.
-            $app->setUserState('com_emundus.edit.job.id', null);
+            $this->app->setUserState('com_emundus.edit.job.id', null);
 
             // Flush the data from the session.
-            $app->setUserState('com_emundus.edit.job.data', null);
+            $this->app->setUserState('com_emundus.edit.job.data', null);
 
             // Redirect to the list screen.
             $this->setMessage(JText::_('COM_EMUNDUS_ITEM_SAVED_SUCCESSFULLY'));
-            $menu = & JFactory::getApplication()->getMenu();
+            $menu = $this->app->getMenu();
             $item = $menu->getActive();
             $this->setRedirect(JRoute::_($item->link, false));
         } else throw new Exception(500);
@@ -171,15 +171,15 @@ class EmundusControllerJob extends EmundusController {
     public function remove() {
 
         // Initialise variables.
-        $app = JFactory::getApplication();
+
 
         //Checking if the user can remove object
         $user = JFactory::getUser();
         if ($user->authorise($user->authorise('core.delete', 'com_emundus'))) {
-            $model = $this->getModel('Job', 'EmundusModel');
+            $model = $this->getModel('Job');
 
             // Get the user data.
-            $id = $app->input->getInt('id', 0);
+            $id = $this->input->getInt('id', 0);
 
             // Attempt to save the data.
             $return = $model->delete($id);
@@ -194,16 +194,16 @@ class EmundusControllerJob extends EmundusController {
                     $model->checkin($return);
 
                 // Clear the profile id from the session.
-                $app->setUserState('com_emundus.edit.job.id', null);
+                $this->app->setUserState('com_emundus.edit.job.id', null);
 
                 // Flush the data from the session.
-                $app->setUserState('com_emundus.edit.job.data', null);
+                $this->app->setUserState('com_emundus.edit.job.data', null);
 
                 $this->setMessage(JText::_('COM_EMUNDUS_ITEM_DELETED_SUCCESSFULLY'));
             }
 
             // Redirect to the list screen.
-            $menu = & JFactory::getApplication()->getMenu();
+            $menu = $this->app->getMenu();
             $item = $menu->getActive();
             $this->setRedirect(JRoute::_($item->link, false));
         } else throw new Exception(500);

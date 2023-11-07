@@ -687,9 +687,9 @@ class EmundusModelCalendar extends JModelLegacy {
     // Helper function, gets the synthesis
     function getSynthesis($fnum) {
 
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'application.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'emails.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
 
         $m_profile      = new EmundusModelProfile;
         $m_application  = new EmundusModelApplication;

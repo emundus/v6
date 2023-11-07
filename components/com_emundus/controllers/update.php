@@ -14,28 +14,34 @@
  */
 
 defined( '_JEXEC' ) or die( 'Restricted access' );
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
-require_once (JPATH_COMPONENT.DS.'models'.DS.'calendar.php');
-require_once (JPATH_COMPONENT.DS.'models'.DS.'update.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'calendar.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'update.php');
 
 jimport('joomla.application.component.controller');
+
+use Joomla\CMS\Factory;
 
 
 class EmundusControllerUpdate extends JControllerLegacy {
 
+	protected $app;
+
     public function __construct($config = array()) {
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'update.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'update.php');
         parent::__construct($config);
+
+		$this->app = Factory::getApplication();
     }
 
     // Accept Update
     public function accept() {
-        $jinput = JFactory::getApplication()->input;
-        $version = $jinput->post->get('version', null);
-        $oldVersion = $jinput->post->get('oldversion', null);
-        $ignoreVersion = $jinput->post->get('ignoreversion', null);
-        $m_update = new EmundusModelUpdate();
+        
+        $version = $this->input->post->get('version', null);
+        $oldVersion = $this->input->post->get('oldversion', null);
+        $ignoreVersion = $this->input->post->get('ignoreversion', null);
+        $m_update = $this->getModel('Update');
 
         $user = JFactory::getUser();
         // verify if version is not already set
@@ -88,13 +94,13 @@ class EmundusControllerUpdate extends JControllerLegacy {
 
 	/// Ignore Update
     public function ignore() {
-        $jinput = JFactory::getApplication()->input;
-        $version = $jinput->post->get('version', null);
-        $oldVersion = $jinput->post->get('oldversion', null);
-        $ignoreVersion = $jinput->post->get('ignoreversion', null);
+        
+        $version = $this->input->post->get('version', null);
+        $oldVersion = $this->input->post->get('oldversion', null);
+        $ignoreVersion = $this->input->post->get('ignoreversion', null);
 
         if ($version != $oldVersion && $version != $ignoreVersion && EmundusHelperAccess::asCoordinatorAccessLevel(JFactory::getUser()->id)) {
-	        $m_update = new EmundusModelUpdate();
+	        $m_update = $this->getModel('Update');
 
             echo json_encode((object)['status' => $m_update->setIgnoreVal($version)]);
             exit;
@@ -106,17 +112,17 @@ class EmundusControllerUpdate extends JControllerLegacy {
 
     /// Choose Update
     public function choose() {
-        $jinput = JFactory::getApplication()->input;
-        $version = $jinput->post->get('version', null);
-        $oldVersion = $jinput->post->get('oldversion', null);
-        $ignoreVersion = $jinput->post->get('ignoreversion', null);
-        $updateDate = $jinput->post->get('updateDate', null);
+        
+        $version = $this->input->post->get('version', null);
+        $oldVersion = $this->input->post->get('oldversion', null);
+        $ignoreVersion = $this->input->post->get('ignoreversion', null);
+        $updateDate = $this->input->post->get('updateDate', null);
 
         $user = JFactory::getUser();
 
 
         if($version != $oldVersion && $version != $ignoreVersion && EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-	        $m_calendar = new EmundusModelCalendar();
+	        $m_calendar = $this->getModel('Calendar');
 	        $eMConfig = JComponentHelper::getParams('com_emundus');
 			$google_client_id       = $eMConfig->get('clientId');
             $google_secret_key      = $eMConfig->get('clientSecret');

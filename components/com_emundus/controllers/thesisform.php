@@ -10,7 +10,7 @@
 // No direct access
 defined('_JEXEC') or die;
 
-require_once JPATH_COMPONENT . '/controller.php';
+require_once JPATH_BASE.DS.'components'.DS.'com_emundus' . '/controller.php';
 
 /**
  * Thesis controller class.
@@ -23,17 +23,17 @@ class EmundusControllerThesisForm extends EmundusController {
      * @since	1.6
      */
     public function edit() {
-        $app = JFactory::getApplication();
+
 
         // Get the previous edit id (if any) and the current edit id.
-        $previousId = (int) $app->getUserState('com_emundus.edit.thesis.id');
-        $editId = JFactory::getApplication()->input->getInt('id', null, 'array');
+        $previousId = (int) $this->app->getUserState('com_emundus.edit.thesis.id');
+        $editId = $this->input->getInt('id', null, 'array');
 
         // Set the user id for the user to edit in the session.
-        $app->setUserState('com_emundus.edit.thesis.id', $editId);
+        $this->app->setUserState('com_emundus.edit.thesis.id', $editId);
 
         // Get the model.
-        $model = new EmundusModelThesisForm();
+        $model = $this->getModel('ThesisForm');
 
         // Check out the item
         if ($editId) {
@@ -60,11 +60,11 @@ class EmundusControllerThesisForm extends EmundusController {
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
         // Initialise variables.
-        $app = JFactory::getApplication();
-        $model = new EmundusModelThesisForm();
+
+        $model = $this->getModel('ThesisForm');
 
         // Get the user data.
-        $data = JFactory::getApplication()->input->get('jform', array(), 'array');
+        $data = $this->input->get('jform', array(), 'array');
 
         // Validate the posted data.
         $form = $model->getForm();
@@ -84,20 +84,20 @@ class EmundusControllerThesisForm extends EmundusController {
             // Push up to three validation messages out to the user.
             for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
                 if ($errors[$i] instanceof Exception) {
-                    $app->enqueueMessage($errors[$i]->getMessage(), 'warning');
+                    $this->app->enqueueMessage($errors[$i]->getMessage(), 'warning');
                 } else {
-                    $app->enqueueMessage($errors[$i], 'warning');
+                    $this->app->enqueueMessage($errors[$i], 'warning');
                 }
             }
 
-            $input = $app->input;
+            $input = $this->input;
             $jform = $input->get('jform', array(), 'ARRAY');
 
             // Save the data in the session.
-            $app->setUserState('com_emundus.edit.thesis.data', $jform, array());
+            $this->app->setUserState('com_emundus.edit.thesis.data', $jform, array());
 
             // Redirect back to the edit screen.
-            $id = (int) $app->getUserState('com_emundus.edit.thesis.id');
+            $id = (int) $this->app->getUserState('com_emundus.edit.thesis.id');
             $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=thesisform&layout=edit&id=' . $id, false));
             return false;
         }
@@ -108,10 +108,10 @@ class EmundusControllerThesisForm extends EmundusController {
         // Check for errors.
         if ($return === false) {
             // Save the data in the session.
-            $app->setUserState('com_emundus.edit.thesis.data', $data);
+            $this->app->setUserState('com_emundus.edit.thesis.data', $data);
 
             // Redirect back to the edit screen.
-            $id = (int) $app->getUserState('com_emundus.edit.thesis.id');
+            $id = (int) $this->app->getUserState('com_emundus.edit.thesis.id');
             $this->setMessage(JText::sprintf('Save failed', $model->getError()), 'warning');
             $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=thesisform&layout=edit&id=' . $id, false));
             return false;
@@ -124,35 +124,35 @@ class EmundusControllerThesisForm extends EmundusController {
         }
 
         // Clear the profile id from the session.
-        $app->setUserState('com_emundus.edit.thesis.id', null);
+        $this->app->setUserState('com_emundus.edit.thesis.id', null);
 
         // Redirect to the list screen.
         $this->setMessage(JText::_('COM_EMUNDUS_ITEM_SAVED_SUCCESSFULLY'));
-        $menu = JFactory::getApplication()->getMenu();
+        $menu = $this->app->getMenu();
         $item = $menu->getActive();
         $url = (empty($item->link) ? 'index.php?option=com_emundus&view=thesiss' : $item->link);
         $this->setRedirect(JRoute::_($url, false));
 
         // Flush the data from the session.
-        $app->setUserState('com_emundus.edit.thesis.data', null);
+        $this->app->setUserState('com_emundus.edit.thesis.data', null);
     }
 
     function cancel() {
 
-        $app = JFactory::getApplication();
+
 
         // Get the current edit id.
-        $editId = (int) $app->getUserState('com_emundus.edit.thesis.id');
+        $editId = (int) $this->app->getUserState('com_emundus.edit.thesis.id');
 
         // Get the model.
-        $model = new EmundusModelThesisForm();
+        $model = $this->getModel('ThesisForm');
 
         // Check in the item
         if ($editId) {
             $model->checkin($editId);
         }
 
-        $menu = JFactory::getApplication()->getMenu();
+        $menu = $this->app->getMenu();
         $item = $menu->getActive();
         $url = (empty($item->link) ? 'index.php?option=com_emundus&view=thesiss' : $item->link);
         $this->setRedirect(JRoute::_($url, false));
@@ -168,12 +168,12 @@ class EmundusControllerThesisForm extends EmundusController {
     public function remove() {
 
         // Initialise variables.
-        $app = JFactory::getApplication();
-        $model = new EmundusModelThesisForm();
+
+        $model = $this->getModel('ThesisForm');
 
         // Get the user data.
         $data = array();
-        $data['id'] = $app->input->getInt('id');
+        $data['id'] = $this->input->getInt('id');
 
         // Check for errors.
         if (empty($data['id'])) {
@@ -183,17 +183,17 @@ class EmundusControllerThesisForm extends EmundusController {
             // Push up to three validation messages out to the user.
             for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
                 if ($errors[$i] instanceof Exception) {
-                    $app->enqueueMessage($errors[$i]->getMessage(), 'warning');
+                    $this->app->enqueueMessage($errors[$i]->getMessage(), 'warning');
                 } else {
-                    $app->enqueueMessage($errors[$i], 'warning');
+                    $this->app->enqueueMessage($errors[$i], 'warning');
                 }
             }
 
             // Save the data in the session.
-            $app->setUserState('com_emundus.edit.thesis.data', $data);
+            $this->app->setUserState('com_emundus.edit.thesis.data', $data);
 
             // Redirect back to the edit screen.
-            $id = (int) $app->getUserState('com_emundus.edit.thesis.id');
+            $id = (int) $this->app->getUserState('com_emundus.edit.thesis.id');
             $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=thesis&layout=edit&id=' . $id, false));
             return false;
         }
@@ -204,10 +204,10 @@ class EmundusControllerThesisForm extends EmundusController {
         // Check for errors.
         if ($return === false) {
             // Save the data in the session.
-            $app->setUserState('com_emundus.edit.thesis.data', $data);
+            $this->app->setUserState('com_emundus.edit.thesis.data', $data);
 
             // Redirect back to the edit screen.
-            $id = (int) $app->getUserState('com_emundus.edit.thesis.id');
+            $id = (int) $this->app->getUserState('com_emundus.edit.thesis.id');
             $this->setMessage(JText::sprintf('Delete failed', $model->getError()), 'warning');
             $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=thesis&layout=edit&id=' . $id, false));
             return false;
@@ -220,17 +220,17 @@ class EmundusControllerThesisForm extends EmundusController {
         }
 
         // Clear the profile id from the session.
-        $app->setUserState('com_emundus.edit.thesis.id', null);
+        $this->app->setUserState('com_emundus.edit.thesis.id', null);
 
         // Redirect to the list screen.
         $this->setMessage(JText::_('COM_EMUNDUS_ITEM_DELETED_SUCCESSFULLY'));
-        $menu = JFactory::getApplication()->getMenu();
+        $menu = $this->app->getMenu();
         $item = $menu->getActive();
         $url = (empty($item->link) ? 'index.php?option=com_emundus&view=thesiss' : $item->link);
         $this->setRedirect(JRoute::_($url, false));
 
         // Flush the data from the session.
-        $app->setUserState('com_emundus.edit.thesis.data', null);
+        $this->app->setUserState('com_emundus.edit.thesis.data', null);
     }
 
 }

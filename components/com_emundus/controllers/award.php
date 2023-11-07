@@ -29,10 +29,18 @@ use Joomla\CMS\Factory;
  */
 class EmundusControllerAward extends JControllerLegacy
 {
-    public function __construct($config = array())
-    {
-        parent::__construct($config);
-    }
+	protected $app;
+
+	private $_user;
+
+	public function __construct($config = array())
+	{
+
+		$this->app = Factory::getApplication();
+		$this->_user = $this->app->getIdentity();
+
+		parent::__construct($config);
+	}
 
 	public function addvote()
 	{

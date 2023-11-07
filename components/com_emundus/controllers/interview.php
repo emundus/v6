@@ -13,6 +13,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Factory;
+
 /**
  * eMundus Component Controller
  *
@@ -22,23 +24,25 @@ jimport('joomla.application.component.controller');
 //error_reporting(E_ALL);
 class EmundusControllerInterview extends JControllerLegacy
 {
-    var $_user = null;
-    var $_db = null;
+	protected $app;
+
+    private $_user;
+	private $_db;
 
     public function __construct($config = array())
     {
-        //require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
-        require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'files.php');
-        require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'filters.php');
-        require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'list.php');
-        require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
-        require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'emails.php');
-        require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'export.php');
-        require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'menu.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'files.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'filters.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'list.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'access.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'emails.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'export.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'menu.php');
 
 
-        $this->_user = JFactory::getSession()->get('emundusUser');
-        $this->_db = JFactory::getDBO();
+		$this->app = Factory::getApplication();
+        $this->_user = $this->app->getSession()->get('emundusUser');
+        $this->_db = Factory::getDBO();
 
         parent::__construct($config);
     }
@@ -46,22 +50,22 @@ class EmundusControllerInterview extends JControllerLegacy
     public function display($cachable = false, $urlparams = false)
     {
         // Set a default view if none exists
-        if (!JRequest::getCmd('view')) {
+        if (!$this->input->get('view')) {
             $default = 'files';
-            JRequest::setVar('view', $default);
+            $this->input->set('view', $default);
         }
         parent::display();
     }
     function pdf(){
-        $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->getString('fnum', null);
-        $student_id = $jinput->getInt('student_id', $jinput->getInt('user', $this->_user->id));
+        
+        $fnum = $this->input->getString('fnum', null);
+        $student_id = $this->input->getInt('student_id', $this->input->getInt('user', $this->_user->id));
 
         if (!EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum) )
             die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
-        $m_profile = new EmundusModelProfile();
-        $m_campaign = new EmundusModelCampaign();
+        $m_profile = $this->getModel('Profile');
+        $m_campaign = $this->getModel('Campaign');
 
         if (!empty($fnum)) {
             $candidature = $m_profile->getFnumDetails($fnum);
