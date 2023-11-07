@@ -6,9 +6,13 @@ jimport('joomla.application.component.controller');
 jimport( 'joomla.user.helper' );
 
 use \classes\files\files;
+use Joomla\CMS\Factory;
 
 class EmundusControllerFile extends JControllerLegacy
 {
+	protected $app;
+
+	private $_user;
 	private $type;
 	private $files;
 
@@ -16,12 +20,14 @@ class EmundusControllerFile extends JControllerLegacy
     {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'classes'.DS.'files'.DS.'Files.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'classes'.DS.'files'.DS.'Evaluations.php');
-		
-		$this->type = JFactory::getApplication()->input->getString('type','default');
-		$refresh = JFactory::getApplication()->input->getString('refresh',false);
+
+		$this->app = Factory::getApplication();
+		$this->_user = $this->app->getIdentity();
+		$this->type = $this->input->getString('type','default');
+		$refresh = $this->input->getString('refresh',false);
 
 
-		$files_session = unserialize(JFactory::getSession()->get('files'));
+		$files_session = unserialize($this->app->getSession()->get('files'));
 		if($files_session instanceof Files){
 			$this->files = $files_session;
 		}
@@ -46,7 +52,7 @@ class EmundusControllerFile extends JControllerLegacy
 			}
 		}
 
-	    JFactory::getSession()->set('files', serialize($this->files));
+	    $this->app->getSession()->set('files', serialize($this->files));
 
         parent::__construct($config);
     }
@@ -117,7 +123,7 @@ class EmundusControllerFile extends JControllerLegacy
         $results = ['status' => 1, 'msg' => '', 'data' => []];
 
         if(EmundusHelperAccess::asAccessAction(5,'r',JFactory::getUser()->id) || EmundusHelperAccess::asAccessAction(5,'c', JFactory::getUser()->id)){
-            $fnum = JFactory::getApplication()->input->getString('fnum',null);
+            $fnum = $this->input->getString('fnum',null);
 
             $results['data'] = $this->files->getEvaluationFormByFnum($fnum);
         } else {
@@ -133,7 +139,7 @@ class EmundusControllerFile extends JControllerLegacy
 		$results = ['status' => 1, 'msg' => '', 'data' => []];
 
 		if(EmundusHelperAccess::asAccessAction(5,'r',JFactory::getUser()->id) || EmundusHelperAccess::asAccessAction(5,'c', JFactory::getUser()->id)){
-			$fnum = JFactory::getApplication()->input->getString('fnum',null);
+			$fnum = $this->input->getString('fnum',null);
 
 			$results['data'] = $this->files->getMyEvaluation($fnum);
 		} else {
@@ -149,7 +155,7 @@ class EmundusControllerFile extends JControllerLegacy
 		$results = ['status' => 0, 'msg' => '', 'data' => []];
 
 		if(EmundusHelperAccess::asAccessAction(5,'r',JFactory::getUser()->id) || EmundusHelperAccess::asAccessAction(5,'c', JFactory::getUser()->id)){
-			$fnum = JFactory::getApplication()->input->getString('fnum',null);
+			$fnum = $this->input->getString('fnum',null);
 
 			$results['status'] = $this->files->checkAccess($fnum);
 			$results['data'] = $this->files->getAccess($fnum);
@@ -165,7 +171,7 @@ class EmundusControllerFile extends JControllerLegacy
 		$results = ['status' => 1, 'msg' => '', 'data' => [],'rights' => []];
 
 		if(EmundusHelperAccess::asAccessAction(5,'r',JFactory::getUser()->id) || EmundusHelperAccess::asAccessAction(5,'c', JFactory::getUser()->id)){
-			$fnum = JFactory::getApplication()->input->getString('fnum',null);
+			$fnum = $this->input->getString('fnum',null);
 
 			$access = $this->files->checkAccess($fnum);
 			if($access){
@@ -187,7 +193,7 @@ class EmundusControllerFile extends JControllerLegacy
 		$results = ['status' => 1, 'msg' => ''];
 
 		if(EmundusHelperAccess::asAccessAction(5,'r',JFactory::getUser()->id) || EmundusHelperAccess::asAccessAction(5,'c', JFactory::getUser()->id)){
-			$limit = JFactory::getApplication()->input->getInt('limit',5);
+			$limit = $this->input->getInt('limit',5);
 
 			$this->files->setLimit($limit);
 
@@ -205,7 +211,7 @@ class EmundusControllerFile extends JControllerLegacy
 		$results = ['status' => 1, 'msg' => ''];
 
 		if(EmundusHelperAccess::asAccessAction(5,'r',JFactory::getUser()->id) || EmundusHelperAccess::asAccessAction(5,'c', JFactory::getUser()->id)){
-			$page = JFactory::getApplication()->input->getInt('page',0);
+			$page = $this->input->getInt('page',0);
 
 			$this->files->setPage($page);
 
@@ -237,7 +243,7 @@ class EmundusControllerFile extends JControllerLegacy
 		$results = ['status' => 1, 'msg' => ''];
 
 		if(EmundusHelperAccess::asAccessAction(5,'r',JFactory::getUser()->id) || EmundusHelperAccess::asAccessAction(5,'c', JFactory::getUser()->id)){
-			$tab = JFactory::getApplication()->input->getString('tab','');
+			$tab = $this->input->getString('tab','');
 
 			$this->files->setSelectedTab($tab);
 
@@ -253,7 +259,7 @@ class EmundusControllerFile extends JControllerLegacy
 
 	public function getcomments(){
 		$results = ['status' => 1, 'msg' => '', 'data' => []];
-		$fnum = JFactory::getApplication()->input->getString('fnum','');
+		$fnum = $this->input->getString('fnum','');
 
 		if(!empty($fnum) && (EmundusHelperAccess::asAccessAction(10,'r',JFactory::getUser()->id,$fnum) || EmundusHelperAccess::asAccessAction(10,'c',JFactory::getUser()->id,$fnum))){
 			$results['data'] = $this->files->getComments($fnum);
@@ -268,12 +274,12 @@ class EmundusControllerFile extends JControllerLegacy
 
 	public function savecomment(){
 		$results = ['status' => 0, 'msg' => JText::_('ACCESS_DENIED'), 'data' => []];
-		$jinput = JFactory::getApplication()->input;
-		$fnum = $jinput->getString('fnum', '');
+
+		$fnum = $this->input->getString('fnum', '');
 
 		if (!empty($fnum) && EmundusHelperAccess::asAccessAction(10,'c',JFactory::getUser()->id,$fnum)){
-			$reason = $jinput->getString('reason','');
-			$comment_body = $jinput->getString('comment_body','');
+			$reason = $this->input->getString('reason','');
+			$comment_body = $this->input->getString('comment_body','');
 
 			$comment = $this->files->saveComment($fnum,$reason,$comment_body);
 
@@ -293,8 +299,8 @@ class EmundusControllerFile extends JControllerLegacy
 
 	public function deletecomment(){
 		$results = ['status' => 0, 'msg' => JText::_('ACCESS_DENIED')];
-		$jinput = JFactory::getApplication()->input;
-		$cid = $jinput->getString('cid','');
+
+		$cid = $this->input->getString('cid','');
 
 		if(!empty($cid) && EmundusHelperAccess::asAccessAction(10,'c',JFactory::getUser()->id)) {
 			$results['status'] = $this->files->deleteComment($cid);
@@ -325,8 +331,8 @@ class EmundusControllerFile extends JControllerLegacy
         $response = ['status' => 1, 'msg' => ''];
 
         if (EmundusHelperAccess::asAccessAction(5,'r', JFactory::getUser()->id) || EmundusHelperAccess::asAccessAction(5,'c', JFactory::getUser()->id)) {
-            $jinput = JFactory::getApplication()->input;
-            $filters = $jinput->getString('filters');
+
+            $filters = $this->input->getString('filters');
             $filters = json_decode($filters, true);
             $this->files->applyFilters($filters);
             JFactory::getSession()->set('files', serialize($this->files));

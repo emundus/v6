@@ -590,7 +590,7 @@ class plgUserEmundus extends JPlugin
 
             JPluginHelper::importPlugin('emundus', 'custom_event_handler');
             $dispatcher = JEventDispatcher::getInstance();
-            $dispatcher->trigger('callEventHandler', ['onUserLogin', ['user_id' => $user->id]]);
+            $dispatcher->trigger('onCallEventHandler', ['onUserLogin', ['user_id' => $user->id]]);
 
 	        if (!empty($previous_url)) {
                 $app->redirect($previous_url);

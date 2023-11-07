@@ -169,7 +169,7 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
         $old_status = $student->fnums[$student->fnum]->status;
 		JPluginHelper::importPlugin('emundus');
         \Joomla\CMS\Factory::getApplication()->triggerEvent('onBeforeSubmitFile', [$student->id, $student->fnum]);
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
         $query = $db->getQuery(true);
         $query->update($db->quoteName('#__emundus_campaign_candidature'))
@@ -197,7 +197,7 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
         if ($updated && $old_status != $new_status) {
             $this->logUpdateState($old_status, $new_status, $student->id, $applicant_id, $student->fnum);
             \Joomla\CMS\Factory::getApplication()->triggerEvent('onAfterStatusChange', [$student->fnum, $new_status]);
-            \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterStatusChange', ['fnum' => $student->fnum, 'state' => $new_status, 'old_state' => $old_status]]);
+            \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterStatusChange', ['fnum' => $student->fnum, 'state' => $new_status, 'old_state' => $old_status]]);
         }
 
 		$query = 'UPDATE #__emundus_declaration SET time_date=' . $db->Quote($now) . ' WHERE user='.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
@@ -218,7 +218,7 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
         $m_emails->sendEmailTrigger($step, $code, $to_applicant, $student);
 
         \Joomla\CMS\Factory::getApplication()->triggerEvent('onAfterSubmitFile', [$student->id, $student->fnum]);
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
 		// If pdf exporting is activated
 		if ($export_pdf == 1) {

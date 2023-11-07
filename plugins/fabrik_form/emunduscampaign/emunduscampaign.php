@@ -193,7 +193,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
             JPluginHelper::importPlugin('emundus');
             $dispatcher = JEventDispatcher::getInstance();
             $dispatcher->trigger('onCreateNewFile', [$user->id, $fnum, $campaign_id]);
-            $dispatcher->trigger('callEventHandler', ['onCreateNewFile', ['user_id' => $user->id, 'fnum' => $fnum, 'cid' => $campaign_id]]);
+            $dispatcher->trigger('onCallEventHandler', ['onCreateNewFile', ['user_id' => $user->id, 'fnum' => $fnum, 'cid' => $campaign_id]]);
 
         } catch (Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');

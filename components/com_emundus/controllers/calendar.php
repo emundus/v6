@@ -9,16 +9,29 @@
 
 // ensure this file is being included by a parent file
 defined( '_JEXEC' ) or die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
-require_once (JPATH_COMPONENT.DS.'models'.DS.'calendar.php');
+
+use Joomla\CMS\Factory;
+
 
 /**
  * Custom report controller
  * @package     Emundus
  */
+class EmundusControllerCalendar extends JControllerLegacy
+{
+	private $_user;
+	protected $app;
 
-class EmundusControllerCalendar extends JControllerLegacy {
+	public function __construct($config = array())
+	{
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
+
+		$this->app = Factory::getApplication();
+		$this->_user = $this->app->getIdentity();
+
+		parent::__construct($config);
+	}
 
 	/**
 	 * Creates a calendar using the google API and by manually creating a category for dpcalendar to use.
@@ -27,15 +40,13 @@ class EmundusControllerCalendar extends JControllerLegacy {
 	 */
     public function createcalendar() {
 
-        $m_calendar = new EmundusModelCalendar();
+		$m_calendar = $this->getModel('Calendar');
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
-        $jinput = JFactory::getApplication()->input;
-
         // Calendar information is obtained via the post data
-        $calendar_title     = $jinput->get("calTitle", null, "string");
-        $calendar_program   = $jinput->get("calProgram", null, "string");
-        $calendar_color     = $jinput->get("calColor", null, "string");
+		$calendar_title   = $this->input->get("calTitle", null, "string");
+		$calendar_program = $this->input->get("calProgram", null, "string");
+		$calendar_color   = $this->input->get("calColor", null, "string");
         $calendar_alias     = str_replace(' ', '-', $calendar_title);
 
         // Google API info is obtained via the module params
@@ -64,15 +75,13 @@ class EmundusControllerCalendar extends JControllerLegacy {
 	 */
     public function bookinterview() {
 
-        $m_calendar = new EmundusModelCalendar();
+		$m_calendar = $this->getModel('Calendar');
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
-        $jinput = JFactory::getApplication()->input;
-
-        $event_id       = $jinput->get('eventId', null, 'string');
-        $user_id        = $jinput->get('userId', null, 'string');
-        $fnum           = $jinput->get('fnum', null, 'string');
-        $contact_info   = $jinput->get('contactInfo', null, 'array');
+		$event_id     = $this->input->get('eventId', null, 'string');
+		$user_id      = $this->input->get('userId', null, 'string');
+		$fnum         = $this->input->get('fnum', null, 'string');
+		$contact_info = $this->input->get('contactInfo', null, 'array');
 
         $google = $eMConfig->get('useGoogle');
 
@@ -99,11 +108,10 @@ class EmundusControllerCalendar extends JControllerLegacy {
 
     public function cancelinterview() {
 
-        $m_calendar = new EmundusModelCalendar();
+		$m_calendar = $this->getModel('Calendar');
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
-        $jinput = JFactory::getApplication()->input;
-        $event_id = $jinput->get("eventId", null, "string");
+		$event_id = $this->input->get("eventId", null, "string");
 
         $google = $eMConfig->get('useGoogle');
 
@@ -127,18 +135,16 @@ class EmundusControllerCalendar extends JControllerLegacy {
 
     public function createtimeslots() {
 
-        $m_calendar = new EmundusModelCalendar();
-
-        $jinput = JFactory::getApplication()->input;
+		$m_calendar = $this->getModel('Calendar');
 
         // Information about the timeslots to create is obtained through the POST data.
-        $calendar_id    = $jinput->get('calId', null, 'INT')[0];
-        $start_day      = $jinput->get('sDate', null, 'STR')[0];
-        $end_day        = $jinput->get('eDate', null, 'STR')[0];
-        $start_time     = $jinput->get('sTime', null, 'STR')[0];
-        $end_time       = $jinput->get('eTime', null, 'STR')[0];
-        $ts_length      = $jinput->get('tsLength', 50, 'INT')[0];
-        $pause_length   = $jinput->get('pLength', 10, 'INT')[0];
+		$calendar_id  = $this->input->get('calId', null, 'INT')[0];
+		$start_day    = $this->input->get('sDate', null, 'STR')[0];
+		$end_day      = $this->input->get('eDate', null, 'STR')[0];
+		$start_time   = $this->input->get('sTime', null, 'STR')[0];
+		$end_time     = $this->input->get('eTime', null, 'STR')[0];
+		$ts_length    = $this->input->get('tsLength', 50, 'INT')[0];
+		$pause_length = $this->input->get('pLength', 10, 'INT')[0];
         $today          = date('Y-m-d');
 
 
@@ -248,11 +254,13 @@ class EmundusControllerCalendar extends JControllerLegacy {
     /**
      * Used for first activation with the calendar.
      */
-    public function authenticateclient() {
-    	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'calendar.php');
-    	$m_calendar = new EmundusModelCalendar();
+	public function authenticateclient()
+	{
+		$m_calendar = $this->getModel('Calendar');
+
 		$m_calendar->authenticateClient();
-		JFactory::getApplication()->redirect('/index.php');
+
+		$this->app->redirect('/index.php');
     }
 
 }

@@ -880,7 +880,7 @@ class EmundusModelUsers extends JModelList {
         }
 
         $dispatcher->trigger('onBeforeSaveEmundusUser', [$user_id, $params]);
-        $dispatcher->trigger('callEventHandler', ['onBeforeSaveEmundusUser', ['user_id' => $user_id, 'params' => $params]]);
+        $dispatcher->trigger('onCallEventHandler', ['onBeforeSaveEmundusUser', ['user_id' => $user_id, 'params' => $params]]);
 
         if(!empty($id_ehesp)){
             $query = "INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id,id_ehesp) VALUES ('',".$user_id.",'".$now."',".$db->quote($firstname).",".$db->quote($lastname).",".$profile.",'',0,'','','','".$univ_id."','".$id_ehesp."')";
@@ -898,19 +898,19 @@ class EmundusModelUsers extends JModelList {
             $db->execute();
         }
 	    $dispatcher->trigger('onAfterSaveEmundusUser', [$user_id, $params]);
-        $dispatcher->trigger('callEventHandler', ['onAfterSaveEmundusUser', ['user_id' => $user_id, 'params' => $params]]);
+        $dispatcher->trigger('onCallEventHandler', ['onAfterSaveEmundusUser', ['user_id' => $user_id, 'params' => $params]]);
 
         if (!empty($groups)) {
             foreach ($groups as $group) {
 	            $dispatcher->trigger('onBeforeAddUserToGroup', [$user_id, $group]);
-                $dispatcher->trigger('callEventHandler', ['onBeforeAddUserToGroup', ['user_id' => $user_id, 'group' => $group]]);
+                $dispatcher->trigger('onCallEventHandler', ['onBeforeAddUserToGroup', ['user_id' => $user_id, 'group' => $group]]);
 
                 $query = "INSERT INTO `#__emundus_groups` VALUES ('',".$user_id.",".$group.")";
                 $db->setQuery($query);
                 $db->execute();
 
 	            $dispatcher->trigger('onAfterAddUserToGroup', [$user_id, $group]);
-                $dispatcher->trigger('callEventHandler', ['onAfterAddUserToGroup', ['user_id' => $user_id, 'group' => $group]]);
+                $dispatcher->trigger('onCallEventHandler', ['onAfterAddUserToGroup', ['user_id' => $user_id, 'group' => $group]]);
             }
         }
 
@@ -918,7 +918,7 @@ class EmundusModelUsers extends JModelList {
             $connected = JFactory::getUser()->id;
             foreach ($campaigns as $campaign) {
 	            $dispatcher->trigger('onBeforeCampaignCandidature', [$user_id, $connected, $campaign]);
-                $dispatcher->trigger('callEventHandler', ['onBeforeCampaignCandidature', ['user_id' => $user_id, 'connected' => $connected, 'campaign' => $campaign]]);
+                $dispatcher->trigger('onCallEventHandler', ['onBeforeCampaignCandidature', ['user_id' => $user_id, 'connected' => $connected, 'campaign' => $campaign]]);
 
                 $query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `user_id`, `campaign_id`, `fnum`)
                                     VALUES ('.$user_id.', '. $connected .','.$campaign.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'), LPAD(`applicant_id`, 7, \'0\')))';
@@ -926,12 +926,12 @@ class EmundusModelUsers extends JModelList {
                 $db->execute();
 
 	            $dispatcher->trigger('onAfterCampaignCandidature', [$user_id, $connected, $campaign]);
-                $dispatcher->trigger('callEventHandler', ['onAfterCampaignCandidature', ['user_id' => $user_id, 'connected' => $connected, 'campaign' => $campaign]]);
+                $dispatcher->trigger('onCallEventHandler', ['onAfterCampaignCandidature', ['user_id' => $user_id, 'connected' => $connected, 'campaign' => $campaign]]);
             }
         }
 
 	    $dispatcher->trigger('onBeforeAddUserProfile', [$user_id, $profile]);
-        $dispatcher->trigger('callEventHandler', ['onBeforeAddUserProfile', ['user_id' => $user_id, 'profile' => $profile]]);
+        $dispatcher->trigger('onCallEventHandler', ['onBeforeAddUserProfile', ['user_id' => $user_id, 'profile' => $profile]]);
 
         $query="INSERT INTO `#__emundus_users_profiles`
                         VALUES ('','".$now."',".$user_id.",".$profile.",'','')";
@@ -939,13 +939,13 @@ class EmundusModelUsers extends JModelList {
         $db->execute() or die($db->getErrorMsg());
 
 	    $dispatcher->trigger('onAfterAddUserProfile', [$user_id, $profile]);
-        $dispatcher->trigger('callEventHandler', ['onAfterAddUserProfile', ['user_id' => $user_id, 'profile' => $profile]]);
+        $dispatcher->trigger('onCallEventHandler', ['onAfterAddUserProfile', ['user_id' => $user_id, 'profile' => $profile]]);
 
 
         if (!empty($oprofiles)) {
             foreach ($oprofiles as $profile) {
 	            $dispatcher->trigger('onBeforeAddUserProfile', [$user_id, $profile]);
-                $dispatcher->trigger('callEventHandler', ['onBeforeAddUserProfile', ['user_id' => $user_id, 'profile' => $profile]]);
+                $dispatcher->trigger('onCallEventHandler', ['onBeforeAddUserProfile', ['user_id' => $user_id, 'profile' => $profile]]);
 
                 $query = "INSERT INTO `#__emundus_users_profiles`
                                 VALUES ('','".$now."',".$user_id.",".$profile.",'','')";
@@ -953,7 +953,7 @@ class EmundusModelUsers extends JModelList {
                 $db->execute();
 
 	            $dispatcher->trigger('onAfterAddUserProfile', [$user_id, $profile]);
-                $dispatcher->trigger('callEventHandler', ['onAfterAddUserProfile', ['user_id' => $user_id, 'profile' => $profile]]);
+                $dispatcher->trigger('onCallEventHandler', ['onAfterAddUserProfile', ['user_id' => $user_id, 'profile' => $profile]]);
 
                 $query = 'SELECT `acl_aro_groups` FROM `#__emundus_setup_profiles` WHERE id='.(int)$profile;
                 $db->setQuery($query);
@@ -1029,7 +1029,7 @@ class EmundusModelUsers extends JModelList {
         $options = array('action' => 'core.login.site', 'remember' => false);
 
         $dispatcher->trigger( 'onUserLogin', $instance );
-        $dispatcher->trigger('callEventHandler', ['onUserLogin', ['instance' => $instance]]);
+        $dispatcher->trigger('onCallEventHandler', ['onUserLogin', ['instance' => $instance]]);
 
         return $instance;
 
@@ -2651,7 +2651,7 @@ class EmundusModelUsers extends JModelList {
 	        $saved = $db->execute();
 	        if ($saved) {
 		        JPluginHelper::importPlugin('emundus');
-				\Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterSaveUserProfile', ['user' => $uid, 'data' => $user, 'columns' => $columns]]);
+				\Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterSaveUserProfile', ['user' => $uid, 'data' => $user, 'columns' => $columns]]);
 		    }
 
         } catch (Exception $e) {
@@ -2716,7 +2716,7 @@ class EmundusModelUsers extends JModelList {
             JPluginHelper::importPlugin('emundus');
             $dispatcher = JEventDispatcher::getInstance();
             $dispatcher->trigger('onAfterProfileAttachmentUpload', [$user_id, (int)$attachment_id, $filename]);
-            $dispatcher->trigger('callEventHandler', ['onAfterProfileAttachmentUpload', ['user_id' => $user_id, 'attachment_id' => (int)$attachment_id, 'file' => $filename]]);
+            $dispatcher->trigger('onCallEventHandler', ['onAfterProfileAttachmentUpload', ['user_id' => $user_id, 'attachment_id' => (int)$attachment_id, 'file' => $filename]]);
 
             return $result;
         } catch (Exception $e) {
@@ -2745,7 +2745,7 @@ class EmundusModelUsers extends JModelList {
             JPluginHelper::importPlugin('emundus');
             $dispatcher = JEventDispatcher::getInstance();
             $dispatcher->trigger('onAfterProfileAttachmentDelete', [$user_id, (int)$default_attachment->attachment_id]);
-            $dispatcher->trigger('callEventHandler', ['onAfterProfileAttachmentDelete', ['user_id' => $user_id, 'attachment_id' => (int)$default_attachment->attachment_id, 'filename' => $default_attachment->filename]]);
+            $dispatcher->trigger('onCallEventHandler', ['onAfterProfileAttachmentDelete', ['user_id' => $user_id, 'attachment_id' => (int)$default_attachment->attachment_id, 'filename' => $default_attachment->filename]]);
 
             return $result;
         } catch (Exception $e) {
@@ -2864,7 +2864,7 @@ class EmundusModelUsers extends JModelList {
                     JPluginHelper::importPlugin('emundus');
                     $dispatcher = JEventDispatcher::getInstance();
                     $dispatcher->trigger('onAfterProfileAttachmentUpload', [$uid, (int)$attachment_to_copy->attachment_id, $root_dir . '/' . $target_file]);
-                    $dispatcher->trigger('callEventHandler', ['onAfterProfileAttachmentUpload', ['user_id' => $uid, 'attachment_id' => (int)$attachment_to_copy->attachment_id, 'file' => $root_dir . '/' . $target_file]]);
+                    $dispatcher->trigger('onCallEventHandler', ['onAfterProfileAttachmentUpload', ['user_id' => $uid, 'attachment_id' => (int)$attachment_to_copy->attachment_id, 'file' => $root_dir . '/' . $target_file]]);
                 }
             }
 

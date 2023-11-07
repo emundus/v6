@@ -95,7 +95,7 @@ if (!$handle) {
 
 JPluginHelper::importPlugin('emundus');
 $dispatcher = JEventDispatcher::getInstance();
-$dispatcher->trigger('callEventHandler', ['onBeforeImportCSV', ['data' => array(
+$dispatcher->trigger('onCallEventHandler', ['onBeforeImportCSV', ['data' => array(
     'csv' => $csv,
     'create_new_fnum' => $create_new_fnum,
     'formData' => $formModel->formData,
@@ -968,6 +968,6 @@ $data = array(
 
 JPluginHelper::importPlugin('emundus');
 $dispatcher = JEventDispatcher::getInstance();
-$dispatcher->trigger('callEventHandler', ['onAfterImportCSV', $data]);
+$dispatcher->trigger('onCallEventHandler', ['onAfterImportCSV', $data]);
 
 return true;

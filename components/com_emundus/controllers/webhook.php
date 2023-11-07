@@ -77,7 +77,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 			$webhook_datas = json_decode($payload, true);
 
 			JPluginHelper::importPlugin('emundus', 'custom_event_handler');
-			$return = \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onWebhookCallbackProcess', ['webhook_datas' => $webhook_datas, 'type' => $type]]);
+			$return = \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onWebhookCallbackProcess', ['webhook_datas' => $webhook_datas, 'type' => $type]]);
 
 			$result = $return[0]['onWebhookCallbackProcess'];
 		} else {

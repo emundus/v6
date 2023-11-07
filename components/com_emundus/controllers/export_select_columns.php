@@ -8,28 +8,31 @@ jimport('joomla.application.component.controller');
  * @package    Joomla.Tutorials
  * @subpackage Components
  */
-class EmundusControllerExport_select_columns extends JControllerLegacy {
+class EmundusControllerExport_select_columns extends JControllerLegacy
+{
+    protected $app;
 
 	function display($cachable = false, $urlparams = false){
 		// Set a default view if none exists
-		if ( ! JRequest::getCmd( 'view' ) ){
+		if ( ! $this->input->get( 'view' ) ){
 			$default = 'export_select_columns';
-			JRequest::setVar('view', $default );
+			$this->input->set('view', $default );
 		}
 		parent::display();
     }
 
     function __construct($config = array()){
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'programme.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'files.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'programme.php');
 
         parent::__construct($config);
+
+        $this->app = Factory::getApplication();
     }
 
     public function getformtags(){
-        $user = JFactory::getUser();
-        $jinput = JFactory::getApplication()->input;
+        $user = $this->app->getIdentity();
 
         $model = $this->getModel('export_select_columns');
 
@@ -37,9 +40,9 @@ class EmundusControllerExport_select_columns extends JControllerLegacy {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $prg = $jinput->getString('code', null);
-            $camp = $jinput->getInt('camp', null);
-            $profile = $jinput->getInt('profile', null);
+            $prg = $this->input->getString('code', null);
+            $camp = $this->input->getInt('camp', null);
+            $profile = $this->input->getInt('profile', null);
 
             $code = array();
             $camps = array();
@@ -66,8 +69,7 @@ class EmundusControllerExport_select_columns extends JControllerLegacy {
      * Gets all eMundus Tags from tags_table
      */
     public function getalltags(){
-        $user = JFactory::getUser();
-        $jinput = JFactory::getApplication()->input;
+        $user = $this->app->getIdentity();
 
         $model = $this->getModel('export_select_columns');
 

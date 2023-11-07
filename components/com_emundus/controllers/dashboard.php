@@ -25,22 +25,25 @@ use Joomla\CMS\Factory;
  */
 class EmundusControllerDashboard extends JControllerLegacy
 {
+	protected $app;
 
-    var $model = null;
+	private $_user;
+	private $m_dashboard;
 
     public function __construct($config = array())
     {
         parent::__construct($config);
-        $this->model = $this->getModel('dashboard');
+
+		$this->app = Factory::getApplication();
+		$this->m_dashboard = $this->getModel('Dashboard');
+		$this->_user       = $this->app->getIdentity();
     }
 
     public function getallwidgetsbysize(){
         try {
-            $user = JFactory::getUser();
-            $jinput = JFactory::getApplication()->input;
-            $size = $jinput->getInt('size');
+			$size = $this->input->getInt('size');
 
-            $widgets = $this->model->getallwidgetsbysize($size,$user->id);
+			$widgets = $this->m_dashboard->getallwidgetsbysize($size, $this->_user->id);
 
             $tab = array('status' => 0, 'msg' => 'success', 'data' => $widgets);
         } catch (Exception $e) {
@@ -55,8 +58,7 @@ class EmundusControllerDashboard extends JControllerLegacy
         $query = $db->getQuery(true);
 
         try {
-            $app    = JFactory::getApplication();
-            $menu   = $app->getMenu();
+			$menu   = $this->app->getMenu();
             $active = $menu->getActive();
             if(empty($active)){
                 $menuid = 1079;
@@ -90,8 +92,7 @@ class EmundusControllerDashboard extends JControllerLegacy
 
     public function getwidgets(){
         try {
-            $user = JFactory::getUser();
-            $widgets = $this->model->getwidgets($user->id);
+			$widgets = $this->m_dashboard->getwidgets($this->_user->id);
 
             $tab = array('status' => 0, 'msg' => 'success', 'data' => $widgets);
         } catch (Exception $e) {
@@ -103,14 +104,10 @@ class EmundusControllerDashboard extends JControllerLegacy
 
     public function updatemydashboard(){
         try {
-            $user = JFactory::getUser();
+			$widget   = $this->input->getInt('widget');
+			$position = $this->input->getInt('position');
 
-            $jinput = JFactory::getApplication()->input;
-
-            $widget = $jinput->getInt('widget');
-            $position = $jinput->getInt('position');
-
-            $result = $this->model->updatemydashboard($widget,$position,$user->id);
+			$result = $this->m_dashboard->updatemydashboard($widget, $position, $this->_user->id);
 
             $tab = array('status' => 0, 'msg' => 'success', 'data' => $result);
         } catch (Exception $e) {
@@ -120,16 +117,13 @@ class EmundusControllerDashboard extends JControllerLegacy
         exit;
     }
 
-    public function getfirstcoordinatorconnection(){
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
+	public function getfirstcoordinatorconnection()
+	{
         try {
-            $user = JFactory::getUser();
             $table = JTable::getInstance('user', 'JTable');
-            $table->load($user->id);
+			$table->load($this->_user->id);
 
-            $params = $user->getParameters();
+			$params = $this->_user->getParameters();
             if ($params->get('first_login_date')) {
                 $register_at = $params->get('first_login_date');
             } else {
@@ -146,8 +140,7 @@ class EmundusControllerDashboard extends JControllerLegacy
 
     public function getfilters(){
         try {
-            $jinput = JFactory::getApplication()->input;
-            $widget = $jinput->getInt('widget');
+			$widget = $this->input->getInt('widget');
 
             $tab = array('msg' => 'success', 'filters' => JFactory::getSession()->get('widget_filters_' . $widget));
         } catch (Exception $e) {
@@ -159,14 +152,13 @@ class EmundusControllerDashboard extends JControllerLegacy
 
     public function renderchartbytag(){
         try {
-            $jinput = JFactory::getApplication()->input;
-            $widget = $jinput->getInt('widget');
-            $filters = $jinput->getRaw('filters');
+			$widget  = $this->input->getInt('widget');
+			$filters = $this->input->getRaw('filters');
 
             $session = JFactory::getSession();
             $session->set('widget_filters_' . $widget, $filters);
 
-            $results = $this->model->renderchartbytag($widget);
+			$results = $this->m_dashboard->renderchartbytag($widget);
 
             $tab = array('msg' => 'success', 'dataset' => $results);
         } catch (Exception $e) {
@@ -178,11 +170,10 @@ class EmundusControllerDashboard extends JControllerLegacy
 
     public function getarticle(){
         try {
-            $jinput = JFactory::getApplication()->input;
-            $widget = $jinput->getInt('widget');
-            $article = $jinput->getInt('article');
+			$widget  = $this->input->getInt('widget');
+			$article = $this->input->getInt('article');
 
-            $results = $this->model->getarticle($widget,$article);
+			$results = $this->m_dashboard->getarticle($widget, $article);
 
             $tab = array('msg' => 'success', 'data' => $results);
         } catch (Exception $e) {
@@ -194,14 +185,12 @@ class EmundusControllerDashboard extends JControllerLegacy
 
     public function geteval() {
 		$response = ['status' => 0, 'msg' => JText::_('ACCESS_DENIED')];
-		$user_id = Factory::getApplication()->getIdentity()->id;
 
-		if (EmundusHelperAccess::asPartnerAccessLevel($user_id)) {
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			try {
-				$jinput = JFactory::getApplication()->input;
-				$widget = $jinput->getInt('widget');
+				$widget = $this->input->getInt('widget');
 
-				$results = $this->model->renderchartbytag($widget);
+				$results = $this->m_dashboard->renderchartbytag($widget);
 				$response = array('msg' => 'success', 'data' => $results, 'status' => 1);
 			} catch (Exception $e) {
 				$response['msg'] = $e->getMessage();

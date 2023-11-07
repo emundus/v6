@@ -324,7 +324,7 @@ class Files
 		$can_access = false;
 
 		if(empty($this->files['fnums'])){
-			require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+			require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 
 			$can_access = \EmundusHelperAccess::asAccessAction(1,'r',$this->current_user->id,$fnum);
 		}

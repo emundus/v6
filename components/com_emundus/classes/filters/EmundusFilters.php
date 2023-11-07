@@ -1,5 +1,7 @@
 <?php
 
+use Joomla\CMS\Factory;
+
 class EmundusFilters
 {
 	protected $user = null;
@@ -12,7 +14,8 @@ class EmundusFilters
 	{
 		JLog::addLogger(['text_file' => 'com_emundus.filters.php'], JLog::ALL, 'com_emundus.filters');
 
-		$this->user = JFactory::getUser();
+		$app = Factory::getApplication();
+		$this->user = $app->getIdentity();
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
 			throw new Exception('Access denied', 403);

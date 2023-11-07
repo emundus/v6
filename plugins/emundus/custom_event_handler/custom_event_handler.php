@@ -22,7 +22,7 @@ class plgEmundusCustom_event_handler extends JPlugin {
     }
 
 
-    function callEventHandler(String $event, array $args = null): array
+    function onCallEventHandler(String $event, array $args = null): array
     {
         $events = [];
         $codes = [];

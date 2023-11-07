@@ -1749,7 +1749,7 @@ try {
 						$program_form_params->only_process_curl[]  = "onAfterProcess";
 						$program_form_params->form_php_file[]      = "-1";
 						$program_form_params->curl_code[]          = 'JPluginHelper::importPlugin(\'emundus\', \'custom_event_handler\');
-\Joomla\CMS\Factory::getApplication()->triggerEvent(\'callEventHandler\', [\'onAfterProgramCreate\', [\'formModel\' => $this->getModel(), \'data\' => $this->getProcessData()]]);';
+\Joomla\CMS\Factory::getApplication()->triggerEvent(\'onCallEventHandler\', [\'onAfterProgramCreate\', [\'formModel\' => $this->getModel(), \'data\' => $this->getProcessData()]]);';
 						$program_form_params->plugins[]            = "php";
 						$program_form_params->plugin_locations[]   = "both";
 						$program_form_params->plugin_events[]      = "new";

@@ -115,7 +115,7 @@ class PlgFabrik_FormEmundusFinalGrade extends plgFabrik_Form {
 				'fnum' => $fnum
 			];
 			JPluginHelper::importPlugin('emundus', 'custom_event_handler');
-			\Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onRenderFinalgrade', ['event_datas' => $event_datas]]);
+			\Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onRenderFinalgrade', ['event_datas' => $event_datas]]);
 		}
 
 		$app->enqueueMessage($decision['message']);
@@ -130,14 +130,14 @@ class PlgFabrik_FormEmundusFinalGrade extends plgFabrik_Form {
 		$formModel = $this->getModel();
 
 		JPluginHelper::importPlugin('emundus','custom_event_handler');
-		\Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeSubmitFinalgrade', ['formModel' => $formModel]]);
+		\Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeSubmitFinalgrade', ['formModel' => $formModel]]);
 	}
 
 	public function onAfterProcess() {
 		$formModel = $this->getModel();
 
 		JPluginHelper::importPlugin('emundus','custom_event_handler');
-		\Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterSubmitFinalgrade', ['formModel' => $formModel]]);
+		\Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterSubmitFinalgrade', ['formModel' => $formModel]]);
 	}
 
     public function onBeforeCalculations() {

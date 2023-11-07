@@ -1790,7 +1790,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         $send = $mailer->Send();
         $dispatcher = JEventDispatcher::getInstance();
         $dispatcher->trigger('onAfterEmailSend', ['fnum', 'template_id']);
-        $dispatcher->trigger('callEventHandler', ['onAfterEmailSend', ['fnum' => $fnum, 'template_id' => $template_email_id]]);
+        $dispatcher->trigger('onCallEventHandler', ['onAfterEmailSend', ['fnum' => $fnum, 'template_id' => $template_email_id]]);
         /* track the log of email */
         if ($send !== true) {
             $failed[] = $fnum_info['email'];

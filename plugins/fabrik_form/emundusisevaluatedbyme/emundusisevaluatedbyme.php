@@ -70,7 +70,7 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
                 'fnum' => $fnum
             ];
             JPluginHelper::importPlugin('emundus', 'custom_event_handler');
-            \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onRenderEvaluation', ['event_datas' => $event_datas]]);
+            \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onRenderEvaluation', ['event_datas' => $event_datas]]);
         }
 
         $app->enqueueMessage($evaluation['message']);
@@ -85,13 +85,13 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeSubmitEvaluation', ['formModel' => $formModel]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeSubmitEvaluation', ['formModel' => $formModel]]);
     }
 
     public function onAfterProcess() {
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterSubmitEvaluation', ['formModel' => $formModel]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterSubmitEvaluation', ['formModel' => $formModel]]);
     }
 }

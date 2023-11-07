@@ -78,7 +78,7 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeStore', ['formModel' => $formModel]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeStore', ['formModel' => $formModel]]);
         return true;
     }
 

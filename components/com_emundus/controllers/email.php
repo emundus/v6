@@ -11,7 +11,8 @@
 
 defined( '_JEXEC' ) or die( 'Restricted access' );
 jimport('joomla.application.component.controller');
-JHTML::addIncludePath(JPATH_COMPONENT.DS.'helpers');
+
+use Joomla\CMS\Factory;
 
 /**
  * eMundus Component Controller
@@ -19,30 +20,32 @@ JHTML::addIncludePath(JPATH_COMPONENT.DS.'helpers');
  * @package    Joomla.eMundus
  * @subpackage Components
  */
-class EmundusControllerEmail extends JControllerLegacy {
-	var $_em_user = null;
-	var $_user = null;
-	var $_db = null;
-    var $m_emails = null;
+class EmundusControllerEmail extends JControllerLegacy
+{
+	protected $app;
+	
+	private $_em_user;
+	private $_user;
+	private $m_emails;
 
 	function __construct($config = array()){
         parent::__construct($config);
 
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
 
-		$this->_em_user = JFactory::getSession()->get('emundusUser');
-		$this->_user = JFactory::getUser();
-		$this->_db = JFactory::getDBO();
+		$this->app = Factory::getApplication();
+		$this->_em_user = $this->app->getSession()->get('emundusUser');
+		$this->_user    = $this->app->getIdentity();
         $this->m_emails = $this->getModel('emails');
     }
 
 	function display($cachable = false, $urlparams = false) {
 		// Set a default view if none exists
-		if ( ! JRequest::getCmd( 'view' ) ) {
+		if (!$this->input->get('view')) {
 			$default = 'evaluation';
-			JRequest::setVar('view', $default );
+			$this->input->set('view', $default);
 		}
 
 		if (EmundusHelperAccess::asEvaluatorAccessLevel($this->_em_user->id)) {
@@ -55,44 +58,32 @@ class EmundusControllerEmail extends JControllerLegacy {
 	function clear() {
 		EmundusHelperFiles::clear();
 
-		$itemid=JFactory::getApplication()->getMenu()->getActive()->id;
-		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
-		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
-		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
+		$itemid           = $this->app->getMenu()->getActive()->id;
+		$limitstart       = $this->input->get('limitstart', null, 'POST');
+		$filter_order     = $this->input->get('filter_order', null, 'POST', null, 0);
+		$filter_order_Dir = $this->input->get('filter_order_Dir', null, 'POST', null, 0);
 
-		$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
+		$this->setRedirect('index.php?option=com_emundus&view=' . $this->input->get('view') . '&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir . '&Itemid=' . $itemid);
 	}
 
-
-	////// EMAIL ASSESSORS WITH DEFAULT MESSAGE///////////////////
-	function defaultEmail($reqids = null) {
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
-		//@EmundusHelperEmails::sendDefaultEmail();
+	function applicantEmail()
+	{
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
+		EmundusHelperEmails::sendApplicantEmail();
 	}
 
-	////// EMAIL ASSESSORS WITH CUSTOM MESSAGE///////////////////
-	function customEmail() {
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
-		//@EmundusHelperEmails::sendCustomEmail();
-	}
-
-	////// EMAIL APPLICANT WITH CUSTOM MESSAGE///////////////////
-	function applicantEmail() {
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
-		@EmundusHelperEmails::sendApplicantEmail();
-	}
-
-	function getTemplate(){
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
-		@EmundusHelperEmails::getTemplate();
+	function getTemplate()
+	{
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
+		EmundusHelperEmails::getTemplate();
 	}
 
 	function sendmail_expert() {
 		$response = ['status' => false, 'sent' => null, 'failed' => true, 'message' => JText::_( 'ACCESS_DENIED')];
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_em_user->id) || EmundusHelperAccess::asAccessAction(18, 'c', $this->_user->id)) {
-			$jinput = JFactory::getApplication()->input;
-			$fnums = $jinput->post->getString('fnums');
+
+			$fnums = $this->input->post->getString('fnums');
 
 			if (!empty($fnums)) {
 				$email = $this->m_emails->sendExpertMail((array) $fnums);
@@ -113,13 +104,13 @@ class EmundusControllerEmail extends JControllerLegacy {
 	    $tab = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
 
         if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-            $jinput = JFactory::getApplication()->input;
-            $filter = $jinput->getString('filter') ? $jinput->getString('filter') : 'Publish';
-            $sort = $jinput->getString('sort', '');
-            $recherche = $jinput->getString('recherche', '');
-            $lim = $jinput->getInt('lim', 25);
-            $page = $jinput->getInt('page', 0);
-            $category = $jinput->getString('category', '');
+
+			$filter    = $this->input->getString('filter') ? $this->input->getString('filter') : 'Publish';
+			$sort      = $this->input->getString('sort', '');
+			$recherche = $this->input->getString('recherche', '');
+			$lim       = $this->input->getInt('lim', 25);
+			$page      = $this->input->getInt('page', 0);
+			$category  = $this->input->getString('category', '');
 
             $emails = $this->m_emails->getAllEmails($lim, $page, $filter, $sort, $recherche, $category);
 
@@ -137,10 +128,11 @@ class EmundusControllerEmail extends JControllerLegacy {
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $jinput = JFactory::getApplication()->input;
+		}
+		else {
 
-            $data = $jinput->getInt('id');
+
+			$data = $this->input->getInt('id');
 
             $emails = $this->m_emails->deleteEmail($data);
 
@@ -158,10 +150,11 @@ class EmundusControllerEmail extends JControllerLegacy {
         if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $jinput = JFactory::getApplication()->input;
+		}
+		else {
 
-            $data = $jinput->getInt('id');
+
+			$data = $this->input->getInt('id');
 
             $emails = $this->m_emails->unpublishEmail($data);
 
@@ -179,10 +172,11 @@ class EmundusControllerEmail extends JControllerLegacy {
         if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $jinput = JFactory::getApplication()->input;
+		}
+		else {
 
-            $data = $jinput->getInt('id');
+
+			$data = $this->input->getInt('id');
 
             $emails = $this->m_emails->publishEmail($data);
 
@@ -200,10 +194,11 @@ class EmundusControllerEmail extends JControllerLegacy {
         if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $jinput = JFactory::getApplication()->input;
+		}
+		else {
 
-            $data = $jinput->getInt('id');
+
+			$data = $this->input->getInt('id');
 
             $email = $this->m_emails->duplicateEmail($data);
 
@@ -221,15 +216,16 @@ class EmundusControllerEmail extends JControllerLegacy {
         if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $jinput = JFactory::getApplication()->input;
+		}
+		else {
 
-            $data = $jinput->getRaw('body');
-            $receivers_cc = $jinput->getRaw('selectedReceiversCC');
-            $receivers_bcc = $jinput->getRaw('selectedReceiversBCC');
-            $letter_attachments = $jinput->getRaw('selectedLetterAttachments');
-            $candidate_attachments = $jinput->getRaw('selectedCandidateAttachments');
-            $tags = $jinput->getRaw('selectedTags');
+
+			$data                  = $this->input->getRaw('body');
+			$receivers_cc          = $this->input->getRaw('selectedReceiversCC');
+			$receivers_bcc         = $this->input->getRaw('selectedReceiversBCC');
+			$letter_attachments    = $this->input->getRaw('selectedLetterAttachments');
+			$candidate_attachments = $this->input->getRaw('selectedCandidateAttachments');
+			$tags                  = $this->input->getRaw('selectedTags');
 
             $cc_list = [];
             $bcc_list = [];
@@ -289,15 +285,14 @@ class EmundusControllerEmail extends JControllerLegacy {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $jinput = JFactory::getApplication()->input;
-
-            $data = $jinput->getRaw('body');
-            $code = $jinput->getString('code');
-            $receivers_cc = $jinput->getRaw('selectedReceiversCC');
-            $receivers_bcc = $jinput->getRaw('selectedReceiversBCC');
-            $letter_attachments = $jinput->getRaw('selectedLetterAttachments');
-            $candidate_attachments = $jinput->getRaw('selectedCandidateAttachments');
-            $tags = $jinput->getRaw('selectedTags');
+			$data                  = $this->input->getRaw('body','{}');
+			$data = json_decode($data, true);
+			$code                  = $this->input->getString('code');
+			$receivers_cc          = $this->input->getRaw('selectedReceiversCC');
+			$receivers_bcc         = $this->input->getRaw('selectedReceiversBCC');
+			$letter_attachments    = $this->input->getRaw('selectedLetterAttachments');
+			$candidate_attachments = $this->input->getRaw('selectedCandidateAttachments');
+			$tags                  = $this->input->getRaw('selectedTags');
 
             $cc_list = [];
             $bcc_list = [];
@@ -357,10 +352,11 @@ class EmundusControllerEmail extends JControllerLegacy {
         if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $jinput = JFactory::getApplication()->input;
+		}
+		else {
 
-            $id = $jinput->getInt('id');
+
+			$id = $this->input->getInt('id');
 
             $email = $this->m_emails->getAdvancedEmailById($id);
 
@@ -429,10 +425,11 @@ class EmundusControllerEmail extends JControllerLegacy {
         if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $jinput = JFactory::getApplication()->input;
+		}
+		else {
 
-            $pid = $jinput->getInt('pid');
+
+			$pid = $this->input->getInt('pid');
 
             $triggers = $this->m_emails->getTriggersByProgramId($pid);
 
@@ -450,10 +447,11 @@ class EmundusControllerEmail extends JControllerLegacy {
         if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $jinput = JFactory::getApplication()->input;
+		}
+		else {
 
-            $tid = $jinput->getInt('tid');
+
+			$tid = $this->input->getInt('tid');
 
             $trigger = $this->m_emails->getTriggerById($tid);
 
@@ -471,13 +469,14 @@ class EmundusControllerEmail extends JControllerLegacy {
         if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $jinput = JFactory::getApplication()->input;
+		}
+		else {
 
-            $trigger = $jinput->getRaw('trigger');
-            $this->_users = $jinput->getRaw('users');
 
-            $status = $this->m_emails->createTrigger($trigger, $this->_users, $this->_user);
+			$trigger      = $this->input->getRaw('trigger');
+			$users = $this->input->getRaw('users');
+
+            $status = $this->m_emails->createTrigger($trigger, $users, $this->_user);
 
             if ($status) {
                 $tab = array('status' => 1, 'msg' => JText::_('TRIGGER_CREATED'), 'data' => $status);
@@ -493,14 +492,15 @@ class EmundusControllerEmail extends JControllerLegacy {
         if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $jinput = JFactory::getApplication()->input;
+		}
+		else {
 
-            $tid = $jinput->getInt('tid');
-            $trigger = $jinput->getRaw('trigger');
-            $this->_users = $jinput->getRaw('users');
 
-            $status = $this->m_emails->updateTrigger($tid, $trigger, $this->_users);
+			$tid          = $this->input->getInt('tid');
+			$trigger      = $this->input->getRaw('trigger');
+			$users = $this->input->getRaw('users');
+
+            $status = $this->m_emails->updateTrigger($tid, $trigger, $users);
 
             if (!empty($status)) {
                 $tab = array('status' => 1, 'msg' => JText::_('TRIGGER_CREATED'), 'data' => $status);
@@ -516,10 +516,11 @@ class EmundusControllerEmail extends JControllerLegacy {
         if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $jinput = JFactory::getApplication()->input;
+		}
+		else {
 
-            $tid = $jinput->getInt('tid');
+
+			$tid = $this->input->getInt('tid');
 
             $status = $this->m_emails->removeTrigger($tid);
 

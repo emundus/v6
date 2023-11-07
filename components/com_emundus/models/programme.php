@@ -618,7 +618,7 @@ class EmundusModelProgramme extends JModelList {
 
             JPluginHelper::importPlugin('emundus');
             $dispatcher = JEventDispatcher::getInstance();
-            $dispatcher->trigger('callEventHandler', ['onBeforeProgramCreate', ['data' => $data]]);
+            $dispatcher->trigger('onCallEventHandler', ['onBeforeProgramCreate', ['data' => $data]]);
 
             if (count($data) > 0) {
                 $query->insert($db->quoteName('#__emundus_setup_programmes'))
@@ -695,7 +695,7 @@ class EmundusModelProgramme extends JModelList {
                     //
 
                     // Call plugin triggers
-                    $dispatcher->trigger('callEventHandler', ['onAfterProgramCreate', ['programme' => $programme]]);
+                    $dispatcher->trigger('onCallEventHandler', ['onAfterProgramCreate', ['programme' => $programme]]);
 
                     $response = array(
                         'programme_id' => $prog_id,
@@ -728,7 +728,7 @@ class EmundusModelProgramme extends JModelList {
 
             JPluginHelper::importPlugin('emundus');
             $dispatcher = JEventDispatcher::getInstance();
-            $dispatcher->trigger('callEventHandler', ['onBeforeProgramUpdate', ['id' => $id, 'data' => $data]]);
+            $dispatcher->trigger('onCallEventHandler', ['onBeforeProgramUpdate', ['id' => $id, 'data' => $data]]);
 
             if (!empty($data)) {
                 $query = 'SELECT DISTINCT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = ' . $db->quote('jos_emundus_setup_programmes');
@@ -754,7 +754,7 @@ class EmundusModelProgramme extends JModelList {
 
                         if ($updated) {
                             $dispatcher = JEventDispatcher::getInstance();
-                            $dispatcher->trigger('callEventHandler', ['onAfterProgramUpdate', ['id' => $id, 'data' => $data]]);
+                            $dispatcher->trigger('onCallEventHandler', ['onAfterProgramUpdate', ['id' => $id, 'data' => $data]]);
                         }
                     } catch(Exception $e) {
                         JLog::add('component/com_emundus/models/program | Error when updating the program ' . $id . ': ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
@@ -784,7 +784,7 @@ class EmundusModelProgramme extends JModelList {
             // Call plugin event before we delete the programme
             JPluginHelper::importPlugin('emundus');
             $dispatcher = JEventDispatcher::getInstance();
-            $dispatcher->trigger('callEventHandler', ['onBeforeProgramDelete', ['data' => $data]]);
+            $dispatcher->trigger('onCallEventHandler', ['onBeforeProgramDelete', ['data' => $data]]);
 
 
 	        $db = JFactory::getDbo();
@@ -818,7 +818,7 @@ class EmundusModelProgramme extends JModelList {
 
 	            if ($deleted) {
 		            $dispatcher = JEventDispatcher::getInstance();
-		            $dispatcher->trigger('callEventHandler', ['onAfterProgramDelete', ['id' => JFactory::getUser()->id, 'data' => $data]]);
+		            $dispatcher->trigger('onCallEventHandler', ['onAfterProgramDelete', ['id' => JFactory::getUser()->id, 'data' => $data]]);
 	            }
             } catch(Exception $e) {
                 JLog::add('component/com_emundus/models/program | Error wen delete programs : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');

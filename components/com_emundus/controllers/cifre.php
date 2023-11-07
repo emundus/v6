@@ -20,30 +20,28 @@ jimport('joomla.application.component.controller');
  * @package    Joomla
  * @subpackage Components
  */
+class EmundusControllerCifre extends JControllerLegacy
+{
 
-class EmundusControllerCifre extends JControllerLegacy {
+	protected $app;
 
-	// Initialize class variables
-	var $user = null;
-	var $m_cifre = null;
-	var $c_messages = null;
-	var $m_files = null;
+	private $user;
+	private $m_cifre;
+	private $c_messages;
+	private $m_files;
 
 	public function __construct(array $config = array()) {
 
-		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
 		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
-		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
-		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+
+		$this->app = JFactory::getApplication();
 
 		// Load class variables
 		$this->user = JFactory::getSession()->get('emundusUser');
-		$this->m_cifre = new EmundusModelCifre();
+		$this->m_cifre    = $this->getModel('Cifre');
 		$this->c_messages = new EmundusControllerMessages();
-		$this->m_files = new EmundusModelFiles();
+		$this->m_files    = $this->getModel('Files');
 
 		parent::__construct($config);
 	}
@@ -51,6 +49,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 	/**
 	 * Gets the type of action button to be put on the page.
+	 *
 	 * @param $fnum
 	 *
 	 * @return bool|string
@@ -84,6 +83,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 	 * Get all offers made by the current user.
 	 *
 	 * @param $fnum String do not get offers linked to this fnum.
+	 *
 	 * @return Mixed
 	 */
 	public function getOwnOffers($fnum = null) {
@@ -96,24 +96,16 @@ class EmundusControllerCifre extends JControllerLegacy {
 	 */
 	public function contact() {
 
-		try {
-			$application = JFactory::getApplication();
-		} catch (Exception $e) {
-			JLog::add('Unable to start application in c/cifre', JLog::ERROR, 'com_emundus');
-			echo json_encode((object)['status' => false, 'msg' => 'Internal server error']);
-			exit;
-		}
-
         $toAttach = [];
-		$jinput = $application->input;
-		$fnum = $jinput->post->get('fnum', null);
-		$linkedOffer = $jinput->post->get('linkedOffer', null);
-		$message = $jinput->post->getString('message', null);
-		$motivation = $jinput->post->getString('motivation', null);
-		$cv = $jinput->post->getPath('CV', null);
-		$ml = $jinput->post->getPath('ML', null);
-		$doc = $jinput->post->getPath('DOC', null);
-		$bcc = $jinput->post->getString('bcc', 'false') === 'true';
+
+		$fnum        = $this->input->post->get('fnum', null);
+		$linkedOffer = $this->input->post->get('linkedOffer', null);
+		$message     = $this->input->post->getString('message', null);
+		$motivation  = $this->input->post->getString('motivation', null);
+		$cv          = $this->input->post->getPath('CV', null);
+		$ml          = $this->input->post->getPath('ML', null);
+		$doc         = $this->input->post->getPath('DOC', null);
+		$bcc         = $this->input->post->getString('bcc', 'false') === 'true';
 
 		// check if the files are on the server
         if (!empty($cv) && file_exists(JPATH_SITE.DS.$cv)) {
@@ -150,10 +142,10 @@ class EmundusControllerCifre extends JControllerLegacy {
 			// This gets additional information about the offer, for example the title.
 			$offerInformation = $this->m_cifre->getOffer($fnum['fnum']);
 
-			$m_messages = new EmundusModelMessages();
+			$m_messages = $this->getModel('Messages');
 			$contact_id = $this->m_cifre->getContactRequestID($fnum['applicant_id'], $this->user->id, $fnum['fnum']);
 
-			$m_profile = new EmundusModelProfile();
+			$m_profile    = $this->getModel('Profile');
 			$profile = $m_profile->getProfileByApplicant($fnum['applicant_id']);
             $user_profile = $m_profile->getProfileByApplicant($this->user->id);
 
@@ -197,7 +189,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 				$chat_contact_request = $m_messages->getEmail('chat_contact_request');
 			}
 
-			$m_emails = new EmundusModelEmails();
+			$m_emails             = $this->getModel('Emails');
 			$tags = $m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum'], '', $chat_contact_request->message);
 			$chat_contact_request = preg_replace($tags['patterns'], $tags['replacements'], $chat_contact_request->message);
 
@@ -221,16 +213,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 	 */
 	public function retry() {
 
-		try {
-			$application = JFactory::getApplication();
-		} catch (Exception $e) {
-			JLog::add('Unable to start application in c/cifre', JLog::ERROR, 'com_emundus');
-			echo json_encode((object)['status' => false, 'msg' => 'Internal server error']);
-			exit;
-		}
-
-		$jinput = $application->input;
-		$fnum = $jinput->post->get('fnum', null);
+		$fnum = $this->input->post->get('fnum', null);
 
 		$fnum = $this->m_files->getFnumInfos($fnum);
 
@@ -263,16 +246,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 	 */
 	public function retrybyid() {
 
-		try {
-			$application = JFactory::getApplication();
-		} catch (Exception $e) {
-			JLog::add('Unable to start application in c/cifre', JLog::ERROR, 'com_emundus');
-			echo json_encode((object)['status' => false, 'msg' => 'Internal server error']);
-			exit;
-		}
-
-		$jinput = $application->input;
-		$id = $jinput->post->get('id', null);
+		$id = $this->input->post->get('id', null);
 
 		if (empty($id)) {
 			echo json_encode((object) ['status' => false, 'msg' => "Internal Server Error"]);
@@ -314,16 +288,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 	 */
 	public function reply() {
 
-		try {
-			$application = JFactory::getApplication();
-		} catch (Exception $e) {
-			JLog::add('Unable to start application in c/cifre', JLog::ERROR, 'com_emundus');
-			echo json_encode((object)['status' => false, 'msg' => 'Internal server error']);
-			exit;
-		}
-
-		$jinput = $application->input;
-		$fnum = $jinput->post->get('fnum', null);
+		$fnum = $this->input->post->get('fnum', null);
 
 		// If we have a link type that isnt -1 then we are not replying.
 		if ($this->m_cifre->getContactStatus($this->user->id, $fnum) != -1) {
@@ -338,8 +303,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 		if ($this->m_cifre->acceptContactRequest((int)substr($fnum, -7), $this->user->id, $fnum)) {
 
 			// Send a chat message to the user in order to start a conversation thread.
-			$m_messages = new EmundusModelMessages();
-			$m_emails = new EmundusModelEmails();
+			$m_messages = $this->getModel('Messages');
+			$m_emails   = $this->getModel('Emails');
 
 			// This gets additional information about the offer, for example the title.
 			$fnum = $this->m_files->getFnumInfos($fnum);
@@ -374,16 +339,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 	 */
 	public function replybyid() {
 
-		try {
-			$application = JFactory::getApplication();
-		} catch (Exception $e) {
-			JLog::add('Unable to start application in c/cifre', JLog::ERROR, 'com_emundus');
-			echo json_encode((object) ['status' => false, 'msg' => 'Internal server error']);
-			exit;
-		}
-
-		$jinput = $application->input;
-		$id = $jinput->post->get('id', null);
+		$id = $this->input->post->get('id', null);
 
 		if (empty($id)) {
 			echo json_encode((object) ['status' => false, 'msg' => "Internal Server Error"]);
@@ -409,8 +365,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 		EmundusModelLogs::log($this->user->id, $link->user_from, $link->fnum_from, 34, 'c', 'COM_EMUNDUS_LOGS_CONTACT_REQUEST_ACCEPTED');
 
 		// Send a chat message to the user in order to start a conversation thread.
-		$m_messages = new EmundusModelMessages();
-		$m_emails = new EmundusModelEmails();
+		$m_messages = $this->getModel('Messages');
+		$m_emails   = $this->getModel('Emails');
 
 		if (!empty($link->fnum_from)) {
 
@@ -442,11 +398,11 @@ class EmundusControllerCifre extends JControllerLegacy {
 			$user_from = JFactory::getUser($link->user_from);
 
 			// We cannot use the usual mailing function in c_messages because the recipient is not an fnum.
-			require_once(JPATH_COMPONENT . DS . 'models' . DS . 'files.php');
-			require_once(JPATH_COMPONENT . DS . 'models' . DS . 'emails.php');
+			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
 
-			$m_messages = new EmundusModelMessages();
-			$m_emails   = new EmundusModelEmails();
+			$m_messages = $this->getModel('Messages');
+			$m_emails   = $this->getModel('Emails');
 
 			$template = $m_messages->getEmail($email_to_send);
 
@@ -539,17 +495,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 	 */
 	public function breakup() {
 
-		try {
-			$application = JFactory::getApplication();
-		} catch (Exception $e) {
-			JLog::add('Unable to start application in c/cifre', JLog::ERROR, 'com_emundus');
-			echo json_encode((object) ['status' => false, 'msg' => 'Internal server error']);
-			exit;
-		}
-
-		$jinput = $application->input;
-		$action = $jinput->get->get('action', 'breakup');
-		$fnum   = $jinput->post->get('fnum', null);
+		$action = $this->input->get->get('action', 'breakup');
+		$fnum   = $this->input->post->get('fnum', null);
 
 		if (empty($this->m_cifre->getContactStatus($this->user->id, $fnum))) {
 			echo json_encode((object) ['status' => false, 'msg' => "Vous n'etes pas en contact avec cette personne pour cette offre."]);
@@ -597,17 +544,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 	 */
 	public function breakupbyid() {
 
-		try {
-			$application = JFactory::getApplication();
-		} catch (Exception $e) {
-			JLog::add('Unable to start application in c/cifre', JLog::ERROR, 'com_emundus');
-			echo json_encode((object) ['status' => false, 'msg' => 'Internal server error']);
-			exit;
-		}
-
-		$jinput = $application->input;
-		$action = $jinput->get->get('action', 'breakup');
-		$id = $jinput->post->get('id', null);
+		$action = $this->input->get->get('action', 'breakup');
+		$id     = $this->input->post->get('id', null);
 
 		if (empty($id)) {
 			echo json_encode((object) ['status' => false, 'msg' => "Internal Server Error"]);
@@ -628,7 +566,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 		// Remove the contact request from the DB.
 		if ($this->m_cifre->deleteContactRequest($link->user_to, $link->user_from, $link->fnum_to)) {
 
-			$m_messages = new EmundusModelMessages();
+			$m_messages = $this->getModel('Messages');
 
 			// Either we are user_from: send to fnum_to about fnum_to
 			// Or we are user_to and fnum_from exists: send to fnum_from about fnum_from
@@ -657,10 +595,10 @@ class EmundusControllerCifre extends JControllerLegacy {
 				$offerInformation = $this->m_cifre->getOffer($fnum['fnum']);
 
 				// We cannot use the usual mailing function in c_messages because the recipient is not an fnum.
-				require_once(JPATH_COMPONENT . DS . 'models' . DS . 'files.php');
-				require_once(JPATH_COMPONENT . DS . 'models' . DS . 'emails.php');
+				require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+				require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'emails.php');
 
-				$m_emails   = new EmundusModelEmails();
+				$m_emails = $this->getModel('Emails');
 
 				$template = $m_messages->getEmail($email_to_send);
 
@@ -776,8 +714,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 	 */
 	public function favorite() {
 
-		$jinput = JFactory::getApplication()->input;
-		$link_id = $jinput->post->getInt('link_id');
+		$link_id = $this->input->post->getInt('link_id');
 
 		if (empty($link_id)) {
 			echo json_encode((object) ['status' => false, 'msg' => 'Link ID not provided.']);
@@ -836,7 +773,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 		$favorites = $this->m_cifre->checkForTwoFavorites($fnum, $this->user->id);
 		if (count($favorites) === 2) {
 
-			$m_messages = new EmundusModelMessages();
+			$m_messages = $this->getModel('Messages');
 
 			$users = [];
 			// Here we get the two users from our favorites who are not us.
@@ -853,8 +790,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 			if (empty($chatroom_id)) {
 
-				require_once(JPATH_COMPONENT . DS . 'models' . DS . 'users.php');
-				$m_users = new EmundusModelUsers();
+				require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+				$m_users = $this->getModel('Users');
 
 				// Set the user param in order to show onBoarding message for user adding a fave for first time or being added as a fav for the first time.
 				$m_users->createParam('addedFaves', $this->user->id);
@@ -912,8 +849,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 	 */
 	public function unfavorite() {
 
-		$jinput = JFactory::getApplication()->input;
-		$link_id = $jinput->post->getInt('link_id');
+		$link_id = $this->input->post->getInt('link_id');
 
 		if (empty($link_id)) {
 			echo json_encode((object) ['status' => false, 'msg' => 'Link ID not provided.']);
@@ -953,8 +889,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 	 */
 	public function notify() {
 
-		$jinput = JFactory::getApplication()->input;
-		$link_id = $jinput->post->getInt('link_id');
+		$link_id = $this->input->post->getInt('link_id');
 
 		if (empty($link_id)) {
 			echo json_encode((object) ['status' => false, 'msg' => 'Link ID not provided.']);
@@ -990,8 +925,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 	 */
 	public function unnotify() {
 
-		$jinput = JFactory::getApplication()->input;
-		$link_id = $jinput->post->getInt('link_id');
+		$link_id = $this->input->post->getInt('link_id');
 
 		if (empty($link_id)) {
 			echo json_encode((object) ['status' => false, 'msg' => 'Link ID not provided.']);
@@ -1027,8 +961,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 	 * @since version
 	 */
 	private function getUserCifreProfile($user) {
-		require_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
-		$m_profile = new EmundusModelProfile();
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
+		$m_profile = $this->getModel('Profile');
 
 		// Get the other user's profile, used for checking for
 		$profiles = $m_profile->getUserProfiles($user);
@@ -1044,17 +978,9 @@ class EmundusControllerCifre extends JControllerLegacy {
 	/**
 	 *
 	 */
-	public function getdepartmentsbyregion() {
-        try {
-            $application = JFactory::getApplication();
-        } catch (Exception $e) {
-            JLog::add('Unable to start application in c/cifre', JLog::ERROR, 'com_emundus');
-            echo json_encode((object) ['status' => false, 'msg' => 'Internal server error']);
-            exit;
-        }
-
-        $jinput = $application->input;
-        $id = $jinput->post->get('id', null);
+	public function getdepartmentsbyregion()
+	{
+		$id = $this->input->post->get('id', null);
 
         $this->m_cifre->getDepartmentsByRegion($id);
     }

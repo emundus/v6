@@ -27,13 +27,13 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
     public function onBeforeOrderCreate(&$order,&$do)
     {
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopBeforeOrderCreate', ['order' => $order, 'do' => $do]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopBeforeOrderCreate', ['order' => $order, 'do' => $do]]);
     }
 
     public function onAfterOrderCreate(&$order)
     {
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopAfterOrderCreate', ['order' => $order]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopAfterOrderCreate', ['order' => $order]]);
 
         // We get the emundus payment type from the config
         $eMConfig = JComponentHelper::getParams('com_emundus');
@@ -171,7 +171,7 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
     public function onBeforeOrderUpdate(&$order,&$do)
     {
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopBeforeOrderUpdate', ['order' => $order, 'do' => $do]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopBeforeOrderUpdate', ['order' => $order, 'do' => $do]]);
     }
 
     public function onAfterOrderUpdate(&$order) {
@@ -277,7 +277,7 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         }
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopAfterOrderUpdate', ['order' => $order, 'em_order' => $em_order]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopAfterOrderUpdate', ['order' => $order, 'em_order' => $em_order]]);
 
         $this->onAfterOrderCreate($order);
     }
@@ -285,7 +285,7 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
     public function onAfterOrderConfirm(&$order,&$methods,$method_id)
     {
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopAfterOrderConfirm',
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopAfterOrderConfirm',
             ['order' => $order, 'methods' => $methods, 'method_id' => $method_id]
         ]);
     }
@@ -293,14 +293,14 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
     public function onAfterOrderDelete($elements)
     {
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopAfterOrderDelete', ['elements' => $elements]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopAfterOrderDelete', ['elements' => $elements]]);
     }
 
 
     public function onCheckoutWorkflowLoad(&$checkout_workflow, &$shop_closed, $cart_id)
     {
 	    JPluginHelper::importPlugin('emundus', 'custom_event_handler');
-	    \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopCheckoutWorkflowLoad',
+	    \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopCheckoutWorkflowLoad',
 		    ['checkout_workflow' => $checkout_workflow, 'shop_closed' => $shop_closed, 'cart_id' => $cart_id]
 	    ]);
 
@@ -349,7 +349,7 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
 
         if(!$app->isAdmin()) {
             JPluginHelper::importPlugin('emundus','custom_event_handler');
-            \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopBeforeProductListingLoad',
+            \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopBeforeProductListingLoad',
                 ['filters' => $filters, 'order' => $order,'parent' => $parent, 'select' => $select, 'select2' => $select2, 'a' => $a, 'b' => $b, 'on' => $on]
             ]);
 
@@ -374,14 +374,14 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         }
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopAfterCartProductsLoad', ['cart' => &$cart]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopAfterCartProductsLoad', ['cart' => &$cart]]);
     }
 
     public function onCheckoutStepList(&$list)
     {
         $list['emundus_return'] = array('name' => 'eMundus - Retour au dossier', 'params' => array('reset_session' => ['name' => JText::_('COM_EMUNDUS_RESET_SESSION_ON_QUIT'), 'type' => 'boolean', 'default' => 0]));
 	    JPluginHelper::importPlugin('emundus','custom_event_handler');
-	    \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopCheckoutStepList', ['list' => &$list]]);
+	    \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopCheckoutStepList', ['list' => &$list]]);
     }
 
     public function onCheckoutStepDisplay($layoutName, &$html, &$view, $pos = null, $options = null)
@@ -407,7 +407,7 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         $html .= $layout;
 
 	    JPluginHelper::importPlugin('emundus','custom_event_handler');
-	    \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopCheckoutStepDisplay', ['layoutName' => $layoutName, 'html' => &$html]]);
+	    \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopCheckoutStepDisplay', ['layoutName' => $layoutName, 'html' => &$html]]);
     }
 
     public function onAfterCheckoutStep($controllerName, &$go_back, $original_go_back, &$controller) {
@@ -421,6 +421,6 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         }
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopAfterCheckoutStep', ['controllerName' => $controllerName, 'go_back' => &$go_back, 'original_go_back' => $original_go_back, 'controller' => &$controller]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopAfterCheckoutStep', ['controllerName' => $controllerName, 'go_back' => &$go_back, 'original_go_back' => $original_go_back, 'controller' => &$controller]]);
     }
 }

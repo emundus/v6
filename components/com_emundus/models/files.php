@@ -1413,7 +1413,7 @@ class EmundusModelFiles extends JModelLegacy
 
         if (!empty($fnums) && !empty($tags)) {
             JPluginHelper::importPlugin('emundus');
-            \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeTagAdd', ['fnums' => $fnums, 'tag' => $tags]]);
+            \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeTagAdd', ['fnums' => $fnums, 'tag' => $tags]]);
 
             try {
                 $db = $this->getDbo();
@@ -1466,7 +1466,7 @@ class EmundusModelFiles extends JModelLegacy
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
             }
 
-            \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterTagAdd', ['fnums' => $fnums, 'tag' => $tags, 'tagged' => $tagged]]);
+            \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterTagAdd', ['fnums' => $fnums, 'tag' => $tags, 'tagged' => $tagged]]);
         }
 
         return $tagged;
@@ -1533,7 +1533,7 @@ class EmundusModelFiles extends JModelLegacy
 
                 $dispatcher = JEventDispatcher::getInstance();
                 $dispatcher->trigger('onBeforeMultipleStatusChange', [$fnums, $state]);
-                $trigger = $dispatcher->trigger('callEventHandler', ['onBeforeMultipleStatusChange', ['fnums' => $fnums, 'state' => $state]]);
+                $trigger = $dispatcher->trigger('onCallEventHandler', ['onBeforeMultipleStatusChange', ['fnums' => $fnums, 'state' => $state]]);
                 foreach($trigger as $responses) {
                     foreach($responses as $response) {
                         if (!empty($response) && isset($response['status']) && $response['status'] === false) {
@@ -1556,7 +1556,7 @@ class EmundusModelFiles extends JModelLegacy
                     $old_status_step = $db->loadResult();
 
                     $dispatcher->trigger('onBeforeStatusChange', [$fnum, $state]);
-                    $trigger = $dispatcher->trigger('callEventHandler', ['onBeforeStatusChange', ['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]]);
+                    $trigger = $dispatcher->trigger('onCallEventHandler', ['onBeforeStatusChange', ['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]]);
                     foreach($trigger as $responses) {
                         foreach($responses as $response) {
                             if (!empty($response) && isset($response['status']) && $response['status'] === false) {
@@ -1583,7 +1583,7 @@ class EmundusModelFiles extends JModelLegacy
                     }
 
                     $dispatcher->trigger('onAfterStatusChange', [$fnum, $state]);
-                    $dispatcher->trigger('callEventHandler', ['onAfterStatusChange', ['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]]);
+                    $dispatcher->trigger('onCallEventHandler', ['onAfterStatusChange', ['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]]);
 
                     if (!empty($profile)) {
                         $query->clear()
@@ -1670,7 +1670,7 @@ class EmundusModelFiles extends JModelLegacy
 
                 // Update publish
                 $dispatcher->trigger('onBeforePublishChange', [$fnum, $publish]);
-                $dispatcher->trigger('callEventHandler', ['onBeforePublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
+                $dispatcher->trigger('onCallEventHandler', ['onBeforePublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
                 $query->clear()
                     ->update($db->quoteName('#__emundus_campaign_candidature'))
                     ->set($db->quoteName('published').' = '.$db->quote($publish))
@@ -1684,7 +1684,7 @@ class EmundusModelFiles extends JModelLegacy
                     return false;
                 }
                 $dispatcher->trigger('onAfterPublishChange', [$fnum, $publish]);
-                $dispatcher->trigger('callEventHandler', ['onAfterPublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
+                $dispatcher->trigger('onCallEventHandler', ['onAfterPublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
             }
         }
         return $res;
@@ -3763,7 +3763,7 @@ class EmundusModelFiles extends JModelLegacy
 
         $dispatcher = JEventDispatcher::getInstance();
         $dispatcher->trigger('onBeforeDeleteFile', $fnum);
-        $dispatcher->trigger('callEventHandler', ['onBeforeDeleteFile', ['fnum' => $fnum]]);
+        $dispatcher->trigger('onCallEventHandler', ['onBeforeDeleteFile', ['fnum' => $fnum]]);
 
         $db = JFactory::getDbo();
 
@@ -3805,7 +3805,7 @@ class EmundusModelFiles extends JModelLegacy
             $db->setQuery($query);
             $res = $db->execute();
             $dispatcher->trigger('onAfterDeleteFile', $fnum);
-            $dispatcher->trigger('callEventHandler', ['onAfterDeleteFile', ['fnum' => $fnum]]);
+            $dispatcher->trigger('onCallEventHandler', ['onAfterDeleteFile', ['fnum' => $fnum]]);
             return $res;
         } catch(Exception $e) {
             echo $e->getMessage();

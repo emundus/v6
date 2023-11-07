@@ -691,7 +691,7 @@ class EmundusModelPayment extends JModelList
     {
         JPluginHelper::importPlugin('emundus');
         $dispatcher = JEventDispatcher::getInstance();
-        $extended_config = $dispatcher->trigger('callEventHandler', ['extendFlywireConfig', ['config' => $config]]);
+        $extended_config = $dispatcher->trigger('onCallEventHandler', ['extendFlywireConfig', ['config' => $config]]);
 
         if (!empty($extended_config)) {
             foreach($extended_config[0] as $extend) {
@@ -1005,7 +1005,7 @@ class EmundusModelPayment extends JModelList
 
     public function resetPaymentSession() {
 	    JPluginHelper::importPlugin('emundus','custom_event_handler');
-	    \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopResetSession', ['fnum' => JFactory::getSession()->get('emundusUser')->fnum]]);
+	    \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopResetSession', ['fnum' => JFactory::getSession()->get('emundusUser')->fnum]]);
 
 	    JFactory::getSession()->set('emundusPayment', null);
     }

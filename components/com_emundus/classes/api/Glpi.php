@@ -14,8 +14,11 @@ use JFactory;
 use JLog;
 
 use classes\api\Api;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
 
 defined('_JEXEC') or die('Restricted access');
+
 class Glpi extends Api
 {
 	public function __construct($entities = array())
@@ -34,7 +37,7 @@ class Glpi extends Api
 
 	public function setBaseUrl(): void
 	{
-		$config = JComponentHelper::getParams('com_emundus');
+		$config = ComponentHelper::getParams('com_emundus');
 		$this->baseUrl = $config->get('glpi_api_base_url', '');
 	}
 
@@ -50,7 +53,7 @@ class Glpi extends Api
 
 	public function setAuth(): void
 	{
-		$config = JComponentHelper::getParams('com_emundus');
+		$config = ComponentHelper::getParams('com_emundus');
 
 		$this->auth['app_token'] = $config->get('glpi_api_app_token', '');
 		$this->auth['user_token'] = $config->get('glpi_api_user_token', '');
@@ -59,7 +62,8 @@ class Glpi extends Api
 
 	private function getSessionToken(): string
 	{
-		$glpi_session_token = JFactory::getSession()->get('glpi_session_token', '');
+		$session = Factory::getApplication()->getSession();
+		$glpi_session_token = $session->get('glpi_session_token', '');
 
 		if(empty($glpi_session_token))
 		{
@@ -74,7 +78,7 @@ class Glpi extends Api
 
 			if ($response['status'] == 200)
 			{
-				JFactory::getSession()->set('glpi_session_token', $response['data']->session_token);
+				$session->set('glpi_session_token', $response['data']->session_token);
 
 				$glpi_session_token = $response['data']->session_token;
 			}
@@ -116,6 +120,8 @@ class Glpi extends Api
 	{
 		$response = ['status' => 200, 'message' => '', 'data' => ''];
 
+		$session = Factory::getApplication()->getSession();
+
 		try
 		{
 			$url_params = http_build_query($params);
@@ -133,7 +139,7 @@ class Glpi extends Api
 
 			if($response['status'] == 401 && $retry)
 			{
-				JFactory::getSession()->clear('glpi_session_token');
+				$session->clear('glpi_session_token');
 				$this->setAuth();
 				$this->setHeaders();
 				$this->get($url, $params, false);

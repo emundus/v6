@@ -368,12 +368,12 @@ class EmundusModelCifre extends JModelList {
 		try {
 
 			$dispatcher->trigger('onBeforeNewContactRequest', [$user_to, $user_from, $fnum_to, $fnum_from]);
-            $dispatcher->trigger('callEventHandler', ['onBeforeNewContactRequest', ['user_to' => $user_to, 'user_from' => $user_from, 'fnum_to' => $fnum_to, 'fnum_from' => $fnum_from]]);
+            $dispatcher->trigger('onCallEventHandler', ['onBeforeNewContactRequest', ['user_to' => $user_to, 'user_from' => $user_from, 'fnum_to' => $fnum_to, 'fnum_from' => $fnum_from]]);
 
             $this->db->execute();
 
 			$dispatcher->trigger('onAfterNewContactRequest', [$user_to, $user_from, $fnum_to, $fnum_from]);
-            $dispatcher->trigger('callEventHandler', ['onAfterNewContactRequest', ['user_to' => $user_to, 'user_from' => $user_from, 'fnum_to' => $fnum_to, 'fnum_from' => $fnum_from]]);
+            $dispatcher->trigger('onCallEventHandler', ['onAfterNewContactRequest', ['user_to' => $user_to, 'user_from' => $user_from, 'fnum_to' => $fnum_to, 'fnum_from' => $fnum_from]]);
 
             return true;
 		} catch (Exception $e) {
@@ -432,12 +432,12 @@ class EmundusModelCifre extends JModelList {
 		$this->db->setQuery($query);
 		try {
 			$dispatcher->trigger('onBeforeAcceptContactRequest', [$user1, $user2, $fnum]);
-            $dispatcher->trigger('callEventHandler', ['onBeforeAcceptContactRequest', ['user1' => $user1, 'user2' => $user2, 'fnum' => $fnum]]);
+            $dispatcher->trigger('onCallEventHandler', ['onBeforeAcceptContactRequest', ['user1' => $user1, 'user2' => $user2, 'fnum' => $fnum]]);
 
             $this->db->execute();
 
 			$dispatcher->trigger('onAfterAcceptContactRequest', [$user1, $user2, $fnum]);
-            $dispatcher->trigger('callEventHandler', ['onAfterAcceptContactRequest', ['user1' => $user1, 'user2' => $user2, 'fnum' => $fnum]]);
+            $dispatcher->trigger('onCallEventHandler', ['onAfterAcceptContactRequest', ['user1' => $user1, 'user2' => $user2, 'fnum' => $fnum]]);
 
             return true;
 		} catch (Exception $e) {
@@ -468,11 +468,11 @@ class EmundusModelCifre extends JModelList {
 
 		try {
 			$dispatcher->trigger('onBeforeDeleteContactRequest', [$user1, $user2, $fnum]);
-            $dispatcher->trigger('callEventHandler', ['onBeforeDeleteContactRequest', ['user1' => $user1, 'user2' => $user2, 'fnum' => $fnum]]);
+            $dispatcher->trigger('onCallEventHandler', ['onBeforeDeleteContactRequest', ['user1' => $user1, 'user2' => $user2, 'fnum' => $fnum]]);
 
             $this->db->execute();
 			$dispatcher->trigger('onAfterDeleteContactRequest', [$user1, $user2, $fnum]);
-            $dispatcher->trigger('callEventHandler', ['onAfterDeleteContactRequest', ['user1' => $user1, 'user2' => $user2, 'fnum' => $fnum]]);
+            $dispatcher->trigger('onCallEventHandler', ['onAfterDeleteContactRequest', ['user1' => $user1, 'user2' => $user2, 'fnum' => $fnum]]);
 
             return true;
 		} catch (Exception $e) {

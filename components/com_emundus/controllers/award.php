@@ -8,24 +8,14 @@
  */
 
 // No direct access
-/*
-if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
-
-    use PhpOffice\PhpWord\IOFactory;
-    use PhpOffice\PhpWord\PhpWord;
-    use PhpOffice\PhpWord\TemplateProcessor;
-}
-*/
-
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-//use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
 jimport( 'joomla.user.helper' );
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'award.php');
+
+use Joomla\CMS\Factory;
 
 /**
  * eMundus Component Controller
@@ -41,30 +31,22 @@ class EmundusControllerAward extends JControllerLegacy
 {
     public function __construct($config = array())
     {
-
-
-        $this->_user = JFactory::getSession()->get('emundusUser');
-
-        $this->_db = JFactory::getDBO();
-
         parent::__construct($config);
     }
-    public function addvote(){
 
-        $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->post->getVar('fnum', null);
-        $user = $jinput->post->getString('user', null);
-        $thematique = $jinput->post->getString('thematique', null);
-        $engagement = $jinput->post->getString('engagement', null);
-        $campaign_id = $jinput->post->getString('campaign_id', null);
-        $student_id = $jinput->post->getString('student_id', null);
+	public function addvote()
+	{
+		$fnum        = $this->input->post->getVar('fnum', null);
+		$user        = $this->input->post->getString('user', null);
+		$thematique  = $this->input->post->getString('thematique', null);
+		$engagement  = $this->input->post->getString('engagement', null);
+		$campaign_id = $this->input->post->getString('campaign_id', null);
+		$student_id  = $this->input->post->getString('student_id', null);
 
-
-
-        $m_model = new EmundusModelAward();
+		$m_award = $this->getModel('Award');
 
         try{
-            $m_model->updatePlusNbVote($fnum,$user,$thematique,$engagement, $student_id, $campaign_id);
+			$m_award->updatePlusNbVote($fnum, $user, $thematique, $engagement, $student_id, $campaign_id);
             $res = true;
 
         }
@@ -78,21 +60,22 @@ class EmundusControllerAward extends JControllerLegacy
         echo json_encode($results);
         exit;
     }
-    public function favoris(){
-        $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->post->getString('fnum', null);
-        $user = $jinput->post->getString('user', null);
 
-        $m_model = new EmundusModelAward();
+	public function favoris()
+	{
+		$fnum = $this->input->post->getString('fnum', null);
+		$user = $this->input->post->getString('user', null);
+
+		$m_award = $this->getModel('Award');
 
         try{
-            $favoris = $m_model->getFavoris($fnum,$user);
+			$favoris = $m_award->getFavoris($fnum, $user);
             if(empty($favoris)){
-                $m_model->addToFavoris($fnum,$user);
+				$m_award->addToFavoris($fnum, $user);
                 $res='add';
             }
             else{
-                $m_model->deleteToFavoris($fnum,$user);
+				$m_award->deleteToFavoris($fnum, $user);
                 $res='delete';
             }
 

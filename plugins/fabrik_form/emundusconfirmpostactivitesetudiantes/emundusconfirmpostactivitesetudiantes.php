@@ -171,7 +171,7 @@ class PlgFabrik_FormEmundusconfirmpostactivitesetudiantes extends plgFabrik_Form
         JPluginHelper::importPlugin('emundus');
         $dispatcher = JEventDispatcher::getInstance();
         $dispatcher->trigger('onBeforeSubmitFile', [$student->id, $student->fnum]);
-        $dispatcher->trigger('callEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
+        $dispatcher->trigger('onCallEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
         $fnumInfos = $m_files->getFnumInfos($student->fnum);
 
@@ -254,7 +254,7 @@ class PlgFabrik_FormEmundusconfirmpostactivitesetudiantes extends plgFabrik_Form
 			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
         $dispatcher->trigger('onAfterSubmitFile', [$student->id, $student->fnum]);
-        $dispatcher->trigger('callEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
+        $dispatcher->trigger('onCallEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
 		$student->candidature_posted = 1;
 

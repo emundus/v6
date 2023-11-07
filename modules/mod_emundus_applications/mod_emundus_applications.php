@@ -258,7 +258,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $status = $m_files->getStatus();
 
     JPluginHelper::importPlugin('emundus','custom_event_handler');
-    \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeRenderApplications', ['applications' => $applications, 'layout' => $layout, 'params' => $params, 'user' => $user]]);
+    \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeRenderApplications', ['applications' => $applications, 'layout' => $layout, 'params' => $params, 'user' => $user]]);
 
     require JModuleHelper::getLayoutPath('mod_emundus_applications', $layout);
 }

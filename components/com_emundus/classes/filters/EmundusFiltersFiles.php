@@ -3,6 +3,8 @@ require_once(JPATH_ROOT . '/components/com_emundus/classes/filters/EmundusFilter
 require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 
+use Joomla\CMS\Factory;
+
 class EmundusFiltersFiles extends EmundusFilters
 {
 	private $profiles = [];
@@ -16,7 +18,9 @@ class EmundusFiltersFiles extends EmundusFilters
 	public function __construct($config = array())
 	{
 		JLog::addLogger(['text_file' => 'com_emundus.filters.php'], JLog::ALL, 'com_emundus.filters');
-		$this->user = JFactory::getUser();
+
+		$app = Factory::getApplication();
+		$this->user = $app->getIdentity();
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id) || !EmundusHelperAccess::asAccessAction(1, 'r', $this->user->id)) {
 			throw new Exception('Access denied', 403);
@@ -57,7 +61,7 @@ class EmundusFiltersFiles extends EmundusFilters
 	private function setMenuParams() {
 		$menu = JFactory::getApplication()->getMenu();
 		$active = $menu->getActive();
-		$this->menu_params = $active->params;
+		$this->menu_params = $active->getParams();
 	}
 
 	private function setProfiles()

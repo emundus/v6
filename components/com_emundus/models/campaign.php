@@ -938,7 +938,7 @@ class EmundusModelCampaign extends JModelList {
 
 			$dispatcher = JEventDispatcher::getInstance();
 	        $dispatcher->trigger('onBeforeCampaignDelete', $data);
-	        $dispatcher->trigger('callEventHandler', ['onBeforeCampaignDelete', ['campaign' => $data]]);
+	        $dispatcher->trigger('onCallEventHandler', ['onBeforeCampaignDelete', ['campaign' => $data]]);
 
 	        $query = $this->_db->getQuery(true);
 
@@ -985,7 +985,7 @@ class EmundusModelCampaign extends JModelList {
 
                 if ($deleted) {
                     $dispatcher->trigger('onAfterCampaignDelete', $data);
-                    $dispatcher->trigger('callEventHandler', ['onAfterCampaignDelete', ['campaign' => $data]]);
+                    $dispatcher->trigger('onCallEventHandler', ['onAfterCampaignDelete', ['campaign' => $data]]);
                 }
             } catch (Exception $e) {
                 JLog::add('component/com_emundus/models/campaign | Error when delete campaigns : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
@@ -1018,7 +1018,7 @@ class EmundusModelCampaign extends JModelList {
 
             $dispatcher = JEventDispatcher::getInstance();
             $dispatcher->trigger('onBeforeCampaignUnpublish', $data);
-            $dispatcher->trigger('callEventHandler', ['onBeforeCampaignUnpublish', ['campaign' => $data]]);
+            $dispatcher->trigger('onCallEventHandler', ['onBeforeCampaignUnpublish', ['campaign' => $data]]);
 
             try {
                 $fields = [
@@ -1037,7 +1037,7 @@ class EmundusModelCampaign extends JModelList {
 
                 if ($unpublished) {
                     $dispatcher->trigger('onAfterCampaignUnpublish', $data);
-                    $dispatcher->trigger('callEventHandler', ['onAfterCampaignUnpublish', ['campaign' => $data]]);
+                    $dispatcher->trigger('onCallEventHandler', ['onAfterCampaignUnpublish', ['campaign' => $data]]);
                 }
             } catch (Exception $e) {
                 JLog::add('component/com_emundus/models/campaign | Error when unpublish campaigns : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
@@ -1070,7 +1070,7 @@ class EmundusModelCampaign extends JModelList {
 
             $dispatcher = JEventDispatcher::getInstance();
             $dispatcher->trigger('onBeforeCampaignPublish', $data);
-            $dispatcher->trigger('callEventHandler', ['onBeforeCampaignPublish', ['campaign' => $data]]);
+            $dispatcher->trigger('onCallEventHandler', ['onBeforeCampaignPublish', ['campaign' => $data]]);
             try {
                 $fields = [$this->_db->quoteName('published') . ' = 1'];
                 $sc_conditions = [$this->_db->quoteName('id').' IN ('.implode(", ", array_values($data)).')'];
@@ -1084,7 +1084,7 @@ class EmundusModelCampaign extends JModelList {
 
                 if ($published) {
                     $dispatcher->trigger('onAfterCampaignPublish', $data);
-                    $dispatcher->trigger('callEventHandler', ['onAfterCampaignPublish', ['campaign' => $data]]);
+                    $dispatcher->trigger('onCallEventHandler', ['onAfterCampaignPublish', ['campaign' => $data]]);
                 }
             } catch (Exception $e) {
                 JLog::add('component/com_emundus/models/campaign | Error when publish campaigns : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
@@ -1235,7 +1235,7 @@ class EmundusModelCampaign extends JModelList {
 
             $dispatcher = JEventDispatcher::getInstance();
             $dispatcher->trigger('onBeforeCampaignCreate', $data);
-            $dispatcher->trigger('callEventHandler', ['onBeforeCampaignCreate', ['campaign' => $data]]);
+            $dispatcher->trigger('onCallEventHandler', ['onBeforeCampaignCreate', ['campaign' => $data]]);
 
             $query = $this->_db->getQuery(true);
             foreach ($data as $key => $val) {
@@ -1332,7 +1332,7 @@ class EmundusModelCampaign extends JModelList {
                         $this->createYear($data);
 
                         $dispatcher->trigger('onAfterCampaignCreate', $campaign_id);
-                        $dispatcher->trigger('callEventHandler', ['onAfterCampaignCreate', ['campaign' => $campaign_id]]);
+                        $dispatcher->trigger('onCallEventHandler', ['onAfterCampaignCreate', ['campaign' => $campaign_id]]);
                     }
                 } catch (Exception $e) {
                     JLog::add('component/com_emundus/models/campaign | Error when create the campaign : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
@@ -1378,7 +1378,7 @@ class EmundusModelCampaign extends JModelList {
 
             $dispatcher = JEventDispatcher::getInstance();
             $dispatcher->trigger('onBeforeCampaignUpdate', $data);
-            $dispatcher->trigger('callEventHandler', ['onBeforeCampaignUpdate', ['campaign' => $cid]]);
+            $dispatcher->trigger('onCallEventHandler', ['onBeforeCampaignUpdate', ['campaign' => $cid]]);
 
             foreach ($data as $key => $val) {
                 switch($key) {
@@ -1445,7 +1445,7 @@ class EmundusModelCampaign extends JModelList {
                     $this->createYear($data);
 
                     $dispatcher->trigger('onAfterCampaignUpdate', $data);
-                    $dispatcher->trigger('callEventHandler', ['onAfterCampaignUpdate', ['campaign' => $cid]]);
+                    $dispatcher->trigger('onCallEventHandler', ['onAfterCampaignUpdate', ['campaign' => $cid]]);
                 } else {
                     JLog::add('Attempt to update $campaign ' . $cid . ' with data ' . json_encode($data) . ' failed.', JLog::WARNING, 'com_emundus.error');
                 }

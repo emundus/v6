@@ -8,8 +8,8 @@
 
 // ensure this file is being included by a parent file
 defined( '_JEXEC' ) or die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
 
 //client api for file conversion
 use TheCodingMachine\Gotenberg\Client;
@@ -27,11 +27,13 @@ use GuzzleHttp\Psr7\LazyOpenStream;
  */
 class EmundusControllerExport extends JControllerLegacy
 {
+	protected $app;
+
     public function display($cachable = false, $urlparams = false) {
         // Set a default view if none exists
-        if ( ! JRequest::getCmd( 'view' ) ) {
+        if ( ! $this->input->get( 'view' ) ) {
             $default = 'application_form';
-            JRequest::setVar('view', $default );
+            $this->input->set('view', $default );
         }
         parent::display();
     }
@@ -51,11 +53,11 @@ class EmundusControllerExport extends JControllerLegacy
             exit();
         }
 
-        $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->getString('fnum', null);
-        $file_src = $jinput->getString('src', null);
-        $file_src_format = $jinput->getString('type', null);
-        $file_dest = $jinput->getString('dest', null);
+
+        $fnum = $this->input->getString('fnum', null);
+        $file_src = $this->input->getString('src', null);
+        $file_src_format = $this->input->getString('type', null);
+        $file_dest = $this->input->getString('dest', null);
 
         $user_id = (int)substr($fnum, -7);
 
@@ -133,16 +135,16 @@ class EmundusControllerExport extends JControllerLegacy
         if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
             die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
         } else {
-            $jinput = JFactory::getApplication()->input;
 
-            $code = $jinput->getVar('code', null);
-            $camp = $jinput->getVar('camp', null);
+
+            $code = $this->input->getVar('code', null);
+            $camp = $this->input->getVar('camp', null);
 
             $code = explode(',', $code);
             $camp = explode(',', $camp);
 
-	        require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
-            $m_profile = new EmundusModelProfile();
+	        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+            $m_profile = $this->getModel('Profile');
             $profiles = $m_profile->getProfileIDByCampaigns($camp,$code);
 
             echo json_encode((object) $profiles);
