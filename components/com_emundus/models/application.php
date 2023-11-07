@@ -3733,11 +3733,11 @@ class EmundusModelApplication extends JModelList
         /* First determine the program the user is applying to is in the emundus_hikashop_programs */
         $query
             ->select('hp.id')
-            ->from($db->quoteName('#__emundus_hikashop_programs', 'hp'))
-            ->leftJoin($db->quoteName('jos_emundus_hikashop_programs_repeat_code_prog','hpr').' ON '.$db->quoteName('hpr.parent_id').' = '.$db->quoteName('hp.id'))
-            ->where($db->quoteName('hpr.code_prog') . ' = ' .$db->quote($fnumInfos['training']));
-        $db->setQuery($query);
-        $rule = $db->loadResult();
+            ->from($this->_db->quoteName('#__emundus_hikashop_programs', 'hp'))
+            ->leftJoin($this->_db->quoteName('jos_emundus_hikashop_programs_repeat_code_prog','hpr').' ON '.$this->_db->quoteName('hpr.parent_id').' = '.$this->_db->quoteName('hp.id'))
+            ->where($this->_db->quoteName('hpr.code_prog') . ' = ' .$this->_db->quote($fnumInfos['training']));
+        $this->_db->setQuery($query);
+        $rule = $this->_db->loadResult();
 
         /* If we find a row, we use the emundus_hikashop_programs, otherwise we use the eMundus config */
         $em_application_payment = isset($rule) ? 'programmes' : $eMConfig->get('application_payment', 'user');
@@ -4836,9 +4836,9 @@ class EmundusModelApplication extends JModelList
 		$query->select(implode(',', $this->_db->quoteName($elements_name)))
 			->from($this->_db->quoteName($parent_table,'t'));
 		if(!empty($databases_join_params)){
-			foreach ($databases_join_params as $this->_db_join)
+			foreach ($databases_join_params as $db_join)
 			{
-				$query->leftJoin($this->_db_join);
+				$query->leftJoin($db_join);
 			}
 		}
 		$query->where($this->_db->quoteName('t.fnum') . ' LIKE ' . $this->_db->quote($fnum));
