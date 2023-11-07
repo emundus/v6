@@ -3253,7 +3253,7 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 				$insertLines = "# Tchooz session cookie security" . PHP_EOL .
 			"php_value session.cookie_secure On" . PHP_EOL .
 			"php_value session.cookie_samesite Strict" . PHP_EOL;
-				$succeed['add_htaccess_exeption'] = EmundusHelperUpdate::insertIntoFile($file, $insertLines);
+				$succeed['add_htaccess_exception'] = EmundusHelperUpdate::insertIntoFile($file, $insertLines);
             }
 		}
 
@@ -3382,6 +3382,16 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 			chmod(JPATH_SITE.'/.git/hooks/pre-commit', 0755);
 
 			echo ' - Git pre-commit hook installed' . PHP_EOL;
+		}
+
+		// if payment is activated, remove cookie samesite line in .htaccess file, else add it
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$payment_activated = $eMConfig->get('application_fee');
+
+		if ($payment_activated) {
+			EmundusHelperUpdate::removeFromFile(JPATH_ROOT . '/.htaccess', ['php_value session.cookie_samesite Strict' . PHP_EOL]);
+		} else {
+			EmundusHelperUpdate::insertIntoFile(JPATH_ROOT . '/.htaccess', "php_value session.cookie_samesite Strict" . PHP_EOL);
 		}
 
 		return true;
