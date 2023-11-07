@@ -146,15 +146,15 @@ export default {
     .section-identifier {
       color: white;
       padding: 8px 24px;
-      border-radius: 4px 4px 0px 0px;
+      border-radius: 4px 4px 0 0;
       display: flex;
       align-self: flex-end;;
     }
 
     .section-content {
       padding: 32px;
-      border-top: 4px solid #20835F;
-      background-color: white;
+      border-top: 4px solid var(--em-profile-color);
+      background-color: var(--neutral-0);
       width: 100%;
       transition: all 0.3s ease-in-out;
 

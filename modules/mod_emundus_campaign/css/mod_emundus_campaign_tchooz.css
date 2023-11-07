@@ -26,8 +26,16 @@
     width: 72%;
 }
 
+.mod_emundus_campaign__list_items .pagination {
+    margin: 0;
+}
+
 .mod_emundus_campaign__intro *{
   font-family: var(--em-applicant-font);
+}
+
+.mod_emundus_campaign__intro h1{
+    font-family: var(--em-applicant-font-title);
 }
 
 .mod_emundus_campaign__intro p{
@@ -294,7 +302,7 @@ a.em-blue-400-color:hover {
 
 .mod_emundus_campaign__list_content_container .mod_emundus_campaign__campaign_title {
     margin-bottom: 8px !important;
-    color: var(--em-default-title-color-1) !important;
+    color: var(--em-default-title-color-1);
     -webkit-line-clamp: 2;
     overflow: hidden;
     -webkit-box-orient: vertical;
@@ -428,7 +436,7 @@ a.em-blue-400-color:hover {
     display: grid;
     align-items: flex-start;
     padding: 0;
-    gap: var(--p-32);
+    gap: var(--p-48);
     grid-template-columns: repeat(3,1fr);
 }
 
