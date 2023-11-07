@@ -3253,11 +3253,14 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 				$insertLines = "# Tchooz session cookie security" . PHP_EOL .
 			"php_value session.cookie_secure On" . PHP_EOL .
 			"php_value session.cookie_samesite Strict" . PHP_EOL;
-				$succeed['add_htaccess_exeption'] = EmundusHelperUpdate::insertIntoFile($file, $insertLines);
+				$succeed['add_htaccess_exception'] = EmundusHelperUpdate::insertIntoFile($file, $insertLines);
             }
 
-            if (version_compare($cache_version, '1.37.9', '<=') || $firstrun) {
-                // Update colors
+			if (version_compare($cache_version, '1.37.9', '<=') || $firstrun) {
+				EmundusHelperUpdate::installExtension('plg_extension_emundus', 'emundus', '{"name":"plg_extension_emundus","type":"plugin","creationDate":"November 2023","author":"J\u00e9r\u00e9my LEGENDRE","copyright":"(C) 2010 Open Source Matters, Inc.","authorEmail":"jeremy.legendre@emundus.fr","authorUrl":"www.emundus.fr","version":"1.0.0","description":"PLG_EXTENSION_EMUNDUS_XML_DESCRIPTION","group":"","filename":"emundus"}', 'plugin', 1, 'extension', '{}');
+				EmundusHelperUpdate::enableEmundusPlugins('emundus','extension');
+
+				// Update colors
                 $dashboard_files_associated_by_status_params = array(
                     'eval' => 'php|$db = JFactory::getDbo();
 $query = $db->getQuery(true);
@@ -3469,6 +3472,16 @@ try {
 			chmod(JPATH_SITE.'/.git/hooks/pre-commit', 0755);
 
 			echo ' - Git pre-commit hook installed' . PHP_EOL;
+		}
+
+		// if payment is activated, remove cookie samesite line in .htaccess file, else add it
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$payment_activated = $eMConfig->get('application_fee');
+
+		if ($payment_activated) {
+			EmundusHelperUpdate::removeFromFile(JPATH_ROOT . '/.htaccess', ['php_value session.cookie_samesite Strict' . PHP_EOL]);
+		} else {
+			EmundusHelperUpdate::insertIntoFile(JPATH_ROOT . '/.htaccess', "php_value session.cookie_samesite Strict" . PHP_EOL);
 		}
 
 		return true;
