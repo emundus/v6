@@ -325,7 +325,7 @@
   background : gray;
   border: 3px solid yellow;
 }*/
-/* ! tailwindcss v3.3.2 | MIT License | https://tailwindcss.com */
+/* ! tailwindcss v3.3.3 | MIT License | https://tailwindcss.com */
 /*
 1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
 2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
@@ -465,6 +465,8 @@ optgroup,
 select,
 textarea {
   font-family: inherit; /* 1 */
+  font-feature-settings: inherit; /* 1 */
+  font-variation-settings: inherit; /* 1 */
   font-size: 100%; /* 1 */
   font-weight: inherit; /* 1 */
   line-height: inherit; /* 1 */
@@ -574,6 +576,12 @@ ul,
 menu {
   list-style: none;
   margin: 0;
+  padding: 0;
+}
+/*
+Reset default styling for dialogs.
+*/
+dialog {
   padding: 0;
 }
 /*
@@ -790,19 +798,19 @@ video {
         border-radius: var(--em-coordinator-br);
         border: unset;
         color: var(--neutral-0);
-        background-color: var(--em-coordinator-primary-color);
+        background-color: var(--em-profile-color);
         border: solid 1px transparent;
         font-family: var(--em-coordinator-font);
         font-size: var(--em-coordinator-font-size) !important;
     }
 .em-primary-button:hover, .em-primary-button:focus, .em-primary-button:active {
             background-color: var(--neutral-0);
-            color: var(--em-coordinator-primary-color);
-            border: 1px solid var(--em-coordinator-primary-color);
+            color: var(--em-profile-color);
+            border: 1px solid var(--em-profile-color);
             text-decoration: none;
         }
 .em-primary-button:hover .material-icons, .em-primary-button:focus .material-icons, .em-primary-button:active .material-icons {
-                color: var(--em-coordinator-primary-color) !important;
+                color: var(--em-profile-color) !important;
             }
 .em-primary-button .material-icons {
             color: var(--white);
@@ -828,12 +836,12 @@ video {
 .emundus-form .page-header h1 {
   color: var(--em-default-title-color-1);
   font-family: var(--em-applicant-font-title);
-  font-size: var(--em-coordinator-h1);
+  font-size: var(--em-applicant-h1);
   font-style: normal;
   line-height: 28.8px;
-  font-weight: 500;
+  font-weight: var(--em-font-weight-500);
 }
-.emundus-form .em-form-intro * {
+.emundus-form .em-form-intro p {
         color: var(--neutral-600);
       }
 .emundus-form .groupintro {
@@ -997,10 +1005,8 @@ form.fabrikForm .fabrikElementTip {
       font-weight: 400;
       font-family: var(--em-applicant-font);
       font-style: normal;
+      display: flex;
     }
-form.fabrikForm .fabrikElementTip * {
-        color: var(--em-form-tip-color);
-      }
 form.fabrikForm .fabrikElementTip i.icon-question-sign  {
         display: none;
       }
@@ -1469,7 +1475,6 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio la
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label input {
               accent-color: var(--em-form-radio-color-checked);
               width: var(--em-form-radio-width);
-              min-width: var(--em-form-radio-width);
               height: var(--em-form-radio-height);
               margin-right: var(--em-form-radio-margin-right);
               margin-left: 0;
@@ -2018,8 +2023,7 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   margin-bottom: var(--em-spacing-8);
 }
 .me-1 {
-  -webkit-margin-end: var(--em-spacing-1);
-          margin-inline-end: var(--em-spacing-1);
+  margin-inline-end: var(--em-spacing-1);
 }
 .ml-0 {
   margin-left: 0px;
@@ -2114,14 +2118,14 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .table-column {
   display: table-column;
 }
+.table-row {
+  display: table-row;
+}
 .grid {
   display: grid;
 }
 .contents {
   display: contents;
-}
-.list-item {
-  display: list-item;
 }
 .hidden {
   display: none;
@@ -2329,32 +2333,32 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 h1 {
   color: var(--em-default-title-color-1);
   font-family: var(--em-applicant-font-title);
-  font-size: var(--em-coordinator-h1);
+  font-size: var(--em-applicant-h1);
   font-style: normal;
   line-height: 28.8px;
-  font-weight: 500;
+  font-weight: var(--em-font-weight-500);
 }
 h2 {
   color: var(--em-default-title-color-1);
   font-family: var(--em-applicant-font-title);
-  font-size: var(--em-coordinator-h2);
+  font-size: var(--em-applicant-h2);
   font-style: normal;
   line-height: 26.4px;
-  font-weight: 500;
+  font-weight: var(--em-font-weight-500);
 }
 h3 {
   color: var(--em-default-title-color-1);
   font-family: var(--em-applicant-font-title);
-  font-size: var(--em-coordinator-h3);
+  font-size: var(--em-applicant-h3);
   font-style: normal;
   line-height: 24.2px;
-  font-weight: 500;
+  font-weight: var(--em-font-weight-500);
 }
 h4 {
         font-family: var(--em-default-font);
         font-style: normal;
         font-weight: 500;
-        font-size: var(--em-coordinator-h4);
+        font-size: var(--em-applicant-h4);
         line-height: 23px;
         color: var(--em-default-title-color-1);
     }
@@ -2362,7 +2366,7 @@ h5 {
         font-family: var(--em-default-font);
         font-style: normal;
         font-weight: 500;
-        font-size: var(--em-coordinator-h5);
+        font-size: var(--em-applicant-h5);
         line-height: 20px;
         color: var(--em-default-title-color-1);
     }
@@ -2370,7 +2374,7 @@ h6 {
         font-family: var(--em-default-font);
         font-style: normal;
         font-weight: 500;
-        font-size: var(--em-coordinator-h6);
+        font-size: var(--em-applicant-h6);
         line-height: 16px;
         color: var(--em-default-title-color-1);
     }
@@ -2463,7 +2467,6 @@ hr {
     }
 ul {
         list-style: initial;
-        padding-left: 20px;
     }
 legend {
         margin: 10px 0 20px 0;
@@ -2554,9 +2557,10 @@ legend {
 .swal2-container .swal2-header .swal2-title {
   color: var(--em-default-title-color-1);
   font-family: var(--em-applicant-font-title);
-  font-size: var(--em-coordinator-h3);
+  font-size: var(--em-applicant-h3);
   font-style: normal;
   line-height: 24.2px;
+  font-weight: var(--em-font-weight-500);
   margin: 0px;
                  font-weight: 600;
 }
@@ -2988,6 +2992,7 @@ button.swal2-cancel.goback-btn:hover,
 .label-grey-1 {
         background-color: var(--em-grey-1);
         text-shadow: none;
+        color: var(--neutral-900);
     }
 .label-text-grey-1 {
         color: var(--em-grey-1);
@@ -3088,24 +3093,20 @@ body {
 /* TCHOOZY *
  ***********/
 /* Accueil */
-.view-featured.homepage #g-page-surround {
-    background-image: var(--display-wide-background);
-    background-size: 60%;
-    background-repeat: repeat;
-    background-position: 60vw 120px;
-}
-.homepage #g-container-main .g-container {
+.homepage #g-container-main .g-container .mod_emundus_campaign__intro {
     background-image: var(--display-demonstration);
     background-size: 250px;
     background-repeat: no-repeat;
-    background-position: top right 30px;
+    background-position: top -6px right 30px;
+    width: 100%;
+    padding-right: 28%;
 }
 /* Connexion */
 .login > #g-page-surround {
-    background-image: var(--display-digital-testing), var(--display-corner-bottom-left-background), var(--display-candidate-button), var(--display-corner-top-right-background);
-    background-position: top 120px left 20px, bottom left, bottom 50px right 20px, top right;
-    background-repeat : no-repeat, no-repeat, no-repeat, no-repeat;
-    background-size : 25%, 50%, 25%, 50%;
+    background-image: var(--display-digital-testing), var(--display-candidate-button);
+    background-position: top 120px left 20px, bottom 50px right 20px;
+    background-repeat : no-repeat, no-repeat;
+    background-size : 25%, 25%;
 }
 .login #g-navigation .g-container {
     background : transparent;
@@ -3124,13 +3125,6 @@ body {
     background-position: bottom 65px right, bottom 60px right ;
     background-repeat : no-repeat, no-repeat ;
     background-size :  30%, 50% ;
-}
-/* Coin haut droite des pages mentions légales, cookies, indicateurs, groupes, campagnes... */
-.view-article #g-page-surround, .view-list #g-page-surround, .view-form #g-page-surround, .view-emails #g-page-surround, .view-campaigns #g-page-surround, .view-form.mon-profil #g-page-surround {
-    background-image: var(--display-corner-top-right-background);
-    background-position: top 70px right;
-    background-repeat: no-repeat;
-    background-size: 50%;
 }
 /* Historique des emails */
 .view-list.email-history-indicators-page #g-container-main {
@@ -3163,8 +3157,8 @@ body {
 
     /* Connexion */
     .login > #g-page-surround {
-        background-position: top 120px left 20px, bottom left, top 500px right 20px, top 72px right;
-        background-size : 25%, 50%, 25%, 50%;
+        background-position: top 120px left 20px, top 500px right 20px;
+        background-size : 25%, 25%;
     }
 
     /* Page settings */
@@ -3205,8 +3199,8 @@ body {
 
     /* Connexion */
     .login > #g-page-surround {
-        background-image : none, var(--display-corner-bottom-left-background), none, var(--display-corner-top-right-background);
-        background-size : 80%, 80%, 80%, 80%;
+        background-image : none, none;
+        background-size : 80%, 80%;
     }
 
     /* Page settings */

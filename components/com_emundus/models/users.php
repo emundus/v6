@@ -444,6 +444,29 @@ class EmundusModelUsers extends JModelList {
         return $db->loadResult();
     }
 
+	function getProfileDetails($profile_id)
+	{
+		$profile_info = null;
+
+		if (!empty($profile_id)) {
+			$query = $this->_db->getQuery(true);
+
+			$query->select('id,label,description,class,published')
+				->from($this->_db->quoteName('#__emundus_setup_profiles'))
+				->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($profile_id));
+
+			try {
+				$this->_db->setQuery($query);
+				$profile_info = $this->_db->loadObject();
+
+			} catch (Exception $e){
+				JLog::add('component/com_emundus/models/users | Error when try to get profile details : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return  $profile_info;
+	}
+
     public function changeCurrentUserProfile($uid, $pid) {
         $db = JFactory::getDBO();
         $query = 'UPDATE #__emundus_users SET profile ="'.(int)$pid.'" WHERE user_id='.(int)$uid;

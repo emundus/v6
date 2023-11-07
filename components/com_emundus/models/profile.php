@@ -174,7 +174,7 @@ class EmundusModelProfile extends JModelList {
 	}
 
     function getProfileById($id) {
-        $query = 'SELECT label, menutype, acl_aro_groups from jos_emundus_setup_profiles
+        $query = 'SELECT label, menutype, acl_aro_groups, id from jos_emundus_setup_profiles
 						WHERE id ='.$id;
 
         try {

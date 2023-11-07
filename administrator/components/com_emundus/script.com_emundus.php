@@ -3421,14 +3421,14 @@ structure:
 				EmundusHelperUpdate::addYamlVariable('email-history', 'url("/media/com_emundus/images/tchoozy/objects-illustrations/email-history.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
 				EmundusHelperUpdate::addYamlVariable('wide-background', 'url("/media/com_emundus/images/tchoozy/backgrounds/wide-background.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
 				EmundusHelperUpdate::addYamlVariable('demonstration', 'url("/media/com_emundus/images/tchoozy/complex-illustrations/demonstration.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
-				EmundusHelperUpdate::addYamlVariable('corner-bottom-left-background', 'url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
-				EmundusHelperUpdate::addYamlVariable('corner-top-right-background', 'url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
+				EmundusHelperUpdate::addYamlVariable('corner-bottom-left-background', 'block")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
+				EmundusHelperUpdate::addYamlVariable('corner-top-right-background', 'block")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
 				EmundusHelperUpdate::addYamlVariable('candidate-button', 'url("/media/com_emundus/images/tchoozy/complex-illustrations/candidate-button.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
 				EmundusHelperUpdate::addYamlVariable('digital-testing', 'url("/media/com_emundus/images/tchoozy/complex-illustrations/digital-testing.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
 				EmundusHelperUpdate::addYamlVariable('corner-bottom-right-background', 'url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-right-background.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
 				EmundusHelperUpdate::addYamlVariable('setting-tools', 'url("/media/com_emundus/images/tchoozy/complex-illustrations/setting-tools.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
 				EmundusHelperUpdate::addYamlVariable('groups', 'url("/media/com_emundus/images/tchoozy/objects-illustrations/groups.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
-				EmundusHelperUpdate::addYamlVariable('profiles', 'url("/media/com_emundus/images/tchoozy/objects-illustrations/profiles.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
+				EmundusHelperUpdate::addYamlVariable('profiles', 'block', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
 				EmundusHelperUpdate::addYamlVariable('hiding', 'url("/media/com_emundus/images/tchoozy/complex-illustrations/hiding.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
 
 				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature', 'copy_users_assoc', 'INT');
@@ -3468,6 +3468,56 @@ structure:
 				EmundusHelperUpdate::insertTranslationsTag('COPY_GROUPS_ASSOC', 'Copy associated groups', 'override', null, 'fabrik_elements', 'label', 'en-GB');
 
 				EmundusHelperUpdate::installExtension('plg_fabrik_element_insee', 'insee', '{"name":"plg_fabrik_element_insee","type":"plugin","creationDate":"August 2023","author":"eMundus","copyright":"Copyright (C) 2005-2023 eMundus - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"3.10","description":"PLG_ELEMENT_INSEE_DESCRIPTION","group":"","filename":"insee"}', 'plugin', 1, 'fabrik_element');
+
+				//Remove some colors from fabrik element
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_elements'))
+					->where($db->quoteName('name') . ' LIKE ' . $db->quote('class'))
+					->where($db->quoteName('plugin') . ' LIKE ' . $db->quote('dropdown'))
+					->where($db->quoteName('group_id') . ' = 112');
+				$db->setQuery($query);
+				$class_elt = $db->loadObject();
+
+				if(!empty($class_elt)) {
+					$params = json_decode($class_elt->params, true);
+					$colors_to_remove = ['label-lightblue', 'label-lightyellow', 'label-yellow', 'label-darkyellow', 'label-lightgreen', 'label-darkgreen', 'label-lightgreen', 'label-darkgreen', 'label-lightorange', 'label-darkorange', 'label-lightred', 'label-darkred', 'label-lightpurple', 'label-darkpurple'];
+
+					if(!empty($params['sub_options'])) {
+						foreach ($colors_to_remove as $color_to_remove) {
+							$index = array_search($color_to_remove, $params['sub_options']['sub_values']);
+							if($index !== false) {
+								unset($params['sub_options']['sub_values'][$index]);
+								unset($params['sub_options']['sub_labels'][$index]);
+							}
+						}
+
+						$params['sub_options']['sub_values'] = array_values($params['sub_options']['sub_values']);
+						$params['sub_options']['sub_labels'] = array_values($params['sub_options']['sub_labels']);
+
+						if(!in_array('label-pink', $params['sub_options']['sub_values'])) {
+							$params['sub_options']['sub_values'][] = 'label-pink';
+							$params['sub_options']['sub_labels'][] = 'Pink';
+						}
+					}
+
+					$colors_to_remove = array_map((function($value) use ($db) {
+						return $db->quote($value);
+					}), $colors_to_remove);
+					$query->clear()
+						->update($db->quoteName('#__emundus_setup_profiles'))
+						->set($db->quoteName('class') . ' = ' . $db->quote('label-default'))
+						->where($db->quoteName('class') . 'IN ('.implode(',',$colors_to_remove).')');
+					$db->setQuery($query);
+					$db->execute();
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_elements'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($class_elt->id));
+					$db->setQuery($query);
+					$db->execute();
+				}
 			}
 		}
 
