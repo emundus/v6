@@ -15,20 +15,22 @@ defined('_JEXEC') or die('Restricted access');
  *
  * @since  0.0.1
  */
-class EmundusViewMessenger extends JViewLegacy {
-    /**
-     * Display the Settings view
-     *
-     * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
-     *
-     * @return  void
-     */
-    function display($tpl = null) {
-        $jinput = JFactory::getApplication()->input;
+class EmundusViewMessenger extends JViewLegacy
+{
+	/**
+	 * Display the Settings view
+	 *
+	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 *
+	 * @return  void
+	 */
+	function display($tpl = null)
+	{
+		$jinput = JFactory::getApplication()->input;
 
-        // Display the template
-        $layout = $jinput->getString('layout', null);
-        // Display the template
-        parent::display($tpl);
-    }
+		// Display the template
+		$layout = $jinput->getString('layout', null);
+		// Display the template
+		parent::display($tpl);
+	}
 }

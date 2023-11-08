@@ -2,16 +2,16 @@
   <!-- modalC -->
   <span :id="'modalAddUser'">
     <modal
-      :name="'modalAddUser'"
-      height="auto"
-      transition="nice-modal-fade"
-      :min-width="200"
-      :min-height="200"
-      :delay="100"
-      :adaptive="true"
-      :clickToClose="false"
-      @closed="beforeClose"
-      @before-open="beforeOpen"
+        :name="'modalAddUser'"
+        height="auto"
+        transition="nice-modal-fade"
+        :min-width="200"
+        :min-height="200"
+        :delay="100"
+        :adaptive="true"
+        :clickToClose="false"
+        @closed="beforeClose"
+        @before-open="beforeOpen"
     >
       <div class="fixed-header-modal">
           <div class="topright">
@@ -21,58 +21,61 @@
           </div>
                         <div class="update-field-header">
           <h2 class="update-title-header">
-             {{addUser}}
+             {{ addUser }}
           </h2>
                         </div>
         </div>
 
       <div class="modalC-content">
         <div class="form-group">
-          <label>{{Lastname}}* :</label>
-          <input v-model="form.lastname" type="text" class="form__input field-general w-input" maxlength="40" :class="{ 'is-invalid': errors.lastname}" />
+          <label>{{ Lastname }}* :</label>
+          <input v-model="form.lastname" type="text" class="form__input field-general w-input" maxlength="40"
+                 :class="{ 'is-invalid': errors.lastname}"/>
           <p v-if="errors.lastname" class="error">
-            <span class="error">{{LastnameRequired}}</span>
+            <span class="error">{{ LastnameRequired }}</span>
           </p>
         </div>
         <div class="form-group">
-          <label>{{Firstname}}* :</label>
-          <input v-model="form.firstname" type="text" class="form__input field-general w-input" maxlength="40" :class="{ 'is-invalid': errors.firstname}" />
+          <label>{{ Firstname }}* :</label>
+          <input v-model="form.firstname" type="text" class="form__input field-general w-input" maxlength="40"
+                 :class="{ 'is-invalid': errors.firstname}"/>
           <p v-if="errors.firstname" class="error">
-            <span class="error">{{FirstnameRequired}}</span>
+            <span class="error">{{ FirstnameRequired }}</span>
           </p>
         </div>
         <div class="form-group">
-          <label>{{Email}}* :</label>
-          <input v-model="form.email" type="text" class="form__input field-general w-input" maxlength="40" :class="{ 'is-invalid': errors.email}" />
+          <label>{{ Email }}* :</label>
+          <input v-model="form.email" type="text" class="form__input field-general w-input" maxlength="40"
+                 :class="{ 'is-invalid': errors.email}"/>
           <p v-if="errors.email" class="error">
-            <span class="error">{{EmailRequired}}</span>
+            <span class="error">{{ EmailRequired }}</span>
           </p>
         </div>
         <div class="form-group" v-if="userManage == 1">
-          <label class="mb-1">{{Program}}* :</label>
+          <label class="mb-1">{{ Program }}* :</label>
           <div class="select-all">
               <input type="checkbox" class="form-check-input bigbox" @click="selectAllPrograms" v-model="selectall">
               <label>
-                {{SelectAll}}
+                {{ SelectAll }}
               </label>
           </div>
           <div class="users-block">
             <div v-for="(program, index) in programs" :key="index" class="user-item">
               <input type="checkbox" class="form-check-input bigbox" v-model="affected_programs[program.id]">
               <div class="ml-10px">
-                  <p>{{program.label}}</p>
+                  <p>{{ program.label }}</p>
               </div>
             </div>
           </div>
         </div>
         <div class="form-group" v-if="userManage == 0 || !least_one_program">
-          <label>{{Role}}* :</label>
+          <label>{{ Role }}* :</label>
           <select v-model="form.profile" class="dropdown-toggle" :class="{ 'is-invalid': errors.profile}">
-            <option value="5" v-if="coordinatorAccess != 0">{{Administrator}}</option>
-            <option value="6">{{Evaluator}}</option>
+            <option value="5" v-if="coordinatorAccess != 0">{{ Administrator }}</option>
+            <option value="6">{{ Evaluator }}</option>
           </select>
           <p v-if="errors.profile" class="error">
-            <span class="error">{{RoleRequired}}</span>
+            <span class="error">{{ RoleRequired }}</span>
           </p>
         </div>
       </div>
@@ -80,10 +83,10 @@
                 <button type="button"
                         class="bouton-sauvergarder-et-continuer w-retour"
                         @click.prevent="$modal.hide('modalAddUser')"
-                >{{Retour}}</button>
+                >{{ Retour }}</button>
         <button type="button"
-          class="bouton-sauvergarder-et-continuer"
-          @click.prevent="createUser()"
+                class="bouton-sauvergarder-et-continuer"
+                @click.prevent="createUser()"
         >{{ Continuer }}</button>
       </div>
       <div class="em-page-loader" v-if="loading"></div>
@@ -94,6 +97,7 @@
 <script>
 import axios from "axios";
 import Swal from "sweetalert2";
+
 const qs = require("qs");
 
 export default {
@@ -154,13 +158,13 @@ export default {
     beforeOpen(event) {
     },
     selectAllPrograms() {
-      if(!this.selectall) {
+      if (!this.selectall) {
         this.least_one_program = false;
       } else {
         this.least_one_program = true;
       }
       this.programs.forEach(element => {
-        if(!this.selectall) {
+        if (!this.selectall) {
           this.affected_programs[element.id] = true;
         } else {
           this.affected_programs[element.id] = false;
@@ -180,10 +184,10 @@ export default {
           page: 1,
         },
         paramsSerializer: params => {
-           return qs.stringify(params);
+          return qs.stringify(params);
         }
       }).then(response => {
-          this.programs = response.data.data;
+        this.programs = response.data.data;
       });
     },
     createUser() {
@@ -193,15 +197,15 @@ export default {
         identifier: false,
         email: false,
       };
-      if(this.form.lastname == ''){
+      if (this.form.lastname == '') {
         this.errors.lastname = true;
         return 0;
       }
-      if(this.form.firstname == ''){
+      if (this.form.firstname == '') {
         this.errors.firstname = true;
         return 0;
       }
-      if(this.form.email == ''){
+      if (this.form.email == '') {
         this.errors.email = true;
         return 0;
       }
@@ -216,8 +220,8 @@ export default {
         },
         data: qs.stringify(this.form)
       }).then((response) => {
-        if(response.data.status == true){
-          if(!this.least_one_program && this.userManage == 1){
+        if (response.data.status == true) {
+          if (!this.least_one_program && this.userManage == 1) {
             axios({
               method: "get",
               url: "index.php?option=com_emundus&controller=programme&task=getgroupsbyprograms",
@@ -225,7 +229,7 @@ export default {
                 programs: this.affected_programs,
               },
               paramsSerializer: params => {
-                 return qs.stringify(params);
+                return qs.stringify(params);
               }
             }).then(rep => {
               Object.values(rep.data.groups).forEach((group) => {
@@ -237,7 +241,7 @@ export default {
             this.affectUserToRole(this.group);
           } else {
             this.loading = false;
-            this.$emit("UpdateUsers",this.form);
+            this.$emit("UpdateUsers", this.form);
             this.$modal.hide('modalAddUser');
           }
 
@@ -252,14 +256,14 @@ export default {
             confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
           });
         }
-      }).catch((error) =>  {
+      }).catch((error) => {
         console.log(error);
       });
     },
 
     affectUserToRole(group) {
       let grouptoaffect = null;
-      if(this.form.profile == 5){
+      if (this.form.profile == 5) {
         grouptoaffect = group.manager;
       } else {
         grouptoaffect = group.evaluator;
@@ -278,8 +282,8 @@ export default {
         })
       }).then((rep) => {
         this.loading = false;
-        if(this.userManage == 1) {
-          this.$emit("UpdateUsers",this.form);
+        if (this.userManage == 1) {
+          this.$emit("UpdateUsers", this.form);
         } else {
           if (this.form.profile == 5) {
             this.$emit("Updatemanager");
@@ -293,25 +297,25 @@ export default {
   },
 
   created() {
-    if(this.userManage == 1) {
+    if (this.userManage == 1) {
       this.getProgramsList();
     }
   },
 
   watch: {
     affected_programs: function () {
-        this.least_one_program = this.affected_programs.every((value) => {
-          return value === false;
-        });
+      this.least_one_program = this.affected_programs.every((value) => {
+        return value === false;
+      });
     }
   }
 };
 </script>
 
 <style scoped>
-  p .error{
-    position: absolute;
-    bottom: -10px;
-    left: 28%;
-  }
+p .error {
+  position: absolute;
+  bottom: -10px;
+  left: 28%;
+}
 </style>

@@ -31,7 +31,7 @@ export default {
         }
     },
 
-    async getEvaluationFormByFnum(fnum,type) {
+    async getEvaluationFormByFnum(fnum, type) {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=file&task=getevaluationformbyfnum', {
                 params: {
@@ -60,7 +60,7 @@ export default {
         }
     },
 
-    async checkAccess(fnum){
+    async checkAccess(fnum) {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=file&task=checkaccess', {
                 params: {
@@ -74,7 +74,7 @@ export default {
         }
     },
 
-    async getLimit(type = 'default'){
+    async getLimit(type = 'default') {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=file&task=getlimit', {
                 params: {
@@ -88,7 +88,7 @@ export default {
         }
     },
 
-    async getPage(type = 'default'){
+    async getPage(type = 'default') {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=file&task=getpage', {
                 params: {
@@ -102,7 +102,7 @@ export default {
         }
     },
 
-    async updateLimit(limit){
+    async updateLimit(limit) {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=file&task=updatelimit', {
                 params: {
@@ -116,7 +116,7 @@ export default {
         }
     },
 
-    async updatePage(page){
+    async updatePage(page) {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=file&task=updatepage', {
                 params: {
@@ -130,7 +130,7 @@ export default {
         }
     },
 
-    async getSelectedTab(type){
+    async getSelectedTab(type) {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=file&task=getselectedtab', {
                 params: {
@@ -144,7 +144,7 @@ export default {
         }
     },
 
-    async setSelectedTab(tab,type = 'evaluation'){
+    async setSelectedTab(tab, type = 'evaluation') {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=file&task=setselectedtab', {
                 params: {
@@ -159,7 +159,7 @@ export default {
         }
     },
 
-    async getFile(fnum,type = 'default') {
+    async getFile(fnum, type = 'default') {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=file&task=getfile', {
                 params: {
@@ -195,7 +195,7 @@ export default {
         }
     },
 
-    async getComments(fnum){
+    async getComments(fnum) {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=file&task=getcomments', {
                 params: {
@@ -237,7 +237,7 @@ export default {
         }
     },
 
-    async saveComment(fnum,comment){
+    async saveComment(fnum, comment) {
         const formData = new FormData();
         formData.append('fnum', fnum);
         Object.keys(comment).forEach(key => {
@@ -259,7 +259,7 @@ export default {
         }
     },
 
-    async deleteComment(cid){
+    async deleteComment(cid) {
         try {
             const response = await client().delete('index.php?option=com_emundus&controller=file&task=deletecomment', {
                 params: {

@@ -1,31 +1,31 @@
 /*global tinymce, module, require, define, global, self */
 
 ;(function (f) {
-  'use strict';
+    'use strict';
 
-  // CommonJS
-  if (typeof exports === 'object' && typeof module !== 'undefined') {
-    module.exports = f(require('jquery'));
+    // CommonJS
+    if (typeof exports === 'object' && typeof module !== 'undefined') {
+        module.exports = f(require('jquery'));
 
-  // RequireJS
-  } else if (typeof define === 'function'  && define.amd) {
-    define(['jquery'], f);
+        // RequireJS
+    } else if (typeof define === 'function' && define.amd) {
+        define(['jquery'], f);
 
-  // <script>
-  } else {
-    var g;
-    if (typeof window !== 'undefined') {
-      g = window;
-    } else if (typeof global !== 'undefined') {
-      g = global;
-    } else if (typeof self !== 'undefined') {
-      g = self;
+        // <script>
     } else {
-      g = this;
+        var g;
+        if (typeof window !== 'undefined') {
+            g = window;
+        } else if (typeof global !== 'undefined') {
+            g = global;
+        } else if (typeof self !== 'undefined') {
+            g = self;
+        } else {
+            g = this;
+        }
+
+        f(g.jQuery);
     }
-    
-    f(g.jQuery);
-  }
 
 })(function ($) {
     'use strict';
@@ -62,10 +62,10 @@
         constructor: AutoComplete,
 
         renderInput: function () {
-            var rawHtml =  '<span id="autocomplete">' +
-                                '<span id="autocomplete-delimiter">' + this.options.delimiter + '</span>' +
-                                '<span id="autocomplete-searchtext"><span class="dummy">\uFEFF</span></span>' +
-                            '</span>';
+            var rawHtml = '<span id="autocomplete">' +
+                '<span id="autocomplete-delimiter">' + this.options.delimiter + '</span>' +
+                '<span id="autocomplete-searchtext"><span class="dummy">\uFEFF</span></span>' +
+                '</span>';
 
             this.editor.execCommand('mceInsertContent', false, rawHtml);
             this.editor.focus();
@@ -80,7 +80,9 @@
 
             $('body').on('click', this.bodyClickProxy = $.proxy(this.rteLostFocus, this));
 
-            $(this.editor.getWin()).on('scroll', this.rteScroll = $.proxy(function () { this.cleanUp(true); }, this));
+            $(this.editor.getWin()).on('scroll', this.rteScroll = $.proxy(function () {
+                this.cleanUp(true);
+            }, this));
         },
 
         unbindEvents: function () {
@@ -95,75 +97,75 @@
 
         rteKeyUp: function (e) {
             switch (e.which || e.keyCode) {
-            //DOWN ARROW
-            case 40:
-            //UP ARROW
-            case 38:
-            //SHIFT
-            case 16:
-            //CTRL
-            case 17:
-            //ALT
-            case 18:
-                break;
+                //DOWN ARROW
+                case 40:
+                //UP ARROW
+                case 38:
+                //SHIFT
+                case 16:
+                //CTRL
+                case 17:
+                //ALT
+                case 18:
+                    break;
 
-            //BACKSPACE
-            case 8:
-                if (this.query === '') {
+                //BACKSPACE
+                case 8:
+                    if (this.query === '') {
+                        this.cleanUp(true);
+                    } else {
+                        this.lookup();
+                    }
+                    break;
+
+                //TAB
+                case 9:
+                //ENTER
+                case 13:
+                    var item = (this.$dropdown !== undefined) ? this.$dropdown.find('li.active') : [];
+                    if (item.length) {
+                        this.select(item.data());
+                        this.cleanUp(false);
+                    } else {
+                        this.cleanUp(true);
+                    }
+                    break;
+
+                //ESC
+                case 27:
                     this.cleanUp(true);
-                } else {
+                    break;
+
+                default:
                     this.lookup();
-                }
-                break;
-
-            //TAB
-            case 9:
-            //ENTER
-            case 13:
-                var item = (this.$dropdown !== undefined) ? this.$dropdown.find('li.active') : [];
-                if (item.length) {
-                    this.select(item.data());
-                    this.cleanUp(false);
-                } else {
-                    this.cleanUp(true);
-                }
-                break;
-
-            //ESC
-            case 27:
-                this.cleanUp(true);
-                break;
-
-            default:
-                this.lookup();
             }
         },
 
         rteKeyDown: function (e) {
             switch (e.which || e.keyCode) {
-             //TAB
-            case 9:
-            //ENTER
-            case 13:
-            //ESC
-            case 27:
-                e.preventDefault();
-                break;
+                //TAB
+                case 9:
+                //ENTER
+                case 13:
+                //ESC
+                case 27:
+                    e.preventDefault();
+                    break;
 
-            //UP ARROW
-            case 38:
-                e.preventDefault();
-                if (this.$dropdown !== undefined) {
-                    this.highlightPreviousResult();
-                }
-                break;
-            //DOWN ARROW
-            case 40:
-                e.preventDefault();
-                if (this.$dropdown !== undefined) {
-                    this.highlightNextResult();
-                }
-                break;
+                //UP ARROW
+                case 38:
+                    e.preventDefault();
+                    if (this.$dropdown !== undefined) {
+                        this.highlightPreviousResult();
+                    }
+                    break;
+                //DOWN ARROW
+                case 40:
+                    e.preventDefault();
+                    if (this.$dropdown !== undefined) {
+                        this.highlightNextResult();
+                    }
+                    break;
             }
 
             e.stopPropagation();
@@ -233,7 +235,7 @@
             var offset = this.editor.inline ? this.offsetInline() : this.offset();
 
             this.$dropdown = $(this.renderDropdown())
-                                .css({ 'top': offset.top, 'left': offset.left });
+                .css({'top': offset.top, 'left': offset.left});
 
             $('body').append(this.$dropdown);
 
@@ -281,8 +283,8 @@
 
         render: function (item, index) {
             return '<li>' +
-                        '<a href="javascript:;"><span>' + item[this.options.queryBy] + '</span></a>' +
-                    '</li>';
+                '<a href="javascript:;"><span>' + item[this.options.queryBy] + '</span></a>' +
+                '</li>';
         },
 
         autoCompleteClick: function (e) {
@@ -336,7 +338,7 @@
                 if (!$selection.length) {
                     return;
                 }
-                    
+
                 var replacement = $('<p>' + this.options.delimiter + text + '</p>')[0].firstChild,
                     focus = $(this.editor.selection.getNode()).offset().top === ($selection.offset().top + (($selection.outerHeight() - $selection.height()) / 2));
 
@@ -384,8 +386,8 @@
 
             function prevCharIsSpace() {
                 var start = ed.selection.getRng(true).startOffset,
-                      text = ed.selection.getRng(true).startContainer.data || '',
-                      charachter = text.substr(start > 0 ? start - 1 : 0, 1);
+                    text = ed.selection.getRng(true).startContainer.data || '',
+                    charachter = text.substr(start > 0 ? start - 1 : 0, 1);
 
                 return (!!$.trim(charachter).length) ? false : true;
             }
@@ -396,7 +398,7 @@
                     if (autoComplete === undefined || (autoComplete.hasFocus !== undefined && !autoComplete.hasFocus)) {
                         e.preventDefault();
                         // Clone options object and set the used delimiter.
-                        autoComplete = new AutoComplete(ed, $.extend({}, autoCompleteData, { delimiter: autoCompleteData.delimiter[delimiterIndex] }));
+                        autoComplete = new AutoComplete(ed, $.extend({}, autoCompleteData, {delimiter: autoCompleteData.delimiter[delimiterIndex]}));
                     }
                 }
             });
@@ -413,5 +415,5 @@
     });
 
     tinymce.PluginManager.add('mention', tinymce.plugins.Mention);
-  
+
 });

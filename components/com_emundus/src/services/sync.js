@@ -107,18 +107,18 @@ export default {
     },
     async checkAttachmentsExists(uploadIds) {
         try {
-           const formData = new FormData();
-           formData.append('upload_ids', JSON.stringify(uploadIds));
+            const formData = new FormData();
+            formData.append('upload_ids', JSON.stringify(uploadIds));
 
-           const response = await client().post(
-               'index.php?option=com_emundus&controller=sync&task=checkattachmentsexists',
-               formData,
-               {
-                   headers: {
-                       'Content-Type': 'multipart/form-data'
-                   }
-               }
-           );
+            const response = await client().post(
+                'index.php?option=com_emundus&controller=sync&task=checkattachmentsexists',
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            );
 
             return response.data;
         } catch (e) {
@@ -129,7 +129,7 @@ export default {
         }
     },
 
-    async saveConfig(config,type) {
+    async saveConfig(config, type) {
         try {
             const formData = new FormData();
             formData.append('config', JSON.stringify(config));
@@ -258,7 +258,7 @@ export default {
         }
     },
 
-    async getDocuments(){
+    async getDocuments() {
         try {
             return await client().get(`index.php?option=com_emundus&controller=sync&task=getdocuments`);
         } catch (e) {
@@ -269,7 +269,7 @@ export default {
         }
     },
 
-    async getEmundusTags(){
+    async getEmundusTags() {
         try {
             return await client().get(`index.php?option=com_emundus&controller=sync&task=getemundustags`);
         } catch (e) {
@@ -280,7 +280,7 @@ export default {
         }
     },
 
-    async updateSync(did,sync) {
+    async updateSync(did, sync) {
         try {
             const formData = new FormData();
             formData.append('did', did);
@@ -302,7 +302,7 @@ export default {
         }
     },
 
-    async updateSyncMethod(did,sync_method) {
+    async updateSyncMethod(did, sync_method) {
         try {
             const formData = new FormData();
             formData.append('did', did);

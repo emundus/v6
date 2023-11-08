@@ -12,35 +12,35 @@
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
     var register = function (editor) {
-      editor.addCommand('InsertHorizontalRule', function () {
-        editor.execCommand('mceInsertContent', false, '<hr />');
-      });
+        editor.addCommand('InsertHorizontalRule', function () {
+            editor.execCommand('mceInsertContent', false, '<hr />');
+        });
     };
-    var Commands = { register: register };
+    var Commands = {register: register};
 
     var register$1 = function (editor) {
-      editor.ui.registry.addButton('hr', {
-        icon: 'horizontal-rule',
-        tooltip: 'Horizontal line',
-        onAction: function () {
-          return editor.execCommand('InsertHorizontalRule');
-        }
-      });
-      editor.ui.registry.addMenuItem('hr', {
-        icon: 'horizontal-rule',
-        text: 'Horizontal line',
-        onAction: function () {
-          return editor.execCommand('InsertHorizontalRule');
-        }
-      });
+        editor.ui.registry.addButton('hr', {
+            icon: 'horizontal-rule',
+            tooltip: 'Horizontal line',
+            onAction: function () {
+                return editor.execCommand('InsertHorizontalRule');
+            }
+        });
+        editor.ui.registry.addMenuItem('hr', {
+            icon: 'horizontal-rule',
+            text: 'Horizontal line',
+            onAction: function () {
+                return editor.execCommand('InsertHorizontalRule');
+            }
+        });
     };
-    var Buttons = { register: register$1 };
+    var Buttons = {register: register$1};
 
-    function Plugin () {
-      global.add('hr', function (editor) {
-        Commands.register(editor);
-        Buttons.register(editor);
-      });
+    function Plugin() {
+        global.add('hr', function (editor) {
+            Commands.register(editor);
+            Buttons.register(editor);
+        });
     }
 
     Plugin();

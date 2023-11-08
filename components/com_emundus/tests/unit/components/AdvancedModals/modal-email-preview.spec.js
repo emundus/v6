@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import ModalAffect from '../../../../src/components/AdvancedModals/ModalEmailPreview';
 import translate from '../../../mocks/mixins/translate';
 import VModal from 'vue-js-modal';
@@ -16,7 +16,7 @@ describe('ModalEmailPreview.vue', () => {
         localVue
     });
 
-    it ('ModalEmailPreview constructed', () => {
+    it('ModalEmailPreview constructed', () => {
         expect(wrapper.find('#modalEmailPreview_test').exists()).toBeTruthy();
     });
 });

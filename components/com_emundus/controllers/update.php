@@ -10,157 +10,165 @@
  * of works licensed under the GNU General Public License or other free or open
  * source software licenses. See COPYRIGHT.php for copyright notices and
  * details.
- * @author James Dean
+ * @author      James Dean
  */
 
-defined( '_JEXEC' ) or die( 'Restricted access' );
-require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
-require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
-require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'calendar.php');
-require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'update.php');
+defined('_JEXEC') or die('Restricted access');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'calendar.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'update.php');
 
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
 
 
-class EmundusControllerUpdate extends JControllerLegacy {
+class EmundusControllerUpdate extends JControllerLegacy
+{
 
 	protected $app;
 
-    public function __construct($config = array()) {
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'update.php');
-        parent::__construct($config);
+	public function __construct($config = array())
+	{
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'update.php');
+		parent::__construct($config);
 
 		$this->app = Factory::getApplication();
-    }
+	}
 
-    // Accept Update
-    public function accept() {
-        
-        $version = $this->input->post->get('version', null);
-        $oldVersion = $this->input->post->get('oldversion', null);
-        $ignoreVersion = $this->input->post->get('ignoreversion', null);
-        $m_update = $this->getModel('Update');
+	// Accept Update
+	public function accept()
+	{
 
-        $user = JFactory::getUser();
-        // verify if version is not already set
-        if($version != $oldVersion && $version != $ignoreVersion && EmundusHelperAccess::asCoordinatorAccessLevel(JFactory::getUser()->id)) {
-            $config = JFactory::getConfig();
-            $subject = 'Mise à jour eMundus';
+		$version       = $this->input->post->get('version', null);
+		$oldVersion    = $this->input->post->get('oldversion', null);
+		$ignoreVersion = $this->input->post->get('ignoreversion', null);
+		$m_update      = $this->getModel('Update');
 
-            $body = "Bonjour équipe eMundus,<br>
+		$user = JFactory::getUser();
+		// verify if version is not already set
+		if ($version != $oldVersion && $version != $ignoreVersion && EmundusHelperAccess::asCoordinatorAccessLevel(JFactory::getUser()->id)) {
+			$config  = JFactory::getConfig();
+			$subject = 'Mise à jour eMundus';
+
+			$body = "Bonjour équipe eMundus,<br>
                     Vous avez reçu une demande de mise à jour eMundus v" . $version . " par " . JFactory::getUser()->name . " pour leur site " . JURI::base();
 
-            // Get default mail sender info
-            $mail_from_sys = $config->get('mailfrom');
-            $mail_from_sys_name = $config->get('fromname');
+			// Get default mail sender info
+			$mail_from_sys      = $config->get('mailfrom');
+			$mail_from_sys_name = $config->get('fromname');
 
-            // Set sender
-            $sender = [
-                $mail_from_sys,
-                $mail_from_sys_name
-            ];
+			// Set sender
+			$sender = [
+				$mail_from_sys,
+				$mail_from_sys_name
+			];
 
-            $eMConfig = JComponentHelper::getParams('com_emundus');
-            $emundusEmail = $eMConfig->get('emundus_email', 'support@emundus.fr');
+			$eMConfig     = JComponentHelper::getParams('com_emundus');
+			$emundusEmail = $eMConfig->get('emundus_email', 'support@emundus.fr');
 
-            // Configure email sender
-            $mailer = JFactory::getMailer();
-            $mailer->setSender($sender);
-            $mailer->addReplyTo($mail_from_sys, $mail_from_sys_name);
-            $mailer->addRecipient($emundusEmail);
-            $mailer->setSubject($subject);
-            $mailer->isHTML(true);
-            $mailer->Encoding = 'base64';
-            $mailer->setBody($body);
+			// Configure email sender
+			$mailer = JFactory::getMailer();
+			$mailer->setSender($sender);
+			$mailer->addReplyTo($mail_from_sys, $mail_from_sys_name);
+			$mailer->addRecipient($emundusEmail);
+			$mailer->setSubject($subject);
+			$mailer->isHTML(true);
+			$mailer->Encoding = 'base64';
+			$mailer->setBody($body);
 
-            // Send and log the email.
-            $send = $mailer->Send();
+			// Send and log the email.
+			$send = $mailer->Send();
 
-            if ($send !== true) {
-                JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
-                echo json_encode((object)['status' => false, 'msg' => 'Internal error']);
-                exit;
-            } else {
-                echo json_encode((object)['status' => $m_update->setIgnoreVal($version)]);
-                exit;
-            }
-        } else {
-            echo json_encode((object)['status' => false, 'msg' => 'Internal error']);
-            exit;
-        }
-    }
+			if ($send !== true) {
+				JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+				echo json_encode((object) ['status' => false, 'msg' => 'Internal error']);
+				exit;
+			}
+			else {
+				echo json_encode((object) ['status' => $m_update->setIgnoreVal($version)]);
+				exit;
+			}
+		}
+		else {
+			echo json_encode((object) ['status' => false, 'msg' => 'Internal error']);
+			exit;
+		}
+	}
 
 	/// Ignore Update
-    public function ignore() {
-        
-        $version = $this->input->post->get('version', null);
-        $oldVersion = $this->input->post->get('oldversion', null);
-        $ignoreVersion = $this->input->post->get('ignoreversion', null);
+	public function ignore()
+	{
 
-        if ($version != $oldVersion && $version != $ignoreVersion && EmundusHelperAccess::asCoordinatorAccessLevel(JFactory::getUser()->id)) {
-	        $m_update = $this->getModel('Update');
+		$version       = $this->input->post->get('version', null);
+		$oldVersion    = $this->input->post->get('oldversion', null);
+		$ignoreVersion = $this->input->post->get('ignoreversion', null);
 
-            echo json_encode((object)['status' => $m_update->setIgnoreVal($version)]);
-            exit;
-        } else {
-            echo json_encode((object)['status' => false]);
-            exit;
-        }
-    }
+		if ($version != $oldVersion && $version != $ignoreVersion && EmundusHelperAccess::asCoordinatorAccessLevel(JFactory::getUser()->id)) {
+			$m_update = $this->getModel('Update');
 
-    /// Choose Update
-    public function choose() {
-        
-        $version = $this->input->post->get('version', null);
-        $oldVersion = $this->input->post->get('oldversion', null);
-        $ignoreVersion = $this->input->post->get('ignoreversion', null);
-        $updateDate = $this->input->post->get('updateDate', null);
+			echo json_encode((object) ['status' => $m_update->setIgnoreVal($version)]);
+			exit;
+		}
+		else {
+			echo json_encode((object) ['status' => false]);
+			exit;
+		}
+	}
 
-        $user = JFactory::getUser();
+	/// Choose Update
+	public function choose()
+	{
+
+		$version       = $this->input->post->get('version', null);
+		$oldVersion    = $this->input->post->get('oldversion', null);
+		$ignoreVersion = $this->input->post->get('ignoreversion', null);
+		$updateDate    = $this->input->post->get('updateDate', null);
+
+		$user = JFactory::getUser();
 
 
-        if($version != $oldVersion && $version != $ignoreVersion && EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-	        $m_calendar = $this->getModel('Calendar');
-	        $eMConfig = JComponentHelper::getParams('com_emundus');
-			$google_client_id       = $eMConfig->get('clientId');
-            $google_secret_key      = $eMConfig->get('clientSecret');
-            $google_refresh_token   = $eMConfig->get('refreshToken');
+		if ($version != $oldVersion && $version != $ignoreVersion && EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$m_calendar           = $this->getModel('Calendar');
+			$eMConfig             = JComponentHelper::getParams('com_emundus');
+			$google_client_id     = $eMConfig->get('clientId');
+			$google_secret_key    = $eMConfig->get('clientSecret');
+			$google_refresh_token = $eMConfig->get('refreshToken');
 
-            $service = $m_calendar->google_authenticate($google_client_id, $google_secret_key, $google_refresh_token);
-            $config = JFactory::getConfig();
-            $subject = "Mise à jour eMundus";
+			$service = $m_calendar->google_authenticate($google_client_id, $google_secret_key, $google_refresh_token);
+			$config  = JFactory::getConfig();
+			$subject = "Mise à jour eMundus";
 
-            $body = "Bonjour équipe eMundus,<br>
+			$body = "Bonjour équipe eMundus,<br>
                     Vous avez reçu une demande de mise à jour eMundus v" . $version . " par " . JFactory::getUser()->name . " pour leur site " . JURI::base() . ".
                     <br>
                     <br>
-                    La date de cette mise à jour est prévue pour le ". $updateDate . " et enregistrée sur votre calendrier google.";
+                    La date de cette mise à jour est prévue pour le " . $updateDate . " et enregistrée sur votre calendrier google.";
 
-            // Get default mail sender info
-            $mail_from_sys = $config->get('mailfrom');
-            $mail_from_sys_name = $config->get('fromname');
+			// Get default mail sender info
+			$mail_from_sys      = $config->get('mailfrom');
+			$mail_from_sys_name = $config->get('fromname');
 
-            // Set sender
-            $sender = [$mail_from_sys, $mail_from_sys_name];
-    
-            $eMConfig = JComponentHelper::getParams('com_emundus');
-            $emundusEmail = $eMConfig->get('emundus_email', 'support@emundus.fr');
+			// Set sender
+			$sender = [$mail_from_sys, $mail_from_sys_name];
 
-            // Configure email sender
-            $mailer = JFactory::getMailer();
-            $mailer->setSender($sender);
-            $mailer->addReplyTo($mail_from_sys, $mail_from_sys_name);
-            $mailer->addRecipient($emundusEmail);
-            $mailer->setSubject($subject);
-            $mailer->isHTML(true);
-            $mailer->Encoding = 'base64';
-            $mailer->setBody($body);
+			$eMConfig     = JComponentHelper::getParams('com_emundus');
+			$emundusEmail = $eMConfig->get('emundus_email', 'support@emundus.fr');
 
-            // Send and log the email.
-            $send = $mailer->Send();
-        }
+			// Configure email sender
+			$mailer = JFactory::getMailer();
+			$mailer->setSender($sender);
+			$mailer->addReplyTo($mail_from_sys, $mail_from_sys_name);
+			$mailer->addRecipient($emundusEmail);
+			$mailer->setSubject($subject);
+			$mailer->isHTML(true);
+			$mailer->Encoding = 'base64';
+			$mailer->setBody($body);
+
+			// Send and log the email.
+			$send = $mailer->Send();
+		}
 	}
 }
 

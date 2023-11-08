@@ -1,16 +1,16 @@
 <?php
 /**
- * @package		Joomla.Site
- * @subpackage	mod_emundususerdropdown
- * @copyright	Copyright (C) 2018 emundus.fr, Inc. All rights reserved.
- * @license		GNU General Public License version 2 or later; see LICENSE.txt
+ * @package        Joomla.Site
+ * @subpackage     mod_emundususerdropdown
+ * @copyright      Copyright (C) 2018 emundus.fr, Inc. All rights reserved.
+ * @license        GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
 // Include the syndicate functions only once
-require_once dirname(__FILE__).'/helper.php';
+require_once dirname(__FILE__) . '/helper.php';
 
 $document = JFactory::getDocument();
 $document->addStyleSheet("media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css");

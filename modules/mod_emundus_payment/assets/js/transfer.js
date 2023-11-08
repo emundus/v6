@@ -9,12 +9,12 @@ function validateFile(file, validExtension) {
 }
 
 function uploadFile(file, attachmentId, label) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         const xhr = new XMLHttpRequest();
         const url = window.location.origin + '/index.php?option=com_emundus&task=upload';
         xhr.open('POST', url);
 
-        xhr.onload = function() {
+        xhr.onload = function () {
             if (xhr.status === 200 || xhr.status === 303) {
                 resolve(true);
             } else {
@@ -22,7 +22,7 @@ function uploadFile(file, attachmentId, label) {
             }
         };
 
-        xhr.onerror = function() {
+        xhr.onerror = function () {
             reject(xhr.statusText);
         };
 
@@ -39,13 +39,13 @@ function uploadFile(file, attachmentId, label) {
 }
 
 function updateFilePaymentState() {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         const xhr = new XMLHttpRequest();
         const url = window.location.origin +
             '/index.php?option=com_emundus&controller=payment&task=updateFileTransferPayment';
         xhr.open('POST', url);
 
-        xhr.onload = function() {
+        xhr.onload = function () {
             if (xhr.status === 200) {
                 const response = JSON.parse(xhr.responseText);
                 resolve(response);
@@ -54,7 +54,7 @@ function updateFilePaymentState() {
             }
         };
 
-        xhr.onerror = function() {
+        xhr.onerror = function () {
             reject(xhr.statusText);
         };
         xhr.send();

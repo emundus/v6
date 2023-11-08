@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import FormBuilderDocumentListElement from '../../../../src/components/FormBuilder/FormBuilderDocumentListElement';
 import translate from '../../../mocks/mixins/translate';
 import draggable from 'vuedraggable';
@@ -16,7 +16,7 @@ describe('FormBuilderDocumentListElement.vue', () => {
         localVue
     });
 
-    it ('FormBuilderDocumentListElement should exist', () => {
+    it('FormBuilderDocumentListElement should exist', () => {
         expect(wrapper.find('#form-builder-document-list-element').exists()).toBeTruthy();
     });
 });

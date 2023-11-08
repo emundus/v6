@@ -10,227 +10,238 @@
 // No direct access
 defined('_JEXEC') or die;
 
-require_once JPATH_BASE.DS.'components'.DS.'com_emundus' . '/controller.php';
+require_once JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/controller.php';
 
 /**
  * Thesis controller class.
  */
-class EmundusControllerThesisForm extends EmundusController {
+class EmundusControllerThesisForm extends EmundusController
+{
 
-    /**
-     * Method to check out an item for editing and redirect to the edit form.
-     *
-     * @since	1.6
-     */
-    public function edit() {
-
-
-        // Get the previous edit id (if any) and the current edit id.
-        $previousId = (int) $this->app->getUserState('com_emundus.edit.thesis.id');
-        $editId = $this->input->getInt('id', null, 'array');
-
-        // Set the user id for the user to edit in the session.
-        $this->app->setUserState('com_emundus.edit.thesis.id', $editId);
-
-        // Get the model.
-        $model = $this->getModel('ThesisForm');
-
-        // Check out the item
-        if ($editId) {
-            $model->checkout($editId);
-        }
-
-        // Check in the previous user.
-        if ($previousId) {
-            $model->checkin($previousId);
-        }
-
-        // Redirect to the edit screen.
-        $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=thesisform&layout=edit', false));
-    }
-
-    /**
-     * Method to save a user's profile data.
-     *
-     * @return	void|false
-     * @since	1.6
-     */
-    public function save() {
-        // Check for request forgeries.
-        JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
-        // Initialise variables.
-
-        $model = $this->getModel('ThesisForm');
-
-        // Get the user data.
-        $data = $this->input->get('jform', array(), 'array');
-
-        // Validate the posted data.
-        $form = $model->getForm();
-        if (!$form) {
-            JError::raiseError(500, $model->getError());
-            return false;
-        }
-
-        // Validate the posted data.
-        $data = $model->validate($form, $data);
-
-        // Check for errors.
-        if ($data === false) {
-            // Get the validation messages.
-            $errors = $model->getErrors();
-
-            // Push up to three validation messages out to the user.
-            for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
-                if ($errors[$i] instanceof Exception) {
-                    $this->app->enqueueMessage($errors[$i]->getMessage(), 'warning');
-                } else {
-                    $this->app->enqueueMessage($errors[$i], 'warning');
-                }
-            }
-
-            $input = $this->input;
-            $jform = $input->get('jform', array(), 'ARRAY');
-
-            // Save the data in the session.
-            $this->app->setUserState('com_emundus.edit.thesis.data', $jform, array());
-
-            // Redirect back to the edit screen.
-            $id = (int) $this->app->getUserState('com_emundus.edit.thesis.id');
-            $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=thesisform&layout=edit&id=' . $id, false));
-            return false;
-        }
-
-        // Attempt to save the data.
-        $return = $model->save($data);
-
-        // Check for errors.
-        if ($return === false) {
-            // Save the data in the session.
-            $this->app->setUserState('com_emundus.edit.thesis.data', $data);
-
-            // Redirect back to the edit screen.
-            $id = (int) $this->app->getUserState('com_emundus.edit.thesis.id');
-            $this->setMessage(JText::sprintf('Save failed', $model->getError()), 'warning');
-            $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=thesisform&layout=edit&id=' . $id, false));
-            return false;
-        }
+	/**
+	 * Method to check out an item for editing and redirect to the edit form.
+	 *
+	 * @since    1.6
+	 */
+	public function edit()
+	{
 
 
-        // Check in the profile.
-        if ($return) {
-            $model->checkin($return);
-        }
+		// Get the previous edit id (if any) and the current edit id.
+		$previousId = (int) $this->app->getUserState('com_emundus.edit.thesis.id');
+		$editId     = $this->input->getInt('id', null, 'array');
 
-        // Clear the profile id from the session.
-        $this->app->setUserState('com_emundus.edit.thesis.id', null);
+		// Set the user id for the user to edit in the session.
+		$this->app->setUserState('com_emundus.edit.thesis.id', $editId);
 
-        // Redirect to the list screen.
-        $this->setMessage(JText::_('COM_EMUNDUS_ITEM_SAVED_SUCCESSFULLY'));
-        $menu = $this->app->getMenu();
-        $item = $menu->getActive();
-        $url = (empty($item->link) ? 'index.php?option=com_emundus&view=thesiss' : $item->link);
-        $this->setRedirect(JRoute::_($url, false));
+		// Get the model.
+		$model = $this->getModel('ThesisForm');
 
-        // Flush the data from the session.
-        $this->app->setUserState('com_emundus.edit.thesis.data', null);
-    }
+		// Check out the item
+		if ($editId) {
+			$model->checkout($editId);
+		}
 
-    function cancel() {
+		// Check in the previous user.
+		if ($previousId) {
+			$model->checkin($previousId);
+		}
+
+		// Redirect to the edit screen.
+		$this->setRedirect(JRoute::_('index.php?option=com_emundus&view=thesisform&layout=edit', false));
+	}
+
+	/**
+	 * Method to save a user's profile data.
+	 *
+	 * @return    void|false
+	 * @since    1.6
+	 */
+	public function save()
+	{
+		// Check for request forgeries.
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		// Initialise variables.
+
+		$model = $this->getModel('ThesisForm');
+
+		// Get the user data.
+		$data = $this->input->get('jform', array(), 'array');
+
+		// Validate the posted data.
+		$form = $model->getForm();
+		if (!$form) {
+			JError::raiseError(500, $model->getError());
+
+			return false;
+		}
+
+		// Validate the posted data.
+		$data = $model->validate($form, $data);
+
+		// Check for errors.
+		if ($data === false) {
+			// Get the validation messages.
+			$errors = $model->getErrors();
+
+			// Push up to three validation messages out to the user.
+			for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
+				if ($errors[$i] instanceof Exception) {
+					$this->app->enqueueMessage($errors[$i]->getMessage(), 'warning');
+				}
+				else {
+					$this->app->enqueueMessage($errors[$i], 'warning');
+				}
+			}
+
+			$input = $this->input;
+			$jform = $input->get('jform', array(), 'ARRAY');
+
+			// Save the data in the session.
+			$this->app->setUserState('com_emundus.edit.thesis.data', $jform, array());
+
+			// Redirect back to the edit screen.
+			$id = (int) $this->app->getUserState('com_emundus.edit.thesis.id');
+			$this->setRedirect(JRoute::_('index.php?option=com_emundus&view=thesisform&layout=edit&id=' . $id, false));
+
+			return false;
+		}
+
+		// Attempt to save the data.
+		$return = $model->save($data);
+
+		// Check for errors.
+		if ($return === false) {
+			// Save the data in the session.
+			$this->app->setUserState('com_emundus.edit.thesis.data', $data);
+
+			// Redirect back to the edit screen.
+			$id = (int) $this->app->getUserState('com_emundus.edit.thesis.id');
+			$this->setMessage(JText::sprintf('Save failed', $model->getError()), 'warning');
+			$this->setRedirect(JRoute::_('index.php?option=com_emundus&view=thesisform&layout=edit&id=' . $id, false));
+
+			return false;
+		}
 
 
+		// Check in the profile.
+		if ($return) {
+			$model->checkin($return);
+		}
 
-        // Get the current edit id.
-        $editId = (int) $this->app->getUserState('com_emundus.edit.thesis.id');
+		// Clear the profile id from the session.
+		$this->app->setUserState('com_emundus.edit.thesis.id', null);
 
-        // Get the model.
-        $model = $this->getModel('ThesisForm');
+		// Redirect to the list screen.
+		$this->setMessage(JText::_('COM_EMUNDUS_ITEM_SAVED_SUCCESSFULLY'));
+		$menu = $this->app->getMenu();
+		$item = $menu->getActive();
+		$url  = (empty($item->link) ? 'index.php?option=com_emundus&view=thesiss' : $item->link);
+		$this->setRedirect(JRoute::_($url, false));
 
-        // Check in the item
-        if ($editId) {
-            $model->checkin($editId);
-        }
+		// Flush the data from the session.
+		$this->app->setUserState('com_emundus.edit.thesis.data', null);
+	}
 
-        $menu = $this->app->getMenu();
-        $item = $menu->getActive();
-        $url = (empty($item->link) ? 'index.php?option=com_emundus&view=thesiss' : $item->link);
-        $this->setRedirect(JRoute::_($url, false));
-    }
-
-    /**
-     *
-     * @return false|void
-     *
-     * @throws Exception
-     * @since version
-     */
-    public function remove() {
-
-        // Initialise variables.
-
-        $model = $this->getModel('ThesisForm');
-
-        // Get the user data.
-        $data = array();
-        $data['id'] = $this->input->getInt('id');
-
-        // Check for errors.
-        if (empty($data['id'])) {
-            // Get the validation messages.
-            $errors = $model->getErrors();
-
-            // Push up to three validation messages out to the user.
-            for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
-                if ($errors[$i] instanceof Exception) {
-                    $this->app->enqueueMessage($errors[$i]->getMessage(), 'warning');
-                } else {
-                    $this->app->enqueueMessage($errors[$i], 'warning');
-                }
-            }
-
-            // Save the data in the session.
-            $this->app->setUserState('com_emundus.edit.thesis.data', $data);
-
-            // Redirect back to the edit screen.
-            $id = (int) $this->app->getUserState('com_emundus.edit.thesis.id');
-            $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=thesis&layout=edit&id=' . $id, false));
-            return false;
-        }
-
-        // Attempt to save the data.
-        $return = $model->delete($data);
-
-        // Check for errors.
-        if ($return === false) {
-            // Save the data in the session.
-            $this->app->setUserState('com_emundus.edit.thesis.data', $data);
-
-            // Redirect back to the edit screen.
-            $id = (int) $this->app->getUserState('com_emundus.edit.thesis.id');
-            $this->setMessage(JText::sprintf('Delete failed', $model->getError()), 'warning');
-            $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=thesis&layout=edit&id=' . $id, false));
-            return false;
-        }
+	function cancel()
+	{
 
 
-        // Check in the profile.
-        if ($return) {
-            $model->checkin($return);
-        }
+		// Get the current edit id.
+		$editId = (int) $this->app->getUserState('com_emundus.edit.thesis.id');
 
-        // Clear the profile id from the session.
-        $this->app->setUserState('com_emundus.edit.thesis.id', null);
+		// Get the model.
+		$model = $this->getModel('ThesisForm');
 
-        // Redirect to the list screen.
-        $this->setMessage(JText::_('COM_EMUNDUS_ITEM_DELETED_SUCCESSFULLY'));
-        $menu = $this->app->getMenu();
-        $item = $menu->getActive();
-        $url = (empty($item->link) ? 'index.php?option=com_emundus&view=thesiss' : $item->link);
-        $this->setRedirect(JRoute::_($url, false));
+		// Check in the item
+		if ($editId) {
+			$model->checkin($editId);
+		}
 
-        // Flush the data from the session.
-        $this->app->setUserState('com_emundus.edit.thesis.data', null);
-    }
+		$menu = $this->app->getMenu();
+		$item = $menu->getActive();
+		$url  = (empty($item->link) ? 'index.php?option=com_emundus&view=thesiss' : $item->link);
+		$this->setRedirect(JRoute::_($url, false));
+	}
+
+	/**
+	 *
+	 * @return false|void
+	 *
+	 * @throws Exception
+	 * @since version
+	 */
+	public function remove()
+	{
+
+		// Initialise variables.
+
+		$model = $this->getModel('ThesisForm');
+
+		// Get the user data.
+		$data       = array();
+		$data['id'] = $this->input->getInt('id');
+
+		// Check for errors.
+		if (empty($data['id'])) {
+			// Get the validation messages.
+			$errors = $model->getErrors();
+
+			// Push up to three validation messages out to the user.
+			for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
+				if ($errors[$i] instanceof Exception) {
+					$this->app->enqueueMessage($errors[$i]->getMessage(), 'warning');
+				}
+				else {
+					$this->app->enqueueMessage($errors[$i], 'warning');
+				}
+			}
+
+			// Save the data in the session.
+			$this->app->setUserState('com_emundus.edit.thesis.data', $data);
+
+			// Redirect back to the edit screen.
+			$id = (int) $this->app->getUserState('com_emundus.edit.thesis.id');
+			$this->setRedirect(JRoute::_('index.php?option=com_emundus&view=thesis&layout=edit&id=' . $id, false));
+
+			return false;
+		}
+
+		// Attempt to save the data.
+		$return = $model->delete($data);
+
+		// Check for errors.
+		if ($return === false) {
+			// Save the data in the session.
+			$this->app->setUserState('com_emundus.edit.thesis.data', $data);
+
+			// Redirect back to the edit screen.
+			$id = (int) $this->app->getUserState('com_emundus.edit.thesis.id');
+			$this->setMessage(JText::sprintf('Delete failed', $model->getError()), 'warning');
+			$this->setRedirect(JRoute::_('index.php?option=com_emundus&view=thesis&layout=edit&id=' . $id, false));
+
+			return false;
+		}
+
+
+		// Check in the profile.
+		if ($return) {
+			$model->checkin($return);
+		}
+
+		// Clear the profile id from the session.
+		$this->app->setUserState('com_emundus.edit.thesis.id', null);
+
+		// Redirect to the list screen.
+		$this->setMessage(JText::_('COM_EMUNDUS_ITEM_DELETED_SUCCESSFULLY'));
+		$menu = $this->app->getMenu();
+		$item = $menu->getActive();
+		$url  = (empty($item->link) ? 'index.php?option=com_emundus&view=thesiss' : $item->link);
+		$this->setRedirect(JRoute::_($url, false));
+
+		// Flush the data from the session.
+		$this->app->setUserState('com_emundus.edit.thesis.data', null);
+	}
 
 }

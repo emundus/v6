@@ -1,15 +1,16 @@
 <?xml version="1.0" ?>
 <falang type="contentelement" name="COM_EMUNDUS_CONTENTELEMENTS_SETUP_ATTACHMENTS">
-  <name>COM_EMUNDUS_CONTENTELEMENTS_SETUP_ATTACHMENTS</name>
-  <author>eMundus - www.emundus.fr</author>
-  <version>1.0</version>
-  <description>COM_EMUNDUS_CONTENTELEMENTS_SETUP_ATTACHMENTS_DESC</description>
-  <reference>
-  	<table name="emundus_setup_attachments" reference="id" label="value" filters="" type="falang" load_all="true" load_first_data="false" load_first_child="false">
-        <section label="" name="emundus_setup_attachments">
-            <field name="value" type="field" section="emundus_setup_attachments">Nom du document</field>
-            <field name="description" section="emundus_setup_attachments" type="textarea">Description</field>
-        </section>
-  	</table>
-  </reference>
+    <name>COM_EMUNDUS_CONTENTELEMENTS_SETUP_ATTACHMENTS</name>
+    <author>eMundus - www.emundus.fr</author>
+    <version>1.0</version>
+    <description>COM_EMUNDUS_CONTENTELEMENTS_SETUP_ATTACHMENTS_DESC</description>
+    <reference>
+        <table name="emundus_setup_attachments" reference="id" label="value" filters="" type="falang" load_all="true"
+               load_first_data="false" load_first_child="false">
+            <section label="" name="emundus_setup_attachments">
+                <field name="value" type="field" section="emundus_setup_attachments">Nom du document</field>
+                <field name="description" section="emundus_setup_attachments" type="textarea">Description</field>
+            </section>
+        </table>
+    </reference>
 </falang>

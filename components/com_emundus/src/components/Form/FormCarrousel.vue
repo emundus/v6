@@ -2,7 +2,8 @@
   <div>
     <div class="em-flex-row em-flex-space-between em-align-start">
       <div class="em-w-100">
-        <FormViewer :link="formLinkArray[indexHighlight]" :visibility="this.visibility" v-if="formLinkArray[indexHighlight]" @editPage="EditPage" />
+        <FormViewer :link="formLinkArray[indexHighlight]" :visibility="this.visibility"
+                    v-if="formLinkArray[indexHighlight]" @editPage="EditPage"/>
       </div>
 
       <hr class="vertical-divider">
@@ -16,9 +17,9 @@
           <div v-for="(value, index) in formNameArray" :key="index" class="MenuForm em-mb-8">
             <a @click="ChangeIndex(index)"
                class="em-pointer em-text-neutral-900"
-                :class="indexHighlight == index ? 'MenuFormItem_current' : ''"
-                v-html="value.value"
-            >{{value.value}}</a>
+               :class="indexHighlight == index ? 'MenuFormItem_current' : ''"
+               v-html="value.value"
+            >{{ value.value }}</a>
           </div>
         </div>
 
@@ -28,7 +29,7 @@
             {{ Documents }}
           </h4>
           <div v-for="(doc, index) in documentsList" :key="index" class="MenuForm em-mb-8">
-            <p class="em-text-neutral-900">{{doc.label}}</p>
+            <p class="em-text-neutral-900">{{ doc.label }}</p>
           </div>
         </div>
       </div>
@@ -64,7 +65,7 @@ export default {
     };
   },
   methods: {
-    splitProfileIdfromLabel(label){
+    splitProfileIdfromLabel(label) {
       return (label.split(/-(.+)/))[1];
     },
     ChangeIndex(index) {
@@ -73,9 +74,9 @@ export default {
     EditPage() {
       this.$emit("formbuilder", this.indexHighlight);
     },
-    getDataObject: function() {
+    getDataObject: function () {
       this.formList.forEach(element => {
-        let ellink = element.link.replace("fabrik","emundus");
+        let ellink = element.link.replace("fabrik", "emundus");
         axios
             .get(ellink + "&format=vue_jsonclean")
             .then(response => {
@@ -83,7 +84,7 @@ export default {
                 value: response.data.show_title.value,
                 rgt: element.rgt
               });
-              this.formLinkArray.push({ link: element.link, rgt: element.rgt });
+              this.formLinkArray.push({link: element.link, rgt: element.rgt});
             })
             .then(r => {
               this.formNameArray.sort((a, b) => a.rgt - b.rgt);
@@ -102,13 +103,15 @@ export default {
 </script>
 
 <style scoped>
-.MenuFormItem_current{
+.MenuFormItem_current {
   color: var(--main-500);
 }
-.MenuForm a:hover{
+
+.MenuForm a:hover {
   color: #1C6EF2;
 }
-.vertical-divider{
+
+.vertical-divider {
   height: 50vh;
   border-right: solid 1px #cecece;
   margin: 12px 16px !important;

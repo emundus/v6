@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import '../../mocks/matchMedia.mock';
 import Editor from '../../../src/components/editor';
 import translate from '../../mocks/mixins/translate';
@@ -19,7 +19,7 @@ describe('Editor.vue', () => {
         localVue
     });
 
-    it ('Editor should exist', () => {
+    it('Editor should exist', () => {
         expect(wrapper.find('.editor').exists()).toBeTruthy();
     });
 });

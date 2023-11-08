@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <metadata>
-	<layout title="COM_EMUNDUS_RENEW_APPLICATION_VIEW_DEFAULT_TITLE">
-		<message>
-			<![CDATA[COM_EMUNDUS_RENEW_APPLICATION_VIEW_DEFAULT_TITLE_DESC]]>
-		</message>
-	</layout>
-	
-	<fields name="params">
-		<fieldset addfieldpath="/administrator/components/com_emundus/models/fields" name="basic">
-			<field name="em_groups" value="" type="usergroup" label="COM_EMUNDUS_USER_GROUPS" description="COM_EMUNDUS_USER_GROUPS_DESC"/>
-		</fieldset>
-	</fields>
-	
+    <layout title="COM_EMUNDUS_RENEW_APPLICATION_VIEW_DEFAULT_TITLE">
+        <message>
+            <![CDATA[COM_EMUNDUS_RENEW_APPLICATION_VIEW_DEFAULT_TITLE_DESC]]>
+        </message>
+    </layout>
+
+    <fields name="params">
+        <fieldset addfieldpath="/administrator/components/com_emundus/models/fields" name="basic">
+            <field name="em_groups" value="" type="usergroup" label="COM_EMUNDUS_USER_GROUPS"
+                   description="COM_EMUNDUS_USER_GROUPS_DESC"/>
+        </fieldset>
+    </fields>
+
 </metadata>

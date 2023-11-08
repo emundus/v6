@@ -422,30 +422,31 @@ JText::script('COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION_NOT_NUMBER');
 JText::script('COM_EMUNDUS_ONBOARD_IMAGE_DIMENSION_TITLE');
 
 $vue = 'em-formBuilder-vue';
-if($this->eval != 0){
-    $vue = 'em-evaluationBuilder-vue';
+if ($this->eval != 0) {
+	$vue = 'em-evaluationBuilder-vue';
 }
-$lang = JFactory::getLanguage();
-$short_lang = substr($lang->getTag(), 0 , 2);
+$lang         = JFactory::getLanguage();
+$short_lang   = substr($lang->getTag(), 0, 2);
 $current_lang = $lang->getTag();
-$languages = JLanguageHelper::getLanguages();
+$languages    = JLanguageHelper::getLanguages();
 if (count($languages) > 1) {
-    $many_languages = '1';
-    require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
-    $m_translations = new EmundusModelTranslations();
-    $default_lang = $m_translations->getDefaultLanguage()->lang_code;
-} else {
-    $many_languages = '0';
-    $default_lang = $current_lang;
+	$many_languages = '1';
+	require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
+	$m_translations = new EmundusModelTranslations();
+	$default_lang   = $m_translations->getDefaultLanguage()->lang_code;
+}
+else {
+	$many_languages = '0';
+	$default_lang   = $current_lang;
 }
 
-$user = JFactory::getUser();
+$user               = JFactory::getUser();
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
-$sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
+$sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
 
 $component = JFactory::getApplication()->input->get('evaluation') ? 'evaluationbuilder' : 'formbuilder';
 
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 
 $mode = JFactory::getApplication()->input->get('mode', '');
@@ -462,9 +463,9 @@ $mode = JFactory::getApplication()->input->get('mode', '');
      defaultLang="<?= $default_lang ?>"
      coordinatorAccess="<?= $coordinator_access ?>"
      sysadminAccess="<?= $sysadmin_access ?>"
-     <?php if (!empty($mode)) : ?>
+	<?php if (!empty($mode)) : ?>
         mode="<?= $mode ?>"
-     <?php endif; ?>
+	<?php endif; ?>
 ></div>
 
 <script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

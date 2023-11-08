@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import ModalAddUser from '../../../../src/components/AdvancedModals/ModalAddUser';
 import translate from '../../../mocks/mixins/translate';
 import VModal from 'vue-js-modal';
@@ -13,7 +13,7 @@ describe('ModalAddUser.vue', () => {
         localVue
     });
 
-    it ('ModalAddTrigger constructed', () => {
+    it('ModalAddTrigger constructed', () => {
         expect(wrapper.find('#modalAddUser').exists()).toBeTruthy();
     });
 });

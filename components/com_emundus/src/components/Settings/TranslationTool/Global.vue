@@ -48,7 +48,8 @@
             @remove="unpublishLanguage"
             @select="publishLanguage"
         ></multiselect>
-        <a class="em-pointer em-blue-500-color em-mt-16 em-font-size-12 em-hover-blue-500" @click="purposeLanguage">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_OTHER_LANGUAGE') }}</a>
+        <a class="em-pointer em-blue-500-color em-mt-16 em-font-size-12 em-hover-blue-500"
+           @click="purposeLanguage">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_OTHER_LANGUAGE') }}</a>
       </div>
     </div>
 
@@ -65,7 +66,7 @@ import Swal from "sweetalert2";
 
 export default {
   name: "global",
-  props: { },
+  props: {},
   components: {
     Multiselect
   },
@@ -91,47 +92,47 @@ export default {
     });
   },
 
-  methods:{
+  methods: {
     async getAllLanguages() {
       try {
         const response = await client().get('index.php?option=com_emundus&controller=translations&task=getlanguages');
 
         this.allLanguages = response.data;
         this.allLanguages.forEach((lang) => {
-          if(lang.lang_code !== this.defaultLang.lang_code){
-            if(lang.published == 1){
+          if (lang.lang_code !== this.defaultLang.lang_code) {
+            if (lang.published == 1) {
               this.secondaryLanguages.push(lang);
             }
             this.otherLanguages.push(lang);
           }
         })
         this.secondaryLanguages.forEach((sec_lang) => {
-          translationsService.getOrphelins(this.defaultLang.lang_code,sec_lang.lang_code).then((orphelins) => {
+          translationsService.getOrphelins(this.defaultLang.lang_code, sec_lang.lang_code).then((orphelins) => {
             this.orphelins_count = orphelins.data.length;
-            this.$emit('updateOrphelinsCount',this.orphelins_count);
+            this.$emit('updateOrphelinsCount', this.orphelins_count);
           })
         })
       } catch (e) {
         return false;
       }
     },
-    unpublishLanguage(option){
-      translationsService.updateLanguage(option.lang_code,0);
+    unpublishLanguage(option) {
+      translationsService.updateLanguage(option.lang_code, 0);
     },
-    publishLanguage(option){
-      translationsService.updateLanguage(option.lang_code,1);
+    publishLanguage(option) {
+      translationsService.updateLanguage(option.lang_code, 1);
     },
-    updateDefaultLanguage(option){
-      translationsService.updateLanguage(option.lang_code,1, 1).then(() => {
+    updateDefaultLanguage(option) {
+      translationsService.updateLanguage(option.lang_code, 1, 1).then(() => {
         let valuesToRemove = this.secondaryLanguages.findIndex(lang => lang.lang_code == option.lang_code);
-        if(valuesToRemove !== -1) {
+        if (valuesToRemove !== -1) {
           this.secondaryLanguages.splice(valuesToRemove, 1);
         }
         this.getAllLanguages();
       })
     },
-    async purposeLanguage(){
-      const { value: formValues } = await Swal.fire({
+    async purposeLanguage() {
+      const {value: formValues} = await Swal.fire({
         title: this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SUGGEST_LANGUAGE'),
         html:
             '<p class="em-body-16-semibold em-mb-8 em-text-align-left">' + this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SUGGEST_LANGUAGE_FIELD') + '</p>' +

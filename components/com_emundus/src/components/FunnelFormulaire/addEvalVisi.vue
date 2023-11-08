@@ -1,11 +1,11 @@
 <template>
   <div class="container-evaluation">
-    <p class="heading">{{chooseCampaign}} :</p>
+    <p class="heading">{{ chooseCampaign }} :</p>
     <div class="heading-block mb-1">
       <select class="dropdown-toggle" style="width: 90%" v-model="cid">
         <option :value="null"></option>
         <option v-for="(campaign, index) in campaigns" :key="index" :value="campaign.id">
-          {{campaign.label}}
+          {{ campaign.label }}
         </option>
       </select>
       <a v-if="cid != null"
@@ -18,18 +18,18 @@
     </div>
     <div v-if="cid == null" style="display: flex;" class="required mt-1">
       <em class="fas fa-exclamation-circle icon-warning-margin"></em>
-      <p>{{chooseCampaignWarning}}</p>
+      <p>{{ chooseCampaignWarning }}</p>
     </div>
     <div v-if="cid != null && profile == null" style="display: flex;" class="required mt-1">
       <em class="fas fa-exclamation-circle icon-warning-margin"></em>
-      <p>{{NoFormAffectedToThisCampaign}}</p>
+      <p>{{ NoFormAffectedToThisCampaign }}</p>
     </div>
     <div v-if="cid != null && profile !== null">
       <div>
         <add-formulaire
-                :profileId="profile"
-                :key="formReload"
-                :visibility="cid"
+            :profileId="profile"
+            :key="formReload"
+            :visibility="cid"
         ></add-formulaire>
       </div>
     </div>
@@ -66,26 +66,26 @@ export default {
   methods: {
     getFormByCampaign() {
       axios.get(
-              'index.php?option=com_emundus&controller=campaign&task=getcampaignbyid&id=' + this.cid
+          'index.php?option=com_emundus&controller=campaign&task=getcampaignbyid&id=' + this.cid
       ).then(response => {
         this.profile = response.data.data.campaign.profile_id;
-        if(this.profile != null) {
+        if (this.profile != null) {
           this.formReload += 1;
         }
       });
     },
 
-    getCampaignsByProgram(){
+    getCampaignsByProgram() {
       axios.get("index.php?option=com_emundus&controller=campaign&task=getcampaignsbyprogram&pid=" + this.prog)
-              .then(response => {
-                this.campaigns = response.data.data;
-              });
+          .then(response => {
+            this.campaigns = response.data.data;
+          });
     },
   },
 
   watch: {
     cid: function (value) {
-      if(value){
+      if (value) {
         this.getFormByCampaign();
       }
     },
@@ -97,11 +97,12 @@ export default {
 };
 </script>
 <style>
-  .label-toggle{
-    margin: 0 0 0 1em;
-  }
-  .icon-warning-margin{
-    margin-top: 2px;
-    margin-right: 5px;
-  }
+.label-toggle {
+  margin: 0 0 0 1em;
+}
+
+.icon-warning-margin {
+  margin-top: 2px;
+  margin-right: 5px;
+}
 </style>

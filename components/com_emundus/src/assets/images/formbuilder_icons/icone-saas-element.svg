@@ -1,1 +1,11 @@
-<svg id="Calque_1" data-name="Calque 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.83 14"><defs><style>.cls-1{fill:none;stroke:#de6338;stroke-width:1.5px;}</style></defs><title>icone-saas-element</title><g id="Groupe_82" data-name="Groupe 82"><line id="Ligne_5" data-name="Ligne 5" class="cls-1" y1="0.75" x2="19.83" y2="0.75"/><line id="Ligne_6" data-name="Ligne 6" class="cls-1" y1="6.75" x2="19.83" y2="6.75"/><line id="Ligne_7" data-name="Ligne 7" class="cls-1" y1="13.25" x2="19.83" y2="13.25"/></g></svg>
+<svg id="Calque_1" data-name="Calque 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.83 14">
+    <defs>
+        <style>.cls-1{fill:none;stroke:#de6338;stroke-width:1.5px;}</style>
+    </defs>
+    <title>icone-saas-element</title>
+    <g id="Groupe_82" data-name="Groupe 82">
+        <line id="Ligne_5" data-name="Ligne 5" class="cls-1" y1="0.75" x2="19.83" y2="0.75"/>
+        <line id="Ligne_6" data-name="Ligne 6" class="cls-1" y1="6.75" x2="19.83" y2="6.75"/>
+        <line id="Ligne_7" data-name="Ligne 7" class="cls-1" y1="13.25" x2="19.83" y2="13.25"/>
+    </g>
+</svg>

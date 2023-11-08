@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import ModalAddEvaluation from '../../../../src/components/AdvancedModals/ModalAddEvaluation';
 import translate from '../../../mocks/mixins/translate';
 import VModal from 'vue-js-modal';
@@ -16,7 +16,7 @@ describe('ModalAddEvaluation.vue', () => {
         localVue
     });
 
-    it ('ModalAddEvaluation constructed', () => {
+    it('ModalAddEvaluation constructed', () => {
         expect(wrapper.find('#modalAddEvaluation').exists()).toBeTruthy();
     });
 });

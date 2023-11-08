@@ -39,7 +39,8 @@
       </div>
 
       <div class="form-group controls">
-        <editor-quill :height="'30em'" :text="form.content" :enable_variables="false" :id="'editor'" :key="dynamicComponent" v-model="form.content" @focusout="saveContent"></editor-quill>
+        <editor-quill :height="'30em'" :text="form.content" :enable_variables="false" :id="'editor'"
+                      :key="dynamicComponent" v-model="form.content" @focusout="saveContent"></editor-quill>
       </div>
     </div>
 
@@ -140,7 +141,7 @@ export default {
     },
 
     async saveContent() {
-      this.$emit('updateSaving',true);
+      this.$emit('updateSaving', true);
 
       const formData = new FormData();
       formData.append('content', this.form.content);
@@ -160,8 +161,8 @@ export default {
             }
           }
       ).then(() => {
-        this.$emit('updateSaving',false);
-        this.$emit('updateLastSaving',this.formattedDate('','LT'));
+        this.$emit('updateSaving', false);
+        this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
       });
     },
 
@@ -173,7 +174,7 @@ export default {
     },
 
     async publishArticle() {
-      this.$emit('updateSaving',true);
+      this.$emit('updateSaving', true);
 
       const formData = new FormData();
       formData.append('publish', this.form.published);
@@ -191,15 +192,15 @@ export default {
             }
           }
       ).then(() => {
-        this.$emit('updateSaving',false);
-        this.$emit('updateLastSaving',this.formattedDate('','LT'));
-        this.$emit('updatePublished',this.form.published);
+        this.$emit('updateSaving', false);
+        this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
+        this.$emit('updatePublished', this.form.published);
       });
     },
   },
 
   watch: {
-    lang: function() {
+    lang: function () {
       if (this.lang !== null) {
         this.getArticle();
       } else {

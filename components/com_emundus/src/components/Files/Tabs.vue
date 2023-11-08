@@ -1,6 +1,7 @@
 <template>
   <div class="em-flex-row em-gap-8">
-    <div v-for="tab in $props.tabs" class="em-tabs em-pointer" :class="selected === tab.name ? 'em-selected-tab' : ''" @click="selected = tab.name;$emit('updateTab',tab.name)">
+    <div v-for="tab in $props.tabs" class="em-tabs em-pointer" :class="selected === tab.name ? 'em-selected-tab' : ''"
+         @click="selected = tab.name;$emit('updateTab',tab.name)">
       <p>{{ translate(tab.label) }} ({{ tab.total }})</p>
     </div>
   </div>
@@ -16,9 +17,9 @@ export default {
   data: () => ({
     selected: '',
   }),
-  created(){
+  created() {
     this.$props.tabs.forEach((tab) => {
-      if(tab.selected){
+      if (tab.selected) {
         this.selected = tab.name;
       }
     })

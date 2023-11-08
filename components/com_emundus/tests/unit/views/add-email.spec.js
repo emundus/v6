@@ -1,4 +1,4 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import {shallowMount, createLocalVue} from '@vue/test-utils';
 import '../../mocks/matchMedia.mock';
 import addEmail from '../../../src/views/addEmail';
 import translate from '../../mocks/mixins/translate';
@@ -13,7 +13,7 @@ localVue.mixin(translate);
 
 describe('addEmail.vue', () => {
 
-    it('addEmail should exist',  () => {
+    it('addEmail should exist', () => {
         const wrapper = shallowMount(addEmail, {
             propsData: {
                 campaign: 1

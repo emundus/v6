@@ -1,6 +1,6 @@
 const events = ['click'];
 
-function onClickOutside({ event, el, handler, middleware }) {
+function onClickOutside({event, el, handler, middleware}) {
     const isClickOutside =
         event.target !== el
         && !el.contains(event.target);
@@ -17,7 +17,7 @@ const instances = new Map();
 //Requires loop to toggle events for several listeners of an element
 function toggleEventListeners(eventHandlers) {
     return (action) => {
-        eventHandlers.forEach(({ event, handler }) => {
+        eventHandlers.forEach(({event, handler}) => {
             document[`${action}EventListener`](event, handler, true);
         })
     }
@@ -38,16 +38,16 @@ function processArgs(value) {
 }
 
 //Now need adapter to handle several events for one Map element
-function eventAdapter(events, { el, handler, middleware }) {
+function eventAdapter(events, {el, handler, middleware}) {
     return events.map((eventName) => ({
         event: eventName,
-        handler: (event) => onClickOutside({ event, el, handler, middleware })
+        handler: (event) => onClickOutside({event, el, handler, middleware})
     }));
 }
 
-function bind(el, { value }) {
-    const { handler, middleware } = processArgs(value);
-    const eventHandlers = eventAdapter(events, { el, handler, middleware });
+function bind(el, {value}) {
+    const {handler, middleware} = processArgs(value);
+    const eventHandlers = eventAdapter(events, {el, handler, middleware});
 
     instances.set(
         el,

@@ -19,7 +19,8 @@
     </div>
     <p>{{ TheCandidateDescription }}</p>
 
-    <button class="em-primary-button em-w-auto em-mt-8" @click="$modal.show('modalAddTriggercandidate'); triggerSelected = null">
+    <button class="em-primary-button em-w-auto em-mt-8"
+            @click="$modal.show('modalAddTriggercandidate'); triggerSelected = null">
       {{ addTrigger }}
     </button>
 
@@ -31,25 +32,26 @@
       >
         <div class="em-flex-row em-align-start em-flex-space-between em-w-100">
           <div>
-            <span class="em-mb-8">{{trigger.subject}}</span>
+            <span class="em-mb-8">{{ trigger.subject }}</span>
             <div class="em-mt-8 em-mb-8">
-              <span style="font-weight: bold">{{Target}} : </span>
+              <span style="font-weight: bold">{{ Target }} : </span>
               <span v-for="(user, index) in triggerUsersWithProfile(trigger)" :key="'user_' + index">
-                {{user.firstname}} {{user.lastname}}
+                {{ user.firstname }} {{ user.lastname }}
                 <span v-if="index != Object.keys(trigger.users).length - 1">, </span>
               </span>
-              <span v-if="trigger.users.length == 0 && trigger.profile != 5 && trigger.profile != 6">{{TheCandidate}}</span>
-              <span v-if="trigger.profile == 5">{{Administrators}}</span>
-              <span v-if="trigger.profile == 6">{{Evaluators}}</span>
+              <span
+                  v-if="trigger.users.length == 0 && trigger.profile != 5 && trigger.profile != 6">{{ TheCandidate }}</span>
+              <span v-if="trigger.profile == 5">{{ Administrators }}</span>
+              <span v-if="trigger.profile == 6">{{ Evaluators }}</span>
             </div>
-            <span>{{Status}} {{trigger.status}}</span>
+            <span>{{ Status }} {{ trigger.status }}</span>
           </div>
 
           <div class="em-flex-row em-flex-end">
             <a class="em-mr-8 em-pointer" @click="editTrigger(trigger)">
               <span class="material-icons-outlined">edit</span>
             </a>
-            <a class="em-pointer" @click="removeTrigger(trigger.trigger_id)":title="removeTrig">
+            <a class="em-pointer" @click="removeTrigger(trigger.trigger_id)" :title="removeTrig">
               <span class="material-icons-outlined em-red-500-color">close</span>
             </a>
           </div>
@@ -62,7 +64,8 @@
     </div>
     <p>{{ ManualDescription }}</p>
 
-    <button class="em-primary-button em-w-auto em-mt-8" @click="$modal.show('modalAddTriggermanual'); triggerSelected = null">
+    <button class="em-primary-button em-w-auto em-mt-8"
+            @click="$modal.show('modalAddTriggermanual'); triggerSelected = null">
       {{ addTrigger }}
     </button>
 
@@ -71,21 +74,22 @@
 
         <div class="em-flex-row em-align-start em-flex-space-between em-w-100">
           <div>
-            <span class="em-mb-8">{{trigger.subject}}</span>
+            <span class="em-mb-8">{{ trigger.subject }}</span>
             <div class="em-mt-8 em-mb-8">
-              <span style="font-weight: bold">{{Target}} : </span>
+              <span style="font-weight: bold">{{ Target }} : </span>
               <span
                   v-for="(user, index) in triggerUsersNoProfile(trigger)"
                   :key="'user_manual_' + index"
               >
-              {{user.firstname}} {{user.lastname}}
+              {{ user.firstname }} {{ user.lastname }}
               <span v-if="index != Object.keys(trigger.users).length - 1">, </span>
             </span>
-              <span v-if="trigger.users.length == 0 && trigger.profile != 5 && trigger.profile != 6">{{TheCandidate}}</span>
-              <span v-if="trigger.profile == 5">{{Administrators}}</span>
-              <span v-if="trigger.profile == 6">{{Evaluators}}</span>
+              <span
+                  v-if="trigger.users.length == 0 && trigger.profile != 5 && trigger.profile != 6">{{ TheCandidate }}</span>
+              <span v-if="trigger.profile == 5">{{ Administrators }}</span>
+              <span v-if="trigger.profile == 6">{{ Evaluators }}</span>
             </div>
-            <p>{{Status}} {{trigger.status}}</p>
+            <p>{{ Status }} {{ trigger.status }}</p>
           </div>
 
           <div class="em-flex-row em-flex-end">
@@ -148,12 +152,12 @@ export default {
       this.manual_trigger += 1;
       this.candidate_trigger += 1;
       setTimeout(() => {
-        if(trigger.candidate == 1){
+        if (trigger.candidate == 1) {
           this.$modal.show('modalAddTriggercandidate');
         } else {
           this.$modal.show('modalAddTriggermanual');
         }
-      },500);
+      }, 500);
     },
     removeTrigger(trigger) {
       axios({
@@ -206,14 +210,14 @@ export default {
 };
 </script>
 <style scoped>
-.em-email-card{
+.em-email-card {
   background: white;
   border-radius: 5px;
   padding: 16px 24px;
 }
 
 a.em-pointer:nth-child(2) .material-icons {
-color: #DB333E;
+  color: #DB333E;
 }
 
 a.em-pointer:nth-child(2):hover .material-icons {

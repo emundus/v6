@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import Comments from '../../../../src/components/Files/Comments';
 import translate from '../../../mocks/mixins/translate';
 import VModal from 'vue-js-modal';
@@ -14,22 +14,22 @@ describe('Comments.vue, all rights', () => {
         propsData: {
             fnum: mockComments.fnums[0],
             user: mockComments.users[0],
-            access:{'r':true,'c':true,'u':true,'d':true}
+            access: {'r': true, 'c': true, 'u': true, 'd': true}
         },
         localVue
     });
 
-    it ('Comments constructed', () => {
+    it('Comments constructed', () => {
         expect(wrapper.find('#comments').exists()).toBeTruthy();
     });
 
     wrapper.vm.$data.comments = mockComments.comments;
 
-    it ('.comment-content should exists and its length should be equal to comments length', () => {
+    it('.comment-content should exists and its length should be equal to comments length', () => {
         expect(wrapper.findAll('.comment-content').length).toEqual(mockComments.comments.length);
     });
 
-    it ('delete a comment with no id given should not work', () => {
+    it('delete a comment with no id given should not work', () => {
         const deleted = wrapper.vm.deleteComment(0);
         expect(deleted).toBeFalsy();
         expect(wrapper.vm.$data.comments.length).toEqual(mockComments.comments.length);

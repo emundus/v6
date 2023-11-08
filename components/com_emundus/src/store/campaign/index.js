@@ -11,13 +11,13 @@ const getters = {
 };
 
 const actions = {
-    setUnsavedChanges({ commit }, value) {
+    setUnsavedChanges({commit}, value) {
         commit('setUnsavedChanges', value);
     },
-    setPinned({ commit }, value) {
+    setPinned({commit}, value) {
         commit('setPinned', value);
     },
-    setAllowPinnedCampaign({ commit }, value) {
+    setAllowPinnedCampaign({commit}, value) {
         commit('setAllowPinnedCampaign', value);
     },
 };

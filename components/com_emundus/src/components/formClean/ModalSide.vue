@@ -2,20 +2,20 @@
   <!-- modalC -->
   <span :id="'modalSide'">
     <modal
-      :name="'modalSide' + ID"
-      height="auto"
-      transition="little-move-left"
-      :min-width="200"
-      :min-height="200"
-      :delay="100"
-      :adaptive="true"
-      :clickToClose="true"
-      @closed="beforeClose"
-      @before-open="beforeOpen">
+        :name="'modalSide' + ID"
+        height="auto"
+        transition="little-move-left"
+        :min-width="200"
+        :min-height="200"
+        :delay="100"
+        :adaptive="true"
+        :clickToClose="true"
+        @closed="beforeClose"
+        @before-open="beforeOpen">
 
 	    <div class="em-flex-row em-flex-space-between em-mb-16">
         <h4>
-          {{translations.editMenu}}
+          {{ translations.editMenu }}
         </h4>
         <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalSide' + ID)">
           <span class="material-icons-outlined">close</span>
@@ -24,15 +24,16 @@
 
       <div>
         <div class="em-mb-16">
-          <label>{{translations.Name}} :</label>
-          <input v-model="label[actualLanguage]" type="text" maxlength="40" class="em-w-100" style="margin: 0" :class="{ 'is-invalid': errors}"/>
+          <label>{{ translations.Name }} :</label>
+          <input v-model="label[actualLanguage]" type="text" maxlength="40" class="em-w-100" style="margin: 0"
+                 :class="{ 'is-invalid': errors}"/>
         </div>
         <p v-if="errors" class="em-red-500-color">
-          <span class="em-red-500-color">{{translations.LabelRequired}}</span>
+          <span class="em-red-500-color">{{ translations.LabelRequired }}</span>
         </p>
 
         <div class="em-mb-16" :class="{'mb-0': can_translate.intro}">
-          <label>{{translations.Intro}}</label>
+          <label>{{ translations.Intro }}</label>
           <editor
               v-if="intro.hasOwnProperty(selectedLanguage)"
               :height="'30em'"
@@ -46,7 +47,7 @@
 
         <div class="em-mb-16 em-flex-row" id="template_checkbox">
           <input type="checkbox" v-model="template">
-          <label class="em-ml-8">{{translations.SaveAsTemplate}}</label>
+          <label class="em-ml-8">{{ translations.SaveAsTemplate }}</label>
         </div>
 
         <div class="em-flex-row em-flex-space-between em-mb-16">
@@ -54,18 +55,18 @@
             <button
                 class="em-secondary-button em-w-auto"
                 @click.prevent="$modal.hide('modalSide' + ID)">
-              {{translations.Retour}}
+              {{ translations.Retour }}
             </button>
             <button class="em-tertiary-button em-w-auto"
                     @click.prevent="deleteMenu()"
                     v-if="menus.length > 1 && files == 0">
-              {{translations.Delete}}
+              {{ translations.Delete }}
             </button>
           </div>
           <button
               class="em-primary-button em-w-auto"
               @click.prevent="$modal.hide('modalSide' + ID) & UpdateParams()">
-              {{translations.Continuer}}
+              {{ translations.Continuer }}
           </button>
         </div>
       </div>
@@ -88,7 +89,17 @@ export default {
     Editor,
     Translation
   },
-  props: { ID: String, element: Object, index: Number, menus: Array, files: Number, link: String, manyLanguages: String, actualLanguage: String,  languages: Array },
+  props: {
+    ID: String,
+    element: Object,
+    index: Number,
+    menus: Array,
+    files: Number,
+    link: String,
+    manyLanguages: String,
+    actualLanguage: String,
+    languages: Array
+  },
   data() {
     return {
       tempEl: [],
@@ -141,11 +152,11 @@ export default {
     beforeClose(event) {
       if (this.changes !== false) {
         this.$emit(
-          "show",
-          "foo-velocity",
-          "success",
-          this.dataSaved,
-          this.informations
+            "show",
+            "foo-velocity",
+            "success",
+            this.dataSaved,
+            this.informations
         );
         this.changes = false;
       }
@@ -160,10 +171,10 @@ export default {
      */
     axioschange(label, labelraw) {
       return new Promise(resolve => {
-          axios({
+        axios({
           method: "post",
           url:
-            "index.php?option=com_emundus&controller=formbuilder&task=formsTrad",
+              "index.php?option=com_emundus&controller=formbuilder&task=formsTrad",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -176,9 +187,9 @@ export default {
         }).catch(e => {
           console.log(e);
         });
-    })
+      })
     },
-    updatefalang(label){
+    updatefalang(label) {
       return new Promise(resolve => {
         axios({
           method: "post",
@@ -225,10 +236,10 @@ export default {
         method: "get",
         url: "index.php?option=com_emundus&controller=formbuilder&task=getalltranslations",
         params: {
-          toJTEXT: totrad ,
+          toJTEXT: totrad,
         },
         paramsSerializer: params => {
-           return qs.stringify(params);
+          return qs.stringify(params);
         }
       }).then((rep) => {
         return rep.data;
@@ -255,7 +266,7 @@ export default {
           axios({
             method: "post",
             url:
-                    "index.php?option=com_emundus&controller=formbuilder&task=deletemenu",
+                "index.php?option=com_emundus&controller=formbuilder&task=deletemenu",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -270,7 +281,7 @@ export default {
       });
     },
 
-    checkIfTemplate(){
+    checkIfTemplate() {
       axios({
         method: "get",
         url: "index.php?option=com_emundus&controller=formbuilder&task=getPagesModel"
@@ -293,33 +304,34 @@ export default {
     initialisation() {
       this.tempEl = JSON.parse(JSON.stringify(this.element));
       this.axiostrad(this.tempEl.intro_raw)
-        .then((intro_translated) => {
-          this.intro = intro_translated
-        })
-        .catch(function(intro_translated) {
-          console.log(intro_translated);
-        });
+          .then((intro_translated) => {
+            this.intro = intro_translated
+          })
+          .catch(function (intro_translated) {
+            console.log(intro_translated);
+          });
       this.axiostrad(this.tempEl.show_title.titleraw)
-        .then((label_translated) => {
-          this.label = label_translated
-        })
-        .catch(function(label_translated) {
-          console.log(label_translated);
-        });
+          .then((label_translated) => {
+            this.label = label_translated
+          })
+          .catch(function (label_translated) {
+            console.log(label_translated);
+          });
       this.checkIfTemplate();
     },
   },
   watch: {
-    element: function() {
+    element: function () {
       this.tempEl = JSON.parse(JSON.stringify(this.element));
     }
   },
-  created: function() {}
+  created: function () {
+  }
 };
 </script>
 
 <style scoped>
-#template_checkbox input{
+#template_checkbox input {
   margin: 0 !important;
 }
 </style>

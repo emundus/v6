@@ -23,7 +23,7 @@ var errors = {
                 options.customClass.actions = 'em-swal-single-action';
             }
 
-            if(html){
+            if (html) {
                 options.html = text;
             } else {
                 options.text = this.translate(text);

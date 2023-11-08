@@ -7,7 +7,7 @@
  * @link       http://www.emundus.fr
  * @license    GNU/GPL
  * @author     Hugo Moracchini
-*/
+ */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -24,802 +24,811 @@ use Joomla\CMS\Mail;
  * @package    Joomla.eMundus
  * @subpackage Components
  */
-class EmundusControllerMessages extends JControllerLegacy {
+class EmundusControllerMessages extends JControllerLegacy
+{
 
 	protected $app;
 
-    /**
-     * Constructor
-     *
-     * @since 3.8.6
-     */
-    function __construct($config = array()) {
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
-	    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-	    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
-	    parent::__construct($config);
+	/**
+	 * Constructor
+	 *
+	 * @since 3.8.6
+	 */
+	function __construct($config = array())
+	{
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'messages.php');
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+		parent::__construct($config);
 
 		$this->app = Factory::getApplication();
-    }
+	}
 
-    /**
-     * Get all of the information for an email template.
-     *
-     * @since 3.8.6
-     */
-    function gettemplate() {
-        
-        $template_id = $this->input->post->getInt('select', null);
+	/**
+	 * Get all of the information for an email template.
+	 *
+	 * @since 3.8.6
+	 */
+	function gettemplate()
+	{
 
-        $m_messages = $this->getModel('Messages');
+		$template_id = $this->input->post->getInt('select', null);
 
-        $template = $m_messages->getEmail($template_id);
+		$m_messages = $this->getModel('Messages');
 
-        if (!$template) {
-            echo json_encode((object)(['status' => false]));
-            exit;
-        }
+		$template = $m_messages->getEmail($template_id);
 
-		echo json_encode((object)([
-            'status' => true,
-            'tmpl' => $template
-        ]));
+		if (!$template) {
+			echo json_encode((object) (['status' => false]));
+			exit;
+		}
+
+		echo json_encode((object) ([
+			'status' => true,
+			'tmpl'   => $template
+		]));
 		exit;
 
-    }
+	}
 
-    /**
-     * Get email templates by category.
-     *
-     * @since 3.8.6
-     */
-    public function setcategory() {
-
-        
-        $category = $this->input->get->getString('category', 'all');
-
-        $m_messages = $this->getModel('Messages');
-
-        $templates = $m_messages->getEmailsByCategory($category);
-
-        if (!$templates) {
-            echo json_encode((object)(['status' => false]));
-            exit;
-        }
-
-        echo json_encode((object)([
-            'status' => true,
-            'templates' => $templates
-        ]));
-        exit;
-
-    }
+	/**
+	 * Get email templates by category.
+	 *
+	 * @since 3.8.6
+	 */
+	public function setcategory()
+	{
 
 
-    /**
-     * Upload a file from computer to be attached to the emails sent.
-     *
-     * @since 3.8.6
-     */
-    public function uploadfiletosend() {
+		$category = $this->input->get->getString('category', 'all');
 
-        
+		$m_messages = $this->getModel('Messages');
 
-        // If a filetype was sent in POST: check it.
-	    $filetype = $this->input->post->get('filetype', null);
+		$templates = $m_messages->getEmailsByCategory($category);
 
-        // Get the file sent via AJAX POST
-        $file = $this->input->files->get('file');
+		if (!$templates) {
+			echo json_encode((object) (['status' => false]));
+			exit;
+		}
 
-        // Get the user sent via AJAX POST
-        $user = $this->input->post->get('user');
+		echo json_encode((object) ([
+			'status'    => true,
+			'templates' => $templates
+		]));
+		exit;
 
-        // Get the user sent via AJAX POST
-        $fnum = $this->input->post->get('fnum');
-
-        // Check if an error is present
-	    if (!isset($file['error']) || is_array($file['error'])) {
-		    echo json_encode(['status' => false]);
-		    exit;
-	    }
-
-	    // Sanitize filename.
-	    $file['name'] = preg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $file['name']);
-	    $file['name'] = preg_replace("([\.]{2,})", '', $file['name']);
-	    $file['name'] = str_replace(array( '(', ')' ), '', $file['name']);
-
-	    // Check if file name is alphanumeric
-	    if (!preg_match("`^[-0-9A-Z_\.]+$`i", $file['name'])) {
-	    	echo json_encode(['status' => false]);
-	    	exit;
-	    }
-
-	    // Check if file name is not too long.
-	    if (mb_strlen($file['name'], "UTF-8") > 225) {
-	    	echo json_encode(['status' => false]);
-	    	exit;
-	    }
-
-	    // If we specifically are uploading a PDF, check the MIME type.
-	    if ($filetype == 'pdf' && $file['type'] != 'application/pdf') {
-		    echo json_encode(['status' => false]);
-		    exit;
-	    }
-
-	    // Check file extension and remove any dengerous ones.
-	    if (preg_match("/.exe$|.com$|.bat$|.zip$|.php$|.sh$/i", $file['name'])){
-		    exit("You cannot upload this type of file.");
-	    }
-        // Check if the message attachments directory exists.
-        if (!is_dir('images'.DS.'emundus'.DS.'files'.DS.$user.DS.$fnum)) {
-            mkdir('images'.DS.'emundus'.DS.'files'.DS.$user.DS.$fnum, 0777, true);
-        }
-
-        // Move the uploaded file to the server directory.
-
-	    if (!empty($user) && empty($fnum)) {
-		    $target = 'images'.DS.'emundus'.DS.'files'.DS.$user.DS.$fnum.DS.$file['name'];
-	    } else {
-		    $target = 'images'.DS.'emundus'.DS.'files'.DS.$file['name'];
-	    }
-
-        if (file_exists($target)) {
-	        unlink($target);
-        }
-
-        move_uploaded_file($file['tmp_name'], $target);
-
-        // Send back the info to the frontend.
-        echo json_encode(['status' => true, 'file_name' => $file['name'], 'file_path' => $target]);
-        exit;
-
-    }
+	}
 
 
-    /**
-     * Gets the names of the candidate files.
-     * @since 3.8.6
-     */
-    public function getcandidatefilenames() {
-
-        $m_messages = $this->getModel('Messages');
-
-        
-        $attachment_ids = $this->input->post->getString('attachments', null);
-
-        if (empty($attachment_ids)) {
-            echo json_encode((object)['status' => false]);
-            exit;
-        }
-
-        $attachments = $m_messages->getCandidateFileNames($attachment_ids);
-
-        if (!$attachments) {
-            echo json_encode((object)['status' => false]);
-            exit;
-        }
-
-        echo json_encode((object)['status' => true, 'attachments' => $attachments]);
-        exit;
-
-    }
-
-    /**
-     * Gets the names of the letter files.
-     * @since 3.8.6
-     */
-    public function getletterfilenames() {
-
-        $m_messages = $this->getModel('Messages');
-
-        
-        $attachment_ids = $this->input->post->getString('attachments', null);
-
-        if (empty($attachment_ids)) {
-            echo json_encode((object)['status' => false]);
-            exit;
-        }
-
-        $attachments = $m_messages->getLetterFileNames($attachment_ids);
-
-        if (!$attachments) {
-            echo json_encode((object)['status' => false]);
-            exit;
-        }
-
-        echo json_encode((object)['status' => true, 'attachments' => $attachments]);
-        exit;
-
-    }
+	/**
+	 * Upload a file from computer to be attached to the emails sent.
+	 *
+	 * @since 3.8.6
+	 */
+	public function uploadfiletosend()
+	{
 
 
-    /**
-     * Builds an HTML preview of the message to be sent alongside a recap of other information.
-     *
-     * @since 3.8.13
-     */
-    public function previewemail() {
-        if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
-            die(JText::_("ACCESS_DENIED"));
-        }
+		// If a filetype was sent in POST: check it.
+		$filetype = $this->input->post->get('filetype', null);
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+		// Get the file sent via AJAX POST
+		$file = $this->input->files->get('file');
 
-        $m_messages = $this->getModel('Messages');
-        $m_emails = $this->getModel('Emails');
-        $m_files = $this->getModel('Files');
-        $m_campaign = $this->getModel('Campaign');
+		// Get the user sent via AJAX POST
+		$user = $this->input->post->get('user');
 
-        $config = JFactory::getConfig();
-        
+		// Get the user sent via AJAX POST
+		$fnum = $this->input->post->get('fnum');
 
-        // Get default mail sender info
-        $mail_from_sys = $config->get('mailfrom');
-        $mail_from_sys_name = $config->get('fromname');
+		// Check if an error is present
+		if (!isset($file['error']) || is_array($file['error'])) {
+			echo json_encode(['status' => false]);
+			exit;
+		}
 
-        $fnums = explode(',',$this->input->post->get('recipients', null, null));
-        $nb_recipients = count($fnums);
+		// Sanitize filename.
+		$file['name'] = preg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $file['name']);
+		$file['name'] = preg_replace("([\.]{2,})", '', $file['name']);
+		$file['name'] = str_replace(array('(', ')'), '', $file['name']);
 
-        // If no mail sender info is provided, we use the system global config.
-        $mail_from_name = $this->input->post->getString('mail_from_name', $mail_from_sys_name);
-        $mail_from = $this->input->post->getString('mail_from', $mail_from_sys);
-        $reply_to_from = $this->input->post->getString('reply_to_from', '');
+		// Check if file name is alphanumeric
+		if (!preg_match("`^[-0-9A-Z_\.]+$`i", $file['name'])) {
+			echo json_encode(['status' => false]);
+			exit;
+		}
 
-        $mail_subject = $this->input->post->getString('mail_subject', 'No Subject');
-        $template_id = $this->input->post->getInt('template', null);
-        $mail_message = $this->input->post->get('message', null, 'RAW');
-        $attachments = $this->input->post->get('attachments', null, null);
+		// Check if file name is not too long.
+		if (mb_strlen($file['name'], "UTF-8") > 225) {
+			echo json_encode(['status' => false]);
+			exit;
+		}
 
-	    // Check tags unpublished
-	    $unpublished_tags = $m_emails->checkUnpublishedTags($mail_from.$mail_from_name.$mail_subject.$mail_message);
+		// If we specifically are uploading a PDF, check the MIME type.
+		if ($filetype == 'pdf' && $file['type'] != 'application/pdf') {
+			echo json_encode(['status' => false]);
+			exit;
+		}
 
-	    $html = '';
-		if(!empty($unpublished_tags)) {
-			$html = '<div style="color: #c91212"><p style="color: #c91212">' .JText::_('COM_EMUNDUS_EMAIL_WARNING_UNPUBLISHED_TAGS').'</p><ul>';
+		// Check file extension and remove any dengerous ones.
+		if (preg_match("/.exe$|.com$|.bat$|.zip$|.php$|.sh$/i", $file['name'])) {
+			exit("You cannot upload this type of file.");
+		}
+		// Check if the message attachments directory exists.
+		if (!is_dir('images' . DS . 'emundus' . DS . 'files' . DS . $user . DS . $fnum)) {
+			mkdir('images' . DS . 'emundus' . DS . 'files' . DS . $user . DS . $fnum, 0777, true);
+		}
+
+		// Move the uploaded file to the server directory.
+
+		if (!empty($user) && empty($fnum)) {
+			$target = 'images' . DS . 'emundus' . DS . 'files' . DS . $user . DS . $fnum . DS . $file['name'];
+		}
+		else {
+			$target = 'images' . DS . 'emundus' . DS . 'files' . DS . $file['name'];
+		}
+
+		if (file_exists($target)) {
+			unlink($target);
+		}
+
+		move_uploaded_file($file['tmp_name'], $target);
+
+		// Send back the info to the frontend.
+		echo json_encode(['status' => true, 'file_name' => $file['name'], 'file_path' => $target]);
+		exit;
+
+	}
+
+
+	/**
+	 * Gets the names of the candidate files.
+	 * @since 3.8.6
+	 */
+	public function getcandidatefilenames()
+	{
+
+		$m_messages = $this->getModel('Messages');
+
+
+		$attachment_ids = $this->input->post->getString('attachments', null);
+
+		if (empty($attachment_ids)) {
+			echo json_encode((object) ['status' => false]);
+			exit;
+		}
+
+		$attachments = $m_messages->getCandidateFileNames($attachment_ids);
+
+		if (!$attachments) {
+			echo json_encode((object) ['status' => false]);
+			exit;
+		}
+
+		echo json_encode((object) ['status' => true, 'attachments' => $attachments]);
+		exit;
+
+	}
+
+	/**
+	 * Gets the names of the letter files.
+	 * @since 3.8.6
+	 */
+	public function getletterfilenames()
+	{
+
+		$m_messages = $this->getModel('Messages');
+
+
+		$attachment_ids = $this->input->post->getString('attachments', null);
+
+		if (empty($attachment_ids)) {
+			echo json_encode((object) ['status' => false]);
+			exit;
+		}
+
+		$attachments = $m_messages->getLetterFileNames($attachment_ids);
+
+		if (!$attachments) {
+			echo json_encode((object) ['status' => false]);
+			exit;
+		}
+
+		echo json_encode((object) ['status' => true, 'attachments' => $attachments]);
+		exit;
+
+	}
+
+
+	/**
+	 * Builds an HTML preview of the message to be sent alongside a recap of other information.
+	 *
+	 * @since 3.8.13
+	 */
+	public function previewemail()
+	{
+		if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
+			die(JText::_("ACCESS_DENIED"));
+		}
+
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
+
+		$m_messages = $this->getModel('Messages');
+		$m_emails   = $this->getModel('Emails');
+		$m_files    = $this->getModel('Files');
+		$m_campaign = $this->getModel('Campaign');
+
+		$config = JFactory::getConfig();
+
+
+		// Get default mail sender info
+		$mail_from_sys      = $config->get('mailfrom');
+		$mail_from_sys_name = $config->get('fromname');
+
+		$fnums         = explode(',', $this->input->post->get('recipients', null, null));
+		$nb_recipients = count($fnums);
+
+		// If no mail sender info is provided, we use the system global config.
+		$mail_from_name = $this->input->post->getString('mail_from_name', $mail_from_sys_name);
+		$mail_from      = $this->input->post->getString('mail_from', $mail_from_sys);
+		$reply_to_from  = $this->input->post->getString('reply_to_from', '');
+
+		$mail_subject = $this->input->post->getString('mail_subject', 'No Subject');
+		$template_id  = $this->input->post->getInt('template', null);
+		$mail_message = $this->input->post->get('message', null, 'RAW');
+		$attachments  = $this->input->post->get('attachments', null, null);
+
+		// Check tags unpublished
+		$unpublished_tags = $m_emails->checkUnpublishedTags($mail_from . $mail_from_name . $mail_subject . $mail_message);
+
+		$html = '';
+		if (!empty($unpublished_tags)) {
+			$html = '<div style="color: #c91212"><p style="color: #c91212">' . JText::_('COM_EMUNDUS_EMAIL_WARNING_UNPUBLISHED_TAGS') . '</p><ul>';
 			foreach ($unpublished_tags as $unpublished_tag) {
-				$html .= '<li>'.$unpublished_tag.'</li>';
+				$html .= '<li>' . $unpublished_tag . '</li>';
 			}
 			$html .= '</ul></div>';
 		}
 
-	    if ($nb_recipients > 1) {
-		    $html .= '<h2>'.JText::sprintf('COM_EMUNDUS_EMAIL_ABOUT_TO_SEND', $nb_recipients).'</h2>';
-	    }
+		if ($nb_recipients > 1) {
+			$html .= '<h2>' . JText::sprintf('COM_EMUNDUS_EMAIL_ABOUT_TO_SEND', $nb_recipients) . '</h2>';
+		}
 
 
-        // Here we filter out any CC or BCC emails that have been entered that do not match the regex.
-        $cc = $this->input->post->getString('cc');
-	    $bcc = $this->input->post->getString('bcc');
+		// Here we filter out any CC or BCC emails that have been entered that do not match the regex.
+		$cc  = $this->input->post->getString('cc');
+		$bcc = $this->input->post->getString('bcc');
 
-	    if (!empty($bcc)) {
-		    if (!is_array($bcc)) {
-			    $bcc = [];
-		    }
+		if (!empty($bcc)) {
+			if (!is_array($bcc)) {
+				$bcc = [];
+			}
 
-		    $bcc_html = '';
-		    foreach ($bcc as $key => $bcc_to_test) {
-			    if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $bcc_to_test) !== 1) {
-				    unset($bcc[$key]);
-			    } else {
-				    $bcc_html .= '<li>'.$bcc_to_test.'</li>';
-			    }
-		    }
-	    }
+			$bcc_html = '';
+			foreach ($bcc as $key => $bcc_to_test) {
+				if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $bcc_to_test) !== 1) {
+					unset($bcc[$key]);
+				}
+				else {
+					$bcc_html .= '<li>' . $bcc_to_test . '</li>';
+				}
+			}
+		}
 
-	    if (!empty($cc)) {
-		    if (!is_array($cc)) {
-			    $cc = [];
-		    }
+		if (!empty($cc)) {
+			if (!is_array($cc)) {
+				$cc = [];
+			}
 
-		    $cc_html = '';
-		    foreach ($cc as $key => $cc_to_test) {
-			    if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $cc_to_test) !== 1) {
-				    unset($cc[$key]);
-			    } else {
-				    $cc_html .= '<li>'.$cc_to_test.'</li>';
-			    }
-		    }
-	    }
+			$cc_html = '';
+			foreach ($cc as $key => $cc_to_test) {
+				if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $cc_to_test) !== 1) {
+					unset($cc[$key]);
+				}
+				else {
+					$cc_html .= '<li>' . $cc_to_test . '</li>';
+				}
+			}
+		}
 
-	    if (isset($cc_html) || isset($bcc_html)) {
+		if (isset($cc_html) || isset($bcc_html)) {
 
-	    	$html .= '<div class="well">';
+			$html .= '<div class="well">';
 
-		    if (isset($bcc_html)) {
-			    $html .= '<strong>'.JText::_('COM_EMUNDUS_EMAIL_PEOPLE_BCC').'</strong> <ul>'.$bcc_html.'</ul>';
-		    }
+			if (isset($bcc_html)) {
+				$html .= '<strong>' . JText::_('COM_EMUNDUS_EMAIL_PEOPLE_BCC') . '</strong> <ul>' . $bcc_html . '</ul>';
+			}
 
-		    if (isset($cc_html)) {
-			    $html .= '<strong>'.JText::_('COM_EMUNDUS_EMAIL_PEOPLE_CC').'</strong> <ul>'.$cc_html.'</ul>';
-		    }
+			if (isset($cc_html)) {
+				$html .= '<strong>' . JText::_('COM_EMUNDUS_EMAIL_PEOPLE_CC') . '</strong> <ul>' . $cc_html . '</ul>';
+			}
 
-		    if ($nb_recipients > 1) {
-			    $html .= '<span class="alert alert-info">'.JText::sprintf('COM_EMUNDUS_EMAIL_CC_BCC_WILL_RECEIVE', $nb_recipients).'</span>';
-		    }
+			if ($nb_recipients > 1) {
+				$html .= '<span class="alert alert-info">' . JText::sprintf('COM_EMUNDUS_EMAIL_CC_BCC_WILL_RECEIVE', $nb_recipients) . '</span>';
+			}
 
-		    $html .= '</div>';
-	    }
+			$html .= '</div>';
+		}
 
-        // Get additional info for only the first fnum.
-        $fnum = $m_files->getFnumsInfos([$fnums[0]], 'object')[$fnums[0]];
+		// Get additional info for only the first fnum.
+		$fnum = $m_files->getFnumsInfos([$fnums[0]], 'object')[$fnums[0]];
 
-        // Loading the message template is not used for getting the message text as that can be modified on the frontend by the user before sending.
-        $template = $m_messages->getEmail($template_id);
-        $programme = $m_campaign->getProgrammeByTraining($fnum->training);
+		// Loading the message template is not used for getting the message text as that can be modified on the frontend by the user before sending.
+		$template  = $m_messages->getEmail($template_id);
+		$programme = $m_campaign->getProgrammeByTraining($fnum->training);
 
-        $toAttach = [];
-        $post = [
-            'FNUM' => $fnum->fnum,
-            'USER_NAME' => $fnum->name,
-            'COURSE_LABEL' => $programme->label,
-            'CAMPAIGN_LABEL' => $fnum->label,
-            'CAMPAIGN_YEAR' => $fnum->year,
-            'CAMPAIGN_START' => JHTML::_('date', $fnum->start_date, JText::_('DATE_FORMAT_OFFSET1'), null),
-            'CAMPAIGN_END' => JHTML::_('date', $fnum->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
-            'DEADLINE' => JHTML::_('date', $fnum->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
-            'SITE_URL' => JURI::base(),
-            'USER_EMAIL' => $fnum->email
-        ];
+		$toAttach = [];
+		$post     = [
+			'FNUM'           => $fnum->fnum,
+			'USER_NAME'      => $fnum->name,
+			'COURSE_LABEL'   => $programme->label,
+			'CAMPAIGN_LABEL' => $fnum->label,
+			'CAMPAIGN_YEAR'  => $fnum->year,
+			'CAMPAIGN_START' => JHTML::_('date', $fnum->start_date, JText::_('DATE_FORMAT_OFFSET1'), null),
+			'CAMPAIGN_END'   => JHTML::_('date', $fnum->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
+			'DEADLINE'       => JHTML::_('date', $fnum->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
+			'SITE_URL'       => JURI::base(),
+			'USER_EMAIL'     => $fnum->email
+		];
 
-        $tags = $m_emails->setTags($fnum->applicant_id, $post, $fnum->fnum, '', $mail_from.$mail_from_name.$mail_subject.$mail_message);
-        $message = $m_emails->setTagsFabrik($mail_message, [$fnum->fnum]);
-        $subject = $m_emails->setTagsFabrik($mail_subject, [$fnum->fnum]);
+		$tags    = $m_emails->setTags($fnum->applicant_id, $post, $fnum->fnum, '', $mail_from . $mail_from_name . $mail_subject . $mail_message);
+		$message = $m_emails->setTagsFabrik($mail_message, [$fnum->fnum]);
+		$subject = $m_emails->setTagsFabrik($mail_subject, [$fnum->fnum]);
 
-        // Tags are replaced with their corresponding values.
-        if (empty($template) || empty($template->Template)) {
-        	$db = JFactory::getDbo();
-        	$query = $db->getQuery(true);
+		// Tags are replaced with their corresponding values.
+		if (empty($template) || empty($template->Template)) {
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
 
-        	$query->select($db->quoteName('Template'))
-		        ->from($db->quoteName('#__emundus_email_templates'))
-		        ->where($db->quoteName('id').' = 1');
-        	$db->setQuery($query);
+			$query->select($db->quoteName('Template'))
+				->from($db->quoteName('#__emundus_email_templates'))
+				->where($db->quoteName('id') . ' = 1');
+			$db->setQuery($query);
 
-        	$template->Template = $db->loadResult();
-        }
+			$template->Template = $db->loadResult();
+		}
 
-        $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $message], $template->Template);
-	    $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
-	    $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+		$body    = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $message], $template->Template);
+		$subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
+		$body    = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
 
-        // Get Sender and reply to addresses.
-        $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
-        $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
+		// Get Sender and reply to addresses.
+		$mail_from      = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
+		$mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
 
-        // If the email sender has the same domain as the system sender address.
-        /*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
-            $mail_from_address = $mail_from;
-        } else {*/
-        $mail_from_address = $mail_from_sys;
-        //}
+		// If the email sender has the same domain as the system sender address.
+		/*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
+			$mail_from_address = $mail_from;
+		} else {*/
+		$mail_from_address = $mail_from_sys;
+		//}
 
-        $sender = $mail_from_name.' &lt;'.$mail_from_address.'&gt;';
+		$sender = $mail_from_name . ' &lt;' . $mail_from_address . '&gt;';
 
-        // Build message preview.
-        $html .= '</hr><div class="email-info">
-                    <strong>'.JText::_('COM_EMUNDUS_EMAILS_FROM').'</strong> '.$sender.' </br>';
+		// Build message preview.
+		$html .= '</hr><div class="email-info">
+                    <strong>' . JText::_('COM_EMUNDUS_EMAILS_FROM') . '</strong> ' . $sender . ' </br>';
 
-        if (!empty($reply_to_from)) {
-            $html .= '<strong>'.JText::_('COM_EMUNDUS_EMAILS_REPLY_TO').'</strong> '.$reply_to_from.' </br>';
-        }
+		if (!empty($reply_to_from)) {
+			$html .= '<strong>' . JText::_('COM_EMUNDUS_EMAILS_REPLY_TO') . '</strong> ' . $reply_to_from . ' </br>';
+		}
 
-        $html .= '<strong>'.JText::_('COM_EMUNDUS_EMAILS_TO').'</strong> '.$fnum->email.' </br>'.
-                 '<strong>'.JText::_('COM_EMUNDUS_EMAILS_SUBJECT').'</strong> '.$subject.' </br>'.
-                 '<strong>'.JText::_('COM_EMUNDUS_EMAILS_BODY').'</strong>
+		$html .= '<strong>' . JText::_('COM_EMUNDUS_EMAILS_TO') . '</strong> ' . $fnum->email . ' </br>' .
+			'<strong>' . JText::_('COM_EMUNDUS_EMAILS_SUBJECT') . '</strong> ' . $subject . ' </br>' .
+			'<strong>' . JText::_('COM_EMUNDUS_EMAILS_BODY') . '</strong>
 			</div>
-			<div class="well">'.$body.'</div>';
+			<div class="well">' . $body . '</div>';
 
 
-        // Retrieve and build a list of the files that will be attached to the mail.
+		// Retrieve and build a list of the files that will be attached to the mail.
 
-        // Files uploaded from the frontend.
-        if (!empty($attachments['upload'])) {
-            // In the case of an uploaded file, just add it to the email.
-            foreach ($attachments['upload'] as $upload) {
-                if (file_exists(JPATH_SITE.DS.$upload)) {
-                    $toAttach['upload'][] = pathinfo($upload)['basename'];
-                }
-            }
-        }
+		// Files uploaded from the frontend.
+		if (!empty($attachments['upload'])) {
+			// In the case of an uploaded file, just add it to the email.
+			foreach ($attachments['upload'] as $upload) {
+				if (file_exists(JPATH_SITE . DS . $upload)) {
+					$toAttach['upload'][] = pathinfo($upload)['basename'];
+				}
+			}
+		}
 
-        // Files gotten from candidate files, requires attachment read rights.
-        if (EmundusHelperAccess::asAccessAction(4, 'r') && !empty($attachments['candidate_file'])) {
+		// Files gotten from candidate files, requires attachment read rights.
+		if (EmundusHelperAccess::asAccessAction(4, 'r') && !empty($attachments['candidate_file'])) {
 
-            // Get from DB by fnum.
-            foreach ($attachments['candidate_file'] as $candidate_file) {
+			// Get from DB by fnum.
+			foreach ($attachments['candidate_file'] as $candidate_file) {
 
-                $filename = $m_messages->get_filename($candidate_file);
+				$filename = $m_messages->get_filename($candidate_file);
 
-                if ($filename) {
-                    $toAttach['candidate_file'][] = $filename;
-                }
-            }
-        }
+				if ($filename) {
+					$toAttach['candidate_file'][] = $filename;
+				}
+			}
+		}
 
-        // Files generated using the Letters system. Requires attachment creation and doc generation rights.
-        if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c') && !empty($attachments['setup_letters'])) {
-            $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
+		// Files generated using the Letters system. Requires attachment creation and doc generation rights.
+		if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c') && !empty($attachments['setup_letters'])) {
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
 
-            // Get from DB and generate using the tags.
-            foreach ($attachments['setup_letters'] as $setup_letter) {
-                /// get letter from attachment id distinctly --> note that : in this case, since in dropdown menu, we already show all letter model --> (with its id)
-                /*$query->clear()
-                    ->select('distinct #__emundus_setup_letters.*')
-                    ->from($db->quoteName('#__emundus_setup_letters'))
-                    ->where($db->quoteName('#__emundus_setup_letters.attachment_id') . ' = ' . $setup_letter);**/
+			// Get from DB and generate using the tags.
+			foreach ($attachments['setup_letters'] as $setup_letter) {
+				/// get letter from attachment id distinctly --> note that : in this case, since in dropdown menu, we already show all letter model --> (with its id)
+				/*$query->clear()
+					->select('distinct #__emundus_setup_letters.*')
+					->from($db->quoteName('#__emundus_setup_letters'))
+					->where($db->quoteName('#__emundus_setup_letters.attachment_id') . ' = ' . $setup_letter);**/
 
-                require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-                $m_files = $this->getModel('Files');
+				require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+				$m_files = $this->getModel('Files');
 
-                $aids = $m_files->getSetupAttachmentsById(array($setup_letter));
-                $_letter = reset($aids);
-                $toAttach['letter'][] = $_letter['value'];
-            }
-        }
-
-
-        $files = '';
-        if (!empty($toAttach)) {
-
-            $files .= '<div class="well"><h3>'.JText::_('COM_EMUNDUS_EMAILS_ATTACHMENTS').'</h3>';
-
-            if (!empty($toAttach['upload'])) {
-
-                $files .= '<strong>'.JText::_('COM_EMUNDUS_UPLOAD').'</strong>';
-
-                $files .= '<ul>';
-                foreach ($toAttach['upload'] as $attach) {
-                    $files .= '<li>' . $attach . '</li>';
-                }
-                $files .= '</ul>';
-            }
+				$aids                 = $m_files->getSetupAttachmentsById(array($setup_letter));
+				$_letter              = reset($aids);
+				$toAttach['letter'][] = $_letter['value'];
+			}
+		}
 
 
-            if (!empty($toAttach['candidate_file'])) {
+		$files = '';
+		if (!empty($toAttach)) {
 
-                $files .= '<strong>'.JText::_('COM_EMUNDUS_EMAILS_CANDIDATE_FILE').'</strong>';
+			$files .= '<div class="well"><h3>' . JText::_('COM_EMUNDUS_EMAILS_ATTACHMENTS') . '</h3>';
 
-                $files .= '<ul>';
-                foreach ($toAttach['candidate_file'] as $attach) {
-                    $files .= '<li>' . $attach . '</li>';
-                }
-                $files .= '</ul>';
-            }
+			if (!empty($toAttach['upload'])) {
 
+				$files .= '<strong>' . JText::_('COM_EMUNDUS_UPLOAD') . '</strong>';
 
-            if (!empty($toAttach['letter'])) {
-
-                $files .= '<strong>'.JText::_('COM_EMUNDUS_EMAILS_SETUP_LETTERS_ATTACH').'</strong><ul>';
-                foreach ($toAttach['letter'] as $attach) {
-	                $files .= '<li>'.$attach.'</li>';
-                }
-                $files .= '</ul>';
-            }
-            $files .= '</div>';
-        }
-
-        $html .= $files;
-
-        echo json_encode(['status' => true, 'html' => $html]);
-        exit;
-    }
+				$files .= '<ul>';
+				foreach ($toAttach['upload'] as $attach) {
+					$files .= '<li>' . $attach . '</li>';
+				}
+				$files .= '</ul>';
+			}
 
 
-    /**
-     * Send the email defined in the dialog.
-     *
-     * @since 3.8.6
-     */
-    public function applicantemail() {
+			if (!empty($toAttach['candidate_file'])) {
 
-        if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
+				$files .= '<strong>' . JText::_('COM_EMUNDUS_EMAILS_CANDIDATE_FILE') . '</strong>';
+
+				$files .= '<ul>';
+				foreach ($toAttach['candidate_file'] as $attach) {
+					$files .= '<li>' . $attach . '</li>';
+				}
+				$files .= '</ul>';
+			}
+
+
+			if (!empty($toAttach['letter'])) {
+
+				$files .= '<strong>' . JText::_('COM_EMUNDUS_EMAILS_SETUP_LETTERS_ATTACH') . '</strong><ul>';
+				foreach ($toAttach['letter'] as $attach) {
+					$files .= '<li>' . $attach . '</li>';
+				}
+				$files .= '</ul>';
+			}
+			$files .= '</div>';
+		}
+
+		$html .= $files;
+
+		echo json_encode(['status' => true, 'html' => $html]);
+		exit;
+	}
+
+
+	/**
+	 * Send the email defined in the dialog.
+	 *
+	 * @since 3.8.6
+	 */
+	public function applicantemail()
+	{
+
+		if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
 			die(Text::_("ACCESS_DENIED"));
 		}
-		
-	    $db = Factory::getDbo();
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
-	    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+		$db = Factory::getDbo();
 
-        $m_messages = $this->getModel('Messages');
-        $m_emails = $this->getModel('Emails');
-        $m_users = $this->getModel('Users');
-        $m_files = $this->getModel('Files');
-        $m_campaign = $this->getModel('Campaign');
-        $m_eval = $this->getModel('Evaluation');
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
 
-        $user = $this->app->getIdentity();
-        
+		$m_messages = $this->getModel('Messages');
+		$m_emails   = $this->getModel('Emails');
+		$m_users    = $this->getModel('Users');
+		$m_files    = $this->getModel('Files');
+		$m_campaign = $this->getModel('Campaign');
+		$m_eval     = $this->getModel('Evaluation');
 
-        // Get default mail sender info
-        $mail_from_sys = $this->app->get('mailfrom');
-        $mail_from_sys_name = $this->app->get('fromname');
-
-        $fnums  = explode(',',$this->input->post->get('recipients', null, null));
-
-        // If no mail sender info is provided, we use the system global config.
-        $mail_from_name = $this->input->post->getString('mail_from_name', $mail_from_sys_name);
-        $mail_from = $this->input->post->getString('mail_from', $mail_from_sys);
-        $reply_to_from = $this->input->post->getString('reply_to_from', '');
-
-        $mail_subject = $this->input->post->getString('mail_subject', 'No Subject');
-        $template_id = $this->input->post->getInt('template', null);
-        $mail_message = $this->input->post->get('message', null, 'RAW');
-        $attachments = $this->input->post->get('attachments', null, null);
-        $tags_str = $this->input->post->getString('tags', null, null);
-        $cc = $this->input->post->getString('cc', null, null);
-        $bcc = $this->input->post->getString('bcc', null, null);
-
-        if(!empty($cc) && is_array($cc)) {
-            foreach ($cc as $key => $cc_to_test) {
-                if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $cc_to_test) !== 1) {
-                    unset($cc[$key]);
-                }
-            }
-	        $cc = array_unique($cc);
-        } else {
-            $cc = [];
-        }
+		$user = $this->app->getIdentity();
 
 
-        if(!empty($bcc) && is_array($bcc)) {
-            foreach ($bcc as $key => $bcc_to_test) {
-                if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $bcc_to_test) !== 1) {
-                    unset($bcc[$key]);
-                }
-            }
-	        $bcc = array_unique($bcc);
-        } else {
-            $bcc = [];
-        }
+		// Get default mail sender info
+		$mail_from_sys      = $this->app->get('mailfrom');
+		$mail_from_sys_name = $this->app->get('fromname');
 
-        // Get additional info for the fnums such as the user email.
-        $fnums = $m_files->getFnumsInfos($fnums, 'object');
+		$fnums = explode(',', $this->input->post->get('recipients', null, null));
 
-        // This will be filled with the email adresses of successfully sent emails, used to give feedback to front end.
-        $sent = [];
-        $failed = [];
+		// If no mail sender info is provided, we use the system global config.
+		$mail_from_name = $this->input->post->getString('mail_from_name', $mail_from_sys_name);
+		$mail_from      = $this->input->post->getString('mail_from', $mail_from_sys);
+		$reply_to_from  = $this->input->post->getString('reply_to_from', '');
 
-        // Loading the message template is not used for getting the message text as that can be modified on the frontend by the user before sending.
-        $template = $m_messages->getEmail($template_id);
+		$mail_subject = $this->input->post->getString('mail_subject', 'No Subject');
+		$template_id  = $this->input->post->getInt('template', null);
+		$mail_message = $this->input->post->get('message', null, 'RAW');
+		$attachments  = $this->input->post->get('attachments', null, null);
+		$tags_str     = $this->input->post->getString('tags', null, null);
+		$cc           = $this->input->post->getString('cc', null, null);
+		$bcc          = $this->input->post->getString('bcc', null, null);
 
-        require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
-        $h_emails = new EmundusHelperEmails();
+		if (!empty($cc) && is_array($cc)) {
+			foreach ($cc as $key => $cc_to_test) {
+				if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $cc_to_test) !== 1) {
+					unset($cc[$key]);
+				}
+			}
+			$cc = array_unique($cc);
+		}
+		else {
+			$cc = [];
+		}
 
-        foreach ($fnums as $fnum) {
-            $can_send_mail = $h_emails->assertCanSendMailToUser($fnum->applicant_id, $fnum->fnum);
-            if (!$can_send_mail) {
-                continue;
-            }
 
-            $programme = $m_campaign->getProgrammeByTraining($fnum->training);
+		if (!empty($bcc) && is_array($bcc)) {
+			foreach ($bcc as $key => $bcc_to_test) {
+				if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $bcc_to_test) !== 1) {
+					unset($bcc[$key]);
+				}
+			}
+			$bcc = array_unique($bcc);
+		}
+		else {
+			$bcc = [];
+		}
 
-	        $cc_final = $cc;
-            $emundus_user = $m_users->getUserById($fnum->applicant_id)[0];
-            if(!empty($emundus_user->email_cc)) {
-                if (!in_array($emundus_user->email_cc,$cc_final) && preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
-	                $cc_final[] = $emundus_user->email_cc;
-                }
-            }
+		// Get additional info for the fnums such as the user email.
+		$fnums = $m_files->getFnumsInfos($fnums, 'object');
 
-            $toAttach = [];
-            $post = [
-                'FNUM' => $fnum->fnum,
-                'USER_NAME' => $fnum->name,
-                'COURSE_LABEL' => $programme->label,
-                'CAMPAIGN_LABEL' => $fnum->label,
-                'CAMPAIGN_YEAR' => $fnum->year,
-                'CAMPAIGN_START' => JHTML::_('date', $fnum->start_date, Text::_('DATE_FORMAT_OFFSET1'), null),
-                'CAMPAIGN_END' => JHTML::_('date', $fnum->end_date, Text::_('DATE_FORMAT_OFFSET1'), null),
-                'DEADLINE' => JHTML::_('date', $fnum->end_date, Text::_('DATE_FORMAT_OFFSET1'), null),
-                'SITE_URL' => JURI::base(),
-                'USER_EMAIL' => $fnum->email
-            ];
+		// This will be filled with the email adresses of successfully sent emails, used to give feedback to front end.
+		$sent   = [];
+		$failed = [];
 
-            $tags = $m_emails->setTags($fnum->applicant_id, $post, $fnum->fnum, '', $mail_from.$mail_from_name.$mail_subject.$mail_message);
-            $body = $m_emails->setTagsFabrik($mail_message, [$fnum->fnum]);
-            $subject = $m_emails->setTagsFabrik($mail_subject, [$fnum->fnum]);
+		// Loading the message template is not used for getting the message text as that can be modified on the frontend by the user before sending.
+		$template = $m_messages->getEmail($template_id);
 
-            $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
+		$h_emails = new EmundusHelperEmails();
 
-            if (empty($template) || empty($template->Template)) {
-                $query = $db->getQuery(true);
+		foreach ($fnums as $fnum) {
+			$can_send_mail = $h_emails->assertCanSendMailToUser($fnum->applicant_id, $fnum->fnum);
+			if (!$can_send_mail) {
+				continue;
+			}
 
-                $query->select($db->quoteName('Template'))
-                    ->from($db->quoteName('#__emundus_email_templates'))
-                    ->where($db->quoteName('id').' = 1');
-                $db->setQuery($query);
+			$programme = $m_campaign->getProgrammeByTraining($fnum->training);
 
-                $template->Template = $db->loadResult();
-            }
+			$cc_final     = $cc;
+			$emundus_user = $m_users->getUserById($fnum->applicant_id)[0];
+			if (!empty($emundus_user->email_cc)) {
+				if (!in_array($emundus_user->email_cc, $cc_final) && preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
+					$cc_final[] = $emundus_user->email_cc;
+				}
+			}
 
-            $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
-            $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+			$toAttach = [];
+			$post     = [
+				'FNUM'           => $fnum->fnum,
+				'USER_NAME'      => $fnum->name,
+				'COURSE_LABEL'   => $programme->label,
+				'CAMPAIGN_LABEL' => $fnum->label,
+				'CAMPAIGN_YEAR'  => $fnum->year,
+				'CAMPAIGN_START' => JHTML::_('date', $fnum->start_date, Text::_('DATE_FORMAT_OFFSET1'), null),
+				'CAMPAIGN_END'   => JHTML::_('date', $fnum->end_date, Text::_('DATE_FORMAT_OFFSET1'), null),
+				'DEADLINE'       => JHTML::_('date', $fnum->end_date, Text::_('DATE_FORMAT_OFFSET1'), null),
+				'SITE_URL'       => JURI::base(),
+				'USER_EMAIL'     => $fnum->email
+			];
 
-	        $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
-	        $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
-            $mail_from_address = $mail_from_sys;
+			$tags    = $m_emails->setTags($fnum->applicant_id, $post, $fnum->fnum, '', $mail_from . $mail_from_name . $mail_subject . $mail_message);
+			$body    = $m_emails->setTagsFabrik($mail_message, [$fnum->fnum]);
+			$subject = $m_emails->setTagsFabrik($mail_subject, [$fnum->fnum]);
 
-	        $sender = [
-		        $mail_from_address,
-		        $mail_from_name
-	        ];
+			$subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
 
-            // Configure email sender
-            $mailer = Factory::getMailer();
-            $mailer->setSender($sender);
-			if(!empty($reply_to_from))
-			{
+			if (empty($template) || empty($template->Template)) {
+				$query = $db->getQuery(true);
+
+				$query->select($db->quoteName('Template'))
+					->from($db->quoteName('#__emundus_email_templates'))
+					->where($db->quoteName('id') . ' = 1');
+				$db->setQuery($query);
+
+				$template->Template = $db->loadResult();
+			}
+
+			$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+			$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+
+			$mail_from         = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
+			$mail_from_name    = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
+			$mail_from_address = $mail_from_sys;
+
+			$sender = [
+				$mail_from_address,
+				$mail_from_name
+			];
+
+			// Configure email sender
+			$mailer = Factory::getMailer();
+			$mailer->setSender($sender);
+			if (!empty($reply_to_from)) {
 				$mailer->addReplyTo($reply_to_from);
 			}
-            $mailer->addRecipient($fnum->email);
-            $mailer->setSubject($subject);
-            $mailer->isHTML(true);
-            $mailer->Encoding = 'base64';
-            $mailer->setBody($body);
+			$mailer->addRecipient($fnum->email);
+			$mailer->setSubject($subject);
+			$mailer->isHTML(true);
+			$mailer->Encoding = 'base64';
+			$mailer->setBody($body);
 
-            if (!empty($cc_final)) {
-                $mailer->addCc($cc_final);
-            }
+			if (!empty($cc_final)) {
+				$mailer->addCc($cc_final);
+			}
 
-            if (!empty($bcc)) {
-                $mailer->addBcc($bcc);
-            }
-			
-            // Files uploaded from the frontend.
-            if (!empty($attachments['upload'])) {
-                // In the case of an uploaded file, just add it to the email.
-                foreach ($attachments['upload'] as $upload) {
-                    if (file_exists(JPATH_SITE.DS.$upload)) {
-                        $toAttach[] = JPATH_SITE.DS.$upload;
-                    }
-                }
-            }
+			if (!empty($bcc)) {
+				$mailer->addBcc($bcc);
+			}
 
-            // Files generated using the Letters system. Requires attachment creation and doc generation rights.
-            if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c') && !empty($attachments['setup_letters'])) {
-                foreach ($attachments['setup_letters'] as $setup_letter) {
-                    $_letter = $m_eval->getLetterTemplateForFnum($fnum->fnum, [$setup_letter]);
+			// Files uploaded from the frontend.
+			if (!empty($attachments['upload'])) {
+				// In the case of an uploaded file, just add it to the email.
+				foreach ($attachments['upload'] as $upload) {
+					if (file_exists(JPATH_SITE . DS . $upload)) {
+						$toAttach[] = JPATH_SITE . DS . $upload;
+					}
+				}
+			}
 
-                    if(!empty($_letter)) {
-                        $res = $m_eval->generateLetters($fnum->fnum, [$setup_letter], 0, 0, 0);
+			// Files generated using the Letters system. Requires attachment creation and doc generation rights.
+			if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c') && !empty($attachments['setup_letters'])) {
+				foreach ($attachments['setup_letters'] as $setup_letter) {
+					$_letter = $m_eval->getLetterTemplateForFnum($fnum->fnum, [$setup_letter]);
 
-                        $folder_id = current($m_files->getFnumsInfos(array($fnum->fnum)))['applicant_id'];
+					if (!empty($_letter)) {
+						$res = $m_eval->generateLetters($fnum->fnum, [$setup_letter], 0, 0, 0);
 
-                        foreach ($res->files as $f) {
-                            $path = EMUNDUS_PATH_ABS . $folder_id . DS . $f['filename'];
-                            $toAttach[] = $path;
-                            break;
-                        }
-                    }
-                }
-            }
+						$folder_id = current($m_files->getFnumsInfos(array($fnum->fnum)))['applicant_id'];
 
-            // Files gotten from candidate files, requires attachment read rights.
-            if (EmundusHelperAccess::asAccessAction(4, 'r') && !empty($attachments['candidate_file'])) {
+						foreach ($res->files as $f) {
+							$path       = EMUNDUS_PATH_ABS . $folder_id . DS . $f['filename'];
+							$toAttach[] = $path;
+							break;
+						}
+					}
+				}
+			}
 
-                // Get from DB by fnum.
-                foreach ($attachments['candidate_file'] as $candidate_file) {
+			// Files gotten from candidate files, requires attachment read rights.
+			if (EmundusHelperAccess::asAccessAction(4, 'r') && !empty($attachments['candidate_file'])) {
+				// Get from DB by fnum.
+				foreach ($attachments['candidate_file'] as $candidate_file) {
 
-                    $filename = $m_messages->get_upload($fnum->fnum, $candidate_file);
+					$filename = $m_messages->get_upload($fnum->fnum, $candidate_file);
 
-                    if ($filename != false) {
+					if ($filename != false) {
+						// Build the path to the file we are searching for on the disk.
+						$path = EMUNDUS_PATH_ABS . $fnum->applicant_id . DS . $filename;
 
-                        // Build the path to the file we are searching for on the disk.
-                        $path = EMUNDUS_PATH_ABS.$fnum->applicant_id.DS.$filename;
+						if (file_exists($path)) {
+							$toAttach[] = $path;
+						}
+					}
+				}
+			}
 
-                        if (file_exists($path)) {
-                            $toAttach[] = $path;
-                        }
-                    }
-                }
-            }
+			$files = '';
 
-            $files = '';
+			if (!empty($toAttach)) {
+				$files = '<ul>';
+				if (!empty($attachments['upload'])) {
+					foreach ($attachments['upload'] as $attach) {
+						$filesName = basename($attach);
+						$files     .= '<li>' . $filesName . '</li>';
+					}
+				}
 
-            if (!empty($toAttach)) {
+				if (!empty($attachments['candidate_file'])) {
+					foreach ($attachments['candidate_file'] as $attach) {
+						$raw      = $m_eval->getAttachmentByIds([$attach]);
+						$nameType = current($raw)['value'];
 
-                $files = '<ul>';
-                if(!empty($attachments['upload'])) {
-                    foreach ($attachments['upload'] as $attach) {
-                        $filesName = basename($attach);
-                        $files .= '<li>' . $filesName . '</li>';
-                    }
-                }
+						$files .= '<li>' . $nameType . '</li>';
+					}
+				}
+				if (!empty($attachments['setup_letters'])) {
+					foreach ($attachments['setup_letters'] as $attach) {
+						$raw      = $m_eval->getAttachmentByIds([$attach]);
+						$nameType = current($raw)['value'];
 
-                if(!empty($attachments['candidate_file'])) {
-                    foreach ($attachments['candidate_file'] as $attach) {
-                        $raw = $m_eval->getAttachmentByIds([$attach]);
-                        $nameType = current($raw)['value'];
+						$files .= '<li>' . $nameType . '</li>';
+					}
+				}
+			}
 
-                        $files .= '<li>' . $nameType . '</li>';
-                    }
-                }
-                if(!empty($attachments['setup_letters'])) {
-                    foreach ($attachments['setup_letters'] as $attach) {
-                        $raw = $m_eval->getAttachmentByIds([$attach]);
-                        $nameType = current($raw)['value'];
+			$files .= '</ul>';
 
-                        $files .= '<li>' . $nameType . '</li>';
-                    }
-                }
-            }
+			$mailer->addAttachment(array_unique($toAttach));
 
-            $files .= '</ul>';
+			$custom_email_tag = EmundusHelperEmails::getCustomHeader();
+			if (!empty($custom_email_tag)) {
+				$mailer->addCustomHeader($custom_email_tag);
+			}
 
-            $mailer->addAttachment(array_unique($toAttach));
+			// Send and log the email.
+			$send = $mailer->Send();
+			if ($send !== true) {
+				$failed[] = $fnum->email;
+				echo 'Error sending email: ' . $send->__toString();
+				JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+			}
+			else {
+				// Assoc tags if email has been sent
+				if ($tags_str != null || !empty($template->tags)) {
+					$query = $db->getQuery(true);
 
-	        $custom_email_tag = EmundusHelperEmails::getCustomHeader();
-	        if(!empty($custom_email_tag))
-	        {
-		        $mailer->addCustomHeader($custom_email_tag);
-	        }
+					$tags = array_filter(array_merge(explode(',', $tags_str), explode(',', $template->tags)));
 
-            // Send and log the email.
-            $send = $mailer->Send();
+					foreach ($tags as $tag) {
+						try {
+							$query->clear()
+								->insert($db->quoteName('#__emundus_tag_assoc'))
+								->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum->fnum))
+								->set($db->quoteName('id_tag') . ' = ' . $db->quote($tag))
+								->set($db->quoteName('user_id') . ' = ' . $db->quote($fnum->applicant_id));
 
-            if ($send !== true) {
-                $failed[] = $fnum->email;
-                echo 'Error sending email: ' . $send->__toString();
-                JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
-            } else {
-                // Assoc tags if email has been sent
-                if($tags_str != null || !empty($template->tags)){
-                    $query = $db->getQuery(true);
+							$db->setQuery($query);
+							$db->execute();
+						}
+						catch (Exception $e) {
+							JLog::add('NOT IMPORTANT IF DUPLICATE ENTRY : Error getting template in model/messages at query :' . $query->__toString() . " with " . $e->getMessage(), JLog::ERROR, 'com_emundus');
+						}
+					}
+				}
 
-                    $tags = array_filter(array_merge(explode(',',$tags_str),explode(',',$template->tags)));
+				// Log email
+				$sent[] = $fnum->email;
+				$log    = [
+					'user_id_from' => $user->id,
+					'user_id_to'   => $fnum->applicant_id,
+					'subject'      => $subject,
+					'message'      => '<i>' . Text::_('MESSAGE') . ' ' . Text::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . Text::_('COM_EMUNDUS_TO') . ' ' . $fnum->email . '</i><br>' . $body . $files,
+					'type'         => (empty($template->type)) ? '' : $template->type,
+					'email_id'     => $template_id
+				];
+				if (!empty($cc_final)) {
+					$log['email_cc'] = implode(', ', $cc_final);
+				}
+				$m_emails->logEmail($log, $fnum->fnum);
+			}
 
-                    foreach($tags as $tag){
-                        try{
-                            $query->clear()
-                                ->insert($db->quoteName('#__emundus_tag_assoc'))
-	                            ->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum->fnum))
-                                ->set($db->quoteName('id_tag') . ' = ' . $db->quote($tag))
-                                ->set($db->quoteName('user_id') . ' = ' . $db->quote($fnum->applicant_id));
+			// Due to mailtrap now limiting emails sent to fast, we add a long sleep.
+			if ($this->app->get('smtphost') === 'smtp.mailtrap.io') {
+				sleep(15);
+			}
+		}
 
-                            $db->setQuery($query);
-                            $db->execute();
-                        }  catch (Exception $e) {
-                            JLog::add('NOT IMPORTANT IF DUPLICATE ENTRY : Error getting template in model/messages at query :'.$query->__toString(). " with " . $e->getMessage(), JLog::ERROR, 'com_emundus');
-                        }
-                    }
-                }
-
-                // Log email
-                $sent[] = $fnum->email;
-                $log = [
-                    'user_id_from' => $user->id,
-                    'user_id_to' => $fnum->applicant_id,
-                    'subject' => $subject,
-                    'message' => '<i>' . Text::_('MESSAGE') . ' ' . Text::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . Text::_('COM_EMUNDUS_TO') . ' ' . $fnum->email . '</i><br>' . $body . $files,
-                    'type' => (empty($template->type))?'':$template->type,
-	                'email_id' => $template_id
-                ];
-                if (!empty($cc_final)) {
-                    $log['email_cc'] = implode(', ',$cc_final);
-                }
-                $m_emails->logEmail($log, $fnum->fnum);
-            }
-
-            // Due to mailtrap now limiting emails sent to fast, we add a long sleep.
-            if ($this->app->get('smtphost') === 'smtp.mailtrap.io') {
-            	sleep(15);
-            }
-
-        }
-        echo json_encode(['status' => true, 'sent' => $sent, 'failed' => $failed]);
-        exit;
-    }
+		echo json_encode(['status' => true, 'sent' => $sent, 'failed' => $failed]);
+		exit;
+	}
 
 
 	/**
@@ -827,60 +836,62 @@ class EmundusControllerMessages extends JControllerLegacy {
 	 *
 	 * @since 3.8.10
 	 */
-	public function useremail() {
+	public function useremail()
+	{
 
 
 		if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
 			die(JText::_("ACCESS_DENIED"));
 		}
 
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
 
 		$m_messages = $this->getModel('Messages');
-		$m_emails = $this->getModel('Emails');
-		$m_users = $this->getModel('Users');
+		$m_emails   = $this->getModel('Emails');
+		$m_users    = $this->getModel('Users');
 
 		$current_user = JFactory::getUser();
-		$config = JFactory::getConfig();
-		
+		$config       = JFactory::getConfig();
+
 
 		// Get default mail sender info
-		$mail_from_sys = $config->get('mailfrom');
+		$mail_from_sys      = $config->get('mailfrom');
 		$mail_from_sys_name = $config->get('fromname');
 
-		$uids  = explode(',', $this->input->post->get('recipients', null, null));
-		$bcc = $this->input->post->getString('Bcc', false);
+		$uids = explode(',', $this->input->post->get('recipients', null, null));
+		$bcc  = $this->input->post->getString('Bcc', false);
 
 		// If no mail sender info is provided, we use the system global config.
 		$mail_from_name = $this->input->post->getString('mail_from_name', $mail_from_sys_name);
-		$mail_from = $this->input->post->getString('mail_from', $mail_from_sys);
+		$mail_from      = $this->input->post->getString('mail_from', $mail_from_sys);
 
 		$mail_subject = $this->input->post->getString('mail_subject', 'No Subject');
-		$template_id = $this->input->post->getInt('template', null);
+		$template_id  = $this->input->post->getInt('template', null);
 		$mail_message = $this->input->post->get('message', null, 'RAW');
-		$attachments = $this->input->post->get('attachments', null, null);
+		$attachments  = $this->input->post->get('attachments', null, null);
 
 		// Get additional info for the fnums such as the user email.
 		$users = $m_users->getUsersByIds($uids);
+
 		// This will be filled with the email adresses of successfully sent emails, used to give feedback to front end.
-		$sent = [];
+		$sent   = [];
 		$failed = [];
 
-		if(!empty($template_id))
-		{
+		if (!empty($template_id)) {
 			// Loading the message template is not used for getting the message text as that can be modified on the frontend by the user before sending.
 			$template = $m_messages->getEmail($template_id);
-		} else {
-			$db = JFactory::getDbo();
+		}
+		else {
+			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
 			$query->clear()
 				->select($db->quoteName('Template'))
 				->from($db->quoteName('#__emundus_email_templates'))
-				->where($db->quoteName('id').' = 1');
+				->where($db->quoteName('id') . ' = 1');
 			$db->setQuery($query);
 			$template = $db->loadObject();
 		}
@@ -895,23 +906,23 @@ class EmundusControllerMessages extends JControllerLegacy {
 			}
 
 			$toAttach = [];
-			$post = [
-				'USER_NAME' => $user->name,
-				'SITE_URL' => JURI::base(),
+			$post     = [
+				'USER_NAME'  => $user->name,
+				'SITE_URL'   => JURI::base(),
 				'USER_EMAIL' => $user->email
 			];
 
-			$tags = $m_emails->setTags($user->id, $post, null, '', $mail_from.$mail_from_name.$mail_subject.$mail_message);
+			$tags = $m_emails->setTags($user->id, $post, null, '', $mail_from . $mail_from_name . $mail_subject . $mail_message);
 
 			// Tags are replaced with their corresponding values using the PHP preg_replace function.
 			$subject = preg_replace($tags['patterns'], $tags['replacements'], $mail_subject);
-			$body = $mail_message;
+			$body    = $mail_message;
 			if (!empty($template->Template)) {
 				$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
 			}
 			$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
-			$mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
+			$mail_from      = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
 			$mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
 
 			// If the email sender has the same domain as the system sender address.
@@ -948,9 +959,9 @@ class EmundusControllerMessages extends JControllerLegacy {
 				// Here we also build the HTML being logged to show which files were attached to the email.
 				$files = '<ul>';
 				foreach ($attachments as $upload) {
-					if (file_exists(JPATH_SITE.DS.$upload)) {
-						$toAttach[] = JPATH_SITE.DS.$upload;
-						$files .= '<li>'.basename($upload).'</li>';
+					if (file_exists(JPATH_SITE . DS . $upload)) {
+						$toAttach[] = JPATH_SITE . DS . $upload;
+						$files      .= '<li>' . basename($upload) . '</li>';
 					}
 				}
 				$files .= '</ul>';
@@ -960,8 +971,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 			$mailer->addAttachment($toAttach);
 
 			$custom_email_tag = EmundusHelperEmails::getCustomHeader();
-			if(!empty($custom_email_tag))
-			{
+			if (!empty($custom_email_tag)) {
 				$mailer->addCustomHeader($custom_email_tag);
 			}
 
@@ -972,14 +982,15 @@ class EmundusControllerMessages extends JControllerLegacy {
 				$failed[] = $user->email;
 				echo 'Error sending email: ' . $send->__toString();
 				JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
-			} else {
+			}
+			else {
 				$sent[] = $user->email;
-				$log = [
+				$log    = [
 					'user_id_from' => $current_user->id,
-					'user_id_to' => $user->id,
-					'subject' => $subject,
-					'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $user->email . '</i><br>' . $body . $files,
-					'type' => !empty($template->type)?$template->type:''
+					'user_id_to'   => $user->id,
+					'subject'      => $subject,
+					'message'      => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $user->email . '</i><br>' . $body . $files,
+					'type'         => !empty($template->type) ? $template->type : ''
 				];
 				$m_emails->logEmail($log);
 				// Log the email in the eMundus logging system.
@@ -994,291 +1005,299 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 	/** The generic function used for sending emails.
 	 *
-	 * @param       $fnum
-	 * @param       $email_id
-	 * @param null  $post
-	 * @param array $attachments
-	 * @param bool  $bcc
+	 * @param          $fnum
+	 * @param          $email_id
+	 * @param   null   $post
+	 * @param   array  $attachments
+	 * @param   bool   $bcc
 	 *
 	 * @return bool
 	 * @throws \PhpOffice\PhpWord\Exception\CopyFileException
 	 * @throws \PhpOffice\PhpWord\Exception\CreateTemporaryFileException
 	 * @throws \PhpOffice\PhpWord\Exception\Exception
 	 */
-    function sendEmail($fnum, $email_id, $post = null, $attachments = [], $bcc = false, $sender_id = null) {
-        if (empty($fnum) || empty($email_id)) {
-            return false;
-        }
+	function sendEmail($fnum, $email_id, $post = null, $attachments = [], $bcc = false, $sender_id = null)
+	{
+		if (empty($fnum) || empty($email_id)) {
+			return false;
+		}
 
-        require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'emails.php');
-        $h_emails   = new EmundusHelperEmails();
+		require_once(JPATH_ROOT . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
+		$h_emails = new EmundusHelperEmails();
 
-        $can_send_mail = $h_emails->assertCanSendMailToUser(null, $fnum);
-        if (!$can_send_mail) {
-            return false;
-        }
+		$can_send_mail = $h_emails->assertCanSendMailToUser(null, $fnum);
+		if (!$can_send_mail) {
+			return false;
+		}
 
-        require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-	    require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-        require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
-	    require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-	    require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+		require_once(JPATH_ROOT . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+		require_once(JPATH_ROOT . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
+		require_once(JPATH_ROOT . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
+		require_once(JPATH_ROOT . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
+		require_once(JPATH_ROOT . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
 
-        $m_messages = $this->getModel('Messages');
-	    $m_emails   = $this->getModel('Emails');
-        $m_files    = $this->getModel('Files');
-	    $m_campaign = $this->getModel('Campaign');
-	    $m_users = $this->getModel('Users');
+		$m_messages = $this->getModel('Messages');
+		$m_emails   = $this->getModel('Emails');
+		$m_files    = $this->getModel('Files');
+		$m_campaign = $this->getModel('Campaign');
+		$m_users    = $this->getModel('Users');
 
-	    $user   = JFactory::getUser();
-	    $config = JFactory::getConfig();
+		$user   = JFactory::getUser();
+		$config = JFactory::getConfig();
 
-	    // Get additional info for the fnums such as the user email.
-	    $fnum = $m_files->getFnumInfos($fnum);
-	    $template = $m_messages->getEmail($email_id);
-	    $programme = $m_campaign->getProgrammeByTraining($fnum['training']);
+		// Get additional info for the fnums such as the user email.
+		$fnum      = $m_files->getFnumInfos($fnum);
+		$template  = $m_messages->getEmail($email_id);
+		$programme = $m_campaign->getProgrammeByTraining($fnum['training']);
 
-	    // In case no post value is supplied
-	    $post['FNUM'] = !isset($post['FNUM']) ? $fnum['fnum'] : $post['FNUM'];
-	    $post['USER_NAME'] = !isset($post['USER_NAME']) ? $fnum['name'] : $post['USER_NAME'];
-	    $post['COURSE_LABEL'] = !isset($post['COURSE_LABEL']) ? $programme->label : $post['COURSE_LABEL'];
-	    $post['CAMPAIGN_LABEL'] = !isset($post['CAMPAIGN_LABEL']) ? $fnum['label'] : $post['CAMPAIGN_LABEL'];
-	    $post['SITE_URL'] = !isset($post['SITE_URL']) ? JURI::base() : $post['SITE_URL'];
-	    $post['USER_EMAIL'] = !isset($post['USER_EMAIL']) ? $fnum['email'] : $post['USER_EMAIL'];
-	    $tags = $m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum'], '', $template->emailfrom.$template->name.$template->subject.$template->message);
+		// In case no post value is supplied
+		$post['FNUM']           = !isset($post['FNUM']) ? $fnum['fnum'] : $post['FNUM'];
+		$post['USER_NAME']      = !isset($post['USER_NAME']) ? $fnum['name'] : $post['USER_NAME'];
+		$post['COURSE_LABEL']   = !isset($post['COURSE_LABEL']) ? $programme->label : $post['COURSE_LABEL'];
+		$post['CAMPAIGN_LABEL'] = !isset($post['CAMPAIGN_LABEL']) ? $fnum['label'] : $post['CAMPAIGN_LABEL'];
+		$post['SITE_URL']       = !isset($post['SITE_URL']) ? JURI::base() : $post['SITE_URL'];
+		$post['USER_EMAIL']     = !isset($post['USER_EMAIL']) ? $fnum['email'] : $post['USER_EMAIL'];
+		$tags                   = $m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum'], '', $template->emailfrom . $template->name . $template->subject . $template->message);
 
-	    // Get default mail sender info
-	    $mail_from_sys = $config->get('mailfrom');
-	    $mail_from_sys_name = $config->get('fromname');
+		// Get default mail sender info
+		$mail_from_sys      = $config->get('mailfrom');
+		$mail_from_sys_name = $config->get('fromname');
 
-	    // If no mail sender info is provided, we use the system global config.
-        if(!empty($template->emailfrom)) {
-            $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $template->emailfrom);
-        } else {
-            $mail_from = $mail_from_sys;
-        }
-        if(!empty($template->name)){
-            $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $template->name);
-        } else {
-            $mail_from_name = $mail_from_sys_name;
-        }
+		// If no mail sender info is provided, we use the system global config.
+		if (!empty($template->emailfrom)) {
+			$mail_from = preg_replace($tags['patterns'], $tags['replacements'], $template->emailfrom);
+		}
+		else {
+			$mail_from = $mail_from_sys;
+		}
+		if (!empty($template->name)) {
+			$mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $template->name);
+		}
+		else {
+			$mail_from_name = $mail_from_sys_name;
+		}
 
-        /* DEPRECATED */
-	    // If the email sender has the same domain as the system sender address
-	    /*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
-		    $mail_from_address = $mail_from;
-	    } else {
-            $mail_from_address = $mail_from_sys;
-	    }*/
-        $mail_from_address = $mail_from_sys;
+		/* DEPRECATED */
+		// If the email sender has the same domain as the system sender address
+		/*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
+			$mail_from_address = $mail_from;
+		} else {
+			$mail_from_address = $mail_from_sys;
+		}*/
+		$mail_from_address = $mail_from_sys;
 
-	    // Set sender
-	    $sender = [
-		    $mail_from_address,
-		    $mail_from_name
-	    ];
+		// Set sender
+		$sender = [
+			$mail_from_address,
+			$mail_from_name
+		];
 
-	    if (!empty($attachments) && is_array($attachments)) {
-	        $toAttach = $attachments;
-	    } else {
-		    $toAttach[] = $attachments;
-	    }
+		if (!empty($attachments) && is_array($attachments)) {
+			$toAttach = $attachments;
+		}
+		else {
+			$toAttach[] = $attachments;
+		}
 
-	    $message = $m_emails->setTagsFabrik($template->message, [$fnum['fnum']]);
-	    $subject = $m_emails->setTagsFabrik($template->subject, [$fnum['fnum']]);
+		$message = $m_emails->setTagsFabrik($template->message, [$fnum['fnum']]);
+		$subject = $m_emails->setTagsFabrik($template->subject, [$fnum['fnum']]);
 
-	    // Tags are replaced with their corresponding values using the PHP preg_replace function.
-	    $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
+		// Tags are replaced with their corresponding values using the PHP preg_replace function.
+		$subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
 
-        $body = $message;
-        $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
-        $body_raw = strip_tags($body);
+		$body     = $message;
+		$body     = preg_replace($tags['patterns'], $tags['replacements'], $body);
+		$body_raw = strip_tags($body);
 
-        if ($template) {
-            $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
-            $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
-        }
+		if ($template) {
+			$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+			$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+		}
 
-        // Check if user defined a cc address
-        $cc = [];
-        $emundus_user = $m_users->getUserById($fnum['applicant_id'])[0];
-        if(isset($emundus_user->email_cc) && !empty($emundus_user->email_cc)) {
-            if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
-                $cc[] = $emundus_user->email_cc;
-            }
-        }
+		// Check if user defined a cc address
+		$cc           = [];
+		$emundus_user = $m_users->getUserById($fnum['applicant_id'])[0];
+		if (isset($emundus_user->email_cc) && !empty($emundus_user->email_cc)) {
+			if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
+				$cc[] = $emundus_user->email_cc;
+			}
+		}
 
-	    // Configure email sender
-	    $mailer = JFactory::getMailer();
-        if (!empty($cc)) {
-            $mailer->addCc($cc);
-        }
-	    if ($bcc) {
-		    $mailer->addBCC($user->email);
-	    }
-	    $mailer->setSender($sender);
-	    $mailer->addReplyTo($mail_from, $mail_from_name);
-	    $mailer->addRecipient($fnum['email']);
-	    $mailer->setSubject($subject);
-	    $mailer->isHTML(true);
-	    $mailer->Encoding = 'base64';
-	    $mailer->setBody($body);
-        $mailer->AltBody = $body_raw;
-
-
-        // Get any candidate files included in the message.
-        if (!empty($template->candidate_file)) {
-            foreach ($template->candidate_file as $candidate_file) {
-
-                $filename = $m_messages->get_upload($fnum['fnum'], $candidate_file);
-
-                if ($filename) {
-
-                    // Build the path to the file we are searching for on the disk.
-                    $path = EMUNDUS_PATH_ABS.$fnum['applicant_id'].DS.$filename;
-
-                    if (file_exists($path)) {
-                        $toAttach[] = $path;
-                    }
-                }
-            }
-        }
+		// Configure email sender
+		$mailer = JFactory::getMailer();
+		if (!empty($cc)) {
+			$mailer->addCc($cc);
+		}
+		if ($bcc) {
+			$mailer->addBCC($user->email);
+		}
+		$mailer->setSender($sender);
+		$mailer->addReplyTo($mail_from, $mail_from_name);
+		$mailer->addRecipient($fnum['email']);
+		$mailer->setSubject($subject);
+		$mailer->isHTML(true);
+		$mailer->Encoding = 'base64';
+		$mailer->setBody($body);
+		$mailer->AltBody = $body_raw;
 
 
-	    // Files generated using the Letters system. Requires attachment creation and doc generation rights.
-        // Get from DB and generate using the tags.
-        if (!empty($template->setup_letters)) {
-            foreach ($template->setup_letters as $setup_letter) {
+		// Get any candidate files included in the message.
+		if (!empty($template->candidate_file)) {
+			foreach ($template->candidate_file as $candidate_file) {
 
-                $letter = $m_messages->get_letter($setup_letter);
+				$filename = $m_messages->get_upload($fnum['fnum'], $candidate_file);
 
-                // We only get the letters if they are for that particular programme.
-                if ($letter && in_array($fnum['training'], explode('","', $letter->training))) {
+				if ($filename) {
 
-                    // Some letters are only for files of a certain status, this is where we check for that.
-                    if ($letter->status != null && !in_array($fnum['step'], explode(',', $letter->status))) {
-	                    continue;
-                    }
+					// Build the path to the file we are searching for on the disk.
+					$path = EMUNDUS_PATH_ABS . $fnum['applicant_id'] . DS . $filename;
 
-                    // A different file is to be generated depending on the template type.
-                    switch ($letter->template_type) {
+					if (file_exists($path)) {
+						$toAttach[] = $path;
+					}
+				}
+			}
+		}
 
-                        case '1':
-                            // This is a static file, we just need to find its path add it as an attachment.
-                            if (file_exists(JPATH_SITE.$letter->file)) {
-                                $toAttach[] = JPATH_SITE.$letter->file;
-                            }
-                            break;
 
-                        case '2':
-                            // This is a PDF to be generated from HTML.
-                            require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
+		// Files generated using the Letters system. Requires attachment creation and doc generation rights.
+		// Get from DB and generate using the tags.
+		if (!empty($template->setup_letters)) {
+			foreach ($template->setup_letters as $setup_letter) {
 
-                            $path = generateLetterFromHtml($letter, $fnum['fnum'], $fnum['applicant_id'], $fnum['training']);
+				$letter = $m_messages->get_letter($setup_letter);
 
-                            if ($path && file_exists($path)) {
-	                            $toAttach[] = $path;
-                            }
-                            break;
+				// We only get the letters if they are for that particular programme.
+				if ($letter && in_array($fnum['training'], explode('","', $letter->training))) {
 
-                        case '3':
-                            // This is a DOC template to be completed with applicant information.
-                            $path = $m_messages->generateLetterDoc($letter, $fnum['fnum']);
+					// Some letters are only for files of a certain status, this is where we check for that.
+					if ($letter->status != null && !in_array($fnum['step'], explode(',', $letter->status))) {
+						continue;
+					}
 
-                            if ($path && file_exists($path)) {
-	                            $toAttach[] = $path;
-                            }
-                            break;
+					// A different file is to be generated depending on the template type.
+					switch ($letter->template_type) {
 
-	                    default:
-                        break;
+						case '1':
+							// This is a static file, we just need to find its path add it as an attachment.
+							if (file_exists(JPATH_SITE . $letter->file)) {
+								$toAttach[] = JPATH_SITE . $letter->file;
+							}
+							break;
 
-                    }
-                }
-            }
-        }
+						case '2':
+							// This is a PDF to be generated from HTML.
+							require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'pdf.php');
 
-        if (!empty($toAttach)) {
-	        $mailer->addAttachment($toAttach);
-        }
+							$path = generateLetterFromHtml($letter, $fnum['fnum'], $fnum['applicant_id'], $fnum['training']);
 
-	    $custom_email_tag = EmundusHelperEmails::getCustomHeader();
-	    if(!empty($custom_email_tag))
-	    {
-		    $mailer->addCustomHeader($custom_email_tag);
-	    }
+							if ($path && file_exists($path)) {
+								$toAttach[] = $path;
+							}
+							break;
 
-	    // Send and log the email.
-        $send = $mailer->Send();
+						case '3':
+							// This is a DOC template to be completed with applicant information.
+							$path = $m_messages->generateLetterDoc($letter, $fnum['fnum']);
 
-	    if ($send !== true) {
-		    JLog::add($send, JLog::WARNING, 'com_emundus.email');
-		    return false;
-	    } else {
-            // in cron task, the current user is the last logged user, so we use a sender_id given in parameter, or the current user id, or the default user_id if none is found.
-            if (!empty($sender_id)) {
-                $user_id = $sender_id;
-            } else if (!empty($user)) {
-                $user_id = $user->id;
-            } else {
-                $user_id = 62;
-            }
-		    $log = [
-			    'user_id_from'  => $user_id,
-			    'user_id_to'    => $fnum['applicant_id'],
-			    'subject'       => $subject,
-			    'message'       => '<i>'.JText::_('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO').' '.$fnum['email'].'</i><br>'.$body,
-			    'type'          => $template->type,
-			    'email_id'      => $email_id,
-		    ];
-		    $m_emails->logEmail($log,$fnum['fnum']);
+							if ($path && file_exists($path)) {
+								$toAttach[] = $path;
+							}
+							break;
 
-		    return true;
-	    }
-    }
+						default:
+							break;
+
+					}
+				}
+			}
+		}
+
+		if (!empty($toAttach)) {
+			$mailer->addAttachment($toAttach);
+		}
+
+		$custom_email_tag = EmundusHelperEmails::getCustomHeader();
+		if (!empty($custom_email_tag)) {
+			$mailer->addCustomHeader($custom_email_tag);
+		}
+
+		// Send and log the email.
+		$send = $mailer->Send();
+
+		if ($send !== true) {
+			JLog::add($send, JLog::WARNING, 'com_emundus.email');
+
+			return false;
+		}
+		else {
+			// in cron task, the current user is the last logged user, so we use a sender_id given in parameter, or the current user id, or the default user_id if none is found.
+			if (!empty($sender_id)) {
+				$user_id = $sender_id;
+			}
+			else if (!empty($user)) {
+				$user_id = $user->id;
+			}
+			else {
+				$user_id = 62;
+			}
+			$log = [
+				'user_id_from' => $user_id,
+				'user_id_to'   => $fnum['applicant_id'],
+				'subject'      => $subject,
+				'message'      => '<i>' . JText::_('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO') . ' ' . $fnum['email'] . '</i><br>' . $body,
+				'type'         => $template->type,
+				'email_id'     => $email_id,
+			];
+			$m_emails->logEmail($log, $fnum['fnum']);
+
+			return true;
+		}
+	}
 
 	/** The generic function used for sending emails outside of emundus.
 	 *
-	 * @param String $email_address
-	 * @param Mixed $email If a numeric ID is provided, use that, if a string is provided, get the email with that label.
-	 * @param null $post
-	 * @param null $user_id
-	 * @param array $attachments
-     * @param array $fnum If we need to replace fabrik tags
+	 * @param   String  $email_address
+	 * @param   Mixed   $email  If a numeric ID is provided, use that, if a string is provided, get the email with that label.
+	 * @param   null    $post
+	 * @param   null    $user_id
+	 * @param   array   $attachments
+	 * @param   array   $fnum   If we need to replace fabrik tags
 	 *
 	 * @return bool
 	 */
-	function sendEmailNoFnum($email_address, $email, $post = null, $user_id = null, $attachments = [], $fnum = null, $log_email = true) {
+	function sendEmailNoFnum($email_address, $email, $post = null, $user_id = null, $attachments = [], $fnum = null, $log_email = true)
+	{
 
-        include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
-        include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
+		include_once(JPATH_SITE . '/components/com_emundus/models/emails.php');
+		include_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 
-        $m_email = $this->getModel('Emails');
+		$m_email    = $this->getModel('Emails');
 		$m_messages = $this->getModel('Messages');
-        $m_users = $this->getModel('Users');
+		$m_users    = $this->getModel('Users');
 
 		$config = JFactory::getConfig();
 
 		$template = $m_messages->getEmail($email);
-		$body = $template->message;
-		$subject = $template->subject;
+		$body     = $template->message;
+		$subject  = $template->subject;
 
 		// Get default mail sender info
-		$mail_from_sys = $config->get('mailfrom');
+		$mail_from_sys      = $config->get('mailfrom');
 		$mail_from_sys_name = $config->get('fromname');
 
 		// If no mail sender info is provided, we use the system global config.
-        $mail_from = $mail_from_sys;
-        if(!empty($template->emailfrom)){
-            $mail_from = $template->emailfrom;
-        }
-        $mail_from_name = $mail_from_sys_name;
-        if(!empty($template->name)){
-            $mail_from_name = $template->name;
-        }
-        $mail_from_address = $mail_from_sys;
+		$mail_from = $mail_from_sys;
+		if (!empty($template->emailfrom)) {
+			$mail_from = $template->emailfrom;
+		}
+		$mail_from_name = $mail_from_sys_name;
+		if (!empty($template->name)) {
+			$mail_from_name = $template->name;
+		}
+		$mail_from_address = $mail_from_sys;
 
-        $toAttach = array();
+		$toAttach = array();
 		if (!empty($attachments) && is_array($attachments)) {
 			$toAttach = $attachments;
 		}
@@ -1286,56 +1305,55 @@ class EmundusControllerMessages extends JControllerLegacy {
 		// In case no post value is supplied
 		if (empty($post)) {
 			$post = [
-				'SITE_URL'      => JURI::base(),
-				'USER_EMAIL'    => $email_address
+				'SITE_URL'   => JURI::base(),
+				'USER_EMAIL' => $email_address
 			];
 		}
 
-        $cc = [];
+		$cc   = [];
 		$keys = [];
 
-        if($user_id != null)
-		{
-	        $emundus_user = $m_users->getUserById($user_id)[0];
-	        if(isset($emundus_user->email_cc) && !empty($emundus_user->email_cc)) {
-		        if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
-			        $cc[] = $emundus_user->email_cc;
-		        }
-	        }
+		if ($user_id != null) {
+			$emundus_user = $m_users->getUserById($user_id)[0];
+			if (isset($emundus_user->email_cc) && !empty($emundus_user->email_cc)) {
+				if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
+					$cc[] = $emundus_user->email_cc;
+				}
+			}
 
-            $password = !empty($post['PASSWORD']) ? $post['PASSWORD'] : "";
-            $post = $m_email->setTags($user_id, $post, null, $password, $mail_from_name.$mail_from.$template->subject.$template->message);
+			$password = !empty($post['PASSWORD']) ? $post['PASSWORD'] : "";
+			$post     = $m_email->setTags($user_id, $post, null, $password, $mail_from_name . $mail_from . $template->subject . $template->message);
 
-            $mail_from_name = preg_replace($post['patterns'], $post['replacements'], $mail_from_name);
-		    $mail_from = preg_replace($post['patterns'], $post['replacements'], $mail_from);
-			$subject = preg_replace($post['patterns'], $post['replacements'], $subject);
-			$body = preg_replace($post['patterns'], $post['replacements'], $body);
-        }
-		else
-		{
-            foreach (array_keys($post) as $key) {
-                $keys[] = '/\['.$key.'\]/';
-            }
+			$mail_from_name = preg_replace($post['patterns'], $post['replacements'], $mail_from_name);
+			$mail_from      = preg_replace($post['patterns'], $post['replacements'], $mail_from);
+			$subject        = preg_replace($post['patterns'], $post['replacements'], $subject);
+			$body           = preg_replace($post['patterns'], $post['replacements'], $body);
+		}
+		else {
+			foreach (array_keys($post) as $key) {
+				$keys[] = '/\[' . $key . '\]/';
+			}
 
 			$subject = preg_replace($keys, $post, $subject);
-			$body = preg_replace($keys, $post, $body);
-        }
+			$body    = preg_replace($keys, $post, $body);
+		}
 
-        if($fnum != null) {
-            $body = $m_email->setTagsFabrik($body, array($fnum));
-        }
+		if ($fnum != null) {
+			$body = $m_email->setTagsFabrik($body, array($fnum));
+		}
 
-        $body_raw = strip_tags($body);
+		$body_raw = strip_tags($body);
 
-        if (isset($template->Template)) {
-            $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+		if (isset($template->Template)) {
+			$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
 
-            if($user_id != null) {
-                $body = preg_replace($post['patterns'], $post['replacements'], $body);
-            } else {
-                $body = preg_replace($keys, $post, $body);
-            }
-        }
+			if ($user_id != null) {
+				$body = preg_replace($post['patterns'], $post['replacements'], $body);
+			}
+			else {
+				$body = preg_replace($keys, $post, $body);
+			}
+		}
 
 
 		// Configure email sender
@@ -1352,7 +1370,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 		$mailer->isHTML(true);
 		$mailer->Encoding = 'base64';
 		$mailer->setBody($body);
-        $mailer->AltBody = $body_raw;
+		$mailer->AltBody = $body_raw;
 
 		if (!empty($cc)) {
 			$mailer->addCC($cc);
@@ -1363,52 +1381,53 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 		require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
 		$custom_email_tag = EmundusHelperEmails::getCustomHeader();
-		if(!empty($custom_email_tag))
-		{
+		if (!empty($custom_email_tag)) {
 			$mailer->addCustomHeader($custom_email_tag);
 		}
 
 		$send = $mailer->Send();
-
 		if ($send !== true) {
 			if ($send === false) {
 				JLog::add('Tried sending email with mailer disabled in site settings.', JLog::ERROR, 'com_emundus');
-			} else {
+			}
+			else {
 				JLog::add($send->getMessage(), JLog::ERROR, 'com_emundus');
 			}
 
 			return false;
-		} else {
-            $user_id_to = !empty($user_id) ? $user_id : null;
+		}
+		else {
+			$user_id_to = !empty($user_id) ? $user_id : null;
 
-            if ($user_id_to === null) {
-                $db = JFactory::getDbo();
-                $query = $db->getQuery(true);
+			if ($user_id_to === null) {
+				$db    = JFactory::getDbo();
+				$query = $db->getQuery(true);
 
-                $query->select('id')
-                    ->from($db->quoteName('#__users'))
-                    ->where($db->quoteName('email') . ' LIKE ' . $db->quote($email_address));
-                $db->setQuery($query);
+				$query->select('id')
+					->from($db->quoteName('#__users'))
+					->where($db->quoteName('email') . ' LIKE ' . $db->quote($email_address));
+				$db->setQuery($query);
 
-                try {
-                    $user_id_to = $db->loadResult();
-                } catch (Exception $e) {
-                    JLog::add('error trying to find user_id_to ' . $e->getMessage(), JLog::ERROR);
-                }
-            }
+				try {
+					$user_id_to = $db->loadResult();
+				}
+				catch (Exception $e) {
+					JLog::add('error trying to find user_id_to ' . $e->getMessage(), JLog::ERROR);
+				}
+			}
 
-            if (!empty($user_id_to) && $log_email) {
-                // Logs send email
-                $log = [
-                    'user_id_from'  => !empty(JFactory::getUser()->id) ? JFactory::getUser()->id : 62,
-                    'user_id_to'    => $user_id_to,
-                    'subject'       => $subject,
-                    'message'       => '<i>'.JText::_('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO').' '.$email_address.'</i><br>'.$body,
-                    'type'          => $template->type
-                ];
-                $m_emails = $this->getModel('Emails');
-                $m_emails->logEmail($log);
-            }
+			if (!empty($user_id_to) && $log_email) {
+				// Logs send email
+				$log      = [
+					'user_id_from' => !empty(JFactory::getUser()->id) ? JFactory::getUser()->id : 62,
+					'user_id_to'   => $user_id_to,
+					'subject'      => $subject,
+					'message'      => '<i>' . JText::_('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO') . ' ' . $email_address . '</i><br>' . $body,
+					'type'         => $template->type
+				];
+				$m_emails = $this->getModel('Emails');
+				$m_emails->logEmail($log);
+			}
 
 			return true;
 		}
@@ -1416,79 +1435,83 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 
 /////// chat functions
-    /** send message in chat
-     *
-     */
-    public function sendMessage() {
 
-	    $user = JFactory::getSession()->get('emundusUser');
-        $m_messages = $this->getModel('Messages');
-        
-        $message = $this->input->post->getRaw('message', null);
-        $receiver = $this->input->post->get('receiver', null);
-        $message = str_replace("&nbsp;", "", $message);
-        $cifre_link = $this->input->post->get('cifre_link', null);
+	/** send message in chat
+	 *
+	 */
+	public function sendMessage()
+	{
 
-        // Get receiver info
-	    $m_profile = $this->getModel('Profile');
-	    $receiver_profile = $m_profile->getProfileByApplicant($receiver);
-	    $user_id = JFactory::getUser($receiver)->id;
-	    $email = JFactory::getUser($receiver)->email;
+		$user       = JFactory::getSession()->get('emundusUser');
+		$m_messages = $this->getModel('Messages');
 
-        // Send notification email to the receiver
-	    $post = [
-		    'USER_NAME' => strtoupper($receiver_profile["lastname"]). ' '.ucfirst($receiver_profile["firstname"]),
-		    'SENDER' => strtoupper($user->lastname). ' '.ucfirst($user->firstname),
-		    'MESSAGE' => $message
-	    ];
+		$message    = $this->input->post->getRaw('message', null);
+		$receiver   = $this->input->post->get('receiver', null);
+		$message    = str_replace("&nbsp;", "", $message);
+		$cifre_link = $this->input->post->get('cifre_link', null);
 
-	    if (!empty($cifre_link)) {
+		// Get receiver info
+		$m_profile        = $this->getModel('Profile');
+		$receiver_profile = $m_profile->getProfileByApplicant($receiver);
+		$user_id          = JFactory::getUser($receiver)->id;
+		$email            = JFactory::getUser($receiver)->email;
 
-	    	// Find out if we should notify the receiver using the CIFRE notification system.
-		    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
-		    $m_cifre = $this->getModel('Cifre');
-		    $notify = $m_cifre->checkNotify($user->id, $receiver);
-		    if (!empty($notify)) {
-			    $this->sendEmailNoFnum($email, 'notification_mail', $post, $user_id);
-		    }
+		// Send notification email to the receiver
+		$post = [
+			'USER_NAME' => strtoupper($receiver_profile["lastname"]) . ' ' . ucfirst($receiver_profile["firstname"]),
+			'SENDER'    => strtoupper($user->lastname) . ' ' . ucfirst($user->firstname),
+			'MESSAGE'   => $message
+		];
 
+		if (!empty($cifre_link)) {
 
-	    } else {
-		    // check if the receiver is online
-		    // IF he isn't connected we send them a notification email
-		    $m_user = $this->getModel('Users');
-		    $online_users = $m_user->getOnlineUsers();
-		    if (!in_array($receiver, $online_users)) {
-			    $this->sendEmailNoFnum($email, 'notification_mail', $post, $user_id);
-		    }
-	    }
+			// Find out if we should notify the receiver using the CIFRE notification system.
+			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'cifre.php');
+			$m_cifre = $this->getModel('Cifre');
+			$notify  = $m_cifre->checkNotify($user->id, $receiver);
+			if (!empty($notify)) {
+				$this->sendEmailNoFnum($email, 'notification_mail', $post, $user_id);
+			}
 
 
-	    echo json_encode((object) ['status' => $m_messages->sendMessage($receiver, $message)]);
-	    exit;
-    }
+		}
+		else {
+			// check if the receiver is online
+			// IF he isn't connected we send them a notification email
+			$m_user       = $this->getModel('Users');
+			$online_users = $m_user->getOnlineUsers();
+			if (!in_array($receiver, $online_users)) {
+				$this->sendEmailNoFnum($email, 'notification_mail', $post, $user_id);
+			}
+		}
+
+
+		echo json_encode((object) ['status' => $m_messages->sendMessage($receiver, $message)]);
+		exit;
+	}
 
 
 	/** send message in chatroom
 	 *
 	 */
-	public function sendChatroomMessage() {
+	public function sendChatroomMessage()
+	{
 
 		$m_messages = $this->getModel('Messages');
-		
-		$message = $this->input->post->getRaw('message', null);
+
+		$message  = $this->input->post->getRaw('message', null);
 		$chatroom = $this->input->post->getInt('chatroom', null);
-		$message = str_replace("&nbsp;", "", $message);
+		$message  = str_replace("&nbsp;", "", $message);
 
 		// Here we need to notify those that have a bell based on the link.
 		if ($m_messages->sendChatroomMessage($chatroom, $message)) {
 
-			require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
-			require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-			$m_cifre = $this->getModel('Cifre');
+			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'cifre.php');
+			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
+			$m_cifre   = $this->getModel('Cifre');
 			$m_profile = $this->getModel('Profile');
 
-			$users = $m_messages->getChatroomUsersId($chatroom);
+			$users        = $m_messages->getChatroomUsersId($chatroom);
 			$current_user = JFactory::getSession()->get('emundusUser');
 			foreach ($users as $receiver) {
 
@@ -1499,9 +1522,9 @@ class EmundusControllerMessages extends JControllerLegacy {
 				$receiver_profile = $m_profile->getProfileByApplicant($receiver);
 				// Send notification email to the receiver
 				$post = [
-					'USER_NAME' => strtoupper($receiver_profile["lastname"]). ' '.ucfirst($receiver_profile["firstname"]),
-					'SENDER' => strtoupper($current_user->lastname). ' '.ucfirst($current_user->firstname),
-					'MESSAGE' => $message
+					'USER_NAME' => strtoupper($receiver_profile["lastname"]) . ' ' . ucfirst($receiver_profile["firstname"]),
+					'SENDER'    => strtoupper($current_user->lastname) . ' ' . ucfirst($current_user->firstname),
+					'MESSAGE'   => $message
 				];
 
 				// Find out if we should notify the receiver using the CIFRE notification system.
@@ -1517,407 +1540,432 @@ class EmundusControllerMessages extends JControllerLegacy {
 		exit;
 	}
 
-    /** update message list
-     *
-     */
-    public function updatemessages() {
+	/** update message list
+	 *
+	 */
+	public function updatemessages()
+	{
 
-        $m_messages = $this->getModel('Messages');
+		$m_messages = $this->getModel('Messages');
 
-        
-        $lastId = $this->input->post->get('id', null);
-        $other_user = $this->input->post->get('user', null);
-        $chatroom = $this->input->post->getInt('chatroom', null);
 
-        if (empty($other_user) && !empty($chatroom)) {
-	        $messages = $m_messages->updateChatroomMessages($lastId, $chatroom);
-        } else {
-	        $messages = $m_messages->updateMessages($lastId, null, $other_user);
-        }
+		$lastId     = $this->input->post->get('id', null);
+		$other_user = $this->input->post->get('user', null);
+		$chatroom   = $this->input->post->getInt('chatroom', null);
 
-        if (!empty($messages)) {
-            foreach ($messages as $message) {
-                $message->date_time = date("d/m/Y", strtotime($message->date_time));
-            }
-            echo json_encode((object)['status' => 'true', 'messages' => $messages]);
-        } else {
-            echo json_encode((object)['status' => 'false']);
-        }
+		if (empty($other_user) && !empty($chatroom)) {
+			$messages = $m_messages->updateChatroomMessages($lastId, $chatroom);
+		}
+		else {
+			$messages = $m_messages->updateMessages($lastId, null, $other_user);
+		}
 
-        exit;
-    }
+		if (!empty($messages)) {
+			foreach ($messages as $message) {
+				$message->date_time = date("d/m/Y", strtotime($message->date_time));
+			}
+			echo json_encode((object) ['status' => 'true', 'messages' => $messages]);
+		}
+		else {
+			echo json_encode((object) ['status' => 'false']);
+		}
 
+		exit;
+	}
 
-    public function getTypeAttachment($id) {
-        $db = JFactory::getDbo();
 
-        $query = $db->getQuery(true);
+	public function getTypeAttachment($id)
+	{
+		$db = JFactory::getDbo();
 
-        $query
-            ->select('esa.*')
-            ->from($db->quoteName('#__emundus_setup_attachments', 'esa'))
-            ->where($db->quoteName('esa.id')  . ' = ' . $id);
+		$query = $db->getQuery(true);
 
-        $db->setQuery($query);
-        return $db->loadObjectList() ;
-    }
+		$query
+			->select('esa.*')
+			->from($db->quoteName('#__emundus_setup_attachments', 'esa'))
+			->where($db->quoteName('esa.id') . ' = ' . $id);
 
+		$db->setQuery($query);
 
-    public function getTypeLetters($id) {
-        $db = JFactory::getDbo();
+		return $db->loadObjectList();
+	}
 
-        $query = $db->getQuery(true);
 
-        $query
-            ->select('esl.*')
-            ->from($db->quoteName('#__emundus_setup_letters', 'esl'))
-            ->where($db->quoteName('esl.id')  . ' = ' . $id);
+	public function getTypeLetters($id)
+	{
+		$db = JFactory::getDbo();
 
-        $db->setQuery($query);
-        return $db->loadObjectList() ;
-    }
+		$query = $db->getQuery(true);
 
-    // get recap info by fnum
-    public function getrecapbyfnum() {
-        
+		$query
+			->select('esl.*')
+			->from($db->quoteName('#__emundus_setup_letters', 'esl'))
+			->where($db->quoteName('esl.id') . ' = ' . $id);
 
-        $fnum = $this->input->post->getRaw('fnum', null);
+		$db->setQuery($query);
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-        $_mFiles = $this->getModel('Files');
+		return $db->loadObjectList();
+	}
 
-        $_recap = $_mFiles->getFnumInfos($fnum);
+	// get recap info by fnum
+	public function getrecapbyfnum()
+	{
 
 
+		$fnum = $this->input->post->getRaw('fnum', null);
 
-        /// call to com_emundus_onbooard/settings
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'settings.php');
-        $_mSettings = $this->getModel('Settings');
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+		$_mFiles = $this->getModel('Files');
 
-        echo json_encode((object)['status' => true, 'recap' => $_recap, 'color' => $_mSettings->getColorClasses()[$_recap['class']]]);
-        exit;
-    }
+		$_recap = $_mFiles->getFnumInfos($fnum);
 
-    // get message (subject, preview) + all attached documents by fnums
-    public function getmessagerecapbyfnum() {
-        
 
-        $fnum = $this->input->post->getRaw('fnum', null);
+		/// call to com_emundus_onbooard/settings
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'settings.php');
+		$_mSettings = $this->getModel('Settings');
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-        $_mEmails = $this->getModel('Messages');
-        $_emails = $_mEmails->getMessageRecapByFnum($fnum);
+		echo json_encode((object) ['status' => true, 'recap' => $_recap, 'color' => $_mSettings->getColorClasses()[$_recap['class']]]);
+		exit;
+	}
 
-        if($_emails) {
-            echo json_encode((object)['status' => true, 'email_recap' => $_emails]);
-        } else {
-            echo json_encode((object)['status' => false, 'email_recap' => $_emails]);
-        }
-        exit;
-    }
+	// get message (subject, preview) + all attached documents by fnums
+	public function getmessagerecapbyfnum()
+	{
 
-    /// send email to candidat with attached letters
-    public function sendemailtocandidat() {
-        
-
-        $fnum = $this->input->post->getRaw('fnum', null);
-
-        $raw = $this->input->post->getRaw('raw', null);
-        $template_email_id = $this->input->post->getString('tmpl', null);
-
-        if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
-            die(JText::_("ACCESS_DENIED"));
-        }
-
-        require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
-        $h_emails = new EmundusHelperEmails();
-        $can_send_mail = $h_emails->assertCanSendMailToUser(null, $fnum);
-        if (!$can_send_mail) {
-            echo json_encode(['status' => false, 'msg' => 'Can not send mail to this user']);
-            exit;
-        }
-
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
-
-        $m_emails = $this->getModel('Emails');
-        $m_users = $this->getModel('Users');
-        $m_files = $this->getModel('Files');
-        $m_campaign = $this->getModel('Campaign');
-        $_meval = $this->getModel('Evaluation');
-
-        $user = JFactory::getUser();
-        $config = JFactory::getConfig();
-
-        // Get default mail sender info
-        $mail_from_sys = $config->get('mailfrom');
-        $mail_from_sys_name = $config->get('fromname');
-
-        // If no mail sender info is provided, we use the system global config.
-        $mail_from_name = $this->input->post->getString('mail_from_name', $mail_from_sys_name);
-        $mail_from = $this->input->post->getString('mail_from', $mail_from_sys);
-
-        /// end of default mail sender
-
-        /// from fnum --> detect candidat email
-        $fnum_info = $m_files->getFnumInfos($fnum);
-
-        // get programme info
-        $programme = $m_campaign->getProgrammeByTraining($fnum_info['training']);
-
-        $toAttach = [];
-        $post = [
-            'FNUM' => $fnum_info['fnum'],
-            'USER_NAME' => $fnum_info['name'],
-            'COURSE_LABEL' => $programme->label,
-            'CAMPAIGN_LABEL' => $fnum_info['label'],
-            'CAMPAIGN_YEAR' => $fnum_info['year'],
-            'CAMPAIGN_START' => $fnum_info['start_date'],
-            'CAMPAIGN_END' => $fnum_info['end_date'],
-            'SITE_URL' => JURI::base(),
-            'USER_EMAIL' => $fnum_info['email'],
-        ];
-
-        /* old code
-        $body = $m_emails->setTagsFabrik($email_recap[0]->message, [$fnum_info['fnum']]);
-        $subject = $m_emails->setTagsFabrik($email_recap[0]->subject, [$fnum_info['fnum']]);
-        */
-
-        /* get email template */
-        $template_id = $raw['template'];
-        $letters = $raw['files'];
-        $types = $raw['types'];
-
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        $query->select($db->quoteName('Template'))
-            ->from($db->quoteName('#__emundus_email_templates'))
-            ->where($db->quoteName('id') . ' = ' . $template_id);
-        $db->setQuery($query);
-        $template = $db->loadResult();
-
-        /* get email template */
-
-        $body = $m_emails->setTagsFabrik($raw['content'], [$fnum_info['fnum']]);
-        $subject = $m_emails->setTagsFabrik($raw['title'], [$fnum_info['fnum']]);
-
-        /* get tags from subject, body, mail from and mail address */
-        $tags = $m_emails->setTags($fnum_info['applicant_id'], $post, $fnum_info['fnum'], '', $mail_from.$mail_from_name.$subject.$body);
-
-        /* attach email template to body */
-        $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template);
-
-        // Tags are replaced with their corresponding values using the PHP preg_replace function.
-        $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
-        $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
-
-        $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
-        $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
-
-        // If the email sender has the same domain as the system sender address.
-        /*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
-            $mail_from_address = $mail_from;
-        } else {*/
-        $mail_from_address = $mail_from_sys;
-        //}
-
-        // Set sender
-        $sender = [
-            $mail_from_address,
-            $mail_from_name
-        ];
-
-        // Check if user defined a cc address
-        $cc = [];
-        $emundus_user = $m_users->getUserById($fnum_info['applicant_id'])[0];
-        if(isset($emundus_user->email_cc) && !empty($emundus_user->email_cc)) {
-            if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
-                $cc[] = $emundus_user->email_cc;
-            }
-        }
-
-        // Configure email sender
-        $mailer = JFactory::getMailer();
-        $mailer->setSender($sender);
-        $mailer->addReplyTo($mail_from, $mail_from_name);
-        $mailer->addRecipient($fnum_info['email']);
-        if(!empty($cc)) {
-            $mailer->addCC($cc);
-        }
-        $mailer->setSubject($subject);
-        $mailer->isHTML(true);
-        $mailer->Encoding = 'base64';
-        $mailer->setBody($body);
-
-        $attachments = $_meval->getLettersByFnums($fnum, true);
-
-        $attachment_ids = array();
-        foreach ($attachments as $key => $value) {
-            $attachment_ids[] = $value['id'];
-        }
-
-        $attachment_ids = array_unique(array_filter($attachment_ids));
-
-        /// get attachment letters by fnum
-        $files = '<ul>';
-        $file_path = [];
-
-        foreach($letters as $letter) {
-            $folder_id = current($m_files->getFnumsInfos(array($fnum)))['applicant_id'];
-
-            $file_path[] = EMUNDUS_PATH_ABS . $folder_id . DS . $letter;
-        }
-
-        foreach($types as $type) { $files .= '<li>' . $type . '</li>'; }
-
-        $mailer->addAttachment($file_path);
-        $send = $mailer->Send();
-
-        $this->app->triggerEvent('onAfterEmailSend', ['fnum', 'template_id']);
-        $this->app->triggerEvent('onCallEventHandler', ['onAfterEmailSend', ['fnum' => $fnum, 'template_id' => $template_email_id]]);
-        /* track the log of email */
-        if ($send !== true) {
-            $failed[] = $fnum_info['email'];
-            echo 'Error sending email: ' . $send->__toString();
-            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
-        } else {
-            $sent[] = $fnum_info['email'];
-            $log = [
-                'user_id_from' => $user->id,
-                'user_id_to' => $fnum_info['applicant_id'],
-                'subject' => $subject,
-                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $fnum_info['email'] . '</i><br>' . $body . $files,
-                'type' => (empty($template->type))?'':$template->type,
-	            'email_id' => $template_email_id,
-            ];
-            $m_emails->logEmail($log, $fnum);
-        }
-        // Due to mailtrap now limiting emails sent to fast, we add a long sleep.
-        if ($config->get('smtphost') === 'smtp.mailtrap.io') {
-            sleep(15);
-        }
-
-        echo json_encode(['status' => true, 'email' => $fnum_info['email']]);
-        exit;
-    }
-
-    /// set tags to fnum --> params :: fnum
-    public function addtagsbyfnum() {
-        
-
-        $fnum = $this->input->post->getRaw('fnum');
-        $tmpl = $this->input->post->getRaw('tmpl');
-
-        if(!empty($fnum)) {
-            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
-            $_mMessages = $this->getModel('Messages');
-
-            $_tags = $_mMessages->addTagsByFnum($fnum, $tmpl);
-            echo json_encode(['status'=>true]);
-        } else {
-            echo json_encode(['status'=>false]);
-        }
-        exit;
-    }
-
-    // get all documents being letters
-    public function getalldocumentsletters() {
-        $_mMessages = $this->getModel('Messages');
-        $_documents = $_mMessages->getAllDocumentsLetters();
-
-        if($_documents) {
-            echo json_encode(['status' => true, 'documents' => $_documents]);
-        } else {
-            echo json_encode(['status' => false, 'documents' => null]);
-        }
-        exit;
-    }
-
-    // get attachments by profiles
-    public function getattachmentsbyprofiles() {
-        
-
-        $fnums = explode(',', $this->input->post->getRaw('fnums'));
-
-        $_mMessages = $this->getModel('Messages');
-        $_results = $_mMessages->getAttachmentsByProfiles($fnums);
-
-        if($_results) {
-            echo json_encode(['status' => true, 'attachments' => $_results]);
-        } else {
-            echo json_encode(['status' => false, 'attachments' => null]);
-        }
-        exit;
-    }
-
-    // get all attachments
-    public function getallattachments() {
-        $_mMessages = $this->getModel('Messages');
-        $_documents = $_mMessages->getAllAttachments();
-
-        if($_documents) {
-            echo json_encode(['status' => true, 'attachments' => $_documents]);
-        } else {
-            echo json_encode(['status' => false, 'attachments' => null]);
-        }
-        exit;
-    }
-
-    /// set tags to fnums --> params : [fnums]
-    public function addtagsbyfnums() {
-        
-
-        /// get data from jinput
-        $data = $this->input->post->getRaw('data');
-
-        /// get fnums and email tmpl
-        $fnums = explode(',', $data['recipients']);
-        $email_tmpl = $data['template'];
-
-        $_mMessages = $this->getModel('Messages');
-
-        $_tags = $_mMessages->addTagsByFnums($fnums,$email_tmpl);
-
-        if($_tags) {
-            echo json_encode(['status' => true]);
-        } else {
-            echo json_encode(['status' => false]);
-        }
-        exit;
-    }
-
-   public function getAllCategories() {
+
+		$fnum = $this->input->post->getRaw('fnum', null);
+
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+		$_mEmails = $this->getModel('Messages');
+		$_emails  = $_mEmails->getMessageRecapByFnum($fnum);
+
+		if ($_emails) {
+			echo json_encode((object) ['status' => true, 'email_recap' => $_emails]);
+		}
+		else {
+			echo json_encode((object) ['status' => false, 'email_recap' => $_emails]);
+		}
+		exit;
+	}
+
+	/// send email to candidat with attached letters
+	public function sendemailtocandidat()
+	{
+
+
+		$fnum = $this->input->post->getRaw('fnum', null);
+
+		$raw               = $this->input->post->getRaw('raw', null);
+		$template_email_id = $this->input->post->getString('tmpl', null);
+
+		if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
+			die(JText::_("ACCESS_DENIED"));
+		}
+
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
+		$h_emails      = new EmundusHelperEmails();
+		$can_send_mail = $h_emails->assertCanSendMailToUser(null, $fnum);
+		if (!$can_send_mail) {
+			echo json_encode(['status' => false, 'msg' => 'Can not send mail to this user']);
+			exit;
+		}
+
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+
+		$m_emails   = $this->getModel('Emails');
+		$m_users    = $this->getModel('Users');
+		$m_files    = $this->getModel('Files');
+		$m_campaign = $this->getModel('Campaign');
+		$_meval     = $this->getModel('Evaluation');
+
+		$user   = JFactory::getUser();
+		$config = JFactory::getConfig();
+
+		// Get default mail sender info
+		$mail_from_sys      = $config->get('mailfrom');
+		$mail_from_sys_name = $config->get('fromname');
+
+		// If no mail sender info is provided, we use the system global config.
+		$mail_from_name = $this->input->post->getString('mail_from_name', $mail_from_sys_name);
+		$mail_from      = $this->input->post->getString('mail_from', $mail_from_sys);
+
+		/// end of default mail sender
+
+		/// from fnum --> detect candidat email
+		$fnum_info = $m_files->getFnumInfos($fnum);
+
+		// get programme info
+		$programme = $m_campaign->getProgrammeByTraining($fnum_info['training']);
+
+		$toAttach = [];
+		$post     = [
+			'FNUM'           => $fnum_info['fnum'],
+			'USER_NAME'      => $fnum_info['name'],
+			'COURSE_LABEL'   => $programme->label,
+			'CAMPAIGN_LABEL' => $fnum_info['label'],
+			'CAMPAIGN_YEAR'  => $fnum_info['year'],
+			'CAMPAIGN_START' => $fnum_info['start_date'],
+			'CAMPAIGN_END'   => $fnum_info['end_date'],
+			'SITE_URL'       => JURI::base(),
+			'USER_EMAIL'     => $fnum_info['email'],
+		];
+
+		/* old code
+		$body = $m_emails->setTagsFabrik($email_recap[0]->message, [$fnum_info['fnum']]);
+		$subject = $m_emails->setTagsFabrik($email_recap[0]->subject, [$fnum_info['fnum']]);
+		*/
+
+		/* get email template */
+		$template_id = $raw['template'];
+		$letters     = $raw['files'];
+		$types       = $raw['types'];
+
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select($db->quoteName('Template'))
+			->from($db->quoteName('#__emundus_email_templates'))
+			->where($db->quoteName('id') . ' = ' . $template_id);
+		$db->setQuery($query);
+		$template = $db->loadResult();
+
+		/* get email template */
+
+		$body    = $m_emails->setTagsFabrik($raw['content'], [$fnum_info['fnum']]);
+		$subject = $m_emails->setTagsFabrik($raw['title'], [$fnum_info['fnum']]);
+
+		/* get tags from subject, body, mail from and mail address */
+		$tags = $m_emails->setTags($fnum_info['applicant_id'], $post, $fnum_info['fnum'], '', $mail_from . $mail_from_name . $subject . $body);
+
+		/* attach email template to body */
+		$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template);
+
+		// Tags are replaced with their corresponding values using the PHP preg_replace function.
+		$subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
+		$body    = preg_replace($tags['patterns'], $tags['replacements'], $body);
+
+		$mail_from      = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
+		$mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
+
+		// If the email sender has the same domain as the system sender address.
+		/*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
+			$mail_from_address = $mail_from;
+		} else {*/
+		$mail_from_address = $mail_from_sys;
+		//}
+
+		// Set sender
+		$sender = [
+			$mail_from_address,
+			$mail_from_name
+		];
+
+		// Check if user defined a cc address
+		$cc           = [];
+		$emundus_user = $m_users->getUserById($fnum_info['applicant_id'])[0];
+		if (isset($emundus_user->email_cc) && !empty($emundus_user->email_cc)) {
+			if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
+				$cc[] = $emundus_user->email_cc;
+			}
+		}
+
+		// Configure email sender
+		$mailer = JFactory::getMailer();
+		$mailer->setSender($sender);
+		$mailer->addReplyTo($mail_from, $mail_from_name);
+		$mailer->addRecipient($fnum_info['email']);
+		if (!empty($cc)) {
+			$mailer->addCC($cc);
+		}
+		$mailer->setSubject($subject);
+		$mailer->isHTML(true);
+		$mailer->Encoding = 'base64';
+		$mailer->setBody($body);
+
+		$attachments = $_meval->getLettersByFnums($fnum, true);
+
+		$attachment_ids = array();
+		foreach ($attachments as $key => $value) {
+			$attachment_ids[] = $value['id'];
+		}
+
+		$attachment_ids = array_unique(array_filter($attachment_ids));
+
+		/// get attachment letters by fnum
+		$files     = '<ul>';
+		$file_path = [];
+
+		foreach ($letters as $letter) {
+			$folder_id = current($m_files->getFnumsInfos(array($fnum)))['applicant_id'];
+
+			$file_path[] = EMUNDUS_PATH_ABS . $folder_id . DS . $letter;
+		}
+
+		foreach ($types as $type) {
+			$files .= '<li>' . $type . '</li>';
+		}
+
+		$mailer->addAttachment($file_path);
+		$send = $mailer->Send();
+
+		$this->app->triggerEvent('onAfterEmailSend', ['fnum', 'template_id']);
+		$this->app->triggerEvent('onCallEventHandler', ['onAfterEmailSend', ['fnum' => $fnum, 'template_id' => $template_email_id]]);
+		/* track the log of email */
+		if ($send !== true) {
+			$failed[] = $fnum_info['email'];
+			echo 'Error sending email: ' . $send->__toString();
+			JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+		}
+		else {
+			$sent[] = $fnum_info['email'];
+			$log    = [
+				'user_id_from' => $user->id,
+				'user_id_to'   => $fnum_info['applicant_id'],
+				'subject'      => $subject,
+				'message'      => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $fnum_info['email'] . '</i><br>' . $body . $files,
+				'type'         => (empty($template->type)) ? '' : $template->type,
+				'email_id'     => $template_email_id,
+			];
+			$m_emails->logEmail($log, $fnum);
+		}
+		// Due to mailtrap now limiting emails sent to fast, we add a long sleep.
+		if ($config->get('smtphost') === 'smtp.mailtrap.io') {
+			sleep(15);
+		}
+
+		echo json_encode(['status' => true, 'email' => $fnum_info['email']]);
+		exit;
+	}
+
+	/// set tags to fnum --> params :: fnum
+	public function addtagsbyfnum()
+	{
+
+
+		$fnum = $this->input->post->getRaw('fnum');
+		$tmpl = $this->input->post->getRaw('tmpl');
+
+		if (!empty($fnum)) {
+			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'messages.php');
+			$_mMessages = $this->getModel('Messages');
+
+			$_tags = $_mMessages->addTagsByFnum($fnum, $tmpl);
+			echo json_encode(['status' => true]);
+		}
+		else {
+			echo json_encode(['status' => false]);
+		}
+		exit;
+	}
+
+	// get all documents being letters
+	public function getalldocumentsletters()
+	{
+		$_mMessages = $this->getModel('Messages');
+		$_documents = $_mMessages->getAllDocumentsLetters();
+
+		if ($_documents) {
+			echo json_encode(['status' => true, 'documents' => $_documents]);
+		}
+		else {
+			echo json_encode(['status' => false, 'documents' => null]);
+		}
+		exit;
+	}
+
+	// get attachments by profiles
+	public function getattachmentsbyprofiles()
+	{
+
+
+		$fnums = explode(',', $this->input->post->getRaw('fnums'));
+
+		$_mMessages = $this->getModel('Messages');
+		$_results   = $_mMessages->getAttachmentsByProfiles($fnums);
+
+		if ($_results) {
+			echo json_encode(['status' => true, 'attachments' => $_results]);
+		}
+		else {
+			echo json_encode(['status' => false, 'attachments' => null]);
+		}
+		exit;
+	}
+
+	// get all attachments
+	public function getallattachments()
+	{
+		$_mMessages = $this->getModel('Messages');
+		$_documents = $_mMessages->getAllAttachments();
+
+		if ($_documents) {
+			echo json_encode(['status' => true, 'attachments' => $_documents]);
+		}
+		else {
+			echo json_encode(['status' => false, 'attachments' => null]);
+		}
+		exit;
+	}
+
+	/// set tags to fnums --> params : [fnums]
+	public function addtagsbyfnums()
+	{
+
+
+		/// get data from jinput
+		$data = $this->input->post->getRaw('data');
+
+		/// get fnums and email tmpl
+		$fnums      = explode(',', $data['recipients']);
+		$email_tmpl = $data['template'];
+
+		$_mMessages = $this->getModel('Messages');
+
+		$_tags = $_mMessages->addTagsByFnums($fnums, $email_tmpl);
+
+		if ($_tags) {
+			echo json_encode(['status' => true]);
+		}
+		else {
+			echo json_encode(['status' => false]);
+		}
+		exit;
+	}
+
+	public function getAllCategories()
+	{
 		$res = ['status' => true, 'data' => []];
 		if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
 			$res['status'] = false;
 			echo json_encode($res);
 			exit;
-        }
+		}
 
-        $_mMessages = $this->getModel('Messages');
-        $res['data'] = $_mMessages->getAllCategories();
+		$_mMessages  = $this->getModel('Messages');
+		$res['data'] = $_mMessages->getAllCategories();
 
-        echo json_encode($res);
-        exit;
-    }
+		echo json_encode($res);
+		exit;
+	}
 
-	public function getAllMessages() {
+	public function getAllMessages()
+	{
 		$res = ['status' => true, 'data' => []];
 		if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
 			$res['status'] = false;
 			echo json_encode($res);
-            exit;
-        }
+			exit;
+		}
 
-        $_mMessages = $this->getModel('Messages');
-        $res['data'] = $_mMessages->getAllMessages();
+		$_mMessages  = $this->getModel('Messages');
+		$res['data'] = $_mMessages->getAllMessages();
 
-        echo json_encode($res);
-        exit;
-    }
+		echo json_encode($res);
+		exit;
+	}
 }

@@ -1,5 +1,5 @@
 export default {
-    sync_type:[
+    sync_type: [
         {
             label: "COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_SYNC_TYPE_LOCAL",
             value: '0',

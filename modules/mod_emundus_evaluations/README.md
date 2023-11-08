@@ -1,27 +1,33 @@
 # mod_emundus_evaluations
 
 ## Project setup
+
 ```
 yarn install
 ```
 
 ### Compiles and hot-reloads for development
+
 ```
 yarn run watch
 ```
 
 ### Compiles and minifies for production
+
 ```
 yarn run build
 ```
 
 ### Lints and fixes files
+
 ```
 yarn run lint
 ```
 
 ## Evaluation form setup
+
 Update Sweet php plugin to this to work properly
+
 ```
 echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>';
 echo '<script
@@ -57,4 +63,5 @@ die("<script>
 ```
 
 ### Customize configuration
+
 See [Configuration Reference](https://cli.vuejs.org/config/).

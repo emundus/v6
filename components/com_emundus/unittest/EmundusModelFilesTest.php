@@ -39,26 +39,27 @@ jimport('joomla.plugin.helper');
 // set global config --> initialize Joomla Application with default param 'site'
 JFactory::getApplication('site');
 
-class EmundusModelFilesTest extends TestCase{
-    private $m_files;
+class EmundusModelFilesTest extends TestCase
+{
+	private $m_files;
 	private $h_files;
 	private $h_sample;
-    private $h_users;
+	private $h_users;
 	public $unit_test_coord_id;
 
-    public function __construct(?string $name = null, array $data = [], $dataName = '')
-    {
-        parent::__construct($name, $data, $dataName);
-        $this->h_sample = new EmundusUnittestHelperSamples;
-        $this->h_users = new EmundusHelperUsers;
-		$this->h_files = new EmundusHelperFiles;
+	public function __construct(?string $name = null, array $data = [], $dataName = '')
+	{
+		parent::__construct($name, $data, $dataName);
+		$this->h_sample = new EmundusUnittestHelperSamples;
+		$this->h_users  = new EmundusHelperUsers;
+		$this->h_files  = new EmundusHelperFiles;
 
-        $app = JFactory::getApplication();
-        $username = 'test-gestionnaire-' . rand(0, 1000) . '@emundus.fr';
-		$password = $this->h_users->generateStrongPassword();
-        $this->unit_test_coord_id = $this->h_sample->createSampleUser(2, $username, $password);
+		$app                      = JFactory::getApplication();
+		$username                 = 'test-gestionnaire-' . rand(0, 1000) . '@emundus.fr';
+		$password                 = $this->h_users->generateStrongPassword();
+		$this->unit_test_coord_id = $this->h_sample->createSampleUser(2, $username, $password);
 
-		if(!empty($this->unit_test_coord_id)) {
+		if (!empty($this->unit_test_coord_id)) {
 			$logged_in = $app->login([
 				'username' => $username,
 				'password' => $password
@@ -70,85 +71,90 @@ class EmundusModelFilesTest extends TestCase{
 			}
 		}
 
-	    $this->m_files = new EmundusModelFiles();
-    }
+		$this->m_files = new EmundusModelFiles();
+	}
 
 	public function testFoo()
 	{
 		$this->assertTrue(true);
 	}
 
-    public function testConstruct() {
-        $this->assertSame(false, $this->m_files->use_module_filters, 'By default, we do not use new module filters');
-    }
+	public function testConstruct()
+	{
+		$this->assertSame(false, $this->m_files->use_module_filters, 'By default, we do not use new module filters');
+	}
 
-	public function testshareUsers() {
-		$user_id = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 1000) . '@emundus.test.fr');
-		$program = $this->h_sample->createSampleProgram('Test partage d\'utilisateurs');
+	public function testshareUsers()
+	{
+		$user_id     = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 1000) . '@emundus.test.fr');
+		$program     = $this->h_sample->createSampleProgram('Test partage d\'utilisateurs');
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
-		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+		$fnum        = $this->h_sample->createSampleFile($campaign_id, $user_id);
 
 		$shared = $this->m_files->shareUsers([$this->unit_test_coord_id], EVALUATOR_RIGHTS, [$fnum]);
 		$this->assertTrue($shared, 'shareUsers returns true if the sharing is successful');
 	}
 
-    public function testgetAllFnums()
-    {
-	    $fnums = $this->m_files->getAllFnums();
-        $this->assertIsArray($fnums, 'getusers returns an array');
+	public function testgetAllFnums()
+	{
+		$fnums = $this->m_files->getAllFnums();
+		$this->assertIsArray($fnums, 'getusers returns an array');
 
-        $user_id = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 1000) . '@emundus.test.fr');
-        $program = $this->h_sample->createSampleProgram();
-	    $campaign_id = $this->h_sample->createSampleCampaign($program);
-        $fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+		$user_id     = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 1000) . '@emundus.test.fr');
+		$program     = $this->h_sample->createSampleProgram();
+		$campaign_id = $this->h_sample->createSampleCampaign($program);
+		$fnum        = $this->h_sample->createSampleFile($campaign_id, $user_id);
 
-	    $session = JFactory::getSession();
-	    $session->set('filt_params', ['programme' => [$program['programme_code']]]);
+		$session = JFactory::getSession();
+		$session->set('filt_params', ['programme' => [$program['programme_code']]]);
 
-	    $fnums = $this->m_files->getAllFnums();
-	    $this->assertNotEmpty($fnums, 'if a fnum exists, by default get users should return a value');
+		$fnums = $this->m_files->getAllFnums();
+		$this->assertNotEmpty($fnums, 'if a fnum exists, by default get users should return a value');
 		$this->assertTrue(in_array($fnum, $fnums), 'If a fnum is associated to me. I should see it.');
-    }
+	}
 
-    public function testgetAllTags()
-    {
-        $tags = $this->m_files->getAllTags();
-        $this->assertIsArray($tags, 'getAllTags returns an array');
-        $this->assertNotEmpty($tags, 'getAllTags returns a non-empty array');
-    }
+	public function testgetAllTags()
+	{
+		$tags = $this->m_files->getAllTags();
+		$this->assertIsArray($tags, 'getAllTags returns an array');
+		$this->assertNotEmpty($tags, 'getAllTags returns a non-empty array');
+	}
 
-    public function testTagFile() {
-        $tagged = $this->m_files->tagFile([], []);
-        $this->assertFalse($tagged, 'tagFile returns false if no file is given');
+	public function testTagFile()
+	{
+		$tagged = $this->m_files->tagFile([], []);
+		$this->assertFalse($tagged, 'tagFile returns false if no file is given');
 
-        $user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-        $program = $this->h_sample->createSampleProgram();
-        $campaign_id = $this->h_sample->createSampleCampaign($program);
-        $fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+		$user_id     = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$program     = $this->h_sample->createSampleProgram();
+		$campaign_id = $this->h_sample->createSampleCampaign($program);
+		$fnum        = $this->h_sample->createSampleFile($campaign_id, $user_id);
 
-        $tagged = $this->m_files->tagFile([$fnum], []);
-        $this->assertFalse($tagged, 'tagFile returns false if no tag is given');
+		$tagged = $this->m_files->tagFile([$fnum], []);
+		$this->assertFalse($tagged, 'tagFile returns false if no tag is given');
 
-        $tags = $this->m_files->getAllTags();
-        $tagged = $this->m_files->tagFile([$fnum], [$tags[0]['id']], 62);
-        $this->assertTrue($tagged, 'tagFile returns true if a file and a tag are given');
-    }
+		$tags   = $this->m_files->getAllTags();
+		$tagged = $this->m_files->tagFile([$fnum], [$tags[0]['id']], 62);
+		$this->assertTrue($tagged, 'tagFile returns true if a file and a tag are given');
+	}
 
-    public function testUpdateState() {
-        $updated = $this->m_files->updateState([], null);
-        $this->assertFalse($updated, 'updateState returns false if no file and no new state is given');
-    }
+	public function testUpdateState()
+	{
+		$updated = $this->m_files->updateState([], null);
+		$this->assertFalse($updated, 'updateState returns false if no file and no new state is given');
+	}
 
-	public function testgetFnumArray2() {
-		$fnums = [];
+	public function testgetFnumArray2()
+	{
+		$fnums    = [];
 		$elements = [];
-		$data = $this->m_files->getFnumArray2($fnums, $elements);
+		$data     = $this->m_files->getFnumArray2($fnums, $elements);
 		$this->assertEmpty($data, 'getFnumArray returns an empty array if no fnum is given');
 
 		$element_ids = [];
-		$form_id = $this->h_sample->getUnitTestFabrikForm();
+		$form_id     = $this->h_sample->getUnitTestFabrikForm();
 
-		$db = JFactory::getDbo();
+		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 		$query->select('jfe.id')
 			->from($db->quoteName('#__fabrik_elements', 'jfe'))
@@ -159,34 +165,34 @@ class EmundusModelFilesTest extends TestCase{
 		$db->setQuery($query);
 		$element_ids = $db->loadColumn();
 		$element_ids = implode(',', $element_ids);
-		$elements = $this->h_files->getElementsName($element_ids);
+		$elements    = $this->h_files->getElementsName($element_ids);
 		$this->assertNotEmpty($elements, 'getElementsName returns an array of elements');
 
-		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-        $program = $this->h_sample->createSampleProgram();
-        $campaign_id = $this->h_sample->createSampleCampaign($program);
-        $fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+		$user_id     = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$program     = $this->h_sample->createSampleProgram();
+		$campaign_id = $this->h_sample->createSampleCampaign($program);
+		$fnum        = $this->h_sample->createSampleFile($campaign_id, $user_id);
 
-        $columns = ['user', 'fnum', 'e_797_7973', 'e_797_7974', 'e_797_7975', 'e_797_7976', 'e_797_7977', 'e_797_7978', 'e_797_7979', 'e_797_7980', 'e_797_7981', 'e_797_7982', 'e_797_7983', 'dropdown_multi', 'dbjoin_multi', 'cascadingdropdown'];
-        $values = array($user_id, $fnum, 'TEST FIELD', 'TEST TEXTAREA', '["1"]', '2', '3', '65', 'Ajoutez du texte personnalisé pour vos candidats', "<p>S'il vous plait taisez vous</p>", '1', '2023-01-01', '2023-07-13 00:00:00', '["0","1"]', null, '');
-        $query->clear()
-            ->insert('jos_emundus_unit_test_form')
-            ->columns($columns)
-            ->values(implode(',', $db->quote($values)));
+		$columns = ['user', 'fnum', 'e_797_7973', 'e_797_7974', 'e_797_7975', 'e_797_7976', 'e_797_7977', 'e_797_7978', 'e_797_7979', 'e_797_7980', 'e_797_7981', 'e_797_7982', 'e_797_7983', 'dropdown_multi', 'dbjoin_multi', 'cascadingdropdown'];
+		$values  = array($user_id, $fnum, 'TEST FIELD', 'TEST TEXTAREA', '["1"]', '2', '3', '65', 'Ajoutez du texte personnalisé pour vos candidats', "<p>S'il vous plait taisez vous</p>", '1', '2023-01-01', '2023-07-13 00:00:00', '["0","1"]', null, '');
+		$query->clear()
+			->insert('jos_emundus_unit_test_form')
+			->columns($columns)
+			->values(implode(',', $db->quote($values)));
 
-        $db->setQuery($query);
-        $db->execute();
-        $insert_id = $db->insertid();
+		$db->setQuery($query);
+		$db->execute();
+		$insert_id = $db->insertid();
 
-        if (!empty($insert_id)) {
-            $query->clear()
-                ->insert('jos_emundus_unit_test_form_repeat_dbjoin_multi')
-                ->columns(['parent_id', 'dbjoin_multi'])
-                ->values($insert_id . ', "17"');
+		if (!empty($insert_id)) {
+			$query->clear()
+				->insert('jos_emundus_unit_test_form_repeat_dbjoin_multi')
+				->columns(['parent_id', 'dbjoin_multi'])
+				->values($insert_id . ', "17"');
 
-            $db->setQuery($query);
-            $db->execute();
-        }
+			$db->setQuery($query);
+			$db->execute();
+		}
 
 		$field_element = null;
 		foreach ($elements as $element) {
@@ -216,9 +222,9 @@ class EmundusModelFilesTest extends TestCase{
 			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with texarea element');
 			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
 			$this->assertArrayHasKey($texarea_element->tab_name . '___' . $texarea_element->element_name, $data[$fnum], 'the data contains the textarea element');
-            $this->assertEquals('TEST TEXTAREA', $data[$fnum][$texarea_element->tab_name . '___' . $texarea_element->element_name], 'the fnum contains the field element');
+			$this->assertEquals('TEST TEXTAREA', $data[$fnum][$texarea_element->tab_name . '___' . $texarea_element->element_name], 'the fnum contains the field element');
 
-        }
+		}
 
 		$display_element = null;
 		foreach ($elements as $element) {
@@ -312,7 +318,7 @@ class EmundusModelFilesTest extends TestCase{
 			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with databasejoin multi element');
 			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
 			$this->assertArrayHasKey($databasejoin_multi_element->table_join . '___' . $databasejoin_multi_element->element_name, $data[$fnum], 'the data contains the databasejoin multi element');
-            $this->assertStringContainsString('Charente-Maritime', $data[$fnum][$databasejoin_multi_element->table_join . '___' . $databasejoin_multi_element->element_name], 'the databasejoin multi element contains the correct value');
+			$this->assertStringContainsString('Charente-Maritime', $data[$fnum][$databasejoin_multi_element->table_join . '___' . $databasejoin_multi_element->element_name], 'the databasejoin multi element contains the correct value');
 		}
 
 		$radio_element = null;
@@ -382,7 +388,7 @@ class EmundusModelFilesTest extends TestCase{
 		}
 
 		$first_form_elements = [$birthday_element, $date_element, $yesno_element, $display_element, $texarea_element, $field_element, $databasejoin_element, $radio_element, $dropdown_element, $dropdown_multi_element, $databasejoin_multi_element, $cascadingdropdown_element];
-		$data = $this->m_files->getFnumArray2([$fnum], $first_form_elements);
+		$data                = $this->m_files->getFnumArray2([$fnum], $first_form_elements);
 		$this->assertNotEmpty($data, 'getFnumArray returns an not empty array of data with all elements');
 
 		// TODO: create a form with all type of elements and where the group is repeatable
@@ -598,16 +604,16 @@ class EmundusModelFilesTest extends TestCase{
 
 		// calculate time of execution
 		//$elements_from_different_forms = array_merge($first_form_elements, $repeat_form_elements);
-        $elements_from_different_forms = $first_form_elements;
-		$start = microtime(true);
-		$data = $this->m_files->getFnumArray2([$fnum], $elements_from_different_forms, true);
-		$end = microtime(true);
+		$elements_from_different_forms = $first_form_elements;
+		$start                         = microtime(true);
+		$data                          = $this->m_files->getFnumArray2([$fnum], $elements_from_different_forms, true);
+		$end                           = microtime(true);
 		$this->assertNotEmpty($data, 'getFnumArray returns a not empty array of data with all elements from different forms');
 		$elapsed_new_function_time = $end - $start;
 
-		$start = microtime(true);
-		$data = $this->m_files->getFnumArray([$fnum], $elements_from_different_forms);
-		$end = microtime(true);
+		$start                     = microtime(true);
+		$data                      = $this->m_files->getFnumArray([$fnum], $elements_from_different_forms);
+		$end                       = microtime(true);
 		$elapsed_old_function_time = $end - $start;
 
 		$this->assertGreaterThanOrEqual($elapsed_new_function_time, $elapsed_old_function_time, 'getFnumArray2 is faster than getFnumArray ' . $elapsed_new_function_time . ' vs ' . $elapsed_old_function_time);

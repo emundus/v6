@@ -2,7 +2,7 @@
 /**
  * @package     Joomla
  * @subpackage  eMundus
- * @link       http://www.emundus.fr
+ * @link        http://www.emundus.fr
  *
  * @license     GNU/GPL
  * @author      HUBINET Brice
@@ -10,7 +10,7 @@
 
 // No direct access
 
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
@@ -20,357 +20,377 @@ class EmundusControllerSync extends JControllerLegacy
 {
 	protected $app;
 
-    private $_user;
-    private $m_sync;
+	private $_user;
+	private $m_sync;
 
-    public function __construct($config = array())
-    {
-        parent::__construct($config);
+	public function __construct($config = array())
+	{
+		parent::__construct($config);
 
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'sync.php');
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'access.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'sync.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 
-		$this->app = Factory::getApplication();
-        $this->_user = $this->app->getSession()->get('emundusUser');
-        $this->m_sync = $this->getModel('Sync');
-    }
+		$this->app    = Factory::getApplication();
+		$this->_user  = $this->app->getSession()->get('emundusUser');
+		$this->m_sync = $this->getModel('Sync');
+	}
 
-    public function getconfig()
-    {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_('ACCESS_DENIED'));
-        } else {
-            
-            $type = $this->input->getString('type', null);
+	public function getconfig()
+	{
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+			$result = 0;
+			$tab    = array('status' => $result, 'msg' => JText::_('ACCESS_DENIED'));
+		}
+		else {
 
-            if (!empty($type)) {
-                $config = $this->m_sync->getConfig($type);
-                $tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => json_decode($config));
-            } else {
-                $tab = array('status' => 0, 'msg' => JText::_('MISSING_PARAMS'));
-            }
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
+			$type = $this->input->getString('type', null);
 
-    public function saveconfig()
-    {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            
-            $config = $this->input->getString('config', null);
-            $type = $this->input->getString('type', null);
+			if (!empty($type)) {
+				$config = $this->m_sync->getConfig($type);
+				$tab    = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => json_decode($config));
+			}
+			else {
+				$tab = array('status' => 0, 'msg' => JText::_('MISSING_PARAMS'));
+			}
+		}
+		echo json_encode((object) $tab);
+		exit;
+	}
 
-            $saved = $this->m_sync->saveConfig($config, $type);
+	public function saveconfig()
+	{
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+			$result = 0;
+			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+		}
+		else {
 
-            $tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => $saved);
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
+			$config = $this->input->getString('config', null);
+			$type   = $this->input->getString('type', null);
 
-    public function getaspects()
-    {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $aspects = $this->m_sync->getAspects();
-            $tab = array('status' => 1, 'msg' => JText::_('ASPECTS_FOUND'), 'data' => $aspects);
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
+			$saved = $this->m_sync->saveConfig($config, $type);
 
-    public function uploadaspectfile()
-    {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $file = $_FILES['file'];
+			$tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => $saved);
+		}
+		echo json_encode((object) $tab);
+		exit;
+	}
 
-            $aspects = $this->m_sync->uploadAspectFile($file);
-            $tab = array('status' => !empty($aspects), 'msg' => JText::_('ASPECTS_UPLOADED'), 'data' => $aspects);
-        }
+	public function getaspects()
+	{
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+			$result = 0;
+			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+		}
+		else {
+			$aspects = $this->m_sync->getAspects();
+			$tab     = array('status' => 1, 'msg' => JText::_('ASPECTS_FOUND'), 'data' => $aspects);
+		}
+		echo json_encode((object) $tab);
+		exit;
+	}
 
-        echo json_encode((object)$tab);
-        exit;
-    }
+	public function uploadaspectfile()
+	{
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+			$result = 0;
+			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+		}
+		else {
+			$file = $_FILES['file'];
 
-    public function updateaspectlistfromfile()
-    {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $file = $_FILES['file'];
+			$aspects = $this->m_sync->uploadAspectFile($file);
+			$tab     = array('status' => !empty($aspects), 'msg' => JText::_('ASPECTS_UPLOADED'), 'data' => $aspects);
+		}
 
-            $aspects = $this->m_sync->updateAspectListFromFile($file);
-            $tab = array('status' => !empty($aspects), 'msg' => JText::_('ASPECTS_UPDATED'), 'data' => $aspects);
-        }
+		echo json_encode((object) $tab);
+		exit;
+	}
 
-        echo json_encode((object)$tab);
-        exit;
-    }
+	public function updateaspectlistfromfile()
+	{
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+			$result = 0;
+			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+		}
+		else {
+			$file = $_FILES['file'];
+
+			$aspects = $this->m_sync->updateAspectListFromFile($file);
+			$tab     = array('status' => !empty($aspects), 'msg' => JText::_('ASPECTS_UPDATED'), 'data' => $aspects);
+		}
+
+		echo json_encode((object) $tab);
+		exit;
+	}
 
 
-    public function getdocuments()
-    {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $documents = $this->m_sync->getDocuments();
+	public function getdocuments()
+	{
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+			$result = 0;
+			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+		}
+		else {
+			$documents = $this->m_sync->getDocuments();
 
-            $tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => $documents);
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
+			$tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => $documents);
+		}
+		echo json_encode((object) $tab);
+		exit;
+	}
 
-    public function getemundustags()
-    {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $tags = $this->m_sync->getEmundusTags();
+	public function getemundustags()
+	{
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+			$result = 0;
+			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+		}
+		else {
+			$tags = $this->m_sync->getEmundusTags();
 
-            $tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => $tags);
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
+			$tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => $tags);
+		}
+		echo json_encode((object) $tab);
+		exit;
+	}
 
-    public function getsetuptags()
-    {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'tags.php');
-            $helper = new EmundusHelperTags();
-            $tags = $helper->getTags();
+	public function getsetuptags()
+	{
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+			$result = 0;
+			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+		}
+		else {
+			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'tags.php');
+			$helper = new EmundusHelperTags();
+			$tags   = $helper->getTags();
 
-            $tab = array('status' => 1, 'msg' => JText::_('TAGS_RETRIEVED'), 'data' => $tags);
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
+			$tab = array('status' => 1, 'msg' => JText::_('TAGS_RETRIEVED'), 'data' => $tags);
+		}
+		echo json_encode((object) $tab);
+		exit;
+	}
 
-    public function updatedocumentsync()
-    {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            
-            $did = $this->input->getString('did', null);
-            $sync = $this->input->getString('sync', null);
+	public function updatedocumentsync()
+	{
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+			$result = 0;
+			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+		}
+		else {
 
-            $updated = $this->m_sync->updateDocumentSync($did, $sync);
+			$did  = $this->input->getString('did', null);
+			$sync = $this->input->getString('sync', null);
 
-            $tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => $updated);
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
+			$updated = $this->m_sync->updateDocumentSync($did, $sync);
 
-    public function updatedocumentsyncmethod()
-    {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            
-            $did = $this->input->getString('did', null);
-            $sync_method = $this->input->getString('sync_method', null);
+			$tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => $updated);
+		}
+		echo json_encode((object) $tab);
+		exit;
+	}
 
-            $updated = $this->m_sync->updateDocumentSyncMethod($did, $sync_method);
+	public function updatedocumentsyncmethod()
+	{
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+			$result = 0;
+			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+		}
+		else {
 
-            $tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => $updated);
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
+			$did         = $this->input->getString('did', null);
+			$sync_method = $this->input->getString('sync_method', null);
 
-    public function issyncmoduleactive()
-    {
-        $sync_active = $this->m_sync->isSyncModuleActive();
+			$updated = $this->m_sync->updateDocumentSyncMethod($did, $sync_method);
 
-        $tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => $sync_active);
-        echo json_encode((object)$tab);
-        exit;
-    }
+			$tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => $updated);
+		}
+		echo json_encode((object) $tab);
+		exit;
+	}
 
-    public function getsynctype(): string
-    {
-        $upload_id = $this->input->getInt('upload_id', null);
-        $tab = array(
-            'status' => 1,
-            'msg' => JText::_('SYNC_TYPE_FOUND'),
-        );
+	public function issyncmoduleactive()
+	{
+		$sync_active = $this->m_sync->isSyncModuleActive();
 
-        if (!empty($upload_id)) {
-            $sync_type = $this->m_sync->getSyncType($upload_id);
+		$tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => $sync_active);
+		echo json_encode((object) $tab);
+		exit;
+	}
 
-            if (!empty($sync_type)) {
-                $tab['data'] = $sync_type;
-            } else {
-                $tab['status'] = 0;
-                $tab['msg'] = JText::_('SYNC_TYPE_NOT_FOUND');
-            }
-        } else {
-            $tab['status'] = 0;
-            $tab['msg'] = JText::_('MISSING_UPLOAD_ID');
-        }
+	public function getsynctype(): string
+	{
+		$upload_id = $this->input->getInt('upload_id', null);
+		$tab       = array(
+			'status' => 1,
+			'msg'    => JText::_('SYNC_TYPE_FOUND'),
+		);
 
-        echo json_encode((object)$tab);
-        exit;
-    }
+		if (!empty($upload_id)) {
+			$sync_type = $this->m_sync->getSyncType($upload_id);
 
-    public function getsynchronizestate()
-    {
-        $upload_id = $this->input->getInt('upload_id', null);
-        $tab = array(
-            'status' => 0,
-            'msg' => JText::_('SYNC_STATE_NOT_FOUND'),
-        );
+			if (!empty($sync_type)) {
+				$tab['data'] = $sync_type;
+			}
+			else {
+				$tab['status'] = 0;
+				$tab['msg']    = JText::_('SYNC_TYPE_NOT_FOUND');
+			}
+		}
+		else {
+			$tab['status'] = 0;
+			$tab['msg']    = JText::_('MISSING_UPLOAD_ID');
+		}
 
-        if (!empty($upload_id)) {
-            $sync_state = $this->m_sync->getUploadSyncState($upload_id);
+		echo json_encode((object) $tab);
+		exit;
+	}
 
-            $tab['status'] = 1;
-            $tab['msg'] = JText::_('SYNC_STATE_FOUND');
-            $tab['data'] = $sync_state;
-        }
+	public function getsynchronizestate()
+	{
+		$upload_id = $this->input->getInt('upload_id', null);
+		$tab       = array(
+			'status' => 0,
+			'msg'    => JText::_('SYNC_STATE_NOT_FOUND'),
+		);
 
-        echo json_encode((object)$tab);
-        exit;
-    }
+		if (!empty($upload_id)) {
+			$sync_state = $this->m_sync->getUploadSyncState($upload_id);
 
-    public function synchronizeattachments()
-    {
-        $updated = array();
-        $upload_ids = $this->input->get('upload_ids', array(), 'array');
-        $upload_ids = json_decode($upload_ids[0]);
+			$tab['status'] = 1;
+			$tab['msg']    = JText::_('SYNC_STATE_FOUND');
+			$tab['data']   = $sync_state;
+		}
 
-        if (!empty($upload_ids) && is_array($upload_ids)) {
-            $updated = $this->m_sync->synchronizeAttachments($upload_ids);
-            $tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => $updated);
-        } else {
-            $tab = array('status' => 0, 'msg' => JText::_('MISSING_UPLOAD_IDS'));
-        }
+		echo json_encode((object) $tab);
+		exit;
+	}
 
-        echo json_encode((object)$tab);
-        exit;
-    }
+	public function synchronizeattachments()
+	{
+		$updated    = array();
+		$upload_ids = $this->input->get('upload_ids', array(), 'array');
+		$upload_ids = json_decode($upload_ids[0]);
 
-    public function deleteattachments()
-    {
-        $upload_ids = $this->input->get('upload_ids', array(), 'array');
-        $upload_ids = json_decode($upload_ids[0]);
+		if (!empty($upload_ids) && is_array($upload_ids)) {
+			$updated = $this->m_sync->synchronizeAttachments($upload_ids);
+			$tab     = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => $updated);
+		}
+		else {
+			$tab = array('status' => 0, 'msg' => JText::_('MISSING_UPLOAD_IDS'));
+		}
 
-        if (!empty($upload_ids) && is_array($upload_ids)) {
-            $updated = $this->m_sync->deleteAttachments($upload_ids);
-            $tab = array('status' => 1, 'msg' => JText::_('ATTACHMENTS_SYNC_DELETED'), 'data' => $updated);
-        } else {
-            $tab = array('status' => 0, 'msg' => JText::_('MISSING_UPLOAD_IDS'));
-        }
+		echo json_encode((object) $tab);
+		exit;
+	}
 
-        echo json_encode((object)$tab);
-        exit;
-    }
+	public function deleteattachments()
+	{
+		$upload_ids = $this->input->get('upload_ids', array(), 'array');
+		$upload_ids = json_decode($upload_ids[0]);
 
-    public function checkattachmentsexists()
-    {
-        $upload_ids = $this->input->get('upload_ids', array(), 'array');
-        $upload_ids = json_decode($upload_ids[0]);
+		if (!empty($upload_ids) && is_array($upload_ids)) {
+			$updated = $this->m_sync->deleteAttachments($upload_ids);
+			$tab     = array('status' => 1, 'msg' => JText::_('ATTACHMENTS_SYNC_DELETED'), 'data' => $updated);
+		}
+		else {
+			$tab = array('status' => 0, 'msg' => JText::_('MISSING_UPLOAD_IDS'));
+		}
 
-        if (!empty($upload_ids)) {
-            $attachments_exists = $this->m_sync->checkAttachmentsExists($upload_ids);
+		echo json_encode((object) $tab);
+		exit;
+	}
 
-            $tab['status'] = 1;
-            $tab['msg'] = JText::_('ATTACHMENT_FOUND');
-            $tab['data'] = $attachments_exists;
-        }
+	public function checkattachmentsexists()
+	{
+		$upload_ids = $this->input->get('upload_ids', array(), 'array');
+		$upload_ids = json_decode($upload_ids[0]);
 
-        echo json_encode((object)$tab);
-        exit;
-    }
+		if (!empty($upload_ids)) {
+			$attachments_exists = $this->m_sync->checkAttachmentsExists($upload_ids);
 
-    public function getattachmentaspectsconfig()
-    {
-        $user = JFactory::getUser();
+			$tab['status'] = 1;
+			$tab['msg']    = JText::_('ATTACHMENT_FOUND');
+			$tab['data']   = $attachments_exists;
+		}
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
-        } else {
-            $attachmentId = $this->input->getInt('attachmentId', 0);
+		echo json_encode((object) $tab);
+		exit;
+	}
 
-            if (!empty($attachmentId)) {
-                $tab = array('status' => 1, 'msg' => JText::_('ATTACHMENT_ASPECTS_CONFIG_FOUND'));
-                $tab['data'] = $this->m_sync->getAttachmentAspectsConfig($attachmentId);
-            } else {
-                $tab = array('status' => 0, 'msg' => JText::_('MISSING_ATTACHMENT_ID'));
-            }
-        }
+	public function getattachmentaspectsconfig()
+	{
+		$user = JFactory::getUser();
 
-        echo json_encode((object)$tab);
-        exit;
-    }
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
+		}
+		else {
+			$attachmentId = $this->input->getInt('attachmentId', 0);
 
-    public function saveattachmentaspectsconfig()
-    {
-        $user = JFactory::getUser();
+			if (!empty($attachmentId)) {
+				$tab         = array('status' => 1, 'msg' => JText::_('ATTACHMENT_ASPECTS_CONFIG_FOUND'));
+				$tab['data'] = $this->m_sync->getAttachmentAspectsConfig($attachmentId);
+			}
+			else {
+				$tab = array('status' => 0, 'msg' => JText::_('MISSING_ATTACHMENT_ID'));
+			}
+		}
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
-        } else {
-            $attachmentId = $this->input->getInt('attachmentId', 0);
-            $config = $this->input->getString('config', '');
+		echo json_encode((object) $tab);
+		exit;
+	}
 
-            if (!empty($attachmentId)) {
-                $tab = array('status' => 1, 'msg' => JText::_('ATTACHMENT_ASPECTS_CONFIG_SAVED'));
-                $tab['data'] = $this->m_sync->saveAttachmentAspectsConfig($attachmentId, $config);
-            } else {
-                $tab = array('status' => 0, 'msg' => JText::_('MISSING_PARAMS'));
-            }
-        }
+	public function saveattachmentaspectsconfig()
+	{
+		$user = JFactory::getUser();
 
-        echo json_encode((object)$tab);
-        exit;
-    }
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
+		}
+		else {
+			$attachmentId = $this->input->getInt('attachmentId', 0);
+			$config       = $this->input->getString('config', '');
 
-    public function getnodeid()
-    {
-        $response = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
-        $user = JFactory::getUser();
+			if (!empty($attachmentId)) {
+				$tab         = array('status' => 1, 'msg' => JText::_('ATTACHMENT_ASPECTS_CONFIG_SAVED'));
+				$tab['data'] = $this->m_sync->saveAttachmentAspectsConfig($attachmentId, $config);
+			}
+			else {
+				$tab = array('status' => 0, 'msg' => JText::_('MISSING_PARAMS'));
+			}
+		}
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $upload_id = $this->input->getInt('uploadId', 0);
+		echo json_encode((object) $tab);
+		exit;
+	}
 
-            if (!empty($upload_id)) {
-                $node_id = $this->m_sync->getNodeId($upload_id);
+	public function getnodeid()
+	{
+		$response = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
+		$user     = JFactory::getUser();
 
-                $eMConfig = JComponentHelper::getParams('com_emundus');
-                $external_storage_ged_alfresco_base_url = $eMConfig->get('external_storage_ged_alfresco_base_url', '');
-                $external_storage_ged_alfresco_site = $eMConfig->get('external_storage_ged_alfresco_site', '');
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$upload_id = $this->input->getInt('uploadId', 0);
 
-                $response['data'] =  $external_storage_ged_alfresco_base_url . 'share/page/site/' . $external_storage_ged_alfresco_site . '/document-details?nodeRef=workspace://SpacesStore/' . $node_id;
-                $response['status'] = 1;
-                $response['msg'] = 'Success';
-            } else {
-                $response['msg'] = JText::_('MISSING_PARAMS');
-            }
-        }
+			if (!empty($upload_id)) {
+				$node_id = $this->m_sync->getNodeId($upload_id);
 
-        echo json_encode((object)$response);
-        exit;
-    }
+				$eMConfig                               = JComponentHelper::getParams('com_emundus');
+				$external_storage_ged_alfresco_base_url = $eMConfig->get('external_storage_ged_alfresco_base_url', '');
+				$external_storage_ged_alfresco_site     = $eMConfig->get('external_storage_ged_alfresco_site', '');
+
+				$response['data']   = $external_storage_ged_alfresco_base_url . 'share/page/site/' . $external_storage_ged_alfresco_site . '/document-details?nodeRef=workspace://SpacesStore/' . $node_id;
+				$response['status'] = 1;
+				$response['msg']    = 'Success';
+			}
+			else {
+				$response['msg'] = JText::_('MISSING_PARAMS');
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
 }

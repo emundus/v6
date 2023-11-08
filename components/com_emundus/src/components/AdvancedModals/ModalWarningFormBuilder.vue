@@ -2,16 +2,16 @@
   <!-- modalC -->
   <span :id="'modalWarningFormBuilder'">
     <modal
-      :name="'modalWarningFormBuilder'"
-      height="auto"
-      transition="nice-modal-fade"
-      :min-width="200"
-      :min-height="200"
-      :delay="100"
-      :adaptive="true"
-      :clickToClose="false"
-      @closed="beforeClose"
-      @before-open="beforeOpen"
+        :name="'modalWarningFormBuilder'"
+        height="auto"
+        transition="nice-modal-fade"
+        :min-width="200"
+        :min-height="200"
+        :delay="100"
+        :adaptive="true"
+        :clickToClose="false"
+        @closed="beforeClose"
+        @before-open="beforeOpen"
     >
 
     <div class="fixed-header-modal">
@@ -22,10 +22,10 @@
       </div>
       <div class="update-field-header">
         <h2 class="update-title-header">
-          {{Warning}}
+          {{ Warning }}
         </h2>
         <p>
-          {{FormAffectedToFiles}}
+          {{ FormAffectedToFiles }}
         </p>
       </div>
 
@@ -34,7 +34,7 @@
           <button class="bouton-sauvergarder-et-continuer w-retour"
                   type="button"
                   @click.prevent="$modal.hide('modalWarningFormBuilder')">
-            {{Retour}}
+            {{ Retour }}
           </button>
             <button class="bouton-sauvergarder-et-continuer em-mr-4"
                     type="button"
@@ -70,7 +70,8 @@ export default {
   methods: {
     beforeClose(event) {
     },
-    beforeOpen(event) {},
+    beforeOpen(event) {
+    },
     /*duplicateProfile() {
       axios({
         method: "post",
@@ -104,12 +105,12 @@ export default {
       });
     },*/
 
-    formbuilder(){
+    formbuilder() {
       window.location.replace(
-              "index.php?option=com_emundus&view=form&layout=formbuilder&prid=" +
-              this.pid +
-              "&index=0&cid=" +
-              this.cid
+          "index.php?option=com_emundus&view=form&layout=formbuilder&prid=" +
+          this.pid +
+          "&index=0&cid=" +
+          this.cid
       );
     },
   },
@@ -117,7 +118,7 @@ export default {
 </script>
 
 <style scoped>
-.modalC-content{
+.modalC-content {
   margin-top: 0;
 }
 </style>

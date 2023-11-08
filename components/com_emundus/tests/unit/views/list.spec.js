@@ -1,10 +1,10 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import '../../mocks/matchMedia.mock';
 import List from '../../../src/views/list.vue';
 import translate from '../../mocks/mixins/translate';
 import store from '../../../src/store/index';
 import VModal from 'vue-js-modal';
-import { VPopover } from 'v-tooltip';
+import {VPopover} from 'v-tooltip';
 
 const localVue = createLocalVue();
 localVue.mixin(translate);
@@ -12,7 +12,67 @@ localVue.use(VModal);
 localVue.component('v-popover', VPopover);
 
 
-const ListMock = btoa(JSON.stringify({'forms':{'title':'COM_EMUNDUS_ONBOARD_FORMS','tabs':[{'title':'COM_EMUNDUS_FORM_MY_FORMS','key':'form','controller':'form','getter':'getallform','actions':[{'action':'duplicateform','label':'COM_EMUNDUS_ONBOARD_ACTION_DUPLICATE','controller':'form','name':'duplicate'},{'action':'index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%','label':'COM_EMUNDUS_ONBOARD_MODIFY','controller':'form','type':'redirect','name':'edit'},{'action':'createform','controller':'form','label':'COM_EMUNDUS_ONBOARD_ADD_FORM','name':'add'}],'filters':[]},{'title':'COM_EMUNDUS_FORM_MY_EVAL_FORMS','key':'form_evaluations','controller':'form','getter':'getallgrilleEval','actions':[{'action':'createformeval','label':'COM_EMUNDUS_ONBOARD_ADD_EVAL_FORM','controller':'form','name':'add'},{'action':'/index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%&mode=eval','label':'COM_EMUNDUS_ONBOARD_MODIFY','controller':'form','type':'redirect','name':'edit'}],'filters':[]},{'title':'COM_EMUNDUS_FORM_PAGE_MODELS','key':'form_models','controller':'formbuilder','getter':'getallmodels','actions':[{'action':'deleteformmodelfromids','label':'COM_EMUNDUS_ACTIONS_DELETE','controller':'formbuilder','parameters':'&model_ids=%id%','name':'delete'},{'action':'/index.php?option=com_emundus&view=form&layout=formbuilder&prid=%form_id%&mode=models','label':'COM_EMUNDUS_ONBOARD_MODIFY','controller':'form','type':'redirect','name':'edit'}],'filters':[]}]}}));
+const ListMock = btoa(JSON.stringify({
+    'forms': {
+        'title': 'COM_EMUNDUS_ONBOARD_FORMS',
+        'tabs': [{
+            'title': 'COM_EMUNDUS_FORM_MY_FORMS',
+            'key': 'form',
+            'controller': 'form',
+            'getter': 'getallform',
+            'actions': [{
+                'action': 'duplicateform',
+                'label': 'COM_EMUNDUS_ONBOARD_ACTION_DUPLICATE',
+                'controller': 'form',
+                'name': 'duplicate'
+            }, {
+                'action': 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%',
+                'label': 'COM_EMUNDUS_ONBOARD_MODIFY',
+                'controller': 'form',
+                'type': 'redirect',
+                'name': 'edit'
+            }, {'action': 'createform', 'controller': 'form', 'label': 'COM_EMUNDUS_ONBOARD_ADD_FORM', 'name': 'add'}],
+            'filters': []
+        }, {
+            'title': 'COM_EMUNDUS_FORM_MY_EVAL_FORMS',
+            'key': 'form_evaluations',
+            'controller': 'form',
+            'getter': 'getallgrilleEval',
+            'actions': [{
+                'action': 'createformeval',
+                'label': 'COM_EMUNDUS_ONBOARD_ADD_EVAL_FORM',
+                'controller': 'form',
+                'name': 'add'
+            }, {
+                'action': '/index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%&mode=eval',
+                'label': 'COM_EMUNDUS_ONBOARD_MODIFY',
+                'controller': 'form',
+                'type': 'redirect',
+                'name': 'edit'
+            }],
+            'filters': []
+        }, {
+            'title': 'COM_EMUNDUS_FORM_PAGE_MODELS',
+            'key': 'form_models',
+            'controller': 'formbuilder',
+            'getter': 'getallmodels',
+            'actions': [{
+                'action': 'deleteformmodelfromids',
+                'label': 'COM_EMUNDUS_ACTIONS_DELETE',
+                'controller': 'formbuilder',
+                'parameters': '&model_ids=%id%',
+                'name': 'delete'
+            }, {
+                'action': '/index.php?option=com_emundus&view=form&layout=formbuilder&prid=%form_id%&mode=models',
+                'label': 'COM_EMUNDUS_ONBOARD_MODIFY',
+                'controller': 'form',
+                'type': 'redirect',
+                'name': 'edit'
+            }],
+            'filters': []
+        }]
+    }
+}));
 
 describe('List view', () => {
     const wrapper = mount(List, {
@@ -24,11 +84,11 @@ describe('List view', () => {
         store
     });
 
-    it ('List wrapper should exist', () => {
+    it('List wrapper should exist', () => {
         expect(wrapper.find('#onboarding_list').exists()).toBeTruthy();
     });
 
-    it ('Current displayed tab should be equal to selected list tab in navigation', () => {
+    it('Current displayed tab should be equal to selected list tab in navigation', () => {
         expect(wrapper.vm.currentTab.key).toBe(wrapper.vm.selectedListTab);
     });
 
@@ -39,13 +99,13 @@ describe('List view', () => {
     });
 
     wrapper.vm.$data.loading.tabs = false;
-    it ('Nav tabs should exists and have as much tabs as list tabs length', () => {
+    it('Nav tabs should exists and have as much tabs as list tabs length', () => {
         if (wrapper.vm.$data.currentList.tabs.length > 1) {
             expect(wrapper.findAll('#list-nav li').length).toBe(wrapper.vm.$data.currentList.tabs.length);
         }
     });
 
-    it ('Empty list message should be displayed if displayedItems is empty', () => {
+    it('Empty list message should be displayed if displayedItems is empty', () => {
         if (wrapper.vm.displayedItems.length < 1) {
             expect(wrapper.find('#empty-list').exists()).toBeTruthy();
         } else {
@@ -53,7 +113,7 @@ describe('List view', () => {
         }
     });
 
-    it ('Add action button should exists if current tab has add action', () => {
+    it('Add action button should exists if current tab has add action', () => {
         if (wrapper.vm.addAction) {
             expect(wrapper.find('#add-action-btn').exists()).toBeTruthy();
         } else {
@@ -61,7 +121,7 @@ describe('List view', () => {
         }
     });
 
-    it ('tabActionsPopover should never include add, edit or preview actions', () => {
+    it('tabActionsPopover should never include add, edit or preview actions', () => {
         wrapper.vm.tabActionsPopover.forEach(action => {
             expect(action.name).not.toBe('add');
             expect(action.name).not.toBe('edit');
@@ -69,7 +129,7 @@ describe('List view', () => {
         });
     });
 
-    it ('on click action should return false if no action is defined', () => {
+    it('on click action should return false if no action is defined', () => {
         expect(wrapper.vm.onClickAction(null)).toBeFalsy();
         expect(wrapper.vm.onClickAction(['test'])).toBeFalsy();
     });
@@ -118,7 +178,16 @@ describe('List view filter function', () => {
 
     const getListItems = jest.spyOn(wrapper.vm, 'getListItems');
 
-    const mockFilters = {'programs':[{'key':'recherche','value':'all','options':[{'value':'all','label':'Toutes les catégories'},{'value':'RECHERCHE','label':'RECHERCHE'}]}]};
+    const mockFilters = {
+        'programs': [{
+            'key': 'recherche',
+            'value': 'all',
+            'options': [{'value': 'all', 'label': 'Toutes les catégories'}, {
+                'value': 'RECHERCHE',
+                'label': 'RECHERCHE'
+            }]
+        }]
+    };
     wrapper.vm.$data.filters = mockFilters;
 
     jest.useFakeTimers();
@@ -131,8 +200,124 @@ describe('List view filter function', () => {
 });
 
 describe('List of campaigns', () => {
-    let listCampaigns = btoa(JSON.stringify({'campaigns': {'title':'Campagnes','tabs':[{'title':'Campagnes','key':'campaign','controller':'campaign','getter':'getallcampaign','actions':[{'action':'index.php?option=com_emundus&view=campaigns&layout=add','label':'Créer une campagne','controller':'campaign','name':'add','type':'redirect'},{'action':'duplicatecampaign','label':'Dupliquer','controller':'campaign','name':'duplicate'},{'action':'index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=%id%','label':'Modifier','controller':'campaign','type':'redirect','name':'edit'},{'action':'deletecampaign','label':'Supprimer','controller':'campaign','name':'delete','confirm':'Attention ! En supprimant une campagne, vous allez aussi effacer les dossiers de cette campagne','showon':{'key':'nb_files','operator':'<','value':'1'}},{'action':'unpublishcampaign','label':'Dépublier','controller':'campaign','name':'unpublish','showon':{'key':'published','operator':'=','value':'1'}},{'action':'publishcampaign','label':'Publier','controller':'campaign','name':'publish','showon':{'key':'published','operator':'=','value':'0'}},{'action':'pincampaign','label':'COM_EMUNDUS_ONBOARD_ACTION_PIN_CAMPAIGN','controller':'campaign','name':'pin','icon':'push_pin','iconOutlined':true,'showon':{'key':'pinned','operator':'!=','value':'1'}},{'action':'unpincampaign','label':'COM_EMUNDUS_ONBOARD_ACTION_UNPIN_CAMPAIGN','controller':'campaign','name':'unpin','icon':'push_pin','iconOutlined':false,'showon':{'key':'pinned','operator':'=','value':'1'}}],'filters':[{'label':'Tout','getter':'','controller':'campaigns','key':'filter','values':[{'label':'COM_EMUNDUS_ONBOARD_FILTER_ALL','value':'all'},{'label':'COM_EMUNDUS_CAMPAIGN_YET_TO_COME','value':'yettocome'},{'label':'COM_EMUNDUS_ONBOARD_FILTER_OPEN','value':'ongoing'},{'label':'COM_EMUNDUS_ONBOARD_FILTER_CLOSE','value':'Terminated'},{'label':'COM_EMUNDUS_ONBOARD_FILTER_PUBLISH','value':'Publish'},{'label':'COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH','value':'Unpublish'}],'default':'Publish'},{'label':'Tous les programmes','getter':'getallprogramforfilter','controller':'programme','key':'program','values':null}]},{'title':'Programmes','key':'programs','controller':'programme','getter':'getallprogram','actions':[{'action':'index.php?option=com_fabrik&view=form&formid=108','controller':'programme','label':'Ajouter un programme','name':'add','type':'redirect'},{'action':'index.php?option=com_fabrik&view=form&formid=108&rowid=%id%','label':'Modifier','controller':'programme','type':'redirect','name':'edit'}],'filters':[{'label':'Toutes les catégories','getter':'getprogramcategories','controller':'programme','key':'recherche','values':null}]}]}}));
-    
+    let listCampaigns = btoa(JSON.stringify({
+        'campaigns': {
+            'title': 'Campagnes', 'tabs': [{
+                'title': 'Campagnes',
+                'key': 'campaign',
+                'controller': 'campaign',
+                'getter': 'getallcampaign',
+                'actions': [{
+                    'action': 'index.php?option=com_emundus&view=campaigns&layout=add',
+                    'label': 'Créer une campagne',
+                    'controller': 'campaign',
+                    'name': 'add',
+                    'type': 'redirect'
+                }, {
+                    'action': 'duplicatecampaign',
+                    'label': 'Dupliquer',
+                    'controller': 'campaign',
+                    'name': 'duplicate'
+                }, {
+                    'action': 'index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=%id%',
+                    'label': 'Modifier',
+                    'controller': 'campaign',
+                    'type': 'redirect',
+                    'name': 'edit'
+                }, {
+                    'action': 'deletecampaign',
+                    'label': 'Supprimer',
+                    'controller': 'campaign',
+                    'name': 'delete',
+                    'confirm': 'Attention ! En supprimant une campagne, vous allez aussi effacer les dossiers de cette campagne',
+                    'showon': {'key': 'nb_files', 'operator': '<', 'value': '1'}
+                }, {
+                    'action': 'unpublishcampaign',
+                    'label': 'Dépublier',
+                    'controller': 'campaign',
+                    'name': 'unpublish',
+                    'showon': {'key': 'published', 'operator': '=', 'value': '1'}
+                }, {
+                    'action': 'publishcampaign',
+                    'label': 'Publier',
+                    'controller': 'campaign',
+                    'name': 'publish',
+                    'showon': {'key': 'published', 'operator': '=', 'value': '0'}
+                }, {
+                    'action': 'pincampaign',
+                    'label': 'COM_EMUNDUS_ONBOARD_ACTION_PIN_CAMPAIGN',
+                    'controller': 'campaign',
+                    'name': 'pin',
+                    'icon': 'push_pin',
+                    'iconOutlined': true,
+                    'showon': {'key': 'pinned', 'operator': '!=', 'value': '1'}
+                }, {
+                    'action': 'unpincampaign',
+                    'label': 'COM_EMUNDUS_ONBOARD_ACTION_UNPIN_CAMPAIGN',
+                    'controller': 'campaign',
+                    'name': 'unpin',
+                    'icon': 'push_pin',
+                    'iconOutlined': false,
+                    'showon': {'key': 'pinned', 'operator': '=', 'value': '1'}
+                }],
+                'filters': [{
+                    'label': 'Tout',
+                    'getter': '',
+                    'controller': 'campaigns',
+                    'key': 'filter',
+                    'values': [{
+                        'label': 'COM_EMUNDUS_ONBOARD_FILTER_ALL',
+                        'value': 'all'
+                    }, {
+                        'label': 'COM_EMUNDUS_CAMPAIGN_YET_TO_COME',
+                        'value': 'yettocome'
+                    }, {
+                        'label': 'COM_EMUNDUS_ONBOARD_FILTER_OPEN',
+                        'value': 'ongoing'
+                    }, {
+                        'label': 'COM_EMUNDUS_ONBOARD_FILTER_CLOSE',
+                        'value': 'Terminated'
+                    }, {
+                        'label': 'COM_EMUNDUS_ONBOARD_FILTER_PUBLISH',
+                        'value': 'Publish'
+                    }, {'label': 'COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH', 'value': 'Unpublish'}],
+                    'default': 'Publish'
+                }, {
+                    'label': 'Tous les programmes',
+                    'getter': 'getallprogramforfilter',
+                    'controller': 'programme',
+                    'key': 'program',
+                    'values': null
+                }]
+            }, {
+                'title': 'Programmes',
+                'key': 'programs',
+                'controller': 'programme',
+                'getter': 'getallprogram',
+                'actions': [{
+                    'action': 'index.php?option=com_fabrik&view=form&formid=108',
+                    'controller': 'programme',
+                    'label': 'Ajouter un programme',
+                    'name': 'add',
+                    'type': 'redirect'
+                }, {
+                    'action': 'index.php?option=com_fabrik&view=form&formid=108&rowid=%id%',
+                    'label': 'Modifier',
+                    'controller': 'programme',
+                    'type': 'redirect',
+                    'name': 'edit'
+                }],
+                'filters': [{
+                    'label': 'Toutes les catégories',
+                    'getter': 'getprogramcategories',
+                    'controller': 'programme',
+                    'key': 'recherche',
+                    'values': null
+                }]
+            }]
+        }
+    }));
+
     const wrapper = mount(List, {
         propsData: {
             defaultType: 'campaigns',
@@ -145,11 +330,91 @@ describe('List of campaigns', () => {
     wrapper.vm.$data.loading.lists = false;
     wrapper.vm.$data.loading.tabs = false;
 
-    it ('List wrapper should exist', () => {
+    it('List wrapper should exist', () => {
         expect(wrapper.find('#onboarding_list').exists()).toBeTruthy();
     });
 
-    let campaignsData = {'status':true,'msg':'CAMPAIGNS_RETRIEVED','data':{'datas':[{'id':'10','date_time':'2023-09-13 06:56:24','user':null,'label':{'fr':'Campagne test unitaire','en':'Campagne test unitaire'},'description':'Lorem ipsum','short_description':'Lorem ipsum','start_date':'2023-09-12 06:56:24','end_date':'2024-09-13 06:56:24','profile_id':'9','training':'programmet-65015d180451b','year':'2022-2023','published':'1','eval_end_date':null,'admission_start_date':null,'admission_end_date':null,'is_limited':'0','limit':null,'limit_status':null,'pinned':null,'eval_start_date':null,'nb_files':'1','program_label':'Programme Test Unitaire','program_id':'10','published_prog':'1','additional_columns':[{'key':'Date de début','value':'12/09/2023 06h56','classes':'','display':'table'},{'key':'Date de fin','value':'13/09/2024 06h56','classes':'','display':'table'},{'key':'État','type':'tags','values':[{'key':'État','value':'Publié','classes':'label label-lightgreen em-p-5-12 em-font-weight-600'},{'key':'COM_EMUNDUS_ONBOARD_TIME_STATE','value':'En cours','classes':'label label-default em-p-5-12 em-font-weight-600'}],'display':'table'},{'key':'Nombre de dossiers','value':'<a target=\'_blank\' href=\'/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=10\' style=\'line-height: unset;font-size: unset;\'>1</a>','classes':'go-to-campaign-link','display':'table'},{'value':'du 12/09/2023 06h56 au 13/09/2024 06h56','classes':'em-font-size-14 em-neutral-700-color','display':'blocs'},{'type':'tags','key':'État','values':[{'key':'État','value':'Publié','classes':'label label-lightgreen em-p-5-12 em-font-weight-600'},{'key':'COM_EMUNDUS_ONBOARD_TIME_STATE','value':'En cours','classes':'label label-default em-p-5-12 em-font-weight-600'},{'key':'dossiers','value':'<a target=\'_blank\' href=\'/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=10\' style=\'line-height: unset;font-size: unset;\'>1 dossier</a>','classes':'label label-default em-p-5-12 em-font-weight-600 go-to-campaign-link'}],'classes':'em-mt-8 em-mb-8','display':'blocs'}]}],'count':8},'allow_pinned_campaigns':'1'};
+    let campaignsData = {
+        'status': true, 'msg': 'CAMPAIGNS_RETRIEVED', 'data': {
+            'datas': [{
+                'id': '10',
+                'date_time': '2023-09-13 06:56:24',
+                'user': null,
+                'label': {'fr': 'Campagne test unitaire', 'en': 'Campagne test unitaire'},
+                'description': 'Lorem ipsum',
+                'short_description': 'Lorem ipsum',
+                'start_date': '2023-09-12 06:56:24',
+                'end_date': '2024-09-13 06:56:24',
+                'profile_id': '9',
+                'training': 'programmet-65015d180451b',
+                'year': '2022-2023',
+                'published': '1',
+                'eval_end_date': null,
+                'admission_start_date': null,
+                'admission_end_date': null,
+                'is_limited': '0',
+                'limit': null,
+                'limit_status': null,
+                'pinned': null,
+                'eval_start_date': null,
+                'nb_files': '1',
+                'program_label': 'Programme Test Unitaire',
+                'program_id': '10',
+                'published_prog': '1',
+                'additional_columns': [{
+                    'key': 'Date de début',
+                    'value': '12/09/2023 06h56',
+                    'classes': '',
+                    'display': 'table'
+                }, {
+                    'key': 'Date de fin',
+                    'value': '13/09/2024 06h56',
+                    'classes': '',
+                    'display': 'table'
+                }, {
+                    'key': 'État',
+                    'type': 'tags',
+                    'values': [{
+                        'key': 'État',
+                        'value': 'Publié',
+                        'classes': 'label label-lightgreen em-p-5-12 em-font-weight-600'
+                    }, {
+                        'key': 'COM_EMUNDUS_ONBOARD_TIME_STATE',
+                        'value': 'En cours',
+                        'classes': 'label label-default em-p-5-12 em-font-weight-600'
+                    }],
+                    'display': 'table'
+                }, {
+                    'key': 'Nombre de dossiers',
+                    'value': '<a target=\'_blank\' href=\'/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=10\' style=\'line-height: unset;font-size: unset;\'>1</a>',
+                    'classes': 'go-to-campaign-link',
+                    'display': 'table'
+                }, {
+                    'value': 'du 12/09/2023 06h56 au 13/09/2024 06h56',
+                    'classes': 'em-font-size-14 em-neutral-700-color',
+                    'display': 'blocs'
+                }, {
+                    'type': 'tags',
+                    'key': 'État',
+                    'values': [{
+                        'key': 'État',
+                        'value': 'Publié',
+                        'classes': 'label label-lightgreen em-p-5-12 em-font-weight-600'
+                    }, {
+                        'key': 'COM_EMUNDUS_ONBOARD_TIME_STATE',
+                        'value': 'En cours',
+                        'classes': 'label label-default em-p-5-12 em-font-weight-600'
+                    }, {
+                        'key': 'dossiers',
+                        'value': '<a target=\'_blank\' href=\'/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=10\' style=\'line-height: unset;font-size: unset;\'>1 dossier</a>',
+                        'classes': 'label label-default em-p-5-12 em-font-weight-600 go-to-campaign-link'
+                    }],
+                    'classes': 'em-mt-8 em-mb-8',
+                    'display': 'blocs'
+                }]
+            }], 'count': 8
+        }, 'allow_pinned_campaigns': '1'
+    };
 
     wrapper.vm.$data.items.campaign = campaignsData.data.datas;
     wrapper.vm.$data.loading.items = false;
@@ -158,7 +423,7 @@ describe('List of campaigns', () => {
         expect(wrapper.find('#list-items').exists()).toBeTruthy();
     });
 
-    it ('List should have 1 items', () => {
+    it('List should have 1 items', () => {
         expect(wrapper.findAll('.table-row').length).toBe(campaignsData.data.datas.length);
     });
 

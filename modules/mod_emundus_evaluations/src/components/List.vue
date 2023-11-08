@@ -1,11 +1,14 @@
 <template>
   <div>
-    <EvaluationModal v-if="currentFile" :file="currentFile" :evaluation_form="Number(files.evaluation_form)" :readonly="this.$parent.$props.readonly == '1'" @reload-list="getMyEvaluations" />
+    <EvaluationModal v-if="currentFile" :file="currentFile" :evaluation_form="Number(files.evaluation_form)"
+                     :readonly="this.$parent.$props.readonly == '1'" @reload-list="getMyEvaluations"/>
 
     <div v-if="campaigns.length > 0 && !loading">
       <select v-model="currentCampaign" style="width: max-content">
         <option value="0">{{ translate('MOD_EMUNDUS_EVALUATIONS_PLEASE_SELECT') }}</option>
-        <option v-for="campaign in campaigns" :value="campaign.id">{{ campaign.label }} - {{ campaign.files }} {{ translate('MOD_EMUNDUS_EVALUATIONS_FILES_TO_EVALUATE') }}</option>
+        <option v-for="campaign in campaigns" :value="campaign.id">{{ campaign.label }} - {{ campaign.files }}
+          {{ translate('MOD_EMUNDUS_EVALUATIONS_FILES_TO_EVALUATE') }}
+        </option>
       </select>
     </div>
 
@@ -33,11 +36,11 @@
               </span>
             </th>
             <th v-for="element in shownElements" :key="element.id" :id="element.name" @click="orderBy(element.name)">
-                {{ element.label }}
-                <span v-if="sort.orderBy == element.name && sort.order == 'asc'" class="material-icons">
+              {{ element.label }}
+              <span v-if="sort.orderBy == element.name && sort.order == 'asc'" class="material-icons">
                   arrow_upward
                 </span>
-                <span v-if="sort.orderBy == element.name && sort.order == 'desc'" class="material-icons">
+              <span v-if="sort.orderBy == element.name && sort.order == 'desc'" class="material-icons">
                   arrow_downward
                 </span>
             </th>
@@ -45,14 +48,14 @@
           </tr>
           </thead>
           <tbody>
-            <EvaluationRow
-                v-for="file in files.evaluations"
-                :key="file.fnum + '-' + file.id"
-                :file="file"
-                :elements="files.elements"
-                @open-modal="openModal"
-            >
-            </EvaluationRow>
+          <EvaluationRow
+              v-for="file in files.evaluations"
+              :key="file.fnum + '-' + file.id"
+              :file="file"
+              :elements="files.elements"
+              @open-modal="openModal"
+          >
+          </EvaluationRow>
           </tbody>
         </table>
       </div>
@@ -60,7 +63,9 @@
         <p class="em-text-align-center">{{ translate('MOD_EMUNDUS_EVALUATIONS_MISSING_EVALUATION_GRID') }}</p>
       </div>
     </div>
-    <div v-if="loading"><div class="em-page-loader"></div></div>
+    <div v-if="loading">
+      <div class="em-page-loader"></div>
+    </div>
   </div>
 </template>
 
@@ -97,7 +102,7 @@ export default {
     this.getCampaigns();
   },
   methods: {
-    getCampaigns(){
+    getCampaigns() {
       this.loading = true;
       axios({
         method: "GET",
@@ -110,14 +115,14 @@ export default {
         }
       }).then(response => {
         this.campaigns = response.data.campaigns;
-        if(this.campaigns.length === 1){
+        if (this.campaigns.length === 1) {
           this.currentCampaign = this.campaigns[0].id;
         }
         this.loading = false;
       });
     },
 
-    getMyEvaluations(){
+    getMyEvaluations() {
       this.loading = true;
       axios({
         method: "GET",
@@ -136,12 +141,12 @@ export default {
       });
     },
 
-    openModal(file){
+    openModal(file) {
       this.currentFile = file;
 
       setTimeout(() => {
         this.$modal.show("evaluation-modal");
-      },500)
+      }, 500)
     },
 
     orderBy(key) {
@@ -182,7 +187,7 @@ export default {
     }
   },
   watch: {
-    currentCampaign: function(value){
+    currentCampaign: function (value) {
       if (value != '') {
         this.getMyEvaluations();
       } else {
@@ -205,6 +210,7 @@ table {
   tr {
     th:first-of-type {
       width: 39px;
+
       input {
         margin-right: 0px;
       }

@@ -30,7 +30,9 @@
           </transition-group>
         </draggable>
       </div>
-      <button id="add-document" class="em-primary-button px-6 py-3" @click="addDocument('1')">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_REQUIRED_DOCUMENT') }}</button>
+      <button id="add-document" class="em-primary-button px-6 py-3" @click="addDocument('1')">
+        {{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_REQUIRED_DOCUMENT') }}
+      </button>
     </div>
     <div id="optional-documents" class="em-w-100 em-mb-32 em-mt-32">
       <p class="em-font-size-24 em-font-weight-600">{{ translate('COM_EMUNDUS_FORM_BUILDER_OPTIONAL_DOCUMENTS') }}</p>
@@ -38,15 +40,15 @@
         <draggable v-model="optionalDocuments" group="form-builder-documents" :sort="false">
           <transition-group id="optional-documents">
             <form-builder-document-list-element
-              v-for="(document, index) in optionalDocuments"
-              :key="'optional-' + document.id"
-              :document="document"
-              :documentIndex="index + 1"
-              :totalDocuments="optionalDocuments.length"
-              :profile_id="profile_id"
-              @edit-document="editDocument(document)"
-              @delete-document="deleteDocument"
-              @move-document="moveDocument"
+                v-for="(document, index) in optionalDocuments"
+                :key="'optional-' + document.id"
+                :document="document"
+                :documentIndex="index + 1"
+                :totalDocuments="optionalDocuments.length"
+                :profile_id="profile_id"
+                @edit-document="editDocument(document)"
+                @delete-document="deleteDocument"
+                @move-document="moveDocument"
             >
             </form-builder-document-list-element>
           </transition-group>
@@ -61,7 +63,9 @@
           </transition-group>
         </draggable>
       </div>
-      <button id="add-document" class="em-primary-button px-6 py-3" @click="addDocument('0')">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_OPTIONAL_DOCUMENT') }}</button>
+      <button id="add-document" class="em-primary-button px-6 py-3" @click="addDocument('0')">
+        {{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_OPTIONAL_DOCUMENT') }}
+      </button>
     </div>
   </div>
 </template>
@@ -88,7 +92,7 @@ export default {
       required: true
     },
   },
-  data () {
+  data() {
     return {
       documents: [],
       emptyDocuments: [{
@@ -97,20 +101,20 @@ export default {
       closedSection: false,
     }
   },
-  created () {
-	  this.getDocuments();
+  created() {
+    this.getDocuments();
   },
-	methods: {
-    getDocuments () {
+  methods: {
+    getDocuments() {
       formService.getDocuments(this.profile_id).then(response => {
-				if (response.status) {
-					this.documents = response.data.filter((document) => {
-						return document.id;
-					});
-				}
+        if (response.status) {
+          this.documents = response.data.filter((document) => {
+            return document.id;
+          });
+        }
       });
     },
-    moveDocument (documentToMove, direction) {
+    moveDocument(documentToMove, direction) {
       let requiredDocumentsInOrder = this.requiredDocuments.map((document, index) => {
         return {
           id: document.id,
@@ -149,7 +153,7 @@ export default {
         if (documentToMove.mandatory == 1) {
           if (position == 0 && direction === 'up') {
             moved = false;
-          } else if (position == (lastPosition-1) && direction === 'down') {
+          } else if (position == (lastPosition - 1) && direction === 'down') {
             // update document and put it inside
             documentToMove.mandatory = false;
             requiredDocumentsInOrder = requiredDocumentsInOrder.filter((document) => {
@@ -179,7 +183,7 @@ export default {
               id: documentToMove.id,
               order: requiredDocumentsInOrder.length
             });
-          } else if (position == (lastPosition-1) && direction === 'down') {
+          } else if (position == (lastPosition - 1) && direction === 'down') {
             moved = false;
           } else {
             if (direction === 'up') {
@@ -228,25 +232,25 @@ export default {
         }
       }
     },
-    addDocument (mandatory = "1") {
+    addDocument(mandatory = "1") {
       this.$emit('add-document', mandatory);
     },
-    editDocument (document) {
+    editDocument(document) {
       this.$emit('edit-document', document);
     },
-    deleteDocument () {
+    deleteDocument() {
       this.$emit('delete-document');
       this.getDocuments();
     },
   },
   computed: {
-    requiredDocuments () {
+    requiredDocuments() {
       const requiredDocuments = this.documents.filter(document => document.mandatory == 1);
       return requiredDocuments.sort((a, b) => {
         return a.ordering - b.ordering;
       });
     },
-    optionalDocuments () {
+    optionalDocuments() {
       const optionalDocuments = this.documents.filter(document => document.mandatory == 0);
       return optionalDocuments.sort((a, b) => {
         return a.ordering - b.ordering;

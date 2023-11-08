@@ -9,11 +9,11 @@
 
 // No direct access
 
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
-jimport( 'joomla.user.helper' );
-require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'award.php');
+jimport('joomla.user.helper');
+require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'award.php');
 
 use Joomla\CMS\Factory;
 
@@ -24,6 +24,7 @@ use Joomla\CMS\Factory;
  * @subpackage eMundus
  */
 //error_reporting(E_ALL);
+
 /**
  * Class EmundusControllerFiles
  */
@@ -36,7 +37,7 @@ class EmundusControllerAward extends JControllerLegacy
 	public function __construct($config = array())
 	{
 
-		$this->app = Factory::getApplication();
+		$this->app   = Factory::getApplication();
 		$this->_user = $this->app->getIdentity();
 
 		parent::__construct($config);
@@ -53,21 +54,20 @@ class EmundusControllerAward extends JControllerLegacy
 
 		$m_award = $this->getModel('Award');
 
-        try{
+		try {
 			$m_award->updatePlusNbVote($fnum, $user, $thematique, $engagement, $student_id, $campaign_id);
-            $res = true;
+			$res = true;
+		}
+		catch (Exception $e) {
+			$res = false;
+			echo "Captured Throwable: " . $e->getMessage() . PHP_EOL;
+		}
 
-        }
-        catch(Exception $e){
-            $res = false;
-            echo "Captured Throwable: " . $e->getMessage() . PHP_EOL;
-        }
+		$results = array('status' => $res);
 
-        $results = array('status'=>$res);
-
-        echo json_encode($results);
-        exit;
-    }
+		echo json_encode($results);
+		exit;
+	}
 
 	public function favoris()
 	{
@@ -76,26 +76,26 @@ class EmundusControllerAward extends JControllerLegacy
 
 		$m_award = $this->getModel('Award');
 
-        try{
+		try {
 			$favoris = $m_award->getFavoris($fnum, $user);
-            if(empty($favoris)){
+			if (empty($favoris)) {
 				$m_award->addToFavoris($fnum, $user);
-                $res='add';
-            }
-            else{
+				$res = 'add';
+			}
+			else {
 				$m_award->deleteToFavoris($fnum, $user);
-                $res='delete';
-            }
+				$res = 'delete';
+			}
 
-        }
-        catch(Exception $e){
-            $res = false;
-            echo "Captured Throwable: " . $e->getMessage() . PHP_EOL;
-        }
-        $results = array('status'=>$res);
+		}
+		catch (Exception $e) {
+			$res = false;
+			echo "Captured Throwable: " . $e->getMessage() . PHP_EOL;
+		}
+		$results = array('status' => $res);
 
-        echo json_encode($results);
-        exit;
+		echo json_encode($results);
+		exit;
 
-    }
+	}
 }

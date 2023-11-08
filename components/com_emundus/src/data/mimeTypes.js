@@ -1,5 +1,5 @@
 export default {
-    mimeTypes : {
+    mimeTypes: {
         'aac': 'audio/aac',
         'abw': 'application/x-abiword',
         'arc': 'application/octet-stream',

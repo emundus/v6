@@ -1,4 +1,4 @@
-.em-container-profile-view-pict a.btn.manage-account-icon{
+.em-container-profile-view-pict a.btn.manage-account-icon {
     background: #FFFFFF;
     border: 1px solid #E3E3E3;
     box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
@@ -8,7 +8,7 @@
     border-radius: var(--em-default-br) !important;
 }
 
-.em-container-profile-view-pict a.btn.manage-account-icon span.material-icons-outlined{
+.em-container-profile-view-pict a.btn.manage-account-icon span.material-icons-outlined {
     color: #000000;
     font-size: 20px;
 }

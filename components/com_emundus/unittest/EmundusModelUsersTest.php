@@ -8,19 +8,20 @@
  */
 
 use PHPUnit\Framework\TestCase;
-ini_set( 'display_errors', false );
+
+ini_set('display_errors', false);
 error_reporting(E_ALL);
 define('_JEXEC', 1);
 define('DS', DIRECTORY_SEPARATOR);
 define('JPATH_BASE', dirname(__DIR__) . '/../../');
 
-include_once ( JPATH_BASE . 'includes/defines.php' );
-include_once ( JPATH_BASE . 'includes/framework.php' );
-include_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
-include_once (JPATH_SITE . '/components/com_emundus/models/users.php');
+include_once(JPATH_BASE . 'includes/defines.php');
+include_once(JPATH_BASE . 'includes/framework.php');
+include_once(JPATH_SITE . '/components/com_emundus/unittest/helpers/samples.php');
+include_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 
 jimport('joomla.user.helper');
-jimport( 'joomla.application.application' );
+jimport('joomla.application.application');
 jimport('joomla.plugin.helper');
 
 // set global config --> initialize Joomla Application with default param 'site'
@@ -34,15 +35,15 @@ session_start();
 
 class EmundusModelUsersTest extends TestCase
 {
-    private $m_users;
+	private $m_users;
 	private $h_sample;
 
-    public function __construct(?string $name = null, array $data = [], $dataName = '')
-    {
-        parent::__construct($name, $data, $dataName);
-        $this->m_users = new EmundusModelUsers;
-	    $this->h_sample = new EmundusUnittestHelperSamples;
-    }
+	public function __construct(?string $name = null, array $data = [], $dataName = '')
+	{
+		parent::__construct($name, $data, $dataName);
+		$this->m_users  = new EmundusModelUsers;
+		$this->h_sample = new EmundusUnittestHelperSamples;
+	}
 
 	public function testFoo()
 	{
@@ -55,13 +56,14 @@ class EmundusModelUsersTest extends TestCase
 	 * It should only return user_ids that are not only applicant (at least one profile is not an applicant profile)
 	 * @return void
 	 */
-	public function testgetNonApplicantId() {
+	public function testgetNonApplicantId()
+	{
 		$this->assertSame([], $this->m_users->getNonApplicantId(0));
 
 		$applicant_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
 		$this->assertSame([], $this->m_users->getNonApplicantId($applicant_id), 'User with only applicant profile should not appear in the list of non applicant users');
 
-		$user_id = $this->h_sample->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$user_id         = $this->h_sample->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
 		$nonApplicantIds = $this->m_users->getNonApplicantId($user_id);
 		$this->assertNotEmpty($nonApplicantIds, 'User with at least one non applicant profile should appear in the list of non applicant users');
 
@@ -80,16 +82,18 @@ class EmundusModelUsersTest extends TestCase
 		$this->assertSame([], $this->m_users->getNonApplicantId([$applicant_id, $applicant_id, 'test passing a string instead of an id']), 'Passing an incorrect array should return an empty array');
 	}
 
-	public function testaffectToGroups() {
+	public function testaffectToGroups()
+	{
 		$this->assertEmpty($this->m_users->affectToGroups([], []), 'Passing an incorrect user id should return false');
 		$this->assertEmpty($this->m_users->affectToGroups([['user_id' => 99999]], []), 'Passing an incorrect array of group ids should return false');
 
-		$user_id = $this->h_sample->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$user_id         = $this->h_sample->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
 		$nonApplicantIds = $this->m_users->getNonApplicantId($user_id);
 		$this->assertTrue($this->m_users->affectToGroups($nonApplicantIds, [1]), 'Affect user to group, using getNonApplicantId result should return true');
 	}
 
-	public function testgetProfileDetails() {
+	public function testgetProfileDetails()
+	{
 
 		$this->assertEmpty($this->m_users->getProfileDetails(0), 'Passing an incorrect user id should return false');
 		$profile = $this->m_users->getProfileDetails(9);

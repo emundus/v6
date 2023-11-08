@@ -11,7 +11,7 @@ $template_type = array(
 <div id="em-documents" style="display:none;">
     <div>
         <label for="em-doc-tmpl-label"><?= JText::_('DOCUMENT_TYPE'); ?></label>
-        <div id="exp-document" >
+        <div id="exp-document">
             <select name="docs" id="em-doc-tmpl" class="chzn-select" multiple></select>
         </div>
     </div>
@@ -57,7 +57,7 @@ $template_type = array(
     addLoader();
     let fnums = document.querySelector('input[name="em-doc-fnums"]').value;
 
-    if(fnums.split(',').length === 1) {
+    if (fnums.split(',').length === 1) {
         document.getElementById('merge-div').remove();
         document.querySelector("#em-doc-export-mode option[value='0']").remove();
         document.querySelector("#em-doc-export-mode option[value='1']").remove();
@@ -68,17 +68,17 @@ $template_type = array(
         type: 'post',
         url: 'index.php?option=com_emundus&controller=evaluation&task=getattachmentletters',
         dataType: 'JSON',
-        data: { fnums: fnums },
-        success: function(result) {
-            if(result.status) {
+        data: {fnums: fnums},
+        success: function (result) {
+            if (result.status) {
                 let attachment_letters = result.attachment_letters;
                 $('#export-div').show();
 
-                attachment_letters.forEach((letter,index) => {
+                attachment_letters.forEach((letter, index) => {
                     const opt = document.createElement("option");
                     opt.value = letter.id;
                     opt.text = letter.value;
-                    if(index == 0){
+                    if (index == 0) {
                         opt.selected = true;
                     }
 
@@ -95,20 +95,20 @@ $template_type = array(
                 document.getElementById('doc_can_see').remove();
                 document.getElementById('export-div').remove();
                 const merge_div = document.getElementById('merge-div');
-                if(merge_div != null) {
+                if (merge_div != null) {
                     document.getElementById('merge-div').remove();
                 }
                 document.getElementsByClassName('swal2-confirm')[0].remove();
             }
 
-            $('#em-doc-tmpl').chosen({width:'100%'});
+            $('#em-doc-tmpl').chosen({width: '100%'});
             document.getElementById('em-documents').style.display = 'block';
         }
     })
 
-    $('#em-doc-tmpl').on('change', function() {
+    $('#em-doc-tmpl').on('change', function () {
         let tmpl = $(this).val();
-        if(tmpl == null || tmpl.includes('-1')) {
+        if (tmpl == null || tmpl.includes('-1')) {
             $('#em-generate').remove();
             $('#export-div').hide();
             $('#merge-div').hide();

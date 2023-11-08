@@ -15,16 +15,18 @@ defined('_JEXEC') or die('Restricted access');
  *
  * @since  0.0.1
  */
-class EmundusViewEmails extends JViewLegacy {
+class EmundusViewEmails extends JViewLegacy
+{
 
-	function display($tpl = null) {
-        $jinput = JFactory::getApplication()->input;
+	function display($tpl = null)
+	{
+		$jinput = JFactory::getApplication()->input;
 
-        // Display the template
-        $layout = $jinput->getString('layout', null);
-        if ($layout == 'add') {
-            $this->id = $jinput->get->get('eid', null);
-        }
+		// Display the template
+		$layout = $jinput->getString('layout', null);
+		if ($layout == 'add') {
+			$this->id = $jinput->get->get('eid', null);
+		}
 		// Display the template
 		parent::display($tpl);
 	}

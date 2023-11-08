@@ -2,7 +2,7 @@
   <div :id="'form-builder-page-section-' + section.group_id" class="form-builder-page-section em-mt-32 em-mb-32">
     <div class="section-card em-flex-column">
       <div class="section-identifier em-bg-main-500 em-pointer em-flex-row"
-          @click="closedSection = !closedSection">
+           @click="closedSection = !closedSection">
         <span class="material-icons em-mr-8 em-color-white" v-show="section.repeat_group">library_add</span>
         {{ translate('COM_EMUNDUS_FORM_BUILDER_SECTION') }} {{ index }} / {{ totalSections }}
         <span class="material-icons em-ml-8 em-color-white" v-show="!closedSection">unfold_less</span>
@@ -10,19 +10,22 @@
       </div>
       <div class="section-content em-w-100 em-p-32" :class="{'closed': closedSection}">
         <div class="em-flex-row em-flex-space-between em-w-100 ">
-	        <input
-			        id="section-title"
-			        class="editable-data em-w-100"
-			        :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
-			        v-model="section.label[shortDefaultLang]"
-			        @focusout="updateTitle"
-			        @keyup.enter="blurElement('#section-title')"
-			        maxlength="100"
-	        />
+          <input
+              id="section-title"
+              class="editable-data em-w-100"
+              :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
+              v-model="section.label[shortDefaultLang]"
+              @focusout="updateTitle"
+              @keyup.enter="blurElement('#section-title')"
+              maxlength="100"
+          />
           <div class="section-actions-wrapper">
-            <span class="material-icons-outlined em-pointer hover-opacity" @click="moveSection('up')" title="Move section upwards">keyboard_double_arrow_up</span>
-            <span class="material-icons-outlined em-pointer hover-opacity" @click="moveSection('down')" title="Move section downwards">keyboard_double_arrow_down</span>
-            <span class="material-icons-outlined em-red-500-color em-pointer delete hover-opacity" @click="deleteSection">delete</span>
+            <span class="material-icons-outlined em-pointer hover-opacity" @click="moveSection('up')"
+                  title="Move section upwards">keyboard_double_arrow_up</span>
+            <span class="material-icons-outlined em-pointer hover-opacity" @click="moveSection('down')"
+                  title="Move section downwards">keyboard_double_arrow_down</span>
+            <span class="material-icons-outlined em-red-500-color em-pointer delete hover-opacity"
+                  @click="deleteSection">delete</span>
             <span class="material-icons-outlined em-pointer hover-opacity" @click="$emit('open-section-properties')">settings</span>
           </div>
         </div>
@@ -86,7 +89,7 @@ import globalMixin from "../../mixins/mixin";
 import FormBuilderPageSectionElement from "./FormBuilderPageSectionElement";
 import draggable from "vuedraggable";
 
-export  default {
+export default {
   components: {
     FormBuilderPageSectionElement,
     draggable
@@ -136,52 +139,55 @@ export  default {
     },
     updateTitle() {
       this.section.label[this.shortDefaultLang] = this.section.label[this.shortDefaultLang].trim();
-      formBuilderService.updateTranslation({value: this.section.group_id, key: 'group'}, this.section.group_tag, this.section.label).then((response) => {
-	      if (response.data.status) {
-		      this.section.group_tag = response.data.data;
-					this.updateLastSave();
-	      } else {
-		      Swal.fire({
-			      title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
-			      text: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR_SAVE_TRANSLATION'),
-			      type: "error",
-			      cancelButtonText: this.translate("OK"),
-		      });
-	      }
+      formBuilderService.updateTranslation({
+        value: this.section.group_id,
+        key: 'group'
+      }, this.section.group_tag, this.section.label).then((response) => {
+        if (response.data.status) {
+          this.section.group_tag = response.data.data;
+          this.updateLastSave();
+        } else {
+          Swal.fire({
+            title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
+            text: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR_SAVE_TRANSLATION'),
+            type: "error",
+            cancelButtonText: this.translate("OK"),
+          });
+        }
       });
     },
-	  blurElement(selector) {
-			document.querySelector(selector).blur();
-	  },
+    blurElement(selector) {
+      document.querySelector(selector).blur();
+    },
     updateIntro() {
       this.$refs.sectionIntro.innerHTML = this.$refs.sectionIntro.innerHTML.trim().replace(/[\r\n]/gm, " ");
       this.section.group_intro = this.$refs.sectionIntro.innerHTML;
-	    formBuilderService.updateGroupParams(this.section.group_id, {'intro': this.section.group_intro}, this.shortDefaultLang).then((response) => {
-		    if (response.data.status) {
-			    this.updateLastSave();
-		    } else {
-					Swal.fire({
-						title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
-						text: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR_UPDATE_GROUP_PARAMS'),
-						type: "error",
-						cancelButtonText: this.translate("OK"),
-					});
-		    }
-			});
+      formBuilderService.updateGroupParams(this.section.group_id, {'intro': this.section.group_intro}, this.shortDefaultLang).then((response) => {
+        if (response.data.status) {
+          this.updateLastSave();
+        } else {
+          Swal.fire({
+            title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
+            text: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR_UPDATE_GROUP_PARAMS'),
+            type: "error",
+            cancelButtonText: this.translate("OK"),
+          });
+        }
+      });
     },
     onDragEnd(e) {
       const toGroup = e.to.getAttribute('data-sid');
 
       if (toGroup == this.section.group_id) {
         const elements = this.elements.map((element, index) => {
-          return { id: element.id, order: index + 1 };
+          return {id: element.id, order: index + 1};
         });
         const movedElement = this.elements[e.newIndex];
         formBuilderService.updateOrder(elements, this.section.group_id, movedElement).then((response) => {
-	        this.updateLastSave();
+          this.updateLastSave();
           let obj = {};
           this.elements.forEach((elem, i) => {
-            obj['element'+elem.id] = elem
+            obj['element' + elem.id] = elem
           });
           this.section.elements = obj;
         });
@@ -190,14 +196,14 @@ export  default {
       }
     },
     deleteElement(elementId) {
-      this.section.elements['element'+elementId].publish = -2;
+      this.section.elements['element' + elementId].publish = -2;
       this.elementsDeletedPending.push(elementId);
-	    this.getElements();
-	    this.updateLastSave();
+      this.getElements();
+      this.updateLastSave();
     },
     cancelDeleteElement(elementId) {
-      this.section.elements['element'+elementId].publish = true;
-	    this.getElements();
+      this.section.elements['element' + elementId].publish = true;
+      this.getElements();
     },
     deleteSection() {
       this.swalConfirm(
@@ -224,24 +230,24 @@ export  default {
       deep: true
     }
   },
-	computed: {
-		publishedElements() {
-			return this.elements && this.elements.length > 0 ? this.elements.filter((element) => {
-				return element.publish === true && (element.hidden === false || this.sysadmin);
-			}) : [];
-		},
-		sysadmin: function(){
-			return parseInt(this.$store.state.global.sysadminAccess);
-		},
-	}
+  computed: {
+    publishedElements() {
+      return this.elements && this.elements.length > 0 ? this.elements.filter((element) => {
+        return element.publish === true && (element.hidden === false || this.sysadmin);
+      }) : [];
+    },
+    sysadmin: function () {
+      return parseInt(this.$store.state.global.sysadminAccess);
+    },
+  }
 }
 </script>
 
 <style lang="scss">
 .form-builder-page-section {
-	.section-actions-wrapper {
-		min-width: fit-content;
-	}
+  .section-actions-wrapper {
+    min-width: fit-content;
+  }
 
   .section-card {
     .section-identifier {

@@ -19,7 +19,7 @@ JText::script('COM_EMUNDUS_MESSENGER_WRITE_MESSAGE');
 
 $user = JFactory::getUser()->id;
 
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 <div id="em-component-vue" component="messages" user="<?= $user ?>" modal="false"></div>

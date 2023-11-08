@@ -14,13 +14,13 @@ defined('_JEXEC') or die('Restricted access');
 $offset = JFactory::getConfig()->get('offset');
 JFactory::getSession()->set('application_layout', 'attachment');
 
-$can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this->fnum);
+$can_export          = EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $this->fnum);
 $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_user->id);
-$lang = JFactory::getLanguage();
+$lang                = JFactory::getLanguage();
 
 $xmlDoc = new DOMDocument();
-if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
-    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
+if ($xmlDoc->load(JPATH_SITE . '/administrator/components/com_emundus/emundus.xml')) {
+	$release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
 }
 ?>
 
@@ -30,11 +30,13 @@ if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml'
         <div class="panel-heading em-container-form-heading">
             <h3 class="panel-title">
                 <span class="material-icons">file_present</span>
-                <?= JText::_('COM_EMUNDUS_ONBOARD_DOCUMENTS').' - '.$this->attachmentsProgress.' % '.JText::_('COM_EMUNDUS_APPLICATION_SENT'); ?>
+				<?= JText::_('COM_EMUNDUS_ONBOARD_DOCUMENTS') . ' - ' . $this->attachmentsProgress . ' % ' . JText::_('COM_EMUNDUS_APPLICATION_SENT'); ?>
             </h3>
             <div class="btn-group pull-right">
-                <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span></button>
-                <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span></button>
+                <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span>
+                </button>
+                <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span>
+                </button>
             </div>
         </div>
     </div>

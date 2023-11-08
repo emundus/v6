@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="2.5.0">
-	<name>MOD_EMUNDUS_CHECKLIST_SYS_XML</name>
+    <name>MOD_EMUNDUS_CHECKLIST_SYS_XML</name>
     <author>Benjamin Rivalland</author>
     <creationDate>April 2016</creationDate>
     <copyright>Copyright (C) 2016 eMundus. All rights reserved.</copyright>
@@ -8,90 +8,111 @@
     <authorEmail>benjamin@emundus.fr</authorEmail>
     <authorUrl>www.emundus.fr</authorUrl>
     <version>6.0</version>
-	<description>MOD_EMUNDUS_CHECKLIST_SYS_XML_DESC</description>
-	<files>
-		<filename module="mod_emundus_checklist">mod_emundus_checklist.php</filename>
-		<filename module="mod_emundus_checklist">index.html</filename>
-		<filename module="mod_emundus_checklist">tmpl/default.php</filename>
-		<filename module="mod_emundus_checklist">tmpl/index.html</filename>
-		<folder>language</folder>
+    <description>MOD_EMUNDUS_CHECKLIST_SYS_XML_DESC</description>
+    <files>
+        <filename module="mod_emundus_checklist">mod_emundus_checklist.php</filename>
+        <filename module="mod_emundus_checklist">index.html</filename>
+        <filename module="mod_emundus_checklist">tmpl/default.php</filename>
+        <filename module="mod_emundus_checklist">tmpl/index.html</filename>
+        <folder>language</folder>
 
-	</files>
-	<languages folder="language">
-		<language tag="fr-FR">fr-FR.mod_emundus_checklist.ini</language>
-		<language tag="en-GB">en-GB.mod_emundus_checklist.ini</language>
-	</languages>
-	<config>
-		<fields name="params">
-			<fieldset name="basic">
-				<field
-					name="show_forms"
-					type="radio"
-					default="1"
-					label="MOD_EMUNDUS_CHECKLIST_SHOW_FORMS"
-					description="MOD_EMUNDUS_CHECKLIST_SHOW_FORMS_DESC">
-					<option
-						value="1">JSHOW</option>
-					<option
-						value="0">JHIDE</option>
-				</field>
-				<field type="text" size="60" name="forms_title" label="MOD_EMUNDUS_CHECKLIST_FORMS_TITLE" description="MOD_EMUNDUS_CHECKLIST_FORMS_TITLE_DESC" default="Formulaires"/>
-				<field
-					name="show_mandatory_documents"
-					type="radio"
-					default="1"
-					label="MOD_EMUNDUS_CHECKLIST_SHOW_MANDATORY_DOCUMENTS"
-					description="MOD_EMUNDUS_CHECKLIST_SHOW_MANDATORY_DOCUMENTS_DESC">
-					<option
-						value="1">JSHOW</option>
-					<option
-						value="0">JHIDE</option>
-				</field>
-				<field type="text" size="60" name="mandatory_documents_title" label="MOD_EMUNDUS_CHECKLIST_MANDATORY_DOCUMENTS_TITLE" description="MOD_EMUNDUS_CHECKLIST_MANDATORY_DOCUMENTS_TITLE_DESC" default="Documents obligatoires"/>
-				<field
-					name="show_optional_documents"
-					type="radio"
-					default="1"
-					label="MOD_EMUNDUS_CHECKLIST_SHOW_OPTIONAL_DOCUMENTS"
-					description="MOD_EMUNDUS_CHECKLIST_SHOW_OPTIONAL_DOCUMENTS_DESC">
-					<option
-						value="1">JSHOW</option>
-					<option
-						value="0">JHIDE</option>
-				</field>
-				<field type="text" size="60" name="optional_documents_title" label="MOD_EMUNDUS_CHECKLIST_OPTIONAL_DOCUMENTS_TITLE" description="MOD_EMUNDUS_CHECKLIST_OPTIONAL_DOCUMENTS_TITLE_DESC" default="Documents optionnels"/>
-				<field
-					name="show_duplicate_documents"
-					type="radio"
-					default="1"
-					label="MOD_EMUNDUS_CHECKLIST_SHOW_DUPLICATE_DOCUMENTS"
-					description="MOD_EMUNDUS_CHECKLIST_SHOW_DUPLICATE_DOCUMENTS_DESC">
-					<option
-						value="-1">JALL</option>
-					<option
-						value="1">JSHOW</option>
-					<option
-						value="0">JHIDE</option>
-				</field>
-				<field type="text" size="60" name="preliminary_documents_title" label="MOD_EMUNDUS_CHECKLIST_preliminary_DOCUMENTS_TITLE" description="MOD_EMUNDUS_CHECKLIST_preliminary_DOCUMENTS_TITLE_DESC" default="PRELIMINARY_DOCUMENTS"/>
-				<field
-						name="show_preliminary_documents"
-						type="radio"
-						default="0"
-						label="MOD_EMUNDUS_CHECKLIST_SHOW_PRELIMINARY_DOCUMENTS"
-						description="MOD_EMUNDUS_CHECKLIST_SHOW_PRELIMINARY_DOCUMENTS_DESC">
-					<option value="1">JYES</option>
-					<option value="0">JNO</option>
-				</field>
-				<field name="showsend" type="list" default="1" label="MOD_EMUNDUS_CHECKLIST_SHOW_SEND" description="MOD_EMUNDUS_CHECKLIST_SHOW_SEND_DESC">
-					<option value="1">JYES</option>
-					<option value="0">JNO</option>
-				</field>
-				<field name="admission" type="list" default="0" description="MOD_EMUNDUS_CHECKLIST_IS_ADMISSION" label="MOD_EMUNDUS_CHECKLIST_IS_ADMISSION_DESC" >
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
-			</fieldset>
-		</fields>
-	</config>
+    </files>
+    <languages folder="language">
+        <language tag="fr-FR">fr-FR.mod_emundus_checklist.ini</language>
+        <language tag="en-GB">en-GB.mod_emundus_checklist.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                        name="show_forms"
+                        type="radio"
+                        default="1"
+                        label="MOD_EMUNDUS_CHECKLIST_SHOW_FORMS"
+                        description="MOD_EMUNDUS_CHECKLIST_SHOW_FORMS_DESC">
+                    <option
+                            value="1">JSHOW
+                    </option>
+                    <option
+                            value="0">JHIDE
+                    </option>
+                </field>
+                <field type="text" size="60" name="forms_title" label="MOD_EMUNDUS_CHECKLIST_FORMS_TITLE"
+                       description="MOD_EMUNDUS_CHECKLIST_FORMS_TITLE_DESC" default="Formulaires"/>
+                <field
+                        name="show_mandatory_documents"
+                        type="radio"
+                        default="1"
+                        label="MOD_EMUNDUS_CHECKLIST_SHOW_MANDATORY_DOCUMENTS"
+                        description="MOD_EMUNDUS_CHECKLIST_SHOW_MANDATORY_DOCUMENTS_DESC">
+                    <option
+                            value="1">JSHOW
+                    </option>
+                    <option
+                            value="0">JHIDE
+                    </option>
+                </field>
+                <field type="text" size="60" name="mandatory_documents_title"
+                       label="MOD_EMUNDUS_CHECKLIST_MANDATORY_DOCUMENTS_TITLE"
+                       description="MOD_EMUNDUS_CHECKLIST_MANDATORY_DOCUMENTS_TITLE_DESC"
+                       default="Documents obligatoires"/>
+                <field
+                        name="show_optional_documents"
+                        type="radio"
+                        default="1"
+                        label="MOD_EMUNDUS_CHECKLIST_SHOW_OPTIONAL_DOCUMENTS"
+                        description="MOD_EMUNDUS_CHECKLIST_SHOW_OPTIONAL_DOCUMENTS_DESC">
+                    <option
+                            value="1">JSHOW
+                    </option>
+                    <option
+                            value="0">JHIDE
+                    </option>
+                </field>
+                <field type="text" size="60" name="optional_documents_title"
+                       label="MOD_EMUNDUS_CHECKLIST_OPTIONAL_DOCUMENTS_TITLE"
+                       description="MOD_EMUNDUS_CHECKLIST_OPTIONAL_DOCUMENTS_TITLE_DESC"
+                       default="Documents optionnels"/>
+                <field
+                        name="show_duplicate_documents"
+                        type="radio"
+                        default="1"
+                        label="MOD_EMUNDUS_CHECKLIST_SHOW_DUPLICATE_DOCUMENTS"
+                        description="MOD_EMUNDUS_CHECKLIST_SHOW_DUPLICATE_DOCUMENTS_DESC">
+                    <option
+                            value="-1">JALL
+                    </option>
+                    <option
+                            value="1">JSHOW
+                    </option>
+                    <option
+                            value="0">JHIDE
+                    </option>
+                </field>
+                <field type="text" size="60" name="preliminary_documents_title"
+                       label="MOD_EMUNDUS_CHECKLIST_preliminary_DOCUMENTS_TITLE"
+                       description="MOD_EMUNDUS_CHECKLIST_preliminary_DOCUMENTS_TITLE_DESC"
+                       default="PRELIMINARY_DOCUMENTS"/>
+                <field
+                        name="show_preliminary_documents"
+                        type="radio"
+                        default="0"
+                        label="MOD_EMUNDUS_CHECKLIST_SHOW_PRELIMINARY_DOCUMENTS"
+                        description="MOD_EMUNDUS_CHECKLIST_SHOW_PRELIMINARY_DOCUMENTS_DESC">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="showsend" type="list" default="1" label="MOD_EMUNDUS_CHECKLIST_SHOW_SEND"
+                       description="MOD_EMUNDUS_CHECKLIST_SHOW_SEND_DESC">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="admission" type="list" default="0" description="MOD_EMUNDUS_CHECKLIST_IS_ADMISSION"
+                       label="MOD_EMUNDUS_CHECKLIST_IS_ADMISSION_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
 </extension>

@@ -10,7 +10,7 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 
 // GLOBAL
 JText::script('COM_EMUNDUS_ONBOARD_ADD_RETOUR');
@@ -243,25 +243,26 @@ JText::script('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_UPLOAD_ADD_FR
 JText::script('COM_EMUNDUS_ATTACHMENT_STORAGE_DEFAULT_ASPECTS_MAPPING');
 Jtext::script('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_MISSING_ASPECT_FILE');
 
-$lang = JFactory::getLanguage();
-$short_lang = substr($lang->getTag(), 0 , 2);
+$lang         = JFactory::getLanguage();
+$short_lang   = substr($lang->getTag(), 0, 2);
 $current_lang = $lang->getTag();
-$languages = JLanguageHelper::getLanguages();
+$languages    = JLanguageHelper::getLanguages();
 if (count($languages) > 1) {
-    $many_languages = '1';
-    require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
-    $m_translations = new EmundusModelTranslations();
-    $default_lang = $m_translations->getDefaultLanguage()->lang_code;
-} else {
-    $many_languages = '0';
-    $default_lang = $current_lang;
+	$many_languages = '1';
+	require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
+	$m_translations = new EmundusModelTranslations();
+	$default_lang   = $m_translations->getDefaultLanguage()->lang_code;
+}
+else {
+	$many_languages = '0';
+	$default_lang   = $current_lang;
 }
 
-$user = JFactory::getUser();
+$user               = JFactory::getUser();
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
-$sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
+$sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
 
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 

@@ -1,19 +1,23 @@
 <template>
   <div id="incremental-selector">
     <div class="em-w-100 em-flex-row em-mb-16">
-	    <div v-if="isNewVal" id="new-value" class="em-w-100">
-		    <input type="text" class="em-w-100 em-mb-0-important" v-model="newValue.label" @focusin="showOptions = true" @focusout="emitValueChanges"/>
-		    <i class="em-main-500-color">({{ translate('COM_EMUNDUS_FORM_BUILDER_NEW_VALUE') }})</i>
-	    </div>
+      <div v-if="isNewVal" id="new-value" class="em-w-100">
+        <input type="text" class="em-w-100 em-mb-0-important" v-model="newValue.label" @focusin="showOptions = true"
+               @focusout="emitValueChanges"/>
+        <i class="em-main-500-color">({{ translate('COM_EMUNDUS_FORM_BUILDER_NEW_VALUE') }})</i>
+      </div>
       <div v-if="!isNewVal" id="existing-value" class="em-w-100">
-	      <div class="em-w-100 em-flex-row em-flex-space-between">
-		      <input type="text" class="em-w-100 em-mb-0-important em-border-main-500 important" v-model="newExistingLabel" @focusout="emitValueChanges"/>
-		      <span v-if="!locked" @click="unselectExistingValue" class="material-icons-outlined em-pointer" @mouseenter="hoverUnselect = true" @mouseleave="hoverUnselect = false">close</span>
-	      </div>
-	      <i class="em-main-500-color">({{ translate('COM_EMUNDUS_FORM_BUILDER_EXISTING_VALUE') }})</i>
+        <div class="em-w-100 em-flex-row em-flex-space-between">
+          <input type="text" class="em-w-100 em-mb-0-important em-border-main-500 important" v-model="newExistingLabel"
+                 @focusout="emitValueChanges"/>
+          <span v-if="!locked" @click="unselectExistingValue" class="material-icons-outlined em-pointer"
+                @mouseenter="hoverUnselect = true" @mouseleave="hoverUnselect = false">close</span>
+        </div>
+        <i class="em-main-500-color">({{ translate('COM_EMUNDUS_FORM_BUILDER_EXISTING_VALUE') }})</i>
       </div>
     </div>
-    <ul v-if="existingValues && showOptions" class="em-custom-selector em-border-neutral-300 em-w-100" @mouseenter="hoverOptions = true" @mouseleave="hoverOptions = false">
+    <ul v-if="existingValues && showOptions" class="em-custom-selector em-border-neutral-300 em-w-100"
+        @mouseenter="hoverOptions = true" @mouseleave="hoverOptions = false">
       <li v-for="option in displayedOptions"
           :key="option.id"
           :value="option.id"
@@ -38,14 +42,14 @@ export default {
       type: Number,
       required: false
     },
-	  locked: {
-			type: Boolean,
-		  default: false
-	  }
+    locked: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
-			originalOptions: [],
+      originalOptions: [],
       newValue: {
         id: 0,
         label: ''
@@ -55,12 +59,12 @@ export default {
       selectedExistingValue: -1,
       isNewVal: true,
       showOptions: false,
-	    hoverOptions: false,
-	    hoverUnselect: false
+      hoverOptions: false,
+      hoverUnselect: false
     }
   },
   beforeMount() {
-		this.originalOptions = JSON.parse(JSON.stringify(this.options));
+    this.originalOptions = JSON.parse(JSON.stringify(this.options));
     this.existingValues = this.options;
   },
   mounted() {
@@ -89,34 +93,34 @@ export default {
           this.newValue = detachedValue;
           this.emitValueChanges();
         } else {
-					this.unselectExistingValue();
+          this.unselectExistingValue();
         }
       }
       this.showOptions = false;
     },
     unselectExistingValue() {
       this.isNewVal = true;
-			let foundValue = this.existingValues.find((existingValue) => {
-				return existingValue.id == this.selectedExistingValue;
-			});
-	    this.newExistingLabel = foundValue ? foundValue.label : '';
-			this.selectedExistingValue = -1;
+      let foundValue = this.existingValues.find((existingValue) => {
+        return existingValue.id == this.selectedExistingValue;
+      });
+      this.newExistingLabel = foundValue ? foundValue.label : '';
+      this.selectedExistingValue = -1;
       this.newValue.label = '';
       this.newValue.id = 0;
-			this.existingValues = JSON.parse(JSON.stringify(this.originalOptions));
+      this.existingValues = JSON.parse(JSON.stringify(this.originalOptions));
       this.showOptions = false;
-			this.hoverOptions = false;
-			this.hoverUnselect = false;
+      this.hoverOptions = false;
+      this.hoverUnselect = false;
       this.emitValueChanges();
     },
     emitValueChanges(event = null) {
-	    if (this.hoverUnselect) {
-				return;
-	    }
+      if (this.hoverUnselect) {
+        return;
+      }
 
-	    if (this.showOptions && !this.hoverOptions) {
-				this.showOptions = false;
-			}
+      if (this.showOptions && !this.hoverOptions) {
+        this.showOptions = false;
+      }
 
       if (this.isNewVal) {
         this.$emit('update-value', this.newValue);
@@ -128,7 +132,7 @@ export default {
         if (newValue.label !== this.newExistingLabel) {
           newValue.label = this.newExistingLabel;
         }
-	      this.$emit('update-value', newValue);
+        this.$emit('update-value', newValue);
       }
     }
   },
@@ -151,37 +155,38 @@ export default {
 
 <style lang="scss">
 #incremental-selector {
-	position: relative;
+  position: relative;
 
-	.em-custom-selector {
-		margin: 0;
-		list-style: none;
-		background: white;
-		position: absolute;
-		top: 42px;
-		max-height: 33vh;
-		overflow-y: auto;
+  .em-custom-selector {
+    margin: 0;
+    list-style: none;
+    background: white;
+    position: absolute;
+    top: 42px;
+    max-height: 33vh;
+    overflow-y: auto;
 
-		li {
-			transition: .3s all;
-			&:hover {
-				background: #f8f8f8;
-			}
-		}
-	}
+    li {
+      transition: .3s all;
 
-	#existing-value {
-		position: relative;
+      &:hover {
+        background: #f8f8f8;
+      }
+    }
+  }
 
-		input {
-			padding-right: 25px;
-		}
+  #existing-value {
+    position: relative;
 
-		span {
-			position: absolute;
-			right: 5px;
-			top: 12px;
-		}
-	}
+    input {
+      padding-right: 25px;
+    }
+
+    span {
+      position: absolute;
+      right: 5px;
+      top: 12px;
+    }
+  }
 }
 </style>

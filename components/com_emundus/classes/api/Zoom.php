@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @package     com_emundus
- * @subpackage  api
- * @author    eMundus.fr
+ * @package       com_emundus
+ * @subpackage    api
+ * @author        eMundus.fr
  * @copyright (C) 2022 eMundus SOFTWARE. All rights reserved.
- * @license    GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
+ * @license       GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
  */
 
 use GuzzleHttp\Client as GuzzleClient;
@@ -32,7 +32,7 @@ class Zoom
 	private $baseUrl = '';
 
 	/**
-	 * @param GuzzleClient $client
+	 * @param   GuzzleClient  $client
 	 */
 	private $client = null;
 
@@ -46,19 +46,20 @@ class Zoom
 
 		if (empty($this->auth['token'])) {
 			throw new Exception('Missing zoom api token. Please check your configuration.');
-		} else {
+		}
+		else {
 			$this->setHeaders();
 			$this->setBaseUrl();
 			$this->client = new GuzzleClient([
 				'base_uri' => $this->getBaseUrl(),
-				'headers' => $this->getHeaders()
+				'headers'  => $this->getHeaders()
 			]);
 		}
 	}
 
 	private function setAuth()
 	{
-		$config = ComponentHelper::getParams('com_emundus');
+		$config              = ComponentHelper::getParams('com_emundus');
 		$this->auth['token'] = $config->get('zoom_jwt', '');
 	}
 
@@ -73,8 +74,8 @@ class Zoom
 
 		$this->headers = array(
 			'Authorization' => 'Bearer ' . $auth['token'],
-			'Accept' => 'application/json',
-			'Content-Type' => 'application/json'
+			'Accept'        => 'application/json',
+			'Content-Type'  => 'application/json'
 		);
 	}
 
@@ -85,7 +86,7 @@ class Zoom
 
 	private function setBaseUrl()
 	{
-		$config = ComponentHelper::getParams('com_emundus');
+		$config        = ComponentHelper::getParams('com_emundus');
 		$this->baseUrl = $config->get('zoom_base_url', 'https://api.zoom.us/v2/');
 	}
 
@@ -98,12 +99,14 @@ class Zoom
 	{
 		try {
 			$url_params = http_build_query($params);
-			$url = !empty($url_params) ? $url . '?' . $url_params : $url;
-			$response = $this->client->get($url);
+			$url        = !empty($url_params) ? $url . '?' . $url_params : $url;
+			$response   = $this->client->get($url);
 
 			return json_decode($response->getBody());
-		} catch (\Exception $e) {
+		}
+		catch (\Exception $e) {
 			JLog::add('[GET] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.zoom');
+
 			return $e->getMessage();
 		}
 	}
@@ -115,7 +118,8 @@ class Zoom
 		try {
 			$response = $this->client->post($url, ['body' => $json]);
 			$response = json_decode($response->getBody());
-		} catch (\Exception $e) {
+		}
+		catch (\Exception $e) {
 			JLog::add('[POST] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.zoom');
 			$response = $e->getMessage();
 		}
@@ -130,7 +134,8 @@ class Zoom
 		try {
 			$response = $this->client->patch($url, ['body' => $json]);
 			$response = json_decode($response->getBody());
-		} catch (\Exception $e) {
+		}
+		catch (\Exception $e) {
 			JLog::add('[PATCH] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.zoom');
 			$response = $e->getMessage();
 		}
@@ -158,7 +163,8 @@ class Zoom
 
 			if (!empty($host->id)) {
 				$meeting = $this->post("users/$host_id/meetings", json_encode($body));
-			} else {
+			}
+			else {
 				JLog::add('[CREATE MEETING] Host not found', JLog::ERROR, 'com_emundus.zoom');
 			}
 		}
@@ -183,12 +189,12 @@ class Zoom
 
 		if (!empty($user['eamil'])) {
 			$user = $this->post('users', [
-				'action' => 'custCreate',
+				'action'    => 'custCreate',
 				'user_info' => [
-					'email' => $user['email'],
-					'type' => 2,
+					'email'      => $user['email'],
+					'type'       => 2,
 					'first_name' => $user['first_name'],
-					'last_name' => $user['last_name']
+					'last_name'  => $user['last_name']
 				]
 			]);
 		}
@@ -196,7 +202,8 @@ class Zoom
 		return $user;
 	}
 
-	public function updateMeetingDuration($meeting_id, $duration = 60) {
+	public function updateMeetingDuration($meeting_id, $duration = 60)
+	{
 		$response = null;
 
 		if (!empty($meeting_id) && $duration >= 60) {

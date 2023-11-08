@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import '../../../mocks/matchMedia.mock';
 import FormBuilderCreatePage from '../../../../src/components/FormBuilder/FormBuilderCreatePage';
 import translate from '../../../mocks/mixins/translate';
@@ -59,12 +59,12 @@ describe('FormBuilderCreatePage.vue', () => {
         expect(wrapper.vm.$data.canUseInitialStructure).toBeTruthy();
     });
 
-    it ('input radio value="new" should be displayed', () => {
+    it('input radio value="new" should be displayed', () => {
         expect(wrapper.find('input#new-structure')).toBeTruthy();
     });
 
     it('should diplay all models', () => {
-       expect(wrapper.findAll('.model-preview').length).toEqual(models.length);
+        expect(wrapper.findAll('.model-preview').length).toEqual(models.length);
     });
 });
 

@@ -1,9 +1,9 @@
 <?php
 /**
- * @package   Joomla.Site
+ * @package     Joomla.Site
  * @subpackage  eMundus
- * @copyright Copyright (C) 2018 emundus.fr. All rights reserved.
- * @license   GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2018 emundus.fr. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 // no direct access
 defined('_JEXEC') or die;
@@ -21,31 +21,33 @@ echo $description;
     }
 </style>
 
-<?php if (!empty($favorites)) :?>
+<?php if (!empty($favorites)) : ?>
     <div class="<?php echo $moduleclass_sfx ?>">
 		<?php foreach ($favorites as $favorite) : ?>
             <div class="row favorite" id="row<?php echo $favorite->id; ?>">
                 <div class="col-md-8 main-page-favorite-title">
                     <div class="overflow">
-                        <a rel="tooltip" title="<?php echo $favorite->title; ?>" href="<?php echo JRoute::_(JURI::base().'formation?rowid='. $favorite->id.'-'.str_replace('.html', '', $favorite->url)); ?>" ><?php echo $favorite->title; ?></a>
+                        <a rel="tooltip" title="<?php echo $favorite->title; ?>"
+                           href="<?php echo JRoute::_(JURI::base() . 'formation?rowid=' . $favorite->id . '-' . str_replace('.html', '', $favorite->url)); ?>"><?php echo $favorite->title; ?></a>
                     </div>
                 </div>
 
                 <div class="col-md-3 main-page-file-progress">
                     <div class="em-button-add-candidate">
-                        <?php
-                        $signupURL = $params->get('signupURL');
-                        
-                        if (!empty($signupURL)) :?>
-                            <a href="<?php echo JRoute::_($signupURL.'?formation='.$favorite->code); ?>" ><?php echo JText::_('SIGNUP_USER');?></a>
-                        <?php endif; ?>
+						<?php
+						$signupURL = $params->get('signupURL');
+
+						if (!empty($signupURL)) :?>
+                            <a href="<?php echo JRoute::_($signupURL . '?formation=' . $favorite->code); ?>"><?php echo JText::_('SIGNUP_USER'); ?></a>
+						<?php endif; ?>
                     </div>
                 </div>
                 <div class="col-md-1">
-                    <i class="fas fa-times unfave" id="unf-<?php echo $favorite->id; ?>" onclick="unfavorite(<?php echo $favorite->id; ?>)"></i>
+                    <i class="fas fa-times unfave" id="unf-<?php echo $favorite->id; ?>"
+                       onclick="unfavorite(<?php echo $favorite->id; ?>)"></i>
                 </div>
             </div>
-		<?php endforeach;  ?>
+		<?php endforeach; ?>
         <ul id="fav-pagin"></ul>
     </div>
 <?php else :
@@ -63,18 +65,18 @@ endif; ?>
     //Pagination
     pageSize = 3;
 
-    var pageCount =  Object.keys(favorites).length / pageSize;
+    var pageCount = Object.keys(favorites).length / pageSize;
 
     if (pageCount > 1) {
-        for (var i = 0 ; i<pageCount;i++) {
-            jQuery("#fav-pagin").append('<li><p>'+(i+1)+'</p></li> ');
+        for (var i = 0; i < pageCount; i++) {
+            jQuery("#fav-pagin").append('<li><p>' + (i + 1) + '</p></li> ');
         }
     }
 
     jQuery("#fav-pagin li").first().find("p").addClass("current");
-    showPageFav = function(page) {
+    showPageFav = function (page) {
         jQuery(".favorite").hide();
-        jQuery(".favorite").each(function(n) {
+        jQuery(".favorite").each(function (n) {
             if (n >= pageSize * (page - 1) && n < pageSize * page)
                 jQuery(this).show();
         });
@@ -82,7 +84,7 @@ endif; ?>
 
     showPageFav(1);
 
-    jQuery("#fav-pagin li p").click(function() {
+    jQuery("#fav-pagin li p").click(function () {
         jQuery("#fav-pagin li p").removeClass("current");
         jQuery(this).addClass("current");
         showPageFav(parseInt(jQuery(this).text()))

@@ -1,438 +1,468 @@
 <?xml version="1.0"?>
-	<extension type="module" version ="2.5.0" method="upgrade">
-		<name>MOD_EMUNDUS_STAT_XML</name>
-        <author>Anne-laure Drouard</author>
-        <creationDate>MAY 2020</creationDate>
-        <authorUrl>www.emundus.fr</authorUrl>
-        <version>6.0</version>
-		<description>MOD_EMUNDUS_STAT_XML_DESCRIPTION</description>
-		<files>
-			<filename module="mod_emundus_stat">helper.php</filename>
-			<filename module="mod_emundus_stat">mod_emundus_stat.xml</filename>
-			<filename module="mod_emundus_stat">mod_emundus_stat.php</filename>
-			<filename module="mod_emundus_stat">index.html</filename>
-			<folder>tmpl</folder>
-			<folder>language</folder>
-			<folder>style</folder>
-		</files>
-		<config>
-			<fields name="params">
-				<fieldset name="basic" addfieldpath="/modules/mod_emundus_stat/tmpl" >
-					<field
-						name="list_id"
-						type="text"
-						label="LIST_ID_LABEL"
-						description="LIST_ID_DESC"
-						size="60"
-						required="true"
-					/>
-					<field
-						name="view"
-						type="text"
-						label="VIEW_LABEL"
-						description="VIEW_DESC"
-						size="60"
-						required="true"
-					/>
-					<field
-						name="type_graph"
-						type="groupedlist"
-						label="TYPE_GRAPH_LABEL"
-						description="TYPE_GRAPH_DESC"
-						size="60"
-						required="true"
-					>
-						<group label="GROUP_SINGLE">
-							<option value="column2d">COLUMN_LABEL</option>
-							<option value="column3d">COLUMN_3D_LABEL</option>
-							<option value="scrollcolumn2d">COLUMN_SCROLL_LABEL</option>
-							<option value="line">LINE_LABEL</option>
-							<option value="scrollline2d">LINE_SCROLL_LABEL</option>
-							<option value="timeseries">LINE_TIME_LABEL</option>
-							<option value="area2d">AREA_LABEL</option>
-							<option value="scrollarea2d">AREA_SCROLL_LABEL</option>
-							<option value="bar2d">BAR_LABEL</option>
-							<option value="bar3d">BAR_3D_LABEL</option>
-							<option value="scrollbar2d">BAR_SCROLL_LABEL</option>
-							<option value="pie2d">PIE_LABEL</option>
-							<option value="pie3d">PIE_3D_LABEL</option>
-							<option value="doughnut2d">DOUGHNUT_LABEL</option>
-							<option value="doughnut3d">DOUGHNUT_3D_LABEL</option>
-							<option value="pareto2d">PARETO_LABEL</option>
-							<option value="pareto3d">PARETO_3D_LABEL</option>
-						</group>
-						<group label="GROUP_MS">
-							<option value="mscolumn2d">MS_COLUMN_LABEL</option>
-							<option value="stackedcolumn2d">COLUMN_STACKED_LABEL</option>
-							<option value="scrollstackedcolumn2d">SCROLL_COLUMN_STACKED_LABEL</option>
-							<option value="msstackedcolumn2d">MS_COLUMN_STACKED_LABEL</option>
-							<option value="scrollmsstackedcolumn2d">SCROLL_MS_COLUMN_STACKED_LABEL</option>
-							<option value="mscolumn3d">MS_COLUMN_3D_LABEL</option>
-							<option value="stackedcolumn3d">COLUMN_STACKED_3D_LABEL</option>
-							<option value="msline">MS_LINE_LABEL</option>
-							<option value="msbar2d">MS_BAR_LABEL</option>
-							<option value="stackedbar2d">BAR_STACKED_LABEL</option>
-							<option value="scrollstackedbar2d">SCROLL_BAR_STACKED_LABEL</option>
-							<option value="msbar3d">MS_BAR_3D_LABEL</option>
-							<option value="stackedbar3d">BAR_STACKED_3D_LABEL</option>
-							<option value="overlappedcolumn2d">OVERLAPPED_COLUMN_LABEL</option>
-							<option value="overlappedbar2d">OVERLAPPED_BAR_LABEL</option>
-							<option value="msarea">MS_AREA_LABEL</option>
-							<option value="stackedarea2d">AREA_STACKED_LABEL</option>
-							<option value="marimekko">MARIMEKKO_LABEL</option>
-						</group>
-						<group label="GROUP_ZOOM">
-							<option value="zoomline">ZOOMLINE_LABEL</option>
-							<option value="zoomlinedy">ZOOMLINE_YD_LABEL</option>
-						</group>
-						<group label="GROUP_COMBI">
-							<option value="mscombi2d">MS_COMBI_LABEL</option>
-							<option value="mscombidy2d">MS_COMBI_DY_LABEL</option>
-							<option value="mscombi3d">MS_COMBI_3D_LABEL</option>
-							<option value="mscombidy3d">MS_COMBI_DY_3D_LABEL</option>
-							<option value="mscolumnline3d">MS_COLUMN_3D_LINE_LABEL</option>
-							<option value="mscolumn3dlinedy">MS_COLUMN_3D_LINE_DY_LABEL</option>
-							<option value="stackedcolumn2dline">COLUMN_STACKED_LINE_LABEL</option>
-							<option value="stackedcolumn3dline">COLUMN_STACKED_3D_LINE_LABEL</option>
-							<option value="stackedcolumn2dlinedy">COLUMN_STACKED_LINE_DY_LABEL</option>
-							<option value="stackedcolumn3dlinedy">COLUMN_STACKED_3D_LINE_DY_LABEL</option>
-							<option value="stackedarea2dlinedy">AREA_STACKED_LINE_DY_LABEL</option>
-							<option value="msstackedcolumn2dlinedy">MS_COLUMN_STACKED_LINE_DY_LABEL</option>
-							<option value="scrollmsstackedcolumn2dlinedy">SCROLL_MS_COLUMN_STACKED_LINE_DY_LABEL</option>
-							<option value="scrollcombi2d">COMBI_SCROLL_LABEL</option>
-							<option value="scrollcombidy2d">COMBI_DUAL_SCROLL_LABEL</option>
-						</group>
-					</field>
-					<field
-						name="nb_value"
-						type="number"
-						label="NB_VALUE_LABEL"
-						description="NB_VALUE_DESC"
-						size="60"
-						min="2"
-						max="5"
-						showon="type_graph!:column2d,column3d,scrollcolumn2d,line,scrollline2d,timeseries,area2d,scrollarea2d,bar2d,bar3d,scrollbar2d,pie2d,pie3d,doughnut2d,doughnut3d,pareto2d,pareto3d"
-					/>
-					<field
-						name="nb_column"
-						type="number"
-						min="2"
-						max="4"
-						label="NB_COLUMN_LABEL"
-						description="NB_COLUMN_DESC"
-						size="60"
-						showon="type_graph:msstackedcolumn2d,scrollmsstackedcolumn2d"
-					/>
-					<field
-						name="y_name_db_0"
-						type="text"
-						label="Y_NAME_DB_0_LABEL"
-						description="Y_NAME_DB_0_DESC"
-						size="60"
-						required="true"
-					/>
-					<field
-						name="serie_name_0"
-						type="text"
-						label="SERIE_NAME_0_LABEL"
-						description="SERIE_NAME_0_DESC"
-						size="60"
-						showon="nb_value:2[OR]nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph!:column2d,column3d,scrollcolumn2d,line,scrollline2d,timeseries,area2d,scrollarea2d,bar2d,bar3d,scrollbar2d,pie2d,pie3d,doughnut2d,doughnut3d,pareto2d,pareto3d"
-					/>
-					<field
-						name="type_trace_0"
-						type="list"
-						label="TYPE_TRACE_0_LABEL"
-						description="TYPE_TRACE_0_DESC"
-						size="60"
-						showon="nb_value:2[OR]nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph:mscombi2d,mscombidy2d,mscombi3d,mscombidy3d,mscolumnline3d,mscolumn3dlinedy,stackedcolumn2dline,stackedcolumn3dline,stackedcolumn2dlinedy,stackedcolumn3dlinedy,stackedarea2dlinedy,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollcombi2d,scrollcombidy2d"
-					>
-						<option value="line">LINE_LABEL</option>
-						<option value="column" showon="type_graph!:stackedarea2dlinedy">COLUMN_LABEL</option>
-						<option value="area" showon="type_graph:mscombi2d,mscombi3d,stackedarea2dlinedy,mscombidy2d,mscombidy3d,scrollcombi2d,scrollcombidy2d">AREA_LABEL</option>
-						<option value="spline" showon="type_graph:mscombi2d,mscombi3d,mscombidy2d,mscombidy3d,scrollcombi2d,scrollcombidy2d">SPLINE_LABEL</option>
-					</field>
-					<field
-						name="y_choice_0"
-						type="list"
-						label="Y_CHOICE_0_LABEL"
-						description="Y_CHOICE_0_DESC"
-						size="60"
-						showon="nb_value:2[OR]nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph:mscombidy2d,zoomlinedy,stackedcolumn2dlinedy,stackedcolumn3dlinedy,stackedarea2dlinedy,mscombidy2d,mscombidy3d,mscolumn3dlinedy,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollcombidy2d"
-					>
-						<option value="P">Y_0_LABEL</option>
-						<option value="S">Y_1_LABEL</option>
-					</field>
-					<field
-						name="column_choice_0"
-						type="number"
-						min="1"
-						max="4"
-						label="COLUMN_CHOICE_0_LABEL"
-						description="COLUMN_CHOICE_0_DESC"
-						size="60"
-						showon="nb_value:2[OR]nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph:msstackedcolumn2d,scrollmsstackedcolumn2d,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollmsstackedcolumn2d[AND]type_trace_0!:line"
-					/>
+<extension type="module" version="2.5.0" method="upgrade">
+    <name>MOD_EMUNDUS_STAT_XML</name>
+    <author>Anne-laure Drouard</author>
+    <creationDate>MAY 2020</creationDate>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>6.0</version>
+    <description>MOD_EMUNDUS_STAT_XML_DESCRIPTION</description>
+    <files>
+        <filename module="mod_emundus_stat">helper.php</filename>
+        <filename module="mod_emundus_stat">mod_emundus_stat.xml</filename>
+        <filename module="mod_emundus_stat">mod_emundus_stat.php</filename>
+        <filename module="mod_emundus_stat">index.html</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+        <folder>style</folder>
+    </files>
+    <config>
+        <fields name="params">
+            <fieldset name="basic" addfieldpath="/modules/mod_emundus_stat/tmpl">
+                <field
+                        name="list_id"
+                        type="text"
+                        label="LIST_ID_LABEL"
+                        description="LIST_ID_DESC"
+                        size="60"
+                        required="true"
+                />
+                <field
+                        name="view"
+                        type="text"
+                        label="VIEW_LABEL"
+                        description="VIEW_DESC"
+                        size="60"
+                        required="true"
+                />
+                <field
+                        name="type_graph"
+                        type="groupedlist"
+                        label="TYPE_GRAPH_LABEL"
+                        description="TYPE_GRAPH_DESC"
+                        size="60"
+                        required="true"
+                >
+                    <group label="GROUP_SINGLE">
+                        <option value="column2d">COLUMN_LABEL</option>
+                        <option value="column3d">COLUMN_3D_LABEL</option>
+                        <option value="scrollcolumn2d">COLUMN_SCROLL_LABEL</option>
+                        <option value="line">LINE_LABEL</option>
+                        <option value="scrollline2d">LINE_SCROLL_LABEL</option>
+                        <option value="timeseries">LINE_TIME_LABEL</option>
+                        <option value="area2d">AREA_LABEL</option>
+                        <option value="scrollarea2d">AREA_SCROLL_LABEL</option>
+                        <option value="bar2d">BAR_LABEL</option>
+                        <option value="bar3d">BAR_3D_LABEL</option>
+                        <option value="scrollbar2d">BAR_SCROLL_LABEL</option>
+                        <option value="pie2d">PIE_LABEL</option>
+                        <option value="pie3d">PIE_3D_LABEL</option>
+                        <option value="doughnut2d">DOUGHNUT_LABEL</option>
+                        <option value="doughnut3d">DOUGHNUT_3D_LABEL</option>
+                        <option value="pareto2d">PARETO_LABEL</option>
+                        <option value="pareto3d">PARETO_3D_LABEL</option>
+                    </group>
+                    <group label="GROUP_MS">
+                        <option value="mscolumn2d">MS_COLUMN_LABEL</option>
+                        <option value="stackedcolumn2d">COLUMN_STACKED_LABEL</option>
+                        <option value="scrollstackedcolumn2d">SCROLL_COLUMN_STACKED_LABEL</option>
+                        <option value="msstackedcolumn2d">MS_COLUMN_STACKED_LABEL</option>
+                        <option value="scrollmsstackedcolumn2d">SCROLL_MS_COLUMN_STACKED_LABEL</option>
+                        <option value="mscolumn3d">MS_COLUMN_3D_LABEL</option>
+                        <option value="stackedcolumn3d">COLUMN_STACKED_3D_LABEL</option>
+                        <option value="msline">MS_LINE_LABEL</option>
+                        <option value="msbar2d">MS_BAR_LABEL</option>
+                        <option value="stackedbar2d">BAR_STACKED_LABEL</option>
+                        <option value="scrollstackedbar2d">SCROLL_BAR_STACKED_LABEL</option>
+                        <option value="msbar3d">MS_BAR_3D_LABEL</option>
+                        <option value="stackedbar3d">BAR_STACKED_3D_LABEL</option>
+                        <option value="overlappedcolumn2d">OVERLAPPED_COLUMN_LABEL</option>
+                        <option value="overlappedbar2d">OVERLAPPED_BAR_LABEL</option>
+                        <option value="msarea">MS_AREA_LABEL</option>
+                        <option value="stackedarea2d">AREA_STACKED_LABEL</option>
+                        <option value="marimekko">MARIMEKKO_LABEL</option>
+                    </group>
+                    <group label="GROUP_ZOOM">
+                        <option value="zoomline">ZOOMLINE_LABEL</option>
+                        <option value="zoomlinedy">ZOOMLINE_YD_LABEL</option>
+                    </group>
+                    <group label="GROUP_COMBI">
+                        <option value="mscombi2d">MS_COMBI_LABEL</option>
+                        <option value="mscombidy2d">MS_COMBI_DY_LABEL</option>
+                        <option value="mscombi3d">MS_COMBI_3D_LABEL</option>
+                        <option value="mscombidy3d">MS_COMBI_DY_3D_LABEL</option>
+                        <option value="mscolumnline3d">MS_COLUMN_3D_LINE_LABEL</option>
+                        <option value="mscolumn3dlinedy">MS_COLUMN_3D_LINE_DY_LABEL</option>
+                        <option value="stackedcolumn2dline">COLUMN_STACKED_LINE_LABEL</option>
+                        <option value="stackedcolumn3dline">COLUMN_STACKED_3D_LINE_LABEL</option>
+                        <option value="stackedcolumn2dlinedy">COLUMN_STACKED_LINE_DY_LABEL</option>
+                        <option value="stackedcolumn3dlinedy">COLUMN_STACKED_3D_LINE_DY_LABEL</option>
+                        <option value="stackedarea2dlinedy">AREA_STACKED_LINE_DY_LABEL</option>
+                        <option value="msstackedcolumn2dlinedy">MS_COLUMN_STACKED_LINE_DY_LABEL</option>
+                        <option value="scrollmsstackedcolumn2dlinedy">SCROLL_MS_COLUMN_STACKED_LINE_DY_LABEL</option>
+                        <option value="scrollcombi2d">COMBI_SCROLL_LABEL</option>
+                        <option value="scrollcombidy2d">COMBI_DUAL_SCROLL_LABEL</option>
+                    </group>
+                </field>
+                <field
+                        name="nb_value"
+                        type="number"
+                        label="NB_VALUE_LABEL"
+                        description="NB_VALUE_DESC"
+                        size="60"
+                        min="2"
+                        max="5"
+                        showon="type_graph!:column2d,column3d,scrollcolumn2d,line,scrollline2d,timeseries,area2d,scrollarea2d,bar2d,bar3d,scrollbar2d,pie2d,pie3d,doughnut2d,doughnut3d,pareto2d,pareto3d"
+                />
+                <field
+                        name="nb_column"
+                        type="number"
+                        min="2"
+                        max="4"
+                        label="NB_COLUMN_LABEL"
+                        description="NB_COLUMN_DESC"
+                        size="60"
+                        showon="type_graph:msstackedcolumn2d,scrollmsstackedcolumn2d"
+                />
+                <field
+                        name="y_name_db_0"
+                        type="text"
+                        label="Y_NAME_DB_0_LABEL"
+                        description="Y_NAME_DB_0_DESC"
+                        size="60"
+                        required="true"
+                />
+                <field
+                        name="serie_name_0"
+                        type="text"
+                        label="SERIE_NAME_0_LABEL"
+                        description="SERIE_NAME_0_DESC"
+                        size="60"
+                        showon="nb_value:2[OR]nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph!:column2d,column3d,scrollcolumn2d,line,scrollline2d,timeseries,area2d,scrollarea2d,bar2d,bar3d,scrollbar2d,pie2d,pie3d,doughnut2d,doughnut3d,pareto2d,pareto3d"
+                />
+                <field
+                        name="type_trace_0"
+                        type="list"
+                        label="TYPE_TRACE_0_LABEL"
+                        description="TYPE_TRACE_0_DESC"
+                        size="60"
+                        showon="nb_value:2[OR]nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph:mscombi2d,mscombidy2d,mscombi3d,mscombidy3d,mscolumnline3d,mscolumn3dlinedy,stackedcolumn2dline,stackedcolumn3dline,stackedcolumn2dlinedy,stackedcolumn3dlinedy,stackedarea2dlinedy,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollcombi2d,scrollcombidy2d"
+                >
+                    <option value="line">LINE_LABEL</option>
+                    <option value="column" showon="type_graph!:stackedarea2dlinedy">COLUMN_LABEL</option>
+                    <option value="area"
+                            showon="type_graph:mscombi2d,mscombi3d,stackedarea2dlinedy,mscombidy2d,mscombidy3d,scrollcombi2d,scrollcombidy2d">
+                        AREA_LABEL
+                    </option>
+                    <option value="spline"
+                            showon="type_graph:mscombi2d,mscombi3d,mscombidy2d,mscombidy3d,scrollcombi2d,scrollcombidy2d">
+                        SPLINE_LABEL
+                    </option>
+                </field>
+                <field
+                        name="y_choice_0"
+                        type="list"
+                        label="Y_CHOICE_0_LABEL"
+                        description="Y_CHOICE_0_DESC"
+                        size="60"
+                        showon="nb_value:2[OR]nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph:mscombidy2d,zoomlinedy,stackedcolumn2dlinedy,stackedcolumn3dlinedy,stackedarea2dlinedy,mscombidy2d,mscombidy3d,mscolumn3dlinedy,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollcombidy2d"
+                >
+                    <option value="P">Y_0_LABEL</option>
+                    <option value="S">Y_1_LABEL</option>
+                </field>
+                <field
+                        name="column_choice_0"
+                        type="number"
+                        min="1"
+                        max="4"
+                        label="COLUMN_CHOICE_0_LABEL"
+                        description="COLUMN_CHOICE_0_DESC"
+                        size="60"
+                        showon="nb_value:2[OR]nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph:msstackedcolumn2d,scrollmsstackedcolumn2d,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollmsstackedcolumn2d[AND]type_trace_0!:line"
+                />
 
-					<field
-						name="y_name_db_1"
-						type="text"
-						label="Y_NAME_DB_1_LABEL"
-						description="Y_NAME_DB_1_DESC"
-						size="60"
-						showon="nb_value:2[OR]nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph!:column2d,column3d,scrollcolumn2d,line,scrollline2d,timeseries,area2d,scrollarea2d,bar2d,bar3d,scrollbar2d,pie2d,pie3d,doughnut2d,doughnut3d,pareto2d,pareto3d"
-					/>
-					<field
-						name="serie_name_1"
-						type="text"
-						label="SERIE_NAME_1_LABEL"
-						description="SERIE_NAME_1_DESC"
-						size="60"
-						showon="nb_value:2[OR]nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph!:column2d,column3d,scrollcolumn2d,line,scrollline2d,timeseries,area2d,scrollarea2d,bar2d,bar3d,scrollbar2d,pie2d,pie3d,doughnut2d,doughnut3d,pareto2d,pareto3d"
-					/>
-					<field
-						name="type_trace_1"
-						type="list"
-						label="TYPE_TRACE_1_LABEL"
-						description="TYPE_TRACE_1_DESC"
-						size="60"
-						showon="nb_value:2[OR]nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph:mscombi2d,mscombidy2d,mscombi3d,mscombidy3d,mscolumnline3d,mscolumn3dlinedy,stackedcolumn2dline,stackedcolumn3dline,stackedcolumn2dlinedy,stackedcolumn3dlinedy,stackedarea2dlinedy,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollcombi2d,scrollcombidy2d"
-					>
-						<option value="line">LINE_LABEL</option>
-						<option value="column" showon="type_graph!:stackedarea2dlinedy">COLUMN_LABEL</option>
-						<option value="area" showon="type_graph:mscombi2d,mscombi3d,stackedarea2dlinedy,mscombidy2d,mscombidy3d,scrollcombi2d,scrollcombidy2d">AREA_LABEL</option>
-						<option value="spline" showon="type_graph:mscombi2d,mscombi3d,mscombidy2d,mscombidy3d,scrollcombi2d,scrollcombidy2d">SPLINE_LABEL</option>
-					</field>
-					<field
-						name="y_choice_1"
-						type="list"
-						label="Y_CHOICE_1_LABEL"
-						description="Y_CHOICE_1_DESC"
-						size="60"
-						showon="nb_value:2[OR]nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph:mscombidy2d,zoomlinedy,stackedcolumn2dlinedy,stackedcolumn3dlinedy,stackedarea2dlinedy,mscombidy2d,mscombidy3d,mscolumn3dlinedy,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollcombidy2d"
-					>
-						<option value="P">Y_0_LABEL</option>
-						<option value="S">Y_1_LABEL</option>
-					</field>
-					<field
-						name="column_choice_1"
-						type="number"
-						min="1"
-						max="4"
-						label="COLUMN_CHOICE_1_LABEL"
-						description="COLUMN_CHOICE_1_DESC"
-						size="60"
-						showon="nb_value:2[OR]nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph:msstackedcolumn2d,scrollmsstackedcolumn2d,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollmsstackedcolumn2d[AND]type_trace_1!:line"
-					/>
+                <field
+                        name="y_name_db_1"
+                        type="text"
+                        label="Y_NAME_DB_1_LABEL"
+                        description="Y_NAME_DB_1_DESC"
+                        size="60"
+                        showon="nb_value:2[OR]nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph!:column2d,column3d,scrollcolumn2d,line,scrollline2d,timeseries,area2d,scrollarea2d,bar2d,bar3d,scrollbar2d,pie2d,pie3d,doughnut2d,doughnut3d,pareto2d,pareto3d"
+                />
+                <field
+                        name="serie_name_1"
+                        type="text"
+                        label="SERIE_NAME_1_LABEL"
+                        description="SERIE_NAME_1_DESC"
+                        size="60"
+                        showon="nb_value:2[OR]nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph!:column2d,column3d,scrollcolumn2d,line,scrollline2d,timeseries,area2d,scrollarea2d,bar2d,bar3d,scrollbar2d,pie2d,pie3d,doughnut2d,doughnut3d,pareto2d,pareto3d"
+                />
+                <field
+                        name="type_trace_1"
+                        type="list"
+                        label="TYPE_TRACE_1_LABEL"
+                        description="TYPE_TRACE_1_DESC"
+                        size="60"
+                        showon="nb_value:2[OR]nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph:mscombi2d,mscombidy2d,mscombi3d,mscombidy3d,mscolumnline3d,mscolumn3dlinedy,stackedcolumn2dline,stackedcolumn3dline,stackedcolumn2dlinedy,stackedcolumn3dlinedy,stackedarea2dlinedy,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollcombi2d,scrollcombidy2d"
+                >
+                    <option value="line">LINE_LABEL</option>
+                    <option value="column" showon="type_graph!:stackedarea2dlinedy">COLUMN_LABEL</option>
+                    <option value="area"
+                            showon="type_graph:mscombi2d,mscombi3d,stackedarea2dlinedy,mscombidy2d,mscombidy3d,scrollcombi2d,scrollcombidy2d">
+                        AREA_LABEL
+                    </option>
+                    <option value="spline"
+                            showon="type_graph:mscombi2d,mscombi3d,mscombidy2d,mscombidy3d,scrollcombi2d,scrollcombidy2d">
+                        SPLINE_LABEL
+                    </option>
+                </field>
+                <field
+                        name="y_choice_1"
+                        type="list"
+                        label="Y_CHOICE_1_LABEL"
+                        description="Y_CHOICE_1_DESC"
+                        size="60"
+                        showon="nb_value:2[OR]nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph:mscombidy2d,zoomlinedy,stackedcolumn2dlinedy,stackedcolumn3dlinedy,stackedarea2dlinedy,mscombidy2d,mscombidy3d,mscolumn3dlinedy,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollcombidy2d"
+                >
+                    <option value="P">Y_0_LABEL</option>
+                    <option value="S">Y_1_LABEL</option>
+                </field>
+                <field
+                        name="column_choice_1"
+                        type="number"
+                        min="1"
+                        max="4"
+                        label="COLUMN_CHOICE_1_LABEL"
+                        description="COLUMN_CHOICE_1_DESC"
+                        size="60"
+                        showon="nb_value:2[OR]nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph:msstackedcolumn2d,scrollmsstackedcolumn2d,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollmsstackedcolumn2d[AND]type_trace_1!:line"
+                />
 
-					<field
-						name="y_name_db_2"
-						type="text"
-						label="Y_NAME_DB_2_LABEL"
-						description="Y_NAME_DB_2_DESC"
-						size="60"
-						showon="nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph!:column2d,column3d,scrollcolumn2d,line,scrollline2d,timeseries,area2d,scrollarea2d,bar2d,bar3d,scrollbar2d,pie2d,pie3d,doughnut2d,doughnut3d,pareto2d,pareto3d"
-					/>
-					<field
-						name="serie_name_2"
-						type="text"
-						label="SERIE_NAME_2_LABEL"
-						description="SERIE_NAME_2_DESC"
-						size="60"
-						showon="nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph!:column2d,column3d,scrollcolumn2d,line,scrollline2d,timeseries,area2d,scrollarea2d,bar2d,bar3d,scrollbar2d,pie2d,pie3d,doughnut2d,doughnut3d,pareto2d,pareto3d"
-					/>
-					<field
-						name="type_trace_2"
-						type="list"
-						label="TYPE_TRACE_2_LABEL"
-						description="TYPE_TRACE_2_DESC"
-						size="60"
-						showon="nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph:mscombi2d,mscombidy2d,mscombi3d,mscombidy3d,mscolumnline3d,mscolumn3dlinedy,stackedcolumn2dline,stackedcolumn3dline,stackedcolumn2dlinedy,stackedcolumn3dlinedy,stackedarea2dlinedy,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollcombi2d,scrollcombidy2d"
-					>
-						<option value="line">LINE_LABEL</option>
-						<option value="column" showon="type_graph!:stackedarea2dlinedy">COLUMN_LABEL</option>
-						<option value="area" showon="type_graph:mscombi2d,mscombi3d,stackedarea2dlinedy,mscombidy2d,mscombidy3d,scrollcombi2d,scrollcombidy2d">AREA_LABEL</option>
-						<option value="spline" showon="type_graph:mscombi2d,mscombi3d,mscombidy2d,mscombidy3d,scrollcombi2d,scrollcombidy2d">SPLINE_LABEL</option>
-					</field>
-					<field
-						name="y_choice_2"
-						type="list"
-						label="Y_CHOICE_2_LABEL"
-						description="Y_CHOICE_2_DESC"
-						size="60"
-						showon="nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph:mscombidy2d,zoomlinedy,stackedcolumn2dlinedy,stackedcolumn3dlinedy,stackedarea2dlinedy,mscombidy2d,mscombidy3d,mscolumn3dlinedy,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollcombidy2d"
-					>
-						<option value="P">Y_0_LABEL</option>
-						<option value="S">Y_1_LABEL</option>
-					</field>
-					<field
-						name="column_choice_2"
-						type="number"
-						min="1"
-						max="4"
-						label="COLUMN_CHOICE_2_LABEL"
-						description="COLUMN_CHOICE_2_DESC"
-						size="60"
-						showon="nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph:msstackedcolumn2d,scrollmsstackedcolumn2d,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollmsstackedcolumn2d[AND]type_trace_2!:line"
-					/>
+                <field
+                        name="y_name_db_2"
+                        type="text"
+                        label="Y_NAME_DB_2_LABEL"
+                        description="Y_NAME_DB_2_DESC"
+                        size="60"
+                        showon="nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph!:column2d,column3d,scrollcolumn2d,line,scrollline2d,timeseries,area2d,scrollarea2d,bar2d,bar3d,scrollbar2d,pie2d,pie3d,doughnut2d,doughnut3d,pareto2d,pareto3d"
+                />
+                <field
+                        name="serie_name_2"
+                        type="text"
+                        label="SERIE_NAME_2_LABEL"
+                        description="SERIE_NAME_2_DESC"
+                        size="60"
+                        showon="nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph!:column2d,column3d,scrollcolumn2d,line,scrollline2d,timeseries,area2d,scrollarea2d,bar2d,bar3d,scrollbar2d,pie2d,pie3d,doughnut2d,doughnut3d,pareto2d,pareto3d"
+                />
+                <field
+                        name="type_trace_2"
+                        type="list"
+                        label="TYPE_TRACE_2_LABEL"
+                        description="TYPE_TRACE_2_DESC"
+                        size="60"
+                        showon="nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph:mscombi2d,mscombidy2d,mscombi3d,mscombidy3d,mscolumnline3d,mscolumn3dlinedy,stackedcolumn2dline,stackedcolumn3dline,stackedcolumn2dlinedy,stackedcolumn3dlinedy,stackedarea2dlinedy,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollcombi2d,scrollcombidy2d"
+                >
+                    <option value="line">LINE_LABEL</option>
+                    <option value="column" showon="type_graph!:stackedarea2dlinedy">COLUMN_LABEL</option>
+                    <option value="area"
+                            showon="type_graph:mscombi2d,mscombi3d,stackedarea2dlinedy,mscombidy2d,mscombidy3d,scrollcombi2d,scrollcombidy2d">
+                        AREA_LABEL
+                    </option>
+                    <option value="spline"
+                            showon="type_graph:mscombi2d,mscombi3d,mscombidy2d,mscombidy3d,scrollcombi2d,scrollcombidy2d">
+                        SPLINE_LABEL
+                    </option>
+                </field>
+                <field
+                        name="y_choice_2"
+                        type="list"
+                        label="Y_CHOICE_2_LABEL"
+                        description="Y_CHOICE_2_DESC"
+                        size="60"
+                        showon="nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph:mscombidy2d,zoomlinedy,stackedcolumn2dlinedy,stackedcolumn3dlinedy,stackedarea2dlinedy,mscombidy2d,mscombidy3d,mscolumn3dlinedy,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollcombidy2d"
+                >
+                    <option value="P">Y_0_LABEL</option>
+                    <option value="S">Y_1_LABEL</option>
+                </field>
+                <field
+                        name="column_choice_2"
+                        type="number"
+                        min="1"
+                        max="4"
+                        label="COLUMN_CHOICE_2_LABEL"
+                        description="COLUMN_CHOICE_2_DESC"
+                        size="60"
+                        showon="nb_value:3[OR]nb_value:4[OR]nb_value:5[AND]type_graph:msstackedcolumn2d,scrollmsstackedcolumn2d,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollmsstackedcolumn2d[AND]type_trace_2!:line"
+                />
 
-					<field
-						name="y_name_db_3"
-						type="text"
-						label="Y_NAME_DB_3_LABEL"
-						description="Y_NAME_DB_3_DESC"
-						size="60"
-						showon="nb_value:4[OR]nb_value:5[AND]type_graph!:column2d,column3d,scrollcolumn2d,line,scrollline2d,timeseries,area2d,scrollarea2d,bar2d,bar3d,scrollbar2d,pie2d,pie3d,doughnut2d,doughnut3d,pareto2d,pareto3d"
-					/>
-					<field
-						name="serie_name_3"
-						type="text"
-						label="SERIE_NAME_3_LABEL"
-						description="SERIE_NAME_3_DESC"
-						size="60"
-						showon="nb_value:4[OR]nb_value:5[AND]type_graph!:column2d,column3d,scrollcolumn2d,line,scrollline2d,timeseries,area2d,scrollarea2d,bar2d,bar3d,scrollbar2d,pie2d,pie3d,doughnut2d,doughnut3d,pareto2d,pareto3d"
-					/>
-					<field
-						name="type_trace_3"
-						type="list"
-						label="TYPE_TRACE_3_LABEL"
-						description="TYPE_TRACE_3_DESC"
-						size="60"
-						showon="nb_value:4[OR]nb_value:5[AND]type_graph:mscombi2d,mscombidy2d,mscombi3d,mscombidy3d,mscolumnline3d,mscolumn3dlinedy,stackedcolumn2dline,stackedcolumn3dline,stackedcolumn2dlinedy,stackedcolumn3dlinedy,stackedarea2dlinedy,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollcombi2d,scrollcombidy2d"
-					>
-						<option value="line">LINE_LABEL</option>
-						<option value="column" showon="type_graph!:stackedarea2dlinedy">COLUMN_LABEL</option>
-						<option value="area" showon="type_graph:mscombi2d,mscombi3d,stackedarea2dlinedy,mscombidy2d,mscombidy3d,scrollcombi2d,scrollcombidy2d">AREA_LABEL</option>
-						<option value="spline" showon="type_graph:mscombi2d,mscombi3d,mscombidy2d,mscombidy3d,scrollcombi2d,scrollcombidy2d">SPLINE_LABEL</option>
-					</field>
-					<field
-						name="y_choice_3"
-						type="list"
-						label="Y_CHOICE_3_LABEL"
-						description="Y_CHOICE_3_DESC"
-						size="60"
-						showon="nb_value:4[OR]nb_value:5[AND]type_graph:mscombidy2d,zoomlinedy,stackedcolumn2dlinedy,stackedcolumn3dlinedy,stackedarea2dlinedy,mscombidy2d,mscombidy3d,mscolumn3dlinedy,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollcombidy2d"
-					>
-						<option value="P">Y_0_LABEL</option>
-						<option value="S">Y_1_LABEL</option>
-					</field>
-					<field
-						name="column_choice_3"
-						type="number"
-						min="1"
-						max="4"
-						label="COLUMN_CHOICE_3_LABEL"
-						description="COLUMN_CHOICE_3_DESC"
-						size="60"
-						showon="nb_value:4[OR]nb_value:5[AND]type_graph:msstackedcolumn2d,scrollmsstackedcolumn2d,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollmsstackedcolumn2d[AND]type_trace_3!:line"
-					/>
+                <field
+                        name="y_name_db_3"
+                        type="text"
+                        label="Y_NAME_DB_3_LABEL"
+                        description="Y_NAME_DB_3_DESC"
+                        size="60"
+                        showon="nb_value:4[OR]nb_value:5[AND]type_graph!:column2d,column3d,scrollcolumn2d,line,scrollline2d,timeseries,area2d,scrollarea2d,bar2d,bar3d,scrollbar2d,pie2d,pie3d,doughnut2d,doughnut3d,pareto2d,pareto3d"
+                />
+                <field
+                        name="serie_name_3"
+                        type="text"
+                        label="SERIE_NAME_3_LABEL"
+                        description="SERIE_NAME_3_DESC"
+                        size="60"
+                        showon="nb_value:4[OR]nb_value:5[AND]type_graph!:column2d,column3d,scrollcolumn2d,line,scrollline2d,timeseries,area2d,scrollarea2d,bar2d,bar3d,scrollbar2d,pie2d,pie3d,doughnut2d,doughnut3d,pareto2d,pareto3d"
+                />
+                <field
+                        name="type_trace_3"
+                        type="list"
+                        label="TYPE_TRACE_3_LABEL"
+                        description="TYPE_TRACE_3_DESC"
+                        size="60"
+                        showon="nb_value:4[OR]nb_value:5[AND]type_graph:mscombi2d,mscombidy2d,mscombi3d,mscombidy3d,mscolumnline3d,mscolumn3dlinedy,stackedcolumn2dline,stackedcolumn3dline,stackedcolumn2dlinedy,stackedcolumn3dlinedy,stackedarea2dlinedy,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollcombi2d,scrollcombidy2d"
+                >
+                    <option value="line">LINE_LABEL</option>
+                    <option value="column" showon="type_graph!:stackedarea2dlinedy">COLUMN_LABEL</option>
+                    <option value="area"
+                            showon="type_graph:mscombi2d,mscombi3d,stackedarea2dlinedy,mscombidy2d,mscombidy3d,scrollcombi2d,scrollcombidy2d">
+                        AREA_LABEL
+                    </option>
+                    <option value="spline"
+                            showon="type_graph:mscombi2d,mscombi3d,mscombidy2d,mscombidy3d,scrollcombi2d,scrollcombidy2d">
+                        SPLINE_LABEL
+                    </option>
+                </field>
+                <field
+                        name="y_choice_3"
+                        type="list"
+                        label="Y_CHOICE_3_LABEL"
+                        description="Y_CHOICE_3_DESC"
+                        size="60"
+                        showon="nb_value:4[OR]nb_value:5[AND]type_graph:mscombidy2d,zoomlinedy,stackedcolumn2dlinedy,stackedcolumn3dlinedy,stackedarea2dlinedy,mscombidy2d,mscombidy3d,mscolumn3dlinedy,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollcombidy2d"
+                >
+                    <option value="P">Y_0_LABEL</option>
+                    <option value="S">Y_1_LABEL</option>
+                </field>
+                <field
+                        name="column_choice_3"
+                        type="number"
+                        min="1"
+                        max="4"
+                        label="COLUMN_CHOICE_3_LABEL"
+                        description="COLUMN_CHOICE_3_DESC"
+                        size="60"
+                        showon="nb_value:4[OR]nb_value:5[AND]type_graph:msstackedcolumn2d,scrollmsstackedcolumn2d,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollmsstackedcolumn2d[AND]type_trace_3!:line"
+                />
 
-					<field
-						name="y_name_db_4"
-						type="text"
-						label="Y_NAME_DB_4_LABEL"
-						description="Y_NAME_DB_4_DESC"
-						size="60"
-						showon="nb_value:5[AND]type_graph!:column2d,column3d,scrollcolumn2d,line,scrollline2d,timeseries,area2d,scrollarea2d,bar2d,bar3d,scrollbar2d,pie2d,pie3d,doughnut2d,doughnut3d,pareto2d,pareto3d"
-					/>
-					<field
-						name="serie_name_4"
-						type="text"
-						label="SERIE_NAME_4_LABEL"
-						description="SERIE_NAME_4_DESC"
-						size="60"
-						showon="nb_value:5[AND]type_graph!:column2d,column3d,scrollcolumn2d,line,scrollline2d,timeseries,area2d,scrollarea2d,bar2d,bar3d,scrollbar2d,pie2d,pie3d,doughnut2d,doughnut3d,pareto2d,pareto3d"
-					/>
-					<field
-						name="type_trace_4"
-						type="list"
-						label="TYPE_TRACE_4_LABEL"
-						description="TYPE_TRACE_4_DESC"
-						size="60"
-						showon="nb_value:5[AND]type_graph:mscombi2d,mscombidy2d,mscombi3d,mscombidy3d,mscolumnline3d,mscolumn3dlinedy,stackedcolumn2dline,stackedcolumn3dline,stackedcolumn2dlinedy,stackedcolumn3dlinedy,stackedarea2dlinedy,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollcombi2d,scrollcombidy2d"
-					>
-						<option value="line">LINE_LABEL</option>
-						<option value="column" showon="type_graph!:stackedarea2dlinedy">COLUMN_LABEL</option>
-						<option value="area" showon="type_graph:mscombi2d,mscombi3d,stackedarea2dlinedy,mscombidy2d,mscombidy3d,scrollcombi2d,scrollcombidy2d">AREA_LABEL</option>
-						<option value="spline" showon="type_graph:mscombi2d,mscombi3d,mscombidy2d,mscombidy3d,scrollcombi2d,scrollcombidy2d">SPLINE_LABEL</option>
-					</field>
-					<field
-						name="y_choice_4"
-						type="list"
-						label="Y_CHOICE_4_LABEL"
-						description="Y_CHOICE_4_DESC"
-						size="60"
-						showon="nb_value:5[AND]type_graph:mscombidy2d,zoomlinedy,stackedcolumn2dlinedy,stackedcolumn3dlinedy,stackedarea2dlinedy,mscombidy2d,mscombidy3d,mscolumn3dlinedy,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollcombidy2d"
-					>
-						<option value="P">Y_0_LABEL</option>
-						<option value="S">Y_1_LABEL</option>
-					</field>
-					<field
-						name="column_choice_4"
-						type="number"
-						min="1"
-						max="4"
-						label="COLUMN_CHOICE_4_LABEL"
-						description="COLUMN_CHOICE_4_DESC"
-						size="60"
-						showon="nb_value:5[AND]type_graph:msstackedcolumn2d,scrollmsstackedcolumn2d,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollmsstackedcolumn2d[AND]type_trace_4!:line"
-					/>
+                <field
+                        name="y_name_db_4"
+                        type="text"
+                        label="Y_NAME_DB_4_LABEL"
+                        description="Y_NAME_DB_4_DESC"
+                        size="60"
+                        showon="nb_value:5[AND]type_graph!:column2d,column3d,scrollcolumn2d,line,scrollline2d,timeseries,area2d,scrollarea2d,bar2d,bar3d,scrollbar2d,pie2d,pie3d,doughnut2d,doughnut3d,pareto2d,pareto3d"
+                />
+                <field
+                        name="serie_name_4"
+                        type="text"
+                        label="SERIE_NAME_4_LABEL"
+                        description="SERIE_NAME_4_DESC"
+                        size="60"
+                        showon="nb_value:5[AND]type_graph!:column2d,column3d,scrollcolumn2d,line,scrollline2d,timeseries,area2d,scrollarea2d,bar2d,bar3d,scrollbar2d,pie2d,pie3d,doughnut2d,doughnut3d,pareto2d,pareto3d"
+                />
+                <field
+                        name="type_trace_4"
+                        type="list"
+                        label="TYPE_TRACE_4_LABEL"
+                        description="TYPE_TRACE_4_DESC"
+                        size="60"
+                        showon="nb_value:5[AND]type_graph:mscombi2d,mscombidy2d,mscombi3d,mscombidy3d,mscolumnline3d,mscolumn3dlinedy,stackedcolumn2dline,stackedcolumn3dline,stackedcolumn2dlinedy,stackedcolumn3dlinedy,stackedarea2dlinedy,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollcombi2d,scrollcombidy2d"
+                >
+                    <option value="line">LINE_LABEL</option>
+                    <option value="column" showon="type_graph!:stackedarea2dlinedy">COLUMN_LABEL</option>
+                    <option value="area"
+                            showon="type_graph:mscombi2d,mscombi3d,stackedarea2dlinedy,mscombidy2d,mscombidy3d,scrollcombi2d,scrollcombidy2d">
+                        AREA_LABEL
+                    </option>
+                    <option value="spline"
+                            showon="type_graph:mscombi2d,mscombi3d,mscombidy2d,mscombidy3d,scrollcombi2d,scrollcombidy2d">
+                        SPLINE_LABEL
+                    </option>
+                </field>
+                <field
+                        name="y_choice_4"
+                        type="list"
+                        label="Y_CHOICE_4_LABEL"
+                        description="Y_CHOICE_4_DESC"
+                        size="60"
+                        showon="nb_value:5[AND]type_graph:mscombidy2d,zoomlinedy,stackedcolumn2dlinedy,stackedcolumn3dlinedy,stackedarea2dlinedy,mscombidy2d,mscombidy3d,mscolumn3dlinedy,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollcombidy2d"
+                >
+                    <option value="P">Y_0_LABEL</option>
+                    <option value="S">Y_1_LABEL</option>
+                </field>
+                <field
+                        name="column_choice_4"
+                        type="number"
+                        min="1"
+                        max="4"
+                        label="COLUMN_CHOICE_4_LABEL"
+                        description="COLUMN_CHOICE_4_DESC"
+                        size="60"
+                        showon="nb_value:5[AND]type_graph:msstackedcolumn2d,scrollmsstackedcolumn2d,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollmsstackedcolumn2d[AND]type_trace_4!:line"
+                />
 
 
-					<field
-						name="x_name"
-						type="text"
-						label="X_NAME_LABEL"
-						description="X_NAME_DESC"
-						size="60"
-						required="true"
-					/>
-					<field
-						name="x_name_db"
-						type="text"
-						label="X_NAME_DB_LABEL"
-						description="X_NAME_DB_DESC"
-						size="60"
-						required="true"
-					/>
-					<field
-						name="y_name_0"
-						type="text"
-						label="Y_NAME_0_LABEL"
-						description="Y_NAME_0_DESC"
-						size="60"
-						required="true"
-					/>
-					<field
-						name="y_name_1"
-						type="text"
-						label="Y_NAME_1_LABEL"
-						description="Y_NAME_1_DESC"
-						size="60"
-						showon="type_graph:mscombidy2d,zoomlinedy,stackedcolumn2dlinedy,stackedcolumn3dlinedy,stackedarea2dlinedy,mscombidy2d,mscombidy3d,mscolumn3dlinedy,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollcombidy2d"
-					/>
-					<field
-						name="program"
-						type="text"
-						label="PROGRAM_LABEL"
-						description="PROGRAM_DESC"
-						size="60"
-					/>
-					<field
-						name="year"
-						type="text"
-						label="YEAR_LABEL"
-						description="YEAR_DESC"
-						size="60"
-					/>
-					<field
-						name="campaign"
-						type="text"
-						label="CAMPAIGN_LABEL"
-						description="CAMPAIGN_DESC"
-						size="60"
-					/>
-				</fieldset>
-			</fields>
-		</config>
-	</extension>
+                <field
+                        name="x_name"
+                        type="text"
+                        label="X_NAME_LABEL"
+                        description="X_NAME_DESC"
+                        size="60"
+                        required="true"
+                />
+                <field
+                        name="x_name_db"
+                        type="text"
+                        label="X_NAME_DB_LABEL"
+                        description="X_NAME_DB_DESC"
+                        size="60"
+                        required="true"
+                />
+                <field
+                        name="y_name_0"
+                        type="text"
+                        label="Y_NAME_0_LABEL"
+                        description="Y_NAME_0_DESC"
+                        size="60"
+                        required="true"
+                />
+                <field
+                        name="y_name_1"
+                        type="text"
+                        label="Y_NAME_1_LABEL"
+                        description="Y_NAME_1_DESC"
+                        size="60"
+                        showon="type_graph:mscombidy2d,zoomlinedy,stackedcolumn2dlinedy,stackedcolumn3dlinedy,stackedarea2dlinedy,mscombidy2d,mscombidy3d,mscolumn3dlinedy,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollcombidy2d"
+                />
+                <field
+                        name="program"
+                        type="text"
+                        label="PROGRAM_LABEL"
+                        description="PROGRAM_DESC"
+                        size="60"
+                />
+                <field
+                        name="year"
+                        type="text"
+                        label="YEAR_LABEL"
+                        description="YEAR_DESC"
+                        size="60"
+                />
+                <field
+                        name="campaign"
+                        type="text"
+                        label="CAMPAIGN_LABEL"
+                        description="CAMPAIGN_DESC"
+                        size="60"
+                />
+            </fieldset>
+        </fields>
+    </config>
+</extension>

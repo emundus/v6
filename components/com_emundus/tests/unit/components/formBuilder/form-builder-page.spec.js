@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import '../../../mocks/matchMedia.mock';
 import FormBuilderPage from '../../../../src/components/FormBuilder/FormBuilderPage';
 import translate from '../../../mocks/mixins/translate';
@@ -23,7 +23,7 @@ describe('FormBuilderPage.vue', () => {
         store
     });
 
-    it ('FormBuilderPage should exist, and sections should be empty by default', () => {
+    it('FormBuilderPage should exist, and sections should be empty by default', () => {
         expect(wrapper.find('#form-builder-page').exists()).toBeTruthy();
         expect(wrapper.vm.$data.sections.length).toEqual(0);
     });

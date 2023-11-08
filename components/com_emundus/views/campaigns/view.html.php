@@ -15,15 +15,17 @@ defined('_JEXEC') or die('Restricted access');
  *
  * @since  0.0.1
  */
-class EmundusViewCampaigns extends JViewLegacy {
+class EmundusViewCampaigns extends JViewLegacy
+{
 
-	function display($tpl = null) {
-        $jinput = JFactory::getApplication()->input;
+	function display($tpl = null)
+	{
+		$jinput = JFactory::getApplication()->input;
 
-        // Display the template
-        $layout = $jinput->getString('layout', null);
-        if ($layout == 'add') {
-            $this->id = $jinput->getString('cid', null);
+		// Display the template
+		$layout = $jinput->getString('layout', null);
+		if ($layout == 'add') {
+			$this->id = $jinput->getString('cid', null);
 		}
 		// Display the template
 		parent::display($tpl);

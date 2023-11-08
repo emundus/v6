@@ -22,8 +22,7 @@ export default {
             };
         }
     },
-    async createSectionSimpleElements(params)
-    {
+    async createSectionSimpleElements(params) {
         try {
             const formData = new FormData();
             Object.keys(params).forEach(key => {
@@ -43,8 +42,7 @@ export default {
             };
         }
     },
-    async createSimpleGroup(fid, label)
-    {
+    async createSimpleGroup(fid, label) {
         try {
             const formData = new FormData();
             formData.append('fid', fid);
@@ -70,8 +68,7 @@ export default {
             };
         }
     },
-    async createTestingFile(campaign_id)
-    {
+    async createTestingFile(campaign_id) {
         try {
             const formData = new FormData();
             formData.append('cid', campaign_id);
@@ -89,8 +86,7 @@ export default {
             };
         }
     },
-    async getElement(gid, element)
-    {
+    async getElement(gid, element) {
         try {
             const response = await client().get(
                 'index.php?option=com_emundus&controller=formbuilder&task=getElement',
@@ -110,8 +106,7 @@ export default {
             };
         }
     },
-    async getJTEXT(text)
-    {
+    async getJTEXT(text) {
         const formData = new FormData();
         formData.append('toJTEXT', text);
 
@@ -121,7 +116,7 @@ export default {
             );
 
             return response;
-        }  catch (e) {
+        } catch (e) {
             return {
                 status: false,
                 message: e.message
@@ -131,7 +126,7 @@ export default {
     async getJTEXTA(texts) {
         const formData = new FormData();
         texts.forEach((text, index) => {
-            formData.append('toJTEXT['+ index +']', text);
+            formData.append('toJTEXT[' + index + ']', text);
         });
 
         try {
@@ -140,15 +135,14 @@ export default {
             );
 
             return response;
-        }  catch (e) {
+        } catch (e) {
             return {
                 status: false,
                 message: e.message
             };
         }
     },
-    async getAllTranslations(text)
-    {
+    async getAllTranslations(text) {
         const formData = new FormData();
         formData.append('toJTEXT', text);
 
@@ -159,15 +153,14 @@ export default {
             );
 
             return response;
-        }  catch (e) {
+        } catch (e) {
             return {
                 status: false,
                 message: e.message
             };
         }
     },
-    async getTestingParams(id)
-    {
+    async getTestingParams(id) {
         try {
             const response = await client().get(
                 'index.php?option=com_emundus&controller=formbuilder&task=gettestingparams',
@@ -186,8 +179,7 @@ export default {
             };
         }
     },
-    async getDatabases()
-    {
+    async getDatabases() {
         try {
             const response = await client().get(
                 'index.php?option=com_emundus&controller=formbuilder&task=getdatabasesjoin'
@@ -220,8 +212,7 @@ export default {
             };
         }
     },
-    async updateParams(element)
-    {
+    async updateParams(element) {
         const formData = new FormData();
         const postData = JSON.stringify(element);
         formData.append('element', postData);
@@ -290,24 +281,24 @@ export default {
         }
     },
     updateElementOrder(groupId, elementId, newIndex) {
-      const formData = new FormData();
-      formData.append('group_id', groupId);
-      formData.append('element_id', elementId);
-      formData.append('new_index', newIndex);
+        const formData = new FormData();
+        formData.append('group_id', groupId);
+        formData.append('element_id', elementId);
+        formData.append('new_index', newIndex);
 
-      try {
-        const response = client().post(
-          'index.php?option=com_emundus&controller=formbuilder&task=updateelementorder',
-          formData
-        );
+        try {
+            const response = client().post(
+                'index.php?option=com_emundus&controller=formbuilder&task=updateelementorder',
+                formData
+            );
 
-        return response;
-      } catch (e) {
-        return {
-          status: false,
-          message: e.message
-        };
-      }
+            return response;
+        } catch (e) {
+            return {
+                status: false,
+                message: e.message
+            };
+        }
     },
     async updateDocument(data) {
         if (data.document_id == undefined || data.profile_id == undefined || data.document == undefined) {
@@ -340,8 +331,7 @@ export default {
         }
     },
 
-    async toggleElementPublishValue(element)
-    {
+    async toggleElementPublishValue(element) {
         const formData = new FormData();
         formData.append('element', element);
 
@@ -359,7 +349,7 @@ export default {
             };
         }
     },
-    async toggleElementHiddenValue(element){
+    async toggleElementHiddenValue(element) {
         const formData = new FormData();
         formData.append('element', element);
 
@@ -377,8 +367,7 @@ export default {
             };
         }
     },
-    async reorderMenu(params,profile_id)
-    {
+    async reorderMenu(params, profile_id) {
         const formData = new FormData();
         formData.append('menus', JSON.stringify(params));
         formData.append('profile', profile_id);
@@ -396,8 +385,7 @@ export default {
         }
     },
 
-    async reorderSections(pageId, sections)
-    {
+    async reorderSections(pageId, sections) {
         const formData = new FormData();
         formData.append('groups', JSON.stringify(sections));
         formData.append('fid', pageId);
@@ -439,7 +427,7 @@ export default {
             };
         }
     },
-    async deletePage(page){
+    async deletePage(page) {
         if (!page) {
             return {
                 status: false,
@@ -549,17 +537,16 @@ export default {
             };
         }
     },
-    updateElementSubOptionsOrder(element, old_order, new_order)
-    {
+    updateElementSubOptionsOrder(element, old_order, new_order) {
         const formData = new FormData();
         formData.append('element', element);
         formData.append('options_old_order', JSON.stringify(old_order));
         formData.append('options_new_order', JSON.stringify(new_order));
 
         try {
-            const response =  client().post(
-              'index.php?option=com_emundus&controller=formbuilder&task=updateElementSubOptionsOrder' ,
-              formData
+            const response = client().post(
+                'index.php?option=com_emundus&controller=formbuilder&task=updateElementSubOptionsOrder',
+                formData
             );
 
             return response;
@@ -626,7 +613,7 @@ export default {
             };
         }
     },
-    async updateDefaultValue(eid,value) {
+    async updateDefaultValue(eid, value) {
         const formData = new FormData();
         formData.append('eid', eid);
         formData.append('value', value);
@@ -643,8 +630,7 @@ export default {
             };
         }
     },
-    async getAllDatabases()
-    {
+    async getAllDatabases() {
         try {
             const response = await client().get(
                 'index.php?option=com_emundus&controller=formbuilder&task=getalldatabases'
@@ -658,8 +644,7 @@ export default {
             };
         }
     },
-    async getSection(section)
-    {
+    async getSection(section) {
         try {
             const response = await client().get(
                 'index.php?option=com_emundus&controller=formbuilder&task=getsection',
@@ -678,8 +663,7 @@ export default {
             };
         }
     },
-    async getModels()
-    {
+    async getModels() {
         try {
             const response = await client().get(
                 'index.php?option=com_emundus&controller=formbuilder&task=getpagemodels'

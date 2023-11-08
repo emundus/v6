@@ -9,25 +9,30 @@
     height: 34px !important;
     margin-bottom: 0;
 }
+
 .navsearch input {
     margin-bottom: 0 !important;
     height: 34px !important;
     border-radius: 0;
 }
+
 .navsearch label {
     margin: 0 !important;
 }
+
 #navfilter .navsearch .navsearch-content .input-group-btn button {
     margin-left: -5px !important;
     height: 34px !important;
     margin-bottom: 0;
     border-radius: 0 var(--em-default-br) var(--em-default-br) 0 !important;
 }
+
 #navfilter .navsearch .navsearch-content .input-group label input {
     border-radius: var(--em-default-br) 0 0 var(--em-default-br) !important;
     height: 34px;
     margin-top: 0;
 }
+
 .campaignbymonth {
     margin-top: 0 !important;
 }
@@ -37,17 +42,21 @@
     margin-bottom: 20px !important;
     padding-left: 0;
 }
+
 .campaign-title::after {
     content: "\f0a1";
     font-family: FontAwesome;
     margin-left: 10px;
 }
+
 .campaigntext.blue h4 a:hover {
     text-decoration: underline;
 }
+
 .campaigntext.blue h4 {
     margin-bottom: 10px !important;
 }
+
 .campaigntext.blue h4 a {
     font-size: 1em;
     display: block;
@@ -59,10 +68,12 @@
     font-family: FontAwesome;
     margin-right: 6px;
 }
+
 .navsearch {
     margin-left: 0;
     margin-top: 0;
 }
+
 .campaign {
     margin-top: 5rem !important;
     text-transform: uppercase;
@@ -70,16 +81,20 @@
     color: #42c69d;
     font-size: 2rem;
 }
+
 .position-me {
     position: relative;
 }
+
 .campaigns-list .campaignbymonth .campaign-month-label .position-me {
     top: 27px;
     z-index: 9;
 }
+
 #search_program {
     padding: 0 !important;
 }
+
 #search_program .rotate-me p {
     color: #fff;
     padding-left: 10px;
@@ -91,10 +106,12 @@
     display: flex;
     flex-direction: column;
 }
+
 .em-flex-row {
     display: flex;
     flex-direction: row;
 }
+
 .rotate-me p {
     margin: 0 !important;
     transform: rotate(180deg);
@@ -123,10 +140,10 @@
 }
 
 .campaigns-list .below-content a.btn {
-  border-radius: var(--em-applicant-br);
-  width: auto;
-  padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
-  text-transform: inherit;
+    border-radius: var(--em-applicant-br);
+    width: auto;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
+    text-transform: inherit;
 }
 
 .campaigns-list .below-content a.btn.btn-primary.btn-plein.btn-blue {
@@ -201,9 +218,11 @@
     display: flex;
     flex-direction: column;
 }
+
 .single-campaign .right-side, .single-campaign .below-content {
     border: none !important;
 }
+
 .single-campaign .below-content {
     text-align: left !important;
 }
@@ -219,7 +238,7 @@
 }
 
 .em-campaign-dropfiles ul {
-    margin-left:0;
+    margin-left: 0;
 }
 
 .em-campaign-dropfiles li {
@@ -240,8 +259,8 @@
 }
 
 .em-campaign-dropfiles .g-title {
-    border:none !important;
-    position:relative;
+    border: none !important;
+    position: relative;
 }
 
 .em-campaign-dropfiles .g-title::after {
@@ -306,16 +325,16 @@
     }
 
     .campaigntext .blue h4 a {
-         padding-left: 0;
-     }
+        padding-left: 0;
+    }
 
     .left-side {
         border-bottom: none !important;
     }
 
     .left-side.campaigntext a {
-         margin-left: 0;
-     }
+        margin-left: 0;
+    }
 
     .below-content {
         text-align: center !important;
@@ -325,7 +344,7 @@
         width: 100% !important;
     }
 
-   .campaign-month-label .position-me .rotate-me.blue,  .campaign-month-label .position-me .rotate-me.orange {
+    .campaign-month-label .position-me .rotate-me.blue, .campaign-month-label .position-me .rotate-me.orange {
         width: 100%;
         display: flex;
         justify-content: flex-start;
@@ -356,6 +375,7 @@
         padding: 10px !important;
     }
 }
+
 @media all and (max-width: 479px) {
     .homepage .blog-featuredhomepage {
         margin-bottom: 25px;
@@ -366,7 +386,7 @@
         margin-bottom: 0;
     }
 
-    .campaign-month-campaigns .campaign-content  .left-side.campaigntext p {
+    .campaign-month-campaigns .campaign-content .left-side.campaigntext p {
         padding-left: 0;
         margin-left: 0;
     }
@@ -430,7 +450,7 @@
         margin-left: 0 !important;
     }
 
-    .campaigntext.blue h4 a  {
+    .campaigntext.blue h4 a {
         padding-left: 0;
     }
 
@@ -505,19 +525,19 @@
 }
 
 @media all and (max-width: 1034px) {
-    .campaign-content .below-content a{
+    .campaign-content .below-content a {
         width: 18.3%;
     }
 }
 
 @media all and (max-width: 982px) {
-    .campaign-content .below-content a{
+    .campaign-content .below-content a {
         width: 19.3%;
     }
 }
 
 @media all and (max-width: 1227px) {
-    .campaign-content .below-content a{
+    .campaign-content .below-content a {
         width: 17.3%;
     }
 }
@@ -541,6 +561,7 @@
         justify-content: initial !important;
         align-items: initial !important;
     }
+
     .navsearch {
         margin-top: 0 !important;
         margin-bottom: 10px !important;

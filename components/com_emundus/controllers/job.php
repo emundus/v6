@@ -15,198 +15,208 @@ jimport('joomla.application.component.controller');
 /**
  * Job controller class.
  */
-class EmundusControllerJob extends EmundusController {
+class EmundusControllerJob extends EmundusController
+{
 
-    /**
-     * Method to apply to a job.
-     *
-     * @return  void
-     * @since   1.6
-     */
-    public function apply()
-    {
+	/**
+	 * Method to apply to a job.
+	 *
+	 * @return  void
+	 * @since   1.6
+	 */
+	public function apply()
+	{
 
-        $user = JFactory::getSession()->get('emundusUser');
+		$user = JFactory::getSession()->get('emundusUser');
 
-        // Get the previous edit id (if any) and the current edit id.
-        //$previousId = (int) $app->getUserState('com_emundus.edit.job.id');
-        $jobId = $this->input->getInt('id', null, 'array');
-        $Itemid = $this->input->getInt('Itemid', null, 'int');
+		// Get the previous edit id (if any) and the current edit id.
+		//$previousId = (int) $app->getUserState('com_emundus.edit.job.id');
+		$jobId  = $this->input->getInt('id', null, 'array');
+		$Itemid = $this->input->getInt('Itemid', null, 'int');
 
-        // Set the user id for the user to edit in the session.
-        $this->app->setUserState('com_emundus.apply.job.id', $jobId);
+		// Set the user id for the user to edit in the session.
+		$this->app->setUserState('com_emundus.apply.job.id', $jobId);
 
-        // Get the model.
-        $model = $this->getModel('Job');
-        $fnum = $model->apply($user->id, $jobId);
-        if ($fnum) {
-            // Redirect to the edit screen.
-            $this->setRedirect(JRoute::_('index.php?option=com_emundus&controller=job&task=display&fnum='.$fnum.'&id='.$jobId.'&Itemid='.$Itemid, false));
+		// Get the model.
+		$model = $this->getModel('Job');
+		$fnum  = $model->apply($user->id, $jobId);
+		if ($fnum) {
+			// Redirect to the edit screen.
+			$this->setRedirect(JRoute::_('index.php?option=com_emundus&controller=job&task=display&fnum=' . $fnum . '&id=' . $jobId . '&Itemid=' . $Itemid, false));
 
-        } else {
-            JError::raiseWarning( 100, JText::_('COM_EMUNDUS_ERROR') );
-            $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=jobs&Itemid='.$Itemid, false));
-        }
-    }
-    /**
-     * Method to display application on a Job.
-     *
-     * @return  void
-     * @since   1.6
-     */
-    public function display($cachable = false, $urlparams = false)
-    {
+		}
+		else {
+			JError::raiseWarning(100, JText::_('COM_EMUNDUS_ERROR'));
+			$this->setRedirect(JRoute::_('index.php?option=com_emundus&view=jobs&Itemid=' . $Itemid, false));
+		}
+	}
 
-        $user = JFactory::getSession()->get('emundusUser');
+	/**
+	 * Method to display application on a Job.
+	 *
+	 * @return  void
+	 * @since   1.6
+	 */
+	public function display($cachable = false, $urlparams = false)
+	{
 
-        $jobId = $this->input->getInt('id', null, 'array');
-        $fnum = $this->input->get('fnum', null, 'ALNUM');
+		$user = JFactory::getSession()->get('emundusUser');
 
-        // Set the user id for the user to edit in the session.
-        $this->app->setUserState('com_emundus.display.job.id', $jobId);
+		$jobId = $this->input->getInt('id', null, 'array');
+		$fnum  = $this->input->get('fnum', null, 'ALNUM');
 
-        $user->fnum = $fnum;
-        $redirect = 'index.php?option=com_fabrik&view=form&formid=205&Itemid=1465';
+		// Set the user id for the user to edit in the session.
+		$this->app->setUserState('com_emundus.display.job.id', $jobId);
 
-        $this->setRedirect(JRoute::_('index.php?option=com_emundus&task=openfile&fnum='.$fnum.'&redirect='.base64_encode($redirect), false));
-    }
+		$user->fnum = $fnum;
+		$redirect   = 'index.php?option=com_fabrik&view=form&formid=205&Itemid=1465';
 
-    /**
-     * Method to cancel application on a Job.
-     *
-     * @return  void
-     * @since   1.6
-     */
-    public function cancel()
-    {
+		$this->setRedirect(JRoute::_('index.php?option=com_emundus&task=openfile&fnum=' . $fnum . '&redirect=' . base64_encode($redirect), false));
+	}
 
-        $user = JFactory::getSession()->get('emundusUser');
+	/**
+	 * Method to cancel application on a Job.
+	 *
+	 * @return  void
+	 * @since   1.6
+	 */
+	public function cancel()
+	{
 
-        $jobId = $this->input->getInt('id', null, 'array');
-        $fnum = $this->input->get('fnum', null, 'ALNUM');
+		$user = JFactory::getSession()->get('emundusUser');
 
-        // Set the user id for the user to edit in the session.
-        $this->app->setUserState('com_emundus.cancel.job.id', $jobId);
+		$jobId = $this->input->getInt('id', null, 'array');
+		$fnum  = $this->input->get('fnum', null, 'ALNUM');
 
-        // Get the model.
-        $model = $this->getModel('Job');
+		// Set the user id for the user to edit in the session.
+		$this->app->setUserState('com_emundus.cancel.job.id', $jobId);
 
-        if ($model->cancel($user->id, $fnum))
-            $this->setMessage(JText::_('COM_EMUNDUS_JOBS_DELETED'));
-        else
-            JError::raiseWarning( 100, JText::_('COM_EMUNDUS_ERROR') );
+		// Get the model.
+		$model = $this->getModel('Job');
 
-        $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=jobs&Itemid=1468', false));
-    }
-    /**
-     * Method to check out an item for editing and redirect to the edit form.
-     *
-     * @since   1.6
-     */
-    public function edit() {
+		if ($model->cancel($user->id, $fnum))
+			$this->setMessage(JText::_('COM_EMUNDUS_JOBS_DELETED'));
+		else
+			JError::raiseWarning(100, JText::_('COM_EMUNDUS_ERROR'));
 
+		$this->setRedirect(JRoute::_('index.php?option=com_emundus&view=jobs&Itemid=1468', false));
+	}
 
-        // Get the previous edit id (if any) and the current edit id.
-        $previousId = (int) $this->app->getUserState('com_emundus.edit.job.id');
-        $editId = $this->input->getInt('id', null, 'array');
-
-        // Set the user id for the user to edit in the session.
-        $this->app->setUserState('com_emundus.edit.job.id', $editId);
-
-        // Get the model.
-        $model = $this->getModel('Job');
-
-        // Check out the item
-        if ($editId)
-            $model->checkout($editId);
-
-        // Check in the previous user.
-        if ($previousId && $previousId !== $editId)
-            $model->checkin($previousId);
-
-        // Redirect to the edit screen.
-        $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=jobform&layout=edit', false));
-    }
-
-    /**
-     * Method to save a user's profile data.
-     *
-     * @return  void
-     * @since   1.6
-     */
-    public function publish() {
-        // Initialise variables.
+	/**
+	 * Method to check out an item for editing and redirect to the edit form.
+	 *
+	 * @since   1.6
+	 */
+	public function edit()
+	{
 
 
-        //Checking if the user can remove object
-        $user = JFactory::getSession()->get('emundusUser');
-        if ($user->authorise('core.edit', 'com_emundus') || $user->authorise('core.edit.state', 'com_emundus')) {
-            $model = $this->getModel('Job', 'EmundusModel');
+		// Get the previous edit id (if any) and the current edit id.
+		$previousId = (int) $this->app->getUserState('com_emundus.edit.job.id');
+		$editId     = $this->input->getInt('id', null, 'array');
 
-            // Get the user data.
-            $id = $this->input->getInt('id', 0);
-            $state = $this->input->getInt('state', 1);
+		// Set the user id for the user to edit in the session.
+		$this->app->setUserState('com_emundus.edit.job.id', $editId);
 
-            // Attempt to save the data.
-            $return = $model->publish($id, $state);
+		// Get the model.
+		$model = $this->getModel('Job');
 
-            // Check for errors.
-            if ($return === false)
-                $this->setMessage(JText::sprintf('Save failed: %s', $model->getError()), 'warning');
+		// Check out the item
+		if ($editId)
+			$model->checkout($editId);
 
-            // Clear the profile id from the session.
-            $this->app->setUserState('com_emundus.edit.job.id', null);
+		// Check in the previous user.
+		if ($previousId && $previousId !== $editId)
+			$model->checkin($previousId);
 
-            // Flush the data from the session.
-            $this->app->setUserState('com_emundus.edit.job.data', null);
+		// Redirect to the edit screen.
+		$this->setRedirect(JRoute::_('index.php?option=com_emundus&view=jobform&layout=edit', false));
+	}
 
-            // Redirect to the list screen.
-            $this->setMessage(JText::_('COM_EMUNDUS_ITEM_SAVED_SUCCESSFULLY'));
-            $menu = $this->app->getMenu();
-            $item = $menu->getActive();
-            $this->setRedirect(JRoute::_($item->link, false));
-        } else throw new Exception(500);
-    }
-
-    public function remove() {
-
-        // Initialise variables.
+	/**
+	 * Method to save a user's profile data.
+	 *
+	 * @return  void
+	 * @since   1.6
+	 */
+	public function publish()
+	{
+		// Initialise variables.
 
 
-        //Checking if the user can remove object
-        $user = JFactory::getUser();
-        if ($user->authorise($user->authorise('core.delete', 'com_emundus'))) {
-            $model = $this->getModel('Job');
+		//Checking if the user can remove object
+		$user = JFactory::getSession()->get('emundusUser');
+		if ($user->authorise('core.edit', 'com_emundus') || $user->authorise('core.edit.state', 'com_emundus')) {
+			$model = $this->getModel('Job', 'EmundusModel');
 
-            // Get the user data.
-            $id = $this->input->getInt('id', 0);
+			// Get the user data.
+			$id    = $this->input->getInt('id', 0);
+			$state = $this->input->getInt('state', 1);
 
-            // Attempt to save the data.
-            $return = $model->delete($id);
+			// Attempt to save the data.
+			$return = $model->publish($id, $state);
+
+			// Check for errors.
+			if ($return === false)
+				$this->setMessage(JText::sprintf('Save failed: %s', $model->getError()), 'warning');
+
+			// Clear the profile id from the session.
+			$this->app->setUserState('com_emundus.edit.job.id', null);
+
+			// Flush the data from the session.
+			$this->app->setUserState('com_emundus.edit.job.data', null);
+
+			// Redirect to the list screen.
+			$this->setMessage(JText::_('COM_EMUNDUS_ITEM_SAVED_SUCCESSFULLY'));
+			$menu = $this->app->getMenu();
+			$item = $menu->getActive();
+			$this->setRedirect(JRoute::_($item->link, false));
+		}
+		else throw new Exception(500);
+	}
+
+	public function remove()
+	{
+
+		// Initialise variables.
 
 
-            // Check for errors.
-            if ($return === false) {
-                $this->setMessage(JText::sprintf('Delete failed', $model->getError()), 'warning');
-            } else {
-                // Check in the profile.
-                if ($return)
-                    $model->checkin($return);
+		//Checking if the user can remove object
+		$user = JFactory::getUser();
+		if ($user->authorise($user->authorise('core.delete', 'com_emundus'))) {
+			$model = $this->getModel('Job');
 
-                // Clear the profile id from the session.
-                $this->app->setUserState('com_emundus.edit.job.id', null);
+			// Get the user data.
+			$id = $this->input->getInt('id', 0);
 
-                // Flush the data from the session.
-                $this->app->setUserState('com_emundus.edit.job.data', null);
+			// Attempt to save the data.
+			$return = $model->delete($id);
 
-                $this->setMessage(JText::_('COM_EMUNDUS_ITEM_DELETED_SUCCESSFULLY'));
-            }
 
-            // Redirect to the list screen.
-            $menu = $this->app->getMenu();
-            $item = $menu->getActive();
-            $this->setRedirect(JRoute::_($item->link, false));
-        } else throw new Exception(500);
-    }
+			// Check for errors.
+			if ($return === false) {
+				$this->setMessage(JText::sprintf('Delete failed', $model->getError()), 'warning');
+			}
+			else {
+				// Check in the profile.
+				if ($return)
+					$model->checkin($return);
+
+				// Clear the profile id from the session.
+				$this->app->setUserState('com_emundus.edit.job.id', null);
+
+				// Flush the data from the session.
+				$this->app->setUserState('com_emundus.edit.job.data', null);
+
+				$this->setMessage(JText::_('COM_EMUNDUS_ITEM_DELETED_SUCCESSFULLY'));
+			}
+
+			// Redirect to the list screen.
+			$menu = $this->app->getMenu();
+			$item = $menu->getActive();
+			$this->setRedirect(JRoute::_($item->link, false));
+		}
+		else throw new Exception(500);
+	}
 
 }

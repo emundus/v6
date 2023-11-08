@@ -11,21 +11,21 @@
         </div>
         <div class="elements">
           <div
-            class="element"
-            v-for="element in orderedElements"
-            :key="element.type == 'filter' ? element.id : element.group"
+              class="element"
+              v-for="element in orderedElements"
+              :key="element.type == 'filter' ? element.id : element.group"
           >
             <FilterRow
-              v-if="element.type == 'filter'"
-              class="filter-row"
-              @removeFilter="removeFilter($event)"
-              :group="0"
-              :id="element.id"
+                v-if="element.type == 'filter'"
+                class="filter-row"
+                @removeFilter="removeFilter($event)"
+                :group="0"
+                :id="element.id"
             ></FilterRow>
             <FilterGroup
-              v-if="element.type == 'group'"
-              :id="element.group"
-              @removeGroup="removeGroup($event)"
+                v-if="element.type == 'group'"
+                :id="element.group"
+                @removeGroup="removeGroup($event)"
             ></FilterGroup>
           </div>
         </div>

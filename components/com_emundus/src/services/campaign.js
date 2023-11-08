@@ -33,7 +33,7 @@ export default {
 
         try {
             const response = await client().post(
-                'index.php?option=com_emundus&controller=campaign&task=updatedocumentmandatory' ,
+                'index.php?option=com_emundus&controller=campaign&task=updatedocumentmandatory',
                 formData
             );
 
@@ -46,7 +46,7 @@ export default {
         }
     },
 
-    async getAllCampaigns(filter = '',sort = 'DESC',recherche = '',lim = 9999,page = 0,program = 'all') {
+    async getAllCampaigns(filter = '', sort = 'DESC', recherche = '', lim = 9999, page = 0, program = 'all') {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=campaign&task=getallcampaign', {
                 params: {
@@ -68,7 +68,7 @@ export default {
         }
     },
 
-    async createCampaign(form){
+    async createCampaign(form) {
         try {
             const formData = new FormData();
             formData.append('label', JSON.stringify(form.label));
@@ -100,7 +100,7 @@ export default {
         }
     },
 
-    async pinCampaign(cid){
+    async pinCampaign(cid) {
         try {
             const formData = new FormData();
             formData.append('cid', cid);

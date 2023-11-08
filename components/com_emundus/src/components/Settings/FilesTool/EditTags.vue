@@ -11,11 +11,14 @@
         </button>
       </div>
 
-      <div v-for="(tag, index) in tags" class="em-mb-24" :id="'tag_' + tag.id" :key="'tag_' + tag.id" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
+      <div v-for="(tag, index) in tags" class="em-mb-24" :id="'tag_' + tag.id" :key="'tag_' + tag.id"
+           @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
         <div class="em-flex-row em-flex-row-start em-w-100">
           <div class="status-field">
             <div style="width: 100%">
-              <p class="em-p-8-12 em-editable-content" contenteditable="true" :id="'tag_label_' + tag.id" @focusout="updateTag(tag)" @keyup.enter="manageKeyup(tag)" @keydown="checkMaxlength">{{tag.label}}</p>
+              <p class="em-p-8-12 em-editable-content" contenteditable="true" :id="'tag_label_' + tag.id"
+                 @focusout="updateTag(tag)" @keyup.enter="manageKeyup(tag)" @keydown="checkMaxlength">
+                {{ tag.label }}</p>
             </div>
             <input type="hidden" :class="tag.class">
           </div>
@@ -30,7 +33,8 @@
                 popover-x="left"
                 popover-y="top"
             ></v-swatches>
-            <a type="button" :title="translate('COM_EMUNDUS_ONBOARD_DELETE_TAGS')" @click="removeTag(tag,index)" class="em-flex-row em-ml-8 em-pointer">
+            <a type="button" :title="translate('COM_EMUNDUS_ONBOARD_DELETE_TAGS')" @click="removeTag(tag,index)"
+               class="em-flex-row em-ml-8 em-pointer">
               <span class="material-icons-outlined em-red-500-color">delete_outline</span>
             </a>
           </div>
@@ -77,7 +81,7 @@ export default {
 
       tags: [],
       show: false,
-      actualLanguage : '',
+      actualLanguage: '',
       swatches: [],
       colors: [],
       variables: null,
@@ -154,7 +158,7 @@ export default {
     },
 
     async updateTag(tag) {
-      this.$emit('updateSaving',true);
+      this.$emit('updateSaving', true);
 
       let index = this.colors.findIndex(item => item.value === tag.class);
       const formData = new FormData();
@@ -170,13 +174,13 @@ export default {
             }
           }
       ).then(() => {
-        this.$emit('updateSaving',false);
-        this.$emit('updateLastSaving',this.formattedDate('','LT'));
+        this.$emit('updateSaving', false);
+        this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
       });
     },
 
     pushTag() {
-      this.$emit('updateSaving',true);
+      this.$emit('updateSaving', true);
 
       axios({
         method: "post",
@@ -190,13 +194,13 @@ export default {
           this.getHexColors(newtag.data);
         }, 100);
 
-        this.$emit('updateSaving',false);
-        this.$emit('updateLastSaving',this.formattedDate('','LT'));
+        this.$emit('updateSaving', false);
+        this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
       });
     },
 
     removeTag(tag, index) {
-      this.$emit('updateSaving',true);
+      this.$emit('updateSaving', true);
 
       axios({
         method: "post",
@@ -208,36 +212,36 @@ export default {
           id: tag.id
         })
       }).then(() => {
-        this.tags.splice(index,1);
+        this.tags.splice(index, 1);
 
-        this.$emit('updateSaving',false);
-        this.$emit('updateLastSaving',this.formattedDate('','LT'));
+        this.$emit('updateSaving', false);
+        this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
       });
     },
 
-    manageKeyup(tag){
+    manageKeyup(tag) {
       document.getElementById(('tag_label_' + tag.id)).textContent = document.getElementById(('tag_label_' + tag.id)).textContent.trim();
       document.activeElement.blur();
     },
 
     getHexColors(element) {
       element.translate = false;
-      element.class = this.variables.getPropertyValue('--em-'+element.class.replace('label-',''));
+      element.class = this.variables.getPropertyValue('--em-' + element.class.replace('label-', ''));
     },
 
     checkMaxlength(event) {
-      if(event.target.textContent.length === 50 && event.keyCode != 8) {
+      if (event.target.textContent.length === 50 && event.keyCode != 8) {
         event.preventDefault();
       }
     },
 
-    enableGrab(index){
-      if(this.tags.length !== 1){
+    enableGrab(index) {
+      if (this.tags.length !== 1) {
         this.indexGrab = index;
         this.grab = true;
       }
     },
-    disableGrab(){
+    disableGrab() {
       this.indexGrab = 0;
       this.grab = false;
     },
@@ -246,14 +250,14 @@ export default {
 };
 </script>
 <style scoped>
-.status-field{
+.status-field {
   border-radius: 5px;
   width: 100%;
   margin-right: 1em;
   display: flex;
 }
 
-.status-item{
+.status-item {
   display: flex;
   align-items: center;
   justify-content: center;

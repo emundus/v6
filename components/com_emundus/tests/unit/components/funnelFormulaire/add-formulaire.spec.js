@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import addFormulaire from '../../../../src/components/FunnelFormulaire/addFormulaire.vue';
 import translate from '../../../mocks/mixins/translate';
 

@@ -1,4 +1,4 @@
-.mod_emundus_banner__banner{
+.mod_emundus_banner__banner {
     background-image: url("/images/custom/default_banner.png");
     background-size: cover;
     background-repeat: no-repeat;
@@ -8,7 +8,7 @@
     overflow: hidden;
 }
 
-#g-utility .g-container{
+#g-utility .g-container {
     width: 100%;
 }
 

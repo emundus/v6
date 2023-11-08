@@ -17,14 +17,14 @@
         </div>
 
         <div
-          class="input-group valid-state"
-          :class="{
+            class="input-group valid-state"
+            :class="{
 			    	success: attachmentIsValidated == 1,
 			    	warning: attachmentIsValidated == 2,
 			    	error: attachmentIsValidated == 0,
 			    }"
         >
-          <label for="status">{{translate("COM_EMUNDUS_ATTACHMENTS_CHECK") }}</label>
+          <label for="status">{{ translate("COM_EMUNDUS_ATTACHMENTS_CHECK") }}</label>
           <select
               name="status"
               v-model="attachmentIsValidated"
@@ -47,7 +47,7 @@
           />
         </div>
         <div class="input-group" v-if="attachment.profiles && attachment.profiles.length > 0">
-          <label for="can_be_viewed">{{translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED") }}</label>
+          <label for="can_be_viewed">{{ translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED") }}</label>
           <input
               type="checkbox"
               name="can_be_viewed"
@@ -57,7 +57,7 @@
           />
         </div>
         <div class="input-group" v-if="attachment.profiles && attachment.profiles.length > 0">
-          <label for="can_be_deleted">{{translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED") }}</label>
+          <label for="can_be_deleted">{{ translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED") }}</label>
           <input
               type="checkbox"
               name="can_be_deleted"
@@ -85,23 +85,23 @@
           <span class="em-text-align-right">{{ getUserNameById(attachment.modified_by) }}</span>
         </div>
         <div v-if="attachment.modified">
-					<span>{{translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE") }}</span>
+          <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE") }}</span>
           <span class="em-text-align-right">{{ formattedDate(attachment.modified) }}</span>
         </div>
         <!-- TODO: add file size -->
       </div>
     </div>
 
-	  <div class="em-w-100 em-flex-row em-flex-space-between">
-		  <div id="toggle-display">
+    <div class="em-w-100 em-flex-row em-flex-space-between">
+      <div id="toggle-display">
 			  <span v-if="displayed" class="material-icons-outlined displayed em-pointer" @click="toggleDisplay(false)">
 				  chevron_right
 			  </span>
-			  <span v-else class="material-icons-outlined not-displayed em-pointer" @click="toggleDisplay(true)">
+        <span v-else class="material-icons-outlined not-displayed em-pointer" @click="toggleDisplay(true)">
 				  menu_open
 			  </span>
-		  </div>
-	  </div>
+      </div>
+    </div>
     <div v-if="error" class="error-msg">{{ errorMessage }}</div>
   </div>
 </template>
@@ -117,15 +117,15 @@ export default {
       type: String,
       required: true,
     },
-	  isDisplayed: {
-			type: Boolean,
-		  default: true
-	  }
+    isDisplayed: {
+      type: Boolean,
+      default: true
+    }
   },
   mixins: [mixin],
   data() {
     return {
-			displayed: true,
+      displayed: true,
       attachment: {},
       categories: {},
       file: null,
@@ -140,7 +140,7 @@ export default {
     };
   },
   mounted() {
-		this.displayed = this.isDisplayed;
+    this.displayed = this.isDisplayed;
     this.canUpdate = this.$store.state.user.rights[this.fnum] ? this.$store.state.user.rights[this.fnum].canUpdate : false;
     this.canSee = !this.$store.state.global.anonyme;
     this.attachment = this.$store.state.attachment.selectedAttachment;
@@ -203,11 +203,11 @@ export default {
     },
     updateFile(event) {
       this.file = event.target.files[0];
-			this.saveChanges();
+      this.saveChanges();
     },
     updateAttachmentStatus(event) {
       this.attachmentIsValidated = event.target.value;
-	    this.saveChanges();
+      this.saveChanges();
     },
     showError(error) {
       this.error = true;
@@ -218,10 +218,10 @@ export default {
         this.errorMessage = "";
       }, 3000);
     },
-	  toggleDisplay(displayed) {
-			this.displayed = displayed;
-			this.$emit('update-displayed', this.displayed);
-	  }
+    toggleDisplay(displayed) {
+      this.displayed = displayed;
+      this.$emit('update-displayed', this.displayed);
+    }
   },
   computed: {
     allowedType() {
@@ -318,6 +318,7 @@ export default {
   .non-editable-data {
     width: 100%;
     margin-top: 16px;
+
     div {
       width: 100%;
       display: flex;
@@ -356,57 +357,57 @@ export default {
       width: fit-content;
     }
 
-	  input {
-		  height: fit-content !important;
-	  }
+    input {
+      height: fit-content !important;
+    }
   }
 
-	.valid-state {
-		select {
-			padding: 4px 8px;
-			border-radius: 4px;
-			background-color: var(--grey-bg-color);
-			color: var(--grey-color);
-			border: none;
-			width: max-content;
-		}
+  .valid-state {
+    select {
+      padding: 4px 8px;
+      border-radius: 4px;
+      background-color: var(--grey-bg-color);
+      color: var(--grey-color);
+      border: none;
+      width: max-content;
+    }
 
-		select::-ms-expand {
-			display: none !important;
-		}
+    select::-ms-expand {
+      display: none !important;
+    }
 
-		&.warning {
-			select {
-				color: var(--warning-color);
-				background-color: var(--warning-bg-color);
-			}
-		}
+    &.warning {
+      select {
+        color: var(--warning-color);
+        background-color: var(--warning-bg-color);
+      }
+    }
 
-		&.success {
-			select {
-				color: var(--success-color);
-				background-color: var(--success-bg-color);
-			}
-		}
+    &.success {
+      select {
+        color: var(--success-color);
+        background-color: var(--success-bg-color);
+      }
+    }
 
-		&.error {
-			select {
-				color: var(--error-color);
-				background-color: var(--error-bg-color);
-			}
-		}
-	}
+    &.error {
+      select {
+        color: var(--error-color);
+        background-color: var(--error-bg-color);
+      }
+    }
+  }
 
-	#toggle-display {
-		.not-displayed {
-			position: absolute;
-			bottom: 0;
-			right: 15px;
-			padding: 10px;
-			background: white;
-			border-top-left-radius: 4px;
-			border: 1px solid #ececec;
-		}
-	}
+  #toggle-display {
+    .not-displayed {
+      position: absolute;
+      bottom: 0;
+      right: 15px;
+      padding: 10px;
+      background: white;
+      border-top-left-radius: 4px;
+      border: 1px solid #ececec;
+    }
+  }
 }
 </style>

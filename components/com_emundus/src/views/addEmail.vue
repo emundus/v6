@@ -12,12 +12,12 @@
         <div>
           <div class="mb-4">
             <h1>{{ translate('COM_EMUNDUS_ONBOARD_ADD_EMAIL') }}</h1>
-            <span class="em-red-500-color em-mb-8">{{translations.RequiredFieldsIndicate}}</span>
+            <span class="em-red-500-color em-mb-8">{{ translations.RequiredFieldsIndicate }}</span>
           </div>
 
           <div>
             <div class="em-mb-16">
-              <label>{{translations.emailName}} <span style="color: #E5283B">*</span></label>
+              <label>{{ translations.emailName }} <span style="color: #E5283B">*</span></label>
               <input
                   type="text"
                   class="w-full"
@@ -26,11 +26,11 @@
               />
             </div>
             <span v-if="errors.subject" class="em-red-500-color mb-2">
-              <span class="em-red-500-color">{{translations.SubjectRequired}}</span>
+              <span class="em-red-500-color">{{ translations.SubjectRequired }}</span>
             </span>
 
             <div class="mb-4">
-              <label>{{translations.emailBody}} <span style="color: #E5283B">*</span></label>
+              <label>{{ translations.emailBody }} <span style="color: #E5283B">*</span></label>
               <editor-quill
                   style="height: 30em"
                   :text="form.message"
@@ -43,11 +43,13 @@
               >
               </editor-quill>
               <div class="mt-12">
-                <a href="component/emundus/?view=export_select_columns&format=html&layout=all_programs&Itemid=1173" class="em-main-500-color em-hover-main-600" target="_blank">{{ translate('COM_EMUNDUS_EMAIL_SHOW_TAGS') }}</a>
+                <a href="component/emundus/?view=export_select_columns&format=html&layout=all_programs&Itemid=1173"
+                   class="em-main-500-color em-hover-main-600"
+                   target="_blank">{{ translate('COM_EMUNDUS_EMAIL_SHOW_TAGS') }}</a>
               </div>
             </div>
             <p v-if="errors.message" class="em-red-500-color mb-2">
-              <span class="em-red-500-color">{{translations.BodyRequired}}</span>
+              <span class="em-red-500-color">{{ translations.BodyRequired }}</span>
             </p>
 
             <div class="form-group">
@@ -69,21 +71,23 @@
         <div>
           <div class="flex items-center mb-4 gap-1">
             <h3 class="cursor-pointer em-mb-0-important" @click="displayAdvanced">{{ translations.Advanced }}</h3>
-            <button :title="translations.Advanced" type="button" class="em-transparent-button flex flex-col" @click="displayAdvanced" v-show="!displayAdvancedParameters">
+            <button :title="translations.Advanced" type="button" class="em-transparent-button flex flex-col"
+                    @click="displayAdvanced" v-show="!displayAdvancedParameters">
               <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
             </button>
-            <button :title="translations.Advanced" type="button" @click="displayAdvanced" class="em-transparent-button flex flex-col" v-show="displayAdvancedParameters">
+            <button :title="translations.Advanced" type="button" @click="displayAdvanced"
+                    class="em-transparent-button flex flex-col" v-show="displayAdvancedParameters">
               <span class="material-icons-outlined em-main-500-color">remove_circle_outline</span>
             </button>
           </div>
           <div id="email-advanced-parameters" v-if="displayAdvancedParameters">
             <div class="form-group mb-4">
               <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_SENDER_EMAIL') }}</label>
-              <span>{{email_sender}}</span>
+              <span>{{ email_sender }}</span>
             </div>
 
             <div class="form-group mb-4">
-              <label>{{translations.receiverName}}</label>
+              <label>{{ translations.receiverName }}</label>
               <input
                   type="text"
                   class="w-full fabrikinput"
@@ -92,14 +96,15 @@
             </div>
 
             <div class="form-group mb-4">
-              <label>{{translations.emailAddress}}</label>
+              <label>{{ translations.emailAddress }}</label>
               <input
                   type="text"
                   class="w-full fabrikinput"
                   v-model="form.emailfrom"
                   placeholder="reply-to@tchooz.io"
               />
-              <p class="em-font-size-12 em-neutral-700-color">{{translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESTIP')}}</p>
+              <p class="em-font-size-12 em-neutral-700-color">
+                {{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESTIP') }}</p>
             </div>
 
             <div class="form-group mb-4" id="receivers_cc">
@@ -252,7 +257,7 @@ export default {
     dynamicComponent: false,
     displayAdvancedParameters: false,
 
-    translations:{
+    translations: {
       AddEmail: "COM_EMUNDUS_ONBOARD_ADD_EMAIL",
       Advanced: "COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING",
       Informations: "COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION",
@@ -398,7 +403,7 @@ export default {
     });
     setTimeout(() => {
       this.enableVariablesTip();
-    },2000);
+    }, 2000);
     this.getProgramsList();
     this.getStatus();
     this.getUsers();
@@ -448,8 +453,12 @@ export default {
         }
       }
 
-      const cc_filtered = receiver_cc.filter(el => { return el['id'] !== null && el['id'] !== undefined; })
-      const bcc_filtered = receiver_bcc.filter(el => { return el['id'] !== null && el['id'] !== undefined; })
+      const cc_filtered = receiver_cc.filter(el => {
+        return el['id'] !== null && el['id'] !== undefined;
+      })
+      const bcc_filtered = receiver_bcc.filter(el => {
+        return el['id'] !== null && el['id'] !== undefined;
+      })
 
       this.selectedReceiversCC = cc_filtered;
       this.selectedReceiversBCC = bcc_filtered;
@@ -457,7 +466,7 @@ export default {
     displayAdvanced() {
       this.displayAdvancedParameters = !this.displayAdvancedParameters;
     },
-    addNewCC (newCC) {
+    addNewCC(newCC) {
       const tag = {
         email: newCC,
         id: newCC.substring(0, 2) + Math.floor((Math.random() * 10000000))
@@ -467,7 +476,7 @@ export default {
     },
 
     /// add new BCC
-    addNewBCC (newBCC) {
+    addNewBCC(newBCC) {
       const tag = {
         email: newBCC,
         id: newBCC.substring(0, 2) + Math.floor((Math.random() * 10000000))
@@ -477,7 +486,7 @@ export default {
     },
 
     /// get all users
-    getAllUsers: function() {
+    getAllUsers: function () {
       axios({
         method: 'post',
         url: 'index.php?option=com_emundus&controller=settings&task=getallusers',
@@ -536,7 +545,7 @@ export default {
     },
 
     addTrigger() {
-      if(this.trigger.program != null) {
+      if (this.trigger.program != null) {
         this.triggered = true;
       } else {
         this.triggered = false;
@@ -544,7 +553,7 @@ export default {
     },
     selectAllUsers() {
       this.users.forEach(element => {
-        if(!this.selectall) {
+        if (!this.selectall) {
           this.selectedUsers[element.id] = true;
         } else {
           this.selectedUsers[element.id] = false;
@@ -565,12 +574,12 @@ export default {
         }
       };
 
-      if (this.form.subject == ""){
+      if (this.form.subject == "") {
         this.errors.subject = true;
         return 0;
       }
 
-      if (this.form.message == ""){
+      if (this.form.message == "") {
         this.errors.message = true;
         return 0;
       }
@@ -605,11 +614,12 @@ export default {
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
-          data: qs.stringify({ body: this.form,
+          data: qs.stringify({
+            body: this.form,
             code: this.email,
             selectedReceiversCC: this.selectedReceiversCC,
             selectedReceiversBCC: this.selectedReceiversBCC,
-            selectedLetterAttachments:this.selectedLetterAttachments,
+            selectedLetterAttachments: this.selectedLetterAttachments,
             selectedCandidateAttachments: this.selectedCandidateAttachments,
             selectedTags: this.selectedTags
           })
@@ -625,10 +635,11 @@ export default {
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
-          data: qs.stringify({ body: this.form,
+          data: qs.stringify({
+            body: this.form,
             selectedReceiversCC: this.selectedReceiversCC,
             selectedReceiversBCC: this.selectedReceiversBCC,
-            selectedLetterAttachments:this.selectedLetterAttachments,
+            selectedLetterAttachments: this.selectedLetterAttachments,
             selectedCandidateAttachments: this.selectedCandidateAttachments,
             selectedTags: this.selectedTags
           })
@@ -658,7 +669,7 @@ export default {
     },
 
     enableVariablesTip() {
-      if(!this.enableTip){
+      if (!this.enableTip) {
         this.enableTip = true;
         this.tip();
       }
@@ -688,11 +699,11 @@ export default {
       });
     },
     clean(group) {
-      this.$notify({ group, clean: true });
+      this.$notify({group, clean: true});
     },
 
     /// get all tags
-    getAllTags: function() {
+    getAllTags: function () {
       axios({
         method: 'post',
         url: 'index.php?option=com_emundus&controller=settings&task=gettags',
@@ -706,7 +717,7 @@ export default {
       })
     },
 
-    getAllDocumentLetter: function() {
+    getAllDocumentLetter: function () {
       axios({
         method: 'post',
         url: 'index.php?option=com_emundus&controller=messages&task=getalldocumentsletters',
@@ -720,7 +731,7 @@ export default {
       })
     },
 
-    getAllAttachments: function() {
+    getAllAttachments: function () {
       axios({
         method: 'get',
         url: 'index.php?option=com_emundus&controller=messages&task=getallattachments',
@@ -734,8 +745,7 @@ export default {
       })
     },
 
-    updateCategorySelectedValue(category)
-    {
+    updateCategorySelectedValue(category) {
       if (category.label) {
         this.form.category = category.label;
       } else {
@@ -747,9 +757,9 @@ export default {
 
   computed: {
     categoriesList() {
-      return this.categories.map((category,index) => {
+      return this.categories.map((category, index) => {
         return {
-          id: index+1,
+          id: index + 1,
           label: category
         };
       });
@@ -771,7 +781,7 @@ export default {
 </script>
 
 <style scoped>
-.emails__add-email{
+.emails__add-email {
   width: 100%;
   margin-left: auto;
 }

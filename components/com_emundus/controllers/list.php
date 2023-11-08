@@ -23,110 +23,119 @@ use Joomla\CMS\Factory;
  * @package    Joomla
  * @subpackage eMundus
  */
-class EmundusControllerList extends JControllerLegacy {
+class EmundusControllerList extends JControllerLegacy
+{
 
 	protected $app;
 
-    private $m_list;
+	private $m_list;
 
-    public function __construct($config = array()) {
-        parent::__construct($config);
+	public function __construct($config = array())
+	{
+		parent::__construct($config);
 
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 
-		$this->app = Factory::getApplication();
-        $this->m_list = $this->getModel('list');
-    }
+		$this->app    = Factory::getApplication();
+		$this->m_list = $this->getModel('list');
+	}
 
-    public function getList() {
-        $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
-        $user = JFactory::getUser();
+	public function getList()
+	{
+		$tab  = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
+		$user = JFactory::getUser();
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            
-            $listId = $this->input->getInt('listId');
-            $listParticularConditionalColumn = json_decode($this->input->getString('listParticularConditionalColumn'));
-            $listParticularConditionalColumnValues = json_decode($this->input->getString('listParticularConditionalColumnValues'));
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 
-            if (!empty($listId)) {
-                $listData = $this->m_list->getList($listId, $listParticularConditionalColumn, $listParticularConditionalColumnValues);
-                if (!empty($listData)) {
-                    $tab = array('status' => 1, 'msg' => JText::_('COM_EMUNDUS_LIST_RETRIEVED'), 'data' => $listData);
-                } else {
-                    $tab = array('status' => 0, 'msg' => JText::_('COM_EMUNDUS_ERROR_CANNOT_RETRIEVE_LIST'), 'data' => $listData);
-                }
-            } else {
-                $tab['msg'] = JText::_('MISSING_PARAMS');
-            }
-        }
+			$listId                                = $this->input->getInt('listId');
+			$listParticularConditionalColumn       = json_decode($this->input->getString('listParticularConditionalColumn'));
+			$listParticularConditionalColumnValues = json_decode($this->input->getString('listParticularConditionalColumnValues'));
 
-        echo json_encode((object)$tab);
-        exit;
-    }
+			if (!empty($listId)) {
+				$listData = $this->m_list->getList($listId, $listParticularConditionalColumn, $listParticularConditionalColumnValues);
+				if (!empty($listData)) {
+					$tab = array('status' => 1, 'msg' => JText::_('COM_EMUNDUS_LIST_RETRIEVED'), 'data' => $listData);
+				}
+				else {
+					$tab = array('status' => 0, 'msg' => JText::_('COM_EMUNDUS_ERROR_CANNOT_RETRIEVE_LIST'), 'data' => $listData);
+				}
+			}
+			else {
+				$tab['msg'] = JText::_('MISSING_PARAMS');
+			}
+		}
 
-    public function getListActions() {
-        $user = JFactory::getUser();
-        $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
+		echo json_encode((object) $tab);
+		exit;
+	}
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            
-            $listId = $this->input->getInt('listId');
-            $lisActionColumnId=  $this->input->getInt('listActionColumnId');
-            $listData = $this->m_list->getListActions($listId,$lisActionColumnId,);
+	public function getListActions()
+	{
+		$user = JFactory::getUser();
+		$tab  = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
 
-            if (!empty($listData)) {
-                $tab = array('status' => 1, 'msg' => JText::_('COM_EMUNDUS_LIST_RETRIEVED'), 'data' => $listData);
-            } else {
-                $tab = array('status' => 0, 'msg' => JText::_('COM_EMUNDUS_ERROR_CANNOT_RETRIEVE_LIST'), 'data' => $listData);
-            }
-        }
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 
-        echo json_encode((object)$tab);
-        exit;
-    }
+			$listId            = $this->input->getInt('listId');
+			$lisActionColumnId = $this->input->getInt('listActionColumnId');
+			$listData          = $this->m_list->getListActions($listId, $lisActionColumnId,);
 
-    public function actionSetColumnValueAs() {
-        $user = JFactory::getUser();
-        $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
+			if (!empty($listData)) {
+				$tab = array('status' => 1, 'msg' => JText::_('COM_EMUNDUS_LIST_RETRIEVED'), 'data' => $listData);
+			}
+			else {
+				$tab = array('status' => 0, 'msg' => JText::_('COM_EMUNDUS_ERROR_CANNOT_RETRIEVE_LIST'), 'data' => $listData);
+			}
+		}
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            
-            $rowId = $this->input->getString('row_id');
-            $value = $this->input->getString('value');
-            $columnName = $this->input->getString('column_name');
-            $dbTablename = $this->input->getString('db_table_name');
-            $updated = $this->m_list->actionSetColumnValueAs($rowId,$value,$dbTablename,$columnName);
+		echo json_encode((object) $tab);
+		exit;
+	}
 
-            if ($updated) {
-                $tab = array('status' => 1, 'msg' => JText::_('COM_EMUNDUS_LIST_RETRIEVED'), 'data' => $updated);
-            } else {
-                $tab = array('status' => 0, 'msg' => JText::_('COM_EMUNDUS_ERROR_CANNOT_RETRIEVE_LIST'), 'data' => $updated);
-            }
-        }
+	public function actionSetColumnValueAs()
+	{
+		$user = JFactory::getUser();
+		$tab  = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
 
-        echo json_encode((object)$tab);
-        exit;
-    }
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 
-    public function updateActionState()
-    {
-        $user = JFactory::getUser();
-        $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
+			$rowId       = $this->input->getString('row_id');
+			$value       = $this->input->getString('value');
+			$columnName  = $this->input->getString('column_name');
+			$dbTablename = $this->input->getString('db_table_name');
+			$updated     = $this->m_list->actionSetColumnValueAs($rowId, $value, $dbTablename, $columnName);
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            
-            $newValue = $this->input->getString('newValue');
-            $rows = json_decode($this->input->getString('rows'), true);
+			if ($updated) {
+				$tab = array('status' => 1, 'msg' => JText::_('COM_EMUNDUS_LIST_RETRIEVED'), 'data' => $updated);
+			}
+			else {
+				$tab = array('status' => 0, 'msg' => JText::_('COM_EMUNDUS_ERROR_CANNOT_RETRIEVE_LIST'), 'data' => $updated);
+			}
+		}
 
-            if (!empty($newValue) && !empty($rows)) {
-                $updated = $this->m_list->updateActionState($newValue, $rows);
+		echo json_encode((object) $tab);
+		exit;
+	}
 
-                $tab['status'] = $updated;
-            }
-        }
+	public function updateActionState()
+	{
+		$user = JFactory::getUser();
+		$tab  = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
 
-        echo json_encode((object)$tab);
-        exit;
-    }
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+
+			$newValue = $this->input->getString('newValue');
+			$rows     = json_decode($this->input->getString('rows'), true);
+
+			if (!empty($newValue) && !empty($rows)) {
+				$updated = $this->m_list->updateActionState($newValue, $rows);
+
+				$tab['status'] = $updated;
+			}
+		}
+
+		echo json_encode((object) $tab);
+		exit;
+	}
 }
 

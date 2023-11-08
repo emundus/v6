@@ -6,7 +6,7 @@
  * @link       http://www.emundus.fr
  * @license    GNU/GPL
  * @author     Hugo Moracchini
-*/
+ */
 
 // no direct access
 defined('_JEXEC') or die('Restricted access');
@@ -18,53 +18,56 @@ jimport('joomla.application.component.view');
  *
  * @package Emundus
  */
+class EmundusViewMessage extends JViewLegacy
+{
 
-class EmundusViewMessage extends JViewLegacy {
 
+	public function __construct($config = array())
+	{
 
-	public function __construct($config = array()) {
-
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-		require_once (JPATH_COMPONENT.DS.'models'.DS.'messages.php');
-		require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
-		require_once (JPATH_COMPONENT.DS.'models'.DS.'application.php');
+		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
+		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'messages.php');
+		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'files.php');
+		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'application.php');
 
 		parent::__construct($config);
 
 	}
 
-    public function display($tpl = null) {
+	public function display($tpl = null)
+	{
 
 		$current_user = JFactory::getUser();
 
-    	if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+		if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
 			die (JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 		}
 
 		// List of fnum is sent via GET in JSON format.
-	    $jinput = JFactory::getApplication()->input;
+		$jinput = JFactory::getApplication()->input;
 
-		$fnums_post = $jinput->getString('fnums', null);
-		$fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
+		$fnums_post  = $jinput->getString('fnums', null);
+		$fnums_array = ($fnums_post == 'all') ? 'all' : (array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
-	    $document = JFactory::getDocument();
+		$document = JFactory::getDocument();
 		$document->addStyleSheet("media/com_emundus/css/emundus.css");
 
-		$m_files = new EmundusModelFiles();
+		$m_files       = new EmundusModelFiles();
 		$m_application = new EmundusModelApplication();
 
 
 		// If we are selecting all fnums: we get them using the files model
 		if ($fnums_array == 'all') {
-			$fnums = $m_files->getAllFnums();
+			$fnums       = $m_files->getAllFnums();
 			$fnums_infos = $m_files->getFnumsInfos($fnums, 'object');
-			$fnums = $fnums_infos;
-		} else {
-            $fnums = array();
-            foreach ($fnums_array as $key => $value) {
-                $fnums[] = $value->fnum;
-            }
-        }
+			$fnums       = $fnums_infos;
+		}
+		else {
+			$fnums = array();
+			foreach ($fnums_array as $key => $value) {
+				$fnums[] = $value->fnum;
+			}
+		}
 
 		$fnum_array = [];
 
@@ -72,10 +75,10 @@ class EmundusViewMessage extends JViewLegacy {
 
 		foreach ($fnums as $fnum) {
 			if (EmundusHelperAccess::asAccessAction(9, 'c', $current_user->id, $fnum->fnum) && !empty($fnum->sid)) {
-				$user = $m_application->getApplicantInfos($fnum->sid, $tables);
+				$user                = $m_application->getApplicantInfos($fnum->sid, $tables);
 				$user['campaign_id'] = $fnum->cid;
-				$fnum_array[] = $fnum->fnum;
-				$users[] = $user;
+				$fnum_array[]        = $fnum->fnum;
+				$users[]             = $user;
 			}
 		}
 
@@ -84,6 +87,7 @@ class EmundusViewMessage extends JViewLegacy {
 
 		parent::display($tpl);
 
-    }
+	}
 }
+
 ?>

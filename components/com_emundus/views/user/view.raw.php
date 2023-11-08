@@ -1,54 +1,49 @@
 <?php
+
+use Joomla\CMS\Factory;
+
 class EmundusViewUser extends JViewLegacy
 {
-    var $_user = null;
-    var $_db = null;
+	private $_user;
+	private $_db;
 
-    function __construct($config = array())
-    {
-        require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'javascript.php');
-        require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'files.php');
-        require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
-        require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'export.php');
-        require_once(JPATH_COMPONENT . DS . 'models' . DS . 'users.php');
-        require_once(JPATH_COMPONENT . DS . 'models' . DS . 'files.php');
+	protected $user;
 
-        $this->_user = JFactory::getUser();
-        $this->_db = JFactory::getDBO();
+	function __construct($config = array())
+	{
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'javascript.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
 
-        parent::__construct($config);
-    }
+		$this->_user = Factory::getUser();
+		$this->_db   = Factory::getDBO();
 
-    function display($tpl = null)
-    {
-        $document = JFactory::getDocument();
-        $document->addStyleSheet(JURI::base(true) . '/media/com_emundus/css/emundus_activation.css');
+		parent::__construct($config);
+	}
 
-        $user = JFactory::getUser();
+	function display($tpl = null)
+	{
+		$document = Factory::getDocument();
+		$document->addStyleSheet(JURI::base(true) . '/media/com_emundus/css/emundus_activation.css');
 
-        if($user->guest != 0){
-            $app = JFactory::getApplication();
-            $message = JText::_('ACCESS_DENIED');
-            $app->redirect(JRoute::_('index.php', false), $message, 'warning');
-        }
-        $layout = JFactory::getApplication()->input->getString('layout', null);
-        switch ($layout) {
+		if ($this->_user->guest != 0) {
+			$app     = JFactory::getApplication();
+			$message = JText::_('ACCESS_DENIED');
+			$app->redirect(JRoute::_('index.php', false), $message, 'warning');
+		}
 
-            default :
-                $query = $this->_db->getQuery(true);
+		$query = $this->_db->getQuery(true);
 
-                $query->select($this->_db->quoteName('email'));
-                $query->from($this->_db->quoteName('#__users'));
-                $query->where($this->_db->quoteName('id') . ' LIKE ' . $this->_db->quote($user->id));
+		$query->select($this->_db->quoteName('email'))
+			->from($this->_db->quoteName('#__users'))
+			->where($this->_db->quoteName('id') . ' LIKE ' . $this->_db->quote($this->_user->id));
+		$this->_db->setQuery($query);
+		$this->user = $this->_db->loadResult();
 
-                $this->_db->setQuery($query);
+		parent::display($tpl);
 
-                $email = $this->_db->loadResult();
-                $this->assignRef('user', $email);
-                break;
-
-        }
-        parent::display($tpl);
-
-    }
+	}
 }

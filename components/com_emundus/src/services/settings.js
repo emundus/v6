@@ -15,10 +15,10 @@ export default {
     async removeParameter(param) {
         try {
             const response = await client().post(
-            'index.php?option=com_emundus&controller=settings&task=removeparam',
-            {
-                param: param
-            });
+                'index.php?option=com_emundus&controller=settings&task=removeparam',
+                {
+                    param: param
+                });
 
             return response;
         } catch (e) {

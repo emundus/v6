@@ -6,25 +6,25 @@
 </template>
 
 <script>
-  import axios from "axios";
-  // Import TinyMCE
-  import tinymce from 'tinymce/tinymce';
-  import _ from 'lodash'
-  import $ from 'jquery'
+import axios from "axios";
+// Import TinyMCE
+import tinymce from 'tinymce/tinymce';
+import _ from 'lodash'
+import $ from 'jquery'
 
-  // Any plugins you want to use has to be imported
-  import 'tinymce/plugins/paste';
-  import 'tinymce/plugins/link';
-  import 'tinymce/plugins/media';
-  import 'tinymce/plugins/preview';
-  import 'tinymce/plugins/image';
-  import 'tinymce/plugins/code';
-  import 'tinymce/plugins/anchor';
-  import 'tinymce/plugins/advlist';
-  import 'tinymce/plugins/hr';
-  import 'tinymce/plugins/emoticons';
-  import 'tinymce/plugins/searchreplace';
-  import 'tinymce/plugins/charmap';
+// Any plugins you want to use has to be imported
+import 'tinymce/plugins/paste';
+import 'tinymce/plugins/link';
+import 'tinymce/plugins/media';
+import 'tinymce/plugins/preview';
+import 'tinymce/plugins/image';
+import 'tinymce/plugins/code';
+import 'tinymce/plugins/anchor';
+import 'tinymce/plugins/advlist';
+import 'tinymce/plugins/hr';
+import 'tinymce/plugins/emoticons';
+import 'tinymce/plugins/searchreplace';
+import 'tinymce/plugins/charmap';
 
 export default {
   components: {
@@ -49,15 +49,15 @@ export default {
   },
 
   methods: {
-    saveText(){
-			if (typeof tinymce.activeEditor !== undefined && tinymce.activeEditor !== null) {
-				this.$emit("input", tinymce.activeEditor.getContent());
-			}
+    saveText() {
+      if (typeof tinymce.activeEditor !== undefined && tinymce.activeEditor !== null) {
+        this.$emit("input", tinymce.activeEditor.getContent());
+      }
     }
   },
 
   watch: {
-    text: function() {
+    text: function () {
       this.$forceUpdate();
     }
   },
@@ -67,7 +67,7 @@ export default {
       method: "get",
       url: "index.php?option=com_emundus&controller=settings&task=geteditorvariables"
     }).then(response => {
-        this.variables = response.data.data;
+      this.variables = response.data.data;
     });
     var baseUrl = window.location.protocol + '//' + window.location.host + '/media/com_emundus_vue/';
 
@@ -92,24 +92,24 @@ export default {
       placeholder: this.placeholder,
       file_picker_types: 'image',
       paste_data_images: true,
-      file_picker_callback: function(cb, value, meta) {
+      file_picker_callback: function (cb, value, meta) {
         var input = document.createElement('input');
         input.setAttribute('type', 'file');
         input.setAttribute('accept', 'image/*');
 
-        input.onchange = function() {
+        input.onchange = function () {
           var file = this.files[0];
           var reader = new FileReader();
 
           reader.onload = function () {
             var id = 'blobid' + (new Date()).getTime();
-            var blobCache =  tinymce.activeEditor.editorUpload.blobCache;
+            var blobCache = tinymce.activeEditor.editorUpload.blobCache;
             var base64 = reader.result.split(',')[1];
             var blobInfo = blobCache.create(id, file, base64);
             blobCache.add(blobInfo);
 
             // call the callback and populate the Title field with the file name
-            cb(blobInfo.blobUri(), { title: file.name });
+            cb(blobInfo.blobUri(), {title: file.name});
           };
           reader.readAsDataURL(file);
         };
@@ -128,15 +128,15 @@ export default {
         insert: (item) => {
           setTimeout(() => {
             this.$emit("input", tinymce.activeEditor.getContent());
-          },500);
+          }, 500);
           return '<span>[' + item.value + ']</span>';
         },
-        render: function(item) {
+        render: function (item) {
           return '<li class="email-tags">' +
               '<a href="javascript:;"><span>' + item.value + '</span><p>' + item.description + '</p></a>' +
               '</li>';
         },
-        renderDropdown: function() {
+        renderDropdown: function () {
           //add twitter bootstrap dropdown-menu class
           return '<ul class="rte-autocomplete em-autocomplete dropdown-menu"></ul>';
         }
@@ -153,7 +153,7 @@ export default {
         });
       }
     };
-    if(this.lang == 'fr'){
+    if (this.lang == 'fr') {
       options.language = 'fr_FR';
       options.language_url = baseUrl + 'languages/fr_FR.js';
       tinymce.init(options);
@@ -174,6 +174,7 @@ export default {
   border: 1px solid #ccc;
   box-sizing: border-box;
 }
+
 .editor__content {
   padding: 10px;
 }
@@ -183,13 +184,13 @@ export default {
   margin-top: 10px;
 }
 
-.menubar__button svg{
+.menubar__button svg {
   padding: 5px;
   height: 30px;
   width: 30px;
 }
 
-.menubar__button svg:hover, .heading strong:hover{
+.menubar__button svg:hover, .heading strong:hover {
   background: #cecece78;
   border-radius: 4px;
   color: black;
@@ -205,71 +206,71 @@ div.forms-emails-editor .menubar {
   background-color: rgb(240, 240, 240);;
 }
 
-  .redo, .underline, .paragraph, .heading-3-toolbar, .ordered-list, .code-block{
-    margin-right: 15px;
-  }
+.redo, .underline, .paragraph, .heading-3-toolbar, .ordered-list, .code-block {
+  margin-right: 15px;
+}
 
-  .redo:after, .underline:after, .paragraph:after, .heading-3-toolbar:after, .ordered-list:after, .code-block:after{
-    content: '';
-    height: 25px;
-    width: 1px;
-    position: absolute;
-    background: #000;
-    margin-left: 15px;
-  }
+.redo:after, .underline:after, .paragraph:after, .heading-3-toolbar:after, .ordered-list:after, .code-block:after {
+  content: '';
+  height: 25px;
+  width: 1px;
+  position: absolute;
+  background: #000;
+  margin-left: 15px;
+}
 
-  .heading{
-    position: relative;
-    top: -18px;
-  }
+.heading {
+  position: relative;
+  top: -18px;
+}
 
-  .heading strong{
-    position: relative;
-    top: 5px;
-    padding: 5px;
-  }
+.heading strong {
+  position: relative;
+  top: 5px;
+  padding: 5px;
+}
 
-  .is-active svg, .is-active strong{
-    background: #151931;
-    border-radius: 4px;
-    color: white;
-    fill: white
-  }
+.is-active svg, .is-active strong {
+  background: #151931;
+  border-radius: 4px;
+  color: white;
+  fill: white
+}
 
-  .menububble{
-    opacity: 0;
-    position: absolute;
-    transition: opacity 0.3s ease-in-out;
-    padding: 5px;
-    background: #484444;
-    border-radius: 4px;
-  }
+.menububble {
+  opacity: 0;
+  position: absolute;
+  transition: opacity 0.3s ease-in-out;
+  padding: 5px;
+  background: #484444;
+  border-radius: 4px;
+}
 
-  .menububble__button{
-    background: #484444;
-    color: white;
-    fill: white;
-    vertical-align: middle;
-  }
+.menububble__button {
+  background: #484444;
+  color: white;
+  fill: white;
+  vertical-align: middle;
+}
 
-.menububble__button svg{
+.menububble__button svg {
   padding: 5px;
   height: 30px;
   width: 30px;
 }
 
-.menububble__button svg:hover{
+.menububble__button svg:hover {
   background: #cecece78;
   border-radius: 4px;
   color: black;
   fill: black;
 }
 
-  .bubble-active{
-    opacity: 1 !important;
-  }
+.bubble-active {
+  opacity: 1 !important;
+}
 
-.mce-content-body[data-mce-placeholder]:not(.mce-visualblocks)::before{
+.mce-content-body[data-mce-placeholder]:not(.mce-visualblocks)::before {
   opacity: 0.5;
   color: #1B1F3C !important;
 }

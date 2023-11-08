@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import '../../../mocks/matchMedia.mock';
 import FormBuilderPageSection from '../../../../src/components/FormBuilder/FormBuilderPageSection';
 import translate from '../../../mocks/mixins/translate';
@@ -30,7 +30,7 @@ describe('FormBuilderPageSection.vue', () => {
         store
     });
 
-    it ('FormBuilderPageSection should exist', () => {
+    it('FormBuilderPageSection should exist', () => {
         expect(wrapper.find('#form-builder-page-section-' + wrapper.vm.$props.section.group_id).exists()).toBeTruthy();
     });
 });

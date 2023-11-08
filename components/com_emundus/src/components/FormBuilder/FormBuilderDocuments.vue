@@ -1,6 +1,7 @@
 <template>
   <div id="form-builder-documents">
-    <div id="form-builder-title" class="em-pointer em-flex-row em-flex-space-between em-p-16" @click="$emit('show-documents')">
+    <div id="form-builder-title" class="em-pointer em-flex-row em-flex-space-between em-p-16"
+         @click="$emit('show-documents')">
       <span>{{ translate('COM_EMUNDUS_FORM_BUILDER_EVERY_DOCUMENTS') }}</span>
       <span id="add-document" class="material-icons-outlined em-pointer" @click="createDocument">add</span>
     </div>
@@ -32,19 +33,19 @@ export default {
     },
   },
   mixins: [errors],
-  data () {
+  data() {
     return {
       documents: [],
     }
   },
-  created () {
+  created() {
     this.getDocuments();
     if (this.$store.getters['formBuilder/getDocumentModels'].length === 0) {
       this.getDocumentModels();
     }
   },
   methods: {
-    getDocuments () {
+    getDocuments() {
       formService.getDocuments(this.profile_id).then(response => {
         if (response.status) {
           this.documents = response.data;
@@ -53,7 +54,7 @@ export default {
         }
       });
     },
-    getDocumentModels () {
+    getDocumentModels() {
       formService.getDocumentModels().then(response => {
         if (response.status) {
           this.$store.dispatch('formBuilder/updateDocumentModels', response.data);

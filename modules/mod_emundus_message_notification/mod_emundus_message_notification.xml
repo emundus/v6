@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="3.8.8" client="site" method="upgrade">
-	<name>MOD_EMUNDUS_MESSAGE_NOTIFICATIONS_XML</name>
+    <name>MOD_EMUNDUS_MESSAGE_NOTIFICATIONS_XML</name>
     <author>James Dean</author>
     <creationDate>August 2018</creationDate>
     <copyright>Copyright (C) 2018 eMundus. All rights reserved.</copyright>
@@ -8,30 +8,30 @@
     <authorEmail>james.dean@emundus.fr</authorEmail>
     <authorUrl>www.emundus.fr</authorUrl>
     <version>6.0</version>
-	<description>MOD_EMUNDUS_MESSAGE_NOTIFICATIONS_XML_DESCRIPTION</description>
-	<files>
-		<filename module="mod_emundus_message_notification">mod_emundus_message_notification.php</filename>
-		<folder>tmpl</folder>
-		<folder>language</folder>
-		<filename>helper.php</filename>
-		<filename>index.html</filename>
-		<filename>mod_emundus_message_notification.xml</filename>
-	</files>
+    <description>MOD_EMUNDUS_MESSAGE_NOTIFICATIONS_XML_DESCRIPTION</description>
+    <files>
+        <filename module="mod_emundus_message_notification">mod_emundus_message_notification.php</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+        <filename>helper.php</filename>
+        <filename>index.html</filename>
+        <filename>mod_emundus_message_notification.xml</filename>
+    </files>
 
-	<config>
-		<fields name="params">
-			<fieldset name="basic">
-				<field
-						name="layout"
-						type="list"
-						label="JFIELD_ALT_LAYOUT_LABEL"
-						description="JFIELD_ALT_MODULE_LAYOUT_DESC"
-				>
-				<option value="default">default</option>
-				<option value="dropdown_menu">dropdown_menu</option>
-				<option value="list">list</option>
-				</field>
-			</fieldset>
-		</fields>
-	</config>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                        name="layout"
+                        type="list"
+                        label="JFIELD_ALT_LAYOUT_LABEL"
+                        description="JFIELD_ALT_MODULE_LAYOUT_DESC"
+                >
+                    <option value="default">default</option>
+                    <option value="dropdown_menu">dropdown_menu</option>
+                    <option value="list">list</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
 </extension>

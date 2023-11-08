@@ -33,13 +33,13 @@ export default {
 
         if (filters && name.length > 0) {
             return client.post('newsavefilters', {
-                filters:  JSON.stringify(filters),
+                filters: JSON.stringify(filters),
                 name: name,
                 item_id: moduleId
             }).then(data => {
-               if (data.status) {
-                   saved = true;
-               }
+                if (data.status) {
+                    saved = true;
+                }
 
                 return saved;
             }).catch((error) => {
@@ -55,13 +55,13 @@ export default {
 
         if (filters) {
             client.post('updatefilter', {
-                filters:  JSON.stringify(filters),
+                filters: JSON.stringify(filters),
                 item_id: moduleId,
                 id: filterId
             }).then(data => {
-               if (data.status) {
-                   updated = true;
-               }
+                if (data.status) {
+                    updated = true;
+                }
 
                 return updated;
             });
@@ -74,9 +74,9 @@ export default {
 
         if (filterId) {
             client.delete('deletefilters', {id: filterId}).then(data => {
-               if (data.status) {
-                   deleted = true;
-               }
+                if (data.status) {
+                    deleted = true;
+                }
 
                 return deleted;
             });

@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import ModalUpdateColors from '../../../../src/components/AdvancedModals/ModalUpdateColors';
 import translate from '../../../mocks/mixins/translate';
 import VModal from 'vue-js-modal';
@@ -13,7 +13,7 @@ describe('ModalUpdateColors.vue', () => {
         localVue
     });
 
-    it ('ModalUpdateColors constructed', () => {
+    it('ModalUpdateColors constructed', () => {
         expect(wrapper.find('#modalUpdateColors').exists()).toBeTruthy();
     });
 });

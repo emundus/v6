@@ -8,19 +8,20 @@
  */
 
 use PHPUnit\Framework\TestCase;
-ini_set( 'display_errors', false );
+
+ini_set('display_errors', false);
 error_reporting(E_ALL);
 define('_JEXEC', 1);
 define('DS', DIRECTORY_SEPARATOR);
 define('JPATH_BASE', dirname(__DIR__) . '/../../');
 
-include_once ( JPATH_BASE . 'includes/defines.php' );
-include_once ( JPATH_BASE . 'includes/framework.php' );
-include_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
-include_once (JPATH_SITE . '/components/com_emundus/models/checklist.php');
+include_once(JPATH_BASE . 'includes/defines.php');
+include_once(JPATH_BASE . 'includes/framework.php');
+include_once(JPATH_SITE . '/components/com_emundus/unittest/helpers/samples.php');
+include_once(JPATH_SITE . '/components/com_emundus/models/checklist.php');
 
 jimport('joomla.user.helper');
-jimport( 'joomla.application.application' );
+jimport('joomla.application.application');
 jimport('joomla.plugin.helper');
 
 // set global config --> initialize Joomla Application with default param 'site'
@@ -34,13 +35,13 @@ session_start();
 
 class EmundusModelChecklistTest extends TestCase
 {
-    private $m_checklist;
+	private $m_checklist;
 
-    public function __construct(?string $name = null, array $data = [], $dataName = '')
-    {
-        parent::__construct($name, $data, $dataName);
-        $this->m_checklist = new EmundusModelChecklist;
-    }
+	public function __construct(?string $name = null, array $data = [], $dataName = '')
+	{
+		parent::__construct($name, $data, $dataName);
+		$this->m_checklist = new EmundusModelChecklist;
+	}
 
 	public function testFoo()
 	{
@@ -53,13 +54,13 @@ class EmundusModelChecklistTest extends TestCase
 		$this->assertIsArray($attachments);
 
 		// set session
-		$user = new stdClass();
-		$user->id = JFactory::getUser()->id;
-		$user->profile = 1;
-		$user->fnum = '00000000';
+		$user               = new stdClass();
+		$user->id           = JFactory::getUser()->id;
+		$user->profile      = 1;
+		$user->fnum         = '00000000';
 		$user->applicant_id = 1;
-		$user->email = '';
-		$user->fnums = array('00000000');
+		$user->email        = '';
+		$user->fnums        = array('00000000');
 
 		JFactory::getSession()->set('emundusUser', $user);
 

@@ -1,32 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="2.5.0" client="site" method="upgrade">
-	<name>MOD_EMUNDUS_BANNER_XML</name>
-	<author>HUBINET Brice, GRANDIN Laura</author>
-	<creationDate>October 2022</creationDate>
-	<copyright>Copyright (C) 2022 eMundus. All rights reserved.</copyright>
-	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-	<authorEmail>contact@emundus.fr</authorEmail>
-	<authorUrl>www.emundus.fr</authorUrl>
-	<version>1.34.0</version>
-	<description>MOD_EMUNDUS_BANNER_XML_DESCRIPTION</description>
-	<files>
-		<filename module="mod_emundus_banner">mod_emundus_banner.php</filename>
-		<folder>tmpl</folder>
-		<filename>index.html</filename>
-		<folder>language</folder>
-	</files>
-	<languages>
-		<language tag="en-GB">en-GB.mod_emundus_banner.ini</language>
-		<language tag="en-GB">en-GB.mod_emundus_banner.sys.ini</language>
-		<language tag="fr-FR">fr-FR.mod_emundus_banner.ini</language>
-		<language tag="fr-FR">fr-FR.mod_emundus_banner.sys.ini</language>
-	</languages>
+    <name>MOD_EMUNDUS_BANNER_XML</name>
+    <author>HUBINET Brice, GRANDIN Laura</author>
+    <creationDate>October 2022</creationDate>
+    <copyright>Copyright (C) 2022 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>contact@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>1.34.0</version>
+    <description>MOD_EMUNDUS_BANNER_XML_DESCRIPTION</description>
+    <files>
+        <filename module="mod_emundus_banner">mod_emundus_banner.php</filename>
+        <folder>tmpl</folder>
+        <filename>index.html</filename>
+        <folder>language</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.mod_emundus_banner.ini</language>
+        <language tag="en-GB">en-GB.mod_emundus_banner.sys.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_banner.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_banner.sys.ini</language>
+    </languages>
 
-	<config>
-		<fields name="params">
-			<fieldset name="basic">
-				<field type="media" name="mod_em_banner_image" label="MOD_EM_BANNER_IMAGE" description="MOD_EM_BANNER_IMAGE_DESC" />
-			</fieldset>
-		</fields>
-	</config>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field type="media" name="mod_em_banner_image" label="MOD_EM_BANNER_IMAGE"
+                       description="MOD_EM_BANNER_IMAGE_DESC"/>
+            </fieldset>
+        </fields>
+    </config>
 </extension>

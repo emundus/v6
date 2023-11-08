@@ -87,7 +87,8 @@ body ::-webkit-scrollbar-track {
   margin-top: -8em;
   z-index: 999;
 }
-.vue-swatches__wrapper::after{
+
+.vue-swatches__wrapper::after {
   width: 0;
   height: 0;
   border-left: 10px solid transparent;
@@ -98,37 +99,43 @@ body ::-webkit-scrollbar-track {
   bottom: -10px;
   left: 0px;
 }
+
 .vue-swatches__trigger {
   cursor: pointer;
 }
+
 .vue-swatches__swatch {
   width: 25px !important;
   height: 25px !important;
   z-index: 9999;
   position: relative;
 }
-.vue-swatches__swatch:hover{
+
+.vue-swatches__swatch:hover {
   transform: scale(1.2);
 }
-.vue-swatches__container{
+
+.vue-swatches__container {
   background: transparent !important;
   margin-bottom: unset !important;
   padding: unset !important;
 }
-.vue-swatches__check__wrapper{
+
+.vue-swatches__check__wrapper {
   display: none;
 }
 
-.vue-notification-group{
+.vue-notification-group {
   margin: 30px;
 }
-.vue-notification-template{
+
+.vue-notification-template {
   background: #E3E5E8 !important;
   padding: 16px;
   border-radius: 4px;
 }
 
-.v-popover .trigger{
+.v-popover .trigger {
   display: flex !important;
   align-items: center;
 }

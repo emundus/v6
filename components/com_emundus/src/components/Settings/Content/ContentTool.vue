@@ -17,33 +17,38 @@
           </div>
           <div v-if="saving" class="em-flex-row em-flex-start">
             <div class="em-loader em-mr-8"></div>
-            <p class="em-font-size-14 em-flex-row">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_PROGRESS') }}</p>
+            <p class="em-font-size-14 em-flex-row">{{
+                translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_PROGRESS')
+              }}</p>
           </div>
-          <p class="em-font-size-14" v-if="!saving && last_save != null">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_LAST') + last_save}}</p>
+          <p class="em-font-size-14"
+             v-if="!saving && last_save != null">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_LAST') + last_save }}</p>
         </div>
       </div>
 
       <div class="em-modal-content">
         <div class="em-modal-menu__sidebar">
-          <div v-for="menu in menus" :key="'menu_' + menu.index" 
-            @click="currentMenu = menu.index"
-            class="translation-menu-item em-p-16 em-flex-row em-flex-space-between pointer" 
-            :class="currentMenu === menu.index ? 'em-modal-menu__current' : ''"
+          <div v-for="menu in menus" :key="'menu_' + menu.index"
+               @click="currentMenu = menu.index"
+               class="translation-menu-item em-p-16 em-flex-row em-flex-space-between pointer"
+               :class="currentMenu === menu.index ? 'em-modal-menu__current' : ''"
           >
-            <p class="em-font-size-16">{{translate(menu.title)}}</p>
+            <p class="em-font-size-16">{{ translate(menu.title) }}</p>
           </div>
         </div>
 
         <transition name="fade" mode="out-in" v-if="selectedMenu">
           <EditArticle v-if="selectedMenu.type === 'article'"
                        :key="currentMenu"
-                       :article_id="selectedMenu.id" :article_alias="selectedMenu.alias" :category="selectedMenu.category" :published="selectedMenu.published"
+                       :article_id="selectedMenu.id" :article_alias="selectedMenu.alias"
+                       :category="selectedMenu.category" :published="selectedMenu.published"
                        class="em-modal-component"
                        @updateSaving="updateSaving"
                        @updateLastSaving="updateLastSaving"
                        @updatePublished="updatePublished"
           ></EditArticle>
-          <EditFooter v-else-if="selectedMenu.type === 'footer'" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditFooter>
+          <EditFooter v-else-if="selectedMenu.type === 'footer'" class="em-modal-component" @updateSaving="updateSaving"
+                      @updateLastSaving="updateLastSaving"></EditFooter>
         </transition>
       </div>
 
@@ -62,7 +67,7 @@ import mixin from "com_emundus/src/mixins/mixin";
 
 export default {
   name: "contentTool",
-  props: { },
+  props: {},
   components: {EditFooter, EditArticle},
   mixins: [mixin],
   data() {
@@ -91,7 +96,7 @@ export default {
       client().get("index.php?option=com_emundus&controller=settings&task=getrgpdarticles").then(response => {
         response.data.data.forEach((article) => {
           index++;
-          if(article.id) {
+          if (article.id) {
             this.menus.push({
               type: "article",
               id: parseInt(article.id),
@@ -121,21 +126,21 @@ export default {
       });
     });
   },
-  methods:{
+  methods: {
     beforeClose(event) {
       this.$emit('resetMenuIndex');
     },
 
 
-    updateSaving(saving){
+    updateSaving(saving) {
       this.saving = saving;
     },
 
-    updateLastSaving(last_save){
+    updateLastSaving(last_save) {
       this.last_save = last_save;
     },
 
-    updatePublished(published){
+    updatePublished(published) {
       this.menus.forEach((menu) => {
         if (menu.index === this.currentMenu) {
           menu.published = Number(published);

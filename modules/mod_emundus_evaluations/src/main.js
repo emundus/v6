@@ -13,19 +13,19 @@ Vue.use(Vuex);
 Vue.use(VModal);
 Vue.mixin(translate);
 
-const modEvaluation =  document.getElementById('em-evaluations-vue');
+const modEvaluation = document.getElementById('em-evaluations-vue');
 if (modEvaluation) {
-  const vue = new Vue({
-    el: '#em-evaluations-vue',
-    store,
-    render(h) {
-      return h(App, {
-        props: {
-          currentUser: modEvaluation.getAttribute('user'),
-          module: modEvaluation.getAttribute('module'),
-          readonly: modEvaluation.getAttribute('readonly')
+    const vue = new Vue({
+        el: '#em-evaluations-vue',
+        store,
+        render(h) {
+            return h(App, {
+                props: {
+                    currentUser: modEvaluation.getAttribute('user'),
+                    module: modEvaluation.getAttribute('module'),
+                    readonly: modEvaluation.getAttribute('readonly')
+                }
+            });
         }
-      });
-    }
-  });
+    });
 }

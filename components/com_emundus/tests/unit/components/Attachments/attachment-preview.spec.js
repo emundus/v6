@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import AttachmentPreview from '../../../../src/components/Attachments/AttachmentPreview';
 import translate from '../../../mocks/mixins/translate';
 import store from '../../../../src/store';
@@ -19,7 +19,7 @@ describe('AttachmentPreview.vue', () => {
         store
     });
 
-    it ('AttachmentPreview constructed', () => {
+    it('AttachmentPreview constructed', () => {
         expect(wrapper.find('#em-attachment-preview').exists()).toBeTruthy();
     });
 });

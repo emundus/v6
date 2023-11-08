@@ -223,25 +223,26 @@ JText::script('COM_EMUNDUS_FORM_ATTACHMENTS_PREVIEW');
 JText::script('COM_EMUNDUS_ONBOARD_NO_FORM_FOUND_ADD_FORM');
 JText::script('COM_EMUNDUS_ONBOARD_EDIT_FORM');
 
-$lang = JFactory::getLanguage();
-$short_lang = substr($lang->getTag(), 0 , 2);
+$lang         = JFactory::getLanguage();
+$short_lang   = substr($lang->getTag(), 0, 2);
 $current_lang = $lang->getTag();
-$languages = JLanguageHelper::getLanguages();
+$languages    = JLanguageHelper::getLanguages();
 if (count($languages) > 1) {
-    $many_languages = '1';
-    require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
-    $m_translations = new EmundusModelTranslations();
-    $default_lang = $m_translations->getDefaultLanguage()->lang_code;
-} else {
-    $many_languages = '0';
-    $default_lang = $current_lang;
+	$many_languages = '1';
+	require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
+	$m_translations = new EmundusModelTranslations();
+	$default_lang   = $m_translations->getDefaultLanguage()->lang_code;
+}
+else {
+	$many_languages = '0';
+	$default_lang   = $current_lang;
 }
 
-$user = JFactory::getUser();
+$user               = JFactory::getUser();
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
-$sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
+$sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
 
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 

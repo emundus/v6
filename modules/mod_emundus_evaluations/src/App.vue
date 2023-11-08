@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <List />
+    <List/>
   </div>
 </template>
 
@@ -41,7 +41,8 @@ export default {
   color: #2c3e50;
   margin: 20px 20px 0 0;
 }
-#g-container-main .g-container{
+
+#g-container-main .g-container {
   width: 90%;
 }
 </style>

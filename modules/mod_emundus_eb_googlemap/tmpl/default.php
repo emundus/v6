@@ -23,12 +23,13 @@ defined('_JEXEC') or die;
         </a>
     </div>
 </div>
-<div id="map<?php echo $module->id;?>" style="position:relative; z-index:0; border-radius:7px; width: <?php echo $width; ?>%; height: <?php echo $height?>px"></div>
+<div id="map<?php echo $module->id; ?>"
+     style="position:relative; z-index:0; border-radius:7px; width: <?php echo $width; ?>%; height: <?php echo $height ?>px"></div>
 
 <script type="text/javascript">
     jQuery(document).ready(function () {
         console.log('here');
-        if(typeof document.getElementsByClassName('em-map')[0] != 'undefined') {
+        if (typeof document.getElementsByClassName('em-map')[0] != 'undefined') {
             document.getElementById('eb-category-page-columns').append(document.getElementsByClassName('em-map')[0]);
         }
     });

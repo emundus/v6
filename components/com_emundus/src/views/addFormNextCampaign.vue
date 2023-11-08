@@ -1,106 +1,111 @@
 <template>
-	<div id="add-form-next-campaign">
-		<div class="em-w-custom"></div>
-		<div>
-			<ModalWarningFormBuilder
-					:pid="getProfileId"
-					:cid="campaignId"
-			/>
-			<div>
-				<div class="em-flex-row em-mt-16 em-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
-					<span class="material-icons-outlined">arrow_back</span>
-					<p class="em-ml-8">{{ translate('BACK') }}</p>
-				</div>
-				<div class="em-flex-row em-mt-16">
-					<h1 v-if="menuHighlight != -1">{{this.translate(formCategories[menuHighlight])}}</h1>
-					<h1 v-if="menuHighlightProg != -1">{{this.translate(formPrograms[menuHighlightProg])}}</h1>
-				</div>
-				<p v-if="menuHighlight != -1" v-html="this.translate(formCategoriesDesc[menuHighlight])" style="margin-top: 20px"></p>
-				<p v-if="menuHighlightProg != -1" v-html="this.translate(formProgramsDesc[menuHighlightProg])" style="margin-top: 20px"></p>
+  <div id="add-form-next-campaign">
+    <div class="em-w-custom"></div>
+    <div>
+      <ModalWarningFormBuilder
+          :pid="getProfileId"
+          :cid="campaignId"
+      />
+      <div>
+        <div class="em-flex-row em-mt-16 em-pointer"
+             @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
+          <span class="material-icons-outlined">arrow_back</span>
+          <p class="em-ml-8">{{ translate('BACK') }}</p>
+        </div>
+        <div class="em-flex-row em-mt-16">
+          <h1 v-if="menuHighlight != -1">{{ this.translate(formCategories[menuHighlight]) }}</h1>
+          <h1 v-if="menuHighlightProg != -1">{{ this.translate(formPrograms[menuHighlightProg]) }}</h1>
+        </div>
+        <p v-if="menuHighlight != -1" v-html="this.translate(formCategoriesDesc[menuHighlight])"
+           style="margin-top: 20px"></p>
+        <p v-if="menuHighlightProg != -1" v-html="this.translate(formProgramsDesc[menuHighlightProg])"
+           style="margin-top: 20px"></p>
 
-				<hr>
+        <hr>
 
-      <div class="em-flex-row em-mb-32">
-        <p>
-          <b style="color: var(--em-profile-color); font-weight: 700 !important;"> {{form.label}}</b>
-          {{translations.From}}
-          <strong>{{ form.start_date }}</strong>
-          {{translations.To}}
-          <strong>{{ form.end_date }}</strong>
-        </p>
+        <div class="em-flex-row em-mb-32">
+          <p>
+            <b style="color: var(--em-profile-color); font-weight: 700 !important;"> {{ form.label }}</b>
+            {{ translations.From }}
+            <strong>{{ form.start_date }}</strong>
+            {{ translations.To }}
+            <strong>{{ form.end_date }}</strong>
+          </p>
+        </div>
+
+        <!--- start Menu --->
+        <div class="em-flex-row">
+          <ul class="nav nav-tabs topnav">
+
+            <li v-for="(formCat, index) in formCategories" :key="'category-' + index" v-show="closeSubmenu">
+              <a @click="profileId != null ? changeToCampMenu(index): ''"
+                 class="em-neutral-700-color em-pointer"
+                 :class="[(menuHighlight == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]">
+                {{ translate(formCat) }}
+              </a>
+            </li>
+
+            <li v-for="(formProg, index) in formPrograms" :key="'program-' + index" v-show="closeSubmenu">
+              <a @click="profileId != null ? changeToProgMenu(index) : ''"
+                 class="em-neutral-700-color em-pointer"
+                 :class="[(menuHighlightProg == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]">
+                {{ translate(formProg) }}
+              </a>
+            </li>
+          </ul>
+        </div>
+        <br>
+
+
+        <!-- end Menu -->
+
+        <div v-if="menuHighlightProg != -1" class="warning-message-program mb-1">
+          <p class="em-red-500-color em-flex-row"><span class="material-icons-outlined em-mr-8 em-red-500-color">warning_amber</span>{{ translations.ProgramWarning }}
+          </p>
+          <ul v-if="campaignsByProgram.length > 0" class="em-mt-8 em-mb-32 em-pl-16">
+            <li v-for="(campaign, index) in campaignsByProgram" :key="'camp_progs_' + index">{{ campaign.label }}</li>
+          </ul>
+        </div>
+        <transition name="fade">
+          <add-campaign
+              v-if="menuHighlight == 0 && campaignId !== ''"
+              :campaign="campaignId"
+              :coordinatorAccess="true"
+              :actualLanguage="actualLanguage"
+              :manyLanguages="manyLanguages"
+              @nextSection="menuHighlight++"
+              @getInformations="initInformations"
+              @updateHeader="updateHeader"
+          ></add-campaign>
+          <addFormulaire
+              v-if="menuHighlight == 2"
+              :profileId="profileId"
+              :campaignId="campaignId"
+              :profiles="profiles"
+              :key="formReload"
+              @profileId="setProfileId"
+              :visibility="null"
+          ></addFormulaire>
+
+          <add-documents-dropfiles
+              v-if="menuHighlight == 1"
+              :funnelCategorie="formCategories[langue][menuHighlight]"
+              :profileId="getProfileId"
+              :campaignId="campaignId"
+              :menuHighlight="menuHighlight"
+              :langue="actualLanguage"
+              :manyLanguages="manyLanguages"
+          />
+
+          <add-email
+              v-if="menuHighlightProg == 0 && program.id != 0"
+              :prog="Number(program.id)"
+          ></add-email>
+        </transition>
       </div>
 
-				<!--- start Menu --->
-				<div class="em-flex-row" >
-					<ul class="nav nav-tabs topnav">
-
-						<li v-for="(formCat, index) in formCategories" :key="'category-' + index" v-show="closeSubmenu">
-							<a  @click="profileId != null ? changeToCampMenu(index): ''"
-							    class="em-neutral-700-color em-pointer"
-							    :class="[(menuHighlight == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]">
-								{{ translate(formCat) }}
-							</a>
-						</li>
-
-						<li v-for="(formProg, index) in formPrograms" :key="'program-' + index" v-show="closeSubmenu">
-							<a @click="profileId != null ? changeToProgMenu(index) : ''"
-							   class="em-neutral-700-color em-pointer"
-							   :class="[(menuHighlightProg == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]">
-								{{ translate(formProg) }}
-							</a>
-						</li>
-					</ul>
-				</div>
-				<br>
-
-
-				<!-- end Menu -->
-
-				<div v-if="menuHighlightProg != -1" class="warning-message-program mb-1">
-					<p class="em-red-500-color em-flex-row"><span class="material-icons-outlined em-mr-8 em-red-500-color">warning_amber</span>{{translations.ProgramWarning}}</p>
-					<ul v-if="campaignsByProgram.length > 0" class="em-mt-8 em-mb-32 em-pl-16">
-						<li v-for="(campaign, index) in campaignsByProgram" :key="'camp_progs_' + index">{{campaign.label}}</li>
-					</ul>
-				</div>
-				<transition name="fade">
-					<add-campaign
-							v-if="menuHighlight == 0 && campaignId !== ''"
-							:campaign="campaignId"
-							:coordinatorAccess="true"
-							:actualLanguage="actualLanguage"
-							:manyLanguages="manyLanguages"
-							@nextSection="menuHighlight++"
-							@getInformations="initInformations"
-							@updateHeader="updateHeader"
-					></add-campaign>
-					<addFormulaire
-							v-if="menuHighlight == 2"
-							:profileId="profileId"
-							:campaignId="campaignId"
-							:profiles="profiles"
-							:key="formReload"
-							@profileId="setProfileId"
-							:visibility="null"
-					></addFormulaire>
-
-					<add-documents-dropfiles
-							v-if="menuHighlight == 1"
-							:funnelCategorie="formCategories[langue][menuHighlight]"
-							:profileId="getProfileId"
-							:campaignId="campaignId"
-							:menuHighlight="menuHighlight"
-							:langue="actualLanguage"
-							:manyLanguages="manyLanguages"
-					/>
-
-					<add-email
-							v-if="menuHighlightProg == 0 && program.id != 0"
-							:prog="Number(program.id)"
-					></add-email>
-				</transition>
-			</div>
-
-      <div class="em-flex-row em-flex-space-between em-float-right" v-if="menuHighlight !== 0 && menuHighlightProg !== 0">
+      <div class="em-flex-row em-flex-space-between em-float-right"
+           v-if="menuHighlight !== 0 && menuHighlightProg !== 0">
         <button
             type="button"
             class="em-primary-button em-w-auto"
@@ -109,9 +114,9 @@
         </button>
       </div>
 
-			<div class="em-page-loader" v-if="loading"></div>
-		</div>
-	</div>
+      <div class="em-page-loader" v-if="loading"></div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -162,9 +167,9 @@ export default {
     campaignsByProgram: [],
     langue: 0,
     formCategoriesDesc: [
-        'COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC',
-        'COM_EMUNDUS_DOCUMENTS_CAMPAIGNS_DESC',
-        'COM_EMUNDUS_FORM_CAMPAIGN_DESC'
+      'COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC',
+      'COM_EMUNDUS_DOCUMENTS_CAMPAIGNS_DESC',
+      'COM_EMUNDUS_FORM_CAMPAIGN_DESC'
     ],
 
     formCategories: [
@@ -214,7 +219,7 @@ export default {
     },
   }),
 
-  created () {
+  created() {
     // Get datas that we need with store
     this.campaignId = Number(this.$store.getters['global/datas'].campaignId.value);
     this.actualLanguage = this.$store.getters['global/shortLang'];
@@ -238,9 +243,9 @@ export default {
           `index.php?option=com_emundus&controller=form&task=getallformpublished`
       ).then(profiles => {
         this.profiles = profiles.data.data;
-        if(this.form.profile_id == null) {
+        if (this.form.profile_id == null) {
           this.profiles.length != 0 ? this.profileId = this.profiles[0].id : this.profileId = null;
-          if(this.profileId != null){
+          if (this.profileId != null) {
             this.formReload += 1;
             //this.updateProfileCampaign(this.profileId)
           }
@@ -250,37 +255,37 @@ export default {
         }
         this.loading = false;
 
-        let cookie = this.getCookie('campaign_'+this.campaignId+'_menu');
-        if(cookie){
+        let cookie = this.getCookie('campaign_' + this.campaignId + '_menu');
+        if (cookie) {
           this.menuHighlight = cookie;
-          document.cookie = 'campaign_'+this.campaignId+'_menu =; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+          document.cookie = 'campaign_' + this.campaignId + '_menu =; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         }
       });
     },
 
-    updateHeader(value){
+    updateHeader(value) {
       this.form.label = value.label[this.actualLanguage];
       this.initDates(value);
     },
 
-    initDates(campaign){
+    initDates(campaign) {
       this.form.start_date = campaign.start_date;
       this.form.end_date = campaign.end_date;
 
-	    let currentLanguage = this.$store.getters['global/currentLanguage'];
-			if (currentLanguage === '' || currentLanguage === undefined) {
-				currentLanguage = 'fr-FR';
-			}
+      let currentLanguage = this.$store.getters['global/currentLanguage'];
+      if (currentLanguage === '' || currentLanguage === undefined) {
+        currentLanguage = 'fr-FR';
+      }
 
-			const dateOptions = { dateStyle: 'long', timeStyle: 'short' };
-	    const startDate = new Date(campaign.start_date);
-	    this.form.start_date = new Intl.DateTimeFormat(currentLanguage, dateOptions).format(startDate);
+      const dateOptions = {dateStyle: 'long', timeStyle: 'short'};
+      const startDate = new Date(campaign.start_date);
+      this.form.start_date = new Intl.DateTimeFormat(currentLanguage, dateOptions).format(startDate);
 
       if (this.form.end_date === '0000-00-00 00:00:00') {
         this.form.end_date = null;
       } else {
         const endDate = new Date(campaign.end_date);
-				this.form.end_date = new Intl.DateTimeFormat(currentLanguage, dateOptions).format(endDate);
+        this.form.end_date = new Intl.DateTimeFormat(currentLanguage, dateOptions).format(endDate);
       }
     },
 
@@ -333,15 +338,15 @@ export default {
         Swal.fire({
           title: this.translate("COM_EMUNDUS_CAMPAIGN_UNSAVED_CHANGES"),
           type: "warning",
-            showCancelButton: true,
-            confirmButtonText: this.translate("JYES"),
-            cancelButtonText: this.translate("JNO"),
-            reverseButtons: true,
-            customClass: {
-              title: 'em-swal-title',
-              cancelButton: 'em-swal-cancel-button',
-              confirmButton: 'em-swal-confirm-button',
-            }
+          showCancelButton: true,
+          confirmButtonText: this.translate("JYES"),
+          cancelButtonText: this.translate("JNO"),
+          reverseButtons: true,
+          customClass: {
+            title: 'em-swal-title',
+            cancelButton: 'em-swal-cancel-button',
+            confirmButton: 'em-swal-confirm-button',
+          }
         }).then(result => {
           if (result.value) {
             this.menuHighlight = index;
@@ -362,7 +367,7 @@ export default {
       if (this.menuHighlight < 2) {
         let index = this.menuHighlight + 1;
         this.changeToCampMenu(index)
-      } else if(this.menuHighlightProg < 1) {
+      } else if (this.menuHighlightProg < 1) {
         this.changeToProgMenu(0)
       }
     },
@@ -408,16 +413,16 @@ export default {
 <style scoped>
 @import "../assets/css/formbuilder.scss";
 
-.w--current{
+.w--current {
   border: solid 1px #eeeeee;
   background: #eeeeee;
 }
 
-.w--current:hover{
+.w--current:hover {
   color: var(--em-profile-color);
 }
 
-.em-pointer:hover{
+.em-pointer:hover {
   color: var(--em-profile-color);
 }
 
@@ -426,7 +431,7 @@ export default {
   margin-left: auto;
 }
 
-#add-form-next-campaign{
+#add-form-next-campaign {
   width: 100%;
 }
 </style>

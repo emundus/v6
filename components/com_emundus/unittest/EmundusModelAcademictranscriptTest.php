@@ -8,19 +8,20 @@
  */
 
 use PHPUnit\Framework\TestCase;
-ini_set( 'display_errors', false );
+
+ini_set('display_errors', false);
 error_reporting(E_ALL);
 define('_JEXEC', 1);
 define('DS', DIRECTORY_SEPARATOR);
 define('JPATH_BASE', dirname(__DIR__) . '/../../');
 
-include_once ( JPATH_BASE . 'includes/defines.php' );
-include_once ( JPATH_BASE . 'includes/framework.php' );
-include_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
-include_once (JPATH_SITE . '/components/com_emundus/models/academictranscript.php');
+include_once(JPATH_BASE . 'includes/defines.php');
+include_once(JPATH_BASE . 'includes/framework.php');
+include_once(JPATH_SITE . '/components/com_emundus/unittest/helpers/samples.php');
+include_once(JPATH_SITE . '/components/com_emundus/models/academictranscript.php');
 
 jimport('joomla.user.helper');
-jimport( 'joomla.application.application' );
+jimport('joomla.application.application');
 jimport('joomla.plugin.helper');
 
 // set global config --> initialize Joomla Application with default param 'site'
@@ -34,13 +35,13 @@ session_start();
 
 class EmundusModelAcademictranscriptTest extends TestCase
 {
-    private $m_academictranscript;
+	private $m_academictranscript;
 
-    public function __construct(?string $name = null, array $data = [], $dataName = '')
-    {
-        parent::__construct($name, $data, $dataName);
-        $this->m_academictranscript = new EmundusModelAcademicTranscript;
-    }
+	public function __construct(?string $name = null, array $data = [], $dataName = '')
+	{
+		parent::__construct($name, $data, $dataName);
+		$this->m_academictranscript = new EmundusModelAcademicTranscript;
+	}
 
 	public function testFoo()
 	{

@@ -9,7 +9,7 @@
 
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
-require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+require_once(JPATH_ROOT . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 $document = JFactory::getDocument();
 $document->addScript('media/mod_emundus_qcm/chunk-vendors.js');
 $document->addStyleSheet('media/mod_emundus_qcm/app.css');

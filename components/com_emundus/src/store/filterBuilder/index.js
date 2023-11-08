@@ -12,7 +12,7 @@ export default new Vuex.Store({
                 0: {
                     filters: {},
                 }
-            } 
+            }
         },
     },
     mutations: {
@@ -48,23 +48,21 @@ export default new Vuex.Store({
         }
     },
     actions: {
-        setFilters({ commit }, filters) {
+        setFilters({commit}, filters) {
             commit('setFilters', filters)
         },
-        updateQueryFilters({ commit }, data) {
+        updateQueryFilters({commit}, data) {
             commit('updateQueryFilters', data)
         },
-        removeGroup({ commit }, group) {
+        removeGroup({commit}, group) {
             commit('removeGroup', group)
         },
-        removeQueryFilter({ commit }, data) {
+        removeQueryFilter({commit}, data) {
             commit('removeQueryFilter', data)
         },
-        updateAndOr({ commit }, data) {
+        updateAndOr({commit}, data) {
             commit('updateAndOr', data)
         }
     },
-    modules: {
-        
-    }
+    modules: {}
 })

@@ -9,7 +9,8 @@
         @UpdateDocuments="updateList"
     />
 
-    <a @click="$modal.show('modalAddDocuments')" class="bouton-ajouter bouton-ajouter-green pointer" style="width: max-content">
+    <a @click="$modal.show('modalAddDocuments')" class="bouton-ajouter bouton-ajouter-green pointer"
+       style="width: max-content">
       <div class="add-button-div">
         <em class="fas fa-plus em-mr-4"></em>
         {{ createDocument }}
@@ -53,7 +54,8 @@
                     <button type="button" @click="addUndoc(indexUndoc)" class="buttonAddDoc" :title="addDoc">
                       <em class="fas fa-plus"></em>
                     </button>
-                    <button type="button" v-show="undocument.can_be_deleted" class="ml-10px buttonDeleteDoc" :title="deleteDoc" @click="deleteDocument(undocument.id,indexUndoc)">
+                    <button type="button" v-show="undocument.can_be_deleted" class="ml-10px buttonDeleteDoc"
+                            :title="deleteDoc" @click="deleteDocument(undocument.id,indexUndoc)">
                       <em class="fas fa-trash-alt" style="color: white"></em>
                     </button>
                   </div>
@@ -82,7 +84,8 @@
               v-bind="dragOptions"
               group="documents"
           >
-            <transition-group type="transition" :value="!drag ? 'flip-list' : null" style="display: block;min-height: 200px">
+            <transition-group type="transition" :value="!drag ? 'flip-list' : null"
+                              style="display: block;min-height: 200px">
               <li class="list-doc-item"
                   :id="'itemDoc' + document.id"
                   v-for="(document, indexDoc) in documents"
@@ -119,7 +122,8 @@
                         {{ Mandatory }}
                       </div>
                     </div>
-                    <button type="button" @click="deleteDocFromForm(indexDoc)" :title="removeDoc" class="buttonDeleteDoc">
+                    <button type="button" @click="deleteDocFromForm(indexDoc)" :title="removeDoc"
+                            class="buttonDeleteDoc">
                       <em class="fas fa-times"></em>
                     </button>
                   </div>
@@ -228,7 +232,7 @@ export default {
                 }
               }
 
-              this.undocuments = this.unattachments.map(function(unattachment) {
+              this.undocuments = this.unattachments.map(function (unattachment) {
                 var infos = {
                   id: unattachment.id,
                   value: unattachment.value,
@@ -256,14 +260,14 @@ export default {
       });
     },
 
-    updateMandatory(doc){
+    updateMandatory(doc) {
       axios({
         method: "post",
         url: "index.php?option=com_emundus&controller=form&task=updatemandatory",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
-        data: qs.stringify({ did: doc.id, prid: this.profileId, cid: this.campaignId })
+        data: qs.stringify({did: doc.id, prid: this.profileId, cid: this.campaignId})
       }).then(() => {
         /*if(doc.need == 0){
           doc.need = 1;
@@ -275,14 +279,14 @@ export default {
       });
     },
 
-    addDocument(undoc){
+    addDocument(undoc) {
       axios({
         method: "post",
         url: "index.php?option=com_emundus&controller=form&task=adddocument",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
-        data: qs.stringify({ did: undoc.id, prid: this.profileId, cid: this.campaignId })
+        data: qs.stringify({did: undoc.id, prid: this.profileId, cid: this.campaignId})
       }).then(() => {
       }).catch(error => {
         console.log(error);
@@ -296,7 +300,7 @@ export default {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
-        data: qs.stringify({ did: id, prid: this.profileId, cid: this.campaignId })
+        data: qs.stringify({did: id, prid: this.profileId, cid: this.campaignId})
       })
           .then(() => {
             //this.$parent.next();
@@ -306,7 +310,7 @@ export default {
           });
     },
 
-    deleteDocument(id,index) {
+    deleteDocument(id, index) {
       Swal.fire({
         title: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEDOCUMENTTYPE"),
         text: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEDOCUMENTTYPE_MESSAGE"),
@@ -317,7 +321,7 @@ export default {
         cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
         reverseButtons: true
       }).then(result => {
-        if(result.value){
+        if (result.value) {
           axios({
             method: "POST",
             url: "index.php?option=com_emundus&controller=form&task=deletedocument",
@@ -335,23 +339,23 @@ export default {
     },
 
     deleteDocFromForm(index) {
-      let newIndex = this.undocuments.push(this.documents[index])-1;
-      this.documents.splice(index,1);
+      let newIndex = this.undocuments.push(this.documents[index]) - 1;
+      this.documents.splice(index, 1);
       this.removeDocument(this.undocuments[newIndex].id);
     },
 
-    addingToDocs: function(evt) {
+    addingToDocs: function (evt) {
       this.addDocument(this.documents[evt.newIndex]);
     },
 
-    removeToDocs: function(evt) {
+    removeToDocs: function (evt) {
       let index = evt.newIndex;
-      this.deleteDoc(index,this.undocuments[index]);
+      this.deleteDoc(index, this.undocuments[index]);
     },
 
     addUndoc(index) {
-      let newIndex = this.documents.push(this.undocuments[index])-1;
-      this.undocuments.splice(index,1);
+      let newIndex = this.documents.push(this.undocuments[index]) - 1;
+      this.undocuments.splice(index, 1);
       this.addDocument(this.documents[newIndex]);
     },
 
@@ -359,7 +363,7 @@ export default {
       this.currentDoc = document;
       setTimeout(() => {
         this.$modal.show('modalAddDocuments');
-      },100);
+      }, 100);
     }
   },
 
@@ -377,7 +381,7 @@ export default {
         disabled: false,
         ghostClass: "ghost"
       };
-      },
+    },
 
     dragOptionsUndoc() {
       return {
@@ -397,7 +401,8 @@ export default {
     }
   },
 
-  mounted() {},
+  mounted() {
+  },
 
   created() {
     this.getDocuments();
@@ -405,13 +410,13 @@ export default {
 };
 </script>
 <style scoped>
-.text-no-assigned{
+.text-no-assigned {
   float: right;
   display: flex;
   width: auto;
 }
 
-.cta-block{
+.cta-block {
   position: relative;
   right: 0;
   bottom: -30%;

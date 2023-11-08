@@ -1,9 +1,9 @@
 <?php
 /**
- * @package		Joomla.Site
- * @subpackage	mod_menu
- * @copyright	Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
- * @license		GNU General Public License version 2 or later; see LICENSE.txt
+ * @package        Joomla.Site
+ * @subpackage     mod_menu
+ * @copyright      Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
+ * @license        GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 require JModuleHelper::getLayoutPath('mod_emundus_user_dropdown', 'tchooz');
@@ -41,9 +41,9 @@ require JModuleHelper::getLayoutPath('mod_emundus_user_dropdown', 'tchooz');
             }).then(response => {
                 return response.json();
             }).then(data => {
-                if (data.status &&  data.data.files.length > 0) {
+                if (data.status && data.data.files.length > 0) {
                     let file = data.data.files[0].url + data.data.files[0].filename;
-                    download(file,'carte_acces.pdf');
+                    download(file, 'carte_acces.pdf');
                 }
 
                 if (loader) {

@@ -16,17 +16,18 @@ $m_messages = new EmundusModelMessages();
 
 // load all of the available messages, categories (to sort messages),attachments, letters.
 $message_categories = $m_messages->getAllCategories();
-$message_templates 	= $m_messages->getAllMessages();
+$message_templates  = $m_messages->getAllMessages();
 
 $email_list = array();
-$name_list = array();
-$uids = array();
+$name_list  = array();
+$uids       = array();
 ?>
 
 <style>
     form {
         margin: 0;
     }
+
     #emailForm #mceu_15 {
         display: none;
     }
@@ -39,14 +40,16 @@ $uids = array();
         position: static !important;
     }
 
-    .ql-editor{
+    .ql-editor {
         height: 300px !important;
         overflow-y: scroll;
     }
+
     .form-group {
         position: static;
     }
-    .form-group .email-input-block{
+
+    .form-group .email-input-block {
         height: var(--em-coordinator-form-height);
         display: flex;
         align-items: center;
@@ -55,50 +58,60 @@ $uids = array();
         border-radius: var(--em-coordinator-form-br);
         background: var(--neutral-0);
     }
-    .cc-bcc-mails .items{
+
+    .cc-bcc-mails .items {
         border: 1px solid var(--em-coordinator-bc);
         border-radius: var(--em-coordinator-form-br);
     }
-    .cc-bcc-mails .items div[data-value]{
+
+    .cc-bcc-mails .items div[data-value] {
         background: #EBECF0;
         border: unset;
         border-radius: var(--em-coordinator-form-br);
         box-shadow: unset !important;
         padding: var(--p-4) var(--p-8);
     }
-    .cc-bcc-mails .items div[data-value] .remove{
+
+    .cc-bcc-mails .items div[data-value] .remove {
         font-size: 16px;
         border: unset;
         padding-right: var(--p-12);
     }
-    .ql-editor .mention{
+
+    .ql-editor .mention {
         background: unset;
     }
+
     .email-input-block::-webkit-scrollbar {
         height: 6px;
     }
-    div#mail_from_name,div#mail_subject{
+
+    div#mail_from_name, div#mail_subject {
         border-radius: var(--em-coordinator-br);
         border: solid 2px transparent;
     }
-    div#mail_from_name:focus,div#mail_subject:focus,div#reply_to_from:focus {
+
+    div#mail_from_name:focus, div#mail_subject:focus, div#reply_to_from:focus {
         outline-color: #2E90FA;
     }
-    div#mail_from_name:hover,div#mail_subject:hover{
+
+    div#mail_from_name:hover, div#mail_subject:hover {
         border-radius: var(--em-coordinator-br);
         border: solid 2px var(--em-coordinator-bc);
     }
-    #cc-box-label,#bcc-box-label,#replyto-box-label{
+
+    #cc-box-label, #bcc-box-label, #replyto-box-label {
         border-radius: var(--em-coordinator-br);
         width: fit-content;
         padding: var(--p-4) var(--p-8) 5px 0;
         margin-left: 0;
     }
-    #cc-box-label:hover,#bcc-box-label:hover {
+
+    #cc-box-label:hover, #bcc-box-label:hover {
         background: var(--neutral-300);
     }
 
-    #reply_to_from,#emailForm div#mail_subject{
+    #reply_to_from, #emailForm div#mail_subject {
         min-width: 100%;
     }
 
@@ -122,7 +135,7 @@ $uids = array();
         margin-right: auto;
         background: white;
         padding: 24px;
-        box-shadow: 0 0 0 50vmax rgba(0,0,0,.5);
+        box-shadow: 0 0 0 50vmax rgba(0, 0, 0, .5);
         border-radius: 8px;
     }
 
@@ -147,33 +160,35 @@ $uids = array();
 
             <!-- Dropdown to select the email categories used. -->
             <div class="form-group col-md-6 col-sm-6 em-form-selectCategory">
-                <label for="select_category" ><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_CATEGORY'); ?></label>
-                <select name="select_category" id="select_category" class="em-border-radius-8 em-mb-16 email-input-block em-w-100" onChange="setCategory(this);">
-                    <?php if (!$message_categories) :?>
+                <label for="select_category"><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_CATEGORY'); ?></label>
+                <select name="select_category" id="select_category"
+                        class="em-border-radius-8 em-mb-16 email-input-block em-w-100" onChange="setCategory(this);">
+					<?php if (!$message_categories) : ?>
                         <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_NO_CATEGORIES_FOUND'); ?> </option>
-                    <?php else: ?>
+					<?php else: ?>
                         <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_SELECT_CATEGORY'); ?> </option>
-                        <?php foreach ($message_categories as $message_category) :?>
-                            <?php if (!empty($message_category)) :?>
+						<?php foreach ($message_categories as $message_category) : ?>
+							<?php if (!empty($message_category)) : ?>
                                 <option value="<?= $message_category; ?>"> <?= $message_category; ?></option>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+							<?php endif; ?>
+						<?php endforeach; ?>
+					<?php endif; ?>
                 </select>
             </div>
 
             <!-- Dropdown to select the email template used. -->
             <div class="form-group col-md-6 col-sm-6 em-form-selectTypeEmail">
-                <label for="select_template" ><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_TEMPLATE'); ?></label>
-                <select name="select_template" id="message_template" class="em-border-radius-8 em-mb-16 email-input-block em-w-100" onChange="getTemplate(this);">
-                    <?php if (!$message_templates) :?>
+                <label for="select_template"><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_TEMPLATE'); ?></label>
+                <select name="select_template" id="message_template"
+                        class="em-border-radius-8 em-mb-16 email-input-block em-w-100" onChange="getTemplate(this);">
+					<?php if (!$message_templates) : ?>
                         <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_NO_TEMPLATES_FOUND'); ?> </option>
-                    <?php else: ?>
+					<?php else: ?>
                         <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_SELECT_TEMPLATE'); ?> </option>
-                        <?php foreach ($message_templates as $message_template) :?>
+						<?php foreach ($message_templates as $message_template) : ?>
                             <option value="<?= $message_template->id; ?>"> <?= $message_template->subject; ?></option>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+						<?php endforeach; ?>
+					<?php endif; ?>
                 </select>
                 <a class="em-font-size-14 em-pointer" href="emails"
                    target="_blank"><?= JText::_('COM_EMUNDUS_EMAILS_ADD_TEMPLATE'); ?>
@@ -185,7 +200,7 @@ $uids = array();
         <div class="em-form-checkbox-copyEmail flex items-center gap-1">
             <input type="checkbox" id="sendUserACopy">
             <label for="sendUserACopy" style="margin: 0">
-                <?= JText::_('COM_EMUNDUS_EMAILS_SEND_COPY_TO_CURRENT_USER'); ?>
+				<?= JText::_('COM_EMUNDUS_EMAILS_SEND_COPY_TO_CURRENT_USER'); ?>
             </label>
         </div>
 
@@ -194,7 +209,8 @@ $uids = array();
                 <div class="flex items-center">
                     <label class='em-mr-8' for="mail_from"><?= JText::_('FROM'); ?> :</label>
                     <div id="mail_from_block" class="em-border-radius-8 em-mb-4 email-input-block">
-                        <div id="mail_from_name" class="em-p-4-6" contenteditable="true"><?= JFactory::getConfig()->get('fromname') ?></div>
+                        <div id="mail_from_name" class="em-p-4-6"
+                             contenteditable="true"><?= JFactory::getConfig()->get('fromname') ?></div>
                         <div id="mail_from" class="em-ml-4" contenteditable="false">
                             <em class="em-font-size-14">&lt;<?= JFactory::getConfig()->get('mailfrom') ?>&gt;</em>
                         </div>
@@ -214,19 +230,19 @@ $uids = array();
                     </div>
 
                     <div class="flex items-center gap-2 flex-wrap" style="max-height: 150px; overflow-y: auto;">
-			            <?php foreach ($this->users as $user) : ?>
-				            <?php if (!empty($user->email)) : ?>
-					            <?php $email_list[] = $user->email; ?>
-					            <?php $name_list[] = $user->name; ?>
-					            <?php $uids[] = $user->id; ?>
+						<?php foreach ($this->users as $user) : ?>
+							<?php if (!empty($user->email)) : ?>
+								<?php $email_list[] = $user->email; ?>
+								<?php $name_list[] = $user->name; ?>
+								<?php $uids[] = $user->id; ?>
 
                                 <span class="label label-default em-mr-8 em-email-label">
                                     <?= $user->email . ' <em class="em-font-size-14">&lt;' . $user->name . '&gt;</em>'; ?>
                                 </span>
 
                                 <input type="hidden" name="ud[]" id="ud" value="<?= $user->id; ?>"/>
-				            <?php endif; ?>
-			            <?php endforeach; ?>
+							<?php endif; ?>
+						<?php endforeach; ?>
                     </div>
                 </div>
 
@@ -240,23 +256,25 @@ $uids = array();
                             </span>
 
 
-				            <?php if(count($email_list) > 1) : ?>
-                                <span class="label label-default em-mr-8 em-email-label pointer" onclick="showEmailList()">
-                                    +<?= count($email_list)-1 ?>
+							<?php if (count($email_list) > 1) : ?>
+                                <span class="label label-default em-mr-8 em-email-label pointer"
+                                      onclick="showEmailList()">
+                                    +<?= count($email_list) - 1 ?>
                                 </span>
-				            <?php endif; ?>
+							<?php endif; ?>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <input name="uids" type="hidden" class="inputbox" id="uids" value="<?= implode(',', $uids); ?>" />
-            <input name="mail_from_id" type="hidden" class="inputbox" id="mail_from_id" value="<?= $current_user->id; ?>" /><br>
+            <input name="uids" type="hidden" class="inputbox" id="uids" value="<?= implode(',', $uids); ?>"/>
+            <input name="mail_from_id" type="hidden" class="inputbox" id="mail_from_id"
+                   value="<?= $current_user->id; ?>"/><br>
             <input name="mail_body" type="hidden" class="inputbox" id="mail_body" value=""/>
         </div>
 
 
-		<div class="form-group em-form-subject em-mt-12">
+        <div class="form-group em-form-subject em-mt-12">
             <label class='em-mr-8' for="mail_from"><?= JText::_('COM_EMUNDUS_EMAILS_SUBJECT'); ?> :</label>
             <div class="em-border-radius-8 email-input-block em-mb-12">
                 <div id="mail_subject"
@@ -272,23 +290,24 @@ $uids = array();
             <p class="em-text-neutral-600 em-mt-8 em-font-size-14t">
 				<?= JText::_('COM_EMUNDUS_ONBOARD_VARIABLESTIP'); ?>
             </p>
-		</div>
+        </div>
 
         <div class="form-group">
             <br>
             <hr>
         </div>
 
-		<div class="form-inline row em-form-attachments">
+        <div class="form-inline row em-form-attachments">
 
-			<div class="form-group col-sm-12 col-md-12">
-				<!-- Upload a file from computer -->
+            <div class="form-group col-sm-12 col-md-12">
+                <!-- Upload a file from computer -->
                 <div class="upload-file em-form-attachments-uploadFile" id="upload_file">
 
                     <div class="file-browse">
                         <span id="em-filename"><?= JText::_('COM_EMUNDUS_ATTACHMENTS_FILE_NAME'); ?></span>
 
-                        <label for="em-file_to_upload" type="button"><?= JText::_('COM_EMUNDUS_ATTACHMENTS_SELECT_FILE_TO_UPLOAD') ?>
+                        <label for="em-file_to_upload"
+                               type="button"><?= JText::_('COM_EMUNDUS_ATTACHMENTS_SELECT_FILE_TO_UPLOAD') ?>
                             <input type="file" id="em-file_to_upload" onChange="addFile();">
                         </label>
                     </div>
@@ -343,17 +362,17 @@ $uids = array();
     $(document).ready(() => {
         initQuill();
 
-	    <?php if(!empty($this->data['mail_subject'])) : ?>
+		<?php if(!empty($this->data['mail_subject'])) : ?>
         $("#mail_subject").text("<?= $this->data['mail_subject'] ?>");
-	    <?php endif; ?>
+		<?php endif; ?>
 
-	    <?php if(!empty($this->data['mail_from_name'])) : ?>
+		<?php if(!empty($this->data['mail_from_name'])) : ?>
         $("#mail_from_name").text("<?= $this->data['mail_from_name'] ?>");
-	    <?php endif; ?>
+		<?php endif; ?>
 
-	    <?php if(!empty($this->data['reply_to_from'])) : ?>
+		<?php if(!empty($this->data['reply_to_from'])) : ?>
         $("#reply_to_from").html("<?= $this->data['reply_to_from'] ?>");
-	    <?php endif; ?>
+		<?php endif; ?>
     });
 
     function showEmailList() {
@@ -434,7 +453,7 @@ $uids = array();
 
                 editor.on('editor-change', (eventName, ...args) => {
                     if (eventName === 'text-change') {
-                        if(editor.root.innerHTML === null){
+                        if (editor.root.innerHTML === null) {
                             editor.root.innerHTML = '';
                         }
                         $('#mail_body').val(editor.root.innerHTML);
@@ -446,14 +465,14 @@ $uids = array();
     // Change file upload string to selected file and reset the progress bar.
     $('#em-file_to_upload').change(function () {
         $('#em-filename').html(this.value.match(/([^\/\\]+)$/)[1]);
-        $("#em-progress-wrp .progress-bar").css("width", + 0 + "%");
+        $("#em-progress-wrp .progress-bar").css("width", +0 + "%");
         $("#em-progress-wrp .status").text(0 + "%");
     });
 
     // Loads the template and updates the WYSIWYG editor
     function getTemplate(select) {
 
-        if(select.value !== '%') {
+        if (select.value !== '%') {
             $.ajax({
                 type: "POST",
                 url: "index.php?option=com_emundus&controller=email&task=getemailbyid",
@@ -469,8 +488,7 @@ $uids = array();
 
                         $("#mail_subject").text(email.subject);
 
-                        if(email.name !== '')
-                        {
+                        if (email.name !== '') {
                             $("#mail_from_name").text(email.name);
                         } else {
                             $("#mail_from_name").text("<?= JFactory::getConfig()->get('fromname'); ?>");
@@ -511,7 +529,7 @@ $uids = array();
 
         $.ajax({
             type: "GET",
-            url: "index.php?option=com_emundus&controller=messages&task=setcategory&category="+category,
+            url: "index.php?option=com_emundus&controller=messages&task=setcategory&category=" + category,
             success: data => {
 
                 data = JSON.parse(data);
@@ -555,15 +573,21 @@ $uids = array();
 
 
     // Helper function for uploading a file via AJAX.
-    var Upload = function(file) {
+    var Upload = function (file) {
         this.file = file;
     };
 
-    Upload.prototype.getType = function() { return this.file.type; };
-    Upload.prototype.getSize = function() { return this.file.size; };
-    Upload.prototype.getName = function() { return this.file.name; };
+    Upload.prototype.getType = function () {
+        return this.file.type;
+    };
+    Upload.prototype.getSize = function () {
+        return this.file.size;
+    };
+    Upload.prototype.getName = function () {
+        return this.file.name;
+    };
 
-    Upload.prototype.doUpload = function() {
+    Upload.prototype.doUpload = function () {
         var that = this;
         var formData = new FormData();
 
@@ -585,7 +609,7 @@ $uids = array();
                 data = JSON.parse(data);
 
                 if (data.status) {
-                    $('#em-attachment-list').append('<li class="list-group-item upload"><div class="value hidden">'+data.file_path+'</div>'+data.file_name+'<span class="badge em-error-button" style="padding: 2px 9px;" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
+                    $('#em-attachment-list').append('<li class="list-group-item upload"><div class="value hidden">' + data.file_path + '</div>' + data.file_name + '<span class="badge em-error-button" style="padding: 2px 9px;" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
                 } else {
                     $("#em-file_to_upload").append('<span class="alert"> <?= JText::_('UPLOAD_FAILED'); ?> </span>')
                 }

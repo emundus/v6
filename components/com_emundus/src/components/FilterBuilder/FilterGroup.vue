@@ -10,12 +10,12 @@
           </select>
         </div>
         <FilterRow
-          :group="id"
-          :id="filter"
-          class="filter"
-          v-for="filter in filters"
-          :key="filter"
-          @removeFilter="removeFilter(filter)"
+            :group="id"
+            :id="filter"
+            class="filter"
+            v-for="filter in filters"
+            :key="filter"
+            @removeFilter="removeFilter(filter)"
         ></FilterRow>
       </div>
       <div class="actions">

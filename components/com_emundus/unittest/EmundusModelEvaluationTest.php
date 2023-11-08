@@ -8,19 +8,20 @@
  */
 
 use PHPUnit\Framework\TestCase;
-ini_set( 'display_errors', false );
+
+ini_set('display_errors', false);
 error_reporting(E_ALL);
 define('_JEXEC', 1);
 define('DS', DIRECTORY_SEPARATOR);
 define('JPATH_BASE', dirname(__DIR__) . '/../../');
 
-include_once ( JPATH_BASE . 'includes/defines.php' );
-include_once ( JPATH_BASE . 'includes/framework.php' );
-include_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
-include_once (JPATH_SITE . '/components/com_emundus/models/evaluation.php');
+include_once(JPATH_BASE . 'includes/defines.php');
+include_once(JPATH_BASE . 'includes/framework.php');
+include_once(JPATH_SITE . '/components/com_emundus/unittest/helpers/samples.php');
+include_once(JPATH_SITE . '/components/com_emundus/models/evaluation.php');
 
 jimport('joomla.user.helper');
-jimport( 'joomla.application.application' );
+jimport('joomla.application.application');
 jimport('joomla.plugin.helper');
 
 // set global config --> initialize Joomla Application with default param 'site'
@@ -34,14 +35,14 @@ session_start();
 
 class EmundusModelEvaluationTest extends TestCase
 {
-    private $m_evaluation;
+	private $m_evaluation;
 	private $h_samples;
 
-    public function __construct(?string $name = null, array $data = [], $dataName = '')
-    {
-        parent::__construct($name, $data, $dataName);
-        $this->m_evaluation = new EmundusModelEvaluation;
-		$this->h_samples = new EmundusUnittestHelperSamples;
+	public function __construct(?string $name = null, array $data = [], $dataName = '')
+	{
+		parent::__construct($name, $data, $dataName);
+		$this->m_evaluation = new EmundusModelEvaluation;
+		$this->h_samples    = new EmundusUnittestHelperSamples;
 	}
 
 	public function testFoo()
@@ -56,9 +57,9 @@ class EmundusModelEvaluationTest extends TestCase
 		$this->assertEmpty($letters, 'Without parameters, getLettersByProgrammesStatusCampaigns should return an empty array');
 
 		$letter_attachement_id = $this->h_samples->createSampleAttachment();
-		$program = $this->h_samples->createSampleProgram();
+		$program               = $this->h_samples->createSampleProgram();
 
-		$campaign = $this->h_samples->createSampleCampaign($program);
+		$campaign  = $this->h_samples->createSampleCampaign($program);
 		$letter_id = $this->h_samples->createSampleLetter($letter_attachement_id, 2, [$program['programme_code']], [0], [$campaign]);
 
 		$user = $this->h_samples->createSampleUser(9, 'user.test' . rand(0, 1000) . '@emundus.fr');
@@ -67,8 +68,8 @@ class EmundusModelEvaluationTest extends TestCase
 		$letters = $this->m_evaluation->getLettersByProgrammesStatusCampaigns([$program['programme_code']], [0], [$campaign]);
 		$this->assertNotEmpty($letters, 'I should retrieve letters by programme status and campaign');
 
-		$letter_ids = array_column($letters, 'id');
-		$letter_id_string = (string)$letter_id;
+		$letter_ids       = array_column($letters, 'id');
+		$letter_id_string = (string) $letter_id;
 		$this->assertContains($letter_id_string, $letter_ids, 'I should retrieve the created letter id in the list of letters');
 
 	}
@@ -80,9 +81,9 @@ class EmundusModelEvaluationTest extends TestCase
 		$this->assertEmpty($letters, 'Without parameters, getLetterTemplateForFnum should return an empty array');
 
 		$letter_attachement_id = $this->h_samples->createSampleAttachment();
-		$program = $this->h_samples->createSampleProgram();
+		$program               = $this->h_samples->createSampleProgram();
 
-		$campaign = $this->h_samples->createSampleCampaign($program);
+		$campaign  = $this->h_samples->createSampleCampaign($program);
 		$letter_id = $this->h_samples->createSampleLetter($letter_attachement_id, 2, [$program['programme_code']], [0], [$campaign]);
 
 		$user = $this->h_samples->createSampleUser(9, 'user.test' . rand(0, 1000) . '@emundus.fr');

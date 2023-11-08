@@ -9,40 +9,45 @@
 // no direct access
 defined('_JEXEC') or die;
 
-$doc = JFactory::getDocument();
+$doc  = JFactory::getDocument();
 $user = JFactory::getUser();
 
-$doc->addStyleSheet( 'components/com_emundus/assets/css/item.css');
+$doc->addStyleSheet('components/com_emundus/assets/css/item.css');
 $doc->addStyleSheet('components/com_emundus/assets/css/list.css');
 JHtml::stylesheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
 
 $canEdit = $user->authorise('core.edit', 'com_emundus.' . $this->item->id);
 if (!$canEdit && $user->authorise('core.edit.own', 'com_emundus' . $this->item->id)) {
-    $canEdit = $user->id == $this->item->created_by;
+	$canEdit = $user->id == $this->item->created_by;
 }
-$app      = JFactory::getApplication();
+$app    = JFactory::getApplication();
 $itemid = $app->getMenu()->getActive()->id;
-$tmpl = $app->input->get('tmpl', null, 'CMD');
+$tmpl   = $app->input->get('tmpl', null, 'CMD');
 
 ?>
 <?php if ($user->guest): ?>
     <div class="alert alert-warning">
-        <b><?php echo JText::_('WARNING'); ?> : </b> <?php echo JText::_('COM_EMUNDUS_THESIS_PLEASE_CONNECT_OR_LOGIN_TO_APPLY'); ?>
+        <b><?php echo JText::_('WARNING'); ?>
+            : </b> <?php echo JText::_('COM_EMUNDUS_THESIS_PLEASE_CONNECT_OR_LOGIN_TO_APPLY'); ?>
     </div>
 <?php endif; ?>
 <?php if ($this->item) : ?>
-    <?php if ($user->applicant) : ?>
-        <?php if(!$this->thesis_selected): ?>
-            <button onclick="$('.btn').attr('disabled', true); window.location.href = '<?php echo JRoute::_('index.php?option=com_emundus&controller=thesis&task=apply&id=' . $this->item->id.'&tmpl='.$tmpl, false, 2); ?>';" class="btn btn-info glyphicon glyphicon-circle-arrow-right" type="button"> <?php echo JText::_('COM_EMUNDUS_THESIS_APPLY'); ?></button>
-        <?php endif; ?>
-        <?php if(is_null($tmpl)): ?>
-            <a class="btn btn-default" href="index.php?option=com_fabrik&view=form&formid=232&previous=<?php echo $this->item->id; ?>&Itemid=<?php echo $itemid; ?>&usekey=fnum&rowid=<?php echo $user->fnum; ?>" role="button"><?php echo JText::_('COM_EMUNDUS_THESIS_CHANGE'); ?></a>
-        <?php endif; ?>
-    <?php endif; ?>
-    
+	<?php if ($user->applicant) : ?>
+		<?php if (!$this->thesis_selected): ?>
+            <button onclick="$('.btn').attr('disabled', true); window.location.href = '<?php echo JRoute::_('index.php?option=com_emundus&controller=thesis&task=apply&id=' . $this->item->id . '&tmpl=' . $tmpl, false, 2); ?>';"
+                    class="btn btn-info glyphicon glyphicon-circle-arrow-right"
+                    type="button"> <?php echo JText::_('COM_EMUNDUS_THESIS_APPLY'); ?></button>
+		<?php endif; ?>
+		<?php if (is_null($tmpl)): ?>
+            <a class="btn btn-default"
+               href="index.php?option=com_fabrik&view=form&formid=232&previous=<?php echo $this->item->id; ?>&Itemid=<?php echo $itemid; ?>&usekey=fnum&rowid=<?php echo $user->fnum; ?>"
+               role="button"><?php echo JText::_('COM_EMUNDUS_THESIS_CHANGE'); ?></a>
+		<?php endif; ?>
+	<?php endif; ?>
+
     <h4><?php echo $this->item->titre; ?></h4>
     <div class="item_fields">
-        <table class="table">    
+        <table class="table">
             <tr>
                 <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_THESIS_DOMAIN'); ?></th>
                 <td><?php echo $this->item->domain; ?></td>
@@ -89,7 +94,8 @@ $tmpl = $app->input->get('tmpl', null, 'CMD');
             </tr>
             <tr>
                 <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_THESIS_WEBSITE'); ?></th>
-                <td><a href="<?php echo $this->item->website; ?>" target="_blank"><?php echo $this->item->website; ?></a></td>
+                <td><a href="<?php echo $this->item->website; ?>"
+                       target="_blank"><?php echo $this->item->website; ?></a></td>
             </tr>
             <tr>
                 <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_THESIS_LABORATORY_DIRECTOR'); ?></th>
@@ -109,26 +115,32 @@ $tmpl = $app->input->get('tmpl', null, 'CMD');
             </tr>
         </table>
     </div>
-    <?php if ($user->applicant) : ?>
-        <?php if(!$this->thesis_selected): ?>
-            <button onclick="$('.btn').attr('disabled', true); window.location.href = '<?php echo JRoute::_('index.php?option=com_emundus&controller=thesis&task=apply&id=' . $this->item->id.'&tmpl='.$tmpl, false, 2); ?>';" class="btn btn-info glyphicon glyphicon-circle-arrow-right" type="button"> <?php echo JText::_('COM_EMUNDUS_THESIS_APPLY'); ?></button>
-        <?php endif; ?>
-        <?php if(is_null($tmpl)): ?>
-            <?php $user = JFactory::getSession()->get('emundusUser'); ?>
-            <a class="btn btn-default" href="index.php?option=com_fabrik&view=form&formid=232&previous=<?php echo $this->item->id; ?>&Itemid=<?php echo $itemid; ?>&usekey=fnum&rowid=<?php echo $user->fnum; ?>" role="button"><?php echo JText::_('COM_EMUNDUS_THESIS_CHANGE'); ?></a>
-            <?php $user = JFactory::getUser(); ?>
-        <?php endif; ?>
-    <?php endif; ?>
-    
-    <?php if($canEdit): ?>
-        <button type="button" onclick="window.location.href='<?php echo JRoute::_('index.php?option=com_emundus&task=thesis.edit&id='.$this->item->id); ?>';"><?php echo JText::_("COM_EMUNDUS_EDIT_ITEM"); ?></button>
-    <?php endif; ?>
-    <?php if($user->authorise('core.delete','com_emundus.thesis.'.$this->item->id)):?>
-        <button type="button" onclick="window.location.href='<?php echo JRoute::_('index.php?option=com_emundus&task=thesis.remove&id=' . $this->item->id, false, 2); ?>';"><?php echo JText::_("COM_EMUNDUS_DELETE_ITEM"); ?></button>
-    <?php endif; ?>
+	<?php if ($user->applicant) : ?>
+		<?php if (!$this->thesis_selected): ?>
+            <button onclick="$('.btn').attr('disabled', true); window.location.href = '<?php echo JRoute::_('index.php?option=com_emundus&controller=thesis&task=apply&id=' . $this->item->id . '&tmpl=' . $tmpl, false, 2); ?>';"
+                    class="btn btn-info glyphicon glyphicon-circle-arrow-right"
+                    type="button"> <?php echo JText::_('COM_EMUNDUS_THESIS_APPLY'); ?></button>
+		<?php endif; ?>
+		<?php if (is_null($tmpl)): ?>
+			<?php $user = JFactory::getSession()->get('emundusUser'); ?>
+            <a class="btn btn-default"
+               href="index.php?option=com_fabrik&view=form&formid=232&previous=<?php echo $this->item->id; ?>&Itemid=<?php echo $itemid; ?>&usekey=fnum&rowid=<?php echo $user->fnum; ?>"
+               role="button"><?php echo JText::_('COM_EMUNDUS_THESIS_CHANGE'); ?></a>
+			<?php $user = JFactory::getUser(); ?>
+		<?php endif; ?>
+	<?php endif; ?>
+
+	<?php if ($canEdit): ?>
+        <button type="button"
+                onclick="window.location.href='<?php echo JRoute::_('index.php?option=com_emundus&task=thesis.edit&id=' . $this->item->id); ?>';"><?php echo JText::_("COM_EMUNDUS_EDIT_ITEM"); ?></button>
+	<?php endif; ?>
+	<?php if ($user->authorise('core.delete', 'com_emundus.thesis.' . $this->item->id)): ?>
+        <button type="button"
+                onclick="window.location.href='<?php echo JRoute::_('index.php?option=com_emundus&task=thesis.remove&id=' . $this->item->id, false, 2); ?>';"><?php echo JText::_("COM_EMUNDUS_DELETE_ITEM"); ?></button>
+	<?php endif; ?>
 <?php
 else:
-    echo JText::_('COM_EMUNDUS_ITEM_NOT_LOADED');
+	echo JText::_('COM_EMUNDUS_ITEM_NOT_LOADED');
 endif;
 ?>
 <script type="text/javascript">

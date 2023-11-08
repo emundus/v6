@@ -8,19 +8,20 @@
  */
 
 use PHPUnit\Framework\TestCase;
-ini_set( 'display_errors', false );
+
+ini_set('display_errors', false);
 error_reporting(E_ALL);
 define('_JEXEC', 1);
 define('DS', DIRECTORY_SEPARATOR);
 define('JPATH_BASE', dirname(__DIR__) . '/../../');
 
-include_once ( JPATH_BASE . 'includes/defines.php' );
-include_once ( JPATH_BASE . 'includes/framework.php' );
-include_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
-include_once (JPATH_SITE . '/components/com_emundus/models/form.php');
+include_once(JPATH_BASE . 'includes/defines.php');
+include_once(JPATH_BASE . 'includes/framework.php');
+include_once(JPATH_SITE . '/components/com_emundus/unittest/helpers/samples.php');
+include_once(JPATH_SITE . '/components/com_emundus/models/form.php');
 
 jimport('joomla.user.helper');
-jimport( 'joomla.application.application' );
+jimport('joomla.application.application');
 jimport('joomla.plugin.helper');
 
 // set global config --> initialize Joomla Application with default param 'site'
@@ -34,23 +35,24 @@ session_start();
 
 class EmundusModelFormTest extends TestCase
 {
-    private $m_form;
+	private $m_form;
 	private $h_sample;
 
 
 	public function __construct(?string $name = null, array $data = [], $dataName = '')
-    {
-        parent::__construct($name, $data, $dataName);
-        $this->m_form = new EmundusModelForm;
-	    $this->h_sample = new EmundusUnittestHelperSamples;
-    }
+	{
+		parent::__construct($name, $data, $dataName);
+		$this->m_form   = new EmundusModelForm;
+		$this->h_sample = new EmundusUnittestHelperSamples;
+	}
 
 	/**
 	 * @test
 	 * @covers EmundusModelForm::copyAttachmentsToNewProfile()
 	 */
-	public function testCopyAttachmentsToNewProfile() {
-		$base_profile = 9;
+	public function testCopyAttachmentsToNewProfile()
+	{
+		$base_profile     = 9;
 		$fake_new_profile = 64567657;
 
 		$copy = $this->m_form->copyAttachmentsToNewProfile(0, $fake_new_profile);
@@ -73,8 +75,9 @@ class EmundusModelFormTest extends TestCase
 	 * @test
 	 * @covers EmundusModelForm::duplicateForm()
 	 */
-	public function testDuplicateForm() {
-		$pids = [0];
+	public function testDuplicateForm()
+	{
+		$pids      = [0];
 		$duplicate = $this->m_form->duplicateForm($pids);
 		$this->assertFalse($duplicate, 'Duplicate form requires a valid profile id');
 
@@ -86,7 +89,7 @@ class EmundusModelFormTest extends TestCase
 		$form_id = $this->m_form->createFormEval();
 		$this->assertNotEmpty($form_id, 'Evaluation form creation succeeds');
 
-		$db = JFactory::getDbo();
+		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
 		$query->select('jfe.name, jfe.published')
@@ -106,7 +109,7 @@ class EmundusModelFormTest extends TestCase
 		$this->assertContains('user', $element_names, 'Evaluation form elements contains user');
 		$this->assertContains('student_id', $element_names, 'Evaluation form elements contains student_id');
 
-		foreach($elements as $element) {
+		foreach ($elements as $element) {
 			if (in_array($element['name'], ['id', 'time_date', 'fnum', 'user', 'student_id'])) {
 				$this->assertSame(1, intval($element['published']), 'Evaluation default form elements are published');
 			}

@@ -3,13 +3,13 @@
     <div id="default-aspects-toggle" class="em-flex-row em-flex-start">
       <div class="em-toggle">
         <input type="checkbox"
-          :true-value="true"
-          :false-value="false"
-          class="em-toggle-check"
-          id="default-aspects"
-          name="'default-aspects'"
-          v-model="aspectsConfig.default"
-          @click="aspectsConfig.default = !aspectsConfig.default; saveAttachmentAspects();"
+               :true-value="true"
+               :false-value="false"
+               class="em-toggle-check"
+               id="default-aspects"
+               name="'default-aspects'"
+               v-model="aspectsConfig.default"
+               @click="aspectsConfig.default = !aspectsConfig.default; saveAttachmentAspects();"
         />
         <strong class="b em-toggle-switch"></strong>
         <strong class="b em-toggle-track"></strong>

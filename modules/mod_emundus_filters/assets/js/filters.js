@@ -1,5 +1,5 @@
 var filtersInstances = [];
-const filterSampleContainerHTML = '<div class="filter-container em-w-100" id="sample-id" style="position: relative;">'+
+const filterSampleContainerHTML = '<div class="filter-container em-w-100" id="sample-id" style="position: relative;">' +
     '<section class="filter-recap-container em-pointer em-border-radius-8 em-border-neutral-400 em-flex-row em-flex-space-between em-box-shadow em-white-bg">' +
     '   <div class="filter-recap em-p-8 em-flex-col-start">' +
     '       <div class="operator em-mt-8 em-ml-8 em-p-8-0"></div>' +
@@ -19,16 +19,16 @@ let filterSampleContainer = document.createElement('div');
 filterSampleContainer.innerHTML = filterSampleContainerHTML;
 
 var basicOperators = [
-    { value: '=', label: translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS')},
-    { value: '!=', label:  translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_NOT')},
-    { value: 'LIKE', label: translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_CONTAINS')},
-    { value: 'NOT LIKE', label: translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_DOES_NOT_CONTAIN')},
-    { value: 'IN', label:  translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_ONE_OF')},
-    { value: 'NOT IN', label: translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_NOT_ONE_OF')},
+    {value: '=', label: translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS')},
+    {value: '!=', label: translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_NOT')},
+    {value: 'LIKE', label: translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_CONTAINS')},
+    {value: 'NOT LIKE', label: translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_DOES_NOT_CONTAIN')},
+    {value: 'IN', label: translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_ONE_OF')},
+    {value: 'NOT IN', label: translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_NOT_ONE_OF')},
 ];
 var andOrOperators = [
-    { value: 'AND', label: translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_AND')},
-    { value: 'OR', label: translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_OR')},
+    {value: 'AND', label: translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_AND')},
+    {value: 'OR', label: translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_OR')},
 ];
 
 function translate(str) {
@@ -184,7 +184,7 @@ class MultiSelectFilter {
             this.selectedOperator = e.target.dataset.operator;
 
             this.operators.forEach((operator) => {
-                const operatorSpan = document.querySelector('select#'+ this.id +' +div .filter-operator[data-operator="' + operator.value + '"]');
+                const operatorSpan = document.querySelector('select#' + this.id + ' +div .filter-operator[data-operator="' + operator.value + '"]');
                 if (operator.value !== this.selectedOperator) {
                     operatorSpan.classList.remove('label-default');
                     operatorSpan.classList.add('label-darkblue');
@@ -205,7 +205,7 @@ class MultiSelectFilter {
             this.selectedAndOrOperator = e.target.dataset.operator;
 
             this.andOrOperators.forEach((operator) => {
-                const operatorSpan =  document.querySelector('select#' + this.id + ' +div .filter-and-or-operator[data-operator="' + operator.value + '"]');
+                const operatorSpan = document.querySelector('select#' + this.id + ' +div .filter-and-or-operator[data-operator="' + operator.value + '"]');
                 if (operator.value !== this.selectedAndOrOperator) {
                     operatorSpan.classList.remove('label-default');
                     operatorSpan.classList.add('label-darkblue');
@@ -313,7 +313,7 @@ const appliedFiltersSection = document.getElementById('applied-filters');
 const filtersSelectWrapper = document.querySelector('#filters-selection-wrapper');
 const filtersSelect = document.getElementById('filters-selection');
 
-function initFilters(){
+function initFilters() {
     appliedFiltersSection.querySelectorAll('.filter-container').forEach(function (filterContainer) {
         // check type of filter
         let select = filterContainer.querySelector('select');

@@ -30,14 +30,14 @@ JFactory::getDocument()->addStyleSheet("media/com_emundus/css/emundus_chat.css")
         <div id="chat" class="wrapper-chat">
             <div id="em-messagerie" class="card-chat">
                 <div class="message-list">
-                    <?php if (empty($this->messages)) :?>
+					<?php if (empty($this->messages)) : ?>
                         <div class="w-col w-col-6">
                             <p class="name-message"><?= JText::_('COM_EMUNDUS_CHATROOM_NO_MESSAGES_WITH'); ?></p>
                         </div>
-                    <?php else:?>
-                        <?php foreach ($this->messages as $message) :?>
+					<?php else: ?>
+						<?php foreach ($this->messages as $message) : ?>
                             <div class="columns-4 w-row">
-                                <?php if ($message->user_id_from != $this->user_id) :?>
+								<?php if ($message->user_id_from != $this->user_id) : ?>
                                     <div class="w-col w-col-6">
                                         <p class="name-message">
                                             <strong><?= JFactory::getUser($message->user_id_from)->name; ?></strong> <?= date('D j M à H:i', strtotime($message->date_time)); ?>
@@ -47,29 +47,33 @@ JFactory::getDocument()->addStyleSheet("media/com_emundus/css/emundus_chat.css")
                                         </div>
                                     </div>
                                     <div class="w-col w-col-6"></div>
-                                <?php elseif ($message->user_id_from == $this->user_id) :?>
+								<?php elseif ($message->user_id_from == $this->user_id) : ?>
                                     <div class="w-col w-col-6"></div>
                                     <div class="w-col w-col-6">
-                                        <p class="name-message"><strong>Moi</strong> <?= date('D j M à H:i', strtotime($message->date_time)); ?></p>
+                                        <p class="name-message">
+                                            <strong>Moi</strong> <?= date('D j M à H:i', strtotime($message->date_time)); ?>
+                                        </p>
                                         <div class="me">
                                             <p class="chat-message"><?= $message->message; ?></p>
                                         </div>
                                     </div>
-                                <?php endif; ?>
+								<?php endif; ?>
                             </div>
-                        <?php endforeach; ?>
-                        <?php
-                            if (!empty($message->message_id)) {
-	                            $lastId = $message->message_id;
-                            }
-                        ?>
-                    <?php endif;?>
+						<?php endforeach; ?>
+						<?php
+						if (!empty($message->message_id)) {
+							$lastId = $message->message_id;
+						}
+						?>
+					<?php endif; ?>
                 </div>
             </div>
 
             <div id="em-message">
-                <input type="text" class="chat-field w-input" maxlength="256" name="Tapez-votre-message-ici" placeholder="Tapez votre message ici" id="Tapez-votre-message-ici">
-                <button type="button" class="submit-button w-button" id="sendMessage" onclick="sendMessage()"><?= JText::_('SEND'); ?></button>
+                <input type="text" class="chat-field w-input" maxlength="256" name="Tapez-votre-message-ici"
+                       placeholder="Tapez votre message ici" id="Tapez-votre-message-ici">
+                <button type="button" class="submit-button w-button" id="sendMessage"
+                        onclick="sendMessage()"><?= JText::_('SEND'); ?></button>
             </div>
         </div>
     </div>
@@ -88,9 +92,9 @@ JFactory::getDocument()->addStyleSheet("media/com_emundus/css/emundus_chat.css")
         $.ajax({
             type: 'POST',
             url: 'index.php?option=com_emundus&controller=messages&task=updatemessages',
-            data : {
-                id : lastId,
-                chatroom : chatroom
+            data: {
+                id: lastId,
+                chatroom: chatroom
             },
             success: function (result) {
                 result = JSON.parse(result);
@@ -99,12 +103,12 @@ JFactory::getDocument()->addStyleSheet("media/com_emundus/css/emundus_chat.css")
                     for (let key in result.messages) {
                         let messageList = $('.message-list');
                         messageList.append('<div class="columns-4 w-row">' +
-                            '<div class="w-col w-col-6">\n'+
-'                              <p class="name-message"><strong>'+result.messages[key].user_from+'</strong> <?= JText::_('NOW'); ?></p>\n'+
-'                              <div class="me">\n'+
-'                                  <p class="chat-message">'+ result.messages[key].message + '</p>\n'+
-'                              </div>\n'+
-'                           </div>' +
+                            '<div class="w-col w-col-6">\n' +
+                            '                              <p class="name-message"><strong>' + result.messages[key].user_from + '</strong> <?= JText::_('NOW'); ?></p>\n' +
+                            '                              <div class="me">\n' +
+                            '                                  <p class="chat-message">' + result.messages[key].message + '</p>\n' +
+                            '                              </div>\n' +
+                            '                           </div>' +
                             '<div class="w-col w-col-6"></div></div>');
 
                         $('#em-messagerie').scrollTop($('#em-messagerie')[0].scrollHeight);
@@ -118,7 +122,7 @@ JFactory::getDocument()->addStyleSheet("media/com_emundus/css/emundus_chat.css")
         });
     }
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         setInterval(updateMessages, 10000);
     });
 
@@ -129,7 +133,7 @@ JFactory::getDocument()->addStyleSheet("media/com_emundus/css/emundus_chat.css")
     }
 
     // Editor loads disabled by default, we apply must toggle it active on page load.
-    $(document).ready(function() {
+    $(document).ready(function () {
         $('#em-messagerie').scrollTop($('#em-messagerie')[0].scrollHeight);
     });
 
@@ -137,13 +141,13 @@ JFactory::getDocument()->addStyleSheet("media/com_emundus/css/emundus_chat.css")
         let message = document.getElementById('Tapez-votre-message-ici').value;
         const chatroom = '<?= $this->chatroom_id; ?>';
 
-        if (message.length !== 0  && strip(message).replace(/\s/g, '').length !== 0) {
+        if (message.length !== 0 && strip(message).replace(/\s/g, '').length !== 0) {
             // remove white spaces
-            message = message.replace(/ &nbsp;/g,'').replace(/&nbsp;/g,'').replace(/&nbsp; /g,'');
+            message = message.replace(/ &nbsp;/g, '').replace(/&nbsp;/g, '').replace(/&nbsp; /g, '');
             $.ajax({
                 type: 'POST',
                 url: 'index.php?option=com_emundus&controller=messages&task=sendChatroomMessage',
-                data : {
+                data: {
                     message: message,
                     chatroom: chatroom
                 },
@@ -152,13 +156,13 @@ JFactory::getDocument()->addStyleSheet("media/com_emundus/css/emundus_chat.css")
                     let contactMessage = document.getElementById('contact-message');
 
                     messageList.append('<div class="columns-4 w-row"></div>' +
-                                             '<div class="w-col w-col-6"></div>\n'+
-                        '                         <div class="w-col w-col-6">\n'+
-            '                                        <p class="name-message"><strong>Moi</strong> <?= JText::_('NOW'); ?></p>\n'+
-            '                                        <div class="me">\n'+
-            '                                            <p class="chat-message">' + message + '</p>\n'+
-            '                                        </div>\n'+
-            '                                    </div>');
+                        '<div class="w-col w-col-6"></div>\n' +
+                        '                         <div class="w-col w-col-6">\n' +
+                        '                                        <p class="name-message"><strong>Moi</strong> <?= JText::_('NOW'); ?></p>\n' +
+                        '                                        <div class="me">\n' +
+                        '                                            <p class="chat-message">' + message + '</p>\n' +
+                        '                                        </div>\n' +
+                        '                                    </div>');
 
                     $('#em-messagerie').scrollTop($('#em-messagerie')[0].scrollHeight);
 
@@ -175,7 +179,7 @@ JFactory::getDocument()->addStyleSheet("media/com_emundus/css/emundus_chat.css")
         }
     }
 
-    document.getElementById("Tapez-votre-message-ici").addEventListener("keyup", function(e) {
+    document.getElementById("Tapez-votre-message-ici").addEventListener("keyup", function (e) {
         e.preventDefault();
         if (e.keyCode === 13) {
             sendMessage();

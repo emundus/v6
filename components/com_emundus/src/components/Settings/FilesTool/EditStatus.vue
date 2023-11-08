@@ -17,14 +17,17 @@
           :class="'draggables-list'"
           @end="updateStatusOrder"
       >
-        <div v-for="(statu, index) in status" class="em-mb-24" :title="'step_' + statu.step"  :key="statu.step" :id="'step_' + statu.step" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
+        <div v-for="(statu, index) in status" class="em-mb-24" :title="'step_' + statu.step" :key="statu.step"
+             :id="'step_' + statu.step" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
           <div class="em-flex-row em-flex-row-start em-w-100">
             <span class="handle em-grab" :style="grab && indexGrab == index ? 'opacity: 1' : 'opacity: 0'">
               <span class="material-icons-outlined">drag_indicator</span>
             </span>
             <div class="status-field">
               <div>
-                <p class="em-p-8-12 em-editable-content" contenteditable="true" :id="'status_label_' + statu.step" @focusout="updateStatus(statu)" @keyup.enter="manageKeyup(statu)" @keydown="checkMaxlength">{{statu.label[actualLanguage]}}</p>
+                <p class="em-p-8-12 em-editable-content" contenteditable="true" :id="'status_label_' + statu.step"
+                   @focusout="updateStatus(statu)" @keyup.enter="manageKeyup(statu)" @keydown="checkMaxlength">
+                  {{ statu.label[actualLanguage] }}</p>
               </div>
               <input type="hidden" :class="'label-' + statu.class">
             </div>
@@ -39,10 +42,13 @@
                   popover-x="left"
                   popover-y="top"
               ></v-swatches>
-              <a type="button" v-if="statu.edit == 1 && statu.step != 0 && statu.step != 1" :title="translate('COM_EMUNDUS_ONBOARD_DELETE_STATUS')" @click="removeStatus(statu,index)" class="em-flex-row em-ml-8 em-pointer">
+              <a type="button" v-if="statu.edit == 1 && statu.step != 0 && statu.step != 1"
+                 :title="translate('COM_EMUNDUS_ONBOARD_DELETE_STATUS')" @click="removeStatus(statu,index)"
+                 class="em-flex-row em-ml-8 em-pointer">
                 <span class="material-icons-outlined em-red-500-color">delete_outline</span>
               </a>
-              <a type="button" v-else :title="translate('COM_EMUNDUS_ONBOARD_CANNOT_DELETE_STATUS')" class="em-flex-row em-ml-8 em-pointer">
+              <a type="button" v-else :title="translate('COM_EMUNDUS_ONBOARD_CANNOT_DELETE_STATUS')"
+                 class="em-flex-row em-ml-8 em-pointer">
                 <span class="material-icons-outlined em-text-neutral-600">delete_outline</span>
               </a>
             </div>
@@ -92,7 +98,7 @@ export default {
 
       status: [],
       show: false,
-      actualLanguage : '',
+      actualLanguage: '',
       swatches: [],
       colors: [],
       variables: null,
@@ -169,7 +175,7 @@ export default {
     },
 
     async updateStatus(status) {
-      this.$emit('updateSaving',true);
+      this.$emit('updateSaving', true);
 
       let index = this.colors.findIndex(item => item.value === status.class);
       const formData = new FormData();
@@ -185,8 +191,8 @@ export default {
             }
           }
       ).then(() => {
-        this.$emit('updateSaving',false);
-        this.$emit('updateLastSaving',this.formattedDate('','LT'));
+        this.$emit('updateSaving', false);
+        this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
       });
     },
 
@@ -196,7 +202,7 @@ export default {
         status_steps.push(statu.step);
       })
 
-      this.$emit('updateSaving',true);
+      this.$emit('updateSaving', true);
 
       const formData = new FormData();
       formData.append('status', status_steps.join(','));
@@ -209,13 +215,13 @@ export default {
             }
           }
       ).then(() => {
-        this.$emit('updateSaving',false);
-        this.$emit('updateLastSaving',this.formattedDate('','LT'));
+        this.$emit('updateSaving', false);
+        this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
       });
     },
 
     pushStatus() {
-      this.$emit('updateSaving',true);
+      this.$emit('updateSaving', true);
 
       axios({
         method: "post",
@@ -229,14 +235,14 @@ export default {
           this.getHexColors(newstatus.data);
         }, 100);
 
-        this.$emit('updateSaving',false);
-        this.$emit('updateLastSaving',this.formattedDate('','LT'));
+        this.$emit('updateSaving', false);
+        this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
       });
     },
 
     removeStatus(status, index) {
-      if(status.edit == 1 && status.step != 0 && status.step != 1) {
-        this.$emit('updateSaving',true);
+      if (status.edit == 1 && status.step != 0 && status.step != 1) {
+        this.$emit('updateSaving', true);
 
         axios({
           method: "post",
@@ -251,35 +257,35 @@ export default {
         }).then(() => {
           this.status.splice(index, 1);
 
-          this.$emit('updateSaving',false);
-          this.$emit('updateLastSaving',this.formattedDate('','LT'));
+          this.$emit('updateSaving', false);
+          this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
         });
       }
     },
 
-    manageKeyup(status){
+    manageKeyup(status) {
       document.getElementById(('status_label_' + status.step)).textContent = document.getElementById(('status_label_' + status.step)).textContent.trim();
       document.activeElement.blur();
     },
 
     getHexColors(element) {
       element.translate = false;
-      element.class = this.variables.getPropertyValue('--em-'+element.class);
+      element.class = this.variables.getPropertyValue('--em-' + element.class);
     },
 
     checkMaxlength(event) {
-      if(event.target.textContent.length === 50 && event.keyCode != 8) {
+      if (event.target.textContent.length === 50 && event.keyCode != 8) {
         event.preventDefault();
       }
     },
 
-    enableGrab(index){
-      if(this.status.length !== 1){
+    enableGrab(index) {
+      if (this.status.length !== 1) {
         this.indexGrab = index;
         this.grab = true;
       }
     },
-    disableGrab(){
+    disableGrab() {
       this.indexGrab = 0;
       this.grab = false;
     },
@@ -287,14 +293,14 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-.status-field{
+.status-field {
   border-radius: 5px;
   width: 100%;
   margin-right: 1em;
   display: flex;
 }
 
-.status-item{
+.status-item {
   display: flex;
   align-items: center;
   justify-content: center;

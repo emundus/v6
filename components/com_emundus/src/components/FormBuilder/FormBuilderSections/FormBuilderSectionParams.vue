@@ -14,7 +14,8 @@
       <textarea v-else-if="param.type === 'textarea'" v-model="section.params[param.name]" class="em-w-100"></textarea>
 
       <!-- INPUT (TEXT,NUMBER) -->
-      <input v-else :type="param.type" v-model="section.params[param.name]" class="em-w-100" :placeholder="translate(param.placeholder)"/>
+      <input v-else :type="param.type" v-model="section.params[param.name]" class="em-w-100"
+             :placeholder="translate(param.placeholder)"/>
 
       <!-- HELPTEXT -->
       <label v-if="param.helptext !== ''" style="font-size: small">{{ translate(param.helptext) }}</label>
@@ -41,14 +42,14 @@ export default {
     loading: false,
   }),
   computed: {
-    sysadmin: function() {
+    sysadmin: function () {
       return parseInt(this.$store.state.global.sysadminAccess);
     },
-	  displayedParams() {
-			return this.params.filter((param) => {
-				return (param.published && !param.sysadmin_only) || (this.sysadmin && param.sysadmin_only && param.published)
-			});
-	  }
+    displayedParams() {
+      return this.params.filter((param) => {
+        return (param.published && !param.sysadmin_only) || (this.sysadmin && param.sysadmin_only && param.published)
+      });
+    }
   }
 }
 </script>

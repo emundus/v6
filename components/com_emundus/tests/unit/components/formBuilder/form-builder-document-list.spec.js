@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import FormBuilderDocumentList from '../../../../src/components/FormBuilder/FormBuilderDocumentList';
 import translate from '../../../mocks/mixins/translate';
 import draggable from 'vuedraggable';
@@ -11,12 +11,12 @@ describe('FormBuilderDocumentList.vue', () => {
     const wrapper = mount(FormBuilderDocumentList, {
         propsData: {
             profile_id: 9,
-            campaign_id:1
+            campaign_id: 1
         },
         localVue
     });
 
-    it ('FormBuilderDocumentList should exist', () => {
+    it('FormBuilderDocumentList should exist', () => {
         expect(wrapper.find('#form-builder-document-list').exists()).toBeTruthy();
     });
 });

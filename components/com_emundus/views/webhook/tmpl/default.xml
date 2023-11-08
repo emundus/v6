@@ -2,7 +2,7 @@
 <metadata>
     <layout title="COM_EMUNDUS_WEBHOOK" option="View">
         <message>
-                        <![CDATA[COM_EMUNDUS_WEBHOOK_DESC]]>
+            <![CDATA[COM_EMUNDUS_WEBHOOK_DESC]]>
         </message>
     </layout>
 

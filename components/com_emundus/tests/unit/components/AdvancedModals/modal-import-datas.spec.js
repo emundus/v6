@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import ModalImportDatas from '../../../../src/components/AdvancedModals/ModalImportDatas';
 import translate from '../../../mocks/mixins/translate';
 import VModal from 'vue-js-modal';
@@ -13,7 +13,7 @@ describe('ModalImportDatas.vue', () => {
         localVue
     });
 
-    it ('ModalImportDatas constructed', () => {
+    it('ModalImportDatas constructed', () => {
         expect(wrapper.find('#modalImportDatas').exists()).toBeTruthy();
     });
 });

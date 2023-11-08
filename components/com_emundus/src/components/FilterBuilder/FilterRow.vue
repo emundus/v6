@@ -9,8 +9,8 @@
 
     <!-- <label for="filter-action">Actions</label> -->
     <select
-      name="filter-action"
-      v-model="selectedAction"
+        name="filter-action"
+        v-model="selectedAction"
     >
       <option v-for="(action, key) in actions" :key="key" :value="key">
         {{ action }}
@@ -19,19 +19,19 @@
 
     <!-- <label for="filter-value">Valeurs</label> -->
     <select
-      v-if="type == 'select'"
-      name="filter-value"
-      v-model="selectedValue"
+        v-if="type == 'select'"
+        name="filter-value"
+        v-model="selectedValue"
     >
       <option v-for="(value, key) in values" :key="key" :value="key">
         {{ value }}
       </option>
     </select>
     <input
-      v-else
-      type="text"
-      name="filter-value"
-      v-model="selectedValue"
+        v-else
+        type="text"
+        name="filter-value"
+        v-model="selectedValue"
     />
 
     <span class="material-icons-outlined delete" @click="removeFilter">
@@ -73,9 +73,9 @@ export default {
     });
 
     if (
-      this.$store.state.queryFilters.groups[this.group] &&
-      this.$store.state.queryFilters.groups[this.group].filters &&
-      this.$store.state.queryFilters.groups[this.group].filters[this.id]
+        this.$store.state.queryFilters.groups[this.group] &&
+        this.$store.state.queryFilters.groups[this.group].filters &&
+        this.$store.state.queryFilters.groups[this.group].filters[this.id]
     ) {
       this.selectedFilter = this.$store.state.queryFilters.groups[this.group].filters[this.id].id;
       this.selectedAction = this.$store.state.queryFilters.groups[this.group].filters[this.id].action;
@@ -109,19 +109,19 @@ export default {
   computed: {
     actions() {
       const filter = this.$store.state.filters.find(
-        (filter) => filter.id == this.selectedFilter
+          (filter) => filter.id == this.selectedFilter
       );
       return filter ? filter.actions : [];
     },
     values() {
       const filter = this.$store.state.filters.find(
-        (filter) => filter.id == this.selectedFilter
+          (filter) => filter.id == this.selectedFilter
       );
       return filter ? filter.values : [];
     },
     type() {
       const filter = this.$store.state.filters.find(
-        (filter) => filter.id == this.selectedFilter
+          (filter) => filter.id == this.selectedFilter
       );
       return filter ? filter.type : null;
     },

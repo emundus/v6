@@ -2,9 +2,10 @@
   <div class="translation">
     <transition :name="'slide-down'" type="transition">
       <div class="inlineflex" style="margin: 25px">
-        <label class="translate-label">{{TranslateIn}}</label>
+        <label class="translate-label">{{ TranslateIn }}</label>
         <select v-model="currentLangTranslation" class="dropdown-toggle ml-10px">
-          <option v-for="language in languages" :key="language.sef" :value="language.sef">{{language.title_native}}</option>
+          <option v-for="language in languages" :key="language.sef" :value="language.sef">{{ language.title_native }}
+          </option>
         </select>
       </div>
     </transition>
@@ -48,9 +49,9 @@ export default {
         url: "index.php?option=com_emundus&controller=settings&task=getactivelanguages"
       }).then(response => {
         this.languages = response.data.data;
-        this.languages.forEach((element,index) => {
-          if(element.sef == this.actualLanguage){
-            this.languages.splice(index,1);
+        this.languages.forEach((element, index) => {
+          if (element.sef == this.actualLanguage) {
+            this.languages.splice(index, 1);
           }
         });
         this.currentLangTranslation = this.languages[0].sef;

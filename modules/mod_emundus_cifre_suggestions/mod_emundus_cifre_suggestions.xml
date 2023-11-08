@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="3.8.11" client="site">
-	<name>CIFRE Suggestions</name>
+    <name>CIFRE Suggestions</name>
     <author>Hugo Moracchini</author>
     <creationDate>August 2018</creationDate>
     <copyright>Copyright (C) 2018 eMundus. All rights reserved.</copyright>
@@ -8,22 +8,23 @@
     <authorEmail>hugo.moracchini@emundus.fr</authorEmail>
     <authorUrl>www.emundus.fr</authorUrl>
     <version>6.0</version>
-	<description>Displays a list of suggested CIFRE offers that may interest the user.</description>
-	<files>
-		<filename module="mod_emundus_cifre_suggestions">mod_emundus_cifre_suggestions.php</filename>
-		<folder>tmpl</folder>
-		<folder>language</folder>
-		<filename>helper.php</filename>
-		<filename>index.html</filename>
-		<filename>mod_emundus_cifre_suggestions.xml</filename>
-	</files>
+    <description>Displays a list of suggested CIFRE offers that may interest the user.</description>
+    <files>
+        <filename module="mod_emundus_cifre_suggestions">mod_emundus_cifre_suggestions.php</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+        <filename>helper.php</filename>
+        <filename>index.html</filename>
+        <filename>mod_emundus_cifre_suggestions.xml</filename>
+    </files>
 
-	<config>
-		<fields name="params">
-			<fieldset name="basic">
-				<field name="intro" type="editor" width="50" filter="safehtml" hide="readmore,pagebreak" default="" label="Intro"/>
-				<field name="nb_suggestions" type="text" default="5" label="Numebr of suggestions"/>
-			</fieldset>
-		</fields>
-	</config>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="intro" type="editor" width="50" filter="safehtml" hide="readmore,pagebreak" default=""
+                       label="Intro"/>
+                <field name="nb_suggestions" type="text" default="5" label="Numebr of suggestions"/>
+            </fieldset>
+        </fields>
+    </config>
 </extension>

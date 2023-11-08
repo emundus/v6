@@ -1,22 +1,22 @@
 <?php
 
 switch ($config['flywire_status']) {
-    case 'initiated':
-        $currentStep = 1;
-        break;
-    case 'guaranteed':
-        $currentStep = 2;
-        break;
-    case 'delivered':
-        $currentStep = 3;
-        break;
-    case 'cancelled':
-        $app->enqueueMessage(JText::_('MOD_EMUNDUS_PAYMENT_FLYWIRE_CANCELLED'));
-        $app->redirect('/');
-        break;
-    default:
-        $currentStep = 0;
-        break;
+	case 'initiated':
+		$currentStep = 1;
+		break;
+	case 'guaranteed':
+		$currentStep = 2;
+		break;
+	case 'delivered':
+		$currentStep = 3;
+		break;
+	case 'cancelled':
+		$app->enqueueMessage(JText::_('MOD_EMUNDUS_PAYMENT_FLYWIRE_CANCELLED'));
+		$app->redirect('/');
+		break;
+	default:
+		$currentStep = 0;
+		break;
 }
 
 $contact = $params['contact_support'];
@@ -25,7 +25,8 @@ $contact = $params['contact_support'];
     <div class="em-flex-row em-flex-space-between">
         <p><?= JText::_('MOD_EMUNDUS_PAYMENT_FLYWIRE_STEPS') ?></p>
         <a href="<?= JFactory::getUri() ?>">
-            <span class="material-icons" title="<?= JText::_('MOD_EMUNDUS_PAYMENT_FLYWIRE_REFRESH_STEPS') ?>">refresh</span>
+            <span class="material-icons"
+                  title="<?= JText::_('MOD_EMUNDUS_PAYMENT_FLYWIRE_REFRESH_STEPS') ?>">refresh</span>
         </a>
     </div>
     <section id="payment-steps">
@@ -46,15 +47,16 @@ $contact = $params['contact_support'];
             </div>
         </div>
     </section>
-    <p><?= JText::_('MOD_EMUNDUS_PAYMENT_FLYWIRE_STEPS_WRONG') . ', '?>
-        <?php if (!empty($contact)) : ?>
+    <p><?= JText::_('MOD_EMUNDUS_PAYMENT_FLYWIRE_STEPS_WRONG') . ', ' ?>
+		<?php if (!empty($contact)) : ?>
             <a href="mailto:<?= $contact; ?>"><?= JText::_('MOD_EMUNDUS_PAYMENT_FLYWIRE_STEPS_CONTACT') . '.' ?></a>
-        <?php else : ?>
-            <?= JText::_('MOD_EMUNDUS_PAYMENT_FLYWIRE_STEPS_CONTACT') . '.' ?>
-        <?php endif; ?>
+		<?php else : ?>
+			<?= JText::_('MOD_EMUNDUS_PAYMENT_FLYWIRE_STEPS_CONTACT') . '.' ?>
+		<?php endif; ?>
     </p>
 
     <div id="payment-actions" class="em-w-100 em-mt-16 em-flex-row-end">
-        <a href="/" class="em-front-btn em-front-primary-btn em-w-33"><?= JText::_('MOD_EMUNDUS_PAYMENT_FLYWIRE_GO_TO_HOMEPAGE') ?></a>
+        <a href="/"
+           class="em-front-btn em-front-primary-btn em-w-33"><?= JText::_('MOD_EMUNDUS_PAYMENT_FLYWIRE_GO_TO_HOMEPAGE') ?></a>
     </div>
 </div>

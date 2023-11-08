@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import Autocomplete from '../../../src/components/autocomplete';
 import translate from '../../mocks/mixins/translate';
 
@@ -15,7 +15,7 @@ describe('Autocomplete.vue', () => {
         localVue
     });
 
-    it ('Autocomplete should exist', () => {
+    it('Autocomplete should exist', () => {
         expect(wrapper.find('.autocomplete').exists()).toBeTruthy();
     });
 });

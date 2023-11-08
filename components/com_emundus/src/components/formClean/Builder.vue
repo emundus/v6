@@ -2,25 +2,25 @@
   <div id="FormBuilder" class="em-mt-16 applicant-form">
     <div>
       <BuilderViewer
-        :object="object"
-        :groups="GroupList"
-        v-if="object_json"
-        :change="this.change"
-        :changedElement="this.changedElement"
-        :changedGroup="this.changedGroup"
-        @show="show"
-        @modalClosed="$emit('modalClosed')"
-        @modalOpen="$emit('modalOpen')"
-        @createGroup="$emit('createGroup')"
-        :UpdateUx="UpdateUx"
-        @UpdateUxf="UpdateUXF"
-        :key="builderViewKey"
-        :files="files"
-        :prid="prid"
-        :eval="eval"
-        :actualLanguage="actualLanguage"
-        :manyLanguages="manyLanguages"
-        ref="builder_viewer"
+          :object="object"
+          :groups="GroupList"
+          v-if="object_json"
+          :change="this.change"
+          :changedElement="this.changedElement"
+          :changedGroup="this.changedGroup"
+          @show="show"
+          @modalClosed="$emit('modalClosed')"
+          @modalOpen="$emit('modalOpen')"
+          @createGroup="$emit('createGroup')"
+          :UpdateUx="UpdateUx"
+          @UpdateUxf="UpdateUXF"
+          :key="builderViewKey"
+          :files="files"
+          :prid="prid"
+          :eval="eval"
+          :actualLanguage="actualLanguage"
+          :manyLanguages="manyLanguages"
+          ref="builder_viewer"
       />
     </div>
   </div>
@@ -38,7 +38,16 @@ const qs = require("qs");
 
 export default {
   name: "Builder",
-  props: { object: Object, UpdateUx: Boolean, rgt: Number, files: Number, prid: String, eval: Number, actualLanguage: String, manyLanguages: Number  },
+  props: {
+    object: Object,
+    UpdateUx: Boolean,
+    rgt: Number,
+    files: Number,
+    prid: String,
+    eval: Number,
+    actualLanguage: String,
+    manyLanguages: Number
+  },
   components: {
     draggable,
     BuilderViewer,
@@ -83,15 +92,15 @@ export default {
     show(group, type, text, title) {
       this.$emit("show", group, type, text, title);
     },
-    Initialised: function() {
+    Initialised: function () {
       for (var group in this.GroupsObject) {
         let IndexTable = this.object.rgt + "_" + this.GroupsObject[group].group_id;
         this.ElementList[IndexTable] = Object.values(
-          this.GroupsObject[group].elements
+            this.GroupsObject[group].elements
         );
       }
     },
-    deleteAMenu(mid){
+    deleteAMenu(mid) {
       Swal.fire({
         title: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEMENU"),
         text: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEMENUWARNING"),
@@ -107,7 +116,7 @@ export default {
           axios({
             method: "post",
             url:
-                    "index.php?option=com_emundus&controller=formbuilder&task=deleteMenu",
+                "index.php?option=com_emundus&controller=formbuilder&task=deleteMenu",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -130,11 +139,11 @@ export default {
         }
       });
     },
-    async updateOrder(gid,elts){
-      await this.$refs.builder_viewer.updateElementsOrder(gid,elts);
+    async updateOrder(gid, elts) {
+      await this.$refs.builder_viewer.updateElementsOrder(gid, elts);
     },
 
-    getDataObject: function() {
+    getDataObject: function () {
       this.object_json = this.object.object;
       this.GroupList = Object.values(this.object_json.Groups);
       this.GroupsObject = this.object_json.Groups;
@@ -142,20 +151,20 @@ export default {
     }
   },
   created() {
-    if(!_.isEmpty(this.object.object)){
+    if (!_.isEmpty(this.object.object)) {
       this.getDataObject();
     }
   },
   watch: {
-    object: function() {
+    object: function () {
       this.getDataObject();
     },
-    update: function() {
+    update: function () {
       if (this.update === true) {
         this.getDataObject();
       }
     },
-    UpdateUx: function() {
+    UpdateUx: function () {
       if (this.UpdateUx === true) {
         this.UpdateUXT();
       }
@@ -165,7 +174,7 @@ export default {
 </script>
 
 <style scoped>
-  #FormBuilder{
-    margin-bottom: unset !important;
-  }
+#FormBuilder {
+  margin-bottom: unset !important;
+}
 </style>

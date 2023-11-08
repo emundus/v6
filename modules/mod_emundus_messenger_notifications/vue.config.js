@@ -6,16 +6,16 @@ module.exports = {
     assetsDir: '../mod_emundus_messenger_notifications',
 
     css: {
-      modules: false,
-      extract: {
-        filename: '[name].css',
-        chunkFilename: '[name].css',
-      },
+        modules: false,
+        extract: {
+            filename: '[name].css',
+            chunkFilename: '[name].css',
+        },
     },
     configureWebpack: {
-      output: {
-        filename: '[name].js',
-        chunkFilename: '[name].js',
-      },
+        output: {
+            filename: '[name].js',
+            chunkFilename: '[name].js',
+        },
     },
 };

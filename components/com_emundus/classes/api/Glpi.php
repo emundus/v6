@@ -1,10 +1,10 @@
 <?php
 /**
- * @package     com_emundus
- * @subpackage  api
- * @author    eMundus.fr
+ * @package       com_emundus
+ * @subpackage    api
+ * @author        eMundus.fr
  * @copyright (C) 2022 eMundus SOFTWARE. All rights reserved.
- * @license    GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
+ * @license       GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
  */
 
 namespace classes\api;
@@ -29,15 +29,14 @@ class Glpi extends Api
 		$this->setClient();
 		$this->setAuth();
 		$this->setHeaders();
-		if(!empty($entities))
-		{
+		if (!empty($entities)) {
 			$this->setEntities($entities);
 		}
 	}
 
 	public function setBaseUrl(): void
 	{
-		$config = ComponentHelper::getParams('com_emundus');
+		$config        = ComponentHelper::getParams('com_emundus');
 		$this->baseUrl = $config->get('glpi_api_base_url', '');
 	}
 
@@ -46,7 +45,7 @@ class Glpi extends Api
 		$auth = $this->getAuth();
 
 		$this->headers = array(
-			'App-Token' => $auth['app_token'],
+			'App-Token'     => $auth['app_token'],
 			'Session-token' => $auth['session_token'],
 		);
 	}
@@ -55,18 +54,17 @@ class Glpi extends Api
 	{
 		$config = ComponentHelper::getParams('com_emundus');
 
-		$this->auth['app_token'] = $config->get('glpi_api_app_token', '');
-		$this->auth['user_token'] = $config->get('glpi_api_user_token', '');
+		$this->auth['app_token']     = $config->get('glpi_api_app_token', '');
+		$this->auth['user_token']    = $config->get('glpi_api_user_token', '');
 		$this->auth['session_token'] = $this->getSessionToken();
 	}
 
 	private function getSessionToken(): string
 	{
-		$session = Factory::getApplication()->getSession();
+		$session            = Factory::getApplication()->getSession();
 		$glpi_session_token = $session->get('glpi_session_token', '');
 
-		if(empty($glpi_session_token))
-		{
+		if (empty($glpi_session_token)) {
 			$auth = $this->getAuth();
 
 			$this->headers = array(
@@ -76,8 +74,7 @@ class Glpi extends Api
 
 			$response = $this->get('initSession');
 
-			if ($response['status'] == 200)
-			{
+			if ($response['status'] == 200) {
 				$session->set('glpi_session_token', $response['data']->session_token);
 
 				$glpi_session_token = $response['data']->session_token;
@@ -89,17 +86,16 @@ class Glpi extends Api
 
 	private function setEntities($entities): void
 	{
-		if(!empty($entities))
-		{
+		if (!empty($entities)) {
 			$body = array();
-			array_map(function($entity) use (&$body) {
+			array_map(function ($entity) use (&$body) {
 				$body[] = array(
-					'entities_id' => $entity,
+					'entities_id'  => $entity,
 					'is_recursive' => true
 				);
 			}, $entities);
 
-			$this->post('changeActiveEntities',json_encode($body));
+			$this->post('changeActiveEntities', json_encode($body));
 		}
 	}
 
@@ -108,8 +104,7 @@ class Glpi extends Api
 		$response = $this->get('getMyEntities');
 
 		$entities = array();
-		if($response['status'] == 200)
-		{
+		if ($response['status'] == 200) {
 			$entities = $response['data']->myentities;
 		}
 
@@ -122,33 +117,30 @@ class Glpi extends Api
 
 		$session = Factory::getApplication()->getSession();
 
-		try
-		{
-			$url_params = http_build_query($params);
+		try {
+			$url_params   = http_build_query($params);
 			$complete_url = !empty($url_params) ? $url . '?' . $url_params : $url;
-			if(!empty($complete_url))
-			{
-				$complete_url = $this->baseUrl.'/'.$complete_url;
-			} else {
+			if (!empty($complete_url)) {
+				$complete_url = $this->baseUrl . '/' . $complete_url;
+			}
+			else {
 				$complete_url = $this->baseUrl;
 			}
 
-			$request = $this->client->get($complete_url, ['headers' => $this->getHeaders()]);
+			$request            = $this->client->get($complete_url, ['headers' => $this->getHeaders()]);
 			$response['status'] = $request->getStatusCode();
-			$response['data'] = json_decode($request->getBody());
+			$response['data']   = json_decode($request->getBody());
 
-			if($response['status'] == 401 && $retry)
-			{
+			if ($response['status'] == 401 && $retry) {
 				$session->clear('glpi_session_token');
 				$this->setAuth();
 				$this->setHeaders();
 				$this->get($url, $params, false);
 			}
 		}
-		catch (\Exception $e)
-		{
+		catch (\Exception $e) {
 			JLog::add('[GET] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.api');
-			$response['status'] = $e->getCode();
+			$response['status']  = $e->getCode();
 			$response['message'] = $e->getMessage();
 		}
 
@@ -163,7 +155,7 @@ class Glpi extends Api
 	 */
 	public function listSearchOptions($table): array
 	{
-		return $this->get('listSearchOptions/'.$table);
+		return $this->get('listSearchOptions/' . $table);
 	}
 
 	/**
@@ -178,11 +170,11 @@ class Glpi extends Api
 	 */
 	public function search($table, $criterias = [], $forcedisplay = [], $range = '0-100'): array
 	{
-		return $this->get('search/'.$table,
+		return $this->get('search/' . $table,
 			[
-				'criteria' => $criterias,
+				'criteria'     => $criterias,
 				'forcedisplay' => $forcedisplay,
-				'range' => $range
+				'range'        => $range
 			]
 		);
 	}
@@ -211,6 +203,6 @@ class Glpi extends Api
 	 */
 	public function deleteItem($table, $id, $force_purge = false): array
 	{
-		return $this->delete($table.'/'.$id.'?force_purge='.$force_purge);
+		return $this->delete($table . '/' . $id . '?force_purge=' . $force_purge);
 	}
 }

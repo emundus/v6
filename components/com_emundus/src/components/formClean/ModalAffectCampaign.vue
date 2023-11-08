@@ -15,7 +15,7 @@
     >
       <div class="em-flex-row em-flex-space-between em-mb-16">
         <h4>
-          {{translations.affectCampaigns}}
+          {{ translations.affectCampaigns }}
         </h4>
         <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalAffectCampaign')">
           <span class="material-icons-outlined">close</span>
@@ -23,12 +23,12 @@
       </div>
 
       <div>
-        <p v-if="campaigns.length === 0" class="em-mb-16">{{translations.campaignsEmpty}}</p>
+        <p v-if="campaigns.length === 0" class="em-mb-16">{{ translations.campaignsEmpty }}</p>
         <div class="em-mb-16">
           <div v-for="(campaign, index) in campaigns" :key="index" class="user-item">
               <input type="checkbox" class="form-check-input bigbox" v-model="affectedCampaigns[campaign.id]">
               <div class="ml-10px">
-                  <p>{{campaign.label}}</p>
+                  <p>{{ campaign.label }}</p>
               </div>
           </div>
         </div>
@@ -53,7 +53,7 @@
                 type="button"
                 class="em-tertiary-button em-w-auto"
                 @click.prevent="goAddCampaign">
-          {{translations.addCampaign}}
+          {{ translations.addCampaign }}
         </button>
       </div>
     </modal>
@@ -62,17 +62,18 @@
 
 <script>
 import axios from "axios";
+
 const qs = require("qs");
 
 export default {
   name: "modalAffectCampaign",
-  props: { prid: String, testing: Boolean },
+  props: {prid: String, testing: Boolean},
   data() {
     return {
       campaigns: [],
       affectedCampaigns: [],
       searchTerm: '',
-      translations:{
+      translations: {
         Continuer: this.translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
         affectCampaigns: this.translate("COM_EMUNDUS_ONBOARD_FORM_AFFECTCAMPAIGNS"),
         campaignsEmpty: this.translate("COM_EMUNDUS_ONBOARD_FORM_CAMPAIGNSEMPTY"),
@@ -89,7 +90,7 @@ export default {
     },
     affectToForm() {
       let campaigns = [];
-      if(this.affectedCampaigns.length > 0) {
+      if (this.affectedCampaigns.length > 0) {
         this.campaigns.forEach(campaign => {
           if (this.affectedCampaigns[campaign.id]) {
             campaigns.push(campaign.id);
@@ -106,17 +107,17 @@ export default {
             campaigns: campaigns
           })
         }).then(() => {
-          if(!this.testing) {
+          if (!this.testing) {
             window.location.href = 'index.php?option=com_emundus&view=form';
           } else {
-            if(campaigns.length > 0){
+            if (campaigns.length > 0) {
               this.$emit("testForm");
               this.$modal.hide('modalAffectCampaign');
             }
           }
         });
       } else {
-        if(!this.testing) {
+        if (!this.testing) {
           window.location.href = 'index.php?option=com_emundus&view=form';
         } else {
           this.$modal.hide('modalAffectCampaign');
@@ -163,24 +164,27 @@ export default {
   font-size: 15px;
   overflow: auto;
 }
+
 .topright {
   font-size: 25px;
   float: right;
 }
+
 .btnCloseModal {
   background-color: inherit;
 }
-.update-field-header{
+
+.update-field-header {
   margin-bottom: 1em;
 }
 
-.update-title-header{
+.update-title-header {
   margin-top: 0;
   display: flex;
   align-items: center;
 }
 
-.user-item{
+.user-item {
   display: flex;
   padding: 10px;
   background-color: #f0f0f0;
@@ -189,22 +193,23 @@ export default {
   margin-bottom: 1em;
 }
 
-.bigbox{
+.bigbox {
   height: 30px !important;
   width: 30px !important;
   cursor: pointer;
 }
 
-.campaigns-list{
+.campaigns-list {
   max-height: 50vh;
   margin-top: 15%;
 }
 
-.wrap{
+.wrap {
   position: fixed;
   width: 22%;
 }
-.searchButton{
+
+.searchButton {
   height: 50px;
   background: transparent;
   margin-left: 12px;

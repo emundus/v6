@@ -8,7 +8,8 @@
  */
 
 use PHPUnit\Framework\TestCase;
-ini_set( 'display_errors', false );
+
+ini_set('display_errors', false);
 error_reporting(E_ALL);
 define('_JEXEC', 1);
 define('DS', DIRECTORY_SEPARATOR);
@@ -21,7 +22,7 @@ include_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
 include_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
 
 jimport('joomla.user.helper');
-jimport( 'joomla.application.application' );
+jimport('joomla.application.application');
 jimport('joomla.plugin.helper');
 
 // set global config --> initialize Joomla Application with default param 'site'
@@ -29,26 +30,26 @@ JFactory::getApplication('site');
 
 class EmundusModelEmailsTest extends TestCase
 {
-    private $m_emails;
+	private $m_emails;
 
 	private $h_sample;
 
-    public function __construct(?string $name = null, array $data = [], $dataName = '')
-    {
-        parent::__construct($name, $data, $dataName);
-	    $app = JFactory::getApplication();
-	    $this->h_sample = new EmundusUnittestHelperSamples;
-	    $username = 'test-expert-email-' . rand(0, 1000) . '@emundus.fr';
-	    $this->h_sample->createSampleUser(9, $username);
-	    $logged_in = $app->login([
-		    'username' => $username,
-		    'password' => 'test1234'
-	    ]);
+	public function __construct(?string $name = null, array $data = [], $dataName = '')
+	{
+		parent::__construct($name, $data, $dataName);
+		$app            = JFactory::getApplication();
+		$this->h_sample = new EmundusUnittestHelperSamples;
+		$username       = 'test-expert-email-' . rand(0, 1000) . '@emundus.fr';
+		$this->h_sample->createSampleUser(9, $username);
+		$logged_in = $app->login([
+			'username' => $username,
+			'password' => 'test1234'
+		]);
 
-	    $m_profile = new EmundusModelProfile();
-	    $m_profile->initEmundusSession();
-        $this->m_emails = new EmundusModelEmails;
-    }
+		$m_profile = new EmundusModelProfile();
+		$m_profile->initEmundusSession();
+		$this->m_emails = new EmundusModelEmails;
+	}
 
 	public function testFoo()
 	{
@@ -61,7 +62,7 @@ class EmundusModelEmailsTest extends TestCase
 		$this->assertNotEmpty($data);
 
 		// select one email with type 1
-		$system_emails = array_filter($data['datas'], function($email) {
+		$system_emails = array_filter($data['datas'], function ($email) {
 			return $email->type == 1;
 		});
 
@@ -75,13 +76,13 @@ class EmundusModelEmailsTest extends TestCase
 	public function testCreateEmail()
 	{
 		$data = [
-			'lbl' => 'Test de la création',
-			'subject' => 'Test de la création',
-			'name' => '',
+			'lbl'       => 'Test de la création',
+			'subject'   => 'Test de la création',
+			'name'      => '',
 			'emailfrom' => '',
-			'message' => '<p>Test de la création</p>',
-			'type' => 2,
-			'category' => '',
+			'message'   => '<p>Test de la création</p>',
+			'type'      => 2,
+			'category'  => '',
 			'published' => 1
 		];
 
@@ -98,15 +99,15 @@ class EmundusModelEmailsTest extends TestCase
 
 	public function testDeleteEmails()
 	{
-		$lbl = 'Test de la suppression ' . rand(0, 1000);
+		$lbl  = 'Test de la suppression ' . rand(0, 1000);
 		$data = [
-			'lbl' => $lbl,
-			'subject' => 'Test de la création',
-			'name' => 'Test de la création',
+			'lbl'       => $lbl,
+			'subject'   => 'Test de la création',
+			'name'      => 'Test de la création',
 			'emailfrom' => '',
-			'message' => '<p>Test de la création</p>',
-			'type' => 2,
-			'category' => '',
+			'message'   => '<p>Test de la création</p>',
+			'type'      => 2,
+			'category'  => '',
 			'published' => 1
 		];
 
@@ -127,20 +128,20 @@ class EmundusModelEmailsTest extends TestCase
 		$this->assertEmpty($response['sent'], 'L\'envoi de l\'email a échoué, car il manque des paramètres');
 
 		$params = [
-			'mail_from' => '',
+			'mail_from'      => '',
 			'mail_from_name' => '',
-			'mail_subject' => '',
-			'mail_body' => '',
-			'fnums' => []
+			'mail_subject'   => '',
+			'mail_body'      => '',
+			'fnums'          => []
 		];
 
-		$app = JFactory::getApplication();
+		$app    = JFactory::getApplication();
 		$jinput = $app->input;
 
-		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-		$program = $this->h_sample->createSampleProgram();
+		$user_id     = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$program     = $this->h_sample->createSampleProgram();
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
-		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+		$fnum        = $this->h_sample->createSampleFile($campaign_id, $user_id);
 
 		$response = $this->m_emails->sendExpertMail([$fnum]);
 		$this->assertEmpty($response['sent'], 'L\'envoi de l\'email a échoué, car il manque des paramètres');

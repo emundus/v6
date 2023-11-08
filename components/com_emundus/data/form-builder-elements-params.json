@@ -4,7 +4,7 @@
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE",
       "name": "password",
       "type": "dropdown",
-      "options" : [
+      "options": [
         {
           "value": 0,
           "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_TEXT"
@@ -61,7 +61,7 @@
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_DISPLAY_LABEL",
       "name": "textarea_showlabel",
       "type": "dropdown",
-      "options" : [
+      "options": [
         {
           "value": 0,
           "label": "JNO"
@@ -89,7 +89,7 @@
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_WYSIWIG",
       "name": "use_wysiwyg",
       "type": "dropdown",
-      "options" : [
+      "options": [
         {
           "value": 0,
           "label": "JNO"
@@ -117,7 +117,7 @@
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_SHOWMAX_LIMIT",
       "name": "textarea-showmax",
       "type": "dropdown",
-      "options" : [
+      "options": [
         {
           "value": 0,
           "label": "JNO"
@@ -136,7 +136,7 @@
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_LIMIT_TYPE",
       "name": "textarea_limit_type",
       "type": "dropdown",
-      "options" : [
+      "options": [
         {
           "value": "char",
           "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_LIMIT_TYPE_CHARACTERS"
@@ -206,7 +206,7 @@
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_ADVANCED",
       "name": "advanced_behavior",
       "type": "dropdown",
-      "options" : [
+      "options": [
         {
           "value": 0,
           "label": "JNO"
@@ -225,7 +225,7 @@
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_LIST_METHOD",
       "name": "birthday_yearopt",
       "type": "dropdown",
-      "options" : [
+      "options": [
         {
           "value": "number",
           "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_LIST_METHOD_YEARS_NUMBER"
@@ -262,7 +262,7 @@
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT",
       "name": "list_date_format",
       "type": "dropdown",
-      "options" : [
+      "options": [
         {
           "value": "d.m.Y",
           "label": "21.12.2022"
@@ -300,7 +300,7 @@
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_YESNO_DEFAULT_VALUE",
       "name": "yesno_default",
       "type": "dropdown",
-      "options" : [
+      "options": [
         {
           "value": 0,
           "label": "JNO"
@@ -341,7 +341,7 @@
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_DISPLAY_TYPE",
       "name": "database_join_display_type",
       "type": "dropdown",
-      "options" : [
+      "options": [
         {
           "value": "dropdown",
           "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_DISPLAY_TYPE_DROPDOWN"
@@ -400,7 +400,7 @@
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_SHOW_PLEASE_SELECT",
       "name": "database_join_show_please_select",
       "type": "dropdown",
-      "options" : [
+      "options": [
         {
           "value": 0,
           "label": "JNO"
@@ -428,7 +428,7 @@
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_WHERE_AJAX",
       "name": "databasejoin_where_ajax",
       "type": "dropdown",
-      "options" : [
+      "options": [
         {
           "value": 0,
           "label": "JNO"
@@ -458,7 +458,7 @@
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_CALENDAR_DEFAULT_TODAY",
       "name": "date_defaulttotoday",
       "type": "dropdown",
-      "options" : [
+      "options": [
         {
           "value": 0,
           "label": "JNO"
@@ -477,7 +477,7 @@
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_CALENDAR_FIRST_DAY",
       "name": "date_firstday",
       "type": "dropdown",
-      "options" : [
+      "options": [
         {
           "value": 0,
           "label": "COM_EMUNDUS_ONBOARD_BUILDER_CALENDAR_SUNDAY"
@@ -508,20 +508,17 @@
       "name": "all_currencies_options",
       "type": "subform",
       "min": 1,
-
       "helptext": "",
       "placeholder": "",
       "published": true,
       "sysadmin_only": false,
-
       "subparams": [
         {
           "name": "iso3",
           "type": "sql",
-          "label":"COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_CURRENCY",
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_CURRENCY",
           "value_field": "label",
           "key_field": "iso3",
-
           "plugin_name": "currency",
           "placeholder": "",
           "helptext": "",
@@ -537,7 +534,6 @@
           "max": 99999999.98,
           "default": 0.00,
           "step": 1,
-
           "placeholder": "",
           "helptext": "",
           "published": true,
@@ -552,7 +548,6 @@
           "max": 99999999.99,
           "default": 10000.00,
           "step": 1,
-
           "placeholder": "",
           "helptext": "",
           "published": true,
@@ -565,7 +560,6 @@
           "maxlength": 1,
           "size": 3,
           "default": " ",
-
           "placeholder": "",
           "helptext": "",
           "published": true,
@@ -579,7 +573,6 @@
           "maxlength": 1,
           "size": 1,
           "default": ",",
-
           "placeholder": "",
           "helptext": "",
           "published": true,
@@ -594,7 +587,6 @@
           "max": 10,
           "min": 0,
           "default": 2,
-
           "placeholder": "",
           "helptext": "",
           "published": true,

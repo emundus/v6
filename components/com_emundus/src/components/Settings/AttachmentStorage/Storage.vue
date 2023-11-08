@@ -4,27 +4,32 @@
 
     <table>
       <thead>
-        <tr>
-          <th>{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_DOCTYPE') }}</th>
-          <th>{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_STATUS') }}</th>
-          <th>{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_STORAGE_TYPE') }}</th>
-          <th>{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_SYNCHRO') }}</th>
-        </tr>
-        <tr v-for="document in documents">
-          <td @click="openAttachmentParameters(document)">{{document.value}}</td>
-          <td></td>
-          <td>
-            <select class="em-mr-8 em-clear-dropdown" v-model="document.sync" @change="updateSync(document.id,document.sync)">
-              <option :value="type.value" v-for="type in syncTypes">{{ translate(type.label) }}</option>
-            </select>
-          </td>
-          <td>
-            <select class="em-mr-8 em-clear-dropdown" v-if="document.sync != 0" v-model="document.sync_method" @change="updateSyncMethod(document.id,document.sync_method)">
-              <option :value="'write'" selected>{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_SYNC_WRITE') }}</option>
-              <option :value="'read'">{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_SYNC_READ') }}</option>
-            </select>
-          </td>
-        </tr>
+      <tr>
+        <th>{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_DOCTYPE') }}</th>
+        <th>{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_STATUS') }}</th>
+        <th>{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_STORAGE_TYPE') }}</th>
+        <th>{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_SYNCHRO') }}</th>
+      </tr>
+      <tr v-for="document in documents">
+        <td @click="openAttachmentParameters(document)">{{ document.value }}</td>
+        <td></td>
+        <td>
+          <select class="em-mr-8 em-clear-dropdown" v-model="document.sync"
+                  @change="updateSync(document.id,document.sync)">
+            <option :value="type.value" v-for="type in syncTypes">{{ translate(type.label) }}</option>
+          </select>
+        </td>
+        <td>
+          <select class="em-mr-8 em-clear-dropdown" v-if="document.sync != 0" v-model="document.sync_method"
+                  @change="updateSyncMethod(document.id,document.sync_method)">
+            <option :value="'write'" selected>{{
+                translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_SYNC_WRITE')
+              }}
+            </option>
+            <option :value="'read'">{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_SYNC_READ') }}</option>
+          </select>
+        </td>
+      </tr>
       </thead>
     </table>
 
@@ -66,27 +71,27 @@ export default {
   mounted() {
     this.syncTypes = syncs['sync_type'];
   },
-  created(){
+  created() {
     syncService.getDocuments().then((response) => {
       this.documents = response.data.data;
     });
   },
-  methods:{
-    updateSync(did,sync){
-      this.$emit('updateSaving',true);
-      syncService.updateSync(did,sync).then(() => {
-        this.$emit('updateSaving',false);
-        this.$emit('updateLastSaving',this.formattedDate('','LT'));
+  methods: {
+    updateSync(did, sync) {
+      this.$emit('updateSaving', true);
+      syncService.updateSync(did, sync).then(() => {
+        this.$emit('updateSaving', false);
+        this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
       })
     },
-    updateSyncMethod(did,sync_method){
-      this.$emit('updateSaving',true);
-      syncService.updateSyncMethod(did,sync_method).then(() => {
-        this.$emit('updateSaving',false);
-        this.$emit('updateLastSaving',this.formattedDate('','LT'));
+    updateSyncMethod(did, sync_method) {
+      this.$emit('updateSaving', true);
+      syncService.updateSyncMethod(did, sync_method).then(() => {
+        this.$emit('updateSaving', false);
+        this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
       })
     },
-    openAttachmentParameters(document){
+    openAttachmentParameters(document) {
       this.selectedDocument = document;
       this.$modal.show('attachmentParameters');
     }
@@ -95,17 +100,19 @@ export default {
 </script>
 
 <style scoped>
-table{
+table {
   border: unset;
 }
-th{
+
+th {
   background: unset;
   border-bottom: 2px solid #ddd;
   border-top: unset;
   border-right: unset;
   border-left: unset;
 }
-td{
+
+td {
   border-bottom: 1px solid #ddd;
   border-top: unset;
   border-right: unset;
@@ -113,11 +120,13 @@ td{
   padding-bottom: 16px;
   padding-top: 16px;
 }
-.em-clear-dropdown{
+
+.em-clear-dropdown {
   border: unset;
   height: auto;
 }
-.em-clear-dropdown:focus{
+
+.em-clear-dropdown:focus {
   outline: unset;
   background: #E3E5E8;
 }

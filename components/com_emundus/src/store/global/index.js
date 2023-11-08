@@ -22,10 +22,10 @@ const getters = {
 };
 
 const actions = {
-    setLang({ commit }, lang) {
+    setLang({commit}, lang) {
         commit('setLang', lang);
     },
-    setAnonyme({ commit }, anonyme) {
+    setAnonyme({commit}, anonyme) {
         commit('setAnonyme', anonyme);
     },
 };

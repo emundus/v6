@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import FormBuilderElementProperties from '../../../../src/components/FormBuilder/FormBuilderElementProperties';
 import translate from '../../../mocks/mixins/translate';
 import store from '../../../../src/store/index';
@@ -21,7 +21,7 @@ describe('FormBuilderElementProperties.vue', () => {
         store
     });
 
-    it ('FormBuilderElementProperties should exist', () => {
+    it('FormBuilderElementProperties should exist', () => {
         expect(wrapper.find('#form-builder-element-properties').exists()).toBeTruthy();
     });
 });

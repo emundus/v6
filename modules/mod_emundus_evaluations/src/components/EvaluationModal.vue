@@ -7,7 +7,8 @@
       styles="display:flex;flex-direction:column;justify-content:center;align-items:center;"
   >
     <div class="em-modal-header em-w-100">
-      <div class="em-flex-row em-pointer" id="evaluation-modal-close" @click="$emit('reload-list');$modal.hide('evaluation-modal')">
+      <div class="em-flex-row em-pointer" id="evaluation-modal-close"
+           @click="$emit('reload-list');$modal.hide('evaluation-modal')">
         <div class="em-w-max-content em-flex-row">
           <span class="material-icons-outlined">arrow_back</span>
           <span class="em-ml-8">{{ translate('MOD_EMUNDUS_EVALUATIONS_BACK') }}</span>
@@ -23,8 +24,11 @@
         <template #left>
           <div id="modal-applicationform">
             <div class="em-p-16-0">
-              <h3 class="em-w-100 em-flex-row em-flex-center">{{ translate('MOD_EMUNDUS_EVALUATIONS_APPLICATION_FORM')}}</h3>
-              <button class="btn btn-primary em-ml-16" @click="exportFile">{{ translate('MOD_EMUNDUS_EVALUATIONS_APPLICATION_DOWNLOAD')}}</button>
+              <h3 class="em-w-100 em-flex-row em-flex-center">
+                {{ translate('MOD_EMUNDUS_EVALUATIONS_APPLICATION_FORM') }}</h3>
+              <button class="btn btn-primary em-ml-16" @click="exportFile">
+                {{ translate('MOD_EMUNDUS_EVALUATIONS_APPLICATION_DOWNLOAD') }}
+              </button>
             </div>
             <div class="scrollable">
               <div v-html="applicationform"></div>
@@ -40,8 +44,10 @@
                   </tr>
                   </thead>
                   <tbody>
-                  <tr v-for="attachment in attachments" class="file-row em-pointer" :key="attachment.id" @click="downloadAttachment(attachment)">
-                    <td class="td-file" v-for="column in activeAttachmentColumns" :key="column.name" :id="'value_'+column.name">
+                  <tr v-for="attachment in attachments" class="file-row em-pointer" :key="attachment.id"
+                      @click="downloadAttachment(attachment)">
+                    <td class="td-file" v-for="column in activeAttachmentColumns" :key="column.name"
+                        :id="'value_'+column.name">
                       <span v-if="column.name === 'timedate'">{{ formattedDate(attachment[column.name]) }}</span>
                       <a v-else-if="column.name === 'value'" style="text-decoration: underline;">
                         {{ attachment[column.name] }}
@@ -59,9 +65,12 @@
         <template #right>
           <div id="modal-evaluationgrid">
             <div class="em-p-16-0">
-              <h3 class="em-w-100 em-flex-row em-flex-center">{{ translate('MOD_EMUNDUS_EVALUATIONS_EVALUATION_GRID') }}</h3>
+              <h3 class="em-w-100 em-flex-row em-flex-center">{{
+                  translate('MOD_EMUNDUS_EVALUATIONS_EVALUATION_GRID')
+                }}</h3>
             </div>
-            <iframe :src="url" class="iframe-evaluation" @load="loading = false;" id="iframe-evaluation" title="Evaluation form" />
+            <iframe :src="url" class="iframe-evaluation" @load="loading = false;" id="iframe-evaluation"
+                    title="Evaluation form"/>
             <div class="em-page-loader" v-if="loading"></div>
           </div>
         </template>
@@ -115,7 +124,7 @@ export default {
   data: () => ({
     applicationform: '',
     attachments: '',
-    attachments_column:[
+    attachments_column: [
       {
         label: 'MOD_EMUNDUS_EVALUATIONS_ATTACHMENT_NAME',
         name: 'value',
@@ -147,16 +156,16 @@ export default {
     this.current_user = this.$store.state.user.currentUser;
   },
   methods: {
-    getApplicationForm(){
+    getApplicationForm() {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus&view=application&format=raw&layout=form&fnum="+this.file.fnum,
+        url: "index.php?option=com_emundus&view=application&format=raw&layout=form&fnum=" + this.file.fnum,
       }).then(response => {
         this.applicationform = response.data;
       });
     },
 
-    async getAttachments(){
+    async getAttachments() {
       const response = await attachmentService.getAttachmentsByFnum(this.$props.file.fnum);
 
       if (response.status) {
@@ -164,12 +173,12 @@ export default {
       }
     },
 
-    downloadAttachment(attachment){
-      let url = '/images/emundus/files/'+this.student_id+'/'+attachment.filename;
+    downloadAttachment(attachment) {
+      let url = '/images/emundus/files/' + this.student_id + '/' + attachment.filename;
       window.open(url, '_blank');
     },
 
-    exportFile(){
+    exportFile() {
       const formData = new FormData();
       formData.append('student_id', this.student_id);
       formData.append('fnum', this.$props.file.fnum);
@@ -183,7 +192,7 @@ export default {
       })
     },
 
-    getEvaluationForm(){
+    getEvaluationForm() {
       if (this.$props.file.id != null) {
         this.rowid = this.$props.file.id;
       }
@@ -192,7 +201,7 @@ export default {
       }
       let view = this.$props.readonly ? 'details' : 'form';
 
-      this.url = 'index.php?option=com_fabrik&c=form&view=' + view + '&formid='+this.$props.evaluation_form+'&rowid='+this.rowid+'&jos_emundus_evaluations___student_id[value]='+this.student_id+'&jos_emundus_evaluations___campaign_id[value]='+this.$props.file.campaign_id+'&jos_emundus_evaluations___fnum[value]='+this.$props.file.fnum+'&student_id='+this.student_id+'&tmpl=component&iframe=1'
+      this.url = 'index.php?option=com_fabrik&c=form&view=' + view + '&formid=' + this.$props.evaluation_form + '&rowid=' + this.rowid + '&jos_emundus_evaluations___student_id[value]=' + this.student_id + '&jos_emundus_evaluations___campaign_id[value]=' + this.$props.file.campaign_id + '&jos_emundus_evaluations___fnum[value]=' + this.$props.file.fnum + '&student_id=' + this.student_id + '&tmpl=component&iframe=1'
     },
   },
 
@@ -207,12 +216,13 @@ export default {
 </script>
 
 <style lang="scss">
-.modal-grid{
+.modal-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-gap: 16px;
   width: 100%;
   height: 100vh;
+
   #modal-applicationform {
     grid-column: 1;
 
@@ -232,46 +242,54 @@ export default {
       }
     }
   }
-  #modal-evaluationgrid{
+
+  #modal-evaluationgrid {
     grid-column: 2;
     padding-right: 16px;
     height: 90vh;
     margin-left: 48px;
   }
 }
-.em-modal-header{
+
+.em-modal-header {
   padding: 24px;
 }
-.holds-iframe{
+
+.holds-iframe {
   display: none;
 }
-#iframe{
+
+#iframe {
   height: 100vh;
   overflow-y: scroll;
   overflow-x: hidden;
 }
-.em-container-form-heading{
+
+.em-container-form-heading {
   display: none;
 }
-.iframe-evaluation{
+
+.iframe-evaluation {
   width: 100%;
   height: 100%;
   border: unset;
 }
-.w--current{
+
+.w--current {
   background: #E3E3E3;
 }
-.nav-tabs > li > a:hover{
+
+.nav-tabs > li > a:hover {
   color: black;
 }
 
-#em-attachments  {
+#em-attachments {
   .head, .category-select {
     display: none !important;
   }
 
   .table-wrapper {
-    .date, .desc, .category ,.status, .user, .modified_by, .modified, .permissions, td:nth-child(7), td:nth-child(8), td:nth-child(1) {
+    .date, .desc, .category, .status, .user, .modified_by, .modified, .permissions, td:nth-child(7), td:nth-child(8), td:nth-child(1) {
       display: none;
     }
 
@@ -289,7 +307,7 @@ export default {
   display: none;
 }
 
-.drager_col{
+.drager_col {
   display: flex;
 }
 
@@ -304,6 +322,7 @@ export default {
   height: 90vh;
   border-radius: 8px;
 }
+
 .drager_col > .slider_col:before {
   transition: background-color 0.2s;
   position: absolute;
@@ -318,6 +337,7 @@ export default {
   max-height: 70px;
   background-color: #6f808d;
 }
+
 .drager_col > .slider_col:after {
   transition: background-color 0.2s;
   position: absolute;
@@ -332,12 +352,14 @@ export default {
   max-height: 70px;
   background-color: #6f808d;
 }
+
 .drager_col > .slider_col:hover:before,
 .drager_col > .slider_col:hover:after,
 .drager_col > .slider_col:active:before,
 .drager_col > .slider_col:active:after {
   background-color: #6f808d;
 }
+
 .drager_col > .slider_col:hover,
 .drager_col > .slider_col:active {
   background: #e3e3e3;

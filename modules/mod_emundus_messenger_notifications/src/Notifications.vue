@@ -8,7 +8,7 @@
     />
     <div class="em-messages-container">
       <span class="material-icons-outlined em-messages-modal" style="cursor: pointer;" @click="openModal">question_answer</span>
-      <p v-if="counter > 0" class="notifications__counter">{{counter}}</p>
+      <p v-if="counter > 0" class="notifications__counter">{{ counter }}</p>
     </div>
   </div>
 </template>
@@ -22,7 +22,7 @@ axios.defaults.baseURL = '/';
 
 export default {
   name: 'Notifications',
-  props:{
+  props: {
     user: Number,
     fnum: String
   },
@@ -36,11 +36,11 @@ export default {
     };
   },
   methods: {
-    openModal(){
+    openModal() {
       this.$modal.show('messages');
     },
 
-    getNotifications(){
+    getNotifications() {
       axios({
         method: "get",
         url: "index.php?option=com_emundus&controller=messenger&task=getnotifications",
@@ -48,26 +48,26 @@ export default {
           user: this.user,
         },
         paramsSerializer: params => {
-           return qs.stringify(params);
+          return qs.stringify(params);
         }
       }).then(response => {
-        if(response.data.data != null && response.data.status) {
+        if (response.data.data != null && response.data.status) {
           this.counter = response.data.data.notifications;
           this.notifications = response.data.data;
         }
       });
     },
 
-    removeNotifications(count){
+    removeNotifications(count) {
       this.counter -= count;
     }
   },
 
-  created(){
+  created() {
     this.getNotifications();
     setInterval(() => {
       this.getNotifications();
-    },20000);
+    }, 20000);
   }
 }
 </script>
@@ -81,7 +81,7 @@ export default {
   color: #2c3e50;
 }
 
-.messages__vue{
+.messages__vue {
   min-height: unset !important;
 }
 </style>

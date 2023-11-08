@@ -5,21 +5,19 @@ const state = {
     rights: {},
 };
 
-const getters = {
-
-};
+const getters = {};
 
 const actions = {
-    setUsers({ commit }, users) {
+    setUsers({commit}, users) {
         commit('setUser', users);
     },
-    setCurrentUser({ commit }, user) {
+    setCurrentUser({commit}, user) {
         commit('setCurrentUser', user);
     },
-    setDisplayedUser({ commit }, user) {
+    setDisplayedUser({commit}, user) {
         commit('setDisplayedUser', user);
     },
-    setAccessRights({ commit }, data) {
+    setAccessRights({commit}, data) {
         commit('setAccessRights', data);
     }
 };

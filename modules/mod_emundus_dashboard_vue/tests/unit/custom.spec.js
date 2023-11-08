@@ -1,11 +1,11 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils'
+import {shallowMount, createLocalVue} from '@vue/test-utils'
 import Custom from '@/components/Custom.vue'
 import translate from '../mocks/translate'
 import VueFusionCharts from 'vue-fusioncharts';
 import FusionCharts from 'fusioncharts';
 import Column2D from 'fusioncharts/fusioncharts.charts';
 import FusionTheme from 'fusioncharts/themes/fusioncharts.theme.fusion';
-import { VTooltip, VPopover, VClosePopover } from 'v-tooltip';
+import {VTooltip, VPopover, VClosePopover} from 'v-tooltip';
 
 const localVue = createLocalVue();
 localVue.directive('close-popover', VClosePopover);
@@ -16,7 +16,19 @@ localVue.use(VTooltip);
 localVue.mixin(translate);
 
 describe('Custom.vue - created hook', () => {
-    let widget = {"id":"7","name":"custom","label":"FAQ","params":null,"size":"2","size_small":"2","type":"article","class":"faq-widget","position":"1","chart_type":null,"article_id":"1040"}
+    let widget = {
+        "id": "7",
+        "name": "custom",
+        "label": "FAQ",
+        "params": null,
+        "size": "2",
+        "size_small": "2",
+        "type": "article",
+        "class": "faq-widget",
+        "position": "1",
+        "chart_type": null,
+        "article_id": "1040"
+    }
     const createdSpy = jest.spyOn(Custom, 'created');
     const getTranslations = jest.spyOn(Custom.methods, 'getTranslations');
     const getArticle = jest.spyOn(Custom.methods, 'getArticle');
@@ -44,7 +56,19 @@ describe('Custom.vue - created hook', () => {
     });
 
 
-    widget = {"id":"7","name":"custom","label":"FAQ","params":null,"size":"2","size_small":"2","type":"chart","class":"faq-widget","position":"1","chart_type":"column2d","article_id":"1040"}
+    widget = {
+        "id": "7",
+        "name": "custom",
+        "label": "FAQ",
+        "params": null,
+        "size": "2",
+        "size_small": "2",
+        "type": "chart",
+        "class": "faq-widget",
+        "position": "1",
+        "chart_type": "column2d",
+        "article_id": "1040"
+    }
     const getFilters = jest.spyOn(Custom.methods, 'getFilters');
     shallowMount(Custom, {
         localVue,
@@ -57,7 +81,19 @@ describe('Custom.vue - created hook', () => {
         expect(getFilters).toHaveBeenCalled();
     });
 
-    widget = {"id":"7","name":"custom","label":"FAQ","params":null,"size":"2","size_small":"2","type":"other","class":"faq-widget","position":"1","chart_type":"column2d","article_id":"1040"}
+    widget = {
+        "id": "7",
+        "name": "custom",
+        "label": "FAQ",
+        "params": null,
+        "size": "2",
+        "size_small": "2",
+        "type": "other",
+        "class": "faq-widget",
+        "position": "1",
+        "chart_type": "column2d",
+        "article_id": "1040"
+    }
     const getEval = jest.spyOn(Custom.methods, 'getEval');
     shallowMount(Custom, {
         localVue,
@@ -72,9 +108,21 @@ describe('Custom.vue - created hook', () => {
 });
 
 describe('Custom.vue - Render the FAQ Widget', () => {
-    const widget = {"id":"7","name":"custom","label":"FAQ","params":null,"size":"2","size_small":"2","type":"article","class":"faq-widget","position":"1","chart_type":null,"article_id":"1040"}
+    const widget = {
+        "id": "7",
+        "name": "custom",
+        "label": "FAQ",
+        "params": null,
+        "size": "2",
+        "size_small": "2",
+        "type": "article",
+        "class": "faq-widget",
+        "position": "1",
+        "chart_type": null,
+        "article_id": "1040"
+    }
     const wrapper = shallowMount(Custom, {
-        propsData: { widget },
+        propsData: {widget},
         localVue
     });
 
@@ -102,9 +150,21 @@ describe('Custom.vue - Render the FAQ Widget', () => {
 })
 
 describe('Custom.vue - Render the Files By Status Widget', () => {
-    const widget = {"id":"5","name":"custom","label":"Nombre de dossiers par statut","params":null,"size":"10","size_small":"12","type":"chart","class":"","position":"2","chart_type":"column2d","article_id":null}
+    const widget = {
+        "id": "5",
+        "name": "custom",
+        "label": "Nombre de dossiers par statut",
+        "params": null,
+        "size": "10",
+        "size_small": "12",
+        "type": "chart",
+        "class": "",
+        "position": "2",
+        "chart_type": "column2d",
+        "article_id": null
+    }
     const wrapper = shallowMount(Custom, {
-        propsData: { widget },
+        propsData: {widget},
         localVue
     });
 

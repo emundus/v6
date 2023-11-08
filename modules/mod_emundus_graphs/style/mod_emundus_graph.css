@@ -1,6 +1,6 @@
 /*INDICATEURS*/
-.indicateurs-page #userSummary > *{
-    margin:10px 0!important;
+.indicateurs-page #userSummary > * {
+    margin: 10px 0 !important;
 }
 
 .explination {
@@ -9,34 +9,40 @@
     width: 100%;
 }
 
-.indicateurs-page #userSummary{
+.indicateurs-page #userSummary {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.indicateurs-page #userRow .col-md-6{
-    padding:0!important;
+.indicateurs-page #userRow .col-md-6 {
+    padding: 0 !important;
 }
+
 .indicateurs-page .g-content div#userSummary a,
 .indicateurs-page .g-content div#summaryFiles a {
     color: #ffffff;
 }
- .indicateurs-page #g-main-mainbody{
+
+.indicateurs-page #g-main-mainbody {
     padding: 0;
-    width:75rem;
-    margin:auto;
+    width: 75rem;
+    margin: auto;
 }
-#userSummary .btn i, #summaryGender .btn i, #summaryNationality .btn i,  #summaryFiles .btn i{
+
+#userSummary .btn i, #summaryGender .btn i, #summaryNationality .btn i, #summaryFiles .btn i {
     display: inline;
     margin: 5px !important;
 }
-.btn{
+
+.btn {
     background-image: none !important;
 }
+
 footer#g-footer {
     padding: 20px !important;
 }
+
 footer#g-footer {
     background: transparent;
     border-top: 1px solid #bbb;

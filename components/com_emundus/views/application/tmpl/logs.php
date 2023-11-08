@@ -10,10 +10,21 @@ JFactory::getSession()->set('application_layout', 'logs');
 ?>
 
 <style>
-	.widget .panel-body { padding:0; }
-	.widget .list-group { margin-bottom: 0; }
-	.widget .panel-title { display:inline }
-    .widget .log-info { margin: 1.5rem;}
+    .widget .panel-body {
+        padding: 0;
+    }
+
+    .widget .list-group {
+        margin-bottom: 0;
+    }
+
+    .widget .panel-title {
+        display: inline
+    }
+
+    .widget .log-info {
+        margin: 1.5rem;
+    }
 </style>
 
 <div class="logs">
@@ -24,24 +35,28 @@ JFactory::getSession()->set('application_layout', 'logs');
             <div class="panel-heading em-container-comment-heading">
 
                 <h3 class="panel-title">
-                	<span class="glyphicon glyphicon-list"></span>
-                	<?php echo JText::_('COM_EMUNDUS_ACCESS_LOGS'); ?>
+                    <span class="glyphicon glyphicon-list"></span>
+					<?php echo JText::_('COM_EMUNDUS_ACCESS_LOGS'); ?>
                 </h3>
 
                 <div class="btn-group pull-right">
-                    <button id="em-prev-file" class="btn btn-info btn-xxl"><i class="small arrow left icon"></i></button>
-                    <button id="em-next-file" class="btn btn-info btn-xxl"><i class="small arrow right icon"></i></button>
+                    <button id="em-prev-file" class="btn btn-info btn-xxl"><i class="small arrow left icon"></i>
+                    </button>
+                    <button id="em-next-file" class="btn btn-info btn-xxl"><i class="small arrow right icon"></i>
+                    </button>
                 </div>
 
             </div>
 
             <br class="panel-body em-container-comment-body">
-            <?php if (!empty($this->fileLogs)) { ?>
+			<?php if (!empty($this->fileLogs)) { ?>
                 <div id="filters-logs" class="em-flex-row">
                     <!-- add CRUD filters (multi-chosen) -->
                     <div id="actions" class="em-w-33 em-mr-16">
-                        <label for="crud-logs-label" id="crud-logs-hint"><?= JText::_('COM_EMUNDUS_CRUD_FILTER_LABEL'); ?></label>
-                        <select name="crud-logs-select" id="crud-logs" class="chzn-select em-w-100" multiple data-placeholder="<?= JText::_('COM_EMUNDUS_CRUD_FILTER_PLACEHOLDER'); ?>">
+                        <label for="crud-logs-label"
+                               id="crud-logs-hint"><?= JText::_('COM_EMUNDUS_CRUD_FILTER_LABEL'); ?></label>
+                        <select name="crud-logs-select" id="crud-logs" class="chzn-select em-w-100" multiple
+                                data-placeholder="<?= JText::_('COM_EMUNDUS_CRUD_FILTER_PLACEHOLDER'); ?>">
                             <option value="r"><?= JText::_('COM_EMUNDUS_LOG_READ_TYPE'); ?></option>
                             <option value="c"><?= JText::_('COM_EMUNDUS_LOG_CREATE_TYPE'); ?></option>
                             <option value="u"><?= JText::_('COM_EMUNDUS_LOG_UPDATE_TYPE'); ?></option>
@@ -49,46 +64,52 @@ JFactory::getSession()->set('application_layout', 'logs');
                         </select>
                     </div>
                     <div id="types" class="em-w-33 em-mr-16">
-                        <label for="actions-logs-label" id="actions-logs-hint"><?= JText::_('COM_EMUNDUS_TYPE_FILTER_LABEL'); ?></label>
-                        <select name="type-logs-select" id="type-logs" class="chzn-select em-w-100" multiple data-placeholder="<?= JText::_('COM_EMUNDUS_TYPE_FILTER_PLACEHOLDER'); ?>"></select>
+                        <label for="actions-logs-label"
+                               id="actions-logs-hint"><?= JText::_('COM_EMUNDUS_TYPE_FILTER_LABEL'); ?></label>
+                        <select name="type-logs-select" id="type-logs" class="chzn-select em-w-100" multiple
+                                data-placeholder="<?= JText::_('COM_EMUNDUS_TYPE_FILTER_PLACEHOLDER'); ?>"></select>
                     </div>
                     <div id="actors" class="em-w-33 em-mr-16">
-                        <label for="actors-logs-label" id="actors-logs-hint"><?= JText::_('COM_EMUNDUS_ACTORS_FILTER_LABEL'); ?></label>
-                        <select name="actor-logs-select" id="actors-logs" class="chzn-select em-w-100" multiple data-placeholder="<?= JText::_('COM_EMUNDUS_ACTOR_FILTER_PLACEHOLDER'); ?>"></select>
+                        <label for="actors-logs-label"
+                               id="actors-logs-hint"><?= JText::_('COM_EMUNDUS_ACTORS_FILTER_LABEL'); ?></label>
+                        <select name="actor-logs-select" id="actors-logs" class="chzn-select em-w-100" multiple
+                                data-placeholder="<?= JText::_('COM_EMUNDUS_ACTOR_FILTER_PLACEHOLDER'); ?>"></select>
                     </div>
                 </div>
 
                 <div id="apply-filters" class="em-flex-row-justify-end">
-                    <button id="log-reset-filter-btn" class="em-w-auto em-secondary-button em-mt-8 em-mb-8 em-ml-8 em-mr-8">
-                        <?= JText::_('COM_EMUNDUS_LOGS_RESET_FILTER') ?>
+                    <button id="log-reset-filter-btn"
+                            class="em-w-auto em-secondary-button em-mt-8 em-mb-8 em-ml-8 em-mr-8">
+						<?= JText::_('COM_EMUNDUS_LOGS_RESET_FILTER') ?>
                     </button>
                     <button id="log-filter-btn" class="em-w-auto em-primary-button em-mt-8 em-mb-8 em-ml-8 em-mr-16">
-                        <?= JText::_('COM_EMUNDUS_LOGS_FILTER') ?>
+						<?= JText::_('COM_EMUNDUS_LOGS_FILTER') ?>
                     </button>
                 </div>
 
                 <div id="export-logs" class="em-flex-row-justify-end">
-                    <button id="log-export-btn" class="em-w-auto em-secondary-button em-mt-8 em-mb-8 em-ml-8 em-mr-16" onclick="exportLogs(<?=  "'" . $this->fnum . "'" ?>)">
+                    <button id="log-export-btn" class="em-w-auto em-secondary-button em-mt-8 em-mb-8 em-ml-8 em-mr-16"
+                            onclick="exportLogs(<?= "'" . $this->fnum . "'" ?>)">
                         <span class="material-icons-outlined em-mr-8">file_upload</span>
-                        <?= JText::_('COM_EMUNDUS_LOGS_EXPORT') ?>
+						<?= JText::_('COM_EMUNDUS_LOGS_EXPORT') ?>
                     </button>
                 </div>
 
                 <table class="table table-hover logs_table">
                     <caption class="hidden"><?= JText::_('COM_EMUNDUS_LOGS_CAPTION'); ?></caption>
                     <thead>
-                        <tr>
-                            <th id="date"><?= JText::_('DATE'); ?></th>
-                            <th id="ip">IP</th>
-                            <th id="user"><?= JText::_('USER'); ?></th>
-                            <th id="action_category"><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION_CATEGORY'); ?></th>
-                            <th id="action_name"><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION'); ?></th>
-                            <th id="action_details"><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION_DETAILS'); ?></th>
-                        </tr>
+                    <tr>
+                        <th id="date"><?= JText::_('DATE'); ?></th>
+                        <th id="ip">IP</th>
+                        <th id="user"><?= JText::_('USER'); ?></th>
+                        <th id="action_category"><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION_CATEGORY'); ?></th>
+                        <th id="action_name"><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION'); ?></th>
+                        <th id="action_details"><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION_DETAILS'); ?></th>
+                    </tr>
                     </thead>
                     <tbody id="logs_list">
-                        <?php
-                        foreach ($this->fileLogs as $log) { ?>
+					<?php
+					foreach ($this->fileLogs as $log) { ?>
                         <tr>
                             <td><?= $log->date; ?></td>
                             <td><?= $log->ip_from; ?></td>
@@ -97,16 +118,18 @@ JFactory::getSession()->set('application_layout', 'logs');
                             <td><?= $log->details['action_name']; ?></td>
                             <td><?= $log->details['action_details']; ?></td>
                         </tr>
-                        <?php } ?>
+					<?php } ?>
                     </tbody>
                 </table>
-                <?php
-                if (count($this->fileLogs) >= 100) { ?>
-                <div class="log-info show-more"><button type="button" class="btn btn-info btn-xs" id="show-more">Afficher plus</button></div>
-                <?php } ?>
-                <?php } else { ?>
+				<?php
+				if (count($this->fileLogs) >= 100) { ?>
+                    <div class="log-info show-more">
+                        <button type="button" class="btn btn-info btn-xs" id="show-more">Afficher plus</button>
+                    </div>
+				<?php } ?>
+			<?php } else { ?>
                 <div class="log-info"><?= JText::_('COM_EMUNDUS_LOGS_NO_LOGS'); ?></div>
-                <?php } ?>
+			<?php } ?>
         </div>
     </div>
 </div>
@@ -114,19 +137,19 @@ JFactory::getSession()->set('application_layout', 'logs');
 <script type="text/javascript">
     let offset = 100;
 
-    $('#crud-logs').chosen({width:'100%'});
-    $('#type-logs').chosen({width:'100%'});
-    $('#actors-logs').chosen({width:'100%'});
+    $('#crud-logs').chosen({width: '100%'});
+    $('#type-logs').chosen({width: '100%'});
+    $('#actors-logs').chosen({width: '100%'});
 
     /* get all logs when loading page */
-   $(document).ready(function() {
+    $(document).ready(function () {
         /* get all logs type */
-       $.ajax({
+        $.ajax({
             method: "post",
             url: "index.php?option=com_emundus&controller=files&task=getalllogactions",
             dataType: 'json',
-            success: function(results) {
-                if(results.status) {
+            success: function (results) {
+                if (results.status) {
                     const typeLogs = $('#type-logs');
 
                     results.data.forEach(log => {
@@ -134,37 +157,37 @@ JFactory::getSession()->set('application_layout', 'logs');
                         typeLogs.trigger("liszt:updated");
                     })
                 } else {
-                   $('#filters-logs').remove();
-                   $('#log-filter-btn').remove();
-                   $('.em-container-comment-heading').after('<b style="color:red">' + Joomla.JText._("COM_EMUNDUS_NO_ACTION_FOUND") + '</b>');
+                    $('#filters-logs').remove();
+                    $('#log-filter-btn').remove();
+                    $('.em-container-comment-heading').after('<b style="color:red">' + Joomla.JText._("COM_EMUNDUS_NO_ACTION_FOUND") + '</b>');
                 }
-            }, error: function(jqXHR, textStatus, errorThrown) {
+            }, error: function (jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText, textStatus, errorThrown);
             }
         });
 
         /* show hint */
-        $('#crud-logs-hint').on('hover', function(){
-            $(this).css('cursor','pointer').attr('title', Joomla.JText._("COM_EMUNDUS_CRUD_LOG_FILTER_HINT"));
+        $('#crud-logs-hint').on('hover', function () {
+            $(this).css('cursor', 'pointer').attr('title', Joomla.JText._("COM_EMUNDUS_CRUD_LOG_FILTER_HINT"));
         });
 
-        $('#actions-logs-hint').on('hover', function(){
-            $(this).css('cursor','pointer').attr('title', Joomla.JText._("COM_EMUNDUS_TYPES_LOG_FILTER_HINT"));
+        $('#actions-logs-hint').on('hover', function () {
+            $(this).css('cursor', 'pointer').attr('title', Joomla.JText._("COM_EMUNDUS_TYPES_LOG_FILTER_HINT"));
         });
 
-        $('#actors-logs-hint').on('hover', function(){
-            $(this).css('cursor','pointer').attr('title', Joomla.JText._("COM_EMUNDUS_ACTOR_LOG_FILTER_HINT"));
+        $('#actors-logs-hint').on('hover', function () {
+            $(this).css('cursor', 'pointer').attr('title', Joomla.JText._("COM_EMUNDUS_ACTOR_LOG_FILTER_HINT"));
         });
 
-       $.ajax({
+        $.ajax({
             type: 'post',
             url: 'index.php?option=com_emundus&controller=files&task=getuserslogbyfnum',
             data: ({
-                fnum:$('#fnum_hidden').attr('value'),
+                fnum: $('#fnum_hidden').attr('value'),
             }),
             dataType: 'json',
-            success: function(results) {
-                if(results.status) {
+            success: function (results) {
+                if (results.status) {
                     const actorsLog = $('#actors-logs');
 
                     results.data.forEach((user) => {
@@ -176,45 +199,45 @@ JFactory::getSession()->set('application_layout', 'logs');
                     $('#types').after('<br><p style="color:red">' + Joomla.JText._("COM_EMUNDUS_NO_LOG_USERS_FOUND") + '</p></br>');
                 }
 
-            }, error: function(xhr, status, error) {
+            }, error: function (xhr, status, error) {
                 console.log(xhr.responseText, status, error);
             }
         });
 
-       $('#log-filter-btn').on('click', function() {
+        $('#log-filter-btn').on('click', function () {
             let crud = $('#crud-logs').val();
 
             if (!crud) {
-                crud = ['c','r', 'u', 'd'];
+                crud = ['c', 'r', 'u', 'd'];
             }
 
             const types = $('#type-logs').val();
             const persons = $('#actors-logs').val();
 
-           $.ajax({
+            $.ajax({
                 type: 'post',
                 url: 'index.php?option=com_emundus&controller=files&task=getactionsonfnum',
                 data: ({
-                    fnum:$('#fnum_hidden').attr('value'),
+                    fnum: $('#fnum_hidden').attr('value'),
                     crud: crud,
                     types: types,
                     persons: persons,
                 }),
                 dataType: 'json',
-                success: function(results) {
+                success: function (results) {
                     $('#log-count-results').remove();
 
                     // add loading icon
                     const logList = $('#logs_list');
                     logList.empty();
-                    logList.before('<div id="loading"><img src="'+loading+'" alt="loading"/></div>');
+                    logList.before('<div id="loading"><img src="' + loading + '" alt="loading"/></div>');
 
                     // remove the error-message (if any)
-                    if($('#error-message').length > 0) {
+                    if ($('#error-message').length > 0) {
                         $('#error-message').remove();
                     }
 
-                    if(results.status) {
+                    if (results.status) {
                         $('.logs_table').show();
                         $('#log-export-btn').show();
                         $('#export-logs').after('<p id="log-count-results" style="font-weight: bold" class="em-main-500-color em-p-8-12 em-float-right">' + results.res.length + Joomla.JText._("COM_EMUNDUS_LOGS_FILTERS_FOUND_RESULTS") + '</p>');
@@ -226,12 +249,12 @@ JFactory::getSession()->set('application_layout', 'logs');
                         }
                         for (let i = 0; i < results.res.length; i++) {
                             tr = '<tr>' +
-                                '<td>'+ results.res[i].date + '</td>' +
-                                '<td>'+ results.res[i].ip_from + '</td>' +
-                                '<td>'+ results.res[i].firstname + ' ' + results.res[i].lastname + '</td>' +
-                                '<td>'+ results.details[i].action_category + '</td>' +
-                                '<td>'+ results.details[i].action_name + '</td>' +
-                                '<td>'+ results.details[i].action_details + '</td>' +
+                                '<td>' + results.res[i].date + '</td>' +
+                                '<td>' + results.res[i].ip_from + '</td>' +
+                                '<td>' + results.res[i].firstname + ' ' + results.res[i].lastname + '</td>' +
+                                '<td>' + results.details[i].action_category + '</td>' +
+                                '<td>' + results.details[i].action_name + '</td>' +
+                                '<td>' + results.details[i].action_details + '</td>' +
                                 '</tr>'
                             logList.append(tr);
                         }
@@ -243,32 +266,33 @@ JFactory::getSession()->set('application_layout', 'logs');
                         $('#log-export-btn').hide();
                         $('.logs_table').hide();
                     }
-                }, error: function(xhr,status,error) {
+                }, error: function (xhr, status, error) {
                     console.log(xhr, status, error);
                 }
             })
         })
-   });
+    });
 
-   $(document).on('click', '#show-more', function(e) {
-       if(e.handle === true) {
-           e.handle = false;
-           const fnum = "<?php echo $this->fnum; ?>";
-           const crud =$('#crud-logs').val();
-           const types =$('#type-logs').val();
-           const persons =$('#actors-logs').val();
+    $(document).on('click', '#show-more', function (e) {
+        if (e.handle === true) {
+            e.handle = false;
+            const fnum = "<?php echo $this->fnum; ?>";
+            const crud = $('#crud-logs').val();
+            const types = $('#type-logs').val();
+            const persons = $('#actors-logs').val();
 
-           $.ajax({
-               type:'POST',
-               url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getactionsonfnum',
-                dataType:'json',
-                data:({fnum: fnum,
+            $.ajax({
+                type: 'POST',
+                url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getactionsonfnum',
+                dataType: 'json',
+                data: ({
+                    fnum: fnum,
                     offset: offset,
                     crud: crud,
                     types: types,
                     persons: persons
                 }),
-                success: function(result) {
+                success: function (result) {
                     if (result.status) {
                         let tr = ''
                         if (result.res.length < 100) {
@@ -276,12 +300,12 @@ JFactory::getSession()->set('application_layout', 'logs');
                         }
                         for (let i = 0; i < result.res.length; i++) {
                             tr = '<tr>' +
-                                '<td>'+ result.res[i].date + '</td>' +
-                                '<td>'+ result.res[i].ip_from + '</td>' +
-                                '<td>'+ result.res[i].firstname + ' ' + result.res[i].lastname + '</td>' +
-                                '<td>'+ result.details[i].action_category + '</td>' +
-                                '<td>'+ result.details[i].action_name + '</td>' +
-                                '<td>'+ result.details[i].action_details + '</td>' +
+                                '<td>' + result.res[i].date + '</td>' +
+                                '<td>' + result.res[i].ip_from + '</td>' +
+                                '<td>' + result.res[i].firstname + ' ' + result.res[i].lastname + '</td>' +
+                                '<td>' + result.details[i].action_category + '</td>' +
+                                '<td>' + result.details[i].action_name + '</td>' +
+                                '<td>' + result.details[i].action_details + '</td>' +
                                 '</tr>'
                             $('#logs_list').append(tr);
                         }
@@ -291,16 +315,15 @@ JFactory::getSession()->set('application_layout', 'logs');
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log(jqXHR.responseText);
                 }
-           });
-       }
-   });
+            });
+        }
+    });
 
-    function exportLogs(fnum)
-    {
+    function exportLogs(fnum) {
         xhr = new XMLHttpRequest();
         xhr.open('POST', 'index.php?option=com_emundus&controller=files&task=exportLogs', true);
 
-        xhr.onreadystatechange = function() {
+        xhr.onreadystatechange = function () {
             if (xhr.readyState == 4) {
                 if (xhr.status == 200) {
                     const response = JSON.parse(xhr.response);
@@ -340,7 +363,7 @@ JFactory::getSession()->set('application_layout', 'logs');
         xhr.send(body);
     }
 
-    document.querySelector('#log-reset-filter-btn').addEventListener('click', function() {
+    document.querySelector('#log-reset-filter-btn').addEventListener('click', function () {
         resetFilters();
     });
 
@@ -353,7 +376,7 @@ JFactory::getSession()->set('application_layout', 'logs');
 </script>
 
 <style>
-    .search-field input{
+    .search-field input {
         font-size: small !important;
         font-style: italic;
     }

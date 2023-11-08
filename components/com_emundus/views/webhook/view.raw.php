@@ -13,14 +13,16 @@ defined('_JEXEC') or die;
 /**
  * View to edit
  */
-class EmundusViewWebhook extends JViewLegacy {
+class EmundusViewWebhook extends JViewLegacy
+{
 
-    /**
-     * Display the view
-     */
-    public function display($tpl = null) {
+	/**
+	 * Display the view
+	 */
+	public function display($tpl = null)
+	{
 
-       parent::display($tpl);
-    }
+		parent::display($tpl);
+	}
 
 }

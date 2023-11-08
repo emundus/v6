@@ -32,12 +32,10 @@ class ModLoginHelper
 		// Stay on the same page
 		$url = JUri::getInstance()->toString();
 
-		if ($item)
-		{
+		if ($item) {
 			$lang = '';
 
-			if ($item->language !== '*' && JLanguageMultilang::isEnabled())
-			{
+			if ($item->language !== '*' && JLanguageMultilang::isEnabled()) {
 				$lang = '&lang=' . $item->language;
 			}
 

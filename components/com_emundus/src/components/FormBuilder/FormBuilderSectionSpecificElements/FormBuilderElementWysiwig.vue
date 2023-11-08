@@ -46,11 +46,12 @@ export default {
       dynamicComponent: 0,
     };
   },
-  created () {},
+  created() {
+  },
   methods: {
-    updateDisplayText(value){
+    updateDisplayText(value) {
       this.editable = false;
-      formBuilderService.updateDefaultValue(this.$props.element.id,value).then((response) => {
+      formBuilderService.updateDefaultValue(this.$props.element.id, value).then((response) => {
         this.$emit('update-element');
       })
     }

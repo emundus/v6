@@ -88,31 +88,33 @@ JText::script('COM_EMUNDUS_ONBOARD_OK');
 JText::script('COM_EMUNDUS_FORM_BUILDER_NEW_VALUE');
 JText::script('COM_EMUNDUS_FORM_BUILDER_EXISTING_VALUE');
 
-$lang = JFactory::getLanguage();
-$short_lang = substr($lang->getTag(), 0 , 2);
+$lang         = JFactory::getLanguage();
+$short_lang   = substr($lang->getTag(), 0, 2);
 $current_lang = $lang->getTag();
-$languages = JLanguageHelper::getLanguages();
-if(count($languages) > 1){
-    $many_languages = '1';
-} else {
-    $many_languages = '0';
+$languages    = JLanguageHelper::getLanguages();
+if (count($languages) > 1) {
+	$many_languages = '1';
+}
+else {
+	$many_languages = '0';
 }
 
-$user = JFactory::getUser();
+$user               = JFactory::getUser();
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
-$sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
+$sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
 
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 
 <div id="em-component-vue"
-     email="<?= JFactory::getApplication()->input->get('eid') ;?>"
+     email="<?= JFactory::getApplication()->input->get('eid'); ?>"
      component="addemail"
      coordinatorAccess="<?= $coordinator_access ?>"
      sysadminAccess="<?= $sysadmin_access ?>"
      shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
      manyLanguages="<?= $many_languages ?>">
-></div>
+    >
+</div>
 
 <script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

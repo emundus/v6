@@ -22,7 +22,8 @@
                     <option value="1">JYES</option>
                     <!--<option value="0">JNO</option>-->
                 </field>
-                <field showon="filter_on_fnums:0" type="text" name="element_id" label="MOD_EM_FILTER_FABRIK_ELEMENT_ID" description="MOD_EM_FILTER_FABRIK_ELEMENT_ID_DESC" default="0"/>
+                <field showon="filter_on_fnums:0" type="text" name="element_id" label="MOD_EM_FILTER_FABRIK_ELEMENT_ID"
+                       description="MOD_EM_FILTER_FABRIK_ELEMENT_ID_DESC" default="0"/>
                 <field showon="filter_on_fnums:0"
                        name="default_filter_element_ids"
                        type="subform"
@@ -35,26 +36,31 @@
                        layout="joomla.form.field.subform.repeatable-table"
                 >
                     <form>
-                        <field type="text" name="id" label="MOD_EM_FILTER_DEFAULT_ELEMENT_ID" description="MOD_EM_FILTER_DEFAULT_ELEMENT_ID_DESC" default="0"/>
-                        <field type="text" name="join_table" label="MOD_EM_FILTER_DEFAULT_ELEMENT_JOIN_TABLE" default=""/>
-                        <field type="text" name="join_column_from" label="MOD_EM_FILTER_DEFAULT_ELEMENT_JOIN_COLUMN_FROM" default=""/>
-                        <field type="text" name="join_column_to" label="MOD_EM_FILTER_DEFAULT_ELEMENT_JOIN_COLUMN_TO" default=""/>
+                        <field type="text" name="id" label="MOD_EM_FILTER_DEFAULT_ELEMENT_ID"
+                               description="MOD_EM_FILTER_DEFAULT_ELEMENT_ID_DESC" default="0"/>
+                        <field type="text" name="join_table" label="MOD_EM_FILTER_DEFAULT_ELEMENT_JOIN_TABLE"
+                               default=""/>
+                        <field type="text" name="join_column_from"
+                               label="MOD_EM_FILTER_DEFAULT_ELEMENT_JOIN_COLUMN_FROM" default=""/>
+                        <field type="text" name="join_column_to" label="MOD_EM_FILTER_DEFAULT_ELEMENT_JOIN_COLUMN_TO"
+                               default=""/>
                     </form>
                 </field>
 
                 <!-- fields shown on fnum context -->
                 <fieldset showon="filter_on_fnum=1">
-                    <field type="checkbox" name="count_filter_values" label="MOD_EMUNDUS_FILTER_COUNT_FILTER_VALUES" description="MOD_EMUNDUS_FILTER_COUNT_FILTER_VALUES_DESC" default="0"/>
+                    <field type="checkbox" name="count_filter_values" label="MOD_EMUNDUS_FILTER_COUNT_FILTER_VALUES"
+                           description="MOD_EMUNDUS_FILTER_COUNT_FILTER_VALUES_DESC" default="0"/>
                     <field type="list" name="filter_status" label="FILTER_ON_STATUS">
                         <option value="0">JNO</option>
                         <option value="1">JYES</option>
                     </field>
                     <field
-                        type="text"
-                        name="filter_status_order"
-                        label="FILTER_ORDER"
-                        description="FILTER_ORDER_DESC"
-                        default="0"
+                            type="text"
+                            name="filter_status_order"
+                            label="FILTER_ORDER"
+                            description="FILTER_ORDER_DESC"
+                            default="0"
                     />
                     <field type="list" name="filter_campaign" label="FILTER_ON_CAMPAIGN">
                         <option value="0">JNO</option>
@@ -123,7 +129,8 @@
                                label="MOD_EM_FILTER_FABRIK_ELEMENT_ID"
                                description="MOD_EM_FILTER_FABRIK_ELEMENT_ID_DESC"
                         />
-                        <field name="order" type="text" label="MOD_EM_FILTER_ORDER" description="MOD_EM_FILTER_ORDER_DESC" default="0"/>
+                        <field name="order" type="text" label="MOD_EM_FILTER_ORDER"
+                               description="MOD_EM_FILTER_ORDER_DESC" default="0"/>
                     </field>
 
                     <field name="more_fabrik_forms"

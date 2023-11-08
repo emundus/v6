@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <metadata>
-	<layout title="COM_EMUNDUS_APPLICATION_VIEW_DEFAULT_TITLE">
-		<message>
-			<![CDATA[COM_EMUNDUS_APPLICATION_VIEW_DEFAULT_TITLE_DESC]]>
-		</message>
-	</layout>
+    <layout title="COM_EMUNDUS_APPLICATION_VIEW_DEFAULT_TITLE">
+        <message>
+            <![CDATA[COM_EMUNDUS_APPLICATION_VIEW_DEFAULT_TITLE_DESC]]>
+        </message>
+    </layout>
 </metadata>

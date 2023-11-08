@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="3.8.11" client="site">
-	<name>eMundus - Tutorial popup</name>
+    <name>eMundus - Tutorial popup</name>
     <author>Hugo Moracchini</author>
     <creationDate>May 2020</creationDate>
     <copyright>Copyright (C) 2020 eMundus. All rights reserved.</copyright>
@@ -8,22 +8,27 @@
     <authorEmail>hugo.moracchini@emundus.fr</authorEmail>
     <authorUrl>www.emundus.fr</authorUrl>
     <version>6.9.13</version>
-	<description>Displays a tutorial popup containing the contents of one or more defined Joomla articles, Content is automatically shown once to the user, or can be toggled by a button on the page.</description>
-	<files>
-		<filename module="mod_emundus_tutorial">mod_emundus_tutorial.php</filename>
-		<folder>tmpl</folder>
-		<folder>language</folder>
-		<filename>helper.php</filename>
-		<filename>index.html</filename>
-		<filename>mod_emundus_tutorial.xml</filename>
-	</files>
-	<config>
-		<fields name="params">
-			<fieldset name="basic">
-				<field name="artids" type="text" label="MOD_EMUNDUS_TUTORIAL_ARTICLE_IDS" description="MOD_EMUNDUS_TUTORIAL_ARTICLE_IDS_DESC"/>
-				<field name="user_param" type="text" label="MOD_EMUNDUS_TUTORIAL_USER_PARAM" description="MOD_EMUNDUS_TUTORIAL_USER_PARAM_DESC"/>
-				<field name="layout" type="modulelayout" label="JFIELD_ALT_LAYOUT_LABEL" description="JFIELD_ALT_MODULE_LAYOUT_DESC" />
-			</fieldset>
-		</fields>
-	</config>
+    <description>Displays a tutorial popup containing the contents of one or more defined Joomla articles, Content is
+        automatically shown once to the user, or can be toggled by a button on the page.
+    </description>
+    <files>
+        <filename module="mod_emundus_tutorial">mod_emundus_tutorial.php</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+        <filename>helper.php</filename>
+        <filename>index.html</filename>
+        <filename>mod_emundus_tutorial.xml</filename>
+    </files>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="artids" type="text" label="MOD_EMUNDUS_TUTORIAL_ARTICLE_IDS"
+                       description="MOD_EMUNDUS_TUTORIAL_ARTICLE_IDS_DESC"/>
+                <field name="user_param" type="text" label="MOD_EMUNDUS_TUTORIAL_USER_PARAM"
+                       description="MOD_EMUNDUS_TUTORIAL_USER_PARAM_DESC"/>
+                <field name="layout" type="modulelayout" label="JFIELD_ALT_LAYOUT_LABEL"
+                       description="JFIELD_ALT_MODULE_LAYOUT_DESC"/>
+            </fieldset>
+        </fields>
+    </config>
 </extension>

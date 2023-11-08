@@ -75,11 +75,9 @@ $now = EmundusHelperDate::displayDate(date('Y-m-d H:i:s'), 'DATE_FORMAT_LC2', 0)
             <div class="panel-body em-container-comment-body">
                 <ul class="list-group">
 					<?php
-					if (count($this->userComments) > 0)
-					{
+					if (count($this->userComments) > 0) {
 						$i = 0;
-						foreach ($this->userComments as $comment)
-						{ ?>
+						foreach ($this->userComments as $comment) { ?>
                             <li class="list-group-item" id="<?php echo $comment->id; ?>">
                                 <div class="row">
                                     <div class="col-xs-10 col-md-11">
@@ -244,12 +242,12 @@ $now = EmundusHelperDate::displayDate(date('Y-m-d H:i:s'), 'DATE_FORMAT_LC2', 0)
                         '<textarea style="display: none;" class="ctext">' + escapeHtml(comment) + '</textarea>' +
                         '<div class="action">' +
                         '<div class="edit-comment-container">' +
-                        '<button type="button" class="btn btn-info btn-xs edit-comment" onclick="editComment('+result.id+')" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_EDIT');?>" >' +
+                        '<button type="button" class="btn btn-info btn-xs edit-comment" onclick="editComment(' + result.id + ')" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_EDIT');?>" >' +
                         '<span class="material-icons">edit</span>' +
                         '<div class="hidden cid">' + result.id + '</div>' +
                         '</button>' +
                         '<div class="action">' +
-                        '<button type="button" class="btn btn-danger btn-xs delete-comment" onclick="deleteComment('+result.id+')" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_DELETE');?>">' +
+                        '<button type="button" class="btn btn-danger btn-xs delete-comment" onclick="deleteComment(' + result.id + ')" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_DELETE');?>">' +
                         '<span class="material-icons">delete_outline</span>' +
                         '</button>' +
                         '</div>' +

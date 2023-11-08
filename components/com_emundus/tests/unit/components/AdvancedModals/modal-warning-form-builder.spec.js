@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import ModalWarningFormBuilder from '../../../../src/components/AdvancedModals/ModalWarningFormBuilder';
 import translate from '../../../mocks/mixins/translate';
 import VModal from 'vue-js-modal';
@@ -13,7 +13,7 @@ describe('ModalWarningFormBuilder.vue', () => {
         localVue
     });
 
-    it ('ModalWarningFormBuilder constructed', () => {
+    it('ModalWarningFormBuilder constructed', () => {
         expect(wrapper.find('#modalWarningFormBuilder').exists()).toBeTruthy();
     });
 });

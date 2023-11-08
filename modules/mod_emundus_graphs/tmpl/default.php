@@ -3,28 +3,29 @@ defined('_JEXEC') or die;
 header('Content-Type: text/html; charset=utf-8');
 $document = JFactory::getDocument();
 //Chart.js is the libary used for this module's graphs
-$document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'Chart.min.js');
+$document->addScript('media' . DS . 'com_emundus' . DS . 'lib' . DS . 'Chart.min.js');
 //moment.js is a Date libary, using to retrieve missing dates
-$document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
+$document->addScript('media' . DS . 'com_emundus' . DS . 'lib' . DS . 'moment.min.js');
 ?>
 <div class="container">
 
     <div class="explination">
-        <?php echo JText::_('MOD_EMUNDUS_GRAPHS_INTRO'); ?>
+		<?php echo JText::_('MOD_EMUNDUS_GRAPHS_INTRO'); ?>
     </div>
 
 
     <!-- Shows connexion info  -->
     <div class="row" id="connectionRow" style="display:none;">
         <div class="col-md-12">
-            <canvas id="co" ></canvas>
+            <canvas id="co"></canvas>
         </div>
 
         <div class="col-md-6" style="padding-left: 10%;">
             <table>
-                <tr><td><?php echo JText::_("PERIODE"); ?></td>
+                <tr>
+                    <td><?php echo JText::_("PERIODE"); ?></td>
                     <td>
-                        <select class="periodeCo" >
+                        <select class="periodeCo">
                             <option value='0'><?php echo JText::_("PERIODE_1_WEEK"); ?></option>
                             <option value='1'><?php echo JText::_("PERIODE_2_WEEK"); ?></option>
                             <option value='2' selected><?php echo JText::_("PERIODE_1_MONTH"); ?></option>
@@ -51,23 +52,25 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
             <canvas id="users"></canvas>
         </div>
 
-        <div class="col-md-6" style="padding-left: 10%;" >
+        <div class="col-md-6" style="padding-left: 10%;">
             <table id="userTable">
-                <tr><td><?php echo JText::_("USER_TYPE"); ?></td>
+                <tr>
+                    <td><?php echo JText::_("USER_TYPE"); ?></td>
                     <td>
 
                         <select class="compte" id="compte">
-                            <?php
-                            echo $distinctProfile;
-                            ?>
+							<?php
+							echo $distinctProfile;
+							?>
                         </select>
 
                     </td>
                 </tr>
 
-                <tr><td> <?php echo JText::_("PERIODE"); ?> </td>
+                <tr>
+                    <td> <?php echo JText::_("PERIODE"); ?> </td>
                     <td>
-                        <select class="periodeCompte" >
+                        <select class="periodeCompte">
                             <option value='0'><?php echo JText::_("PERIODE_1_WEEK"); ?></option>
                             <option value='1'><?php echo JText::_("PERIODE_2_WEEK"); ?></option>
                             <option value='2' selected><?php echo JText::_("PERIODE_1_MONTH"); ?></option>
@@ -80,18 +83,14 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
             </table>
         </div>
 
-        <div class="col-md-6" id="userSummary"  >
-            <p id='userCount'><i><?php echo JText::_("USER_GRAPH_TOTAL");?></i></p>
+        <div class="col-md-6" id="userSummary">
+            <p id='userCount'><i><?php echo JText::_("USER_GRAPH_TOTAL"); ?></i></p>
         </div>
         <div class="col-md-12">
             <hr style='width: 100%; border-top: 5px solid #fff;'>
         </div>
 
     </div>
-
-
-
-
 
 
     <!-- Shows offer info  -->
@@ -107,9 +106,10 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
             <div class="row">
                 <div class="col-md-12" style="padding-left: 10%;">
                     <table>
-                        <tr><td><?php echo JText::_("PERIODE"); ?></td>
+                        <tr>
+                            <td><?php echo JText::_("PERIODE"); ?></td>
                             <td>
-                                <select class="periodeCand" >
+                                <select class="periodeCand">
                                     <option value='0'><?php echo JText::_("PERIODE_1_WEEK"); ?></option>
                                     <option value='1'><?php echo JText::_("PERIODE_2_WEEK"); ?></option>
                                     <option value='2' selected><?php echo JText::_("PERIODE_1_MONTH"); ?></option>
@@ -130,13 +130,12 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
                     </div>
                 </div>
 
-                <div class="col-md-6" >
-                    <div id="summaryCandidature" >
+                <div class="col-md-6">
+                    <div id="summaryCandidature">
                         <p id='countCandidature'><i><?php echo JText::_("CANDIDATE_TOTAL"); ?></i></p>
                     </div>
                 </div>
             </div>
-
 
 
         </div>
@@ -144,7 +143,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
         <div class="col-md-6">
             <div class="row">
                 <div class="col-md-12">
-                    <canvas id="projects"  height="400"></canvas>
+                    <canvas id="projects" height="400"></canvas>
                 </div>
             </div>
 
@@ -157,15 +156,13 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
     </div>
 
 
-
-
 </div>
 
 <!-- Shows gender info  -->
 <div class="row" id="genderRow" style="display:none;">
 
     <div class="col-md-12">
-        <canvas id="gender" ></canvas>
+        <canvas id="gender"></canvas>
     </div>
 
     <div class="col-md-6" style="padding-left: 10%;">
@@ -180,7 +177,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
 <div class="row" id="nationRow" style="display:none;">
 
     <div class="col-md-12">
-        <canvas id="nationality" ></canvas>
+        <canvas id="nationality"></canvas>
     </div>
 
     <div class="col-md-6" style="padding-left: 10%;">
@@ -195,7 +192,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
 <div class="row" id="ageRow" style="display:none;">
 
     <div class="col-md-12">
-        <canvas id="age" ></canvas>
+        <canvas id="age"></canvas>
     </div>
 
     <div class="col-md-6" style="padding-left: 10%;">
@@ -210,7 +207,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
 <div class="row" id="filesRow" style="display:none;">
 
     <div class="col-md-12">
-        <canvas id="files" ></canvas>
+        <canvas id="files"></canvas>
     </div>
 
     <div class="col-md-6" style="padding-left: 10%;">
@@ -223,10 +220,13 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
 
 <!-- Additional views  -->
 <div class="row">
-    <div class="col-md-4 col-centered" >
+    <div class="col-md-4 col-centered">
         <table id="viewTable">
-            <tr><th> Autres Statistiques Possibles</th><th></th></tr>
-            <?php echo $tableField; ?>
+            <tr>
+                <th> Autres Statistiques Possibles</th>
+                <th></th>
+            </tr>
+			<?php echo $tableField; ?>
         </table>
     </div>
 </div>
@@ -248,7 +248,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
         yAxes: [{
             ticks: {
                 beginAtZero: true,
-                userCallback: function(label, index, labels) {
+                userCallback: function (label, index, labels) {
                     // when the floored value is the same as the value we have a whole number
                     if (Math.floor(label) === label) {
                         return label;
@@ -297,9 +297,9 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
         var green_diff = end_green - start_green;
         var blue_diff = end_blue - start_blue;
 
-        var red_step = (red_diff/num_steps) ;
-        var green_step = (green_diff/num_steps);
-        var blue_step = (blue_diff/num_steps);
+        var red_step = (red_diff / num_steps);
+        var green_step = (green_diff / num_steps);
+        var blue_step = (blue_diff / num_steps);
         while (current_red > end_red && current_green < end_green && current_blue < end_blue) {
             current_red += red_step;
             current_green += green_step;
@@ -311,7 +311,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
     }
 
     // Account function
-    function afficheComptes(value,periode) {
+    function afficheComptes(value, periode) {
 
         var sel = document.getElementById('compte');
         var opt = sel.options[sel.selectedIndex];
@@ -320,11 +320,11 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
             type: "post",
             url: "index.php?option=com_emundus&controller=stats&task=getprofiletype",
             dataType: 'json',
-            data:({
+            data: ({
                 chosenvalue: value,
                 periode: periode
             }),
-            success: function(result) {
+            success: function (result) {
                 if (result.status) {
                     if (document.getElementById("userCount").childNodes.length > 1)
                         document.getElementById("userCount").childNodes[1].remove();
@@ -361,27 +361,27 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
                             }]
                         },
                         options: {
-                            title:{
+                            title: {
                                 display: true,
                                 text: "<?php echo JText::_("USER_GRAPH_TITLE"); ?>",
                                 fontSize: 20
                             },
-                            elements: { point: { radius: 1 } } ,
+                            elements: {point: {radius: 1}},
                             scales: options,
                             maintainAspectRatio: false
                         }
                     });
                 }
             },
-            error: function(jqXHR) {
+            error: function (jqXHR) {
                 console.log(jqXHR.responseText);
             }
         });
     }
 
-    <?php if (isset($projects)) :?>
+	<?php if (isset($projects)) :?>
     // Project function
-    function  afficheProjets() {
+    function afficheProjets() {
         if (projectChart != undefined || projectChart != null)
             projectChart.destroy();
         var elem = document.getElementById('projects');
@@ -393,13 +393,13 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
                     // Future Doctorant
                     {
                         label: 'Mises en relation avec des chercheurs acceptées',
-                        data: [<?php echo $projects["future_to_chercheur_accept"];?>,0,0],
+                        data: [<?php echo $projects["future_to_chercheur_accept"];?>, 0, 0],
                         backgroundColor: 'rgba(255, 99, 132, 0.2)',
                         stack: 1
                     },
                     {
                         label: 'Totalité des mises en relation avec des chercheurs',
-                        data: [<?php echo $projects["future_to_chercheur_total"];?>,0,0],
+                        data: [<?php echo $projects["future_to_chercheur_total"];?>, 0, 0],
                         backgroundColor: 'rgba(255, 206, 86, 0.2)',
                         stack: 1
                     },
@@ -418,14 +418,14 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
                     // Chercheurs
                     {
                         label: 'Mises en relation avec des Futurs Doctorants acceptées',
-                        data: [0,<?php echo $projects["chercheur_to_future_accept"];?>,0],
+                        data: [0,<?php echo $projects["chercheur_to_future_accept"];?>, 0],
                         backgroundColor: 'rgba(226, 138, 138, 0.2)',
                         borderWidth: 1,
                         stack: 1
                     },
                     {
                         label: 'Totalité des mises en relation avec des Futurs Doctorants',
-                        data: [0,<?php echo $projects["chercheur_to_future_total"];?>,0],
+                        data: [0,<?php echo $projects["chercheur_to_future_total"];?>, 0],
                         backgroundColor: 'rgba(255, 0, 0, 0.2)',
                         stack: 1
                     },
@@ -444,14 +444,14 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
                     // Acteurs public
                     {
                         label: 'Nombre de demande de mise en relation par des Future Doctorants acceptés',
-                        data: [0,0,<?php echo $projects["public_to_future_accept"];?>],
+                        data: [0, 0,<?php echo $projects["public_to_future_accept"];?>],
                         backgroundColor: 'rgba(255, 99, 132, 0.2)',
                         borderWidth: 1,
                         stack: 1
                     },
                     {
                         label: 'Nombre de demande de mise en relation par des Future Doctorants',
-                        data: [0,0,<?php echo $projects["public_to_future_total"];?>],
+                        data: [0, 0,<?php echo $projects["public_to_future_total"];?>],
                         backgroundColor: "rgba(99,255,132,0.2)",
                         stack: 1
                     },
@@ -474,7 +474,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
                 legend: {
                     display: false
                 },
-                title:{
+                title: {
                     display: true,
                     text: "<?php echo JText::_("PROJECT_TITLE"); ?>",
                     fontSize: 20
@@ -488,7 +488,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
                         stacked: false,
                         ticks: {
                             beginAtZero: true,
-                            userCallback: function(label, index, labels) {
+                            userCallback: function (label, index, labels) {
                                 // when the floored value is the same as the value we have a whole number
                                 if (Math.floor(label) === label) {
                                     return label;
@@ -501,7 +501,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
         });
         elem.height = 400;
     }
-    <?php endif; ?>
+	<?php endif; ?>
 
 
     // Account function uses 2 ajax functions, consultation and candidate
@@ -510,19 +510,19 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
             type: "post",
             url: "index.php?option=com_emundus&controller=stats&task=getcandidatures",
             dataType: 'json',
-            data:({
+            data: ({
                 periode: periode
             }),
-            success: function(resultCand) {
+            success: function (resultCand) {
                 if (resultCand.status) {
                     jQuery.ajax({
                         type: "post",
                         url: "index.php?option=com_emundus&controller=stats&task=getoffres",
                         dataType: 'json',
-                        data:({
+                        data: ({
                             periode: periode
                         }),
-                        success: function(resultOffre) {
+                        success: function (resultOffre) {
                             if (document.getElementById("countCandidature").childNodes.length > 1)
                                 document.getElementById("countCandidature").childNodes[1].remove();
                             document.getElementById("countCandidature").append(resultCand.count);
@@ -553,7 +553,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
                                 },
                                 options: {
                                     maintainAspectRatio: false,
-                                    title:{
+                                    title: {
                                         display: true,
                                         text: "<?php echo JText::_('OFFER_TITLE'); ?>",
                                         fontSize: 20
@@ -563,7 +563,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
                                             ticks: {
                                                 min: 0,
                                                 beginAtZero: true,
-                                                userCallback: function(label, index, labels) {
+                                                userCallback: function (label, index, labels) {
                                                     // when the floored value is the same as the value we have a whole number
                                                     if (Math.floor(label) === label) {
                                                         return label;
@@ -575,25 +575,26 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
                                 }
                             });
                         },
-                        error: function(jqXHR, textStatus, errorThrown) {
+                        error: function (jqXHR, textStatus, errorThrown) {
                             console.log(jqXHR.responseText);
                         }
                     });
                 }
             },
-            error: function(jqXHR, textStatus, errorThrown) {
+            error: function (jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText);
             }
         });
     }
+
     // Connection Function
     function afficheConnections(periode) {
         jQuery.ajax({
             type: "post",
             url: "index.php?option=com_emundus&controller=stats&task=getconnections",
             dataType: 'json',
-            data:({ periode: periode }),
-            success: function(result) {
+            data: ({periode: periode}),
+            success: function (result) {
                 if (result.status) {
 
                     if (document.getElementById("countConnexion").childNodes.length > 1)
@@ -630,18 +631,18 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
                         },
                         options: {
                             maintainAspectRatio: false,
-                            title:{
+                            title: {
                                 display: true,
-                                text: "<?php echo JText::_("CONNECTION_TITLE") ;?>",
+                                text: "<?php echo JText::_("CONNECTION_TITLE");?>",
                                 fontSize: 20
                             },
-                            elements: { point: { radius: 1 } } ,
+                            elements: {point: {radius: 1}},
                             scales: options
                         }
                     });
                 }
             },
-            error: function(jqXHR, textStatus, errorThrown) {
+            error: function (jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText);
             }
         });
@@ -652,7 +653,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
             type: "post",
             url: "index.php?option=com_emundus&controller=stats&task=getgender",
             dataType: 'json',
-            success: function(result) {
+            success: function (result) {
                 if (result.status) {
                     if (genderChart != undefined || genderChart != null)
                         genderChart.destroy();
@@ -673,7 +674,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
                         },
                         options: {
                             maintainAspectRatio: false,
-                            title:{
+                            title: {
                                 display: true,
                                 text: "<?php echo JText::_('MOD_EMUNDUS_GRAPHS_GENDERS'); ?>",
                                 fontSize: 20
@@ -682,17 +683,18 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
                     });
                 }
             },
-            error: function(jqXHR, textStatus, errorThrown) {
+            error: function (jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText);
             }
         });
     }
+
     function afficheNationality() {
         jQuery.ajax({
             type: "post",
             url: "index.php?option=com_emundus&controller=stats&task=getnationality",
             dataType: 'json',
-            success: function(result) {
+            success: function (result) {
                 if (result.status) {
                     if (nationChart != undefined || nationChart != null)
                         nationChart.destroy();
@@ -713,7 +715,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
                             legend: {
                                 display: false,
                             },
-                            title:{
+                            title: {
                                 display: true,
                                 text: "<?php echo JText::_('MOD_EMUNDUS_GRAPHS_NATIONALITIES'); ?>",
                                 fontSize: 20
@@ -723,17 +725,18 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
                     });
                 }
             },
-            error: function(jqXHR, textStatus, errorThrown) {
+            error: function (jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText);
             }
         });
     }
+
     function afficheAge() {
         jQuery.ajax({
             type: "post",
             url: "index.php?option=com_emundus&controller=stats&task=getage",
             dataType: 'json',
-            success: function(result) {
+            success: function (result) {
                 if (result.status) {
                     if (ageChart != undefined || ageChart != null)
                         ageChart.destroy();
@@ -754,7 +757,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
                             legend: {
                                 display: false,
                             },
-                            title:{
+                            title: {
                                 display: true,
                                 text: "<?php echo JText::_('MOD_EMUNDUS_GRAPHS_AGES'); ?>",
                                 fontSize: 20
@@ -764,17 +767,18 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
                     });
                 }
             },
-            error: function(jqXHR, textStatus, errorThrown) {
+            error: function (jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText);
             }
         });
     }
+
     function afficheFiles() {
         jQuery.ajax({
             type: "post",
             url: "index.php?option=com_emundus&controller=stats&task=getfiles",
             dataType: 'json',
-            success: function(result) {
+            success: function (result) {
                 var nbArray = [];
                 var valArray = [];
                 if (filesChart != undefined || filesChart != null)
@@ -811,6 +815,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
             }
         });
     }
+
     //// AddView Function uses 2 AJAXs
     // Fist AJAX Creates the view if possible
     function addView(view) {
@@ -818,23 +823,23 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
             type: "post",
             url: "index.php?option=com_emundus&controller=stats&task=addview&format=raw",
             dataType: 'json',
-            data: ({ view: view }),
-            success: function(result) {
+            data: ({view: view}),
+            success: function (result) {
                 if (result.status) {
                     jQuery.ajax({
                         type: "post",
                         url: "index.php?option=com_emundus&controller=stats&task=linkfabrik&format=raw",
                         dataType: 'json',
-                        data:({
+                        data: ({
                             view: view,
                             listid: result.listid
                         }),
-                        success: function(res) {
+                        success: function (res) {
                             if (res.status) {
                                 location.reload();
                             }
                         },
-                        error: function(jqXHR, textStatus, errorThrown) {
+                        error: function (jqXHR, textStatus, errorThrown) {
                             alert("Impossible de relier à Fabrik");
                             console.log(jqXHR.responseText);
                         }
@@ -846,30 +851,31 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
                     document.getElementById(view).prepend(nono);
                 }
             },
-            error: function(jqXHR, textStatus, errorThrown) {
+            error: function (jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText);
             }
         })
     }
-    jQuery(document).ready(function() {
+
+    jQuery(document).ready(function () {
         var projectButton = document.createElement("div");
         projectButton.className = "btn";
         var ProjectIcon = document.createElement("i");
-        ProjectIcon.className ="search icon";
+        ProjectIcon.className = "search icon";
         projectButton.append(ProjectIcon);
         var ProjectClick = document.createElement("a");
         var text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID10"); ?>");
-        ProjectClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id10');?>&Itemid=0' );
+        ProjectClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id10');?>&Itemid=0');
         ProjectClick.append(text);
         projectButton.append(ProjectClick);
         document.getElementById("summaryProjects").append(projectButton);
         document.getElementById("summaryProjects").append(document.createElement("br"));
 
-        <?php if (isset($projects)) :?>
-            afficheProjets();
-        <?php endif; ?>
+		<?php if (isset($projects)) :?>
+        afficheProjets();
+		<?php endif; ?>
 
-        jQuery('#viewTable').each(function() {
+        jQuery('#viewTable').each(function () {
             if (jQuery(this).find('tr').children("td").length < 2) {
                 jQuery(this).hide();
             }
@@ -884,7 +890,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
             button.append(icon);
             var OffreClick = document.createElement("a");
             var text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID7"); ?>");
-            OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id7');?>&Itemid=0' );
+            OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id7');?>&Itemid=0');
             OffreClick.append(text);
             button.append(OffreClick);
             document.getElementById("summaryNationality").append(button);
@@ -900,7 +906,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
             button.append(icon);
             var OffreClick = document.createElement("a");
             var text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID9"); ?>");
-            OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id9');?>&Itemid=0' );
+            OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id9');?>&Itemid=0');
             OffreClick.append(text);
             button.append(OffreClick);
             document.getElementById("summaryGender").append(button);
@@ -916,7 +922,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
             button.append(icon);
             var OffreClick = document.createElement("a");
             var text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID10"); ?>");
-            OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id10');?>&Itemid=0' );
+            OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id10');?>&Itemid=0');
             OffreClick.append(text);
             button.append(OffreClick);
             document.getElementById("summaryAge").append(button);
@@ -932,7 +938,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
             button.append(icon);
             var OffreClick = document.createElement("a");
             var text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID8"); ?>");
-            OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id8');?>&Itemid=0' );
+            OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id8');?>&Itemid=0');
             OffreClick.append(text);
             button.append(OffreClick);
             document.getElementById("summaryFiles").append(button);
@@ -949,7 +955,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
             button.append(icon);
             var OffreClick = document.createElement("a");
             var text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID1"); ?>");
-            OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id1');?>&Itemid=0' );
+            OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id1');?>&Itemid=0');
             OffreClick.append(text);
             button.append(OffreClick);
             document.getElementById("userSummary").append(button);
@@ -962,7 +968,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
             buttonC.append(iconC);
             var contacts = document.createElement("a");
             text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID2"); ?>");
-            contacts.setAttribute('href', '<?php echo $user_url; ?>' );
+            contacts.setAttribute('href', '<?php echo $user_url; ?>');
             contacts.append(text);
             buttonC.append(contacts);
             document.getElementById("userSummary").append(buttonC);
@@ -970,7 +976,8 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
             var value = jQuery('.compte').val();
             afficheComptes(value, valuePeriodecompte);
         }
-        if (<?php echo $consult; ?>  && <?php echo $cand; ?>) {
+        if (<?php echo $consult; ?>  && <?php echo $cand; ?>)
+        {
             document.getElementById("offerRow").setAttribute("style", "display:block;");
             var buttonCon = document.createElement("div");
             buttonCon.className = "btn";
@@ -984,13 +991,13 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
             buttonCon.append(icon2);
             var exportDonnees1 = document.createElement("a");
             text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID3"); ?>");
-            exportDonnees1.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id3');?>&Itemid=0' );
+            exportDonnees1.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id3');?>&Itemid=0');
             exportDonnees1.append(text);
             buttonCon.append(exportDonnees1);
             document.getElementById("summaryOffres").append(buttonCon);
             var exportCand = document.createElement("a");
             text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID5"); ?>");
-            exportCand.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id5');?>&Itemid=0' );
+            exportCand.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id5');?>&Itemid=0');
             exportCand.append(text);
             buttonCand.append(exportCand);
             document.getElementById("summaryCandidature").append(buttonCand);
@@ -1002,11 +1009,11 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
             var button = document.createElement("div");
             button.className = "btn";
             var icon = document.createElement("i");
-            icon.className ="search icon";
+            icon.className = "search icon";
             button.append(icon);
             var exportConnexion = document.createElement("a");
             text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID4"); ?>");
-            exportConnexion.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id4');?>&Itemid=0' );
+            exportConnexion.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id4');?>&Itemid=0');
             exportConnexion.append(text);
             button.append(exportConnexion);
             document.getElementById("summaryConnexion").append(button);
@@ -1016,21 +1023,21 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
 
     });
 
-    jQuery('.compte').on('change', function() {
+    jQuery('.compte').on('change', function () {
         var value = jQuery(this).val();
         var valuePeriodecompte = jQuery('.periodeCompte').val();
         afficheComptes(value, valuePeriodecompte);
     });
-    jQuery('.periodeCompte').on('change', function() {
+    jQuery('.periodeCompte').on('change', function () {
         var value = jQuery('.compte').val();
         var valuePeriodecompte = jQuery(this).val();
         afficheComptes(value, valuePeriodecompte);
     });
-    jQuery('.periodeCand').on('change', function() {
+    jQuery('.periodeCand').on('change', function () {
         var valuePeriodeCand = jQuery(this).val();
         afficheOffres(valuePeriodeCand);
     });
-    jQuery('.periodeCo').on('change',function() {
+    jQuery('.periodeCo').on('change', function () {
         var valuePeriodeCand = jQuery(this).val();
         afficheConnections(valuePeriodeCand);
     });
@@ -1041,6 +1048,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
     .span12 {
         display: none;
     }
+
     .explination {
         text-align: center;
         background-color: rgb(233, 233, 233);
@@ -1051,6 +1059,7 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
         padding-bottom: 10px;
         margin-bottom: 30px;
     }
+
     table {
         border: none;
     }
@@ -1058,37 +1067,48 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
     table td {
         border: none;
     }
+
     #selectPeriode {
         margin-left: 33%;
         padding-bottom: 50px;
     }
+
     #userSummary p {
         margin-bottom: 0px;
     }
+
     #summaryOffres p {
         margin-bottom: 0px;
     }
+
     #summaryCandidature p {
         margin-bottom: 0px;
     }
+
     #summaryConnexion p {
         margin-bottom: 0px;
     }
+
     #summaryRelation p {
         margin-bottom: 0px;
     }
+
     #projects {
         height: 400px !important;
     }
+
     #connectionRow {
         margin-bottom: 35px;
     }
+
     #userRow {
         margin-bottom: 35px;
     }
+
     #summaryCandidature {
         margin-left: 10px;
     }
+
     #summaryProjects {
         margin-top: 20px;
         margin-left: 30%;

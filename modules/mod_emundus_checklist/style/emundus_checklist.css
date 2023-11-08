@@ -1,13 +1,13 @@
-#g-sidebar{
+#g-sidebar {
     background: transparent !important;
     margin: 0 !important;
 }
 
-#g-sidebar .moduletable{
+#g-sidebar .moduletable {
     padding: 0 !important;
 }
 
-.mod_emundus_checklist{
+.mod_emundus_checklist {
     margin-left: 32px;
     box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
     border-radius: var(--em-form-br-block) !important;
@@ -15,18 +15,18 @@
     background: #fff;
 }
 
-.mod_emundus_checklist___buttons{
+.mod_emundus_checklist___buttons {
     margin-left: 32px;
     margin-top: 24px;
 }
 
-.mod_emundus_checklist___grid{
+.mod_emundus_checklist___grid {
     display: grid;
     grid-template-columns: 32px 86%;
     align-items: baseline;
 }
 
-.mod_emundus_checklist___form_item a:not(.mod_emundus_checklist___attachment_links){
+.mod_emundus_checklist___form_item a:not(.mod_emundus_checklist___attachment_links) {
     border-bottom: unset !important;
     padding: unset !important;
     min-height: 40px;
@@ -37,47 +37,48 @@
     color: black;
     font-family: var(--em-applicant-font);
 }
-.mod_emundus_checklist___attachment_links{
+
+.mod_emundus_checklist___attachment_links {
     color: var(--neutral-900);
 }
 
-.mod_emundus_checklist___attachment_links:hover{
+.mod_emundus_checklist___attachment_links:hover {
     color: var(--neutral-700);
 }
 
-.mod_emundus_checklist #mod_emundus_checklist___expand_icon{
+.mod_emundus_checklist #mod_emundus_checklist___expand_icon {
     display: none;
     font-size: 24px !important;
     color: var(--neutral-800);
 }
 
-#mod_emundus_checklist___content{
+#mod_emundus_checklist___content {
     overflow: hidden;
 }
 
-.mod_emundus_campaign__details_file_icon{
+.mod_emundus_campaign__details_file_icon {
     margin-right: 16px;
 }
 
-.mod_emundus_checklist___content_closed{
+.mod_emundus_checklist___content_closed {
     max-height: 0 !important;
     /* margin-top: 0 !important; */
 }
 
 .mod_emundus_checklist #mod_emundus_checklist___content.mod_emundus_checklist___content_closed.em-mt-24 {
-     margin-top: 0;
+    margin-top: 0;
 }
 
-#mod_emundus_checklist___expand_icon{
+#mod_emundus_checklist___expand_icon {
     transition: transform 300ms linear;
 }
 
-.mod_emundus_checklist___attachment{
+.mod_emundus_checklist___attachment {
     margin-top: -12px;
     margin-left: 36px;
 }
 
-.mod_emundus_checklist___count{
+.mod_emundus_checklist___count {
     border-radius: 4px;
     background: #F3F3F3;
     padding: 3px 8px;
@@ -125,6 +126,7 @@
     border: solid 1px var(--neutral-300);
     background: var(--neutral-300);
 }
+
 .mod_emundus_checklist .mod_emundus_checklist_need_missing:not(.active) .mod_emundus_checklist___step_count .material-icons-outlined {
     color: var(--red-500);
 }
@@ -133,7 +135,8 @@
     color: #FFF;
     border: none;
 }
-.mod_emundus_checklist .mod_emundus_checklist_need_ok:not(.active) .mod_emundus_checklist___step_count  .material-icons-outlined {
+
+.mod_emundus_checklist .mod_emundus_checklist_need_ok:not(.active) .mod_emundus_checklist___step_count .material-icons-outlined {
     color: var(--main-500);
 }
 
@@ -142,21 +145,22 @@
 }
 
 @media all and (max-width: 479px) {
-    .mod_emundus_checklist{
+    .mod_emundus_checklist {
         margin-left: 0;
     }
-    .mod_emundus_checklist___buttons{
+
+    .mod_emundus_checklist___buttons {
         margin-left: 0;
         width: 100%;
     }
 
-    .mod_emundus_checklist #mod_emundus_checklist___expand_icon{
+    .mod_emundus_checklist #mod_emundus_checklist___expand_icon {
         display: block;
     }
 }
 
-@media all and (min-width: 480px) and (max-width: 767px){
-    .mod_emundus_checklist #mod_emundus_checklist___expand_icon{
+@media all and (min-width: 480px) and (max-width: 767px) {
+    .mod_emundus_checklist #mod_emundus_checklist___expand_icon {
         display: block;
     }
 

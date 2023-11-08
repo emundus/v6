@@ -1,4 +1,4 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import {shallowMount, createLocalVue} from '@vue/test-utils';
 import AttachmentEdit from '../../../../src/components/Attachments/AttachmentEdit';
 import translate from '../../../mocks/mixins/translate';
 import mockAttachment from '../../../mocks/attachments.mock';
@@ -34,7 +34,7 @@ describe('AttachmentEdit.vue', () => {
         store
     });
 
-    it ('AttachmentEdit should exist', () => {
+    it('AttachmentEdit should exist', () => {
         expect(wrapper.find('#attachment-edit').exists()).toBeTruthy();
         expect(wrapper.vm.$data.attachment).toEqual(mockAttachment.attachments[0]);
     });
@@ -76,7 +76,7 @@ describe('AttachmentEdit.vue, attachment with empty profiles', () => {
         store
     });
 
-    it ('AttachmentEdit should exist', () => {
+    it('AttachmentEdit should exist', () => {
         expect(wrapper.find('#attachment-edit').exists()).toBeTruthy();
         expect(wrapper.vm.$data.attachment).toEqual(attachment);
     });

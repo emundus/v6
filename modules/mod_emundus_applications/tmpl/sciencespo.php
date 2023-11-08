@@ -15,75 +15,82 @@ echo $description;
     </a>
 <?php endif; ?>
 <a id="add-application" href="<?= JText::_('ORDERS_LINK'); ?>" class="btn btn-success">
-    <?= JText::_('MY_ORDERS'); ?>
+	<?= JText::_('MY_ORDERS'); ?>
 </a>
 <?php if (!empty($applications)) : ?>
-    <div class="<?= $moduleclass_sfx ?>">
-        <?php foreach ($applications as $application) : ?>
+<div class="<?= $moduleclass_sfx ?>">
+	<?php foreach ($applications
 
-            <?php
-            $is_admission = in_array($application->status, $admission_status);
-            $state = $application->published;
-            $confirm_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&confirm=1';
-            $first_page_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
-            if ($state == '1' || $show_remove_files == 1 && $state == '-1' || $show_archive_files == 1 && $state == '0' ) : ?>
-                <?php
-                if ($file_tags != '') {
+	as $application) : ?>
 
-                    $post = array(
-                        'APPLICANT_ID'  => $user->id,
-                        'DEADLINE'      => strftime("%A %d %B %Y %H:%M", strtotime($application->end_date)),
-                        'CAMPAIGN_LABEL' => $application->label,
-                        'CAMPAIGN_YEAR'  => $application->year,
-                        'CAMPAIGN_START' => $application->start_date,
-                        'CAMPAIGN_END'  => $application->end_date,
-                        'CAMPAIGN_CODE' => $application->training,
-                        'FNUM'          => $application->fnum
-                    );
+	<?php
+	$is_admission   = in_array($application->status, $admission_status);
+	$state          = $application->published;
+	$confirm_url    = (($absolute_urls === 1) ? '/' : '') . 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&confirm=1';
+	$first_page_url = (($absolute_urls === 1) ? '/' : '') . 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
+	if ($state == '1' || $show_remove_files == 1 && $state == '-1' || $show_archive_files == 1 && $state == '0') : ?>
+	<?php
+	if ($file_tags != '') {
 
-                    $tags = $m_email->setTags($user->id, $post, $application->fnum, '', $file_tags);
-                    $file_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $file_tags);
-                    $file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($application->fnum));
-                }
+		$post = array(
+			'APPLICANT_ID'   => $user->id,
+			'DEADLINE'       => strftime("%A %d %B %Y %H:%M", strtotime($application->end_date)),
+			'CAMPAIGN_LABEL' => $application->label,
+			'CAMPAIGN_YEAR'  => $application->year,
+			'CAMPAIGN_START' => $application->start_date,
+			'CAMPAIGN_END'   => $application->end_date,
+			'CAMPAIGN_CODE'  => $application->training,
+			'FNUM'           => $application->fnum
+		);
 
-                ?>
-                <div class="row" id="row<?= $application->fnum; ?>">
-                    <div class="col-md-12 main-page-application-title">
+		$tags              = $m_email->setTags($user->id, $post, $application->fnum, '', $file_tags);
+		$file_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $file_tags);
+		$file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($application->fnum));
+	}
 
-                        <a href="<?= JRoute::_($first_page_url); ?>">
-                            <?= ($is_admission &&  $add_admission_prefix)?JText::_('COM_EMUNDUS_INSCRIPTION').' - '.$application->label:$application->label; ?>
-                        </a>
+	?>
+    <div class="row" id="row<?= $application->fnum; ?>">
+        <div class="col-md-12 main-page-application-title">
 
-                    </div>
+            <a href="<?= JRoute::_($first_page_url); ?>">
+				<?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?>
+            </a>
 
-                    <div class="col-xs-12 col-md-6 main-page-file-info">
-                        <p class="em-tags-display"><?= $file_tags_display; ?></i></p>
+        </div>
 
-                        <?php if (((int) ($attachments[$application->fnum]) >= 100 && (int) ($forms[$application->fnum]) >= 100 && in_array($application->status, $status_for_send) && !$is_dead_line_passed) && $application->order_status == 'pending') : ?>
-                            <a id='send' class="btn btn-xs btn-info" href="<?= JRoute::_($confirm_url); ?>" title="<?= JText::_('UPLOAD_BANKTRANSFER'); ?>"><i class="icon-envelope"></i> <?= JText::_('UPLOAD_BANKTRANSFER'); ?></a>
-                        <?php else : ?>
-                            <a class="btn btn-warning" href="<?php echo JRoute::_($first_page_url); ?>" role="button">
-                            <i class="folder open outline icon"></i> <?= ($is_admission) ? JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_ADMISSION') : JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION'); ?>
-                            </a>
-                        <?php endif; ?>
+        <div class="col-xs-12 col-md-6 main-page-file-info">
+            <p class="em-tags-display"><?= $file_tags_display; ?></i></p>
 
-                        <?php if ($application->status == 0 && $application->training != 'sur-mesure' && $application->training != 'winter-school') : ?>
-                            <a class="btn btn-warning" href="index.php?option=com_fabrik&view=form&formid=377&usekey=fnum&rowid=<?php echo $application->fnum ?>&r=1" role="button">
-                                <?= JText::_('SWITCH_SESSION'); ?>
-                            </a>
-                        <?php endif; ?>
+			<?php if (((int) ($attachments[$application->fnum]) >= 100 && (int) ($forms[$application->fnum]) >= 100 && in_array($application->status, $status_for_send) && !$is_dead_line_passed) && $application->order_status == 'pending') : ?>
+                <a id='send' class="btn btn-xs btn-info" href="<?= JRoute::_($confirm_url); ?>"
+                   title="<?= JText::_('UPLOAD_BANKTRANSFER'); ?>"><i
+                            class="icon-envelope"></i> <?= JText::_('UPLOAD_BANKTRANSFER'); ?></a>
+			<?php else : ?>
+                <a class="btn btn-warning" href="<?php echo JRoute::_($first_page_url); ?>" role="button">
+                    <i class="folder open outline icon"></i> <?= ($is_admission) ? JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_ADMISSION') : JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION'); ?>
+                </a>
+			<?php endif; ?>
 
-                        <a class="btn btn-warning" href="<?= JText::_('FORMS_LINK'); ?>?fnum=<?php echo $application->fnum ?>" role="button">
-                            <?= JText::_('MY_FORMS'); ?>
-                        </a>
+			<?php if ($application->status == 0 && $application->training != 'sur-mesure' && $application->training != 'winter-school') : ?>
+                <a class="btn btn-warning"
+                   href="index.php?option=com_fabrik&view=form&formid=377&usekey=fnum&rowid=<?php echo $application->fnum ?>&r=1"
+                   role="button">
+					<?= JText::_('SWITCH_SESSION'); ?>
+                </a>
+			<?php endif; ?>
 
-                        <?php if (!empty($attachments) && ((int) ($attachments[$application->fnum]) >= 100 && (int) ($forms[$application->fnum]) >= 100 && in_array($application->status, $status_for_send) && !$is_dead_line_passed) || in_array($user->id, $applicants)) : ?>
+            <a class="btn btn-warning" href="<?= JText::_('FORMS_LINK'); ?>?fnum=<?php echo $application->fnum ?>"
+               role="button">
+				<?= JText::_('MY_FORMS'); ?>
+            </a>
 
-                            <!--                            <a id='send' class="btn btn-xs" href="<?/*= JRoute::_($confirm_url); */?>" title="<?/*= JText::_('MOD_EMUNDUS_APPLICATIONS_SEND_APPLICATION_FILE'); */?>"><i class="icon-envelope"></i> <?/*= JText::_('MOD_EMUNDUS_APPLICATIONS_SEND_APPLICATION_FILE'); */?></a>
+			<?php if (!empty($attachments) && ((int) ($attachments[$application->fnum]) >= 100 && (int) ($forms[$application->fnum]) >= 100 && in_array($application->status, $status_for_send) && !$is_dead_line_passed) || in_array($user->id, $applicants)) : ?>
+
+                <!--                            <a id='send' class="btn btn-xs" href="<? /*= JRoute::_($confirm_url); */ ?>" title="<? /*= JText::_('MOD_EMUNDUS_APPLICATIONS_SEND_APPLICATION_FILE'); */ ?>"><i class="icon-envelope"></i> <? /*= JText::_('MOD_EMUNDUS_APPLICATIONS_SEND_APPLICATION_FILE'); */ ?></a>
 -->
-                        <?php endif; ?>
+			<?php endif; ?>
 
-                        <!--                        <a id='print' class="btn btn-info btn-xs" href="<?/*= JRoute::_('index.php?option=com_emundus&task=pdf_by_status&fnum=' . $application->fnum); */?>" title="<?/*= JText::_('MOD_EMUNDUS_APPLICATIONS_PRINT_APPLICATION_FILE'); */?>" target="_blank"><i class="icon-print"></i></a>
+            <!--                        <a id='print' class="btn btn-info btn-xs" href="<? /*= JRoute::_('index.php?option=com_emundus&task=pdf_by_status&fnum=' . $application->fnum); */ ?>" title="<? /*= JText::_('MOD_EMUNDUS_APPLICATIONS_PRINT_APPLICATION_FILE'); */ ?>" target="_blank"><i class="icon-print"></i></a>
                         <?php if ((in_array($application->status, $status_for_send) && empty($status_for_delete)) || (in_array($application->status, $status_for_delete))) : ?>
                             <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?= $application->fnum; ?>');" href="#row<?php !empty($attachments) ? $attachments[$application->fnum] : ''; ?>" title="<?= JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
                         <?php endif; ?>
@@ -152,7 +159,7 @@ echo $description;
                             <span class="label label-<?= $application->class; ?>">
                         <?= $application->value; ?>
                     </span>
-                            <?php if(!empty($application->order_status)): ?>
+                            <?php if (!empty($application->order_status)): ?>
                                 <br>
                                 <strong><?= JText::_('ORDER_STATUS'); ?> :</strong>
                                 <span class="label" style="background-color: <?= $application->order_color; ?>">
@@ -161,15 +168,15 @@ echo $description;
                             <?php endif; ?>
                         </div>
                     </div>
-                    <?php if ($show_state_files == 1) :?>
+                    <?php if ($show_state_files == 1) : ?>
                         <div class="col-xs-12 col-md-3 main-page-file-progress">
                             <div class="main-page-file-progress-label">
                                 <strong><?= JText::_('MOD_EMUNDUS_STATE'); ?></strong>
-                                <?php if ($state == 1) :?>
+                                <?php if ($state == 1) : ?>
                                     <span class="label alert-success" role="alert"> <?= JText::_('MOD_EMUNDUS_PUBLISH'); ?></span>
-                                <?php elseif ($state == 0) :?>
+                                <?php elseif ($state == 0) : ?>
                                     <span class="label alert-secondary" role="alert"> <?= JText::_('MOD_EMUNDUS_ARCHIVE'); ?></span>
-                                <?php else :?>
+                                <?php else : ?>
                                     <span class="label alert-danger" role="alert"><?= JText::_('MOD_EMUNDUS_DELETE'); ?></span>
                                 <?php endif; ?>
                             </div>
@@ -177,7 +184,7 @@ echo $description;
                     <?php endif; ?>
 
                     <div class="col-md-12">
-                        <?php if (!empty($forms) && $forms[$application->fnum] == 0 && $state == '1') :?>
+                        <?php if (!empty($forms) && $forms[$application->fnum] == 0 && $state == '1') : ?>
                             <div class="ui segments">
                                 <div class="ui yellow segment">
                                     <p><i class="info circle icon"></i> <?= JText::_('MOD_EMUNDUS_FLOW_EMPTY_FILE_ACTION'); ?></p>
@@ -191,9 +198,9 @@ echo $description;
         <?php endforeach; ?>
     </div>
 <?php else :
-    echo JText::_('NO_FILE_MESSAGE');
+				echo JText::_('NO_FILE_MESSAGE');
 
-endif; ?>
+			endif; ?>
 
 <?php if ($show_add_application && $position_add_application > 0 && $applicant_can_renew) : ?>
     <a class="btn btn-success" href="<?= $cc_list_url; ?>"><span class="icon-plus-sign"> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span></a>
@@ -236,8 +243,8 @@ endif; ?>
             confirmButtonColor: "#28a745",
             cancelButtonColor: "#dc3545",
             reverseButtons: true,
-            confirmButtonText: "<?php echo JText::_('JYES');?>",
-            cancelButtonText: "<?php echo JText::_('JNO');?>"
+            confirmButtonText: "<?php echo JText::_('JYES'); ?>",
+            cancelButtonText: "<?php echo JText::_('JNO'); ?>"
         }).then((confirm) => {
             if (confirm.value) {
                 document.location.href = "index.php?option=com_emundus&task=deletefile&fnum=" + fnum+"&redirect=<?php echo base64_encode(JUri::getInstance()->getPath()); ?>";

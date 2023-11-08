@@ -1,7 +1,8 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-ini_set( 'display_errors', false );
+
+ini_set('display_errors', false);
 error_reporting(E_ALL);
 define('_JEXEC', 1);
 define('DS', DIRECTORY_SEPARATOR);
@@ -25,7 +26,8 @@ JFactory::getApplication('site');
 session_start();
 
 
-class EmundusHelperFilesTest extends TestCase {
+class EmundusHelperFilesTest extends TestCase
+{
 
 	private $h_files;
 
@@ -45,13 +47,15 @@ class EmundusHelperFilesTest extends TestCase {
 	 * @test
 	 * @covers EmundusHelperFiles::createFnum
 	 */
-	public function testCreateFnum() {
+	public function testCreateFnum()
+	{
 		$this->assertSame('', EmundusHelperFiles::createFnum(0, 0, false), 'Create fnum with wrong campaign_id and user_id returns empty');
 		$this->assertSame('', EmundusHelperFiles::createFnum(0, 95, false), 'Create fnum with wrong campaign_id returns empty');
 
 		if (JFactory::getUser()->id) {
 			$this->assertNotEmpty(EmundusHelperFiles::createFnum(1, 0, false), 'Create fnum with empty user_id  will use current user_id and returns not empty');
-		} else {
+		}
+		else {
 			$this->assertSame('', EmundusHelperFiles::createFnum(1, 0, false), 'Create fnum with nio user id connected or given returns empty');
 		}
 		$this->assertNotEmpty(EmundusHelperFiles::createFnum(1, 95, false), 'Create fnum with correct campaign_id and user_id returns not empty');
@@ -62,7 +66,8 @@ class EmundusHelperFilesTest extends TestCase {
 	 * @test
 	 * @covers EmundusHelperFiles::getExportExcelFilter
 	 */
-	public function testGetExportExcelFilter() {
+	public function testGetExportExcelFilter()
+	{
 		$this->assertFalse($this->h_files->getExportExcelFilter(0), 'Get export excel filter with wrong user id returns false');
 
 		$coord_filters = $this->h_files->getExportExcelFilter(95);
@@ -70,7 +75,8 @@ class EmundusHelperFilesTest extends TestCase {
 		$this->assertSame('array', gettype($coord_filters), 'Get export excel filter with correct user id returns an array even if empty');
 	}
 
-	public function testfindJoinsBetweenTablesRecursively() {
+	public function testfindJoinsBetweenTablesRecursively()
+	{
 		$joins = $this->h_files->findJoinsBetweenTablesRecursively('', '');
 		$this->assertEmpty($joins, 'Find joins between tables recursively with empty tables returns an empty array');
 
@@ -93,13 +99,14 @@ class EmundusHelperFilesTest extends TestCase {
 		$this->assertSame(1, sizeof($joins), 'Join between jos_emundus_campaign_candidature and jos_emundus_users returns 1 join');
 		$this->assertSame('jos_emundus_campaign_candidature.applicant_id = jos_emundus_users.user_id', $joins[0]['join_from_table'] . '.' . $joins[0]['table_key'] . ' = ' . $joins[0]['table_join'] . '.' . $joins[0]['table_join_key'], 'Join between jos_emundus_campaign_candidature and jos_emundus_users returns correct join');
 
-		$joins = $this->h_files->findJoinsBetweenTablesRecursively('jos_emundus_evaluations', 'jos_emundus_campaign_candidature');
+		$joins          = $this->h_files->findJoinsBetweenTablesRecursively('jos_emundus_evaluations', 'jos_emundus_campaign_candidature');
 		$joins_reversed = $this->h_files->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', 'jos_emundus_evaluations');
 		$this->assertSame($joins, $joins_reversed, 'Join between jos_emundus_evaluations and jos_emundus_campaign_candidature returns same join as join between jos_emundus_campaign_candidature and jos_emundus_evaluations');
 	}
 
-	public function testwriteJoins() {
-		$joins = $this->h_files->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', 'jos_emundus_setup_campaigns');
+	public function testwriteJoins()
+	{
+		$joins          = $this->h_files->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', 'jos_emundus_setup_campaigns');
 		$already_joined = array();
 
 		$joins_as_string = $this->h_files->writeJoins([], $already_joined);
@@ -137,11 +144,12 @@ class EmundusHelperFilesTest extends TestCase {
 		$this->assertSame('ecc.created >= \'2023-02-01\'', $query_condition, 'Write query with between operator for date filter type works even if only "from" value is passed');
 	}
 
-	public function testgetFabrikElementData() {
+	public function testgetFabrikElementData()
+	{
 		$data = $this->h_files->getFabrikElementData(0);
 		$this->assertEmpty($data, 'Get fabrik element data with 0 id returns empty array');
 
-		$db = JFactory::getDbo();
+		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 		$query->select('*')
 			->from('#__fabrik_elements')

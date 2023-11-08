@@ -1,13 +1,13 @@
-.table{
+.table {
     width: 100%;
     margin-bottom: 18px;
 }
 
-.table tr{
+.table tr {
     border: none;
 }
 
-.table td, .table th{
+.table td, .table th {
     padding: 8px;
     line-height: 18px;
     text-align: left;

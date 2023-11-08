@@ -1,14 +1,15 @@
 <template>
   <div class="ml-8 em-files">
-    <Application v-if="currentFile" :file="currentFile" :type="$props.type" :user="$props.user" :ratio="$props.ratio" @getFiles="getFiles(true)" />
+    <Application v-if="currentFile" :file="currentFile" :type="$props.type" :user="$props.user" :ratio="$props.ratio"
+                 @getFiles="getFiles(true)"/>
 
     <div class="mb-4 mt-4 flex items-center justify-between">
-      <h1>{{ translate('COM_EMUNDUS_FILES_'+type.toUpperCase()) }}</h1>
+      <h1>{{ translate('COM_EMUNDUS_FILES_' + type.toUpperCase()) }}</h1>
     </div>
 
-	  <div v-if="error.displayed" class="alert">
-		  <p>{{ error.message }}</p>
-	  </div>
+    <div v-if="error.displayed" class="alert">
+      <p>{{ error.message }}</p>
+    </div>
 
     <div v-if="files">
       <div class="flex items-center justify-between mb-4">
@@ -45,60 +46,75 @@
       <tabs v-if="$props.type === 'evaluation'" :tabs="tabs" @updateTab="updateTab"></tabs>
       <hr/>
 
-	    <div v-if="!filtersLoading" class="flex justify-between items-start mb-4">
-		    <div id="filters" class="flex flex-col">
-			    <div id="default-filters" class="mb-4" v-if="defaultFilters.length > 0" v-click-outside="onDefaultFiltersClickOutside">
-				    <div class="em-tabs cursor-pointer flex items-center em-s-justify-content-center" @click="openedFilters = !openedFilters">
-					    <span>{{ translate('COM_EMUNDUS_FILES_FILTER') }}</span>
-					    <span class="material-icons-outlined ml-3">filter_list</span>
-				    </div>
-				    <ul :class="{'hidden': !openedFilters, 'em-input': true}">
-					    <li v-for="filter in defaultFilters" :key="filter.id" @click="addFilter(filter)" class="em-pointer">{{ filter.label }}</li>
-				    </ul>
-			    </div>
-			    <div id="applied-filters" v-if="filters.length > 0" class="flex items-center">
-				    <div v-for="filter in filters" :key="filter.key" class="applied-filter ml-3 flex items-center">
-					    <label class="filter-label mr-3" :for="filter.id + '-' + filter.key" :title="filter.label">{{ filter.label }}</label>
-					    <select class="mr-3" v-model="filter.selectedOperator">
-							    <option v-for="operator in filter.operators" :key="operator.value" :value="operator.value">{{ operator.label }}</option>
-					    </select>
-					    <input v-if="filter.type == 'field'" :name="filter.id + '-' + filter.key" type="text" :placeholder="filter.label" v-model="filter.selectedValue"/>
-					    <input v-else-if="filter.type == 'date'" :name="filter.id + '-' + filter.key" type="date" v-model="filter.selectedValue">
-					    <multiselect
-							  v-else-if="filter.type == 'select'"
-								v-model="filter.selectedValue"
-							  label="label"
-							  track-by="value"
-							  :options="filter.values"
-							  :multiple="true"
-							  :taggable="false"
-							  select-label=""
-							  :placeholder="filter.label"
-							  selected-label=""
-							  deselect-label=""
-							  :close-on-select="true"
-							  :clear-on-select="false"
-							  :searchable="true"
-							  :allow-empty="true"
-							  width="250px"
-					    ></multiselect>
-					    <span class="material-icons-outlined cursor-pointer em-red-500-color ml-3" @click="removeFilter(filter)">close</span>
-				    </div>
-			    </div>
-		    </div>
-		    <div v-if="defaultFilters.length > 0" class="flex items-center">
-			    <span class="material-icons-outlined mr-4 em-red-500-color" :class="{'em-pointer': filters.length > 0, 'em-pointer-disbabled': filters.length < 1 }" :alt="translate('COM_EMUNDUS_FILES_RESET_FILTERS')" @click="resetFilters">filter_alt_off</span>
-			    <button class="em-primary-button cusor-pointer" @click="applyFilters">{{ translate('COM_EMUNDUS_FILES_APPLY_FILTER') }}</button>
-		    </div>
-	    </div>
-	    <div v-else class="em-flex-row em-flex-space-between em-mb-16">
-			    <skeleton height="40px" width="96px" class="em-border-radius-8"></skeleton>
-			    <skeleton height="40px" width="120px" class="em-border-radius-8"></skeleton>
-	    </div>
+      <div v-if="!filtersLoading" class="flex justify-between items-start mb-4">
+        <div id="filters" class="flex flex-col">
+          <div id="default-filters" class="mb-4" v-if="defaultFilters.length > 0"
+               v-click-outside="onDefaultFiltersClickOutside">
+            <div class="em-tabs cursor-pointer flex items-center em-s-justify-content-center"
+                 @click="openedFilters = !openedFilters">
+              <span>{{ translate('COM_EMUNDUS_FILES_FILTER') }}</span>
+              <span class="material-icons-outlined ml-3">filter_list</span>
+            </div>
+            <ul :class="{'hidden': !openedFilters, 'em-input': true}">
+              <li v-for="filter in defaultFilters" :key="filter.id" @click="addFilter(filter)" class="em-pointer">
+                {{ filter.label }}
+              </li>
+            </ul>
+          </div>
+          <div id="applied-filters" v-if="filters.length > 0" class="flex items-center">
+            <div v-for="filter in filters" :key="filter.key" class="applied-filter ml-3 flex items-center">
+              <label class="filter-label mr-3" :for="filter.id + '-' + filter.key" :title="filter.label">{{
+                  filter.label
+                }}</label>
+              <select class="mr-3" v-model="filter.selectedOperator">
+                <option v-for="operator in filter.operators" :key="operator.value" :value="operator.value">
+                  {{ operator.label }}
+                </option>
+              </select>
+              <input v-if="filter.type == 'field'" :name="filter.id + '-' + filter.key" type="text"
+                     :placeholder="filter.label" v-model="filter.selectedValue"/>
+              <input v-else-if="filter.type == 'date'" :name="filter.id + '-' + filter.key" type="date"
+                     v-model="filter.selectedValue">
+              <multiselect
+                  v-else-if="filter.type == 'select'"
+                  v-model="filter.selectedValue"
+                  label="label"
+                  track-by="value"
+                  :options="filter.values"
+                  :multiple="true"
+                  :taggable="false"
+                  select-label=""
+                  :placeholder="filter.label"
+                  selected-label=""
+                  deselect-label=""
+                  :close-on-select="true"
+                  :clear-on-select="false"
+                  :searchable="true"
+                  :allow-empty="true"
+                  width="250px"
+              ></multiselect>
+              <span class="material-icons-outlined cursor-pointer em-red-500-color ml-3" @click="removeFilter(filter)">close</span>
+            </div>
+          </div>
+        </div>
+        <div v-if="defaultFilters.length > 0" class="flex items-center">
+          <span class="material-icons-outlined mr-4 em-red-500-color"
+                :class="{'em-pointer': filters.length > 0, 'em-pointer-disbabled': filters.length < 1 }"
+                :alt="translate('COM_EMUNDUS_FILES_RESET_FILTERS')" @click="resetFilters">filter_alt_off</span>
+          <button class="em-primary-button cusor-pointer" @click="applyFilters">
+            {{ translate('COM_EMUNDUS_FILES_APPLY_FILTER') }}
+          </button>
+        </div>
+      </div>
+      <div v-else class="em-flex-row em-flex-space-between em-mb-16">
+        <skeleton height="40px" width="96px" class="em-border-radius-8"></skeleton>
+        <skeleton height="40px" width="120px" class="em-border-radius-8"></skeleton>
+      </div>
     </div>
 
     <div class="em-flex-row em-align-start" v-if="files && columns && files.length > 0" :key="reloadFiles">
-      <div id="table_columns_move_right" :class="moveRight ? '' : 'em-disabled-state'" class="table-columns-move em-flex-column em-mr-4" @click="scrollToRight">
+      <div id="table_columns_move_right" :class="moveRight ? '' : 'em-disabled-state'"
+           class="table-columns-move em-flex-column em-mr-4" @click="scrollToRight">
         <span class="material-icons-outlined cursor-pointer" style="font-size: 16px">arrow_back</span>
       </div>
 
@@ -107,7 +123,7 @@
           style="width: 100%"
           height="calc(100vh - 250px)"
           :data="files"
-          :default-sort = "{prop: 'file', order: 'ascending'}"
+          :default-sort="{prop: 'file', order: 'ascending'}"
           :key="reloadFiles"
           @select-all="selectRow"
           @select="selectRow">
@@ -123,7 +139,8 @@
             :sort-method="(a, b) => sortBy(a, b, 'file')">
           <template slot-scope="scope">
             <div @click="openApplication(scope.row)" class="em-pointer">
-              <p class="em-font-weight-500">{{ scope.row.applicant_name.charAt(0).toUpperCase() + scope.row.applicant_name.slice(1) }}</p>
+              <p class="em-font-weight-500">
+                {{ scope.row.applicant_name.charAt(0).toUpperCase() + scope.row.applicant_name.slice(1) }}</p>
               <span class="em-text-neutral-500 em-font-size-14">{{ scope.row.fnum }}</span>
             </div>
           </template>
@@ -135,8 +152,9 @@
               prop="status"
               sortable
               min-width="180">
-            <template slot="header" slot-scope="scope" >
-              <span :title="translate('COM_EMUNDUS_ONBOARD_STATUS')" class="em-neutral-700-color">{{translate('COM_EMUNDUS_ONBOARD_STATUS')}}</span>
+            <template slot="header" slot-scope="scope">
+              <span :title="translate('COM_EMUNDUS_ONBOARD_STATUS')"
+                    class="em-neutral-700-color">{{ translate('COM_EMUNDUS_ONBOARD_STATUS') }}</span>
             </template>
             <template slot-scope="scope">
               <p :class="'label label-'+scope.row.status_color" class="em-status">{{ scope.row.status }}</p>
@@ -146,12 +164,15 @@
           <el-table-column
               v-else-if="column.name === 'assocs'"
               min-width="180">
-            <template slot="header" slot-scope="scope" >
-              <span :title="translate('COM_EMUNDUS_FILES_ASSOCS')" class="em-neutral-700-color">{{translate('COM_EMUNDUS_FILES_ASSOCS')}}</span>
+            <template slot="header" slot-scope="scope">
+              <span :title="translate('COM_EMUNDUS_FILES_ASSOCS')"
+                    class="em-neutral-700-color">{{ translate('COM_EMUNDUS_FILES_ASSOCS') }}</span>
             </template>
             <template slot-scope="scope">
               <div class="em-group-assoc-column">
-                <span v-for="group in scope.row.assocs" :class="group.class" class="em-status em-mb-4">{{ group.label }}</span>
+                <span v-for="group in scope.row.assocs" :class="group.class" class="em-status em-mb-4">{{
+                    group.label
+                  }}</span>
               </div>
             </template>
           </el-table-column>
@@ -159,8 +180,9 @@
           <el-table-column
               v-else-if="column.name === 'tags'"
               min-width="180">
-            <template slot="header" slot-scope="scope" >
-              <span :title="translate('COM_EMUNDUS_FILES_TAGS')" class="em-neutral-700-color">{{translate('COM_EMUNDUS_FILES_TAGS')}}</span>
+            <template slot="header" slot-scope="scope">
+              <span :title="translate('COM_EMUNDUS_FILES_TAGS')"
+                    class="em-neutral-700-color">{{ translate('COM_EMUNDUS_FILES_TAGS') }}</span>
             </template>
             <template slot-scope="scope">
               <div class="em-group-assoc-column">
@@ -169,14 +191,14 @@
             </template>
           </el-table-column>
 
-            <el-table-column
+          <el-table-column
               v-else
               min-width="180"
               :prop="column.name"
               sortable
               :sort-method="(a, b) => sortBy(a, b, column.name)">
-            <template slot="header" slot-scope="scope" >
-              <span :title="column.label" class="em-neutral-700-color">{{column.label}}</span>
+            <template slot="header" slot-scope="scope">
+              <span :title="column.label" class="em-neutral-700-color">{{ column.label }}</span>
             </template>
             <template slot-scope="scope">
               <p v-html="formatter(scope.row[column.name],column)"></p>
@@ -185,7 +207,8 @@
         </template>
       </el-table>
 
-      <div id="table_columns_move_left" v-if="moveLeft" class="table-columns-move em-flex-column em-ml-4" @click="scrollToLeft">
+      <div id="table_columns_move_left" v-if="moveLeft" class="table-columns-move em-flex-column em-ml-4"
+           @click="scrollToLeft">
         <span class="material-icons-outlined em-pointer" style="font-size: 16px">arrow_forward</span>
       </div>
     </div>
@@ -196,8 +219,12 @@
 
     <div v-if="rows_selected.length > 0" class="selected-rows-tip">
       <div class="selected-rows-tip__content em-flex-row">
-        <span v-if="rows_selected.length === 1">{{ rows_selected.length }} {{ translate('COM_EMUNDUS_FILES_ELEMENT_SELECTED') }} :</span>
-        <span v-else-if="rows_selected.length > 1">{{ rows_selected.length }} {{ translate('COM_EMUNDUS_FILES_ELEMENTS_SELECTED') }} :</span>
+        <span v-if="rows_selected.length === 1">{{
+            rows_selected.length
+          }} {{ translate('COM_EMUNDUS_FILES_ELEMENT_SELECTED') }} :</span>
+        <span v-else-if="rows_selected.length > 1">{{
+            rows_selected.length
+          }} {{ translate('COM_EMUNDUS_FILES_ELEMENTS_SELECTED') }} :</span>
         <a class="em-pointer em-ml-16" @click="toggleSelection()">{{ translate('COM_EMUNDUS_FILES_UNSELECT') }}</a>
         <a class="em-pointer em-ml-16" @click="openInNewTab()">{{ translate('COM_EMUNDUS_FILES_OPEN_IN_NEW_TAB') }}</a>
       </div>
@@ -210,7 +237,7 @@
 
 <script>
 import Tabs from "@/components/Files/Tabs.vue";
-import { Table,TableColumn } from 'element-ui';
+import {Table, TableColumn} from 'element-ui';
 
 /** SERVICES **/
 import filesService from 'com_emundus/src/services/files';
@@ -222,17 +249,17 @@ import Skeleton from '../../components/Skeleton';
 export default {
   name: 'Files',
   components: {
-	  Skeleton,
+    Skeleton,
     Application,
     Tabs,
     'el-table': Table,
     'el-table-column': TableColumn,
-	  multiselect
+    multiselect
   },
   props: {
     type: {
-			String,
-	    default: ''
+      String,
+      default: ''
     },
     ratio: {
       type: String,
@@ -246,7 +273,7 @@ export default {
   mixins: [errors],
   data: () => ({
     loading: false,
-	  filtersLoading: false,
+    filtersLoading: false,
     moveRight: false,
     moveLeft: true,
     scrolling: null,
@@ -279,22 +306,22 @@ export default {
     page: null,
     pages: null,
     limit: null,
-	  defaultFilters: [],
-	  filters: [],
-	  openedFilters: false,
+    defaultFilters: [],
+    filters: [],
+    openedFilters: false,
     currentFile: null,
     rows_selected: [],
-	  error: {
-		  displayed: false,
-		  message: ''
-	  }
+    error: {
+      displayed: false,
+      message: ''
+    }
   }),
-  created(){
-		this.addKeyupEnterEventlistener();
+  created() {
+    this.addKeyupEnterEventlistener();
 
     this.getLimit();
     this.getPage();
-    if(this.$props.type === 'evaluation') {
+    if (this.$props.type === 'evaluation') {
       filesService.getSelectedTab(this.$props.type).then((tab) => {
         this.tabs.forEach((value, i) => {
           if (value.name === tab.data) {
@@ -311,20 +338,20 @@ export default {
   methods: {
 
     formatter(row, column) {
-      if(typeof row == 'string'){
+      if (typeof row == 'string') {
         return row.charAt(0).toUpperCase() + row.slice(1);
       } else {
         return row;
       }
     },
 
-    sortBy(a,b, prop) {
-      if(prop === 'file') {
+    sortBy(a, b, prop) {
+      if (prop === 'file') {
         if (a.applicant_name.toUpperCase() < b.applicant_name.toUpperCase()) return -1;
         if (a.applicant_name.toUpperCase() > b.applicant_name.toUpperCase()) return 1;
       }
 
-      if(typeof a[prop] === 'string') {
+      if (typeof a[prop] === 'string') {
         if (a[prop].toUpperCase() < b[prop].toUpperCase()) return -1;
         if (a[prop].toUpperCase() > b[prop].toUpperCase()) return 1;
       }
@@ -333,54 +360,54 @@ export default {
       if (a[prop] > b[prop]) return 1;
     },
 
-	  addKeyupEnterEventlistener(){
-		  window.document.addEventListener('keyup', (e) => {
-			  if (e.key === 'Enter'){
-				  e.preventDefault();
-					e.stopPropagation();
-			  }
-		  });
-	  },
-    getLimit(){
+    addKeyupEnterEventlistener() {
+      window.document.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      });
+    },
+    getLimit() {
       filesService.getLimit(this.$props.type).then((limit) => {
-        if(limit.status == 1) {
+        if (limit.status == 1) {
           this.limit = limit.data;
         } else {
-          this.displayError('COM_EMUNDUS_ERROR_OCCURED',limit.msg);
+          this.displayError('COM_EMUNDUS_ERROR_OCCURED', limit.msg);
         }
       });
     },
-    getPage(){
+    getPage() {
       filesService.getPage(this.$props.type).then((page) => {
-        if(page.status == 1) {
+        if (page.status == 1) {
           this.page = page.data;
         } else {
-          this.displayError('COM_EMUNDUS_ERROR_OCCURED',page.msg);
+          this.displayError('COM_EMUNDUS_ERROR_OCCURED', page.msg);
         }
       });
     },
-    getFiles(refresh = false){
-      document.querySelector('body.layout-evaluation').style.overflow= 'visible';
+    getFiles(refresh = false) {
+      document.querySelector('body.layout-evaluation').style.overflow = 'visible';
       this.loading = true;
-	    this.error.displayed = false;
-			this.error.message = '';
+      this.error.displayed = false;
+      this.error.message = '';
 
       let fnum = window.location.href.split('#')[1];
-      if(typeof fnum == 'undefined'){
+      if (typeof fnum == 'undefined') {
         fnum = '';
       }
 
       if (this.$props.type === 'evaluation') {
-        filesService.getFiles(this.$props.type,refresh,this.limit,this.page).then((files) => {
-          if(files.status == 1) {
+        filesService.getFiles(this.$props.type, refresh, this.limit, this.page).then((files) => {
+          if (files.status == 1) {
             this.total_count = files.total;
-            if(typeof files.data.all !== 'undefined') {
+            if (typeof files.data.all !== 'undefined') {
               this.files = files.data.all;
             } else {
               this.files = [];
             }
-            this.tabs.forEach((tab,i) => {
-              if(files[tab.name]){
+            this.tabs.forEach((tab, i) => {
+              if (files[tab.name]) {
                 this.tabs[i].total = files[tab.name].total;
               }
             })
@@ -388,15 +415,15 @@ export default {
             filesService.getColumns(this.$props.type).then((columns) => {
               this.columns = columns.data;
 
-              if(fnum !== ''){
+              if (fnum !== '') {
                 this.openModal(fnum);
               }
 
-	            this.getFilters();
+              this.getFilters();
               this.loading = false;
               this.reloadFiles++;
 
-              let total_pages = Math.ceil(this.tabs[this.selected_tab].total/this.limit);
+              let total_pages = Math.ceil(this.tabs[this.selected_tab].total / this.limit);
               this.pages = Array.from(Array(total_pages).keys())
             });
 
@@ -404,118 +431,117 @@ export default {
           } else {
             this.loading = false;
             this.displayError('COM_EMUNDUS_ERROR_OCCURED', files.msg);
-						this.error.displayed = true;
-						this.error.message = files.msg;
+            this.error.displayed = true;
+            this.error.message = files.msg;
           }
         });
       }
     },
-	  getFilters() {
-			this.filtersLoading = true;
-			filesService.getFilters().then((response) => {
-				if (response.status == 1) {
-					if (this.filters.length == 0 && response.data.applied_filters.length > 0 ) {
-						response.data.applied_filters.forEach((applied_filter) => {
-							const filter = response.data.default_filters.find((default_filter) => {
-								return default_filter.id == applied_filter.id;
-							});
+    getFilters() {
+      this.filtersLoading = true;
+      filesService.getFilters().then((response) => {
+        if (response.status == 1) {
+          if (this.filters.length == 0 && response.data.applied_filters.length > 0) {
+            response.data.applied_filters.forEach((applied_filter) => {
+              const filter = response.data.default_filters.find((default_filter) => {
+                return default_filter.id == applied_filter.id;
+              });
 
-							this.addFilter(filter, applied_filter.selectedValue, applied_filter.selectedOperator);
-						});
-					}
+              this.addFilter(filter, applied_filter.selectedValue, applied_filter.selectedOperator);
+            });
+          }
 
-					this.defaultFilters = response.data.default_filters;
-					this.filtersLoading = false;
-				} else {
-					this.displayError('COM_EMUNDUS_ERROR_OCCURED', response.msg);
-					this.filtersLoading = false;
-				}
-			});
-	  },
-	  addFilter(filter, selectedValue = null, selectedOperator = null) {
-			this.filters.push({
-				id: filter.id,
-				key: Math.random(),
-				type: filter.type,
-				values: filter.values,
-				label: filter.label,
-				selectedValue: selectedValue,
-				operators: filter.operators,
-				selectedOperator: selectedOperator === null ? filter.operators[0].value : selectedOperator
-			});
-	  },
-	  removeFilter(filterToRemove) {
-		  this.filters.find((filter, index) => {
-				if (filter.key == filterToRemove.key) {
-					this.filters.splice(index, 1);
-				}
-		  });
-	  },
-	  resetFilters() {
-			if (this.filters.length > 0) {
-				this.filters = [];
+          this.defaultFilters = response.data.default_filters;
+          this.filtersLoading = false;
+        } else {
+          this.displayError('COM_EMUNDUS_ERROR_OCCURED', response.msg);
+          this.filtersLoading = false;
+        }
+      });
+    },
+    addFilter(filter, selectedValue = null, selectedOperator = null) {
+      this.filters.push({
+        id: filter.id,
+        key: Math.random(),
+        type: filter.type,
+        values: filter.values,
+        label: filter.label,
+        selectedValue: selectedValue,
+        operators: filter.operators,
+        selectedOperator: selectedOperator === null ? filter.operators[0].value : selectedOperator
+      });
+    },
+    removeFilter(filterToRemove) {
+      this.filters.find((filter, index) => {
+        if (filter.key == filterToRemove.key) {
+          this.filters.splice(index, 1);
+        }
+      });
+    },
+    resetFilters() {
+      if (this.filters.length > 0) {
+        this.filters = [];
 
-				filesService.applyFilters(this.filters).then((response) => {
-					this.getFiles(true);
-				});
-			}
-	  },
-	  applyFilters()
-	  {
-			const filtersToApply = this.filters.map((filter) => {
-				if (filter.selectedValue !== null) {
-					return {
-						id: filter.id,
-						type: filter.type,
-						selectedValue: filter.selectedValue,
-						selectedOperator: filter.selectedOperator
-					}
-				}
-			});
+        filesService.applyFilters(this.filters).then((response) => {
+          this.getFiles(true);
+        });
+      }
+    },
+    applyFilters() {
+      const filtersToApply = this.filters.map((filter) => {
+        if (filter.selectedValue !== null) {
+          return {
+            id: filter.id,
+            type: filter.type,
+            selectedValue: filter.selectedValue,
+            selectedOperator: filter.selectedOperator
+          }
+        }
+      });
 
-		  filesService.applyFilters(filtersToApply).then((response) => {
-			  this.getFiles(true);
-		  });
-	  },
-    updateLimit(limit){
+      filesService.applyFilters(filtersToApply).then((response) => {
+        this.getFiles(true);
+      });
+    },
+    updateLimit(limit) {
       this.loading = true;
       filesService.updateLimit(limit).then((result) => {
-        if(result.status == 1) {
+        if (result.status == 1) {
           this.page = 0;
           this.getFiles(true);
         } else {
           this.loading = false;
-          this.displayError('COM_EMUNDUS_ERROR_OCCURED',result.msg);
+          this.displayError('COM_EMUNDUS_ERROR_OCCURED', result.msg);
         }
       });
     },
-    prevPage(){
+    prevPage() {
       this.page--;
       this.updatePage();
     },
-    nextPage(){
+    nextPage() {
       this.page++;
       this.updatePage();
     },
-    updatePage(page){
+    updatePage(page) {
       filesService.updatePage(page).then((result) => {
-        if(result.status == 1) {
+        if (result.status == 1) {
           this.getFiles(true);
         } else {
           this.loading = false;
-          this.displayError('COM_EMUNDUS_ERROR_OCCURED',result.msg);
+          this.displayError('COM_EMUNDUS_ERROR_OCCURED', result.msg);
         }
       });
     },
 
-    openModal(file){
+    openModal(file) {
       this.currentFile = file;
 
       setTimeout(() => {
         this.$modal.show("application-modal");
-      },500)
+      }, 500)
     },
-    updateTab(tab){
+    updateTab(tab) {
       this.selected_tab = this.tabs.map(e => e.name).indexOf(tab);
 
       filesService.setSelectedTab(tab).then(() => {
@@ -524,36 +550,36 @@ export default {
         this.getFiles(true);
       });
     },
-    openApplication(row){
+    openApplication(row) {
       this.openModal(row);
     },
-    selectRow(selection,row){
+    selectRow(selection, row) {
       this.rows_selected = selection;
     },
-    toggleSelection(){
+    toggleSelection() {
       this.$refs.tableFiles.clearSelection();
       this.rows_selected = [];
     },
-    openInNewTab(){
+    openInNewTab() {
       this.rows_selected.forEach((row) => {
-        window.open(window.location.href+'#'+row.fnum, '_blank');
+        window.open(window.location.href + '#' + row.fnum, '_blank');
       });
     },
-    scrollToLeft(){
+    scrollToLeft() {
       this.moveRight = true;
 
       let tableScroll = document.getElementsByClassName('el-table__body-wrapper')[0];
       tableScroll.scrollLeft += 180;
     },
-    scrollToRight(){
+    scrollToRight() {
       let tableScroll = document.getElementsByClassName('el-table__body-wrapper')[0];
       tableScroll.scrollLeft -= 180;
-      if(tableScroll.scrollLeft == 0){
+      if (tableScroll.scrollLeft == 0) {
         this.moveRight = false;
       }
     },
 
-    stopScrolling(){
+    stopScrolling() {
       clearInterval(this.scrolling);
       this.scrolling = null;
     },
@@ -562,21 +588,20 @@ export default {
       return page + 1;
     },
 
-	  onDefaultFiltersClickOutside()
-	  {
-			if (this.openedFilters) {
-				this.openedFilters = false;
-			}
-	  }
+    onDefaultFiltersClickOutside() {
+      if (this.openedFilters) {
+        this.openedFilters = false;
+      }
+    }
   },
   watch: {
-    limit: function(value, oldVal){
-      if(oldVal !== null && !this.loading) {
+    limit: function (value, oldVal) {
+      if (oldVal !== null && !this.loading) {
         this.updateLimit(value);
       }
     },
-    page: function(value, oldVal){
-      if(oldVal !== null && !this.loading) {
+    page: function (value, oldVal) {
+      if (oldVal !== null && !this.loading) {
         this.updatePage(value);
       }
     }
@@ -585,88 +610,91 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.em-files{
+.em-files {
   width: 98% !important;
   margin: auto;
 }
-.table-columns-move{
+
+.table-columns-move {
   height: calc(100vh - 250px);
   border-radius: 8px;
   background: white;
   width: 24px;
 }
-select.em-select-no-border{
+
+select.em-select-no-border {
   background-color: transparent !important;
 }
 
 #filters {
-	align-items: flex-start;
+  align-items: flex-start;
 
-	#default-filters {
-		position: relative;
+  #default-filters {
+    position: relative;
 
-		ul {
-			position: absolute;
-			top: 50px;
-			z-index: 5;
-			background-color: white;
-			margin: 0;
-			padding: 0;
-			list-style-type: none;
-			min-width: 300px;
-			max-height: 500px;
-			overflow-y: scroll;
+    ul {
+      position: absolute;
+      top: 50px;
+      z-index: 5;
+      background-color: white;
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+      min-width: 300px;
+      max-height: 500px;
+      overflow-y: scroll;
 
-			li {
-				padding: 8px;
-				transition: all .3s;
+      li {
+        padding: 8px;
+        transition: all .3s;
 
-				&:hover {
-					background: ghostwhite;
-				}
-			}
-		}
-	}
+        &:hover {
+          background: ghostwhite;
+        }
+      }
+    }
+  }
 
-	#applied-filters {
-		max-width: 90%;
-		flex-wrap: wrap;
+  #applied-filters {
+    max-width: 90%;
+    flex-wrap: wrap;
 
     .applied-filter {
       padding: 8px 0 8px 0;
       border-bottom: solid 1px var(--neutral-400);
     }
 
-		.multiselect {
-			height: 40px !important;
+    .multiselect {
+      height: 40px !important;
 
-			.multiselect__tags {
-				height: 40px !important;
+      .multiselect__tags {
+        height: 40px !important;
 
-				.multiselect__tags-wrap {
-					height: 24px !important;
-				}
-			}
-		}
-	}
+        .multiselect__tags-wrap {
+          height: 24px !important;
+        }
+      }
+    }
+  }
 }
 
 .filter-label {
-	min-width: 100px;
-	max-width: 220px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  min-width: 100px;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.em-group-assoc-column{
+.em-group-assoc-column {
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
   height: 75px;
   scrollbar-width: none;
 }
-.em-group-assoc-column::-webkit-scrollbar{
+
+.em-group-assoc-column::-webkit-scrollbar {
   display: none;
 }
 </style>

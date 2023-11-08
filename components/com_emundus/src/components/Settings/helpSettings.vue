@@ -1,6 +1,8 @@
 <template>
   <div class="container-evaluation" style="width: auto">
-    <button type="button" @click="rewind()" class="bouton-sauvergarder-et-continuer" style="float: left">{{ REWINDTUTORIAL }}</button>
+    <button type="button" @click="rewind()" class="bouton-sauvergarder-et-continuer" style="float: left">
+      {{ REWINDTUTORIAL }}
+    </button>
   </div>
 </template>
 
@@ -22,7 +24,7 @@ export default {
   }),
 
   methods: {
-    rewind(){
+    rewind() {
       axios({
         method: "post",
         url: "index.php?option=com_emundus&controller=settings&task=rewindtutorial",

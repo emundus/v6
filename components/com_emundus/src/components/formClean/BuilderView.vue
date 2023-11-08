@@ -8,20 +8,28 @@
          v-html="object_json.show_page_heading.page_heading"
     />
     <div class="em-flex-row em-flex-space-between page-header" v-if="eval == 0 && !updatePage">
-      <h3 v-if="object_json.show_title" class="em-mr-8" @click="enableUpdatingPage(object_json)" v-html="object_json.show_title.value" />
-      <span @click="$emit('modalOpen');$modal.show('modalSide' + object.rgt)" :title="translations.Edit" class="material-icons-outlined em-pointer">edit</span>
+      <h3 v-if="object_json.show_title" class="em-mr-8" @click="enableUpdatingPage(object_json)"
+          v-html="object_json.show_title.value"/>
+      <span @click="$emit('modalOpen');$modal.show('modalSide' + object.rgt)" :title="translations.Edit"
+            class="material-icons-outlined em-pointer">edit</span>
     </div>
 
     <div v-show="updatePage && indexPage == object_json.id" class="em-flex-row page-header">
-      <input style="margin-bottom: 0" v-if="object_json.show_title" v-model="object_json.show_title.label[actualLanguage]" @keyup.enter="updateLabelPage(object_json)" :id="'update_input_' + object_json.id"/>
-      <span @click="updateLabelPage(object_json)" :title="translations.Validate" class="material-icons-outlined em-pointer">done</span>
+      <input style="margin-bottom: 0" v-if="object_json.show_title"
+             v-model="object_json.show_title.label[actualLanguage]" @keyup.enter="updateLabelPage(object_json)"
+             :id="'update_input_' + object_json.id"/>
+      <span @click="updateLabelPage(object_json)" :title="translations.Validate"
+            class="material-icons-outlined em-pointer">done</span>
     </div>
 
-    <p v-if="eval == 0 && !updateIntroPage" class="em-mt-16" v-html="object_json.intro_value" />
+    <p v-if="eval == 0 && !updateIntroPage" class="em-mt-16" v-html="object_json.intro_value"/>
 
-    <button class="em-primary-button em-w-auto em-m-center" @click="$emit('createGroup')">{{ translate('COM_EMUNDUS_ADD_SECTION') }}</button>
+    <button class="em-primary-button em-w-auto em-m-center" @click="$emit('createGroup')">
+      {{ translate('COM_EMUNDUS_ADD_SECTION') }}
+    </button>
 
-    <form method="post" v-on:submit.prevent object_json.attribs class="fabrikForm" :id="'form_' + object_json.id" :style="eval == 1 ? 'margin-top: 30px' : ''">
+    <form method="post" v-on:submit.prevent object_json.attribs class="fabrikForm" :id="'form_' + object_json.id"
+          :style="eval == 1 ? 'margin-top: 30px' : ''">
       <div v-if="object_json.plugintop" v-html="object_json.plugintop"></div>
 
       <draggable
@@ -36,29 +44,34 @@
              @mouseover="enableGroupHover(group.group_id)"
              @mouseleave="disableGroupHover()">
 
-          <fieldset :class="[group.group_class]" :id="'group_'+group.group_id" :style="group.hidden_group == -1 ? 'background: #e3e3e3;' : ''" style="background-size: 20px; width: 100%" class="fabrikGroup">
+          <fieldset :class="[group.group_class]" :id="'group_'+group.group_id"
+                    :style="group.hidden_group == -1 ? 'background: #e3e3e3;' : ''"
+                    style="background-size: 20px; width: 100%" class="fabrikGroup">
             <div class="hidden-notice em-flex-row" v-if="group.hidden_group == -1">
               <span class="material-icons-outlined">warning_amber</span>
-              <span class="em-ml-8">{{translations.HiddenGroup}}</span>
+              <span class="em-ml-8">{{ translations.HiddenGroup }}</span>
             </div>
 
-            <div class="em-flex-row em-flex-space-between em-w-100" :class="updateGroup && indexGroup == group.group_id ? 'hidden' : ''">
+            <div class="em-flex-row em-flex-space-between em-w-100"
+                 :class="updateGroup && indexGroup == group.group_id ? 'hidden' : ''">
               <div class="em-flex-row em-flex-space-between em-w-100">
                 <div class="em-flex-row">
-                  <span v-show="hoverGroup && indexGroup == group.group_id" class="material-icons-outlined handle em-handle-group">drag_indicator</span>
+                  <span v-show="hoverGroup && indexGroup == group.group_id"
+                        class="material-icons-outlined handle em-handle-group">drag_indicator</span>
 
                   <legend @click="enableUpdatingGroup(group)" class="legend">
                     <span
                         class="em-ml-32"
                         :class="{'em-opacity-low': !group.group_showLegend}"
                     >
-                      {{ group.group_showLegend ? group.group_showLegend : translate('COM_EMUNDUS_FORM_BUILDER_ADD_TITLE')}}
+                      {{ group.group_showLegend ? group.group_showLegend : translate('COM_EMUNDUS_FORM_BUILDER_ADD_TITLE') }}
                     </span>
                   </legend>
                 </div>
 
                 <div class="em-flex-row">
-                  <span :class="group.repeat_group ? 'active-repeat' : ''" class="em-ml-8 em-pointer" :title="translations.RepeatedGroup" @click="enableRepatedGroup(group)">
+                  <span :class="group.repeat_group ? 'active-repeat' : ''" class="em-ml-8 em-pointer"
+                        :title="translations.RepeatedGroup" @click="enableRepatedGroup(group)">
                     <span class="material-icons-outlined">table_rows</span>
                   </span>
 
@@ -71,13 +84,14 @@
                           <div>
                             <nav aria-label="action" class="em-flex-column em-align-start pointer">
                               <a v-on:click="enableUpdatingGroup(group)" class="em-p-8-0 em-neutral-700-color">
-                                {{translations.EditName}}
+                                {{ translations.EditName }}
                               </a>
                               <a v-on:click="displayHideGroup(group)" class="em-p-8-0 em-neutral-700-color">
-                                {{translations.DisplayHide}}
+                                {{ translations.DisplayHide }}
                               </a>
-                              <a @click="deleteAGroup(group,index_group)" class="action-submenu" v-if="files == 0 && !group.cannot_delete" :title="translations.Delete">
-                                {{translations.Delete}}
+                              <a @click="deleteAGroup(group,index_group)" class="action-submenu"
+                                 v-if="files == 0 && !group.cannot_delete" :title="translations.Delete">
+                                {{ translations.Delete }}
                               </a>
                             </nav>
                           </div>
@@ -91,8 +105,10 @@
             </div>
 
             <div class="em-flex-row em-flex-space-between" v-show="updateGroup && indexGroup == group.group_id">
-              <input v-model="group.label[actualLanguage]" :class="translate.label_group ? '' : 'mb-1'" @keyup.enter="updateLabelGroup(group)" :id="'update_input_' + group.group_id"/>
-              <span @click="updateLabelGroup(group)" :title="translations.Validate" class="material-icons-outlined em-pointer">done</span>
+              <input v-model="group.label[actualLanguage]" :class="translate.label_group ? '' : 'mb-1'"
+                     @keyup.enter="updateLabelGroup(group)" :id="'update_input_' + group.group_id"/>
+              <span @click="updateLabelGroup(group)" :title="translations.Validate"
+                    class="material-icons-outlined em-pointer">done</span>
             </div>
             <div v-if="group.group_intro" class="groupintro" v-html="group.group_intro"></div>
 
@@ -141,42 +157,55 @@
                     <div class="control-group fabrikElementContainer span12">
                       <div class="em-w-90 em-pointer em-p-8-12 em-transparent-border-2"
                            :class="{'element-updating': hoverUpdating && indexHighlight == element.id, 'unpublished': !element.publish, 'draggable-item': draggable && indexHighlight == element.id, 'handle': !clickUpdatingLabel}">
-                        <div class="em-flex-row" :class="clickUpdatingLabel && indexHighlight == element.id ? 'hidden' : ''">
-                          <span v-if="element.label_value" @click="enableLabelInput(element.id)" v-html="element.label_value" v-show="element.labelsAbove != 2"></span>
+                        <div class="em-flex-row"
+                             :class="clickUpdatingLabel && indexHighlight == element.id ? 'hidden' : ''">
+                          <span v-if="element.label_value" @click="enableLabelInput(element.id)"
+                                v-html="element.label_value" v-show="element.labelsAbove != 2"></span>
                         </div>
 
-                        <div v-show="clickUpdatingLabel && indexHighlight == element.id" class="em-flex-row em-flex-space-between">
-                          <input v-model="element.label[actualLanguage]" @keyup.enter="updateLabelElement(element)" :id="'label_' + element.id"/>
-                          <span @click="updateLabelElement(element)" :title="translations.Validate" class="material-icons-outlined em-pointer">done</span>
+                        <div v-show="clickUpdatingLabel && indexHighlight == element.id"
+                             class="em-flex-row em-flex-space-between">
+                          <input v-model="element.label[actualLanguage]" @keyup.enter="updateLabelElement(element)"
+                                 :id="'label_' + element.id"/>
+                          <span @click="updateLabelElement(element)" :title="translations.Validate"
+                                class="material-icons-outlined em-pointer">done</span>
                         </div>
 
                         <div v-if="element.labelsAbove == 0" class="controls">
                           <div v-if="element.element" :class="element.errorClass" v-html="element.element"></div>
                           <span v-if="element.tipSide" v-html="element.tipSide"></span>
                         </div>
-                        <div v-else class="fabrikElement" :class="'plugin-'+element.plugin" v-html="element.element"></div>
+                        <div v-else class="fabrikElement" :class="'plugin-'+element.plugin"
+                             v-html="element.element"></div>
                         <span v-if="element.tipSide" v-html="element.tipSide"></span>
                         <span v-if="element.tipBelow" v-html="element.tipBelow"></span>
                       </div>
 
-                      <div class="em-w-90 em-mt-8 em-flex-row em-flex-space-between" :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
-                        <a class="em-flex-row em-mr-8" v-if="element.plugin != 'display'" :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
+                      <div class="em-w-90 em-mt-8 em-flex-row em-flex-space-between"
+                           :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
+                        <a class="em-flex-row em-mr-8" v-if="element.plugin != 'display'"
+                           :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
                           <div class="em-toggle">
-                            <input type="checkbox" class="em-toggle-check" v-model="element.FRequire" @click="updateRequireElement(element)"/>
+                            <input type="checkbox" class="em-toggle-check" v-model="element.FRequire"
+                                   @click="updateRequireElement(element)"/>
                             <strong class="b em-toggle-switch"></strong>
                             <strong class="b em-toggle-track"></strong>
                           </div>
-                          <span class="em-ml-8" style="color:black">{{translations.Required}} </span>
+                          <span class="em-ml-8" style="color:black">{{ translations.Required }} </span>
                         </a>
 
                         <div class="em-flex-row">
-                          <div class="em-flex-row em-mr-8 em-pointer" @click="openParameters(element)" :title="translations.Edit">
+                          <div class="em-flex-row em-mr-8 em-pointer" @click="openParameters(element)"
+                               :title="translations.Edit">
                             <span class="material-icons-outlined">edit</span>
                           </div>
-                          <div class="em-flex-row em-mr-8 em-pointer" @click="deleteElement(element,index)" :title="translations.Delete">
+                          <div class="em-flex-row em-mr-8 em-pointer" @click="deleteElement(element,index)"
+                               :title="translations.Delete">
                             <span class="material-icons-outlined em-red-500-color">delete</span>
                           </div>
-                          <a class="em-flex-row em-mr-8 em-pointer" target="_blank" :href="'/administrator/index.php?option=com_fabrik&view=element&layout=edit&id=' + element.id" v-if="sysaccess">
+                          <a class="em-flex-row em-mr-8 em-pointer" target="_blank"
+                             :href="'/administrator/index.php?option=com_fabrik&view=element&layout=edit&id=' + element.id"
+                             v-if="sysaccess">
                             <span class="material-icons-outlined">link</span>
                           </a>
                         </div>
@@ -195,7 +224,9 @@
       <div v-if="object_json.pluginbottom" v-html="object_json.pluginbottom"></div>
     </form>
 
-    <button class="em-primary-button em-w-auto em-m-center" @click="$emit('createGroup')">{{ translate('COM_EMUNDUS_ADD_SECTION') }}</button>
+    <button class="em-primary-button em-w-auto em-m-center" @click="$emit('createGroup')">
+      {{ translate('COM_EMUNDUS_ADD_SECTION') }}
+    </button>
   </div>
 </template>
 
@@ -325,13 +356,13 @@ export default {
   },
   methods: {
     // Elements update
-    splitProfileIdFromLabel(label){
+    splitProfileIdFromLabel(label) {
       return (label.split(/-(.+)/))[1];
     },
 
     async updateElementsOrder(group, list, elt) {
       var elements = list.map((element, index) => {
-        return { id: element.id, order: index + 1 };
+        return {id: element.id, order: index + 1};
       });
       axios({
         method: "post",
@@ -353,18 +384,19 @@ export default {
             this.translations.orderSuccess,
             this.translations.update
         );
-        let ellink = this.object.link.replace("fabrik","emundus");
+        let ellink = this.object.link.replace("fabrik", "emundus");
         axios.get(ellink + "&format=vue_jsonclean").then(r => {
           this.groups.forEach(grp => {
             this.$set(this.object_json.Groups['group_' + grp.group_id], 'elements', r.data.Groups['group_' + grp.group_id].elements)
           });
         });
         elt.group_id = group;
-      }).catch(e => {});
+      }).catch(e => {
+      });
     },
 
     updateRequireElement(element) {
-      if(this.clickUpdatingLabel) {
+      if (this.clickUpdatingLabel) {
         this.updateLabelElement(element);
       }
       setTimeout(() => {
@@ -418,7 +450,7 @@ export default {
 
     publishUnpublishEvent(element) {
       element.publish = !element.publish;
-      if(element.publish){
+      if (element.publish) {
         document.getElementById('publish_icon_' + element.id).classList.remove('fa-eye');
         document.getElementById('publish_icon_' + element.id).classList.add('fa-eye-slash');
       } else {
@@ -426,7 +458,7 @@ export default {
         document.getElementById('publish_icon_' + element.id).classList.remove('fa-eye-slash');
       }
     },
-    deleteAssociateElementDoc(docid){
+    deleteAssociateElementDoc(docid) {
 
       //delete doc drop files
       axios({
@@ -439,7 +471,8 @@ export default {
         data: qs.stringify({
           did: docid,
         })
-      }).then((rep) => {});
+      }).then((rep) => {
+      });
 
       // delete document form profile
       axios({
@@ -452,7 +485,8 @@ export default {
         data: qs.stringify({
           did: docid,
         })
-      }).then((rep) => {});
+      }).then((rep) => {
+      });
 
       // remove document
       axios({
@@ -467,11 +501,12 @@ export default {
           prid: this.prid,
           cid: this.cid
         })
-      }).then((rep) => {});
+      }).then((rep) => {
+      });
     },
 
-    deleteElement(element,index) {
-      if(this.clickUpdatingLabel) {
+    deleteElement(element, index) {
+      if (this.clickUpdatingLabel) {
         this.updateLabelElement(element);
       }
       Swal.fire({
@@ -490,7 +525,7 @@ export default {
       }).then(result => {
         if (result.value) {
 
-          if(element.plugin=="emundus_fileupload") {
+          if (element.plugin == "emundus_fileupload") {
             this.deleteAssociateElementDoc(element.params.attachmentId);
           }
           axios({
@@ -510,24 +545,25 @@ export default {
               showConfirmButton: false,
               timer: 2000
             }).then(() => {
-              this.object_json.Groups['group_' + element.group_id].elts.splice(index,1);
+              this.object_json.Groups['group_' + element.group_id].elts.splice(index, 1);
               delete this.object_json.Groups['group_' + element.group_id].elements['element' + element.id];
               this.$forceUpdate();
             });
-          }).catch(e => {});
+          }).catch(e => {
+          });
         }
       });
     },
 
-    openDuplicate(element){
-      if(this.clickUpdatingLabel) {
+    openDuplicate(element) {
+      if (this.clickUpdatingLabel) {
         this.updateLabelElement(element);
       }
       this.$emit('modalOpen')
       this.$modal.show('modalDuplicateElement' + element.id)
     },
 
-    openParameters(element){
+    openParameters(element) {
       /*if(this.clickUpdatingLabel) {
         this.updateLabelElement(element);
       }*/
@@ -536,7 +572,7 @@ export default {
       this.$modal.show('modalEditElement' + element.id)
       console.log('here');
     },
-    retrieveAssociateElementDoc(docid){
+    retrieveAssociateElementDoc(docid) {
       axios({
         method: "post",
         url: 'index.php?option=com_emundus&controller=formbuilder&task=retriveElementFormAssociatedDoc',
@@ -544,11 +580,11 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
-          gid:2,
-          docid:docid
+          gid: 2,
+          docid: docid
         })
-      }).then((result)=>{
-        this.elementAssociateDocUpdateForm.description[this.actualLanguage]=result.data.description;
+      }).then((result) => {
+        this.elementAssociateDocUpdateForm.description[this.actualLanguage] = result.data.description;
 
         if (result.data.allowed_types.includes('pdf')) {
           this.elementAssociateDocUpdateForm.selectedTypes.pdf = true;
@@ -567,11 +603,11 @@ export default {
         }
 
 
-        this.elementAssociateDocUpdateForm.nbmax=result.data.nbmax;
+        this.elementAssociateDocUpdateForm.nbmax = result.data.nbmax;
       })
     },
 
-    updateAssociateDocElement(params){
+    updateAssociateDocElement(params) {
       axios({
         method: "post",
         url: 'index.php?option=com_emundus&controller=campaign&task=updatedocument',
@@ -587,23 +623,24 @@ export default {
             "Content-Type": "application/x-www-form-urlencoded"
           },
           data: qs.stringify(params)
-        }).then((rep)=>{})
+        }).then((rep) => {
+        })
       });
     },
 
     updateLabelElement(element) {
-      if(element.plugin=="emundus_fileupload") {
+      if (element.plugin == "emundus_fileupload") {
         this.retrieveAssociateElementDoc(element.params.attachmentId);
       }
 
       let labels = element.label;
-      if(labels.en === 'Unnamed item'){
+      if (labels.en === 'Unnamed item') {
         labels.en = labels.fr;
         element.label.en = labels.fr;
       }
-      if(element.plugin=="emundus_fileupload") {
-        this.elementAssociateDocUpdateForm.name.en=labels.en;
-        this.elementAssociateDocUpdateForm.name.fr=labels.fr
+      if (element.plugin == "emundus_fileupload") {
+        this.elementAssociateDocUpdateForm.name.en = labels.en;
+        this.elementAssociateDocUpdateForm.name.fr = labels.fr
       }
 
       axios({
@@ -619,7 +656,7 @@ export default {
           NewSubLabel: labels
         })
       }).then((rep) => {
-        if(rep.data.status == 0){
+        if (rep.data.status == 0) {
           axios({
             method: "post",
             url: "index.php?option=com_emundus&controller=formbuilder&task=updateelementlabelwithouttranslation",
@@ -654,7 +691,7 @@ export default {
           });
         } else {
 
-          if(element.plugin=="emundus_fileupload") {
+          if (element.plugin == "emundus_fileupload") {
             let types = [];
             Object.keys(this.elementAssociateDocUpdateForm.selectedTypes).forEach(key => {
               if (this.elementAssociateDocUpdateForm.selectedTypes[key] == true) {
@@ -684,7 +721,7 @@ export default {
               return qs.stringify(params);
             }
           }).then(response => {
-            this.$set(element,'element',response.data.element);
+            this.$set(element, 'element', response.data.element);
             element.label_value = response.data.label_value;
             this.$emit(
                 "show",
@@ -708,7 +745,7 @@ export default {
       });
     },
 
-    reloadElement(element){
+    reloadElement(element) {
       axios({
         method: "get",
         url: "index.php?option=com_emundus&controller=formbuilder&task=getElement",
@@ -720,16 +757,14 @@ export default {
           return qs.stringify(params);
         }
       }).then(response => {
-        if(response.data.plugin === 'databasejoin' && this.repeat === false){
+        if (response.data.plugin === 'databasejoin' && this.repeat === false) {
           // Check variables
           this.repeat = true;
           this.reloadElement(element);
-        }
-
-        else{
-          this.$set(element,'element',response.data.element);
+        } else {
+          this.$set(element, 'element', response.data.element);
           element = response.data;
-          this.$set(this.keyElements,'element' + element.id,this.keyElements['element' + element.id] + 1)
+          this.$set(this.keyElements, 'element' + element.id, this.keyElements['element' + element.id] + 1)
         }
       }).catch(e => {
         this.$emit(
@@ -759,7 +794,7 @@ export default {
           NewSubLabel: labels
         })
       }).then((rep) => {
-        if(rep.data.status == 0){
+        if (rep.data.status == 0) {
           axios({
             method: "post",
             url: "index.php?option=com_emundus&controller=formbuilder&task=updategrouplabelwithouttranslation",
@@ -794,7 +829,7 @@ export default {
       });
     },
 
-    deleteAGroup(group,index){
+    deleteAGroup(group, index) {
       Swal.fire({
         title: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEGROUP"),
         text: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEGROUPWARNING"),
@@ -827,12 +862,13 @@ export default {
               showConfirmButton: false,
               timer: 2000
             }).then(() => {
-              this.groups.splice(index,1);
+              this.groups.splice(index, 1);
               delete this.object_json.Groups['group_' + group.group_id];
               this.updateGroup = false;
               this.$forceUpdate();
             });
-          }).catch(e => {});
+          }).catch(e => {
+          });
         }
       });
     },
@@ -840,7 +876,7 @@ export default {
     updateGroupsOrder() {
       var groups = this.groups.map((group, index) => {
         group.ordering = index + 2;
-        return { id: group.group_id, order: index + 2 };
+        return {id: group.group_id, order: index + 2};
       });
 
 
@@ -874,8 +910,8 @@ export default {
       });
     },
 
-    enableRepatedGroup(group){
-      if(!group.repeat_group) {
+    enableRepatedGroup(group) {
+      if (!group.repeat_group) {
         Swal.fire({
           title: this.translate("COM_EMUNDUS_ONBOARD_REPEAT_GROUP"),
           text: this.translate("COM_EMUNDUS_ONBOARD_REPEAT_GROUP_MESSAGE"),
@@ -890,7 +926,7 @@ export default {
             confirmButton: 'em-swal-confirm-button',
           },
         }).then(result => {
-          if(result.value) {
+          if (result.value) {
             axios({
               method: "POST",
               url: "index.php?option=com_emundus&controller=formbuilder&task=enablegrouprepeat",
@@ -901,7 +937,7 @@ export default {
                 gid: group.group_id,
               })
             }).then((result) => {
-              if(result.data.status == true){
+              if (result.data.status == true) {
                 group.repeat_group = 1;
                 this.$emit(
                     "show",
@@ -932,7 +968,7 @@ export default {
             confirmButton: 'em-swal-confirm-button',
           },
         }).then(result => {
-          if(result.value) {
+          if (result.value) {
             axios({
               method: "POST",
               url: "index.php?option=com_emundus&controller=formbuilder&task=disablegrouprepeat",
@@ -943,7 +979,7 @@ export default {
                 gid: group.group_id,
               })
             }).then((result) => {
-              if(result.data.status == true){
+              if (result.data.status == true) {
                 group.repeat_group = 0;
                 this.$emit(
                     "show",
@@ -964,7 +1000,7 @@ export default {
     //
 
     // Display/Hide group
-    displayHideGroup(group){
+    displayHideGroup(group) {
       Swal.fire({
         title: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_HIDE"),
         text: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_HIDE_MESSAGE"),
@@ -979,7 +1015,7 @@ export default {
           confirmButton: 'em-swal-confirm-button',
         },
       }).then(result => {
-        if(result.value) {
+        if (result.value) {
           axios({
             method: "POST",
             url: "index.php?option=com_emundus&controller=formbuilder&task=displayhidegroup",
@@ -1020,7 +1056,7 @@ export default {
           NewSubLabel: labels
         })
       }).then((rep) => {
-        if(rep.data.status == 0){
+        if (rep.data.status == 0) {
           axios({
             method: "post",
             url: "index.php?option=com_emundus&controller=formbuilder&task=updatepagelabelwithouttranslation",
@@ -1084,7 +1120,7 @@ export default {
           NewSubLabel: intros
         })
       }).then((rep) => {
-        if(rep.data.status == 0){
+        if (rep.data.status == 0) {
           axios({
             method: "post",
             url: "index.php?option=com_emundus&controller=formbuilder&task=updatepageintrowithouttranslation",
@@ -1117,11 +1153,11 @@ export default {
       });
     },
 
-    getDataObject: _.debounce(function() {
+    getDataObject: _.debounce(function () {
       this.object_json = this.object.object;
       this.getElementsArray();
     }, 500),
-    getApiData: _.debounce(function() {
+    getApiData: _.debounce(function () {
       this.$emit(
           "show",
           "foo-velocity",
@@ -1129,7 +1165,7 @@ export default {
           this.translations.updating,
           this.translations.update
       );
-      let ellink = this.object.link.replace("fabrik","emundus");
+      let ellink = this.object.link.replace("fabrik", "emundus");
       axios.get(ellink + "&format=vue_jsonclean").then(r => {
         this.object_json = r.data;
         this.$emit("UpdateUxf");
@@ -1143,7 +1179,7 @@ export default {
       });
     }, 1000),
 
-    getElementsArray(){
+    getElementsArray() {
       Object.keys(this.object_json.Groups).forEach(group => {
         this.object_json.Groups[group].elts = [];
         this.openGroup[this.object_json.Groups[group].group_id] = true;
@@ -1156,13 +1192,13 @@ export default {
 
     // Dynamic actions
     enableActionBar(index) {
-      if(!this.clickUpdatingLabel && !this.updateGroup && !this.updateIntroPage && !this.updatePage) {
+      if (!this.clickUpdatingLabel && !this.updateGroup && !this.updateIntroPage && !this.updatePage) {
         this.hoverUpdating = true;
         this.indexHighlight = index;
       }
     },
     disableActionBar() {
-      if(!this.clickUpdatingLabel && !this.updateGroup && !this.updateIntroPage && !this.updatePage) {
+      if (!this.clickUpdatingLabel && !this.updateGroup && !this.updateIntroPage && !this.updatePage) {
         this.hoverUpdating = false;
         this.clickUpdatingLabel = false;
         this.indexHighlight = 0;
@@ -1170,7 +1206,7 @@ export default {
       }
     },
     enableLabelInput(eid) {
-      if(!this.updateGroup && !this.updateIntroPage && !this.updatePage) {
+      if (!this.updateGroup && !this.updateIntroPage && !this.updatePage) {
         this.clickUpdatingLabel = true;
         setTimeout(() => {
           document.getElementById('label_' + eid).focus();
@@ -1179,14 +1215,14 @@ export default {
     },
     enableTranslationLabel(eid) {
       this.can_translate.label = !this.can_translate.label;
-      if(!this.can_translate.label) {
+      if (!this.can_translate.label) {
         setTimeout(() => {
           document.getElementById('label_' + eid).focus();
-        },100);
+        }, 100);
       }
     },
     enableUpdatingPage(page) {
-      if(!this.clickUpdatingLabel && !this.updateGroup && !this.updateIntroPage) {
+      if (!this.clickUpdatingLabel && !this.updateGroup && !this.updateIntroPage) {
         this.updatePage = true;
         this.indexPage = page.id;
         setTimeout(() => {
@@ -1195,7 +1231,7 @@ export default {
       }
     },
     enableUpdatingPageIntro(page) {
-      if(!this.clickUpdatingLabel && !this.updateGroup && !this.updatePage) {
+      if (!this.clickUpdatingLabel && !this.updateGroup && !this.updatePage) {
         this.updateIntroPage = true;
         this.indexPage = page.id;
         setTimeout(() => {
@@ -1205,22 +1241,22 @@ export default {
     },
     enableTranslationPage(pid) {
       this.can_translate.label_page = !this.can_translate.label_page;
-      if(!this.can_translate.label_page) {
+      if (!this.can_translate.label_page) {
         setTimeout(() => {
           document.getElementById('update_input_' + pid).focus();
-        },100);
+        }, 100);
       }
     },
     enableTranslationPageIntro(pid) {
       this.can_translate.intro_page = !this.can_translate.intro_page;
-      if(!this.can_translate.intro_page) {
+      if (!this.can_translate.intro_page) {
         setTimeout(() => {
           document.getElementById('update_intro_' + pid).focus();
-        },100);
+        }, 100);
       }
     },
     enableUpdatingGroup(group) {
-      if(!this.clickUpdatingLabel && !this.updateIntroPage && !this.updatePage) {
+      if (!this.clickUpdatingLabel && !this.updateIntroPage && !this.updatePage) {
         this.updateGroup = true;
         this.indexGroup = group.group_id;
         setTimeout(() => {
@@ -1230,28 +1266,28 @@ export default {
     },
     enableTranslationGroup(gid) {
       this.can_translate.label_group = !this.can_translate.label_group;
-      if(!this.can_translate.label_group) {
+      if (!this.can_translate.label_group) {
         setTimeout(() => {
           document.getElementById('update_input_' + gid).focus();
-        },100);
+        }, 100);
       }
     },
     enableGroupHover(group) {
-      if(!this.clickUpdatingLabel && !this.updateGroup && !this.updateIntroPage && !this.updatePage) {
+      if (!this.clickUpdatingLabel && !this.updateGroup && !this.updateIntroPage && !this.updatePage) {
         this.hoverGroup = true;
         this.indexGroup = group;
       }
     },
     disableGroupHover() {
-      if(!this.clickUpdatingLabel && !this.updateGroup && !this.updateIntroPage && !this.updatePage) {
+      if (!this.clickUpdatingLabel && !this.updateGroup && !this.updateIntroPage && !this.updatePage) {
         this.hoverGroup = false;
         this.updateGroup = false;
         this.indexGroup = -1;
       }
     },
-    handleGroup(gid){
-      if(!this.updateGroup) {
-        this.openGroup[gid] ? this.$set(this.openGroup,gid,false) : this.$set(this.openGroup,gid,true)
+    handleGroup(gid) {
+      if (!this.updateGroup) {
+        this.openGroup[gid] ? this.$set(this.openGroup, gid, false) : this.$set(this.openGroup, gid, true)
       }
     },
     startGroupDrag() {
@@ -1260,28 +1296,28 @@ export default {
     //
 
     // Draggable trigger
-    SomethingChange: function(evt) {
+    SomethingChange: function (evt) {
       console.log(evt);
       let elt_id = evt.item.childNodes[1].id
       this.groups.forEach(group => {
         group.elts.forEach(element => {
-          if(element.id == elt_id){
-            this.updateElementsOrder(group.group_id,group.elts, element);
+          if (element.id == elt_id) {
+            this.updateElementsOrder(group.group_id, group.elts, element);
           }
         })
       });
       this.draggable = false;
     },
-    SomethingChangeInGroup: function() {
+    SomethingChangeInGroup: function () {
       this.draggable = false;
       this.updateGroupsOrder();
-      Object.keys(this.openGroup).forEach((group,key) => {
+      Object.keys(this.openGroup).forEach((group, key) => {
         this.openGroup[group] = true;
       });
     },
     //
 
-    getAccess(){
+    getAccess() {
       axios({
         method: "get",
         url: "index.php?option=com_emundus&controller=form&task=getAccess",
@@ -1295,16 +1331,16 @@ export default {
     },
   },
   created() {
-    if(!_.isEmpty(this.object.object)) {
+    if (!_.isEmpty(this.object.object)) {
       this.getDataObject();
       this.getAccess();
     }
   },
   watch: {
-    object: function() {
+    object: function () {
       this.getDataObject();
     },
-    UpdateUx: function() {
+    UpdateUx: function () {
       if (this.UpdateUx === true) {
         this.getApiData();
       }
@@ -1319,34 +1355,39 @@ export default {
 </script>
 
 <style lang="scss">
-.em-handle-group{
+.em-handle-group {
   position: absolute;
 }
-.element-updating{
+
+.element-updating {
   border: solid 2px var(--main-500) !important;
   border-radius: 4px;
 }
-.em-transparent-border-2{
+
+.em-transparent-border-2 {
   border: solid 2px transparent;
 }
-.em-no-elements-in-group{
+
+.em-no-elements-in-group {
   text-align: center;
   margin-top: 16px;
   padding: 24px 0;
   border: dashed 2px #919191;
   border-radius: 4px;
 }
-.em-list-elements{
+
+.em-list-elements {
   min-height: 100px;
   display: block;
   width: 100%;
 }
+
 .unpublished {
   background: #C5C8CE;
   border-radius: 5px;
 }
 
-.radio.btn-radio.btn-group label span{
+.radio.btn-radio.btn-group label span {
   margin-top: 0 !important;
 }
 

@@ -6,11 +6,11 @@
     font-weight: 300;
     font-style: normal;
     line-height: normal;
-    font-size : 14px;
+    font-size: 14px;
 }
 
 .em-infoComp ul {
-    margin-left:0;
+    margin-left: 0;
 }
 
 .em-infoComp li {
@@ -39,7 +39,7 @@
 
 
 .view-programme .em-infoComp {
- padding: 24px;
+    padding: 24px;
 }
 
 

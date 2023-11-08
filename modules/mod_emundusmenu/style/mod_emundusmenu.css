@@ -15,6 +15,7 @@
 .g-main-nav .g-sublevel > li.g-parent .g-menu-parent-indicator {
     margin-top: -4px;
 }
+
 .g-main-nav .g-toplevel > li.g-parent .g-menu-parent-indicator::after {
     width: auto;
     padding: 0;
@@ -57,9 +58,11 @@ ul.g-dropdown.g-dropdown-right.g-fade a {
     width: 250px;
     float: left;
 }
+
 #g-navigation .g-main-nav .g-dropdown .g-dropdown {
     margin-left: 6px !important;
 }
+
 .g-main-nav .g-sublevel > li {
     margin: 0 5px !important;
     padding: 0;
@@ -68,6 +71,7 @@ ul.g-dropdown.g-dropdown-right.g-fade a {
 .g-main-nav .g-sublevel > li.g-parent .g-menu-item-content {
     margin-right: 0 !important;
 }
+
 .g-main-nav .g-toplevel > li.g-parent .g-menu-parent-indicator {
     margin-top: -2px;
 }
@@ -98,6 +102,7 @@ ul.g-dropdown.g-dropdown-right.g-fade a {
 .add-new-program-page .goback-btn, .add-new-program-page .btn.btn-primary.button.save {
     line-height: normal !important;
 }
+
 /*LANGAGE*/
 .top-a {
     display: flex;
@@ -131,32 +136,38 @@ div.mod-languages a {
     text-decoration: none;
     display: inline-flex;
 }
+
 /* Experts-synchro-page */
-.experts-synchro-page .ng-scope .btn{
-    margin:10px 5px!important;
+.experts-synchro-page .ng-scope .btn {
+    margin: 10px 5px !important;
 }
+
 /*Calage bouton de connexion + mdp oublié*/
-#header-c .header-right .btn{
-    margin:5px;
+#header-c .header-right .btn {
+    margin: 5px;
     color: white;
 }
-#header-c .header-right .forget-mdp{
-    margin:0 5px;
+
+#header-c .header-right .forget-mdp {
+    margin: 0 5px;
 }
+
 #header-c .header-right .forget-mdp:hover {
-    text-decoration:underline;
+    text-decoration: underline;
 }
+
 .view-login .form-horizontal .controls {
-     margin: 0;
-     width: 100%;
-     display: inline-flex;
-     align-items: center;
- }
+    margin: 0;
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+}
+
 .view-login .form-horizontal .controls:hover {
     box-shadow: #3e8ac5;
 }
 
-.view-login  .form-horizontal .control-label {
+.view-login .form-horizontal .control-label {
     width: 100%;
 }
 
@@ -165,12 +176,13 @@ div.mod-languages a {
     justify-content: center;
 }
 
-footer div{
-    line-height:1.5em;
+footer div {
+    line-height: 1.5em;
 }
-.g-offcanvas-toggle{
-    width: 50px!important;
-    height: 50px!important;
+
+.g-offcanvas-toggle {
+    width: 50px !important;
+    height: 50px !important;
 }
 
 .g-main-nav .g-toplevel > li.g-parent .g-menu-parent-indicator::after {
@@ -200,7 +212,7 @@ ul.g-dropdown.g-dropdown-right.g-fade {
 }
 
 /* TCHOOZ MENU */
-.tchooz-vertical-toplevel{
+.tchooz-vertical-toplevel {
     display: flex;
     flex-direction: column;
     text-align: left;
@@ -208,7 +220,7 @@ ul.g-dropdown.g-dropdown-right.g-fade {
     transition: width 0.3s ease-in-out;
 }
 
-.grey-navbar-icons{
+.grey-navbar-icons {
     width: 70px;
     background: #f8f8f8;
     position: fixed;
@@ -252,10 +264,9 @@ ul.g-dropdown.g-dropdown-right.g-fade {
         display: none !important;
     }
 
-   /*#g-navigation .g-container .g-grid #header-b {
-        width: 100%;
-    }*/
-
+    /*#g-navigation .g-container .g-grid #header-b {
+         width: 100%;
+     }*/
     #g-navigation .g-container .g-grid {
         flex-direction: column;
         align-items: center;

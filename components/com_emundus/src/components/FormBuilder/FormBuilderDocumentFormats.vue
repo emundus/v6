@@ -3,7 +3,7 @@
     <p id="form-builder-document-title" class="em-text-align-center em-w-100 em-p-16">
       {{ translate('COM_EMUNDUS_FORM_BUILDER_FORMATS') }}
     </p>
-	  <input v-if="formats.length > 0" id="search" v-model="search" type="text" class="em-mt-16 em-w-100" placeholder=""/>
+    <input v-if="formats.length > 0" id="search" v-model="search" type="text" class="em-mt-16 em-w-100" placeholder=""/>
     <draggable
         v-model="displayedFormats"
         class="draggables-list"
@@ -15,11 +15,12 @@
     >
       <transition-group>
         <div
-		        v-for="format in displayedFormats"
+            v-for="format in displayedFormats"
             :key="format.id"
             class="em-flex-row em-flex-space-between draggable-element em-mt-8 em-mb-8 em-p-16"
         >
-          <span id="format-name" class="em-w-100 em-p-16" :title="format.name[shortDefaultLang]">{{ format.name[shortDefaultLang] }}</span>
+          <span id="format-name" class="em-w-100 em-p-16"
+                :title="format.name[shortDefaultLang]">{{ format.name[shortDefaultLang] }}</span>
           <span class="material-icons-outlined"> drag_indicator </span>
         </div>
       </transition-group>
@@ -47,7 +48,7 @@ export default {
     return {
       formats: [],
       cloneFormat: null,
-	    search: ''
+      search: ''
     }
   },
   created() {
@@ -55,31 +56,31 @@ export default {
   },
   methods: {
     getFormats() {
-	    formService.getDocumentModels().then(response => {
-		    if (response.status) {
-			    this.formats = response.data;
-		    }
-	    });
+      formService.getDocumentModels().then(response => {
+        if (response.status) {
+          this.formats = response.data;
+        }
+      });
     },
     setCloneFormat(format) {
       this.cloneFormat = format;
     },
     onDragEnd(event) {
-	    const to = event.to;
-	    if (to === null) {
-		    return;
-	    }
+      const to = event.to;
+      if (to === null) {
+        return;
+      }
 
-			this.cloneFormat.mandatory = to.id == 'required-documents' ? '1' : '0';
-			this.$emit('open-create-document', this.cloneFormat);
+      this.cloneFormat.mandatory = to.id == 'required-documents' ? '1' : '0';
+      this.$emit('open-create-document', this.cloneFormat);
     }
   },
   computed: {
-	  displayedFormats() {
-			return this.formats.filter((format) => {
-				return this.search.length > 0 && this.formats.length > 0 ? format.name[this.shortDefaultLang].toLowerCase().includes(this.search.toLowerCase()) : true;
-			});
-	  }
+    displayedFormats() {
+      return this.formats.filter((format) => {
+        return this.search.length > 0 && this.formats.length > 0 ? format.name[this.shortDefaultLang].toLowerCase().includes(this.search.toLowerCase()) : true;
+      });
+    }
   }
 }
 </script>
@@ -99,11 +100,11 @@ export default {
     cursor: grab;
   }
 
-	#format-name {
-		white-space: nowrap;
-		max-width: 100%;
-		text-overflow: ellipsis;
-		overflow: hidden;
-	}
+  #format-name {
+    white-space: nowrap;
+    max-width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
 }
 </style>

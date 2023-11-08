@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import '../../mocks/matchMedia.mock';
 import addCampaign from '../../../src/views/addCampaign';
 import translate from '../../mocks/mixins/translate';
@@ -18,14 +18,14 @@ describe('addCampaign.vue, impossible to submit campaign data if missing require
 
     wrapper.vm.actualLanguage = 'fr';
 
-    it ('addCampaign should exist', () => {
+    it('addCampaign should exist', () => {
         expect(wrapper.find('.campaigns__add-campaign').exists()).toBeTruthy();
     });
 
     it('Submit campaign should return 0 if label is empty', () => {
-       const submitResponse = wrapper.vm.submit();
-       expect(submitResponse).toEqual(0);
-       expect(wrapper.vm.errors.label).toBe(true);
+        const submitResponse = wrapper.vm.submit();
+        expect(submitResponse).toEqual(0);
+        expect(wrapper.vm.errors.label).toBe(true);
     });
 
     it('Submit campaign should return 0 if year is empty', () => {

@@ -12,10 +12,14 @@
             :key="page.id"
             :class="{selected: page.id === selected}"
         >
-          <div class="em-flex-row em-flex-space-between" @mouseover="pageOptionsShown = page.id" @mouseleave="pageOptionsShown = 0">
-            <p @click="selectPage(page.id)" class="em-w-100 em-p-16 form-builder-page-label">{{ page.label !== '' ? translate(page.label) : (translate('COM_EMUNDUS_FILES_PAGE') + ' ' + (index+1)) }}</p>
+          <div class="em-flex-row em-flex-space-between" @mouseover="pageOptionsShown = page.id"
+               @mouseleave="pageOptionsShown = 0">
+            <p @click="selectPage(page.id)" class="em-w-100 em-p-16 form-builder-page-label">{{
+                page.label !== '' ? translate(page.label) : (translate('COM_EMUNDUS_FILES_PAGE') + ' ' + (index + 1))
+              }}</p>
             <div class="em-flex-row em-p-16" :style="pageOptionsShown === page.id ? 'opacity:1' : 'opacity: 0'">
-	            <v-popover :popoverArrowClass="'custom-popover-arraow'" :open-class="'form-builder-pages-popover'" :placement="'left'">
+              <v-popover :popoverArrowClass="'custom-popover-arraow'" :open-class="'form-builder-pages-popover'"
+                         :placement="'left'">
                 <span class="material-icons">more_horiz</span>
 
                 <template slot="popover">
@@ -25,9 +29,9 @@
                         <p @click="deletePage(page)" class="em-p-8-12 em-w-100 em-red-500-color">
                           {{ translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE') }}
                         </p>
-	                      <p @click="createModelFrom(page)" class="em-p-8-12 em-w-100">
-		                      {{ translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE') }}
-	                      </p>
+                        <p @click="createModelFrom(page)" class="em-p-8-12 em-w-100">
+                          {{ translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE') }}
+                        </p>
                       </nav>
                     </div>
                   </transition>
@@ -41,10 +45,10 @@
 
     <transition-group>
       <div
-        class="em-font-weight-500 em-pointer"
-        v-for="page in submissionPages"
-        :key="page.id"
-        :class="{selected: page.id === selected}"
+          class="em-font-weight-500 em-pointer"
+          v-for="page in submissionPages"
+          :key="page.id"
+          :class="{selected: page.id === selected}"
       >
         <div class="em-flex-row em-flex-space-between">
           <p @click="selectPage(page.id)" class="em-w-100 em-p-16 em-main-500-color">{{ page.label }}</p>
@@ -85,13 +89,14 @@ export default {
       pageOptionsShown: 0,
     };
   },
-  created() {},
+  created() {
+  },
   methods: {
     selectPage(id) {
       this.$emit('select-page', id);
     },
     deletePage(page) {
-      if(this.pages.length > 2) {
+      if (this.pages.length > 2) {
         Swal.fire({
           title: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE_CONFIRMATION') + page.label,
           text: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE_CONFIRMATION_TEXT'),
@@ -108,14 +113,14 @@ export default {
         }).then(result => {
           if (result.value) {
             formBuilderService.deletePage(page.id).then(response => {
-							if (response.status) {
-								let deletedPage = this.pages.findIndex(p => p.id === page.id);
-								this.pages.splice(deletedPage, 1);
-								if (this.selected == page.id) {
-									this.$emit('delete-page');
-								}
-								this.updateLastSave();
-							}
+              if (response.status) {
+                let deletedPage = this.pages.findIndex(p => p.id === page.id);
+                this.pages.splice(deletedPage, 1);
+                if (this.selected == page.id) {
+                  this.$emit('delete-page');
+                }
+                this.updateLastSave();
+              }
             });
           }
         });
@@ -135,31 +140,33 @@ export default {
         });
       }
     },
-	  createModelFrom(page) {
-	    // @click="$emit('open-create-model', page.id)"
-		  this.$emit('open-create-model', page.id);
-	  },
+    createModelFrom(page) {
+      // @click="$emit('open-create-model', page.id)"
+      this.$emit('open-create-model', page.id);
+    },
     onDragEnd() {
-      const newOrder = this.pages.map((page, index) => {return {rgt: index, link: page.link};});
+      const newOrder = this.pages.map((page, index) => {
+        return {rgt: index, link: page.link};
+      });
 
       formBuilderService.reorderMenu(newOrder, this.$props.profile_id).then((response) => {
-				if (response.status == 200 && response.data.status) {
-					this.$emit('reorder-pages', this.pages);
-				} else {
-					Swal.fire({
-						title: this.translate('COM_EMUNDUS_FORM_BUILDER_UPDATE_ORDER_PAGE_ERROR'),
-						text: result.msg,
-						type: 'error',
-						showCancelButton: false,
-						confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
-						reverseButtons: true,
-						customClass: {
-							title: 'em-swal-title',
-							confirmButton: 'em-swal-confirm-button',
-							actions: "em-swal-single-action",
-						},
-					});
-				}
+        if (response.status == 200 && response.data.status) {
+          this.$emit('reorder-pages', this.pages);
+        } else {
+          Swal.fire({
+            title: this.translate('COM_EMUNDUS_FORM_BUILDER_UPDATE_ORDER_PAGE_ERROR'),
+            text: result.msg,
+            type: 'error',
+            showCancelButton: false,
+            confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
+            reverseButtons: true,
+            customClass: {
+              title: 'em-swal-title',
+              confirmButton: 'em-swal-confirm-button',
+              actions: "em-swal-single-action",
+            },
+          });
+        }
       });
     }
   },
@@ -193,6 +200,7 @@ export default {
 
   .selected {
     background: #f8f8f8;
+
     p {
       font-weight: 600;
     }
@@ -202,10 +210,10 @@ export default {
     list-style: none;
   }
 
-	.save {
-		&.already-saved {
-			color: #20835f;
-		}
-	}
+  .save {
+    &.already-saved {
+      color: #20835f;
+    }
+  }
 }
 </style>

@@ -21,10 +21,10 @@
         <fields name="params">
             <fieldset name="basic">
                 <field
-                    name="payment_methods"
-                    type="repeatable"
-                    label="Méthodes de paiement"
-                    description="Choix des méthodes de paiement rendues disponible"
+                        name="payment_methods"
+                        type="repeatable"
+                        label="Méthodes de paiement"
+                        description="Choix des méthodes de paiement rendues disponible"
                 >
                     <field name="payment_method" type="list" default="flywire">
                         <option value="flywire">Flywire</option>
@@ -33,26 +33,26 @@
                         <option value="axepta">Axepta</option>
                     </field>
                     <field
-                        name="payment_highlighted"
-                        type="radio"
-                        label="Mise en avant"
-                        description="Afficher 'recommandé' sur le mode de paiement"
-                        class="btn-group btn-group-yesno"
-                        default="0"
-                        filter="integer"
+                            name="payment_highlighted"
+                            type="radio"
+                            label="Mise en avant"
+                            description="Afficher 'recommandé' sur le mode de paiement"
+                            class="btn-group btn-group-yesno"
+                            default="0"
+                            filter="integer"
                     >
                         <option value="0">JNO</option>
                         <option value="1">JYES</option>
                     </field>
                     <field
-                        name="payment_confirmed_state"
-                        type="sql"
-                        multiple="false"
-                        query="SELECT id, step, value FROM #__emundus_setup_status GROUP BY ordering"
-                        default="1"
-                        label="MOD_EMUNDUS_MODULES_PAYMENT_FIELD_CONFIRMED_STATE"
-                        key_field="step"
-                        value_field="value"
+                            name="payment_confirmed_state"
+                            type="sql"
+                            multiple="false"
+                            query="SELECT id, step, value FROM #__emundus_setup_status GROUP BY ordering"
+                            default="1"
+                            label="MOD_EMUNDUS_MODULES_PAYMENT_FIELD_CONFIRMED_STATE"
+                            key_field="step"
+                            value_field="value"
                     >
                     </field>
                 </field>
@@ -62,20 +62,21 @@
                 <field name="contact_support" label="MOD_EMUNDUS_FLYWIRE_CONTACT_SUPPORT" type="text"></field>
             </fieldset>
             <fieldset name="transfert" label="Paiement par virement">
-                <field name="reference_prefix" label="Préfixe de la référence du paiement" type="text" default=""></field>
+                <field name="reference_prefix" label="Préfixe de la référence du paiement" type="text"
+                       default=""></field>
                 <field name="beneficiary_bank" label="BIC" type="text" default=""></field>
                 <field name="beneficiary_bank_address" label="Domiciliation" type="text" default=""></field>
                 <field name="account_holder" label="Titulaire du compte" type="text" default=""></field>
                 <field name="beneficiary_iban" label="IBAN du bénéficaire" type="text" default=""></field>
                 <field
-                   name="proof_attachment"
-                   type="sql"
-                   multiple="false"
-                   query="SELECT id, value FROM #__emundus_setup_attachments WHERE published = '1' ORDER BY ordering"
-                   default=""
-                   label="Type du document justificatif à déposer"
-                   key_field="id"
-                   value_field="value"
+                        name="proof_attachment"
+                        type="sql"
+                        multiple="false"
+                        query="SELECT id, value FROM #__emundus_setup_attachments WHERE published = '1' ORDER BY ordering"
+                        default=""
+                        label="Type du document justificatif à déposer"
+                        key_field="id"
+                        value_field="value"
                 >
                 </field>
             </fieldset>

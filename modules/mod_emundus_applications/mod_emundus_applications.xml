@@ -1,483 +1,501 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension
-		type="module"
-		version="2.5"
-		client="site"
-		method="upgrade">
-	<name>MOD_EMUNDUS_APPLICATIONS_SYS_XML</name>
-	<author>Benjamin Rivalland</author>
-	<creationDate>June 2015</creationDate>
-	<copyright>Copyright (C) 2015 eMundus. All rights reserved.</copyright>
-	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-	<authorEmail>benjamin@emundus.fr</authorEmail>
-	<authorUrl>www.emundus.fr</authorUrl>
-	<version>6.0</version>
-	<description>MOD_EMUNDUS_APPLICATIONS_XML_DESCRIPTION</description>
-	<files>
-		<filename module="mod_users_latest">mod_emundus_applications.php</filename>
-		<folder>tmpl</folder>
-		<filename>helper.php</filename>
-		<filename>index.html</filename>
-		<folder>language</folder>
-	</files>
-	<languages>
-		<language tag="en-GB">en-GB.mod_emundus_applications.ini</language>
-		<language tag="en-GB">en-GB.mod_emundus_applications.sys.ini</language>
-		<language tag="fr-FR">fr-FR.mod_emundus_applications.ini</language>
-		<language tag="fr-FR">fr-FR.mod_emundus_applications.sys.ini</language>
-	</languages>
-	<help key="JHELP_EXTENSIONS_MODULE_MANAGER_EMUNDUS_APPLICATIONS" />
-	<config>
-		<fields name="params">
-			<fieldset name="basic">
-				<!-- LIST PARAMETERS -->
-				<field name="list_parameters"
-					   type="note"
-					   label="MOD_EMUNDUS_APPLICATIONS_LIST_PARAMETERS"
-				/>
+        type="module"
+        version="2.5"
+        client="site"
+        method="upgrade">
+    <name>MOD_EMUNDUS_APPLICATIONS_SYS_XML</name>
+    <author>Benjamin Rivalland</author>
+    <creationDate>June 2015</creationDate>
+    <copyright>Copyright (C) 2015 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>benjamin@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>6.0</version>
+    <description>MOD_EMUNDUS_APPLICATIONS_XML_DESCRIPTION</description>
+    <files>
+        <filename module="mod_users_latest">mod_emundus_applications.php</filename>
+        <folder>tmpl</folder>
+        <filename>helper.php</filename>
+        <filename>index.html</filename>
+        <folder>language</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.mod_emundus_applications.ini</language>
+        <language tag="en-GB">en-GB.mod_emundus_applications.sys.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_applications.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_applications.sys.ini</language>
+    </languages>
+    <help key="JHELP_EXTENSIONS_MODULE_MANAGER_EMUNDUS_APPLICATIONS"/>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <!-- LIST PARAMETERS -->
+                <field name="list_parameters"
+                       type="note"
+                       label="MOD_EMUNDUS_APPLICATIONS_LIST_PARAMETERS"
+                />
 
-				<field name="description"
-					   type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
-					   default=""
-					   label="MOD_EMUNDUS_APPLICATIONS_DESCRIPTION"
-					   description="MOD_EMUNDUS_APPLICATIONS_DESCRIPTION_DESC">
-				</field>
+                <field name="description"
+                       type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+                       default=""
+                       label="MOD_EMUNDUS_APPLICATIONS_DESCRIPTION"
+                       description="MOD_EMUNDUS_APPLICATIONS_DESCRIPTION_DESC">
+                </field>
 
-				<field name="override_default_content"
-					   type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
-					   default=""
-					   label="MOD_EMUNDUS_APPLICATIONS_OVERRIDE_EMPTY_APPLICATION"
-					   description="MOD_EMUNDUS_APPLICATIONS_OVERRIDE_EMPTY_APPLICATION_DESC">
-				</field>
+                <field name="override_default_content"
+                       type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+                       default=""
+                       label="MOD_EMUNDUS_APPLICATIONS_OVERRIDE_EMPTY_APPLICATION"
+                       description="MOD_EMUNDUS_APPLICATIONS_OVERRIDE_EMPTY_APPLICATION_DESC">
+                </field>
 
-				<field name="mod_em_campaign_display_svg" type="radio" default="1" label="MOD_EM_CAMPAIGN_DISPLAY_SVG" description="MOD_EM_CAMPAIGN_DISPLAY_SVG_DESC" class="btn-group btn-group-yesno">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+                <field name="mod_em_campaign_display_svg" type="radio" default="1" label="MOD_EM_CAMPAIGN_DISPLAY_SVG"
+                       description="MOD_EM_CAMPAIGN_DISPLAY_SVG_DESC" class="btn-group btn-group-yesno">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
 
-				<field name="mod_em_campaign_display_hover_offset" type="radio" default="1" label="MOD_EM_CAMPAIGN_DISPLAY_HOVER_OFFSET" description="MOD_EM_CAMPAIGN_DISPLAY_HOVER_OFFSET_DESC" class="btn-group btn-group-yesno" >
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+                <field name="mod_em_campaign_display_hover_offset" type="radio" default="1"
+                       label="MOD_EM_CAMPAIGN_DISPLAY_HOVER_OFFSET"
+                       description="MOD_EM_CAMPAIGN_DISPLAY_HOVER_OFFSET_DESC" class="btn-group btn-group-yesno">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
 
-				<field name="show_add_application"
-					   type="radio"
-					   default="0"
-					   label="MOD_EMUNDUS_APPLICATIONS_LABEL"
-					   description="MOD_EMUNDUS_APPLICATIONS_DESC">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+                <field name="show_add_application"
+                       type="radio"
+                       default="0"
+                       label="MOD_EMUNDUS_APPLICATIONS_LABEL"
+                       description="MOD_EMUNDUS_APPLICATIONS_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
 
-				<field name="position_add_application"
-					   type="radio"
-					   default="0"
-					   label="MOD_EMUNDUS_BTN_LABEL"
-					   description="MOD_EMUNDUS_BTN_DESC">
-					<option value="0">MOD_EMUNDUS_APPLICATIONS_TOP</option>
-					<option value="1">MOD_EMUNDUS_APPLICATIONS_BOTTOM</option>
-					<option value="2">MOD_EMUNDUS_APPLICATIONS_BOTH</option>
-					<option value="3">MOD_EMUNDUS_APPLICATIONS_TOP_INTRO</option>
-					<option value="4">MOD_EMUNDUS_APPLICATIONS_TOP_INTRO_BOTTOM</option>
-				</field>
+                <field name="position_add_application"
+                       type="radio"
+                       default="0"
+                       label="MOD_EMUNDUS_BTN_LABEL"
+                       description="MOD_EMUNDUS_BTN_DESC">
+                    <option value="0">MOD_EMUNDUS_APPLICATIONS_TOP</option>
+                    <option value="1">MOD_EMUNDUS_APPLICATIONS_BOTTOM</option>
+                    <option value="2">MOD_EMUNDUS_APPLICATIONS_BOTH</option>
+                    <option value="3">MOD_EMUNDUS_APPLICATIONS_TOP_INTRO</option>
+                    <option value="4">MOD_EMUNDUS_APPLICATIONS_TOP_INTRO_BOTTOM</option>
+                </field>
 
-				<field name="show_show_campaigns"
-					   type="radio"
-					   default="0"
-					   label="MOD_EMUNDUS_SHOW_CAMPAIGNS_LABEL"
-					   description="MOD_EMUNDUS_SHOW_CAMPAIGNS_DESC">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+                <field name="show_show_campaigns"
+                       type="radio"
+                       default="0"
+                       label="MOD_EMUNDUS_SHOW_CAMPAIGNS_LABEL"
+                       description="MOD_EMUNDUS_SHOW_CAMPAIGNS_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
 
-				<field name="show_campaigns_url"
-					   type="URL"
-					   label="MOD_EMUNDUS_SHOW_CAMPAIGNS_URL"
-					   description=""
-					   default="liste-des-campagnes" />
+                <field name="show_campaigns_url"
+                       type="URL"
+                       label="MOD_EMUNDUS_SHOW_CAMPAIGNS_URL"
+                       description=""
+                       default="liste-des-campagnes"/>
 
-				<field name="cc_list_url"
-					   type="URL"
-					   label="MOD_EMUNDUS_CC_LIST_URL"
-					   description=""
-					   default="index.php?option=com_fabrik&amp;view=form&amp;formid=102" />
+                <field name="cc_list_url"
+                       type="URL"
+                       label="MOD_EMUNDUS_CC_LIST_URL"
+                       description=""
+                       default="index.php?option=com_fabrik&amp;view=form&amp;formid=102"/>
 
-				<field name="show_remove_files"
-					   type="radio"
-					   default="1"
-					   label="MOD_EMUNDUS_SHOW_REMOVE_DOCUMENTS"
-					   description="MOD_EMUNDUS_SHOW_REMOVE_DOCUMENTS_DESC">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+                <field name="show_remove_files"
+                       type="radio"
+                       default="1"
+                       label="MOD_EMUNDUS_SHOW_REMOVE_DOCUMENTS"
+                       description="MOD_EMUNDUS_SHOW_REMOVE_DOCUMENTS_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
 
-				<field name="show_archived_files"
-					   type="radio"
-					   default="1"
-					   label="MOD_EMUNDUS_SHOW_ARCHIVED_DOCUMENTS"
-					   description="MOD_EMUNDUS_SHOW_ARCHIVED_DOCUMENTS_DESC">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+                <field name="show_archived_files"
+                       type="radio"
+                       default="1"
+                       label="MOD_EMUNDUS_SHOW_ARCHIVED_DOCUMENTS"
+                       description="MOD_EMUNDUS_SHOW_ARCHIVED_DOCUMENTS_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
 
-				<field name="absolute_urls" type="radio" default="1" label="MOD_EMUNDUS_ABSOLUTE_URLS" description="MOD_EMUNDUS_ABSOLUTE_URLS_DESC">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+                <field name="absolute_urls" type="radio" default="1" label="MOD_EMUNDUS_ABSOLUTE_URLS"
+                       description="MOD_EMUNDUS_ABSOLUTE_URLS_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
 
-				<field name="order_applications" type="list" default="esc.end_date" label="MOD_EMUNDUS_ORDER_APPLICATIONS" description="MOD_EMUNDUS_ORDER_APPLICATIONS_DESC">
-					<option value="esc.end_date">CAMPAIGN_END_DATE</option>
-					<option value="ecc.date_time">REGISTER_DATE</option>
-					<option value="ecc.updated">LAST_MODIFICATION_DATE</option>
-				</field>
+                <field name="order_applications" type="list" default="esc.end_date"
+                       label="MOD_EMUNDUS_ORDER_APPLICATIONS" description="MOD_EMUNDUS_ORDER_APPLICATIONS_DESC">
+                    <option value="esc.end_date">CAMPAIGN_END_DATE</option>
+                    <option value="ecc.date_time">REGISTER_DATE</option>
+                    <option value="ecc.updated">LAST_MODIFICATION_DATE</option>
+                </field>
 
-				<field name="order_applications_asc_des" type="list" default="DESC" label="MOD_EMUNDUS_ORDER_APPLICATIONS_ASC_DES" description="MOD_EMUNDUS_ORDER_APPLICATIONS_ASC_DES_DESC">
-					<option value="DESC">DESC</option>
-					<option value="ASC">ASC</option>
-				</field>
+                <field name="order_applications_asc_des" type="list" default="DESC"
+                       label="MOD_EMUNDUS_ORDER_APPLICATIONS_ASC_DES"
+                       description="MOD_EMUNDUS_ORDER_APPLICATIONS_ASC_DES_DESC">
+                    <option value="DESC">DESC</option>
+                    <option value="ASC">ASC</option>
+                </field>
 
-				<field name="for_specific_profiles" type="text" label="MOD_EMUNDUS_SPECIFIC_PROFILES" description="MOD_EMUNDUS_SPECIFIC_PROFILES_DESC" default=""/>
+                <field name="for_specific_profiles" type="text" label="MOD_EMUNDUS_SPECIFIC_PROFILES"
+                       description="MOD_EMUNDUS_SPECIFIC_PROFILES_DESC" default=""/>
 
-				<field name="visible_status"
-					   type="text"
-					   label="MOD_EMUNDUS_VISIBLE_STATUS"
-					   description=""
-					   default="" />
+                <field name="visible_status"
+                       type="text"
+                       label="MOD_EMUNDUS_VISIBLE_STATUS"
+                       description=""
+                       default=""/>
 
-				<field name="show_status"
-					   type="text"
-					   label="MOD_EMUNDUS_SHOW_STATUS"
-					   description="MOD_EMUNDUS_SHOW_STATUS_DESC"
-				/>
+                <field name="show_status"
+                       type="text"
+                       label="MOD_EMUNDUS_SHOW_STATUS"
+                       description="MOD_EMUNDUS_SHOW_STATUS_DESC"
+                />
 
-				<field name="selected_campaigns"
-					   type="sql"
-					   label="MOD_EMUNDUS_SELECTED_CAMPAIGNS"
-					   description="MOD_EMUNDUS_SELECTED_CAMPAIGNS_DESC"
-					   query="SELECT id, CONCAT(label, ' ', year) as label FROM jos_emundus_setup_campaigns WHERE published = 1 ORDER BY label ASC"
-					   key_field="id"
-					   value_field="label"
-					   multiple="true"
-					   default="0"
-				/>
+                <field name="selected_campaigns"
+                       type="sql"
+                       label="MOD_EMUNDUS_SELECTED_CAMPAIGNS"
+                       description="MOD_EMUNDUS_SELECTED_CAMPAIGNS_DESC"
+                       query="SELECT id, CONCAT(label, ' ', year) as label FROM jos_emundus_setup_campaigns WHERE published = 1 ORDER BY label ASC"
+                       key_field="id"
+                       value_field="label"
+                       multiple="true"
+                       default="0"
+                />
 
-				<field name="selected_campaigns_exclusion"
-					   type="list"
-					   label="MOD_EMUNDUS_SELECTED_CAMPAIGNS_EXCLUSION"
-					   description="MOD_EMUNDUS_SELECTED_CAMPAIGNS_EXCLUSION_DESC"
-					   default="0"
-				>
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+                <field name="selected_campaigns_exclusion"
+                       type="list"
+                       label="MOD_EMUNDUS_SELECTED_CAMPAIGNS_EXCLUSION"
+                       description="MOD_EMUNDUS_SELECTED_CAMPAIGNS_EXCLUSION_DESC"
+                       default="0"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
 
-				<field showon="layout:_:tchooz" name="mod_em_applications_show_tabs" type="radio" default="1" label="MOD_EMUNDUS_APPLICATIONS_SHOW_TABS" description="MOD_EMUNDUS_APPLICATIONS_SHOW_TABS_DESC">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+                <field showon="layout:_:tchooz" name="mod_em_applications_show_tabs" type="radio" default="1"
+                       label="MOD_EMUNDUS_APPLICATIONS_SHOW_TABS" description="MOD_EMUNDUS_APPLICATIONS_SHOW_TABS_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
 
-				<field showon="layout:_:tchooz[AND]mod_em_applications_show_tabs:0"
-					   name="mod_em_application_group"
-					   type="subform"
-					   label="MOD_EM_APPLICATION_GROUP"
-					   description="MOD_EM_APPLICATION_GROUP_DESC"
-					   multiple="true"
-					   layout="joomla.form.field.subform.repeatable-table">
-					<form>
-						<field name="mod_em_application_group_status"
-							   type="text"
-							   label="MOD_EM_APPLICATION_GROUP_STATUS" description="MOD_EM_APPLICATION_GROUP_STATUS_DESC"
-						/>
-						<field name="mod_em_application_group_title"
-							   type="text"
-							   label="MOD_EM_APPLICATION_GROUP_TITLE" description="MOD_EM_APPLICATION_GROUP_TITLE_DESC"
-						/>
-					</form>
-				</field>
+                <field showon="layout:_:tchooz[AND]mod_em_applications_show_tabs:0"
+                       name="mod_em_application_group"
+                       type="subform"
+                       label="MOD_EM_APPLICATION_GROUP"
+                       description="MOD_EM_APPLICATION_GROUP_DESC"
+                       multiple="true"
+                       layout="joomla.form.field.subform.repeatable-table">
+                    <form>
+                        <field name="mod_em_application_group_status"
+                               type="text"
+                               label="MOD_EM_APPLICATION_GROUP_STATUS"
+                               description="MOD_EM_APPLICATION_GROUP_STATUS_DESC"
+                        />
+                        <field name="mod_em_application_group_title"
+                               type="text"
+                               label="MOD_EM_APPLICATION_GROUP_TITLE" description="MOD_EM_APPLICATION_GROUP_TITLE_DESC"
+                        />
+                    </form>
+                </field>
 
-				<field showon="layout:_:tchooz"
-					   name="mod_em_application_group_title_other"
-					   type="text"
-					   label="MOD_EM_APPLICATION_GROUP_TITLE_OTHER" description="MOD_EM_APPLICATION_GROUP_TITLE_OTHER_DESC"
-				/>
+                <field showon="layout:_:tchooz"
+                       name="mod_em_application_group_title_other"
+                       type="text"
+                       label="MOD_EM_APPLICATION_GROUP_TITLE_OTHER"
+                       description="MOD_EM_APPLICATION_GROUP_TITLE_OTHER_DESC"
+                />
 
-				<field showon="layout:_:tchooz" name="mod_em_applications_show_filters" type="radio" default="0" label="MOD_EMUNDUS_APPLICATIONS_SHOW_FILTERS" description="MOD_EMUNDUS_APPLICATIONS_SHOW_FILTERS_DESC">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+                <field showon="layout:_:tchooz" name="mod_em_applications_show_filters" type="radio" default="0"
+                       label="MOD_EMUNDUS_APPLICATIONS_SHOW_FILTERS"
+                       description="MOD_EMUNDUS_APPLICATIONS_SHOW_FILTERS_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
 
-				<field showon="layout:_:tchooz" name="mod_em_applications_show_sort" type="radio" default="0" label="MOD_EMUNDUS_APPLICATIONS_SHOW_SORT" description="MOD_EMUNDUS_APPLICATIONS_SHOW_SORT_DESC">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+                <field showon="layout:_:tchooz" name="mod_em_applications_show_sort" type="radio" default="0"
+                       label="MOD_EMUNDUS_APPLICATIONS_SHOW_SORT" description="MOD_EMUNDUS_APPLICATIONS_SHOW_SORT_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
 
-				<field showon="layout:_:tchooz" name="mod_em_applications_show_search" type="radio" default="1" label="MOD_EMUNDUS_APPLICATIONS_SHOW_SEARCHBAR" description="MOD_EMUNDUS_APPLICATIONS_SHOW_SEARCHBAR_DESC">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+                <field showon="layout:_:tchooz" name="mod_em_applications_show_search" type="radio" default="1"
+                       label="MOD_EMUNDUS_APPLICATIONS_SHOW_SEARCHBAR"
+                       description="MOD_EMUNDUS_APPLICATIONS_SHOW_SEARCHBAR_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
 
-				<field showon="layout:_:tchooz" name="mod_em_applications_show_hello_text" type="radio" default="1" label="MOD_EMUNDUS_APPLICATIONS_SHOW_HELLO_TEXT" description="MOD_EMUNDUS_APPLICATIONS_SHOW_HELLO_TEXT_DESC">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+                <field showon="layout:_:tchooz" name="mod_em_applications_show_hello_text" type="radio" default="1"
+                       label="MOD_EMUNDUS_APPLICATIONS_SHOW_HELLO_TEXT"
+                       description="MOD_EMUNDUS_APPLICATIONS_SHOW_HELLO_TEXT_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
 
-				<!-- SINGLE APPLICATION PARAMETERS -->
-				<field name="spacer" type="spacer" hr="true"/>
-				<field name="application_parameters"
-					   type="note"
-					   label="MOD_EMUNDUS_APPLICATIONS_APPLICATION_PARAMETERS"
-				/>
+                <!-- SINGLE APPLICATION PARAMETERS -->
+                <field name="spacer" type="spacer" hr="true"/>
+                <field name="application_parameters"
+                       type="note"
+                       label="MOD_EMUNDUS_APPLICATIONS_APPLICATION_PARAMETERS"
+                />
 
-				<field name="mod_em_application_date_format"
-					   type="text"
-					   default="d/m/Y H:i"
-					   label="MOD_EMUNDUS_APPLICATIONS_DATE_FORMAT"
-					   description="">
-				</field>
+                <field name="mod_em_application_date_format"
+                       type="text"
+                       default="d/m/Y H:i"
+                       label="MOD_EMUNDUS_APPLICATIONS_DATE_FORMAT"
+                       description="">
+                </field>
 
-				<field showon="layout:_:tchooz"
-					   name="show_fnum"
-					   type="radio"
-					   default="0"
-					   label="MOD_EMUNDUS_APPLICATIONS_SHOW_FNUM"
-					   description="">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+                <field showon="layout:_:tchooz"
+                       name="show_fnum"
+                       type="radio"
+                       default="0"
+                       label="MOD_EMUNDUS_APPLICATIONS_SHOW_FNUM"
+                       description="">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
 
-				<field showon="layout:_:tchooz"
-					   name="mod_emundus_applications_show_programme"
-					   type="radio"
-					   default="1"
-					   label="MOD_EMUNDUS_APPLICATIONS_SHOW_PROGRAMME"
-					   description="MOD_EMUNDUS_APPLICATIONS_SHOW_PROGRAMME_DESC">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+                <field showon="layout:_:tchooz"
+                       name="mod_emundus_applications_show_programme"
+                       type="radio"
+                       default="1"
+                       label="MOD_EMUNDUS_APPLICATIONS_SHOW_PROGRAMME"
+                       description="MOD_EMUNDUS_APPLICATIONS_SHOW_PROGRAMME_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
 
-				<field showon="layout:_:tchooz"
-					   name="mod_emundus_applications_show_end_date"
-					   type="radio"
-					   default="1"
-					   label="MOD_EMUNDUS_APPLICATIONS_SHOW_END_DATE"
-					   description="MOD_EMUNDUS_APPLICATIONS_SHOW_END_DATE_DESC">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+                <field showon="layout:_:tchooz"
+                       name="mod_emundus_applications_show_end_date"
+                       type="radio"
+                       default="1"
+                       label="MOD_EMUNDUS_APPLICATIONS_SHOW_END_DATE"
+                       description="MOD_EMUNDUS_APPLICATIONS_SHOW_END_DATE_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
 
-				<!-- PROGRESS CIRCLES -->
-				<field name="show_progress"
-					   type="radio"
-					   default="1"
-					   label="MOD_EMUNDUS_SHOW_PROGRESS"
-					   description="MOD_EMUNDUS_SHOW_PROGRESS_DESC">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
-				<field showon="layout!:_:tchooz"
-					   name="show_progress_color"
-					   type="text"
-					   label="MOD_EMUNDUS_SHOW_PROGRESS_COLOR"
-					   description=""
-					   default="#EA5012" />
-				<field showon="layout!:_:tchooz"
-					   name="show_progress_forms"
-					   type="radio"
-					   default="0"
-					   label="MOD_EMUNDUS_SHOW_PROGRESS_FORMS"
-					   description="MOD_EMUNDUS_SHOW_PROGRESS_FORMS_DESC">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
-				<field showon="layout!:_:tchooz"
-					   name="show_progress_color_forms"
-					   type="text"
-					   label="MOD_EMUNDUS_SHOW_PROGRESS_COLOR_FORMS"
-					   description=""
-					   default="#EA5012" />
-				<field showon="layout!:_:tchooz"
-					   name="show_progress_documents"
-					   type="radio"
-					   default="0"
-					   label="MOD_EMUNDUS_SHOW_PROGRESS_DOCUMENTS"
-					   description="MOD_EMUNDUS_SHOW_PROGRESS_DOCUMENTS_DESC">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
-				<field showon="layout!:_:tchooz"
-					   name="show_progress_color_documents"
-					   type="text"
-					   label="MOD_EMUNDUS_SHOW_PROGRESS_COLOR_DOCUMENTS"
-					   description=""
-					   default="#EA5012" />
-				<field name="admission_status"
-					   type="text"
-					   label="MOD_EMUNDUS_ADMISSION_STATUS"
-					   description="MOD_EMUNDUS_ADMISSION_STATUS_DESC" />
-				<field name="add_admission_prefix"
-					   type="radio"
-					   default="1"
-					   label="MOD_EMUNDUS_ADD_ADMISSION_PREFIX"
-					   description="MOD_EMUNDUS_ADD_ADMISSION_PREFIX_DESC">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+                <!-- PROGRESS CIRCLES -->
+                <field name="show_progress"
+                       type="radio"
+                       default="1"
+                       label="MOD_EMUNDUS_SHOW_PROGRESS"
+                       description="MOD_EMUNDUS_SHOW_PROGRESS_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field showon="layout!:_:tchooz"
+                       name="show_progress_color"
+                       type="text"
+                       label="MOD_EMUNDUS_SHOW_PROGRESS_COLOR"
+                       description=""
+                       default="#EA5012"/>
+                <field showon="layout!:_:tchooz"
+                       name="show_progress_forms"
+                       type="radio"
+                       default="0"
+                       label="MOD_EMUNDUS_SHOW_PROGRESS_FORMS"
+                       description="MOD_EMUNDUS_SHOW_PROGRESS_FORMS_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field showon="layout!:_:tchooz"
+                       name="show_progress_color_forms"
+                       type="text"
+                       label="MOD_EMUNDUS_SHOW_PROGRESS_COLOR_FORMS"
+                       description=""
+                       default="#EA5012"/>
+                <field showon="layout!:_:tchooz"
+                       name="show_progress_documents"
+                       type="radio"
+                       default="0"
+                       label="MOD_EMUNDUS_SHOW_PROGRESS_DOCUMENTS"
+                       description="MOD_EMUNDUS_SHOW_PROGRESS_DOCUMENTS_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field showon="layout!:_:tchooz"
+                       name="show_progress_color_documents"
+                       type="text"
+                       label="MOD_EMUNDUS_SHOW_PROGRESS_COLOR_DOCUMENTS"
+                       description=""
+                       default="#EA5012"/>
+                <field name="admission_status"
+                       type="text"
+                       label="MOD_EMUNDUS_ADMISSION_STATUS"
+                       description="MOD_EMUNDUS_ADMISSION_STATUS_DESC"/>
+                <field name="add_admission_prefix"
+                       type="radio"
+                       default="1"
+                       label="MOD_EMUNDUS_ADD_ADMISSION_PREFIX"
+                       description="MOD_EMUNDUS_ADD_ADMISSION_PREFIX_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
 
-				<field showon="layout!:_:tchooz"
-					   name="show_state_files"
-					   type="radio"
-					   default="0"
-					   label="MOD_EMUNDUS_SHOW_STATE_DOCUMENTS"
-					   description="MOD_EMUNDUS_SHOW_STATE_DOCUMENTS_DESC">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+                <field showon="layout!:_:tchooz"
+                       name="show_state_files"
+                       type="radio"
+                       default="0"
+                       label="MOD_EMUNDUS_SHOW_STATE_DOCUMENTS"
+                       description="MOD_EMUNDUS_SHOW_STATE_DOCUMENTS_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
 
-				<field showon="layout!:_:tchooz"
-					   name="show_payment_status"
-					   type="radio"
-					   default="0"
-					   label="MOD_EMUNDUS_SHOW_PAYMENT_STATUS"
-					   description="MOD_EMUNDUS_SHOW_PAYMENT_STATUS_DESC">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+                <field showon="layout!:_:tchooz"
+                       name="show_payment_status"
+                       type="radio"
+                       default="0"
+                       label="MOD_EMUNDUS_SHOW_PAYMENT_STATUS"
+                       description="MOD_EMUNDUS_SHOW_PAYMENT_STATUS_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
 
-				<field name="tags"
-					   type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
-					   default=""
-					   label="MOD_EMUNDUS_TAGS"
-					   description="MOD_EMUNDUS_TAGS_DESC">
-				</field>
+                <field name="tags"
+                       type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+                       default=""
+                       label="MOD_EMUNDUS_TAGS"
+                       description="MOD_EMUNDUS_TAGS_DESC">
+                </field>
 
-				<field showon="layout:_:tchooz"
-					   name="mod_emundus_applications_actions"
-					   type="checkboxes"
-					   default=""
-					   label="MOD_EMUNDUS_APPLICATIONS_ACTIONS"
-					   description="MOD_EMUNDUS_APPLICATIONS_ACTIONS_DESC">
-					<option value="rename">MOD_EMUNDUS_APPLICATIONS_ACTIONS_RENAME</option>
-					<option value="copy">MOD_EMUNDUS_APPLICATIONS_ACTIONS_COPY</option>
-					<option value="history">MOD_EMUNDUS_APPLICATIONS_ACTIONS_HISTORY</option>
-				</field>
+                <field showon="layout:_:tchooz"
+                       name="mod_emundus_applications_actions"
+                       type="checkboxes"
+                       default=""
+                       label="MOD_EMUNDUS_APPLICATIONS_ACTIONS"
+                       description="MOD_EMUNDUS_APPLICATIONS_ACTIONS_DESC">
+                    <option value="rename">MOD_EMUNDUS_APPLICATIONS_ACTIONS_RENAME</option>
+                    <option value="copy">MOD_EMUNDUS_APPLICATIONS_ACTIONS_COPY</option>
+                    <option value="history">MOD_EMUNDUS_APPLICATIONS_ACTIONS_HISTORY</option>
+                </field>
 
-				<field showon="layout:_:tchooz"
-					   name="mod_em_application_custom_actions"
-					   type="subform"
-					   label="MOD_EM_APPLICATION_CUSTOM_ACTIONS"
-					   description="MOD_EM_APPLICATION_CUSTOM_ACTIONS_DESC"
-					   multiple="true"
-					   layout="joomla.form.field.subform.repeatable-table">
-					<form>
-						<field
-								name="mod_em_application_custom_action_status"
-								type="sql"
-								query="SELECT step, value FROM #__emundus_setup_status"
-								multiple="true"
-								default=''
-								key_field="step"
-								value_field="value"
-								label="MOD_EM_APPLICATION_CUSTOM_ACTION_INPUT_STATUS"
-								description="MOD_EM_APPLICATION_CUSTOM_ACTION_INPUT_STATUS_DESC"
-						/>
-						<field
-							name="display_condition"
-							type="textarea"
-							label="MOD_EM_APPLICATION_CUSTOM_ACTION_DISPLAY_CONDITION"
-							description="MOD_EM_APPLICATION_CUSTOM_ACTION_DISPLAY_CONDITION_DESC"
-						/>
-						<field
-								name="mod_em_application_custom_action_icon"
-								type="text"
-								label="MOD_EM_APPLICATION_CUSTOM_ACTION_ICON"
-								description="MOD_EM_APPLICATION_CUSTOM_ACTION_ICON_DESC"
-						/>
-						<field
-								name="mod_em_application_custom_action_label"
-								type="text"
-								label="MOD_EM_APPLICATION_CUSTOM_ACTION_LABEL"
-								description="MOD_EM_APPLICATION_CUSTOM_ACTION_LABEL_DESC"
-						/>
-						<field
-								name="mod_em_application_custom_action_type"
-								type="list"
-								label="MOD_EM_APPLICATION_CUSTOM_ACTION_TYPE"
-								description="MOD_EM_APPLICATION_CUSTOM_ACTION_TYPE_DESC"
-								default="1"
-						>
-							<option value="1">Lien</option>
-							<option value="2">Changement de statut</option>
-						</field>
-						<fieldset>
+                <field showon="layout:_:tchooz"
+                       name="mod_em_application_custom_actions"
+                       type="subform"
+                       label="MOD_EM_APPLICATION_CUSTOM_ACTIONS"
+                       description="MOD_EM_APPLICATION_CUSTOM_ACTIONS_DESC"
+                       multiple="true"
+                       layout="joomla.form.field.subform.repeatable-table">
+                    <form>
+                        <field
+                                name="mod_em_application_custom_action_status"
+                                type="sql"
+                                query="SELECT step, value FROM #__emundus_setup_status"
+                                multiple="true"
+                                default=''
+                                key_field="step"
+                                value_field="value"
+                                label="MOD_EM_APPLICATION_CUSTOM_ACTION_INPUT_STATUS"
+                                description="MOD_EM_APPLICATION_CUSTOM_ACTION_INPUT_STATUS_DESC"
+                        />
+                        <field
+                                name="display_condition"
+                                type="textarea"
+                                label="MOD_EM_APPLICATION_CUSTOM_ACTION_DISPLAY_CONDITION"
+                                description="MOD_EM_APPLICATION_CUSTOM_ACTION_DISPLAY_CONDITION_DESC"
+                        />
+                        <field
+                                name="mod_em_application_custom_action_icon"
+                                type="text"
+                                label="MOD_EM_APPLICATION_CUSTOM_ACTION_ICON"
+                                description="MOD_EM_APPLICATION_CUSTOM_ACTION_ICON_DESC"
+                        />
+                        <field
+                                name="mod_em_application_custom_action_label"
+                                type="text"
+                                label="MOD_EM_APPLICATION_CUSTOM_ACTION_LABEL"
+                                description="MOD_EM_APPLICATION_CUSTOM_ACTION_LABEL_DESC"
+                        />
+                        <field
+                                name="mod_em_application_custom_action_type"
+                                type="list"
+                                label="MOD_EM_APPLICATION_CUSTOM_ACTION_TYPE"
+                                description="MOD_EM_APPLICATION_CUSTOM_ACTION_TYPE_DESC"
+                                default="1"
+                        >
+                            <option value="1">Lien</option>
+                            <option value="2">Changement de statut</option>
+                        </field>
+                        <fieldset>
 
-						</fieldset>
-						<field showon="mod_em_application_custom_action_type:1"
-								name="mod_em_application_custom_action_link"
-								type="text"
-								label="MOD_EM_APPLICATION_CUSTOM_ACTION_LINK"
-								description="MOD_EM_APPLICATION_CUSTOM_ACTION_LINK_DESC"
-						/>
-						<field showon="mod_em_application_custom_action_type:1"
-								name="mod_em_application_custom_action_link_blank"
-								type="list"
-								label="MOD_EM_APPLICATION_CUSTOM_ACTION_LINK_BLANK"
-								description="MOD_EM_APPLICATION_CUSTOM_ACTION_LINK_BLANK_DESC"
-								default="1"
-						>
-							<option value="1">JYES</option>
-							<option value="0">JNO</option>
-						</field>
-						<field showon="mod_em_application_custom_action_type:2"
-							   name="mod_em_application_custom_action_new_status"
-							   type="sql"
-							   query="SELECT step, value FROM #__emundus_setup_status"
-							   default=''
-							   key_field="step"
-							   value_field="value"
-							   label="MOD_EM_APPLICATION_CUSTOM_ACTION_OUTPUT_STATUS"
-							   description="MOD_EM_APPLICATION_CUSTOM_ACTION_OUTPUT_STATUS_DESC"
-						>
-						</field>
-						<field showon="mod_em_application_custom_action_type:2"
-							   name="mod_em_application_custom_action_new_status_message"
-							   type="text"
-							   label="MOD_EM_APPLICATION_CUSTOM_ACTION_STATUS_MESSAGE"
-							   description="MOD_EM_APPLICATION_CUSTOM_ACTION_STATUS_MESSAGE_DESC"
-						>
-						</field>
-					</form>
-				</field>
-			</fieldset>
+                        </fieldset>
+                        <field showon="mod_em_application_custom_action_type:1"
+                               name="mod_em_application_custom_action_link"
+                               type="text"
+                               label="MOD_EM_APPLICATION_CUSTOM_ACTION_LINK"
+                               description="MOD_EM_APPLICATION_CUSTOM_ACTION_LINK_DESC"
+                        />
+                        <field showon="mod_em_application_custom_action_type:1"
+                               name="mod_em_application_custom_action_link_blank"
+                               type="list"
+                               label="MOD_EM_APPLICATION_CUSTOM_ACTION_LINK_BLANK"
+                               description="MOD_EM_APPLICATION_CUSTOM_ACTION_LINK_BLANK_DESC"
+                               default="1"
+                        >
+                            <option value="1">JYES</option>
+                            <option value="0">JNO</option>
+                        </field>
+                        <field showon="mod_em_application_custom_action_type:2"
+                               name="mod_em_application_custom_action_new_status"
+                               type="sql"
+                               query="SELECT step, value FROM #__emundus_setup_status"
+                               default=''
+                               key_field="step"
+                               value_field="value"
+                               label="MOD_EM_APPLICATION_CUSTOM_ACTION_OUTPUT_STATUS"
+                               description="MOD_EM_APPLICATION_CUSTOM_ACTION_OUTPUT_STATUS_DESC"
+                        >
+                        </field>
+                        <field showon="mod_em_application_custom_action_type:2"
+                               name="mod_em_application_custom_action_new_status_message"
+                               type="text"
+                               label="MOD_EM_APPLICATION_CUSTOM_ACTION_STATUS_MESSAGE"
+                               description="MOD_EM_APPLICATION_CUSTOM_ACTION_STATUS_MESSAGE_DESC"
+                        >
+                        </field>
+                    </form>
+                </field>
+            </fieldset>
 
-			<fieldset name="advanced">
-				<field name="layout"
-					   type="modulelayout"
-					   label="JFIELD_ALT_LAYOUT_LABEL"
-					   description="JFIELD_ALT_MODULE_LAYOUT_DESC" />
-				<field name="moduleclass_sfx"
-					   type="text"
-					   label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
-					   description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC"
-					   default="list-group" />
-				<field name="cache"
-					   type="list"
-					   default="1"
-					   label="COM_MODULES_FIELD_CACHING_LABEL"
-					   description="COM_MODULES_FIELD_CACHING_DESC">
-					<option value="1">JGLOBAL_USE_GLOBAL</option>
-					<option value="0">COM_MODULES_FIELD_VALUE_NOCACHING</option>
-				</field>
-				<field name="cache_time"
-					   type="text"
-					   default="900"
-					   label="COM_MODULES_FIELD_CACHE_TIME_LABEL"
-					   description="COM_MODULES_FIELD_CACHE_TIME_DESC" />
-				<field name="cachemode"
-					   type="hidden"
-					   default="static">
-					<option value="static"></option>
-				</field>
-			</fieldset>
-		</fields>
-	</config>
+            <fieldset name="advanced">
+                <field name="layout"
+                       type="modulelayout"
+                       label="JFIELD_ALT_LAYOUT_LABEL"
+                       description="JFIELD_ALT_MODULE_LAYOUT_DESC"/>
+                <field name="moduleclass_sfx"
+                       type="text"
+                       label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
+                       description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC"
+                       default="list-group"/>
+                <field name="cache"
+                       type="list"
+                       default="1"
+                       label="COM_MODULES_FIELD_CACHING_LABEL"
+                       description="COM_MODULES_FIELD_CACHING_DESC">
+                    <option value="1">JGLOBAL_USE_GLOBAL</option>
+                    <option value="0">COM_MODULES_FIELD_VALUE_NOCACHING</option>
+                </field>
+                <field name="cache_time"
+                       type="text"
+                       default="900"
+                       label="COM_MODULES_FIELD_CACHE_TIME_LABEL"
+                       description="COM_MODULES_FIELD_CACHE_TIME_DESC"/>
+                <field name="cachemode"
+                       type="hidden"
+                       default="static">
+                    <option value="static"></option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
 </extension>

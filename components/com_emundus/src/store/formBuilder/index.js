@@ -11,10 +11,10 @@ const getters = {
 };
 
 const actions = {
-    updateLastSave({ commit }, payload) {
+    updateLastSave({commit}, payload) {
         commit('updateLastSave', payload);
     },
-    updateDocumentModels({ commit }, payload) {
+    updateDocumentModels({commit}, payload) {
         commit('updateDocumentModels', payload);
     },
 };

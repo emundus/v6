@@ -1,6 +1,6 @@
 <template>
   <div class="em-container">
-    <div class="em-h4"> {{ attachment.value }} </div>
+    <div class="em-h4"> {{ attachment.value }}</div>
     <AttachmentAspectsMapping :attachment="attachment" v-if="attachment.sync == 1"></AttachmentAspectsMapping>
   </div>
 </template>

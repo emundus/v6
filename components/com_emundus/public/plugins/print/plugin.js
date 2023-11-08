@@ -14,40 +14,40 @@
     var global$1 = tinymce.util.Tools.resolve('tinymce.Env');
 
     var register = function (editor) {
-      editor.addCommand('mcePrint', function () {
-        if (global$1.browser.isIE()) {
-          editor.getDoc().execCommand('print', false, null);
-        } else {
-          editor.getWin().print();
-        }
-      });
+        editor.addCommand('mcePrint', function () {
+            if (global$1.browser.isIE()) {
+                editor.getDoc().execCommand('print', false, null);
+            } else {
+                editor.getWin().print();
+            }
+        });
     };
-    var Commands = { register: register };
+    var Commands = {register: register};
 
     var register$1 = function (editor) {
-      editor.ui.registry.addButton('print', {
-        icon: 'print',
-        tooltip: 'Print',
-        onAction: function () {
-          return editor.execCommand('mcePrint');
-        }
-      });
-      editor.ui.registry.addMenuItem('print', {
-        text: 'Print...',
-        icon: 'print',
-        onAction: function () {
-          return editor.execCommand('mcePrint');
-        }
-      });
+        editor.ui.registry.addButton('print', {
+            icon: 'print',
+            tooltip: 'Print',
+            onAction: function () {
+                return editor.execCommand('mcePrint');
+            }
+        });
+        editor.ui.registry.addMenuItem('print', {
+            text: 'Print...',
+            icon: 'print',
+            onAction: function () {
+                return editor.execCommand('mcePrint');
+            }
+        });
     };
-    var Buttons = { register: register$1 };
+    var Buttons = {register: register$1};
 
-    function Plugin () {
-      global.add('print', function (editor) {
-        Commands.register(editor);
-        Buttons.register(editor);
-        editor.addShortcut('Meta+P', '', 'mcePrint');
-      });
+    function Plugin() {
+        global.add('print', function (editor) {
+            Commands.register(editor);
+            Buttons.register(editor);
+            editor.addShortcut('Meta+P', '', 'mcePrint');
+        });
     }
 
     Plugin();

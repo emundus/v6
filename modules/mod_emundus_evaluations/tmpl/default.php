@@ -1,10 +1,10 @@
 <?php
 
 defined('_JEXEC') or die('Restricted Access');
-require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
-include_once(JPATH_BASE.'/components/com_emundus/models/campaign.php');
-include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
-include_once(JPATH_BASE.'/components/com_emundus/models/users.php');
+require_once(JPATH_ROOT . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+include_once(JPATH_BASE . '/components/com_emundus/models/campaign.php');
+include_once(JPATH_BASE . '/components/com_emundus/models/profile.php');
+include_once(JPATH_BASE . '/components/com_emundus/models/users.php');
 
 JText::script('MOD_EMUNDUS_EVALUATIONS_MY_EVALUATIONS');
 JText::script('MOD_EMUNDUS_EVALUATIONS_FNUM');
@@ -67,19 +67,19 @@ JText::script('COM_EMUNDUS_ACTIONS_SEARCH');
 JText::script('COM_EMUNDUS_ATTACHMENTS_SELECT_CATEGORY');
 JText::script('COM_EMUNDUS_ATTACHMENTS_LINK_TO_DOWNLOAD');
 
-$user = JFactory::getSession()->get('emundusUser');
-$label = $params->get('label', 'Mes dossiers à évaluer');
-$intro = $params->get('intro', 'Veuillez sélectionner une campagne afin de commencer l\'évaluation de vos dossiers');
+$user     = JFactory::getSession()->get('emundusUser');
+$label    = $params->get('label', 'Mes dossiers à évaluer');
+$intro    = $params->get('intro', 'Veuillez sélectionner une campagne afin de commencer l\'évaluation de vos dossiers');
 $readonly = $params->get('readonly_eval', '0');
 
 if (!empty($label)) {
-    echo '<h3 class="em-mb-16">'.$label.'</h3>';
+	echo '<h3 class="em-mb-16">' . $label . '</h3>';
 }
 
 if (!empty($intro)) {
-    echo '<p class="em-mt-8">'.$intro.'</p>';
+	echo '<p class="em-mt-8">' . $intro . '</p>';
 }
-echo '<div id="em-evaluations-vue" user="'. $user->id . '" module="' . $module->id . '" readonly="' . $readonly . '"></div>';
+echo '<div id="em-evaluations-vue" user="' . $user->id . '" module="' . $module->id . '" readonly="' . $readonly . '"></div>';
 ?>
 
 <script src="media/mod_emundus_evaluations/app.js"></script>

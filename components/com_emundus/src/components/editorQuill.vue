@@ -94,7 +94,7 @@ export default {
       formats: this.formats
     };
 
-    if(this.$props.enable_variables){
+    if (this.$props.enable_variables) {
       options.modules.mention = {
         allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
         mentionDenotationChars: ["/"],
@@ -133,7 +133,7 @@ export default {
       }
     }
 
-    this.editor = new Quill('.editor_'+this.$attrs.id, options);
+    this.editor = new Quill('.editor_' + this.$attrs.id, options);
     if (this.text !== '' && this.text !== null && typeof this.text !== 'undefined') {
       let delta = this.editor.clipboard.convert(this.text);
       this.editor.setContents(delta);
@@ -141,12 +141,12 @@ export default {
 
     this.editor.on('editor-change', (eventName, ...args) => {
       if (eventName === 'text-change') {
-        if(this.$props.limit){
+        if (this.$props.limit) {
           if (this.editor.getLength() > this.$props.limit) {
             this.editor.deleteText(this.$props.limit, this.editor.getLength());
           }
         }
-        if(this.editor.root.innerHTML === null){
+        if (this.editor.root.innerHTML === null) {
           this.editor.root.innerHTML = '';
         }
         this.$emit("input", this.editor.root.innerHTML);
@@ -228,7 +228,7 @@ export default {
   line-height: 160%;
 }
 
-.ql-mention-list{
+.ql-mention-list {
   overflow-y: scroll !important;
   max-height: 250px;
 }
@@ -237,7 +237,7 @@ export default {
   padding: 8px !important;
 }
 
-.editor_campResume{
+.editor_campResume {
   max-height: 85px;
 }
 </style>

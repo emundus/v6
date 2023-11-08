@@ -16,12 +16,13 @@ JHtml::_('bootstrap.tooltip');
 ?>
 <div class="container-module-cas">
     <div class="sous-container-module-cas">
-	    <?php if ($mod_emundus_cas_tab2_display == 1): ?>
+		<?php if ($mod_emundus_cas_tab2_display == 1): ?>
             <ul>
                 <li id="onglet-connexion" onclick="Connexion()"><?= JText::_('MOD_EM_CAS_SUBMENU1') ?></li>
-                <li id="onglet-inscription" class="couleurFoncee" onclick="Inscription()"><?= JText::_('MOD_EM_CAS_SUBMENU2') ?></li>
+                <li id="onglet-inscription" class="couleurFoncee"
+                    onclick="Inscription()"><?= JText::_('MOD_EM_CAS_SUBMENU2') ?></li>
             </ul>
-	    <?php endif; ?>
+		<?php endif; ?>
 
 
         <div id="connexion">
@@ -29,48 +30,49 @@ JHtml::_('bootstrap.tooltip');
                 <p><?= $mod_emundus_cas_url1_desc; ?></p>
                 <br/>
 
-                    <?php if (empty($mod_emundus_cas_logo)) :?>
-                        <div class="btn-cas">
+				<?php if (empty($mod_emundus_cas_logo)) : ?>
+                    <div class="btn-cas">
 
-                            <a href="<?= $mod_emundus_cas_url1; ?>" target="_blank" class="btn btn-primary rounded">
-                            <?= $mod_emundus_cas_btn1; ?>
-                           </a>
-                        </div>
-                 <?php else:?>
-                   <div class="btn-cas">
-                          <a href="<?= $mod_emundus_cas_url1; ?>" class="btn btn-primary logo">
+                        <a href="<?= $mod_emundus_cas_url1; ?>" target="_blank" class="btn btn-primary rounded">
+							<?= $mod_emundus_cas_btn1; ?>
+                        </a>
+                    </div>
+				<?php else: ?>
+                    <div class="btn-cas">
+                        <a href="<?= $mod_emundus_cas_url1; ?>" class="btn btn-primary logo">
 
-                                <img src="<?= $mod_emundus_cas_logo; ?>" alt="Icône du système de connexion"/>
-                            </a>
-                            <a href="<?= $mod_emundus_cas_url1; ?>"  class="btn btn-primary">
-                                <?= $mod_emundus_cas_btn1; ?>
-                            </a>
-                      </div>
-                <?php endif;?>
+                            <img src="<?= $mod_emundus_cas_logo; ?>" alt="Icône du système de connexion"/>
+                        </a>
+                        <a href="<?= $mod_emundus_cas_url1; ?>" class="btn btn-primary">
+							<?= $mod_emundus_cas_btn1; ?>
+                        </a>
+                    </div>
+				<?php endif; ?>
 
             </div>
         </div>
 
         <div id="inscription" class="invisible">
-            <?php if(!empty($mod_emundus_cas_url2_desc) || !empty($mod_emundus_cas_url2)) :?>
+			<?php if (!empty($mod_emundus_cas_url2_desc) || !empty($mod_emundus_cas_url2)) : ?>
                 <div class="container em-grid-2">
                     <p><?= $mod_emundus_cas_url2_desc; ?></p>
-                    <p><a href="<?= $mod_emundus_cas_url2; ?>" class="btn btn-primary"><?= $mod_emundus_cas_btn2; ?></a></p>
+                    <p><a href="<?= $mod_emundus_cas_url2; ?>" class="btn btn-primary"><?= $mod_emundus_cas_btn2; ?></a>
+                    </p>
                 </div>
-            <?php endif; ?>
+			<?php endif; ?>
 
             <div class="formulaire">
                 <form action="<?php echo JRoute::_('index.php', true, $params->get('usesecure', 0)); ?>" method="post"
                       id="login-form" class="form-inline">
-                    <?php if ($params->get('pretext')) : ?>
+					<?php if ($params->get('pretext')) : ?>
                         <div class="pretext">
                             <p><?php echo $params->get('pretext'); ?></p>
                         </div>
-                    <?php endif; ?>
+					<?php endif; ?>
                     <div class="userdata">
                         <div id="form-login-username" class="control-group">
                             <div class="controls">
-                                <?php if (!$params->get('usetext', 0)) : ?>
+								<?php if (!$params->get('usetext', 0)) : ?>
                                     <div class="input-prepend">
 						<span class="add-on">
 							<span class="icon-user hasTooltip"
@@ -85,19 +87,19 @@ JHtml::_('bootstrap.tooltip');
                                                size="18"
                                                placeholder="<?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?>"/>
                                     </div>
-                                <?php else : ?>
+								<?php else : ?>
                                     <label for="modlgn-username"><?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?>
                                         <i data-isicon="true" class="icon-star small "></i>
                                     </label>
                                     <input id="modlgn-username" type="text" name="username" class="input-small"
                                            tabindex="0"
                                            size="18" placeholder="<?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?>"/>
-                                <?php endif; ?>
+								<?php endif; ?>
                             </div>
                         </div>
                         <div id="form-login-password" class="control-group">
                             <div class="controls">
-                                <?php if (!$params->get('usetext', 0)) : ?>
+								<?php if (!$params->get('usetext', 0)) : ?>
                                     <div class="input-prepend">
 						<span class="add-on">
 							<span class="icon-lock hasTooltip" title="<?php echo JText::_('JGLOBAL_PASSWORD'); ?>">
@@ -111,20 +113,20 @@ JHtml::_('bootstrap.tooltip');
                                                tabindex="0" size="18"
                                                placeholder="<?php echo JText::_('JGLOBAL_PASSWORD'); ?>"/>
                                     </div>
-                                <?php else : ?>
+								<?php else : ?>
                                     <label for="modlgn-passwd"><?php echo JText::_('JGLOBAL_PASSWORD'); ?>
                                         <i data-isicon="true" class="icon-star small "></i>
                                     </label>
                                     <input id="modlgn-passwd" type="password" name="password" class="input-small"
                                            tabindex="0"
                                            size="18" placeholder="<?php echo JText::_('JGLOBAL_PASSWORD'); ?>"/>
-                                <?php endif; ?>
+								<?php endif; ?>
                             </div>
                         </div>
-                        <?php if (count($twofactormethods) > 1) : ?>
+						<?php if (count($twofactormethods) > 1) : ?>
                             <div id="form-login-secretkey" class="control-group">
                                 <div class="controls">
-                                    <?php if (!$params->get('usetext', 0)) : ?>
+									<?php if (!$params->get('usetext', 0)) : ?>
                                         <div class="input-prepend input-append">
 						<span class="add-on">
 							<span class="icon-star hasTooltip" title="<?php echo JText::_('JGLOBAL_SECRETKEY'); ?>">
@@ -141,7 +143,7 @@ JHtml::_('bootstrap.tooltip');
 							<span class="icon-help"></span>
 						</span>
                                         </div>
-                                    <?php else : ?>
+									<?php else : ?>
                                         <label for="modlgn-secretkey"><?php echo JText::_('JGLOBAL_SECRETKEY'); ?></label>
                                         <input id="modlgn-secretkey" autocomplete="one-time-code" type="text"
                                                name="secretkey"
@@ -151,12 +153,12 @@ JHtml::_('bootstrap.tooltip');
                                               title="<?php echo JText::_('JGLOBAL_SECRETKEY_HELP'); ?>">
 						<span class="icon-help"></span>
 					</span>
-                                    <?php endif; ?>
+									<?php endif; ?>
 
                                 </div>
                             </div>
-                        <?php endif; ?>
-                        <?php if (JPluginHelper::isEnabled('system', 'remember')) : ?>
+						<?php endif; ?>
+						<?php if (JPluginHelper::isEnabled('system', 'remember')) : ?>
                             <div id="form-login-remember" class="control-group checkbox">
                                 <label for="modlgn-remember"
                                        class="control-label"><?php echo JText::_('MOD_LOGIN_REMEMBER_ME'); ?></label>
@@ -164,26 +166,26 @@ JHtml::_('bootstrap.tooltip');
                                         id="modlgn-remember" type="checkbox" name="remember" class="inputbox"
                                         value="yes"/>
                             </div>
-                        <?php endif; ?>
+						<?php endif; ?>
                         <div id="form-login-submit" class="control-group">
                             <div class="controls">
                                 <button type="submit" tabindex="0" name="Submit"
                                         class="btn btn-primary login-button"><?php echo JText::_('JLOGIN'); ?></button>
                             </div>
                         </div>
-                        <?php
-                        $usersConfig = JComponentHelper::getParams('com_users'); ?>
+						<?php
+						$usersConfig = JComponentHelper::getParams('com_users'); ?>
 
                         <input type="hidden" name="option" value="com_users"/>
                         <input type="hidden" name="task" value="user.login"/>
                         <input type="hidden" name="return" value="<?php echo $return; ?>"/>
-                        <?php echo JHtml::_('form.token'); ?>
+						<?php echo JHtml::_('form.token'); ?>
                     </div>
-                    <?php if ($params->get('posttext')) : ?>
+					<?php if ($params->get('posttext')) : ?>
                         <div class="posttext">
                             <p><?php echo $params->get('posttext'); ?></p>
                         </div>
-                    <?php endif; ?>
+					<?php endif; ?>
                 </form>
             </div>
         </div>

@@ -1,22 +1,26 @@
 <?php
-    defined('_JEXEC') or die('Access Deny');
+defined('_JEXEC') or die('Access Deny');
 
-    class modEmundusCalendarAddHelper {
+class modEmundusCalendarAddHelper
+{
 
-        public function getPrograms() {
+	public function getPrograms()
+	{
 
-            try {
+		try {
 
-                $db = JFactory::getDbo();
-                $db->setQuery('SELECT code, label FROM #__emundus_setup_programmes');
-                return $db->loadObjectList();
+			$db = JFactory::getDbo();
+			$db->setQuery('SELECT code, label FROM #__emundus_setup_programmes');
 
-            } catch (Exception $e) {
-                die($e->getMessage());
-            }
+			return $db->loadObjectList();
 
-        }
+		}
+		catch (Exception $e) {
+			die($e->getMessage());
+		}
 
-    }
+	}
+
+}
 
 ?>

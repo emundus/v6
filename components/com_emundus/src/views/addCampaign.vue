@@ -1,7 +1,8 @@
 <template>
   <div class="campaigns__add-campaign">
     <div v-if="typeof campaignId == 'undefined' || campaignId == 0">
-      <div class="flex items-center mt-4 cursor-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
+      <div class="flex items-center mt-4 cursor-pointer"
+           @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
         <span class="material-icons-outlined">arrow_back</span>
         <p class="ml-2">{{ translate('BACK') }}</p>
       </div>
@@ -18,7 +19,8 @@
           <div class="em-red-500-color mb-2">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</div>
 
           <div class="mb-4">
-            <label for="campLabel">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME') }} <span class="em-red-500-color">*</span></label>
+            <label for="campLabel">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME') }} <span
+                class="em-red-500-color">*</span></label>
             <input
                 id="campLabel"
                 type="text"
@@ -36,7 +38,8 @@
           <div class="grid grid-cols-2 mb-4 gap-1.5">
             <div>
               <div>
-                <label for="startDate">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE') }} <span class="em-red-500-color">*</span></label>
+                <label for="startDate">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE') }} <span
+                    class="em-red-500-color">*</span></label>
                 <datetime
                     v-model="form.start_date"
                     id="startDate"
@@ -52,7 +55,8 @@
             </div>
             <div>
               <div>
-                <label for="endDate">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE') }} <span class="em-red-500-color">*</span></label>
+                <label for="endDate">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE') }} <span
+                    class="em-red-500-color">*</span></label>
                 <datetime
                     v-model="form.end_date"
                     id="endDate"
@@ -70,7 +74,8 @@
           </div>
 
           <div class="mb-4">
-            <label for="year">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR') }} <span class="em-red-500-color">*</span></label>
+            <label for="year">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR') }} <span
+                class="em-red-500-color">*</span></label>
             <autocomplete
                 :id="'year'"
                 @searched="onSearchYear"
@@ -106,7 +111,8 @@
           </div>
 
           <div class="mb-4">
-            <label style="top: 5em">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME') }} <span class="em-red-500-color">*</span></label>
+            <label style="top: 5em">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME') }} <span
+                class="em-red-500-color">*</span></label>
             <editor-quill
                 style="height: 25em"
                 :text="form.short_description"
@@ -142,7 +148,8 @@
           <div class="mb-4">
             <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM') }}</h2>
           </div>
-          <div class="mb-4">{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC') }}<span class="em-red-500-color">*</span></div>
+          <div class="mb-4">{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC') }}<span
+              class="em-red-500-color">*</span></div>
 
           <div class="flex items-center mb-4">
             <select
@@ -158,10 +165,13 @@
                   v-bind:value="item.code"
                   v-bind:data-category="item.programmes"
                   :key="index">
-                {{ item.label && item.label[actualLanguage] !== null && typeof item.label[actualLanguage] != 'undefined' ? item.label[actualLanguage] : item.label }}
+                {{
+                  item.label && item.label[actualLanguage] !== null && typeof item.label[actualLanguage] != 'undefined' ? item.label[actualLanguage] : item.label
+                }}
               </option>
             </select>
-            <button v-if="coordinatorAccess != 0" :title="translate('COM_EMUNDUS_ONBOARD_ADDPROGRAM')" type="button" id="add-program" class="ml-2 em-transparent-button" @click="displayProgram">
+            <button v-if="coordinatorAccess != 0" :title="translate('COM_EMUNDUS_ONBOARD_ADDPROGRAM')" type="button"
+                    id="add-program" class="ml-2 em-transparent-button" @click="displayProgram">
               <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
             </button>
           </div>
@@ -170,7 +180,8 @@
             <div v-if="isHiddenProgram">
               <div>
                 <div class="mb-4">
-                  <label for="prog_label">{{ translate('COM_EMUNDUS_ONBOARD_PROGNAME') }} <span class="em-red-500-color">*</span></label>
+                  <label for="prog_label">{{ translate('COM_EMUNDUS_ONBOARD_PROGNAME') }} <span
+                      class="em-red-500-color">*</span></label>
                   <input
                       type="text"
                       id="prog_label"
@@ -192,7 +203,8 @@
                            :class="index != 0 ? 'ml-2' : ''"
                            :style="selectedColor == color.text ? 'background-color:' + color.text + ';border: 2px solid ' + color.background : 'background-color:' + color.text"
                            @click="programForm.color = color.text;selectedColor = color.text">
-                        <span v-if="selectedColor == color.text" class="material-icons-outlined" style="font-weight: bold;color: black;filter: invert(1)">done</span>
+                        <span v-if="selectedColor == color.text" class="material-icons-outlined"
+                              style="font-weight: bold;color: black;filter: invert(1)">done</span>
                       </div>
                     </div>
                   </div>
@@ -222,8 +234,8 @@
 <script>
 import Swal from "sweetalert2";
 import axios from "axios";
-import { Datetime } from "vue-datetime";
-import { DateTime as LuxonDateTime, Settings } from "luxon";
+import {Datetime} from "vue-datetime";
+import {DateTime as LuxonDateTime, Settings} from "luxon";
 import Autocomplete from "../components/autocomplete";
 import Translation from "../components/translation"
 
@@ -243,7 +255,8 @@ export default {
     Translation
   },
 
-  directives: { focus: {
+  directives: {
+    focus: {
       inserted: function (el) {
         el.focus()
       }
@@ -321,10 +334,10 @@ export default {
     },
 
     colors: [
-        {
-          text: '#1C6EF2',
-          background: '#79B6FB',
-        },
+      {
+        text: '#1C6EF2',
+        background: '#79B6FB',
+      },
       {
         text: '#20835F',
         background: '#87D4B8',
@@ -360,7 +373,7 @@ export default {
     //
 
     let now = new Date();
-    this.form.start_date = LuxonDateTime.local(now.getFullYear(),now.getMonth() + 1,now.getDate(),0,0,0).toISO();
+    this.form.start_date = LuxonDateTime.local(now.getFullYear(), now.getMonth() + 1, now.getDate(), 0, 0, 0).toISO();
     this.getLanguages().then(() => {
       this.getCampaignById();
     });
@@ -375,13 +388,13 @@ export default {
           let label = response.data.data.campaign.label;
 
           this.form = response.data.data.campaign;
-          this.$emit('getInformations',this.form);
+          this.$emit('getInformations', this.form);
           this.programForm = response.data.data.program;
 
           // Check label translations
           this.form.label = response.data.data.label;
           this.languages.forEach((language) => {
-            if(this.form.label[language.sef] === '' || this.form.label[language.sef] == null) {
+            if (this.form.label[language.sef] === '' || this.form.label[language.sef] == null) {
               this.form.label[language.sef] = label;
             }
           });
@@ -395,7 +408,7 @@ export default {
           }
           //
 
-          if(typeof response.data.data.campaign.status != 'undefined') {
+          if (typeof response.data.data.campaign.status != 'undefined') {
             this.form.limit_status = [];
             this.form.is_limited = 1;
             Object.values(response.data.data.campaign.status).forEach((statu) => {
@@ -417,31 +430,31 @@ export default {
       axios.get('index.php?option=com_emundus&controller=programme&task=getallprogram')
           .then(response => {
 
-	          if (response.data.status) {
-		          this.programs = response.data.data.datas;
-		          if(Object.keys(this.programs).length !== 0) {
-			          this.programs.sort((a, b) => a.id - b.id);
-		          }
-	          } else {
-		          this.programs = [];
-	          }
+            if (response.data.status) {
+              this.programs = response.data.data.datas;
+              if (Object.keys(this.programs).length !== 0) {
+                this.programs.sort((a, b) => a.id - b.id);
+              }
+            } else {
+              this.programs = [];
+            }
           }).catch(e => {
-              console.log(e);
-          });
+        console.log(e);
+      });
       this.getYears();
     },
     getYears() {
       axios.get('index.php?option=com_emundus&controller=campaign&task=getyears')
-        .then(response => {
-          this.years = response.data.data;
+          .then(response => {
+            this.years = response.data.data;
 
-          this.years.forEach((year) => {
-            this.session.push(year.schoolyear);
-          });
+            this.years.forEach((year) => {
+              this.session.push(year.schoolyear);
+            });
 
-        }).catch(e => {
-          console.log(e);
-        });
+          }).catch(e => {
+        console.log(e);
+      });
 
       this.getStatus();
     },
@@ -470,14 +483,14 @@ export default {
           });
     },
 
-	  createCampaign(form_data){
+    createCampaign(form_data) {
       campaignService.createCampaign(form_data).then((response) => {
         this.campaignId = response.data.data;
         this.quitFunnelOrContinue(this.quit);
       });
     },
 
-	  createCampaignWithNoExistingProgram(programForm){
+    createCampaignWithNoExistingProgram(programForm) {
       axios({
         method: "post",
         url: "index.php?option=com_emundus&controller=programme&task=createprogram",
@@ -492,7 +505,7 @@ export default {
           this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
           this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
 
-					this.createCampaign(this.form);
+          this.createCampaign(this.form);
         } else {
           Swal.fire({
             title: this.translate(rep.data.msg),
@@ -512,7 +525,7 @@ export default {
 
 
     submit() {
-	    this.$store.dispatch('campaign/setUnsavedChanges', true);
+      this.$store.dispatch('campaign/setUnsavedChanges', true);
 
       // Checking errors
       this.errors = {
@@ -524,49 +537,49 @@ export default {
         limit_status: false
       }
       if (this.form.label[this.actualLanguage] === '' || this.form.label[this.actualLanguage] == null || typeof this.form.label[this.actualLanguage] === 'undefined') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({top: 0, behavior: 'smooth'});
         this.errors.label = true;
         return 0;
       }
 
       if (this.form.end_date == '' || this.form.end_date == '0000-00-00 00:00:00') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-	      const endDate = document.getElementById('end_date');
-	      if (endDate) {
-		      endDate.focus();
-	      }
+        window.scrollTo({top: 0, behavior: 'smooth'});
+        const endDate = document.getElementById('end_date');
+        if (endDate) {
+          endDate.focus();
+        }
         return 0;
       }
 
-	    if (this.form.start_date == '' || this.form.start_date == '0000-00-00 00:00:00') {
-		    window.scrollTo({ top: 0, behavior: 'smooth' });
-				const startDate = document.getElementById('start_date');
-				if (startDate) {
-					startDate.focus();
-				}
-		    return 0;
-	    }
+      if (this.form.start_date == '' || this.form.start_date == '0000-00-00 00:00:00') {
+        window.scrollTo({top: 0, behavior: 'smooth'});
+        const startDate = document.getElementById('start_date');
+        if (startDate) {
+          startDate.focus();
+        }
+        return 0;
+      }
 
       if (this.form.year == "") {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({top: 0, behavior: 'smooth'});
         const year = document.getElementById('year');
-				if (year) {
-					year.focus();
-				}
+        if (year) {
+          year.focus();
+        }
         return 0;
       }
 
-      if (this.form.is_limited == 1){
+      if (this.form.is_limited == 1) {
         let least_one_status = this.form.limit_status.every((value) => {
           return value === false;
         });
-        if(this.form.limit == ''){
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (this.form.limit == '') {
+          window.scrollTo({top: 0, behavior: 'smooth'});
           this.errors.limit_files_number = true;
           return 0;
         }
-        if(this.form.limit_status.length == 0 || least_one_status) {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (this.form.limit_status.length == 0 || least_one_status) {
+          window.scrollTo({top: 0, behavior: 'smooth'});
           this.errors.limit_status = true;
           return 0;
         }
@@ -576,19 +589,19 @@ export default {
         if (this.isHiddenProgram) {
           if (this.programForm.label == "") {
             this.errors.progLabel = true;
-	          document.getElementById('prog_label').focus();
-	          return 0;
+            document.getElementById('prog_label').focus();
+            return 0;
           } else {
-						// does this label already exists
-						const similarProgram = this.programs.find((program) => {
-							return program.label == this.programForm.label;
-						});
+            // does this label already exists
+            const similarProgram = this.programs.find((program) => {
+              return program.label == this.programForm.label;
+            });
 
-						if (similarProgram != undefined) {
-							this.errors.progLabel = true;
-							document.getElementById('prog_label').focus();
-							return 0;
-						}
+            if (similarProgram != undefined) {
+              this.errors.progLabel = true;
+              document.getElementById('prog_label').focus();
+              return 0;
+            }
           }
         } else {
           document.getElementById('select_prog').focus();
@@ -614,25 +627,25 @@ export default {
         if (this.form.training != '') {
           this.updateCampaign();
         } else {
-	        axios({
-		        method: "post",
-		        url: "index.php?option=com_emundus&controller=programme&task=createprogram",
-		        headers: {
-			        "Content-Type": "application/x-www-form-urlencoded"
-		        },
-		        data: qs.stringify( {body: this.programForm})
-	        }).then((response) => {
-		        this.programForm.code = response.data.data.programme_code;
-		        this.form.progid = response.data.data.programme_id;
+          axios({
+            method: "post",
+            url: "index.php?option=com_emundus&controller=programme&task=createprogram",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({body: this.programForm})
+          }).then((response) => {
+            this.programForm.code = response.data.data.programme_code;
+            this.form.progid = response.data.data.programme_id;
 
-						this.updateCampaign();
-	        }).catch(error => {
-		        console.log(error);
-	        });
+            this.updateCampaign();
+          }).catch(error => {
+            console.log(error);
+          });
         }
       } else {
         // get program code if there is training value
-        if (this.form.training !== "")  {
+        if (this.form.training !== "") {
           this.programForm = this.programs.find(program => program.code == this.form.training);
           this.form.training = this.programForm.code;
           this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
@@ -644,46 +657,46 @@ export default {
       }
     },
 
-	  updateCampaign() {
-		  this.form.training = this.programForm.code;
-		  this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
-		  this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
+    updateCampaign() {
+      this.form.training = this.programForm.code;
+      this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
+      this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
 
-		  axios({
-			  method: 'post',
-			  url: 'index.php?option=com_emundus&controller=campaign&task=updatecampaign',
-			  headers: {
-				  'Content-Type': 'application/x-www-form-urlencoded'
-			  },
-			  data: qs.stringify({ body: this.form, cid: this.campaignId })
-		  }).then((response) => {
-			  if (!response.status) {
-				  Swal.fire({
-					  type: 'error',
-					  title: this.translate('COM_EMUNDUS_ADD_CAMPAIGN_ERROR'),
-					  reverseButtons: true,
-					  customClass: {
-						  title: 'em-swal-title',
-						  confirmButton: 'em-swal-confirm-button',
-						  actions: "em-swal-single-action",
-					  },
-				  });
-				  this.submitted = false;
-				  return 0;
-			  } else {
-				  this.$emit('nextSection');
-				  this.$emit('updateHeader',this.form);
-			  }
-		  }).catch(error => {
-			  console.log(error);
-		  });
-	  },
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus&controller=campaign&task=updatecampaign',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        data: qs.stringify({body: this.form, cid: this.campaignId})
+      }).then((response) => {
+        if (!response.status) {
+          Swal.fire({
+            type: 'error',
+            title: this.translate('COM_EMUNDUS_ADD_CAMPAIGN_ERROR'),
+            reverseButtons: true,
+            customClass: {
+              title: 'em-swal-title',
+              confirmButton: 'em-swal-confirm-button',
+              actions: "em-swal-single-action",
+            },
+          });
+          this.submitted = false;
+          return 0;
+        } else {
+          this.$emit('nextSection');
+          this.$emit('updateHeader', this.form);
+        }
+      }).catch(error => {
+        console.log(error);
+      });
+    },
 
     quitFunnelOrContinue(quit) {
       if (quit === 0) {
         this.redirectJRoute('index.php?option=com_emundus&view=campaign');
       } else if (quit === 1) {
-        document.cookie = 'campaign_'+this.campaignId+'_menu = 1; expires=Session; path=/';
+        document.cookie = 'campaign_' + this.campaignId + '_menu = 1; expires=Session; path=/';
         this.redirectJRoute('index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' + this.campaignId + '&index=0')
       }
     },
@@ -699,7 +712,7 @@ export default {
       this.$store.dispatch('campaign/setUnsavedChanges', true);
     },
     displayProgram() {
-      if(this.isHiddenProgram){
+      if (this.isHiddenProgram) {
         document.getElementById('add-program').style = 'transform: rotate(0)';
         this.form.training = this.old_training;
         this.programForm = this.old_program_form;
@@ -725,7 +738,7 @@ export default {
 
   watch: {
     'form.start_date': function (val) {
-      this.minDate = LuxonDateTime.fromISO(val).plus({ days: 1 }).toISO();
+      this.minDate = LuxonDateTime.fromISO(val).plus({days: 1}).toISO();
       if (this.form.end_date == "") {
         this.form.end_date = LuxonDateTime.fromISO(val).plus({days: 1}).toISO();
       }
@@ -736,7 +749,8 @@ export default {
 
 <style scoped>
 @import "../assets/css/date-time.css";
-#add-program{
+
+#add-program {
   height: 24px;
   width: 24px;
   padding: unset;
@@ -746,7 +760,7 @@ export default {
   height: 130px !important;
 }
 
-.em-color-round{
+.em-color-round {
   height: 30px;
   width: 30px;
   border-radius: 50%;

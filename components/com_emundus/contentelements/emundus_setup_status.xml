@@ -1,14 +1,15 @@
 <?xml version="1.0" ?>
 <falang type="contentelement" name="Statuts">
-  <name>Statuts</name>
-  <author>eMundus - www.emundus.fr</author>
-  <version>1.0</version>
-  <description></description>
-  <reference>
-  	<table name="emundus_setup_status" reference="step" label="value" filters="" type="falang" load_all="true" load_first_data="false" load_first_child="false">
-        <section label="" name="emundus_setup_status">
-            <field name="value" type="field" section="emundus_setup_status">Nom du statut</field>
-        </section>
-  	</table>
-  </reference>
+    <name>Statuts</name>
+    <author>eMundus - www.emundus.fr</author>
+    <version>1.0</version>
+    <description></description>
+    <reference>
+        <table name="emundus_setup_status" reference="step" label="value" filters="" type="falang" load_all="true"
+               load_first_data="false" load_first_child="false">
+            <section label="" name="emundus_setup_status">
+                <field name="value" type="field" section="emundus_setup_status">Nom du statut</field>
+            </section>
+        </table>
+    </reference>
 </falang>

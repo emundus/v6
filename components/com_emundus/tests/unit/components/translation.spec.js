@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import Translation from '../../../src/components/translation';
 import translate from '../../mocks/mixins/translate';
 
@@ -17,7 +17,7 @@ describe('Translation.vue', () => {
         localVue
     });
 
-    it ('Translation should exist', () => {
+    it('Translation should exist', () => {
         expect(wrapper.find('.translation').exists()).toBeTruthy();
     });
 });

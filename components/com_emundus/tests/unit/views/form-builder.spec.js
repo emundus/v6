@@ -1,4 +1,4 @@
-import { shallowMount, mount, createLocalVue } from '@vue/test-utils';
+import {shallowMount, mount, createLocalVue} from '@vue/test-utils';
 import '../../mocks/matchMedia.mock';
 import formBuilder from '../../../src/views/formBuilder';
 import translate from '../../mocks/mixins/translate';
@@ -28,7 +28,7 @@ describe('formBuilder.vue', () => {
     });
     wrapper.vm.$modal.show('formBuilder');
 
-    it ('formBuilder should exist', () => {
+    it('formBuilder should exist', () => {
         expect(wrapper.find('#formBuilder').exists()).toBeTruthy();
         expect(wrapper.find('[data-modal="formBuilder"]')).toBeTruthy();
     });
@@ -46,11 +46,11 @@ describe('formBuilder go back button', () => {
 
     wrapper.vm.$modal.show('formBuilder');
 
-    it ('formBuilder should have a button to go back', () => {
+    it('formBuilder should have a button to go back', () => {
         expect(wrapper.find('#go-back').exists()).toBeTruthy();
     });
 
-    test ('formBuilder should set vm.principalContainer to default when clicking on the button if it\'s on create-page', () => {
+    test('formBuilder should set vm.principalContainer to default when clicking on the button if it\'s on create-page', () => {
         const spyClose = jest.spyOn(wrapper.vm, 'onCloseCreatePage');
         wrapper.vm.$data.principalContainer = 'create-page';
         wrapper.find('#go-back').trigger('click');

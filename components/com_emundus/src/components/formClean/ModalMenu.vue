@@ -15,7 +15,7 @@
     >
       <div class="em-flex-row em-flex-space-between em-mb-16">
         <h4>
-          {{translations.addMenu}}
+          {{ translations.addMenu }}
         </h4>
         <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalMenu')">
           <span class="material-icons-outlined">close</span>
@@ -24,23 +24,26 @@
 
       <div>
         <div class="em-mb-16">
-          <label class="em-w-100">{{translations.ChooseExistingPageModel}} :</label>
+          <label class="em-w-100">{{ translations.ChooseExistingPageModel }} :</label>
           <select v-model="model_id" class="em-w-100" :disabled="Object.keys(models).length <= 0">
             <option value="-1"></option>
-            <option v-for="model in models" :key="model.form_id" :value="model.form_id"> {{ model.label[actualLanguage] }}</option>
+            <option v-for="model in models" :key="model.form_id" :value="model.form_id"> {{
+                model.label[actualLanguage]
+              }}</option>
           </select>
         </div>
 
         <div class="em-mb-16">
-          <label>{{translations.Name}}* :</label>
-          <input v-model="label[actualLanguage]" type="text" maxlength="40" id="menu_label" class="em-w-100" :class="{ 'is-invalid': errors}"/>
+          <label>{{ translations.Name }}* :</label>
+          <input v-model="label[actualLanguage]" type="text" maxlength="40" id="menu_label" class="em-w-100"
+                 :class="{ 'is-invalid': errors}"/>
         </div>
         <p v-if="errors && model_id == -1" class="em-red-500-color">
-          <span class="em-red-500-color">{{translations.LabelRequired}}</span>
+          <span class="em-red-500-color">{{ translations.LabelRequired }}</span>
         </p>
 
         <div class="em-mb-16">
-          <label>{{translations.Intro}}</label>
+          <label>{{ translations.Intro }}</label>
                 <editor v-for="(language,index_group) in languages"
                         v-if="language.sef === selectedLanguage"
                         :height="'30em'"
@@ -59,7 +62,7 @@
             type="button"
             class="em-secondary-button em-w-auto"
             @click.prevent="$modal.hide('modalMenu')">
-          {{translations.Retour}}
+          {{ translations.Retour }}
         </button>
         <button
             type="button"
@@ -76,6 +79,7 @@
 
 <script>
 import axios from "axios";
+
 const qs = require("qs");
 import translation from "@/components/translation";
 import Editor from "../editor";
@@ -188,7 +192,7 @@ export default {
         }).then((result) => {
           this.submitted = false;
           this.$modal.hide('modalMenu');
-          this.$emit('AddMenu',result.data);
+          this.$emit('AddMenu', result.data);
         }).catch(e => {
           console.log(e);
         });
@@ -200,16 +204,16 @@ export default {
 
   watch: {
     model_id: function (value) {
-      if(value != -1){
+      if (value != -1) {
         Object.values(this.models).forEach(model => {
-          if(model.form_id == this.model_id){
+          if (model.form_id == this.model_id) {
             this.label.fr = model.label.fr;
             this.label.en = model.label.en;
 
             var divfr = document.createElement("div");
             var diven = document.createElement("div");
-            divfr.innerHTML =  model.intro.fr;
-            diven.innerHTML =  model.intro.en;
+            divfr.innerHTML = model.intro.fr;
+            diven.innerHTML = model.intro.en;
             this.intro.fr = divfr.innerText;
             this.intro.en = diven.innerText;
           }

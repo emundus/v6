@@ -4,8 +4,13 @@ defined('_JEXEC') or die;
 ?>
 
 <div class="alert alert-info">
-    <p> <?php echo JText::_("MOD_EM_BOOK_INTERVIEW_NEXT_INTERVIEW_JURY"); ?> <strong><?php echo $next_interview->title; ?> </strong><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_NEXT_INTERVIEW")?> <strong><?php echo $interview_date; ?> </strong>  <?php echo JText::_("MOD_EM_BOOK_INTERVIEW_AT"); ?> <strong><?php echo $interview_time." ".$offset; ?></strong> <p>
-        <button type="button" class="btn btn-danger" id="btnBook" onclick="cancelInterview()"><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_CANCEL"); ?></button>
+    <p> <?php echo JText::_("MOD_EM_BOOK_INTERVIEW_NEXT_INTERVIEW_JURY"); ?>
+        <strong><?php echo $next_interview->title; ?> </strong><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_NEXT_INTERVIEW") ?>
+        <strong><?php echo $interview_date; ?> </strong> <?php echo JText::_("MOD_EM_BOOK_INTERVIEW_AT"); ?>
+        <strong><?php echo $interview_time . " " . $offset; ?></strong>
+    <p>
+        <button type="button" class="btn btn-danger" id="btnBook"
+                onclick="cancelInterview()"><?php echo JText::_("MOD_EM_BOOK_INTERVIEW_CANCEL"); ?></button>
 </div>
 
 <script>
@@ -25,7 +30,7 @@ defined('_JEXEC') or die;
             data: {
                 eventId: eventId
             },
-            success: function(result) {
+            success: function (result) {
                 result = JSON.parse(result);
                 if (result.status) {
                     location.reload(true);
@@ -34,7 +39,7 @@ defined('_JEXEC') or die;
                     bookBtn.style.innerText = 'Error!';
                 }
             },
-            error: function(jqXHR, textStatus, errorThrown) {
+            error: function (jqXHR, textStatus, errorThrown) {
                 bookBtn.style.backgroundColor = '#96281B';
                 bookBtn.style.innerText = 'Error!';
             }

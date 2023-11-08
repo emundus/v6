@@ -1,86 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="2.5" client="site" method="upgrade">
-	<name>eMundus - Favorite programmes</name>
-	<author>Hugo Moracchini</author>
-	<creationDate>June 2015</creationDate>
-	<copyright>Copyright (C) 2018 eMundus. All rights reserved.</copyright>
-	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-	<authorEmail>hugo.moracchini@emundus.fr</authorEmail>
-	<authorUrl>www.emundus.fr</authorUrl>
-	<version>3.9.1</version>
-	<description>A module displaying upcoming sessions of favorited programmes.</description>
-	<files>
-		<filename module="mod_emundus_favorites">mod_emundus_favorites.php</filename>
-		<folder>tmpl</folder>
-		<filename>index.html</filename>
-		<folder>language</folder>
-	</files>
-	<languages>
-		<language tag="en-GB">en-GB.mod_emundus_favorites.ini</language>
-		<language tag="en-GB">en-GB.mod_emundus_favorites.sys.ini</language>
-		<language tag="fr-FR">fr-FR.mod_emundus_favorites.ini</language>
-		<language tag="fr-FR">fr-FR.mod_emundus_favorites.sys.ini</language>
-	</languages>
-	<config>
-		<fields name="params">
-			<fieldset name="basic">
-				<field
-					name="description"
-					type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
-					default=""
-					label="MOD_EMUNDUS_DESCRIPTION"
-					description="MOD_EMUNDUS_DESCRIPTION_DESC">
-				</field>
-				<field
-						name="outro"
-						type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
-						default=""
-						label="MOD_EMUNDUS_OUTRO"
-						description="MOD_EMUNDUS_OUTRO_DESC">
-				</field>
-				<field
-						name="signupURL"
-						type="text"
-						label="MOD_EMUNDUS_FAVORITES_SIGNUPURL"
-					   	description="MOD_EMUNDUS_FAVORITES_SIGNUPURL_DESC"
-				/>
-			</fieldset>
-			<fieldset name="advanced">
-				<field
-					name="layout"
-					type="modulelayout"
-					label="JFIELD_ALT_LAYOUT_LABEL"
-					description="JFIELD_ALT_MODULE_LAYOUT_DESC" />
-				<field
-					name="moduleclass_sfx"
-					type="text"
-					label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
-					description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC"
-					default="list-group" />
-				<field
-					name="cache"
-					type="list"
-					default="1"
-					label="COM_MODULES_FIELD_CACHING_LABEL"
-					description="COM_MODULES_FIELD_CACHING_DESC">
-					<option
-						value="1">JGLOBAL_USE_GLOBAL</option>
-					<option
-						value="0">COM_MODULES_FIELD_VALUE_NOCACHING</option>
-				</field>
-				<field
-					name="cache_time"
-					type="text"
-					default="900"
-					label="COM_MODULES_FIELD_CACHE_TIME_LABEL"
-					description="COM_MODULES_FIELD_CACHE_TIME_DESC" />
-				<field
-					name="cachemode"
-					type="hidden"
-					default="static">
-					<option value="static">static</option>
-				</field>
-			</fieldset>
-		</fields>
-	</config>
+    <name>eMundus - Favorite programmes</name>
+    <author>Hugo Moracchini</author>
+    <creationDate>June 2015</creationDate>
+    <copyright>Copyright (C) 2018 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>hugo.moracchini@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>3.9.1</version>
+    <description>A module displaying upcoming sessions of favorited programmes.</description>
+    <files>
+        <filename module="mod_emundus_favorites">mod_emundus_favorites.php</filename>
+        <folder>tmpl</folder>
+        <filename>index.html</filename>
+        <folder>language</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.mod_emundus_favorites.ini</language>
+        <language tag="en-GB">en-GB.mod_emundus_favorites.sys.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_favorites.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_favorites.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                        name="description"
+                        type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+                        default=""
+                        label="MOD_EMUNDUS_DESCRIPTION"
+                        description="MOD_EMUNDUS_DESCRIPTION_DESC">
+                </field>
+                <field
+                        name="outro"
+                        type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+                        default=""
+                        label="MOD_EMUNDUS_OUTRO"
+                        description="MOD_EMUNDUS_OUTRO_DESC">
+                </field>
+                <field
+                        name="signupURL"
+                        type="text"
+                        label="MOD_EMUNDUS_FAVORITES_SIGNUPURL"
+                        description="MOD_EMUNDUS_FAVORITES_SIGNUPURL_DESC"
+                />
+            </fieldset>
+            <fieldset name="advanced">
+                <field
+                        name="layout"
+                        type="modulelayout"
+                        label="JFIELD_ALT_LAYOUT_LABEL"
+                        description="JFIELD_ALT_MODULE_LAYOUT_DESC"/>
+                <field
+                        name="moduleclass_sfx"
+                        type="text"
+                        label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
+                        description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC"
+                        default="list-group"/>
+                <field
+                        name="cache"
+                        type="list"
+                        default="1"
+                        label="COM_MODULES_FIELD_CACHING_LABEL"
+                        description="COM_MODULES_FIELD_CACHING_DESC">
+                    <option
+                            value="1">JGLOBAL_USE_GLOBAL
+                    </option>
+                    <option
+                            value="0">COM_MODULES_FIELD_VALUE_NOCACHING
+                    </option>
+                </field>
+                <field
+                        name="cache_time"
+                        type="text"
+                        default="900"
+                        label="COM_MODULES_FIELD_CACHE_TIME_LABEL"
+                        description="COM_MODULES_FIELD_CACHE_TIME_DESC"/>
+                <field
+                        name="cachemode"
+                        type="hidden"
+                        default="static">
+                    <option value="static">static</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
 </extension>

@@ -1,37 +1,44 @@
 <?xml version="1.0"?>
-	<extension type="module" version ="2.5.0" method="upgrade">
-		<name>MOD_EMUNDUS_BOOK_INTERVIEW_XML</name>
-        <author>Hugo Moracchini</author>
-        <creationDate>October 2017</creationDate>
-        <copyright>Copyright (C) 2017 eMundus. All rights reserved.</copyright>
-        <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-        <authorEmail>benjamin@emundus.fr</authorEmail>
-        <authorUrl>www.emundus.fr</authorUrl>
-        <version>6.0</version>
-		<description>MOD_EMUNDUS_BOOK_INTERVIEW_XML_DESC</description>
-		<files>
-			<filename>mod_emundus_book_interview.xml</filename>
-			<filename module="mod_emundus_book_interview">mod_emundus_book_interview.php</filename>
-			<filename>index.html</filename>
-			<folder>tmpl</folder>
-			<folder>language</folder>
-		</files>
-		<config>
-			<fields name="params">
-				<fieldset name="basic" label="Options">``
-					<field name="skype" type="checkbox" label="MOD_EM_BOOK_INTERVIEW_SKYPE_PARAM" description="MOD_EM_BOOK_INTERVIEW_SKYPE_PARAM_DESC" value="1" default="0"/>
-					<field name="facetime" type="checkbox" label="MOD_EM_BOOK_INTERVIEW_FACETIME_PARAM" description="MOD_EM_BOOK_INTERVIEW_FACETIME_PARAM_DESC" value="1" default="0"/>
-					<field name="whatsapp" type="checkbox" label="MOD_EM_BOOK_INTERVIEW_WHATSAPP_PARAM" description="MOD_EM_BOOK_INTERVIEW_WHATSAPP_PARAM_DESC" value="1" default="0"/>
-					<field name="google" type="checkbox" label="MOD_EM_BOOK_INTERVIEW_GOOGLE_PARAM" description="MOD_EM_BOOK_INTERVIEW_GOOGLE_PARAM_DESC" value="1" default="0"/>
-					<field type="list" name="mod_em_book_interview_layout" default="" label="MOD_EM_BOOK_INTERVIEW_LAYOUT" description="MOD_EM_BOOK_INTERVIEW_LAYOUT_DESC">
-                        <option value="default">MOD_EM_BOOK_INTERVIEW_EM_MODAL</option>
-                        <option value="form">MOD_EM_BOOK_INTERVIEW_EM_FORM</option>
-                    </field>
-					<field name="evaluated_status" type="text" label="MOD_EM_BOOK_INTERVIEW_EVALUATED_STATUS" description="MOD_EM_BOOK_INTERVIEW_EVALUATED_STATUS_DESC"/>
-				</fieldset>
-				<fieldset name="advanced">
-					<field name="layout" type="modulelayout" label="JFIELD_ALT_LAYOUT_LABEL" description="JFIELD_ALT_MODULE_LAYOUT_DESC" />
-				</fieldset>
-			</fields>
-		</config>
-	</extension>
+<extension type="module" version="2.5.0" method="upgrade">
+    <name>MOD_EMUNDUS_BOOK_INTERVIEW_XML</name>
+    <author>Hugo Moracchini</author>
+    <creationDate>October 2017</creationDate>
+    <copyright>Copyright (C) 2017 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>benjamin@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>6.0</version>
+    <description>MOD_EMUNDUS_BOOK_INTERVIEW_XML_DESC</description>
+    <files>
+        <filename>mod_emundus_book_interview.xml</filename>
+        <filename module="mod_emundus_book_interview">mod_emundus_book_interview.php</filename>
+        <filename>index.html</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+    </files>
+    <config>
+        <fields name="params">
+            <fieldset name="basic" label="Options">``
+                <field name="skype" type="checkbox" label="MOD_EM_BOOK_INTERVIEW_SKYPE_PARAM"
+                       description="MOD_EM_BOOK_INTERVIEW_SKYPE_PARAM_DESC" value="1" default="0"/>
+                <field name="facetime" type="checkbox" label="MOD_EM_BOOK_INTERVIEW_FACETIME_PARAM"
+                       description="MOD_EM_BOOK_INTERVIEW_FACETIME_PARAM_DESC" value="1" default="0"/>
+                <field name="whatsapp" type="checkbox" label="MOD_EM_BOOK_INTERVIEW_WHATSAPP_PARAM"
+                       description="MOD_EM_BOOK_INTERVIEW_WHATSAPP_PARAM_DESC" value="1" default="0"/>
+                <field name="google" type="checkbox" label="MOD_EM_BOOK_INTERVIEW_GOOGLE_PARAM"
+                       description="MOD_EM_BOOK_INTERVIEW_GOOGLE_PARAM_DESC" value="1" default="0"/>
+                <field type="list" name="mod_em_book_interview_layout" default="" label="MOD_EM_BOOK_INTERVIEW_LAYOUT"
+                       description="MOD_EM_BOOK_INTERVIEW_LAYOUT_DESC">
+                    <option value="default">MOD_EM_BOOK_INTERVIEW_EM_MODAL</option>
+                    <option value="form">MOD_EM_BOOK_INTERVIEW_EM_FORM</option>
+                </field>
+                <field name="evaluated_status" type="text" label="MOD_EM_BOOK_INTERVIEW_EVALUATED_STATUS"
+                       description="MOD_EM_BOOK_INTERVIEW_EVALUATED_STATUS_DESC"/>
+            </fieldset>
+            <fieldset name="advanced">
+                <field name="layout" type="modulelayout" label="JFIELD_ALT_LAYOUT_LABEL"
+                       description="JFIELD_ALT_MODULE_LAYOUT_DESC"/>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

@@ -19,7 +19,7 @@
         </div>
 
         <div class="em-logo-box pointer em-mt-16" v-if="!logo_updating">
-          <img class="logo-settings" v-if="!hideLogo" :src="imageLink" :srcset="'/'+imageLink"  @error="hideLogo = true">
+          <img class="logo-settings" v-if="!hideLogo" :src="imageLink" :srcset="'/'+imageLink" @error="hideLogo = true">
           <p v-if="hideLogo">{{ translate('COM_EMUNDUS_ONBOARD_INSERT_LOGO') }}</p>
         </div>
         <div class="em-mt-16" v-if="logo_updating">
@@ -122,7 +122,8 @@
         </div>
 
         <div class="em-logo-box pointer em-mt-16" v-if="!banner_updating">
-          <img class="logo-settings" style="width: 180px" :src="bannerLink" :srcset="'/'+bannerLink" :alt="InsertBanner">
+          <img class="logo-settings" style="width: 180px" :src="bannerLink" :srcset="'/'+bannerLink"
+               :alt="InsertBanner">
         </div>
         <div class="em-mt-16" v-if="banner_updating">
           <vue-dropzone
@@ -175,7 +176,7 @@ const getTemplate = () => `
 
 export default {
   name: "global",
-  props: { },
+  props: {},
   components: {
     ModalUpdateColors,
     Multiselect,
@@ -265,7 +266,7 @@ export default {
       method: "get",
       url: 'index.php?option=com_emundus&controller=settings&task=getlogo',
     }).then((rep) => {
-      if(rep.data.filename == null){
+      if (rep.data.filename == null) {
         this.imageLink = 'images/custom/logo.png';
       } else {
         this.imageLink = 'images/custom/' + rep.data.filename + '?' + new Date().getTime();
@@ -273,14 +274,14 @@ export default {
 
       setTimeout(() => {
         this.changes = true;
-      },1000);
+      }, 1000);
     });
 
     axios({
       method: "get",
       url: 'index.php?option=com_emundus&controller=settings&task=getfavicon',
     }).then((rep) => {
-      if(rep.data.filename == null){
+      if (rep.data.filename == null) {
         this.iconLink = 'images/custom/favicon.png';
       } else {
         this.iconLink = rep.data.filename + '?' + new Date().getTime();
@@ -288,33 +289,33 @@ export default {
 
       setTimeout(() => {
         this.changes = true;
-      },1000);
+      }, 1000);
     });
 
     axios({
       method: "get",
       url: 'index.php?option=com_emundus&controller=settings&task=getbanner',
     }).then((rep) => {
-      if(rep.data.filename != null){
+      if (rep.data.filename != null) {
         this.bannerLink = rep.data.filename;
       }
 
       setTimeout(() => {
         this.changes = true;
-      },1000);
+      }, 1000);
     });
 
     axios({
       method: "get",
       url: 'index.php?option=com_emundus&controller=settings&task=getbanner',
     }).then((rep) => {
-      if(rep.data.filename != null){
+      if (rep.data.filename != null) {
         this.bannerLink = rep.data.filename;
       }
 
       setTimeout(() => {
         this.changes = true;
-      },1000);
+      }, 1000);
       this.loading = false;
     });
 
@@ -326,34 +327,34 @@ export default {
       this.secondary = rep.data.secondary;
       setTimeout(() => {
         this.changes = true;
-      },1000);
+      }, 1000);
       this.loading = false;
     });
   },
 
-  methods:{
+  methods: {
     updateView(response) {
       this.hideLogo = false;
-      this.imageLink = 'images/custom/'+response.filename+'?' + new Date().getTime();
-      document.querySelector('img[src="/images/custom/'+response.old_logo+'"]').src = '/images/custom/'+response.filename+'?' + new Date().getTime();
+      this.imageLink = 'images/custom/' + response.filename + '?' + new Date().getTime();
+      document.querySelector('img[src="/images/custom/' + response.old_logo + '"]').src = '/images/custom/' + response.filename + '?' + new Date().getTime();
       this.$forceUpdate();
     },
     updateIcon(response) {
       this.hideIcon = false;
-      this.iconLink = window.location.origin + '//images/custom/'+response.filename+'?' + new Date().getTime();
-      document.querySelector('link[type="image/x-icon"]').href = window.location.origin + '//images/custom/'+response.filename+'?' + new Date().getTime();
-      document.querySelector('.tchooz-vertical-logo a img').src = window.location.origin + '//images/custom/'+response.filename+'?' + new Date().getTime();
+      this.iconLink = window.location.origin + '//images/custom/' + response.filename + '?' + new Date().getTime();
+      document.querySelector('link[type="image/x-icon"]').href = window.location.origin + '//images/custom/' + response.filename + '?' + new Date().getTime();
+      document.querySelector('.tchooz-vertical-logo a img').src = window.location.origin + '//images/custom/' + response.filename + '?' + new Date().getTime();
       this.$forceUpdate();
     },
     updateBanner(ext = 'png') {
-      this.bannerLink = 'images/custom/default_banner.'+ext+'?' + new Date().getTime();
+      this.bannerLink = 'images/custom/default_banner.' + ext + '?' + new Date().getTime();
       this.$forceUpdate();
     },
     updateBanner() {
       this.bannerLink = 'images/custom/default_banner.png?' + new Date().getTime();
       this.$forceUpdate();
     },
-    updateColors(colors){
+    updateColors(colors) {
       this.primary = colors.primary;
       this.secondary = colors.secondary;
     },
@@ -365,34 +366,34 @@ export default {
       document.getElementById('dropzone-message').style.display = 'none';
     },
     afterRemoved() {
-      if(this.$refs.dropzone.getAcceptedFiles().length === 0){
-        if(this.banner_updating || this.logo_updating || this.favicon_updating) {
+      if (this.$refs.dropzone.getAcceptedFiles().length === 0) {
+        if (this.banner_updating || this.logo_updating || this.favicon_updating) {
           document.getElementById('dropzone-message').style.display = 'block';
         }
       }
     },
-    onComplete: function(response){
+    onComplete: function (response) {
       const ext = response.name.split('.').pop();
-      if(response.status == 'success'){
-        if(this.logo_updating) {
+      if (response.status == 'success') {
+        if (this.logo_updating) {
           this.logo_updating = false;
           this.updateView(JSON.parse(response.xhr.response));
         }
-        if(this.favicon_updating) {
+        if (this.favicon_updating) {
           this.favicon_updating = false;
           this.updateIcon(JSON.parse(response.xhr.response));
         }
-        if(this.banner_updating) {
+        if (this.banner_updating) {
           this.banner_updating = false;
           this.updateBanner(ext);
         }
-        if(this.banner_updating) {
+        if (this.banner_updating) {
           this.banner_updating = false;
           this.updateBanner();
         }
       }
     },
-    catchError: function(file, message, xhr){
+    catchError: function (file, message, xhr) {
       Swal.fire({
         title: this.translate("COM_EMUNDUS_ONBOARD_ERROR"),
         text: message,
@@ -486,29 +487,29 @@ export default {
       });
     },
 
-    openFileInput(){
+    openFileInput() {
       setTimeout(() => {
         document.getElementsByClassName('dz-clickable')[0].click();
       }, 300);
     }
   },
   watch: {
-    logo_updating: function(value){
-      if(value){
+    logo_updating: function (value) {
+      if (value) {
         this.favicon_updating = false;
         this.banner_updating = false;
         this.openFileInput();
       }
     },
-    favicon_updating: function(value){
-      if(value){
+    favicon_updating: function (value) {
+      if (value) {
         this.logo_updating = false;
         this.banner_updating = false;
         this.openFileInput();
       }
     },
-    banner_updating: function(value){
-      if(value){
+    banner_updating: function (value) {
+      if (value) {
         this.favicon_updating = false;
         this.logo_updating = false;
         this.openFileInput();
@@ -519,7 +520,7 @@ export default {
 </script>
 
 <style scoped>
-.color-preset{
+.color-preset {
   height: 50px;
   border-radius: 50%;
   width: 50px;

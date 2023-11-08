@@ -1,25 +1,29 @@
-#em_user_menu{
+#em_user_menu {
     list-style-type: none;
     margin: unset;
     display: flex;
     align-items: center;
 }
-#em_user_menu li{
+
+#em_user_menu li {
     padding: 6px 12px;
     border-radius: var(--em-default-br);
 }
-#em_user_menu li.active{
+
+#em_user_menu li.active {
     background: var(--neutral-200);
 }
-#em_user_menu li:not(:first-child){
+
+#em_user_menu li:not(:first-child) {
     margin-left: 12px;
 }
-#header-b{
+
+#header-b {
     justify-content: start;
 }
 
 @media all and (max-width: 767px) {
-    #em_user_menu{
+    #em_user_menu {
         margin-top: 24px;
     }
 }
@@ -31,7 +35,7 @@
 }
 
 @media all and (max-width: 479px) {
-    #header-b{
+    #header-b {
         justify-content: center;
     }
 }

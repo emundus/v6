@@ -21,11 +21,12 @@ class EmundusControllerJobs extends EmundusController
 {
 	/**
 	 * Proxy for getModel.
-	 * @since	1.6
+	 * @since    1.6
 	 */
 	public function &getModel($name = 'Jobs', $prefix = 'EmundusModel', $config = array())
 	{
 		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
+
 		return $model;
 	}
 }

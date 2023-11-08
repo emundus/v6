@@ -3,9 +3,10 @@
     <div class="em-w-80">
 
       <div class="form-group em-flex-center em-w-100 em-mb-16" v-for="(param, index) in params" :key="index">
-        <label :for="'param_' + index">{{param.label}}</label>
-        <select class="dropdown-toggle w-select" :id="'param_' + index" v-model="param.value" style="margin-bottom: 0" @change="saveEmundusParam(param)">
-          <option v-for="option in param.options" :key="option.value"  :value="option.value">{{option.label}}</option>
+        <label :for="'param_' + index">{{ param.label }}</label>
+        <select class="dropdown-toggle w-select" :id="'param_' + index" v-model="param.value" style="margin-bottom: 0"
+                @change="saveEmundusParam(param)">
+          <option v-for="option in param.options" :key="option.value" :value="option.value">{{ option.label }}</option>
         </select>
       </div>
 
@@ -107,7 +108,7 @@ export default {
     },
 
     saveEmundusParam(param) {
-      this.$emit('updateSaving',true);
+      this.$emit('updateSaving', true);
       axios({
         method: "post",
         url: 'index.php?option=com_emundus&controller=settings&task=updateemundusparam',
@@ -119,18 +120,19 @@ export default {
           value: param.value,
         })
       }).then(() => {
-        this.$emit('updateSaving',false);
-        this.$emit('updateLastSaving',this.formattedDate('','LT'));
+        this.$emit('updateSaving', false);
+        this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
       });
     },
   },
 };
 </script>
 <style scoped>
-.form-group label{
+.form-group label {
   width: 100%;
 }
-.dropdown-toggle{
+
+.dropdown-toggle {
   width: 30%;
 }
 </style>

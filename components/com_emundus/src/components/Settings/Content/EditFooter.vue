@@ -23,10 +23,12 @@
       </div>
 
       <div class="form-group controls" v-if="selectedColumn.index === 0 && this.form.content.col1 != null">
-        <editor :height="'30em'" :text="form.content.col1" :lang="actualLanguage" :enable_variables="false" :id="'editor_1'" :key="dynamicComponent" v-model="form.content.col1" @focusout="saveFooter"></editor>
+        <editor :height="'30em'" :text="form.content.col1" :lang="actualLanguage" :enable_variables="false"
+                :id="'editor_1'" :key="dynamicComponent" v-model="form.content.col1" @focusout="saveFooter"></editor>
       </div>
       <div class="form-group controls" v-if="selectedColumn.index === 1 && this.form.content.col2 != null">
-        <editor :height="'30em'" :text="form.content.col2" :lang="actualLanguage" :enable_variables="false" :id="'editor_2'" :key="dynamicComponent" v-model="form.content.col2" @focusout="saveFooter"></editor>
+        <editor :height="'30em'" :text="form.content.col2" :lang="actualLanguage" :enable_variables="false"
+                :id="'editor_2'" :key="dynamicComponent" v-model="form.content.col2" @focusout="saveFooter"></editor>
       </div>
     </div>
 
@@ -99,7 +101,7 @@ export default {
     },
 
     async saveFooter() {
-      this.$emit('updateSaving',true);
+      this.$emit('updateSaving', true);
 
       const formData = new FormData();
       formData.append('col1', this.form.content.col1);
@@ -113,14 +115,14 @@ export default {
             }
           }
       ).then(() => {
-        this.$emit('updateSaving',false);
-        this.$emit('updateLastSaving',this.formattedDate('','LT'));
+        this.$emit('updateSaving', false);
+        this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
       });
     },
   },
 
   watch: {
-    selectedColumn: function() {
+    selectedColumn: function () {
       this.dynamicComponent++;
     }
   }

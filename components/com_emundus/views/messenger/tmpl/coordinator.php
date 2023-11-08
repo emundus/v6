@@ -18,23 +18,24 @@ JText::script('COM_EMUNDUS_MESSENGER_SEND');
 JText::script('COM_EMUNDUS_MESSENGER_WRITE_MESSAGE');
 
 $jinput = JFactory::getApplication()->input;
-$fnum 	= $jinput->getString('fnum', null);
-$user = JFactory::getUser();
+$fnum   = $jinput->getString('fnum', null);
+$user   = JFactory::getUser();
 
-$lang = JFactory::getLanguage();
-$short_lang = substr($lang->getTag(), 0 , 2);
+$lang         = JFactory::getLanguage();
+$short_lang   = substr($lang->getTag(), 0, 2);
 $current_lang = $lang->getTag();
-$languages = JLanguageHelper::getLanguages();
+$languages    = JLanguageHelper::getLanguages();
 if (count($languages) > 1) {
-    $many_languages = '1';
-} else {
-    $many_languages = '0';
+	$many_languages = '1';
+}
+else {
+	$many_languages = '0';
 }
 
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
-$sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
+$sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
 
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 
 ?>

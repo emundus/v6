@@ -1,1 +1,10 @@
-<svg id="Calque_1" data-name="Calque 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21.5 27.5"><defs><style>.cls-1{fill:none;stroke:#de6338;stroke-linecap:round;stroke-width:1.5px;}</style></defs><title>icone-saas-page</title><g id="Composant_1_1" data-name="Composant 1 1"><polygon class="cls-1" points="16.75 0.75 16.75 5.75 4.75 5.75 4.75 21.75 0.75 21.75 0.75 0.75 16.75 0.75"/><rect class="cls-1" x="4.75" y="5.75" width="16" height="21"/></g></svg>
+<svg id="Calque_1" data-name="Calque 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21.5 27.5">
+    <defs>
+        <style>.cls-1{fill:none;stroke:#de6338;stroke-linecap:round;stroke-width:1.5px;}</style>
+    </defs>
+    <title>icone-saas-page</title>
+    <g id="Composant_1_1" data-name="Composant 1 1">
+        <polygon class="cls-1" points="16.75 0.75 16.75 5.75 4.75 5.75 4.75 21.75 0.75 21.75 0.75 0.75 16.75 0.75"/>
+        <rect class="cls-1" x="4.75" y="5.75" width="16" height="21"/>
+    </g>
+</svg>

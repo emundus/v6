@@ -2,15 +2,15 @@
   <!-- modalC -->
   <span :id="'modalAddEvaluation'">
     <modal
-      :name="'modalAddEvaluation'"
-      height="auto"
-      transition="nice-modal-fade"
-      :min-width="200"
-      :min-height="200"
-      :delay="100"
-      :adaptive="true"
-      :clickToClose="false"
-      @before-open="beforeOpen"
+        :name="'modalAddEvaluation'"
+        height="auto"
+        transition="nice-modal-fade"
+        :min-width="200"
+        :min-height="200"
+        :delay="100"
+        :adaptive="true"
+        :clickToClose="false"
+        @before-open="beforeOpen"
     >
       <div class="fixed-header-modal">
         <div class="topright">
@@ -29,14 +29,16 @@
           <label>{{ translations.ChooseExistingGridModel }} :</label>
           <select v-model="model_id" class="dropdown-toggle">
             <option value="-1"></option>
-            <option v-for="model in models" :key="model.form_id" :value="model.form_id">{{model.label}}</option>
+            <option v-for="model in models" :key="model.form_id" :value="model.form_id">{{ model.label }}</option>
           </select>
         </div>
         <div class="form-group" :class="{ 'mb-0': can_translate.label}">
           <label>{{ translations.Name }}<span class="em-red-500-color">*</span> :</label>
           <div class="input-can-translate">
-            <input v-model="label.fr" type="text" maxlength="40" class="form__input field-general w-input" id="menu_label" style="margin: 0" :class="{ 'is-invalid': errors}"/>
-            <button class="translate-icon" :class="{'translate-icon-selected': can_translate.label}" type="button" @click="can_translate.label = !can_translate.label"></button>
+            <input v-model="label.fr" type="text" maxlength="40" class="form__input field-general w-input"
+                   id="menu_label" style="margin: 0" :class="{ 'is-invalid': errors}"/>
+            <button class="translate-icon" :class="{'translate-icon-selected': can_translate.label}" type="button"
+                    @click="can_translate.label = !can_translate.label"></button>
           </div>
         </div>
         <transition :name="'slide-down'" type="transition">
@@ -58,8 +60,10 @@
         <div class="form-group mt-1" :class="{'mb-0': can_translate.intro}">
           <label>{{ translations.Intro }} :</label>
           <div class="input-can-translate">
-              <textarea v-model="intro.fr" class="form__input field-general w-input" rows="3" maxlength="300" style="margin: 0"></textarea>
-              <button class="translate-icon" :class="{'translate-icon-selected': can_translate.intro}" type="button" @click="can_translate.intro = !can_translate.intro"></button>
+              <textarea v-model="intro.fr" class="form__input field-general w-input" rows="3" maxlength="300"
+                        style="margin: 0"></textarea>
+              <button class="translate-icon" :class="{'translate-icon-selected': can_translate.intro}" type="button"
+                      @click="can_translate.intro = !can_translate.intro"></button>
           </div>
         </div>
         <transition :name="'slide-down'" type="transition">
@@ -82,12 +86,12 @@
       </div>
       <div class="em-flex-row em-flex-space-between mb-1">
         <button type="button"
-          class="bouton-sauvergarder-et-continuer w-retour"
-          @click.prevent="$modal.hide('modalAddEvaluation')"
+                class="bouton-sauvergarder-et-continuer w-retour"
+                @click.prevent="$modal.hide('modalAddEvaluation')"
         >{{ translations.Retour }}</button>
         <button type="button"
-          class="bouton-sauvergarder-et-continuer"
-          @click.prevent="createGrid()"
+                class="bouton-sauvergarder-et-continuer"
+                @click.prevent="createGrid()"
         >{{ translations.Continuer }}</button>
       </div>
       <div class="em-page-loader" v-if="submitted"></div>
@@ -97,12 +101,13 @@
 
 <script>
 import axios from "axios";
+
 const qs = require("qs");
 
 export default {
   name: "modalAddEvaluation",
   components: {},
-  props: { prog: Number, grid: Number },
+  props: {prog: Number, grid: Number},
   data() {
     return {
       can_translate: {
@@ -151,11 +156,11 @@ export default {
     createGrid() {
       this.changes = true;
 
-      if(this.label.fr != '' || this.model_id != -1) {
-        if(!this.can_translate.label){
+      if (this.label.fr != '' || this.model_id != -1) {
+        if (!this.can_translate.label) {
           this.label.en = this.label.fr;
         }
-        if(!this.can_translate.intro){
+        if (!this.can_translate.intro) {
           this.intro.en = this.intro.fr;
         }
         this.submitted = true;
@@ -187,9 +192,9 @@ export default {
 
   watch: {
     model_id: function (value) {
-      if(value != -1){
+      if (value != -1) {
         this.models.forEach(model => {
-          if(model.form_id == this.model_id){
+          if (model.form_id == this.model_id) {
             this.label.fr = model.label;
             this.intro.fr = model.intro;
           }

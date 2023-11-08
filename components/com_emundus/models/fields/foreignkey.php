@@ -72,37 +72,31 @@ class JFormFieldForeignKey extends JFormField
 		$input_options = 'class="' . $this->getAttribute('class') . '"';
 
 		//Depends of the type of input, the field will show a type or another
-		switch ($this->input_type)
-		{
+		switch ($this->input_type) {
 			case 'list':
 			default:
 				$options = array();
 
 				//Iterate through all the results
-				foreach ($results as $result)
-				{
+				foreach ($results as $result) {
 					$options[] = JHtml::_('select.option', $result->{$this->key_field}, $result->{$this->value_field});
 				}
 
 				$value = $this->value;
 
 				//If the value is a string -> Only one result
-				if (is_string($value))
-				{
+				if (is_string($value)) {
 					$value = array($value);
 				}
-				else if (is_object($value))
-				{ //If the value is an object, let's get its properties.
+				else if (is_object($value)) { //If the value is an object, let's get its properties.
 					$value = get_object_vars($value);
 				}
 
 				//If the select is multiple
-				if ($this->multiple)
-				{
+				if ($this->multiple) {
 					$input_options .= 'multiple="multiple"';
 				}
-				else
-				{
+				else {
 					array_unshift($options, JHtml::_('select.option', '', ''));
 				}
 
@@ -116,19 +110,17 @@ class JFormFieldForeignKey extends JFormField
 	/**
 	 * Wrapper method for getting attributes from the form element
 	 *
-	 * @param string $attr_name Attribute name
-	 * @param mixed  $default   Optional value to return if attribute not found
+	 * @param   string  $attr_name  Attribute name
+	 * @param   mixed   $default    Optional value to return if attribute not found
 	 *
 	 * @return mixed The value of the attribute if it exists, null otherwise
 	 */
 	public function getAttribute($attr_name, $default = null)
 	{
-		if (!empty($this->element[$attr_name]))
-		{
+		if (!empty($this->element[$attr_name])) {
 			return $this->element[$attr_name];
 		}
-		else
-		{
+		else {
 			return $default;
 		}
 	}

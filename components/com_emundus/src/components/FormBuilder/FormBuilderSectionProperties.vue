@@ -72,12 +72,12 @@ export default {
     };
   },
   created() {
-	  this.paramsAvailable();
-	  this.getSection();
+    this.paramsAvailable();
+    this.getSection();
   },
   methods: {
     saveProperties() {
-      formBuilderService.updateGroupParams(this.section_tmp.id,this.section_tmp.params, this.shortDefaultLang).then(() => {
+      formBuilderService.updateGroupParams(this.section_tmp.id, this.section_tmp.params, this.shortDefaultLang).then(() => {
         this.$emit('close');
       });
     },
@@ -90,8 +90,8 @@ export default {
       });
       tab.active = true;
     },
-    paramsAvailable(){
-      if(typeof sectionParams['parameters'] !== 'undefined'){
+    paramsAvailable() {
+      if (typeof sectionParams['parameters'] !== 'undefined') {
         this.tabs[1].published = true;
         this.params = sectionParams['parameters'];
       } else {
@@ -100,24 +100,24 @@ export default {
         this.tabs[1].published = false;
       }
     },
-    getSection(){
+    getSection() {
       formBuilderService.getSection(this.$props.section_id).then((response) => {
         this.section_tmp = response.data.group;
       });
     }
   },
   computed: {
-    sysadmin: function(){
+    sysadmin: function () {
       return parseInt(this.$store.state.global.sysadminAccess);
     },
-	  publishedTabs() {
-			return this.tabs.filter((tab) => {
-				return tab.published;
-			});
-	  }
+    publishedTabs() {
+      return this.tabs.filter((tab) => {
+        return tab.published;
+      });
+    }
   },
   watch: {
-    section: function(){
+    section: function () {
       this.paramsAvailable();
       this.getSection();
     }

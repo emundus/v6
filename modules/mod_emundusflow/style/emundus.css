@@ -109,133 +109,135 @@
 .view-form .ui.attached.segment,
 .view-checklist .ui.attached.segment,
 .view-details .ui.attached.segment {
-	background:var(--em-secondary-color);
-	border: var(--em-secondary-color);
-	color: var(--neutral-0);
+    background: var(--em-secondary-color);
+    border: var(--em-secondary-color);
+    color: var(--neutral-0);
 }
 
 .view-form .platform-content .ui.tablet.attached .step i,
 .view-form .platform-content .ui.tablet.attached .description {
-	color: var(--em-primary-color);
+    color: var(--em-primary-color);
 }
 
 .view-form .platform-content .ui.tablet.attached .step i.arrow.left,
 .view-details .platform-content .ui.tablet.attached .step i.arrow.left {
-	color: var(--em-secondary-color);
+    color: var(--em-secondary-color);
 }
 
 .ui.yellow.segment:not(.inverted) {
-	border-top: 2px solid var(--em-secondary-color);
+    border-top: 2px solid var(--em-secondary-color);
 }
 
 .step.completed i.icon.file.text.outline::before,
 .step.completed i.icon.attach::before,
 .step.completed i.icon.add.to.cart::before,
 .step.completed i.icon.time::before {
-	color: var(--main-500);
+    color: var(--main-500);
 }
 
 /******************COORDONEES PERSO*************/
 #g-utility #drawer .moduletable {
-	padding: 0 !important;
+    padding: 0 !important;
 }
 
 .step .description .label {
-	white-space: normal !important;
+    white-space: normal !important;
 }
 
 .ui.steps .step {
-	display: flex;
-	flex-direction: column;
-	justify-content: initial;
+    display: flex;
+    flex-direction: column;
+    justify-content: initial;
 }
 
 .ui.steps .step > .icon {
-	margin: auto;
+    margin: auto;
 }
 
 .ui.bottom.attached.steps {
-	display: flex;
-	justify-content: space-around;
-	background: var(--neutral-0);
+    display: flex;
+    justify-content: space-around;
+    background: var(--neutral-0);
 }
 
 .ui.steps .step {
-	white-space: normal;
-	text-align: center;
+    white-space: normal;
+    text-align: center;
 }
+
 .ui.steps:not(.vertical) .step > .icon {
-	width: 40px;
-	height: 40px;
+    width: 40px;
+    height: 40px;
 }
 
 
 .ui.steps .step .description {
-	font-size: 12px;
-	font-family: var(--em-default-font);
+    font-size: 12px;
+    font-family: var(--em-default-font);
 }
 
 .step i.arrow {
-	margin-top: -8px;
+    margin-top: -8px;
 }
 
 .ui.steps:not(.vertical) .step > .icon {
-	margin: 0;
+    margin: 0;
 }
 
 .ui.steps .step > .icon ~ .content {
-	padding-top: var(--p-8);
+    padding-top: var(--p-8);
 }
 
 .ui.bottom.attached.steps .step:first-child {
-	justify-content: center;
-	background: transparent;
+    justify-content: center;
+    background: transparent;
 }
 
 .ui.bottom.attached.steps .step:first-child a {
-	color: var(--neutral-800);
-	font-family: var(--em-default-font);
+    color: var(--neutral-800);
+    font-family: var(--em-default-font);
 }
 
 .registration form > div {
-	display: flex;
-	justify-content: center;
-	align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .step.completed i.icon.file.text.outline::before,
 .step.completed i.icon.attach::before,
 .step.completed i.icon.add.to.cart::before,
 .step.completed i.icon.time::before {
-	background: none !important;
+    background: none !important;
 }
 
 .ui.attached.segment {
-	display: flex !important;
-	align-items: center !important;
-	justify-content: space-between !important;
-	flex-direction: row;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-direction: row;
 }
 
 .view-form .attached p, .view-details .attached p, .view-checklist .attached p {
-	color: var(--neutral-0);
-	font-family: var(--em-default-font);
+    color: var(--neutral-0);
+    font-family: var(--em-default-font);
 }
-@media all and (max-width: 767px) {
-	 .ui.attached.segment p {
-		text-align: center !important;
-	}
 
-	.ui.attached.segment  {
-		flex-direction: column;
-	}
+@media all and (max-width: 767px) {
+    .ui.attached.segment p {
+        text-align: center !important;
+    }
+
+    .ui.attached.segment {
+        flex-direction: column;
+    }
 }
 
 @media all and (min-width: 768px) {
-	 .ui.attached.segment {
-		display: flex !important;
-		align-items: center !important;
-		justify-content: space-between !important;
-	}
+    .ui.attached.segment {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+    }
 }
 

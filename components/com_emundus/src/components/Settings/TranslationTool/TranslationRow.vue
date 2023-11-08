@@ -5,8 +5,10 @@
         <p>{{ field.reference_label ? field.reference_label.toUpperCase() : field.reference_id }}</p>
         <div class="em-flex-space-between em-mt-16 em-grid-50 em-ml-24">
           <p class="em-neutral-700-color">{{ field.default_lang }}</p>
-          <input v-if="field.field_type === 'field'" class="mb-0 em-input em-w-100" type="text" :value="field.lang_to" @focusout="saveTranslation($event.target.value,field)" />
-          <textarea v-if="field.field_type === 'textarea'" class="mb-0 em-input" :value="field.lang_to" @focusout="saveTranslation($event.target.value,field)" />
+          <input v-if="field.field_type === 'field'" class="mb-0 em-input em-w-100" type="text" :value="field.lang_to"
+                 @focusout="saveTranslation($event.target.value,field)"/>
+          <textarea v-if="field.field_type === 'textarea'" class="mb-0 em-input" :value="field.lang_to"
+                    @focusout="saveTranslation($event.target.value,field)"/>
         </div>
       </div>
     </div>
@@ -34,25 +36,25 @@ export default {
       key_fields: [],
     }
   },
-  created(){
+  created() {
     this.initTranslations();
   },
   methods: {
-    initTranslations(){
+    initTranslations() {
       this.key_fields = Object.keys(this.$props.section.indexedFields);
 
       Object.values(this.$props.translations).forEach((translations_reference) => {
         Object.values(translations_reference).forEach((translation) => {
-          if(this.key_fields.includes(translation.reference_field) && translation.reference_table === this.$props.section.Name){
+          if (this.key_fields.includes(translation.reference_field) && translation.reference_table === this.$props.section.Name) {
             translation.reference_field_order = this.key_fields.indexOf(translation.reference_field);
             translation.reference_label = this.$props.section.indexedFields[translation.reference_field].Label;
             translation.field_type = this.$props.section.indexedFields[translation.reference_field].Type;
             // For FALANG translation we need this
-            if(!translation.hasOwnProperty('tag')){
+            if (!translation.hasOwnProperty('tag')) {
               translation.tag = translation.reference_field;
             }
             //
-            if(!this.translations_rows.hasOwnProperty(translation.reference_id)) {
+            if (!this.translations_rows.hasOwnProperty(translation.reference_id)) {
               this.translations_rows[translation.reference_id] = [];
             }
             this.translations_rows[translation.reference_id].push(translation);
@@ -65,8 +67,8 @@ export default {
       });
     },
 
-    async saveTranslation(value,translation){
-      this.$emit('saveTranslation',{ value:value, translation:translation });
+    async saveTranslation(value, translation) {
+      this.$emit('saveTranslation', {value: value, translation: translation});
     }
   },
 }

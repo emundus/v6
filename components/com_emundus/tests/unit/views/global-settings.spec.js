@@ -1,4 +1,4 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import {shallowMount, createLocalVue} from '@vue/test-utils';
 import '../../mocks/matchMedia.mock';
 import globalSettings from '../../../src/views/globalSettings';
 import translate from '../../mocks/mixins/translate';

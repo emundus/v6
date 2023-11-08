@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import '../../../mocks/matchMedia.mock';
 import FormBuilderCreateDocument from '../../../../src/components/FormBuilder/FormBuilderCreateDocument';
 import translate from '../../../mocks/mixins/translate';
@@ -16,32 +16,32 @@ describe('FormBuilderCreateDocument.vue', () => {
         localVue
     });
 
-    it ('FormBuilderCreateDocument should exist', () => {
+    it('FormBuilderCreateDocument should exist', () => {
         expect(wrapper.find('#form-builder-create-document').exists()).toBeTruthy();
     });
 
-    it ('I can not save document if name is empty', () => {
+    it('I can not save document if name is empty', () => {
         expect(wrapper.vm.saveDocument()).toBe(false);
     });
 
-    it ('I can not save if empty selected types', () => {
-        wrapper.vm.$data.document.name  = 'Test';
+    it('I can not save if empty selected types', () => {
+        wrapper.vm.$data.document.name = 'Test';
         expect(wrapper.vm.saveDocument()).toBe(false);
     });
 
-    it ('hasSample should exists and be false by default', () => {
+    it('hasSample should exists and be false by default', () => {
         expect(wrapper.vm.$data.hasSample).toBe(false);
     });
 
-    it ('newSample should exists and be empty by default', () => {
+    it('newSample should exists and be empty by default', () => {
         expect(wrapper.vm.$data.newSample).toBe('');
     });
 
-    it ('#sample should not exists by default', () => {
+    it('#sample should not exists by default', () => {
         expect(wrapper.find('#sample').exists()).toBeFalsy();
     });
 
-    it ('#current-sample should not exists by default', () => {
+    it('#current-sample should not exists by default', () => {
         expect(wrapper.find('#current-sample').exists()).toBeFalsy();
     });
 });
@@ -57,11 +57,11 @@ describe('FormBuilder create document sample', () => {
     wrapper.vm.$data.hasSample = true;
     wrapper.vm.$data.currentSample = 'test.pdf';
 
-    it ('#sample should exists', () => {
+    it('#sample should exists', () => {
         expect(wrapper.find('#sample').exists()).toBeTruthy();
     });
 
-    it ('#current-sample should exists', () => {
+    it('#current-sample should exists', () => {
         expect(wrapper.find('#current-sample').exists()).toBeTruthy();
 
         expect(wrapper.find('#current-sample a').exists()).toBeTruthy();

@@ -1,6 +1,7 @@
 <template>
   <div id="form-builder-elements">
-    <p id="form-builder-elements-title" class="em-text-align-center em-w-100 em-p-16"> {{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENTS') }} </p>
+    <p id="form-builder-elements-title" class="em-text-align-center em-w-100 em-p-16">
+      {{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENTS') }} </p>
     <draggable
         v-model="elements"
         class="draggables-list"
@@ -69,26 +70,26 @@ export default {
         return;
       }
 
-	    const data = this.$store.getters['global/datas'];
-			const mode = typeof data.mode !== 'undefined' ? data.mode.value : 'forms';
+      const data = this.$store.getters['global/datas'];
+      const mode = typeof data.mode !== 'undefined' ? data.mode.value : 'forms';
 
-	    formBuilderService.createSimpleElement({
+      formBuilderService.createSimpleElement({
         gid: group_id,
         plugin: this.cloneElement.value,
-	      mode: mode
+        mode: mode
       }).then(response => {
-		    if (response.status && response.data > 0) {
-	        formBuilderService.updateElementOrder(group_id, response.data, event.newDraggableIndex).then((response) => {
-	          this.$emit('element-created');
-	          this.updateLastSave();
-	          this.loading = false;
-	        });
-				} else {
-					this.displayError(response.msg);
-					this.loading = false;
-				}
+        if (response.status && response.data > 0) {
+          formBuilderService.updateElementOrder(group_id, response.data, event.newDraggableIndex).then((response) => {
+            this.$emit('element-created');
+            this.updateLastSave();
+            this.loading = false;
+          });
+        } else {
+          this.displayError(response.msg);
+          this.loading = false;
+        }
       }).catch((error) => {
-				console.warn(error);
+        console.warn(error);
         this.loading = false;
       });
     },

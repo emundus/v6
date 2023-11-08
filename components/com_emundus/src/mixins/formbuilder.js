@@ -22,7 +22,7 @@ export default {
                     confirmButton: 'em-swal-confirm-button',
                 },
             };
-            if(html){
+            if (html) {
                 options.html = text;
             } else {
                 options.text = text;

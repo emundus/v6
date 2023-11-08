@@ -1,18 +1,23 @@
 <template>
   <div>
     <ModalAddEvaluation
-      :prog="prog"
-      :grid="grid"
-      @updateGrid="getEvaluationGridByProgram(1)"
+        :prog="prog"
+        :grid="grid"
+        @updateGrid="getEvaluationGridByProgram(1)"
     />
     <div class="container-evaluation">
       <div class="text-center" v-if="grid == null">
-        <button class="bouton-sauvergarder-et-continuer" style="float: none" type="button" @click="$modal.show('modalAddEvaluation')">{{translations.addGrid}}</button>
+        <button class="bouton-sauvergarder-et-continuer" style="float: none" type="button"
+                @click="$modal.show('modalAddEvaluation')">{{ translations.addGrid }}
+        </button>
       </div>
       <div class="em-flex-row" v-if="grid != null">
-        <button class="bouton-sauvergarder-et-continuer em-mr-4" style="float: none" type="button" @click="evaluationBuilder">{{translations.editGrid}}</button>
+        <button class="bouton-sauvergarder-et-continuer em-mr-4" style="float: none" type="button"
+                @click="evaluationBuilder">{{ translations.editGrid }}
+        </button>
         <button class="bouton-sauvergarder-et-continuer w-delete" style="float: none" type="button" @click="deleteGrid">
-          {{ translations.deleteGrid }}</button>
+          {{ translations.deleteGrid }}
+        </button>
       </div>
       <FormViewerEvaluation :link="link" :prog="prog" :key="viewer" v-if="grid != null"/>
     </div>
@@ -20,7 +25,7 @@
 </template>
 
 <script>
-import { Datetime } from "vue-datetime";
+import {Datetime} from "vue-datetime";
 import axios from "axios";
 import FormViewerEvaluation from "../Form/FormViewerEvaluation";
 import ModalAddEvaluation from "../AdvancedModals/ModalAddEvaluation";
@@ -52,7 +57,7 @@ export default {
       visibility: null,
       viewer: 0,
       grid: null,
-      translations:{
+      translations: {
         addGrid: "COM_EMUNDUS_ONBOARD_BUILDER_ADDGRID",
         editGrid: "COM_EMUNDUS_ONBOARD_BUILDER_EDITGRID",
         deleteGrid: "COM_EMUNDUS_ONBOARD_BUILDER_DELETEGRID",
@@ -60,26 +65,26 @@ export default {
     };
   },
   methods: {
-    getEvaluationGridByProgram(redirect){
+    getEvaluationGridByProgram(redirect) {
       axios.get("index.php?option=com_emundus&controller=programme&task=getevaluationgrid&pid=" + this.prog)
-              .then(response => {
-                this.grid = response.data.data;
-                if (this.grid != null) {
-                  this.link.link = 'index.php?option=com_fabrik&view=form&formid=' + response.data.data;
-                  this.viewer++;
-                  if(redirect){
-                    this.evaluationBuilder();
-                  }
-                }
-              });
+          .then(response => {
+            this.grid = response.data.data;
+            if (this.grid != null) {
+              this.link.link = 'index.php?option=com_fabrik&view=form&formid=' + response.data.data;
+              this.viewer++;
+              if (redirect) {
+                this.evaluationBuilder();
+              }
+            }
+          });
     },
 
     evaluationBuilder() {
 
       this.redirectJRoute('index.php?option=com_emundus&view=form&layout=formbuilder&prid=&index=0&cid=' +
-              this.prog +
-              '&evaluation=' +
-              this.grid);
+          this.prog +
+          '&evaluation=' +
+          this.grid);
     },
 
     deleteGrid() {

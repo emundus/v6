@@ -5,10 +5,11 @@
       <!--- MENU --->
       <transition name="slide-right">
         <div class="em-grid-3" v-if="menuHighlight === 0">
-          <div style="background: var(--neutral-0);" v-for="(menu,index) in displayedMenus" :key="'menu_' + menu.index" class="em-shadow-cards col-md-3 em-hover-s-scale" v-wave @click="changeMenu(menu)">
-            <span class="material-icons-outlined em-main-500-color em-mb-16">{{menu.icon}}</span>
-            <h4 class="em-body-16-semibold em-mb-8">{{translate(menu.title)}}</h4>
-            <p class="em-font-size-14">{{translate(menu.description)}}</p>
+          <div style="background: var(--neutral-0);" v-for="(menu,index) in displayedMenus" :key="'menu_' + menu.index"
+               class="em-shadow-cards col-md-3 em-hover-s-scale" v-wave @click="changeMenu(menu)">
+            <span class="material-icons-outlined em-main-500-color em-mb-16">{{ menu.icon }}</span>
+            <h4 class="em-body-16-semibold em-mb-8">{{ translate(menu.title) }}</h4>
+            <p class="em-font-size-14">{{ translate(menu.description) }}</p>
           </div>
         </div>
       </transition>
@@ -28,20 +29,20 @@
         />
 
         <FilesTool
-		        v-else-if="menuHighlight === 3"
+            v-else-if="menuHighlight === 3"
             v-show="modal_ready"
             @resetMenuIndex="menuHighlight = 0"
         />
 
         <TranslationTool
-		        v-else-if="menuHighlight === 9"
+            v-else-if="menuHighlight === 9"
             v-show="modal_ready"
             @resetMenuIndex="menuHighlight = 0"
             ref="translations"
         />
 
         <AttachmentStorage
-		        v-else-if="menuHighlight === 5"
+            v-else-if="menuHighlight === 5"
             v-show="modal_ready"
             @resetMenuIndex="menuHighlight = 0"
         />
@@ -76,16 +77,16 @@ export default {
   },
   props: {
     actualLanguage: {
-			type: String,
-	    default: 'fr'
+      type: String,
+      default: 'fr'
     },
     coordinatorAccess: {
-			type: Number,
-	    default: 1
+      type: Number,
+      default: 1
     },
     manyLanguages: {
-			type: Number,
-	    default: 1
+      type: Number,
+      default: 1
     }
   },
 
@@ -147,7 +148,7 @@ export default {
       this.menus[0].access = this.em_params.style != undefined ? parseInt(this.em_params.style) : 1;
       this.menus[1].access = this.em_params.content != undefined ? parseInt(this.em_params.content) : 1;
       this.menus[2].access = 1;
-      this.menus[3].access = this.em_params.translations != undefined  ? parseInt(this.em_params.translations) : 1;
+      this.menus[3].access = this.em_params.translations != undefined ? parseInt(this.em_params.translations) : 1;
       this.menus[4].access = this.em_params.attachment_storage != undefined ? parseInt(this.em_params.attachment_storage) : 0;
       //
 
@@ -156,27 +157,27 @@ export default {
   },
 
   methods: {
-    changeMenu(menu){
+    changeMenu(menu) {
       setTimeout(() => {
         this.menuHighlight = menu.index;
         this.currentTitle = menu.title;
-      },200);
+      }, 200);
     }
   },
 
-	computed: {
-		displayedMenus() {
-			return this.menus.filter((menu) => {
-				return menu.access === 1;
-			})
-		}
-	},
+  computed: {
+    displayedMenus() {
+      return this.menus.filter((menu) => {
+        return menu.access === 1;
+      })
+    }
+  },
 
   watch: {
-    menuHighlight: function(value){
+    menuHighlight: function (value) {
       this.modal_ready = false;
       setTimeout(() => {
-        switch (value){
+        switch (value) {
           case 1:
             this.$modal.show('styleTool');
             this.modal_ready = true;
@@ -200,20 +201,22 @@ export default {
           default:
             break;
         }
-      },500)
+      }, 500)
     }
   }
 };
 </script>
 
 <style scoped>
-.em-hover-s-scale{
+.em-hover-s-scale {
   transition: transform 0.2s ease-in-out;
 }
-.em-hover-s-scale:hover{
+
+.em-hover-s-scale:hover {
   transform: scale(1.03);
 }
-.em-shadow-cards{
+
+.em-shadow-cards {
   margin: unset;
 }
 

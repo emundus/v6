@@ -2,18 +2,18 @@
   <div>
     <a class="em-pointer" @click="addNewForm">{{ translate('COM_EMUNDUS_ONBOARD_NO_FORM_FOUND_ADD_FORM') }}</a>
 
-    <div class="em-mb-4 em-mt-16 em-text-color">{{ChooseForm}} : </div>
+    <div class="em-mb-4 em-mt-16 em-text-color">{{ ChooseForm }} :</div>
     <div class="em-mb-4">
       <select id="select_profile" v-model="$props.profileId" @change="updateProfileCampaign">
         <option v-for="(profile, index) in profiles" :key="index" :value="profile.id">
-          {{profile.form_label}}
+          {{ profile.form_label }}
         </option>
       </select>
     </div>
     <a class="em-pointer" @click="formbuilder">{{ translate('COM_EMUNDUS_ONBOARD_EDIT_FORM') }}</a>
 
     <hr/>
-    <h5>{{ translate('COM_EMUNDUS_FORM_PAGES_PREVIEW')}}</h5>
+    <h5>{{ translate('COM_EMUNDUS_FORM_PAGES_PREVIEW') }}</h5>
     <div class="em-flex-row em-flex-wrap">
       <div v-for="form in fabrikFormList" :key="form.id"
            class="card-wrapper em-mr-32"
@@ -28,7 +28,7 @@
     </div>
 
     <div v-if="documentsList.length > 0">
-      <h5 class="em-mt-12">{{ translate('COM_EMUNDUS_FORM_ATTACHMENTS_PREVIEW')}}</h5>
+      <h5 class="em-mt-12">{{ translate('COM_EMUNDUS_FORM_ATTACHMENTS_PREVIEW') }}</h5>
       <div class="em-flex-row">
         <div v-for="document in documentsList" :key="document.id"
              class="card-wrapper em-mr-32"
@@ -103,7 +103,7 @@ export default {
       axios({
         method: "get",
         url:
-          "index.php?option=com_emundus&controller=form&task=getFormsByProfileId",
+            "index.php?option=com_emundus&controller=form&task=getFormsByProfileId",
         params: {
           profile_id: profile_id
         },
@@ -111,16 +111,16 @@ export default {
           return qs.stringify(params);
         }
       })
-        .then(response => {
-          this.formList = response.data.data;
-          this.loading = false;
-        })
-        .catch(e => {
-          console.log(e);
-        });
+          .then(response => {
+            this.formList = response.data.data;
+            this.loading = false;
+          })
+          .catch(e => {
+            console.log(e);
+          });
     },
 
-    getDocuments(profile_id){
+    getDocuments(profile_id) {
       axios({
         method: "get",
         url: "index.php?option=com_emundus&controller=form&task=getDocuments",
@@ -157,7 +157,7 @@ export default {
       });
     },
 
-    updateProfileCampaign(){
+    updateProfileCampaign() {
       axios({
         method: "post",
         url: "index.php?option=com_emundus&controller=campaign&task=updateprofile",
@@ -237,7 +237,8 @@ export default {
     }
   }
 }
-#select_profile{
+
+#select_profile {
   min-width: 250px;
   width: max-content;
   max-width: 350px;

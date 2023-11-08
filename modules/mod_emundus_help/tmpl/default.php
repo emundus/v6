@@ -24,27 +24,27 @@ defined('_JEXEC') or die;
                     "<a href='https://emundus.atlassian.net/wiki/spaces/HD/overview' target='_blank'><img class='icone-aide-tchoozy' src='../../../media/com_emundus/images/tchoozy/icons/Tchoozy-icone-articles-aide.svg' alt='icone articles aide'><p><?= JText::_('MOD_EMUNDUS_HELP_ARTICLES'); ?></p></a>" +
                     "<a href='https://emundus.atlassian.net/servicedesk/customer/portals' target='_blank'><img class='icone-aide-tchoozy' src='../../../media/com_emundus/images/tchoozy/icons/Tchoozy-icone-centre-aide.svg' alt='icone centre aide'><p><?= JText::_('MOD_EMUNDUS_HELP_HELP_CENTER'); ?></p></a>" +
                     "<hr/>" +
-                    <?php if($current_lang == 'fr') : ?>
+					<?php if($current_lang == 'fr') : ?>
                     "<a href='https://emundus.atlassian.net/wiki/x/EIBskg' target='_blank'><span class='material-icons'>new_releases</span><p><?= JText::_('MOD_EMUNDUS_HELP_LAST_RELEASE'); ?></p></a>" +
-                    <?php else : ?>
+					<?php else : ?>
                     "<a href='https://emundus.atlassian.net/wiki/x/AYBdkw' target='_blank'><span class='material-icons'>new_releases</span><p><?= JText::_('MOD_EMUNDUS_HELP_LAST_RELEASE'); ?></p></a>" +
-                    <?php endif; ?>
+					<?php endif; ?>
                     "<hr/>" +
                     "<span>Version <?php echo trim($file_version) ?></span>",
             }
         )
 
-        document.addEventListener("click", function(evt) {
+        document.addEventListener("click", function (evt) {
             let popover = document.getElementById('mod_emundus_help'),
                 targetEl = evt.target; // clicked element
             do {
-                if(targetEl === popover) {
+                if (targetEl === popover) {
                     return;
                 }
                 // Go up the DOM
                 targetEl = targetEl.parentNode;
             } while (targetEl);
-            if(document.querySelector('#mod_emundus_help .popover') != null) {
+            if (document.querySelector('#mod_emundus_help .popover') != null) {
                 jQuery('[data-toggle="popover"]').click();
             }
         });

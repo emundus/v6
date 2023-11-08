@@ -6,10 +6,10 @@ Vue.config.devtools = false;
 
 /** COMPONENTS **/
 import VModal from 'vue-js-modal';
-import { VTooltip, VPopover, VClosePopover } from 'v-tooltip';
+import {VTooltip, VPopover, VClosePopover} from 'v-tooltip';
 import * as VueSpinnersCss from 'vue-spinners-css';
 import 'vue2-dropzone/dist/vue2Dropzone.min.css';
-import { TableComponent, TableColumn } from 'vue-table-component';
+import {TableComponent, TableColumn} from 'vue-table-component';
 import Notifications from 'vue-notification';
 import velocity from 'velocity-animate';
 import VWave from 'v-wave';
@@ -24,7 +24,7 @@ import translate from './mixins/translate.js';
 Vue.component('v-popover', VPopover);
 Vue.component('table-component', TableComponent);
 Vue.component('table-column', TableColumn);
-Vue.use(Notifications, { velocity });
+Vue.use(Notifications, {velocity});
 
 Vue.use(VModal);
 Vue.use(VueSpinnersCss);
@@ -35,6 +35,7 @@ Vue.mixin(translate);
 
 /** DIRECTIVES **/
 import clickOutside from './directives/clickOutside';
+
 Vue.directive('tooltip', VTooltip);
 Vue.directive('close-popover', VClosePopover);
 Vue.directive('click-outside', clickOutside);
@@ -64,8 +65,7 @@ if (attachmentElement || filesElement) {
             data[attr.name] = attr.value;
         });
 
-        if(data.fnum !== '' && filesElement)
-        {
+        if (data.fnum !== '' && filesElement) {
             componentName = 'application';
         }
 

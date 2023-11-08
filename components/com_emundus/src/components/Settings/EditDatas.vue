@@ -16,30 +16,32 @@
         @updateDatabases="getDatabases"
     />
     <div class="em-flex-row">
-      <a @click="$modal.show('modalAddDatas')" class="bouton-ajouter-green bouton-ajouter pointer em-mr-4" style="width: max-content">
+      <a @click="$modal.show('modalAddDatas')" class="bouton-ajouter-green bouton-ajouter pointer em-mr-4"
+         style="width: max-content">
         <div class="add-button-div">
           <em class="fas fa-plus em-mr-4"></em>
           {{ CreateDatas }}
         </div>
       </a>
       <button type="button" class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalImportDatas')">
-        {{ImportDatas}}
+        {{ ImportDatas }}
       </button>
     </div>
     <div class="mt-1">
-      <div v-for="(database, index) in databases" :key="database.database_name"  class="db-table">
-        <div :class="[index == indexOpen ? 'down-arrow' : 'right-arrow']" class="db-item" @click="getDatas(database.database_name,index)">
-          <h3>{{database.label}}</h3>
-          <p>{{database.description}}</p>
+      <div v-for="(database, index) in databases" :key="database.database_name" class="db-table">
+        <div :class="[index == indexOpen ? 'down-arrow' : 'right-arrow']" class="db-item"
+             @click="getDatas(database.database_name,index)">
+          <h3>{{ database.label }}</h3>
+          <p>{{ database.description }}</p>
         </div>
         <transition :name="'slide-down'" type="transition">
           <div v-if="index == indexOpen" class="mt-1">
             <table class="db-description">
               <tr class="db-columns">
-                <th v-for="(data, i) in datas.columns" :key="i" :id="'column_' + data">{{data}}</th>
+                <th v-for="(data, i) in datas.columns" :key="i" :id="'column_' + data">{{ data }}</th>
               </tr>
               <tr v-for="(data, i) in datas.datas" :key="i" class="db-values">
-                <th v-for="(value, key) in data" :key="key"> {{value}} </th>
+                <th v-for="(value, key) in data" :key="key"> {{ value }}</th>
               </tr>
             </table>
           </div>
@@ -86,7 +88,7 @@ export default {
   },
 
   methods: {
-    getDatabases(){
+    getDatabases() {
       axios({
         method: "get",
         url: "index.php?option=com_emundus&controller=formbuilder&task=getdatabasesjoin",
@@ -94,8 +96,8 @@ export default {
         this.databases = response.data.data;
       });
     },
-    getDatas(db_name,index){
-      if(index == this.indexOpen){
+    getDatas(db_name, index) {
+      if (index == this.indexOpen) {
         this.indexOpen = -1;
       } else {
         this.loading = true;
@@ -123,7 +125,7 @@ export default {
     /**
      * ** Methods for notify
      */
-    tip(){
+    tip() {
       this.show(
           "foo-velocity",
           this.translate("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
@@ -139,7 +141,7 @@ export default {
       });
     },
     clean(group) {
-      this.$notify({ group, clean: true });
+      this.$notify({group, clean: true});
     },
   },
 
@@ -147,12 +149,11 @@ export default {
     this.getDatabases();
   },
 
-  watch: {
-  }
+  watch: {}
 };
 </script>
 <style>
-.db-item{
+.db-item {
   background-size: 20px;
   cursor: pointer;
   height: 35px;

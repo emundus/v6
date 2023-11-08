@@ -1,29 +1,31 @@
 <?php
 if (!empty($params['proof_attachment'])) {
-    $sort_price = str_replace(',', '', $product->product_sort_price);
-    $price = number_format((double)$sort_price, 2, '.', ' ');
-    $document->addScript(JUri::base(). '/modules/mod_emundus_payment/assets/js/transfer.js');
-    $reference = $params['reference_prefix'] . substr($user->fnum, 8, 6) . $user->id;
+	$sort_price = str_replace(',', '', $product->product_sort_price);
+	$price      = number_format((double) $sort_price, 2, '.', ' ');
+	$document->addScript(JUri::base() . '/modules/mod_emundus_payment/assets/js/transfer.js');
+	$reference = $params['reference_prefix'] . substr($user->fnum, 8, 6) . $user->id;
 
-    $label = $helper->getAttachmentLabelFromId($params['proof_attachment']);
-    $allowed_extensions = $helper->getAttachmentAllowedExtTypes($params['proof_attachment']);
-    $extensions = array_keys($allowed_extensions);
-    $mime_types = array_values($allowed_extensions);
-} else {
-    $app = JFactory::getApplication();
-    $app->enqueueMessage(JText::_('MOD_EMUNDUS_PAYMENT_TRANSFER_ERROR_MISSING_PROOF_ATTACHMENT'), 'error');
-    return false;
+	$label              = $helper->getAttachmentLabelFromId($params['proof_attachment']);
+	$allowed_extensions = $helper->getAttachmentAllowedExtTypes($params['proof_attachment']);
+	$extensions         = array_keys($allowed_extensions);
+	$mime_types         = array_values($allowed_extensions);
+}
+else {
+	$app = JFactory::getApplication();
+	$app->enqueueMessage(JText::_('MOD_EMUNDUS_PAYMENT_TRANSFER_ERROR_MISSING_PROOF_ATTACHMENT'), 'error');
+
+	return false;
 }
 ?>
 
 <section class="container-rounded" style="min-height: 200px;">
     <div class="hidden em-loader" style="margin: auto;"></div>
     <div class="panier">
-        <?php if (strpos(JUri::getInstance(), 'payment_method') !== false) { ?>
-            <a href="<?= str_replace('&payment_method=transfer' , '', JUri::getInstance()) ?>">
-                <?= JText::_('MOD_EMUNDUS_PAYMENT_GO_BACK_TO_METHOD_CHOICE') ?>
+		<?php if (strpos(JUri::getInstance(), 'payment_method') !== false) { ?>
+            <a href="<?= str_replace('&payment_method=transfer', '', JUri::getInstance()) ?>">
+				<?= JText::_('MOD_EMUNDUS_PAYMENT_GO_BACK_TO_METHOD_CHOICE') ?>
             </a>
-        <?php } ?>
+		<?php } ?>
         <div class="em-mt-16">
             <table>
                 <tbody>
@@ -58,17 +60,18 @@ if (!empty($params['proof_attachment'])) {
         <div id="upload-proof-file" class="em-mt-16 em-mb-16">
             <label for="proof-file"> <?= JText::_('MOD_EMUNDUS_PAYMENT_UPLOAD_PROOF_FILE') ?></label>
             <input
-                data-attachment="<?= $params['proof_attachment']  ?>"
-                data-attachment-labem="<?= $label ?>"
-                style="height: auto;"
-                id="proof-file"
-                type="file"
-                accept="<?= implode(',', $mime_types) ?>"
-                max="1"
+                    data-attachment="<?= $params['proof_attachment'] ?>"
+                    data-attachment-labem="<?= $label ?>"
+                    style="height: auto;"
+                    id="proof-file"
+                    type="file"
+                    accept="<?= implode(',', $mime_types) ?>"
+                    max="1"
             >
         </div>
         <div class="em-w-100 em-flex-row em-flex-end">
-            <button id="submit-transfer" class="em-front-btn em-front-primary-btn em-w-33"><?= JText::_('MOD_EMUNDUS_PAYMENT_SUBMIT_TRANSFER') ?></button>
+            <button id="submit-transfer"
+                    class="em-front-btn em-front-primary-btn em-w-33"><?= JText::_('MOD_EMUNDUS_PAYMENT_SUBMIT_TRANSFER') ?></button>
         </div>
     </div>
 </section>

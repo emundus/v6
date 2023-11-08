@@ -1,5 +1,5 @@
-import { mount, createLocalVue } from '@vue/test-utils';
-import { VPopover } from 'v-tooltip';
+import {mount, createLocalVue} from '@vue/test-utils';
+import {VPopover} from 'v-tooltip';
 import FormBuilderPages from '../../../../src/components/FormBuilder/FormBuilderPages';
 import translate from '../../../mocks/mixins/translate';
 import draggable from 'vuedraggable';
@@ -35,7 +35,7 @@ describe('FormBuilderPages.vue', () => {
         store
     });
 
-    it ('FormBuilderPages should exist', () => {
+    it('FormBuilderPages should exist', () => {
         expect(wrapper.find('#form-builder-pages').exists()).toBeTruthy();
     });
 

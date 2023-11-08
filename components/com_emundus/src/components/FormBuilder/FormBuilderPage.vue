@@ -2,46 +2,46 @@
   <div id="form-builder-page">
     <div class="em-flex-row em-flex-space-between">
 	    <span
-			    class="em-font-size-24 em-font-weight-600 editable-data"
-			    ref="pageTitle"
-			    @focusout="updateTitle"
-			    @keyup.enter="updateTitleKeyup"
-			    @keydown="(event) => checkMaxMinlength(event, 50, 0)"
-			    contenteditable="true"
-			    :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
-			    v-html="translate(title)"></span>
-	    <span class="material-icons-outlined em-pointer"
-						v-if="mode == 'forms'"
-	          :title="translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE')"
-	          @click="$emit('open-create-model', page.id)">post_add</span>
+          class="em-font-size-24 em-font-weight-600 editable-data"
+          ref="pageTitle"
+          @focusout="updateTitle"
+          @keyup.enter="updateTitleKeyup"
+          @keydown="(event) => checkMaxMinlength(event, 50, 0)"
+          contenteditable="true"
+          :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
+          v-html="translate(title)"></span>
+      <span class="material-icons-outlined em-pointer"
+            v-if="mode == 'forms'"
+            :title="translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE')"
+            @click="$emit('open-create-model', page.id)">post_add</span>
     </div>
     <span class="description editable-data"
-      id="pageDescription"
-      ref="pageDescription"
-      v-html="description"
-      @focusout="updateDescription"
-      contenteditable="true"
-      :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_INTRO_ADD')"></span>
+          id="pageDescription"
+          ref="pageDescription"
+          v-html="description"
+          @focusout="updateDescription"
+          contenteditable="true"
+          :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_INTRO_ADD')"></span>
 
     <div class="form-builder-page-sections mt-2">
       <button v-if="sections.length > 0" id="add-section" class="em-primary-button px-6 py-3" @click="addSection()">
         {{ translate('COM_EMUNDUS_FORM_BUILDER_ADD_SECTION') }}
       </button>
       <form-builder-page-section
-        v-for="(section, index) in sections"
-        :key="section.group_id"
-        :profile_id="parseInt(profile_id)"
-        :page_id="parseInt(page.id)"
-        :section="section"
-        :index="index+1"
-        :totalSections="sections.length"
-        :ref="'section-'+section.group_id"
-        @open-element-properties="$emit('open-element-properties', $event)"
-        @move-element="updateElementsOrder"
-        @delete-section="deleteSection"
-        @update-element="getSections"
-        @move-section="moveSection"
-        @open-section-properties="$emit('open-section-properties', section)"
+          v-for="(section, index) in sections"
+          :key="section.group_id"
+          :profile_id="parseInt(profile_id)"
+          :page_id="parseInt(page.id)"
+          :section="section"
+          :index="index+1"
+          :totalSections="sections.length"
+          :ref="'section-'+section.group_id"
+          @open-element-properties="$emit('open-element-properties', $event)"
+          @move-element="updateElementsOrder"
+          @delete-section="deleteSection"
+          @update-element="getSections"
+          @move-section="moveSection"
+          @open-section-properties="$emit('open-section-properties', section)"
       >
       </form-builder-page-section>
     </div>
@@ -77,10 +77,10 @@ export default {
       type: Object,
       default: {}
     },
-	  mode: {
-		  type: String,
-		  default: 'forms'
-	  }
+    mode: {
+      type: String,
+      default: 'forms'
+    }
   },
   mixins: [formBuilderMixin, globalMixin, errorMixin],
   data() {
@@ -108,25 +108,25 @@ export default {
           this.title = this.fabrikPage.show_title.label[this.shortDefaultLang];
           const groups = Object.values(response.data.Groups);
           this.sections = groups.filter(group => group.hidden_group != -1);
-	        this.getDescription();
+          this.getDescription();
         } else {
-					this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
+          this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
         }
 
-	      this.loading = false;
+        this.loading = false;
       });
     },
     getDescription() {
       formBuilderService.getAllTranslations(this.fabrikPage.intro_raw).then(response => {
         if (response.status && response.data) {
-          if(response.data[this.shortDefaultLang] !== '') {
+          if (response.data[this.shortDefaultLang] !== '') {
             this.description = response.data[this.shortDefaultLang];
           }
         }
       });
     },
     addSection() {
-      if(this.sections.length < 10) {
+      if (this.sections.length < 10) {
         formBuilderService.createSimpleGroup(this.page.id, {
           fr: 'Nouvelle section',
           en: 'New section'
@@ -175,14 +175,13 @@ export default {
       });
       this.sections = newOrderSections;
     },
-    updateTitle()
-    {
+    updateTitle() {
       this.fabrikPage.show_title.label[this.shortDefaultLang] = this.$refs.pageTitle.innerText.trim().replace(/[\r\n]/gm, "");
       this.$refs.pageTitle.innerText = this.$refs.pageTitle.innerText.trim().replace(/[\r\n]/gm, "");
 
       formBuilderService.updateTranslation(null, this.fabrikPage.show_title.titleraw, this.fabrikPage.show_title.label).then(response => {
         if (response.status) {
-          translationService.updateTranslations(this.fabrikPage.show_title.label[this.shortDefaultLang],'falang', this.shortDefaultLang, this.fabrikPage.menu_id,'title','menu');
+          translationService.updateTranslations(this.fabrikPage.show_title.label[this.shortDefaultLang], 'falang', this.shortDefaultLang, this.fabrikPage.menu_id, 'title', 'menu');
           this.$emit('update-page-title', {
             page: this.page.id,
             new_title: this.$refs.pageTitle.innerText
@@ -191,58 +190,56 @@ export default {
         }
       });
     },
-	  updateTitleKeyup()
-	  {
-		  document.activeElement.blur();
-	  },
-    updateDescription()
-    {
+    updateTitleKeyup() {
+      document.activeElement.blur();
+    },
+    updateDescription() {
       this.fabrikPage.intro[this.shortDefaultLang] = this.$refs.pageDescription.innerText.replace(/[\r\n]/gm, "<br/>");
 
       formBuilderService.updateTranslation(null, this.fabrikPage.intro_raw, this.fabrikPage.intro).then((response) => {
-				if (response.data.status) {
-					this.updateLastSave();
-					this.fabrikPage.intro_raw = response.data.data;
-				}
+        if (response.data.status) {
+          this.updateLastSave();
+          this.fabrikPage.intro_raw = response.data.data;
+        }
 
-	      if (this.$refs.pageDescription.innerText === '') {
-		      document.getElementById('pageDescription').textContent = this.translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_INTRO_ADD');
-		      document.getElementById('pageDescription').classList.add('em-text-neutral-600');
-	      }
+        if (this.$refs.pageDescription.innerText === '') {
+          document.getElementById('pageDescription').textContent = this.translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_INTRO_ADD');
+          document.getElementById('pageDescription').classList.add('em-text-neutral-600');
+        }
       });
     },
     updateElementsOrder(event, fromGroup, toGroup) {
-			let updated = false;
+      let updated = false;
 
-			if (fromGroup > 0 && toGroup > 0 && fromGroup != toGroup) {
-				const sectionFrom = this.sections.find(section => section.group_id === fromGroup);
-				const fromElements = Object.values(sectionFrom.elements);
-				const movedElement = fromElements[event.oldIndex];
+      if (fromGroup > 0 && toGroup > 0 && fromGroup != toGroup) {
+        const sectionFrom = this.sections.find(section => section.group_id === fromGroup);
+        const fromElements = Object.values(sectionFrom.elements);
+        const movedElement = fromElements[event.oldIndex];
 
-				if (movedElement !== undefined && movedElement !== null && movedElement.id) {
-					const foundElement = this.$refs['section-'+toGroup][0].elements.find(element => element.id === movedElement.id);
+        if (movedElement !== undefined && movedElement !== null && movedElement.id) {
+          const foundElement = this.$refs['section-' + toGroup][0].elements.find(element => element.id === movedElement.id);
 
-					if (foundElement == undefined || foundElement == null) {
-						this.$refs['section-'+toGroup][0].elements.splice(event.newIndex, 0, movedElement);
-					}
+          if (foundElement == undefined || foundElement == null) {
+            this.$refs['section-' + toGroup][0].elements.splice(event.newIndex, 0, movedElement);
+          }
 
-					const toElements = this.$refs['section-'+toGroup][0].elements.map((element, index) => {
-						return { id: element.id, order: index + 1 };
-					});
-					formBuilderService.updateOrder(toElements, toGroup, movedElement).then((response) => {
-						updated = response.data.status;
+          const toElements = this.$refs['section-' + toGroup][0].elements.map((element, index) => {
+            return {id: element.id, order: index + 1};
+          });
+          formBuilderService.updateOrder(toElements, toGroup, movedElement).then((response) => {
+            updated = response.data.status;
 
-						if (!updated) {
-							this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED');
-						}
-					});
-					this.updateLastSave();
-				} else {
-					this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED');
-				}
+            if (!updated) {
+              this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED');
+            }
+          });
+          this.updateLastSave();
+        } else {
+          this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED');
+        }
       } else {
-				this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED');
-			}
+        this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED');
+      }
     },
     deleteSection(sectionId) {
       this.sections = this.sections.filter(section => section.group_id !== sectionId);

@@ -2,7 +2,7 @@
 
 defined('_JEXEC') or die('Access Deny');
 
-$document 	= JFactory::getDocument();
+$document = JFactory::getDocument();
 $document->addScript('media/mod_emundus_evaluations/chunk-vendors.js');
 $document->addStyleSheet('media/mod_emundus_evaluations/app.css');
 $document->addStyleSheet('media/mod_emundus_evaluations/app.css');

@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension
-		type="module"
-		version="2.5"
-		client="site"
-		method="upgrade">
-	<name>MOD_EMUNDUS_HELP_XML</name>
-	<author>Brice HUBINET</author>
-	<creationDate>February 2022</creationDate>
-	<copyright>Copyright (C) 2022 eMundus. All rights reserved.</copyright>
-	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-	<authorEmail>brice.hubinet@emundus.fr</authorEmail>
-	<authorUrl>www.emundus.fr</authorUrl>
-	<version>1.0</version>
-	<description>MOD_EMUNDUS_HELP_XML_DESCRIPTION</description>
-	<files>
-		<filename module="mod_emundus_help">mod_emundus_help.php</filename>
-		<folder>tmpl</folder>
-		<filename>helper.php</filename>
-		<filename>index.html</filename>
-		<folder>language</folder>
-	</files>
-	<languages>
-		<language tag="en-GB">en-GB.mod_emundus_help.ini</language>
-		<language tag="en-GB">en-GB.mod_emundus_help.sys.ini</language>
-		<language tag="fr-FR">fr-FR.mod_emundus_help.ini</language>
-		<language tag="fr-FR">fr-FR.mod_emundus_help.sys.ini</language>
-	</languages>
-	<config>
-	</config>
+        type="module"
+        version="2.5"
+        client="site"
+        method="upgrade">
+    <name>MOD_EMUNDUS_HELP_XML</name>
+    <author>Brice HUBINET</author>
+    <creationDate>February 2022</creationDate>
+    <copyright>Copyright (C) 2022 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>brice.hubinet@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>1.0</version>
+    <description>MOD_EMUNDUS_HELP_XML_DESCRIPTION</description>
+    <files>
+        <filename module="mod_emundus_help">mod_emundus_help.php</filename>
+        <folder>tmpl</folder>
+        <filename>helper.php</filename>
+        <filename>index.html</filename>
+        <folder>language</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.mod_emundus_help.ini</language>
+        <language tag="en-GB">en-GB.mod_emundus_help.sys.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_help.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_help.sys.ini</language>
+    </languages>
+    <config>
+    </config>
 </extension>

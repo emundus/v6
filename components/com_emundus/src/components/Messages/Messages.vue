@@ -16,12 +16,13 @@
       >
         <div class="em-flex-row em-flex-align-start em-w-100 em-h-100 em-small-flex-column">
           <div class="messages__campaigns-list em-h-100">
-            <div v-for="file in files" @click="fileSelected = file.fnum" :class="file.fnum == fileSelected ? 'messages__active-campaign' : ''" class="messages__block">
+            <div v-for="file in files" @click="fileSelected = file.fnum"
+                 :class="file.fnum == fileSelected ? 'messages__active-campaign' : ''" class="messages__block">
               <div class="messages__campaign-block em-w-100">
                 <div class="em-w-100">
-                  <p class="messages__campaigns_title">{{file.label}}</p>
-                  <p class="messages__campaigns_fnum messages__campaigns_title">N° {{file.fnum}}</p>
-                  <p class="messages__campaigns_fnum messages__campaigns_title">{{file.year}}</p>
+                  <p class="messages__campaigns_title">{{ file.label }}</p>
+                  <p class="messages__campaigns_fnum messages__campaigns_title">N° {{ file.fnum }}</p>
+                  <p class="messages__campaigns_fnum messages__campaigns_title">{{ file.year }}</p>
                 </div>
               </div>
               <div></div>
@@ -36,7 +37,7 @@
 
           <div class="messages__list em-w-100 em-h-100">
             <div class="message__header">
-              <label class="text-center" style="width: 100%">{{translations.messages}}</label>
+              <label class="text-center" style="width: 100%">{{ translations.messages }}</label>
               <i class="fas fa-times pointer" @click="$modal.hide('messages')"></i>
             </div>
             <div class="messages__list-block em-h-80" id="messages__list">
@@ -46,32 +47,44 @@
                   <p>{{ moment(date.dates).format("DD/MM/YYYY") }}</p>
                   <hr>
                 </div>
-                <div v-for="message in messages" v-if="date.messages.includes(message.message_id)" class="messages__message-item" :class="user == message.user_id_from ? 'messages__current_user' : 'messages__other_user'">
-                  <div class="messages__message-item-block" @click="showDate != message.message_id ? showDate = message.message_id : showDate = 0" :class="user == message.user_id_from ? 'messages__text-align-right' : 'messages__text-align-left'">
+                <div v-for="message in messages" v-if="date.messages.includes(message.message_id)"
+                     class="messages__message-item"
+                     :class="user == message.user_id_from ? 'messages__current_user' : 'messages__other_user'">
+                  <div class="messages__message-item-block"
+                       @click="showDate != message.message_id ? showDate = message.message_id : showDate = 0"
+                       :class="user == message.user_id_from ? 'messages__text-align-right' : 'messages__text-align-left'">
                     <p>
                       <span class="messages__message-item-from">
-                        <span v-if="anonymous === 0 && user != message.user_id_from">{{message.name}} - </span>
-                        <span v-if="user == message.user_id_from">{{message.name}} - </span>
+                        <span v-if="anonymous === 0 && user != message.user_id_from">{{ message.name }} - </span>
+                        <span v-if="user == message.user_id_from">{{ message.name }} - </span>
                         {{ moment(message.date_time).format("HH:mm") }}
                       </span>
                     </p>
-                    <span class="messages__message-item-span" :class="user == message.user_id_from ? 'messages__message-item-span_current-user' : 'messages__message-item-span_other-user'" v-html="message.message"></span>
-                    <p><span class="messages__message-item-from" v-if="showDate == message.message_id">{{ moment(message.date_time).format("DD/MM/YYYY HH:mm") }}</span></p>
+                    <span class="messages__message-item-span"
+                          :class="user == message.user_id_from ? 'messages__message-item-span_current-user' : 'messages__message-item-span_other-user'"
+                          v-html="message.message"></span>
+                    <p><span class="messages__message-item-from" v-if="showDate == message.message_id">{{
+                        moment(message.date_time).format("DD/MM/YYYY HH:mm")
+                      }}</span></p>
                   </div>
                 </div>
               </div>
               <transition :name="'slide-up'" type="transition">
-               <AttachDocument :user="user" :fnum="fileSelected" v-if="attachOpen" :applicant="true" @pushAttachmentMessage="pushAttachmentMessage" ref="attachment"/>
+               <AttachDocument :user="user" :fnum="fileSelected" v-if="attachOpen" :applicant="true"
+                               @pushAttachmentMessage="pushAttachmentMessage" ref="attachment"/>
               </transition>
             </div>
 
             <div style="position: sticky;bottom: 15px;padding: 0 15px;margin-right: 15px;">
               <div class="messages__bottom-input">
-                <textarea type="text" class="messages__input_text" rows="1" :disabled="send_progress" spellcheck="true" :placeholder="translations.writeMessage" v-model="message" @keydown.enter.exact.prevent="sendMessage($event)"/>
+                <textarea type="text" class="messages__input_text" rows="1" :disabled="send_progress" spellcheck="true"
+                          :placeholder="translations.writeMessage" v-model="message"
+                          @keydown.enter.exact.prevent="sendMessage($event)"/>
               </div>
               <div class="messages__bottom-input-actions">
                 <div class="messages__actions_bar">
-                  <img class="messages__send-icon" src="/images/emundus/messenger/attached.svg" @click="attachDocument"/>
+                  <img class="messages__send-icon" src="/images/emundus/messenger/attached.svg"
+                       @click="attachDocument"/>
                 </div>
                 <button type="button" class="messages__send_button" @click="sendMessage">
                     {{ translations.send }}
@@ -121,7 +134,7 @@ export default {
       attachOpen: false,
       send_progress: false,
 
-      translations:{
+      translations: {
         messages: Joomla.JText._("COM_EMUNDUS_MESSENGER_TITLE"),
         send: Joomla.JText._("COM_EMUNDUS_MESSENGER_SEND"),
         writeMessage: Joomla.JText._("COM_EMUNDUS_MESSENGER_WRITE_MESSAGE"),
@@ -138,25 +151,25 @@ export default {
       clearInterval(this.interval);
     },
 
-    getFilesByUser(){
+    getFilesByUser() {
       axios({
         method: "get",
         url: "index.php?option=com_emundus&controller=messenger&task=getfilesbyuser",
       }).then(response => {
         this.files = response.data.data;
-        if(this.fnum != ''){
+        if (this.fnum != '') {
           this.fileSelected = this.fnum;
         } else {
           this.fileSelected = this.files[0].fnum;
         }
         this.getMessagesByFnum(true);
         this.interval = setInterval(() => {
-          this.getMessagesByFnum(false,false);
-        },20000);
+          this.getMessagesByFnum(false, false);
+        }, 20000);
       });
     },
 
-    getMessagesByFnum(loader = true,scroll = true){
+    getMessagesByFnum(loader = true, scroll = true) {
       this.loading = loader;
       axios({
         method: "get",
@@ -172,14 +185,14 @@ export default {
         this.dates = response.data.data.dates;
         this.anonymous = parseInt(response.data.data.anonymous);
         this.markAsRead();
-        if(scroll) {
+        if (scroll) {
           this.scrollToBottom();
         }
         this.loading = false;
       });
     },
 
-    markAsRead(){
+    markAsRead() {
       axios({
         method: "get",
         url: "index.php?option=com_emundus&controller=messenger&task=markasread",
@@ -190,15 +203,15 @@ export default {
           return qs.stringify(params);
         }
       }).then(response => {
-        this.$emit('removeNotifications',response.data.data);
+        this.$emit('removeNotifications', response.data.data);
       });
     },
 
-    sendMessage(e){
-      if(typeof e != 'undefined') {
+    sendMessage(e) {
+      if (typeof e != 'undefined') {
         e.stopImmediatePropagation();
       }
-      if(this.message.trim() !== '' && !this.send_progress) {
+      if (this.message.trim() !== '' && !this.send_progress) {
         this.send_progress = true;
         axios({
           method: "post",
@@ -220,16 +233,16 @@ export default {
       }
     },
 
-    pushToDatesArray(message){
+    pushToDatesArray(message) {
       var pushToDate = false;
       var message_date = message.date_time.split(' ')[0];
-      this.dates.forEach((elt,index) => {
-        if(elt.dates == message_date){
+      this.dates.forEach((elt, index) => {
+        if (elt.dates == message_date) {
           this.dates[index].messages.push(message.message_id);
           pushToDate = true;
         }
       });
-      if(!pushToDate){
+      if (!pushToDate) {
         var new_date = {
           dates: this.moment().format("YYYY-MM-DD"),
           messages: []
@@ -264,20 +277,20 @@ export default {
       setTimeout(() => {
         const container = document.getElementById("messages__list");
         container.scrollTop = container.scrollHeight;
-      },500);
+      }, 500);
     },
 
-    attachDocument(){
+    attachDocument() {
       this.attachOpen = !this.attachOpen;
       this.scrollToBottom();
       setTimeout(() => {
-        if(this.attachOpen){
+        if (this.attachOpen) {
           this.$refs.attachment.getTypesByCampaign();
         }
-      },500);
+      }, 500);
     },
 
-    pushAttachmentMessage(message){
+    pushAttachmentMessage(message) {
       //this.$modal.hide('attach_documents' + this.fileSelected);
       this.pushToDatesArray(message);
       this.scrollToBottom();
@@ -286,7 +299,7 @@ export default {
   },
 
   watch: {
-    fileSelected: function() {
+    fileSelected: function () {
       this.getMessagesByFnum(true);
     }
   }

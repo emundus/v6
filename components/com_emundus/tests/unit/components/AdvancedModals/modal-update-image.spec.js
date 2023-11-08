@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import ModalUpdateImage from '../../../../src/components/AdvancedModals/ModalUpdateImage';
 import translate from '../../../mocks/mixins/translate';
 import VModal from 'vue-js-modal';
@@ -13,7 +13,7 @@ describe('ModalUpdateImage.vue', () => {
         localVue
     });
 
-    it ('ModalUpdateImage constructed', () => {
+    it('ModalUpdateImage constructed', () => {
         expect(wrapper.find('#modalUpdateImage').exists()).toBeTruthy();
     });
 });

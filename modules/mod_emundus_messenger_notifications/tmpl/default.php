@@ -14,7 +14,7 @@ JText::script('COM_EMUNDUS_PLEASE_SELECT');
 $user = JFactory::getSession()->get('emundusUser')->id;
 
 $jinput = JFactory::getApplication()->input;
-$fnum 	= $jinput->getString('rowid', null);
+$fnum   = $jinput->getString('rowid', null);
 ?>
 
 <div id="em-notifications" user="<?= $user ?>" fnum="<?= $fnum ?>"></div>

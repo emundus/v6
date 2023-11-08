@@ -2,16 +2,16 @@
   <!-- modalC -->
   <span :id="'modalDuplicateElement'">
     <modal
-      :name="'modalDuplicateElement' + ID"
-      height="auto"
-      transition="little-move-left"
-      :min-width="200"
-      :min-height="200"
-      :delay="100"
-      :adaptive="true"
-      :clickToClose="true"
-      @closed="beforeClose"
-      @before-open="beforeOpen"
+        :name="'modalDuplicateElement' + ID"
+        height="auto"
+        transition="little-move-left"
+        :min-width="200"
+        :min-height="200"
+        :delay="100"
+        :adaptive="true"
+        :clickToClose="true"
+        @closed="beforeClose"
+        @before-open="beforeOpen"
     >
       <div class="fixed-header-modal">
         <div class="topright">
@@ -21,29 +21,29 @@
           </div>
         <div class="update-field-header">
           <h2 class="update-title-header">
-             {{translations.DuplicateElement}}
+             {{ translations.DuplicateElement }}
           </h2>
-          <p>{{translations.Target}}</p>
+          <p>{{ translations.Target }}</p>
         </div>
       </div>
       <div class="modalC-content">
         <div class="form-group mb-2">
-          <label>{{translations.Page}}* :</label>
+          <label>{{ translations.Page }}* :</label>
           <select id="select_page" class="dropdown-toggle" v-model="page" :class="{ 'is-invalid': errors.page}">
             <option v-for="(page, index) in pages" :key="index" :value="page.id">
-              {{page.label}}
+              {{ page.label }}
             </option>
           </select>
         </div>
         <p v-if="errors.page" class="error col-md-12 mb-2">
-          <span class="error">{{translations.PageRequired}}</span>
+          <span class="error">{{ translations.PageRequired }}</span>
         </p>
         <transition :name="'slide-down'" type="transition">
           <div class="form-group mb-2" v-if="page !== -1 && groups.length > 1">
-            <label>{{Group}}* :</label>
+            <label>{{ Group }}* :</label>
             <select id="select_group" class="dropdown-toggle" v-model="group" :class="{ 'is-invalid': errors.group}">
               <option v-for="(group, index) in groups" :key="index" :value="group.id">
-                {{group.label}}
+                {{ group.label }}
               </option>
             </select>
           </div>
@@ -59,8 +59,8 @@
           {{ translations.Retour }}
         </button>
         <button type="button"
-          class="bouton-sauvergarder-et-continuer"
-          @click.prevent="duplicate()"
+                class="bouton-sauvergarder-et-continuer"
+                @click.prevent="duplicate()"
         >{{ translations.Continuer }}</button>
       </div>
     </modal>
@@ -69,6 +69,7 @@
 
 <script>
 import axios from "axios";
+
 const qs = require("qs");
 
 export default {
@@ -105,11 +106,11 @@ export default {
     beforeClose(event) {
       if (this.changes === true) {
         this.$emit(
-          "show",
-          "foo-velocity",
-          "warn",
-          this.dataSaved,
-          this.informations
+            "show",
+            "foo-velocity",
+            "warn",
+            this.dataSaved,
+            this.informations
         );
       }
       this.$emit("modalClosed");
@@ -131,12 +132,12 @@ export default {
         group: false
       };
 
-      if(this.page == -1) {
+      if (this.page == -1) {
         this.errors.page = true;
         return 0;
       }
 
-      if(this.group == -1) {
+      if (this.group == -1) {
         this.errors.group = true;
         return 0;
       }
@@ -158,7 +159,7 @@ export default {
       });
     },
 
-    getFormPages(){
+    getFormPages() {
       axios({
         method: "get",
         url: "index.php?option=com_emundus&controller=form&task=getFormsByProfileId",
@@ -169,12 +170,12 @@ export default {
           return qs.stringify(params);
         }
       }).then(response => {
-          this.pages = response.data.data;
-          this.page = this.currentPage;
+        this.pages = response.data.data;
+        this.page = this.currentPage;
       });
     },
 
-    getGroupsByForm(){
+    getGroupsByForm() {
       axios({
         method: "get",
         url: "index.php?option=com_emundus&controller=form&task=getgroupsbyform",
@@ -186,7 +187,7 @@ export default {
         }
       }).then(response => {
         this.groups = response.data.data;
-        if(this.groups.length <= 1){
+        if (this.groups.length <= 1) {
           this.group = this.groups[0].id;
         }
       });
@@ -194,7 +195,7 @@ export default {
   },
 
   watch: {
-    page: function() {
+    page: function () {
       this.getGroupsByForm();
     }
   }

@@ -28,7 +28,7 @@
     "published": true
   },
   {
-    "id":10,
+    "id": 10,
     "value": "email",
     "icon": "mail",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_EMAIL",
@@ -77,7 +77,7 @@
     "published": true
   },
   {
-    "id":12,
+    "id": 12,
     "value": "yesno",
     "icon": "toggle_on",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_YESNO",

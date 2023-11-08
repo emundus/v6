@@ -6,7 +6,8 @@
     <div class="em-modal-header em-w-100 em-h-50 em-p-12-16 em-bg-main-900 em-flex-row">
       <div class="em-flex-row em-pointer em-gap-8" id="evaluation-modal-close">
         <div class="em-w-max-content em-flex-row">
-          <span class="material-icons-outlined em-font-size-16" onclick="document.querySelector('body').style.overflow= 'visible';swal.close()" style="color: white">arrow_back</span>
+          <span class="material-icons-outlined em-font-size-16"
+                onclick="document.querySelector('body').style.overflow= 'visible';swal.close()" style="color: white">arrow_back</span>
         </div>
         <span class="em-text-neutral-500">|</span>
         <p class="em-font-size-14" style="color: white" v-if="file.applicant_name != ''">
@@ -22,7 +23,8 @@
       <div id="modal-applicationform">
         <div class="scrollable">
           <div class="em-flex-row em-flex-center em-gap-16 em-border-bottom-neutral-300 sticky-tab">
-            <div v-for="tab in tabs" v-if="access[tab.access].r" class="em-light-tabs em-pointer" @click="selected = tab.name" :class="selected === tab.name ? 'em-light-selected-tab' : ''">
+            <div v-for="tab in tabs" v-if="access[tab.access].r" class="em-light-tabs em-pointer"
+                 @click="selected = tab.name" :class="selected === tab.name ? 'em-light-selected-tab' : ''">
               <span class="em-font-size-14">{{ translate(tab.label) }}</span>
             </div>
           </div>
@@ -40,7 +42,7 @@
               :fnum="file.fnum"
               :user="$props.user"
               :access="access['10']"
-            />
+          />
         </div>
       </div>
 
@@ -52,7 +54,8 @@
             </div>
           </div>
         </div>
-        <iframe v-if="url" :src="url" class="iframe-evaluation" id="iframe-evaluation" @load="iframeLoaded($event);" title="Evaluation form" />
+        <iframe v-if="url" :src="url" class="iframe-evaluation" id="iframe-evaluation" @load="iframeLoaded($event);"
+                title="Evaluation form"/>
         <div class="em-page-loader" v-if="loading"></div>
       </div>
     </div>
@@ -71,7 +74,7 @@ export default {
   name: "ApplicationSingle",
   components: {Comments, Attachments},
   props: {
-    file: Object|String,
+    file: Object | String,
     type: String,
     user: {
       type: String,
@@ -111,29 +114,29 @@ export default {
     loading: false
   }),
 
-  created(){
-    document.querySelector('body').style.overflow= 'hidden';
+  created() {
+    document.querySelector('body').style.overflow = 'hidden';
     var r = document.querySelector(':root');
     let ratio_array = this.$props.ratio.split('/');
-    r.style.setProperty('--attachment-width', ratio_array[0]+'%');
+    r.style.setProperty('--attachment-width', ratio_array[0] + '%');
 
     this.loading = true;
     let fnum = '';
 
-    if(typeof this.$props.file == 'string'){
+    if (typeof this.$props.file == 'string') {
       fnum = this.$props.file;
     } else {
       fnum = this.$props.file.fnum;
     }
 
-    if(typeof this.$props.file == 'string'){
-      filesService.getFile(fnum,this.$props.type).then((result) => {
-        if(result.status == 1){
+    if (typeof this.$props.file == 'string') {
+      filesService.getFile(fnum, this.$props.type).then((result) => {
+        if (result.status == 1) {
           this.$props.file = result.data;
           this.access = result.rights;
           this.updateURL(this.$props.file.fnum)
           this.getApplicationForm();
-          if(this.$props.type === 'evaluation'){
+          if (this.$props.type === 'evaluation') {
             this.getEvaluationForm();
           }
         } else {
@@ -141,7 +144,7 @@ export default {
               'COM_EMUNDUS_FILES_CANNOT_ACCESS',
               'COM_EMUNDUS_FILES_CANNOT_ACCESS_DESC'
           ).then((confirm) => {
-            if(confirm === true){
+            if (confirm === true) {
               this.$modal.hide('application-modal');
             }
           });
@@ -149,19 +152,19 @@ export default {
       });
     } else {
       filesService.checkAccess(fnum).then((result) => {
-        if(result.status == true){
+        if (result.status == true) {
           this.access = result.data;
           this.updateURL(this.$props.file.fnum)
-          if(this.access['1'].r) {
+          if (this.access['1'].r) {
             this.getApplicationForm();
           } else {
-            if(this.access['4'].r) {
+            if (this.access['4'].r) {
               this.selected = 'attachments';
-            } else if(this.access['10'].r){
+            } else if (this.access['10'].r) {
               this.selected = 'comments';
             }
           }
-          if(this.$props.type === 'evaluation'){
+          if (this.$props.type === 'evaluation') {
             this.getEvaluationForm();
           }
         } else {
@@ -169,7 +172,7 @@ export default {
               'COM_EMUNDUS_FILES_CANNOT_ACCESS',
               'COM_EMUNDUS_FILES_CANNOT_ACCESS_DESC'
           ).then((confirm) => {
-            if(confirm === true){
+            if (confirm === true) {
               this.$modal.hide('application-modal');
             }
           });
@@ -178,35 +181,35 @@ export default {
     }
   },
 
-  methods:{
-    getApplicationForm(){
+  methods: {
+    getApplicationForm() {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus&view=application&format=raw&layout=form&fnum="+this.file.fnum,
+        url: "index.php?option=com_emundus&view=application&format=raw&layout=form&fnum=" + this.file.fnum,
       }).then(response => {
         this.applicationform = response.data;
-        if(this.$props.type !== 'evaluation'){
+        if (this.$props.type !== 'evaluation') {
           this.loading = false;
         }
       });
     },
-    getEvaluationForm(){
+    getEvaluationForm() {
       if (this.$props.file.id != null) {
         this.rowid = this.$props.file.id;
       }
-      if(typeof this.$props.file.applicant_id != 'undefined'){
+      if (typeof this.$props.file.applicant_id != 'undefined') {
         this.student_id = this.$props.file.applicant_id;
       } else {
         this.student_id = this.$props.file.student_id;
       }
       let view = 'form';
 
-      filesService.getEvaluationFormByFnum(this.$props.file.fnum,this.$props.type).then((response) => {
-        if(response.data !== 0) {
-          if(typeof this.$props.file.id === 'undefined'){
+      filesService.getEvaluationFormByFnum(this.$props.file.fnum, this.$props.type).then((response) => {
+        if (response.data !== 0) {
+          if (typeof this.$props.file.id === 'undefined') {
             filesService.getMyEvaluation(this.$props.file.fnum).then((data) => {
               this.rowid = data.data;
-              if(this.rowid == null){
+              if (this.rowid == null) {
                 this.rowid = "";
               }
 
@@ -218,24 +221,24 @@ export default {
         }
       });
     },
-    iframeLoaded(event){
+    iframeLoaded(event) {
       this.loading = false;
     },
-    updateURL(fnum = ''){
+    updateURL(fnum = '') {
       let url = window.location.href;
       url = url.split('#');
 
-      if(fnum === '') {
+      if (fnum === '') {
         window.history.pushState('', '', url[0]);
       } else {
         window.history.pushState('', '', url[0] + '#' + fnum);
       }
     }
   },
-  computed:{
-    ratioStyle(){
+  computed: {
+    ratioStyle() {
       let ratio_array = this.$props.ratio.split('/');
-      return ratio_array[0]+'% '+ratio_array[1]+'%';
+      return ratio_array[0] + '% ' + ratio_array[1] + '%';
     },
   }
 }
@@ -248,47 +251,57 @@ export default {
   width: 100%;
   height: 100vh;
 }
+
 .scrollable {
   height: calc(100vh - 100px);
   overflow-y: scroll;
   overflow-x: hidden;
 }
-.em-container-form-heading{
+
+.em-container-form-heading {
   display: none;
 }
-#iframe{
+
+#iframe {
   height: 100vh;
   overflow-y: scroll;
   overflow-x: hidden;
 }
-.iframe-evaluation{
+
+.iframe-evaluation {
   width: 100%;
   height: 90%;
   border: unset;
 }
-#modal-evaluationgrid{
+
+#modal-evaluationgrid {
   border-left: 1px solid #EBECF0;
   box-shadow: 0px 4px 16px rgba(32, 35, 44, 0.1);
 }
-.sticky-tab{
+
+.sticky-tab {
   position: sticky;
   top: 0;
   background: white;
 }
-#modal-applicationform #em-attachments .v--modal-overlay{
+
+#modal-applicationform #em-attachments .v--modal-overlay {
   height: 100% !important;
   width: var(--attachment-width) !important;
   margin-top: 50px;
 }
-#modal-applicationform #em-attachments .v--modal-box.v--modal{
+
+#modal-applicationform #em-attachments .v--modal-box.v--modal {
   width: 100% !important;
   height: calc(100vh - 50px) !important;
   box-shadow: unset;
 }
-#modal-applicationform #em-attachments .modal-body{
+
+#modal-applicationform #em-attachments .modal-body {
   width: 100%;
 }
-#modal-applicationform #em-attachments #em-attachment-preview{
+
+#modal-applicationform #em-attachments #em-attachment-preview {
   width: 100%;
 }
 </style>

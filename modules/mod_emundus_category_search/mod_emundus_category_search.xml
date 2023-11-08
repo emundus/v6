@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="3.8.12" client="site" method="upgrade">
-	<name>eMundus - Category search</name>
+    <name>eMundus - Category search</name>
     <author>Hugo Moracchini</author>
     <creationDate>August 2018</creationDate>
     <copyright>Copyright (C) 2018 eMundus. All rights reserved.</copyright>
@@ -8,26 +8,31 @@
     <authorEmail>hugo.moracchini@emundus.fr</authorEmail>
     <authorUrl>www.emundus.fr</authorUrl>
     <version>6.0</version>
-	<description>Displays the different categories found in the table jos_emundus_setup_thematiques and provides links to the search engine with the required params for a prefilter.</description>
-	<files>
-		<filename module="mod_emundus_category_search">mod_emundus_category_search.php</filename>
-		<folder>tmpl</folder>
-		<folder>language</folder>
-		<filename>helper.php</filename>
-		<filename>index.html</filename>
-		<filename>mod_emundus_category_search.xml</filename>
-	</files>
+    <description>Displays the different categories found in the table jos_emundus_setup_thematiques and provides links
+        to the search engine with the required params for a prefilter.
+    </description>
+    <files>
+        <filename module="mod_emundus_category_search">mod_emundus_category_search.php</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+        <filename>helper.php</filename>
+        <filename>index.html</filename>
+        <filename>mod_emundus_category_search.xml</filename>
+    </files>
 
-	<config>
-		<fields name="params">
-			<fieldset name="basic" label="Options">
-				<field type="editor" filter="safehtml" hide="readmore,pagebreak" name="heading" label="MOD_EM_CATEGORY_SEARCH_HEADING" description="MOD_EM_CATEGORY_SEARCH_HEADING_DESC"/>
-				<field type="text" name="search_page" label="MOD_EM_CATEGORY_SEARCH_PAGE" description="MOD_EM_CATEGORY_SEARCH_PAGE_DESC"/>
-				<field type="list" name="tmpl" label="MOD_EM_CATEGORY_SEARCH_LAYOUT" description="MOD_EM_CATEGORY_SEARCH_LAYOUT_DESC">
-					<option value="default">DEFAULT</option>
-					<option value="fullWidth">WIDESCREEN</option>
-				</field>
-			</fieldset>
-		</fields>
-	</config>
+    <config>
+        <fields name="params">
+            <fieldset name="basic" label="Options">
+                <field type="editor" filter="safehtml" hide="readmore,pagebreak" name="heading"
+                       label="MOD_EM_CATEGORY_SEARCH_HEADING" description="MOD_EM_CATEGORY_SEARCH_HEADING_DESC"/>
+                <field type="text" name="search_page" label="MOD_EM_CATEGORY_SEARCH_PAGE"
+                       description="MOD_EM_CATEGORY_SEARCH_PAGE_DESC"/>
+                <field type="list" name="tmpl" label="MOD_EM_CATEGORY_SEARCH_LAYOUT"
+                       description="MOD_EM_CATEGORY_SEARCH_LAYOUT_DESC">
+                    <option value="default">DEFAULT</option>
+                    <option value="fullWidth">WIDESCREEN</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
 </extension>

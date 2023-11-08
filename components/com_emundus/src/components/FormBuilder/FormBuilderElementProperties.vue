@@ -21,7 +21,8 @@
     <div id="properties">
       <div v-if="tabs[0].active" id="element-parameters" class="em-p-16">
         <label for="element-label">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_LABEL') }}</label>
-        <input id="element-label" name="element-label" class="em-w-100" type="text" v-model="element.label[shortDefaultLang]"/>
+        <input id="element-label" name="element-label" class="em-w-100" type="text"
+               v-model="element.label[shortDefaultLang]"/>
         <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16">
           <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_UNPUBLISH") }}</span>
           <div class="em-toggle">
@@ -31,10 +32,12 @@
           </div>
         </div>
 
-        <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16" v-show="this.element.plugin !== 'display'">
+        <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16"
+             v-show="this.element.plugin !== 'display'">
           <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_REQUIRED") }}</span>
           <div class="em-toggle">
-            <input type="checkbox" class="em-toggle-check" v-model="element.FRequire" @click="element.FRequire = !element.FRequire;">
+            <input type="checkbox" class="em-toggle-check" v-model="element.FRequire"
+                   @click="element.FRequire = !element.FRequire;">
             <strong class="b em-toggle-switch"></strong>
             <strong class="b em-toggle-track"></strong>
           </div>
@@ -51,7 +54,7 @@
 
       </div>
       <div v-if="tabs[1].active" class="em-p-16">
-        <FormBuilderElementParams :element="element" :params="params" :key="element.id" :databases="databases" />
+        <FormBuilderElementParams :element="element" :params="params" :key="element.id" :databases="databases"/>
       </div>
     </div>
     <div class="em-flex-row em-flex-space-between actions em-m-16">
@@ -86,16 +89,16 @@ export default {
       required: true
     },
   },
-	mixins: [formBuilderMixin],
+  mixins: [formBuilderMixin],
   data() {
     return {
       databases: [],
       params: [],
       elementsNeedingDb: [
-          "dropdown",
-          "checkbox",
-          "radiobutton",
-          "databasejoin"
+        "dropdown",
+        "checkbox",
+        "radiobutton",
+        "databasejoin"
       ],
       tabs: [
         {
@@ -120,7 +123,7 @@ export default {
     this.paramsAvailable();
   },
   methods: {
-    getDatabases(){
+    getDatabases() {
       formBuilderService.getDatabases().then(response => {
         if (response.status) {
           this.databases = response.data.data;
@@ -129,33 +132,36 @@ export default {
     },
     saveProperties() {
       this.loading = true;
-      formBuilderService.updateTranslation({value: this.element.id, key: 'element'}, this.element.label_tag, this.element.label);
+      formBuilderService.updateTranslation({
+        value: this.element.id,
+        key: 'element'
+      }, this.element.label_tag, this.element.label);
 
-	    if (['radiobutton', 'checkbox', 'dropdown'].includes(this.element.plugin)) {
-		    formBuilderService.getJTEXTA(this.element.params.sub_options.sub_labels).then(response => {
-					if (response) {
-						this.element.params.sub_options.sub_labels.forEach((label, index) => {
-							this.element.params.sub_options.sub_labels[index] = Object.values(response.data)[index];
-						});
+      if (['radiobutton', 'checkbox', 'dropdown'].includes(this.element.plugin)) {
+        formBuilderService.getJTEXTA(this.element.params.sub_options.sub_labels).then(response => {
+          if (response) {
+            this.element.params.sub_options.sub_labels.forEach((label, index) => {
+              this.element.params.sub_options.sub_labels[index] = Object.values(response.data)[index];
+            });
 
-						formBuilderService.updateParams(this.element).then(response => {
-							if (response.status) {
-								this.loading = false;
-								this.updateLastSave();
-								this.$emit('close');
-							}
-						});
-					}
-				});
-	    } else {
-		    formBuilderService.updateParams(this.element).then(response => {
-			    if (response.status) {
-				    this.loading = false;
-				    this.updateLastSave();
-				    this.$emit('close');
-			    }
-		    });
-	    }
+            formBuilderService.updateParams(this.element).then(response => {
+              if (response.status) {
+                this.loading = false;
+                this.updateLastSave();
+                this.$emit('close');
+              }
+            });
+          }
+        });
+      } else {
+        formBuilderService.updateParams(this.element).then(response => {
+          if (response.status) {
+            this.loading = false;
+            this.updateLastSave();
+            this.$emit('close');
+          }
+        });
+      }
     },
     togglePublish() {
       this.element.publish = !this.element.publish;
@@ -181,8 +187,8 @@ export default {
       });
       tab.active = true;
     },
-    paramsAvailable(){
-      if(typeof elementParams[this.element.plugin] !== 'undefined'){
+    paramsAvailable() {
+      if (typeof elementParams[this.element.plugin] !== 'undefined') {
         this.tabs[1].published = true;
         this.params = elementParams[this.element.plugin];
       } else {
@@ -197,7 +203,7 @@ export default {
       let type = '';
       switch (this.element.plugin) {
         case 'databasejoin':
-          type = this.element.params.database_join_display_type =='radio' ?  'radiobutton' : this.element.params.database_join_display_type;
+          type = this.element.params.database_join_display_type == 'radio' ? 'radiobutton' : this.element.params.database_join_display_type;
           break;
         case 'years':
         case 'date':
@@ -217,17 +223,17 @@ export default {
     isHidden() {
       return this.element.hidden;
     },
-    sysadmin: function(){
+    sysadmin: function () {
       return parseInt(this.$store.state.global.sysadminAccess);
     },
-	  publishedTabs() {
-			return this.tabs.filter((tab) => {
-				return tab.published;
-			});
-	  }
+    publishedTabs() {
+      return this.tabs.filter((tab) => {
+        return tab.published;
+      });
+    }
   },
   watch: {
-    'element.id': function(value){
+    'element.id': function (value) {
       this.paramsAvailable();
     }
   }

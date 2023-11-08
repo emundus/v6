@@ -66,7 +66,7 @@ export default {
             'training': 'prog',
             'show': true,
             'existsOnServer': false,
-            'profiles': [1,2]
+            'profiles': [1, 2]
         }
     ],
     'users': [

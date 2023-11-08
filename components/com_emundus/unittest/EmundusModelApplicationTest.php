@@ -8,21 +8,22 @@
  */
 
 use PHPUnit\Framework\TestCase;
-ini_set( 'display_errors', false );
+
+ini_set('display_errors', false);
 error_reporting(E_ALL);
 define('_JEXEC', 1);
 define('DS', DIRECTORY_SEPARATOR);
 define('JPATH_BASE', dirname(__DIR__) . '/../../');
 
-include_once(JPATH_BASE . 'includes/defines.php' );
-include_once(JPATH_BASE . 'includes/framework.php' );
+include_once(JPATH_BASE . 'includes/defines.php');
+include_once(JPATH_BASE . 'includes/framework.php');
 include_once(JPATH_SITE . '/components/com_emundus/unittest/helpers/samples.php');
 include_once(JPATH_SITE . '/components/com_emundus/models/application.php');
 include_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
 include_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
 
 jimport('joomla.user.helper');
-jimport( 'joomla.application.application' );
+jimport('joomla.application.application');
 jimport('joomla.plugin.helper');
 
 // set global config --> initialize Joomla Application with default param 'site'
@@ -33,28 +34,30 @@ session_start();
 class EmundusModelApplicationTest extends TestCase
 {
 	private $app;
-    private $m_application;
+	private $m_application;
 	private $h_sample;
 
-    public function __construct(?string $name = null, array $data = [], $dataName = '')
-    {
-        parent::__construct($name, $data, $dataName);
+	public function __construct(?string $name = null, array $data = [], $dataName = '')
+	{
+		parent::__construct($name, $data, $dataName);
 
-		$this->app = JFactory::getApplication();
-        $this->m_application = new EmundusModelApplication;
-	    $this->h_sample = new EmundusUnittestHelperSamples;
-    }
+		$this->app           = JFactory::getApplication();
+		$this->m_application = new EmundusModelApplication;
+		$this->h_sample      = new EmundusUnittestHelperSamples;
+	}
 
-    public function testGetApplicantInfos(){
-        $applicant_infos = $this->m_application->getApplicantInfos(0, []);
-        $this->assertSame([], $applicant_infos);
+	public function testGetApplicantInfos()
+	{
+		$applicant_infos = $this->m_application->getApplicantInfos(0, []);
+		$this->assertSame([], $applicant_infos);
 
-        $applicant_infos = $this->m_application->getApplicantInfos(62, ['jos_users.id']);
-        $this->assertNotEmpty($applicant_infos);
-        $this->assertSame(intval($applicant_infos['id']), 62);
-    }
+		$applicant_infos = $this->m_application->getApplicantInfos(62, ['jos_users.id']);
+		$this->assertNotEmpty($applicant_infos);
+		$this->assertSame(intval($applicant_infos['id']), 62);
+	}
 
-	public function testGetUserAttachmentsByFnum() {
+	public function testGetUserAttachmentsByFnum()
+	{
 		if (!defined('EMUNDUS_PATH_ABS')) {
 			define('EMUNDUS_PATH_ABS', JPATH_ROOT);
 		}
@@ -62,14 +65,14 @@ class EmundusModelApplicationTest extends TestCase
 		$attachments = $this->m_application->getUserAttachmentsByFnum('');
 		$this->assertSame([], $attachments);
 
-		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-		$program = $this->h_sample->createSampleProgram();
+		$user_id     = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$program     = $this->h_sample->createSampleProgram();
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
-		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+		$fnum        = $this->h_sample->createSampleFile($campaign_id, $user_id);
 		$attachments = $this->m_application->getUserAttachmentsByFnum($fnum);
 		$this->assertEmpty($attachments);
 
-		$first_attachment_id = $this->h_sample->createSampleAttachment();
+		$first_attachment_id  = $this->h_sample->createSampleAttachment();
 		$second_attachment_id = $this->h_sample->createSampleAttachment();
 		$this->h_sample->createSampleUpload($fnum, $campaign_id, $user_id, $first_attachment_id);
 		$this->h_sample->createSampleUpload($fnum, $campaign_id, $user_id, $second_attachment_id);
@@ -86,63 +89,68 @@ class EmundusModelApplicationTest extends TestCase
 		$this->assertObjectHasAttribute('profiles', $current_attachment);
 
 		// if i use search parameter, only pertinent attachments should be returned
-		$search = $attachments[0]->value;
+		$search      = $attachments[0]->value;
 		$attachments = $this->m_application->getUserAttachmentsByFnum($fnum, $search);
 		$this->assertNotEmpty($attachments);
 		$this->assertSame($attachments[0]->value, $search);
 		$this->assertSame(count($attachments), 1);
 	}
 
-	public function testuploadAttachment() {
+	public function testuploadAttachment()
+	{
 		$upload = $this->m_application->uploadAttachment([]);
 		$this->assertSame($upload, false);
 
-		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-		$program = $this->h_sample->createSampleProgram();
-		$campaign_id = $this->h_sample->createSampleCampaign($program);
-		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+		$user_id       = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$program       = $this->h_sample->createSampleProgram();
+		$campaign_id   = $this->h_sample->createSampleCampaign($program);
+		$fnum          = $this->h_sample->createSampleFile($campaign_id, $user_id);
 		$attachment_id = $this->h_sample->createSampleAttachment();
 
-		$data = [];
-		$data['key'] = ['fnum', 'user_id', 'campaign_id', 'attachment_id', 'filename', 'local_filename', 'timedate', 'can_be_deleted', 'can_be_viewed'];
+		$data          = [];
+		$data['key']   = ['fnum', 'user_id', 'campaign_id', 'attachment_id', 'filename', 'local_filename', 'timedate', 'can_be_deleted', 'can_be_viewed'];
 		$data['value'] = [$fnum, $user_id, $campaign_id, $attachment_id, 'test.pdf', 'test.pdf', date('Y-m-d H:i:s'), 1, 1];
 
 		$upload = $this->m_application->uploadAttachment($data);
 		$this->assertGreaterThan(0, $upload);
 	}
 
-	public function testgetTabs() {
+	public function testgetTabs()
+	{
 		$tabs = $this->m_application->getTabs(0);
 		$this->assertSame([], $tabs);
 	}
 
-	public function testdeleteTab() {
+	public function testdeleteTab()
+	{
 		$deleted = $this->m_application->deleteTab(0, 0);
 		$this->assertSame(false, $deleted);
 	}
 
-	public function testmoveToTab() {
+	public function testmoveToTab()
+	{
 		$moved = $this->m_application->moveToTab(0, 0);
 		$this->assertSame(false, $moved);
 	}
 
-	public function testupdateTabs() {
+	public function testupdateTabs()
+	{
 		$updated = $this->m_application->updateTabs([], 0);
 		$this->assertSame(false, $updated, 'No tabs to update');
 
 		$updated = $this->m_application->updateTabs([], 95);
 		$this->assertSame(false, $updated, 'No tabs to update');
 
-		$tab = new stdClass();
-		$tab->id = 999;
-		$tab->name = 'Test';
+		$tab           = new stdClass();
+		$tab->id       = 999;
+		$tab->name     = 'Test';
 		$tab->ordering = 1;
 
 		$updated = $this->m_application->updateTabs([['id' => 1, 'name' => 'Test', 'ordering' => 1]], 0);
 		$this->assertSame(false, $updated, 'Missing user id');
 
 		$updated = $this->m_application->updateTabs([['id' => 1, 'name' => 'Test', 'ordering' => 1]], 95);
-		$this->assertSame(false, $updated, );
+		$this->assertSame(false, $updated,);
 
 		$tab->id = $this->m_application->createTab('Test', 95);
 		$this->assertNotEmpty($tab->id);
@@ -159,17 +167,18 @@ class EmundusModelApplicationTest extends TestCase
 	 * @covers EmundusModelApplication::isTabOwnedByUser
 	 * @return void
 	 */
-	public function testisTabOwnedByUser() {
+	public function testisTabOwnedByUser()
+	{
 		$owned = $this->m_application->isTabOwnedByUser(0, 95);
 		$this->assertSame(false, $owned, 'An invalid tab id should return false');
 
 		$owned = $this->m_application->isTabOwnedByUser(1);
 		$this->assertSame(false, $owned, 'An invalid user id should return false');
 
-		$tab = new stdClass();
-		$tab->name = 'Unit Test ' . time();
+		$tab           = new stdClass();
+		$tab->name     = 'Unit Test ' . time();
 		$tab->ordering = 9999;
-		$tab->id = $this->m_application->createTab('Test', 95);
+		$tab->id       = $this->m_application->createTab('Test', 95);
 		$this->assertNotEmpty($tab->id);
 
 		$owned = $this->m_application->isTabOwnedByUser($tab->id, 95);
@@ -186,20 +195,21 @@ class EmundusModelApplicationTest extends TestCase
 	 * @covers EmundusModelApplication::applicantCustomAction
 	 * @return void
 	 */
-	public function testapplicantCustomAction() {
+	public function testapplicantCustomAction()
+	{
 		$done = $this->m_application->applicantCustomAction(0, '');
 		$this->assertSame($done, false, 'applicantCustomAction should return false if action and fnum are empty');
 
-		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-		$program = $this->h_sample->createSampleProgram();
+		$user_id     = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$program     = $this->h_sample->createSampleProgram();
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
-		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+		$fnum        = $this->h_sample->createSampleFile($campaign_id, $user_id);
 
 		$done = $this->m_application->applicantCustomAction(0, $fnum);
 		$this->assertSame($done, false, 'applicantCustomAction should return false if action is empty');
 
 		// get module params
-		$db = JFactory::getDbo();
+		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 		$query->select('id, params')
 			->from('#__modules')
@@ -213,7 +223,7 @@ class EmundusModelApplicationTest extends TestCase
 		$params['mod_em_application_custom_actions'] = [
 			'mod_em_application_custom_action1' => [
 				'mod_em_application_custom_action_new_status' => 1,
-				'mod_em_application_custom_action_status' => [0]
+				'mod_em_application_custom_action_status'     => [0]
 			]
 		];
 
@@ -236,11 +246,12 @@ class EmundusModelApplicationTest extends TestCase
 		$this->assertSame($done, false, 'Action should no longer work because file status has changed');
 	}
 
-	public function testgetApplicationMenu() {
-		$username = 'test-application-coordinator-' . rand(0, 1000) . '@emundus.fr';
-		$coordinator = $this->h_sample->createSampleUser(9, $username, 'test1234',  [2,7]);
-		$username = 'test-application-applicant-' . rand(0, 1000) . '@emundus.fr';
-		$applicant = $this->h_sample->createSampleUser(9, $username);
+	public function testgetApplicationMenu()
+	{
+		$username    = 'test-application-coordinator-' . rand(0, 1000) . '@emundus.fr';
+		$coordinator = $this->h_sample->createSampleUser(9, $username, 'test1234', [2, 7]);
+		$username    = 'test-application-applicant-' . rand(0, 1000) . '@emundus.fr';
+		$applicant   = $this->h_sample->createSampleUser(9, $username);
 
 		$menus = $this->m_application->getApplicationMenu($coordinator);
 		$this->assertNotEmpty($menus, 'A coordinator should have access to the application menu');

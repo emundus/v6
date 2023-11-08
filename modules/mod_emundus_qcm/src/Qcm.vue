@@ -18,11 +18,14 @@
           </div>
         </div>
         <div v-if="quizTesting && !testPassed">
-          <question :question="testing_question" :updateProposal="updateProposal" :tierstemps="tierstemps" :pending="pending" :formid="formid" @nextQuestion="testPassed = true;"></question>
+          <question :question="testing_question" :updateProposal="updateProposal" :tierstemps="tierstemps"
+                    :pending="pending" :formid="formid" @nextQuestion="testPassed = true;"></question>
         </div>
         <div v-if="quizStarting">
-          <p style="text-align: center;">{{parseInt(step)+1}} / {{count}}</p>
-          <question :question="applicant_questions[step]" :updateProposal="updateProposal" :pending="pending" :formid="formid" :tierstemps="tierstemps" @nextQuestion="nextQuestion" @resetPending="pending = 0" @saveAnswer="saveAnswer"></question>
+          <p style="text-align: center;">{{ parseInt(step) + 1 }} / {{ count }}</p>
+          <question :question="applicant_questions[step]" :updateProposal="updateProposal" :pending="pending"
+                    :formid="formid" :tierstemps="tierstemps" @nextQuestion="nextQuestion" @resetPending="pending = 0"
+                    @saveAnswer="saveAnswer"></question>
         </div>
       </div>
       <div v-else>
@@ -81,15 +84,15 @@ export default {
     };
   },
   methods: {
-    startQcm(){
-      if(!this.quizTesting){
+    startQcm() {
+      if (!this.quizTesting) {
         this.quizTesting = true;
       } else {
         this.quizTesting = false;
         this.quizStarting = true;
       }
     },
-    getQuestions(){
+    getQuestions() {
       axios({
         method: "get",
         url: "index.php?option=com_emundus&controller=qcm&task=getQuestions",
@@ -102,24 +105,24 @@ export default {
       }).then(response => {
         this.applicant_questions = response.data;
         this.count = Object.keys(this.applicant_questions).length;
-        if(this.step >= this.count){
+        if (this.step >= this.count) {
           this.finishedQcm = true;
         }
         this.loading = false;
       });
     },
-    nextQuestion(){
+    nextQuestion() {
       this.step++;
-      if(this.step < Object.keys(this.applicant_questions).length){
+      if (this.step < Object.keys(this.applicant_questions).length) {
         this.updateProposal++;
       } else {
         this.finishedQcm = true;
         setTimeout(() => {
           window.location.reload();
-        },3000);
+        }, 3000);
       }
     },
-    saveAnswer(answer){
+    saveAnswer(answer) {
       axios({
         method: "post",
         url:
@@ -135,7 +138,7 @@ export default {
         })
       });
     },
-    getIntro(){
+    getIntro() {
       this.loading = true;
       axios({
         method: "post",
@@ -148,8 +151,8 @@ export default {
           module: this.module,
         })
       }).then((result) => {
-          this.intro = result.data.scalar;
-          this.loading = false;
+        this.intro = result.data.scalar;
+        this.loading = false;
       });
     }
   },
@@ -171,7 +174,8 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
-.em-print-button{
+
+.em-print-button {
   width: max-content;
   margin: 0 auto;
 }

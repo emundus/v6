@@ -1,84 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension
-	type="module"
-	version="2.5"
-	client="site"
-	method="upgrade">
-	<name>MOD_EMUNDUS_SEND_APPLICATION_XML</name>
-	<author>Hugo Moracchini</author>
-	<creationDate>October 2018</creationDate>
-	<copyright>Copyright (C) 2018 eMundus. All rights reserved.</copyright>
-	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-	<authorEmail>hugo.moracchini@emundus.fr</authorEmail>
-	<authorUrl>www.emundus.fr</authorUrl>
-	<version>3.8.13</version>
-	<description>MOD_EMUNDUS_APPLICATIONS_XML_DESCRIPTION</description>
-	<files>
-		<filename module="mod_emundus_send_application">mod_emundus_send_application.php</filename>
-		<folder>tmpl</folder>
-		<filename>helper.php</filename>
-		<filename>index.html</filename>
-		<folder>language</folder>
-	</files>
-	<languages>
-		<language tag="en-GB">en-GB.mod_emundus_send_application.ini</language>
-		<language tag="en-GB">en-GB.mod_emundus_send_application.sys.ini</language>
-		<language tag="fr-FR">fr-FR.mod_emundus_send_application.ini</language>
-		<language tag="fr-FR">fr-FR.mod_emundus_send_application.sys.ini</language>
-	</languages>
-	<help key="MOD_EMUNDUS_SEND_APPLICATION_EMUNDUS_SITE" />
-	<config>
-		<fields name="params">
-			<fieldset name="standard" label="Settings">
-				<field name="showprint" type="list" default="1" label="COM_EMUNDUS_SEND_APP_SHOW_PRINT_LABEL">
-					<option value="1">JYES</option>
-					<option value="0">JNO</option>
-				</field>
-				<field name="showsend" type="list" default="1" label="COM_EMUNDUS_SEND_APP_SHOW_SEND_LABEL" description="COM_EMUNDUS_SEND_APP_SHOW_SEND_DESC">
-					<option value="1">JYES</option>
-					<option value="0">JNO</option>
-				</field>
-				<field name="admission" type="list" default="0" description="MOD_EMUNDUSFLOW_IS_ADMISSION_DESC" label="MOD_EMUNDUSFLOW_IS_ADMISSION" >
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
-			</fieldset>
-			<fieldset name="advanced">
-				<field
-					name="layout"
-					type="modulelayout"
-					label="JFIELD_ALT_LAYOUT_LABEL"
-					description="JFIELD_ALT_MODULE_LAYOUT_DESC" />
-				<field
-					name="moduleclass_sfx"
-					type="text"
-					label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
-					description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC"
-					default="list-group" />
-				<field
-					name="cache"
-					type="list"
-					default="1"
-					label="COM_MODULES_FIELD_CACHING_LABEL"
-					description="COM_MODULES_FIELD_CACHING_DESC">
-					<option
-						value="1">JGLOBAL_USE_GLOBAL</option>
-					<option
-						value="0">COM_MODULES_FIELD_VALUE_NOCACHING</option>
-				</field>
-				<field
-					name="cache_time"
-					type="text"
-					default="900"
-					label="COM_MODULES_FIELD_CACHE_TIME_LABEL"
-					description="COM_MODULES_FIELD_CACHE_TIME_DESC" />
-				<field
-					name="cachemode"
-					type="hidden"
-					default="static">
-					<option value="static"></option>
-				</field>
-			</fieldset>
-		</fields>
-	</config>
+        type="module"
+        version="2.5"
+        client="site"
+        method="upgrade">
+    <name>MOD_EMUNDUS_SEND_APPLICATION_XML</name>
+    <author>Hugo Moracchini</author>
+    <creationDate>October 2018</creationDate>
+    <copyright>Copyright (C) 2018 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>hugo.moracchini@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>3.8.13</version>
+    <description>MOD_EMUNDUS_APPLICATIONS_XML_DESCRIPTION</description>
+    <files>
+        <filename module="mod_emundus_send_application">mod_emundus_send_application.php</filename>
+        <folder>tmpl</folder>
+        <filename>helper.php</filename>
+        <filename>index.html</filename>
+        <folder>language</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.mod_emundus_send_application.ini</language>
+        <language tag="en-GB">en-GB.mod_emundus_send_application.sys.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_send_application.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_send_application.sys.ini</language>
+    </languages>
+    <help key="MOD_EMUNDUS_SEND_APPLICATION_EMUNDUS_SITE"/>
+    <config>
+        <fields name="params">
+            <fieldset name="standard" label="Settings">
+                <field name="showprint" type="list" default="1" label="COM_EMUNDUS_SEND_APP_SHOW_PRINT_LABEL">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="showsend" type="list" default="1" label="COM_EMUNDUS_SEND_APP_SHOW_SEND_LABEL"
+                       description="COM_EMUNDUS_SEND_APP_SHOW_SEND_DESC">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="admission" type="list" default="0" description="MOD_EMUNDUSFLOW_IS_ADMISSION_DESC"
+                       label="MOD_EMUNDUSFLOW_IS_ADMISSION">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+            </fieldset>
+            <fieldset name="advanced">
+                <field
+                        name="layout"
+                        type="modulelayout"
+                        label="JFIELD_ALT_LAYOUT_LABEL"
+                        description="JFIELD_ALT_MODULE_LAYOUT_DESC"/>
+                <field
+                        name="moduleclass_sfx"
+                        type="text"
+                        label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
+                        description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC"
+                        default="list-group"/>
+                <field
+                        name="cache"
+                        type="list"
+                        default="1"
+                        label="COM_MODULES_FIELD_CACHING_LABEL"
+                        description="COM_MODULES_FIELD_CACHING_DESC">
+                    <option
+                            value="1">JGLOBAL_USE_GLOBAL
+                    </option>
+                    <option
+                            value="0">COM_MODULES_FIELD_VALUE_NOCACHING
+                    </option>
+                </field>
+                <field
+                        name="cache_time"
+                        type="text"
+                        default="900"
+                        label="COM_MODULES_FIELD_CACHE_TIME_LABEL"
+                        description="COM_MODULES_FIELD_CACHE_TIME_DESC"/>
+                <field
+                        name="cachemode"
+                        type="hidden"
+                        default="static">
+                    <option value="static"></option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
 </extension>

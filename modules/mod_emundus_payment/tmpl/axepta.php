@@ -13,13 +13,15 @@
             <fieldset class="fabrikGroup">
                 <h3>Régler les frais d'inscriptions</h3>
                 <section id="recap_payment" class="em-mt-16">
-                    <p class="em-font-weight-600"><?= JText::_('MOD_EMUNDUS_PAYMENT_RECAP_FOR') ?> <b> <?= " " . $campaign->label ?></b></p>
-                    <p class="em-mt-8"><?= JText::_('MOD_EMUNDUS_PAYMENT_PRICE') . " : " .  $price . "€" ?></p>
+                    <p class="em-font-weight-600"><?= JText::_('MOD_EMUNDUS_PAYMENT_RECAP_FOR') ?>
+                        <b> <?= " " . $campaign->label ?></b></p>
+                    <p class="em-mt-8"><?= JText::_('MOD_EMUNDUS_PAYMENT_PRICE') . " : " . $price . "€" ?></p>
                 </section>
 
                 <div class="em-w-100 em-flex-row em-flex-row-justify-end em-mt-16">
-                    <a id="submit-payer-infos" class="em-front-btn em-front-primary-btn em-w-33" href="<?php echo $payment_url ?>" target="_blank">
-                        <?= JText::_('MOD_EMUNDUS_PAYMENT_OPEN_FLYWIRE') ?>
+                    <a id="submit-payer-infos" class="em-front-btn em-front-primary-btn em-w-33"
+                       href="<?php echo $payment_url ?>" target="_blank">
+						<?= JText::_('MOD_EMUNDUS_PAYMENT_OPEN_FLYWIRE') ?>
                     </a>
                 </div>
             </fieldset>

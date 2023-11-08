@@ -2,10 +2,16 @@
   <div id="app">
     <div class="profile_widget">
       <div class="profile_widget-text">
-        <h1 v-if="language == 1">{{ translate('COM_EMUNDUS_DASHBOARD_AREA')}} <span class="em-lowercase" v-if="data.label !== ''">{{ data.label }}</span><span v-else>{{ translate('COM_EMUNDUS_DASHBOARD_EMPTY_LABEL')}}</span></h1>
-        <h1 v-else><span v-if="data.label !== ''">{{ data.label }}</span><span v-else>{{ translate('COM_EMUNDUS_DASHBOARD_EMPTY_LABEL')}}</span> <span class="em-lowercase">{{ translate('COM_EMUNDUS_DASHBOARD_AREA')}}</span></h1>
-        <p v-if="displayName == 1">{{ translate('COM_EMUNDUS_DASHBOARD_HELLO') }} {{name}} {{ translate('COM_EMUNDUS_DASHBOARD_WELCOME') }}</p>
-        <p v-if="displayDescription == 1">{{data.description}}</p>
+        <h1 v-if="language == 1">{{ translate('COM_EMUNDUS_DASHBOARD_AREA') }} <span class="em-lowercase"
+                                                                                     v-if="data.label !== ''">{{
+            data.label
+          }}</span><span v-else>{{ translate('COM_EMUNDUS_DASHBOARD_EMPTY_LABEL') }}</span></h1>
+        <h1 v-else><span v-if="data.label !== ''">{{ data.label }}</span><span
+            v-else>{{ translate('COM_EMUNDUS_DASHBOARD_EMPTY_LABEL') }}</span> <span
+            class="em-lowercase">{{ translate('COM_EMUNDUS_DASHBOARD_AREA') }}</span></h1>
+        <p v-if="displayName == 1">{{ translate('COM_EMUNDUS_DASHBOARD_HELLO') }} {{ name }}
+          {{ translate('COM_EMUNDUS_DASHBOARD_WELCOME') }}</p>
+        <p v-if="displayDescription == 1">{{ data.description }}</p>
       </div>
       <div class="profile_widget-container"></div>
     </div>
@@ -18,15 +24,18 @@
         chosen-class="plugin-chosen"
         ghost-class="plugin-ghost">
       <div v-if="this.programmeFilter == 1" class="program-filter">
-        <label>{{translations.filterByProgram}}</label>
+        <label>{{ translations.filterByProgram }}</label>
         <select v-model="selectedProgramme">
-          <option :value="null" selected>{{translations.all}}</option>
-          <option v-for="programme in programmes" v-bind:key="programme.id" :value="programme.code">{{programme.label}}</option>
+          <option :value="null" selected>{{ translations.all }}</option>
+          <option v-for="programme in programmes" v-bind:key="programme.id" :value="programme.code">
+            {{ programme.label }}
+          </option>
         </select>
       </div>
       <template v-if="widgets.length > 0">
         <div v-for="(widget,index) in widgets" :id="widget.name + '_' + index"
-        :class="enableDrag ? 'jello-horizontal handle' : widget.name + '-' + widget.class" :key="widget.name + '_' + index">
+             :class="enableDrag ? 'jello-horizontal handle' : widget.name + '-' + widget.class"
+             :key="widget.name + '_' + index">
           <Custom v-if="widget.name === 'custom'" :widget="widget" @forceUpdate="$forceUpdate"/>
         </div>
       </template>
@@ -58,7 +67,7 @@ export default {
       selectedProgramme: null,
       widgets: [],
       colors: "",
-      translations:{
+      translations: {
         all: "",
         filterByProgram: "",
       },
@@ -74,7 +83,7 @@ export default {
     this.getTranslations();
     this.getWidgets();
     this.getProfileDetails();
-    if(this.programmeFilter == 1){
+    if (this.programmeFilter == 1) {
       this.getProgrammes();
     }
   },
@@ -86,7 +95,7 @@ export default {
         profilArea: this.translate("COM_EMUNDUS_DASHBOARD_OK "),
       };
     },
-    getWidgets(){
+    getWidgets() {
       axios({
         method: "get",
         url: "index.php?option=com_emundus&controller=dashboard&task=getwidgets",
@@ -95,7 +104,7 @@ export default {
       });
     },
 
-    getProgrammes(){
+    getProgrammes() {
       axios({
         method: "get",
         url: "index.php?option=com_emundus&controller=program&task=getallprogram",
@@ -104,17 +113,17 @@ export default {
       });
     },
 
-    getProfileDetails(){
-      let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=getcurrentprofile';
+    getProfileDetails() {
+      let url = window.location.origin + '/index.php?option=com_emundus&controller=users&task=getcurrentprofile';
       fetch(url, {
         method: 'GET',
       }).then((response) => {
 
-         if (response.ok) {
+        if (response.ok) {
           return response.json();
         }
       }).then((result) => {
-        if(result.status) {
+        if (result.status) {
           this.data = {
             label: result.data.label,
             description: result.data.description,
@@ -128,34 +137,37 @@ export default {
 
 <style scoped>
 
-#app > div{
+#app > div {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
 }
 
-#app > div > div{
+#app > div > div {
   width: 100%;
   margin: 0 0 30px 0;
 }
 
-.tchooz-widget{
+.tchooz-widget {
   height: 400px;
 }
 
-.cta-block{
+.cta-block {
   position: absolute;
   right: 20px;
   top: 30px;
   color: #b0b0bf;
 }
-.pointer{
+
+.pointer {
   cursor: pointer;
 }
+
 .jello-horizontal {
   -webkit-animation: vibrate-1 1s infinite;
   animation: vibrate-1 1s infinite;
 }
+
 /* ----------------------------------------------
  * Generated by Animista on 2020-12-24 16:21:1
  * Licensed under FreeBSD License.
@@ -194,6 +206,7 @@ export default {
     transform: translate(0);
   }
 }
+
 @keyframes vibrate-1 {
   0% {
     -webkit-transform: translate(0);
@@ -223,15 +236,16 @@ export default {
 
 /**** END ****/
 
-.handle{
+.handle {
   cursor: grab;
 }
 
-.program-filter{
+.program-filter {
   text-align: center;
   margin-bottom: 10px;
 }
-.program-filter label{
+
+.program-filter label {
   margin-bottom: 0 !important;
   margin-right: 10px;
 }

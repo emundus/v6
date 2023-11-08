@@ -1,11 +1,11 @@
 <template>
-	<div class="com_emundus_vue em-flex-col-center">
-		<Attachments
-			v-if="component === 'attachments'"
-			:fnum="data.fnum"
-			:user="data.user"
-			:defaultAttachments="data.attachments ? data.attachments : null"
-		></Attachments>
+  <div class="com_emundus_vue em-flex-col-center">
+    <Attachments
+        v-if="component === 'attachments'"
+        :fnum="data.fnum"
+        :user="data.user"
+        :defaultAttachments="data.attachments ? data.attachments : null"
+    ></Attachments>
 
     <Files
         v-else-if="component === 'files'"
@@ -25,7 +25,7 @@
     <transition v-else name="slide-right">
       <component v-bind:is="$props.component"/>
     </transition>
-	</div>
+  </div>
 </template>
 
 <script>
@@ -48,29 +48,29 @@ import settingsService from "./services/settings.js";
 import ApplicationSingle from "@/components/Files/ApplicationSingle.vue";
 
 export default {
-	props: {
+  props: {
     datas: NamedNodeMap,
     currentLanguage: String,
     shortLang: String,
     manyLanguages: String,
     coordinatorAccess: String,
     sysadminAccess: String,
-		defaultLang: {
-			type: String,
-			default: 'fr'
-		},
-		component: {
-			type: String,
-			required: true
-		},
-		data: {
-			type: Object,
+    defaultLang: {
+      type: String,
+      default: 'fr'
+    },
+    component: {
+      type: String,
+      required: true
+    },
+    data: {
+      type: Object,
       default: () => ({})
-		},
-	},
-	components: {
+    },
+  },
+  components: {
     ApplicationSingle,
-		Attachments,
+    Attachments,
     addcampaign,
     addformnextcampaign,
     addemail,
@@ -79,8 +79,8 @@ export default {
     messagescoordinator,
     messages,
     Files,
-		list_v2
-	},
+    list_v2
+  },
 
   created() {
     if (this.$props.component === 'attachments') {
@@ -92,17 +92,17 @@ export default {
     }
 
     if (this.data.attachments) {
-		  this.data.attachments = JSON.parse(atob(this.data.attachments));
-	  }
+      this.data.attachments = JSON.parse(atob(this.data.attachments));
+    }
 
     if (typeof this.$props.datas != 'undefined') {
       this.$store.commit("global/initDatas", this.$props.datas);
     }
     if (typeof this.$props.currentLanguage != 'undefined') {
       this.$store.commit('global/initCurrentLanguage', this.$props.currentLanguage);
-	    moment.locale(this.$store.state.global.currentLanguage);
+      moment.locale(this.$store.state.global.currentLanguage);
     } else {
-	    this.$store.commit('global/initCurrentLanguage', 'fr');
+      this.$store.commit('global/initCurrentLanguage', 'fr');
       moment.locale('fr');
     }
     if (typeof this.$props.shortLang != 'undefined') {
@@ -111,9 +111,9 @@ export default {
     if (typeof this.$props.manyLanguages != 'undefined') {
       this.$store.commit("global/initManyLanguages", this.$props.manyLanguages);
     }
-	  if (typeof this.$props.defaultLang != 'undefined') {
-		  this.$store.commit("global/initDefaultLang", this.$props.defaultLang);
-	  }
+    if (typeof this.$props.defaultLang != 'undefined') {
+      this.$store.commit("global/initDefaultLang", this.$props.defaultLang);
+    }
     if (typeof this.$props.coordinatorAccess != 'undefined') {
       this.$store.commit("global/initCoordinatorAccess", this.$props.coordinatorAccess);
     }
@@ -129,10 +129,10 @@ export default {
   },
 
   mounted() {
-		if (this.data.base) {
-			this.$store.dispatch('attachment/setAttachmentPath', this.data.base + '/images/emundus/files/');
-		}
-	},
+    if (this.data.base) {
+      this.$store.dispatch('attachment/setAttachmentPath', this.data.base + '/images/emundus/files/');
+    }
+  },
 };
 </script>
 
@@ -141,6 +141,7 @@ export default {
 
 .com_emundus_vue {
   margin-bottom: 8px;
+
   input {
     display: block;
     margin-bottom: 10px;
@@ -150,24 +151,30 @@ export default {
     -webkit-transition: border-color 200ms linear;
     transition: border-color 200ms linear;
     box-sizing: border-box !important;
+
     &:hover {
       border-color: #cecece;
     }
+
     &:focus {
       border-color: #16AFE1;
       -webkit-box-shadow: 0 0 6px #e0f3f8;
       -moz-box-shadow: 0 0 6px #e0f3f8;
       box-shadow: 0 0 6px #e0f3f8;
     }
+
     &::-webkit-input-placeholder {
       color: #A4A4A4;
     }
+
     &:-ms-input-placeholder {
       color: #A4A4A4;
     }
+
     &::-ms-input-placeholder {
       color: #A4A4A4;
     }
+
     &::placeholder {
       color: #A4A4A4;
     }

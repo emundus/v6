@@ -8,15 +8,15 @@ Vue.config.devtools = true;
 Vue.use(VueJsModal);
 
 if (document.getElementById('em-notifications')) {
-  new Vue({
-    el: '#em-notifications',
-    render(h) {
-      return h(Notifications, {
-        props: {
-          user: Number(this.$el.attributes.user.value),
-          fnum: this.$el.attributes.fnum.value,
+    new Vue({
+        el: '#em-notifications',
+        render(h) {
+            return h(Notifications, {
+                props: {
+                    user: Number(this.$el.attributes.user.value),
+                    fnum: this.$el.attributes.fnum.value,
+                }
+            });
         }
-      });
-    }
-  });
+    });
 }

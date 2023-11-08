@@ -28,7 +28,7 @@ class ModWhosonlineHelper
 		$db = JFactory::getDbo();
 
 		// Calculate number of guests and users
-		$result	     = array();
+		$result      = array();
 		$user_array  = 0;
 		$guest_array = 0;
 
@@ -40,29 +40,23 @@ class ModWhosonlineHelper
 			->where('client_id ' . $whereCondition);
 		$db->setQuery($query);
 
-		try
-		{
+		try {
 			$sessions = (array) $db->loadObjectList();
 		}
-		catch (RuntimeException $e)
-		{
+		catch (RuntimeException $e) {
 			$sessions = array();
 		}
 
-		if (count($sessions))
-		{
-			foreach ($sessions as $session)
-			{
+		if (count($sessions)) {
+			foreach ($sessions as $session) {
 				// If guest increase guest count by 1
-				if ($session->guest == 1)
-				{
-					$guest_array ++;
+				if ($session->guest == 1) {
+					$guest_array++;
 				}
 
 				// If member increase member count by 1
-				if ($session->guest == 0)
-				{
-					$user_array ++;
+				if ($session->guest == 0) {
+					$user_array++;
 				}
 			}
 		}
@@ -96,12 +90,10 @@ class ModWhosonlineHelper
 
 		$user = JFactory::getUser();
 
-		if (!$user->authorise('core.admin') && $params->get('filter_groups', 0) == 1)
-		{
+		if (!$user->authorise('core.admin') && $params->get('filter_groups', 0) == 1) {
 			$groups = $user->getAuthorisedGroups();
 
-			if (empty($groups))
-			{
+			if (empty($groups)) {
 				return array();
 			}
 
@@ -113,12 +105,10 @@ class ModWhosonlineHelper
 
 		$db->setQuery($query);
 
-		try
-		{
+		try {
 			return (array) $db->loadObjectList();
 		}
-		catch (RuntimeException $e)
-		{
+		catch (RuntimeException $e) {
 			return array();
 		}
 	}

@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import FormBuilderDocuments from '../../../../src/components/FormBuilder/FormBuilderDocuments';
 import translate from '../../../mocks/mixins/translate';
 import draggable from 'vuedraggable';
@@ -56,11 +56,11 @@ describe('FormBuilderDocuments.vue', () => {
         store
     });
 
-    it ('FormBuilderDocuments should exist', () => {
+    it('FormBuilderDocuments should exist', () => {
         expect(wrapper.find('#form-builder-documents').exists()).toBeTruthy();
     });
 
-    it ('add documents button should exist', () => {
+    it('add documents button should exist', () => {
         expect(wrapper.find('#add-document').exists()).toBeTruthy();
     });
 
@@ -104,10 +104,10 @@ describe('FormBuilderDocuments with documents', () => {
         localVue,
         store
     });
-    
+
     wrapper.vm.$data.documents = mockDocuments;
 
-    it ('A list of documents labels should be displayed', () => {
+    it('A list of documents labels should be displayed', () => {
         expect(wrapper.find('.document-label').exists()).toBeTruthy();
         expect(wrapper.findAll('.document-label').length).toEqual(2);
         expect(wrapper.find('.document-label').text()).toEqual(mockDocuments[0].label);

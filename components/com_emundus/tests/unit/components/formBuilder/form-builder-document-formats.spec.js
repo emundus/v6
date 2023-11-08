@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import FormBuilderDocumentFormats from '../../../../src/components/FormBuilder/FormBuilderDocumentFormats';
 import translate from '../../../mocks/mixins/translate';
 import draggable from 'vuedraggable';
@@ -15,7 +15,7 @@ describe('FormBuilderDocumentFormats.vue', () => {
         localVue
     });
 
-    it ('FormBuilderDocumentFormats should exist', () => {
+    it('FormBuilderDocumentFormats should exist', () => {
         expect(wrapper.find('#form-builder-document-formats').exists()).toBeTruthy();
     });
 });

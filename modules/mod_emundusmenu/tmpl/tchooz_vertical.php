@@ -1,9 +1,9 @@
 <?php
 /**
- * @package		Joomla.Site
- * @subpackage	mod_menu
- * @copyright	Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
- * @license		GNU General Public License version 2 or later; see LICENSE.txt
+ * @package        Joomla.Site
+ * @subpackage     mod_menu
+ * @copyright      Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
+ * @license        GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 // No direct access.
@@ -12,13 +12,14 @@ defined('_JEXEC') or die;
 ?>
 
 <style type='text/css'>
-    hr{
+    hr {
         z-index: 999;
     }
-    .edge .g-active{
+
+    .edge .g-active {
         position: absolute !important;
         left: -100% !important;
-        z-index: 1 !important ;
+        z-index: 1 !important;
         margin-left: -50px !important;
         top: -9px !important;
         /* right: 100%; */
@@ -26,19 +27,19 @@ defined('_JEXEC') or die;
     }
 
     /*** Navbar ***/
-    #header-a{
+    #header-a {
         position: relative;
         left: 5%;
         opacity: 0;
     }
 
     @media all and (max-width: 479px) {
-        #header-a{
+        #header-a {
             opacity: 1;
         }
     }
 
-    #header-b{
+    #header-b {
         width: auto;
         position: fixed;
         background: var(--neutral-0);
@@ -48,35 +49,41 @@ defined('_JEXEC') or die;
         height: 100%;
         align-items: baseline;
         overflow-y: auto;
-        -ms-overflow-style: none;  /* IE and Edge */
-        scrollbar-width: none;  /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
     }
+
     #header-b::-webkit-scrollbar {
         display: none;
     }
-    #header-b #em_user_menu li.parent-active:hover a{
+
+    #header-b #em_user_menu li.parent-active:hover a {
         color: var(--neutral-900);
     }
 
-    #header-b #em_user_menu li:hover a, #header-b #em_user_menu li:active a, #header-b #em_user_menu li:focus a{
+    #header-b #em_user_menu li:hover a, #header-b #em_user_menu li:active a, #header-b #em_user_menu li:focus a {
         color: var(--neutral-900);
     }
-    .g-sublevel .g-menu-item-title span:hover,.g-sublevel .g-menu-item-title span:focus,.g-sublevel .g-menu-item-title span:active {
+
+    .g-sublevel .g-menu-item-title span:hover, .g-sublevel .g-menu-item-title span:focus, .g-sublevel .g-menu-item-title span:active {
         color: var(--neutral-900);
     }
-    .g-sublevel-list{
+
+    .g-sublevel-list {
         margin-top: 10px;
     }
-    .g-sublevel-list::before{
+
+    .g-sublevel-list::before {
         position: absolute;
         height: 50%;
         border: solid 3px #16AFE1;
         border-radius: 25px;
     }
+
     /*** END ***/
 
     /*** Sublevel parent ***/
-    ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item::before{
+    ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item::before {
         background: var(--neutral-900);
         width: 3px;
         height: 100%;
@@ -85,21 +92,25 @@ defined('_JEXEC') or die;
         left: -20px;
         display: flex;
     }
-    .active .item .image-title{
+
+    .active .item .image-title {
         color: var(--em-profile-color);
     }
-    .g-menu-parent-indicator{
+
+    .g-menu-parent-indicator {
         margin-left: 20px;
         align-self: center;
     }
-    .parent-indicator-close::after{
+
+    .parent-indicator-close::after {
         opacity: 1 !important;
         content: "\f054" !important;
     }
+
     /*** END ***/
 
     /*** List style ***/
-    #g-navigation .g-main-nav .tchooz-vertical-toplevel > li{
+    #g-navigation .g-main-nav .tchooz-vertical-toplevel > li {
         margin-inline: 10px;
         font-family: var(--em-default-font);
     }
@@ -120,11 +131,11 @@ defined('_JEXEC') or die;
         height: fit-content;
     }
 
-    #g-navigation .g-main-nav .g-sublevel > li:not(:last-child) > .g-menu-item-container{
+    #g-navigation .g-main-nav .g-sublevel > li:not(:last-child) > .g-menu-item-container {
         border-bottom: unset !important;
     }
 
-    .tchooz-vertical-item a{
+    .tchooz-vertical-item a {
         display: flex;
         align-items: center;
         white-space: nowrap;
@@ -132,6 +143,7 @@ defined('_JEXEC') or die;
         z-index: 2;
         transition: all 0.3s ease-in-out;
     }
+
     .tchooz-vertical-item a img,
     .tchooz-vertical-item a span[class*="material-icons"] {
         width: 30px;
@@ -140,7 +152,7 @@ defined('_JEXEC') or die;
         color: var(--em-profile-color) !important;
     }
 
-    .image-title{
+    .image-title {
         margin-left: 30px;
         transition: opacity 0.2s ease-in-out;
     }
@@ -155,23 +167,27 @@ defined('_JEXEC') or die;
     /*** END ***/
 
     /*** Back button ***/
-    .g-main-nav .g-standard .g-go-back{
+    .g-main-nav .g-standard .g-go-back {
         display: block;
         border-bottom: solid 1px #e0e0e5;
         margin-bottom: 15px !important;
     }
-    .g-go-back a span{
+
+    .g-go-back a span {
         display: block;
         margin-left: 10px;
     }
-    .burger-button{
+
+    .burger-button {
         margin: 0 10px 10px 12px;
         background: transparent;
-        padding: 0;width: 30px;
+        padding: 0;
+        width: 30px;
         order: 0;
     }
+
     /*** END ***/
-    .message-tooltip{
+    .message-tooltip {
         width: auto;
         height: auto;
         position: fixed;
@@ -183,6 +199,7 @@ defined('_JEXEC') or die;
         margin-top: -38px;
         z-index: 1;
     }
+
     .message-tooltip-block p {
         font-weight: 600;
         border-bottom: 1px solid #e0e0e5;
@@ -190,14 +207,15 @@ defined('_JEXEC') or die;
         color: var(--neutral-900);
     }
 
-    .message-tooltip-block{
+    .message-tooltip-block {
         margin-left: 60px;
         box-shadow: 0 5px 10px rgb(0 0 0 / 10%);
         padding: 15px;
         border-radius: 5px;
         background: var(--neutral-0);
     }
-    .message-tooltip-block::after{
+
+    .message-tooltip-block::after {
         content: "";
         position: absolute;
         height: 0;
@@ -211,269 +229,272 @@ defined('_JEXEC') or die;
         border-right: 10px solid var(--neutral-0);
     }
 
-    .g-main-nav .g-standard .g-sublevel .g-menu-item a.g-menu-item-container:hover   {
+    .g-main-nav .g-standard .g-sublevel .g-menu-item a.g-menu-item-container:hover {
         background: #EBECF0 !important;
         border-radius: var(--em-default-br) !important;
     }
 
-    .g-sublevel{
+    .g-sublevel {
         margin-top: 10px !important;
     }
+
     .g-sublevel .tchooz-vertical-item::before {
         height: 110%;
         position: absolute;
         display: block;
-       border: solid 2px var(--neutral-0);
+        border: solid 2px var(--neutral-0);
         border-radius: 5px;
         content: "";
     }
 
-    #g-container-main,#g-footer,#footer-rgpd {
+    #g-container-main, #g-footer, #footer-rgpd {
         padding-left: 76px;
     }
 </style>
-<nav class="g-main-nav <?php echo $class_sfx;?>" data-g-hover-expand="true"
-    <?php
-    $tag = '';
-    if ($params->get('tag_id')!=NULL) {
-        $tag = $params->get('tag_id').'';
-        echo ' id="'.$tag.'"';
-    }
-    ?>>
+<nav class="g-main-nav <?php echo $class_sfx; ?>" data-g-hover-expand="true"
+	<?php
+	$tag = '';
+	if ($params->get('tag_id') != null) {
+		$tag = $params->get('tag_id') . '';
+		echo ' id="' . $tag . '"';
+	}
+	?>>
     <div style="opacity: 0" class="grey-navbar-icons"></div>
     <ul class="g-toplevel tchooz-vertical-toplevel">
 
         <li class="g-menu-item g-standard tchooz-vertical-item">
             <a class="item" onclick="enableTitles()">
                 <img src="http://localhost/images/emundus/menus/menu.png" style="width: 30px">
-                <span class="image-title" style="display: block; opacity: 1;"><?php echo JText::_('MOD_EMUNDUSMENU_ITEM_MENU') ?></span>
+                <span class="image-title"
+                      style="display: block; opacity: 1;"><?php echo JText::_('MOD_EMUNDUSMENU_ITEM_MENU') ?></span>
             </a>
         </li>
 
-        <?php
+		<?php
 
-        $target_dir = "images/custom/";
-        $filename = 'favicon';
-        $favicon = glob("{$target_dir}{$filename}.*");
+		$target_dir = "images/custom/";
+		$filename   = 'favicon';
+		$favicon    = glob("{$target_dir}{$filename}.*");
 
-        if(file_exists(JPATH_SITE . '/' . $favicon[0])){
-            $favicon = JURI::base().'/' . $favicon[0];
-        } else {
-            $favicon = JURI::base().'/images/emundus/tchooz_favicon.png';
-        }
-        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo"><a class="item" title="'.JText::_('MOD_EMUNDUSMENU_HOME').'" href="'.$favicon_link.'"><img src="'.$favicon.'" alt="'.JText::_('MOD_EMUNDUSMENU_HOME').'"></a>
+		if (file_exists(JPATH_SITE . '/' . $favicon[0])) {
+			$favicon = JURI::base() . '/' . $favicon[0];
+		}
+		else {
+			$favicon = JURI::base() . '/images/emundus/tchooz_favicon.png';
+		}
+		echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo"><a class="item" title="' . JText::_('MOD_EMUNDUSMENU_HOME') . '" href="' . $favicon_link . '"><img src="' . $favicon . '" alt="' . JText::_('MOD_EMUNDUSMENU_HOME') . '"></a>
         </li>';
 
-        if ($display_tchooz) :
-            foreach ($tchooz_list as $i => &$item) :
-                $item->anchor_css="item";
-                $class = 'item-'.$item->id.' g-standard';
-                if ($item->id == $active_id) {
-                    $class .= ' current';
-                }
+		if ($display_tchooz) :
+			foreach ($tchooz_list as $i => &$item) :
+				$item->anchor_css = "item";
+				$class            = 'item-' . $item->id . ' g-standard';
+				if ($item->id == $active_id) {
+					$class .= ' current';
+				}
 
-                if (in_array($item->id, $path)) {
-                    $class .= ' active';
-                }
+				if (in_array($item->id, $path)) {
+					$class .= ' active';
+				}
                 elseif ($item->type == 'alias') {
-                    $aliasToId = $item->params->get('aliasoptions');
-                    if (count($path) > 0 && $aliasToId == $path[count($path)-1]) {
-                        $class .= ' active';
-                    }
+					$aliasToId = $item->params->get('aliasoptions');
+					if (count($path) > 0 && $aliasToId == $path[count($path) - 1]) {
+						$class .= ' active';
+					}
                     elseif (in_array($aliasToId, $path)) {
-                        $class .= ' alias-parent-active';
-                    }
-                }
+						$class .= ' alias-parent-active';
+					}
+				}
 
-                if ($item->parent) {
-                    $class .= ' g-parent';
-                }
+				if ($item->parent) {
+					$class .= ' g-parent';
+				}
 
-                if (!empty($class)) {
-                    $class = ' class="tchooz-vertical-item g-menu-item g-menu-'.trim($class) .'"';
-                }
+				if (!empty($class)) {
+					$class = ' class="tchooz-vertical-item g-menu-item g-menu-' . trim($class) . '"';
+				}
 
-                echo '<li' . $class . 'onmouseenter="enableTooltip(' . $item->id . ')" onmouseleave="disableTooltip(' . $item->id . ')">';
+				echo '<li' . $class . 'onmouseenter="enableTooltip(' . $item->id . ')" onmouseleave="disableTooltip(' . $item->id . ')">';
 
-                // Render the menu item.
-                switch ($item->type) :
-                    case 'separator':
-                    case 'url':
-                    case 'component':
-                        require JModuleHelper::getLayoutPath('mod_emundusmenu', 'tchooz_'.$item->type);
-                        break;
+				// Render the menu item.
+				switch ($item->type) :
+					case 'separator':
+					case 'url':
+					case 'component':
+						require JModuleHelper::getLayoutPath('mod_emundusmenu', 'tchooz_' . $item->type);
+						break;
 
-                    default:
-                        require JModuleHelper::getLayoutPath('mod_emundusmenu', 'tchooz_url');
-                        break;
-                endswitch;
+					default:
+						require JModuleHelper::getLayoutPath('mod_emundusmenu', 'tchooz_url');
+						break;
+				endswitch;
 
-                // The next item is deeper.
-                if ($item->deeper) {
-                    echo '<ul class="g-sublevel-list" id="sublevel_list_' . $item->id . '" style="display: none">';
-                    echo '<li class="g-dropdown-column">';
-                    echo '<div class="g-grid"><div class="g-block size-100"><ul class="g-sublevel"><li class="g-level-'.($item->level).' g-go-back"><a class="g-menu-item-container" href="#" onclick="backToParentMenu(' . $item->id . ')" data-g-menuparent=""><span class="g-menu-item-content"><span class="g-menu-item-title">' . JText::_("COM_EMUNDUS_BACK") . '</span></span></a></li>';
-                }
-                // The next item is shallower.
+				// The next item is deeper.
+				if ($item->deeper) {
+					echo '<ul class="g-sublevel-list" id="sublevel_list_' . $item->id . '" style="display: none">';
+					echo '<li class="g-dropdown-column">';
+					echo '<div class="g-grid"><div class="g-block size-100"><ul class="g-sublevel"><li class="g-level-' . ($item->level) . ' g-go-back"><a class="g-menu-item-container" href="#" onclick="backToParentMenu(' . $item->id . ')" data-g-menuparent=""><span class="g-menu-item-content"><span class="g-menu-item-title">' . JText::_("COM_EMUNDUS_BACK") . '</span></span></a></li>';
+				}
+				// The next item is shallower.
                 elseif ($item->shallower) {
-                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><div class="message-tooltip-block"> '.$item->title.'</div>';
-                    echo '</li>';
-                    echo str_repeat('</ul></div></div></li></ul>', $item->level_diff);
-                }
-                // The next item is on the same level.
-                else {
-                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><div class="message-tooltip-block"><a class class="'.$class.'" href="'. $item->flink . '"> '.$item->title.'</a></div></div>';
-                    echo '</li>';
-                }
-            endforeach;
+					echo '<div class="message-tooltip" id="tooltip-' . $item->id . '"><div class="message-tooltip-block"> ' . $item->title . '</div>';
+					echo '</li>';
+					echo str_repeat('</ul></div></div></li></ul>', $item->level_diff);
+				}
+				// The next item is on the same level.
+				else {
+					echo '<div class="message-tooltip" id="tooltip-' . $item->id . '"><div class="message-tooltip-block"><a class class="' . $class . '" href="' . $item->flink . '"> ' . $item->title . '</a></div></div>';
+					echo '</li>';
+				}
+			endforeach;
 
-            if(sizeof($tchooz_list) > 0) :
-                echo '<hr id="menu_separator" class="mb-4 mt-4">';
-            endif;
-        endif;
+			if (sizeof($tchooz_list) > 0) :
+				echo '<hr id="menu_separator" class="mb-4 mt-4">';
+			endif;
+		endif;
 
-        foreach ($list as $i => &$item) :
-            if($item->alias != 'homepage' && $item->params->get('menu_show') != 0) :
-                $item->anchor_css="item";
-                $class = 'item-'.$item->id.' g-standard';
-                if ($item->id == $active_id) {
-                    $class .= ' current';
-                }
+		foreach ($list as $i => &$item) :
+			if ($item->alias != 'homepage' && $item->params->get('menu_show') != 0) :
+				$item->anchor_css = "item";
+				$class            = 'item-' . $item->id . ' g-standard';
+				if ($item->id == $active_id) {
+					$class .= ' current';
+				}
 
-                if (in_array($item->id, $path)) {
-                    $class .= ' active';
-                }
+				if (in_array($item->id, $path)) {
+					$class .= ' active';
+				}
                 elseif ($item->type == 'alias') {
-                    $aliasToId = $item->params->get('aliasoptions');
-                    if (count($path) > 0 && $aliasToId == $path[count($path)-1]) {
-                        $class .= ' active';
-                    }
+					$aliasToId = $item->params->get('aliasoptions');
+					if (count($path) > 0 && $aliasToId == $path[count($path) - 1]) {
+						$class .= ' active';
+					}
                     elseif (in_array($aliasToId, $path)) {
-                        $class .= ' alias-parent-active';
-                    }
-                }
+						$class .= ' alias-parent-active';
+					}
+				}
 
-                if ($item->parent) {
-                    $class .= ' g-parent';
-                }
+				if ($item->parent) {
+					$class .= ' g-parent';
+				}
 
-                if (!empty($class)) {
-                    $class = ' class="tchooz-vertical-item g-menu-item g-menu-'.trim($class) .'"';
-                }
+				if (!empty($class)) {
+					$class = ' class="tchooz-vertical-item g-menu-item g-menu-' . trim($class) . '"';
+				}
 
-                if($item->level == 1) {
-                    echo '<li' . $class . 'onmouseenter="enableTooltip(' . $item->id . ')" onmouseleave="disableTooltip(' . $item->id . ')">';
-                } else {
-                    echo '<li' . $class.'>';
-                }
+				if ($item->level == 1) {
+					echo '<li' . $class . 'onmouseenter="enableTooltip(' . $item->id . ')" onmouseleave="disableTooltip(' . $item->id . ')">';
+				}
+				else {
+					echo '<li' . $class . '>';
+				}
 
-                // Render the menu item.
-                switch ($item->type) :
-                    case 'separator':
-                    case 'url':
-                    case 'component':
-                        require JModuleHelper::getLayoutPath('mod_emundusmenu', 'tchooz_'.$item->type);
-                        break;
+				// Render the menu item.
+				switch ($item->type) :
+					case 'separator':
+					case 'url':
+					case 'component':
+						require JModuleHelper::getLayoutPath('mod_emundusmenu', 'tchooz_' . $item->type);
+						break;
 
-                    default:
-                        require JModuleHelper::getLayoutPath('mod_emundusmenu', 'tchooz_url');
-                        break;
-                endswitch;
+					default:
+						require JModuleHelper::getLayoutPath('mod_emundusmenu', 'tchooz_url');
+						break;
+				endswitch;
 
-                // The next item is deeper.
-                if ($item->deeper) {
-                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'" style="height: auto"><div class="message-tooltip-block"><p>'.$item->title.'</p>';
-                    echo '<ul class="g-sublevel-list" id="sublevel_list_' . $item->id . '">';
-                    echo '<li class="g-dropdown-column">';
-                    echo '<div class="g-grid"><div class="g-block size-100"><ul class="g-sublevel">';
-                }
-                // The next item is shallower.
+				// The next item is deeper.
+				if ($item->deeper) {
+					echo '<div class="message-tooltip" id="tooltip-' . $item->id . '" style="height: auto"><div class="message-tooltip-block"><p>' . $item->title . '</p>';
+					echo '<ul class="g-sublevel-list" id="sublevel_list_' . $item->id . '">';
+					echo '<li class="g-dropdown-column">';
+					echo '<div class="g-grid"><div class="g-block size-100"><ul class="g-sublevel">';
+				}
+				// The next item is shallower.
                 elseif ($item->shallower) {
-                    //echo '<div class="message-tooltip" id="tooltip-'.$item->id.'">'.$item->title.'</div>';
-                    echo '</li>';
-                    echo str_repeat('</ul></div></div></li></ul>', $item->level_diff);
-                }
-                // The next item is on the same level.
-                else {
-                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><div class="message-tooltip-block"> <a class class="'.$class.'" href="'. $item->flink . '"> '.$item->title.'</a></div></div>';
-                    echo '</li>';
-                }
-            endif;
-        endforeach;
+					//echo '<div class="message-tooltip" id="tooltip-'.$item->id.'">'.$item->title.'</div>';
+					echo '</li>';
+					echo str_repeat('</ul></div></div></li></ul>', $item->level_diff);
+				}
+				// The next item is on the same level.
+				else {
+					echo '<div class="message-tooltip" id="tooltip-' . $item->id . '"><div class="message-tooltip-block"> <a class class="' . $class . '" href="' . $item->flink . '"> ' . $item->title . '</a></div></div>';
+					echo '</li>';
+				}
+			endif;
+		endforeach;
 
 
+		foreach ($help_list as $i => &$item) :
+			if ($item->params->get('menu_show') != 0) :
+				$item->anchor_css = "item";
+				$class            = 'item-' . $item->id . ' g-standard';
+				if ($item->id == $active_id) {
+					$class .= ' current';
+				}
 
-        foreach ($help_list as $i => &$item) :
-            if($item->params->get('menu_show') != 0) :
-                $item->anchor_css="item";
-                $class = 'item-'.$item->id.' g-standard';
-                if ($item->id == $active_id) {
-                    $class .= ' current';
-                }
-
-                if (in_array($item->id, $path)) {
-                    $class .= ' active';
-                }
+				if (in_array($item->id, $path)) {
+					$class .= ' active';
+				}
                 elseif ($item->type == 'alias') {
-                    $aliasToId = $item->params->get('aliasoptions');
-                    if (count($path) > 0 && $aliasToId == $path[count($path)-1]) {
-                        $class .= ' active';
-                    }
+					$aliasToId = $item->params->get('aliasoptions');
+					if (count($path) > 0 && $aliasToId == $path[count($path) - 1]) {
+						$class .= ' active';
+					}
                     elseif (in_array($aliasToId, $path)) {
-                        $class .= ' alias-parent-active';
-                    }
-                }
+						$class .= ' alias-parent-active';
+					}
+				}
 
-                if ($item->parent) {
-                    $class .= ' g-parent';
-                }
+				if ($item->parent) {
+					$class .= ' g-parent';
+				}
 
-                if (!empty($class)) {
-                    $class = ' class="tchooz-vertical-item g-menu-item g-menu-'.trim($class) .'"';
-                }
+				if (!empty($class)) {
+					$class = ' class="tchooz-vertical-item g-menu-item g-menu-' . trim($class) . '"';
+				}
 
-                echo '<li'.$class.'onmouseenter="enableTooltip('.$item->id.')" onmouseleave="disableTooltip('.$item->id.')">';
+				echo '<li' . $class . 'onmouseenter="enableTooltip(' . $item->id . ')" onmouseleave="disableTooltip(' . $item->id . ')">';
 
-                // Render the menu item.
-                switch ($item->type) :
-                    case 'separator':
-                    case 'url':
-                    case 'component':
-                        require JModuleHelper::getLayoutPath('mod_emundusmenu', 'tchooz_'.$item->type);
-                        break;
+				// Render the menu item.
+				switch ($item->type) :
+					case 'separator':
+					case 'url':
+					case 'component':
+						require JModuleHelper::getLayoutPath('mod_emundusmenu', 'tchooz_' . $item->type);
+						break;
 
-                    default:
-                        require JModuleHelper::getLayoutPath('mod_emundusmenu', 'tchooz_url');
-                        break;
-                endswitch;
+					default:
+						require JModuleHelper::getLayoutPath('mod_emundusmenu', 'tchooz_url');
+						break;
+				endswitch;
 
-                // The next item is deeper.
-                if ($item->deeper) {
-                    echo '<ul class="g-sublevel-list" id="sublevel_list_' . $item->id . '" style="display: none">';
-                    echo '<li class="g-dropdown-column">';
-                    echo '<div class="g-grid"><div class="g-block size-100"><ul class="g-sublevel"><li class="g-level-'.($item->level).' g-go-back"><a class="g-menu-item-container" href="#" onclick="backToParentMenu(' . $item->id . ')" data-g-menuparent=""><span class="g-menu-item-content"><span class="g-menu-item-title">' . JText::_("COM_EMUNDUS_BACK") . '</span></span></a></li>';
-                }
-                // The next item is shallower.
+				// The next item is deeper.
+				if ($item->deeper) {
+					echo '<ul class="g-sublevel-list" id="sublevel_list_' . $item->id . '" style="display: none">';
+					echo '<li class="g-dropdown-column">';
+					echo '<div class="g-grid"><div class="g-block size-100"><ul class="g-sublevel"><li class="g-level-' . ($item->level) . ' g-go-back"><a class="g-menu-item-container" href="#" onclick="backToParentMenu(' . $item->id . ')" data-g-menuparent=""><span class="g-menu-item-content"><span class="g-menu-item-title">' . JText::_("COM_EMUNDUS_BACK") . '</span></span></a></li>';
+				}
+				// The next item is shallower.
                 elseif ($item->shallower) {
-                    echo '</li>';
-                    echo str_repeat('</ul></div></div></li></ul>', $item->level_diff);
-                }
-                // The next item is on the same level.
-                else {
-                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><div class="message-tooltip-block">'.$item->title.'</div></div>';
+					echo '</li>';
+					echo str_repeat('</ul></div></div></li></ul>', $item->level_diff);
+				}
+				// The next item is on the same level.
+				else {
+					echo '<div class="message-tooltip" id="tooltip-' . $item->id . '"><div class="message-tooltip-block">' . $item->title . '</div></div>';
 
-                    //'<a'.$class.' href="'. $item->flink . '"'. $item->title .'></a>
+					//'<a'.$class.' href="'. $item->flink . '"'. $item->title .'></a>
 
-                    echo '</li>';
-                }
-            endif;
-        endforeach;
-        ?>
+					echo '</li>';
+				}
+			endif;
+		endforeach;
+		?>
     </ul>
 </nav>
 
 <script type="text/javascript">
-    jQuery(document).ready(function() {
+    jQuery(document).ready(function () {
         jQuery(".g-sublevel > li").on('mouseenter', function (e) {
             if (jQuery('ul', this).length) {
                 var elm = jQuery('ul:first', this);
@@ -495,11 +516,11 @@ defined('_JEXEC') or die;
 
 
     //Keep original tooltip margin to reposition after mouse out (usefull in case of window resizing)
-    const originalMargin = parseInt(jQuery("[id^=tooltip-]:first").css('margin-top'),10);
+    const originalMargin = parseInt(jQuery("[id^=tooltip-]:first").css('margin-top'), 10);
 
-    function enableTooltip(menu){
-        if(jQuery(".image-title").css("display") != 'none') {
-            if(typeof jQuery("#sublevel_list_" + menu)[0] != 'undefined'){
+    function enableTooltip(menu) {
+        if (jQuery(".image-title").css("display") != 'none') {
+            if (typeof jQuery("#sublevel_list_" + menu)[0] != 'undefined') {
                 jQuery("#tooltip-" + menu).css('margin-left', '200px');
                 jQuery("#tooltip-" + menu).css('display', 'block');
             }
@@ -510,38 +531,38 @@ defined('_JEXEC') or die;
             //Reposition tooltip if out of viewport or scroll happened
             var tooltipBox = document.querySelector("#tooltip-" + menu);
             var tooltipRect = tooltipBox.getBoundingClientRect();
-            const menuBox = document.querySelector("li.g-menu-item-"+menu);
+            const menuBox = document.querySelector("li.g-menu-item-" + menu);
             const menuRect = menuBox.getBoundingClientRect();
             const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
 
             //reposition after scrolling
-            if(tooltipRect.top - menuRect.top > 10){
-                jQuery("#tooltip-" + menu).css('margin-top', -(tooltipRect.top - menuRect.top - originalMargin)+'px');
+            if (tooltipRect.top - menuRect.top > 10) {
+                jQuery("#tooltip-" + menu).css('margin-top', -(tooltipRect.top - menuRect.top - originalMargin) + 'px');
                 //get new position of tooltip
                 tooltipBox = document.querySelector("#tooltip-" + menu);
                 tooltipRect = tooltipBox.getBoundingClientRect();
             }
 
             //reposition out of viewport
-            if(tooltipRect.bottom > viewportHeight){
-                jQuery("#tooltip-" + menu).css('margin-top', -(tooltipRect.bottom - viewportHeight - parseInt(jQuery("#tooltip-" + menu).css('margin-top'),10))+'px');
+            if (tooltipRect.bottom > viewportHeight) {
+                jQuery("#tooltip-" + menu).css('margin-top', -(tooltipRect.bottom - viewportHeight - parseInt(jQuery("#tooltip-" + menu).css('margin-top'), 10)) + 'px');
             }
         }
     }
 
-    function disableTooltip(menu){
+    function disableTooltip(menu) {
         jQuery("#tooltip-" + menu).css('display', 'none');
         jQuery("#tooltip-" + menu).css('margin-top', originalMargin);
     }
 
-    function enableTitles(state = null){
-        if(jQuery(".image-title").css("display") == 'none' && state == null){
+    function enableTitles(state = null) {
+        if (jQuery(".image-title").css("display") == 'none' && state == null) {
             localStorage.setItem('menu', 'true');
-            jQuery(".tchooz-vertical-toplevel").css("width","250px");
-            jQuery(".tchooz-vertical-item").css("width","auto");
-            jQuery(".grey-navbar-icons").css("opacity","1");
-            jQuery(".sidebar-formbuilder").css("opacity","0");
-            if(window.innerWidth >= 1280) {
+            jQuery(".tchooz-vertical-toplevel").css("width", "250px");
+            jQuery(".tchooz-vertical-item").css("width", "auto");
+            jQuery(".grey-navbar-icons").css("opacity", "1");
+            jQuery(".sidebar-formbuilder").css("opacity", "0");
+            if (window.innerWidth >= 1280) {
                 jQuery("#g-footer").css("padding-left", "280px");
                 jQuery("#footer-rgpd").css("padding-left", "280px");
                 jQuery("#g-container-main").css("padding-left", "280px");
@@ -550,75 +571,75 @@ defined('_JEXEC') or die;
                 jQuery(".tchooz-vertical-logo").css("opacity", "0");
 
                 let elmnt = document.getElementById("g-top");
-                if(elmnt !== null) {
+                if (elmnt !== null) {
                     jQuery(".logo").css("top", "-37px");
                 } else {
                     jQuery(".logo").css("top", "7px");
                 }
             }
-            setTimeout(() =>{
-                jQuery(".image-title").css("display","block");
-                jQuery(".image-title").css("opacity","1");
-                jQuery(".sidebar-formbuilder").css("display","none");
+            setTimeout(() => {
+                jQuery(".image-title").css("display", "block");
+                jQuery(".image-title").css("opacity", "1");
+                jQuery(".sidebar-formbuilder").css("display", "none");
                 setTimeout(() => {
-                    jQuery(".g-menu-parent-indicator").css("display","block");
-                },50);
-            },250)
-        } else if(state == 'true'){
-            jQuery(".tchooz-vertical-toplevel").css("width","250px");
-            jQuery(".tchooz-vertical-item").css("width","auto");
-            jQuery(".grey-navbar-icons").css("opacity","1");
-            jQuery(".sidebar-formbuilder").css("opacity","0");
-            if(window.innerWidth >= 1280) {
+                    jQuery(".g-menu-parent-indicator").css("display", "block");
+                }, 50);
+            }, 250)
+        } else if (state == 'true') {
+            jQuery(".tchooz-vertical-toplevel").css("width", "250px");
+            jQuery(".tchooz-vertical-item").css("width", "auto");
+            jQuery(".grey-navbar-icons").css("opacity", "1");
+            jQuery(".sidebar-formbuilder").css("opacity", "0");
+            if (window.innerWidth >= 1280) {
                 jQuery("#g-footer").css("padding-left", "280px");
                 jQuery("#footer-rgpd").css("padding-left", "280px");
                 jQuery("#g-container-main").css("padding-left", "280px");
                 jQuery("#header-a").css("opacity", "1");
                 jQuery(".tchooz-vertical-logo").css("opacity", "0");
             }
-            setTimeout(() =>{
-                jQuery(".image-title").css("display","block");
-                jQuery(".image-title").css("opacity","1");
-                jQuery(".sidebar-formbuilder").css("display","none");
+            setTimeout(() => {
+                jQuery(".image-title").css("display", "block");
+                jQuery(".image-title").css("opacity", "1");
+                jQuery(".sidebar-formbuilder").css("display", "none");
                 setTimeout(() => {
-                    jQuery(".g-menu-parent-indicator").css("display","block");
-                },50);
-            },250)
+                    jQuery(".g-menu-parent-indicator").css("display", "block");
+                }, 50);
+            }, 250)
         } else {
             localStorage.setItem('menu', 'false');
-            jQuery(".tchooz-vertical-toplevel").css("width","55px");
-            jQuery(".image-title").css("opacity","0");
-            jQuery(".g-menu-parent-indicator").css("display","none");
-            jQuery(".sidebar-formbuilder").css("display","block");
-            jQuery(".sidebar-formbuilder").css("opacity","1");
-            if(window.innerWidth >= 1280) {
+            jQuery(".tchooz-vertical-toplevel").css("width", "55px");
+            jQuery(".image-title").css("opacity", "0");
+            jQuery(".g-menu-parent-indicator").css("display", "none");
+            jQuery(".sidebar-formbuilder").css("display", "block");
+            jQuery(".sidebar-formbuilder").css("opacity", "1");
+            if (window.innerWidth >= 1280) {
                 jQuery("#g-container-main").css("padding-left", "76px");
                 jQuery("#g-footer").css("padding-left", "76px");
                 jQuery("#footer-rgpd").css("padding-left", "76px");
                 jQuery("#header-a").css("opacity", "0");
                 jQuery(".tchooz-vertical-logo").css("opacity", "1");
             }
-            setTimeout(() =>{
-                jQuery(".image-title").css("display","none");
-                jQuery(".grey-navbar-icons").css("opacity","0");
-            },50)
+            setTimeout(() => {
+                jQuery(".image-title").css("display", "none");
+                jQuery(".grey-navbar-icons").css("opacity", "0");
+            }, 50)
         }
     }
 
-    function backToParentMenu(id){
-        jQuery(".tchooz-vertical-toplevel").css("width","250px");
-        jQuery(".tchooz-vertical-item").css("width","auto");
-        jQuery("#menu_separator").css('width','auto');
+    function backToParentMenu(id) {
+        jQuery(".tchooz-vertical-toplevel").css("width", "250px");
+        jQuery(".tchooz-vertical-item").css("width", "auto");
+        jQuery("#menu_separator").css('width', 'auto');
         jQuery(".g-menu-item-" + id).removeClass('parent-active');
         jQuery("#sublevel_list_" + id).css("display", "none");
-        jQuery(".g-menu-parent-indicator").css("display","block");
-        jQuery(".image-title").css("display","block");
-        jQuery(".image-title").css("opacity","1");
+        jQuery(".g-menu-parent-indicator").css("display", "block");
+        jQuery(".image-title").css("display", "block");
+        jQuery(".image-title").css("opacity", "1");
     }
 
     document.addEventListener('click', function (e) {
         e.stopPropagation();
-        if(jQuery(".image-title").css("display") == 'block') {
+        if (jQuery(".image-title").css("display") == 'block') {
             enableTitles();
         }
     });

@@ -5,41 +5,42 @@
          v-html="object_json.show_page_heading.page_heading"
     />
     <div class="em-flex-row em-flex-space-between page-header">
-      <h1 class="em-mt-0" v-if="object_json.show_title" v-html="object_json.show_title.value" />
+      <h1 class="em-mt-0" v-if="object_json.show_title" v-html="object_json.show_title.value"/>
     </div>
 
-    <p v-if="object_json.intro_value" class="em-mt-16" v-html="object_json.intro_value" />
+    <p v-if="object_json.intro_value" class="em-mt-16" v-html="object_json.intro_value"/>
 
     <form method="post" object_json.attribs class="fabrikForm" :id="'form_' + object_json.id">
       <div v-if="object_json.plugintop" v-html="object_json.plugintop"></div>
 
-      <fieldset v-for="group in object_json.Groups" v-bind:key="group.index" :class="group.group_class" :id="'group'+group.group_id" :style="group.group_css" class="fabrikGroup">
+      <fieldset v-for="group in object_json.Groups" v-bind:key="group.index" :class="group.group_class"
+                :id="'group'+group.group_id" :style="group.group_css" class="fabrikGroup">
         <legend v-if="group.group_showLegend" class="legend">
-          {{group.group_showLegend}}
+          {{ group.group_showLegend }}
         </legend>
         <div v-if="group.group_intro" v-html="group.group_intro"></div>
 
-          <div v-for="element in group.elements"
-               v-bind:key="element.index"
-               v-show="element.hidden === false"
-               class="row-fluid"
-               :class="{'unpublished': !element.publish}"
-          >
-            <div class="control-group fabrikElementContainer span12" :class="'plg-' + element.plugin">
-              <span v-html="element.label_value"></span>
+        <div v-for="element in group.elements"
+             v-bind:key="element.index"
+             v-show="element.hidden === false"
+             class="row-fluid"
+             :class="{'unpublished': !element.publish}"
+        >
+          <div class="control-group fabrikElementContainer span12" :class="'plg-' + element.plugin">
+            <span v-html="element.label_value"></span>
 
-              <div v-if="element.params.date_table_format">
-                <date-picker v-model="date" :config="options"></date-picker>
-              </div>
-              <div v-else-if="element.labelsAbove == 0" class="controls">
-                <div v-if="element.element" :class="element.errorClass" v-html="element.element"></div>
-                <span v-if="element.tipSide" v-html="element.tipSide"></span>
-              </div>
-              <div v-else class="fabrikElement" :class="element.errorClass" v-html="element.element"></div>
-              <span v-if="element.tipSide" v-html="element.tipSide"></span>
-              <span v-if="element.tipBelow" v-html="element.tipBelow"></span>
+            <div v-if="element.params.date_table_format">
+              <date-picker v-model="date" :config="options"></date-picker>
             </div>
+            <div v-else-if="element.labelsAbove == 0" class="controls">
+              <div v-if="element.element" :class="element.errorClass" v-html="element.element"></div>
+              <span v-if="element.tipSide" v-html="element.tipSide"></span>
+            </div>
+            <div v-else class="fabrikElement" :class="element.errorClass" v-html="element.element"></div>
+            <span v-if="element.tipSide" v-html="element.tipSide"></span>
+            <span v-if="element.tipBelow" v-html="element.tipBelow"></span>
           </div>
+        </div>
 
         <div class="groupoutro" v-if="group.group_outro" v-html="group_outro"></div>
       </fieldset>
@@ -54,6 +55,7 @@
 import _ from "lodash";
 import datePicker from "vue-bootstrap-datetimepicker";
 import axios from "axios";
+
 const qs = require("qs");
 export default {
   name: "FormViewer",
@@ -81,21 +83,21 @@ export default {
     };
   },
   methods: {
-    splitProfileIdfromLabel(label){
+    splitProfileIdfromLabel(label) {
       return (label.split(/-(.+)/))[1];
     },
     formbuilder() {
       this.$emit("editPage");
     },
 
-    getDataObject: _.debounce(function() {
+    getDataObject: _.debounce(function () {
       this.submitted = true;
-      let ellink = this.link.link.replace("fabrik","emundus");
+      let ellink = this.link.link.replace("fabrik", "emundus");
       axios
           .get(ellink + "&format=vue_jsonclean")
           .then(response => {
             this.object_json = response.data;
-            if(this.visibility != null){
+            if (this.visibility != null) {
               axios({
                 method: "get",
                 url:
@@ -108,7 +110,7 @@ export default {
                 }
               }).then(constraint => {
                 Object.keys(this.object_json.Groups).forEach(group => {
-                  if(constraint.data.data != null) {
+                  if (constraint.data.data != null) {
                     axios({
                       method: "get",
                       url:
@@ -165,7 +167,7 @@ export default {
     this.getDataObject();
   },
   watch: {
-    link: function() {
+    link: function () {
       this.getDataObject();
     }
   }
@@ -176,30 +178,34 @@ export default {
 .dropdown-menu {
   width: 0 !important;
 }
+
 .hidden {
   display: none;
 }
+
 .FormViewer {
   padding: 0 1%;
   border-radius: 5px;
 }
 
 #FormViewer h1, #FormViewer legend {
-color: #2B2B2B;
+  color: #2B2B2B;
 }
 
-.loading-form{
+.loading-form {
   top: 10vh;
 }
 
-.eye-button{
+.eye-button {
   background: transparent;
 }
+
 .unpublished {
   background: #C5C8CE;
   border-radius: 5px;
 }
-.em-mt-0{
+
+.em-mt-0 {
   margin-top: 0 !important;
 }
 </style>

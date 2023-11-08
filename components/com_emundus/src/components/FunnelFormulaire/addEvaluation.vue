@@ -11,11 +11,11 @@
           <div class="w-form">
             <form id="email-form" name="email-form" data-name="Email Form" class="form-2">
               <datetime
-                :placeholder="StartDate"
-                type="datetime"
-                id="start_date"
-                v-model="form.start_date"
-                :language="fr"
+                  :placeholder="StartDate"
+                  type="datetime"
+                  id="start_date"
+                  v-model="form.start_date"
+                  :language="fr"
               ></datetime>
             </form>
           </div>
@@ -24,11 +24,11 @@
           <div class="w-form">
             <form id="email-form" name="email-form" data-name="Email Form">
               <datetime
-                :placeholder="EndDate"
-                type="datetime"
-                id="end_date"
-                v-model="form.end_date"
-                :language="fr"
+                  :placeholder="EndDate"
+                  type="datetime"
+                  id="end_date"
+                  v-model="form.end_date"
+                  :language="fr"
               ></datetime>
             </form>
           </div>
@@ -47,15 +47,24 @@
         <form id="email-form" name="email-form" data-name="Email Form">
           <div class="container-flexbox-choisir-ou-plus w-clearfix">
             <select
-              id="Grille-d-valuation"
-              name="Grille-d-valuation"
-              data-name="Grille D Valuation"
-              class="dropdown-toggle"
-              ><option value="">{{ ChooseEvalutationGrid }}</option
-              ><option value="Grille d'évaluation 1">Grille d'évaluation 1</option
-              ><option value="Grille d'évaluation 2">Grille d'évaluation 2</option
-              ><option value="Grille d'évaluation 3">Grille d'évaluation 3</option></select
-            ><button class="plus w-inline-block">+</button>
+                id="Grille-d-valuation"
+                name="Grille-d-valuation"
+                data-name="Grille D Valuation"
+                class="dropdown-toggle"
+            >
+              <option value="">{{ ChooseEvalutationGrid }}
+              </option
+              >
+              <option value="Grille d'évaluation 1">Grille d'évaluation 1
+              </option
+              >
+              <option value="Grille d'évaluation 2">Grille d'évaluation 2
+              </option
+              >
+              <option value="Grille d'évaluation 3">Grille d'évaluation 3</option>
+            </select
+            >
+            <button class="plus w-inline-block">+</button>
           </div>
         </form>
       </div>
@@ -65,7 +74,7 @@
 </template>
 
 <script>
-import { Datetime } from "vue-datetime";
+import {Datetime} from "vue-datetime";
 
 export default {
   name: "addEvaluation",
@@ -89,6 +98,7 @@ export default {
 
   methods: {},
 
-  created() {}
+  created() {
+  }
 };
 </script>

@@ -6,14 +6,14 @@
  * @author      emundus <dev@emundus.fr> - http://www.emundus.fr
  */
 
-table.front-end-list{
+table.front-end-list {
     width: 100%;
     border-spacing: 1px;
     background-color: var(--neutral-200);
     color: #666;
 }
 
-table.front-end-list thead th{
+table.front-end-list thead th {
     text-align: center;
     background: #f7f7f7;
     color: #666;
@@ -21,11 +21,11 @@ table.front-end-list thead th{
     border-left: 1px solid #fff;
 }
 
-table.front-end-list td, table.front-end-list th{
+table.front-end-list td, table.front-end-list th {
     padding: 4px;
 }
 
-table.front-end-list thead th.align-left{
+table.front-end-list thead th.align-left {
     text-align: left;
 }
 
@@ -33,57 +33,57 @@ table.front-end-list thead th.align-center, table.front-end-list tbody td.align-
     text-align: center;
 }
 
-table.front-end-list tbody tr td{
+table.front-end-list tbody tr td {
     background: #fff;
     border: 1px solid #fff;
 }
 
-table.front-end-list td{
+table.front-end-list td {
     padding-left: 8px;
 }
 
-div.list-footer{
-    clear:both;
+div.list-footer {
+    clear: both;
     text-decoration: none;
     text-align: center;
 }
 
-div.list-footer ul{
+div.list-footer ul {
     list-style: none;
     display: inline-block;
 }
 
-div.list-footer ul li{
+div.list-footer ul li {
     display: inline-block;
 }
 
-div.list-footer div.limit{
+div.list-footer div.limit {
     display: inline-block;
 }
 
-div.list-footer div.counter{
+div.list-footer div.counter {
     display: inline-block;
 }
 
-div.filter-select.hide{
+div.filter-select.hide {
     display: none;
 }
 
-div.filter-select.show{
+div.filter-select.show {
     display: block;
 }
 
-div.filter-search , div.filter-select {
+div.filter-search, div.filter-select {
     float: left;
     clear: both;
 }
 
-div.filter-select .fltlft{
+div.filter-select .fltlft {
     float: left;
     clear: both;
 }
 
-div.field-filter{
+div.field-filter {
     float: left;
     margin: 10px;
 }
@@ -92,10 +92,10 @@ div.field-filter{
     margin-top: 0 !important;
 }
 
-button.open{
+button.open {
     font-weight: bold;
 }
 
-div.field-filter:first-of-type{
+div.field-filter:first-of-type {
     margin-left: 0;
 }

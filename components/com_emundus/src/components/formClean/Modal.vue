@@ -15,7 +15,7 @@
 
       <div class="em-flex-row em-flex-space-between em-mb-16">
         <h4>
-          {{ElementOptions}}
+          {{ ElementOptions }}
         </h4>
         <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalEditElement' + elementId)">
           <span class="material-icons-outlined">close</span>
@@ -25,26 +25,29 @@
       <div v-if="element != null">
         <div class="em-mb-16">
           <div class="em-flex-row em-mb-16 em-pointer" @click="publishUnpublishElement()">
-            <em :class="[element.publish ? 'fa-eye-slash' : 'fa-eye','far']" style="width: 45px" :id="'publish_icon_' + element.id"></em>
-            <span class="em-ml-8" v-if="element.publish">{{Unpublish}}</span>
-            <span class="em-ml-8" v-if="!element.publish">{{Publish}}</span>
+            <em :class="[element.publish ? 'fa-eye-slash' : 'fa-eye','far']" style="width: 45px"
+                :id="'publish_icon_' + element.id"></em>
+            <span class="em-ml-8" v-if="element.publish">{{ Unpublish }}</span>
+            <span class="em-ml-8" v-if="!element.publish">{{ Publish }}</span>
           </div>
 
           <div class="em-mb-16 em-flex-row" v-if="plugin != 'display'">
             <div class="em-toggle">
-              <input type="checkbox" class="em-toggle-check" id="require" name="require" v-model="element.FRequire" @click="updateRequireElement()"/>
+              <input type="checkbox" class="em-toggle-check" id="require" name="require" v-model="element.FRequire"
+                     @click="updateRequireElement()"/>
               <strong class="b em-toggle-switch"></strong>
               <strong class="b em-toggle-track"></strong>
             </div>
-            <span for="require" class="em-ml-8 em-pointer" @click="updateRequireElement()">{{Required}}</span>
+            <span for="require" class="em-ml-8 em-pointer" @click="updateRequireElement()">{{ Required }}</span>
           </div>
         </div>
 
         <div class="em-mb-16">
-          <label>{{fieldType}} :</label>
-          <select id="select_type" class="em-w-100" v-model="plugin" :disabled="(files != 0 && element.plugin == 'birthday') || (files != 0 && element.params.password == 6)">
+          <label>{{ fieldType }} :</label>
+          <select id="select_type" class="em-w-100" v-model="plugin"
+                  :disabled="(files != 0 && element.plugin == 'birthday') || (files != 0 && element.params.password == 6)">
             <option v-for="(plugin, index) in plugins" :key="index" :value="plugin.value">
-              {{plugin.name}}
+              {{ plugin.name }}
             </option>
           </select>
         </div>
@@ -54,14 +57,17 @@
         <div class="em-mb-16">
           <fieldF v-if="plugin == 'field'" :files="files" :element="element"></fieldF>
           <birthdayF v-if="plugin =='birthday'" :element="element"></birthdayF>
-          <checkboxF v-if="plugin =='checkbox'" :element="element" :databases="databases"  @subOptions="subOptions"></checkboxF>
-          <dropdownF v-if="plugin =='dropdown'" :element="element" :databases="databases" @subOptions="subOptions"></dropdownF>
-          <radiobtnF v-if="plugin == 'radiobutton'" :element="element" :databases="databases"  @subOptions="subOptions"></radiobtnF>
+          <checkboxF v-if="plugin =='checkbox'" :element="element" :databases="databases"
+                     @subOptions="subOptions"></checkboxF>
+          <dropdownF v-if="plugin =='dropdown'" :element="element" :databases="databases"
+                     @subOptions="subOptions"></dropdownF>
+          <radiobtnF v-if="plugin == 'radiobutton'" :element="element" :databases="databases"
+                     @subOptions="subOptions"></radiobtnF>
           <textareaF v-if="plugin =='textarea'" :element="element"></textareaF>
           <displayF v-if="plugin =='display'" :element="element"></displayF>
-<!--
-          <fileF v-if="plugin =='emundus_fileupload'" :element="element" :prid="profileId"></fileF>
--->
+          <!--
+                    <fileF v-if="plugin =='emundus_fileupload'" :element="element" :prid="profileId"></fileF>
+          -->
           <yesnoF v-if="plugin=='yesno'" :element="element"></yesnoF>
         </div>
       </div>
@@ -70,7 +76,7 @@
         <button type="button"
                 class="em-secondary-button em-w-auto"
                 @click.prevent="$modal.hide('modalEditElement' + elementId)">
-          {{Retour}}
+          {{ Retour }}
         </button>
         <button type="button"
                 class="em-primary-button em-w-auto"
@@ -100,7 +106,7 @@ export default {
     files: Number,
     manyLanguages: Number,
     actualLanguage: String,
-    profileId:Number
+    profileId: Number
   },
   components: {},
   data() {
@@ -145,13 +151,13 @@ export default {
           value: 'display',
           name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
         },
-/*        fileupload: {
-          value: 'emundus_fileupload',
-          name:  this.translate("COM_EMUNDUS_ONBOARD_TYPE_FILE")
-        },*/
+        /*        fileupload: {
+                  value: 'emundus_fileupload',
+                  name:  this.translate("COM_EMUNDUS_ONBOARD_TYPE_FILE")
+                },*/
         yesno: {
           value: 'yesno',
-          name:  this.translate("COM_EMUNDUS_ONBOARD_TYPE_YESNO")
+          name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_YESNO")
           /*this.translate("COM_EMUNDUS_ONBOARD_TYPE_YESNO")*/
         }
       },
@@ -184,7 +190,7 @@ export default {
     },
     UpdateParams() {
       this.changes = true;
-      if(typeof this.element.params.sub_options !== 'undefined') {
+      if (typeof this.element.params.sub_options !== 'undefined') {
         this.element.params.sub_options.sub_labels = this.sublabel.map(value => value.sub_label);
         this.element.params.sub_options.sub_values = this.sublabel.map(value => value.sub_value);
       }
@@ -203,13 +209,13 @@ export default {
       }).then((response) => {
         setTimeout(() => {
           this.$emit("reloadElement")
-        },200);
+        }, 200);
         this.$modal.hide('modalEditElement' + this.elementId);
       }).catch(e => {
         console.log(e);
       });
     },
-    axiostrad: function(totrad) {
+    axiostrad: function (totrad) {
       return axios({
         method: "post",
         url:
@@ -237,8 +243,8 @@ export default {
       }).then(response => {
         this.element = response.data;
 
-        if(this.element.plugin == 'databasejoin'){
-          this.element.params.database_join_display_type =='radio'?  this.plugin ='radiobutton':  this.plugin =this.element.params.database_join_display_type;
+        if (this.element.plugin == 'databasejoin') {
+          this.element.params.database_join_display_type == 'radio' ? this.plugin = 'radiobutton' : this.plugin = this.element.params.database_join_display_type;
 
         } else if (this.element.plugin == 'date' || this.element.plugin == 'years') {
           this.plugin = 'birthday';
@@ -252,14 +258,14 @@ export default {
               this.label.en = rep.data.en;
             });
 
-        if(this.files != 0 && this.element.plugin != 'birthday'){
+        if (this.files != 0 && this.element.plugin != 'birthday') {
           delete this.plugins.birthday;
         }
 
         this.loading = false;
       });
     },
-    getDatabases(){
+    getDatabases() {
       axios({
         method: "get",
         url: "index.php?option=com_emundus&controller=formbuilder&task=getdatabasesjoin",
@@ -349,25 +355,25 @@ export default {
     },
   },
   watch: {
-    element: function() {
+    element: function () {
       this.tempEl = JSON.parse(JSON.stringify(this.element));
     },
-    plugin: function(value) {
-      switch (value){
+    plugin: function (value) {
+      switch (value) {
         case 'dropdown':
 
-          if(this.element.plugin !== 'databasejoin'){
+          if (this.element.plugin !== 'databasejoin') {
             this.element.plugin = value;
           }
           break;
         case 'radiobutton':
 
-          if(this.element.plugin !== 'databasejoin'){
+          if (this.element.plugin !== 'databasejoin') {
             this.element.plugin = value;
           }
           break;
         case 'birthday':
-          if(this.element.plugin !== 'date' && this.element.plugin !== 'years'){
+          if (this.element.plugin !== 'date' && this.element.plugin !== 'years') {
             this.element.plugin = value;
           }
           break;
@@ -380,7 +386,7 @@ export default {
 </script>
 
 <style scoped>
-.check{
+.check {
   width: 100%;
 }
 </style>

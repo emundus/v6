@@ -79,8 +79,13 @@
         text-decoration: underline;
     }
 
-    .unread-contact {font-weight: bold;}
-    .read-contact {font-weight: normal;}
+    .unread-contact {
+        font-weight: bold;
+    }
+
+    .read-contact {
+        font-weight: normal;
+    }
 
     .no-messages {
         background-color: #e5e5e5;
@@ -88,34 +93,43 @@
         width: 310px;
     }
 </style>
-<?php if (empty($message_contacts) || empty($messages)) :?>
+<?php if (empty($message_contacts) || empty($messages)) : ?>
     <div class="no-messages"><?php echo JText::_('NO_NEW_MESSAGES'); ?></div>
-<?php else :?>
+<?php else : ?>
     <div id="em-contacts">
         <ul id="em-message-list">
-            <?php foreach ($message_contacts as $message_contact) :?>
-                <?php if ($message_contact->state == 1) :?>
-                    <?php if ($message_contact->user_id_to == $user->id) :?>
-                        <li  class="em-list-item" id="em-contact-<?php echo $message_contact->user_id_from ; ?>">
-                            <a class="linkToMessage" href="/index.php?option=com_emundus&view=messages&chatid=<?php echo $message_contact->user_id_from ; ?>">
-                                <?php if ($message_contact->photo_from == null) :?>
+			<?php foreach ($message_contacts as $message_contact) : ?>
+				<?php if ($message_contact->state == 1) : ?>
+					<?php if ($message_contact->user_id_to == $user->id) : ?>
+                        <li class="em-list-item" id="em-contact-<?php echo $message_contact->user_id_from; ?>">
+                            <a class="linkToMessage"
+                               href="/index.php?option=com_emundus&view=messages&chatid=<?php echo $message_contact->user_id_from; ?>">
+								<?php if ($message_contact->photo_from == null) : ?>
                                     <div class="contact-photo contact-photo-<?php echo str_replace(' ', '-', $message_contact->profile_from) ?>"></div>
-                                <?php endif; ?>
-                                <div class="em-contact" >
+								<?php endif; ?>
+                                <div class="em-contact">
 
-                                        <p class="unread-contact" id="contact-<?php echo $message_contact->user_id_from ; ?>-name"><i class="circle outline" id="unread-icon"></i><?php  echo $message_contact->name_from ." : " ; ?></p>
-                                        <p class='unread-contact' id="contact-<?php echo $message_contact->user_id_from ; ?>-date"><?php echo date("d/m/Y", strtotime($message_contact->date_time)) ;?></p>
-                                        <p class="unread-contact contact-message" id="contact-<?php echo $message_contact->user_id_from ; ?>-message"><?php echo strip_tags($message_contact->message)  ;?></p>
+                                    <p class="unread-contact"
+                                       id="contact-<?php echo $message_contact->user_id_from; ?>-name"><i
+                                                class="circle outline"
+                                                id="unread-icon"></i><?php echo $message_contact->name_from . " : "; ?>
+                                    </p>
+                                    <p class='unread-contact'
+                                       id="contact-<?php echo $message_contact->user_id_from; ?>-date"><?php echo date("d/m/Y", strtotime($message_contact->date_time)); ?></p>
+                                    <p class="unread-contact contact-message"
+                                       id="contact-<?php echo $message_contact->user_id_from; ?>-message"><?php echo strip_tags($message_contact->message); ?></p>
 
                                 </div>
                             </a>
                         </li>
-                    <?php endif; ?>
-                <?php endif; ?>
-            <?php endforeach ; ?>
-            <li class="em-list-item"><a class="em-link-messages" href="/index.php?option=com_emundus&view=messages"><?php echo JText::_('SHOW_ALL'); ?></a></li>
+					<?php endif; ?>
+				<?php endif; ?>
+			<?php endforeach; ?>
+            <li class="em-list-item"><a class="em-link-messages"
+                                        href="/index.php?option=com_emundus&view=messages"><?php echo JText::_('SHOW_ALL'); ?></a>
+            </li>
         </ul>
-</div>
+    </div>
 <?php endif; ?>
 <script type="text/javascript">
 

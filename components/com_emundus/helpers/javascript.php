@@ -1,10 +1,10 @@
 <?php
 /**
- * @version		$Id: javascript.php 14401 2013-03-19 14:10:00Z brivalland $
- * @package		Joomla
- * @subpackage	Emundus
- * @copyright	Copyright (C) 2016 eMundus SAS. All rights reserved.
- * @license		GNU/GPL, see LICENSE.php
+ * @version        $Id: javascript.php 14401 2013-03-19 14:10:00Z brivalland $
+ * @package        Joomla
+ * @subpackage     Emundus
+ * @copyright      Copyright (C) 2016 eMundus SAS. All rights reserved.
+ * @license        GNU/GPL, see LICENSE.php
  * eMundus is free software. This version may have been modified pursuant to the
  * GNU General Public License, and as distributed it includes or is derivative
  * of works licensed under the GNU General Public License or other free or open
@@ -15,19 +15,22 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
+
 /**
  * Content Component Query Helper
  *
  * @static
- * @package		Joomla
- * @subpackage	Content
- * @since 1.5
+ * @package        Joomla
+ * @subpackage     Content
+ * @since          1.5
  */
-abstract class EmundusHelperJavascript{
+abstract class EmundusHelperJavascript
+{
 
-	public static function onSubmitForm(){
-		$itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
-		$view = JFactory::getApplication()->input->get('view', null, 'GET', 'none',0);
+	public static function onSubmitForm()
+	{
+		$itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none', 0);
+		$view   = JFactory::getApplication()->input->get('view', null, 'GET', 'none', 0);
 
 		$script = '
 function OnSubmitForm() {
@@ -38,153 +41,153 @@ function OnSubmitForm() {
 		   case \'affect\':
 		   		if(is_checked("ud")) {
 		   			document.adminForm.task.value = "setAssessor";
-					document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=setAssessor";
+					document.adminForm.action ="index.php?option=com_emundus&view=' . $view . '&controller=' . $view . '&Itemid=' . $itemid . '&task=setAssessor";
 				} else {
-					alert("'.JText::_('COM_EMUNDUS_ALERT_NO_CHECKBOX_CHECKED').'");
+					alert("' . JText::_('COM_EMUNDUS_ALERT_NO_CHECKBOX_CHECKED') . '");
 					return false;
 				}
 			break;
 			case \'unaffect\':
 				if(is_checked("ud")) {
-					if (confirm("'.JText::_("COM_EMUNDUS_GROUPS_CONFIRM_UNAFFECT_ASSESSORS").'")) {
+					if (confirm("' . JText::_("COM_EMUNDUS_GROUPS_CONFIRM_UNAFFECT_ASSESSORS") . '")) {
 						document.adminForm.task.value = "unsetAssessor";
-						document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=unsetAssessor";
+						document.adminForm.action ="index.php?option=com_emundus&view=' . $view . '&controller=' . $view . '&Itemid=' . $itemid . '&task=unsetAssessor";
 					} else
 						return false;
 				} else
-					alert("'.JText::_('COM_EMUNDUS_ALERT_NO_CHECKBOX_CHECKED').'");
+					alert("' . JText::_('COM_EMUNDUS_ALERT_NO_CHECKBOX_CHECKED') . '");
 			break;
 			case \'export_zip\':
 				if (is_checked()) {
 					document.adminForm.task.value = "export_zip";
-					document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=export_zip";
+					document.adminForm.action ="index.php?option=com_emundus&view=' . $view . '&controller=' . $view . '&Itemid=' . $itemid . '&task=export_zip";
 				} else {
-					alert("'.JText::_("COM_EMUNDUS_FORMS_PLEASE_SELECT_APPLICANT").'");
+					alert("' . JText::_("COM_EMUNDUS_FORMS_PLEASE_SELECT_APPLICANT") . '");
 					return false;
 				}
 			break;
 			case \'export_to_xls\':
 				document.adminForm.task.value = "transfert_view";
-				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&Itemid='.$itemid.'&task=transfert_view&v='.$view.'";
+				document.adminForm.action ="index.php?option=com_emundus&view=' . $view . '&Itemid=' . $itemid . '&task=transfert_view&v=' . $view . '";
 			break;
 			case \'custom_email\':
 				document.adminForm.task.value = "customEmail";
-				document.adminForm.action = "index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=customemail";
+				document.adminForm.action = "index.php?option=com_emundus&view=' . $view . '&controller=' . $view . '&Itemid=' . $itemid . '&task=customemail";
 			break;
 			case \'applicant_email\':
 				if(is_checked("ud")) {
 					document.adminForm.task.value = "applicantEmail";
-					document.adminForm.action = "index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=applicantEmail";
+					document.adminForm.action = "index.php?option=com_emundus&view=' . $view . '&controller=' . $view . '&Itemid=' . $itemid . '&task=applicantEmail";
 				} else {
-					alert("'.JText::_('COM_EMUNDUS_FORMS_PLEASE_SELECT_APPLICANT').'");
+					alert("' . JText::_('COM_EMUNDUS_FORMS_PLEASE_SELECT_APPLICANT') . '");
 					return false;
 				}
 			break;
 			case \'default_email\':
-				if (confirm("'.JText::_("COM_EMUNDUS_EMAILS_CONFIRM_DEFAULT_EMAIL").'")) {
+				if (confirm("' . JText::_("COM_EMUNDUS_EMAILS_CONFIRM_DEFAULT_EMAIL") . '")) {
 					document.adminForm.task.value = "defaultEmail";
-					document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=defaultEmail";
+					document.adminForm.action ="index.php?option=com_emundus&view=' . $view . '&controller=' . $view . '&Itemid=' . $itemid . '&task=defaultEmail";
 				} else
 					return false;
 			break;
 			case \'search_button\':
-				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&Itemid='.$itemid.'";
+				document.adminForm.action ="index.php?option=com_emundus&view=' . $view . '&Itemid=' . $itemid . '";
 			break;
 			case \'clear_button\':
 				document.adminForm.task.value = "clear";
-				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=clear";
+				document.adminForm.action ="index.php?option=com_emundus&view=' . $view . '&controller=' . $view . '&Itemid=' . $itemid . '&task=clear";
 			break;
 			case \'delete\':
-			if(confirm("'.JText::_("COM_EMUNDUS_ACTIONS_CONFIRM_DELETE").'")) {
+			if(confirm("' . JText::_("COM_EMUNDUS_ACTIONS_CONFIRM_DELETE") . '")) {
 				document.adminForm.task.value = "delete";
-				document.adminForm.action = "index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=delete&sid="+button_name[1];
+				document.adminForm.action = "index.php?option=com_emundus&view=' . $view . '&controller=' . $view . '&Itemid=' . $itemid . '&task=delete&sid="+button_name[1];
 			}
 			break;
 			case \'push_true\':
 				document.adminForm.task.value = "push_true";
-				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=push_true";
+				document.adminForm.action ="index.php?option=com_emundus&view=' . $view . '&controller=' . $view . '&Itemid=' . $itemid . '&task=push_true";
 			break;
 			case \'push_false\':
 				document.adminForm.task.value = "push_false";
-				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=push_false";
+				document.adminForm.action ="index.php?option=com_emundus&view=' . $view . '&controller=' . $view . '&Itemid=' . $itemid . '&task=push_false";
 			break;
 			case \'validate\':
 				document.adminForm.task.value = "administrative_check";
 				document.getElementById("cb"+button_name[1]).checked = true;
 				document.getElementById("validation_list").value = 1;
-				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=administrative_check";
+				document.adminForm.action ="index.php?option=com_emundus&view=' . $view . '&controller=' . $view . '&Itemid=' . $itemid . '&task=administrative_check";
 			break;
 			case \'unvalidate\':
 				document.adminForm.task.value = "administrative_check";
 				document.getElementById("cb"+button_name[1]).checked = true;
 				document.getElementById("validation_list").value = 0;
-				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=administrative_check";
+				document.adminForm.action ="index.php?option=com_emundus&view=' . $view . '&controller=' . $view . '&Itemid=' . $itemid . '&task=administrative_check";
 			break;
 			case \'set_status\':
 				document.adminForm.task.value = "administrative_check";
-				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=administrative_check";
+				document.adminForm.action ="index.php?option=com_emundus&view=' . $view . '&controller=' . $view . '&Itemid=' . $itemid . '&task=administrative_check";
 			break;
 			case \'delete_eval\':
-			if(confirm("'.JText::_("COM_EMUNDUS_ACTIONS_CONFIRM_DELETE_EVAL").'")) {
+			if(confirm("' . JText::_("COM_EMUNDUS_ACTIONS_CONFIRM_DELETE_EVAL") . '")) {
 				document.adminForm.task.value = "delete_eval";
-				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=delete_eval&sid="+button_name[1];
+				document.adminForm.action ="index.php?option=com_emundus&view=' . $view . '&controller=' . $view . '&Itemid=' . $itemid . '&task=delete_eval&sid="+button_name[1];
 			} else return false;
 			break;
 			case \'export_account_to_xls\':
 				document.adminForm.task.value = "export_account_to_xls";
-				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=export_account_to_xls&Itemid='.$itemid.'";
+				document.adminForm.action ="index.php?option=com_emundus&view=' . $view . '&controller=' . $view . '&task=export_account_to_xls&Itemid=' . $itemid . '";
 			break;
 
 			case \'archive\':
 				document.adminForm.task.value = "archive";
-				document.adminForm.action ="index.php?option=com_emundu&view='.$view.'&controller='.$view.'&task=archive&Itemid='.$itemid.'";
+				document.adminForm.action ="index.php?option=com_emundu&view=' . $view . '&controller=' . $view . '&task=archive&Itemid=' . $itemid . '";
 			break;
 			case \'delusers\':
 				document.adminForm.task.value = "delusers";
-				if (confirm("'.JText::_("COM_EMUNDUS_ACTIONS_CONFIRM_DELETE").'")) {
-	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&Itemid='.$itemid.'&task=delusers&v='.$view.'";
+				if (confirm("' . JText::_("COM_EMUNDUS_ACTIONS_CONFIRM_DELETE") . '")) {
+	        		document.adminForm.action ="index.php?option=com_emundus&view=' . $view . '&Itemid=' . $itemid . '&task=delusers&v=' . $view . '";
 			 	} else
 			 		return false;
 			break;
 			case \'delrefused\':
 				document.adminForm.task.value = "delrefused";
-				if (confirm("'.JText::_("COM_EMUNDUS_ACTIONS_CONFIRM_DELETE").'")) {
-	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=delrefused&Itemid='.$itemid.'";
+				if (confirm("' . JText::_("COM_EMUNDUS_ACTIONS_CONFIRM_DELETE") . '")) {
+	        		document.adminForm.action ="index.php?option=com_emundus&view=' . $view . '&controller=' . $view . '&task=delrefused&Itemid=' . $itemid . '";
 			 	} else
 			 		return false;
 			break;
 			case \'delincomplete\':
 				document.adminForm.task.value = "delincomplete";
-				if (confirm("'.JText::_("COM_EMUNDUS_ACTIONS_CONFIRM_INCOMPLETE").'")) {
-	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=delincomplete&Itemid='.$itemid.'";
+				if (confirm("' . JText::_("COM_EMUNDUS_ACTIONS_CONFIRM_INCOMPLETE") . '")) {
+	        		document.adminForm.action ="index.php?option=com_emundus&view=' . $view . '&controller=' . $view . '&task=delincomplete&Itemid=' . $itemid . '";
 			 	} else
 			 		return false;
 			break;
 			case \'delnonevaluated\':
 				document.adminForm.task.value = "delnonevaluated";
-				if (confirm("'.JText::_("COM_EMUNDUS_ACTIONS_CONFIRM_NON_EVALUATED").'")) {
-	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=delnonevaluated&Itemid='.$itemid.'";
+				if (confirm("' . JText::_("COM_EMUNDUS_ACTIONS_CONFIRM_NON_EVALUATED") . '")) {
+	        		document.adminForm.action ="index.php?option=com_emundus&view=' . $view . '&controller=' . $view . '&task=delnonevaluated&Itemid=' . $itemid . '";
 			 	} else
 			 		return false;
 			break;
 			case \'delete_attachements\':
 				document.adminForm.task.value = "delete_attachements";
-				if (confirm("'.JText::_("COM_EMUNDUS_ATTACHMENTS_CONFIRM_DELETE_SELETED_ATTACHEMENTS").'")) {
-	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=delete_attachements&Itemid='.$itemid.'";
+				if (confirm("' . JText::_("COM_EMUNDUS_ATTACHMENTS_CONFIRM_DELETE_SELETED_ATTACHEMENTS") . '")) {
+	        		document.adminForm.action ="index.php?option=com_emundus&view=' . $view . '&controller=' . $view . '&task=delete_attachements&Itemid=' . $itemid . '";
 			 	} else
 			 		return false;
 			break;
 			case \'delete_comments\':
 				document.adminForm.task.value = "delete_comments";
-				if (confirm("'.JText::_("COM_EMUNDUS_COMMENTS_CONFIRM_DELETE_SELETED_COMMENTS").'")) {
-	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=delete_comments&Itemid='.$itemid.'";
+				if (confirm("' . JText::_("COM_EMUNDUS_COMMENTS_CONFIRM_DELETE_SELETED_COMMENTS") . '")) {
+	        		document.adminForm.action ="index.php?option=com_emundus&view=' . $view . '&controller=' . $view . '&task=delete_comments&Itemid=' . $itemid . '";
 			 	} else
 			 		return false;
 			break;
 			case \'add_comment\':
 				document.adminForm.task.value = "add_comment";
-				if (confirm("'.JText::_("COM_EMUNDUS_COMMENTS_ADD_COMMENT").'")) {
-	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=add_comment&Itemid='.$itemid.'";
+				if (confirm("' . JText::_("COM_EMUNDUS_COMMENTS_ADD_COMMENT") . '")) {
+	        		document.adminForm.action ="index.php?option=com_emundus&view=' . $view . '&controller=' . $view . '&task=add_comment&Itemid=' . $itemid . '";
 			 	} else
 			 		return false;
 			break;
@@ -201,9 +204,10 @@ function OnSubmitForm() {
 	** @todo :
 	*/
 
-	public static function addElement(){
-		$script =
-		'function addElement() {
+	public static function addElement()
+	{
+		$script       =
+			'function addElement() {
 			var ni = document.getElementById("myDiv");
 		  	var numi = document.getElementById("theValue");
 		  	var num = (document.getElementById("theValue").value -1)+ 2;
@@ -211,34 +215,36 @@ function OnSubmitForm() {
 		  	var newdiv = document.createElement("div");
 		  	var divIdName = "my"+num+"Div";
 		  	newdiv.setAttribute("id",divIdName);
-			newdiv.innerHTML = "<select class=\"chzn-select\" name=\"elements[]\" id=\"elements\" onChange=\"javascript:submit();\"><option value=\"\">'.JText::_("COM_EMUNDUS_PLEASE_SELECT").'</option>';
-		$groupe =""; $i=0;
-		$length = 50;
+			newdiv.innerHTML = "<select class=\"chzn-select\" name=\"elements[]\" id=\"elements\" onChange=\"javascript:submit();\"><option value=\"\">' . JText::_("COM_EMUNDUS_PLEASE_SELECT") . '</option>';
+		$groupe       = "";
+		$i            = 0;
+		$length       = 50;
 		$all_elements = EmundusHelperFilters::getElements();
-		foreach($all_elements as $elements) {
+		foreach ($all_elements as $elements) {
 			$groupe_tmp = $elements->group_label;
-			if (isset($groupe) && ($groupe != $groupe_tmp))
-			{
+			if (isset($groupe) && ($groupe != $groupe_tmp)) {
 				$script .= '</optgroup>';
 			}
-			$dot_grp = strlen($groupe_tmp)>=$length?'...':'';
-			$dot_elm = strlen($elements->element_label)>=$length?'...':'';
+			$dot_grp = strlen($groupe_tmp) >= $length ? '...' : '';
+			$dot_elm = strlen($elements->element_label) >= $length ? '...' : '';
 			if ($groupe != $groupe_tmp) {
-				$script .= '<optgroup label=\"'.substr(strtoupper($groupe_tmp), 0, $length).$dot_grp.'\">';
+				$script .= '<optgroup label=\"' . substr(strtoupper($groupe_tmp), 0, $length) . $dot_grp . '\">';
 				$groupe = $groupe_tmp;
 			}
-			$script .= '<option class=\"emundus_search_elm\" value=\"'.$elements->table_name.'.'.$elements->element_name.'\">'.substr(htmlentities($elements->element_label, ENT_QUOTES), 0, $length).$dot_elm.'</option>';
+			$script .= '<option class=\"emundus_search_elm\" value=\"' . $elements->table_name . '.' . $elements->element_name . '\">' . substr(htmlentities($elements->element_label, ENT_QUOTES), 0, $length) . $dot_elm . '</option>';
 
 			$i++;
 		}
-		$script .= '</select>  <a href=\"#removeElement\" title=\"'.JText::_('REMOVE_SEARCH_ELEMENT').'\" onclick=\"removeElement(\'"+divIdName+"\', 1)\"><span class=\"glyphicon glyphicon-trash\" id=\"add_filt\"></span></a>"; ni.appendChild(newdiv); $(".chzn-select").chosen({width:"75%"});}';
+		$script .= '</select>  <a href=\"#removeElement\" title=\"' . JText::_('REMOVE_SEARCH_ELEMENT') . '\" onclick=\"removeElement(\'"+divIdName+"\', 1)\"><span class=\"glyphicon glyphicon-trash\" id=\"add_filt\"></span></a>"; ni.appendChild(newdiv); $(".chzn-select").chosen({width:"75%"});}';
+
 		//die($script);
 		return $script;
 	}
 
-	public static function addElementOther($tables){
-		$script =
-		'function addElementOther() {
+	public static function addElementOther($tables)
+	{
+		$script   =
+			'function addElementOther() {
 			var ni = document.getElementById("otherDiv");
 		  	var numi = document.getElementById("theValue");
 		  	var num = (document.getElementById("theValue").value -1)+ 2;
@@ -246,51 +252,55 @@ function OnSubmitForm() {
 		  	var newdiv = document.createElement("div");
 		  	var divIdName = "other"+num+"Div";
 		  	newdiv.setAttribute("id",divIdName);
-			newdiv.innerHTML = "<select class=\"chzn-select\" name=\"elements_other[]\" id=\"elements_other\" onChange=\"javascript:submit();\"><option value=\"\">'.JText::_("COM_EMUNDUS_PLEASE_SELECT").'</option>';
-		$groupe =""; $i=0;
-		$length = 50;
+			newdiv.innerHTML = "<select class=\"chzn-select\" name=\"elements_other[]\" id=\"elements_other\" onChange=\"javascript:submit();\"><option value=\"\">' . JText::_("COM_EMUNDUS_PLEASE_SELECT") . '</option>';
+		$groupe   = "";
+		$i        = 0;
+		$length   = 50;
 		$elements = EmundusHelperFilters::getElementsOther($tables);
-		if(!empty($elements))
-			foreach($elements as $element) {
+		if (!empty($elements))
+			foreach ($elements as $element) {
 				$groupe_tmp = $element->group_label;
-				if (isset($groupe) && ($groupe != $groupe_tmp) )
-				{
+				if (isset($groupe) && ($groupe != $groupe_tmp)) {
 					$script .= '</optgroup>';
 				}
-				$dot_grp = strlen($groupe_tmp)>=$length?'...':'';
-				$dot_elm = strlen($element->element_label)>=$length?'...':'';
+				$dot_grp = strlen($groupe_tmp) >= $length ? '...' : '';
+				$dot_elm = strlen($element->element_label) >= $length ? '...' : '';
 				if ($groupe != $groupe_tmp) {
-					$script .= '<optgroup label=\"'.substr(strtoupper($groupe_tmp), 0, $length).$dot_grp.'\">';
+					$script .= '<optgroup label=\"' . substr(strtoupper($groupe_tmp), 0, $length) . $dot_grp . '\">';
 					$groupe = $groupe_tmp;
 				}
-				$script .= '<option class=\"emundus_search_elm_other\" value=\"'.$element->table_name.'.'.$element->element_name.'\">'.substr(htmlentities($element->element_label, ENT_QUOTES), 0, $length).$dot_elm.'</option>';
+				$script .= '<option class=\"emundus_search_elm_other\" value=\"' . $element->table_name . '.' . $element->element_name . '\">' . substr(htmlentities($element->element_label, ENT_QUOTES), 0, $length) . $dot_elm . '</option>';
 				$i++;
 			}
-		$script .= '</select><a href=\"#removeElement\" onclick=\"removeElement(\'"+divIdName+"\', 2)\"><img src=\"'.JURI::base().'media/com_emundus/images/icones/viewmag-_16x16.png\" alt=\"'.JText::_('REMOVE_SEARCH_ELEMENT').'\" id=\"add_filt\"/></a>"; ni.appendChild(newdiv); } ';
+		$script .= '</select><a href=\"#removeElement\" onclick=\"removeElement(\'"+divIdName+"\', 2)\"><img src=\"' . JURI::base() . 'media/com_emundus/images/icones/viewmag-_16x16.png\" alt=\"' . JText::_('REMOVE_SEARCH_ELEMENT') . '\" id=\"add_filt\"/></a>"; ni.appendChild(newdiv); } ';
+
 		return $script;
 	}
 
-	public static function delayAct(){
-		$itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
+	public static function delayAct()
+	{
+		$itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none', 0);
 		$script =
-		'function delayAct(user_id, campaign_id){
-			document.adminForm.action = "index.php?option=com_emundus&view='.JFactory::getApplication()->input->get( 'view' ).'&Itemid='.$itemid.'#em_user_id_"+user_id+"_"+campaign_id;
+			'function delayAct(user_id, campaign_id){
+			document.adminForm.action = "index.php?option=com_emundus&view=' . JFactory::getApplication()->input->get('view') . '&Itemid=' . $itemid . '#em_user_id_"+user_id+"_"+campaign_id;
 			setTimeout("document.adminForm.submit()",10) }';
+
 		return $script;
 	}
 
-	public static function getPreferenceFilters(){
+	public static function getPreferenceFilters()
+	{
 		global $option;
 		$mainframe = JFactory::getApplication();
 
 		$script = '
 		function save_filter()
 		{
-			var name=prompt("'.JText::_('COM_EMUNDUS_FILTERS_FILTER_NAME').'","");
+			var name=prompt("' . JText::_('COM_EMUNDUS_FILTERS_FILTER_NAME') . '","");
 			while (name=="")
 			{
-				alert("'.JText::_('COM_EMUNDUS_FILTERS_ALERT_EMPTY_FILTER').'");
-				name=prompt("'.JText::_('COM_EMUNDUS_FILTERS_FILTER_NAME').'","name");
+				alert("' . JText::_('COM_EMUNDUS_FILTERS_ALERT_EMPTY_FILTER') . '");
+				name=prompt("' . JText::_('COM_EMUNDUS_FILTERS_FILTER_NAME') . '","name");
 			}
 			if(name){
 				getJsonInput(name);
@@ -497,7 +507,7 @@ function OnSubmitForm() {
 			}
 
 
-			var view="'.JFactory::getApplication()->input->get('view', null, 'GET', 'none', 0).'";
+			var view="' . JFactory::getApplication()->input->get('view', null, 'GET', 'none', 0) . '";
 			var xhr2 = getXMLHttpRequest();
 			xhr2.onreadystatechange = function()
 			{
@@ -609,17 +619,19 @@ function OnSubmitForm() {
 		}
 
 		window.onload=function() {
-			if("'.$mainframe->getUserState($option.'select_id', 'select_id').'"!="select_id"){
-				$(\'select_filter\').options['.$mainframe->getUserState($option.'select_id', 'select_id').'].selected=true;
+			if("' . $mainframe->getUserState($option . 'select_id', 'select_id') . '"!="select_id"){
+				$(\'select_filter\').options[' . $mainframe->getUserState($option . 'select_id', 'select_id') . '].selected=true;
 			}
 			/* getLegend();*/
 		}
 		';
+
 		return $script;
 	}
 
-	public static function clearAdvanceFilter(){
-		$itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
+	public static function clearAdvanceFilter()
+	{
+		$itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none', 0);
 		$script = '
 		function clearAdvanceFilter(filter){
 
@@ -701,11 +713,13 @@ function OnSubmitForm() {
 				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 				xhr.send("&filters="+filters+"&filters_other="+filters_other);
 		}';
+
 		return $script;
 	}
 
-	public static function getTemplate(){
-		$itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
+	public static function getTemplate()
+	{
+		$itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none', 0);
 		$editor = JFactory::getEditor();
 		$script = '
 		function getXMLHttpRequest() {
@@ -758,7 +772,9 @@ function OnSubmitForm() {
 			xhr.send("&select="+select.value);
 		}
 		';
+
 		return $script;
 	}
 }
+
 ?>

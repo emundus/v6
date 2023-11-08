@@ -15,17 +15,19 @@
       >
         <div class="messages__attach_content">
           <ul class="messages__attach_actions_tabs" v-if="!applicant">
-            <li class="messages__attach_action" @click="action = 1" :class="action === 1 ? 'messages__attach_action__current' : ''">{{translations.sendDocument}}</li>
-            <li class="messages__attach_action" @click="action = 2" :class="action === 2 ? 'messages__attach_action__current' : ''">{{translations.askDocument}}</li>
+            <li class="messages__attach_action" @click="action = 1"
+                :class="action === 1 ? 'messages__attach_action__current' : ''">{{ translations.sendDocument }}</li>
+            <li class="messages__attach_action" @click="action = 2"
+                :class="action === 2 ? 'messages__attach_action__current' : ''">{{ translations.askDocument }}</li>
           </ul>
 
           <div v-if="action === 1">
-            <label v-if="applicant">{{translations.sendDocument}}</label>
+            <label v-if="applicant">{{ translations.sendDocument }}</label>
             <div v-if="applicant && types.length > 0" class="messages__attach_applicant_doc">
-              <label for="applicant_attachment_input">{{translations.typeAttachment}}</label>
+              <label for="applicant_attachment_input">{{ translations.typeAttachment }}</label>
               <select v-model="attachment_input" id="applicant_attachment_input">
-                <option :value="0">{{translations.pleaseSelect }}</option>
-                <option v-for="type in types" :value="type.id">{{type.value}}</option>
+                <option :value="0">{{ translations.pleaseSelect }}</option>
+                <option v-for="type in types" :value="type.id">{{ type.value }}</option>
               </select>
             </div>
             <vue-dropzone
@@ -42,7 +44,7 @@
                 v-on:vdropzone-sending="sendingEvent">
               <div class="dropzone-custom-content" id="dropzone-message">
                 <em class="fas fa-file-image"></em>
-                {{translations.DropHere}}
+                {{ translations.DropHere }}
               </div>
             </vue-dropzone>
             <button type="button" class="messages__send_button" @click="sendMessage" v-if="applicant">
@@ -50,10 +52,10 @@
             </button>
           </div>
           <div v-if="action === 2">
-            <label for="attachment_input">{{translations.typeAttachment}}</label>
+            <label for="attachment_input">{{ translations.typeAttachment }}</label>
             <select v-model="attachment_input" id="attachment_input">
-              <option :value="0">{{translations.pleaseSelect }}</option>
-              <option v-for="type in types" :value="type.id">{{type.value}}</option>
+              <option :value="0">{{ translations.pleaseSelect }}</option>
+              <option v-for="type in types" :value="type.id">{{ type.value }}</option>
             </select>
           </div>
         </div>
@@ -96,7 +98,7 @@ export default {
   },
   data() {
     return {
-      translations:{
+      translations: {
         sendDocument: Joomla.JText._("COM_EMUNDUS_MESSENGER_SEND_DOCUMENT"),
         askDocument: Joomla.JText._("COM_EMUNDUS_MESSENGER_ASK_DOCUMENT"),
         DropHere: Joomla.JText._("COM_EMUNDUS_MESSENGER_DROP_HERE"),
@@ -123,32 +125,33 @@ export default {
   },
 
   methods: {
-    beforeClose() {},
+    beforeClose() {
+    },
 
     afterAdded() {
       document.getElementById('dropzone-message').style.display = 'none';
     },
 
     afterRemoved() {
-      if(this.$refs.dropzone.getAcceptedFiles().length === 0){
+      if (this.$refs.dropzone.getAcceptedFiles().length === 0) {
         document.getElementById('dropzone-message').style.display = 'block';
       }
     },
 
-    onComplete: function(response){
+    onComplete: function (response) {
       this.message_input = '';
       console.log(response);
-      if(response.status == 'success'){
-        this.$emit("pushAttachmentMessage",JSON.parse(response.xhr.response).data);
+      if (response.status == 'success') {
+        this.$emit("pushAttachmentMessage", JSON.parse(response.xhr.response).data);
       }
     },
 
-    sendingEvent(file, xhr, formData){
+    sendingEvent(file, xhr, formData) {
       formData.append('message', this.message_input);
       formData.append('attachment', this.attachment_input);
     },
 
-    catchError: function(file, message, xhr){
+    catchError: function (file, message, xhr) {
       Swal.fire({
         title: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR"),
         text: message,
@@ -178,7 +181,7 @@ export default {
       }
     },
 
-    getTypesByCampaign(){
+    getTypesByCampaign() {
       axios({
         method: "get",
         url: "index.php?option=com_emundus&controller=messenger&task=getdocumentsbycampaign",
@@ -194,7 +197,7 @@ export default {
       });
     },
 
-    askAttachment(){
+    askAttachment() {
       axios({
         method: "post",
         url: "index.php?option=com_emundus&controller=messenger&task=askattachment",
@@ -207,13 +210,13 @@ export default {
           message: this.message_input,
         })
       }).then(response => {
-        this.$emit("pushAttachmentMessage",response.data.data);
+        this.$emit("pushAttachmentMessage", response.data.data);
       });
     },
 
-    sendMessage(message){
-      if(this.action === 1) {
-        if(!this.applicant) {
+    sendMessage(message) {
+      if (this.action === 1) {
+        if (!this.applicant) {
           this.message_input = message;
         }
         this.$refs.dropzone.processQueue();
@@ -230,7 +233,7 @@ export default {
 </script>
 
 <style scoped>
-.messages__send_button{
+.messages__send_button {
   margin: 20px 0;
   float: right;
 }

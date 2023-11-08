@@ -1,4 +1,4 @@
-.tutorial-link{
+.tutorial-link {
     color: white !important;
     text-decoration: unset !important;
     display: flex;
@@ -7,14 +7,14 @@
     align-items: center;
 }
 
-.swal2-title{
+.swal2-title {
     margin-top: 1em !important;
 }
 
-.swal-button-link{
+.swal-button-link {
     padding: 0 !important;
 }
 
-.swal-popup-custom{
+.swal-popup-custom {
     width: auto !important;
 }

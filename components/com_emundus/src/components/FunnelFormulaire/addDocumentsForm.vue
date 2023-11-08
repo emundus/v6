@@ -14,7 +14,7 @@
             v-on:vdropzone-error="catchError">
           <div class="dropzone-custom-content" id="dropzone-message">
             <em class="fas fa-file-upload"></em>
-            {{DropHere}}
+            {{ DropHere }}
           </div>
         </vue-dropzone>
 
@@ -28,11 +28,12 @@
                 <span class="draggable">
                   {{ document.name }}
                 </span>
-                <button type="button" @click="deleteDoc(indexDoc,document.id)" class="buttonDeleteDoc">
-                  <em class="fas fa-times"></em>
-                </button>
+              <button type="button" @click="deleteDoc(indexDoc,document.id)" class="buttonDeleteDoc">
+                <em class="fas fa-times"></em>
+              </button>
             </div>
-            <a @click="editName(document)" class="cta-block pointer" style="font-size: 27px;float: right;position: relative;bottom: -20px;">
+            <a @click="editName(document)" class="cta-block pointer"
+               style="font-size: 27px;float: right;position: relative;bottom: -20px;">
               <em class="fas fa-pen"></em>
             </a>
           </li>
@@ -120,7 +121,7 @@ export default {
         this.documents = response.data.documents;
       });
     },
-    editName(doc){
+    editName(doc) {
       Swal.fire({
         title: '',
         html: '<div class="form-group campaign-label">' +
@@ -133,7 +134,7 @@ export default {
           popup: 'swal-popup-custom',
         }
       }).then((value) => {
-        if(value){
+        if (value) {
           let newname = document.getElementById('label_' + doc.id).value
           axios({
             method: "post",
@@ -152,7 +153,7 @@ export default {
         }
       });
     },
-    deleteDoc(index,id) {
+    deleteDoc(index, id) {
       this.documents.splice(index, 1);
       axios({
         method: "post",
@@ -162,7 +163,7 @@ export default {
         },
         data: qs.stringify({
           pid: this.profileId,
-          did : id,
+          did: id,
         })
       });
     },
@@ -171,15 +172,15 @@ export default {
       document.getElementById('dropzone-message').style.display = 'none';
     },
     afterRemoved() {
-      if(this.$refs.dropzone.getAcceptedFiles().length === 0){
+      if (this.$refs.dropzone.getAcceptedFiles().length === 0) {
         document.getElementById('dropzone-message').style.display = 'block';
       }
     },
-    onComplete: function(response){
+    onComplete: function (response) {
       this.documents.push(JSON.parse(response.xhr.response));
       this.$refs.dropzone.removeFile(response);
     },
-    catchError: function(file, message){
+    catchError: function (file, message) {
       Swal.fire({
         title: this.translate("COM_EMUNDUS_ONBOARD_ERROR"),
         text: message,
@@ -198,12 +199,12 @@ export default {
 };
 </script>
 <style scoped>
-.fa-file-upload{
+.fa-file-upload {
   font-size: 25px;
   margin-right: 20px;
 }
 
-.list-group-item{
+.list-group-item {
   border: 2px solid #ececec;
   margin-bottom: 10px;
   border-radius: 5px;

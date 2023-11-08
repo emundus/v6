@@ -1,24 +1,24 @@
 <template>
   <div class="autocomplete">
     <input
-      type="text"
-      :id="id"
-      v-model="search"
-      @input="onChange"
-      @keydown.down="onArrowDown"
-      @keydown.up="onArrowUp"
-      @keydown.enter="onEnter"
-      :placeholder="year !== '' ? year : name"
-      :class="year !== '' ? '' : 'placeholder'"
-      class="em-w-100"
+        type="text"
+        :id="id"
+        v-model="search"
+        @input="onChange"
+        @keydown.down="onArrowDown"
+        @keydown.up="onArrowUp"
+        @keydown.enter="onEnter"
+        :placeholder="year !== '' ? year : name"
+        :class="year !== '' ? '' : 'placeholder'"
+        class="em-w-100"
     />
     <ul v-show="isOpen" class="autocomplete-results">
       <li
-        v-for="(result, i) in results"
-        :key="i"
-        @click="setResult(result)"
-        class="autocomplete-result"
-        :class="{ 'is-active': i === arrowCounter }"
+          v-for="(result, i) in results"
+          :key="i"
+          @click="setResult(result)"
+          class="autocomplete-result"
+          :class="{ 'is-active': i === arrowCounter }"
       >
         {{ result }}
       </li>
@@ -72,7 +72,7 @@ export default {
     },
     filterResults() {
       this.results = this.items.filter(
-        item => item.toLowerCase().indexOf(this.search.toLowerCase()) > -1
+          item => item.toLowerCase().indexOf(this.search.toLowerCase()) > -1
       );
     },
     setResult(result) {
@@ -124,8 +124,8 @@ export default {
 }
 
 .autocomplete input {
-	height: 48px;
-	margin-bottom: 0px;
+  height: 48px;
+  margin-bottom: 0px;
 }
 
 .autocomplete-results {

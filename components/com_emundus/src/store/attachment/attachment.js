@@ -7,33 +7,31 @@ const state = {
     checkedAttachments: [],
 };
 
-const getters = {
-
-};
+const getters = {};
 
 const actions = {
-    setAttachments({ commit }, attachments) {
+    setAttachments({commit}, attachments) {
         commit('setAttachments', attachments);
     },
-    setAttachmentsOfFnum({ commit }, data) {
+    setAttachmentsOfFnum({commit}, data) {
         commit('setAttachmentsOfFnum', data);
     },
-    updateAttachmentOfFnum({ commit }, data) {
+    updateAttachmentOfFnum({commit}, data) {
         commit('updateAttachmentOfFnum', data);
     },
-    setSelectedAttachment({ commit }, attachment) {
+    setSelectedAttachment({commit}, attachment) {
         commit('setSelectedAttachment', attachment);
     },
-    setPreview({ commit }, previewData) {
+    setPreview({commit}, previewData) {
         commit('setPreview', previewData);
     },
-    setCategories({ commit }, categories) {
+    setCategories({commit}, categories) {
         commit('setCategories', categories);
     },
-    setAttachmentPath({ commit }, path) {
+    setAttachmentPath({commit}, path) {
         commit('setAttachmentPath', path);
     },
-    setCheckedAttachments({ commit }, attachments) {
+    setCheckedAttachments({commit}, attachments) {
         commit('setCheckedAttachments', attachments);
     }
 };

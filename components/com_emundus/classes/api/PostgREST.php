@@ -1,10 +1,10 @@
 <?php
 /**
- * @package     com_emundus
- * @subpackage  api
- * @author    eMundus.fr
+ * @package       com_emundus
+ * @subpackage    api
+ * @author        eMundus.fr
  * @copyright (C) 2022 eMundus SOFTWARE. All rights reserved.
- * @license    GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
+ * @license       GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
  */
 
 namespace classes\api;
@@ -18,6 +18,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 
 defined('_JEXEC') or die('Restricted access');
+
 class PostgREST extends Api
 {
 	private $db;
@@ -36,7 +37,7 @@ class PostgREST extends Api
 
 	public function setBaseUrl(): void
 	{
-		$config = ComponentHelper::getParams('com_emundus');
+		$config        = ComponentHelper::getParams('com_emundus');
 		$this->baseUrl = $config->get('postgrest_api_base_url', '');
 	}
 
@@ -62,43 +63,42 @@ class PostgREST extends Api
 
 		$query = $this->db->getQuery(true);
 
-		try
-		{
+		try {
 			$query->select('config')
 				->from($this->db->quoteName('#__emundus_setup_sync'))
 				->where($this->db->quoteName('type') . ' LIKE ' . $this->db->quote('postgrest'));
 			$this->db->setQuery($query);
 			$result = $this->db->loadResult();
-			if(!empty($result)){
+			if (!empty($result)) {
 				$result = json_decode($result, true);
-			} else {
+			}
+			else {
 				$result = array();
 			}
 		}
-		catch (\Exception $e)
-		{
+		catch (\Exception $e) {
 			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
 
 		return $result;
 	}
 
-	public function mapDatas($datas,$uid = 0): bool{
+	public function mapDatas($datas, $uid = 0): bool
+	{
 		$result = true;
 
-		$query = $this->db->getQuery(true);
+		$query   = $this->db->getQuery(true);
 		$mapping = $this->getAttributeMapping();
 
-		if(empty($uid)){
+		if (empty($uid)) {
 			$uid = Factory::getApplication()->getIdentity()->id;
 		}
 
-		try
-		{
-			if(!empty($datas) && !empty($mapping['mapping'])){
+		try {
+			if (!empty($datas) && !empty($mapping['mapping'])) {
 
-				foreach($mapping['mapping'] as $map){
-					$table = $map['table'];
+				foreach ($mapping['mapping'] as $map) {
+					$table    = $map['table'];
 					$user_key = $map['user_key'];
 
 					$query->clear()
@@ -108,43 +108,43 @@ class PostgREST extends Api
 					$this->db->setQuery($query);
 					$exists = $this->db->loadResult();
 
-					if($exists)
-					{
+					if ($exists) {
 						$query->clear()
 							->update($this->db->quoteName($table))
 							->where($this->db->quoteName($user_key) . ' = ' . $this->db->quote($uid));
-					} else {
+					}
+					else {
 						$query->clear()
 							->insert($this->db->quoteName($table))
 							->set($this->db->quoteName($user_key) . ' = ' . $this->db->quote($uid));
 					}
 
-					foreach($map['attributes'] as $api_key => $attribute){
-						if(!empty($datas->{$api_key})){
-							$value =  $datas->{$api_key};
+					foreach ($map['attributes'] as $api_key => $attribute) {
+						if (!empty($datas->{$api_key})) {
+							$value = $datas->{$api_key};
 
-							if(isset($attribute['mapping_options'])){
-								if(!empty($attribute['mapping_options'][$datas->{$api_key}])){
+							if (isset($attribute['mapping_options'])) {
+								if (!empty($attribute['mapping_options'][$datas->{$api_key}])) {
 									$value = $attribute['mapping_options'][$datas->{$api_key}];
 								}
 							}
 
-							if(!empty($value)){
+							if (!empty($value)) {
 								$query->set($this->db->quoteName($attribute['key']) . ' = ' . $this->db->quote($value));
 							}
 						}
 					}
 
 					$this->db->setQuery($query);
-					if(!$this->db->execute()){
-						JLog::add('Error when map Postgrest api datas with query : '.$query->__toString().' with error : '.$this->db->getErrorMsg(), JLog::ERROR, 'com_emundus');
+					if (!$this->db->execute()) {
+						JLog::add('Error when map Postgrest api datas with query : ' . $query->__toString() . ' with error : ' . $this->db->getErrorMsg(), JLog::ERROR, 'com_emundus');
+
 						return false;
 					}
 				}
 			}
 		}
-		catch (\Exception $e)
-		{
+		catch (\Exception $e) {
 			$result = false;
 			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
 		}

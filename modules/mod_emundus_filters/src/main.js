@@ -1,10 +1,10 @@
-import { createApp } from 'vue';
+import {createApp} from 'vue';
 import Vuex from 'vuex';
 import App from './App.vue';
 import translate from './mixins/translate';
 
 
-const modFilters =  document.getElementById('em-filters-vue');
+const modFilters = document.getElementById('em-filters-vue');
 if (modFilters) {
     const appliedFilters = JSON.parse(atob(modFilters.getAttribute('data-applied-filters')));
     const filters = JSON.parse(atob(modFilters.getAttribute('data-filters')));

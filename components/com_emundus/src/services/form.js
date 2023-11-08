@@ -1,5 +1,6 @@
 /* jshint esversion: 8 */
 import client from './axiosClient';
+
 const baseUrl = 'index.php?option=com_emundus&controller=form';
 
 export default {
@@ -8,13 +9,13 @@ export default {
         Object.keys(params).forEach(key => formData.append(key, params[key]));
 
         try {
-            const response = await client().post( baseUrl + '&task=updateformlabel', formData);
+            const response = await client().post(baseUrl + '&task=updateformlabel', formData);
 
             return response;
         } catch (error) {
             return {
                 status: false,
-                error:error
+                error: error
             };
         }
     },
@@ -26,7 +27,7 @@ export default {
         } catch (error) {
             return {
                 status: false,
-                error:error
+                error: error
             };
         }
     },
@@ -45,12 +46,11 @@ export default {
         } catch (error) {
             return {
                 status: false,
-                error:error
+                error: error
             };
         }
     },
-    async getFormsByProfileId(id)
-    {
+    async getFormsByProfileId(id) {
         try {
             const response = await client().get(
                 baseUrl + '&task=getFormsByProfileId',
@@ -59,7 +59,7 @@ export default {
                         profile_id: id
                     }
                 }
-             );
+            );
 
             return response;
         } catch (error) {
@@ -80,8 +80,7 @@ export default {
             };
         }
     },
-    async getProfileLabelByProfileId(id)
-    {
+    async getProfileLabelByProfileId(id) {
         const formData = new FormData();
         formData.append('profile_id', id);
 
@@ -96,8 +95,7 @@ export default {
             };
         }
     },
-    async getDocuments(id)
-    {
+    async getDocuments(id) {
         if (id > 0) {
             try {
                 const response = await client().get(baseUrl + '&task=getDocuments', {params: {pid: id}});
@@ -187,8 +185,7 @@ export default {
             };
         }
     },
-    async reorderDocuments(documents)
-    {
+    async reorderDocuments(documents) {
         try {
             const formData = new FormData();
             formData.append('documents', JSON.stringify(documents));
@@ -202,12 +199,11 @@ export default {
         } catch (error) {
             return {
                 status: false,
-                error:error
+                error: error
             };
         }
     },
-    async addDocument(params)
-    {
+    async addDocument(params) {
         const formData = new FormData();
         Object.keys(params).forEach(key => formData.append(key, params[key]));
 
@@ -218,32 +214,30 @@ export default {
         } catch (error) {
             return {
                 status: false,
-                error:error
+                error: error
             };
         }
     },
-    async getAssociatedCampaigns(id)
-    {
-      try {
-        const response = client().get(
-          baseUrl + '&task=getassociatedcampaign',
-          {
-            params: {
-              pid: id
-            }
-          }
-        );
+    async getAssociatedCampaigns(id) {
+        try {
+            const response = client().get(
+                baseUrl + '&task=getassociatedcampaign',
+                {
+                    params: {
+                        pid: id
+                    }
+                }
+            );
 
-        return response;
-      } catch (error) {
-        return {
-          status: false,
-          error:error
-        };
-      }
+            return response;
+        } catch (error) {
+            return {
+                status: false,
+                error: error
+            };
+        }
     },
-    async removeDocumentFromProfile(id)
-    {
+    async removeDocumentFromProfile(id) {
         try {
             const response = await client().get(
                 baseUrl + '&task=removeDocumentFromProfile',
@@ -252,18 +246,17 @@ export default {
                         did: id
                     }
                 }
-             );
+            );
 
             return response;
         } catch (error) {
             return {
                 status: false,
-                error:error
+                error: error
             };
         }
     },
-    async getPageObject(formId)
-    {
+    async getPageObject(formId) {
         try {
             const response = await client().get(
                 'index.php?option=com_emundus&view=form&formid=' + formId + '&format=vue_jsonclean'
@@ -281,8 +274,7 @@ export default {
             };
         }
     },
-    async checkIfDocumentCanBeDeletedForProfile(documentId, profileId)
-    {
+    async checkIfDocumentCanBeDeletedForProfile(documentId, profileId) {
         try {
             const response = await client().get(
                 baseUrl + '&task=checkcandocbedeleted&docid=' + documentId + '&prid=' + profileId
@@ -292,7 +284,7 @@ export default {
         } catch (error) {
             return {
                 status: false,
-                error:error
+                error: error
             };
         }
     }

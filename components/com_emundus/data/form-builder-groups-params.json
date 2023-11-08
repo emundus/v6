@@ -22,7 +22,7 @@
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_SECTIONS_REPEAT",
       "name": "repeat_group_button",
       "type": "dropdown",
-      "options" : [
+      "options": [
         {
           "value": 0,
           "label": "JNO"

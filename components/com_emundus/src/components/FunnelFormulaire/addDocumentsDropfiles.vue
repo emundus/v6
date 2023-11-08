@@ -1,63 +1,69 @@
 <template>
   <div id="documents-dropfiles">
-      <div class="w-form">
-        <vue-dropzone
-            ref="dropzone"
-            id="customdropzone"
-            style="width: 100%"
-            :include-styling="false"
-            :options="dropzoneOptions"
-            :useCustomSlot=true
-            v-on:vdropzone-file-added="afterAdded"
-            v-on:vdropzone-removed-file="afterRemoved"
-            v-on:vdropzone-success="onComplete"
-            v-on:vdropzone-error="catchError">
-          <div class="dropzone-custom-content" id="dropzone-message">
-            {{DropHere}}
-          </div>
-        </vue-dropzone>
+    <div class="w-form">
+      <vue-dropzone
+          ref="dropzone"
+          id="customdropzone"
+          style="width: 100%"
+          :include-styling="false"
+          :options="dropzoneOptions"
+          :useCustomSlot=true
+          v-on:vdropzone-file-added="afterAdded"
+          v-on:vdropzone-removed-file="afterRemoved"
+          v-on:vdropzone-success="onComplete"
+          v-on:vdropzone-error="catchError">
+        <div class="dropzone-custom-content" id="dropzone-message">
+          {{ DropHere }}
+        </div>
+      </vue-dropzone>
 
-        <hr>
+      <hr>
 
-        <draggable
-            v-model="documents"
-            style="margin: 0"
-            handle=".handle"
-            class="em-flex-row"
-            chosen-class="em-grabbing"
-            v-bind="dragOptions"
-            @end="updateDocumentsOrder"
-        >
-          <transition-group type="transition" :value="!drag ? 'flip-list' : null" class="em-grid-3 em-w-100 handle">
-            <div :id="'itemDoc' + document.id"
-                 v-for="(document,indexDoc) in documents"
-                 :key="document.id"
-                 class="em-document-dropzone-card em-grab">
-              <button type="button" class="em-float-right em-transparent-button" @click="deleteDoc(indexDoc,document.id)">
-                <span class="material-icons-outlined">close</span>
-              </button>
-              <div class="em-flex-row em-w-100 em-flex-center">
-                <div class="em-flex-column em-edit-cursor" @click="editName(document)">
-                  <img v-if="document.ext === 'pdf'" src="media/com_emundus/images/icones/filetype/pdf.png" class="em-filetype-icon" alt="filetype">
-                  <img v-else-if="['docx','doc','odf'].includes(document.ext)" src="media/com_emundus/images/icones/filetype/doc.png" class="em-filetype-icon" alt="filetype">
-                  <img v-else-if="['xls','xlsx','csv'].includes(document.ext)" src="media/com_emundus/images/icones/filetype/excel.png" class="em-filetype-icon" alt="filetype">
-                  <img v-else-if="['png','gif','jpg','jpeg'].includes(document.ext)" src="media/com_emundus/images/icones/filetype/image.png" class="em-filetype-icon" alt="filetype">
-                  <img v-else-if="['zip','rar'].includes(document.ext)" src="media/com_emundus/images/icones/filetype/zip.png" class="em-filetype-icon" alt="filetype">
-                  <img v-else-if="['svg'].includes(document.ext)" src="media/com_emundus/images/icones/filetype/svg.png" class="em-filetype-icon" alt="filetype">
-                  <div class="em-mt-8">
-                    <span class="em-overflow-ellipsis em-max-width-250 em-mr-4">{{ document.title }}</span>
-                  </div>
+      <draggable
+          v-model="documents"
+          style="margin: 0"
+          handle=".handle"
+          class="em-flex-row"
+          chosen-class="em-grabbing"
+          v-bind="dragOptions"
+          @end="updateDocumentsOrder"
+      >
+        <transition-group type="transition" :value="!drag ? 'flip-list' : null" class="em-grid-3 em-w-100 handle">
+          <div :id="'itemDoc' + document.id"
+               v-for="(document,indexDoc) in documents"
+               :key="document.id"
+               class="em-document-dropzone-card em-grab">
+            <button type="button" class="em-float-right em-transparent-button" @click="deleteDoc(indexDoc,document.id)">
+              <span class="material-icons-outlined">close</span>
+            </button>
+            <div class="em-flex-row em-w-100 em-flex-center">
+              <div class="em-flex-column em-edit-cursor" @click="editName(document)">
+                <img v-if="document.ext === 'pdf'" src="media/com_emundus/images/icones/filetype/pdf.png"
+                     class="em-filetype-icon" alt="filetype">
+                <img v-else-if="['docx','doc','odf'].includes(document.ext)"
+                     src="media/com_emundus/images/icones/filetype/doc.png" class="em-filetype-icon" alt="filetype">
+                <img v-else-if="['xls','xlsx','csv'].includes(document.ext)"
+                     src="media/com_emundus/images/icones/filetype/excel.png" class="em-filetype-icon" alt="filetype">
+                <img v-else-if="['png','gif','jpg','jpeg'].includes(document.ext)"
+                     src="media/com_emundus/images/icones/filetype/image.png" class="em-filetype-icon" alt="filetype">
+                <img v-else-if="['zip','rar'].includes(document.ext)"
+                     src="media/com_emundus/images/icones/filetype/zip.png" class="em-filetype-icon" alt="filetype">
+                <img v-else-if="['svg'].includes(document.ext)" src="media/com_emundus/images/icones/filetype/svg.png"
+                     class="em-filetype-icon" alt="filetype">
+                <div class="em-mt-8">
+                  <span class="em-overflow-ellipsis em-max-width-250 em-mr-4">{{ document.title }}</span>
                 </div>
               </div>
-              <hr/>
-              <div>
-                <span><strong>{{ translate('COM_EMUNDUS_ONBOARD_FILE_SIZE') }} : </strong></span>
-                <span>{{ formatBytes(document.size) }}</span>
-              </div>
             </div>
-          </transition-group>
-        </draggable>
-      </div>
+            <hr/>
+            <div>
+              <span><strong>{{ translate('COM_EMUNDUS_ONBOARD_FILE_SIZE') }} : </strong></span>
+              <span>{{ formatBytes(document.size) }}</span>
+            </div>
+          </div>
+        </transition-group>
+      </draggable>
+    </div>
 
     <div class="em-page-loader" v-if="loading"></div>
   </div>
@@ -118,7 +124,7 @@ export default {
         dictInvalidFileType: this.translate("COM_EMUNDUS_ONBOARD_INVALID_FILE_TYPE"),
         dictFileTooBig: this.translate("COM_EMUNDUS_ONBOARD_FILE_TOO_BIG"),
         dictMaxFilesExceeded: this.translate("COM_EMUNDUS_ONBOARD_MAX_FILES_EXCEEDED"),
-	      uploadMultiple: false
+        uploadMultiple: false
       },
       documents: [],
       Retour: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
@@ -148,8 +154,8 @@ export default {
         this.documents = response.data.documents;
       });
     },
-    updateDocumentsOrder(){
-      this.documents.forEach((document,index) => {
+    updateDocumentsOrder() {
+      this.documents.forEach((document, index) => {
         document.ordering = index;
       });
       axios({
@@ -163,7 +169,7 @@ export default {
         })
       });
     },
-    editName(doc){
+    editName(doc) {
       Swal.fire({
         title: '',
         html: '<div class="form-group campaign-label">' +
@@ -177,11 +183,11 @@ export default {
           actions: "em-swal-single-action",
         }
       }).then((value) => {
-        if(value){
+        if (value) {
           let newname = document.getElementById('label_' + doc.id).value;
-					if (newname.length > 200) {
-						newname = newname.substring(0, 200);
-					}
+          if (newname.length > 200) {
+            newname = newname.substring(0, 200);
+          }
 
           axios({
             method: "post",
@@ -199,7 +205,7 @@ export default {
         }
       });
     },
-    deleteDoc(index,id) {
+    deleteDoc(index, id) {
       this.documents.splice(index, 1);
       axios({
         method: "post",
@@ -208,7 +214,7 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
-          did : id,
+          did: id,
         })
       });
     },
@@ -228,15 +234,15 @@ export default {
       document.getElementById('dropzone-message').style.display = 'none';
     },
     afterRemoved() {
-      if(this.$refs.dropzone.getAcceptedFiles().length === 0){
+      if (this.$refs.dropzone.getAcceptedFiles().length === 0) {
         document.getElementById('dropzone-message').style.display = 'block';
       }
     },
-    onComplete: function(response){
+    onComplete: function (response) {
       this.documents.push(JSON.parse(response.xhr.response));
       this.$refs.dropzone.removeFile(response);
     },
-    catchError: function(file, message){
+    catchError: function (file, message) {
       Swal.fire({
         title: this.translate("COM_EMUNDUS_ONBOARD_ERROR"),
         text: message,
@@ -266,12 +272,12 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-.fa-file-upload{
+.fa-file-upload {
   font-size: 25px;
   margin-right: 20px;
 }
 
-.list-group-item{
+.list-group-item {
   border: 2px solid #ececec;
   margin-bottom: 10px;
   border-radius: 5px;
@@ -291,48 +297,58 @@ export default {
   align-items: center;
   display: flex;
   cursor: pointer;
+
   .dz-preview {
     width: 100%;
     display: inline-block;
     text-align: center;
+
     .dz-image {
       width: auto;
       height: 100px;
-      >div {
+
+      > div {
         width: inherit;
         height: inherit;
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center;
       }
-      >img {
+
+      > img {
         width: 100%;
       }
     }
+
     .dz-details {
       color: black;
       transition: opacity .2s linear;
       text-align: center;
     }
   }
+
   .dz-success-mark {
     display: none;
   }
 }
+
 .dz-default.dz-message {
   text-align: center !important;
 }
+
 .dz-error-mark {
   display: none;
 }
+
 /**** END ****/
 
-.em-document-dropzone-card{
+.em-document-dropzone-card {
   background: white;
   border-radius: 5px;
   padding: 16px 24px;
 }
-.em-filetype-icon{
+
+.em-filetype-icon {
   width: 50px;
 }
 </style>

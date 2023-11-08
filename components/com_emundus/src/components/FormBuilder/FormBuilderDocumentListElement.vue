@@ -10,9 +10,12 @@
             <span class="section-title">{{ documentData.name[shortDefaultLang] }}</span>
 
             <div>
-              <span class="material-icons-outlined em-pointer hover-opacity" @click="moveDocument('up')" title="Move section upwards">keyboard_double_arrow_up</span>
-              <span class="material-icons-outlined em-pointer hover-opacity" @click="moveDocument('down')" title="Move section downwards">keyboard_double_arrow_down</span>
-              <span v-if="canBeRemoved" class="material-icons-outlined em-red-500-color em-pointer hover-opacity" @click="deleteDocument">delete</span>
+              <span class="material-icons-outlined em-pointer hover-opacity" @click="moveDocument('up')"
+                    title="Move section upwards">keyboard_double_arrow_up</span>
+              <span class="material-icons-outlined em-pointer hover-opacity" @click="moveDocument('down')"
+                    title="Move section downwards">keyboard_double_arrow_down</span>
+              <span v-if="canBeRemoved" class="material-icons-outlined em-red-500-color em-pointer hover-opacity"
+                    @click="deleteDocument">delete</span>
             </div>
           </div>
           <p> {{ documentData.description[shortDefaultLang] }} </p>
@@ -44,24 +47,24 @@ export default {
       type: Number,
       default: 1,
     },
-	  profile_id: {
-			type: Number,
-		  required: true
-	  }
+    profile_id: {
+      type: Number,
+      required: true
+    }
   },
   mixins: [formBuilderMixin],
-  data () {
+  data() {
     return {
       closedSection: false,
       documentData: {},
-	    canBeRemoved: false,
-	    reasonCantRemove: ''
+      canBeRemoved: false,
+      reasonCantRemove: ''
     }
   },
   created() {
     if (this.document.docid) {
       this.getDocumentModel(this.document.docid);
-			this.checkIfDocumentCanBeDeleted();
+      this.checkIfDocumentCanBeDeleted();
     }
   },
   methods: {
@@ -100,43 +103,43 @@ export default {
       this.$emit('edit-document');
     },
     deleteDocument(event) {
-	    this.swalConfirm(
-			    this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_DOCUMENT'),
-			    this.document.label,
-			    this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_DOCUMENT_CONFIRM'),
-			    this.translate('JNO'),
-			    () => {
-				    formService.removeDocumentFromProfile(this.document.id).then(response => {
-					    this.$emit('delete-document', this.document.id);
-					    this.$destroy();
-				    });
-			    },
-	    );
+      this.swalConfirm(
+          this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_DOCUMENT'),
+          this.document.label,
+          this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_DOCUMENT_CONFIRM'),
+          this.translate('JNO'),
+          () => {
+            formService.removeDocumentFromProfile(this.document.id).then(response => {
+              this.$emit('delete-document', this.document.id);
+              this.$destroy();
+            });
+          },
+      );
     },
-	  checkIfDocumentCanBeDeleted() {
-			formService.checkIfDocumentCanBeDeletedForProfile(this.document.docid, this.profile_id).then((response) => {
-				if (response.status) {
-					if (response.data.can_be_deleted) {
-						this.canBeRemoved = true;
-						this.reasonCantRemove = '';
-					} else {
-						this.canBeRemoved = false;
-						this.reasonCantRemove = response.data.reason;
-					}
-				} else {
-					this.canBeRemoved = false;
-				}
-			});
-	  }
+    checkIfDocumentCanBeDeleted() {
+      formService.checkIfDocumentCanBeDeletedForProfile(this.document.docid, this.profile_id).then((response) => {
+        if (response.status) {
+          if (response.data.can_be_deleted) {
+            this.canBeRemoved = true;
+            this.reasonCantRemove = '';
+          } else {
+            this.canBeRemoved = false;
+            this.reasonCantRemove = response.data.reason;
+          }
+        } else {
+          this.canBeRemoved = false;
+        }
+      });
+    }
   },
-	watch: {
-		document: {
-			handler(newValue) {
-				this.getDocumentModel(newValue.docid, false);
-			},
-			deep: true
-		}
-	}
+  watch: {
+    document: {
+      handler(newValue) {
+        this.getDocumentModel(newValue.docid, false);
+      },
+      deep: true
+    }
+  }
 }
 </script>
 
