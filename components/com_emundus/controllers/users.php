@@ -1511,18 +1511,20 @@ class EmundusControllerUsers extends JControllerLegacy
 
 	function getcurrentprofile()
 	{
-		$response = ['data' => [], 'status' => true, 'msg' => ''];
+		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+		$user = JFactory::getUser();
 
-		$em_users = JFactory::getSession()->get('emundusUser');
-		$m_users  = $this->getModel('Users');
+		if (!$user->guest) {
+			$em_users = JFactory::getSession()->get('emundusUser');
+			$m_users = $this->getModel('Users');
 
-		if (!empty($em_users->profile)) {
-			$response['data'] = $m_users->getProfileDetails($em_users->profile);
-
-		}
-		else {
-			$response['msg']    = 'No profile found';
-			$response['status'] = false;
+			if (!empty($em_users->profile)) {
+				$response['data'] = $m_users->getProfileDetails($em_users->profile);
+				$response['status'] = true;
+				$response['msg'] = JText::_('COM_EMUNDUS_SUCCESS');
+			} else {
+				$response['msg'] = 'No profile found';
+			}
 		}
 
 		echo json_encode((object) $response);
