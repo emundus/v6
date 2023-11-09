@@ -449,18 +449,24 @@ class EmundusModelUsers extends JModelList {
 		$profile_info = null;
 
 		if (!empty($profile_id)) {
-			$query = $this->_db->getQuery(true);
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
+			$h_cache = new EmundusHelperCache();
+			$profile_info = $h_cache->get('profile_details_'.$profile_id);
 
-			$query->select('id,label,description,class,published')
-				->from($this->_db->quoteName('#__emundus_setup_profiles'))
-				->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($profile_id));
+			if (empty($profile_info)) {
+				$query = $this->_db->getQuery(true);
 
-			try {
-				$this->_db->setQuery($query);
-				$profile_info = $this->_db->loadObject();
+				$query->select('id,label,description,class,published')
+					->from($this->_db->quoteName('#__emundus_setup_profiles'))
+					->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($profile_id));
 
-			} catch (Exception $e){
-				JLog::add('component/com_emundus/models/users | Error when try to get profile details : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
+				try {
+					$this->_db->setQuery($query);
+					$profile_info = $this->_db->loadObject();
+					$h_cache->set('profile_details_'.$profile_id, $profile_info);
+				} catch (Exception $e){
+					JLog::add('component/com_emundus/models/users | Error when try to get profile details : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
+				}
 			}
 		}
 
