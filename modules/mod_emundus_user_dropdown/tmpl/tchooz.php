@@ -330,8 +330,8 @@ if ($user != null) {
                 }
             }).then((result) => {
                 if(result.status) {
-                    profile_color = result.data.class;
-                    profile_state = result.data.published;
+                    let profile_color = result.data.class;
+                    let profile_state = result.data.published;
 
                     // save profile color and state in local storage
                     sessionStorage.setItem('profile_color', profile_color);
@@ -502,6 +502,9 @@ if ($user != null) {
                     profnum: current_fnum
                 }),
                 success: function (result) {
+                    sessionStorage.removeItem('profile_state');
+                    sessionStorage.removeItem('profile_color');
+
                     window.location.href = url;
                     //location.reload(true);
                 },
