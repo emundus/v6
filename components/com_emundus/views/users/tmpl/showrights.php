@@ -14,7 +14,7 @@
 <form action="index.php?option=com_emundus&controller=users&task=addgroup" id="em-add-group" class="em-add-group"
       role="form" method="post">
 	<?php
-	if (!empty($this->groups)) {
+	if (empty($this->groups)) {
 		echo JText::_('COM_EMUNDUS_GROUPS_NO_GROUP');
 	}
 	else {
@@ -54,7 +54,7 @@
                             </th>
                         </tr>
                         </thead>
-                        <tbody size="<?php echo count($this->actions) ?>">
+                        <tbody size="<?php echo count($g['acl']) ?>">
 						<?php foreach ($g['acl'] as $l => $action): ?>
 
                             <tr class="em-actions-table-line">
@@ -99,6 +99,7 @@
 
 	<?php
 	echo '<script type="text/javascript">
+    var $ = jQuery.noConflict();
 	$(document).ready(function() {
 	    $("#can-val").hide();
 	});

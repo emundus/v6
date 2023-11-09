@@ -838,10 +838,8 @@ class EmundusControllerMessages extends JControllerLegacy
 	 */
 	public function useremail()
 	{
-
-
 		if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
-			die(JText::_("ACCESS_DENIED"));
+			die(Text::_("ACCESS_DENIED"));
 		}
 
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
@@ -853,9 +851,8 @@ class EmundusControllerMessages extends JControllerLegacy
 		$m_emails   = $this->getModel('Emails');
 		$m_users    = $this->getModel('Users');
 
-		$current_user = JFactory::getUser();
-		$config       = JFactory::getConfig();
-
+		$current_user = $this->app->getIdentity();
+		$config       = Factory::getConfig();
 
 		// Get default mail sender info
 		$mail_from_sys      = $config->get('mailfrom');
@@ -868,12 +865,11 @@ class EmundusControllerMessages extends JControllerLegacy
 		$mail_from_name = $this->input->post->getString('mail_from_name', $mail_from_sys_name);
 		$mail_from      = $this->input->post->getString('mail_from', $mail_from_sys);
 
-		$mail_subject = $this->input->post->getString('mail_subject', 'No Subject');
-		$template_id  = $this->input->post->getInt('template', null);
-		$mail_message = $this->input->post->get('message', null, 'RAW');
-		$attachments  = $this->input->post->get('attachments', null, null);
+		$mail_subject = $this->input->getString('mail_subject', 'No Subject');
+		$template_id  = $this->input->getInt('template',0);
+		$mail_message = $this->input->getRaw('message');
+		$attachments  = $this->input->getString('attachments');
 
-		// Get additional info for the fnums such as the user email.
 		$users = $m_users->getUsersByIds($uids);
 
 		// This will be filled with the email adresses of successfully sent emails, used to give feedback to front end.
@@ -885,7 +881,7 @@ class EmundusControllerMessages extends JControllerLegacy
 			$template = $m_messages->getEmail($template_id);
 		}
 		else {
-			$db    = JFactory::getDbo();
+			$db    = Factory::getDbo();
 			$query = $db->getQuery(true);
 
 			$query->clear()
@@ -924,22 +920,16 @@ class EmundusControllerMessages extends JControllerLegacy
 
 			$mail_from      = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
 			$mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
-
-			// If the email sender has the same domain as the system sender address.
-			/*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
-				$mail_from_address = $mail_from;
-			} else {*/
+			
 			$mail_from_address = $mail_from_sys;
-			//}
-
-			// Set sender
+			
 			$sender = [
 				$mail_from_address,
 				$mail_from_name
 			];
 
 			// Configure email sender
-			$mailer = JFactory::getMailer();
+			$mailer = Factory::getMailer();
 			$mailer->setSender($sender);
 			$mailer->addReplyTo($mail_from, $mail_from_name);
 			$mailer->addRecipient($user->email);

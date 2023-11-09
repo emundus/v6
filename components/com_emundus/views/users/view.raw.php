@@ -10,6 +10,8 @@
 
 // no direct access
 
+use Joomla\CMS\Factory;
+
 defined('_JEXEC') or die('Restricted access');
 //error_reporting(E_ALL);
 jimport('joomla.application.component.view');
@@ -182,7 +184,7 @@ class EmundusViewUsers extends JViewLegacy
 	private function _loadRightsForm()
 	{
 		$m_users = new EmundusModelUsers();
-		$uid     = JFactory::getApplication()->input->getInt('user', null);
+		$uid     = Factory::getApplication()->input->getInt('user', null);
 		$groups  = $m_users->getUserGroups($uid);
 
 		$g = array();
@@ -255,7 +257,7 @@ class EmundusViewUsers extends JViewLegacy
 		}
 
 		$this->onSubmitForm = EmundusHelperJavascript::onSubmitForm();
-		$this->itemId       = JFactory::getApplication()->input->getInt('Itemid', null);
+		$this->itemId       = Factory::getApplication()->input->getInt('Itemid', null);
 
 		parent::display($tpl);
 	}
