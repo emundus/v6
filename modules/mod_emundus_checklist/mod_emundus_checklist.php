@@ -76,11 +76,10 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
 				// See if applicant has uploaded the required scolarship form.
 				try {
-
-					$query = 'SELECT count(id) FROM #__emundus_uploads
-								WHERE attachment_id = ' . $scholarship_document . '
-								AND fnum LIKE ' . $db->Quote($user->fnum);
-
+					$query->select('count(id)')
+						->from($db->quoteName('#__emundus_uploads'))
+						->where($db->quoteName('attachment_id') . ' = ' . $db->quote($scholarship_document))
+						->andWhere($db->quoteName('fnum') . ' LIKE ' . $db->quote($user->fnum));
 					$db->setQuery($query);
 					$uploaded_document = $db->loadResult();
 
@@ -127,7 +126,11 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	}
 
 	$menuid = $app->getMenu()->getActive()->id;
-	$query  = 'SELECT id, link FROM #__menu WHERE alias like "checklist%" AND menutype like "%' . $user->menutype . '"';
+	$query->clear()
+		->select('id,link')
+		->from($db->quoteName('#__menu'))
+		->where($db->quoteName('alias') . ' LIKE ' . $db->quote('checklist%'))
+		->andWhere($db->quoteName('menutype') . ' LIKE ' . $db->quote('%' . $user->menutype));
 	$db->setQuery($query);
 	$itemid = $db->loadAssoc();
 

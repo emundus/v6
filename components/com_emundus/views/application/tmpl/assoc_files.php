@@ -1,5 +1,13 @@
 <?php
-JFactory::getSession()->set('application_layout', 'assoc_files');
+
+use Joomla\CMS\Factory;
+
+if (version_compare(JVERSION, '4.0', '>')) {
+	Factory::getApplication()->getSession()->set('application_layout', 'assoc_files');
+}
+else {
+	Factory::getSession()->set('application_layout', 'assoc_files');
+}
 
 if (!empty((array) $this->assoc_files)) : ?>
 	<?php foreach ($this->assoc_files->camps as $camp): ?>

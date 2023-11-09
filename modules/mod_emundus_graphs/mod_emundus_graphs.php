@@ -3,7 +3,6 @@ defined('_JEXEC') or die('Access Deny');
 require_once(dirname(__FILE__) . DS . 'helper.php');
 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'stats.php');
 
-JHtml::script('media/com_emundus/js/jquery.cookie.js');
 JHtml::script('media/jui/js/bootstrap.min.js');
 
 $document = JFactory::getDocument();

@@ -11,17 +11,26 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-$offset = JFactory::getConfig()->get('offset');
-JFactory::getSession()->set('application_layout', 'attachment');
+use Joomla\CMS\Factory;
+
+$app = Factory::getApplication();
+
+if (version_compare(JVERSION, '4.0', '>')) {
+	$offset = $app->getConfig()->get('offset');
+	Factory::getApplication()->getSession()->set('application_layout', 'attachment');
+	$lang = $app->getLanguage();
+}
+else {
+	$offset = Factory::getConfig()->get('offset');
+	Factory::getSession()->set('application_layout', 'attachment');
+	$lang = JFactory::getLanguage();
+}
 
 $can_export          = EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $this->fnum);
 $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_user->id);
-$lang                = JFactory::getLanguage();
 
-$xmlDoc = new DOMDocument();
-if ($xmlDoc->load(JPATH_SITE . '/administrator/components/com_emundus/emundus.xml')) {
-	$release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
-}
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 
 
@@ -52,4 +61,4 @@ if ($xmlDoc->load(JPATH_SITE . '/administrator/components/com_emundus/emundus.xm
 >
 </div>
 
-<script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>
+<script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

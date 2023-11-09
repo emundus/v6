@@ -1,8 +1,10 @@
 <?php
 defined('_JEXEC') or die;
 
-$user = JFactory::getSession()->get('emundusUser');
-$app  = JFactory::getApplication();
+use Joomla\CMS\Factory;
+
+$app  = Factory::getApplication();
+$user = $app->getSession()->get('emundusUser');
 
 if (!empty($user) && EmundusHelperAccess::asAccessAction(1, 'r', $user->id)) {
 	if (!empty($params)) {
@@ -10,7 +12,7 @@ if (!empty($user) && EmundusHelperAccess::asAccessAction(1, 'r', $user->id)) {
 		$filter_on_fnums = $params->get('filter_on_fnums', 0);
 
 		if ($filter_on_fnums == 1) {
-			require_once JPATH_ROOT . '/components/com_emundus/classes/filters/EmundusFiltersFiles.php';
+			require_once JPATH_SITE . '/components/com_emundus/classes/filters/EmundusFiltersFiles.php';
 
 			try {
 				$m_filters = new EmundusFiltersFiles($params->toArray());

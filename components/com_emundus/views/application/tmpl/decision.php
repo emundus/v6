@@ -12,9 +12,14 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-JFactory::getSession()->set('application_layout', 'decision');
+use Joomla\CMS\Factory;
 
-//$isCoordinator = EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)?true:false;
+if (version_compare(JVERSION, '4.0', '>')) {
+	Factory::getApplication()->getSession()->set('application_layout', 'comment');
+}
+else {
+	Factory::getSession()->set('application_layout', 'comment');
+}
 
 ?>
 <div class="row">
@@ -23,7 +28,7 @@ JFactory::getSession()->set('application_layout', 'decision');
             <h3 class="panel-title">
                 <span class="glyphicon glyphicon-check"></span>
 				<?php echo JText::_('COM_EMUNDUS_DECISION'); ?>
-				<?php if (EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum)): ?>
+				<?php if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $this->fnum)): ?>
                     <a class="  clean" target="_blank"
                        href="<?php echo JURI::base(); ?>index.php?option=com_emundus&controller=evaluation&task=pdf_decision&user=<?php echo $this->student->id; ?>&fnum=<?php echo $this->fnum; ?>">
                         <button class="btn btn-default"

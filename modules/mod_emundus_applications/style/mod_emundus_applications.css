@@ -420,7 +420,7 @@ a.btn.btn-success:not(.btn-xs) {
 }
 
 .mod_emundus_applications___content {
-    display: grid;
+    display: grid !important;
     align-items: flex-start;
     padding: 0;
     gap: var(--p-48);

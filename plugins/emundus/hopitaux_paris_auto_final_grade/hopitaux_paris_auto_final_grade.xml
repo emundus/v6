@@ -15,9 +15,12 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
-                <field name="final_grade_status_step" type="field" default="3" label="Status *" description="Status to defined when the final grade has to be completed" />
-                <field name="final_grade_elts_to_complete" type="field" default="" label="Elements to complete *" description="Elements to complete in final grade form" />
-                <field name="final_grade_elts_values" type="field" default="" label="Values *" description="Values of elements selected above" />
+                <field name="final_grade_status_step" type="field" default="3" label="Status *"
+                       description="Status to defined when the final grade has to be completed"/>
+                <field name="final_grade_elts_to_complete" type="field" default="" label="Elements to complete *"
+                       description="Elements to complete in final grade form"/>
+                <field name="final_grade_elts_values" type="field" default="" label="Values *"
+                       description="Values of elements selected above"/>
                 <!-- <field name="final_grade_campaigns" type="field" default="" label="Campaigns" description="Campaigns to apply this plugin" /> -->
             </fieldset>
         </fields>

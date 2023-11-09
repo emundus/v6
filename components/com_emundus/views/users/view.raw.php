@@ -184,7 +184,8 @@ class EmundusViewUsers extends JViewLegacy
 		$m_users = new EmundusModelUsers();
 		$uid     = JFactory::getApplication()->input->getInt('user', null);
 		$groups  = $m_users->getUserGroups($uid);
-		$g       = array();
+
+		$g = array();
 		foreach ($groups as $key => $label) {
 			$g[$key]['label'] = $label;
 			$g[$key]['progs'] = $m_users->getGroupProgs($key);

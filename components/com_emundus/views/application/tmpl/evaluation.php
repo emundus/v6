@@ -15,7 +15,15 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-JFactory::getSession()->set('application_layout', 'evaluation');
+use Joomla\CMS\Factory;
+
+if (version_compare(JVERSION, '4.0', '>')) {
+	Factory::getApplication()->getSession()->set('application_layout', 'evaluation');
+}
+else {
+	Factory::getSession()->set('application_layout', 'evaluation');
+}
+
 ?>
 
 <div class="row">
@@ -60,7 +68,7 @@ JFactory::getSession()->set('application_layout', 'evaluation');
         </div>
         <div class="panel-body em-container-evaluation-body">
             <div class="content" style="display: flex; flex-direction: column;">
-				<?php if (isset($this->evaluation_select) && count($this->evaluation_select) > 0) : ?>
+				<?php if (!empty($this->evaluation_select)) : ?>
                     <label for="copy_evaltuations"
                            class="em-container-evaluation-body-label"><?= JText::_('COM_EMUNDUS_EVALUATION_PICK_EVAL_TO_COPY'); ?></label>
                     <select id="copy_evaluations">

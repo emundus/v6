@@ -30,8 +30,8 @@ class EmundusViewMessages extends JViewLegacy
 
 	public function __construct($config = array())
 	{
-		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
-		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'messages.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'messages.php');
 		parent::__construct($config);
 	}
 
@@ -53,7 +53,7 @@ class EmundusViewMessages extends JViewLegacy
 			$this->messages   = $m_messages->loadMessages($this->other_user);
 			$this->user_id    = $current_user->id;
 
-			require_once(JPATH_COMPONENT . DS . 'models' . DS . 'cifre.php');
+			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'cifre.php');
 			$m_cifre      = new EmundusModelCifre();
 			$this->offers = $m_cifre->getOffersBetweenUsers($this->user_id, $this->other_user);
 
@@ -71,7 +71,7 @@ class EmundusViewMessages extends JViewLegacy
 
 			$chatroom = $m_messages->getChatroom($chatroom);
 
-			require_once(JPATH_COMPONENT . DS . 'models' . DS . 'cifre.php');
+			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'cifre.php');
 			$m_cifre      = new EmundusModelCifre();
 			$this->offers = $m_cifre->getOffer($chatroom->fnum);
 

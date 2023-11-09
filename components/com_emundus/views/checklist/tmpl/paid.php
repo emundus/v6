@@ -1,7 +1,10 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
 
-$Itemid = JRequest::getVar('Itemid', null, 'GET', 'none', 0);
+use Joomla\CMS\Factory;
+
+$app    = Factory::getApplication();
+$Itemid = $app->input->get('Itemid', null, 'GET', 'none', 0);
 
 echo JText::_('PAYMENT_RECEIVED');
 

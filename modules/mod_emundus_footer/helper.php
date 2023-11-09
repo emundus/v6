@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
  *
  * @since  1.5
  */
-class ModLoginHelper
+class ModEmundusFooterHelper
 {
 	/**
 	 * Retrieve the URL where the user should be returned after logging in

@@ -15,7 +15,8 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
-                <field name="eb_book_event_status_step" type="field" default="4" label="Status *" description="Status to defined when the event has to be book" />
+                <field name="eb_book_event_status_step" type="field" default="4" label="Status *"
+                       description="Status to defined when the event has to be book"/>
             </fieldset>
         </fields>
     </config>

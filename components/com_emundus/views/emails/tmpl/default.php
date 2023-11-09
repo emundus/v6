@@ -11,7 +11,7 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 
 ## GLOBAL ##
 JText::script('COM_EMUNDUS_ONBOARD_MODIFY');
@@ -175,7 +175,7 @@ $lang               = JFactory::getLanguage();
 $short_lang         = substr($lang->getTag(), 0, 2);
 $current_lang       = $lang->getTag();
 
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'cache.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 

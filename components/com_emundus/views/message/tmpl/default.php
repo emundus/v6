@@ -240,6 +240,7 @@ if ($allowed_attachments !== true) {
 
                     <div class="flex items-center gap-2 flex-wrap" style="max-height: 150px; overflow-y: auto;">
 						<?php foreach ($this->users as $user) : ?>
+
 							<?php if (!empty($user['email']) && !in_array($user['email'], $email_list)) : ?>
 								<?php $email_list[] = $user['email']; ?>
 								<?php $name_list[] = $user['name']; ?>
@@ -250,6 +251,7 @@ if ($allowed_attachments !== true) {
 
                                 <input type="hidden" name="ud[]" id="ud" value="<?= $user['id']; ?>"/>
 							<?php endif; ?>
+
 						<?php endforeach; ?>
                     </div>
                 </div>
@@ -260,16 +262,16 @@ if ($allowed_attachments !== true) {
                         <label class='em-mr-8 em-cursor-text mb-0'><?= JText::_('COM_EMUNDUS_TO'); ?> :</label>
 
                         <div class="em-border-radius-8">
-                            <span class="label label-default em-mr-8 em-email-label">
+                        <span class="label label-default em-mr-8 em-email-label">
                                 <?= $email_list[0] . ' <em class="em-font-size-14">&lt;' . $name_list[0] . '&gt;</em>'; ?>
-                            </span>
+                        </span>
 
 
 							<?php if (count($email_list) > 1) : ?>
                                 <span class="label label-default em-mr-8 em-email-label pointer"
                                       onclick="showEmailList()">
                                     +<?= count($email_list) - 1 ?>
-                                </span>
+                            </span>
 							<?php endif; ?>
                         </div>
                     </div>
@@ -456,7 +458,7 @@ if ($allowed_attachments !== true) {
     var SizeStyle = Quill.import('attributors/style/size');
     Quill.register(SizeStyle, true);
 
-    let editor = null;
+    var editor = null;
     // update css
     $('#cc-mails-selectized').css('vertical-align', '-10px');
     $('#bcc-mails-selectized').css('vertical-align', '-10px');
@@ -479,7 +481,7 @@ if ($allowed_attachments !== true) {
             }
         },
         onItemAdd: function (value, $item) {
-            let email = value.substring(value.indexOf(":") + 1);
+            var email = value.substring(value.indexOf(":") + 1);
             email = email.trim();
 
             const regex = /^\S{1,64}@\S{1,255}\.\S{1,255}$/;
@@ -506,7 +508,7 @@ if ($allowed_attachments !== true) {
             }
         },
         onItemAdd: function (value, $item) {
-            let email = value.substring(value.indexOf(":") + 1);
+            var email = value.substring(value.indexOf(":") + 1);
             email = email.trim();
 
             const regex = /^\S{1,64}@\S{1,255}\.\S{1,255}$/;
@@ -517,7 +519,7 @@ if ($allowed_attachments !== true) {
     });
 
     // get attachments by profiles (fnums)
-    let fnums = $('#fnums').val();
+    var fnums = $('#fnums').val();
     $.ajax({
         type: 'post',
         url: 'index.php?option=com_emundus&controller=messages&task=getattachmentsbyprofiles',
@@ -527,18 +529,18 @@ if ($allowed_attachments !== true) {
         },
         success: function (data) {
             /// get all profile id
-            let profile_id = Object.keys(data.attachments);
+            var profile_id = Object.keys(data.attachments);
             // $('#em-select_candidate_file').append('<option value="0" selected>'+Joomla.JText._('JGLOBAL_SELECT_AN_OPTION')+'</option>');
 
             // attach profile id to #em-select_candidate_file
             profile_id.forEach(profile => {
                 /// get profile label
-                let profile_label = data.attachments[profile].label;
+                var profile_label = data.attachments[profile].label;
 
                 $('#em-select_candidate_file').append('<optgroup label ="_______' + profile_label + '_______" style="color:#16afe1">');
 
                 ///get all attachments for each profile_id
-                let letters = data.attachments[profile].letters;
+                var letters = data.attachments[profile].letters;
                 letters.forEach(letter => {
                     $('#em-select_candidate_file').append('<option value="' + letter.letter_id + '">' + letter.letter_label + '</option>');
                 })
@@ -592,8 +594,8 @@ if ($allowed_attachments !== true) {
     }
 
     function openCC() {
-        let cc = $('#cc-box');
-        let cc_input = $('#cc-box .selectize-control');
+        var cc = $('#cc-box');
+        var cc_input = $('#cc-box .selectize-control');
         if (cc.css('display') === 'block') {
             cc.css('display', 'none');
             cc_input.css('display', 'none');
@@ -606,8 +608,8 @@ if ($allowed_attachments !== true) {
     }
 
     function openBCC() {
-        let bcc = $('#bcc-box');
-        let bcc_input = $('#bcc-box .selectize-control');
+        var bcc = $('#bcc-box');
+        var bcc_input = $('#bcc-box .selectize-control');
         if (bcc.css('display') === 'block') {
             bcc.css('display', 'none');
             bcc_input.css('display', 'none');
@@ -620,7 +622,7 @@ if ($allowed_attachments !== true) {
     }
 
     function openReplyTo() {
-        let replyto = $('#reply_to_div');
+        var replyto = $('#reply_to_div');
         if (replyto.css('display') === 'block') {
             replyto.css('display', 'none');
             $('#replyto-icon').css('transform', 'rotate(0deg)');
@@ -631,7 +633,7 @@ if ($allowed_attachments !== true) {
     }
 
     function initQuill() {
-        let variables = [];
+        var variables = [];
 
         fetch('index.php?option=com_emundus&controller=settings&task=geteditorvariables')
             .then(function (response) {
@@ -640,7 +642,7 @@ if ($allowed_attachments !== true) {
             .then(function (variables) {
                 variables = variables.data;
 
-                let options = {
+                var options = {
                     modules: {
                         toolbar: [
                             ['bold', 'italic', 'underline', 'strike'],
@@ -664,7 +666,7 @@ if ($allowed_attachments !== true) {
                     allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
                     mentionDenotationChars: ["/"],
                     source: (searchTerm, renderList, mentionChar) => {
-                        let values;
+                        var values;
 
                         if (mentionChar === "/") {
                             values = variables;
@@ -674,7 +676,7 @@ if ($allowed_attachments !== true) {
                             renderList(values, searchTerm);
                         } else {
                             const matches = [];
-                            for (let i = 0; i < values.length; i++)
+                            for (var i = 0; i < values.length; i++)
                                 if (
                                     ~values[i].value.toLowerCase().indexOf(searchTerm.toLowerCase())
                                 )
@@ -698,7 +700,7 @@ if ($allowed_attachments !== true) {
                 }
                 editor = new Quill('#editor', options);
                 const editorContent = "<?php echo addslashes($this->body) ?>";
-                let delta = editor.clipboard.convert(editorContent);
+                var delta = editor.clipboard.convert(editorContent);
                 editor.setContents(delta);
                 $('#mail_body').val(editor.root.innerHTML);
 
@@ -769,14 +771,14 @@ if ($allowed_attachments !== true) {
                 success: function (data) {
                     if (data.status) {
                         if (data.data.receivers != null && data.data.receivers != undefined && data.data.receivers != "") {
-                            let receivers = data.data.receivers;
+                            var receivers = data.data.receivers;
 
-                            let receiver_cc = [];
-                            let receiver_bcc = [];
-                            let fabrik_cc = [];
-                            let fabrik_bcc = [];
+                            var receiver_cc = [];
+                            var receiver_bcc = [];
+                            var fabrik_cc = [];
+                            var fabrik_bcc = [];
 
-                            for (let index = 0; index < receivers.length; index++) {
+                            for (var index = 0; index < receivers.length; index++) {
                                 switch (receivers[index].type) {
                                     case 'receiver_cc_email':
                                         receiver_cc.push(receivers[index].receivers);
@@ -828,7 +830,7 @@ if ($allowed_attachments !== true) {
                                         elements: fabrik_cc
                                     },
                                     success: function (data) {
-                                        let emails = [];
+                                        var emails = [];
 
                                         for (email in data.data) {
                                             if (REGEX_EMAIL.test(data.data[email])) {
@@ -860,7 +862,7 @@ if ($allowed_attachments !== true) {
                                         elements: fabrik_bcc
                                     },
                                     success: function (data) {
-                                        let emails = [];
+                                        var emails = [];
 
                                         for (email in data.data) {
                                             if (REGEX_EMAIL.test(data.data[email])) {
@@ -883,7 +885,7 @@ if ($allowed_attachments !== true) {
                         var email_block = document.getElementById("em_email_block");
 
                         // email raw info
-                        let email = data.data.email;
+                        var email = data.data.email;
 
                         $("#mail_subject").text(email.subject);
 
@@ -895,12 +897,12 @@ if ($allowed_attachments !== true) {
                         }
 
 
-                        let delta = editor.clipboard.convert(email.message);
+                        var delta = editor.clipboard.convert(email.message);
                         editor.setContents(delta);
 
                         /// get letter attachments block
                         if (data.data.letter_attachment !== null) {
-                            let letters = data.data.letter_attachment;
+                            var letters = data.data.letter_attachment;
                             letters.forEach(letter => {
                                 $('#em-attachment-list').append('' +
                                     '<li class="list-group-item setup_letters" style="padding: 6px 12px; display: flex; align-content: center; justify-content: space-between">' +
@@ -919,7 +921,7 @@ if ($allowed_attachments !== true) {
                         /// get candidat attachments block * check in the user permission *
 						<?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
                         if (data.data.candidate_attachment !== null) {
-                            let attachments = data.data.candidate_attachment;
+                            var attachments = data.data.candidate_attachment;
                             attachments.forEach(attachment => {
                                 $('#em-attachment-list').append('' +
                                     '<li class="list-group-item candidate_file" style="padding: 6px 12px; display: flex; align-content: center; justify-content: space-between">' +
@@ -949,7 +951,7 @@ if ($allowed_attachments !== true) {
             $("#reply_to_from").text("");
             $("#mail_from_name").text("<?= JFactory::getConfig()->get('fromname'); ?>");
 
-            let delta = editor.clipboard.convert('<p>Bonjour [NAME],</p>');
+            var delta = editor.clipboard.convert('<p>Bonjour [NAME],</p>');
             editor.setContents(delta);
         }
     }
@@ -1249,5 +1251,4 @@ if ($allowed_attachments !== true) {
         $("#em-progress-wrp .progress-bar").css("width", +percent + "%");
         $("#em-progress-wrp .status").text(percent + "%");
     };
-
 </script>

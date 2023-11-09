@@ -13,6 +13,9 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.view');
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
 /**
  * HTML View class for the Emundus Component
  *
@@ -20,73 +23,79 @@ jimport('joomla.application.component.view');
  */
 class EmundusViewMessage extends JViewLegacy
 {
+	private $app;
 
+	protected $users;
+	protected $fnums;
+	protected $body;
+	protected $data;
 
 	public function __construct($config = array())
 	{
 
-		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
-		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'messages.php');
-		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'files.php');
-		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'application.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'messages.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
 
 		parent::__construct($config);
+
+		$this->app = Factory::getApplication();
 
 	}
 
 	public function display($tpl = null)
 	{
 
-		$current_user = JFactory::getUser();
+		$current_user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-			die (JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+			die (Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 		}
 
 		// List of fnum is sent via GET in JSON format.
-		$jinput = JFactory::getApplication()->input;
+		$jinput = $this->app->input;
 		$layout = $jinput->getString('layout', null);
 
-		$document = JFactory::getDocument();
-		$document->addStyleSheet('media/com_emundus/css/emundus.css');
+		$document = $this->app->getDocument();
+		$wa       = $document->getWebAssetManager();
+		$wa->registerAndUseStyle('emundus_css', 'media/com_emundus/css/emundus.css');
 
 		switch ($layout) {
-
 			// Sending an email directly to a user.
 			case 'user_message':
 				$m_users = new EmundusModelUsers();
 
-				$users = $jinput->getString('users', null);
-				if ($users === 'all') {
-					$us    = $m_users->getUsers(0, 0);
-					$users = array();
+				$this->users = $jinput->getString('users', null);
+				if ($this->users === 'all') {
+					$us          = $m_users->getUsers(0, 0);
+					$this->users = array();
 					foreach ($us as $u) {
-						$users[] = $u->id;
+						$this->users[] = $u->id;
 					}
 
 				}
 				else {
-					$users = (array) json_decode(stripslashes($users));
+					$this->users = (array) json_decode(stripslashes($this->users));
 
-					foreach ($users as $key => $value) {
+					foreach ($this->users as $key => $value) {
 						if (!is_numeric($value)) {
-							unset($users[$key]);
+							unset($this->users[$key]);
 						}
 					}
 				}
 
-				$users = $m_users->getUsersByIds($users);
-				$this->assignRef('users', $users);
+				$this->users = $m_users->getUsersByIds($this->users);
 				break;
 
 
 			// Default = sending an email to an FNUM.
 			default:
-				$fnums = $jinput->getString('fnums', null);
-				$data  = $jinput->getArray()['data'];
-				$body  = $jinput->getRaw('body', '');
-				if (empty($body)) {
-					$body = JText::_('COM_EMUNDUS_EMAILS_DEAR') . ' [NAME], ';
+				$fnums      = $jinput->getString('fnums', null);
+				$this->data = $jinput->getArray()['data'];
+				$this->body = $jinput->getRaw('body', '');
+				if (empty($this->body)) {
+					$this->body = Text::_('COM_EMUNDUS_EMAILS_DEAR') . ' [NAME], ';
 				}
 				$fnums = ($fnums == 'all') ? 'all' : (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
@@ -115,14 +124,11 @@ class EmundusViewMessage extends JViewLegacy
 						$user                = $m_application->getApplicantInfos($fnum->sid, $tables);
 						$user['campaign_id'] = $fnum->cid;
 						$fnum_array[]        = $fnum->fnum;
-						$users[]             = $user;
+						$this->users[]       = $user;
 					}
 				}
 
-				$this->assignRef('users', $users);
-				$this->assignRef('fnums', $fnum_array);
-				$this->assignRef('body', $body);
-				$this->assignRef('data', $data);
+				$this->fnums = $fnum_array;
 				break;
 
 		}

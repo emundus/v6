@@ -10,8 +10,10 @@
 
 // no direct access
 defined('_JEXEC') or die('Restricted access');
-//error_reporting(E_ALL);
+
 jimport('joomla.application.component.view');
+
+use Joomla\CMS\Factory;
 
 /**
  * HTML View class for the Emundus Component
@@ -20,29 +22,41 @@ jimport('joomla.application.component.view');
  */
 class EmundusViewDecision extends JViewLegacy
 {
-	//var $_user = null;
-	//var $_db = null;
+	private $app;
+	private $user;
 	protected $itemId;
-
-	//protected $actions;
 
 	public function __construct($config = array())
 	{
+		$this->app = Factory::getApplication();
+		if (version_compare(JVERSION, '4.0', '>')) {
+			$this->user = $this->app->getIdentity();
+		}
+		else {
+			$this->user = Factory::getUser();
+		}
+
 		parent::__construct($config);
 	}
 
 	public function display($tpl = null)
 	{
-		$current_user = JFactory::getUser();
-		if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
 			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+		}
 
-		$this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
-		//$this->cfnum = JFactory::getApplication()->input->getString('cfnum', null);
+		$this->itemId = $this->app->input->getInt('Itemid', null);
 
 		/* Get the values from the state object that were inserted in the model's construct function */
-		$lists['order_dir'] = JFactory::getSession()->get('filter_order_Dir');
-		$lists['order']     = JFactory::getSession()->get('filter_order');
+		if (version_compare(JVERSION, '4.0', '>')) {
+			$session = $this->app->getSession();
+		}
+		else {
+			$session = Factory::getSession();
+		}
+
+		$lists['order_dir'] = $session->get('filter_order_Dir');
+		$lists['order']     = $session->get('filter_order');
 
 		parent::display($tpl);
 	}

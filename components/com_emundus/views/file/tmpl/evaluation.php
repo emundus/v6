@@ -52,7 +52,7 @@ JText::script('COM_EMUNDUS_OK');
 
 JHtml::styleSheet('components/com_emundus/src/assets/css/element-ui/theme-chalk/index.css');
 
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'cache.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 
 $menu         = JFactory::getApplication()->getMenu();

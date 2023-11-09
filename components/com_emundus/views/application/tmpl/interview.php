@@ -13,10 +13,17 @@
  */
 
 // No direct access
-
 defined('_JEXEC') or die('Restricted access');
 
-JFactory::getSession()->set('application_layout', 'interview');
+use Joomla\CMS\Factory;
+
+if (version_compare(JVERSION, '4.0', '>')) {
+	Factory::getApplication()->getSession()->set('application_layout', 'interview');
+}
+else {
+	Factory::getSession()->set('application_layout', 'interview');
+}
+
 ?>
 
 <div class="row">
@@ -25,7 +32,7 @@ JFactory::getSession()->set('application_layout', 'interview');
             <h3 class="panel-title" style="display:inline-block">
                 <span class="glyphicon glyphicon-check"></span>
 				<?= JText::_('COM_EMUNDUS_ASSESSMENT'); ?>
-				<?php if (EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum) && !empty($this->url_form)) : ?>
+				<?php if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $this->fnum) && !empty($this->url_form)) : ?>
                     <a class="  clean" target="_blank"
                        href="<?= JURI::base(); ?>index.php?option=com_emundus&controller=interview&task=pdf&user=<?= $this->student->id; ?>&fnum=<?= $this->fnum; ?>">
                         <button class="btn btn-default"

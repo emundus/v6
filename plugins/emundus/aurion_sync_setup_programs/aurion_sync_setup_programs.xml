@@ -1,31 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="system">
-	<name>Emundus - Sync jos_emundus_setup_programmes with an Aurion data table.</name>
-	<creationDate>5 November 2019</creationDate>
-	<version>6.9.13</version>
-	<author>eMundus</author>
-	<authorEmail>dev@emundus.fr</authorEmail>
-	<authorUrl>https://www.emundus.fr</authorUrl>
-	<copyright>(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.</copyright>
-	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-	<description>This plugin will synchronize the programmes table with a table containing data from an Aurion import.</description>
-	<files>
-		<filename plugin="aurion_sync_setup_programs">aurion_sync_setup_programs.php</filename>
-	</files>
-	<config>
-		<fields name="params">
-			<fieldset name="basic">
-				<field name="au_ids_programme" type="text" description="Enter a single Aurion ID correcponding to the table to be used for programmes or a comma separated list (in case of multiple tables being the source of your programs)." label="Program Aurion ID(s)" size="30" />
-				<field name="programme_id" type="text" label="Programme ID" size="30" />
-				<field name="programme_code" type="text" label="Code" size="30" />
-				<field name="programme_label" type="text" label="Label" size="30" />
-				<field name="programme_label_en" type="text" label="English label (optional)" size="30" />
-				<field name="programme_category" type="text" label="Program category" size="30" />
-				<field name="programme_eval_gid" type="text" label="Fabrik evaluation group id" size="30" />
-				<field name="programme_decision_gid" type="text" label="Fabrik decision group id" size="30" />
-				<field name="programme_admission_gid" type="text" label="Fabrik admission group id" size="30" />
-				<field name="programme_applicant_admission_gid" type="text" label="Fabrik applicant admission group id" size="30" />
-			</fieldset>
-		</fields>
-	</config>
+    <name>Emundus - Sync jos_emundus_setup_programmes with an Aurion data table.</name>
+    <creationDate>5 November 2019</creationDate>
+    <version>6.9.13</version>
+    <author>eMundus</author>
+    <authorEmail>dev@emundus.fr</authorEmail>
+    <authorUrl>https://www.emundus.fr</authorUrl>
+    <copyright>(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.</copyright>
+    <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+    <description>This plugin will synchronize the programmes table with a table containing data from an Aurion import.
+    </description>
+    <files>
+        <filename plugin="aurion_sync_setup_programs">aurion_sync_setup_programs.php</filename>
+    </files>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="au_ids_programme" type="text"
+                       description="Enter a single Aurion ID correcponding to the table to be used for programmes or a comma separated list (in case of multiple tables being the source of your programs)."
+                       label="Program Aurion ID(s)" size="30"/>
+                <field name="programme_id" type="text" label="Programme ID" size="30"/>
+                <field name="programme_code" type="text" label="Code" size="30"/>
+                <field name="programme_label" type="text" label="Label" size="30"/>
+                <field name="programme_label_en" type="text" label="English label (optional)" size="30"/>
+                <field name="programme_category" type="text" label="Program category" size="30"/>
+                <field name="programme_eval_gid" type="text" label="Fabrik evaluation group id" size="30"/>
+                <field name="programme_decision_gid" type="text" label="Fabrik decision group id" size="30"/>
+                <field name="programme_admission_gid" type="text" label="Fabrik admission group id" size="30"/>
+                <field name="programme_applicant_admission_gid" type="text" label="Fabrik applicant admission group id"
+                       size="30"/>
+            </fieldset>
+        </fields>
+    </config>
 </extension>

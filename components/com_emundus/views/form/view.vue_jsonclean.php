@@ -18,6 +18,8 @@ jimport('joomla.application.component.view');
 jimport('joomla.application.component.model');
 require_once JPATH_SITE . '/components/com_fabrik/views/form/view.base.php';
 
+use Joomla\CMS\Factory;
+
 /**
  * HTML Form view class
  *
@@ -42,7 +44,8 @@ class EmundusViewForm extends FabrikViewFormBase
 			/**
 			 *   *Instanciation des variables du form
 			 */
-			$jinput = JFactory::getApplication()->input;
+			$app    = Factory::getApplication();
+			$jinput = $app->input;
 
 			// Display the template
 			$formid = $jinput->getString('formid', null);

@@ -15,9 +15,32 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 
 use Joomla\CMS\Date\Date;
+use Joomla\CMS\Factory;
 
 class EmundusModelsettings extends JModelList
 {
+
+	private $db;
+	private $user;
+	private $app;
+
+	function __construct()
+	{
+		parent::__construct();
+
+		$this->app = JFactory::getApplication();
+
+		if (version_compare(JVERSION, '4.0', '>')) {
+			$this->db   = Factory::getContainer()->get('DatabaseDriver');
+			$this->user = $this->app->getIdentity();
+		}
+		else {
+			$this->db   = Factory::getDBO();
+			$this->user = Factory::getUser();
+		}
+
+		JLog::addLogger(['text_file' => 'com_emundus.error.php'], JLog::ERROR, array('com_emundus'));
+	}
 
 	/**
 	 * Get all colors available for status and tags
@@ -1032,7 +1055,7 @@ class EmundusModelsettings extends JModelList
             value_fr varchar(255) NOT NULL,
             value_en varchar(255) NOT NULL,
             PRIMARY KEY (id)
-            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8";
+            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4";
 			$db->setQuery($table_query);
 			$db->execute();
 			//
@@ -1106,7 +1129,7 @@ class EmundusModelsettings extends JModelList
 			$table_query = "CREATE TABLE IF NOT EXISTS " . $table_name . " (
             id int(11) NOT NULL AUTO_INCREMENT,
             PRIMARY KEY (id)
-            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8";
+            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4";
 			$db->setQuery($table_query);
 			$db->execute();
 

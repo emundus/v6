@@ -12,9 +12,6 @@
  * details.
  */
 defined('_JEXEC') or die('Restricted access');
-JHTML::_('behavior.tooltip');
-JHTML::stylesheet('media/com_emundus/css/emundus_panel.css');
-JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.4.1/css/all.css');
 
 ?>
 
@@ -127,6 +124,8 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 
 
 <script type="text/javascript">
+    var $ = jQuery.noConflict();
+
     var itemId = '<?php echo @$this->itemId;?>';
     var cfnum = '<?php echo @$this->cfnum;?>';
     var filterName = '<?php echo JText::_('COM_EMUNDUS_FILTERS_FILTER_NAME'); ?>';

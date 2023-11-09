@@ -788,38 +788,6 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 </form>
 <script type="text/javascript">
     jQuery(document).ready(function () {
-        var tabsidshow = jQuery.cookie("tabactive");
-        if (tabsidshow === undefined) {
-            jQuery('#tabslist a[href="#current"]').tab('show');
-            jQuery('#current').addClass('in');
-            jQuery.cookie("tabactive", "current");
-        } else {
-            jQuery('#tabslist a[href="#' + tabsidshow + '"]').tab('show');
-            jQuery('#' + tabsidshow).addClass('in');
-        }
-
-        jQuery('#tabslist a').click(function (e) {
-            e.preventDefault();
-            var id = jQuery(this).attr("href").substr(1);
-            jQuery.cookie("tabactive", id);
-            jQuery(this).tab('show');
-
-            // This timeout waits for the animation to complete before resizing the label.
-            setTimeout(function () {
-                if (jQuery(window).width() > 768) {
-                    jQuery('.position-me').each(function () {
-                        var h = jQuery(this).parent().parent().height() - 23;
-                        jQuery(this).width(h);
-                    });
-                } else if (jQuery(window).width() == 768) {
-                    jQuery('.position-me').each(function () {
-                        var h = jQuery(this).parent().parent().height() - 38;
-                        jQuery(this).width(h);
-                    });
-                }
-            }, 200);
-
-        });
 
         if (jQuery(window).width() > 768) {
             jQuery('.position-me').each(function () {
@@ -1036,7 +1004,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         let filters = document.getElementById('filters_block');
         let clickInsideModule = false;
 
-        if (sort.style.display === 'flex') {
+        if (sort && sort.style.display === 'flex') {
             e.composedPath().forEach((pathElement) => {
                 if (pathElement.id == "sort_block" || pathElement.id == "mod_emundus_campaign__header_sort") {
                     clickInsideModule = true;
@@ -1050,7 +1018,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
         if (typeof filters !== 'undefined') {
             clickInsideModule = false;
-            if (filters.style.display === 'flex') {
+            if (filters && filters.style.display === 'flex') {
                 e.composedPath().forEach((pathElement) => {
                     if (pathElement.id == "filters_block" || pathElement.id == "mod_emundus_campaign__header_filter") {
                         clickInsideModule = true;

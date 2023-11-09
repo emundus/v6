@@ -15,8 +15,10 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
-                <field name="opi_status_step" type="field" label="Status *" description="Status to defined when the OPI code has to been generated" />
-                <field name="opi_prefix" type="field" default="EM" label="Prefixe de OPI *" description="OPI Code prefix (e.g: EM1)" />
+                <field name="opi_status_step" type="field" label="Status *"
+                       description="Status to defined when the OPI code has to been generated"/>
+                <field name="opi_prefix" type="field" default="EM" label="Prefixe de OPI *"
+                       description="OPI Code prefix (e.g: EM1)"/>
             </fieldset>
         </fields>
     </config>

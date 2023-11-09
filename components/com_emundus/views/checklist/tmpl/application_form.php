@@ -1,33 +1,48 @@
 <?php
-//JHTML::_('behavior.modal'); 
-JHTML::stylesheet('media/com_emundus/css/emundus.css');
-
-$document = JFactory::getDocument();
-$document->addStyleSheet("media/com_emundus/css/emundus_checklist.css");
-
 defined('_JEXEC') or die('Restricted access');
 
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
 
-$user   = JFactory::getSession()->get('emundusUser');
-$_db    = JFactory::getDBO();
-$itemid = JRequest::getVar('Itemid', null, 'GET', 'none', 0);
+JHTML::stylesheet('media/com_emundus/css/emundus.css');
+
+use Joomla\CMS\Factory;
+
+$app = Factory::getApplication();
+if (version_compare(JVERSION, '4.0', '>')) {
+	$document = $app->getDocument();
+	$wa       = $document->getWebAssetManager();
+	$wa->registerAndUseStyle('com_emundus.checklist', 'com_emundus/css/emundus_checklist.css', [], ['version' => 'auto', 'relative' => true]);
+	$session = $app->getSession();
+	$_db     = Factory::getContainer()->get('DatabaseDriver');
+}
+else {
+	$document = Factory::getDocument();
+	$document->addStyleSheet("media/com_emundus/css/emundus_checklist.css");
+	$session = Factory::getSession();
+	$_db     = Factory::getDBO();
+}
+
+$user = $session->get('emundusUser');
+
+$itemid = $app->input->get('Itemid', null, 'GET', 'none', 0);
 
 $h_menu = new EmundusHelperMenu();
 $forms  = $h_menu->getUserApplicationMenu($user->profile);
 ?>
     <ul>
 		<?php
+		$query = $_db->getQuery(true);
+
 		foreach ($forms as $form) {
-			$query = 'SELECT count(*) FROM ' . $form->db_table_name . ' WHERE user = ' . $user->id . ' AND fnum like ' . $_db->Quote($user->fnum);
+			$query->clear()->select('count(*)')->from($form->db_table_name)->where('user = ' . $user->id)->where('fnum like ' . $_db->quote($user->fnum));
 			$_db->setQuery($query);
 			$form->nb = $_db->loadResult();
+
 			$link     = '<a href="' . $form->link . '">';
 			$active   = $form->id == $itemid ? ' active' : '';
 			$need     = $form->nb == 0 ? 'need_missing' : 'need_ok';
 			$class    = $need . $active;
 			$endlink  = '</a>';
-			// TODO: implement this way of writing title everywhere (instead of the explode)
 			$title    = preg_replace('/^([^-]+ - )/', '', $form->label);
 			$linkForm = $link . JText::_(trim($title)) . $endlink;
 			?>

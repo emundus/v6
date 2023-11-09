@@ -10,8 +10,11 @@
 
 // no direct access
 defined('_JEXEC') or die('Restricted access');
-//error_reporting(E_ALL);
+
 jimport('joomla.application.component.view');
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\Component\ComponentHelper;
 
 /**
  * HTML View class for the Emundus Component
@@ -24,51 +27,66 @@ class EmundusViewAmetys extends JViewLegacy
 	protected $task;
 	protected $token;
 
+	private $app;
+	private $user;
+	private $jdocument;
+
+	protected $ametys_sync_default_eval;
+	protected $ametys_sync_default_decision;
+	protected $ametys_sync_default_synthesis;
+
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
+
+		$this->app = Factory::getApplication();
+		if (version_compare(JVERSION, '4.0', '>')) {
+			$this->user      = $this->app->getIdentity();
+			$this->jdocument = $this->app->getDocument();
+			$wa              = $this->jdocument->getWebAssetManager();
+			$wa->registerAndUseScript('media/com_emundus/lib/Semantic-UI-CSS-master/components/daterangepicker/moment.min.js', 'moment_js');
+			$wa->registerAndUseScript('media/com_emundus/lib/Semantic-UI-CSS-master/components/daterangepicker/daterangepicker.min.js', 'datepicker_js');
+			$wa->registerAndUseStyle('media/com_emundus/lib/Semantic-UI-CSS-master/components/daterangepicker/daterangepicker.min.css', 'daterangepicker_css');
+		}
+		else {
+			$this->user      = Factory::getUser();
+			$this->jdocument = Factory::getDocument();
+			$this->jdocument->addScript("media/com_emundus/lib/Semantic-UI-CSS-master/components/daterangepicker/moment.min.js");
+			$this->jdocument->addScript("media/com_emundus/lib/Semantic-UI-CSS-master/components/daterangepicker/daterangepicker.min.js");
+			$this->jdocument->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/components/daterangepicker/daterangepicker.min.css");
+		}
 	}
 
 	public function display($tpl = null)
 	{
-		// translation to load in javacript file ; /media/com_emundus/em_files.js
-		// put it in com_emundus/emundus.php
-
-		$current_user = JFactory::getUser();
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id))
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
 			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+		}
 
-		$app                           = JFactory::getApplication();
-		$params                        = JComponentHelper::getParams('com_emundus');
-		$ametys_sync_default_eval      = $params->get('ametys_sync_default_eval', null);
-		$ametys_sync_default_decision  = $params->get('ametys_sync_default_decision', null);
-		$ametys_sync_default_synthesis = $params->get('ametys_sync_default_synthesis', null);
-		$this->assignRef('ametys_sync_default_eval', $ametys_sync_default_eval);
-		$this->assignRef('ametys_sync_default_decision', $ametys_sync_default_decision);
-		$this->assignRef('ametys_sync_default_synthesis', $ametys_sync_default_synthesis);
-
-		$document = JFactory::getDocument();
-		//$document->addScript("media/com_emundus/lib/jquery-1.10.2.min.js" );
-		//$document->addScript("media/com_emundus/lib/bootstrap-336/js/bootstrap.min.js" );
-		$document->addScript("media/com_emundus/lib/Semantic-UI-CSS-master/components/daterangepicker/moment.min.js");
-		$document->addScript("media/com_emundus/lib/Semantic-UI-CSS-master/components/daterangepicker/daterangepicker.min.js");
-		//$document->addStyleSheet("media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
-		$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/components/daterangepicker/daterangepicker.min.css");
+		$params                              = ComponentHelper::getParams('com_emundus');
+		$this->ametys_sync_default_eval      = $params->get('ametys_sync_default_eval', null);
+		$this->ametys_sync_default_decision  = $params->get('ametys_sync_default_decision', null);
+		$this->ametys_sync_default_synthesis = $params->get('ametys_sync_default_synthesis', null);
 
 		// overide css
-		$menu         = @JFactory::getApplication()->getMenu();
+		$menu         = $this->app->getMenu();
 		$current_menu = $menu->getActive();
 		$menu_params  = $menu->getParams($current_menu->id);
 
-		$page_heading  = $menu_params->get('page_heading', '');
-		$pageclass_sfx = $menu_params->get('pageclass_sfx', '');
+		$page_heading = $menu_params->get('page_heading', '');
 		if (!empty($page_heading)) {
-			$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/components/site." . $page_heading . ".css");
+			if (version_compare(JVERSION, '4.0', '>')) {
+				$wa = $this->jdocument->getWebAssetManager();
+				$wa->registerAndUseStyle('media/com_emundus/lib/Semantic-UI-CSS-master/components/site.' . $page_heading . '.css', 'site_css');
+			}
+			else {
+				$this->jdocument->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/components/site." . $page_heading . ".css");
+			}
 		}
 
 		$this->itemId = $current_menu->id;
-		$this->task   = $app->input->getInt('task', null);
-		$this->token  = $app->input->getInt('token', null);
+		$this->task   = $this->app->input->getInt('task', null);
+		$this->token  = $this->app->input->getInt('token', null);
 
 		parent::display($tpl);
 	}

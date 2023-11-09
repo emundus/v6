@@ -47,7 +47,6 @@
 				<?php endforeach; ?>
             </ul>
 		<?php endif; ?>
-
 		<?php if (!empty($g['acl'])) : ?>
             <table id="em-modal-action-table" class="table table-hover em-showgroupright-table"
                    style="color:black !important;">

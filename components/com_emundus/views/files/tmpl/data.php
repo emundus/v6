@@ -291,10 +291,12 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
         menuAction = document.querySelector('.em-menuaction');
         headerNav = document.querySelector('#g-navigation .g-container');
         containerResult = document.querySelector('.container-result');
-        setTimeout(() => {
-            $('.container-result').css('top', (headerNav.offsetHeight + menuAction.offsetHeight) + 'px');
-            $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
-        }, 2000);
+        if (containerResult) {
+            setTimeout(() => {
+                $('.container-result').css('top', (headerNav.offsetHeight + menuAction.offsetHeight) + 'px');
+                $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
+            }, 2000);
+        }
 
         const dataContainer = document.querySelector('.em-data-container')
         if (dataContainer) {
@@ -306,22 +308,25 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 
 
 <script>
-    const selectDropdownContainer = document.querySelector('.selectAll');
-    const countFiles = document.querySelector('#countCheckedCheckbox');
-    selectDropdownContainer.style.display = 'none';
+    var selectDropdownContainer = document.querySelector('.selectAll');
+    var countFiles = document.querySelector('#countCheckedCheckbox');
 
-    $('.selectDropdown').click(function () {
-        if (selectDropdownContainer.style.display === 'none') {
-            selectDropdownContainer.style.display = 'flex';
-        } else {
-            selectDropdownContainer.style.display = 'none';
-        }
-    });
+    if (selectDropdownContainer) {
+        selectDropdownContainer.style.display = 'none';
+
+        $('.selectDropdown').click(function () {
+            if (selectDropdownContainer.style.display === 'none') {
+                selectDropdownContainer.style.display = 'flex';
+            } else {
+                selectDropdownContainer.style.display = 'none';
+            }
+        });
+    }
 
     $(document).click(function (e) {
         var container = $(".selectDropdown");
 
-        if (!container.is(e.target) && container.has(e.target).length === 0) {
+        if (!container.is(e.target) && container.has(e.target).length === 0 && selectDropdownContainer) {
             selectDropdownContainer.style.display = 'none';
         }
     });

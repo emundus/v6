@@ -50,6 +50,7 @@ class modEmundusCampaignDropfilesHelper
 			}
 
 			$current_profile = JFactory::getSession()->get('emundusUser')->profile;
+
 			if (!empty($column)) {
 				try {
 					$query->clear()

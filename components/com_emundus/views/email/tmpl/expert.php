@@ -1,28 +1,26 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
 
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'emails.php');
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'list.php');
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'filters.php');
-require_once(JPATH_COMPONENT . DS . 'models' . DS . 'files.php');
+use Joomla\CMS\Factory;
+
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
 
 $m_files = new EmundusModelFiles();
 
-JHTML::_('behavior.modal');
-JHTML::_('behavior.tooltip');
-
-$jinput        = JFactory::getApplication()->input;
+$app           = Factory::getApplication();
+$jinput        = $app->input;
 $doc_to_attach = $jinput->get->get('attach', null);
 
-$document = JFactory::getDocument();
-$document->addStyleSheet(JURI::base() . "media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css");
-unset($document->_styleSheets[$this->baseurl . '/media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css']);
+$document = $app->getDocument();
+$wa       = $document->getWebAssetManager();
+$wa->registerAndUseScript('com_emundus.webtoolkit.aim', 'media/com_emundus/js/webtoolkit.aim.js');
+
+$current_user = $app->getIdentity();
+
 JHTML::stylesheet('media/com_emundus/css/emundus_files.css');
-
-// AJAX upload
-$document->addScript('media/com_emundus/js/webtoolkit.aim.js');
-
-$current_user = JFactory::getUser();
 
 $itemid = $jinput->get->getInt('Itemid');
 
@@ -31,7 +29,6 @@ include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models'
 
 $m_evaluations = new EmundusModelEvaluation;
 $m_emails      = new EmundusModelEmails;
-
 
 $fnums = $m_files->getFnumsInfos($this->fnum_array);
 $email = $m_emails->getEmail($this->default_email_tmpl);

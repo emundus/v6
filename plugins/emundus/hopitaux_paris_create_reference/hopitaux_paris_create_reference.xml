@@ -15,7 +15,8 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
-                <field name="reference_status_step" type="field" default="5" label="Status *" description="Status to defined when the reference has to been created" />
+                <field name="reference_status_step" type="field" default="5" label="Status *"
+                       description="Status to defined when the reference has to been created"/>
             </fieldset>
         </fields>
     </config>

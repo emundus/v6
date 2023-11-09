@@ -197,7 +197,6 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
     window.onunload = function () {
         window.opener.location.reload();
     };
-
     $(document).ready(function () {
         var edit = '<?php echo $this->edit?>';
         $('alertes-details').css({padding: "30px"});

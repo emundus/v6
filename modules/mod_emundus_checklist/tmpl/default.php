@@ -2,6 +2,9 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Uri\Uri;
+
 $index_form = 1;
 $index_doc  = 1;
 
@@ -217,9 +220,12 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
 </div>
 
 <?php
-$uri          =& JFactory::getURI();
+$details_view = false;
+$uri          = Uri::getInstance();
 $url          = explode('&', $uri->toString());
-$details_view = array_search('view=details', $url);
+if (is_array($url)) {
+	$details_view = in_array('view=details', $url);
+}
 ?>
 
 <div class="mod_emundus_checklist___buttons">

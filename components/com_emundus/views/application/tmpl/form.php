@@ -5,15 +5,21 @@
  * Date: 19/06/14
  * Time: 11:23
  */
-JFactory::getSession()->set('application_layout', 'form');
+
+use Joomla\CMS\Factory;
+
+if (version_compare(JVERSION, '4.0', '>')) {
+	Factory::getApplication()->getSession()->set('application_layout', 'form');
+}
+else {
+	Factory::getSession()->set('application_layout', 'form');
+}
 
 $pids       = json_decode($this->pids);
 $defaultpid = $this->defaultpid;
 $user       = $this->userid;
-?>
 
-<!--<div class="active title" id="em_application_forms"> <i class="dropdown icon"></i> </div>
--->
+?>
 
 <style type="text/css">
     .group-result {
@@ -36,7 +42,7 @@ $user       = $this->userid;
                 <h3 class="panel-title">
                     <span class="material-icons">list_alt</span>
 					<?php echo JText::_('COM_EMUNDUS_APPLICATION_APPLICATION_FORM') . ' - ' . $this->formsProgress . " % " . JText::_("COM_EMUNDUS_APPLICATION_COMPLETED"); ?>
-					<?php if (EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum)): ?>
+					<?php if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $this->fnum)): ?>
                         <a id="download-pdf" class="  clean" target="_blank"
                            href="<?php echo JURI::base(); ?>index.php?option=com_emundus&task=pdf&user=<?php echo $this->sid; ?>&fnum=<?php echo $this->fnum; ?>">
                             <button class="btn btn-default"
@@ -55,7 +61,7 @@ $user       = $this->userid;
                 </div>
             </div>
 		<?php endif; ?>
-		<?php if (!EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id) && $this->header == 1) : ?>
+		<?php if (!EmundusHelperAccess::isDataAnonymized($this->_user->id) && $this->header == 1) : ?>
             <div class="em-flex-row em-mt-16">
                 <div class="em-flex-row em-small-flex-column em-small-align-items-start">
                     <div class="em-profile-picture-big no-hover"
@@ -80,7 +86,6 @@ $user       = $this->userid;
             <input type="hidden" id="dpid_hidden" value="<?php echo $defaultpid->pid ?>"/>
 
             <div id="em-switch-profiles" <?php if (sizeof($pids) < 1): ?>style="display: none"<?php endif; ?>>
-
                 <div class="em_label">
                     <label class="control-label em-filter-label em-font-size-14"
                            style="margin-left: 0 !important;"><?= JText::_('PROFILE_FORM'); ?></label>

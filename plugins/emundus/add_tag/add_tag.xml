@@ -8,7 +8,8 @@
     <authorUrl>https://www.emundus.fr</authorUrl>
     <copyright>(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.</copyright>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-    <description>This plugin sends a ZIP of the file when it is changed to a certain status or when it is deleted.</description>
+    <description>This plugin sends a ZIP of the file when it is changed to a certain status or when it is deleted.
+    </description>
     <files>
         <filename plugin="add_tag">add_tag.php</filename>
     </files>

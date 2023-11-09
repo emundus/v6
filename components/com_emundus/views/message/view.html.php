@@ -20,15 +20,16 @@ jimport('joomla.application.component.view');
  */
 class EmundusViewMessage extends JViewLegacy
 {
-
+	protected $users;
+	protected $fnums;
 
 	public function __construct($config = array())
 	{
 
-		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
-		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'messages.php');
-		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'files.php');
-		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'application.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'messages.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
 
 		parent::__construct($config);
 
@@ -69,7 +70,7 @@ class EmundusViewMessage extends JViewLegacy
 			}
 		}
 
-		$fnum_array = [];
+		$this->fnums = [];
 
 		$tables = array('jos_users.name', 'jos_users.username', 'jos_users.email', 'jos_users.id');
 
@@ -77,16 +78,12 @@ class EmundusViewMessage extends JViewLegacy
 			if (EmundusHelperAccess::asAccessAction(9, 'c', $current_user->id, $fnum->fnum) && !empty($fnum->sid)) {
 				$user                = $m_application->getApplicantInfos($fnum->sid, $tables);
 				$user['campaign_id'] = $fnum->cid;
-				$fnum_array[]        = $fnum->fnum;
-				$users[]             = $user;
+				$this->fnums[]       = $fnum->fnum;
+				$this->users[]       = $user;
 			}
 		}
 
-		$this->assignRef('users', $users);
-		$this->assignRef('fnums', $fnum_array);
-
 		parent::display($tpl);
-
 	}
 }
 

@@ -10,7 +10,6 @@
 defined('_JEXEC') or die();
 
 
-JHTML::_('behavior.tooltip');
 JHTML::_('script', 'system/multiselect.js', false, true);
 // Import CSS
 $document = JFactory::getDocument();

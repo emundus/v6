@@ -10,65 +10,78 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Language\LanguageHelper;
 
-JText::script('COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN');
-JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER');
-JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME');
-JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE');
-JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE');
-JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION');
-JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME');
-JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION');
-JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM');
-JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG');
-JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR');
-JText::script('COM_EMUNDUS_ONBOARD_ADDPROGRAM');
-JText::script('COM_EMUNDUS_ONBOARD_ADD_RETOUR');
-JText::script('COM_EMUNDUS_ONBOARD_ADD_QUITTER');
-JText::script('COM_EMUNDUS_ONBOARD_ADD_CONTINUER');
-JText::script('COM_EMUNDUS_ONBOARD_FILTER_PUBLISH');
-JText::script('COM_EMUNDUS_ONBOARD_FILTER_CLOSE');
-JText::script('COM_EMUNDUS_ONBOARD_DEPOTDEDOSSIER');
-JText::script('COM_EMUNDUS_ONBOARD_PROGNAME');
-JText::script('COM_EMUNDUS_ONBOARD_PROGCODE');
-JText::script('COM_EMUNDUS_ONBOARD_CHOOSECATEGORY');
-JText::script('COM_EMUNDUS_ONBOARD_NAMECATEGORY');
-JText::script('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME');
-JText::script('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE');
-JText::script('COM_EMUNDUS_ONBOARD_PROGRAM_RESUME');
-JText::script('COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL');
-JText::script('COM_EMUNDUS_ONBOARD_CAMP_REQUIRED_RESUME');
-JText::script('COM_EMUNDUS_ONBOARD_OK');
-JText::script('COM_EMUNDUS_ONBOARD_CANCEL');
-JText::script('COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH');
-JText::script('COM_EMUNDUS_ONBOARD_TRANSLATETIP');
-JText::script('COM_EMUNDUS_ONBOARD_TIP');
-JText::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT');
-JText::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_NUMBER');
-JText::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS');
-JText::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED');
-JText::script('COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED');
-JText::script('COM_EMUNDUS_ONBOARD_TRANSLATE_IN');
-JText::script('COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC');
-JText::script('COM_EMUNDUS_GLOBAL_INFORMATIONS');
-JText::script('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC');
-JText::script('COM_EMUNDUS_ONBOARD_PROGCOLOR');
-JText::script('COM_EMUNDUS_ADD_CAMPAIGN_ERROR');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+
+Text::script('COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR');
+Text::script('COM_EMUNDUS_ONBOARD_ADDPROGRAM');
+Text::script('COM_EMUNDUS_ONBOARD_ADD_RETOUR');
+Text::script('COM_EMUNDUS_ONBOARD_ADD_QUITTER');
+Text::script('COM_EMUNDUS_ONBOARD_ADD_CONTINUER');
+Text::script('COM_EMUNDUS_ONBOARD_FILTER_PUBLISH');
+Text::script('COM_EMUNDUS_ONBOARD_FILTER_CLOSE');
+Text::script('COM_EMUNDUS_ONBOARD_DEPOTDEDOSSIER');
+Text::script('COM_EMUNDUS_ONBOARD_PROGNAME');
+Text::script('COM_EMUNDUS_ONBOARD_PROGCODE');
+Text::script('COM_EMUNDUS_ONBOARD_CHOOSECATEGORY');
+Text::script('COM_EMUNDUS_ONBOARD_NAMECATEGORY');
+Text::script('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME');
+Text::script('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE');
+Text::script('COM_EMUNDUS_ONBOARD_PROGRAM_RESUME');
+Text::script('COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL');
+Text::script('COM_EMUNDUS_ONBOARD_CAMP_REQUIRED_RESUME');
+Text::script('COM_EMUNDUS_ONBOARD_OK');
+Text::script('COM_EMUNDUS_ONBOARD_CANCEL');
+Text::script('COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH');
+Text::script('COM_EMUNDUS_ONBOARD_TRANSLATETIP');
+Text::script('COM_EMUNDUS_ONBOARD_TIP');
+Text::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT');
+Text::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_NUMBER');
+Text::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS');
+Text::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED');
+Text::script('COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED');
+Text::script('COM_EMUNDUS_ONBOARD_TRANSLATE_IN');
+Text::script('COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC');
+Text::script('COM_EMUNDUS_GLOBAL_INFORMATIONS');
+Text::script('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC');
+Text::script('COM_EMUNDUS_ONBOARD_PROGCOLOR');
+Text::script('COM_EMUNDUS_ADD_CAMPAIGN_ERROR');
 
 ## TUTORIAL ##
-JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_CAMPAIGN');
-JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORM');
-JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORMBUILDER');
-JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS');
-JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM');
-JText::script('BACK');
+Text::script('COM_EMUNDUS_ONBOARD_TUTORIAL_CAMPAIGN');
+Text::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORM');
+Text::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORMBUILDER');
+Text::script('COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS');
+Text::script('COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM');
+Text::script('BACK');
 ## END ##
 
-$lang         = JFactory::getLanguage();
+$app = Factory::getApplication();
+if (version_compare(JVERSION, '4.0', '>')) {
+	$lang = $app->getLanguage();
+	$user = $app->getIdentity();
+}
+else {
+	$lang = Factory::getLanguage();
+	$user = Factory::getUser();
+}
+
 $short_lang   = substr($lang->getTag(), 0, 2);
 $current_lang = $lang->getTag();
-$languages    = JLanguageHelper::getLanguages();
+$languages    = LanguageHelper::getLanguages();
 if (count($languages) > 1) {
 	$many_languages = '1';
 	require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
@@ -80,11 +93,10 @@ else {
 	$default_lang   = $current_lang;
 }
 
-$user               = JFactory::getUser();
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
 $sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
 
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'cache.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 

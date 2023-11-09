@@ -23,46 +23,29 @@ jimport('joomla.application.component.view');
  */
 class EmundusViewCampaign extends JViewLegacy
 {
-	var $_user = null;
-	var $_db = null;
+	protected $active_campaigns;
+	protected $my_campaigns;
+	protected $pagination;
+	protected $lists;
 
 	function __construct($config = array())
 	{
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
-		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
-
-		$this->_user = JFactory::getSession()->get('emundusUser');
-		$this->_db   = JFactory::getDBO();
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 
 		parent::__construct($config);
 	}
 
 	function display($tpl = null)
 	{
-		/*
-		$menu=JFactory::getApplication()->getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access)) die("You are not allowed to access to this page.");
-		*/
+		$this->active_campaigns = $this->get('ActiveCampaign');
 
-		$active_campaigns = $this->get('ActiveCampaign');
-		$this->assignRef('active_campaigns', $active_campaigns);
+		$this->my_campaigns = $this->get('MyCampaign');
 
-		$my_campaigns = $this->get('MyCampaign');
-		$this->assignRef('my_campaigns', $my_campaigns);
+		$this->pagination = $this->get('Pagination');
 
-		$pagination = $this->get('Pagination');
-		$this->assignRef('pagination', $pagination);
-
-		$state                     = $this->get('state');
-		$lists['filter_order_Dir'] = $state->get('filter_order_Dir');
-		$lists['filter_order']     = $state->get('filter_order');
-
-		$this->assignRef('lists', $lists);
+		$state                           = $this->get('state');
+		$this->lists['filter_order_Dir'] = $state->get('filter_order_Dir');
+		$this->lists['filter_order']     = $state->get('filter_order');
 
 		parent::display($tpl);
 	}

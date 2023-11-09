@@ -1,6 +1,8 @@
 <?php
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+
 header('Content-Type: text/html; charset=utf-8');
 
 $app       = JFactory::getApplication();
@@ -193,6 +195,7 @@ if ($currentCampaign->apply_online == 0) {
                     <div class="em-mt-24">
 						<?php $index = 1; ?>
 						<?php foreach ($mod_em_campaign_show_registration_steps as $key => $step): ?>
+							<?php if ($step->mod_em_campaign_show_registration_steps_text == '') continue; ?>
                             <span class="em-applicant-text-color em-flex-row em-font-size-14 em-mb-16"><span
                                         class="mod_emundus_campaign__details_step_count"><?php echo $index ?></span><?php echo $step->mod_em_campaign_show_registration_steps_text ?></span>
 							<?php $index++; ?>
@@ -209,7 +212,7 @@ if ($currentCampaign->apply_online == 0) {
 						$register_url = $redirect_url . "&course=" . $currentCampaign->code . "&cid=" . $currentCampaign->id . "&Itemid=" . $mod_em_campaign_itemid;
 					}
 					else {
-						$register_url = $redirect_url . "?course=" . $currentCampaign->code . "&cid=" . $currentCampaign->id . "&Itemid=" . $mod_em_campaign_itemid;
+						$register_url = JUri::root() . $redirect_url . "?course=" . $currentCampaign->code . "&cid=" . $currentCampaign->id . "&Itemid=" . $mod_em_campaign_itemid;
 					}
 					if (!$user->guest) {
 						$register_url .= "&redirect=" . $formUrl;
@@ -262,11 +265,12 @@ if ($currentCampaign->apply_online == 0) {
 
     window.onload = function () {
         document.getElementById('campaign_tab').classList.add('current-tab');
-		<?php if (in_array('faq', $modules_tabs)) : ?>
+
+		<?php if (is_array($modules_tabs) && in_array('faq', $modules_tabs)) : ?>
         document.getElementById('faq').style.display = 'none';
 		<?php endif; ?>
 
-		<?php if (in_array('documents', $modules_tabs)) : ?>
+		<?php if (is_array($modules_tabs) && in_array('documents', $modules_tabs)) : ?>
         document.getElementById('documents').style.display = 'none';
         if (typeof document.getElementsByClassName('campaign-documents')[0] != 'undefined') {
             document.getElementsByClassName('campaign-documents')[0].parentElement.style.display = 'none';

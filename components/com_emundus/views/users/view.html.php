@@ -160,7 +160,6 @@ class EmundusViewUsers extends JViewLegacy
 			$g[$key]['label'] = $label;
 			$g[$key]['progs'] = $m_users->getGroupProgs($key);
 			$g[$key]['acl']   = $m_users->getGroupsAcl($key);
-
 		}
 
 		$this->groups = $g;

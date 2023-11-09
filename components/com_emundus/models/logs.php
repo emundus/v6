@@ -329,7 +329,6 @@ class EmundusModelLogs extends JModelList
 		$query->select('label')
 			->from($db->quoteName('#__emundus_setup_actions'))
 			->where($db->quoteName('id') . ' = ' . $db->quote($action));
-
 		$db->setQuery($query);
 		$action_category = $db->loadResult();
 

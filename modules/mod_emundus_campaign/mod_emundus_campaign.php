@@ -1,6 +1,8 @@
 <?php
 defined('_JEXEC') or die('Access Deny');
 
+use Joomla\CMS\Factory;
+
 // INCLUDES
 require_once(dirname(__FILE__) . DS . 'helper.php');
 include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
@@ -123,19 +125,19 @@ if ($user->guest || in_array($e_user->profile, $app_prof)) {
 	elseif (empty($order)) {
 		$session->set('order_time', $mod_em_campaign_order_type);
 	}
-	if (isset($group_by) && !empty($group_by)) {
+	if (!empty($group_by)) {
 		$session->set('group_by', $group_by);
 	}
 	elseif (empty($group_by)) {
 		$session->set('group_by', $mod_em_campaign_groupby);
 	}
-	if (isset($codes) && !empty($codes)) {
+	if (!empty($codes)) {
 		$session->set('code', $codes);
 	}
 	elseif (empty($codes)) {
 		$session->clear('code');
 	}
-	if (isset($categories_filt) && !empty($categories_filt)) {
+	if (!empty($categories_filt)) {
 		$session->set('category', $categories_filt);
 	}
 	elseif (empty($categories_filt)) {
@@ -182,11 +184,11 @@ if ($user->guest || in_array($e_user->profile, $app_prof)) {
 	}
 
 	if (!empty($program_code)) {
-		$condition .= ' AND pr.code IN (' . implode(',', array_map('trim', explode(',', $db->quote($program_code)))) . ')';
+		$condition .= ' AND pr.code IN(' . implode(',', array_map('trim', explode(',', $db->quote($program_code)))) . ')';
 	}
 
 	if (!empty($codes)) {
-		$condition .= ' AND pr.code IN (' . implode(',', $db->quote(explode(',', $codes))) . ')';
+		$condition .= ' AND pr.code IN(' . implode(',', $db->quote(explode(',', $codes))) . ')';
 	}
 	if (!empty($categories_filt)) {
 		$condition .= ' AND pr.programmes IN (' . implode(',', $db->quote(explode(',', $categories_filt))) . ')';

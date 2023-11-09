@@ -446,7 +446,7 @@ $sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
 
 $component = JFactory::getApplication()->input->get('evaluation') ? 'evaluationbuilder' : 'formbuilder';
 
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'cache.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 
 $mode = JFactory::getApplication()->input->get('mode', '');

@@ -5,7 +5,15 @@
  * Date: 13/11/14
  * Time: 11:24
  */
-JFactory::getSession()->set('application_layout', 'logs');
+
+use Joomla\CMS\Factory;
+
+if (version_compare(JVERSION, '4.0', '>')) {
+	Factory::getApplication()->getSession()->set('application_layout', 'logs');
+}
+else {
+	Factory::getSession()->set('application_layout', 'logs');
+}
 
 ?>
 
@@ -135,7 +143,7 @@ JFactory::getSession()->set('application_layout', 'logs');
 </div>
 
 <script type="text/javascript">
-    let offset = 100;
+    var offset = 100;
 
     $('#crud-logs').chosen({width: '100%'});
     $('#type-logs').chosen({width: '100%'});

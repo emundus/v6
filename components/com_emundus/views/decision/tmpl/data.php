@@ -13,7 +13,17 @@
  */
 defined('_JEXEC') or die('Restricted access');
 
-$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+use Joomla\CMS\Factory;
+
+$app = Factory::getApplication();
+if (version_compare(JVERSION, '4.0', '>')) {
+	$user = $app->getIdentity();
+}
+else {
+	$user = Factory::getUser();
+}
+
+$anonymize_data = EmundusHelperAccess::isDataAnonymized($user->id);
 ?>
 <input type="hidden" id="view" name="view" value="decision">
 <div class="panel panel-default em-data">

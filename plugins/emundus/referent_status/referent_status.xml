@@ -15,12 +15,19 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
-                <field name="referent_status_mail_id" type="field" default="8" label="Email template id *" description="This template will be use to send the email to referees" />
-                <field name="referent_status_step" type="field" default="3" label="Status *" description="Status to defined when the email has to been sent" />
-                <field name="referent_status_fabrik_elements" type="field" default="emundus_references__Email_1" label="Fabrik elements *" description="Fabrik elements that contains referees's emails (ex: emundus_references__Email_1)" />
-                <field name="referent_status_attachments_letters" type="field" default="4" label="Documents to check *" description="Documents to check to check sending emails" />
-                <field name="referent_status_campaigns" type="field" default="1" label="Campaign *" description="Campaigns where check references" />
-                <field name="referent_status_fabrik_form" type="field" default="68" label="Fabrik Form *" description="Fabrik form to complete by referent" />
+                <field name="referent_status_mail_id" type="field" default="8" label="Email template id *"
+                       description="This template will be use to send the email to referees"/>
+                <field name="referent_status_step" type="field" default="3" label="Status *"
+                       description="Status to defined when the email has to been sent"/>
+                <field name="referent_status_fabrik_elements" type="field" default="emundus_references__Email_1"
+                       label="Fabrik elements *"
+                       description="Fabrik elements that contains referees's emails (ex: emundus_references__Email_1)"/>
+                <field name="referent_status_attachments_letters" type="field" default="4" label="Documents to check *"
+                       description="Documents to check to check sending emails"/>
+                <field name="referent_status_campaigns" type="field" default="1" label="Campaign *"
+                       description="Campaigns where check references"/>
+                <field name="referent_status_fabrik_form" type="field" default="68" label="Fabrik Form *"
+                       description="Fabrik form to complete by referent"/>
             </fieldset>
         </fields>
     </config>

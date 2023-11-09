@@ -1,14 +1,14 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
-JHTML::_('behavior.tooltip');
+
 JHTML::_('behavior.modal');
 $document = JFactory::getDocument();
 $document->addStyleSheet("media/com_emundus/css/emundus_export_select_columns.css");
 $eMConfig     = JComponentHelper::getParams('com_emundus');
 $current_user = JFactory::getUser();
-$view         = JRequest::getVar('v', null, 'GET', 'none', 0);
-$comments     = JRequest::getVar('comments', null, 'POST', 'none', 0);
-$itemid       = JRequest::getVar('Itemid', null, 'GET', 'none', 0);
+$view         = JFactory::getApplication()->input->get('v', null, 'GET', 'none', 0);
+$comments     = JFactory::getApplication()->input->get('comments', null, 'POST', 'none', 0);
+$itemid       = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none', 0);
 $session      = JFactory::getSession();
 
 $s_elements = $session->get('s_elements');

@@ -9,6 +9,6 @@
 
 defined('_JEXEC') or die;
 
-$announcement_content = $params->get('announcement_content', '');
+$announcement_content = $params->get('announcement_content','');
 
 require JModuleHelper::getLayoutPath('mod_emundus_announcements', 'default');

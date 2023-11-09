@@ -6,15 +6,38 @@ JHTML::_('behavior.tooltip');
 JHTML::stylesheet('media/com_emundus/css/emundus.css');
 JHTML::stylesheet('templates/system/css/general.css');
 JHTML::stylesheet('templates/system/css/system.css');
-$document = JFactory::getDocument();
-$document->addStyleSheet("media/com_emunuds/css/emundus_checklist.css");
-$current_user = JFactory::getSession()->get('emundusUser');
 
-$student_id = JRequest::getVar('sid', null, 'GET', 'none', 0);
-if ($student_id > 0 && JFactory::getUser()->usertype != 'Registered')
-	$user = JFactory::getUser($student_id);
-else
-	$user = JFactory::getUser();
+use Joomla\CMS\Factory;
+use Joomla\CMS\User\UserFactoryInterface;
+
+$app = Factory::getApplication();
+if (version_compare(JVERSION, '4.0', '>')) {
+	$document = $app->getDocument();
+	$wa       = $document->getWebAssetManager();
+	$wa->registerAndUseStyle('com_emundus.checklist', 'com_emundus/css/emundus_checklist.css', [], ['version' => 'auto', 'relative' => true]);
+	$session = $app->getSession();
+	$_db     = Factory::getContainer()->get('DatabaseDriver');
+	$user    = $app->getIdentity();
+}
+else {
+	$document = Factory::getDocument();
+	$document->addStyleSheet("media/com_emundus/css/emundus_checklist.css");
+	$session = Factory::getSession();
+	$_db     = Factory::getDBO();
+	$user    = Factory::getUser();
+}
+
+$current_user = $session->get('emundusUser');
+
+$student_id = $app->input->get('sid', null, 'GET', 'none', 0);
+if ($student_id > 0 && $user->usertype != 'Registered') {
+	if (version_compare(JVERSION, '4.0', '>')) {
+		Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(intval($student_id));
+	}
+	else {
+		$user = JFactory::getUser($student_id);
+	}
+}
 
 $chemin = EMUNDUS_PATH_REL;
 ?>

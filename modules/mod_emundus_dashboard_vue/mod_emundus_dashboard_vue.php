@@ -4,7 +4,6 @@ defined('_JEXEC') or die('Access Deny');
 $emundusUser = JFactory::getSession()->get('emundusUser');
 $profiles    = $params->get('profile');
 if (in_array(JFactory::getSession()->get('emundusUser')->profile, $profiles)) {
-	JHtml::script('media/com_emundus/js/jquery.cookie.js');
 	JHtml::script('media/jui/js/bootstrap.min.js');
 
 	$document = JFactory::getDocument();

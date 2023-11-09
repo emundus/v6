@@ -1,24 +1,25 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
 
-JHTML::_('behavior.modal');
+use Joomla\CMS\Factory;
+use Joomla\CMS\Component\ComponentHelper;
 
+$app     = Factory::getApplication();
+$sesdion = $app->getSession();
+$_db     = Factory::getContainer()->get('DatabaseDriver');
+$user    = $app->getIdentity();
+$chemin  = EMUNDUS_PATH_REL;
 
-$document = JFactory::getDocument();
-$document->addScript("https://cdn.jsdelivr.net/npm/sweetalert2@8");
-$mainframe = JFactory::getApplication();
+$itemid = $app->input->get('Itemid', null);
 
-$chemin = EMUNDUS_PATH_REL;
-$itemid = $mainframe->input->get('Itemid', null);
-
-// check if it is possible to upload file
-$eMConfig                = JComponentHelper::getParams('com_emundus');
+$eMConfig                = ComponentHelper::getParams('com_emundus');
 $copy_application_form   = $eMConfig->get('copy_application_form', 0);
 $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
 $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', 0);
 $status_for_send         = explode(',', $eMConfig->get('status_for_send', 0));
 $id_applicants           = $eMConfig->get('id_applicants', '0');
 $applicants              = explode(',', $id_applicants);
+
 //ADDPIPE
 $addpipe_activation   = $eMConfig->get('addpipe_activation', 0);
 $addpipe_account_hash = $eMConfig->get('addpipe_account_hash', null);
@@ -31,7 +32,7 @@ $addpipe_mrt          = $eMConfig->get('addpipe_mrt', 60);
 $addpipe_qualityurl   = $eMConfig->get('addpipe_qualityurl', 'avq/480p.xml');
 $addpipe_size         = $eMConfig->get('addpipe_size', '{width:640,height:510}');
 
-$offset = $mainframe->get('offset', 'UTC');
+$offset = $app->get('offset', 'UTC');
 try {
 	$dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
 	$dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
@@ -46,10 +47,13 @@ if (!empty($this->current_phase) && !empty($this->current_phase->entry_status)) 
 		$status_for_send[] = $status;
 	}
 }
-$is_app_sent = !in_array($this->user->status, $status_for_send);
+$is_app_sent = !in_array($this->_user->status, $status_for_send);
 
 $block_upload = true;
-if ($can_edit_after_deadline || (!$is_app_sent && $this->is_campaign_started && !$this->is_dead_line_passed && $this->isLimitObtained !== true) || in_array($this->user->id, $applicants) || ($is_app_sent && $this->is_campaign_started && !$this->is_dead_line_passed && $can_edit_until_deadline && $this->isLimitObtained !== true)) {
+if ($can_edit_after_deadline ||
+	(!$is_app_sent && $this->is_campaign_started && !$this->is_dead_line_passed && $this->isLimitObtained !== true) ||
+	in_array($this->_user->id, $applicants) ||
+	($is_app_sent && $this->is_campaign_started && !$this->is_dead_line_passed && $can_edit_until_deadline && $this->isLimitObtained !== true)) {
 	$block_upload = false;
 }
 
@@ -69,6 +73,7 @@ function return_bytes($val)
 
 	return $val;
 }
+
 
 if (!empty($this->custom_title)) :?>
     <h1 class="em-checklist-title"><?= $this->custom_title; ?></h1>
@@ -218,8 +223,14 @@ if (!empty($this->custom_title)) :?>
                     <td>';
 					///Video
 					if ($attachment->allowed_types == 'video' && $addpipe_activation == 1) {
-						$document->addStyleSheet("//cdn.addpipe.com/2.0/pipe.css");
-						$document->addScript("//cdn.addpipe.com/2.0/pipe.js");
+						if (version_compare(JVERSION, '4.0', '>')) {
+							$wa->registerAndUseScript('com_emundus.checklist.addpipe', 'https://cdn.addpipe.com/2.0/pipe.js', [], ['version' => 'auto', 'relative' => true]);
+							$wa->registerAndUseStyle('com_emundus.checklist.addpipe', 'https://cdn.addpipe.com/2.0/pipe.css', [], ['version' => 'auto', 'relative' => true]);
+						}
+						else {
+							$document->addStyleSheet("//cdn.addpipe.com/2.0/pipe.css");
+							$document->addScript("//cdn.addpipe.com/2.0/pipe.js");
+						}
 
 						$div .= '<div id="recorder-' . $attachment->id . '-' . $attachment->nb . '"></div>';
 						$div .= '<pre id="log"></pre>';
@@ -230,7 +241,7 @@ if (!empty($this->custom_title)) :?>
                         size: ' . $addpipe_size . ',
                         qualityurl: "' . $addpipe_qualityurl . '", 
                         accountHash:"' . $addpipe_account_hash . '", 
-                        payload:"{\"userId\":\"' . $this->user->id . '\",\"fnum\":\"' . $this->user->fnum . '\",\"aid\":\"' . $attachment->id . '\",\"lbl\":\"' . $attachment->lbl . '\",\"jobId\":\"' . $this->user->fnum . '|' . $attachment->id . '|' . date("Y-m-d_H:i:s") . '\"}", 
+                        payload:"{\"userId\":\"' . $this->_user->id . '\",\"fnum\":\"' . $this->_user->fnum . '\",\"aid\":\"' . $attachment->id . '\",\"lbl\":\"' . $attachment->lbl . '\",\"jobId\":\"' . $this->_user->fnum . '|' . $attachment->id . '|' . date("Y-m-d_H:i:s") . '\"}", 
                         eid:"' . $addpipe_eid . '", 
                         showMenu:' . $addpipe_showmenu . ', 
                         mrt:' . (!empty($attachment->video_max_length) ? $attachment->video_max_length : $addpipe_mrt) . ',
@@ -318,7 +329,7 @@ if (!empty($this->custom_title)) :?>
                 
                             //reload page
                             recorderInserted.remove();
-                            is_file_uploaded("' . $this->user->fnum . '","' . $attachment->id . '","' . $this->user->id . '");
+                            is_file_uploaded("' . $this->_user->fnum . '","' . $attachment->id . '","' . $this->_user->id . '");
                         }
             
                         //DESKTOP UPLOAD EVENTS API
@@ -338,7 +349,7 @@ if (!empty($this->custom_title)) :?>
                 
                             //reload page
                             recorderInserted.remove();
-                            is_file_uploaded(' . $this->user->fnum . ',' . $attachment->id . ',' . $this->user->id . ');
+                            is_file_uploaded(' . $this->_user->fnum . ',' . $attachment->id . ',' . $this->_user->id . ');
                         }
             
                         recorderInserted.onDesktopVideoUploadFailed = function(id, error){
@@ -358,7 +369,7 @@ if (!empty($this->custom_title)) :?>
                 
                             //reload page
                             recorderInserted.remove();
-                            is_file_uploaded("' . $this->user->fnum . '","' . $attachment->id . '","' . $this->user->id . '");
+                            is_file_uploaded("' . $this->_user->fnum . '","' . $attachment->id . '","' . $this->_user->id . '");
                         }
             
                         recorderInserted.onVideoUploadProgress = function(recorderId, percent){
@@ -602,10 +613,10 @@ if (!empty($this->custom_title)) :?>
 			}
 			else {
 				if ($this->isLimitObtained === true) {
-					$mainframe->enqueueMessage(JText::_('LIMIT_OBTAINED'), 'notice');
+					$app->enqueueMessage(JText::_('LIMIT_OBTAINED'), 'notice');
 				}
 				else {
-					$mainframe->enqueueMessage(JText::_('COM_EMUNDUS_READONLY'), 'warning');
+					$app->enqueueMessage(JText::_('COM_EMUNDUS_READONLY'), 'warning');
 				}
 			}
 			$div .= '</table></div></fieldset>';
@@ -675,6 +686,7 @@ if (!empty($this->custom_title)) :?>
     </div>
 
     <script>
+        var $ = jQuery.noConflict();
         $(document).on('change', '.btn-file :file', function () {
             var input = $(this),
                 numFiles = input.get(0).files ? input.get(0).files.length : 1,
@@ -903,3 +915,4 @@ if (!empty($this->custom_title)) :?>
         <p class="em-mt-16"><?= JText::_('COM_EMUNDUS_CHECKLIST_NO_DOCUMENTS_ASSOCIATED_TO_FORM_DESC') ?></p>
     </div>
 <?php endif; ?>
+

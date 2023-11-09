@@ -6,9 +6,6 @@
  * Time: 09:15
  */
 
-$document = JFactory::getDocument();
-$document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
-
 require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
 $config        = JFactory::getConfig();

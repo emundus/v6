@@ -1,6 +1,14 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
-JFactory::getSession()->set('application_layout', 'tag');
+
+use Joomla\CMS\Factory;
+
+if (version_compare(JVERSION, '4.0', '>')) {
+	Factory::getApplication()->getSession()->set('application_layout', 'tag');
+}
+else {
+	Factory::getSession()->set('application_layout', 'tag');
+}
 ?>
 
 

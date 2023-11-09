@@ -456,10 +456,10 @@ class EmundusModelMessenger extends JModelList
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		include_once(JPATH_SITE . '/components/com_emundus/models/emails.php');
-		include_once(JPATH_SITE . '/components/com_emundus/models/files.php');
-		include_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
-		include_once(JPATH_SITE . '/components/com_emundus/controllers/messages.php');
+		include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
+		include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+		include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
+		include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
 
 		$m_files    = new EmundusModelFiles;
 		$m_profile  = new EmundusModelProfile;

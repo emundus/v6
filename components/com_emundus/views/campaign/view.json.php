@@ -16,6 +16,8 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.view');
 
+use Joomla\CMS\Factory;
+
 /**
  * campaign View
  *
@@ -25,13 +27,13 @@ jimport('joomla.application.component.view');
  */
 class EmundusViewCampaign extends JViewLegacy
 {
+	private $app;
 
 	function __construct($config = array())
 	{
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
 
-		// Set up the data to be sent in the response.
-		// call camaign controller
-		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'campaign.php');
+		$this->app = Factory::getApplication();
 
 		parent::__construct($config);
 	}
@@ -39,14 +41,12 @@ class EmundusViewCampaign extends JViewLegacy
 	function display($tpl = null)
 	{
 
-		$app     = JFactory::getApplication();
-		$jinput  = $app->input;
+		$jinput  = $this->app->input;
 		$request = $jinput->get->get('request');
 
 		$m_campaign = new EmundusModelCampaign();
 
 		switch ($request) {
-
 			case 'years':
 				$data = $m_campaign->getTeachingUnity();
 				break;
@@ -82,7 +82,6 @@ class EmundusViewCampaign extends JViewLegacy
 					$data[$key] = $row;
 				}
 				break;
-
 		}
 
 		echo json_encode($data);

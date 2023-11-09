@@ -6,7 +6,7 @@ use Joomla\CMS\Factory;
 JHTML::stylesheet('media/com_emundus/css/emundus.css');
 JHTML::stylesheet('media/com_emundus/css/emundus_programme.css');
 
-$config      = JFactory::getConfig();
+$config      = Factory::getApplication()->getConfig();
 $site_offset = $config->get('offset');
 ?>
 

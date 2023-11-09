@@ -5,7 +5,15 @@
  * Date: 13/11/14
  * Time: 11:24
  */
-JFactory::getSession()->set('application_layout', 'comment');
+
+use Joomla\CMS\Factory;
+
+if (version_compare(JVERSION, '4.0', '>')) {
+	Factory::getApplication()->getSession()->set('application_layout', 'comment');
+}
+else {
+	Factory::getSession()->set('application_layout', 'comment');
+}
 
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'date.php');
 $now = EmundusHelperDate::displayDate(date('Y-m-d H:i:s'), 'DATE_FORMAT_LC2', 0);

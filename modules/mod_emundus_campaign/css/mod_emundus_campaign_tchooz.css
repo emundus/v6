@@ -303,7 +303,7 @@ a.em-blue-400-color:hover {
 
 .mod_emundus_campaign__list_content_container .mod_emundus_campaign__campaign_title {
     margin-bottom: 8px !important;
-    color: var(--em-default-title-color-1);
+    color: var(--em-default-title-color-1) !important;
     -webkit-line-clamp: 2;
     overflow: hidden;
     -webkit-box-orient: vertical;

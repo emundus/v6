@@ -37,6 +37,7 @@ class EmundusViewProfile extends JViewLegacy
 		if (!EmundusHelperAccess::asAdministratorAccessLevel($this->_user->id) && !EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			die(JText::_('ACCESS_DENIED'));
 		}
+
 		$app           = JFactory::getApplication();
 		$p             = $app->input->get('rowid', $default = null, $hash = 'GET', $type = 'none', $mask = 0);
 		$model         = $this->getModel();

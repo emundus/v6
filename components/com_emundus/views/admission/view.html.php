@@ -10,8 +10,11 @@
 
 // no direct access
 defined('_JEXEC') or die('Restricted access');
-//error_reporting(E_ALL);
+
 jimport('joomla.application.component.view');
+
+use Joomla\CMS\Factory;
+
 
 /**
  * HTML View class for the Emundus Component
@@ -20,11 +23,7 @@ jimport('joomla.application.component.view');
  */
 class EmundusViewAdmission extends JViewLegacy
 {
-	//var $_user = null;
-	//var $_db = null;
 	protected $itemId;
-
-	//protected $actions;
 
 	public function __construct($config = array())
 	{
@@ -33,20 +32,30 @@ class EmundusViewAdmission extends JViewLegacy
 
 	public function display($tpl = null)
 	{
-		$current_user = JFactory::getUser();
+		$app = Factory::getApplication();
+		if (version_compare(JVERSION, '4.0', '>')) {
+			$current_user = $app->getIdentity();
+			$document     = $app->getDocument();
+			$wa           = $document->getWebAssetManager();
+			$wa->registerAndUseScript(JURI::base() . "media/com_emundus/js/em_admission.js", 'em_admission');
+			$session = $app->getSession();
+		}
+		else {
+			$current_user = Factory::getUser();
+			$document     = Factory::getDocument();
+			$document->addScript(JURI::base() . "media/com_emundus/js/em_admission.js");
+			$session = Factory::getSession();
+		}
 
-		if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
+		if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
 			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+		}
 
-		$document = JFactory::getDocument();
-		$document->addScript(JURI::base() . "media/com_emundus/js/em_admission.js");
-
-		$this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
-		//$this->cfnum = JFactory::getApplication()->input->getString('cfnum', null);
+		$this->itemId = $app->input->getInt('Itemid', null);
 
 		/* Get the values from the state object that were inserted in the model's construct function */
-		$lists['order_dir'] = JFactory::getSession()->get('filter_order_Dir');
-		$lists['order']     = JFactory::getSession()->get('filter_order');
+		$lists['order_dir'] = $session->get('filter_order_Dir');
+		$lists['order']     = $session->get('filter_order');
 
 		parent::display($tpl);
 	}

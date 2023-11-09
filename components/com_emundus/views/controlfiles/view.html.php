@@ -13,50 +13,51 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.view');
 
+use Joomla\CMS\Factory;
+
 class EmundusViewControlfiles extends JViewLegacy
 {
-	var $_user = null;
-	var $_db = null;
+	private $app;
+	private $_user;
+
+	protected $files;
+	protected $listFiles;
+	protected $lists;
+	protected $total;
 
 	function __construct($config = array())
 	{
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
-		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 
-		$this->_user = JFactory::getUser();
-		$this->_db   = JFactory::getDBO();
+		$this->app = Factory::getApplication();
+		if (version_compare(JVERSION, '4.0', '>')) {
+			$this->_user = $this->app->getIdentity();
+		}
+		else {
+			$this->_user = JFactory::getUser();
+		}
 
 		parent::__construct($config);
 	}
 
 	function display($tpl = null)
 	{
-		//$current_user = JFactory::getUser();
-		$menu   = JFactory::getApplication()->getMenu()->getActive();
+		$menu   = $this->app->getMenu()->getActive();
 		$access = !empty($menu) ? $menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, $access))
+
+		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, $access)) {
 			die("You are not allowed to access to this page.");
+		}
 
-		$files     = $this->get('Files');
-		$listFiles = $this->get('listFiles');
+		$this->files     = $this->get('Files');
+		$this->listFiles = $this->get('listFiles');
 
-		$this->assignRef('files', $files);
-		$this->assignRef('listFiles', $listFiles);
+		$this->total = $this->get('Total');
 
-		$total = $this->get('Total');
-
-		/* Call the state object */
 		$state = $this->get('state');
-		/* Get the values from the state object that were inserted in the model's construct function */
-		$lists['order_Dir'] = $state->get('filter_order_Dir');
-		$lists['order']     = $state->get('filter_order');
 
-		$this->assignRef('lists', $lists);
-		$this->assignRef('total', $total);
+		$this->lists['order_Dir'] = $state->get('filter_order_Dir');
+		$this->lists['order']     = $state->get('filter_order');
 
 		parent::display($tpl);
 	}

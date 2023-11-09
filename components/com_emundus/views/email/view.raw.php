@@ -13,6 +13,9 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.view');
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Component\ComponentHelper;
+
 /**
  * HTML View class for the Emundus Component
  *
@@ -20,23 +23,31 @@ jimport('joomla.application.component.view');
  */
 class EmundusViewEmail extends JViewLegacy
 {
-	var $_user = null;
-	var $_db = null;
+	private $app;
+	private $_user;
+
+	protected $mailBlock;
+	protected $default_email_tmpl;
 
 	function __construct($config = array())
 	{
-		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'javascript.php');
-		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'filters.php');
-		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'files.php');
-		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'list.php');
-		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
-		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'emails.php');
-		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'export.php');
-		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'menu.php');
-		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'files.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'javascript.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
 
-		$this->_user = JFactory::getUser();
-		$this->_db   = JFactory::getDBO();
+		$this->app = Factory::getApplication();
+		if (version_compare(JVERSION, '4.0', '>')) {
+			$this->_user = $this->app->getIdentity();
+		}
+		else {
+			$this->_user = Factory::getUser();
+		}
 
 		parent::__construct($config);
 	}
@@ -44,21 +55,32 @@ class EmundusViewEmail extends JViewLegacy
 	function display($tpl = null)
 	{
 
-		$jinput = JFactory::getApplication()->input;
+		$h_emails = new EmundusHelperEmails();
+
+		$jinput = $this->app->input;
 		$fnums  = $jinput->post->getString('fnums', null);
 		$fnums  = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
 		$dest = $jinput->getInt('desc', 0);
 
-		$eMConfig           = JComponentHelper::getParams('com_emundus');
-		$default_email_tmpl = $eMConfig->get('default_email_tmpl', 'expert');
+		$eMConfig                 = ComponentHelper::getParams('com_emundus');
+		$this->default_email_tmpl = $eMConfig->get('default_email_tmpl', 'expert');
 
 		if ($dest === 3) {
 
-			$document = JFactory::getDocument();
-			$document->addStyleSheet("media/com_emundus/css/emundus.css");
-			$document->addStyleSheet("media/jui/css/chosen.min.css");
-			$document->addScript("media/jui/js/chosen.jquery.min.js");
+			if (version_compare(JVERSION, '4.0', '>')) {
+				$document = $this->app->getDocument();
+				$wa       = $document->getWebAssetManager();
+				$wa->registerAndUseStyle('com_emundus', 'media/com_emundus/css/emundus.css');
+				$wa->registerAndUseStyle('com_emundus.chosen', 'media/jui/css/chosen.min.css');
+				$wa->registerAndUseScript('com_emundus.chosen', 'media/jui/js/chosen.jquery.min.js');
+			}
+			else {
+				$document = Factory::getDocument();
+				$document->addStyleSheet("media/com_emundus/css/emundus.css");
+				$document->addStyleSheet("media/jui/css/chosen.min.css");
+				$document->addScript("media/jui/js/chosen.jquery.min.js");
+			}
 
 			if (!is_array($fnums) || $fnums == "all") {
 				$m_files     = new EmundusModelFiles;
@@ -70,15 +92,11 @@ class EmundusViewEmail extends JViewLegacy
 			$fnum_array = array();
 
 			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
-			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
 			require_once(JPATH_BASE . '/components/com_emundus/models/application.php');
 
 			$m_application = new EmundusModelApplication();
 			$m_evaluation  = new EmundusModelEvaluation;
-			$h_emails      = new EmundusHelperEmails();
 
-			$reference_table = $eMConfig->get('reference_table', '#__emundus_references');
-			$reference_field = $eMConfig->get('reference_field', 'Email_1 as email');
 
 			foreach ($fnums as $key => $fnum) {
 
@@ -93,25 +111,16 @@ class EmundusViewEmail extends JViewLegacy
 					$fnum->status = $app_file->status;
 				}
 			}
+
 			$fnums = array_values($fnums);
 
-			$this->experts_list       = $m_evaluation->getExperts();
-			$this->email              = $h_emails->createEmailBlock(['expert'], $this->experts_list);
-			$this->fnums              = $fnums;
-			$this->fnum_array         = $fnum_array;
-			$this->default_email_tmpl = $default_email_tmpl;
-
+			$this->experts_list = $m_evaluation->getExperts();
+			$this->email        = $h_emails->createEmailBlock(['expert'], $this->experts_list);
+			$this->fnums        = $fnums;
+			$this->fnum_array   = $fnum_array;
 		}
 		else {
-			require_once(JPATH_BASE . '/components/com_emundus/models/application.php');
-			$m_application = new EmundusModelApplication();
-			foreach ($fnums as $fnum) {
-				$users[] = $m_application->getApplicantInfos($fnum['sid'], ['jos_emundus_personal_detail.last_name', 'jos_emundus_personal_detail.first_name', 'jos_users.username', 'jos_users.email']);
-			}
-			$mailBlock = EmundusHelperEmails::createEmailBlock(['applicant_list']);
-
-			$this->assignRef('email', $mailBlock);
-			$this->assignRef('default_email_tmpl', $default_email_tmpl);
+			$this->mailBlock = $h_emails->createEmailBlock(['applicant_list']);
 		}
 
 		parent::display($tpl);

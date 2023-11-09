@@ -44,6 +44,5 @@ class EmundusViewUser extends JViewLegacy
 		$this->user = $this->_db->loadResult();
 
 		parent::display($tpl);
-
 	}
 }

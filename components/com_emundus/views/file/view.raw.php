@@ -29,7 +29,7 @@ class EmundusViewFile extends JViewLegacy
 	{
 		$jinput = JFactory::getApplication()->input;
 
-		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'cache.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 		$hash = EmundusHelperCache::getCurrentGitHash();
 
 		JHTML::script('media/com_emundus_vue/app_emundus.js?' . $hash);

@@ -11,8 +11,13 @@
 // no direct access
 
 defined('_JEXEC') or die('Restricted access');
-//error_reporting(E_ALL);
+
 jimport('joomla.application.component.view');
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Helper\ModuleHelper;
+use Joomla\CMS\User\UserFactoryInterface;
 
 /**
  * HTML View class for the Emundus Component
@@ -21,24 +26,45 @@ jimport('joomla.application.component.view');
  */
 class EmundusViewDecision extends JViewLegacy
 {
-	var $_user = null;
-	var $_db = null;
+	private $app;
+	private $_user;
+
 	protected $itemId;
 	protected $actions;
+	protected $menuActions;
+	protected $display;
+	protected $code;
+	protected $fnum_assoc;
+	protected $filters;
+	protected $formid;
+	protected $form_url_edit;
+	protected $lists;
+	protected $pagination;
+	protected $pageNavigation;
+	protected $accessObj;
+	protected $colsSup;
+	protected $users;
+	protected $data;
 
 	public function __construct($config = array())
 	{
-		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'list.php');
-		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
-		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'emails.php');
-		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'export.php');
-		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'filters.php');
-		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'files.php');
-		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'users.php');
-		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'files.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
 
-		$this->_user = JFactory::getUser();
-		$this->_db   = JFactory::getDBO();
+		$this->app = Factory::getApplication();
+		if (version_compare(JVERSION, '4.0', '>')) {
+			$this->_user = $this->app->getIdentity();
+		}
+		else {
+			$this->_user = JFactory::getUser();
+		}
+
 
 		parent::__construct($config);
 	}
@@ -49,44 +75,40 @@ class EmundusViewDecision extends JViewLegacy
 			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 		}
 
-		$this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
+		$this->itemId = $this->app->input->getInt('Itemid', null);
 
-		$menu         = @JFactory::getApplication()->getMenu();
+		$menu         = $this->app->getMenu();
 		$current_menu = $menu->getActive();
-		$menu_params  = $menu->getParams(@$current_menu->id);
+		$menu_params  = $menu->getParams($current_menu->id);
 		$columnSupl   = explode(',', $menu_params->get('em_other_columns'));
 
-		$jinput = JFactory::getApplication()->input;
+		$jinput = $this->app->input;
 		$layout = $jinput->getString('layout', 0);
 
 		$m_files = new EmundusModelFiles();
 
 		switch ($layout) {
 			case 'menuactions':
-				$display = JFactory::getApplication()->input->getString('display', 'none');
+				$this->display = $this->app->input->getString('display', 'none');
 
-				$items = @EmundusHelperFiles::getMenuList($menu_params);
-				//$actions = @EmundusHelperFiles::getActionsACL();
+				$items   = EmundusHelperFiles::getMenuList($menu_params);
 				$actions = $m_files->getAllActions();
 
-				$menuActions = array();
-				foreach ($items as $key => $item) {
+				$this->menuActions = array();
+				foreach ($items as $item) {
 					if (!empty($item->note)) {
 						$note = explode('|', $item->note);
 						if ($actions[$note[0]][$note[1]] == 1) {
 							$actions[$note[0]]['multi'] = $note[2];
 							$actions[$note[0]]['grud']  = $note[1];
 							$item->action               = $actions[$note[0]];
-							$menuActions[]              = $item;
+							$this->menuActions[]        = $item;
 						}
 					}
 					else {
-						$menuActions[] = $item;
+						$this->menuActions[] = $item;
 					}
 				}
-
-				$this->assignRef('items', $menuActions);
-				$this->assignRef('display', $display);
 				break;
 
 			case 'filters':
@@ -100,20 +122,19 @@ class EmundusViewDecision extends JViewLegacy
 				$fnum_assoc           = $m_user->getApplicantsAssoc($this->_user->id);
 				$m_files->fnum_assoc  = array_merge($fnum_assoc_to_groups, $fnum_assoc);
 
-				$this->assignRef('code', $m_files->code);
-				$this->assignRef('fnum_assoc', $m_files->fnum_assoc);
+				$this->code       = $m_files->code;
+				$this->fnum_assoc = $m_files->fnum_assoc;
 
 				// reset filter
-				$h_files = new EmundusHelperFiles();
-				$filters = $h_files->resetFilter();
-				$this->assignRef('filters', $filters);
+				$h_files       = new EmundusHelperFiles();
+				$this->filters = $h_files->resetFilter();
 				break;
 
 			default :
-				$jinput = JFactory::getApplication()->input;
+				$jinput = $this->app->input;
 				$cfnum  = $jinput->getString('cfnum', null);
 
-				$params                        = JComponentHelper::getParams('com_emundus');
+				$params                        = ComponentHelper::getParams('com_emundus');
 				$evaluators_can_see_other_eval = $params->get('evaluators_can_see_other_eval', 0);
 
 				$m_decision = $this->getModel('Decision');
@@ -128,33 +149,26 @@ class EmundusViewDecision extends JViewLegacy
 				$fnum_assoc             = $m_users->getApplicantsAssoc($this->_user->id);
 				$m_decision->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
 
-				$this->assignRef('code', $m_decision->code);
-				$this->assignRef('fnum_assoc', $m_decision->fnum_assoc);
-
-				// reset filter
-				/*echo '<pre>'; var_dump(JFactory::getSession()->get('filt_params')); echo '</pre>';
-				$filters = @EmundusHelperFiles::resetFilter();
-				$this->assignRef('filters', $filters);*/
+				$this->code       = $m_decision->code;
+				$this->fnum_assoc = $m_decision->fnum_assoc;
 
 				// Do not display photos unless specified in params
 				$displayPhoto = false;
 
 				// get applications files
-				$users = $m_decision->getUsers($cfnum);
+				$this->users = $m_decision->getUsers($cfnum);
 
 				// get evaluation form ID
-				$formid = $m_decision->getDecisionFormByProgramme();
-				$this->assignRef('formid', $formid);
-				$form_url_view = 'index.php?option=com_fabrik&c=form&view=details&formid=' . $formid . '&tmpl=component&iframe=1&rowid=';
-				$form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid=' . $formid . '&tmpl=component&iframe=1&rowid=';
-				$this->assignRef('form_url_edit', $form_url_edit);
+				$this->formid        = $m_decision->getDecisionFormByProgramme();
+				$form_url_view       = 'index.php?option=com_fabrik&c=form&view=details&formid=' . $this->formid . '&tmpl=component&iframe=1&rowid=';
+				$this->form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid=' . $this->formid . '&tmpl=component&iframe=1&rowid=';
 
-				if (!empty($users)) {
+				if (!empty($this->users)) {
 					$taggedFile = $m_decision->getTaggedFile();
 
 					// Columns
 					$defaultElements = $this->get('DefaultElements');
-					$data            = array(array('check' => '#', 'name' => JText::_('COM_EMUNDUS_FILES_APPLICATION_FILES'), 'c.status' => JText::_('COM_EMUNDUS_STATUS')));
+					$this->data      = array(array('check' => '#', 'name' => JText::_('COM_EMUNDUS_FILES_APPLICATION_FILES'), 'c.status' => JText::_('COM_EMUNDUS_STATUS')));
 					$fl              = array();
 
 					// Get eval criterion
@@ -166,29 +180,30 @@ class EmundusViewDecision extends JViewLegacy
 					$fl['jos_emundus_final_grade.user'] = JText::_('COM_EMUNDUS_DECISION_RECORDED_BY');
 
 					// merge eval criterion on application files
-					$data[0] = array_merge($data[0], $fl);
+					$this->data[0] = array_merge($this->data[0], $fl);
 
 					$fnumArray = array();
 
 					foreach ($columnSupl as $col) {
 						$col = explode('.', $col);
+
 						switch ($col[0]) {
 							case 'evaluators':
-								$data[0]['EVALUATORS'] = JText::_('COM_EMUNDUS_EVALUATION_EVALUATORS');
-								$colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $m_decision);
+								$this->data[0]['EVALUATORS'] = JText::_('COM_EMUNDUS_EVALUATION_EVALUATORS');
+								$this->colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $m_decision);
 								break;
 							case 'overall':
-								$data[0]['overall'] = JText::_('COM_EMUNDUS_EVALUATIONS_OVERALL');
-								$colsSup['overall'] = array();
+								$this->data[0]['overall'] = JText::_('COM_EMUNDUS_EVALUATIONS_OVERALL');
+								$this->colsSup['overall'] = array();
 								break;
 							case 'tags':
-								$taggedFile            = $m_decision->getTaggedFile();
-								$data[0]['eta.id_tag'] = JText::_('COM_EMUNDUS_TAGS');
-								$colsSup['id_tag']     = array();
+								$taggedFile                  = $m_decision->getTaggedFile();
+								$this->data[0]['eta.id_tag'] = JText::_('COM_EMUNDUS_TAGS');
+								$this->colsSup['id_tag']     = array();
 								break;
 							case 'access':
-								$data[0]['access'] = JText::_('COM_EMUNDUS_ASSOCIATED_TO');
-								$colsSup['access'] = array();
+								$this->data[0]['access'] = JText::_('COM_EMUNDUS_ASSOCIATED_TO');
+								$this->colsSup['access'] = array();
 								break;
 							case 'photos':
 								$displayPhoto = true;
@@ -196,11 +211,11 @@ class EmundusViewDecision extends JViewLegacy
 							case 'module':
 								// Get every module without a positon.
 								$mod_emundus_custom = array();
-								foreach (JModuleHelper::getModules('') as $module) {
+								foreach (ModuleHelper::getModules('') as $module) {
 									if ($module->module == 'mod_emundus_custom' && ($module->menuid == 0 || $module->menuid == $jinput->get('Itemid', null))) {
 										$mod_emundus_custom[$module->title] = $module->content;
-										$data[0][$module->title]            = JText::_($module->title);
-										$colsSup[$module->title]            = array();
+										$this->data[0][$module->title]      = JText::_($module->title);
+										$this->colsSup[$module->title]      = array();
 									}
 								}
 								break;
@@ -210,7 +225,7 @@ class EmundusViewDecision extends JViewLegacy
 					}
 
 					$i = 0;
-					foreach ($users as $user) {
+					foreach ($this->users as $user) {
 						$usObj       = new stdClass();
 						$usObj->val  = 'X';
 						$fnumArray[] = $user['fnum'];
@@ -234,10 +249,18 @@ class EmundusViewDecision extends JViewLegacy
 								$userObj->val   = $value;
 								$userObj->class = $class;
 								$userObj->type  = 'fnum';
+
 								if ($displayPhoto) {
 									$userObj->photo = EmundusHelperFiles::getPhotos($value);
 								}
-								$userObj->user       = JFactory::getUser((int) substr($value, -7));
+
+								if (version_compare(JVERSION, '4.0', '>')) {
+									$userObj->user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById((int) substr($value, -7));
+								}
+								else {
+									$userObj->user = Factory::getUser((int) substr($value, -7));
+								}
+
 								$userObj->user->name = $user['name'];
 								$line['fnum']        = $userObj;
 							}
@@ -267,8 +290,8 @@ class EmundusViewDecision extends JViewLegacy
 							}
 						}
 
-						if (is_array(@$colsSup) && count(@$colsSup) > 0) {
-							foreach ($colsSup as $key => $obj) {
+						if (is_array($this->colsSup) && count($this->colsSup) > 0) {
+							foreach ($this->colsSup as $key => $obj) {
 								$userObj = new stdClass();
 								if (!is_null($obj)) {
 									if (array_key_exists($user['fnum'], $obj)) {
@@ -288,52 +311,53 @@ class EmundusViewDecision extends JViewLegacy
 								}
 							}
 						}
-						$data[$line['fnum']->val . '-' . $i] = $line;
+						$this->data[$line['fnum']->val . '-' . $i] = $line;
 						$i++;
 					}
 
-					if (isset($colsSup['overall'])) {
-						require_once(JPATH_COMPONENT . DS . 'models' . DS . 'evaluation.php');
-						$m_evaluation       = new EmundusModelEvaluation();
-						$colsSup['overall'] = @$m_evaluation->getEvaluationAverageByFnum($fnumArray);
+					if (isset($this->colsSup['overall'])) {
+						require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+						$m_evaluation             = new EmundusModelEvaluation();
+						$this->colsSup['overall'] = $m_evaluation->getEvaluationAverageByFnum($fnumArray);
 					}
 
-					if (isset($colsSup['id_tag'])) {
-						$tags              = $m_files->getTagsByFnum($fnumArray);
-						$colsSup['id_tag'] = @EmundusHelperFiles::createTagsList($tags);
+					if (isset($this->colsSup['id_tag'])) {
+						$tags                    = $m_files->getTagsByFnum($fnumArray);
+						$this->colsSup['id_tag'] = EmundusHelperFiles::createTagsList($tags);
 					}
 
-					if (isset($colsSup['access'])) {
-						$objAccess = $m_files->getAccessorByFnums($fnumArray);
+					if (isset($this->colsSup['access'])) {
+						$this->accessObj = $m_files->getAccessorByFnums($fnumArray);
 					}
 
 					if (!empty($mod_emundus_custom)) {
 						foreach ($mod_emundus_custom as $key => $module) {
-							if (isset($colsSup[$key])) {
-								$colsSup[$key] = $h_files->createHTMLList($module, $fnumArray);
+							if (isset($this->colsSup[$key])) {
+								$this->colsSup[$key] = $h_files->createHTMLList($module, $fnumArray);
 							}
 						}
 					}
 
 				}
 				else {
-					$data = JText::_('COM_EMUNDUS_NO_RESULT');
+					$this->data = JText::_('COM_EMUNDUS_NO_RESULT');
 				}
 
 				/* Get the values from the state object that were inserted in the model's construct function */
-				$lists['order_dir'] = JFactory::getSession()->get('filter_order_Dir');
-				$lists['order']     = JFactory::getSession()->get('filter_order');
-				$this->assignRef('lists', $lists);
-				$pagination = $this->get('Pagination');
-				$this->assignRef('pagination', $pagination);
-				$pageNavigation = $this->get('PageNavigation');
-				$this->assignRef('pageNavigation', $pageNavigation);
-				$this->assignRef('accessObj', $objAccess);
-				$this->assignRef('colsSup', $colsSup);
-				$this->assignRef('users', $users);
-				$this->assignRef('datas', $data);
+				if (version_compare(JVERSION, '4.0', '>')) {
+					$session = $this->app->getSession();
+				}
+				else {
+					$session = JFactory::getSession();
+				}
+
+				$this->lists['order_dir'] = $session->get('filter_order_Dir');
+				$this->lists['order']     = $session->get('filter_order');
+				$this->pagination         = $this->get('Pagination');
+				$this->pageNavigation     = $this->get('PageNavigation');
 				break;
 		}
+
 		parent::display($tpl);
 	}
 

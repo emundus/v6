@@ -31,20 +31,8 @@ class EmundusViewEvaluation extends JViewLegacy
 
 	public function display($tpl = null)
 	{
-		/* JHtml::script(JURI::base() . 'media/com_emundus/lib/jquery-1.10.2.min.js');
-		 JHtml::script(JURI::base() . 'media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
-		 JHtml::script(JURI::base() . 'media/jui/js/chosen.jquery.min.js' );
-		 JHTML::script(JURI::base() . 'media/com_emundus/js/em_files.js');
-
-		 JHtml::styleSheet( 'media/jui/css/chosen.min.css');
-		 JHtml::styleSheet( 'media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
-		 JHtml::styleSheet( 'media/com_emundus/css/emundus_files.css');
- */
 		$this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
 		$this->cfnum  = JFactory::getApplication()->input->getString('cfnum', null);
-
-		//$filters = @EmundusHelperFiles::resetFilter();
-		//$this->assignRef('filters', $filters);
 
 
 		/* Get the values from the state object that were inserted in the model's construct function */

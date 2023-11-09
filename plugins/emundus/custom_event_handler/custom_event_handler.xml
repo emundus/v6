@@ -31,7 +31,8 @@
                                type="sql"
                                key_field="label" value_field="label"
                                query="SELECT label FROM #__emundus_plugin_events where published"
-                               label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_EVENT_LABEL" description="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_EVENT_DESC"
+                               label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_EVENT_LABEL"
+                               description="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_EVENT_DESC"
                                class="sql_event_handler__event"
                                size="1"
                         />
@@ -49,7 +50,8 @@
                                filter="raw"
                                class="textarea_event_handler__code"
                         />
-                        <field name="published" type="list" label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_PUBLISHED" default="1" size="1">
+                        <field name="published" type="list" label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_PUBLISHED"
+                               default="1" size="1">
                             <option value="0">Non</option>
                             <option value="1">Oui</option>
                         </field>

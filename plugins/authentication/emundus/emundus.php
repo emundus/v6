@@ -23,8 +23,8 @@ jimport('joomla.plugin.plugin');
  */
 class plgAuthenticationEmundus extends JPlugin
 {
-    public function onUserAuthenticate(&$credentials, $options, &$response)
-    {
+	public function onUserAuthenticate(&$credentials, $options, &$response)
+	{
 		if (!empty($credentials['username']) && filter_var($credentials['username'], FILTER_VALIDATE_EMAIL)) {
 			require_once JPATH_ROOT . '/components/com_emundus/models/user.php';
 			$m_user = new EmundusModelUser();

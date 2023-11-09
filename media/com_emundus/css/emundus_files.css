@@ -1383,12 +1383,6 @@ p {
     font-weight: 400 !important;
 }
 
-/*.navbar .navbar-inverse{
-    display: flex;
-    flex-direction: row;
-    margin-bottom: 16px;
-}*/
-
 #check {
     width: 80px !important;
     min-width: 80px !important;

@@ -10,8 +10,6 @@ defined('_JEXEC') or die('Restricted access');
 
 $document = JFactory::getDocument();
 $document->addStyleSheet(JURI::base() . "media/com_emundus/css/emundus_trombinoscope.css");
-$document->addStyleSheet(JURI::base() . "media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css");
-unset($document->_styleSheets[$this->baseurl . '/media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css']);
 
 if (!empty($this->htmlLetters)) {
 	?>

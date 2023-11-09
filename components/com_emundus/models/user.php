@@ -1,16 +1,28 @@
 <?php
 
+defined('_JEXEC') or die('Restricted access');
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\Component\ComponentHelper;
+
 class EmundusModelUser extends JModelList
 {
+
+	public function __construct()
+	{
+		parent::__construct();
+	}
+
 	public function sendActivationEmail($data, $token, $email)
 	{
+		$app = Factory::getApplication();
 		if (json_decode($data['params'])->skip_activation) {
 			return false;
 		}
 
-		$jinput   = JFactory::getApplication()->input;
-		$civility = is_array($jinput->post->get('jos_emundus_users___civility')) ? $jinput->post->get('jos_emundus_users___civility')[0] : $jinput->post->get('jos_emundus_users___civility');
-		$password = !empty($data['password_clear']) ? $data['password_clear'] : $jinput->post->get('jos_emundus_users___password');
+		$input    = $app->input;
+		$civility = is_array($input->post->get('jos_emundus_users___civility')) ? $input->post->get('jos_emundus_users___civility')[0] : $input->post->get('jos_emundus_users___civility');
+		$password = !empty($data['password_clear']) ? $data['password_clear'] : $input->post->get('jos_emundus_users___password');
 
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
 		$c_messages = new EmundusControllerMessages();
@@ -22,23 +34,15 @@ class EmundusModelUser extends JModelList
 		// Compile the user activated notification mail values.
 		$config = JFactory::getConfig();
 
-		// Get a SEF friendly URL or else sites with SEF return 404.
-		// WARNING: This requires making a root level menu item in the backoffice going to com_users&task=edit on the slug /activation.
-		// TODO: Possibly use JRoute to make this work without needing a menu item?
-		if ($config->get('sef') == 0) {
-			$activation_url_rel = '/index.php?option=com_users&task=edit&emailactivation=1&u=' . $userID . '&' . $md5Token . '=1';
-		}
-		else {
-			$activation_url_rel = '/activation?emailactivation=1&u=' . $userID . '&' . $md5Token . '=1';
-		}
+		$activation_url_rel = '/index.php?option=com_emundus&controller=users&task=activateaccount&emailactivation=1&u=' . $userID . '&token=' . $md5Token;
+
 		$activation_url = $baseURL . $activation_url_rel;
 
-		$template = JFactory::getApplication()->getTemplate(true);
+		$template = $app->getTemplate(true);
 		$params   = $template->params;
 		if (!empty($params->get('logo')->custom->image)) {
 			$logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
 			$logo = !empty($logo['path']) ? JURI::base() . $logo['path'] : "";
-
 		}
 		else {
 			$logo_module = JModuleHelper::getModuleById('90');
@@ -48,7 +52,7 @@ class EmundusModelUser extends JModelList
         (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
         (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
 
-			if ((bool) preg_match($pattern, $tab[1])) {
+			if (preg_match($pattern, $tab[1])) {
 				$tab[1] = parse_url($tab[1], PHP_URL_PATH);
 			}
 

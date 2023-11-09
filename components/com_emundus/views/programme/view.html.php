@@ -24,7 +24,6 @@ class EmundusViewProgramme extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-
 		// Get data from the model
 		$model = $this->getModel();
 

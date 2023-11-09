@@ -155,7 +155,6 @@ $uids       = array();
 
 <form id="emailForm" class="em-form-message" name="emailForm">
     <div class="em_email_block" id="em_email_block">
-
         <div class="form-inline row">
 
             <!-- Dropdown to select the email categories used. -->
@@ -231,6 +230,7 @@ $uids       = array();
 
                     <div class="flex items-center gap-2 flex-wrap" style="max-height: 150px; overflow-y: auto;">
 						<?php foreach ($this->users as $user) : ?>
+
 							<?php if (!empty($user->email)) : ?>
 								<?php $email_list[] = $user->email; ?>
 								<?php $name_list[] = $user->name; ?>
@@ -238,10 +238,10 @@ $uids       = array();
 
                                 <span class="label label-default em-mr-8 em-email-label">
                                     <?= $user->email . ' <em class="em-font-size-14">&lt;' . $user->name . '&gt;</em>'; ?>
-                                </span>
-
+						</span>
                                 <input type="hidden" name="ud[]" id="ud" value="<?= $user->id; ?>"/>
 							<?php endif; ?>
+
 						<?php endforeach; ?>
                     </div>
                 </div>
@@ -356,7 +356,7 @@ $uids       = array();
     var SizeStyle = Quill.import('attributors/style/size');
     Quill.register(SizeStyle, true);
 
-    let editor = null;
+    var editor = null;
 
     // Editor loads disabled by default, we apply must toggle it active on page load.
     $(document).ready(() => {

@@ -86,6 +86,7 @@ $limits         = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 1
                             </div>
                         </th>
 					<?php endforeach; ?>
+
                 </tr>
                 </thead>
                 <tbody>

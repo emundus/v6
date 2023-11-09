@@ -4,16 +4,16 @@ defined('_JEXEC') or die('Restricted access');
 $document = JFactory::getDocument();
 
 JHTML::_('behavior.modal');
-JHTML::_('behavior.tooltip');
+
 JHTML::stylesheet('media/com_emundus/cssemundus.css/');
 JHTML::stylesheet('templates/system/css/general.css');
 JHTML::stylesheet('templates/system/csssystem.css/');
 // AJAX upload
 JHTML::script('media/com_emundus/js/webtoolkit.aim.js');
 
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'emails.php');
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'list.php');
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'filters.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
 
 $current_user = JFactory::getUser();
 if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
@@ -21,9 +21,9 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 	die('<h1><img src="' . $this->baseurl . '/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> ' . JText::_("COM_EMUNDUS_SAVED") . '</h1>');
 }
 else {
-	$student_id     = JRequest::getVar('jos_emundus_evaluations___student_id', null, 'GET', 'INT', 0);
-	$evaluations_id = JRequest::getVar('jos_emundus_evaluations___id', null, 'GET', 'INT', 0);
-	$itemid         = JRequest::getVar('Itemid', null, 'GET', 'INT', 0);
+	$student_id     = JFactory::getApplication()->input->get('jos_emundus_evaluations___student_id', null, 'GET', 'INT', 0);
+	$evaluations_id = JFactory::getApplication()->input->get('jos_emundus_evaluations___id', null, 'GET', 'INT', 0);
+	$itemid         = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'INT', 0);
 
 	include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
 	include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');

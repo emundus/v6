@@ -9,13 +9,16 @@
 // no direct access
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+
 include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
 $m_profile = new EmundusModelProfile();
 
+$app = Factory::getApplication();
 $user = JFactory::getSession()->get('emundusUser');
 if (empty($user->firstname) && empty($user->lastname)) {
 	$m_profile->initEmundusSession();
-	$user = JFactory::getSession()->get('emundusUser');
+	$user = $app->getSession()->get('emundusUser');
 }
 $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 
@@ -149,7 +152,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	else {
 		// We send the layout as a param because Hesam needs different information.
 		$applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by, $params);
-		$tabs         = $m_application->getTabs(JFactory::getUser()->id);
+		$tabs         = $m_application->getTabs($user->id);
 	}
 
 	$linknames       = $params->get('linknames', 0);
@@ -157,7 +160,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 
 	if (empty($user)) {
 		$user     = new stdClass();
-		$user->id = JFactory::getUser()->id;
+		$user->id = $app->getIdentity()->id;
 	}
 
 	$user->fnums = $applications;

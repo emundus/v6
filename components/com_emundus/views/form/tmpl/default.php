@@ -9,7 +9,7 @@
 
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 
 ## GLOBAL ##
 JText::script('COM_EMUNDUS_ONBOARD_MODIFY');
@@ -118,7 +118,7 @@ $user               = JFactory::getUser();
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
 $sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
 
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'cache.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 
