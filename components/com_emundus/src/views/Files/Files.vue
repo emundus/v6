@@ -151,7 +151,7 @@
             </template>
             <template slot-scope="scope">
               <div class="em-group-assoc-column">
-                <span v-for="group in scope.row.assocs" :class="group.class" class="em-status em-mb-4">{{ group.label }}</span>
+                <span v-for="group in scope.row.assocs" :class="group.class" class="em-status em-mb-4 label">{{ group.label }}</span>
               </div>
             </template>
           </el-table-column>
@@ -164,7 +164,7 @@
             </template>
             <template slot-scope="scope">
               <div class="em-group-assoc-column">
-                <span v-for="tag in scope.row.tags" :class="tag.class" class="em-status em-mb-4">{{ tag.label }}</span>
+                <span v-for="tag in scope.row.tags" :class="tag.class" class="em-status em-mb-4 label">{{ tag.label }}</span>
               </div>
             </template>
           </el-table-column>
