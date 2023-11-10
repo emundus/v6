@@ -55,17 +55,16 @@ if (!empty((array)$this->assoc_files)) :
 			</div>
 		</div>
     <?php endif; ?>
-    <?php endforeach;
+    <?php endforeach; ?>
 
-        foreach ($this->assoc_files->camps as $camp):
+        <div class="unpublished_campaigns_tab em-flex-row em-flex-space-between" onclick="displayUnpublishedCampaignsContainer()">
+            <p><?php echo JText::_('COM_EMUNDUS_APPLICATION_UNPUBLISHED_CAMPAIGNS');?></p>
+            <span id="unpublished_campaigns_icon" class="material-icons-outlined">expand_less</span>
+        </div>
 
-        if($camp->published !=1):  // files of unpublished campaigns
-        ?>
-        <div>
-            <div class="unpublished_campaigns_tab em-flex-row em-flex-space-between" onclick="displayUnpublishedCampaignsContainer()">
-                <p><?php echo JText::_('COM_EMUNDUS_APPLICATION_UNPUBLISHED_CAMPAIGNS');?></p>
-                <span id="unpublished_campaigns_icon" class="material-icons-outlined">expand_less</span>
-            </div>
+      <?php  foreach ($this->assoc_files->camps as $camp):
+         if($camp->published !=1):  // files of unpublished campaigns
+            ?>
 
             <div id="unpublished_campaigns_container" class="unpublished_campaigns_container" style="display: none;">
                 <div class = "panel panel-primary em-container-assocFiles <?php if($this->assoc_files->fnumInfos['fnum'] == $camp->fnum){echo 'current-file';} ?>">
@@ -115,8 +114,7 @@ if (!empty((array)$this->assoc_files)) :
                         </div>
                     </div>
                 </div>
-            </div>
-        <?php endif; ?>
+             <?php endif; ?>
 	    <?php endforeach;?>
 <?php endif; ?>
 
