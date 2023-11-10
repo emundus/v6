@@ -36,7 +36,14 @@ class EmundusControllerFile extends JControllerLegacy
 		}
 
 		if(empty($this->files->getTotal()) || $refresh == true) {
-			$this->files->setFiles();
+			try {
+				$this->files->setFiles();
+			} catch (Exception $e) {
+				if ($e->getMessage() === 'COM_EMUNDUS_ERROR_NO_EVALUATION_GROUP') {
+					echo json_encode(['status' => false, 'msg' => JText::_($e->getMessage())]);
+					exit;
+				}
+			}
 		}
 
 	    JFactory::getSession()->set('files', serialize($this->files));

@@ -514,7 +514,7 @@ video {
   line-height: 28.8px;
   font-weight: 500;
 }
-.emundus-form .em-form-intro p {
+.emundus-form .em-form-intro * {
         color: var(--neutral-600);
       }
 .emundus-form .groupintro {
@@ -618,9 +618,6 @@ video {
 .com_fabrik .clockpicker-popover .arrow {
         display: none;
       }
-.com_fabrik .clockpicker-popover .\!arrow {
-        display: none !important;
-      }
 .com_fabrik .clockpicker-popover .popover-content {
         background-color: var(--neutral-0);
       }
@@ -681,8 +678,10 @@ form.fabrikForm .fabrikElementTip {
       font-weight: 400;
       font-family: var(--em-applicant-font);
       font-style: normal;
-      display: flex;
     }
+form.fabrikForm .fabrikElementTip * {
+        color: var(--em-form-tip-color);
+      }
 form.fabrikForm .fabrikElementTip i.icon-question-sign  {
         display: none;
       }
@@ -757,11 +756,6 @@ form.fabrikForm .check
     {
       opacity: 0;
       position: absolute;
-    }
-form.fabrikForm .\!check
-    {
-      opacity: 0 !important;
-      position: absolute !important;
     }
 form.fabrikForm .fabrikEmundusPhoneNumber .chzn-container{
       width: auto !important;
@@ -892,20 +886,25 @@ form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calen
               color: var(--neutral-600);
             }
 /* YES / NO */
-form.fabrikForm .row-fluid .plg-yesno.span12 {
+/* And radio buttons grouped together */
+form.fabrikForm .row-fluid .plg-yesno.span12,
+    form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .btn-group {
       width: 48.93617021276595%;
     }
 @media only all and (min-width: 48rem) and (max-width: 59.99rem) {
-      form.fabrikForm .row-fluid .plg-yesno.span12 {
+      form.fabrikForm .row-fluid .plg-yesno.span12,
+      form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .btn-group {
         width: 48.6187845304% !important;
       }
     }
 @media only all and (max-width: 48rem) {
-      form.fabrikForm .row-fluid .plg-yesno.span12 {
+      form.fabrikForm .row-fluid .plg-yesno.span12,
+      form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .btn-group {
         width: 100% !important;
       }
     }
-form.fabrikForm .plg-yesno .fabrikSubElementContainer .btn-group {
+form.fabrikForm .plg-yesno .fabrikSubElementContainer .btn-group,
+    form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .btn-group {
       display: flex;
       gap: var(--em-form-yesno-gap);
     }
@@ -1136,6 +1135,9 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio {
   align-items: center;
   margin-left: 0px;
 }
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio.span12 {
+            width: auto;
+          }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label {
   margin-bottom: 0px;
   display: flex;
@@ -1148,6 +1150,7 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio la
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label input {
               accent-color: var(--em-form-radio-color-checked);
               width: var(--em-form-radio-width);
+              min-width: var(--em-form-radio-width);
               height: var(--em-form-radio-height);
               margin-right: var(--em-form-radio-margin-right);
               margin-left: 0;
@@ -1155,6 +1158,7 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio la
             }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label span{
               word-wrap: break-word;
+              word-break: break-all;
             }
 @supports selector(:has(*)) {
               form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label:has(input[type='radio']:checked) {
@@ -1300,9 +1304,6 @@ form.fabrikForm .currencyElement select .chzn-drop .chzn-results li,form.fabrikF
 form.fabrikForm .currencyElement select .chzn-drop .chzn-results li.highlighted,form.fabrikForm .currencyElement .chzn-container .chzn-drop .chzn-results li.highlighted{
               background-color: #D1E9FF;
             }
-form.fabrikForm .currencyElement select .chzn-drop .chzn-results li.\!highlighted,form.fabrikForm .currencyElement .chzn-container .chzn-drop .chzn-results li.\!highlighted{
-              background-color: #D1E9FF !important;
-            }
 form.fabrikForm .currencyElement input:hover + select,form.fabrikForm .currencyElement input:hover + .chzn-container .chzn-single
       {
         background-color: var(--em-form-bgc-hover);
@@ -1321,16 +1322,9 @@ form.fabrikForm .currencyElement input:focus + select,form.fabrikForm .currencyE
 form.fabrikForm .control-group.error label {
         color: var(--em-form-label-color-error);
       }
-form.fabrikForm .control-group.\!error label {
-        color: var(--em-form-label-color-error) !important;
-      }
 form.fabrikForm .control-group.error input,form.fabrikForm .control-group.error textarea,form.fabrikForm .control-group.error select {
         border-color: var(--em-form-bc-error);
         color: var(--em-default-text-color-1);
-      }
-form.fabrikForm .control-group.\!error input,form.fabrikForm .control-group.\!error textarea,form.fabrikForm .control-group.\!error select {
-        border-color: var(--em-form-bc-error) !important;
-        color: var(--em-default-text-color-1) !important;
       }
 form.fabrikForm .fabrikError.plg-checkbox .fabrikElement .fabrikSubElementContainer {
           border-color: var(--em-form-checkbox-bc-error);
@@ -1628,11 +1622,6 @@ input[type="text"],
       background-image: unset !important;
       color: var(--neutral-900);
     }
-.chzn-container .chzn-results li.\!highlighted, .chzn-container.chzn-container-multi .chzn-results li.\!highlighted, .chzn-container.chzn-container-multi.chzn-container-active .chzn-results li.\!highlighted {
-      background-color: var(--neutral-300) !important;
-      background-image: unset !important;
-      color: var(--neutral-900) !important;
-    }
 .chzn-container-multi:not(.chzn-container-active) .chzn-drop {
     display: none;
   }
@@ -1649,9 +1638,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
       margin-left: -10px;
       font-size: 16px;
     }
-.\!visible {
-  visibility: visible !important;
-}
 .visible {
   visibility: visible;
 }
@@ -1664,17 +1650,11 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .static {
   position: static;
 }
-.\!fixed {
-  position: fixed !important;
-}
 .fixed {
   position: fixed;
 }
 .absolute {
   position: absolute;
-}
-.\!relative {
-  position: relative !important;
 }
 .relative {
   position: relative;
@@ -1682,38 +1662,11 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .sticky {
   position: sticky;
 }
-.end-1 {
-  inset-inline-end: var(--em-spacing-1);
-}
-.end-2 {
-  inset-inline-end: var(--em-spacing-2);
-}
-.end-7 {
-  inset-inline-end: var(--em-spacing-7);
-}
-.start-1 {
-  inset-inline-start: var(--em-spacing-1);
-}
-.start-2 {
-  inset-inline-start: var(--em-spacing-2);
-}
-.isolate {
-  isolation: isolate;
-}
 .float-right {
   float: right;
 }
 .m-0 {
   margin: 0px;
-}
-.m-1 {
-  margin: var(--em-spacing-1);
-}
-.m-10 {
-  margin: var(--em-spacing-10);
-}
-.m-48 {
-  margin: 12rem;
 }
 .mb-0 {
   margin-bottom: 0px;
@@ -1761,11 +1714,20 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .ml-2 {
   margin-left: var(--em-spacing-2);
 }
+.ml-3 {
+  margin-left: var(--em-spacing-3);
+}
+.ml-8 {
+  margin-left: var(--em-spacing-8);
+}
 .mr-0 {
   margin-right: 0px;
 }
 .mr-2 {
   margin-right: var(--em-spacing-2);
+}
+.mr-3 {
+  margin-right: var(--em-spacing-3);
 }
 .mr-4 {
   margin-right: var(--em-spacing-4);
@@ -1806,9 +1768,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .mt-8 {
   margin-top: var(--em-spacing-8);
 }
-.\!block {
-  display: block !important;
-}
 .block {
   display: block;
 }
@@ -1827,17 +1786,8 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .inline-flex {
   display: inline-flex;
 }
-.\!table {
-  display: table !important;
-}
 .table {
   display: table;
-}
-.inline-table {
-  display: inline-table;
-}
-.table-caption {
-  display: table-caption;
 }
 .table-cell {
   display: table-cell;
@@ -1845,56 +1795,17 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .table-column {
   display: table-column;
 }
-.table-column-group {
-  display: table-column-group;
-}
-.table-footer-group {
-  display: table-footer-group;
-}
-.table-header-group {
-  display: table-header-group;
-}
-.table-row-group {
-  display: table-row-group;
-}
-.table-row {
-  display: table-row;
-}
-.flow-root {
-  display: flow-root;
-}
 .grid {
   display: grid;
 }
-.inline-grid {
-  display: inline-grid;
-}
-.\!contents {
-  display: contents !important;
-}
 .contents {
   display: contents;
-}
-.list-item {
-  display: list-item;
-}
-.\!hidden {
-  display: none !important;
 }
 .hidden {
   display: none;
 }
 .h-0 {
   height: 0px;
-}
-.h-1 {
-  height: var(--em-spacing-1);
-}
-.h-2 {
-  height: var(--em-spacing-2);
-}
-.h-3 {
-  height: var(--em-spacing-3);
 }
 .h-max {
   height: -moz-max-content;
@@ -1906,23 +1817,11 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .w-full {
   width: 100%;
 }
-.flex-shrink {
-  flex-shrink: 1;
-}
-.shrink {
-  flex-shrink: 1;
-}
 .flex-grow {
-  flex-grow: 1;
-}
-.grow {
   flex-grow: 1;
 }
 .border-collapse {
   border-collapse: collapse;
-}
-.\!transform {
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)) !important;
 }
 .transform {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
@@ -1960,6 +1859,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .flex-wrap {
   flex-wrap: wrap;
+}
+.items-start {
+  align-items: flex-start;
 }
 .items-center {
   align-items: center;
@@ -2002,34 +1904,11 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .border {
   border-width: 1px;
 }
-.bg-black {
-  --tw-bg-opacity: 1;
-  background-color: rgb(0 0 0 / var(--tw-bg-opacity));
-}
-.bg-white {
-  --tw-bg-opacity: 1;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-.bg-none {
-  background-image: none;
-}
 .p-0 {
   padding: 0px;
 }
-.p-1 {
-  padding: var(--em-spacing-1);
-}
-.p-14 {
-  padding: 3.5rem;
-}
-.p-16 {
-  padding: 4rem;
-}
 .p-2 {
   padding: var(--em-spacing-2);
-}
-.p-3 {
-  padding: var(--em-spacing-3);
 }
 .p-4 {
   padding: var(--em-spacing-4);
@@ -2037,24 +1916,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .p-6 {
   padding: var(--em-spacing-6);
 }
-.p-8 {
-  padding: var(--em-spacing-8);
-}
-.px-2 {
-  padding-left: var(--em-spacing-2);
-  padding-right: var(--em-spacing-2);
-}
-.px-2\.5 {
-  padding-left: 0.625rem;
-  padding-right: 0.625rem;
-}
 .px-6 {
   padding-left: var(--em-spacing-6);
   padding-right: var(--em-spacing-6);
-}
-.py-2 {
-  padding-top: var(--em-spacing-2);
-  padding-bottom: var(--em-spacing-2);
 }
 .py-3 {
   padding-top: var(--em-spacing-3);
@@ -2062,9 +1926,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .text-center {
   text-align: center;
-}
-.text-justify {
-  text-align: justify;
 }
 .text-sm {
   font-size: 0.875rem;
@@ -2085,10 +1946,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .italic {
   font-style: italic;
 }
-.ordinal {
-  --tw-ordinal: ordinal;
-  font-variant-numeric: var(--tw-ordinal) var(--tw-slashed-zero) var(--tw-numeric-figure) var(--tw-numeric-spacing) var(--tw-numeric-fraction);
-}
 .text-neutral-600 {
   color: var(--neutral-600);
 }
@@ -2099,19 +1956,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .underline {
   text-decoration-line: underline;
 }
-.overline {
-  text-decoration-line: overline;
-}
 .line-through {
   text-decoration-line: line-through;
 }
 .antialiased {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-.subpixel-antialiased {
-  -webkit-font-smoothing: auto;
-  -moz-osx-font-smoothing: auto;
 }
 .shadow {
   --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
@@ -2121,17 +1971,8 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .outline {
   outline-style: solid;
 }
-.ring {
-  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
-  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color);
-  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
-}
 .blur {
   --tw-blur: blur(8px);
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
-}
-.drop-shadow {
-  --tw-drop-shadow: drop-shadow(0 1px 2px rgb(0 0 0 / 0.1)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.06));
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 .grayscale {
@@ -2142,26 +1983,8 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   --tw-invert: invert(100%);
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
-.sepia {
-  --tw-sepia: sepia(100%);
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
-}
-.\!filter {
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow) !important;
-}
 .filter {
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
-}
-.backdrop-filter {
-  -webkit-backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
-          backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
-}
-.\!transition {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter !important;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter !important;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter !important;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
-  transition-duration: 150ms !important;
 }
 .transition {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
@@ -2178,14 +2001,8 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .duration-300 {
   transition-duration: 300ms;
 }
-.ease-in {
-  transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
-}
 .ease-in-out {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-.ease-out {
-  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
 }
 h1 {
   color: var(--em-default-title-color-1);
@@ -2255,9 +2072,6 @@ a,
         line-height: normal;
         font-size: var(--em-applicant-font-size);
     }
-.\!hidden {
-        display: none !important;
-    }
 .hidden {
         display: none;
     }
@@ -2319,9 +2133,6 @@ a,
         padding-left: 0;
         padding-right: 0;
     }
-.\!row {
-        margin: 0 !important;
-    }
 .row {
         margin: 0;
     }
@@ -2330,6 +2141,7 @@ hr {
     }
 ul {
         list-style: initial;
+        padding-left: 20px;
     }
 legend {
         margin: 10px 0 20px 0;
@@ -2615,14 +2427,6 @@ button.swal2-cancel.goback-btn:hover,
         width: auto;
     }
 /* STATUTS ET ETIQUETTES */
-.\!label {
-        display: inline-block !important;
-        border-radius: var(--em-status-br) !important;
-        font-size: 14px !important;
-        font-weight: 400 !important;
-        box-shadow: 0 1px 4px rgba(32, 35, 44, 0.05) !important;
-        padding: 6px 10px !important;
-    }
 .label {
         display: inline-block;
         border-radius: var(--em-status-br);
@@ -2889,24 +2693,6 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
-.\!\[a-zA-Z\:_\] {
-  a-z-a--z:  !important;
-}
-.\[_errors\:protected\] {
-  _errors: protected;
-}
-.\[a-zA-Z-\:\#\] {
-  a-z-a--z-: #;
-}
-.\[contenthash\:8\] {
-  contenthash: 8;
-}
-.\[hash\:8\] {
-  hash: 8;
-}
-.\[hash\:base64\] {
-  hash: base64;
-}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;

@@ -4913,11 +4913,9 @@ class EmundusModelApplication extends JModelList
         $fileExists = File::exists($filePath);
 
         if ($fileExists) {
-
             // create preview based on filetype
             if ($extension == 'pdf') {
-                $siteUrl = JURI::base();
-                $preview['content'] = '<iframe src="' . $siteUrl . $filePath . '" style="width:100%;height:100%;" frameborder="0"></iframe>';
+                $preview['content'] = '<iframe src="/index.php?option=com_emundus&task=getfile&u=images/emundus/files/'. $user . '/' . $fileName . '" style="width:100%;height:100%;" border="0"></iframe>';
             } else if ($extension == 'txt') {
                 $content = file_get_contents($filePath);
                 $preview['overflowY'] = true;

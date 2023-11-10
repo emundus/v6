@@ -154,6 +154,7 @@ class EmundusViewEvaluation extends JViewLegacy
 
 				$fnumArray = array();
 
+				$form_url_edit = '';
 			    $this->assignRef('form_url_edit', $form_url_edit);
 
 				if (!empty($users)) {

@@ -4,10 +4,13 @@ const plugin = require('tailwindcss/plugin')
 module.exports = {
     content: [
         "./templates/g5_helium/html/**/*.{html,js,php}",
-        "./modules/**/*.{html,js,php}",
+        "./modules/**/src/*.{html,js,php}",
+        "./modules/**/tmpl/*.{html,js,php}",
         "./plugins/fabrik_element/**/*.{html,js,php}",
-        "./components/com_emundus/**/*.{html,js,php,vue}",
-        "./components/com_fabrik/**/*.{html,js,php}",
+        "./components/com_emundus/src/**/*.{html,js,php,vue}",
+        "./components/com_emundus/views/**/*.{html,js,php,vue}",
+        "./components/com_fabrik/layouts/**/*.{html,js,php}",
+        "./components/com_fabrik/views/**/*.{html,js,php}",
     ],
     safelist: [
         {
