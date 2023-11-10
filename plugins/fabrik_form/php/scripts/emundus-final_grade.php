@@ -19,22 +19,8 @@ $jinput	= JFactory::getApplication()->input->post;
 $fnum = $jinput->get('jos_emundus_final_grade___fnum');
 $status = $jinput->get('jos_emundus_final_grade___final_grade')[0];
 
-if (!empty($status)) {
-
-	jimport('joomla.log.log');
-	JLog::addLogger(['text_file' => 'com_emundus.finalGrade.php'], JLog::ALL, ['com_emundus']);
-
-	$query = $db->getQuery(true);
-	$query->update($db->quoteName('#__emundus_campaign_candidature'))
-			->set($db->quoteName('status').' = '.$status)
-			->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
-
-	try {
-
-		$db->setQuery($query);
-		$db->execute();
-
-	} catch(Exception $e) {
-		JLog::add('Unable to set status in plugin/emundusFinalGrade at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-	}
+if (isset($status) && !empty($fnum)) {
+	require_once(JPATH_SITE.'/components/com_emundus/models/files.php');
+	$m_files = new EmundusModelFiles();
+	$m_files->updateState([$fnum], $status);
 }

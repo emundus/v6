@@ -20,6 +20,9 @@ $sid 		= $jinput->get->get('sid');
 $email 		= JRequest::getVar('email', null,'GET');
 $campaign_id= JRequest::getVar('cid', null,'GET');
 $formid 	= JRequest::getVar('formid', null,'GET');
+$eMConfig = JComponentHelper::getParams('com_emundus');
+
+$referent_edit = $eMConfig->get('referent_can_edit_after_deadline');
 
 $baseurl 	= JURI::base();
 
@@ -55,7 +58,7 @@ if (isset($obj)) {
         // STOP HERE, the campaign or step is not started yet. Redirect to main page
         $mainframe->enqueueMessage(JText::_('COM_EMUNDUS_REFERENT_PERIOD_NOT_STARTED'), 'error');
         $mainframe->redirect('/');
-    } elseif ($is_dead_line_passed) {
+    } elseif ($is_dead_line_passed  && !$referent_edit) {
         // STOP HERE, the campaign or step is over. Redirect to main page
         $mainframe->enqueueMessage(JText::_('COM_EMUNDUS_REFERENT_PERIOD_PASSED'), 'error');
         $mainframe->redirect('/');

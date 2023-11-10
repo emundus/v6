@@ -526,7 +526,7 @@ div#em-appli-block a#download-pdf{
 }
 
 .em-personalInfo > a.em-link  {
-    color: var(--em-coordinator-primary-color);
+    color: var(--em-profile-color);
 }
 
 .em-personalInfo > a {
@@ -2287,7 +2287,7 @@ label[for="em-file_to_upload"]:hover {
 }
 
 .countCheckedCheckbox a.em-pointer{
-    color: var(--em-coordinator-primary-color);
+    color: var(--em-profile-color);
 }
 
 .countCheckedCheckbox a.em-pointer:hover {
