@@ -1257,6 +1257,7 @@ div#em-synthesis .panel-heading h3 {
 
 div#em-assoc-files .panel-body {
     padding: 0.5rem 0.5rem !important;
+    background: #FFFFFF;
 }
 
 div#em-assoc-files h3.panel-title,
@@ -1271,10 +1272,24 @@ div#em-assoc-files .panel.panel-default {
     background: #6E7887;
 }
 
+/* tuile dossier actif */
 div#em-assoc-files .panel.panel-primary.current-file{
     border-radius: 4px;
     border: solid 2px var(--main-500);
+    background: #F7FBF9;
 }
+
+div#em-assoc-files .panel.panel-primary.current-file .panel-heading,
+div#em-assoc-files .panel.panel-primary.current-file .panel-body {
+    background: #F7FBF9;
+    color: var(--main-500);
+}
+
+div#em-assoc-files .panel.panel-primary.current-file .panel-heading .panel-title a h6 {
+    color: var(--main-500) !important;
+}
+
+/* FIN tuile dossier actif */
 
 div#em-assoc-files .panel.panel-primary ul,
 div#em-assoc-files .panel.panel-default ul {
@@ -1309,6 +1324,14 @@ div#em-assoc-files h6 strong {
 
 div#em-assoc-files .pull-right.btn-group {
     display: block;
+}
+
+div#em-assoc-files .pull-right.btn-group .material-icons-outlined{
+    font-size: 27px;
+}
+
+div#em-assoc-files .panel-title .material-icons-outlined {
+    font-size: 27px;
 }
 
 div#em-synthesis .panel-body {
@@ -1573,7 +1596,7 @@ ul {
 
 .btn-xs,
 .btn-group-xs>.btn {
-    padding: 1px 5px !important;
+    padding: 0 !important;
     font-size: 12px;
     line-height: 1.5 !important;
     border-radius: 3px !important;
@@ -2477,10 +2500,12 @@ div#em-assoc-files  .panel-body .panel-body {
     padding-top: 5px !important;
 }
 
+/* Cards dossiers associés */
 div#em-assoc-files .panel > .panel-heading {
     background: #fafafa;
     border-radius: 5px 5px 0 0;
     border-bottom: 2px solid #fff;
+    box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
 }
 
 .glyphicon {
