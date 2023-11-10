@@ -204,8 +204,8 @@ class EmundusFiltersFiles extends EmundusFilters
 							$elements_by_form[$element['element_form_id']][] = $element;
 						}
 
-						foreach($elements_by_form as $form_id => $elements) {
-							$this->h_cache->set('elements_from_form_' . $form_id, $elements);
+						foreach($elements_by_form as $form_id => $element_by_form) {
+							$this->h_cache->set('elements_from_form_' . $form_id, $element_by_form);
 						}
 					}
 				} catch (Exception $e) {
