@@ -94,7 +94,7 @@ class EmundusModelApplication extends JModelList
         return $details;
     }
 
-    public function getUserCampaigns($id, $cid = null)
+    public function getUserCampaigns($id, $cid = null, $published_only = true)
     {
         $query = $this->_db->getQuery(true);
         if ($cid === null) {
@@ -105,8 +105,10 @@ class EmundusModelApplication extends JModelList
                 ->leftJoin($this->_db->quoteName('#__emundus_final_grade','efg').' ON '.$this->_db->quoteName('efg.campaign_id').' = '.$this->_db->quoteName('esc.id').' AND '.$this->_db->quoteName('efg.student_id').' = '.$this->_db->quoteName('eu.user_id'))
                 ->leftJoin($this->_db->quoteName('#__emundus_setup_status','ess').' ON '.$this->_db->quoteName('ess.step').' = '.$this->_db->quoteName('ecc.status'))
                 ->where($this->_db->quoteName('eu.user_id').' = '.$this->_db->quote($id))
-                ->andWhere($this->_db->quoteName('esc.published').' = '.$this->_db->quote(1))
                 ->andWhere($this->_db->quoteName('ecc.published').' = '.$this->_db->quote(1));
+			if($published_only) {
+				$query->andWhere($this->_db->quoteName('esc.published') . ' = ' . $this->_db->quote(1));
+	        }
 
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
