@@ -573,10 +573,15 @@ div#em-appli-block a#download-pdf{
 /* Synthesis panel */
 #em-synthesis a{
     color:#000;
+    text-decoration:underline;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: block;
 }
 
 #em-synthesis a:hover{
-    text-decoration:underline;
+    text-decoration: none;
 }
 /* Panel gauche dernière consultation */
 #em-last-open .list-group-item{
