@@ -2519,11 +2519,30 @@ div#em-assoc-files .panel-body .unpublished_campaigns_tab {
     padding: 10px;
     cursor: pointer;
     align-content: center;
+    margin-top: 0.5rem;
 }
+
+div#em-assoc-files .panel-body .unpublished_campaigns_tab #unpublished_campaigns_icon {
+    font-size: 27px;
+    color: #FFFFFF;
+}
+
 
 div#em-assoc-files .panel-body .unpublished_campaigns_tab p {
     color: var(--neutral-0);
     font-weight: 500;
+}
+
+div#em-assoc-files .panel-body .panel {
+    margin: 0.5rem 0 0 0;
+}
+
+div#em-assoc-files .panel-body .panel:first-child {
+    margin: 0;
+}
+
+div#em-assoc-files .panel-body #unpublished_campaigns_container .panel:first-child {
+    margin-top: 0.5rem;
 }
 
 .glyphicon {
