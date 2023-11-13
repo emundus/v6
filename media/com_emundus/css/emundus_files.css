@@ -510,6 +510,9 @@ div#em-assoc-files .panel > .panel-heading h6 {
     color: #000;
     padding: 10px 0;
     margin: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 div#em-appli-block .panel-heading {
     border: 0;
@@ -2508,7 +2511,7 @@ div#em-assoc-files  .panel-body .panel-body {
 /* Cards dossiers associés */
 div#em-assoc-files .panel > .panel-heading {
     background: #fafafa;
-    border-radius: 5px 5px 0 0;
+    border-radius: 4px;
     border-bottom: 2px solid #fff;
     box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
 }
