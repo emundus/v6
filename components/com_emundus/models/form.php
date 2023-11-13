@@ -1680,6 +1680,8 @@ class EmundusModelForm extends JModelList {
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $modules = $eMConfig->get('form_builder_page_creation_modules', [93,102,103,104,168,170]);
 
+        require_once (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'update.php');
+
         try {
             // Create the menu
             $submittion_page = $this->getSubmittionPage($prid);
