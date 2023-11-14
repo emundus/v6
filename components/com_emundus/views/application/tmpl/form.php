@@ -70,7 +70,7 @@ $user = $this->userid;
         <div class="panel-body Marginpanel-body em-container-form-body">
             <input type="hidden" id="dpid_hidden" value="<?php echo $defaultpid->pid ?>"/>
 
-            <div id="em-switch-profiles" <?php if(sizeof($pids) < 1): ?>style="display: none"<?php endif; ?>>
+            <div id="em-switch-profiles" <?php if(!empty($pids)): ?>style="display: none"<?php endif; ?>>
 
                 <div class="em_label">
                     <label class="control-label em-filter-label em-font-size-14" style="margin-left: 0 !important;"><?= JText::_('PROFILE_FORM'); ?></label>

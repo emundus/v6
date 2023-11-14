@@ -2857,13 +2857,9 @@ class EmundusModelFiles extends JModelLegacy
                         }
 
                         if (is_array($value)) {
-							// values are going to be used in a csv, so we need to implode them
-	                        // but also escape characters that may break the csv
-	                        $value = array_map(function($v) {
-								return '"' . str_replace('"', '""', $v) . '"';
-	                        }, $value);
-
-                            $data[$d_key][$r_key] = implode(', ', $value);
+                            $data[$d_key][$r_key] = '"' . implode(', ', $value) . '"';
+                        } else if (!empty($value) && is_string($value)) {
+							$data[$d_key][$r_key] = str_replace('-', '\-', $value);
                         }
                     }
                 }
