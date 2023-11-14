@@ -144,16 +144,14 @@ if (!empty((array)$this->assoc_files)) :
         }
     }
 
-   /* let headings = document.querySelectorAll(".closed-tab");
-    let heading2 = document.getElementsByClassName("closed-tab");
-    console.log(headings);
+    let headings = document.querySelectorAll(".closed-tab");
     headings.forEach((heading) => {
-        heading2.addEventListener("click", function (e) {
+        heading.addEventListener("click", function() {
             if (heading.classList.contains('closed-tab')) {
                 heading.classList.remove('closed-tab');
             } else {
                 heading.classList.add('closed-tab');
             }
         });
-    });*/
+    });
 </script>
