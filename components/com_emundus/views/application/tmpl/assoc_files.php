@@ -7,7 +7,7 @@ if (!empty((array)$this->assoc_files)) :
 
    	if($camp->published==1):  // files of published campaigns
     ?>
-		<div class = "panel panel-primary em-container-assocFiles <?php if($this->assoc_files->fnumInfos['fnum'] == $camp->fnum){echo 'current-file';} ?>">
+		<div class="panel panel-primary em-container-assocFiles closed-tab <?php if($this->assoc_files->fnumInfos['fnum'] == $camp->fnum){echo 'current-file';} ?>">
 			<div class = "panel-heading em-container-assocFiles-heading">
 				<div class = "panel-title">
 					<a style="text-decoration: none" data-toggle="collapse" data-parent="#accordion" href="#<?php echo $camp->fnum?>-collapse" onclick="openAccordion('<?php echo $camp->fnum?>')">
@@ -65,8 +65,7 @@ if (!empty((array)$this->assoc_files)) :
       <?php  foreach ($this->assoc_files->camps as $camp):
          if($camp->published !=1):  // files of unpublished campaigns
             ?>
-
-            <div id="unpublished_campaigns_container" class="unpublished_campaigns_container" style="display: none;">
+            <div id="unpublished_campaigns_container" class="unpublished_campaigns_container closed-tab" style="display: none;">
                 <div class = "panel panel-primary em-container-assocFiles <?php if($this->assoc_files->fnumInfos['fnum'] == $camp->fnum){echo 'current-file';} ?>">
                     <div class = "panel-heading em-container-assocFiles-heading">
                         <div class = "panel-title">
@@ -144,4 +143,17 @@ if (!empty((array)$this->assoc_files)) :
             icon.style.transform = 'rotate(-180deg)';
         }
     }
+
+   /* let headings = document.querySelectorAll(".closed-tab");
+    let heading2 = document.getElementsByClassName("closed-tab");
+    console.log(headings);
+    headings.forEach((heading) => {
+        heading2.addEventListener("click", function (e) {
+            if (heading.classList.contains('closed-tab')) {
+                heading.classList.remove('closed-tab');
+            } else {
+                heading.classList.add('closed-tab');
+            }
+        });
+    });*/
 </script>
