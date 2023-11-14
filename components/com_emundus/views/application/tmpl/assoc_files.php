@@ -12,7 +12,7 @@ if (!empty((array)$this->assoc_files)) :
 				<div class = "panel-title">
 					<a style="text-decoration: none" data-toggle="collapse" data-parent="#accordion" href="#<?php echo $camp->fnum?>-collapse" onclick="openAccordion('<?php echo $camp->fnum?>')">
                         <div class="em-flex-row em-flex-space-between em-mb-8">
-                            <h6>
+                            <h6 title="<?php echo $camp->label?>">
 		                        <?php echo $camp->label?>
                             </h6>
                             <span id="<?php echo $camp->fnum?>-icon" class="material-icons-outlined">expand_less</span>
@@ -41,9 +41,9 @@ if (!empty((array)$this->assoc_files)) :
 				<div class="panel-body em-container-assocFiles-body em-mt-8">
 					<div>
 						<ul>
-                            <li class="em-mb-4"><span><strong><?php echo JText::_('COM_EMUNDUS_ACADEMIC_YEAR')?> : </strong><?php echo $camp->year?></span></li>
-                            <li class="em-mb-4"><span><strong><?php echo JText::_('COM_EMUNDUS_PROGRAMME')?> : </strong><?php echo $camp->training?></span></li>
-							<li class="em-mb-4"><span><strong><?php echo JText::_('COM_EMUNDUS_FILE_F_NUM')?> : </strong><?php echo $camp->fnum?></span></li>
+                            <li class="em-mb-4"><span title="<?php echo $camp->year?>"><strong><?php echo JText::_('COM_EMUNDUS_ACADEMIC_YEAR')?> : </strong><?php echo $camp->year?></span></li>
+                            <li class="em-mb-4"><span title="<?php echo $camp->training?>"><strong><?php echo JText::_('COM_EMUNDUS_PROGRAMME')?> : </strong><?php echo $camp->training?></span></li>
+							<li class="em-mb-4"><span title="<?php echo $camp->fnum?>"><strong><?php echo JText::_('COM_EMUNDUS_FILE_F_NUM')?> : </strong><?php echo $camp->fnum?></span></li>
 
 							<?php if($camp->submitted==1):?>
 								<li class="em-mb-4"><span><strong><?php echo JText::_('COM_EMUNDUS_APPLICATION_DATE_SUBMITTED')?> : </strong><?php echo JFactory::getDate($camp->date_submitted)->format(JText::_('DATE_FORMAT_LC2'));?></span></li>
@@ -72,7 +72,7 @@ if (!empty((array)$this->assoc_files)) :
                         <div class = "panel-title">
                             <a style="text-decoration: none" data-toggle="collapse" data-parent="#accordion" href="#<?php echo $camp->fnum?>-collapse" onclick="openAccordion('<?php echo $camp->fnum?>')">
                                 <div class="em-flex-row em-flex-space-between em-mb-8">
-                                    <h6>
+                                    <h6 title="<?php echo $camp->label?>">
                                         <?php echo $camp->label?>
                                     </h6>
                                     <span id="<?php echo $camp->fnum?>-icon" class="material-icons-outlined">expand_less</span>
@@ -101,9 +101,9 @@ if (!empty((array)$this->assoc_files)) :
                         <div class="panel-body em-container-assocFiles-body em-mt-8">
                             <div>
                                 <ul>
-                                    <li class="em-mb-4"><span><strong><?php echo JText::_('COM_EMUNDUS_ACADEMIC_YEAR')?> : </strong><?php echo $camp->year?></span></li>
-                                    <li class="em-mb-4"><span><strong><?php echo JText::_('COM_EMUNDUS_PROGRAMME')?> : </strong><?php echo $camp->training?></span></li>
-                                    <li class="em-mb-4"><span><strong><?php echo JText::_('COM_EMUNDUS_FILE_F_NUM')?> : </strong><?php echo $camp->fnum?></span></li>
+                                    <li class="em-mb-4"><span title="<?php echo $camp->year?>"><strong><?php echo JText::_('COM_EMUNDUS_ACADEMIC_YEAR')?> : </strong><?php echo $camp->year?></span></li>
+                                    <li class="em-mb-4"><span title="<?php echo $camp->training?>"><strong><?php echo JText::_('COM_EMUNDUS_PROGRAMME')?> : </strong><?php echo $camp->training?></span></li>
+                                    <li class="em-mb-4"><span title="<?php echo $camp->fnum?>"><strong><?php echo JText::_('COM_EMUNDUS_FILE_F_NUM')?> : </strong><?php echo $camp->fnum?></span></li>
 
                                     <?php if($camp->submitted==1):?>
                                         <li class="em-mb-4"><span><strong><?php echo JText::_('COM_EMUNDUS_APPLICATION_DATE_SUBMITTED')?> : </strong><?php echo JFactory::getDate($camp->date_submitted)->format(JText::_('DATE_FORMAT_LC2'));?></span></li>
