@@ -364,6 +364,9 @@ table > thead > tr > th {
 
 #em-assoc-files ul li{
     list-style:none;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 #em-assoc-files #em-see-files{
@@ -1313,6 +1316,17 @@ div#em-assoc-files .panel-body .panel-body {
     background: var(--neutral-100);
     padding-bottom: 5px !important;
     padding-top: 5px !important;
+}
+
+div#em-assoc-files #unpublished_campaigns_container .panel-body {
+    background: var(--neutral-400);
+    padding-top: 13px !important;
+    margin-top: 0;
+    border-radius: 0 0 4px 4px;
+}
+
+div#em-assoc-files #unpublished_campaigns_container .panel .panel-heading {
+    background: var(--neutral-400);
 }
 
 div#em-assoc-files .panel>.panel-heading {
