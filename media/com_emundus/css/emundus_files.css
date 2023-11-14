@@ -2485,13 +2485,13 @@ div#em-assoc-files .panel.panel-primary.current-file{
     background: var(--main-25);
 }
 
-div#em-assoc-files .panel:not(.closed-tab):not(.unpublished-panel).current-file > .panel-heading {
+div#em-assoc-files .panel:not(.closed-tab):not(.unpublished_campaigns_panel).current-file > .panel-heading {
     background: var(--main-25);
     color: var(--main-500);
     border-bottom: 2px solid var(--neutral-0);
 }
 
-div#em-assoc-files .panel:not(.unpublished-panel).current-file.closed-tab > .panel-heading{
+div#em-assoc-files .panel:not(.unpublished_campaigns_panel).current-file.closed-tab > .panel-heading{
     background: var(--main-25);
     color: var(--main-500);
     border-bottom: none;
@@ -2501,13 +2501,13 @@ div#em-assoc-files .panel.panel-primary.current-file .panel-heading .panel-title
     color: var(--main-500) !important;
 }
 
-div#em-assoc-files .panel-body .panel:not(.unpublished-panel).current-file .panel-body {
+div#em-assoc-files .panel-body .panel:not(.unpublished_campaigns_panel).current-file .panel-body {
     background: var(--main-25);
 }
 
 /* Cards dossiers associés */
 
-div#em-assoc-files .panel-body .panel:not(.unpublished-panel) .panel-body {
+div#em-assoc-files .panel-body .panel:not(.unpublished_campaigns_panel) .panel-body {
     border: none !important;
     background: var(--neutral-100);
     padding-bottom: 5px !important;
@@ -2515,23 +2515,23 @@ div#em-assoc-files .panel-body .panel:not(.unpublished-panel) .panel-body {
     border-radius: 0 0 4px 4px;
 }
 
-div#em-assoc-files .panel:not(.unpublished-panel):not(.current-file).closed-tab > .panel-heading {
+div#em-assoc-files .panel:not(.unpublished_campaigns_panel):not(.current-file).closed-tab > .panel-heading {
     background: var(--neutral-100);
     border-bottom: none;
 }
 
-div#em-assoc-files .panel:not(.closed-tab):not(.unpublished-panel):not(.current-file) > .panel-heading {
+div#em-assoc-files .panel:not(.closed-tab):not(.unpublished_campaigns_panel):not(.current-file) > .panel-heading {
     border-radius: 4px 4px 0 0;
     background: var(--neutral-100);
     border-bottom: 2px solid var(--neutral-0);
 }
 
-div#em-assoc-files .panel.closed-tab:not(.unpublished-panel) > .panel-heading{
+div#em-assoc-files .panel.closed-tab:not(.unpublished_campaigns_panel) > .panel-heading{
    border-radius: 4px;
    box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
 }
 
-div#em-assoc-files .panel:not(.closed-tab):not(.unpublished-panel) {
+div#em-assoc-files .panel:not(.closed-tab):not(.unpublished_campaigns_panel) {
     box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
 }
 
@@ -2542,18 +2542,18 @@ div#em-assoc-files .unpublished_campaigns_container:not(.closed-tab) .panel-body
     border-radius: 0 0 4px 4px;
 }
 
-div#em-assoc-files .unpublished_campaigns_container.closed-tab  .panel.unpublished-panel > .panel-heading {
+div#em-assoc-files .unpublished_campaigns_container.closed-tab  .panel.unpublished_campaigns_panel > .panel-heading {
     background: var(--neutral-400);
     border-bottom: none;
     border-radius: 4px;
     box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
 }
 
-div#em-assoc-files .unpublished_campaigns_container:not(.closed-tab) .panel.unpublished-panel {
+div#em-assoc-files .unpublished_campaigns_container:not(.closed-tab) .panel.unpublished_campaigns_panel {
     box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
 }
 
-div#em-assoc-files .unpublished_campaigns_container:not(.closed-tab) .panel.unpublished-panel > .panel-heading {
+div#em-assoc-files .unpublished_campaigns_container:not(.closed-tab) .panel.unpublished_campaigns_panel > .panel-heading {
     background: var(--neutral-400);
     border-bottom: 2px solid var(--neutral-0);
 }

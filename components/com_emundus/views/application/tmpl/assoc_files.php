@@ -66,7 +66,7 @@ if (!empty((array)$this->assoc_files)) :
          if($camp->published !=1):  // files of unpublished campaigns
             ?>
             <div id="unpublished_campaigns_container" class="unpublished_campaigns_container closed-tab" style="display: none;">
-                <div class = "panel panel-primary em-container-assocFiles unpublished-panel <?php if($this->assoc_files->fnumInfos['fnum'] == $camp->fnum){echo 'current-file';} ?>">
+                <div class = "panel panel-primary em-container-assocFiles unpublished_campaigns_panel <?php if($this->assoc_files->fnumInfos['fnum'] == $camp->fnum){echo 'current-file';} ?>">
                     <div class = "panel-heading em-container-assocFiles-heading">
                         <div class = "panel-title">
                             <a style="text-decoration: none" data-toggle="collapse" data-parent="#accordion" href="#<?php echo $camp->fnum?>-collapse" onclick="openAccordion('<?php echo $camp->fnum?>')">
@@ -118,6 +118,20 @@ if (!empty((array)$this->assoc_files)) :
 <?php endif; ?>
 
 <script>
+
+    let headings = document.querySelectorAll(".closed-tab");
+    headings.forEach((heading) => {
+        let  intro = heading.querySelector(".panel-heading");
+        intro.addEventListener("click", function() {
+
+            if (heading.classList.contains('closed-tab')) {
+                heading.classList.remove('closed-tab');
+            } else {
+                heading.classList.add('closed-tab');
+            }
+        });
+    });
+
     function openAccordion(fnum){
         let block = document.getElementById(fnum+'-collapse-item');
         let icon = document.getElementById(fnum+'-icon');
@@ -144,14 +158,4 @@ if (!empty((array)$this->assoc_files)) :
         }
     }
 
-    let headings = document.querySelectorAll(".closed-tab");
-    headings.forEach((heading) => {
-        heading.addEventListener("click", function() {
-            if (heading.classList.contains('closed-tab')) {
-                heading.classList.remove('closed-tab');
-            } else {
-                heading.classList.add('closed-tab');
-            }
-        });
-    });
 </script>
