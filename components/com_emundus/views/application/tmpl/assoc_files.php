@@ -46,7 +46,7 @@ if (!empty((array)$this->assoc_files)) :
 							<li class="em-mb-4"><span title="<?php echo $camp->fnum?>"><strong><?php echo JText::_('COM_EMUNDUS_FILE_F_NUM')?> : </strong><?php echo $camp->fnum?></span></li>
 
 							<?php if($camp->submitted==1):?>
-								<li class="em-mb-4"><span><strong><?php echo JText::_('COM_EMUNDUS_APPLICATION_DATE_SUBMITTED')?> : </strong><?php echo JFactory::getDate($camp->date_submitted)->format(JText::_('DATE_FORMAT_LC2'));?></span></li>
+								<li class="em-mb-4"><span title="<?php echo JFactory::getDate($camp->date_submitted)->format(JText::_('DATE_FORMAT_LC2'));?>"><strong><?php echo JText::_('COM_EMUNDUS_APPLICATION_DATE_SUBMITTED')?> : </strong><?php echo JFactory::getDate($camp->date_submitted)->format(JText::_('DATE_FORMAT_LC2'));?></span></li>
 							<?php endif;?>
 						</ul>
 
@@ -105,7 +105,7 @@ if (!empty((array)$this->assoc_files)) :
                                     <li class="em-mb-4"><span title="<?php echo $camp->fnum?>"><strong><?php echo JText::_('COM_EMUNDUS_FILE_F_NUM')?> : </strong><?php echo $camp->fnum?></span></li>
 
                                     <?php if($camp->submitted==1):?>
-                                        <li class="em-mb-4"><span><strong><?php echo JText::_('COM_EMUNDUS_APPLICATION_DATE_SUBMITTED')?> : </strong><?php echo JFactory::getDate($camp->date_submitted)->format(JText::_('DATE_FORMAT_LC2'));?></span></li>
+                                        <li class="em-mb-4"><span title="<?php echo JFactory::getDate($camp->date_submitted)->format(JText::_('DATE_FORMAT_LC2'));?>"><strong><?php echo JText::_('COM_EMUNDUS_APPLICATION_DATE_SUBMITTED')?> : </strong><?php echo JFactory::getDate($camp->date_submitted)->format(JText::_('DATE_FORMAT_LC2'));?></span></li>
                                     <?php endif;?>
                                 </ul>
 
