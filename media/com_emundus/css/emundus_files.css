@@ -1311,24 +1311,6 @@ div#em-assoc-files .panel-collapse.collapse {
     border-top: 0 !important;
 }
 
-div#em-assoc-files .panel-body .panel-body {
-    border: none !important;
-    background: var(--neutral-100);
-    padding-bottom: 5px !important;
-    padding-top: 5px !important;
-}
-
-div#em-assoc-files #unpublished_campaigns_container .panel-body {
-    background: var(--neutral-400);
-    padding-top: 13px !important;
-    margin-top: 0;
-    border-radius: 0 0 4px 4px;
-}
-
-div#em-assoc-files #unpublished_campaigns_container .panel .panel-heading {
-    background: var(--neutral-400);
-}
-
 div#em-assoc-files .panel>.panel-heading {
     background: #404B5A;
     border-radius: 5px 5px 0 0;
@@ -2513,18 +2495,59 @@ div#em-assoc-files .panel-collapse.collapse {
     border-top: 0 !important;
 }
 
-div#em-assoc-files  .panel-body .panel-body {
+/* Cards dossiers associés */
+
+div#em-assoc-files .panel-body .panel:not(.unpublished-panel) .panel-body {
     border: none !important;
     background: var(--neutral-100);
     padding-bottom: 5px !important;
     padding-top: 5px !important;
+    border-radius: 0 0 4px 4px;
 }
 
-/* Cards dossiers associés */
-div#em-assoc-files .panel > .panel-heading {
+div#em-assoc-files .panel:not(.unpublished-panel).closed-tab > .panel-heading {
+    background: var(--neutral-100);
+    border-bottom: none;
+}
+
+div#em-assoc-files .panel:not(.closed-tab):not(.unpublished-panel) > .panel-heading {
+    border-radius: 4px 4px 0 0;
     background: var(--neutral-100);
     border-bottom: 2px solid var(--neutral-0);
 }
+
+div#em-assoc-files .panel.closed-tab:not(.unpublished-panel) > .panel-heading{
+   border-radius: 4px;
+   box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+}
+
+div#em-assoc-files .panel:not(.closed-tab):not(.unpublished-panel) {
+    box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+}
+
+div#em-assoc-files .unpublished_campaigns_container:not(.closed-tab) .panel-body {
+    background: var(--neutral-400);
+    padding-top: 13px !important;
+    margin-top: 0;
+    border-radius: 0 0 4px 4px;
+}
+
+div#em-assoc-files .unpublished_campaigns_container.closed-tab  .panel.unpublished-panel > .panel-heading {
+    background: var(--neutral-400);
+    border-bottom: none;
+    border-radius: 4px;
+    box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+}
+
+div#em-assoc-files .unpublished_campaigns_container:not(.closed-tab) .panel.unpublished-panel {
+    box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+}
+
+div#em-assoc-files .unpublished_campaigns_container:not(.closed-tab) .panel.unpublished-panel > .panel-heading {
+    background: var(--neutral-400);
+    border-bottom: 2px solid var(--neutral-0);
+}
+
 
 /* Onglet "campagnes dépubliées" */
 div#em-assoc-files .panel-body .unpublished_campaigns_tab {

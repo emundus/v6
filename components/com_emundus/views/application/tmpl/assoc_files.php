@@ -66,7 +66,7 @@ if (!empty((array)$this->assoc_files)) :
          if($camp->published !=1):  // files of unpublished campaigns
             ?>
             <div id="unpublished_campaigns_container" class="unpublished_campaigns_container closed-tab" style="display: none;">
-                <div class = "panel panel-primary em-container-assocFiles <?php if($this->assoc_files->fnumInfos['fnum'] == $camp->fnum){echo 'current-file';} ?>">
+                <div class = "panel panel-primary em-container-assocFiles unpublished-panel <?php if($this->assoc_files->fnumInfos['fnum'] == $camp->fnum){echo 'current-file';} ?>">
                     <div class = "panel-heading em-container-assocFiles-heading">
                         <div class = "panel-title">
                             <a style="text-decoration: none" data-toggle="collapse" data-parent="#accordion" href="#<?php echo $camp->fnum?>-collapse" onclick="openAccordion('<?php echo $camp->fnum?>')">
