@@ -2820,7 +2820,7 @@ class EmundusModelFiles extends JModelLegacy
 	            return false;
             }
 
-            if (!empty($rows)) {
+	        if (!empty($rows)) {
                 $data_by_fnums = [];
 
 				if ($method === 1) { // one line per repeat
@@ -2865,10 +2865,10 @@ class EmundusModelFiles extends JModelLegacy
 				if (!empty($limit) && count($data) < $limit && count($rows) == $limit) {
 					// it means that we have repeated rows, so we need to retrieve last row all entries, because it may be incomplete (chunked by the limit)
 					$last_row = array_pop($rows);
-					$last_row_data = $this->getFnumArray2($last_row['fnum'], $elements, $start, 0, $method);
+					$last_row_data = $this->getFnumArray2([$last_row['fnum']], $elements, $start, 0, $method);
 					$data[$last_row['fnum']] = $last_row_data[$last_row['fnum']];
 				}
-			}
+	        }
         }
 
         return $data;
