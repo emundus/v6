@@ -1318,19 +1318,15 @@ class EmundusControllerFiles extends JControllerLegacy
 	    $query = $db->getQuery(true);
 
         foreach ($fnums as $fnum) {
-            if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum) && $fnum != 'em-check-all-all' && $fnum != 'em-check-all') {
+            if ($fnum != 'em-check-all-all' && $fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
                 $validFnums[] = $fnum;
-
-				$query->clear()
-					->select('applicant_id')
-					->from($db->quoteName('#__emundus_campaign_candidature'))
-					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
-				$db->setQuery($query);
-				$applicant_id = $db->loadResult();
-
-	            EmundusModelLogs::log(JFactory::getUser()->id, (int) $applicant_id, $fnum, 6, 'c', 'COM_EMUNDUS_ACCESS_EXPORT_EXCEL');
-            }
+			}
         }
+
+		if (!empty($validFnums)) {
+			EmundusModelLogs::logs(JFactory::getUser()->id, $validFnums, 6, 'c', 'COM_EMUNDUS_ACCESS_EXPORT_EXCEL');
+		}
+
         $totalfile = count($validFnums);
 
         $session = JFactory::getSession();
@@ -1460,7 +1456,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $ordered_elements[$c] = $elements[$c];
         }
 
-		$failed_with_old_method = false;
+	    $failed_with_old_method = false;
 		if ($methode == 2) {
 			$fnumsArray = $m_files->getFnumArray($fnums, $ordered_elements, $methode, $start, $limit, 0);
 			if ($fnumsArray === false) {
