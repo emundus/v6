@@ -1283,23 +1283,6 @@ div#em-assoc-files .panel.panel-default {
     background: #6E7887;
 }
 
-/* tuile dossier actif */
-div#em-assoc-files .panel.panel-primary.current-file{
-    border-radius: 4px;
-    border: solid 2px var(--main-500);
-    background: var(--main-25);
-}
-
-div#em-assoc-files .panel.panel-primary.current-file .panel-heading,
-div#em-assoc-files .panel.panel-primary.current-file .panel-body {
-    background: var(--main-25);
-    color: var(--main-500);
-}
-
-div#em-assoc-files .panel.panel-primary.current-file .panel-heading .panel-title a h6 {
-    color: var(--main-500) !important;
-}
-
 /* FIN tuile dossier actif */
 
 div#em-assoc-files .panel.panel-primary ul,
@@ -2495,6 +2478,33 @@ div#em-assoc-files .panel-collapse.collapse {
     border-top: 0 !important;
 }
 
+/* tuile dossier actif */
+
+div#em-assoc-files .panel.panel-primary.current-file{
+    border: solid 2px var(--main-500);
+    background: var(--main-25);
+}
+
+div#em-assoc-files .panel:not(.closed-tab):not(.unpublished-panel).current-file > .panel-heading {
+    background: var(--main-25);
+    color: var(--main-500);
+    border-bottom: 2px solid var(--neutral-0);
+}
+
+div#em-assoc-files .panel:not(.unpublished-panel).current-file.closed-tab > .panel-heading{
+    background: var(--main-25);
+    color: var(--main-500);
+    border-bottom: none;
+}
+
+div#em-assoc-files .panel.panel-primary.current-file .panel-heading .panel-title a h6 {
+    color: var(--main-500) !important;
+}
+
+div#em-assoc-files .panel-body .panel:not(.unpublished-panel).current-file .panel-body {
+    background: var(--main-25);
+}
+
 /* Cards dossiers associés */
 
 div#em-assoc-files .panel-body .panel:not(.unpublished-panel) .panel-body {
@@ -2505,12 +2515,12 @@ div#em-assoc-files .panel-body .panel:not(.unpublished-panel) .panel-body {
     border-radius: 0 0 4px 4px;
 }
 
-div#em-assoc-files .panel:not(.unpublished-panel).closed-tab > .panel-heading {
+div#em-assoc-files .panel:not(.unpublished-panel):not(.current-file).closed-tab > .panel-heading {
     background: var(--neutral-100);
     border-bottom: none;
 }
 
-div#em-assoc-files .panel:not(.closed-tab):not(.unpublished-panel) > .panel-heading {
+div#em-assoc-files .panel:not(.closed-tab):not(.unpublished-panel):not(.current-file) > .panel-heading {
     border-radius: 4px 4px 0 0;
     background: var(--neutral-100);
     border-bottom: 2px solid var(--neutral-0);
