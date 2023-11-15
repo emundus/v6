@@ -1717,7 +1717,7 @@ class EmundusModelEmails extends JModelList {
         $query = $this->_db->getQuery(true);
 
         if (empty($lim)) {
-            $limit = 25;
+            $limit = 5000;
         } else {
             $limit = $lim;
         }
