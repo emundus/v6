@@ -148,22 +148,7 @@ if (!empty((array)$this->assoc_files)) :
         }
     }
 
-   /* function displayUnpublishedCampaignsContainer(){
-        let block = document.querySelectorAll('#unpublished_campaigns_container');
-        let icon = document.querySelector('#unpublished_campaigns_icon');
-
-        if (block.style.display === 'none') {
-            console.log('onglet ouvert')
-            jQuery(block).css("display","block");
-            jQuery(icon).css("transform","rotate(-180deg)");
-        } else {
-            console.log('onglet fermé')
-            jQuery(block).css("display","none");
-            jQuery(icon).css("transform","rotate(0deg)");
-        }
-    }*/
-
-   /* function displayUnpublishedCampaignsContainer(){
+    function displayUnpublishedCampaignsContainer(){
         let blocks = document.querySelectorAll('#unpublished_campaigns_container');
         blocks.forEach((block) => {
             let icon = document.querySelector('#unpublished_campaigns_icon');
@@ -177,6 +162,6 @@ if (!empty((array)$this->assoc_files)) :
                 jQuery(icon).css("transform", "rotate(0deg)");
             }
         });
- }*/
+ }
 
 </script>
