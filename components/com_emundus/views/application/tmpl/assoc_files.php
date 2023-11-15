@@ -8,9 +8,9 @@ if (!empty((array)$this->assoc_files)) :
    	if($camp->published==1):  // files of published campaigns
     ?>
 		<div class="panel panel-primary em-container-assocFiles closed-tab <?php if($this->assoc_files->fnumInfos['fnum'] == $camp->fnum){echo 'current-file';} ?>">
-			<div class = "panel-heading em-container-assocFiles-heading">
+			<div class = "panel-heading em-container-assocFiles-heading" onclick="openAccordion('<?php echo $camp->fnum?>')">
 				<div class = "panel-title">
-					<a style="text-decoration: none" data-toggle="collapse" data-parent="#accordion" href="#<?php echo $camp->fnum?>-collapse" onclick="openAccordion('<?php echo $camp->fnum?>')">
+					<a style="text-decoration: none" data-toggle="collapse" data-parent="#accordion" href="#<?php echo $camp->fnum?>-collapse">
                         <div class="em-flex-row em-flex-space-between em-mb-8">
                             <h6 title="<?php echo $camp->label?>">
 		                        <?php echo $camp->label?>
@@ -63,16 +63,16 @@ if (!empty((array)$this->assoc_files)) :
                 <p><?php echo JText::_('COM_EMUNDUS_APPLICATION_UNPUBLISHED_CAMPAIGNS');?></p>
                 <span id="unpublished_campaigns_icon" class="material-icons-outlined">expand_less</span>
             </div>
-    <?php endif; ?>
+        <?php endif; ?>
 
-      <?php  foreach ($this->assoc_files->camps as $camp):
-         if($camp->published !=1):  // files of unpublished campaigns
+    <?php  foreach ($this->assoc_files->camps as $camp):
+        if($camp->published !=1):  // files of unpublished campaigns
             ?>
             <div id="unpublished_campaigns_container" class="unpublished_campaigns_container closed-tab" style="display: none;">
                 <div class = "panel panel-primary em-container-assocFiles unpublished_campaigns_panel <?php if($this->assoc_files->fnumInfos['fnum'] == $camp->fnum){echo 'current-file';} ?>">
-                    <div class = "panel-heading em-container-assocFiles-heading">
+                    <div class = "panel-heading em-container-assocFiles-heading" onclick="openAccordion('<?php echo $camp->fnum?>')">
                         <div class = "panel-title">
-                            <a style="text-decoration: none" data-toggle="collapse" data-parent="#accordion" href="#<?php echo $camp->fnum?>-collapse" onclick="openAccordion('<?php echo $camp->fnum?>')">
+                            <a style="text-decoration: none" data-toggle="collapse" data-parent="#accordion" href="#<?php echo $camp->fnum?>-collapse">
                                 <div class="em-flex-row em-flex-space-between em-mb-8">
                                     <h6 title="<?php echo $camp->label?>">
                                         <?php echo $camp->label?>
@@ -116,17 +116,16 @@ if (!empty((array)$this->assoc_files)) :
                         </div>
                     </div>
                 </div>
-             <?php endif; ?>
-	    <?php endforeach;?>
+            </div>
+        <?php endif; ?>
+	<?php endforeach;?>
 <?php endif; ?>
 
 <script>
 
     let headings = document.querySelectorAll(".closed-tab");
     headings.forEach((heading) => {
-        let  intro = heading.querySelector(".panel-heading");
-        intro.addEventListener("click", function() {
-
+        heading.addEventListener('click', function() {
             if (heading.classList.contains('closed-tab')) {
                 heading.classList.remove('closed-tab');
             } else {
@@ -162,6 +161,6 @@ if (!empty((array)$this->assoc_files)) :
                 jQuery(icon).css("transform", "rotate(0deg)");
             }
         });
- }
+    }
 
 </script>
