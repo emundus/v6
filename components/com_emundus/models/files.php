@@ -2864,7 +2864,12 @@ class EmundusModelFiles extends JModelLegacy
                     }
                 }
 
-				if (!empty($limit) && count($data) < $limit && count($rows) == $limit) {
+		        /**
+		         * I made that in order to handle repeat lines that are not complete, because of the limit
+		         * If we have a limit of 10, and we have 10 rows, but the last row is not complete, we need to retrieve the last row
+		         * in order to have all the data
+		         */
+				if (!empty($limit) && count($rows) == $limit && (count($data) < $limit || $method === 1)) {
 					// it means that we have repeated rows, so we need to retrieve last row all entries, because it may be incomplete (chunked by the limit)
 					$last_row = array_pop($rows);
 					$last_row_data = $this->getFnumArray2([$last_row['fnum']], $elements, $start, 0, $method);

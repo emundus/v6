@@ -1431,6 +1431,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $opts       = $jinput->getString('opts', null);
         $methode    = $jinput->getString('methode', null);
         $objclass   = $jinput->get('objclass', null);
+	    $lines      = $jinput->get('lines', 0);
         $excel_file_name = $jinput->get('excelfilename', null);
         $opts = $this->getcolumn($opts);
 
@@ -1813,6 +1814,8 @@ class EmundusControllerFiles extends JControllerLegacy
 						$already_counted_fnums[] = $fnum['fnum'];
 						$i++;
 					}
+
+					$lines++;
 				}
 			}
 
@@ -1833,7 +1836,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 			$start = $i;
 
-			$dataresult = array('start' => $start, 'limit'=>$limit, 'totalfile'=> $totalfile,'methode'=>$methode,'elts'=>$elts, 'objs'=> $objs, 'nbcol' => $nbcol,'file'=>$file, 'excelfilename'=>$excel_file_name );
+			$dataresult = array('start' => $start, 'limit'=>$limit, 'totalfile'=> $totalfile,'methode'=>$methode,'elts'=>$elts, 'objs'=> $objs, 'nbcol' => $nbcol,'file'=>$file, 'excelfilename'=>$excel_file_name, 'lines' => $lines);
 			$result = array('status' => true, 'json' => $dataresult);
 		} else {
 			$result = array('status' => false, 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FAILED'));
