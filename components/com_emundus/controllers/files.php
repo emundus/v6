@@ -1673,6 +1673,7 @@ class EmundusControllerFiles extends JControllerLegacy
 					$encryption_key = JFactory::getConfig()->get('secret');
 				}
 
+				$already_counted_fnums = array();
 				// On parcours les fnums
 				foreach ($fnumsArray as $fnum) {
 					// On traite les données du fnum
@@ -1806,8 +1807,12 @@ class EmundusControllerFiles extends JControllerLegacy
 					}
 					// On met les données du fnum dans le CSV
 					$element_csv[] = $line;
-					$line = "";
-					$i++;
+					$line = '';
+
+					if (!in_array($fnum['fnum'], $already_counted_fnums, true)) {
+						$already_counted_fnums[] = $fnum['fnum'];
+						$i++;
+					}
 				}
 			}
 
