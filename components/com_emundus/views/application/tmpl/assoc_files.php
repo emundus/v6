@@ -125,7 +125,9 @@ if (!empty((array)$this->assoc_files)) :
 
     let headings = document.querySelectorAll(".closed-tab");
     headings.forEach((heading) => {
-        heading.addEventListener('click', function() {
+        let clickElement = heading.querySelector('.em-container-assocFiles-heading');
+        clickElement.addEventListener('click', function() {
+            console.log('cliqué sur le header !');
             if (heading.classList.contains('closed-tab')) {
                 heading.classList.remove('closed-tab');
             } else {
