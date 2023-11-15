@@ -2465,6 +2465,8 @@ class EmundusModelFiles extends JModelLegacy
         $data = [];
 
         if (!empty($fnums) && !empty($elements)) {
+			$fnums = !is_array($fnums) ? [$fnums] : $fnums;
+			$fnums = array_unique($fnums);
 	        $method = (int) $method;
 
             $h_files = new EmundusHelperFiles;
