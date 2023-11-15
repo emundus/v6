@@ -57,10 +57,13 @@ if (!empty((array)$this->assoc_files)) :
     <?php endif; ?>
     <?php endforeach; ?>
 
-        <div class="unpublished_campaigns_tab em-flex-row em-flex-space-between" onclick="displayUnpublishedCampaignsContainer()">
-            <p><?php echo JText::_('COM_EMUNDUS_APPLICATION_UNPUBLISHED_CAMPAIGNS');?></p>
-            <span id="unpublished_campaigns_icon" class="material-icons-outlined">expand_less</span>
-        </div>
+       <?php if($camp->published !=1):  // if there are files in the unpublished campaigns
+        ?>
+            <div class="unpublished_campaigns_tab em-flex-row em-flex-space-between" onclick="displayUnpublishedCampaignsContainer()">
+                <p><?php echo JText::_('COM_EMUNDUS_APPLICATION_UNPUBLISHED_CAMPAIGNS');?></p>
+                <span id="unpublished_campaigns_icon" class="material-icons-outlined">expand_less</span>
+            </div>
+    <?php endif; ?>
 
       <?php  foreach ($this->assoc_files->camps as $camp):
          if($camp->published !=1):  // files of unpublished campaigns
@@ -145,17 +148,35 @@ if (!empty((array)$this->assoc_files)) :
         }
     }
 
-    function displayUnpublishedCampaignsContainer(){
-        let block = document.getElementById('unpublished_campaigns_container');
-        let icon = document.getElementById('unpublished_campaigns_icon');
-
-        block.toggle(200);
+   /* function displayUnpublishedCampaignsContainer(){
+        let block = document.querySelectorAll('#unpublished_campaigns_container');
+        let icon = document.querySelector('#unpublished_campaigns_icon');
 
         if (block.style.display === 'none') {
-            icon.style.transform = 'rotate(0deg)';
+            console.log('onglet ouvert')
+            jQuery(block).css("display","block");
+            jQuery(icon).css("transform","rotate(-180deg)");
         } else {
-            icon.style.transform = 'rotate(-180deg)';
+            console.log('onglet fermé')
+            jQuery(block).css("display","none");
+            jQuery(icon).css("transform","rotate(0deg)");
         }
-    }
+    }*/
+
+   /* function displayUnpublishedCampaignsContainer(){
+        let blocks = document.querySelectorAll('#unpublished_campaigns_container');
+        blocks.forEach((block) => {
+            let icon = document.querySelector('#unpublished_campaigns_icon');
+            if (block.style.display === 'none') {
+                console.log('onglet ouvert')
+                jQuery(block).css("display", "block");
+                jQuery(icon).css("transform", "rotate(-180deg)");
+            } else {
+                console.log('onglet fermé')
+                jQuery(block).css("display", "none");
+                jQuery(icon).css("transform", "rotate(0deg)");
+            }
+        });
+ }*/
 
 </script>
