@@ -613,14 +613,32 @@
     }
 
     /** RADIO **/
-    .plg-radiobutton {
+    .plg-radiobutton, .plg-databasejoin {
       .fabrikSubElementContainer {
 
         @media all and (max-width: 767px) {
           width: 100%;
         }
 
-        .fabrikgrid_radio {
+        .row-fluid div[data-role="suboption"] {
+
+           &[class*="span"] {
+             margin-right: var(--em-form-radio-margin-right);
+             label {
+               width: 100%;
+               margin-right: 0;
+             }
+           }
+
+          label {
+            width: fit-content;
+            @media all and (max-width: 767px) {
+              width: 100%;
+            }
+          }
+        }
+
+        .fabrikgrid_radio, .row-fluid div[data-role="suboption"] {
           @apply py-1;
           @apply mb-1;
           @apply items-center;

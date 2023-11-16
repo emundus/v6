@@ -1124,21 +1124,38 @@ form.fabrikForm select.input-small {
       }
 /** RADIO **/
 @media all and (max-width: 767px) {
-      form.fabrikForm .plg-radiobutton .fabrikSubElementContainer {
+      form.fabrikForm .plg-radiobutton .fabrikSubElementContainer, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer {
           width: 100%
       }
         }
-form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio {
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"][class*="span"], form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"][class*="span"] {
+             margin-right: var(--em-form-radio-margin-right);
+           }
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"][class*="span"] label, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"][class*="span"] label {
+               width: 100%;
+               margin-right: 0;
+             }
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label {
+            width: -moz-fit-content;
+            width: fit-content;
+          }
+@media all and (max-width: 767px) {
+
+          form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label {
+              width: 100%
+          }
+            }
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio, form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"], form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .fabrikgrid_radio, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"] {
   padding-top: var(--em-spacing-1);
   padding-bottom: var(--em-spacing-1);
   margin-bottom: var(--em-spacing-1);
   align-items: center;
   margin-left: 0px;
 }
-form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio.span12 {
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio.span12, form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"].span12, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .fabrikgrid_radio.span12, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"].span12 {
             width: auto;
           }
-form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label {
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label, form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .fabrikgrid_radio label, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label {
   margin-bottom: 0px;
   display: flex;
   align-items: center;
@@ -1147,7 +1164,7 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio la
             border-radius: var(--em-form-radio-br);
             margin-right: var(--em-form-radio-margin-right);
 }
-form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label input {
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label input, form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label input, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .fabrikgrid_radio label input, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label input {
               accent-color: var(--em-form-radio-color-checked);
               width: var(--em-form-radio-width);
               min-width: var(--em-form-radio-width);
@@ -1156,18 +1173,18 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio la
               margin-left: 0;
               margin-top: 0;
             }
-form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label span{
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label span,form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label span,form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .fabrikgrid_radio label span,form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label span{
               word-wrap: break-word;
               word-break: break-all;
             }
 @supports selector(:has(*)) {
-              form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label:has(input[type='radio']:checked) {
+              form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label:has(input[type='radio']:checked), form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label:has(input[type='radio']:checked), form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .fabrikgrid_radio label:has(input[type='radio']:checked), form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label:has(input[type='radio']:checked) {
                 background-color: var(--em-form-radio-bgc-checked);
                 border-color: var(--em-form-radio-bc-checked);
               }
             }
 @supports not (selector(:has(*))) {
-              form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label.radio {
+              form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label.radio, form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label.radio, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .fabrikgrid_radio label.radio, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label.radio {
                 border: none;
               }
             }
