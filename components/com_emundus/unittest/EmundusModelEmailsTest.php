@@ -176,7 +176,7 @@ class EmundusModelEmailsTest extends TestCase
 
 		$this->assertEquals($string, $new_string, 'La chaine ne contient pas de tag fabrik, elle n\'a pas été modifiée');
 
-		$string = 'Une chaine avec un tag fabrik ${9999999}';
+		$string = 'Une chaine avec un tag fabrik ${99999}';
 		$new_string = $this->m_emails->setTagsFabrik($string, [$fnum]);
 
 		$this->assertNotEquals($string, $new_string, 'La chaine contient un tag fabrik, elle a été modifiée');
@@ -196,14 +196,14 @@ class EmundusModelEmailsTest extends TestCase
 		$new_string_expected = 'Une chaine avec un tag fabrik existant correspondant à la campagne ' . $campaign_label;
 		$this->assertEquals($new_string_expected, $new_string, 'La chaine utilisant un tag fabrik existant retourne le résultat attendu');
 
-		$string = 'Une chaine avec un tag fabrik existant correspondant à la campagne ${1906} et un tag fabrik inexistant ${9999999}';
+		$string = 'Une chaine avec un tag fabrik existant correspondant à la campagne ${1906} et un tag fabrik inexistant ${99999}';
 		$new_string = $this->m_emails->setTagsFabrik($string, [$fnum]);
 		$new_string_expected = 'Une chaine avec un tag fabrik existant correspondant à la campagne ' . $campaign_label . ' et un tag fabrik inexistant ';
 		$this->assertEquals($new_string_expected, $new_string, 'La chaine utilisant un tag fabrik existant et un tag fabrik inexistant retourne le résultat attendu');
 
-		$string = 'Une chaine avec plusieurs tags fabriks existants ${1906} et un tag fabrik inexistant ${9999999} puis ${1906}';
+		$string = 'Une chaine avec plusieurs tags fabriks existants ${1906} et un tag fabrik inexistant ${99999} puis ${1906}';
 		$new_string = $this->m_emails->setTagsFabrik($string, [$fnum]);
 		$new_string_expected = 'Une chaine avec plusieurs tags fabriks existants ' . $campaign_label . ' et un tag fabrik inexistant  puis ' . $campaign_label;
-		$this->assertNotEquals($string, $new_string, 'La chaine utilisant plusieurs tags fabriks existants et un tag fabrik inexistant retourne le résultat attendu');
+		$this->assertEquals($new_string_expected, $new_string, 'La chaine utilisant plusieurs tags fabriks existants et un tag fabrik inexistant retourne le résultat attendu');
 	}
 }
