@@ -228,14 +228,14 @@ hr.footer-separation {
     .footer-rgpd-links {
         flex-direction: column;
         align-items: center;
-        gap: 40px;
+        gap: 20px;
     }
 
     .em-container-footer-cand .row {
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        gap: 40px;
+        gap: 20px;
     }
 
     .em-flex-row.em-footer-container-row {
