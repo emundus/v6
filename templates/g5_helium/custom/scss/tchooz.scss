@@ -1988,6 +1988,14 @@ button.em-swal-delete-button:hover{
     position: static !important;
     margin: auto;
   }
+
+  .view-details .voting-details-group .p-8 {
+    padding-left: 32px !important;
+  }
+
+  .voting-details-group {
+    max-width: 100%;
+  }
 }
 
 @media (max-width: 850px) {
@@ -2048,14 +2056,6 @@ button.em-swal-delete-button:hover{
 
   .moduletable:first-child {
     text-align : center;
-  }
-
-  .view-details .voting-details-group .p-8 {
-    padding-left: 32px !important;
-  }
-
-  .voting-details-group {
-    max-width: 100%;
   }
 }
 
