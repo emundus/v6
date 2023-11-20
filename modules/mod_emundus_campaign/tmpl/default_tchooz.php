@@ -36,8 +36,8 @@ if(sizeof($tmp_campaigns) > 0) {
         });
 
         foreach ($tmp_campaigns as $campaign) {
-            $campaigns[$campaign->code][] = $campaign;
-            $campaigns[$campaign->code]['label'] = $campaign->programme;
+            $campaigns[$campaign->training][] = $campaign;
+            $campaigns[$campaign->training]['label'] = $campaign->programme;
         }
 
     } elseif ($group_by == 'category') {
