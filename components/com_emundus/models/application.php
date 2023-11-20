@@ -3934,6 +3934,15 @@ class EmundusModelApplication extends JModelList
                         WHERE alias like "checkout'.$pid.'" and published = 1';
             $dbo->setQuery($query);
             $url = $dbo->loadResult();
+
+            if (empty($url)) {
+                $query = 'SELECT CONCAT(m.link, "&Itemid=", m.id) as url
+                    FROM #__menu m
+                    LEFT JOIN #__emundus_setup_profiles esp on esp.menutype = m.menutype
+                    WHERE m.alias like "checkout%" and m.published = 1 and esp.id = '.$pid;
+                $dbo->setQuery($query);
+                $url = $dbo->loadResult();
+            }
             return $url;
         }
         catch (Exception $e)
