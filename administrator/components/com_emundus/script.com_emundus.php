@@ -3608,6 +3608,8 @@ structure:
 					$db->setQuery($query);
 					$db->execute();
 				}
+
+				EmundusHelperUpdate::addColumn('jos_emundus_setup_attachments', 'max_filesize', 'INT');
 			}
 		}
 
