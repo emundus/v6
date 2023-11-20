@@ -865,7 +865,7 @@ class EmundusModelEmails extends JModelList {
             $preg = array('patterns' => array(), 'replacements' => array());
             foreach ($fnumsArray as $fnum) {
                 foreach ($idFabrik as $id) {
-                    $preg['patterns'][] = '/\$\{(.*?)'.$id.'(.*?)}/i';
+                    $preg['patterns'][] = '/\${' . $id . '\}/';
                     if (isset($fabrikValues[$id][$fnum])) {
                         $preg['replacements'][] = JText::_($fabrikValues[$id][$fnum]['val']);
                     } else {
