@@ -2028,6 +2028,30 @@ button.em-swal-delete-button:hover{
   .em-small-align-items-start{
     align-items: start;
   }
+
+  .em-applicant-primary-button {
+    padding : var(--em-spacing-vertical) 18px !important;
+  }
+
+  .fabrik_row .p-4 {
+    height: fit-content;
+  }
+
+  .view-list .page-intro p {
+    margin-left : 0 !important;
+  }
+
+  .moduletable:first-child {
+    text-align : center;
+  }
+
+  .em-repeat-card {
+    position: static !important;
+  }
+
+  .view-details .voting-details-group .p-8 {
+    padding-left: 32px !important;
+  }
 }
 
 /* DETAILS PROJET */
