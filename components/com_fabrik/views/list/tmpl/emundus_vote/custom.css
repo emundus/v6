@@ -239,7 +239,7 @@ button.em-applicant-primary-button[disabled] {
 }
 
 .view-list:not(.g-back-office-emundus-tableau) #g-container-main {
-	padding-left: 0 !important;
+	padding-left: 0;
 }
 
 #g-container-main .g-container {

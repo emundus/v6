@@ -1911,7 +1911,7 @@ button.em-swal-delete-button:hover{
   MEDIA QUERIES
 **/
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .em-logo{
     filter: unset;
   }
@@ -1983,6 +1983,11 @@ button.em-swal-delete-button:hover{
     grid-gap: 12px;
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .em-repeat-card {
+    position: static !important;
+    margin: auto;
+  }
 }
 
 @media (max-width: 850px) {
@@ -2045,12 +2050,12 @@ button.em-swal-delete-button:hover{
     text-align : center;
   }
 
-  .em-repeat-card {
-    position: static !important;
-  }
-
   .view-details .voting-details-group .p-8 {
     padding-left: 32px !important;
+  }
+
+  .voting-details-group {
+    max-width: 100%;
   }
 }
 

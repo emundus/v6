@@ -124,6 +124,7 @@ p,
 .gantry.view-details #g-utility,
 .gantry.mon-profil #g-container-main {
   padding-top: 20px !important;
+  overflow: hidden;
 }
 
 #g-container-main .g-container {
@@ -1532,7 +1533,7 @@ footer#g-footer > .g-container {
 }
 
 .view-list:not(.g-back-office-emundus-tableau) #g-container-main {
-  padding-left: 80px;
+  padding-left: 20px;
 }
 
 .view-list:not(.g-back-office-emundus-tableau) #g-container-main .g-container {

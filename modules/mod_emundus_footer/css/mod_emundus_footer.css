@@ -226,8 +226,16 @@ hr.footer-separation {
 
 @media all and (min-width: 480px) and (max-width: 767px) {
     .footer-rgpd-links {
-        flex-direction: row;
+        flex-direction: column;
         align-items: center;
+        gap: 40px;
+    }
+
+    .em-container-footer-cand .row {
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: 40px;
     }
 
     .em-flex-row.em-footer-container-row {
@@ -237,6 +245,20 @@ hr.footer-separation {
 
     .footer-client {
         text-align: center;
+    }
+
+    .em-container-footer-cand {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .em-container-footer-cand .em-col-3-footer {
+        margin: auto;
+    }
+
+    .em-footer-container-row .footer-rgpd hr.footer-separation {
+        display: none;
     }
 }
 
