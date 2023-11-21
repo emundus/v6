@@ -308,124 +308,139 @@ if ($user != null) {
     </div>
 
     <script>
+        // get current profile color and state
+        let profile_color = sessionStorage.getItem('profile_color');
+        let profile_state = sessionStorage.getItem('profile_state');
 
-        // get profile color
-        let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=getcurrentprofile';
-        fetch(url, {
-            method: 'GET',
-        }).then((response) => {
-            if (response.ok) {
-                return response.json();
-            }
-            throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
-        }).then((result) => {
-            if(result.status) {
+        // if session storage is empty, get profile color and state from server
+        if(profile_color === null || profile_state === null) {
+            getProfileColorAndState();
+        } else {
+            applyColors(profile_color, profile_state);
+        }
 
-                let profile_color = result.data.class;
-                let profile_state = result.data.published;
-
-                let label_colors = {
-                    'lightpurple' : '--em-purple-2',
-                    'purple' : '--em-purple-2',
-                    'darkpurple' : '--em-purple-2',
-                    'lightblue' : '--em-light-blue-2',
-                    'blue' : '--em-blue-2',
-                    'darkblue' : '--em-blue-3',
-                    'lightgreen' : '--em-green-2',
-                    'green' : '--em-green-2',
-                    'darkgreen' : '--em-green-2',
-                    'lightyellow' : '--em-yellow-2',
-                    'yellow' : '--em-yellow-2',
-                    'darkyellow' : '--em-yellow-2',
-                    'lightorange' : '--em-orange-2',
-                    'orange' : '--em-orange-2',
-                    'darkorange' : '--em-orange-2',
-                    'lightred' : '--em-red-1',
-                    'red' : '--em-red-2',
-                    'darkred' : '--em-red-2',
-                    'pink' : '--em-pink-2',
-                    'default' : '--neutral-600',
-                };
-
-                if(profile_state == 1) { // it's an applicant profile
-
-                    let root = document.querySelector(':root');
-                    let css_var = getComputedStyle(root).getPropertyValue("--em-primary-color");
-
-                    document.documentElement.style.setProperty("--em-profile-color", css_var);
-
-                    // header background color
-                    let iframeElements_2 = document.querySelectorAll("#background-shapes");
-
-                    if(iframeElements_2 !== null) {
-                        iframeElements_2.forEach((iframeElement) => {
-                            let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
-                            let styleElement = iframeDocument.querySelector("style");
-                            let pathElements = iframeDocument.querySelectorAll("path");
-
-                            if (styleElement) {
-                                let styleContent = styleElement.textContent;
-                                styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + css_var + ";");
-                                styleElement.textContent = styleContent;
-                            }
-
-                            if (pathElements) {
-                                pathElements.forEach((pathElement) => {
-                                    let pathStyle = pathElement.getAttribute("style");
-                                    if (pathStyle && pathStyle.includes("fill:grey;")) {
-                                        pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + css_var + ";");
-                                        pathElement.setAttribute("style", pathStyle);
-
-                                    }
-                                });
-                            }
-                        });
-                    }
+        function getProfileColorAndState() {
+            fetch('/index.php?option=com_emundus&controller=users&task=getcurrentprofile', {
+                method: 'GET',
+            }).then((response) => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
                 }
-                else  { // it's a coordinator profile
+            }).then((result) => {
+                if(result.status) {
+                    let profile_color = result.data.class;
+                    let profile_state = result.data.published;
 
-                    if(profile_color != '') {
+                    // save profile color and state in local storage
+                    sessionStorage.setItem('profile_color', profile_color);
+                    sessionStorage.setItem('profile_state', profile_state);
+                    applyColors(profile_color, profile_state);
+                }
+            });
+        }
 
-                        profile_color = profile_color.split('-')[1];
+        function applyColors(profile_color, profile_state) {
+            const label_colors = {
+                'lightpurple' : '--em-purple-2',
+                'purple' : '--em-purple-2',
+                'darkpurple' : '--em-purple-2',
+                'lightblue' : '--em-light-blue-2',
+                'blue' : '--em-blue-2',
+                'darkblue' : '--em-blue-3',
+                'lightgreen' : '--em-green-2',
+                'green' : '--em-green-2',
+                'darkgreen' : '--em-green-2',
+                'lightyellow' : '--em-yellow-2',
+                'yellow' : '--em-yellow-2',
+                'darkyellow' : '--em-yellow-2',
+                'lightorange' : '--em-orange-2',
+                'orange' : '--em-orange-2',
+                'darkorange' : '--em-orange-2',
+                'lightred' : '--em-red-1',
+                'red' : '--em-red-2',
+                'darkred' : '--em-red-2',
+                'pink' : '--em-pink-2',
+                'default' : '--neutral-600',
+            };
 
-                        if(label_colors[profile_color] != undefined) {
-                            let root = document.querySelector(':root');
-                            let css_var = getComputedStyle(root).getPropertyValue(label_colors[profile_color]);
+            if(profile_state == 1) { // it's an applicant profile
 
-                            document.documentElement.style.setProperty("--em-profile-color", css_var);
+                let root = document.querySelector(':root');
+                let css_var = getComputedStyle(root).getPropertyValue("--em-primary-color");
 
-                            // header background color
-                            let iframeElements_2 = document.querySelectorAll("#background-shapes");
-                            if(iframeElements_2 !== null) {
-                                iframeElements_2.forEach((iframeElement) => {
-                                    let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
-                                    let styleElement = iframeDocument.querySelector("style");
-                                    let pathElements = iframeDocument.querySelectorAll("path");
+                document.documentElement.style.setProperty("--em-profile-color", css_var);
 
-                                    if (styleElement) {
-                                        let styleContent = styleElement.textContent;
-                                        styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + css_var + ";");
-                                        styleElement.textContent = styleContent;
-                                    }
+                // header background color
+                let iframeElements_2 = document.querySelectorAll("#background-shapes");
 
-                                    if (pathElements) {
-                                        pathElements.forEach((pathElement) => {
-                                            let pathStyle = pathElement.getAttribute("style");
-                                            if (pathStyle && pathStyle.includes("fill:grey;")) {
-                                                pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + css_var + ";");
-                                                pathElement.setAttribute("style", pathStyle);
+                if(iframeElements_2 !== null) {
+                    iframeElements_2.forEach((iframeElement) => {
+                        let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
+                        let styleElement = iframeDocument.querySelector("style");
+                        let pathElements = iframeDocument.querySelectorAll("path");
 
-                                            }
-                                        });
-                                    }
-                                });
-                            }
+                        if (styleElement) {
+                            let styleContent = styleElement.textContent;
+                            styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + css_var + ";");
+                            styleElement.textContent = styleContent;
+                        }
 
+                        if (pathElements) {
+                            pathElements.forEach((pathElement) => {
+                                let pathStyle = pathElement.getAttribute("style");
+                                if (pathStyle && pathStyle.includes("fill:grey;")) {
+                                    pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + css_var + ";");
+                                    pathElement.setAttribute("style", pathStyle);
+
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+            else  { // it's a coordinator profile
+                if(profile_color != '') {
+
+                    profile_color = profile_color.split('-')[1];
+
+                    if(label_colors[profile_color] != undefined) {
+                        let root = document.querySelector(':root');
+                        let css_var = getComputedStyle(root).getPropertyValue(label_colors[profile_color]);
+
+                        document.documentElement.style.setProperty("--em-profile-color", css_var);
+
+                        // header background color
+                        let iframeElements_2 = document.querySelectorAll("#background-shapes");
+                        if(iframeElements_2 !== null) {
+                            iframeElements_2.forEach((iframeElement) => {
+                                let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
+                                let styleElement = iframeDocument.querySelector("style");
+                                let pathElements = iframeDocument.querySelectorAll("path");
+
+                                if (styleElement) {
+                                    let styleContent = styleElement.textContent;
+                                    styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + css_var + ";");
+                                    styleElement.textContent = styleContent;
+                                }
+
+                                if (pathElements) {
+                                    pathElements.forEach((pathElement) => {
+                                        let pathStyle = pathElement.getAttribute("style");
+                                        if (pathStyle && pathStyle.includes("fill:grey;")) {
+                                            pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + css_var + ";");
+                                            pathElement.setAttribute("style", pathStyle);
+
+                                        }
+                                    });
+                                }
+                            });
                         }
                     }
                 }
             }
-        });
+        }
 
         <?php if($first_logged) : ?>
         displayUserOptions();
@@ -487,6 +502,9 @@ if ($user != null) {
                     profnum: current_fnum
                 }),
                 success: function (result) {
+                    sessionStorage.removeItem('profile_state');
+                    sessionStorage.removeItem('profile_color');
+
                     window.location.href = url;
                     //location.reload(true);
                 },

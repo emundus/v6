@@ -3016,6 +3016,54 @@ class EmundusHelperUpdate
         return true;
     }
 
+
+	/**
+	 * @param $file string file to update
+	 * @param $linesToRemove array of lines to remove
+	 * @return bool true if success, false otherwise. If lines to remove are not found, it returns false.
+	 */
+	public static function removeFromFile($file, $linesToRemove)
+	{
+		$removed = false;
+
+		if (empty($file)) {
+			echo "ERROR: Please specify a file." . PHP_EOL;
+			return false;
+		} elseif (!file_exists($file)) {
+			echo "ERROR: The file {$file} does not exist." . PHP_EOL;
+			return false;
+		} elseif (!is_writable($file)) {
+			echo "ERROR: Please specify a writable file ({$file})" . PHP_EOL;
+			return false;
+		} elseif (empty($linesToRemove)) {
+			echo "ERROR: Please specify content to remove." . PHP_EOL;
+			return false;
+		}
+
+		$file_content = file_get_contents($file);
+		if (!empty($file_content)) {
+			$changed = false;
+
+			foreach($linesToRemove as $line) {
+				if (strpos($file_content, $line) !== false) {
+					echo " - Remove {$file} file this content: " . PHP_EOL . $line . PHP_EOL;
+					$file_content = str_replace($line, '', $file_content);
+					$changed = true;
+				}
+			}
+
+			if ($changed) {
+				if (file_put_contents($file, $file_content) !== false) {
+					$removed = true;
+				} else {
+					echo "ERROR: Failed to write content to the file." . PHP_EOL;
+				}
+			}
+		}
+
+		return $removed;
+	}
+
 	public static function updateNewColors() {
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
