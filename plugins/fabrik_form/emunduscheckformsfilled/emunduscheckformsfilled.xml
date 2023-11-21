@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_form" method="upgrade" type="plugin" version="1">
+	<name>eMundus - Check that other forms are filled</name>
+	<author>LEGENDRE Jérémy</author>
+	<creationDate>November 2023</creationDate>
+	<copyright>Copyright (C) 2023 eMundus.fr - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>jeremy.legendre@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>3.10</version>
+	<help url="PLG_FORM_EMUNDUS_CHECKFORMSFILLED_HELP_SERVER"/>
+	<description>PLG_FABRIK_FORM_EMUNDUS_CHECKFORMSFILLED_DESCRIPTION</description>
+	<files>
+		<filename plugin="emunduscheckformsfilled">emunduscheckformsfilled.php</filename>
+		<filename>index.html</filename>
+		<folder>forms</folder>
+		<folder>language</folder>
+	</files>
+</extension>
