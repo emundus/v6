@@ -105,17 +105,26 @@ class EmundusViewApplication extends JViewLegacy {
                     if ($show_related_files || EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) || EmundusHelperAccess::asManagerAccessLevel($this->_user->id)) {
                         $campaignInfo = $m_application->getUserCampaigns($fnumInfos['applicant_id'], $cid = null, $published_only = false);
 
+						$published_campaigns = array_filter($campaignInfo, function($campaign) {
+							return $campaign->published == 1;
+						});
+						$unpublished_campaigns = array_filter($campaignInfo, function($campaign) {
+							return $campaign->published != 1;
+						});
+
 	                    foreach($campaignInfo as $key => $campaign) {
 		                    if (!EmundusHelperAccess::isUserAllowedToAccessFnum($this->_user->id, $campaign->fnum)) {
 			                    unset($campaignInfo[$key]);
 		                    }
 	                    }
                     } else {
-                        $campaignInfo = $m_application->getCampaignByFnum($fnum);
+	                    $published_campaigns = $m_application->getCampaignByFnum($fnum);
+	                    $unpublished_campaigns = [];
                     }
 
                     $assoc_files = new stdClass();
-                    $assoc_files->camps = $campaignInfo;
+                    $assoc_files->published_campaigns = $published_campaigns;
+                    $assoc_files->unpublished_campaigns = $unpublished_campaigns;
                     $assoc_files->fnumInfos = $fnumInfos;
                     $assoc_files->fnum = $fnum;
                     $this->assignRef('assoc_files', $assoc_files);
