@@ -163,4 +163,47 @@ class EmundusModelEmailsTest extends TestCase
 		 * $this->assertContains($params['mail_to'][0], $response['sent'], 'L\'envoi de l\'email expert a fonctionné.');
 		 */
 	}
+
+
+	function testsetTagsFabrik() {
+		$user_id = $this->h_sample->getSampleUser(9);
+		$program = $this->h_sample->createSampleProgram();
+		$campaign_id = $this->h_sample->createSampleCampaign($program);
+		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+
+		$string = 'Une chaine sans tag fabrik';
+		$new_string = $this->m_emails->setTagsFabrik($string, [$fnum]);
+
+		$this->assertEquals($string, $new_string, 'La chaine ne contient pas de tag fabrik, elle n\'a pas été modifiée');
+
+		$string = 'Une chaine avec un tag fabrik ${99999}';
+		$new_string = $this->m_emails->setTagsFabrik($string, [$fnum]);
+
+		$this->assertNotEquals($string, $new_string, 'La chaine contient un tag fabrik, elle a été modifiée');
+
+		$string = 'Une chaine avec un tag fabrik existant correspondant à la campagne ${1906}';
+		$new_string = $this->m_emails->setTagsFabrik($string, [$fnum]);
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select('label')
+			->from('#__emundus_setup_campaigns')
+			->where('id = ' . $campaign_id);
+
+		$db->setQuery($query);
+		$campaign_label = $db->loadResult();
+
+		$new_string_expected = 'Une chaine avec un tag fabrik existant correspondant à la campagne ' . $campaign_label;
+		$this->assertEquals($new_string_expected, $new_string, 'La chaine utilisant un tag fabrik existant retourne le résultat attendu');
+
+		$string = 'Une chaine avec un tag fabrik existant correspondant à la campagne ${1906} et un tag fabrik inexistant ${99999}';
+		$new_string = $this->m_emails->setTagsFabrik($string, [$fnum]);
+		$new_string_expected = 'Une chaine avec un tag fabrik existant correspondant à la campagne ' . $campaign_label . ' et un tag fabrik inexistant ';
+		$this->assertEquals($new_string_expected, $new_string, 'La chaine utilisant un tag fabrik existant et un tag fabrik inexistant retourne le résultat attendu');
+
+		$string = 'Une chaine avec plusieurs tags fabriks existants ${1906} et un tag fabrik inexistant ${99999} puis ${1906}';
+		$new_string = $this->m_emails->setTagsFabrik($string, [$fnum]);
+		$new_string_expected = 'Une chaine avec plusieurs tags fabriks existants ' . $campaign_label . ' et un tag fabrik inexistant  puis ' . $campaign_label;
+		$this->assertEquals($new_string_expected, $new_string, 'La chaine utilisant plusieurs tags fabriks existants et un tag fabrik inexistant retourne le résultat attendu');
+	}
 }
