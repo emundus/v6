@@ -3608,6 +3608,14 @@ structure:
 					$db->setQuery($query);
 					$db->execute();
 				}
+
+				$query->clear()
+					->update($db->quoteName('#__menu'))
+					->set($db->quoteName('title') . ' = ' . $db->quote('Emails envoyés'))
+					->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_emundus&view=application&format=raw&layout=mail'))
+					->where($db->quoteName('menutype') . ' LIKE ' . $db->quote('application'));
+				$db->setQuery($query);
+				$db->execute();
 			}
 		}
 
