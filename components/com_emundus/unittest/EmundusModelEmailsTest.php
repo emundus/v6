@@ -187,5 +187,6 @@ class EmundusModelEmailsTest extends TestCase
 
 		$messages = $this->m_emails->get_messages_to_from_user($user_id);
 		$this->assertNotEmpty($messages, 'La récupération des emails a réussi après avoir loggé l\'envoi d\'un email');
+		$this->assertObjectHasAttribute('fnum_to',$messages[0]);
 	}
 }
