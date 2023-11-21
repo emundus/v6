@@ -1516,7 +1516,7 @@ class EmundusModelApplication extends JModelList
                 foreach ($tableuser as $key => $itemt) {
 
                     $forms .= '<br><hr><div class="TitlePersonalInfo em-personalInfo em-mb-12">';
-                    $title = explode('-', JText::_($itemt->label));
+                    $title = explode(' - ', JText::_($itemt->label));
                     if (empty($title[1])) {
                         $title= JText::_(trim($itemt->label));
                     } else {
@@ -2108,7 +2108,7 @@ class EmundusModelApplication extends JModelList
                                                     JLog::add('component/com_emundus/models/application | Error at getting emundus_fileupload for applicant ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
                                                     $elt = '';
                                                 }
-                                            } 
+                                            }
 											elseif ($element->plugin == 'emundus_phonenumber') {
                                                 $elt = substr($element->content, 2, strlen($element->content));
                                             }
