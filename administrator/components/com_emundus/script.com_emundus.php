@@ -3867,7 +3867,7 @@ structure:
 						'menu_image_css' => 'collections'
 					]
 				];
-				EmundusHelperUpdate::addJoomlaMenu($datas);
+				EmundusHelperUpdate::addJoomlaMenu($datas,1,0);
 
 				$datas = [
 					'menutype'     => 'onboardingmenu',
