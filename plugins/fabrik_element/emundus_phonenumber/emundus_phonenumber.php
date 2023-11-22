@@ -193,7 +193,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
      */
     public function validate($data, $repeatCounter = 0)
     {
-        $isValid = false;
+        $isValid = true;
         $value = $data['country_code'].$data['num_tel'];
         $is_valid_JS = $data['is_valid'] == 'on';
 
@@ -202,31 +202,24 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 
         $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_INVALID'); // error as default value
 
-        if ($this->validator->hasValidations()) { // phone mandatory so big validation
+        $validation_while_hiddden = $this->getParams()->get('validations')->validate_hidden[0]; // hidden but still validation ?
 
-            if (preg_match('/^\+\d{'.$minimalNumberlength.','.$maximalNumberlength.'}$/', $value) && $is_valid_JS)
-            {
-                $isValid = true;
-            }
-            else
-            {
-                if ($value[0] !== "+")
-                {
-                    $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_BEGIN_WITH_PLUS');
-                }
-                else if (!(preg_match('/\+\d+$/', $value)))
-                {
-                    $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_ONLY_NUMBERS');
-                }
-                else if (strlen($value) < $minimalNumberlength + 1) // counting the '+'
-                {
-                    $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_SIZE_ERROR');
+        if ($this->validator->hasValidations()) {
+            if (!$this->isHidden() || ($this->isHidden() && $validation_while_hiddden == '1')) { // not hidden or hidden and must have validation
+                if (!preg_match('/^\+\d{' . $minimalNumberlength . ',' . $maximalNumberlength . '}$/', $value) || !$is_valid_JS) {
+                    $isValid = false;
+
+                    if ($value[0] !== "+") {
+                        $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_BEGIN_WITH_PLUS');
+                    } else if (!(preg_match('/\+\d+$/', $value))) {
+                        $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_ONLY_NUMBERS');
+                    } else if (strlen($value) < $minimalNumberlength + 1) { // counting the '+'
+                        $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_SIZE_ERROR');
+                    }
                 }
             }
-        }
-        else if ($is_valid_JS && preg_match('/^\+\d*$/', $value)) // phone not mandatory but still a little validation
-        {
-            $isValid = true;
+        } else {
+            $isValid = !$this->isHidden() && $is_valid_JS && preg_match('/^\+\d*$/', $value);
         }
         return $isValid;
     }
