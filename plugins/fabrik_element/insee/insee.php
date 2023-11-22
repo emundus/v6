@@ -145,7 +145,7 @@ class PlgFabrik_ElementInsee extends PlgFabrik_Element
 	public function getBearerToken()
 	{
 		$response = ['status' => 200, 'message' => '', 'data' => JFactory::getSession()->get('insee_bearer_token','')];
-		
+
 		if(empty($response['data']))
 		{
 			$params = $this->getParams();
@@ -164,6 +164,7 @@ class PlgFabrik_ElementInsee extends PlgFabrik_Element
 				$headers = [
 					'Authorization' => 'Basic ' . base64_encode($consumerKey . ':' . $consumerSecret),
 					'Content-Type'  => 'application/x-www-form-urlencoded',
+                    'Access-Control-Allow-Origin' => JURI::base()
 				];
 				$options = [
 					'form_params' => [
@@ -180,7 +181,7 @@ class PlgFabrik_ElementInsee extends PlgFabrik_Element
 					{
 						$response['data'] = json_decode($request->getBody());
 						$response['data'] = $response['data']->token_type . ' ' . $response['data']->access_token;
-						
+
 						JFactory::getSession()->set('insee_bearer_token', $response['data']);
 					}
 				}

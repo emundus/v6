@@ -635,6 +635,10 @@ JText::script('COM_EMUNDUS_DELETE_ADVANCED_FILTERS');
 
 JText::script('COM_EMUNDUS_MAIL_GB_BUTTON');
 
+JText::script('COM_EMUNDUS_EMAIL_CURRENT_FILE');
+JText::script('COM_EMUNDUS_EMAIL_ALL_FILES');
+JText::script('COM_EMUNDUS_EMAIL_ON_FILE');
+
 $app = JFactory::getApplication();
 
 // Require specific controller if requested
