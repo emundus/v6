@@ -47,6 +47,11 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
         $opts                = array('runplugins' => 1);
 
         $value = $this->getValue($data, $repeatCounter, $opts);
+
+        if (is_array($value)) { // in case of non-valid information, return array
+            $value = $value['country'].$value['country_code'].$value['num_tel'];
+        }
+
         $value = $this->DBFormatToE164Format($value);
         $this->countries = $this->DBRequest(); // avoid multiple call on DB
 
@@ -74,6 +79,11 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 		$bits = $this->inputProperties($repeatCounter);
 
 		$value = $this->getValue($data, $repeatCounter);
+
+        if (is_array($value)) { // in case of non-valid information, return array
+            $value = $value['country'].$value['country_code'].$value['num_tel'];
+        }
+
         $bits['inputValue'] = $this->DBFormatToE164Format($value);
         $bits['selectValue'] = substr($value, 0, 2);
 
@@ -256,7 +266,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 	    }
 
 	    $opts->allCountries = array_values($opts->allCountries);
-		
+
 
         return array('FbPhoneNumber', $id, $opts);
     }
