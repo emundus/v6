@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_element" method="upgrade" type="plugin" version="3">
+	<name>plg_fabrik_element_insee</name>
+	<author>eMundus</author>
+	<creationDate>August 2023</creationDate>
+	<copyright>Copyright (C) 2005-2023 eMundus - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>dev@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>3.10</version>
+	<description>PLG_ELEMENT_INSEE_DESCRIPTION</description>
+
+	<files>
+		<filename plugin="insee">insee.php</filename>
+		<filename>insee.js</filename>
+		<filename>insee-min.js</filename>
+		<filename>index.html</filename>
+		<folder>forms</folder>
+		<folder>language</folder>
+		<folder>layouts</folder>
+	</files>
+
+</extension>

@@ -22,7 +22,7 @@
 
       <div class="em-flex-row em-mb-32">
         <p>
-          <b style="color: var(--em-coordinator-primary-color); font-weight: 700 !important;"> {{form.label}}</b>
+          <b style="color: var(--em-profile-color); font-weight: 700 !important;"> {{form.label}}</b>
           {{translations.From}}
           <strong>{{ form.start_date }}</strong>
           {{translations.To}}
@@ -414,11 +414,11 @@ export default {
 }
 
 .w--current:hover{
-  color: var(--em-coordinator-primary-color);
+  color: var(--em-profile-color);
 }
 
 .em-pointer:hover{
-  color: var(--em-coordinator-primary-color);
+  color: var(--em-profile-color);
 }
 
 .em-w-custom {

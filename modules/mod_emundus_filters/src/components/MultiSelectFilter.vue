@@ -232,13 +232,13 @@ export default {
 			return labels;
 		},
 		searchedValues() {
-			return this.filter.values.filter((value) => {
+			return this.filter.values && this.filter.values.length > 0 ? this.filter.values.filter((value) => {
 				if (value.label) {
 					return value.label.toLowerCase().includes(this.search.toLowerCase());
 				} else {
 					return false;
 				}
-			});
+			}) : [];
 		}
 	}
 }

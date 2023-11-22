@@ -129,7 +129,6 @@ class EmundusModelEmailsTest extends TestCase
 		$params = [
 			'mail_from' => '',
 			'mail_from_name' => '',
-			'mail_to' => [],
 			'mail_subject' => '',
 			'mail_body' => '',
 			'fnums' => []
@@ -163,5 +162,31 @@ class EmundusModelEmailsTest extends TestCase
 		 * $response = $this->m_emails->sendExpertMail([$fnum]);
 		 * $this->assertContains($params['mail_to'][0], $response['sent'], 'L\'envoi de l\'email expert a fonctionné.');
 		 */
+	}
+
+	public function testgetMessagesToFromUser()
+	{
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$program = $this->h_sample->createSampleProgram();
+		$campaign_id = $this->h_sample->createSampleCampaign($program);
+		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+
+		$messages = $this->m_emails->get_messages_to_from_user($user_id);
+		$this->assertEmpty($messages, 'La récupération des emails a échoué car aucun logs n\'a été créé sur cet utilisateur');
+
+		$log = [
+			'user_id_from'  => $user_id,
+			'user_id_to'    => $user_id,
+			'subject'       => 'Envoi de message',
+			'message'       => 'Corps du message',
+			'type'          => 1,
+			'email_id'      => 1,
+			'email_cc' => '',
+		];
+		$this->m_emails->logEmail($log,$fnum);
+
+		$messages = $this->m_emails->get_messages_to_from_user($user_id);
+		$this->assertNotEmpty($messages, 'La récupération des emails a réussi après avoir loggé l\'envoi d\'un email');
+		$this->assertObjectHasAttribute('fnum_to',$messages[0]);
 	}
 }

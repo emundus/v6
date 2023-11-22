@@ -1,0 +1,10 @@
+{% extends '@nucleus/partials/particle.html.twig' %}
+
+{% block particle %}
+    <div class="left-side-404 container-404" >
+        <h2 class="gradient-404">{{ particle.title }}</h2>
+        <p>{{ particle.description }}</p>
+        <img src="{{ url(particle.image) }}" alt="Erreur 404" />
+        <p><a href="index.php">{{ particle.button }}</a></p>
+    </div>
+{% endblock %}

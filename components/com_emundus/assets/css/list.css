@@ -9,7 +9,7 @@
 table.front-end-list{
     width: 100%;
     border-spacing: 1px;
-    background-color: #f3f3f3;
+    background-color: var(--neutral-200);
     color: #666;
 }
 

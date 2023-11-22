@@ -169,6 +169,10 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+		<field name="referent_can_edit_after_deadline" menu="hide" type="list" default="1" label="COM_EMUNDUS_REFERENT_CAN_EDIT_AFTER_DEADLINE" description="COM_EMUNDUS_REFERENT_CAN_EDIT_AFTER_DEADLINE_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 		<field name="copy_application_form" menu="hide" type="list" default="0" label="COM_EMUNDUS_COPY_APPLICATION_FORM" description="COM_EMUNDUS_COPY_APPLICATION_FORM_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
@@ -637,6 +641,14 @@
 			<field name="glpi_api_base_url" type="text" label="COM_EMUNDUS_GLPI_BASE_URL"/>
 			<field name="glpi_api_app_token" type="text" label="COM_EMUNDUS_GLPI_APP_TOKEN"/>
 			<field name="glpi_api_user_token" type="text" label="COM_EMUNDUS_GLPI_USER_TOKEN"/>
+		</fieldset>
+
+		<field name="spacer13" type="spacer" hr="true"/>
+		<field name="insee" type="note" label="COM_EMUNDUS_INSEE_API"/>
+		<fieldset label="COM_EMUNDUS_INSEE_API">
+			<field name="insee_api_base_url" type="text" label="COM_EMUNDUS_INSEE_BASE_URL" default="https://api.insee.fr"/>
+			<field name="insee_api_consumer_key" type="text" label="COM_EMUNDUS_INSEE_CONSUMER_KEY"/>
+			<field name="insee_api_consumer_secret" type="text" label="COM_EMUNDUS_INSEE_CONSUMER_SECRET"/>
 		</fieldset>
 
 	</fieldset>

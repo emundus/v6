@@ -21,8 +21,8 @@ defined('_JEXEC') or die;
                 placement: 'top',
                 template: '<div class="popover" style="margin-top:-65px;"><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
                 content: "" +
-                    "<a href='https://emundus.atlassian.net/wiki/spaces/HD/overview' target='_blank'><span class='material-icons'>menu_book</span><p><?= JText::_('MOD_EMUNDUS_HELP_ARTICLES'); ?></p></a>" +
-                    "<a href='https://emundus.atlassian.net/servicedesk/customer/portals' target='_blank'><span class='material-icons'>textsms</span><p><?= JText::_('MOD_EMUNDUS_HELP_HELP_CENTER'); ?></p></a>" +
+                    "<a href='https://emundus.atlassian.net/wiki/spaces/HD/overview' target='_blank'><img class='icone-aide-tchoozy' src='../../../media/com_emundus/images/tchoozy/icons/Tchoozy-icone-articles-aide.svg' alt='icone articles aide'><p><?= JText::_('MOD_EMUNDUS_HELP_ARTICLES'); ?></p></a>" +
+                    "<a href='https://emundus.atlassian.net/servicedesk/customer/portals' target='_blank'><img class='icone-aide-tchoozy' src='../../../media/com_emundus/images/tchoozy/icons/Tchoozy-icone-centre-aide.svg' alt='icone centre aide'><p><?= JText::_('MOD_EMUNDUS_HELP_HELP_CENTER'); ?></p></a>" +
                     "<hr/>" +
                     <?php if($current_lang == 'fr') : ?>
                     "<a href='https://emundus.atlassian.net/wiki/x/EIBskg' target='_blank'><span class='material-icons'>new_releases</span><p><?= JText::_('MOD_EMUNDUS_HELP_LAST_RELEASE'); ?></p></a>" +

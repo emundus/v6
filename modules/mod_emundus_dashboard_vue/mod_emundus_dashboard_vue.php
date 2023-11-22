@@ -12,7 +12,14 @@ if(in_array(JFactory::getSession()->get('emundusUser')->profile, $profiles)) {
     $document->addScript('media/mod_emundus_dashboard_vue/chunk-vendors.js');
     $document->addStyleSheet('media/mod_emundus_dashboard_vue/app.css');
 
-    $programme_filter = $params->get('filter_programmes');
+    $programme_filter = $params->get('filter_programmes', 0);
+
+	$display_description = $params->get('display_description', 0);
+	$display_name = $params->get('display_name', 0);
+	$name = JFactory::getSession()->get('emundusUser')->name;
+
+	$current_lang = JFactory::getLanguage()->getTag();
+    $language = $current_lang == 'fr-FR' ? 1 : 0;
 
     require_once(JPATH_SITE . '/components/com_emundus/models/dashboard.php');
     $m_dashboard = new EmundusModelDashboard;

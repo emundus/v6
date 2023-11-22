@@ -29,22 +29,24 @@ $user = $this->userid;
 
 <div class="row">
     <div class="panel panel-default widget em-container-form">
-        <div class="panel-heading em-container-form-heading">
-            <h3 class="panel-title">
-                <span class="material-icons">list_alt</span>
-                <?php echo JText::_('COM_EMUNDUS_APPLICATION_APPLICATION_FORM').' - '.$this->formsProgress." % ".JText::_("COM_EMUNDUS_APPLICATION_COMPLETED"); ?>
-                <?php if (EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum)):?>
-                    <a id="download-pdf" class="  clean" target="_blank" href="<?php echo JURI::base(); ?>index.php?option=com_emundus&task=pdf&user=<?php echo $this->sid; ?>&fnum=<?php echo $this->fnum; ?>">
-                        <button class="btn btn-default" data-title="<?php echo JText::_('COM_EMUNDUS_APPLICATION_DOWNLOAD_APPLICATION_FORM'); ?>" data-toggle="tooltip" data-placement="right" title="<?= JText::_('COM_EMUNDUS_APPLICATION_DOWNLOAD_APPLICATION_FORM'); ?>"><span class="material-icons">file_download</span></button>
-                    </a>
-                <?php endif;?>
-            </h3>
-            <div class="btn-group pull-right">
-                <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span></button>
-                <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span></button>
+	    <?php if ($this->header == 1) : ?>
+            <div class="panel-heading em-container-form-heading">
+                <h3 class="panel-title">
+                    <span class="material-icons">list_alt</span>
+                    <?php echo JText::_('COM_EMUNDUS_APPLICATION_APPLICATION_FORM').' - '.$this->formsProgress." % ".JText::_("COM_EMUNDUS_APPLICATION_COMPLETED"); ?>
+                    <?php if (EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum)):?>
+                        <a id="download-pdf" class="  clean" target="_blank" href="<?php echo JURI::base(); ?>index.php?option=com_emundus&task=pdf&user=<?php echo $this->sid; ?>&fnum=<?php echo $this->fnum; ?>">
+                            <button class="btn btn-default" data-title="<?php echo JText::_('COM_EMUNDUS_APPLICATION_DOWNLOAD_APPLICATION_FORM'); ?>" data-toggle="tooltip" data-placement="right" title="<?= JText::_('COM_EMUNDUS_APPLICATION_DOWNLOAD_APPLICATION_FORM'); ?>"><span class="material-icons">file_download</span></button>
+                        </a>
+                    <?php endif;?>
+                </h3>
+                <div class="btn-group pull-right">
+                    <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span></button>
+                    <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span></button>
+                </div>
             </div>
-        </div>
-	    <?php if (!EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)) : ?>
+        <?php endif; ?>
+	    <?php if (!EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id) && $this->header == 1) : ?>
             <div class="em-flex-row em-mt-16">
                 <div class="em-flex-row em-small-flex-column em-small-align-items-start">
                     <div class="em-profile-picture-big no-hover"
