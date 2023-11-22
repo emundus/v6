@@ -435,10 +435,7 @@ class EmundusViewApplication extends JViewLegacy {
 
                         $pids = array_merge($profiles_by_phase, $noPhasePids);
 
-
-                        /* serialize $pids to json format */
-                        $json = json_encode($pids);
-                        $this->assignRef('pids', $json);
+						$this->assignRef('pids', $pids);
 
                         $this->assignRef('defaultpid', $dpid);
 
