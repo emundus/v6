@@ -128,31 +128,31 @@ class EmundusModelApplicationTest extends TestCase
 
 	public function testupdateTabs() {
 		$updated = $this->m_application->updateTabs([], 0);
-		$this->assertSame(false, $updated, 'No tabs to update');
+		$this->assertFalse($updated, 'Missing user id');
 
 		$updated = $this->m_application->updateTabs([], 95);
-		$this->assertSame(false, $updated, 'No tabs to update');
+		$this->assertFalse($updated, 'No tabs to update');
 
 		$tab = new stdClass();
-		$tab->id = 999;
+		$tab->id = 9999;
 		$tab->name = 'Test';
 		$tab->ordering = 1;
 
-		$updated = $this->m_application->updateTabs([['id' => 1, 'name' => 'Test', 'ordering' => 1]], 0);
-		$this->assertSame(false, $updated, 'Missing user id');
-
-		$updated = $this->m_application->updateTabs([['id' => 1, 'name' => 'Test', 'ordering' => 1]], 95);
-		$this->assertSame(false, $updated, );
+		$updated = $this->m_application->updateTabs([$tab], 0);
+		$this->assertFalse($updated, 'Tab does not exist');
 
 		$tab->id = $this->m_application->createTab('Test', 95);
 		$this->assertNotEmpty($tab->id);
 
+		$updated = $this->m_application->updateTabs([$tab], 100);
+		$this->assertFalse($updated, 'Tab is not owned by user');
+
 		$updated = $this->m_application->updateTabs([$tab], 95);
-		$this->assertSame(true, $updated, 'Tab updated');
+		$this->assertTrue($updated, 'Tab updated');
 
 		$tab->id = $tab->id . ' OR 1=1';
 		$updated = $this->m_application->updateTabs([$tab], 0);
-		$this->assertSame(false, $updated, 'SQL Injection impossible');
+		$this->assertFalse($updated, 'SQL Injection impossible');
 	}
 
 	/**
@@ -247,6 +247,31 @@ class EmundusModelApplicationTest extends TestCase
 
 		$menus = $this->m_application->getApplicationMenu($applicant);
 		$this->assertEmpty($menus, 'An applicant should not have access to the application menu');
+	}
+
+	public function testgetUserCampaigns() {
+		$user_campaigns = $this->m_application->getUserCampaigns(95);
+		$this->assertIsArray($user_campaigns, 'getUserCampaigns should return an array');
+
+		$program = $this->h_sample->createSampleProgram();
+		$campaign_published = $this->h_sample->createSampleCampaign($program);
+		$this->h_sample->createSampleFile($campaign_published, 95);
+
+		$user_campaigns = $this->m_application->getUserCampaigns(95);
+		$this->assertNotEmpty($user_campaigns, 'getUserCampaigns should return an array with at least one campaign');
+
+		$found = false;
+		foreach ($user_campaigns as $campaign) {
+			if ($campaign->id == $campaign_published) {
+				$found = true;
+				break;
+			}
+		}
+		$this->assertTrue($found, 'getUserCampaigns should return the created campaign');
+
+		// TODO: assert that calling getUserCampaigns with only_published = 1 returns less campaigns than without
+		// unpublish the campaign
+		// compare the number of campaigns returned
 	}
 }
 
