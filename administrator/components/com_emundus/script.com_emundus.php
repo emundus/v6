@@ -3616,6 +3616,8 @@ structure:
 					->where($db->quoteName('menutype') . ' LIKE ' . $db->quote('application'));
 				$db->setQuery($query);
 				$db->execute();
+
+				EmundusHelperUpdate::addColumn('jos_emundus_setup_attachments', 'max_filesize', 'DOUBLE(6,2)');
 			}
 		}
 
