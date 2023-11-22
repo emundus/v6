@@ -3609,7 +3609,7 @@ structure:
 					$db->execute();
 				}
 
-				EmundusHelperUpdate::addColumn('jos_emundus_setup_attachments', 'max_filesize', 'INT');
+				EmundusHelperUpdate::addColumn('jos_emundus_setup_attachments', 'max_filesize', 'DOUBLE(6,2)');
 			}
 		}
 
