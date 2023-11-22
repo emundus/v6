@@ -3882,7 +3882,7 @@ structure:
 						'menu_show' => 0
 					]
 				];
-				EmundusHelperUpdate::addJoomlaMenu($datas);
+				EmundusHelperUpdate::addJoomlaMenu($datas,1,0);
 
 				$query = $db->getQuery(true);
 
@@ -4120,13 +4120,13 @@ structure:
 
 		EmundusHelperUpdate::checkPageClass();
 
-		if(file_exists(JPATH_SITE.'/.git') && file_exists(JPATH_SITE . '/administrator/components/com_emundus/scripts/pre-commit'))
+		/*if(file_exists(JPATH_SITE.'/.git') && file_exists(JPATH_SITE . '/administrator/components/com_emundus/scripts/pre-commit'))
 		{
 			copy(JPATH_SITE . '/administrator/components/com_emundus/scripts/pre-commit', JPATH_SITE.'/.git/hooks/pre-commit');
 			chmod(JPATH_SITE.'/.git/hooks/pre-commit', 0755);
 
 			echo ' - Git pre-commit hook installed' . PHP_EOL;
-		}
+		}*/
 
 		// if payment is activated, remove cookie samesite line in .htaccess file, else add it
 		$eMConfig = JComponentHelper::getParams('com_emundus');
