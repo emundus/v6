@@ -651,7 +651,7 @@
           label {
             @apply mb-0;
             @apply flex;
-            @apply items-center;
+            @apply items-start;
             padding: var(--em-form-radio-padding);
             border: var(--em-form-radio-bw) solid var(--em-form-radio-bc);
             border-radius: var(--em-form-radio-br);
@@ -663,7 +663,7 @@
               height: var(--em-form-radio-height);
               margin-right: var(--em-form-radio-margin-right);
               margin-left: 0;
-              margin-top: 0;
+              margin-top: 2px !important;
             }
             span{
               word-wrap: break-word;

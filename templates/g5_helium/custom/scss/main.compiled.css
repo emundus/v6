@@ -6,7 +6,7 @@
     gap: 16px;
   }
 }
-/* ! tailwindcss v3.3.2 | MIT License | https://tailwindcss.com */
+/* ! tailwindcss v3.3.3 | MIT License | https://tailwindcss.com */
 /*
 1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
 2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
@@ -146,6 +146,8 @@ optgroup,
 select,
 textarea {
   font-family: inherit; /* 1 */
+  font-feature-settings: inherit; /* 1 */
+  font-variation-settings: inherit; /* 1 */
   font-size: 100%; /* 1 */
   font-weight: inherit; /* 1 */
   line-height: inherit; /* 1 */
@@ -255,6 +257,12 @@ ul,
 menu {
   list-style: none;
   margin: 0;
+  padding: 0;
+}
+/*
+Reset default styling for dialogs.
+*/
+dialog {
   padding: 0;
 }
 /*
@@ -1158,7 +1166,7 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio.sp
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label, form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .fabrikgrid_radio label, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label {
   margin-bottom: 0px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
             padding: var(--em-form-radio-padding);
             border: var(--em-form-radio-bw) solid var(--em-form-radio-bc);
             border-radius: var(--em-form-radio-br);
@@ -1171,7 +1179,7 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio la
               height: var(--em-form-radio-height);
               margin-right: var(--em-form-radio-margin-right);
               margin-left: 0;
-              margin-top: 0;
+              margin-top: 2px !important;
             }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label span,form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label span,form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .fabrikgrid_radio label span,form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label span{
               word-wrap: break-word;
@@ -1339,16 +1347,9 @@ form.fabrikForm .currencyElement input:focus + select,form.fabrikForm .currencyE
 form.fabrikForm .control-group.error label {
         color: var(--em-form-label-color-error);
       }
-form.fabrikForm .control-group.\!error label {
-        color: var(--em-form-label-color-error) !important;
-      }
 form.fabrikForm .control-group.error input,form.fabrikForm .control-group.error textarea,form.fabrikForm .control-group.error select {
         border-color: var(--em-form-bc-error);
         color: var(--em-default-text-color-1);
-      }
-form.fabrikForm .control-group.\!error input,form.fabrikForm .control-group.\!error textarea,form.fabrikForm .control-group.\!error select {
-        border-color: var(--em-form-bc-error) !important;
-        color: var(--em-default-text-color-1) !important;
       }
 form.fabrikForm .fabrikError.plg-checkbox .fabrikElement .fabrikSubElementContainer {
           border-color: var(--em-form-checkbox-bc-error);
@@ -1686,9 +1687,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .sticky {
   position: sticky;
 }
-.isolate {
-  isolation: isolate;
-}
 .float-right {
   float: right;
 }
@@ -1726,8 +1724,7 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   margin-bottom: var(--em-spacing-8);
 }
 .me-1 {
-  -webkit-margin-end: var(--em-spacing-1);
-          margin-inline-end: var(--em-spacing-1);
+  margin-inline-end: var(--em-spacing-1);
 }
 .ml-0 {
   margin-left: 0px;
