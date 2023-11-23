@@ -209,6 +209,22 @@ class EmundusUnittestHelperSamples
 		return $program;
 	}
 
+	public function deleteSampleProgram($program_id) {
+		$deleted = false;
+		if (!empty($program_id)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->delete('#__emundus_setup_programmes')
+				->where('id = ' . $program_id);
+
+			$db->setQuery($query);
+			$deleted = $db->execute();
+		}
+
+		return $deleted;
+	}
+
 	public function createSampleCampaign($program)
 	{
 		$campaign_id = 0;
@@ -235,6 +251,22 @@ class EmundusUnittestHelperSamples
 		}
 
 		return $campaign_id;
+	}
+
+	public function deleteSampleCampaign($campaign_id) {
+		$deleted = false;
+		if (!empty($campaign_id)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->delete('#__emundus_setup_campaigns')
+				->where('id = ' . $campaign_id);
+
+			$db->setQuery($query);
+			$deleted = $db->execute();
+		}
+
+		return $deleted;
 	}
 
 	public function createSampleAttachment() {

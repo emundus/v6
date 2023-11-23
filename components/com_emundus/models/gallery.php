@@ -172,7 +172,7 @@ class EmundusModelGallery extends JModelList
 
 	public function createGallery($data, $user = null)
 	{
-		$result = array();
+		$gallery_id = 0;
 
 		if (empty($user)) {
 			$user = JFactory::getUser();
@@ -243,7 +243,7 @@ class EmundusModelGallery extends JModelList
 			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
 
-		return $result;
+		return $gallery_id;
 	}
 
 	private function createFabrikList($label, $user)
@@ -599,17 +599,21 @@ class EmundusModelGallery extends JModelList
 
 		$query = $this->_db->getQuery(true);
 
-		try {
-			$query->update($this->_db->quoteName('#__fabrik_lists'))
-				->set($this->_db->quoteName($attribute) . ' = ' . $this->_db->quote($value))
-				->where($this->_db->quoteName('id') . ' = ' . $lid);
-			$this->_db->setQuery($query);
+		if(in_array($attribute, ['label', 'introduction'])) {
+			try {
+				$query->update($this->_db->quoteName('#__fabrik_lists'))
+					->set($this->_db->quoteName($attribute) . ' = ' . $this->_db->quote($value))
+					->where($this->_db->quoteName('id') . ' = ' . $lid);
+				$this->_db->setQuery($query);
 
-			$updated = $this->_db->execute();
+				$updated = $this->_db->execute();
+			}
+			catch (Exception $e) {
+				JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
 		}
-		catch (Exception $e) {
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
-		}
+
+		return $updated;
 	}
 
 	public function editPrefilter($lid, $value)
@@ -811,5 +815,87 @@ class EmundusModelGallery extends JModelList
 		}
 
 		return $updated;
+	}
+
+	public function deleteGallery($gid)
+	{
+		$deleted = false;
+
+		$query = $this->_db->getQuery(true);
+
+
+		if(!empty($gid)) {
+			try {
+				$gallery = $this->getGalleryById($gid);
+
+				if($gallery) {
+					$query->select('fl.id,fl.db_table_name,fl.form_id')
+						->from($this->_db->quoteName('#__fabrik_lists', 'fl'))
+						->where($this->_db->quoteName('fl.id') . ' = ' . $this->_db->quote($gallery->list_id));
+					$this->_db->setQuery($query);
+					$flist = $this->_db->loadObject();
+
+					if($flist->id) {
+						$query->clear()
+							->delete($this->_db->quoteName('#__fabrik_lists'))
+							->where($this->_db->quoteName('id') . ' = ' . $flist->id);
+						$this->_db->setQuery($query);
+						$this->_db->execute();
+
+						$query->clear()
+							->select('group_id')
+							->from($this->_db->quoteName('#__fabrik_formgroup','ffg'))
+							->where($this->_db->quoteName('ffg.form_id') . ' = ' . $flist->form_id);
+						$this->_db->setQuery($query);
+						$fgroups = $this->_db->loadColumn();
+
+						if(!empty($fgroups)) {
+							$fgroups = implode(',', $fgroups);
+
+							$query->clear()
+								->delete($this->_db->quoteName('#__fabrik_elements', 'fe'))
+								->where($this->_db->quoteName('fe.group_id') . ' IN (' . $fgroups . ')');
+							$this->_db->setQuery($query);
+							$this->_db->execute();
+
+							$query->clear()
+								->delete($this->_db->quoteName('#__fabrik_groups', 'fg'))
+								->where($this->_db->quoteName('fg.id') . ' IN (' . $fgroups . ')');
+							$this->_db->setQuery($query);
+							$this->_db->execute();
+						}
+
+						$query->clear()
+							->delete($this->_db->quoteName('#__fabrik_formgroup'))
+							->where($this->_db->quoteName('form_id') . ' = ' . $flist->form_id);
+						$this->_db->setQuery($query);
+						$this->_db->execute();
+
+						$query->clear()
+							->delete($this->_db->quoteName('#__fabrik_forms'))
+							->where($this->_db->quoteName('id') . ' = ' . $flist->form_id);
+						$this->_db->setQuery($query);
+						$this->_db->execute();
+
+						$query = 'DROP VIEW IF EXISTS '.$this->_db->quoteName($flist->db_table_name);
+						$this->_db->setQuery($query);
+						$this->_db->execute();
+					}
+
+					$query = $this->_db->getQuery(true);
+
+					$query->delete($this->_db->quoteName('#__emundus_setup_gallery'))
+						->where($this->_db->quoteName('id') . ' = ' . $gid);
+					$this->_db->setQuery($query);
+					$deleted = $this->_db->execute();
+				}
+			}
+			catch (Exception $e) {
+				$query_log = is_string($query) ?: $query->__toString();
+				JLog::add('component/com_emundus/models/gallery | Error when try to delete gallery : ' . $e->getMessage() . ' with query : ' . $query_log, JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $deleted;
 	}
 }
