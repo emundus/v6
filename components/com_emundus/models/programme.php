@@ -439,9 +439,13 @@ class EmundusModelProgramme extends JModelList {
         //
 
         if (!empty($programs)) {
-            $limit = empty($lim) ? 25 : $lim;
+            if (empty($lim) || $lim == 'all') {
+                $limit = '';
+            } else {
+                $limit = $lim;
+            }
 
-            if (empty($page)) {
+            if (empty($page) || empty($limit)) {
                 $offset = 0;
             } else {
                 $offset = ($page-1) * $limit;
@@ -486,11 +490,7 @@ class EmundusModelProgramme extends JModelList {
 	            $db->setQuery($query);
 				$all_programs['count'] = count($db->loadObjectList());
 
-                if(empty($lim)) {
-                    $db->setQuery($query, $offset);
-                } else {
-                    $db->setQuery($query, $offset, $limit);
-                }
+                $db->setQuery($query, $offset, $limit);
 
                 $programs = $db->loadObjectList();
 				

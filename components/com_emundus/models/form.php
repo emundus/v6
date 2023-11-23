@@ -42,7 +42,7 @@ class EmundusModelForm extends JModelList {
      * @param Int $page
      * @return array|stdClass
      */
-    function getAllForms(String $filter = '', String $sort = '', String $recherche = '', Int $lim = 0, Int $page = 0) : Array {
+    function getAllForms(String $filter = '', String $sort = '', String $recherche = '', $lim = 0, Int $page = 0) : Array {
         $data = ['datas' => [], 'count' => 0];
 		require_once (JPATH_ROOT . '/components/com_emundus/models/users.php');
 
@@ -50,13 +50,13 @@ class EmundusModelForm extends JModelList {
         $query = $db->getQuery(true);
 
         // Build filter / limit / pagination part of the query
-        if (empty($lim)) {
-            $limit = 25;
+        if (empty($lim) || $lim == 'all') {
+            $limit = '';
         } else {
             $limit = $lim;
         }
 
-        if (empty($page)) {
+        if (empty($page) || empty($limit)) {
             $offset = 0;
         } else {
             $offset = ($page - 1) * $limit;
