@@ -60,7 +60,7 @@ class EmundusModelGalleryTest extends TestCase
 
 		// 1. En tant que gestionnaire je peux créer un catalogue
 		$gallery_id = $this->m_gallery->createGallery($data);
-		$this->assertNotEmpty($gallery_id);
+		$this->assertNotEquals(0,$gallery_id);
 
 		$gallery = $this->m_gallery->getGalleryById($gallery_id);
 

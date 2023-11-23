@@ -101,17 +101,15 @@ class EmundusControllerGallery extends JControllerLegacy
 
 	public function getgallery()
 	{
-		$response = array('status' => 1, 'msg' => '', 'data' => []);
+		$response = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'), 'data' => []);
 
-		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-			$response['status'] = 0;
-			$response['msg'] = JText::_('ACCESS_DENIED');
-		}
-		else {
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$id = $this->input->getInt('id', 0);
 
 			if(!empty($id)) {
 				$response['data'] = $this->_model->getGalleryById($id);
+				$response['msg'] = '';
+				$response['status'] = 1;
 			}
 		}
 

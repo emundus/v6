@@ -91,6 +91,23 @@ class EmundusUnittestHelperSamples
         return $user_id;
     }
 
+	public function deleteSampleUser($uid)
+	{
+		$deleted = false;
+		if (!empty($uid)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->delete('#__users')
+				->where('id = ' . $uid);
+
+			$db->setQuery($query);
+			$deleted = $db->execute();
+		}
+
+		return $deleted;
+	}
+
     public function createSampleFile($cid,$uid){
         $m_formbuilder = new EmundusModelFormbuilder;
 

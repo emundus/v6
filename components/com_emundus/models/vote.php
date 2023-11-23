@@ -45,21 +45,25 @@ class EmundusModelVote extends JModelList
 	 */
 	public function getVotesByUser($user = null, $email = null): array
 	{
-		$votes = $this->_app->getSession()->get('votes', null);
+		if (empty($user)) {
+			$user = $this->_user;
+		}
+
+		$ip = $_SERVER['REMOTE_ADDR'];
+
+		if($user->id == 0) {
+			$votes = $this->_app->getSession()->get('votes_'.$ip, null);
+		} else {
+			$votes = $this->_app->getSession()->get('votes_'.$user->id, null);
+		}
 
 		if(is_null($votes)) {
-			if (empty($user)) {
-				$user = $this->_user;
-			}
-
 			$query = $this->_db->getQuery(true);
-
-			$ip = $_SERVER['REMOTE_ADDR'];
 
 			try {
 				$query->select('v.id,v.user,v.ccid,v.firstname,v.lastname,v.email,v.ip')
 					->from($this->_db->quoteName('#__emundus_vote', 'v'));
-				if ($user->guest == 1) {
+				if ($user->id == 0) {
 					$query->where($this->_db->quoteName('v.ip') . ' = ' . $this->_db->quote($ip));
 					if(!empty($email)) {
 						$query->orWhere($this->_db->quoteName('v.email') . ' LIKE ' . $this->_db->quote($email));
@@ -148,7 +152,11 @@ class EmundusModelVote extends JModelList
 				$voted = $this->_db->execute();
 
 				if($voted) {
-					$this->_app->getSession()->clear('votes');
+					if(empty($uid)) {
+						$this->_app->getSession()->clear('votes_'.$ip);
+					} else {
+						$this->_app->getSession()->clear('votes_'.$uid);
+					}
 				}
 			}
 		}
