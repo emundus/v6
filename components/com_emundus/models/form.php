@@ -1869,7 +1869,6 @@ class EmundusModelForm extends JModelList {
                     ->where($db->quoteName('id') . ' = ' . $db->quote($form->id));
                 $db->setQuery($query);
                 $form->label = $formbuilder->getJTEXT($db->loadResult());
-                print_r($forms->label);
             }
 
             return $forms;

@@ -1233,9 +1233,9 @@ class EmundusModelEmails extends JModelList {
             $app = JFactory::getApplication();
             $email_from_sys = $app->getCfg('mailfrom');
             $jinput = $app->input;
-            $mail_subject = $jinput->post->getString('mail_subject');
-            $mail_from_name = $jinput->post->getString('mail_from_name');
-            $mail_from = $jinput->post->getRaw('mail_from');
+            $mail_subject = $jinput->post->getString('mail_subject', '');
+            $mail_from_name = $jinput->post->getString('mail_from_name', '');
+            $mail_from = $jinput->post->getRaw('mail_from', '');
 
             // We are using the first fnum for things like setting tags and getting campaign info.
             // ! This means that we should NOT PUT TAGS RELATING TO PERSONAL INFO IN THE EMAIL.
@@ -1246,15 +1246,18 @@ class EmundusModelEmails extends JModelList {
             $example_user = JFactory::getUser($example_user_id);
             $tags = $this->setTags($this->_em_user->id);
 
-            $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
-            $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
 
-            $mail_to = $jinput->post->getRaw('mail_to');
+            $mail_to = $jinput->post->getRaw('mail_to','');
+            $body =  $jinput->post->getRaw('mail_body', '');
 
             $mail_tmpl = $this->getEmail('confirm_post');
 
-            if (!empty($mail_to)) {
-                $mail_body = $this->setBody($example_user, $jinput->post->getRaw('mail_body'));
+
+            if (!empty($mail_to) && !empty($body)) {
+                $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
+                $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
+
+                $mail_body = $this->setBody($example_user, $body);
 
                 // Build an HTML list to stick in the email body.
                 $fnums_infos = $m_files->getFnumsInfos($fnums);
@@ -1487,6 +1490,8 @@ class EmundusModelEmails extends JModelList {
                     JLog::add(JFactory::getUser()->id . ' Function sendExpertMail has been called but mail_to has been found empty. fnums => (' . json_encode($fnums) . ')', JLog::WARNING, 'com_emundus');
                     $print_message = JText::_('NO_MAIL_TO_SEND');
                 }
+            } else {
+                $failed = $mail_to;
             }
         }
 

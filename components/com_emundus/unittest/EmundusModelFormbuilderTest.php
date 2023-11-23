@@ -61,7 +61,7 @@ class EmundusModelFormbuilderTest extends TestCase
         $reference_id = 999999;
 
         $this->m_translations->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', $reference_id);
-        $new_key = $this->m_formbuilder->formsTrad('ELEMENT_TEST', ['fr' => $new_trad, 'en' => 'My test element'], $reference_id);
+        $new_key = $this->m_formbuilder->formsTrad('ELEMENT_TEST', ['fr' => $new_trad, 'en' => $new_trad], $reference_id);
 
         $this->assertNotEmpty($new_key, 'La fonction de traduction a fonctionné');
 

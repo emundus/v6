@@ -384,7 +384,7 @@ class EmundusModelFiles extends JModelLegacy
         $menu = @JFactory::getApplication()->getMenu();
         $current_menu = $menu->getActive();
         $menu_params = $menu->getParams(@$current_menu->id);
-        $em_other_columns = explode(',', $menu_params->get('em_other_columns'));
+        $em_other_columns = explode(',', $menu_params->get('em_other_columns',''));
 
         $session = JFactory::getSession();
         $filter_order = $session->get('filter_order');

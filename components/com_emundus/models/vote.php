@@ -43,13 +43,15 @@ class EmundusModelVote extends JModelList
 	 *
 	 * @since version
 	 */
-	public function getVotesByUser($user = null, $email = null): array
+	public function getVotesByUser($user = null, $email = null, $ip = null)
 	{
 		if (empty($user)) {
 			$user = $this->_user;
 		}
 
-		$ip = $_SERVER['REMOTE_ADDR'];
+		if(empty($ip)) {
+			$ip = $_SERVER['REMOTE_ADDR'];
+		}
 
 		if($user->id == 0) {
 			$votes = $this->_app->getSession()->get('votes_'.$ip, null);
@@ -95,13 +97,15 @@ class EmundusModelVote extends JModelList
 	 *
 	 * @since version
 	 */
-	public function vote($email,$ccid,$uid): bool
+	public function vote($email,$ccid,$uid,$ip = null)
 	{
 		$voted = false;
 
 		$query = $this->_db->getQuery(true);
 
-		$ip = $_SERVER['REMOTE_ADDR'];
+		if(empty($ip)) {
+			$ip = $_SERVER['REMOTE_ADDR'];
+		}
 
 		try {
 			$query->select('v.id')

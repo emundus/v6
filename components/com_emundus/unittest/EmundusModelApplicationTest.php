@@ -138,10 +138,10 @@ class EmundusModelApplicationTest extends TestCase
 		$tab->name = 'Test';
 		$tab->ordering = 1;
 
-		$updated = $this->m_application->updateTabs([['id' => 1, 'name' => 'Test', 'ordering' => 1]], 0);
+		$updated = $this->m_application->updateTabs([$tab], 0);
 		$this->assertSame(false, $updated, 'Missing user id');
 
-		$updated = $this->m_application->updateTabs([['id' => 1, 'name' => 'Test', 'ordering' => 1]], 95);
+		$updated = $this->m_application->updateTabs([$tab], 95);
 		$this->assertSame(false, $updated, );
 
 		$tab->id = $this->m_application->createTab('Test', 95);

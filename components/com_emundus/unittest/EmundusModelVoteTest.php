@@ -48,7 +48,9 @@ class EmundusModelVoteTest extends TestCase
         $this->m_vote = new EmundusModelVote();
     }
 
-	public function testGetVotesByUser() {
+	public function testGetVotesByUser()
+	{
+		$ip = '1.1.1.1';
 		$program = $this->h_sample->createSampleProgram();
 		$campaign = $this->h_sample->createSampleCampaign($program);
 		$username = 'test-candidat-' . rand(0, 1000) . '@emundus.fr';
@@ -64,27 +66,27 @@ class EmundusModelVoteTest extends TestCase
 
 		// 1. En tant qu'utilisateur non connecté, je n'ai pas encore voté
 		$guest_user = Factory::getUser();
-		$votes = $this->m_vote->getVotesByUser($guest_user);
+		$votes = $this->m_vote->getVotesByUser($guest_user,null,$ip);
 		$this->assertIsArray($votes);
 		$this->assertEmpty($votes);
 
 		// 2. En tant qu'utilisateur non connecté, je viens de voter
-		$this->m_vote->vote('test-votant-guest@emundus.fr', $ccid, $guest_user->id);
-		$votes = $this->m_vote->getVotesByUser($guest_user);
+		$this->m_vote->vote('test-votant-guest@emundus.fr', $ccid, $guest_user->id,$ip);
+		$votes = $this->m_vote->getVotesByUser($guest_user,null,$ip);
 		$this->assertNotEmpty($votes);
 
 		// 3. En tant qu'utilisateur connecté, je n'ai pas encore voté
 		$username = 'test-votant-' . rand(0, 1000) . '@emundus.fr';
 		$uid = $this->h_sample->createSampleUser(9, $username);
 		$registered_user = Factory::getUser($uid);
-		$votes = $this->m_vote->getVotesByUser($registered_user);
+		$votes = $this->m_vote->getVotesByUser($registered_user,null,$ip);
 		$this->assertIsArray($votes);
 		$this->assertEmpty($votes);
 
 		// 4. En tant qu'utilisateur connecté, je viens de voter
-		$this->m_vote->vote($registered_user->email, $ccid, $registered_user->id);
+		$this->m_vote->vote($registered_user->email, $ccid, $registered_user->id,$ip);
 
-		$votes = $this->m_vote->getVotesByUser($registered_user);
+		$votes = $this->m_vote->getVotesByUser($registered_user,null,$ip);
 		$this->assertNotEmpty($votes);
 
 		$this->h_sample->deleteSampleUser($registered_user->id);
@@ -102,6 +104,7 @@ class EmundusModelVoteTest extends TestCase
 
 	public function testVote()
 	{
+		$ip = '1.1.1.1';
 		$program = $this->h_sample->createSampleProgram();
 		$campaign = $this->h_sample->createSampleCampaign($program);
 		$username = 'test-candidat-' . rand(0, 1000) . '@emundus.fr';
@@ -117,19 +120,19 @@ class EmundusModelVoteTest extends TestCase
 
 		// 1. En tant qu'utilisateur non connecté, je peux voter pour un projet
 		$guest_user = Factory::getUser();
-		$this->assertTrue($this->m_vote->vote('test-votant-guest@emundus.fr', $ccid, $guest_user->id));
+		$this->assertTrue($this->m_vote->vote('test-votant-guest@emundus.fr', $ccid, $guest_user->id,$ip));
 
 		// 2. En tant qu'utilisateur non connecté je ne peux pas voter 2 fois pour le même projet
-		$this->assertFalse($this->m_vote->vote('test-votant-guest@emundus.fr', $ccid, $guest_user->id));
+		$this->assertFalse($this->m_vote->vote('test-votant-guest@emundus.fr', $ccid, $guest_user->id,$ip));
 
 		// 3. En tant qu'utilisateur connecté, je peux voter un projet
 		$username = 'test-votant-' . rand(0, 1000) . '@emundus.fr';
 		$uid = $this->h_sample->createSampleUser(9, $username);
 		$registered_user = Factory::getUser($uid);
-		$this->assertTrue($this->m_vote->vote($registered_user->email, $ccid, $registered_user->id));
+		$this->assertTrue($this->m_vote->vote($registered_user->email, $ccid, $registered_user->id,$ip));
 
 		// 4. En tant qu'utilisateur connecté je ne peux pas voter 2 fois pour le même projet
-		$this->assertFalse($this->m_vote->vote($registered_user->email, $ccid, $registered_user->id));
+		$this->assertFalse($this->m_vote->vote($registered_user->email, $ccid, $registered_user->id,$ip));
 
 		$this->h_sample->deleteSampleUser($registered_user->id);
 		$this->h_sample->deleteSampleUser($applicant);

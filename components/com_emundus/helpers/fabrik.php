@@ -1160,7 +1160,7 @@ die("<script>
 			try {
 				$inserting_datas = [
 					'name' => $datas['name'],
-					'css' => $datas['css'] ?: '',
+					'css' => !empty($datas['css']) ? $datas['css'] : '',
 					'label' => $datas['label'],
 					'created' => date('Y-m-d H:i:s'),
 					'created_by' => !empty($user) ? $user->id : 62,
@@ -1170,7 +1170,7 @@ die("<script>
 					'checked_out' => 0,
 					'checked_out_time' => date('Y-m-d H:i:s'),
 					'published' => $published,
-					'is_join' => $datas['is_join'] ?: 0,
+					'is_join' => !empty($datas['is_join']) ? $datas['is_join'] : 0,
 					'params' => json_encode($params)
 				];
 
