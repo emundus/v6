@@ -269,9 +269,52 @@ class EmundusModelApplicationTest extends TestCase
 		}
 		$this->assertTrue($found, 'getUserCampaigns should return the created campaign');
 
-		// TODO: assert that calling getUserCampaigns with only_published = 1 returns less campaigns than without
-		// unpublish the campaign
-		// compare the number of campaigns returned
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->update('#__emundus_setup_campaigns')
+			->set('published = 0')
+			->where('id = ' . $db->quote($campaign_published));
+		$db->setQuery($query);
+		$db->execute();
+
+		$user_campaigns = $this->m_application->getUserCampaigns(95);
+		$found = false;
+		foreach ($user_campaigns as $campaign) {
+			if ($campaign->id == $campaign_published) {
+				$found = true;
+				break;
+			}
+		}
+       $this->assertFalse($found, 'getUserCampaigns should not return the unpublished campaign');
+
+		$user_campaigns = $this->m_application->getUserCampaigns(95,null, false);
+		$found = false;
+		foreach ($user_campaigns as $campaign) {
+			if ($campaign->id == $campaign_published) {
+				$found = true;
+				break;
+			}
+		}
+
+		$this->assertTrue($found, 'getUserCampaigns should return the unpublished campaign if only_published is false');
+
+		$campaign_not_attached_applicant = $this->h_sample->createSampleCampaign($program);
+		$user_campaigns = $this->m_application->getUserCampaigns(95, $campaign_not_attached_applicant);
+		$this->assertEmpty($user_campaigns, 'getUserCampaigns should not return the campaign if the applicant is not attached to it');
+
+	    $query->clear();
+		$query->select('distinct(campaign_id)')
+				->from('#__emundus_campaign_candidature')
+				->where('applicant_id = ' . $db->quote(95));
+		$db->setQuery($query);
+		$all_user_campaigns = $db->loadColumn();
+
+		$user_campaigns = $this->m_application->getUserCampaigns(95);
+
+		foreach ($user_campaigns as $campaign) {
+			$this->assertContains($campaign->id, $all_user_campaigns, 'getUserCampaigns should return all campaigns attached to the applicant');
+		}
+
 	}
 }
 
