@@ -103,7 +103,7 @@ class EmundusViewApplication extends JViewLegacy {
                     $show_related_files = $params->get('show_related_files', 0);
 
                     if ($show_related_files || EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) || EmundusHelperAccess::asManagerAccessLevel($this->_user->id)) {
-                        $campaignInfo = $m_application->getUserCampaigns($fnumInfos['applicant_id'], $cid = null, $published_only = false);
+                        $campaignInfo = $m_application->getUserCampaigns($fnumInfos['applicant_id'], null, false);
 
 						$published_campaigns = array_filter($campaignInfo, function($campaign) {
 							return $campaign->published == 1;

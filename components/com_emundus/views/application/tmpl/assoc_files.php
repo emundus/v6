@@ -180,11 +180,9 @@ if (!empty((array) $this->assoc_files)) :
         blocks.forEach((block) => {
             let icon = document.querySelector('#unpublished_campaigns_icon');
             if (block.style.display === 'none') {
-                console.log('onglet ouvert')
                 jQuery(block).css("display", "block");
                 jQuery(icon).css("transform", "rotate(-180deg)");
             } else {
-                console.log('onglet fermé')
                 jQuery(block).css("display", "none");
                 jQuery(icon).css("transform", "rotate(0deg)");
             }
