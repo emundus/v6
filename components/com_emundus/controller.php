@@ -923,9 +923,7 @@ class EmundusController extends JControllerLegacy {
         }
 
         foreach ($fnums as $fnum) {
-
             foreach ($files as $key => $file) {
-
 				$local_filename = $file['name'];
 
                 $pageCount = 0;
@@ -944,7 +942,7 @@ class EmundusController extends JControllerLegacy {
                 }
 
                 try {
-                    $query_ext = 'SELECT UPPER(allowed_types) as allowed_types, nbmax, min_pages_pdf, max_pages_pdf FROM #__emundus_setup_attachments WHERE id = '.(int)$attachments;
+                    $query_ext = 'SELECT UPPER(allowed_types) as allowed_types, nbmax, min_pages_pdf, max_pages_pdf, max_filesize FROM #__emundus_setup_attachments WHERE id = '.(int)$attachments;
                     $db->setQuery($query_ext);
                     $attachment = $db->loadAssoc();
 
@@ -964,6 +962,23 @@ class EmundusController extends JControllerLegacy {
 
                             continue;
                         }
+
+	                    if (!empty($attachment['max_filesize'])) {
+		                    $bytes = $attachment['max_filesize'] * 1024 * 1024;
+
+							if ($file['size'] > $bytes) {
+								$error = JText::_('COM_EMUNDUS_ATTACHMENTS_ERROR_FILE_TOO_BIG');
+
+								if ($format == "raw") {
+									echo '{"aid":"0","status":false,"message":"'.$error.'" }';
+								} else {
+									JFactory::getApplication()->enqueueMessage($error, 'error');
+									$this->setRedirect($url);
+								}
+
+								return false;
+							}
+	                    }
                     } catch (Exception $e) {
                         $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
                         JLog::add($error, JLog::ERROR, 'com_emundus');
