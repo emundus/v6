@@ -870,7 +870,7 @@ class EmundusControllersettings extends JControllerLegacy {
             $jinput = Factory::getApplication()->input;
             $component = $jinput->getString('component');
             $param = $jinput->getString('param');
-            $value = $jinput->getInt('value');
+            $value = $jinput->getString('value');
 
 			switch($component) {
 				case 'emundus':

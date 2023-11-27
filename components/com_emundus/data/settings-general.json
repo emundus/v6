@@ -1,4 +1,10 @@
 {
+  "sitename": {
+    "component": "joomla",
+    "label": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SITENAME",
+    "param": "sitename",
+    "maxlength": 50
+  },
   "list_limit": {
     "component": "joomla",
     "label": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_LIST_LIMIT",
