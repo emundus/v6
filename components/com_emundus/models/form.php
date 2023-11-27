@@ -42,7 +42,7 @@ class EmundusModelForm extends JModelList {
      * @param Int $page
      * @return array|stdClass
      */
-    function getAllForms(String $filter = '', String $sort = '', String $recherche = '', $lim = 0, Int $page = 0) : Array {
+    function getAllForms($filter = '', $sort = '', $recherche = '', $lim = 0, $page = 0): array {
         $data = ['datas' => [], 'count' => 0];
 		require_once (JPATH_ROOT . '/components/com_emundus/models/users.php');
 
