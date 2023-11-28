@@ -508,20 +508,26 @@ class EmundusModelProfile extends JModelList {
         }
     }
 
-    function getProfileByStep($step){
+    function getProfileByStep($step) {
+        $profiles = array();
+
+        // todo: use cache
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
+
+        $query->select('esp.id AS profile')
+            ->from($this->_db->quoteName('jos_emundus_campaign_workflow', 'ecw'))
+            ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('ecw.profile'))
+            ->where($this->_db->quoteName('ecw.step').' = '.$this->_db->quote($step));
+
         try {
-            $query->select('esp.id AS profile')
-                ->from($this->_db->quoteName('jos_emundus_campaign_workflow', 'ecw'))
-                ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('ecw.profile'))
-                ->where($this->_db->quoteName('ecw.step').' = '.$this->_db->quote($step));
-            $this->_db->setQuery( $query );
-            return $this->_db->loadColumn();
+            $this->_db->setQuery($query);
+            $profiles = $this->_db->loadColumn();
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.', error on query '.$query.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
-            return false;
         }
+
+        return $profiles;
     }
 
     /// get profile from menutype

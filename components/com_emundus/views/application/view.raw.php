@@ -394,7 +394,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $pidsRaw = $m_profiles->getProfilesIDByCampaign([$campaignsRaw->id],'object');
 
                         $pidsStep = [];
-                        if (!empty($step)) {
+                        if (isset($step) && is_numeric($step)) {
                             $pidsStep = $m_profiles->getProfileByStep($step);
                         }
 
@@ -402,7 +402,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $hasPhasePids = array();
 
                         foreach($pidsRaw as $pidRaw) {
-                            if (count($pidsStep) > 0) {
+                            if (!empty($pidsStep)) {
                                 if (!in_array($pidRaw->pid, $pidsStep)) {
                                     continue;
                                 }

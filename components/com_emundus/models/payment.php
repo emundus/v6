@@ -1074,7 +1074,13 @@ class EmundusModelPayment extends JModelList
         return $hikashop_user;
     }
 
-    public function getGeneratedCoupon($fnum, $hikashop_product_category)
+	/**
+	 * @param $fnum
+	 * @param $hikashop_product_category
+	 * @param $code_like
+	 * @return int
+	 */
+    public function getGeneratedCoupon($fnum, $hikashop_product_category, $code_like = null)
     {
         $discount_id = 0;
 
@@ -1088,11 +1094,17 @@ class EmundusModelPayment extends JModelList
                 $query->select('discount_code')
                     ->from($db->quoteName('#__hikashop_discount'))
                     ->where('discount_user_id = ' . $hikashop_user->user_id)
-                    ->andWhere('discount_code LIKE ' . $db->quote($fnum . '-REDUCTION-%'))
                     ->andWhere('discount_published = 1')
                     ->andWhere('discount_used_times < 1')
                     ->andWhere('discount_start <= ' . time())
-                    ->andWhere('discount_end > '  . time());
+                    ->andWhere('discount_end > '  . time())
+                    ->andWhere('discount_category_id = ' . $db->quote($hikashop_product_category) . ' OR discount_category_id = ' . $db->quote($hikashop_product_category . ',%'));
+
+				if (!empty($code_like)) {
+					$query->andWhere('discount_code LIKE ' . $db->quote($code_like));
+				}
+
+				$query->order('discount_id DESC');
 
                 try {
                     $db->setQuery($query);
