@@ -313,14 +313,22 @@ class EmundusViewDecision extends JViewLegacy
 			    }
 
 				/* Get the values from the state object that were inserted in the model's construct function */
-			    $lists['order_dir'] = JFactory::getSession()->get( 'filter_order_Dir' );
-				$lists['order']     = JFactory::getSession()->get( 'filter_order' );
+			    $lists['order_dir'] = JFactory::getSession()->get('filter_order_Dir');
+				$lists['order']     = JFactory::getSession()->get('filter_order');
 			    $this->assignRef('lists', $lists);
 			    $pagination = $this->get('Pagination');
 			    $this->assignRef('pagination', $pagination);
                 $pageNavigation = $this->get('PageNavigation');
                 $this->assignRef('pageNavigation', $pageNavigation);
+
+				if (!isset($objAccess)) {
+					$objAccess = [];
+				}
 				$this->assignRef('accessObj', $objAccess);
+
+				if (!isset($colsSup)) {
+					$colsSup = [];
+				}
 				$this->assignRef('colsSup', $colsSup);
 				$this->assignRef('users', $users);
 				$this->assignRef('datas', $data);

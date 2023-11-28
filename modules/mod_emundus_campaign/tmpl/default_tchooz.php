@@ -36,8 +36,8 @@ if(sizeof($tmp_campaigns) > 0) {
         });
 
         foreach ($tmp_campaigns as $campaign) {
-            $campaigns[$campaign->code][] = $campaign;
-            $campaigns[$campaign->code]['label'] = $campaign->programme;
+            $campaigns[$campaign->training][] = $campaign;
+            $campaigns[$campaign->training]['label'] = $campaign->programme;
         }
 
     } elseif ($group_by == 'category') {
@@ -248,16 +248,17 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
                         <hr>
 
-                        <div class="mod_emundus_campaign__list_content_resume em-text-neutral-600">
-                            <?php
-                            $text = '';
-                            $textprog = '';
-                            $textcamp = '';
-                            if ($showcampaign) {
-                                $textcamp = $campaign_pinned->short_description;
-                            }
-                            echo $textcamp;
-                            ?>
+	                        <?php
+	                        $text = '';
+	                        $textprog = '';
+	                        $textcamp = '';
+	                        if ($showcampaign) {
+		                        $textcamp = $campaign_pinned->short_description;
+	                        }
+	                        ?>
+
+                        <div title="<?php echo strip_tags($textcamp); ?>" class="mod_emundus_campaign__list_content_resume em-text-neutral-600">
+                            <?php echo $textcamp; ?>
                         </div>
                         </div>
 
@@ -633,19 +634,19 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                 </div>
 
                                 <hr>
+	                                <?php
+	                                $text = '';
+	                                $textprog = '';
+	                                $textcamp = '';
+	                                if ($showcampaign) {
+		                                $textcamp = $result->short_description;
+	                                }
+	                                ?>
 
-                                <div class="mod_emundus_campaign__list_content_resume em-text-neutral-600"
+                                <div title="<?php echo strip_tags($textcamp); ?>" class="mod_emundus_campaign__list_content_resume em-text-neutral-600"
                                     <?php if (empty($mod_em_campaign_show_timezone) || (strtotime($now) > strtotime($result->end_date)) ) : ?> style="-webkit-line-clamp: 4;" <?php endif; ?>
                                 >
-                                    <?php
-                                    $text = '';
-                                    $textprog = '';
-                                    $textcamp = '';
-                                    if ($showcampaign) {
-                                        $textcamp = $result->short_description;
-                                    }
-                                    echo $textcamp;
-                                    ?>
+	                                <?php echo $textcamp; ?>
                                 </div>
                                 </div>
 

@@ -1516,7 +1516,7 @@ class EmundusModelApplication extends JModelList
                 foreach ($tableuser as $key => $itemt) {
 
                     $forms .= '<br><hr><div class="TitlePersonalInfo em-personalInfo em-mb-12">';
-                    $title = explode('-', JText::_($itemt->label));
+                    $title = explode(' - ', JText::_($itemt->label));
                     if (empty($title[1])) {
                         $title= JText::_(trim($itemt->label));
                     } else {
@@ -2108,7 +2108,7 @@ class EmundusModelApplication extends JModelList
                                                     JLog::add('component/com_emundus/models/application | Error at getting emundus_fileupload for applicant ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
                                                     $elt = '';
                                                 }
-                                            } 
+                                            }
 											elseif ($element->plugin == 'emundus_phonenumber') {
                                                 $elt = substr($element->content, 2, strlen($element->content));
                                             }
@@ -3934,6 +3934,15 @@ class EmundusModelApplication extends JModelList
                         WHERE alias like "checkout'.$pid.'" and published = 1';
             $dbo->setQuery($query);
             $url = $dbo->loadResult();
+
+            if (empty($url)) {
+                $query = 'SELECT CONCAT(m.link, "&Itemid=", m.id) as url
+                    FROM #__menu m
+                    LEFT JOIN #__emundus_setup_profiles esp on esp.menutype = m.menutype
+                    WHERE m.alias like "checkout%" and m.published = 1 and esp.id = '.$pid;
+                $dbo->setQuery($query);
+                $url = $dbo->loadResult();
+            }
             return $url;
         }
         catch (Exception $e)
@@ -4913,11 +4922,9 @@ class EmundusModelApplication extends JModelList
         $fileExists = File::exists($filePath);
 
         if ($fileExists) {
-
             // create preview based on filetype
             if ($extension == 'pdf') {
-                $siteUrl = JURI::base();
-                $preview['content'] = '<iframe src="' . $siteUrl . $filePath . '" style="width:100%;height:100%;" frameborder="0"></iframe>';
+                $preview['content'] = '<iframe src="/index.php?option=com_emundus&task=getfile&u=images/emundus/files/'. $user . '/' . $fileName . '" style="width:100%;height:100%;" border="0"></iframe>';
             } else if ($extension == 'txt') {
                 $content = file_get_contents($filePath);
                 $preview['overflowY'] = true;

@@ -170,11 +170,12 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
                 // TODO : Check if we already sent a file request today, merge this query with query uploaded. If a file request is sent today OR already uploaded we don't send this email
                 $query = $db->getQuery(true);
                 $query->clear()
-                    ->select('count(*)')
+                    ->select('count(id)')
                     ->from($db->quoteName('#__emundus_files_request', 'jefr'))
                     ->where($db->quoteName('jefr.fnum') . ' LIKE ' . $db->quote($fnum))
                     ->andWhere($db->quoteName('jefr.email') . ' = ' . $db->quote($recipient['email']))
-                    ->andWhere($db->quoteName('jefr.attachment_id') . ' = ' . $db->quote($attachment_id));
+                    ->andWhere($db->quoteName('jefr.attachment_id') . ' = ' . $db->quote($attachment_id))
+                    ->andWhere($db->quoteName('jefr.uploaded') . ' = 1');
 
                 $db->setQuery($query);
                 $isSelectedReferent = $db->loadResult();
