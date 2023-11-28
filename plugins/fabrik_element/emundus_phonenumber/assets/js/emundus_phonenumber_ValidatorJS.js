@@ -15,7 +15,8 @@ class ValidatorJS {
         this.input = initDiv.getElementById('inputValue');
         this.renderCountryCode = initDiv.getElementById('renderCountryCode');
         this.divError = initDiv.parentNode.parentNode.getElementsByClassName('fabrikErrorMessage')[0]; // awfull but necessary
-        this.isValid = initDiv.getElementById('validationValue');
+        this.parentForHidden = initDiv.parentNode.parentNode;
+        this.validationInfo = initDiv.getElementById('validationInfo');
 
         this.validColor = validColor;
         this.errorColor = errorColor;
@@ -29,7 +30,9 @@ class ValidatorJS {
         this.countrySelected = this.allCountry[this.indiceCountry];
 
         this.mustValidate = initDiv.getElementById('hasValidation').checked; // does he have validation ?
-        this.isValid.checked = !this.mustValidate; // if yes, set false, if no, set true
+        this.isHidden = this.parentForHidden.className.includes('fabrikHide');
+        this.isValid = !this.mustValidate; // if yes, set false, if no, set true
+        this.setValidationInfo();
 
         if (this.cloned) // awfull
         {
@@ -50,6 +53,7 @@ class ValidatorJS {
         this.input.addEventListener('input', this.inputValidation.bind(this));
         this.input.addEventListener('focusout', this.handlerFocusOut.bind(this));
         this.input.addEventListener('focusin', this.handlerInputFocusIn.bind(this));
+        this.handlerParentHidden();
 
         if (this.mustValidate)
         {
@@ -120,6 +124,18 @@ class ValidatorJS {
         this.changeRenderCountryCode();
     }
 
+    handlerParentHidden()
+    {
+        const self = this;
+        const hiddenObserver = new MutationObserver((mutations, observer) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    self.setValidationInfo(null, mutation.target.className.includes('fabrikHide'));
+                }
+            });
+        });
+        hiddenObserver.observe(this.parentForHidden, {attributes: true});
+    }
     newCountry(id)
     {
         this.indiceCountry = id;
@@ -178,25 +194,25 @@ class ValidatorJS {
         {
             case 'invalid':
                 this.divError.innerHTML = Joomla.JText._('PLG_ELEMENT_PHONE_NUMBER_INVALID');
-                this.isValid.checked = false; // invalid
+                this.setValidationInfo(false); // invalid
                 this.setInputBorderColor(this.errorColor);
                 break;
 
             case 'default':
                 this.divError.innerHTML = '';
-                this.isValid.checked = !this.mustValidate;
+                this.setValidationInfo(!this.mustValidate);
                 this.setInputBorderColor(this.defaultColor);
                 break;
 
             case 'unsupported':
                 this.divError.innerHTML = Joomla.JText._('PLG_ELEMENT_PHONE_NUMBER_UNSUPPORTED');
-                this.isValid.checked = true; // unsupported but still valid
+                this.setValidationInfo(true) // unsupported but still valid
                 this.setInputBorderColor(this.unsupportedColor);
                 break;
 
             case 'valid':
                 this.divError.innerHTML = '';
-                this.isValid.checked = true; // valid
+                this.setValidationInfo(true) // valid
                 this.setInputBorderColor(this.validColor);
                 break;
         }
@@ -214,4 +230,12 @@ class ValidatorJS {
         this.select.options[id].selected = true;
     }
 
+    setValidationInfo(isValid = null, isHidden = null) {
+
+        const valid = isValid !== null ? isValid : this.isValid;
+        const hidden = isHidden !== null ? isHidden : this.isHidden;
+
+        this.validationInfo.value = valid + ":" + hidden;
+        // is_valid_JS:is_hidden
+    }
 }

@@ -46,7 +46,7 @@ JText::script('PLG_ELEMENT_PHONE_NUMBER_UNSUPPORTED');
 			<?php endif ?>
 		>
 
-		<input id="validationValue" name="<?php echo $displayData->attributes['name'].'[is_valid]'; ?>" class="fabrikinput check" type="checkbox"
+		<input id="validationInfo" name="<?php echo $displayData->attributes['name'].'[validation_info]'; ?>" class="fabrikinput" type="hidden"
 		>
 	</div>
 

@@ -195,17 +195,23 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
     {
         $isValid = true;
         $value = $data['country_code'].$data['num_tel'];
-        $is_valid_JS = $data['is_valid'] == 'on';
+        $validation_info = explode(':', $data['validation_info']);
+        $is_valid_JS = $validation_info[0] == 'true';
+        $is_hidden_JS = $validation_info[1] == 'true'; // hidden from javascript, override $this->isHidden() value
 
         $minimalNumberlength = 5; // without counting '+', self-consider it's the minimal length, CAN BE CHANGED
         $maximalNumberlength = 15; // without counting '+', maximal phone number length e.164 format, NO CHANGE
 
         $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_INVALID'); // error as default value
 
-        $validation_while_hiddden = $this->getParams()->get('validations')->validate_hidden[0]; // hidden but still validation ?
+        $not_empty_index = $this->getIndexIfNotEmpty();
+        $validation_while_hidden = '0';
+        if ($not_empty_index != -1) {
+            $validation_while_hidden = $this->getParams()->get('validations')->validate_hidden[$not_empty_index]; // hidden but still validation ?
+        }
 
-        if ($this->validator->hasValidations()) {
-            if (!$this->isHidden() || ($this->isHidden() && $validation_while_hiddden == '1')) { // not hidden or hidden and must have validation
+        if ($this->validator->hasValidations()) { // validation in element's param
+            if (!$is_hidden_JS || $validation_while_hidden == '1') { // not hidden, or, must have validation
                 if (!preg_match('/^\+\d{' . $minimalNumberlength . ',' . $maximalNumberlength . '}$/', $value) || !$is_valid_JS) {
                     $isValid = false;
 
@@ -219,7 +225,9 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
                 }
             }
         } else {
-            $isValid = !$this->isHidden() && $is_valid_JS && preg_match('/^\+\d*$/', $value);
+            if (!$is_hidden_JS && (!$is_valid_JS || !preg_match('/^\+\d*$/', $value))) {
+                $isValid = false;
+            }
         }
         return $isValid;
     }
@@ -275,4 +283,17 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
         return substr($number, 2, strlen($number));
     }
 
+    private function getIndexIfNotEmpty()
+    {
+        $index = -1;
+        if ($this->getParams()->get('validations')->plugin) {
+            foreach ($this->getParams()->get('validations')->plugin as $key => $validation) {
+                if ($validation == 'notempty') {
+                    $index = $key;
+                }
+            }
+        }
+
+        return $index;
+    }
 }
