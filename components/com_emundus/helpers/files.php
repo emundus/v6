@@ -4414,7 +4414,8 @@ class EmundusHelperFiles
                                 $table_column_to_count = 'jecc.campaign_id';
                                 break;
                             case 'programmes':
-                                $table_column_to_count = 'esc.training';
+                            case 'programs':
+                                $table_column_to_count = 'sp.id';
                                 break;
                             case 'tags':
                                 $table_column_to_count = 'eta.id_tag';
@@ -4504,7 +4505,7 @@ class EmundusHelperFiles
                             }
                         }
                         else {
-                            $query = 'SELECT ' . $table_column_to_count . ' as count_value, COUNT(1) as count
+                            $query = 'SELECT ' . $table_column_to_count . ' as count_value, COUNT(DISTINCT jecc.fnum) as count
                             FROM #__emundus_campaign_candidature as jecc
                             LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
                             LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
