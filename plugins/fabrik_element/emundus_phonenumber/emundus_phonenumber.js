@@ -127,6 +127,10 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             return selectedCountryIndex;
         },
 
+        clear: function() {
+            this.ValidatorJS.clear();
+        }
+
     });
     return window.FbPhoneNumber;
 });

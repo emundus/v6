@@ -238,4 +238,8 @@ class ValidatorJS {
         this.validationInfo.value = valid + ":" + hidden;
         // is_valid_JS:is_hidden
     }
+
+    clear() {
+        this.input.value = '';
+    }
 }
