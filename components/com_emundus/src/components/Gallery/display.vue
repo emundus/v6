@@ -11,8 +11,8 @@
           <div class="mb-4 mt-2">
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_TITLE') }}</label>
             <multiselect
-                :key="fields_update"
-                v-if="simple_fields"
+		            :key="fields_update"
+		            v-if="simple_fields"
                 v-model="form.title"
                 label="label"
                 track-by="fullname"
@@ -34,8 +34,8 @@
           <div class="mb-4">
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_SUBTITLE') }}</label>
             <multiselect
-                :key="fields_update"
-                v-if="simple_fields"
+		            :key="fields_update"
+		            v-if="simple_fields"
                 v-model="form.subtitle"
                 label="label"
                 track-by="fullname"
@@ -57,8 +57,8 @@
           <div class="mb-4">
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_SUBTITLE_ICON') }}</label>
             <multiselect
-                :key="fields_update"
-                v-if="subtitle_icons"
+		            :key="fields_update"
+		            v-if="subtitle_icons"
                 v-model="form.subtitle_icon"
                 label="label"
                 track-by="code"
@@ -90,7 +90,6 @@
           <div class="mb-4">
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_TAGS') }}</label>
             <multiselect
-                :key="fields_update"
                 v-if="choices_fields"
                 v-model="form.tags"
                 label="label"
@@ -113,8 +112,8 @@
           <div class="mb-4">
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_RESUME') }}</label>
             <multiselect
-                :key="fields_update"
-                v-if="description_fields"
+		            :key="fields_update"
+		            v-if="description_fields"
                 v-model="form.resume"
                 label="label"
                 track-by="fullname"
@@ -188,11 +187,7 @@ import Multiselect from "vue-multiselect";
 
 export default {
   name: "display",
-
   components: {Multiselect},
-
-  directives: {},
-
   props: {
     gallery: Object,
     elements: [],
@@ -265,13 +260,13 @@ export default {
       });
     });
 
-    this.form.image = this.image_attachments.find(attachment => {
+    this.form.image = this.image_attachments ? this.image_attachments.find(attachment => {
       return attachment.id == this.gallery.image;
-    });
+    }) : null;
 
     this.attachments_update++;
 
-    this.$emit('updateLoader');
+    this.$emit('updateLoader', false);
   },
   methods: {
     updateAttribute(attribute,value) {
@@ -290,7 +285,7 @@ export default {
       }
 
       if(val != oldVal) {
-        this.$emit('updateAttribute', 'title',val.fullname);
+        this.$emit('updateAttribute', 'title', val.fullname);
       }
     },
 

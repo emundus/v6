@@ -107,9 +107,17 @@ class EmundusControllerGallery extends JControllerLegacy
 			$id = $this->input->getInt('id', 0);
 
 			if(!empty($id)) {
-				$response['data'] = $this->_model->getGalleryById($id);
-				$response['msg'] = '';
-				$response['status'] = 1;
+				$gallery = $this->_model->getGalleryById($id);
+
+				if (!empty($gallery->id)) {
+					$response['data'] = $gallery;
+					$response['msg'] = '';
+					$response['status'] = 1;
+				} else {
+					$response['msg'] = JText::_('GALLERY_NOT_FOUND');
+				}
+			} else {
+				$response['msg'] = JText::_('MISSING_PARAMS');
 			}
 		}
 
@@ -148,17 +156,16 @@ class EmundusControllerGallery extends JControllerLegacy
 			$cid = $this->input->getInt('campaign_id', 0);
 
 			if(!empty($cid)) {
-				$response['data']['elements'] = $this->_model->getElements($cid,$lid);
+				$elements = $this->_model->getElements($cid,$lid);
 
-				if(!empty($response['data'])) {
+				if (!empty($elements)) {
 					$keys_to_remove = [];
-
+					$response['data']['elements'] = $elements;
 					$response['data']['simple_fields'] = [];
 					$response['data']['choices_fields'] = [];
 					$response['data']['description_fields'] = [];
 
 					foreach ($response['data']['elements'] as $key => $element) {
-
 						$elts_to_remove = [];
 						foreach ($element['elements'] as $index => $elt) {
 							if(empty($elt->label)) {

@@ -131,40 +131,41 @@ class EmundusModelGallery extends JModelList
 
 	public function getGalleryById($id)
 	{
-		try {
+		$gallery = null;
+
+		if (!empty($id)) {
 			$query = $this->_db->getQuery(true);
-
-
 			$query->select('sg.*,fl.label,fl.introduction,fl.params,fl.db_table_name')
 				->from($this->_db->quoteName('#__emundus_setup_gallery', 'sg'))
 				->leftJoin($this->_db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $this->_db->quoteName('fl.id') . ' = ' . $this->_db->quoteName('sg.list_id'))
 				->where($this->_db->quoteName('sg.id') . ' = ' . $this->_db->quote($id));
-			$this->_db->setQuery($query);
-			$gallery = $this->_db->loadObject();
 
-			if (!empty($gallery)) {
-				$gallery->status = 1;
-
-				$list_params = json_decode($gallery->params, true);
-				if (!empty($list_params['filter-fields'])) {
-					$status_filter = array_search($gallery->db_table_name . '.status_raw', $list_params['filter-fields']);
-
-					if ($status_filter !== false) {
-						$gallery->status = $list_params['filter-value'][$status_filter];
-					}
-				}
-
-
-				$query->clear()
-					->select('id,title,fields')
-					->from($this->_db->quoteName('#__emundus_setup_gallery_detail_tabs'))
-					->where($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($gallery->id));
+			try {
 				$this->_db->setQuery($query);
-				$gallery->tabs = $this->_db->loadObjectList();
+				$gallery = $this->_db->loadObject();
+
+				if (!empty($gallery->id)) {
+					$gallery->status = 1;
+
+					$list_params = json_decode($gallery->params, true);
+					if (!empty($list_params['filter-fields'])) {
+						$status_filter = array_search($gallery->db_table_name . '.status_raw', $list_params['filter-fields']);
+
+						if ($status_filter !== false) {
+							$gallery->status = $list_params['filter-value'][$status_filter];
+						}
+					}
+
+					$query->clear()
+						->select('id,title,fields')
+						->from($this->_db->quoteName('#__emundus_setup_gallery_detail_tabs'))
+						->where($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($gallery->id));
+					$this->_db->setQuery($query);
+					$gallery->tabs = $this->_db->loadObjectList();
+				}
+			} catch (Exception $e) {
+				JLog::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
 			}
-		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
 		}
 
 		return $gallery;

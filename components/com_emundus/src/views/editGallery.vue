@@ -17,10 +17,10 @@
     <div class="flex items-center mt-4" >
       <ul class="nav nav-tabs topnav">
 
-        <li v-for="(menu, index) in menus" :key="'category-' + index">
-          <a  @click="selectedMenu = index;"
+        <li v-for="menu in menus" :key="menu">
+          <a  @click="selectedMenu = menu;"
               class="em-neutral-700-color em-pointer"
-              :class="[(selectedMenu === index ? 'w--current' : '')]">
+              :class="[(selectedMenu === menu ? 'w--current' : '')]">
             {{ translate(menu) }}
           </a>
         </li>
@@ -28,40 +28,40 @@
     </div>
 
     <transition-group name="fade">
-      <display
-          :key="0"
-          v-if="gallery && elements && simple_fields && choices_fields && image_attachments && description_fields"
-          v-show="selectedMenu === 0"
-          :gallery="gallery"
-          :elements="elements"
-          :simple_fields="simple_fields"
-          :choices_fields="choices_fields"
-          :description_fields="description_fields"
-          :image_attachments="image_attachments"
-          @updateAttribute="updateAttribute"
-          @updateLoader="updateLoading"
-      ></display>
-      <gallery-details
-          :key="1"
-          v-if="gallery && elements && simple_fields && choices_fields && image_attachments && description_fields"
-          v-show="selectedMenu === 1"
-          :gallery="gallery"
-          :elements="elements"
-          :simple_fields="simple_fields"
-          :choices_fields="choices_fields"
-          :description_fields="description_fields"
-          :image_attachments="image_attachments"
-          @updateAttribute="updateAttribute"
-          @updateLoader="updateLoading"
-      ></gallery-details>
-      <settings
-          :key="2"
-          v-if="gallery"
-          v-show="selectedMenu === 2"
-          :gallery="gallery"
-          @updateAttribute="updateAttribute"
-          @updateLoader="updateLoading"
-      ></settings>
+	    <display
+				 :key="'display'"
+				 v-if="gallery && elements && simple_fields && choices_fields && image_attachments && description_fields"
+				 v-show="selectedMenu === 'COM_EMUNDUS_GALLERY_DISPLAY'"
+				 :gallery="gallery"
+				 :elements="elements"
+				 :simple_fields="simple_fields"
+				 :choices_fields="choices_fields"
+				 :description_fields="description_fields"
+				 :image_attachments="image_attachments"
+				 @updateAttribute="updateAttribute"
+				 @updateLoader="updateLoading"
+		 ></display>
+		<gallery-details
+				 :key="'details'"
+				 v-if="gallery && elements && simple_fields && choices_fields && image_attachments && description_fields"
+				 v-show="selectedMenu === 'COM_EMUNDUS_GALLERY_DETAILS'"
+				 :gallery="gallery"
+				 :elements="elements"
+				 :simple_fields="simple_fields"
+				 :choices_fields="choices_fields"
+				 :description_fields="description_fields"
+				 :image_attachments="image_attachments"
+				 @updateAttribute="updateAttribute"
+				 @updateLoader="updateLoading"
+		 ></gallery-details>
+		 <settings
+				 :key="'settings'"
+				 v-if="gallery"
+				 v-show="selectedMenu === 'COM_EMUNDUS_GALLERY_SETTINGS'"
+				 :gallery="gallery"
+				 @updateAttribute="updateAttribute"
+				 @updateLoader="updateLoading"
+		 ></settings>
     </transition-group>
 
     <div class="em-page-loader" v-if="loading"></div>
@@ -77,8 +77,6 @@ import galleryDetails from "@/components/Gallery/details_setup.vue";
 
 /** SERVICES **/
 
-const qs = require("qs");
-
 export default {
   name: "editGallery",
 
@@ -91,7 +89,7 @@ export default {
   data: () => ({
     loading: false,
 
-    selectedMenu: 0,
+    selectedMenu: 'COM_EMUNDUS_GALLERY_DISPLAY',
     menus: [
       'COM_EMUNDUS_GALLERY_DISPLAY',
       'COM_EMUNDUS_GALLERY_DETAILS',
@@ -114,11 +112,12 @@ export default {
 
     fetch('/index.php?option=com_emundus&controller=gallery&task=getgallery&id='+gid)
         .then(response => response.json())
-        .then(data => {
-          this.gallery = data.data;
-
-          this.getElements();
-          this.getAttachments();
+        .then(response => {
+					if (response.status == 1) {
+						this.gallery = response.data;
+						this.getElements();
+						//this.getAttachments();
+					}
         })
         .catch((error) => {
           console.error('Error:', error);
@@ -132,12 +131,16 @@ export default {
     async getElements() {
       fetch('/index.php?option=com_emundus&controller=gallery&task=getelements&campaign_id='+this.gallery.campaign_id+'&list_id='+this.gallery.list_id)
           .then(response => response.json())
-          .then(data => {
-            this.elements = data.data.elements;
-            this.simple_fields = Object.values(data.data.simple_fields);
-            this.choices_fields = data.data.choices_fields;
-            this.description_fields = data.data.description_fields;
-          });
+          .then(response => {
+						if (response.status == 1 && response.data.elements) {
+							this.elements = response.data.elements;
+							this.simple_fields = Object.values(response.data.simple_fields);
+							this.choices_fields = response.data.choices_fields;
+							this.description_fields = response.data.description_fields;
+						}
+          }).catch((error) => {
+						console.error('Error:', error);
+					});
     },
 
     async getAttachments() {
@@ -145,6 +148,8 @@ export default {
           .then(response => response.json())
           .then(data => {
             Array.prototype.push.apply(this.image_attachments,Object.values(data.data));
+          }).catch((error) => {
+						console.error('Error:', error);
           });
     },
 
@@ -153,7 +158,9 @@ export default {
           .then(response => response.json())
           .then(data => {
             console.log(data);
-          });
+					}).catch((error) => {
+						console.error('Error:', error);
+					});
     },
 
     updateLoading(state) {
