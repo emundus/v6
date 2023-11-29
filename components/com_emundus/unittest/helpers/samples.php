@@ -309,7 +309,8 @@ class EmundusUnittestHelperSamples
 				$query->select('id')
 					->from('#__emundus_setup_campaigns')
 					->where('training = ' . $db->quote($program['programme_code']))
-					->andWhere('label = ' . $db->quote('Campagne test unitaire'));
+					->andWhere('label = ' . $db->quote('Campagne test unitaire'))
+					->andWhere('published = 1');
 				$db->setQuery($query);
 				$campaign_id = $db->loadResult();
 			}
