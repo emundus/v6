@@ -91,6 +91,57 @@ class EmundusModelLogs extends JModelList {
         return $logged;
     }
 
+	static function logs($user_from, $fnums, $action, $crud = '', $message = '', $params = '') {
+		$logged = false;
+		jimport('joomla.log.log');
+		JLog::addLogger(['text_file' => 'com_emundus.logs.php'], JLog::ERROR, 'com_emundus');
+
+		if (!empty($user_from) && !empty($fnums)) {
+			if (!is_array($fnums)) {
+				$fnums = [$fnums];
+			}
+
+			$eMConfig = JComponentHelper::getParams('com_emundus');
+			$log_actions = $eMConfig->get('log_actions', null);
+			$log_actions_exclude = $eMConfig->get('log_actions_exclude', null);
+			$log_actions_exclude_user = $eMConfig->get('log_actions_exclude_user', 62);
+
+			if ($eMConfig->get('logs', 0) && (empty($log_actions) || in_array($action, explode(',',$log_actions)))) {
+				if (!in_array($action, explode(',', $log_actions_exclude))) {
+					if (!in_array($user_from, explode(',', $log_actions_exclude_user))) {
+						$db = JFactory::getDbo();
+						$query = $db->getQuery(true);
+
+						$ip = JFactory::getApplication()->input->server->get('REMOTE_ADDR','');
+						$user_to = empty($user_to) ? null : $user_to;
+
+						$now = EmundusHelperDate::getNow();
+
+						$columns = ['timestamp', 'user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params', 'ip_from'];
+						$query->insert($db->quoteName('#__emundus_logs'))
+							->columns($db->quoteName($columns));
+
+						foreach($fnums as $fnum) {
+							$query->values($db->quote($now) . ',' . $db->quote($user_from) . ', null,' . $db->quote($fnum) . ',' . $action . ',' . $db->quote($crud) . ',' . $db->quote($message). ',' . $db->quote($params) . ',' . $db->quote($ip));
+						}
+
+						try {
+							$db->setQuery($query);
+							$logged = $db->execute();
+						} catch (Exception $e) {
+							JLog::add('Error logging at the following query: ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
+						}
+					}
+				}
+			}
+		} else {
+			JLog::add('Error in action [' . $action . ' - ' . $crud . '] - ' . $message . ' user_from cannot be null in EmundusModelLogs::logs', JLog::WARNING, 'com_emundus');
+		}
+
+
+		return $logged;
+	}
+
     /**
 	 * Gets the actions done by a user. Can be filtered by action and/or CRUD.
 	 * If the user is not specified, use the currently signed in one.

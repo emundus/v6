@@ -166,10 +166,10 @@
             <field
                     name="username_xpath"
                     type="textarea"
-                    required="true"
+                    required="false"
                     cols="50"
                     rows="5"
-                    default="string(cas:user)"
+                    default=""
                     label="PLG_SYSTEM_CASLOGIN_FIELD_USERNAME_XPATH_LABEL"
                     description="PLG_SYSTEM_CASLOGIN_FIELD_USERNAME_XPATH_DESC"
             />

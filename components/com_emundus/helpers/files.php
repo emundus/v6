@@ -4168,9 +4168,17 @@ class EmundusHelperFiles
 					switch ($operator) {
 						case '=':
 							$query = $element . ' = ' . $db->quote($from);
+
+							if ($type === 'date' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $from)) {
+								$query = $element . ' LIKE ' . $db->quote($from . '%');
+							}
 							break;
 						case '!=':
 							$query = $element . ' != ' . $db->quote($from);
+
+							if ($type === 'date' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $from)) {
+								$query = $element . ' NOT LIKE ' . $db->quote($from . '%');
+							}
 							break;
 						case 'superior':
 							$query = $element . ' > ' . $db->quote($from);
@@ -4183,6 +4191,10 @@ class EmundusHelperFiles
 							break;
 						case 'inferior_or_equal':
 							$query = $element . ' <= ' . $db->quote($from);
+
+							if ($type === 'date' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $from)) {
+								$query = '(' . $element . ' < ' .$db->quote($from) . ' OR ' . $element . ' LIKE ' . $db->quote($from . '%') . ')';
+							}
 							break;
 						case 'between':
 							if (!empty($to)) {
@@ -4402,7 +4414,8 @@ class EmundusHelperFiles
                                 $table_column_to_count = 'jecc.campaign_id';
                                 break;
                             case 'programmes':
-                                $table_column_to_count = 'esc.training';
+                            case 'programs':
+                                $table_column_to_count = 'sp.id';
                                 break;
                             case 'tags':
                                 $table_column_to_count = 'eta.id_tag';
@@ -4492,7 +4505,7 @@ class EmundusHelperFiles
                             }
                         }
                         else {
-                            $query = 'SELECT ' . $table_column_to_count . ' as count_value, COUNT(1) as count
+                            $query = 'SELECT ' . $table_column_to_count . ' as count_value, COUNT(DISTINCT jecc.fnum) as count
                             FROM #__emundus_campaign_candidature as jecc
                             LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
                             LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id

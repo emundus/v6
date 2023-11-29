@@ -161,6 +161,11 @@ define(['jquery', 'fab/element', 'fab/encoder', 'fab/fabrik', 'fab/autocomplete-
                         }
                     }
                     break;
+                case 'radio':
+                    let input = el.querySelector("input[name='"+this.element.id+"[]'][value='"+v+"']");
+                    input.checked = false;
+                    input.parentElement.parentElement.remove();
+                    break;
             }
         },
 

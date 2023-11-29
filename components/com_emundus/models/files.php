@@ -2465,6 +2465,8 @@ class EmundusModelFiles extends JModelLegacy
         $data = [];
 
         if (!empty($fnums) && !empty($elements)) {
+			$fnums = !is_array($fnums) ? [$fnums] : $fnums;
+			$fnums = array_unique($fnums);
 	        $method = (int) $method;
 
             $h_files = new EmundusHelperFiles;
@@ -2820,7 +2822,7 @@ class EmundusModelFiles extends JModelLegacy
 	            return false;
             }
 
-            if (!empty($rows)) {
+	        if (!empty($rows)) {
                 $data_by_fnums = [];
 
 				if ($method === 1) { // one line per repeat
@@ -2857,18 +2859,39 @@ class EmundusModelFiles extends JModelLegacy
                         }
 
                         if (is_array($value)) {
-                            $data[$d_key][$r_key] = implode(', ', $value);
+                            $data[$d_key][$r_key] = '"' . implode(', ', $value) . '"';
+                        } else if (!empty($value) && is_string($value)) {
+							$data[$d_key][$r_key] = str_replace('-', '\-', $value);
                         }
                     }
                 }
 
-				if (!empty($limit) && count($data) < $limit && count($rows) == $limit) {
+		        /**
+		         * I made that in order to handle repeat lines that are not complete, because of the limit
+		         * If we have a limit of 10, and we have 10 rows, but the last row is not complete, we need to retrieve the last row
+		         * in order to have all the data
+		         */
+				if (!empty($limit) && count($rows) == $limit && (count($data) < $limit || $method === 1)) {
 					// it means that we have repeated rows, so we need to retrieve last row all entries, because it may be incomplete (chunked by the limit)
 					$last_row = array_pop($rows);
-					$last_row_data = $this->getFnumArray2($last_row['fnum'], $elements, $start, 0, $method);
-					$data[$last_row['fnum']] = $last_row_data[$last_row['fnum']];
+					$last_row_data = $this->getFnumArray2([$last_row['fnum']], $elements, $start, 0, $method);
+
+					if ($method !== 1) {
+						$data[$last_row['fnum']] = $last_row_data[$last_row['fnum']];
+					} else {
+						// in methode 1, data is not an associative array, so we need to do some stuff
+						// remove from $data all rows with the same fnum
+						foreach($data as $d_key => $row) {
+							if ($row['fnum'] === $last_row['fnum']) {
+								unset($data[$d_key]);
+							}
+						}
+
+						// add the last row array to the data
+						$data = array_merge($data, $last_row_data);
+					}
 				}
-			}
+	        }
         }
 
         return $data;

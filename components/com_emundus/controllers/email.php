@@ -117,7 +117,7 @@ class EmundusControllerEmail extends JControllerLegacy {
             $filter = $jinput->getString('filter') ? $jinput->getString('filter') : 'Publish';
             $sort = $jinput->getString('sort', '');
             $recherche = $jinput->getString('recherche', '');
-            $lim = $jinput->getInt('lim', 25);
+            $lim = $jinput->getInt('lim', 0);
             $page = $jinput->getInt('page', 0);
             $category = $jinput->getString('category', '');
 
