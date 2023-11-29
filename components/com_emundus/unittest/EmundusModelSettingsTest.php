@@ -159,4 +159,10 @@ class EmundusModelSettingsTest extends TestCase
 			}
 		}
 	}
+
+	public function testupdateEmundusParam() {
+		$new_limit_value = 10;
+		$this->assertTrue($this->m_settings->updateEmundusParam('joomla', 'list_limit', $new_limit_value), 'La modification de la limite des listes fonctionne');
+		$this->assertSame($new_limit_value, JFactory::getConfig()->get('list_limit'), 'La modification de la limite des listes fonctionne');
+	}
 }

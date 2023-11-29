@@ -862,43 +862,28 @@ class EmundusControllersettings extends JControllerLegacy {
 
     public function updateemundusparam(){
         $user = Factory::getApplication()->getIdentity();
-		$response = ['status' => false, 'msg' => ''];
+		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$response['msg'] = JText::_('ACCESS_DENIED');
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+	        $response['msg'] = JText::_('MISSING_PARAMS');
             $jinput = Factory::getApplication()->input;
             $component = $jinput->getString('component');
             $param = $jinput->getString('param');
             $value = $jinput->getString('value');
 
-			switch($component) {
-				case 'emundus':
-		            $eMConfig = ComponentHelper::getParams('com_emundus');
-		            $eMConfig->set($param, $value);
+			if (!empty($param) && !empty($value)) {
+				if ($this->m_settings->updateEmundusParam($component, $param, $value)) {
+					$response['msg'] = JText::_('SUCCESS');
+					$response['status'] = true;
 
-		            $componentid = ComponentHelper::getComponent('com_emundus')->id;
-		            $db = JFactory::getDBO();
-
-		            $query = "UPDATE #__extensions SET params = ".$db->Quote($eMConfig->toString())." WHERE extension_id = ".$componentid;
-
-		            try {
-		                $db->setQuery($query);
-		                $response['status'] = $db->execute();
-		            } catch (Exception $e) {
-		                JLog::add('Error set param '.$param, JLog::ERROR, 'com_emundus');
-		            }
-					break;
-				case 'joomla':
-				default:
-					if(!class_exists('EmundusHelperUpdate')) {
-						require_once (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'update.php');
+					if ($param === 'list_limit') {
+						JFactory::getSession()->set('limit', $value);
 					}
-					$response['status'] = EmundusHelperUpdate::updateConfigurationFile($param, $value);
-
-					break;
+				} else {
+					$response['msg'] = JText::_('PARAM_NOT_UPDATED');
+				}
 			}
-        }
+		}
 
 	    echo json_encode($response);
         exit;

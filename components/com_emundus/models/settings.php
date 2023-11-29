@@ -1453,4 +1453,51 @@ class EmundusModelsettings extends JModelList {
 
 		return $result;
 	}
+
+	/**
+	 * @param $component
+	 * @param $param
+	 * @param $value
+	 * @return bool
+	 */
+	public function updateEmundusParam($component, $param, $value) {
+		$updated = false;
+		
+		switch($component) {
+			case 'emundus':
+				$eMConfig = ComponentHelper::getParams('com_emundus');
+				$eMConfig->set($param, $value);
+
+				$componentid = ComponentHelper::getComponent('com_emundus')->id;
+				$db = JFactory::getDBO();
+				$query = $db->getQuery(true);
+
+				$query->update($db->quoteName('#__extensions'))
+					->set($db->quoteName('params') . ' = ' . $db->quote($eMConfig->toString()))
+					->where($db->quoteName('extension_id') . ' = ' . $db->quote($componentid));
+
+				try {
+					$db->setQuery($query);
+					$updated = $db->execute();
+				} catch (Exception $e) {
+					JLog::add('Error set param '.$param . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				}
+				break;
+			case 'joomla':
+			default:
+				if(!class_exists('EmundusHelperUpdate')) {
+					require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+				}
+				$updated = EmundusHelperUpdate::updateConfigurationFile($param, $value);
+
+				if ($updated) {
+					$configuration = JFactory::getConfig();
+					$configuration->set($param,$value);
+				}
+
+				break;
+		}
+
+		return $updated;
+	}
 }
