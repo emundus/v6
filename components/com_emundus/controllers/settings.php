@@ -865,9 +865,9 @@ class EmundusControllersettings extends JControllerLegacy {
             $jinput = Factory::getApplication()->input;
             $component = $jinput->getString('component');
             $param = $jinput->getString('param');
-            $value = $jinput->getString('value');
+            $value = $jinput->getString('value', null);
 
-			if (!empty($param) && !empty($value)) {
+			if (!empty($param) && isset($value)) {
 				if ($this->m_settings->updateEmundusParam($component, $param, $value)) {
 					$response['msg'] = JText::_('SUCCESS');
 					$response['status'] = true;
