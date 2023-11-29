@@ -12,7 +12,7 @@
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_TITLE') }}</label>
             <multiselect
 		            :key="fields_update"
-		            v-if="simple_fields"
+		            v-if="simple_fields.length > 0"
                 v-model="form.title"
                 label="label"
                 track-by="fullname"
@@ -35,7 +35,7 @@
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_SUBTITLE') }}</label>
             <multiselect
 		            :key="fields_update"
-		            v-if="simple_fields"
+		            v-if="simple_fields.length > 0"
                 v-model="form.subtitle"
                 label="label"
                 track-by="fullname"
@@ -58,7 +58,7 @@
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_SUBTITLE_ICON') }}</label>
             <multiselect
 		            :key="fields_update"
-		            v-if="subtitle_icons"
+		            v-if="subtitle_icons.length > 0"
                 v-model="form.subtitle_icon"
                 label="label"
                 track-by="code"
@@ -90,7 +90,7 @@
           <div class="mb-4">
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_TAGS') }}</label>
             <multiselect
-                v-if="choices_fields"
+                v-if="choices_fields.length > 0"
                 v-model="form.tags"
                 label="label"
                 track-by="fullname"
@@ -113,7 +113,7 @@
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_RESUME') }}</label>
             <multiselect
 		            :key="fields_update"
-		            v-if="description_fields"
+		            v-if="description_fields.length > 0"
                 v-model="form.resume"
                 label="label"
                 track-by="fullname"
@@ -136,7 +136,7 @@
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_IMAGE') }}</label>
             <multiselect
                 :key="attachments_update"
-                v-if="image_attachments"
+                v-if="image_attachments.length > 0"
                 v-model="form.image"
                 label="value"
                 track-by="id"

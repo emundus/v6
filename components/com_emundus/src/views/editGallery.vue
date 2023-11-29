@@ -116,7 +116,7 @@ export default {
 					if (response.status == 1) {
 						this.gallery = response.data;
 						this.getElements();
-						//this.getAttachments();
+						this.getAttachments();
 					}
         })
         .catch((error) => {
@@ -134,7 +134,7 @@ export default {
           .then(response => {
 						if (response.status == 1 && response.data.elements) {
 							this.elements = response.data.elements;
-							this.simple_fields = Object.values(response.data.simple_fields);
+							this.simple_fields = response.data.simple_fields ? Object.values(response.data.simple_fields) : [];
 							this.choices_fields = response.data.choices_fields;
 							this.description_fields = response.data.description_fields;
 						}
