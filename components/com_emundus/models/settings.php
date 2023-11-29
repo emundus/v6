@@ -1462,21 +1462,29 @@ class EmundusModelsettings extends JModelList {
 	 */
 	public function getEmundusParams()
 	{
-		$params = ['emundus' => null, 'joomla' =>  new stdClass()];
+		$params = ['emundus' => [], 'joomla' => []];
 
 		$settings_applicants = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-applicants.json');
-		if (!empty($settings_applicants)) {
-			$settings_applicants = json_decode($settings_applicants, true);
-			$emundus_parameters = ComponentHelper::getParams('com_emundus');
-			$params['emundus'] = array_intersect_key($emundus_parameters->toArray(), $settings_applicants);
+		$settings_general = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-general.json');
+
+		$settings_applicants = json_decode($settings_applicants, true);
+		$settings_general = json_decode($settings_general, true);
+
+		$emundus_parameters = ComponentHelper::getParams('com_emundus');
+
+		foreach($settings_applicants as $settings_applicant) {
+			if ($settings_applicant['component'] === 'emundus') {
+				$params['emundus'][$settings_applicant['param']] = $emundus_parameters->get($settings_applicant['param']);
+			} else {
+				$params['joomla']->$settings_applicant['param'] = JFactory::getConfig()->get($settings_applicant['param']);
+			}
 		}
 
-		$settings_general = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-general.json');
-		if (!empty($settings_general)) {
-			$settings_general = json_decode($settings_general, true);
-
-			foreach(array_keys($settings_general) as $key) {
-				$params['joomla']->$key = JFactory::getConfig()->get($key);
+		foreach($settings_general as $setting_general) {
+			if ($setting_general['component'] === 'emundus') {
+				$params['emundus'][$setting_general['param']] = $emundus_parameters->get($setting_general['param']);
+			} else {
+				$params['joomla'][$setting_general['param']] = JFactory::getConfig()->get($setting_general['param']);
 			}
 		}
 
@@ -1492,14 +1500,11 @@ class EmundusModelsettings extends JModelList {
 	public function updateEmundusParam($component, $param, $value) {
 		$updated = false;
 
-		switch($component) {
-			case 'emundus':
-				// only update if param exists is writable (must exists in settings-applicants.json)
-				$settings_applicants = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-applicants.json');
-				if (!empty($settings_applicants)) {
-					$settings_applicants = json_decode($settings_applicants, true);
-
-					if (array_key_exists($param, $settings_applicants)) {
+		if (!empty($param)) {
+			$params = $this->getEmundusParams();
+			switch($component) {
+				case 'emundus':
+					if (array_key_exists($param, $params['emundus'])) {
 						$eMConfig = ComponentHelper::getParams('com_emundus');
 						$eMConfig->set($param, $value);
 
@@ -1517,19 +1522,14 @@ class EmundusModelsettings extends JModelList {
 						} catch (Exception $e) {
 							JLog::add('Error set param '.$param . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 						}
+					} else {
+						JLog::add('Error : unable to detect if param is writable or not : ' . $param , JLog::WARNING, 'com_emundus.error');
 					}
-				} else {
-					JLog::add('Error : unable to detect if param is writable or not : ' . $param , JLog::WARNING, 'com_emundus.error');
-				}
 
-				break;
-			case 'joomla':
-			default:
-				// only update if param exists is writable (must exists in settings-general.json)
-				$settings_general = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-general.json');
-				if (!empty($settings_general)) {
-					$settings_general = json_decode($settings_general, true);
-					if (array_key_exists($param, $settings_general)) {
+					break;
+				case 'joomla':
+				default:
+					if (array_key_exists($param, $params['joomla'])) {
 						if(!class_exists('EmundusHelperUpdate')) {
 							require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
 						}
@@ -1539,12 +1539,11 @@ class EmundusModelsettings extends JModelList {
 							$configuration = JFactory::getConfig();
 							$configuration->set($param, $value);
 						}
+					} else {
+						JLog::add('Error : unable to detect if param is writable or not : ' . $param , JLog::WARNING, 'com_emundus.error');
 					}
-				} else {
-					JLog::add('Error : unable to detect if param is writable or not : ' . $param , JLog::WARNING, 'com_emundus.error');
-				}
-
 				break;
+			}
 		}
 
 		return $updated;

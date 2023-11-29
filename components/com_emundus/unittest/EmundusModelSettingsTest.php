@@ -173,7 +173,7 @@ class EmundusModelSettingsTest extends TestCase
 		$this->assertArrayHasKey('joomla', $params, 'La récupération des paramètres Emundus renvoie un tableau avec la clé joomla');
 		$this->assertArrayHasKey('emundus', $params, 'La récupération des paramètres Emundus renvoie un tableau avec la clé emundus');
 
-		$this->assertObjectHasAttribute('list_limit', $params['joomla'], 'La récupération des paramètres Emundus renvoie un tableau avec la clé list_limit');
+		$this->assertArrayHasKey('list_limit', $params['joomla'], 'La récupération des paramètres Emundus renvoie un tableau avec la clé list_limit');
 		$this->assertArrayNotHasKey('addpipe_api_key', $params['emundus'], 'La récupération des paramètres Emundus ne renvoie pas l\'ensemble de la configuration Emundus. Cela permet de ne pas exposer les clé API');
 	}
 
