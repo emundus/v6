@@ -194,43 +194,60 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
     public function validate($data, $repeatCounter = 0)
     {
         $isValid = true;
-        $value = $data['country_code'].$data['num_tel'];
-        $validation_info = explode(':', $data['validation_info']);
-        $is_valid_JS = $validation_info[0] == 'true';
-        $is_hidden_JS = $validation_info[1] == 'true'; // hidden from javascript, override $this->isHidden() value
 
-        $minimalNumberlength = 5; // without counting '+', self-consider it's the minimal length, CAN BE CHANGED
-        $maximalNumberlength = 15; // without counting '+', maximal phone number length e.164 format, NO CHANGE
+	    if(!empty($data['num_tel'])) {
+		    $value           = $data['country_code'] . $data['num_tel'];
+		    $validation_info = explode(':', $data['validation_info']);
+		    $is_valid_JS     = $validation_info[0] == 'true';
+		    $is_hidden_JS    = $validation_info[1] == 'true'; // hidden from javascript, override $this->isHidden() value
 
-        $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_INVALID'); // error as default value
+		    $minimalNumberlength = 5; // without counting '+', self-consider it's the minimal length, CAN BE CHANGED
+		    $maximalNumberlength = 15; // without counting '+', maximal phone number length e.164 format, NO CHANGE
 
-        $not_empty_index = $this->getIndexIfNotEmpty();
-        $validation_while_hidden = '0';
-        if ($not_empty_index != -1) {
-            $validation_while_hidden = $this->getParams()->get('validations')->validate_hidden[$not_empty_index]; // hidden but still validation ?
-        }
+		    $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_INVALID'); // error as default value
 
-        if ($this->validator->hasValidations()) { // validation in element's param
-            if (!$is_hidden_JS || $validation_while_hidden == '1') { // not hidden, or, must have validation
-                if (!preg_match('/^\+\d{' . $minimalNumberlength . ',' . $maximalNumberlength . '}$/', $value) || !$is_valid_JS) {
-                    $isValid = false;
+		    $not_empty_index         = $this->getIndexIfNotEmpty();
+		    $validation_while_hidden = '0';
+		    if ($not_empty_index != -1) {
+			    $validation_while_hidden = $this->getParams()->get('validations')->validate_hidden[$not_empty_index]; // hidden but still validation ?
+		    }
 
-                    if ($value[0] !== "+") {
-                        $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_BEGIN_WITH_PLUS');
-                    } else if (!(preg_match('/\+\d+$/', $value))) {
-                        $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_ONLY_NUMBERS');
-                    } else if (strlen($value) < $minimalNumberlength + 1) { // counting the '+'
-                        $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_SIZE_ERROR');
-                    }
-                }
-            }
-        } else {
-            if (!$is_hidden_JS && (!$is_valid_JS || !preg_match('/^\+\d*$/', $value))) {
-                $isValid = false;
-            }
-        }
+		    if ($this->validator->hasValidations()) { // validation in element's param
+			    if (!$is_hidden_JS || $validation_while_hidden == '1') { // not hidden, or, must have validation
+				    if (!preg_match('/^\+\d{' . $minimalNumberlength . ',' . $maximalNumberlength . '}$/', $value) || !$is_valid_JS) {
+					    $isValid = false;
+
+					    if ($value[0] !== "+") {
+						    $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_BEGIN_WITH_PLUS');
+					    }
+					    else if (!(preg_match('/\+\d+$/', $value))) {
+						    $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_ONLY_NUMBERS');
+					    }
+					    else if (strlen($value) < $minimalNumberlength + 1) { // counting the '+'
+						    $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_SIZE_ERROR');
+					    }
+				    }
+			    }
+		    }
+		    else {
+			    if (!$is_hidden_JS && (!$is_valid_JS || !preg_match('/^\+\d*$/', $value))) {
+				    $isValid = false;
+			    }
+		    }
+	    }
+
         return $isValid;
     }
+
+	//TODO: Fix this method
+	public function dataConsideredEmptyForValidation($data, $repeatCounter = 0)
+	{
+		if(is_array($data)) {
+			return empty($data['num_tel']);
+		} else {
+			return empty($data);
+		}
+	}
 
     /**
      * Returns javascript which creates an instance of the class defined in formJavascriptClass()
@@ -267,7 +284,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 	    }
 
 	    $opts->allCountries = array_values($opts->allCountries);
-
+		
 
         return array('FbPhoneNumber', $id, $opts);
     }
@@ -283,17 +300,4 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
         return substr($number, 2, strlen($number));
     }
 
-    private function getIndexIfNotEmpty()
-    {
-        $index = -1;
-        if ($this->getParams()->get('validations')->plugin) {
-            foreach ($this->getParams()->get('validations')->plugin as $key => $validation) {
-                if ($validation == 'notempty') {
-                    $index = $key;
-                }
-            }
-        }
-
-        return $index;
-    }
 }
