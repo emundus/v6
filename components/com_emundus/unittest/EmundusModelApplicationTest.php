@@ -257,7 +257,7 @@ class EmundusModelApplicationTest extends TestCase
 		$campaign_published = $this->h_sample->createSampleCampaign($program);
 		$this->h_sample->createSampleFile($campaign_published, 95);
 
-		$user_campaigns = $this->m_application->getUserCampaigns(95);
+		$user_campaigns = $this->m_application->getUserCampaigns(95, null, false);
 		$this->assertNotEmpty($user_campaigns, 'getUserCampaigns should return an array with at least one campaign');
 
 		$found = false;
@@ -298,7 +298,7 @@ class EmundusModelApplicationTest extends TestCase
 
 		$this->assertTrue($found, 'getUserCampaigns should return the unpublished campaign if only_published is false');
 
-		$campaign_not_attached_applicant = $this->h_sample->createSampleCampaign($program);
+		$campaign_not_attached_applicant = $this->h_sample->createSampleCampaign($program, true);
 		$user_campaigns = $this->m_application->getUserCampaigns(95, $campaign_not_attached_applicant);
 		$this->assertEmpty($user_campaigns, 'getUserCampaigns should not return the campaign if the applicant is not attached to it');
 
@@ -314,7 +314,6 @@ class EmundusModelApplicationTest extends TestCase
 		foreach ($user_campaigns as $campaign) {
 			$this->assertContains($campaign->id, $all_user_campaigns, 'getUserCampaigns should return all campaigns attached to the applicant');
 		}
-
 	}
 }
 

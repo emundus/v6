@@ -141,7 +141,7 @@ export default {
   created() {
     this.loading = true;
     settingsService.getEmundusParams().then((params) => {
-      this.em_params = params.data.config;
+      this.em_params = params.data.emundus;
 
       // Give access to modules
       this.menus[0].access = this.em_params.style != undefined ? parseInt(this.em_params.style) : 1;
