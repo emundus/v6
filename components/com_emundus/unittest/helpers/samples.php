@@ -41,6 +41,32 @@ class EmundusUnittestHelperSamples
 		define('EVALUATOR_RIGHTS', array ([ 'id' => '1', 'c' => 0, 'r' => 1, 'u' => 0, 'd' => 0, ], 1 => array ( 'id' => '4', 'c' => 1, 'r' => 1, 'u' => 0, 'd' => 0, ), 2 => array ( 'id' => '5', 'c' => 1, 'r' => 1, 'u' => 1, 'd' => 0, ), 3 => array ( 'id' => '29', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 4 => array ( 'id' => '32', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 5 => array ( 'id' => '34', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 6 => array ( 'id' => '28', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 7 => array ( 'id' => '13', 'c' => 0, 'r' => 1, 'u' => 0, 'd' => 0, ), 8 => array ( 'id' => '14', 'c' => 1, 'r' => 1, 'u' => 1, 'd' => 0, ), 9 => array ( 'id' => '10', 'c' => 1, 'r' => 1, 'u' => 1, 'd' => 0, ), 10 => array ( 'id' => '11', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 11 => array ( 'id' => '37', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 12 => array ( 'id' => '36', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 13 => array ( 'id' => '8', 'c' => 1, 'r' => 0, 'u' => 0, 'd' => 0, ), 14 => array ( 'id' => '6', 'c' => 1, 'r' => 0, 'u' => 0, 'd' => 0, ), 15 => array ( 'id' => '7', 'c' => 1, 'r' => 0, 'u' => 0, 'd' => 0, ), 16 => array ( 'id' => '27', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 17 => array ( 'id' => '31', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 18 => array ( 'id' => '35', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 19 => array ( 'id' => '18', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 20 => array ( 'id' => '9', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 21 => array ( 'id' => '16', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), 22 => array ( 'id' => '15', 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0, ), ));
 	}
 
+	public function getSampleUser($profile = 9) {
+		$user_id = 0;
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('id')
+			->from('#__users as u')
+			->leftJoin('#__emundus_users as eu ON eu.user_id = u.id')
+			->where('email LIKE ' . $db->quote('%@emundus.test.fr'))
+			->andWhere('eu.profile_id = ' . $db->quote($profile));
+
+		try {
+			$db->setQuery($query);
+			$user_id = $db->loadResult();
+		} catch (Exception $e) {
+			JLog::add("Failed to get user id" . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
+
+		if (empty($user_id)) {
+			$user_id = $this->createSampleUser($profile, 'user.test' . rand(0,1000) . '@emundus.test.fr');
+		}
+
+		return $user_id;
+	}
+
     public function createSampleUser($profile = 9, $username = 'user.test@emundus.fr', $password = 'test1234', $j_groups = [2])
     {
         $user_id = 0;
@@ -91,10 +117,28 @@ class EmundusUnittestHelperSamples
         return $user_id;
     }
 
-    public function createSampleFile($cid,$uid){
-        $m_formbuilder = new EmundusModelFormbuilder;
+    public function createSampleFile($cid, $uid, $force_new = true) {
+		$fnum = '';
 
-        return $m_formbuilder->createTestingFile($cid,$uid);
+		if (!$force_new) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('fnum')
+				->from('#__emundus_campaign_candidature')
+				->where('campaign_id = ' . $cid)
+				->where('applicant_id = ' . $uid);
+
+			$db->setQuery($query);
+			$fnum = $db->loadResult();
+		}
+
+		if (empty($fnum)) {
+			$m_formbuilder = new EmundusModelFormbuilder;
+			$fnum = $m_formbuilder->createTestingFile($cid, $uid);
+		}
+
+        return $fnum;
     }
 
     public function createSampleTag(){
@@ -205,7 +249,19 @@ class EmundusUnittestHelperSamples
 	public function createSampleProgram($label = 'Programme Test Unitaire')
 	{
 		$m_programme = new EmundusModelProgramme;
-		$program = $m_programme->addProgram(['label' => $label, 'published' => 1]);
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select('id as programme_id, code as programme_code')
+			->from('#__emundus_setup_programmes')
+			->where('label = ' . $db->quote($label));
+		$db->setQuery($query);
+		$program = $db->loadAssoc();
+
+		if (empty($program['programme_id'])) {
+			$program = $m_programme->addProgram(['label' => $label, 'published' => 1]);
+		}
+
 		return $program;
 	}
 
@@ -214,24 +270,35 @@ class EmundusUnittestHelperSamples
 		$campaign_id = 0;
 
 		if (!empty($program)) {
-			$m_campaign = new EmundusModelCampaign;
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query->select('id')
+				->from('#__emundus_setup_campaigns')
+				->where('training = ' . $db->quote($program['programme_code']))
+				->andWhere('label = ' . $db->quote('Campagne test unitaire'));
+			$db->setQuery($query);
+			$campaign_id = $db->loadResult();
 
-			$start_date = new DateTime();
-			$start_date->modify('-1 day');
-			$end_date = new DateTime();
-			$end_date->modify('+1 year');
-			$campaign_id = $m_campaign->createCampaign([
-				'label' =>  json_encode(['fr' => 'Campagne test unitaire', 'en' => 'Campagne test unitaire']),
-				'description' => 'Lorem ipsum',
-				'short_description' => 'Lorem ipsum',
-				'start_date' => $start_date->format('Y-m-d H:i:s'),
-				'end_date' => $end_date->format('Y-m-d H:i:s'),
-				'profile_id' => 9,
-				'training' => $program['programme_code'],
-				'year' => '2022-2023',
-				'published' => 1,
-				'is_limited' => 0
-			]);
+			if (empty($campaign_id)) {
+				$m_campaign = new EmundusModelCampaign;
+
+				$start_date = new DateTime();
+				$start_date->modify('-1 day');
+				$end_date = new DateTime();
+				$end_date->modify('+1 year');
+				$campaign_id = $m_campaign->createCampaign([
+					'label' =>  json_encode(['fr' => 'Campagne test unitaire', 'en' => 'Campagne test unitaire']),
+					'description' => 'Lorem ipsum',
+					'short_description' => 'Lorem ipsum',
+					'start_date' => $start_date->format('Y-m-d H:i:s'),
+					'end_date' => $end_date->format('Y-m-d H:i:s'),
+					'profile_id' => 9,
+					'training' => $program['programme_code'],
+					'year' => '2022-2023',
+					'published' => 1,
+					'is_limited' => 0
+				]);
+			}
 		}
 
 		return $campaign_id;

@@ -147,7 +147,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
             $filter = $jinput->getString('filter', '');
             $sort = $jinput->getString('sort', '');
             $recherche = $jinput->getString('recherche', '');
-            $lim = $jinput->getInt('lim', 25);
+            $lim = $jinput->getInt('lim', 0);
             $page = $jinput->getInt('page', 0);
             $program = $jinput->getString('program', 'all');
             $session = $jinput->getString('session', 'all');
