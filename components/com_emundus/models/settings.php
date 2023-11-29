@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 use Joomla\CMS\Date\Date;
+use Joomla\CMS\Component\ComponentHelper;
 
 class EmundusModelsettings extends JModelList {
 
@@ -1452,6 +1453,34 @@ class EmundusModelsettings extends JModelList {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Get only accessibles parameters based on settings-applicants.json and settings-general.json files
+	 * This function is used to avoid exposing all parameters to the front-end
+	 * @return array
+	 */
+	public function getEmundusParams()
+	{
+		$params = ['emundus' => null, 'joomla' =>  new stdClass()];
+
+		$settings_applicants = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-applicants.json');
+		if (!empty($settings_applicants)) {
+			$settings_applicants = json_decode($settings_applicants, true);
+			$emundus_parameters = ComponentHelper::getParams('com_emundus');
+			$params['emundus'] = array_intersect_key($emundus_parameters->toArray(), $settings_applicants);
+		}
+
+		$settings_general = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-general.json');
+		if (!empty($settings_general)) {
+			$settings_general = json_decode($settings_general, true);
+
+			foreach(array_keys($settings_general) as $key) {
+				$params['joomla']->$key = JFactory::getConfig()->get($key);
+			}
+		}
+
+		return $params;
 	}
 
 	/**
