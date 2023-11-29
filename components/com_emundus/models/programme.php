@@ -430,7 +430,7 @@ class EmundusModelProgramme extends JModelList {
      *
      * @since version 1.0
      */
-    function getAllPrograms($lim, $page, $filter, $sort, $recherche) {
+    function getAllPrograms($lim = 'all', $page = 0, $filter = null, $sort = 'DESC', $recherche = null) {
         $all_programs = [];
 
         // Get affected programs
