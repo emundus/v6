@@ -265,19 +265,21 @@ class EmundusUnittestHelperSamples
 		return $program;
 	}
 
-	public function createSampleCampaign($program)
+	public function createSampleCampaign($program, $force_new = false)
 	{
 		$campaign_id = 0;
 
 		if (!empty($program)) {
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
-			$query->select('id')
-				->from('#__emundus_setup_campaigns')
-				->where('training = ' . $db->quote($program['programme_code']))
-				->andWhere('label = ' . $db->quote('Campagne test unitaire'));
-			$db->setQuery($query);
-			$campaign_id = $db->loadResult();
+			if (!$force_new) {
+				$db = JFactory::getDbo();
+				$query = $db->getQuery(true);
+				$query->select('id')
+					->from('#__emundus_setup_campaigns')
+					->where('training = ' . $db->quote($program['programme_code']))
+					->andWhere('label = ' . $db->quote('Campagne test unitaire'));
+				$db->setQuery($query);
+				$campaign_id = $db->loadResult();
+			}
 
 			if (empty($campaign_id)) {
 				$m_campaign = new EmundusModelCampaign;
