@@ -976,7 +976,7 @@ class EmundusController extends JControllerLegacy {
 									$this->setRedirect($url);
 								}
 
-								continue;
+								return false;
 							}
 	                    }
                     } catch (Exception $e) {

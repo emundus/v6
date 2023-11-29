@@ -871,7 +871,7 @@ class EmundusModelEmails extends JModelList {
             $preg = array('patterns' => array(), 'replacements' => array());
             foreach ($fnumsArray as $fnum) {
                 foreach ($idFabrik as $id) {
-                    $preg['patterns'][] = '/\$\{(.*?)'.$id.'(.*?)}/i';
+                    $preg['patterns'][] = '/\$\{' . $id . '\}/';
                     if (isset($fabrikValues[$id][$fnum])) {
                         $preg['replacements'][] = JText::_($fabrikValues[$id][$fnum]['val']);
                     } else {
@@ -1758,13 +1758,13 @@ class EmundusModelEmails extends JModelList {
     function getAllEmails($lim, $page, $filter, $sort, $recherche, $category = '') {
         $query = $this->_db->getQuery(true);
 
-        if (empty($lim)) {
-            $limit = 25;
+        if (empty($lim) || $lim == 'all') {
+            $limit = '';
         } else {
             $limit = $lim;
         }
 
-        if (empty($page)) {
+        if (empty($page) || empty($limit)) {
             $offset = 0;
         } else {
             $offset = ($page-1) * $limit;
@@ -1807,11 +1807,7 @@ class EmundusModelEmails extends JModelList {
         try {
             $this->_db->setQuery($query);
             $count_emails  = sizeof($this->_db->loadObjectList());
-            if(empty($lim)) {
-                $this->_db->setQuery($query, $offset);
-            } else {
-                $this->_db->setQuery($query, $offset, $limit);
-            }
+            $this->_db->setQuery($query, $offset, $limit);
 
             $emails = $this->_db->loadObjectList();
             if (!empty($emails)) {

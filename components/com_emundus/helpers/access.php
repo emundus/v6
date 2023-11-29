@@ -306,7 +306,7 @@ class EmundusHelperAccess {
             $query->select('id')
                 ->from('#__emundus_users_assoc')
                 ->where('user_id = '.$db->quote($user_id))
-                ->andWhere('fnum = '.$db->quote($fnum))
+                ->andWhere('fnum LIKE '.$db->quote($fnum))
                 ->andWhere('action_id = 1')
                 ->andWhere('r = 1');
             $db->setQuery($query);

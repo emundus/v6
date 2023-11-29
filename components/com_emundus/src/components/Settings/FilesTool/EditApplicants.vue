@@ -1,15 +1,18 @@
 <template>
   <div class="em-settings-menu">
-    <div class="em-w-80">
+    <div class="em-w-80" v-if="!loading">
 
       <div class="form-group em-flex-center em-w-100 em-mb-16" v-for="(param, index) in params" :key="index">
-        <label :for="'param_' + index">{{param.label}}</label>
-        <select class="dropdown-toggle w-select" :id="'param_' + index" v-model="param.value" style="margin-bottom: 0" @change="saveEmundusParam(param)">
-          <option v-for="option in param.options" :key="option.value"  :value="option.value">{{option.label}}</option>
+        <label :for="'param_' + index">{{ translate(param.label) }}</label>
+        <select v-if="param.options" class="dropdown-toggle w-select" :id="'param_' + index" v-model="param.value" style="margin-bottom: 0" @change="saveEmundusParam(param)">
+          <option v-for="option in param.options" :key="option.value" :value="option.value">{{ translate(option.label) }}</option>
         </select>
+        <input v-else type="text" class="form-control" :id="'param_' + index" v-model="param.value" :maxlength="param.maxlength" style="margin-bottom: 0" @change="saveEmundusParam(param)">
       </div>
 
     </div>
+
+    <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
 
@@ -25,72 +28,22 @@ export default {
 
   components: {},
 
-  props: {},
+  props: {
+    type: String
+  },
 
   mixins: [mixin],
 
   data() {
     return {
-      params: {
-        applicant_can_renew: {
-          label: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_RENEW"),
-          param: 'applicant_can_renew',
-          options: [
-            {
-              label: this.translate("JNO"),
-              value: 0,
-            },
-            {
-              label: this.translate("JYES"),
-              value: 1,
-            },
-            {
-              label: this.translate("COM_EMUNDUS_APPLICANT_CAN_RENEW_CAMPAIGN"),
-              value: 2,
-            },
-            {
-              label: this.translate("COM_EMUNDUS_APPLICANT_CAN_RENEW_YEAR"),
-              value: 3,
-            },
-          ],
-          value: 0,
-        },
-        can_edit_until_deadline: {
-          label: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_EDIT_UNTIL_DEADLINE"),
-          param: 'can_edit_until_deadline',
-          options: [
-            {
-              label: this.translate("JNO"),
-              value: 0,
-            },
-            {
-              label: this.translate("JYES"),
-              value: 1,
-            },
-          ],
-          value: 0,
-        },
-        can_submit_encrypted: {
-          label: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_SUBMIT_ENCRYPTED"),
-          param: 'can_submit_encrypted',
-          options: [
-            {
-              label: this.translate("JNO"),
-              value: 0,
-            },
-            {
-              label: this.translate("JYES"),
-              value: 1,
-            },
-          ],
-          value: 0,
-        }
-      },
+      loading: true,
+      params: {},
       config: {},
     };
   },
 
   created() {
+    this.params = require('../../../../data/settings-'+this.$props.type+'.json');
     this.getEmundusParams();
   },
 
@@ -98,16 +51,19 @@ export default {
     getEmundusParams() {
       axios.get("index.php?option=com_emundus&controller=settings&task=getemundusparams")
           .then(response => {
-            this.config = response.data.config;
-            this.params.applicant_can_renew.value = parseInt(this.config.applicant_can_renew);
-            this.params.can_edit_until_deadline.value = parseInt(this.config.can_edit_until_deadline);
-            this.params.copy_application_form.value = parseInt(this.config.copy_application_form);
-            this.params.can_submit_encrypted.value = parseInt(this.config.can_submit_encrypted);
+            this.config = response.data;
+
+            Object.values(this.params).forEach((param) => {
+              param.value = this.config[param.component][param.param];
+            });
+
+            this.loading = false;
           });
     },
 
     saveEmundusParam(param) {
       this.$emit('updateSaving',true);
+
       axios({
         method: "post",
         url: 'index.php?option=com_emundus&controller=settings&task=updateemundusparam',
@@ -115,6 +71,7 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
+          component: param.component,
           param: param.param,
           value: param.value,
         })

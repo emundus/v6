@@ -128,13 +128,7 @@ export default {
         this.$store.commit("global/initOffset", response.data.data);
       }
     });
-  },
-
-  mounted() {
-		if (this.data.base) {
-			this.$store.dispatch('attachment/setAttachmentPath', this.data.base + '/images/emundus/files/');
-		}
-	},
+  }
 };
 </script>
 

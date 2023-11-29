@@ -128,31 +128,34 @@ class EmundusModelApplicationTest extends TestCase
 
 	public function testupdateTabs() {
 		$updated = $this->m_application->updateTabs([], 0);
-		$this->assertSame(false, $updated, 'No tabs to update');
+		$this->assertFalse($updated, 'Missing user id');
 
 		$updated = $this->m_application->updateTabs([], 95);
-		$this->assertSame(false, $updated, 'No tabs to update');
+		$this->assertFalse($updated, 'No tabs to update');
 
 		$tab = new stdClass();
-		$tab->id = 999;
+		$tab->id = 9999;
 		$tab->name = 'Test';
 		$tab->ordering = 1;
 
 		$updated = $this->m_application->updateTabs([$tab], 0);
-		$this->assertSame(false, $updated, 'Missing user id');
+		$this->assertFalse($updated, 'Tab does not exist');
 
 		$updated = $this->m_application->updateTabs([$tab], 95);
-		$this->assertSame(false, $updated, );
+		$this->assertFalse($updated);
 
 		$tab->id = $this->m_application->createTab('Test', 95);
 		$this->assertNotEmpty($tab->id);
 
+		$updated = $this->m_application->updateTabs([$tab], 100);
+		$this->assertFalse($updated, 'Tab is not owned by user');
+
 		$updated = $this->m_application->updateTabs([$tab], 95);
-		$this->assertSame(true, $updated, 'Tab updated');
+		$this->assertTrue($updated, 'Tab updated');
 
 		$tab->id = $tab->id . ' OR 1=1';
 		$updated = $this->m_application->updateTabs([$tab], 0);
-		$this->assertSame(false, $updated, 'SQL Injection impossible');
+		$this->assertFalse($updated, 'SQL Injection impossible');
 	}
 
 	/**
@@ -247,6 +250,73 @@ class EmundusModelApplicationTest extends TestCase
 
 		$menus = $this->m_application->getApplicationMenu($applicant);
 		$this->assertEmpty($menus, 'An applicant should not have access to the application menu');
+	}
+
+	public function testgetUserCampaigns() {
+		$user_campaigns = $this->m_application->getUserCampaigns(95);
+		$this->assertIsArray($user_campaigns, 'getUserCampaigns should return an array');
+
+		$program = $this->h_sample->createSampleProgram();
+		$campaign_published = $this->h_sample->createSampleCampaign($program);
+		$this->h_sample->createSampleFile($campaign_published, 95);
+
+		$user_campaigns = $this->m_application->getUserCampaigns(95, null, false);
+		$this->assertNotEmpty($user_campaigns, 'getUserCampaigns should return an array with at least one campaign');
+
+		$found = false;
+		foreach ($user_campaigns as $campaign) {
+			if ($campaign->id == $campaign_published) {
+				$found = true;
+				break;
+			}
+		}
+		$this->assertTrue($found, 'getUserCampaigns should return the created campaign');
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->update('#__emundus_setup_campaigns')
+			->set('published = 0')
+			->where('id = ' . $db->quote($campaign_published));
+		$db->setQuery($query);
+		$db->execute();
+
+		$user_campaigns = $this->m_application->getUserCampaigns(95);
+		$found = false;
+		foreach ($user_campaigns as $campaign) {
+			if ($campaign->id == $campaign_published) {
+				$found = true;
+				break;
+			}
+		}
+       $this->assertFalse($found, 'getUserCampaigns should not return the unpublished campaign');
+
+		$user_campaigns = $this->m_application->getUserCampaigns(95,null, false);
+		$found = false;
+		foreach ($user_campaigns as $campaign) {
+			if ($campaign->id == $campaign_published) {
+				$found = true;
+				break;
+			}
+		}
+
+		$this->assertTrue($found, 'getUserCampaigns should return the unpublished campaign if only_published is false');
+
+		$campaign_not_attached_applicant = $this->h_sample->createSampleCampaign($program, true);
+		$user_campaigns = $this->m_application->getUserCampaigns(95, $campaign_not_attached_applicant);
+		$this->assertEmpty($user_campaigns, 'getUserCampaigns should not return the campaign if the applicant is not attached to it');
+
+	    $query->clear();
+		$query->select('distinct(campaign_id)')
+				->from('#__emundus_campaign_candidature')
+				->where('applicant_id = ' . $db->quote(95));
+		$db->setQuery($query);
+		$all_user_campaigns = $db->loadColumn();
+
+		$user_campaigns = $this->m_application->getUserCampaigns(95);
+
+		foreach ($user_campaigns as $campaign) {
+			$this->assertContains($campaign->id, $all_user_campaigns, 'getUserCampaigns should return all campaigns attached to the applicant');
+		}
 	}
 }
 
