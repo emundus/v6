@@ -1220,6 +1220,7 @@ class EmundusModelEmails extends JModelList {
         if (!empty($fnums)) {
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+            JPluginHelper::importPlugin('emundus');
 
             $h_filters = new EmundusHelperFilters();
             $m_files = new EmundusModelFiles();
@@ -1227,7 +1228,7 @@ class EmundusModelEmails extends JModelList {
             JLog::addLogger(['text_file' => 'com_emundus.inviteExpert.error.php'], JLog::ALL, 'com_emundus');
 
             $eMConfig = JComponentHelper::getParams('com_emundus');
-            $formid = json_decode($eMConfig->get('expert_fabrikformid', '{"accepted":169, "refused":328}'));
+            $formid = json_decode($eMConfig->get('expert_fabrikformid', '{"accepted":169, "refused":328, "agreement": 0}'));
             $documentid = $eMConfig->get('expert_document_id', '36');
 
             $app = JFactory::getApplication();
@@ -1378,6 +1379,11 @@ class EmundusModelEmails extends JModelList {
                         'EXPERT_REFUSE_LINK_RELATIVE_NOFORM'    => $link_refuse_noform
                     );
 
+                    if (!empty($formid->agreement)) {
+                        $post['EXPERT_KEY_ID'] = $key1;
+                        $post['EXPERT_AGREEMENT_LINK'] = JURI::base() . 'index.php?option=com_fabrik&c=form&view=form&formid=' . $formid->agreement . '&keyid=' . $key1;
+                    }
+
                     $tags = $this->setTags($example_user_id, $post, $example_fnum);
 
                     $message = $this->setTagsFabrik($mail_body, [$example_fnum]);
@@ -1459,6 +1465,12 @@ class EmundusModelEmails extends JModelList {
                         $print_message .= '<hr>'.JText::_('COM_EMUNDUS_EMAILS_SUBJECT').' : '.$mail_subject;
                         $print_message .= '<hr>'.$body;
                     }
+
+                    JFactory::getApplication()->triggerEvent('callEventHandler', ['onSendExpertRequest', [
+                        'keyid' => $key1,
+                        'fnums' => $fnums,
+                        'mail_to' => $m_to
+                    ]]);
                 }
                 unset($key1);
 
