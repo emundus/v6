@@ -11,7 +11,7 @@
           <div class="mb-4 mt-2">
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_TITLE') }}</label>
             <multiselect
-		            :key="fields_update"
+		            :key="'formtitle-'+fields_update"
 		            v-if="simple_fields.length > 0"
                 v-model="form.title"
                 label="label"
@@ -34,7 +34,7 @@
           <div class="mb-4">
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_SUBTITLE') }}</label>
             <multiselect
-		            :key="fields_update"
+		            :key="'formsubtitle-'+fields_update"
 		            v-if="simple_fields.length > 0"
                 v-model="form.subtitle"
                 label="label"
@@ -57,7 +57,7 @@
           <div class="mb-4">
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_SUBTITLE_ICON') }}</label>
             <multiselect
-		            :key="fields_update"
+		            :key="'formsubtitleicon-'+fields_update"
 		            v-if="subtitle_icons.length > 0"
                 v-model="form.subtitle_icon"
                 label="label"
@@ -112,7 +112,7 @@
           <div class="mb-4">
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_RESUME') }}</label>
             <multiselect
-		            :key="fields_update"
+		            :key="'formresume-'+fields_update"
 		            v-if="description_fields.length > 0"
                 v-model="form.resume"
                 label="label"
@@ -135,7 +135,7 @@
           <div class="mb-4">
             <label>{{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_IMAGE') }}</label>
             <multiselect
-                :key="attachments_update"
+                :key="'attachments-' + attachments_update"
                 v-if="image_attachments.length > 0"
                 v-model="form.image"
                 label="value"
@@ -154,14 +154,14 @@
         </div>
 
         <div class="em-repeat-card-no-padding em-pb-24 relative card-preview">
-          <div v-if="form.image && form.image.id != 0" class="fabrikImageBackground" style="background-image: url('/media/com_emundus/images/gallery/default_card.png')"></div>
+          <div v-if="form.image !== undefined && form.image !== null && form.image.id != 0" class="fabrikImageBackground"></div>
           <div class="p-4">
             <h2 class="line-clamp-2 h-14">
               {{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_TITLE') }}
             </h2>
             <div class="mb-3">
               <p class="em-caption flex items-center" style="min-height: 15px">
-                <span class="material-icons-outlined mr-2">{{ form.subtitle_icon.code }}</span>
+                <span v-if="form.subtitle_icon !== undefined && form.subtitle_icon !== null && form.subtitle_icon.code" class="material-icons-outlined mr-2">{{ form.subtitle_icon.code }}</span>
                 {{ translate('COM_EMUNDUS_GALLERY_DISPLAY_FIELDS_SUBTITLE') }}
               </p>
             </div>
@@ -182,7 +182,6 @@
 </template>
 
 <script>
-import Swal from "sweetalert2";
 import Multiselect from "vue-multiselect";
 
 export default {
@@ -227,6 +226,7 @@ export default {
 
     fields_update: 0,
     attachments_update: 0,
+    finishCreated: false,
   }),
 
   created() {
@@ -266,6 +266,7 @@ export default {
 
     this.attachments_update++;
 
+    this.finishCreated = true;
     this.$emit('updateLoader', false);
   },
   methods: {
@@ -280,8 +281,9 @@ export default {
 
   watch: {
     'form.title' : function(val,oldVal) {
-      if (oldVal === null) {
-        return
+      console.log(oldVal + ' => ' + val, 'form.title');
+      if (!this.finishCreated || oldVal === null) {
+        return;
       }
 
       if(val != oldVal) {
@@ -290,8 +292,8 @@ export default {
     },
 
     'form.subtitle' : function(val,oldVal) {
-      if (oldVal === null) {
-        return
+      if (!this.finishCreated || oldVal === null) {
+        return;
       }
 
       if(val != oldVal) {
@@ -300,8 +302,8 @@ export default {
     },
 
     'form.subtitle_icon' : function(val,oldVal) {
-      if (oldVal === null) {
-        return
+      if (!this.finishCreated || oldVal === null) {
+        return;
       }
 
       if(val != oldVal) {
@@ -310,7 +312,7 @@ export default {
     },
 
     'form.tags' : function(val,oldVal) {
-      if (oldVal === null) {
+      if (!this.finishCreated || oldVal === null) {
         return
       }
 
@@ -320,8 +322,8 @@ export default {
     },
 
     'form.resume' : function(val,oldVal) {
-      if (oldVal === null) {
-        return
+      if (!this.finishCreated || oldVal === null) {
+        return;
       }
 
       if(val != oldVal) {
@@ -330,8 +332,8 @@ export default {
     },
 
     'form.image': function(val,oldVal) {
-      if (oldVal === null) {
-        return
+      if (!this.finishCreated || oldVal === null) {
+        return;
       }
 
       if (val != oldVal) {
@@ -370,5 +372,9 @@ export default {
   padding: 6px 12px;
   border-radius: 14px;
   background: #F0F0F0;
+}
+
+.fabrikImageBackground {
+  background-image: url('/media/com_emundus/images/gallery/default_card.png');
 }
 </style>

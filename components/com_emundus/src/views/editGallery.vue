@@ -28,7 +28,7 @@
     </div>
 
     <transition-group name="fade">
-	    <display
+      <display
 				 :key="'display'"
 				 v-if="gallery && elements && simple_fields && choices_fields && image_attachments && description_fields"
 				 v-show="selectedMenu === 'COM_EMUNDUS_GALLERY_DISPLAY'"
@@ -41,27 +41,27 @@
 				 @updateAttribute="updateAttribute"
 				 @updateLoader="updateLoading"
 		 ></display>
-		<gallery-details
-				 :key="'details'"
-				 v-if="gallery && elements && simple_fields && choices_fields && image_attachments && description_fields"
-				 v-show="selectedMenu === 'COM_EMUNDUS_GALLERY_DETAILS'"
-				 :gallery="gallery"
-				 :elements="elements"
-				 :simple_fields="simple_fields"
-				 :choices_fields="choices_fields"
-				 :description_fields="description_fields"
-				 :image_attachments="image_attachments"
-				 @updateAttribute="updateAttribute"
-				 @updateLoader="updateLoading"
-		 ></gallery-details>
-		 <settings
-				 :key="'settings'"
-				 v-if="gallery"
-				 v-show="selectedMenu === 'COM_EMUNDUS_GALLERY_SETTINGS'"
-				 :gallery="gallery"
-				 @updateAttribute="updateAttribute"
-				 @updateLoader="updateLoading"
-		 ></settings>
+		  <gallery-details
+           :key="'details'"
+           v-if="gallery && elements && simple_fields && choices_fields && image_attachments && description_fields"
+           v-show="selectedMenu === 'COM_EMUNDUS_GALLERY_DETAILS'"
+           :gallery="gallery"
+           :elements="elements"
+           :simple_fields="simple_fields"
+           :choices_fields="choices_fields"
+           :description_fields="description_fields"
+           :image_attachments="image_attachments"
+           @updateAttribute="updateAttribute"
+           @updateLoader="updateLoading"
+       ></gallery-details>
+       <settings
+           :key="'settings'"
+           v-if="gallery"
+           v-show="selectedMenu === 'COM_EMUNDUS_GALLERY_SETTINGS'"
+           :gallery="gallery"
+           @updateAttribute="updateAttribute"
+           @updateLoader="updateLoading"
+       ></settings>
     </transition-group>
 
     <div class="em-page-loader" v-if="loading"></div>
@@ -69,8 +69,6 @@
 </template>
 
 <script>
-import Swal from "sweetalert2";
-
 import Display from "@/components/Gallery/display.vue";
 import Settings from "@/components/Gallery/settings.vue";
 import galleryDetails from "@/components/Gallery/details_setup.vue";
@@ -146,8 +144,10 @@ export default {
     async getAttachments() {
       fetch('/index.php?option=com_emundus&controller=gallery&task=getattachments&campaign_id='+this.gallery.campaign_id)
           .then(response => response.json())
-          .then(data => {
-            Array.prototype.push.apply(this.image_attachments,Object.values(data.data));
+          .then(response => {
+            if (response.status == 1) {
+              this.image_attachments = response.data;
+            }
           }).catch((error) => {
 						console.error('Error:', error);
           });
