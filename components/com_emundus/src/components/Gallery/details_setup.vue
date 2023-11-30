@@ -182,7 +182,7 @@ export default {
       }
 
       this.form.tabs.push(tab);
-    })
+    });
 
     this.attachments_update++;
     this.$emit('updateLoader');
@@ -205,9 +205,11 @@ export default {
       })
           .then(response => response.json())
           .then(data => {
-            new_gallery.id = data.data;
-
-            this.gallery.tabs.push(new_gallery);
+            if (data.status) {
+              new_gallery.id = data.data;
+              this.form.tabs.push(new_gallery);
+              this.gallery.tabs.push(new_gallery);
+            }
           });
     },
 
