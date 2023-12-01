@@ -18,6 +18,11 @@ $fullHeadings = array_filter($this->headings, function ($heading) use ($cellClas
 }, ARRAY_FILTER_USE_KEY );
 
 $otherHeadings = array_diff_key($this->headings, $fullHeadings);
+$actionsHeadings = array_filter($otherHeadings, function ($heading) use ($cellClass) {
+	return $heading === 'fabrik_actions';
+}, ARRAY_FILTER_USE_KEY );
+
+$otherHeadings = array_diff_key($otherHeadings, $actionsHeadings);
 $summary = array_keys($otherHeadings)[0];
 
 unset($otherHeadings[$summary]);
@@ -51,6 +56,15 @@ unset($otherHeadings[$summary]);
                         <?php endif;?>
                 <?php }?>
             </div>
+
+	        <?php foreach ($actionsHeadings as $heading => $label) {
+		        $style = empty($this->cellClass[$heading]['style']) ? '' : 'style="'.$this->cellClass[$heading]['style'].'"';
+		        ?>
+
+		        <?php if($this->_row->data->$heading != '') : ?>
+                    <div class="<?php echo $this->cellClass[$heading]['class']; ?> faq-question-container__answer"><?php echo isset($this->_row->data) ? $this->_row->data->$heading : '';?></div>
+		        <?php endif;?>
+	        <?php }?>
         </div>
     </details>
 </tr>
