@@ -11,21 +11,46 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+$cellClass= $this->cellClass;
+
+$fullHeadings = array_filter($this->headings, function ($heading) use ($cellClass) {
+    return strpos($cellClass[$heading]['class'], "w-full")!== false;
+}, ARRAY_FILTER_USE_KEY );
+
+$otherHeadings = array_diff_key($this->headings, $fullHeadings);
+$summary = array_keys($otherHeadings)[0];
+
+unset($otherHeadings[$summary]);
+
 ?>
 <tr id="<?php echo $this->_row->id;?>" class="<?php echo $this->_row->class;?>" xmlns="http://www.w3.org/1999/html">
     <details class="faq-question-container">
-        <?php foreach ($this->headings as $heading => $label) {
-            $index = array_search($heading,array_keys($this->headings));
-            $style = empty($this->cellClass[$heading]['style']) ? '' : 'style="'.$this->cellClass[$heading]['style'].'"';
-            ?>
+        <summary class="faq-question-container__question">
+            <?php echo isset($this->_row->data) ? $this->_row->data->$summary : '';?>
+        </summary>
 
-            <?php if($index == 0) : ?>
-                <summary class="faq-question-container__question">
-                    <?php echo isset($this->_row->data) ? $this->_row->data->$heading : '';?>
-                </summary>
-            <?php elseif($heading != 'fabrik_select' && $this->_row->data->$heading != '') : ?>
-                <div class="<?php echo $this->cellClass[$heading]['class']; ?> faq-question-container__answer"><?php echo isset($this->_row->data) ? $this->_row->data->$heading : '';?></div>
-            <?php endif;?>
+        <div class="faq-question-container__content">
+            <?php foreach ($fullHeadings as $heading => $label) {
+                $style = empty($this->cellClass[$heading]['style']) ? '' : 'style="'.$this->cellClass[$heading]['style'].'"';
+                ?>
+
+                <?php if($heading != 'fabrik_select' && $this->_row->data->$heading != '') : ?>
+                        <div class="<?php echo $this->cellClass[$heading]['class']; ?> faq-question-container__answer"><?php echo isset($this->_row->data) ? $this->_row->data->$heading : '';?></div>
+                <?php endif;?>
             <?php }?>
+
+            <div class="faq-question-container__informations-container flex">
+                <?php foreach ($otherHeadings as $heading => $label) {
+                    $style = empty($this->cellClass[$heading]['style']) ? '' : 'style="'.$this->cellClass[$heading]['style'].'"';
+                    ?>
+                    <?php if($heading != 'fabrik_select' && $this->_row->data->$heading != '') : ?>
+                    <div class="faq-question-container__infos-block">
+                        <div class="<?php echo $this->cellClass[$heading]['class']; ?> faq-question-container__answer-label"><?php echo isset($label) ? $label : '';?></div>
+                        <div class="<?php echo $this->cellClass[$heading]['class']; ?> faq-question-container__answer-info"><?php echo isset($this->_row->data) ? $this->_row->data->$heading : '';?></div>
+                    </div>
+                        <?php endif;?>
+                <?php }?>
+            </div>
+        </div>
     </details>
 </tr>

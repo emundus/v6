@@ -2133,6 +2133,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .w-full {
   width: 100%;
 }
+.shrink {
+  flex-shrink: 1;
+}
 .flex-grow {
   flex-grow: 1;
 }
@@ -2319,6 +2322,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .ease-in-out {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ease-out {
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
 }
 h1 {
   color: var(--em-default-title-color-1);
