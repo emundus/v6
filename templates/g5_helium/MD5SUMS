@@ -137,7 +137,7 @@ fonts/rockettheme-apps/rockettheme-apps.ttf	2185692f8168ab2fa54c0923be97f190
 fonts/rockettheme-apps/rockettheme-apps.woff	f1258374fedaa30401743337048a64bb
 fonts/rockettheme-apps/rockettheme-apps.woff2	0b76f0674592d3d4653e6524045e890e
 gantry/presets.yaml	4edfd8f32f98ba3020831b1ed61db43f
-gantry/theme.yaml	3eb9e134f4a05395c25d820ac81c6f51
+gantry/theme.yaml	fc1d46855a38922cfbd1c075ab19fc2d
 html/layouts/chromes/gantry.php	870053495a07118a734e96af07a2d7d6
 html/layouts/joomla/system/message.php	74894fe211d66e89d74b70b0881e54aa
 html/modules.php	2dbba70b2727e74cf3313472ace88738
@@ -197,10 +197,10 @@ scss/helium-joomla.scss	c42e12b4660f61cc5fcb45c487dfd9a5
 scss/helium-joomla/components/_contact.scss	cec34e5e7ea200fd67420857c7c9d267
 scss/helium-joomla/components/_content.scss	ccf093c5d7b9512e3589050a465ed15f
 scss/helium-joomla/components/_search.scss	e1839a66f7441b2d3d5df22567617213
-scss/helium-joomla/components/_users.scss	00f89e811a50e5f93b030ab4438d1826
+scss/helium-joomla/components/_users.scss	ad6f76c714bd2c41e2ad5e2036edd95c
 scss/helium-joomla/particles/_popupmodule.scss	7fec4d01154a9a6e2a3f6e3c43e4f895
 scss/helium-joomla/styles/_buttons.scss	ff09acc28df9fdbb6ed04b41e73ce890
-scss/helium-joomla/styles/_core.scss	0938b2e5fe76941c47627b1045d54b45
+scss/helium-joomla/styles/_core.scss	7c25f01c5de16b5bb1d6b26a2fabeba9
 scss/helium-joomla/styles/_forms.scss	5c7c2a4032a49986e5c0cb68ba6c15e9
 scss/helium-joomla/styles/_modules.scss	83a1ad4ef736503a49d58e5996fe2127
 scss/helium-joomla/styles/_tabs.scss	9a4efd5b7ffe28b9e5ebd777fb631101
@@ -244,6 +244,6 @@ scss/helium/styles/_tables.scss	6e98ce2eec18fb2877cdf0e309e88ae2
 scss/helium/styles/_typography.scss	3ceef80704646c220c50c9f2e9ec5ada
 scss/helium/styles/_utilities.scss	5d8aacbecee8059c244371deac2d938e
 scss/helium/styles/_variations.scss	d0cfbd7f75d8cca38131eeeab0e52de8
-templateDetails.xml	627c09ae246d05b5ee6acc9595797e02
+templateDetails.xml	395aa18f395ba2421e24a2cf9235c17e
 template_preview.png	ab4cfffd01e4869e58539c047dd9b084
 template_thumbnail.png	927912da2d23c09c87d8613905b38b74

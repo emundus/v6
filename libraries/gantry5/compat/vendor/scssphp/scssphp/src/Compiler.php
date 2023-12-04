@@ -1508,6 +1508,7 @@ class Compiler
         // start from the root
         while ($scope->parent && $scope->parent->type !== Type::T_ROOT) {
             array_unshift($childStash, $scope);
+            \assert($scope->parent !== null);
             $scope = $scope->parent;
         }
 
@@ -2090,6 +2091,11 @@ class Compiler
             foreach ($selector as $node) {
                 $compound = '';
 
+                if (!is_array($node)) {
+                    $output[] = $node;
+                    continue;
+                }
+
                 array_walk_recursive(
                     $node,
                     function ($value, $key) use (&$compound) {
@@ -2124,12 +2130,16 @@ class Compiler
             foreach ($selector as $node) {
                 $compound = '';
 
-                array_walk_recursive(
-                    $node,
-                    function ($value, $key) use (&$compound) {
-                        $compound .= $value;
-                    }
-                );
+                if (!is_array($node)) {
+                    $compound .= $node;
+                } else {
+                    array_walk_recursive(
+                        $node,
+                        function ($value, $key) use (&$compound) {
+                            $compound .= $value;
+                        }
+                    );
+                }
 
                 if ($this->isImmediateRelationshipCombinator($compound)) {
                     if (\count($output)) {
@@ -2885,7 +2895,7 @@ class Compiler
     {
         if (isset($child[Parser::SOURCE_LINE])) {
             $this->sourceIndex  = isset($child[Parser::SOURCE_INDEX]) ? $child[Parser::SOURCE_INDEX] : null;
-            $this->sourceLine   = isset($child[Parser::SOURCE_LINE]) ? $child[Parser::SOURCE_LINE] : -1;
+            $this->sourceLine   = $child[Parser::SOURCE_LINE];
             $this->sourceColumn = isset($child[Parser::SOURCE_COLUMN]) ? $child[Parser::SOURCE_COLUMN] : -1;
         } elseif (\is_array($child) && isset($child[1]->sourceLine) && $child[1] instanceof Block) {
             $this->sourceIndex  = $child[1]->sourceIndex;
@@ -3544,11 +3554,11 @@ EOL;
                 // 1. op[op name][left type][right type]
                 // 2. op[left type][right type] (passing the op as first arg)
                 // 3. op[op name]
-                if (\is_callable([$this, $fn = "op${ucOpName}${ucLType}${ucRType}"])) {
+                if (\is_callable([$this, $fn = "op{$ucOpName}{$ucLType}{$ucRType}"])) {
                     $out = $this->$fn($left, $right, $shouldEval);
-                } elseif (\is_callable([$this, $fn = "op${ucLType}${ucRType}"])) {
+                } elseif (\is_callable([$this, $fn = "op{$ucLType}{$ucRType}"])) {
                     $out = $this->$fn($op, $left, $right, $shouldEval);
-                } elseif (\is_callable([$this, $fn = "op${ucOpName}"])) {
+                } elseif (\is_callable([$this, $fn = "op{$ucOpName}"])) {
                     $out = $this->$fn($left, $right, $shouldEval);
                 } else {
                     $out = null;
@@ -3892,7 +3902,7 @@ EOL;
 
         // Special functions overriding a CSS function are case-insensitive. We normalize them as lowercase
         // to avoid the deprecation warning about the wrong case being used.
-        if ($lowercasedName === 'min' || $lowercasedName === 'max') {
+        if ($lowercasedName === 'min' || $lowercasedName === 'max' || $lowercasedName === 'rgb' || $lowercasedName === 'rgba' || $lowercasedName === 'hsl' || $lowercasedName === 'hsla') {
             $normalizedName = $lowercasedName;
         }
 
@@ -4529,8 +4539,10 @@ EOL;
                             return $colorName;
                         }
 
-                        if (is_numeric($alpha)) {
+                        if (\is_int($alpha) || \is_float($alpha)) {
                             $a = new Number($alpha, '');
+                        } elseif (is_numeric($alpha)) {
+                            $a = new Number((float) $alpha, '');
                         } else {
                             $a = $alpha;
                         }
@@ -6984,8 +6996,12 @@ EOL;
             return static::$null;
         }
 
-        if (is_numeric($value)) {
+        if (\is_int($value) || \is_float($value)) {
             return new Number($value, '');
+        }
+
+        if (is_numeric($value)) {
+            return new Number((float) $value, '');
         }
 
         if ($value === '') {
@@ -7947,7 +7963,11 @@ EOL;
                 $max = 100;
             }
 
-            return $number->valueInRange($change ? 0 : -$max, $max, $name);
+            if ($scale || $assertPercent) {
+                return $number->valueInRange($change ? 0 : -$max, $max, $name);
+            }
+
+            return $number->valueInRangeWithUnit($change ? 0 : -$max, $max, $name, $checkPercent ? '%' : '');
         };
 
         $alpha = $getParam('alpha', 1);
@@ -8582,7 +8602,7 @@ EOL;
         $color = $this->assertColor($args[0], 'color');
         $amount = $this->assertNumber($args[1], 'amount');
 
-        $color[4] = (isset($color[4]) ? $color[4] : 1) + $amount->valueInRange(0, 1, 'amount');
+        $color[4] = (isset($color[4]) ? $color[4] : 1) + $amount->valueInRangeWithUnit(0, 1, 'amount', '');
         $color[4] = min(1, max(0, $color[4]));
 
         return $color;
@@ -8601,7 +8621,7 @@ EOL;
         $color = $this->assertColor($args[0], 'color');
         $amount = $this->assertNumber($args[1], 'amount');
 
-        $color[4] = (isset($color[4]) ? $color[4] : 1) - $amount->valueInRange(0, 1, 'amount');
+        $color[4] = (isset($color[4]) ? $color[4] : 1) - $amount->valueInRangeWithUnit(0, 1, 'amount', '');
         $color[4] = min(1, max(0, $color[4]));
 
         return $color;
@@ -8769,7 +8789,7 @@ will be an error in future versions of Sass.\n         on line $line of $fname";
     protected function libNth($args)
     {
         $list = $this->coerceList($args[0], ',', false);
-        $n = $this->assertNumber($args[1])->getDimension();
+        $n = $this->assertInteger($args[1]);
 
         if ($n > 0) {
             $n--;
@@ -8784,7 +8804,7 @@ will be an error in future versions of Sass.\n         on line $line of $fname";
     protected function libSetNth($args)
     {
         $list = $this->coerceList($args[0]);
-        $n = $this->assertNumber($args[1])->getDimension();
+        $n = $this->assertInteger($args[1]);
 
         if ($n > 0) {
             $n--;
@@ -9589,7 +9609,25 @@ will be an error in future versions of Sass.\n         on line $line of $fname";
     protected function libRandom($args)
     {
         if (isset($args[0]) && $args[0] !== static::$null) {
-            $n = $this->assertInteger($args[0], 'limit');
+            $limit = $this->assertNumber($args[0], 'limit');
+
+            if ($limit->hasUnits()) {
+                $unitString = $limit->unitStr();
+                $message = <<<TXT
+random() will no longer ignore \$limit units ($limit) in a future release.
+
+Recommendation: random(\$limit / 1$unitString) * 1$unitString
+
+To preserve current behavior: random(\$limit / 1$unitString)
+
+More info: https://sass-lang.com/d/random-with-units
+
+TXT;
+
+                Warn::deprecation($this->addLocationToMessage($message));
+            }
+
+            $n = $this->assertInteger($limit, 'limit');
 
             if ($n < 1) {
                 throw new SassScriptException("\$limit: Must be greater than 0, was $n.");
