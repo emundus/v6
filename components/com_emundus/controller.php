@@ -1626,8 +1626,8 @@ class EmundusController extends JControllerLegacy {
 
         $current_user = JFactory::getSession()->get('emundusUser');
 
-        $fnum= "";
-        if($current_user->id == $uid){
+        $fnum = '';
+        if($current_user->id == $uid && !empty($current_user->fnum)) {
             $fnum = $current_user->fnum;
         }
 	    $fnums = [];
