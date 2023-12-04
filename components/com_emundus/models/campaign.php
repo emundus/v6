@@ -759,14 +759,18 @@ class EmundusModelCampaign extends JModelList {
      *
      * @since version 1.0
      */
-    function getAssociatedCampaigns($filter = '', $sort = 'DESC', $recherche = '', $lim = 25, $page = 0, $program = 'all', $session = 'all') {
+    function getAssociatedCampaigns($filter = '', $sort = 'DESC', $recherche = '', $lim = 0, $page = 0, $program = 'all', $session = 'all') {
         $associated_campaigns = [];
 
         $query = $this->_db->getQuery(true);
 
-        $limit = empty($lim) ? 25 : $lim;
+        if (empty($lim) || $lim == 'all') {
+            $limit = '';
+        } else {
+            $limit = $lim;
+        }
 
-        if (empty($page)) {
+        if (empty($page) || empty($limit)) {
             $offset = 0;
         } else {
             $offset = ($page - 1) * $limit;

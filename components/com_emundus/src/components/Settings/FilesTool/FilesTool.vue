@@ -33,7 +33,8 @@
         <transition name="fade" mode="out-in">
           <EditStatus v-if="currentMenu === 1" :key="currentMenu" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving" />
           <EditTags v-if="currentMenu === 2" :key="currentMenu" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving" />
-          <EditApplicants v-if="currentMenu === 3" :key="currentMenu" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving" />
+          <EditApplicants v-if="currentMenu === 3" :key="currentMenu" :type="'general'" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving" />
+          <EditApplicants v-if="currentMenu === 4" :key="currentMenu" :type="'applicants'" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving" />
         </transition>
       </div>
 
@@ -66,8 +67,12 @@ export default {
           index: 2
         },
         {
-          title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_APPLICANTS",
+          title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_GENERAL",
           index: 3
+        },
+        {
+          title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_APPLICANTS",
+          index: 4
         },
       ],
 

@@ -7,7 +7,6 @@
  */
 JFactory::getSession()->set('application_layout', 'form');
 
-$pids = json_decode($this->pids);
 $defaultpid = $this->defaultpid;
 $user = $this->userid;
 ?>
@@ -29,22 +28,24 @@ $user = $this->userid;
 
 <div class="row">
     <div class="panel panel-default widget em-container-form">
-        <div class="panel-heading em-container-form-heading">
-            <h3 class="panel-title">
-                <span class="material-icons">list_alt</span>
-                <?php echo JText::_('COM_EMUNDUS_APPLICATION_APPLICATION_FORM').' - '.$this->formsProgress." % ".JText::_("COM_EMUNDUS_APPLICATION_COMPLETED"); ?>
-                <?php if (EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum)):?>
-                    <a id="download-pdf" class="  clean" target="_blank" href="<?php echo JURI::base(); ?>index.php?option=com_emundus&task=pdf&user=<?php echo $this->sid; ?>&fnum=<?php echo $this->fnum; ?>">
-                        <button class="btn btn-default" data-title="<?php echo JText::_('COM_EMUNDUS_APPLICATION_DOWNLOAD_APPLICATION_FORM'); ?>" data-toggle="tooltip" data-placement="right" title="<?= JText::_('COM_EMUNDUS_APPLICATION_DOWNLOAD_APPLICATION_FORM'); ?>"><span class="material-icons">file_download</span></button>
-                    </a>
-                <?php endif;?>
-            </h3>
-            <div class="btn-group pull-right">
-                <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span></button>
-                <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span></button>
+	    <?php if ($this->header == 1) : ?>
+            <div class="panel-heading em-container-form-heading">
+                <h3 class="panel-title">
+                    <span class="material-icons">list_alt</span>
+                    <?php echo JText::_('COM_EMUNDUS_APPLICATION_APPLICATION_FORM').' - '.$this->formsProgress." % ".JText::_("COM_EMUNDUS_APPLICATION_COMPLETED"); ?>
+                    <?php if (EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum)):?>
+                        <a id="download-pdf" class="  clean" target="_blank" href="<?php echo JURI::base(); ?>index.php?option=com_emundus&task=pdf&user=<?php echo $this->sid; ?>&fnum=<?php echo $this->fnum; ?>">
+                            <button class="btn btn-default" data-title="<?php echo JText::_('COM_EMUNDUS_APPLICATION_DOWNLOAD_APPLICATION_FORM'); ?>" data-toggle="tooltip" data-placement="right" title="<?= JText::_('COM_EMUNDUS_APPLICATION_DOWNLOAD_APPLICATION_FORM'); ?>"><span class="material-icons">file_download</span></button>
+                        </a>
+                    <?php endif;?>
+                </h3>
+                <div class="btn-group pull-right">
+                    <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span></button>
+                    <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span></button>
+                </div>
             </div>
-        </div>
-	    <?php if (!EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)) : ?>
+        <?php endif; ?>
+	    <?php if (!EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id) && $this->header == 1) : ?>
             <div class="em-flex-row em-mt-16">
                 <div class="em-flex-row em-small-flex-column em-small-align-items-start">
                     <div class="em-profile-picture-big no-hover"
@@ -68,7 +69,7 @@ $user = $this->userid;
         <div class="panel-body Marginpanel-body em-container-form-body">
             <input type="hidden" id="dpid_hidden" value="<?php echo $defaultpid->pid ?>"/>
 
-            <div id="em-switch-profiles" <?php if(sizeof($pids) < 1): ?>style="display: none"<?php endif; ?>>
+            <div id="em-switch-profiles" <?php if(sizeof($this->pids) < 1): ?>style="display: none"<?php endif; ?>>
 
                 <div class="em_label">
                     <label class="control-label em-filter-label em-font-size-14" style="margin-left: 0 !important;"><?= JText::_('PROFILE_FORM'); ?></label>
@@ -80,9 +81,9 @@ $user = $this->userid;
                         <p class="em-font-size-14 em-neutral-900-color" title="<?= $defaultpid->label; ?>" style="white-space: nowrap"> <?= $defaultpid->label; ?></p>
                     </div>
 
-	                <?php foreach($pids as $pid) : ?>
-	                   <?php if(is_array($pid->data)) : ?>
-	                     <?php foreach($pid->data as $data) : ?>
+	                <?php foreach($this->pids as $pid) : ?>
+	                    <?php if(is_array($pid['data'])) : ?>
+	                     <?php foreach($pid['data'] as $data) : ?>
 	                      <?php if($data->pid != $defaultpid->pid): ?>
 	                          <?php if($data->step !== null) : ?>
                                 <div id="tab_link_<?php echo $data->pid; ?>" onclick="updateProfileForm(<?php echo $data->pid ?>)" class="em-mr-16 em-flex-row profile_tab em-light-tabs em-pointer mb-2">
@@ -96,8 +97,8 @@ $user = $this->userid;
                           <?php endif ?>
 		                <?php endforeach; ?>
                         <?php else : ?>
-                                <div id="tab_link_<?php echo $pid->data->pid; ?>" onclick="updateProfileForm(<?php echo $data->pid ?>)" class="em-mr-16 profile_tab em-flex-row em-light-tabs em-pointer mb-2">
-                                    <p class="em-font-size-14 em-neutral-600-color" title="<?php echo $pid->data->label; ?>" style="white-space: nowrap"> <?php echo $pid->data->label; ?></p>
+                                <div id="tab_link_<?php echo $pid['data']->pid; ?>" onclick="updateProfileForm(<?php echo $pid['data']->pid ?>)" class="em-mr-16 profile_tab em-flex-row em-light-tabs em-pointer mb-2">
+                                    <p class="em-font-size-14 em-neutral-600-color" title="<?php echo $pid['data']->label; ?>" style="white-space: nowrap"> <?php echo $pid['data']->label; ?></p>
                                 </div>
                         <?php endif;?>
 	                <?php endforeach; ?>

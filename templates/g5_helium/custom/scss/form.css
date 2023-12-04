@@ -434,29 +434,29 @@
 
 
     /* YES / NO */
+    /* And radio buttons grouped together */
 
-    .row-fluid .plg-yesno.span12 {
+    .row-fluid .plg-yesno.span12,
+    .plg-radiobutton .fabrikSubElementContainer .btn-group {
       width: 48.93617021276595%;
     }
 
     @media only all and (min-width: 48rem) and (max-width: 59.99rem) {
-      .row-fluid .plg-yesno.span12 {
+      .row-fluid .plg-yesno.span12,
+      .plg-radiobutton .fabrikSubElementContainer .btn-group {
         width: 48.6187845304% !important;
       }
     }
 
     @media only all and (max-width: 48rem) {
-      .row-fluid .plg-yesno.span12 {
+      .row-fluid .plg-yesno.span12,
+      .plg-radiobutton .fabrikSubElementContainer .btn-group {
         width: 100% !important;
       }
     }
 
-    .plg-yesno .fabrikSubElementContainer .btn-group {
-      display: flex;
-      gap: var(--em-form-yesno-gap);
-    }
-
-    .plg-yesno .fabrikSubElementContainer .btn-group {
+    .plg-yesno .fabrikSubElementContainer .btn-group,
+    .plg-radiobutton .fabrikSubElementContainer .btn-group {
       display: flex;
       gap: var(--em-form-yesno-gap);
     }
@@ -610,28 +610,45 @@
     }
 
     /** RADIO **/
-    .plg-radiobutton {
+    .plg-radiobutton, .plg-databasejoin {
       .fabrikSubElementContainer {
-        width: fit-content;
-        display: flex;
-        flex-wrap: wrap;
-        flex-direction: column;
-        min-width: 40%;
 
         @media all and (max-width: 767px) {
           width: 100%;
         }
 
-        .fabrikgrid_radio {
+        .row-fluid div[data-role="suboption"] {
+
+           &[class*="span"] {
+             margin-right: var(--em-form-radio-margin-right);
+             label {
+               width: 100%;
+               margin-right: 0;
+             }
+           }
+
+          label {
+            width: fit-content;
+            @media all and (max-width: 767px) {
+              width: 100%;
+            }
+          }
+        }
+
+        .fabrikgrid_radio, .row-fluid div[data-role="suboption"] {
           @apply py-1;
           @apply mb-1;
-          width: 100%;
           @apply items-center;
           @apply ml-0;
+
+          &.span12 {
+            width: auto;
+          }
+
           label {
             @apply mb-0;
             @apply flex;
-            @apply items-center;
+            @apply items-start;
             padding: var(--em-form-radio-padding);
             border: var(--em-form-radio-bw) solid var(--em-form-radio-bc);
             border-radius: var(--em-form-radio-br);
@@ -642,10 +659,11 @@
               height: var(--em-form-radio-height);
               margin-right: var(--em-form-radio-margin-right);
               margin-left: 0;
-              margin-top: 0;
+              margin-top: 2px !important;
             }
             span{
               word-wrap: break-word;
+              word-break: break-all;
             }
 
             @supports selector(:has(*)) {
@@ -1161,8 +1179,7 @@
         height: auto;
         input[type="text"] {
           outline: none;
-          height: 15px;
-          width: 17vw !important;
+          height: 18px;
         }
       }
     }

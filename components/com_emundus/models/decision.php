@@ -772,7 +772,7 @@ class EmundusModelDecision extends JModelList
 					$name = explode('.', $c);
 					if (!in_array($name[0] . '__' . $name[1], $head_val)) {
 
-						if ($this->details->{$name[0] . '__' . $name[1]}['group_by'] && array_key_exists($name[0] . '__' . $name[1], $this->subquery) && array_key_exists($applicant->user_id, $this->subquery[$name[0] . '__' . $name[1]])) {
+						if (!empty($this->subquery) && $this->details->{$name[0] . '__' . $name[1]}['group_by'] && array_key_exists($name[0] . '__' . $name[1], $this->subquery) && array_key_exists($applicant->user_id, $this->subquery[$name[0] . '__' . $name[1]])) {
 							$eval_list[$name[0] . '__' . $name[1]] = @EmundusHelperList::createHtmlList(explode(",",
 								$this->subquery[$name[0] . '__' . $name[1]][$applicant->user_id]));
 						} elseif ($name[0] == 'jos_emundus_training') {
@@ -865,14 +865,14 @@ class EmundusModelDecision extends JModelList
 		$query .= ' FROM #__emundus_campaign_candidature as jecc
 					LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
 					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
-					LEFT JOIN #__emundus_setup_programmes as sp on sp.code LIKE esc.training
+					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
 					LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
 					LEFT JOIN #__users as u on u.id = jecc.applicant_id
-					LEFT JOIN #__emundus_final_grade as jos_emundus_final_grade on jos_emundus_final_grade.fnum LIKE jecc.fnum
-					LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum LIKE jecc.fnum  ';
+					LEFT JOIN #__emundus_final_grade as jos_emundus_final_grade on jos_emundus_final_grade.fnum = jecc.fnum
+					LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum = jecc.fnum  ';
 
 		if (in_array('overall', $em_other_columns)) {
-			$query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum LIKE jecc.fnum ';
+			$query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum = jecc.fnum ';
 		}
 
 

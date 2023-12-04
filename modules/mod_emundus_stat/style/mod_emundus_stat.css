@@ -1,7 +1,7 @@
 .btn {
     background-image: none !important;
-    background: var(--em-coordinator-primary-color) !important;
-    border: 1px solid var(--em-coordinator-primary-color) !important;
+    background: var(--em-profile-color) !important;
+    border: 1px solid var(--em-profile-color) !important;
     color: #ffffff !important;
     margin:0;
 }
@@ -9,7 +9,7 @@
     background: #ffffff !important;
 }
 .btn:hover i {
-    color: var(--em-coordinator-primary-color) !important;
+    color: var(--em-profile-color) !important;
 }
 .btn i {
     display: inline;
@@ -19,7 +19,7 @@
     color: #ffffff !important;
 }
 .btn a:hover {
-    color: var(--em-coordinator-primary-color) !important;
+    color: var(--em-profile-color) !important;
 }
 .container-stat {
 	padding: 12px;

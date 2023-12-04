@@ -159,4 +159,30 @@ class EmundusModelSettingsTest extends TestCase
 			}
 		}
 	}
+
+
+	/**
+	 * @group Emundus parameters
+	 */
+
+	public function testgetEmundusParams() {
+		$params = $this->m_settings->getEmundusParams();
+		$this->assertNotEmpty($params, 'La récupération des paramètres Emundus renvoie une valeur non vide');
+		$this->assertIsArray($params, 'La récupération des paramètres Emundus renvoie un tableau');
+
+		$this->assertArrayHasKey('joomla', $params, 'La récupération des paramètres Emundus renvoie un tableau avec la clé joomla');
+		$this->assertArrayHasKey('emundus', $params, 'La récupération des paramètres Emundus renvoie un tableau avec la clé emundus');
+
+		$this->assertArrayHasKey('list_limit', $params['joomla'], 'La récupération des paramètres Emundus renvoie un tableau avec la clé list_limit');
+		$this->assertArrayNotHasKey('addpipe_api_key', $params['emundus'], 'La récupération des paramètres Emundus ne renvoie pas l\'ensemble de la configuration Emundus. Cela permet de ne pas exposer les clé API');
+	}
+
+	public function testupdateEmundusParam() {
+		$new_limit_value = 10;
+		$this->assertTrue($this->m_settings->updateEmundusParam('joomla', 'list_limit', $new_limit_value), 'La modification de la limite des listes fonctionne');
+		$this->assertSame($new_limit_value, JFactory::getConfig()->get('list_limit'), 'La modification de la limite des listes fonctionne');
+
+		$this->assertFalse($this->m_settings->updateEmundusParam('joomla', 'unallowed_parameter_name', 'test'), 'La modification ne peut pas se faire si le paramètre n\'est pas autorisé, ou n\'existe pas');
+		$this->assertFalse($this->m_settings->updateEmundusParam('emundus', 'addpipe_api_key', 'test'), 'La modification de la clé API Addpipe n\'est pas autorisée et devrait donc renvoyer false');
+	}
 }

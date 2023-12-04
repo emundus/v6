@@ -220,15 +220,24 @@ class modEmundusStatHelper {
 		$db->execute();
 		$exists = (($db->getNumRows() != 0)?true:false);
 		if($exists) {
+			$query = "SELECT id FROM `jos_emundus_setup_campaigns` WHERE `jos_emundus_setup_campaigns`.`training` IN (".implode(",", $db->quote((new modEmundusStatHelper)->codeProgramUser())).")";
+			$all_campaigns = $db->setQuery($query)->loadColumn();
+
 			$tabCampaign = (new modEmundusStatHelper)->getCampaign($param);
 			if($tabCampaign != null) {
-				for($cpt = 0 ; $cpt < count($tabCampaign) ; $cpt++) {
-					$query = "SELECT `label` FROM `jos_emundus_setup_campaigns` WHERE `id` = ".$tabCampaign[$cpt]['id'];		
-					$db->setQuery($query);
-					$labelCampaign = $db->loadResult();
-					$filtre .= "&".$view."___campaign[value][]=".$labelCampaign;
+				if (sizeof($all_campaigns) == sizeof($tabCampaign)) {
+					$filtre = '&resetfilters=1&clearordering=0&clearfilters=0';
+				} else {
+					$filtre .= '&resetfilters=1';
+
+					for($cpt = 0 ; $cpt < count($tabCampaign) ; $cpt++) {
+						$query = "SELECT `label` FROM `jos_emundus_setup_campaigns` WHERE `id` = ".$tabCampaign[$cpt]['id'];
+						$db->setQuery($query);
+						$labelCampaign = $db->loadResult();
+						$filtre .= "&".$view."___campaign[value][]=". str_replace('"', '%22', $labelCampaign);
+					}
+					$filtre .= "&".$view."___campaign[join]=OR";
 				}
-				$filtre .= "&".$view."___campaign[join]=OR";
 			}
 		} else {
 			$query = "SHOW COLUMNS FROM `".$view."` LIKE '_year'";

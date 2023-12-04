@@ -94,36 +94,35 @@ class EmundusModelApplication extends JModelList
         return $details;
     }
 
-    public function getUserCampaigns($id, $cid = null)
+    public function getUserCampaigns($id, $cid = null, $published_only = true)
     {
+		$user_campaigns = [];
+
         $query = $this->_db->getQuery(true);
-        if ($cid === null) {
-            $query->select('esc.*,ecc.date_submitted,ecc.submitted,ecc.id as campaign_candidature_id,efg.result_sent,efg.date_result_sent,efg.final_grade,ecc.fnum,ess.class,ess.step,ess.value as step_value')
-                ->from($this->_db->quoteName('#__emundus_users','eu'))
-                ->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature','ecc').' ON '.$this->_db->quoteName('ecc.applicant_id').' = '.$this->_db->quoteName('eu.user_id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$this->_db->quoteName('ecc.campaign_id').' = '.$this->_db->quoteName('esc.id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_final_grade','efg').' ON '.$this->_db->quoteName('efg.campaign_id').' = '.$this->_db->quoteName('esc.id').' AND '.$this->_db->quoteName('efg.student_id').' = '.$this->_db->quoteName('eu.user_id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_status','ess').' ON '.$this->_db->quoteName('ess.step').' = '.$this->_db->quoteName('ecc.status'))
-                ->where($this->_db->quoteName('eu.user_id').' = '.$this->_db->quote($id))
-                ->andWhere($this->_db->quoteName('esc.published').' = '.$this->_db->quote(1))
-                ->andWhere($this->_db->quoteName('ecc.published').' = '.$this->_db->quote(1));
+	    $query->select('esc.*,ecc.date_submitted,ecc.submitted,ecc.id as campaign_candidature_id,efg.result_sent,efg.date_result_sent,efg.final_grade,ecc.fnum,ess.class,ess.step,ess.value as step_value')
+		    ->from($this->_db->quoteName('#__emundus_users','eu'))
+		    ->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature','ecc').' ON '.$this->_db->quoteName('ecc.applicant_id').' = '.$this->_db->quoteName('eu.user_id'))
+		    ->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$this->_db->quoteName('ecc.campaign_id').' = '.$this->_db->quoteName('esc.id'))
+		    ->leftJoin($this->_db->quoteName('#__emundus_final_grade','efg').' ON '.$this->_db->quoteName('efg.campaign_id').' = '.$this->_db->quoteName('esc.id').' AND '.$this->_db->quoteName('efg.student_id').' = '.$this->_db->quoteName('eu.user_id'))
+		    ->leftJoin($this->_db->quoteName('#__emundus_setup_status','ess').' ON '.$this->_db->quoteName('ess.step').' = '.$this->_db->quoteName('ecc.status'))
+		    ->where($this->_db->quoteName('eu.user_id').' = '.$this->_db->quote($id))
+		    ->andWhere($this->_db->quoteName('ecc.published').' = '.$this->_db->quote(1));
+
+		if ($cid === null) {
+			if ($published_only) {
+				$query->andWhere($this->_db->quoteName('esc.published') . ' = ' . $this->_db->quote(1));
+	        }
 
             $this->_db->setQuery($query);
-            return $this->_db->loadObjectList();
+	        $user_campaigns = $this->_db->loadObjectList();
         } else {
-            $query->select('esc.*,ecc.date_submitted,ecc.submitted,ecc.id as campaign_candidature_id,efg.result_sent,efg.date_result_sent,efg.final_grade,ecc.fnum,ess.class,ess.step,ess.value as step_value')
-                ->from($this->_db->quoteName('#__emundus_users','eu'))
-                ->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature','ecc').' ON '.$this->_db->quoteName('ecc.applicant_id').' = '.$this->_db->quoteName('eu.user_id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$this->_db->quoteName('ecc.campaign_id').' = '.$this->_db->quoteName('esc.id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_final_grade','efg').' ON '.$this->_db->quoteName('efg.campaign_id').' = '.$this->_db->quoteName('esc.id').' AND '.$this->_db->quoteName('efg.student_id').' = '.$this->_db->quoteName('eu.user_id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_status','ess').' ON '.$this->_db->quoteName('ess.step').' = '.$this->_db->quoteName('ecc.status'))
-                ->where($this->_db->quoteName('eu.user_id').' = '.$this->_db->quote($id))
-                ->andWhere($this->_db->quoteName('ecc.published').' = '.$this->_db->quote(1))
-                ->andWhere($this->_db->quoteName('esc.id').' = '.$this->_db->quote($cid));
+			$query->andWhere($this->_db->quoteName('esc.id').' = '.$this->_db->quote($cid));
 
             $this->_db->setQuery($query);
-            return $this->_db->loadObject();
+	        $user_campaigns =  $this->_db->loadObject();
         }
+
+		return $user_campaigns;
     }
 
     public function getCampaignByFnum($fnum)
@@ -1516,7 +1515,7 @@ class EmundusModelApplication extends JModelList
                 foreach ($tableuser as $key => $itemt) {
 
                     $forms .= '<br><hr><div class="TitlePersonalInfo em-personalInfo em-mb-12">';
-                    $title = explode('-', JText::_($itemt->label));
+                    $title = explode(' - ', JText::_($itemt->label));
                     if (empty($title[1])) {
                         $title= JText::_(trim($itemt->label));
                     } else {
@@ -2108,7 +2107,7 @@ class EmundusModelApplication extends JModelList
                                                     JLog::add('component/com_emundus/models/application | Error at getting emundus_fileupload for applicant ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
                                                     $elt = '';
                                                 }
-                                            } 
+                                            }
 											elseif ($element->plugin == 'emundus_phonenumber') {
                                                 $elt = substr($element->content, 2, strlen($element->content));
                                             }
@@ -2620,11 +2619,11 @@ class EmundusModelApplication extends JModelList
 
                                                 if ($show_empty_fields == 1 || !empty($elt)) {
                                                     if ($elements[$j]->plugin == 'display') {
-                                                        $forms .= '<tr><td colspan="2" style="background-color: #F3F3F3"><span style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">' . $elt . '</span></td></tr><br/>';
+                                                        $forms .= '<tr><td colspan="2" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">' . $elt . '</span></td></tr><br/>';
                                                     } elseif ($elements[$j]->plugin == 'textarea') {
-                                                        $forms .= '<tr><td colspan="2" style="background-color: #F3F3F3"><span style="color: #000000;">' .  (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '')  . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">    ' . JText::_($elt) . '</span></td></tr>';
+                                                        $forms .= '<tr><td colspan="2" style="background-color: var(--neutral-200);"><span style="color: #000000;">' .  (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '')  . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">    ' . JText::_($elt) . '</span></td></tr>';
                                                     } else {
-                                                        $forms .= '<tr><td colspan="1" style="background-color: #F3F3F3"><span style="color: #000000;">' . (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td> <td> ' . (($elements[$j]->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
+                                                        $forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td> <td> ' . (($elements[$j]->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
                                                     }
                                                 }
                                             }
@@ -2824,9 +2823,9 @@ class EmundusModelApplication extends JModelList
                                             if ($element->plugin == 'display') {
                                                 $forms .= '<tr><td colspan="2"><span style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">' . $elt . '</span></td></tr><br/>';
                                             } elseif ($element->plugin == 'textarea') {
-                                                $forms .= '<tr><td colspan="2" style="background-color: #F3F3F3"><span style="color: #000000;">' .  (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '')  . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">  ' . JText::_($elt) . '</span></td></tr>';
+                                                $forms .= '<tr><td colspan="2" style="background-color: var(--neutral-200);"><span style="color: #000000;">' .  (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '')  . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">  ' . JText::_($elt) . '</span></td></tr>';
                                             } else {
-                                                $forms .= '<tr><td colspan="1" style="background-color: #F3F3F3"><span style="color: #000000;">' . (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td> <td> ' . (($element->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
+                                                $forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td> <td> ' . (($element->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
                                             }
                                         }
                                     } elseif (empty($element->content) && $show_empty_fields == 1) {
@@ -3934,6 +3933,15 @@ class EmundusModelApplication extends JModelList
                         WHERE alias like "checkout'.$pid.'" and published = 1';
             $dbo->setQuery($query);
             $url = $dbo->loadResult();
+
+            if (empty($url)) {
+                $query = 'SELECT CONCAT(m.link, "&Itemid=", m.id) as url
+                    FROM #__menu m
+                    LEFT JOIN #__emundus_setup_profiles esp on esp.menutype = m.menutype
+                    WHERE m.alias like "checkout%" and m.published = 1 and esp.id = '.$pid;
+                $dbo->setQuery($query);
+                $url = $dbo->loadResult();
+            }
             return $url;
         }
         catch (Exception $e)
@@ -4046,7 +4054,7 @@ class EmundusModelApplication extends JModelList
      * @param $pid Int the profile_id to get list of forms
      * @return bool
      */
-    public function copyApplication($fnum_from, $fnum_to, $pid = null, $copy_attachment = 0, $campaign_id = null, $copy_tag = 0, $move_hikashop_command = 0, $delete_from_file = 0, $params = array()) {
+    public function copyApplication($fnum_from, $fnum_to, $pid = null, $copy_attachment = 0, $campaign_id = null, $copy_tag = 0, $move_hikashop_command = 0, $delete_from_file = 0, $params = array(), $copyUsersAssoc = 0, $copyGroupsAssoc = 0) {
         $db = JFactory::getDbo();
         $pids = [];
 
@@ -4256,6 +4264,12 @@ class EmundusModelApplication extends JModelList
                 $db->setQuery($query);
                 $db->execute();
             }
+            if($copyUsersAssoc){
+                $this->copyUsersAssoc($fnum_from,$fnum_to);
+            }
+            if($copyGroupsAssoc){
+                $this->copyGroupsAssoc($fnum_from,$fnum_to);
+            }
         } catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$q.' :: '.$query, JLog::ERROR, 'com_emundus');
@@ -4340,6 +4354,85 @@ class EmundusModelApplication extends JModelList
                         }
                     } catch (Exception $e) {
                         $error = JUri::getInstance().' :: USER ID : '.$row['user_id'].' -> '.$e->getMessage();
+                        JLog::add($error, JLog::ERROR, 'com_emundus');
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+        return true;
+    }
+
+    public function copyUsersAssoc($fnum_from, $fnum_to)
+    {
+        $query = $this->_db->getQuery(true);
+
+        try {
+			$query->select('eua.*')
+				->from($this->_db->quoteName('#__emundus_users_assoc', 'eua'))
+				->where($this->_db->quoteName('eua.fnum') . ' LIKE ' . $this->_db->quote($fnum_from));
+
+	        $this->_db->setQuery($query);
+            $users_assoc = $this->_db->loadAssocList();
+
+            if (count($users_assoc) > 0) {
+                // 2. copy DB définition and duplicate files in applicant directory
+                foreach ($users_assoc as $user) {
+                    $user['fnum'] = $fnum_to;
+                    unset($user['id']);
+
+                    try {
+						$query->clear()
+							->insert($this->_db->quoteName('#__emundus_users_assoc'))
+							->columns(array_keys($user))
+							->values(implode(", ", $this->_db->quote($user)));
+	                    $this->_db->setQuery($query);
+	                    $this->_db->execute();
+                    } catch (Exception $e) {
+                        $error = JUri::getInstance().' :: USER ID : '.$user['user_id'].' -> '.$e->getMessage();
+                        JLog::add($error, JLog::ERROR, 'com_emundus');
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+        return true;
+    }
+
+    public function copyGroupsAssoc($fnum_from, $fnum_to)
+    {
+	    $query = $this->_db->getQuery(true);
+
+        try {
+			$query->select('ega.*')
+				->from($this->_db->quoteName('#__emundus_group_assoc', 'ega'))
+				->where($this->_db->quoteName('ega.fnum') . ' LIKE ' . $this->_db->quote($fnum_from));
+	        $this->_db->setQuery($query);
+            $groups_assoc = $this->_db->loadAssocList();
+
+            if (count($groups_assoc) > 0) {
+                // 2. copy DB définition and duplicate files in applicant directory
+                foreach ($groups_assoc as $group) {
+                    $group['fnum'] = $fnum_to;
+                    unset($group['id']);
+
+                    try {
+						$query->clear()
+							->insert($this->_db->quoteName('#__emundus_group_assoc'))
+							->columns(array_keys($group))
+							->values(implode(", ", $this->_db->quote($group)));
+	                    $this->_db->setQuery($query);
+	                    $this->_db->execute();
+                    } catch (Exception $e) {
+                        $error = JUri::getInstance().' :: fnum : '.$group['user_id'].' :: group : '.$group['group_id'].' -> '.$e->getMessage();
                         JLog::add($error, JLog::ERROR, 'com_emundus');
                     }
                 }
@@ -4901,7 +4994,6 @@ class EmundusModelApplication extends JModelList
     {
         $preview = [
             'status' => true,
-            'content' => '',
             'overflowX' => false,
             'overflowY' => false,
             'style' => '',
@@ -4914,11 +5006,9 @@ class EmundusModelApplication extends JModelList
         $fileExists = File::exists($filePath);
 
         if ($fileExists) {
-
             // create preview based on filetype
             if ($extension == 'pdf') {
-                $siteUrl = JURI::base();
-                $preview['content'] = '<iframe src="' . $siteUrl . $filePath . '" style="width:100%;height:100%;" frameborder="0"></iframe>';
+                $preview['content'] = '<iframe src="/index.php?option=com_emundus&task=getfile&u=images/emundus/files/'. $user . '/' . $fileName . '" style="width:100%;height:100%;" border="0"></iframe>';
             } else if ($extension == 'txt') {
                 $content = file_get_contents($filePath);
                 $preview['overflowY'] = true;
