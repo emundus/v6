@@ -1364,9 +1364,11 @@ try {
 			if (version_compare($cache_version, '1.36.0', '<=') || $firstrun)
 			{
 				EmundusHelperUpdate::addCustomEvents([
+                    ['label' => 'onBeforeEmundusRedirectToHikashopCart', 'category' => 'Hikashop'],
+                    ['label' => 'onBeforeApplicantEnterApplication', 'category' => 'Files'],
+                    ['label' => 'onAccessDenied', 'category' => 'Access'],
 					['label' => 'onBeforeEmundusRedirectToHikashopCart', 'category' => 'Hikashop'],
-					['label' => 'onBeforeApplicantEnterApplication', 'category' => 'Files'],
-					['label' => 'onAccessDenied', 'category' => 'Access']
+					['label' => 'onBeforeApplicantEnterApplication', 'category' => 'Files']
 				]);
 
 				// Campaign candidature tabs
