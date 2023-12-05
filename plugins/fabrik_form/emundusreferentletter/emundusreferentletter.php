@@ -123,12 +123,27 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 		$emails = explode(',',$this->getParam('emails','jos_emundus_references___Email_1,jos_emundus_references___Email_2,jos_emundus_references___Email_3,jos_emundus_references___Email_4'));
 		$names = explode(',',$this->getParam('names','jos_emundus_references___Last_Name_1,jos_emundus_references___Last_Name_2,jos_emundus_references___Last_Name_3,jos_emundus_references___Last_Name_4'));
 		$firstnames = explode(',',$this->getParam('firstnames','jos_emundus_references___First_Name_1,jos_emundus_references___First_Name_2,jos_emundus_references___First_Name_3,jos_emundus_references___First_Name_4'));
+		$default_attachments = [4,6,21,19];
 
         $recipients = array();
-        $recipients[] = array('attachment_id' => $jinput->get('jos_emundus_references___attachment_id_1', 4), 'email' => $jinput->getString($emails[0], ''),'name'=>ucwords($jinput->getString($names[0], JText::_('CIVILITY_MR').'/'.JText::_('CIVILITY_MRS'))),'firstname'=>ucwords($jinput->getString($firstnames[0], '')));
-        $recipients[] = array('attachment_id' => $jinput->get('jos_emundus_references___attachment_id_2', 6), 'email' => $jinput->getString($emails[1], ''),'name'=>ucwords($jinput->getString($names[1], JText::_('CIVILITY_MR').'/'.JText::_('CIVILITY_MRS'))),'firstname'=>ucwords($jinput->getString($firstnames[1], '')));
-        $recipients[] = array('attachment_id' => $jinput->get('jos_emundus_references___attachment_id_3', 21), 'email' => $jinput->getString($emails[2], ''),'name'=>ucwords($jinput->getString($names[2], JText::_('CIVILITY_MR').'/'.JText::_('CIVILITY_MRS'))),'firstname'=>ucwords($jinput->getString($firstnames[2], '')));
-        $recipients[] = array('attachment_id' => $jinput->get('jos_emundus_references___attachment_id_4', 19), 'email' => $jinput->getString($emails[3], ''),'name'=>ucwords($jinput->getString($names[3], JText::_('CIVILITY_MR').'/'.JText::_('CIVILITY_MRS'))),'firstname'=>ucwords($jinput->getString($firstnames[3], '')));
+		foreach ($emails as $key => $email) {
+			$email = $jinput->getString($email, '');
+			$name = JText::_('CIVILITY_MR').'/'.JText::_('CIVILITY_MRS');
+			$firstname = '';
+			if(!empty($names[$key])) {
+				$name = $jinput->getString($names[$key], JText::_('CIVILITY_MR').'/'.JText::_('CIVILITY_MRS'));
+			}
+			if(!empty($firstnames[$key])) {
+				$firstname = $jinput->getString($firstnames[$key], '');
+			}
+
+			$recipients[] = array(
+				'attachment_id' => $jinput->get('jos_emundus_references___attachment_id_'.$key, $default_attachments[$key]),
+				'email' => $email,
+				'name'=> ucwords($name),
+				'firstname'=> ucwords($firstname)
+			);
+		}
 
 		$student = JFactory::getUser($student_id);
 
