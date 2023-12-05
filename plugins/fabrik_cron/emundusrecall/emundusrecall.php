@@ -107,8 +107,10 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
         if (!empty($applicants)) {
             include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
             include_once(JPATH_SITE.'/components/com_emundus/models/messages.php');
+            include_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
             $m_emails = new EmundusModelEmails;
             $m_messages = new EmundusModelMessages;
+            $h_date = new EmundusHelperDate;
             $email = $m_messages->getEmail($reminder_mail_id);
 
             foreach ($applicants as $applicant) {
@@ -126,7 +128,7 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
 
                 $post = array(
                     'FNUM' => $applicant->fnum,
-                    'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($end_date)),
+                    'DEADLINE' => $h_date->displayDate($end_date),
                     'CAMPAIGN_LABEL' => $applicant->label,
                     'CAMPAIGN_START' => $start_date,
                     'CAMPAIGN_END' => $end_date,

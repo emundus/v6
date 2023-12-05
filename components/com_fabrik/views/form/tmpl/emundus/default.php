@@ -200,13 +200,15 @@ endif;
         for (title of grouptitle) {
             title.style.opacity = 0;
         }
-        grouptitle = document.querySelectorAll('.fabrikGroup h2');
+        grouptitle = document.querySelectorAll('.fabrikGroup h2, .fabrikGroup h3');
         for (title of grouptitle){
             title.style.opacity = 0;
         }
-        let groupintro = document.querySelector('.groupintro');
-        if (groupintro) {
-            groupintro.style.opacity = 0;
+        let groupintros = document.querySelectorAll('.groupintro');
+        if (groupintros) {
+            groupintros.forEach((groupintro) => {
+                groupintro.style.opacity = 0;
+            });
         }
 
         let elements = document.querySelectorAll('.fabrikGroup .row-fluid');

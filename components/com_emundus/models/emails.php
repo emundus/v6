@@ -871,7 +871,7 @@ class EmundusModelEmails extends JModelList {
             $preg = array('patterns' => array(), 'replacements' => array());
             foreach ($fnumsArray as $fnum) {
                 foreach ($idFabrik as $id) {
-                    $preg['patterns'][] = '/\$\{(.*?)'.$id.'(.*?)}/i';
+                    $preg['patterns'][] = '/\$\{' . $id . '\}/';
                     if (isset($fabrikValues[$id][$fnum])) {
                         $preg['replacements'][] = JText::_($fabrikValues[$id][$fnum]['val']);
                     } else {
@@ -1220,6 +1220,7 @@ class EmundusModelEmails extends JModelList {
         if (!empty($fnums)) {
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+            JPluginHelper::importPlugin('emundus');
 
             $h_filters = new EmundusHelperFilters();
             $m_files = new EmundusModelFiles();
@@ -1227,7 +1228,7 @@ class EmundusModelEmails extends JModelList {
             JLog::addLogger(['text_file' => 'com_emundus.inviteExpert.error.php'], JLog::ALL, 'com_emundus');
 
             $eMConfig = JComponentHelper::getParams('com_emundus');
-            $formid = json_decode($eMConfig->get('expert_fabrikformid', '{"accepted":169, "refused":328}'));
+            $formid = json_decode($eMConfig->get('expert_fabrikformid', '{"accepted":169, "refused":328, "agreement": 0}'));
             $documentid = $eMConfig->get('expert_document_id', '36');
 
             $app = JFactory::getApplication();
@@ -1378,6 +1379,11 @@ class EmundusModelEmails extends JModelList {
                         'EXPERT_REFUSE_LINK_RELATIVE_NOFORM'    => $link_refuse_noform
                     );
 
+                    if (!empty($formid->agreement)) {
+                        $post['EXPERT_KEY_ID'] = $key1;
+                        $post['EXPERT_AGREEMENT_LINK'] = JURI::base() . 'index.php?option=com_fabrik&c=form&view=form&formid=' . $formid->agreement . '&keyid=' . $key1;
+                    }
+
                     $tags = $this->setTags($example_user_id, $post, $example_fnum);
 
                     $message = $this->setTagsFabrik($mail_body, [$example_fnum]);
@@ -1459,6 +1465,12 @@ class EmundusModelEmails extends JModelList {
                         $print_message .= '<hr>'.JText::_('COM_EMUNDUS_EMAILS_SUBJECT').' : '.$mail_subject;
                         $print_message .= '<hr>'.$body;
                     }
+
+                    JFactory::getApplication()->triggerEvent('callEventHandler', ['onSendExpertRequest', [
+                        'keyid' => $key1,
+                        'fnums' => $fnums,
+                        'mail_to' => $m_to
+                    ]]);
                 }
                 unset($key1);
 
@@ -1753,13 +1765,13 @@ class EmundusModelEmails extends JModelList {
     function getAllEmails($lim, $page, $filter, $sort, $recherche, $category = '') {
         $query = $this->_db->getQuery(true);
 
-        if (empty($lim)) {
-            $limit = 25;
+        if (empty($lim) || $lim == 'all') {
+            $limit = '';
         } else {
             $limit = $lim;
         }
 
-        if (empty($page)) {
+        if (empty($page) || empty($limit)) {
             $offset = 0;
         } else {
             $offset = ($page-1) * $limit;
@@ -1802,11 +1814,7 @@ class EmundusModelEmails extends JModelList {
         try {
             $this->_db->setQuery($query);
             $count_emails  = sizeof($this->_db->loadObjectList());
-            if(empty($lim)) {
-                $this->_db->setQuery($query, $offset);
-            } else {
-                $this->_db->setQuery($query, $offset, $limit);
-            }
+            $this->_db->setQuery($query, $offset, $limit);
 
             $emails = $this->_db->loadObjectList();
             if (!empty($emails)) {

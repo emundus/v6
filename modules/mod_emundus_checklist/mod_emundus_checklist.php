@@ -163,16 +163,20 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $db->setQuery($query);
     $uploads = $db->loadObjectList();
 
-    foreach ($uploads as $upload){
+	$units = array( 'B', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb', 'Eb', 'Zb', 'Yb');
+
+	foreach ($uploads as $upload){
         $file = $applicant_files_path . $user->id . '/' . $upload->filename;
         $bytes = filesize($file);
 
         if($bytes) {
-            $decimals = 0;
+	        $power = $bytes > 0 ? floor(log($bytes, 1024)) : 0;
+	        $upload->filesize = number_format($bytes / pow(1024, $power), 0, '.', ',') . ' ' . $units[$power];
+            /*$decimals = 0;
 
             $factor = floor((strlen($bytes) - 1) / 3);
             if ($factor > 0) $sz = 'KMGT';
-            $upload->filesize = sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor - 1] . 'o';
+            $upload->filesize = sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor - 1] . 'o';*/
         } else {
             $upload->filesize = 0;
         }

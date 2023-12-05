@@ -1364,9 +1364,11 @@ try {
 			if (version_compare($cache_version, '1.36.0', '<=') || $firstrun)
 			{
 				EmundusHelperUpdate::addCustomEvents([
+                    ['label' => 'onBeforeEmundusRedirectToHikashopCart', 'category' => 'Hikashop'],
+                    ['label' => 'onBeforeApplicantEnterApplication', 'category' => 'Files'],
+                    ['label' => 'onAccessDenied', 'category' => 'Access'],
 					['label' => 'onBeforeEmundusRedirectToHikashopCart', 'category' => 'Hikashop'],
-					['label' => 'onBeforeApplicantEnterApplication', 'category' => 'Files'],
-					['label' => 'onAccessDenied', 'category' => 'Access']
+					['label' => 'onBeforeApplicantEnterApplication', 'category' => 'Files']
 				]);
 
 				// Campaign candidature tabs
@@ -3752,10 +3754,9 @@ structure:
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$payment_activated = $eMConfig->get('application_fee');
 
-		if ($payment_activated) {
-			EmundusHelperUpdate::removeFromFile(JPATH_ROOT . '/.htaccess', ['php_value session.cookie_samesite Strict' . PHP_EOL]);
-		} else {
-			EmundusHelperUpdate::insertIntoFile(JPATH_ROOT . '/.htaccess', "php_value session.cookie_samesite Strict" . PHP_EOL);
+		EmundusHelperUpdate::removeFromFile(JPATH_ROOT . '/.htaccess', ['php_value session.cookie_samesite Strict']);
+		if (!$payment_activated) {
+			EmundusHelperUpdate::insertIntoFile(JPATH_ROOT . '/.htaccess', "php_value session.cookie_samesite Lax" . PHP_EOL);
 		}
 
 		return true;

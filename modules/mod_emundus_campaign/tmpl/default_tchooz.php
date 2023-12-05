@@ -36,8 +36,8 @@ if(sizeof($tmp_campaigns) > 0) {
         });
 
         foreach ($tmp_campaigns as $campaign) {
-            $campaigns[$campaign->code][] = $campaign;
-            $campaigns[$campaign->code]['label'] = $campaign->programme;
+            $campaigns[$campaign->training][] = $campaign;
+            $campaigns[$campaign->training]['label'] = $campaign->programme;
         }
 
     } elseif ($group_by == 'category') {
@@ -261,18 +261,19 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
                             <hr>
 
-                            <div class="mod_emundus_campaign__list_content_resume em-text-neutral-600">
-                                <?php
-                                $text = '';
-                                $textprog = '';
-                                $textcamp = '';
-                                if ($showcampaign) {
-                                    $textcamp = $campaign_pinned->short_description;
-                                }
-                                echo $textcamp;
-                                ?>
-                            </div>
-                            </div>
+	                        <?php
+	                        $text = '';
+	                        $textprog = '';
+	                        $textcamp = '';
+	                        if ($showcampaign) {
+		                        $textcamp = $campaign_pinned->short_description;
+	                        }
+	                        ?>
+
+                        <div title="<?php echo strip_tags($textcamp); ?>" class="mod_emundus_campaign__list_content_resume em-text-neutral-600">
+                            <?php echo $textcamp; ?>
+                        </div>
+                        </div>
 
                             <?php if ($mod_em_campaign_show_apply_button == 1 && (strtotime($now) < strtotime($campaign_pinned->end_date)) && (strtotime($now) > strtotime($campaign_pinned->start_date))) : ?>
                                 <div>
@@ -660,22 +661,22 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                                 </div>
                                             </div>
 
-                                            <hr>
+                                <hr>
+	                                <?php
+	                                $text = '';
+	                                $textprog = '';
+	                                $textcamp = '';
+	                                if ($showcampaign) {
+		                                $textcamp = $result->short_description;
+	                                }
+	                                ?>
 
-                                            <div class="mod_emundus_campaign__list_content_resume em-text-neutral-600"
-                                                <?php if (empty($mod_em_campaign_show_timezone) || (strtotime($now) > strtotime($result->end_date)) ) : ?> style="-webkit-line-clamp: 4;" <?php endif; ?>
-                                            >
-                                                <?php
-                                                $text = '';
-                                                $textprog = '';
-                                                $textcamp = '';
-                                                if ($showcampaign) {
-                                                    $textcamp = $result->short_description;
-                                                }
-                                                echo $textcamp;
-                                                ?>
-                                            </div>
-                                            </div>
+                                <div title="<?php echo strip_tags($textcamp); ?>" class="mod_emundus_campaign__list_content_resume em-text-neutral-600"
+                                    <?php if (empty($mod_em_campaign_show_timezone) || (strtotime($now) > strtotime($result->end_date)) ) : ?> style="-webkit-line-clamp: 4;" <?php endif; ?>
+                                >
+	                                <?php echo $textcamp; ?>
+                                </div>
+                                </div>
 
                                             <?php if ($mod_em_campaign_show_apply_button == 1 && (strtotime($now) < strtotime($result->end_date)) && (strtotime($now) > strtotime($result->start_date))) : ?>
                                                 <div>

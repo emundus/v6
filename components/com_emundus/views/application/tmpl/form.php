@@ -7,7 +7,6 @@
  */
 JFactory::getSession()->set('application_layout', 'form');
 
-$pids = json_decode($this->pids);
 $defaultpid = $this->defaultpid;
 $user = $this->userid;
 ?>
@@ -70,7 +69,7 @@ $user = $this->userid;
         <div class="panel-body Marginpanel-body em-container-form-body">
             <input type="hidden" id="dpid_hidden" value="<?php echo $defaultpid->pid ?>"/>
 
-            <div id="em-switch-profiles" <?php if(sizeof($pids) < 1): ?>style="display: none"<?php endif; ?>>
+            <div id="em-switch-profiles" <?php if(sizeof($this->pids) < 1): ?>style="display: none"<?php endif; ?>>
 
                 <div class="em_label">
                     <label class="control-label em-filter-label em-font-size-14" style="margin-left: 0 !important;"><?= JText::_('PROFILE_FORM'); ?></label>
@@ -82,9 +81,9 @@ $user = $this->userid;
                         <p class="em-font-size-14 em-neutral-900-color" title="<?= $defaultpid->label; ?>" style="white-space: nowrap"> <?= $defaultpid->label; ?></p>
                     </div>
 
-	                <?php foreach($pids as $pid) : ?>
-	                   <?php if(is_array($pid->data)) : ?>
-	                     <?php foreach($pid->data as $data) : ?>
+	                <?php foreach($this->pids as $pid) : ?>
+	                    <?php if(is_array($pid['data'])) : ?>
+	                     <?php foreach($pid['data'] as $data) : ?>
 	                      <?php if($data->pid != $defaultpid->pid): ?>
 	                          <?php if($data->step !== null) : ?>
                                 <div id="tab_link_<?php echo $data->pid; ?>" onclick="updateProfileForm(<?php echo $data->pid ?>)" class="em-mr-16 em-flex-row profile_tab em-light-tabs em-pointer mb-2">
@@ -98,8 +97,8 @@ $user = $this->userid;
                           <?php endif ?>
 		                <?php endforeach; ?>
                         <?php else : ?>
-                                <div id="tab_link_<?php echo $pid->data->pid; ?>" onclick="updateProfileForm(<?php echo $data->pid ?>)" class="em-mr-16 profile_tab em-flex-row em-light-tabs em-pointer mb-2">
-                                    <p class="em-font-size-14 em-neutral-600-color" title="<?php echo $pid->data->label; ?>" style="white-space: nowrap"> <?php echo $pid->data->label; ?></p>
+                                <div id="tab_link_<?php echo $pid['data']->pid; ?>" onclick="updateProfileForm(<?php echo $pid['data']->pid ?>)" class="em-mr-16 profile_tab em-flex-row em-light-tabs em-pointer mb-2">
+                                    <p class="em-font-size-14 em-neutral-600-color" title="<?php echo $pid['data']->label; ?>" style="white-space: nowrap"> <?php echo $pid['data']->label; ?></p>
                                 </div>
                         <?php endif;?>
 	                <?php endforeach; ?>
