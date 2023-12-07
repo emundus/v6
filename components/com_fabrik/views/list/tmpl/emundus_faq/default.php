@@ -234,6 +234,6 @@ endif;
 
     document.querySelectorAll('details').forEach((el) => {
         new Accordion(el);
-    });x
+    });
 
 </script>

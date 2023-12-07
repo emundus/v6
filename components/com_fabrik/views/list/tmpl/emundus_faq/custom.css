@@ -13,6 +13,10 @@ a.advanced-search-link-NOT {
     overflow: auto;
 }
 
+.view-list form.form-search .fabrikFilterContainer .row-fluid .span6 .table.table-striped tfoot tr td {
+    display: none;
+}
+
 .view-list .fabrik_action .dropdown-toggle.btn.btn-mini {
     margin: 0;
     height: min-content;
@@ -235,6 +239,17 @@ a.advanced-search-link-NOT {
     font-weight: 600;
     min-width: 160px;
     margin-bottom: 12px;
+}
+
+/* Mise en forme des catégories de questions */
+.table.table-striped.table-hover .pt-6:not(.pt-6:first-child),
+.table.table-striped.table-hover table{
+    margin-top: 26px;
+}
+
+.table.table-striped.table-hover .pt-6 .fabrik_groupheading.info .toggle i,
+.table.table-striped.table-hover .pt-6 .fabrik_groupheading.info .toggle .groupTitle {
+    color: var(--em-profile-color);
 }
 
 /** **/
