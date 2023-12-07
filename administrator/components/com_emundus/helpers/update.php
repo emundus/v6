@@ -419,27 +419,29 @@ class EmundusHelperUpdate
      *
      * @since version 1.33.0
      */
-    public static function updateConfigurationFile($param, $value) {
+	public static function updateConfigurationFile($param, $value)
+	{
 		$updated = false;
 
-		if(!empty($param) && !empty($value) && !in_array($param, ['host','user','password','db','secret','mailfrom','smtpuser','smpthost','smtppass','smtpsecure','smtpport','webhook_token'])) {
-			$formatter = new JRegistryFormatPHP();
-			$config    = new JConfig();
+		if (!empty($param) && !empty($value) && !in_array($param, ['host', 'user', 'password', 'db', 'secret', 'mailfrom', 'smtpuser', 'smpthost', 'smtppass', 'smtpsecure', 'smtpport'])) {
+			require_once(JPATH_SITE . '/components/com_config/model/cms.php');
+			require_once(JPATH_SITE . '/components/com_config/model/form.php');
+			require_once(JPATH_ROOT . '/administrator/components/com_config/model/application.php');
 
-			$config->$param = $value;
-			$params         = array('class' => 'JConfig', 'closingtag' => false);
-			$str            = $formatter->objectToString($config, $params);
-			$config_file    = JPATH_CONFIGURATION . '/configuration.php';
+			$model = new ConfigModelApplication();
 
-			if (file_exists($config_file) and is_writable($config_file)) {
-				if(file_put_contents($config_file, $str)) {
-					$updated = true;
-				}
-			}
+			$oldData = $model->getData();
+
+			$data         = array();
+			$data[$param] = $value;
+
+			$data = array_replace($oldData, $data);
+
+			$updated = $model->save($data);
 		}
 
 		return $updated;
-    }
+	}
 
     /**
      * Update a variable in a yaml file like Gantry configuration files
