@@ -28,7 +28,7 @@ $summary = array_keys($otherHeadings)[0];
 unset($otherHeadings[$summary]);
 
 ?>
-<tr id="<?php echo $this->_row->id;?>" class="<?php echo $this->_row->class;?>" xmlns="http://www.w3.org/1999/html">
+<div id="<?php echo $this->_row->id;?>" class="<?php echo $this->_row->class;?> mb-4" xmlns="http://www.w3.org/1999/html">
     <details class="faq-question-container">
         <summary class="faq-question-container__question">
             <?php echo isset($this->_row->data) ? $this->_row->data->$summary : '';?>
@@ -67,4 +67,4 @@ unset($otherHeadings[$summary]);
 	        <?php }?>
         </div>
     </details>
-</tr>
+</div>

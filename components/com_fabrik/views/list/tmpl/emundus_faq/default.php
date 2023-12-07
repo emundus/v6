@@ -70,61 +70,49 @@ echo $this->loadTemplate('tabs');
 	echo $c;
 endforeach;
 ?>
-	<table class="<?php echo $this->list->class;?>" id="list_<?php echo $this->table->renderid;?>" >
-        <colgroup>
-            <?php foreach ($this->headings as $key => $heading) : ?>
-				<col class="col-<?php echo $key; ?>">
-            <?php endforeach; ?>
-        </colgroup>
-		 <tfoot>
-			<tr class="fabrik___heading">
-				<td colspan="<?php echo count($this->headings);?>">
-					<?php echo $this->nav;?>
-				</td>
-			</tr>
-		 </tfoot>
+	<div class="<?php echo $this->list->class;?>" id="list_<?php echo $this->table->renderid;?>" >
 		<?php
 		if ($this->isGrouped && empty($this->rows)) :
 			?>
-			<tbody style="<?php echo $this->emptyStyle?>">
-				<tr class="groupDataMsg">
-					<td class="emptyDataMessage" style="<?php echo $this->emptyStyle?>" colspan="<?php echo count($this->headings)?>">
+			<div style="<?php echo $this->emptyStyle?>">
+				<div class="groupDataMsg">
+					<div class="emptyDataMessage" style="<?php echo $this->emptyStyle?>" colspan="<?php echo count($this->headings)?>">
 						<div class="emptyDataMessage" style="<?php echo $this->emptyStyle?>">
 							<?php echo $this->emptyDataMessage; ?>
 						</div>
-					</td>
-				</tr>
-			</tbody>
+					</div>
+				</div>
+			</div>
 			<?php
 		endif;
 		$gCounter = 0;
 		foreach ($this->rows as $groupedBy => $group) :
 			if ($this->isGrouped) : ?>
-			<tbody>
-				<tr class="fabrik_groupheading info">
-					<td colspan="<?php echo $this->colCount;?>">
+			<div class="border-t border-neutral-300 pt-6">
+				<div class="fabrik_groupheading info mb-4 px-2">
+					<div colspan="<?php echo $this->colCount;?>">
 						<?php echo $this->layoutGroupHeading($groupedBy, $group); ?>
-					</td>
-				</tr>
-			</tbody>
+					</div>
+				</div>
+			</div>
 			<?php endif ?>
-			<tbody class="fabrik_groupdata">
-				<tr class="groupDataMsg" style="<?php echo $this->emptyStyle?>">
-					<td class="emptyDataMessage" style="<?php echo $this->emptyStyle?>" colspan="<?php echo count($this->headings)?>">
+			<div class="fabrik_groupdata">
+				<div class="groupDataMsg" style="<?php echo $this->emptyStyle?>">
+					<div class="emptyDataMessage" style="<?php echo $this->emptyStyle?>" colspan="<?php echo count($this->headings)?>">
 						<div class="emptyDataMessage" style="<?php echo $this->emptyStyle?>">
 							<?php echo $this->emptyDataMessage; ?>
 						</div>
-					</td>
-				</tr>
+					</div>
+				</div>
 			<?php
 			foreach ($group as $this->_row) :
 				echo $this->loadTemplate('row');
 		 	endforeach
 		 	?>
-		 	</tbody>
+		 	</div>
 			<?php if ($this->hasCalculations) : ?>
-			<tfoot>
-				<tr class="fabrik_calculations">
+			<div>
+				<div class="fabrik_calculations">
 
 				<?php
 				foreach ($this->headings as $key => $heading) :
@@ -140,13 +128,20 @@ endforeach;
 				endforeach;
 				?>
 
-				</tr>
-			</tfoot>
+				</div>
+			</div>
 			<?php endif ?>
 		<?php
 		$gCounter++;
 		endforeach?>
-	</table>
+        <table style="border: unset">
+            <tr class="fabrik___heading bg-transparent">
+                <td colspan="<?php echo count($this->headings);?>">
+					<?php echo $this->nav;?>
+                </td>
+            </tr>
+        </table>
+	</div>
 	<?php print_r($this->hiddenFields);?>
 </div>
 </form>

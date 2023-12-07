@@ -2250,6 +2250,19 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .border {
   border-width: 1px;
 }
+.border-t {
+  border-top-width: 1px;
+}
+.border-neutral-500 {
+  border-color: var(--neutral-500);
+}
+.border-neutral-300 {
+  --tw-border-opacity: 1;
+  border-color: rgb(212 212 212 / var(--tw-border-opacity));
+}
+.bg-transparent {
+  background-color: transparent;
+}
 .p-0 {
   padding: 0px;
 }
@@ -2262,6 +2275,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .p-6 {
   padding: var(--em-spacing-6);
 }
+.px-2 {
+  padding-left: var(--em-spacing-2);
+  padding-right: var(--em-spacing-2);
+}
 .px-6 {
   padding-left: var(--em-spacing-6);
   padding-right: var(--em-spacing-6);
@@ -2269,6 +2286,13 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .py-3 {
   padding-top: var(--em-spacing-3);
   padding-bottom: var(--em-spacing-3);
+}
+.py-6 {
+  padding-top: var(--em-spacing-6);
+  padding-bottom: var(--em-spacing-6);
+}
+.pt-6 {
+  padding-top: var(--em-spacing-6);
 }
 .text-center {
   text-align: center;
@@ -2279,6 +2303,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .font-normal {
   font-weight: 400;
+}
+.font-semibold {
+  font-weight: 600;
 }
 .uppercase {
   text-transform: uppercase;
@@ -2291,6 +2318,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .italic {
   font-style: italic;
+}
+.text-green-500 {
+  color: var(--main-500);
 }
 .text-neutral-600 {
   color: var(--neutral-600);

@@ -1,49 +1,3 @@
-@media only screen and (max-device-width: 499px) {
-    .fabrikWindow.modal {
-        max-width: 100% !important;
-        left: 0 !important;
-    }
-
-    .fabrikWindow.modal .contentWrapper {
-        max-width: 100% !important;
-    }
-
-    .fabrikWindow .radius_search table.radius_table {
-        table-layout: fixed;
-        max-width: 100%;
-    }
-
-    .fabrikWindow .radius_search table.radius_table td:first-child {
-        width: 70px;
-    }
-
-    .radius_search_geocode_map {
-        width: 300px;
-        height: 275px;
-        margin-top: 15px;
-    }
-}
-
-@media only screen and (min-device-width: 500px) {
-    .radius_search_geocode_map {
-        width: 400px;
-        height: 275px;
-        margin-top: 15px;
-    }
-}
-
-.us_cities___city {
-    font-size: 24px;
-}
-
-.us_cities___state_code {
-    font-size: 16px;
-}
-
-.fab_main_test___yes_no {
-    width: 150px;
-}
-
 a.advanced-search-link-NOT {
     background-color: #4CAF50; /* Green */
     border: none;
@@ -87,11 +41,7 @@ a.advanced-search-link-NOT {
     display: none;
 }
 
-.view-list .table .fabrik_row td.fabrik_actions.fabrik_element {
-    text-align: end;
-}
-
-.view-list .fabrikDataContainer .table tbody td.fabrik_actions.fabrik_element a.btn.btn-default,
+.view-list .fabrikDataContainer .table tbody tr.fabrik_actions.fabrik_element a.btn.btn-default,
 .view-list .table .fabrik___heading th.heading.fabrik_actions .btn-group .btn-default {
     height: 36px;
     width: 44px;
@@ -107,11 +57,11 @@ a.advanced-search-link-NOT {
     color: black;
 }
 
-.view-list .fabrikDataContainer .table tbody td.fabrik_actions.fabrik_element a.btn.btn-default i {
+.view-list .fabrikDataContainer .table div div.fabrik_actions.fabrik_element a.btn.btn-default i {
     margin-right: 0;
 }
 
-.view-list .fabrikDataContainer .table tbody td.fabrik_actions.fabrik_element .btn-group {
+.view-list .fabrikDataContainer .table div div.fabrik_actions.fabrik_element .btn-group {
     display: flex;
     justify-content: end;
     gap: 4px;
@@ -163,7 +113,7 @@ a.advanced-search-link-NOT {
 }
 
 .view-list .table-striped tbody tr:nth-child(2n+1) td, .table-striped tbody tr:nth-child(2n+1) th {
-    background: transparent;
+    background: transparent !important;
 }
 
 .view-list .table-hover tbody tr:nth-child(2n) > td, .table-hover tbody tr:nth-child(2n) > th {
@@ -307,19 +257,20 @@ a.advanced-search-link-NOT {
     padding: 0 6px;
 }
 
-.view-list .fabrikDataContainer .table tfoot tr td {
-    padding-left: 0;
-}
 
-.view-list .fabrikDataContainer .table tfoot .fabrikNav .list-footer .pagination {
+.view-list .fabrikDataContainer .table div .fabrikNav .list-footer .pagination {
     margin: 0;
 }
 
-.view-list .fabrikDataContainer .table tfoot .fabrikNav .list-footer .pagination ul.pagination-list {
+.fabrik___heading:hover {
+    background: transparent;
+}
+
+.view-list .fabrikDataContainer .table div .fabrikNav .list-footer .pagination ul.pagination-list {
     box-shadow: unset;
 }
 
-.view-list .fabrikDataContainer .table tfoot .fabrikNav .list-footer .pagination ul.pagination-list li a {
+.view-list .fabrikDataContainer .table div .fabrikNav .list-footer .pagination ul.pagination-list li a {
     background: transparent;
     border: unset;
     padding: 0;
@@ -339,10 +290,10 @@ a.advanced-search-link-NOT {
     border: 1px solid #EDEDED;
 }
 
-.view-list .fabrikDataContainer .table tfoot .fabrikNav .list-footer .pagination ul.pagination-list li.active.pagination-prev a,
-.view-list .fabrikDataContainer .table tfoot .fabrikNav .list-footer .pagination ul.pagination-list li.active.pagination-start a,
-.view-list .fabrikDataContainer .table tfoot .fabrikNav .list-footer .pagination ul.pagination-list li.active.pagination-next a,
-.view-list .fabrikDataContainer .table tfoot .fabrikNav .list-footer .pagination ul.pagination-list li.active.pagination-end a {
+.view-list .fabrikDataContainer .table div .fabrikNav .list-footer .pagination ul.pagination-list li.active.pagination-prev a,
+.view-list .fabrikDataContainer .table div .fabrikNav .list-footer .pagination ul.pagination-list li.active.pagination-start a,
+.view-list .fabrikDataContainer .table div .fabrikNav .list-footer .pagination ul.pagination-list li.active.pagination-next a,
+.view-list .fabrikDataContainer .table div .fabrikNav .list-footer .pagination ul.pagination-list li.active.pagination-end a {
     color: #8990A9;
 }
 
@@ -405,4 +356,8 @@ a.advanced-search-link-NOT {
 .view-list .fabrikForm::-webkit-scrollbar-thumb {
     background: #DFDFDF;
     border-radius: 8px;
+}
+
+.icon-arrow-down {
+    color: var(--main-500);
 }
