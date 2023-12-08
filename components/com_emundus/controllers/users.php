@@ -187,10 +187,12 @@ class EmundusControllerUsers extends JControllerLegacy {
 			$mail_from_name = $mail_from_sys_name;
 		}
 
-		$sender = [
-			$mail_from,
-			$mail_from_name
-		];
+        $mail_from_address = $mail_from_sys;
+
+        $sender = [
+            $mail_from_address,
+            $mail_from_name
+        ];
 
 		$mailer->setSender($sender);
 		$mailer->addReplyTo($email->emailfrom, $email->name);
