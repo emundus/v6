@@ -52,7 +52,7 @@ JText::script('COM_EMUNDUS_OK');
 
 JHtml::styleSheet('components/com_emundus/src/assets/css/element-ui/theme-chalk/index.css');
 
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+require_once (JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 
 $ratio = '66/33';
