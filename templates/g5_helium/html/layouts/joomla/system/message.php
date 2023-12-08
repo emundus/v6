@@ -25,7 +25,6 @@ if (version_compare(JVERSION, 4.0, '>')) {
 
 $msgList = $displayData['msgList'];
 
-
 ?>
 <div id="system-message-container">
     <?php if (is_array($msgList) && !empty($msgList)) : ?>

@@ -228,6 +228,7 @@ class EmundusModelApplication extends JModelList
 						->where($this->_db->quoteName('attachment_id').' = '.$this->_db->quote($attachment->attachment_id));
 					$this->_db->setQuery($query);
 					$attachment->profiles = $this->_db->loadColumn();
+                    $attachment->upload_description = empty($attachment->upload_description)? '' : $attachment->upload_description;
 				}
 
 				if ($attachments !== array_values($attachments)) {

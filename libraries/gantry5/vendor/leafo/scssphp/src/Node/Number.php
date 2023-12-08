@@ -138,6 +138,7 @@ class Number extends Node implements \ArrayAccess
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         if ($offset === -3) {
@@ -162,6 +163,7 @@ class Number extends Node implements \ArrayAccess
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         switch ($offset) {
@@ -188,6 +190,7 @@ class Number extends Node implements \ArrayAccess
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         if ($offset === 1) {
@@ -206,6 +209,7 @@ class Number extends Node implements \ArrayAccess
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         if ($offset === 1) {
@@ -226,6 +230,7 @@ class Number extends Node implements \ArrayAccess
      *
      * @return boolean
      */
+    #[\ReturnTypeWillChange]
     public function unitless()
     {
         return ! array_sum($this->units);
@@ -236,6 +241,7 @@ class Number extends Node implements \ArrayAccess
      *
      * @return string
      */
+    #[\ReturnTypeWillChange]
     public function unitStr()
     {
         $numerators   = [];
@@ -263,6 +269,7 @@ class Number extends Node implements \ArrayAccess
      *
      * @return string
      */
+    #[\ReturnTypeWillChange]
     public function output(Compiler $compiler = null)
     {
         $dimension = round($this->dimension, static::$precision);
@@ -299,6 +306,7 @@ class Number extends Node implements \ArrayAccess
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function __toString()
     {
         return $this->output();

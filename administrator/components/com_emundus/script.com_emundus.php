@@ -3478,10 +3478,9 @@ try {
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$payment_activated = $eMConfig->get('application_fee');
 
-		if ($payment_activated) {
-			EmundusHelperUpdate::removeFromFile(JPATH_ROOT . '/.htaccess', ['php_value session.cookie_samesite Strict' . PHP_EOL]);
-		} else {
-			EmundusHelperUpdate::insertIntoFile(JPATH_ROOT . '/.htaccess', "php_value session.cookie_samesite Strict" . PHP_EOL);
+		EmundusHelperUpdate::removeFromFile(JPATH_ROOT . '/.htaccess', ['php_value session.cookie_samesite Strict']);
+		if (!$payment_activated) {
+			EmundusHelperUpdate::insertIntoFile(JPATH_ROOT . '/.htaccess', "php_value session.cookie_samesite Lax" . PHP_EOL);
 		}
 
 		return true;
