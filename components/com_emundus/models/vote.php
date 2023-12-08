@@ -14,7 +14,9 @@
 
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Helper\ModuleHelper;
 
 
 class EmundusModelVote extends JModelList
@@ -160,6 +162,53 @@ class EmundusModelVote extends JModelList
 						$this->_app->getSession()->clear('votes_'.$ip);
 					} else {
 						$this->_app->getSession()->clear('votes_'.$uid);
+					}
+
+					$emConfig = ComponentHelper::getComponent('com_emundus')->params;
+					$email_tmpl = $emConfig->get('default_email_tmpl_vote','');
+
+					if(!empty($email_tmpl)) {
+						if(!empty($uid)) {
+							$user = Factory::getUser($uid);
+							$data['name'] = $user->name;
+						}
+						else {
+							$data['name'] = '';
+						}
+
+						$template   = $this->_app->getTemplate(true);
+						$params     = $template->params;
+						$config	 = Factory::getConfig();
+
+						if (!empty($params->get('logo')->custom->image)) {
+							$logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+							$logo = !empty($logo['path']) ? JURI::base().$logo['path'] : "";
+
+						} else {
+							$logo_module = ModuleHelper::getModuleById('90');
+							preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
+							$pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
+        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
+        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
+
+							if (preg_match($pattern, $tab[1])) {
+								$tab[1] = parse_url($tab[1], PHP_URL_PATH);
+							}
+
+							$logo = JURI::base().$tab[1];
+						}
+
+						$post = [
+							'USER_NAME' => $data['name'],
+							'USER_EMAIL' => $email,
+							'SITE_NAME' => $config->get('sitename'),
+							'LOGO' => $logo
+						];
+
+						require_once JPATH_SITE . '/components/com_emundus/controllers/messages.php';
+						$c_messages = new EmundusControllerMessages();
+						$c_messages->sendEmailNoFnum($email,$email_tmpl,$post,$uid);
 					}
 				}
 			}
