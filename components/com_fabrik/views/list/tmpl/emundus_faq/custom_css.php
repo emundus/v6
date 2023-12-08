@@ -103,7 +103,7 @@ font-size: 16px;
 }
 
 .view-list form.form-search {
-   overflow: auto;  
+   /*overflow: auto;  */
 }
 
 .view-list .fabrik_action.dropdown-toggle.btn.btn-mini{

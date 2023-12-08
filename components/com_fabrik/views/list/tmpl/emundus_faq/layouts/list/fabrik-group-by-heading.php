@@ -24,7 +24,7 @@ $imgProps = array('alt' => FText::_('COM_FABRIK_TOGGLE'), 'data-role' => 'toggle
 <?php echo FabrikHelperHTML::image('arrow-down', 'list', $d->tmpl, $imgProps); ?>
 <span class="groupTitle text-green-500 font-semibold	">
 <?php if(empty(strip_tags($d->title))) : ?>
-Non catégorisé
+<?php echo JText::_('COM_EMUNDUS_FAQ_UNCATEGORISED') ?>
 <?php else : ?>
 <?php echo strip_tags($d->title); ?>
 <?php endif; ?>

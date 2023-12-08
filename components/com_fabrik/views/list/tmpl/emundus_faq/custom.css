@@ -10,7 +10,7 @@ a.advanced-search-link-NOT {
 }
 
 .view-list form.form-search {
-    overflow: auto;
+    /*overflow: auto;*/
 }
 
 .view-list form.form-search .fabrikFilterContainer .row-fluid .span6 .table.table-striped tfoot tr td {
@@ -130,6 +130,10 @@ a.advanced-search-link-NOT {
     display: flex;
     flex-direction: column;
     gap: 15px;
+}
+
+.fabrikDataContainer .table.table-striped .fabrik_groupdata {
+    width: 75vw;
 }
 
 .fabrikDataContainer .faq-question-container {
@@ -375,4 +379,14 @@ a.advanced-search-link-NOT {
 
 .icon-arrow-down {
     color: var(--main-500);
+}
+
+@media screen and (max-width: 479px) {
+    .view-list .g-container {
+        margin: 0 10px 0 0;
+    }
+
+    .faq-question-container {
+        margin-right: 20px;
+    }
 }
