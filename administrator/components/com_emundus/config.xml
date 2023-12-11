@@ -643,7 +643,7 @@
 			<field name="glpi_api_user_token" type="text" label="COM_EMUNDUS_GLPI_USER_TOKEN"/>
 		</fieldset>
 
-		<field name="spacer13" type="spacer" hr="true"/>
+		<field name="spacer14" type="spacer" hr="true"/>
 		<field name="insee" type="note" label="COM_EMUNDUS_INSEE_API"/>
 		<fieldset label="COM_EMUNDUS_INSEE_API">
 			<field name="insee_api_base_url" type="text" label="COM_EMUNDUS_INSEE_BASE_URL" default="https://api.insee.fr"/>
@@ -651,7 +651,15 @@
 			<field name="insee_api_consumer_secret" type="text" label="COM_EMUNDUS_INSEE_CONSUMER_SECRET"/>
 		</fieldset>
 
+		<field name="spacer15" type="spacer" hr="true"/>
+		<field name="ixparapheur" type="note" label="COM_EMUNDUS_IXPARAPHEUR_API"/>
+		<fieldset label="COM_EMUNDUS_IXPARAPHEUR_API">
+			<field name="ixparapheur_api_base_url" type="text" label="COM_EMUNDUS_IXPARAPHEUR_BASE_URL"/>
+			<field name="ixparapheur_api_app_token" type="text" label="COM_EMUNDUS_IXPARAPHEUR_APP_TOKEN"/>
+		</fieldset>
+
 	</fieldset>
+
 	<fieldset
 			name="permissions"
 			description="JCONFIG_PERMISSIONS_DESC"
@@ -663,6 +671,7 @@
 				label="JCONFIG_PERMISSIONS_LABEL"
 				section="component" />
 	</fieldset>
+
 	<fieldset label="COM_EMUNDUS_MESSENGER" name="messenger" description="COM_EMUNDUS_MESSENGER_DESC">
 		<field name="messenger_anonymous_coordinator" type="list" default="0" label="COM_EMUNDUS_MESSENGER_ANONYMOUS" description="COM_EMUNDUS_MESSENGER_ANONYMOUS_DESC">
 			<option value="0">JNO</option>
@@ -680,6 +689,7 @@
 		<field name="messenger_notify_groups" type="textarea" default="" label="COM_EMUNDUS_MESSENGER_NOTIFY_GROUPS" description="COM_EMUNDUS_MESSENGER_NOTIFY_GROUPS_DESC"/>
 		<field name="messenger_notify_users" type="textarea" default="" label="COM_EMUNDUS_MESSENGER_NOTIFY_USERS" description="COM_EMUNDUS_MESSENGER_NOTIFY_USERS_DESC"/>
 	</fieldset>
+
 	<fieldset label="COM_EMUNDUS_MODULES" name="modules" description="COM_EMUNDUS_MODULES_DESC">
 		<field name="style" label="COM_EMUNDUS_MODULES_STYLE" type="radio" default="1" description="COM_EMUNDUS_MODULES_STYLE_DESC">
 			<option value="0">JNO</option>
