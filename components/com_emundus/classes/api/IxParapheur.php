@@ -9,6 +9,8 @@
 
 namespace classes\api;
 
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Utils;
 use JComponentHelper;
 use JFactory;
 use JLog;
@@ -204,7 +206,7 @@ class IxParapheur extends Api
 			});
 		}
 
-		return $users;
+		return array_values($users);
 	}
 
 	public function getModelesCircuits($nature, $service, $name = null): array
@@ -228,7 +230,7 @@ class IxParapheur extends Api
 
 	public function createDossier($dossier, $transmettre = false): array
 	{
-		if(empty($dossier['nature']) || empty($dossier['circuit']))
+		if(empty($dossier['nature']) || (empty($dossier['circuit']) && empty($dossier['etapes'])))
 		{
 			return array();
 		}
@@ -254,9 +256,50 @@ class IxParapheur extends Api
 		return $this->post('dossier/'.$idDossier.'/'.$action,json_encode(array()));
 	}
 
-	public function addDocument($idDossier, $datas): array
+	public function addDocument($idDossier, $datas, $filename, $filepath): array
 	{
-		return $this->post('document/'.$idDossier,json_encode($datas));
+		$response = ['status' => 500, 'message' => '', 'data' => ''];
+
+		$copied = copy($filepath,JPATH_SITE.'/tmp/'.$filename);
+
+		if($copied) {
+			$params = [
+				'multipart' => [
+					[
+						'name'     => 'fichier',
+						'contents' => \GuzzleHttp\Psr7\Utils::tryFopen(JPATH_SITE . '/tmp/' . $filename, 'r'),
+						'filename' => $filepath,
+						'headers'  => [
+							'Content-Type' => '<Content-type header>'
+						]
+					],
+					[
+						'name'     => 'type',
+						'contents' => $datas['type']
+					],
+					[
+						'name'     => 'estASigner',
+						'contents' => $datas['estASigner']
+					],
+					[
+						'name'     => 'estPublique',
+						'contents' => $datas['estPublique']
+					],
+				]
+			];
+
+			$response = $this->postFormData('document/' . $idDossier, $params);
+
+			if($response['status'] === 200) {
+				if($response['data']->message === 'Ce dossier possède déjà un document principal') {
+					//TODO: Update document content by his id
+				}
+
+				unlink(JPATH_SITE . '/tmp/' . $filename);
+			}
+		}
+
+		return $response;
 	}
 
 	public function deleteDocument($idDossier): array
@@ -272,5 +315,24 @@ class IxParapheur extends Api
 	public function updateDocumentContent($idDocument,$file): array
 	{
 		return $this->patch('document/contenu/'.$idDocument,json_encode($file));
+	}
+
+	private function postFormData($url, $params = array())
+	{
+		$response = ['status' => 200, 'message' => '', 'data' => ''];
+		
+		try {
+			$request = new Request('POST', $this->baseUrl.'/'.$url, $this->getHeaders());
+			$res = $this->client->sendAsync($request, $params)->wait();
+
+			$response['status']         = $res->getStatusCode();
+			$response['data']         = json_decode($res->getBody());
+		} catch (\Exception $e) {
+			JLog::add('[POST-multipart] : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ixparapheur');
+			$response['status'] = $e->getCode();
+			$response['message'] = $e->getMessage();
+		}
+
+		return $response;
 	}
 }
