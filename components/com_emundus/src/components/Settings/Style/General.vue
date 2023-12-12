@@ -349,10 +349,6 @@ export default {
       this.bannerLink = 'images/custom/default_banner.'+ext+'?' + new Date().getTime();
       this.$forceUpdate();
     },
-    updateBanner() {
-      this.bannerLink = 'images/custom/default_banner.png?' + new Date().getTime();
-      this.$forceUpdate();
-    },
     updateColors(colors){
       this.primary = colors.primary;
       this.secondary = colors.secondary;
