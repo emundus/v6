@@ -77,7 +77,7 @@ defined('_JEXEC') or die;
 
     /*** Sublevel parent ***/
     ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item::before{
-        background: var(--neutral-900);
+        background: var(--em-profile-color);
         width: 3px;
         height: 100%;
         content: "";
