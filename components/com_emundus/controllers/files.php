@@ -3068,48 +3068,49 @@ class EmundusControllerFiles extends JControllerLegacy
 		                    }
 	                    }
 
-						// TODO: weird to use attachment_to_export here, should be $file_ids instead ? it has been like this for a long time, so I'm not sure
-                        $setup_attachments = $m_files->getSetupAttachmentsById($attachment_to_export);
-                        if (!empty($setup_attachments) && !empty($files)) {
-                            foreach($setup_attachments as $att) {
-                                if (!empty($files)) {
-                                    foreach ($files as $file) {
-                                        if ($file['attachment_id'] == $att['id']) {
-                                            $filename = $application_form_name . DS . $file['filename'];
-                                            $dossier = EMUNDUS_PATH_ABS . $users[$file['fnum']]->id . DS;
-                                            if (file_exists($dossier . $file['filename'])) {
-                                                if (!$zip->addFile($dossier . $file['filename'], $filename)) {
-                                                    continue;
-                                                }
-                                            } else {
-                                                $zip->addFromString($filename."-missing.txt", '');
-                                            }
-                                        } elseif (!in_array($att['id'], $file_ids)) {
-                                            $zip->addFromString($application_form_name.DS.str_replace('_', "", $att['lbl'])."-notfound.txt", '');
-                                        }
-                                    }
-                                } elseif (empty($files)) {
-                                    foreach ($setup_attachments as $att) {
-                                        $zip->addFromString($application_form_name . DS .str_replace('_', "", $att['lbl']) ."-notfound.txt", '');
-                                    }
-                                }
-                            }
-                        } elseif (!empty($files)) {
-                            foreach ($files as $file) {
-                                $filename = $application_form_name . DS . $file['filename'];
-                                $dossier = EMUNDUS_PATH_ABS . $users[$file['fnum']]->id . DS;
-                                if (file_exists($dossier . $file['filename'])) {
-                                    if (!$zip->addFile($dossier . $file['filename'], $filename)) {
-                                        continue;
-                                    }
-                                } else {
-                                    $zip->addFromString($filename."-missing.txt", '');
-                                }
-                            }
-                        } elseif (empty($files)) {
-                            foreach ($setup_attachments as $att) {
-                                $zip->addFromString($application_form_name . DS .str_replace('_', "", $att['lbl']) ."-notfound.txt", '');
-                            }
+						if(!empty($file_ids)) {
+	                        $setup_attachments = $m_files->getSetupAttachmentsById($file_ids);
+	                        if (!empty($setup_attachments) && !empty($files)) {
+	                            foreach($setup_attachments as $att) {
+	                                if (!empty($files)) {
+	                                    foreach ($files as $file) {
+	                                        if ($file['attachment_id'] == $att['id']) {
+	                                            $filename = $application_form_name . DS . $file['filename'];
+	                                            $dossier = EMUNDUS_PATH_ABS . $users[$file['fnum']]->id . DS;
+	                                            if (file_exists($dossier . $file['filename'])) {
+	                                                if (!$zip->addFile($dossier . $file['filename'], $filename)) {
+	                                                    continue;
+	                                                }
+	                                            } else {
+	                                                $zip->addFromString($filename."-missing.txt", '');
+	                                            }
+	                                        } elseif (!in_array($att['id'], $file_ids)) {
+	                                            $zip->addFromString($application_form_name.DS.str_replace('_', "", $att['lbl'])."-notfound.txt", '');
+	                                        }
+	                                    }
+	                                } elseif (empty($files)) {
+	                                    foreach ($setup_attachments as $att) {
+	                                        $zip->addFromString($application_form_name . DS .str_replace('_', "", $att['lbl']) ."-notfound.txt", '');
+	                                    }
+	                                }
+	                            }
+	                        } elseif (!empty($files)) {
+	                            foreach ($files as $file) {
+	                                $filename = $application_form_name . DS . $file['filename'];
+	                                $dossier = EMUNDUS_PATH_ABS . $users[$file['fnum']]->id . DS;
+	                                if (file_exists($dossier . $file['filename'])) {
+	                                    if (!$zip->addFile($dossier . $file['filename'], $filename)) {
+	                                        continue;
+	                                    }
+	                                } else {
+	                                    $zip->addFromString($filename."-missing.txt", '');
+	                                }
+	                            }
+	                        } elseif (empty($files)) {
+	                            foreach ($setup_attachments as $att) {
+	                                $zip->addFromString($application_form_name . DS .str_replace('_', "", $att['lbl']) ."-notfound.txt", '');
+	                            }
+	                        }
                         }
                     }
                 }
