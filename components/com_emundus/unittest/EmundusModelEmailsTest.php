@@ -232,4 +232,36 @@ class EmundusModelEmailsTest extends TestCase
 		$this->assertNotEmpty($messages, 'La récupération des emails a réussi après avoir loggé l\'envoi d\'un email');
 		$this->assertObjectHasAttribute('fnum_to',$messages[0]);
 	}
+
+    public function testsendEmailNoFnum()
+    {
+        $email_address = '';
+        $email_id = 0;
+        $sent = $this->m_emails->sendEmailNoFnum($email_address, $email_id);
+        $this->assertFalse($sent, 'L\'envoi d\'un email sans adresse ou id a échoué');
+
+        $email_address = 'jeremy.legendre+test@emundus.fr';
+        $sent = $this->m_emails->sendEmailNoFnum($email_address, $email_id);
+        $this->assertFalse($sent, 'L\'envoi d\'un email sans id a échoué');
+
+        $data = [
+            'lbl' => 'Test d envoi de mail',
+            'subject' => 'Test d envoi de mail',
+            'name' => '',
+            'emailfrom' => '',
+            'message' => '<p>Test</p>',
+            'type' => 2,
+            'category' => '',
+            'published' => 1
+        ];
+
+        $email_id = $this->m_emails->createEmail($data);
+        $sent = $this->m_emails->sendEmailNoFnum('', $email_id);
+        $this->assertFalse($sent, 'L\'envoi d\'un email sans adresse a échoué');
+
+        /*
+         * $sent = $this->m_emails->sendEmailNoFnum($email_address, $email_id);
+         * todo: ajout d'un serveur smtp pour les tests
+         */
+    }
 }
