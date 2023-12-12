@@ -499,13 +499,18 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                     </div>
                 <?php else : ?>
                     <div class="em-mb-44 em-mt-44">
+                        <div class="flex items-center justify-between <?php if(sizeof($campaigns) > 1) : ?>cursor-pointer<?php endif; ?>" <?php if(sizeof($campaigns) > 1) : ?> onclick="hideGroup('<?php echo $key ?>')" <?php endif; ?>>
                         <h3 class="mod_emundus_campaign__programme_cat_title"><?php echo $campaign['label'] ?: JText::_('MOD_EM_CAMPAIGN_LIST_CAMPAIGNS') ?></h3>
+	                        <?php if(sizeof($campaigns) > 1) : ?>
+                                <span class="material-icons-outlined" id="group_icon_<?php echo $key ?>">expand_more</span>
+	                        <?php endif; ?>
+                        </div>
                         <hr style="margin-top: 8px">
                     </div>
                 <?php endif ;?>
 
                 <?php if (!empty($campaign)) : ?>
-                <div id="current" class="mod_emundus_campaign__list_items">
+                <div id="current_<?php echo $key ?>" class="mod_emundus_campaign__list_items">
                     <?php
                     foreach ($campaign as $result) {
                     if(is_object($result)){
@@ -959,12 +964,25 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         window.location.href = existing_filters.join('&');
     }
 
+    function hideGroup(key) {
+        let group = document.getElementById('current_' + key);
+        let icon = document.getElementById('group_icon_'+key);
+
+        if (group.style.display === 'none') {
+            group.style.display = 'grid';
+            icon.innerHTML = 'expand_more';
+        } else {
+            group.style.display = 'none';
+            icon.innerHTML = 'expand_less';
+        }
+    }
+
     document.addEventListener('click', function (e) {
         let sort = document.getElementById('sort_block');
         let filters = document.getElementById('filters_block');
         let clickInsideModule = false;
 
-        if(sort.style.display === 'flex') {
+        if (sort && sort.style.display === 'flex') {
             e.composedPath().forEach((pathElement) => {
                 if (pathElement.id == "sort_block" || pathElement.id == "mod_emundus_campaign__header_sort") {
                     clickInsideModule = true;
@@ -978,7 +996,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
         if(typeof filters !== 'undefined') {
             clickInsideModule = false;
-            if (filters.style.display === 'flex') {
+            if (filters && filters.style.display === 'flex') {
                 e.composedPath().forEach((pathElement) => {
                     if (pathElement.id == "filters_block" || pathElement.id == "mod_emundus_campaign__header_filter") {
                         clickInsideModule = true;

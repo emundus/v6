@@ -1994,7 +1994,7 @@ button.em-swal-delete-button:hover{
   transform: rotate(3deg); /* rotation de base des cards longues */
 }
 
-#current .hover-and-tile-container:hover > #tile-hover-offset-procedure {
+div[id^='current_'] .hover-and-tile-container:hover > #tile-hover-offset-procedure {
   transform: rotate(7deg); /* rotation cards normales */
 }
 
@@ -2003,7 +2003,7 @@ button.em-swal-delete-button:hover{
 }
 
 /* Tuile */
-#current .mod_emundus_campaign__list_content,
+div[id^='current_'] .mod_emundus_campaign__list_content,
 .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content {
   position: relative;
   transition: background-image .3s;
@@ -2011,7 +2011,7 @@ button.em-swal-delete-button:hover{
 }
 
 /* Fond formes */
-#current .mod_emundus_campaign__list_content #background-shapes {
+div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
   position: absolute;
   z-index: 2;
   width: 100%;
@@ -2062,7 +2062,7 @@ button.em-swal-delete-button:hover{
 }
 
 /* Titres */
-#current .mod_emundus_campaign__list_content h4 {
+div[id^='current_'] .mod_emundus_campaign__list_content h4 {
   color: var(--em-profile-color);
   font-size: var(--em-applicant-h4);
 }
@@ -2159,7 +2159,7 @@ button.em-swal-delete-button:hover{
 @media screen and (min-width: 1080px) and (max-width: 1199px) {
 
   /* Peps */
-  #current .mod_emundus_campaign__list_content #background-shapes {
+  div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
     top: -42px;
     right: -16px;
   }
@@ -2191,7 +2191,7 @@ button.em-swal-delete-button:hover{
 @media screen and (min-width: 1025px) and (max-width: 1079px) {
 
   /* Peps */
-  #current .mod_emundus_campaign__list_content #background-shapes {
+  div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
     top: -90px;
     right: -10px;
   }
@@ -2223,12 +2223,12 @@ button.em-swal-delete-button:hover{
 @media screen and (min-width: 960px) and (max-width: 1024px) {
 
   /* Peps */
-  .view-featured #current .mod_emundus_campaign__list_content #background-shapes {
+  .view-featured div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
     top: -47px;
     right: -11px;
   }
 
-  #current .mod_emundus_campaign__list_content #background-shapes {
+  div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
     top: -11px;
     right: -15px;
   }
@@ -2261,7 +2261,7 @@ button.em-swal-delete-button:hover{
 @media screen and (min-width: 768px) and (max-width: 959px) {
 
   /* Peps */
-  #current .mod_emundus_campaign__list_content #background-shapes {
+  div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
     top: -11px;
     right: -232px;
   }
@@ -2416,7 +2416,7 @@ button.em-swal-delete-button:hover{
   }
 
   /* Peps */
-  #current .mod_emundus_campaign__list_content #background-shapes {
+  div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
     top: -11px;
     right: -31px;
   }
