@@ -395,8 +395,7 @@ $current_tab = 0;
                                                                 <?php endif; ?>
                                                                 <?php if (!empty($application->order_status)): ?>
                                                                     <br>
-                                                                    <span class="label"
-                                                                          style="background-color: <?= $application->order_color; ?>"><?= JText::_(strtoupper($application->order_status)); ?></span>
+                                                                    <p><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_ORDER_STATUS') ?> <span style="color: <?= $application->order_color; ?>"><?= JText::_(strtoupper($application->order_status)); ?></span></p>
                                                                 <?php endif; ?>
                                                             </div>
                                                             <div class="mod_emundus_applications__container">
@@ -759,8 +758,7 @@ $current_tab = 0;
 														<?php endif; ?>
 														<?php if (!empty($application->order_status)): ?>
                                                             <br>
-                                                            <span class="label"
-                                                                  style="background-color: <?= $application->order_color; ?>"><?= JText::_(strtoupper($application->order_status)); ?></span>
+                                                            <p><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_ORDER_STATUS') ?> <span style="color: <?= $application->order_color; ?>"><?= JText::_(strtoupper($application->order_status)); ?></span></p>
 														<?php endif; ?>
                                                     </div>
                                                 </td>
