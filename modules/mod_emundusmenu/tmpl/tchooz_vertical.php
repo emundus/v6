@@ -77,7 +77,7 @@ defined('_JEXEC') or die;
 
     /*** Sublevel parent ***/
     ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item::before{
-        background: var(--neutral-900);
+        background: var(--em-profile-color);
         width: 3px;
         height: 100%;
         content: "";
@@ -245,7 +245,7 @@ defined('_JEXEC') or die;
 
         <li class="g-menu-item g-standard tchooz-vertical-item">
             <a class="item" onclick="enableTitles()">
-                <img src="http://localhost/images/emundus/menus/menu.png" style="width: 30px">
+                <span class="material-icons-outlined" style="padding: 5px; font-size: 24px; color: black">menu</span>
                 <span class="image-title" style="display: block; opacity: 1;"><?php echo JText::_('MOD_EMUNDUSMENU_ITEM_MENU') ?></span>
             </a>
         </li>

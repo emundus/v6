@@ -90,7 +90,7 @@
 									<span :class="{'em-font-weight-600 mb-4 text-ellipsis overflow-hidden':  viewType === 'blocs'}" :title="item.label[params.shortlang]">{{ item.label[params.shortlang] }}</span>
 								</td>
 								<td class="columns" v-for="column in item.additional_columns" :key="column.key" v-if="column.display === viewType || column.display === 'all'">
-									<div v-if="column.type === 'tags'" class="flex flex-wrap" :class="column.classes">
+									<div v-if="column.type === 'tags'" class="flex flex-wrap em-flex-gap-8" :class="column.classes">
 										<span v-for="tag in column.values" :key="tag.key" class="mr-2 h-max" :class="tag.classes" v-html="tag.value"></span>
 									</div>
 									<span v-else class="mt-2 mb-2" :class="column.classes" v-html="column.value"></span>
