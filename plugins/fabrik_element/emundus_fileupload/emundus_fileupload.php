@@ -253,7 +253,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
         $current_user = JFactory::getSession()->get('emundusUser');
 
-		if(EmundusHelperAccess::asAccessAction(4,'r',$current_user->id,$fnum) || (EmundusHelperAccess::isApplicant($current_user->id) && in_array($fnum,$current_user->fnums))) {
+		if(EmundusHelperAccess::asAccessAction(4,'r',$current_user->id,$fnum) || (EmundusHelperAccess::isApplicant($current_user->id) && in_array($fnum,array_keys((array)$current_user->fnums)))) {
 
 			if (!class_exists('EmundusModelFiles')) {
 				require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
@@ -308,7 +308,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
 	    $result = array('status' => false);
 
-        if ((EmundusHelperAccess::isApplicant($current_user->id) && in_array($fnum,$current_user->fnums)) || EmundusHelperAccess::asAccessAction(4,'d', $current_user->id,$fnum)) {
+        if ((EmundusHelperAccess::isApplicant($current_user->id) && in_array($fnum,array_keys((array)$current_user->fnums))) || EmundusHelperAccess::asAccessAction(4,'d', $current_user->id,$fnum)) {
 
 	        if (!class_exists('EmundusModelFiles')) {
 		        require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
