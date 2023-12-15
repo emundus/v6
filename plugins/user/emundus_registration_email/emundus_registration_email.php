@@ -140,6 +140,16 @@ class plgUserEmundus_registration_email extends JPlugin {
             }
         }
 
+
+	    if (JPluginHelper::getPlugin('system','emundusproxyredirect')) {
+		    $params = json_decode(JPluginHelper::getPlugin('system','emundusproxyredirect')->params, true);
+			$http_headers = $_SERVER;
+
+			if(!empty($http_headers[$params['username']]) && !empty($http_headers[$params['email']])) {
+				return;
+			}
+	    }
+
         // if saving user's data was successful
         if ($result && !$error) {
             // for anonym sessions

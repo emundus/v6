@@ -56,6 +56,61 @@
 						label="PLG_SYSTEM_EMUNDUSPROXYREDIRECT_LASTNAME"
 						default=""
 				/>
+				<field
+						name="group_attribute"
+						type="text"
+						label="PLG_SYSTEM_EMUNDUSPROXYREDIRECT_GROUP_ATTRIBUTE"
+						default=""
+				/>
+				<field
+						name="group_attribute_separator"
+						type="text"
+						label="PLG_SYSTEM_EMUNDUSPROXYREDIRECT_GROUP_ATTRIBUTE_SEPARATOR"
+						default=";"
+				/>
+
+				<field name="group_mapping"
+					   type="repeatable"
+					   icon="list"
+					   description=""
+					   label="PLG_SYSTEM_EMUNDUSPROXYREDIRECT_GROUP_MAPPING"
+				>
+					<field name="value"
+						   type="text"
+						   default=""
+						   label="PLG_SYSTEM_EMUNDUSPROXYREDIRECT_GROUP_MAPPING_VALUE" description=""/>
+
+					<field name="joomla_group"
+						   query="SELECT ju.id, ju.title as label
+                            FROM jos_usergroups ju
+                            order by ju.parent_id"
+						   type="sql"
+						   key_field="id"
+						   value_field="label"
+						   multiple="true"
+						   label="PLG_SYSTEM_EMUNDUSPROXYREDIRECT_GROUP_MAPPING_JOOMLA"
+					/>
+
+					<field name="emundus_group"
+						   query="SELECT jesg.id, jesg.label
+                            FROM jos_emundus_setup_groups jesg WHERE jesg.published = 1"
+						   type="sql"
+						   key_field="id"
+						   value_field="label"
+						   multiple="true"
+						   label="PLG_SYSTEM_EMUNDUSPROXYREDIRECT_GROUP_MAPPING_EMUNDUS"
+					/>
+
+					<field name="emundus_profile"
+						   query="SELECT jesp.id, jesp.label
+                            FROM jos_emundus_setup_profiles jesp WHERE jesp.published = 0 AND jesp.status = 1"
+						   type="sql"
+						   key_field="id"
+						   value_field="label"
+						   multiple="true"
+						   label="PLG_SYSTEM_EMUNDUSPROXYREDIRECT_GROUP_MAPPING_EMUNDUS_PROFILE"
+					/>
+				</field>
 
 				<field name="attributes"
 					   type="repeatable"
