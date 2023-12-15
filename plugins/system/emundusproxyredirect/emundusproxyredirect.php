@@ -151,6 +151,8 @@ class PlgSystemEmundusProxyRedirect extends CMSPlugin
 						$m_users->addEmundusUser($user->id, $other_param);
 
 						$m_users->login($user->id);
+
+						$this->app->redirect('index.php');
 					}
 				}
 				else {
@@ -163,6 +165,8 @@ class PlgSystemEmundusProxyRedirect extends CMSPlugin
 
 					if ($user->save()) {
 						$m_users->login($user->id);
+
+						$this->app->redirect('index.php');
 					}
 				}
 			}
