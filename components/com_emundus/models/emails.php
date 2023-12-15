@@ -2071,7 +2071,7 @@ class EmundusModelEmails extends JModelList {
 
             /// get associated letters
             $query->clear()
-                ->select('esa.*')
+                ->select('DISTINCT esa.*')
                 ->from($this->_db->quoteName('#__emundus_setup_attachments','esa'))
                 ->leftJoin($this->_db->quoteName('#__emundus_setup_letters','esl') . ' ON ' . $this->_db->quoteName('esl.attachment_id') . ' = ' . $this->_db->quoteName('esa.id'))
                 ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_letter_attachment','eslr') . ' ON ' . $this->_db->quoteName('esl.attachment_id') . ' = ' . $this->_db->quoteName('eslr.letter_attachment'))
