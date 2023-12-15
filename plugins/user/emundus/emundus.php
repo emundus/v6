@@ -274,15 +274,17 @@ class plgUserEmundus extends JPlugin
             if ($isnew) {
 
                 // Update name and firstname from #__users
-                $db->setQuery(' UPDATE #__users SET name='.$db->quote(ucfirst($firstname)).' '.$db->quote(strtoupper($lastname)).',
+                $query = 'UPDATE #__users SET name='.$db->quote(ucfirst($firstname)).' '.$db->quote(strtoupper($lastname)).',
                                 usertype = (SELECT u.title FROM #__usergroups AS u
                                                 LEFT JOIN #__user_usergroup_map AS uum ON u.id=uum.group_id
                                                 WHERE uum.user_id='.$user['id'].' ORDER BY uum.group_id DESC LIMIT 1) 
-                                WHERE id='.$user['id']);
+                                WHERE id='.$user['id'];
+                $db->setQuery($query);
                 try {
                     $db->execute();
                 } catch (Exception $e) {
                     // catch any database errors.
+                    JLog::add('Error at query: ' . $query . ' -> ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
                 }
 
                 if (isset($campaign_id) && !empty($campaign_id)) {
@@ -308,6 +310,7 @@ class plgUserEmundus extends JPlugin
                     $db->execute();
                 } catch (Exception $e) {
                     // catch any database errors.
+                    JLog::add('Error at query: ' . $query . ' -> ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
                 }
 
                 // Insert data in #__emundus_users_profiles
@@ -325,6 +328,7 @@ class plgUserEmundus extends JPlugin
                     $db->execute();
                 } catch (Exception $e) {
                     // catch any database errors.
+                    JLog::add('Error at query: ' . $query . ' -> ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
                 }
 
                 if (isset($campaign_id) && !empty($campaign_id)) {
@@ -335,6 +339,7 @@ class plgUserEmundus extends JPlugin
                         $db->execute();
                     } catch (Exception $e) {
                         // catch any database errors.
+                        JLog::add('Error at query: ' . $query . ' -> ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
                     }
                 }
 
@@ -360,7 +365,7 @@ class plgUserEmundus extends JPlugin
 	                    $e_session->email = $details['email1'];
 						JFactory::getSession()->set('emundusUser', $e_session);
                     }
-					
+
                 } catch (Exception $e) {
                     JLog::add('Error at line ' . __LINE__ . ' of file ' . __FILE__ . ' : ' . '. Error is : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
                 }
