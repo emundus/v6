@@ -161,7 +161,7 @@ class PlgSystemEmundusProxyRedirect extends CMSPlugin
 					$user->name          = $fullname;
 					$user->email         = $email;
 					$user->lastvisitDate = date('Y-m-d H:i:s');
-					$user->groups        = $groups_map['j_groups'];
+					//$user->groups        = $groups_map['j_groups'];
 
 					if ($user->save()) {
 						$m_users->login($user->id);
