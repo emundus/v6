@@ -8,6 +8,8 @@
  */
 
 // Protect from unauthorized access
+use Joomla\CMS\Uri\Uri;
+
 defined('_JEXEC') or die('Restricted access');
 defined('DS') or define('DS', DIRECTORY_SEPARATOR);
 
@@ -144,6 +146,20 @@ class plgUserEmundus_registration_email extends JPlugin {
 	    if (JPluginHelper::getPlugin('system','emundusproxyredirect')) {
 		    $params = json_decode(JPluginHelper::getPlugin('system','emundusproxyredirect')->params, true);
 			$http_headers = $_SERVER;
+
+		    if($params['test_mode'] == 1) {
+			    $http_headers = [
+				    'username' => 'developer',
+				    'email'    => 'dev@emundus.io'
+			    ];
+
+			    $login_route = Uri::root().'connexion';
+			    $current_route = Uri::getInstance()->toString();
+
+			    if($current_route != $login_route) {
+				    return false;
+			    }
+		    }
 
 			if(!empty($http_headers[$params['username']]) && !empty($http_headers[$params['email']])) {
 				return;

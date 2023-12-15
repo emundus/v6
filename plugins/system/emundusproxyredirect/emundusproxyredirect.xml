@@ -9,7 +9,7 @@
 	<authorUrl>www.emundus.fr</authorUrl>
 	<version>1.39.0</version>
 	<description>PLG_SYSTEM_EMUNDUSPROXYREDIRECT_XML_DESCRIPTION</description>
-	<namespace path="src">Joomla\Plugin\System\EmundusProxyRedirect</namespace>
+	<namespace path="src">Emundus\Plugin\System\EmundusProxyRedirect</namespace>
 	<files>
 		<folder>forms</folder>
 		<folder plugin="emundusproxyredirect">services</folder>
@@ -141,6 +141,16 @@
 						   description="">
 					</field>
 
+				</field>
+
+				<field name="test_mode"
+					   type="radio"
+					   default="0"
+					   label="PLG_SYSTEM_EMUNDUSPROXYREDIRECT_TEST_MODE"
+					   description=""
+				>
+					<option value="1">JYES</option>
+					<option value="0">JNO</option>
 				</field>
 			</fieldset>
 		</fields>

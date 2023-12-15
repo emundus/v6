@@ -9,14 +9,10 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Cache\Cache;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Form\Form;
-use Joomla\CMS\HTML\HTMLHelper;
-use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserHelper;
 
@@ -78,6 +74,24 @@ class PlgSystemEmundusProxyRedirect extends CMSPlugin
 			$query = $db->getQuery(true);
 
 			$http_headers = $_SERVER;
+
+			if($this->params->get('test_mode', 0) == 1) {
+				$http_headers = [
+					'username' => 'developer',
+					'email'    => 'dev@emundus.io',
+					'fullname' => 'EMUNDUS Developer',
+					'firstname' => 'Developer',
+					'lastname' => 'EMUNDUS',
+					'group_attribute' => 'student',
+				];
+				
+				$login_route = Uri::root().'connexion';
+				$current_route = Uri::getInstance()->toString();
+
+				if($current_route != $login_route) {
+					return false;
+				}
+			}
 
 			$username  = $http_headers[$this->params->get('username', '')];
 			$email     = $http_headers[$this->params->get('email', '')];
