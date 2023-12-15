@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="system" method="upgrade">
+	<name>plg_system_emundusproxyredirect</name>
+	<author>eMundus</author>
+	<creationDate>2023-12</creationDate>
+	<copyright>(C) 2023 Open Source Matters, Inc.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>dev@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>1.39.0</version>
+	<description>PLG_SYSTEM_EMUNDUSPROXYREDIRECT_XML_DESCRIPTION</description>
+	<namespace path="src">Joomla\Plugin\System\EmundusProxyRedirect</namespace>
+	<files>
+		<folder>forms</folder>
+		<folder plugin="emundusproxyredirect">services</folder>
+		<folder>src</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">language/en-GB/plg_system_emundusproxyredirect.ini</language>
+		<language tag="en-GB">language/en-GB/plg_system_emundusproxyredirect.sys.ini</language>
+		<language tag="fr-FR">language/fr-FR/plg_system_emundusproxyredirect.ini</language>
+		<language tag="fr-FR">language/fr-FR/plg_system_emundusproxyredirect.sys.ini</language>
+	</languages>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field
+						name="username"
+						type="text"
+						label="PLG_SYSTEM_EMUNDUSPROXYREDIRECT_USERNAME"
+						default=""
+						required="true"
+				/>
+				<field
+						name="email"
+						type="text"
+						label="PLG_SYSTEM_EMUNDUSPROXYREDIRECT_EMAIL"
+						default=""
+						required="true"
+				/>
+				<field
+						name="fullname"
+						type="text"
+						label="PLG_SYSTEM_EMUNDUSPROXYREDIRECT_FULLNAME"
+						default=""
+				/>
+				<field
+						name="firstname"
+						type="text"
+						label="PLG_SYSTEM_EMUNDUSPROXYREDIRECT_FIRSTNAME"
+						default=""
+				/>
+				<field
+						name="lastname"
+						type="text"
+						label="PLG_SYSTEM_EMUNDUSPROXYREDIRECT_LASTNAME"
+						default=""
+				/>
+
+				<field name="attributes"
+					   type="repeatable"
+					   icon="list"
+					   description=""
+					   label="PLG_SYSTEM_EMUNDUSPROXYREDIRECT_MORE_ATTRIBUTES"
+				>
+					<field name="table_name"
+						   type="text"
+						   default="jos_users"
+						   label="Table" description=""/>
+
+					<field name="column_name"
+						   type="text"
+						   default=""
+						   label="PLG_SYSTEM_EMUNDUSPROXYREDIRECT_COLUMN_TO_COMPLETE" description=""/>
+
+					<field showon="table_name!:jos_users"
+						   name="column_join_user_id"
+						   type="text"
+						   default=""
+						   label="PLG_SYSTEM_EMUNDUSPROXYREDIRECT_COLUMN_USER_ID" description=""/>
+
+					<field name="attribute_name"
+						   type="text"
+						   default=""
+						   label="PLG_SYSTEM_EMUNDUSPROXYREDIRECT_ATTRIBUTE_NAME"
+						   description="">
+					</field>
+
+				</field>
+			</fieldset>
+		</fields>
+	</config>
+</extension>
