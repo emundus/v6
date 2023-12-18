@@ -184,7 +184,7 @@ if ($user != null) {
     <?= $intro; ?>
 
 <!-- Button which opens up the dropdown menu. -->
-<div class='dropdown <?php if($first_logged) : ?>userDropdown-tip<?php endif; ?>' tabindex="0" id="userDropdown" style="float: right;">
+<div class='dropdown' tabindex="0" id="userDropdown" style="float: right;">
 	<?php if ($display_svg == 1) : ?>
     <iframe id="background-shapes" src="/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg" alt="<?= JText::_('COM_EMUNDUS_USERDROPDOWN_IFRAME') ?>"></iframe>
 	<?php endif; ?>
@@ -215,14 +215,8 @@ if ($user != null) {
                 <p class="em-profile-color em-text-italic"><?= $profile_label; ?></p>
                 <?php endif; ?>
             </div>
-            <div class="em-user-dropdown-button <?php if($first_logged) : ?>userDropdownLabel-tip<?php endif; ?>" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
-                <?php if($first_logged) : ?>
-                    <div class="em-user-dropdown-tip" id="userDropdownTip">
-                        <p><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_TEXT') ?></p><br/>
-                        <p class="em-user-dropdown-tip-link" onclick="closeTip()"><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_CLOSE') ?></p>
-                    </div>
-                <?php endif ;?>
-                <span class="material-icons-outlined em-user-dropdown-icon <?php if($first_logged) : ?>userDropdownIcon-tip<?php endif; ?>" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">account_circle</span>
+            <div class="em-user-dropdown-button" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
+                <span class="material-icons-outlined em-user-dropdown-icon" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">account_circle</span>
             </div>
 
         </div>
@@ -242,7 +236,7 @@ if ($user != null) {
             <div class="em-profile-picture-modal" style="background-image:url('<?php echo $profile_picture ?>');">
             </div>
 	        <?php else : ?>
-            <span class="material-icons-outlined em-profile-picture-modal-icon <?php if($first_logged) : ?>userDropdownIcon-tip<?php endif; ?>" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">account_circle</span>
+            <span class="material-icons-outlined em-profile-picture-modal-icon" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">account_circle</span>
 	        <?php endif; ?>
             <li class="dropdown-header em-text-align-center em-font-weight-500 em-text-neutral-900"><?= $user->firstname . ' ' . $user->lastname; ?></li>
             <li class="dropdown-header em-text-align-center em-text-neutral-600" title="<?= $user->email; ?>"><?= $user->email; ?></li>
@@ -444,9 +438,6 @@ if ($user != null) {
             }
         }
 
-        <?php if($first_logged) : ?>
-        displayUserOptions();
-        <?php endif ?>
         document.addEventListener('DOMContentLoaded', function () {
             if(document.getElementById('profile_chzn') != null){
                 document.getElementById('profile_chzn').style.display = 'none';

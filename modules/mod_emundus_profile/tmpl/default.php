@@ -130,7 +130,7 @@ $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.
                 const date = new Date();
                 const newProfileUrl = window.location.origin + '/' + res.profile_picture + '?' + date.getTime();
                 document.querySelector('#pp_profile_background').style.backgroundImage = 'url(' + newProfileUrl + ')';
-                document.querySelector('#userDropdownLabel').style.backgroundImage = 'url(' + newProfileUrl + ')';
+                document.querySelector('#userDropdownLabel .em-profile-picture').style.backgroundImage = 'url(' + newProfileUrl + ')';
             }
         });
 

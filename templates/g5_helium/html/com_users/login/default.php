@@ -7,6 +7,8 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
+use Symfony\Component\Yaml\Yaml;
+
 defined('_JEXEC') or die;
 
 $cookieLogin = $this->user->get('cookieLogin');
@@ -35,6 +37,15 @@ if (!empty($cookieLogin) || $this->user->get('guest')) {
 
     JFactory::getSession()->set('cid', $this->campaign);
     JFactory::getSession()->set('course', $this->course);
+
+	if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml')) {
+		$yaml = Yaml::parse(file_get_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml'));
+		$this->favicon = $yaml['favicon'];
+	}
+
+	if(!file_exists($this->favicon)) {
+		$this->favicon = '/images/custom/favicon.png';
+	}
 
     // The user is not logged in or needs to provide a password.
     echo $this->loadTemplate('login');
