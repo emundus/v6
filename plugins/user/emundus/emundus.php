@@ -9,6 +9,9 @@
  */
 
 // No direct access
+use Joomla\CMS\User\User;
+use Joomla\CMS\User\UserHelper;
+
 defined('_JEXEC') or die( 'Restricted access' );
 
 jimport('joomla.plugin.plugin');
@@ -395,6 +398,19 @@ class plgUserEmundus extends JPlugin
         $app = JFactory::getApplication();
         $jinput = JFactory::getApplication()->input;
         $redirect = $jinput->get->getBase64('redirect');
+
+	    $instance = User::getInstance();
+	    $id = (int) UserHelper::getUserId($user['username']);
+
+	    if ($id)
+	    {
+		    $instance->load($id);
+	    }
+
+	    if ($instance->block == 1)
+	    {
+		    return false;
+	    }
 
         if (empty($redirect)) {
             parse_str($jinput->server->getVar('HTTP_REFERER'), $return_url);
