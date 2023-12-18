@@ -129,8 +129,7 @@ class EmundusViewDecision extends JViewLegacy
                 $this->assignRef('fnum_assoc', $m_decision->fnum_assoc);
 
 				// reset filter
-				/*echo '<pre>'; var_dump(JFactory::getSession()->get('filt_params')); echo '</pre>';
-				$filters = @EmundusHelperFiles::resetFilter();
+				/*$filters = @EmundusHelperFiles::resetFilter();
 				$this->assignRef('filters', $filters);*/
 
 				// Do not display photos unless specified in params

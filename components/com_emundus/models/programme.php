@@ -1709,9 +1709,6 @@ class EmundusModelProgramme extends JModelList {
             $program_groups = str_replace($group, '', $program_groups);
             $program_groups = str_replace(',,', ',', $program_groups);
 
-            var_dump(strrpos($program_groups, ','));
-            var_dump(strlen($program_groups));
-
             if (strrpos($program_groups, ',') == (strlen($program_groups) - 1)) {
                 $program_groups = substr($program_groups, 0, -1);
             }

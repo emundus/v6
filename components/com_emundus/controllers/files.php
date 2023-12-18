@@ -2800,7 +2800,6 @@ class EmundusControllerFiles extends JControllerLegacy
                         $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('COM_EMUNDUS_ASSOCIATED_USERS'));
                         break;
                     case 'overall':
-						echo '<pre>'; var_dump('here'); echo '</pre>'; die;
                         $objPHPSpreadsheet->getActiveSheet()->setCellValue([$col, $line], JText::_('COM_EMUNDUS_EVALUATIONS_OVERALL'));
                         break;
                 }

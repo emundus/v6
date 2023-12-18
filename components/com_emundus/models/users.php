@@ -233,8 +233,7 @@ class EmundusModelUsers extends JModelList {
             $query.= ' u.id='.(int)$uid;
         } else {
             $and = true;
-            /*var_dump($this->filts_details['profile']);
-            if(isset($this->filts_details['profile']) && !empty($this->filts_details['profile'])){
+            /*if(isset($this->filts_details['profile']) && !empty($this->filts_details['profile'])){
                 $query.= ' AND e.profile IN ('.implode(',', $this->filts_details['profile']).') ';
                 $and = true;
             }*/
@@ -1531,7 +1530,6 @@ class EmundusModelUsers extends JModelList {
                       left join #__emundus_users as eu on eu.user_id = u.id
                       left join #__user_profiles as up on (up.user_id = u.id and up.profile_key like "emundus_profile.newsletter")
                       where u.id = ' .$uid;
-            //var_dump($query);die;
             $db = $this->getDbo();
             $db->setQuery($query);
             return $db->loadAssoc();
