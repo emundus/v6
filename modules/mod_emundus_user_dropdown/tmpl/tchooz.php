@@ -22,7 +22,9 @@ if ($user != null) {
     include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
     $m_profiles = new EmundusModelProfile();
     $app_prof = $m_profiles->getApplicantsProfilesArray();
-	$user_profile = $m_profiles->getProfileById($user->profile);
+    if(!empty($user->profile)) {
+        $user_profile = $m_profiles->getProfileById($user->profile);
+    }
 
     $user = JFactory::getSession()->get('emundusUser');
 
