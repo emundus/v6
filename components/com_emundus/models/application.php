@@ -4095,7 +4095,7 @@ class EmundusModelApplication extends JModelList
                 $db->setQuery($query);
                 $stored = $db->loadAssoc();
 
-                if (count($stored) > 0) {
+                if (!empty($stored)) {
                     // update form data
                     $parent_id = $stored['id'];
                     unset($stored['id']);
