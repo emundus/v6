@@ -13,7 +13,7 @@ class EmundusFiltersFiles extends EmundusFilters
 	private $menu_params = null;
 	private $h_cache = null;
 
-	public function __construct($config = array())
+	public function __construct($config = array(), $skip = false)
 	{
 		JLog::addLogger(['text_file' => 'com_emundus.filters.php'], JLog::ALL, 'com_emundus.filters');
 		$this->user = JFactory::getUser();
@@ -28,30 +28,31 @@ class EmundusFiltersFiles extends EmundusFilters
 		$this->user_campaigns = $this->m_users->getAllCampaignsAssociatedToUser($this->user->id);
 		$this->user_programs = $this->m_users->getUserGroupsProgrammeAssoc($this->user->id, 'jesp.id');
 
-		$this->setMenuParams();
+		if (!$skip) {
+			$this->setMenuParams();
+			$this->setProfiles();
+			$this->setDefaultFilters($config);
+			$this->setFilters();
 
-		$this->setProfiles();
-		$this->setDefaultFilters($config);
-		$this->setFilters();
+			$session_filters = JFactory::getSession()->get('em-applied-filters', null);
+			if (!empty($session_filters)) {
+				$this->addSessionFilters($session_filters);
+				$this->checkFiltersAvailability();
+			}
 
-		$session_filters = JFactory::getSession()->get('em-applied-filters', null);
-		if (!empty($session_filters)) {
-			$this->addSessionFilters($session_filters);
-			$this->checkFiltersAvailability();
+			$quick_search_filters = JFactory::getSession()->get('em-quick-search-filters', null);
+			if (!empty($quick_search_filters)) {
+				$this->setQuickSearchFilters($quick_search_filters);
+			}
+
+			$this->saveFiltersAllValues();
+
+			if ($this->config['count_filter_values']) {
+				require_once JPATH_ROOT . '/components/com_emundus/helpers/files.php';
+				$helper_files = new EmundusHelperFiles();
+				$this->applied_filters = $helper_files->setFiltersValuesAvailability($this->applied_filters);
+			}
 		}
-
-		$quick_search_filters = JFactory::getSession()->get('em-quick-search-filters', null);
-		if (!empty($quick_search_filters)) {
-			$this->setQuickSearchFilters($quick_search_filters);
-		}
-
-        $this->saveFiltersAllValues();
-
-        if ($this->config['count_filter_values']) {
-            require_once JPATH_ROOT . '/components/com_emundus/helpers/files.php';
-            $helper_files = new EmundusHelperFiles();
-            $this->applied_filters = $helper_files->setFiltersValuesAvailability($this->applied_filters);
-        }
     }
 
 	private function setMenuParams() {
