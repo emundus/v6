@@ -4571,20 +4571,18 @@ class EmundusModelApplication extends JModelList
                 return $redirect;
             }
 
-            $query->select(['id','link'])
+            $query->select('CONCAT(link,"&Itemid=", id) as link')
                 ->from($db->quoteName('#__menu'))
                 ->where($db->quoteName('published').'=1 AND '.$db->quoteName('menutype').' LIKE '.$db->quote($user->menutype).' AND '.$db->quoteName('link').' <> "" AND '.$db->quoteName('link').' <> "#"')
                 ->order($db->quoteName('lft').' ASC');
 
             try {
                 $db->setQuery($query);
-                $res = $db->loadObject();
-                return $res->link.'&Itemid='.$res->id;
+	            return $db->loadResult();
             } catch (Exception $e) {
                 JLog::add('Error getting first page of application at model/application in query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
                 return $redirect;
             }
-
         }
     }
 
