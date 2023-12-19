@@ -392,6 +392,10 @@ table > thead > tr > th {
 
 /* FILTRES */
 
+.chzn-container-multi .chzn-choices li.search-choice .search-choice-close {
+    transition: unset;
+}
+
 .em_filters_filedset > label{
     color: var(--neutral-0) !important;
 }
