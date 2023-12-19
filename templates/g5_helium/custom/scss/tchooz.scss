@@ -1976,7 +1976,7 @@ button.em-swal-delete-button:hover{
 
 /* Hover decalage tuile */
 #tile-hover-offset-procedure {
-  background: var(--em-profile-color);
+  background: var(--em-profile-color) !important;
   position: absolute;
   height: 100%;
   width: 100%;
