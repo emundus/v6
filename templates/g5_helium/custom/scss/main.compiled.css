@@ -2688,6 +2688,11 @@ button.swal2-cancel.goback-btn:hover,
         font-family: var(--em-coordinator-font);
     }
 /* ALERTES */
+.files-board #system-message .alert {
+        width: calc(100% - 90px);
+        float: right;
+        margin: 8px 7px;
+    }
 #system-message .alert, .fabrikMainError {
   display: flex;
   padding: var(--em-spacing-5);
@@ -2735,6 +2740,9 @@ button.swal2-cancel.goback-btn:hover,
 .alert.alert-success .material-icons {
             color: var(--em-alert-success-icon-color);
         }
+.alert.alert-danger ul, .alert.alert-error ul {
+        padding-left: 20px;
+    }
 /* ALERT */
 .messenger__notifications_counter {
         background: var(--red-500);
