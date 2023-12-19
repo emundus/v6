@@ -20,12 +20,12 @@ class PlgExtensionEmundus extends CMSPlugin
 		require_once JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php';
 		$payment_activated = $params->get('application_fee');
 		if ($payment_activated) {
-			$removed = EmundusHelperUpdate::removeFromFile(JPATH_ROOT . '/.htaccess', ['php_value session.cookie_samesite Strict' . PHP_EOL]);
+			$removed = EmundusHelperUpdate::removeFromFile(JPATH_ROOT . '/.htaccess', ['php_value session.cookie_samesite Lax' . PHP_EOL]);
 			if ($removed) {
 				Factory::getApplication()->enqueueMessage(JText::_('PLG_EXTENSION_EMUNDUS_SAMESITE_REMOVED'));
 			}
 		} else {
-			$inserted = EmundusHelperUpdate::insertIntoFile(JPATH_ROOT . '/.htaccess', "php_value session.cookie_samesite Strict" . PHP_EOL);
+			$inserted = EmundusHelperUpdate::insertIntoFile(JPATH_ROOT . '/.htaccess', "php_value session.cookie_samesite Lax" . PHP_EOL);
 			if ($inserted) {
 				Factory::getApplication()->enqueueMessage(JText::_('PLG_EXTENSION_EMUNDUS_SAMESITE_INSERTED'));
 			}

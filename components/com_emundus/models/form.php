@@ -2070,7 +2070,6 @@ class EmundusModelForm extends JModelList {
         try {
             $db->setQuery($query);
             $group_id=$db->loadRow();
-            //var_dump($group_id);
 
 
             $query->clear()
@@ -2080,7 +2079,7 @@ class EmundusModelForm extends JModelList {
 
             $db->setQuery($query);
             $programme = $db->loadObject();
-            //var_dump($programme);
+
             return $programme;
 
         } catch(Exception $e) {

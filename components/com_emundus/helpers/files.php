@@ -4440,13 +4440,38 @@ class EmundusHelperFiles
                             }
 
                             $table_alias = $fabrik_element_data['db_table_name'];
-                            if (!in_array($fabrik_element_data['db_table_name'], $already_joined)) {
-                                $joins = $this->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', $fabrik_element_data['db_table_name']);
+	                        if (!in_array($fabrik_element_data['db_table_name'], $already_joined)) {
+		                        $table_column_to_count = $table_alias . '.' . $fabrik_element_data['name'];
+		                        $joins = $this->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', $fabrik_element_data['db_table_name']);
 
-                                if (!empty($joins)) {
-                                    $leftJoins = $this->writeJoins($joins, $already_joined);
-                                }
-                            } else {
+		                        if (!empty($joins)) {
+			                        $leftJoins = $this->writeJoins($joins, $already_joined);
+		                        } else {
+			                        if (!empty($fabrik_element_data['group_params']) && $fabrik_element_data['group_params']['repeat_group_button'] == 1) {
+				                        $group_join_informations = $this->getJoinInformations(0, $fabrik_element_data['group_id']);
+				                        $joins = $this->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', $group_join_informations['table_join']);
+
+				                        if (!empty($joins)) {
+					                        $leftJoins .= $this->writeJoins($joins, $already_joined);
+
+					                        // $fabrik_element_data['db_table_name']
+					                        // get joins last entry table_join
+					                        $table_to_join = end($joins)['table_join'];
+					                        $joins = $this->findJoinsBetweenTablesRecursively($table_to_join, $fabrik_element_data['db_table_name']);
+
+					                        if (!empty($joins)) {
+						                        $leftJoins .= $this->writeJoins($joins, $already_joined);
+
+						                        foreach($joins as $join) {
+							                        if ($join['table_join'] === $fabrik_element_data['db_table_name']) {
+								                        $table_column_to_count = $join['table_join'] . '.' . $join['table_join_key'];
+							                        }
+						                        }
+					                        }
+				                        }
+			                        }
+		                        }
+	                        } else {
                                 $key = array_search($fabrik_element_data['db_table_name'], $already_joined);
 
                                 if (!is_numeric($key)) {
@@ -4529,18 +4554,39 @@ class EmundusHelperFiles
                                 $available_values = $db->loadAssocList('count_value');
                             } catch (Exception $e) {
                                 JLog::add('Failed to get available values for filter ' . $applied_filter['uid'] . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+	                            $available_values = [];
                             }
                         }
 
-                        if (!empty($available_values)) {
-                            foreach($applied_filter['values'] as $key => $value) {
-                                if (isset($available_values[$value['value']])) {
-                                    $applied_filters[$applied_filter_key]['values'][$key]['count'] = $available_values[$value['value']]['count'];
-                                } else {
-                                    $applied_filters[$applied_filter_key]['values'][$key]['count'] = 0;
-                                }
-                            }
-                        }
+	                    if (!empty($available_values)) {
+		                    if (empty($applied_filter['values'])) {
+			                    if (!class_exists('EmundusFiltersFiles')) {
+				                    require_once(JPATH_ROOT . '/components/com_emundus/classes/filters/EmundusFiltersFiles.php');
+			                    }
+
+			                    if (!isset($filters_files)) {
+									try {
+										$filters_files = new EmundusFiltersFiles([], true);
+									} catch(Exception $e) {
+										// exception means that the user is not logged in or has not enough access, should have never happened
+										JLog::add('Failed to get available values for filter ' . $applied_filter['uid'] . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+										return [];
+									}
+			                    }
+
+			                    $applied_filter['values'] = $filters_files->getFabrikElementValuesFromElementId($applied_filter['id']);
+		                    }
+
+		                    if (!empty($applied_filter['values'])) {
+			                    foreach($applied_filter['values'] as $key => $value) {
+				                    if (isset($available_values[$value['value']])) {
+					                    $applied_filters[$applied_filter_key]['values'][$key]['count'] = $available_values[$value['value']]['count'];
+				                    } else {
+					                    $applied_filters[$applied_filter_key]['values'][$key]['count'] = 0;
+				                    }
+			                    }
+		                    }
+	                    }
                     }
                 }
             }

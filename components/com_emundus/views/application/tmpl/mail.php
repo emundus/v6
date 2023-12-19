@@ -13,7 +13,8 @@ $fnum = JFactory::getApplication()->input->getString('fnum', 0);
     }
 
     div#em-appli-block div.em-container-mail-content div.em-container-mail-content-heading.panel-heading {
-        border-radius: var(--em-coordinator-br);
+        border-top-left-radius: var(--em-coordinator-br);
+        border-top-right-radius: var(--em-coordinator-br);
         margin-top: 0;
         align-items: start;
         background: var(--neutral-300);
@@ -87,7 +88,14 @@ $fnum = JFactory::getApplication()->input->getString('fnum', 0);
                                     <i><?= JText::_('COM_EMUNDUS_EMAIL_PEOPLE_CC') . ' ' . $message->email_cc; ?></i>
                                     </div><?php endif; ?>
                                 <div class="panel-body em-container-mail-content-body">
-                                    <?= $message->message; ?>
+                                    <?php
+                                        $length = strlen($message->message);
+                                        if ($length > 1000000) {
+                                            echo '<strong>' . JText::sprintf('COM_EMUNDUS_ERROR_TOO_LARGE_EMAIL', $length). '</strong>';
+                                        } else {
+                                            echo $message->message;
+                                        }
+                                    ?>
                                 </div>
                             </div>
 					<?php endforeach; ?>

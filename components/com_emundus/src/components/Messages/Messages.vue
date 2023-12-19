@@ -40,13 +40,13 @@
               <i class="fas fa-times pointer" @click="$modal.hide('messages')"></i>
             </div>
             <div class="messages__list-block em-h-80" id="messages__list">
-              <div v-for="date in dates">
+              <div v-for="date in messageByDates">
                 <div class="messages__date-section">
                   <hr>
-                  <p>{{ moment(date.dates).format("DD/MM/YYYY") }}</p>
+                  <p>{{ moment(date.date).format("DD/MM/YYYY") }}</p>
                   <hr>
                 </div>
-                <div v-for="message in messages" v-if="date.messages.includes(message.message_id)" class="messages__message-item" :class="user == message.user_id_from ? 'messages__current_user' : 'messages__other_user'">
+                <div v-for="message in date.messages" class="messages__message-item" :class="user == message.user_id_from ? 'messages__current_user' : 'messages__other_user'">
                   <div class="messages__message-item-block" @click="showDate != message.message_id ? showDate = message.message_id : showDate = 0" :class="user == message.user_id_from ? 'messages__text-align-right' : 'messages__text-align-left'">
                     <p>
                       <span class="messages__message-item-from">
@@ -202,8 +202,7 @@ export default {
         this.send_progress = true;
         axios({
           method: "post",
-          url:
-              "index.php?option=com_emundus&controller=messenger&task=sendmessage",
+          url: "index.php?option=com_emundus&controller=messenger&task=sendmessage",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -212,24 +211,31 @@ export default {
             fnum: this.fileSelected
           })
         }).then(response => {
-          this.message = '';
-          this.send_progress = false;
-          this.pushToDatesArray(response.data);
-          this.scrollToBottom();
+          if (response.data.status) {
+            this.message = '';
+            this.send_progress = false;
+            this.pushToDatesArray(response.data.data);
+            this.scrollToBottom();
+          }
         });
       }
     },
 
     pushToDatesArray(message){
-      var pushToDate = false;
-      var message_date = message.date_time.split(' ')[0];
-      this.dates.forEach((elt,index) => {
+      let pushToDate = false;
+
+	    let message_date = this.moment().format("YYYY-MM-DD");
+			if (message.date_time) {
+				 message_date = message.date_time.split(' ')[0];
+			}
+	    this.dates.forEach((elt,index) => {
         if(elt.dates == message_date){
           this.dates[index].messages.push(message.message_id);
           pushToDate = true;
         }
       });
-      if(!pushToDate){
+
+      if (!pushToDate) {
         var new_date = {
           dates: this.moment().format("YYYY-MM-DD"),
           messages: []
@@ -239,27 +245,6 @@ export default {
       }
       this.messages.push(message);
     },
-
-    /*infiniteHandler($state){
-      setTimeout(() => {
-            axios({
-              method: "get",
-              url: "index.php?option=com_emundus&controller=messenger&task=getmessagesbyfnum",
-              params: {
-                fnum: this.campaignSelected,
-                offset: this.messages.length,
-              },
-              paramsSerializer: params => {
-                return qs.stringify(params);
-              }
-            }).then(response => {
-              this.messages.unshift(response.data.data);
-              this.markAsRead();
-              $state.loaded();
-            });
-      },1000);
-    },*/
-
     scrollToBottom() {
       setTimeout(() => {
         const container = document.getElementById("messages__list");
@@ -278,10 +263,30 @@ export default {
     },
 
     pushAttachmentMessage(message){
-      //this.$modal.hide('attach_documents' + this.fileSelected);
       this.pushToDatesArray(message);
       this.scrollToBottom();
       this.attachOpen = !this.attachOpen;
+    }
+  },
+
+  computed: {
+    messageByDates() {
+      let messages = [];
+
+      this.dates.forEach((elt,index) => {
+        let date = elt.dates;
+        let messages_array = [];
+        elt.messages.forEach((message_id) => {
+          this.messages.forEach((message) => {
+            if(message.message_id == message_id){
+              messages_array.push(message);
+            }
+          });
+        });
+        messages.push({date: date, messages: messages_array});
+      });
+
+      return messages;
     }
   },
 

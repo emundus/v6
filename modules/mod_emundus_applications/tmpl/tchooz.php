@@ -185,7 +185,7 @@ $current_tab = 0;
 <?php endif; ?>
 
 <?php if (sizeof($applications) > 0) : ?>
-    <div class="em-flex-row em-flex-space-between em-mt-16">
+    <div class="em-flex-row em-flex-space-between em-mt-16" id="applications_header_filter_sort">
         <div class="em-flex-row">
             <!-- BUTTONS -->
             <?php if ($mod_em_applications_show_sort == 1) : ?>
@@ -310,6 +310,7 @@ $current_tab = 0;
             </div>
         </div>
 	<?php else : ?>
+        <h4 id="no_file_tab_message_view" class="em-display-none"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_TAB') ?></h4>
 		<?php foreach ($applications as $key => $group) : ?>
 			<?php foreach ($group as $g_key => $sub_group) : ?>
 				<?php if (sizeof($sub_group['applications'][0]) > 0) : ?>
@@ -395,8 +396,7 @@ $current_tab = 0;
                                                                 <?php endif; ?>
                                                                 <?php if (!empty($application->order_status)): ?>
                                                                     <br>
-                                                                    <span class="label"
-                                                                          style="background-color: <?= $application->order_color; ?>"><?= JText::_(strtoupper($application->order_status)); ?></span>
+                                                                    <p><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_ORDER_STATUS') ?> <span style="color: <?= $application->order_color; ?>"><?= JText::_(strtoupper($application->order_status)); ?></span></p>
                                                                 <?php endif; ?>
                                                             </div>
                                                             <div class="mod_emundus_applications__container">
@@ -630,6 +630,7 @@ $current_tab = 0;
             </div>
         </div>
 	<?php else : ?>
+        <h4 id="no_file_tab_message_list" class="em-display-none"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_TAB') ?></h4>
 		<?php foreach ($applications as $key => $group) : ?>
 			<?php foreach ($group as $g_key => $sub_group) : ?>
 				<?php if (sizeof($sub_group['applications'][0]) > 0) : ?>
@@ -759,8 +760,7 @@ $current_tab = 0;
 														<?php endif; ?>
 														<?php if (!empty($application->order_status)): ?>
                                                             <br>
-                                                            <span class="label"
-                                                                  style="background-color: <?= $application->order_color; ?>"><?= JText::_(strtoupper($application->order_status)); ?></span>
+                                                            <p><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_ORDER_STATUS') ?> <span style="color: <?= $application->order_color; ?>"><?= JText::_(strtoupper($application->order_status)); ?></span></p>
 														<?php endif; ?>
                                                     </div>
                                                 </td>
@@ -1070,6 +1070,11 @@ $current_tab = 0;
 
     /** TABS **/
     function updateTab(tab) {
+        document.getElementById('applications_header_filter_sort').style.display = 'flex';
+        document.querySelectorAll('h4[id*="no_file_tab_message_"]').forEach((elt) => {
+            elt.style.display = 'none'
+        })
+
         sessionStorage.setItem("mod_emundus_applications___selected_tab", tab);
         document.querySelectorAll('div[id*="tab_link_"]').forEach((elt) => {
             if (elt.id !== 'tab_link_' + tab) {
@@ -1086,6 +1091,14 @@ $current_tab = 0;
                 elt.classList.remove('em-display-none');
             }
         })
+
+        if(!document.querySelector('#group_application_tab_'+tab)) {
+            document.querySelectorAll('h4[id*="no_file_tab_message_"]').forEach((elt) => {
+                elt.style.display = 'block'
+            })
+
+            document.getElementById('applications_header_filter_sort').style.display = 'none';
+        }
     }
 
     async function createTab() {

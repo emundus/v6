@@ -140,24 +140,30 @@ export default {
               fnum: this.fileSelected
             })
           }).then(response => {
-            this.message = '';
-            this.pushToDatesArray(response.data);
-            this.scrollToBottom();
+            if (response.data.status) {
+              this.message = '';
+              this.pushToDatesArray(response.data.data);
+              this.scrollToBottom();
+            }
           });
         }
       }
     },
 
-    pushToDatesArray(message){
-      var pushToDate = false;
-      var message_date = message.date_time.split(' ')[0];
+    pushToDatesArray(message) {
+      let pushToDate = false;
+
+      let message_date = this.moment().format("YYYY-MM-DD");
+      if (message.date_time) {
+        message_date = message.date_time.split(' ')[0];
+      }
       this.dates.forEach((elt,index) => {
         if(elt.dates == message_date){
           this.dates[index].messages.push(message.message_id);
           pushToDate = true;
         }
       });
-      if(!pushToDate){
+      if(!pushToDate) {
         var new_date = {
           dates: this.moment().format("YYYY-MM-DD"),
           messages: []
@@ -195,12 +201,12 @@ export default {
     this.fnum = this.$store.getters['global/datas'].fnum.value;
     this.user = this.$store.getters['global/datas'].user.value;
 
-    if(typeof this.fnum != 'undefined'){
+    if (typeof this.fnum != 'undefined') {
       this.fileSelected = this.fnum;
       this.getMessagesByFnum();
       setInterval(() => {
         this.getMessagesByFnum(false, false);
-      },20000);
+      }, 20000);
     }
   },
 

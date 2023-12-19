@@ -4095,7 +4095,7 @@ class EmundusModelApplication extends JModelList
                 $db->setQuery($query);
                 $stored = $db->loadAssoc();
 
-                if (count($stored) > 0) {
+                if (!empty($stored)) {
                     // update form data
                     $parent_id = $stored['id'];
                     unset($stored['id']);
@@ -5344,8 +5344,18 @@ class EmundusModelApplication extends JModelList
                     break;
                 case 'checkbox':
                     $elm = array();
-                    $index = array_intersect(json_decode(@$value), $params->sub_options->sub_values);
-                    foreach ($index as $sub_value) {
+	                $index = $params->sub_options->sub_values;
+	                if (!empty($value)) {
+		                $value_as_array = json_decode($value, true);
+
+		                if (!empty($value_as_array)) {
+			                $index = array_intersect($value_as_array, $params->sub_options->sub_values);
+		                } else {
+			                $index = $params->sub_options->sub_values;
+		                }
+	                }
+
+					foreach ($index as $sub_value) {
                         $key = array_search($sub_value,$params->sub_options->sub_values);
                         $elm[] = ' - ' . JText::_($params->sub_options->sub_labels[$key]);
                     }

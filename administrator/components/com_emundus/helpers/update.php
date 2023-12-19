@@ -3523,6 +3523,90 @@ class EmundusHelperUpdate
 		}
 		//
 
+		// Manage SCP configuration
+		$query->clear()
+			->select('storage_value')
+			->from($db->quoteName('#__securitycheckpro_storage'))
+			->where($db->quoteName('storage_key') . ' LIKE ' . $db->quote('pro_plugin'));
+		$db->setQuery($query);
+		$scp_plugin = $db->loadResult();
+
+		if(!empty($scp_plugin)) {
+			$storage_value = json_decode($scp_plugin, true);
+
+			// Blacklist
+			$storage_value['dynamic_blacklist'] = 1;
+			$storage_value['dynamic_blacklist_counter'] = 5;
+			$storage_value['dynamic_blacklist_time'] = 300;
+			$storage_value['blacklist_email'] = 0;
+
+			// Strict mode
+			$storage_value['mode'] = 1;
+
+			// Logs
+			$storage_value['logs_attacks'] = 1;
+			$storage_value['scp_delete_period'] = 90;
+			$storage_value['log_limits_per_ip_and_day'] = 5;
+			$storage_value['add_access_attempts_logs'] = 1;
+
+			// Redirect
+			$storage_value['redirect_after_attack'] = 1;
+			$storage_value['redirect_options'] = 1;
+			$storage_value['custom_code'] = '<h1 style="text-align: center;">The application\'s firewall has been triggered by your use of the platform.<br />You no longer have access to the platform.<br />Please contact the platform manager so that he can unblock your account.</h1><hr /><h1 style="text-align: center;">Le pare-feu de l\'application vient de se déclencher suite à votre utilisation de la plateforme.<br />Vous n\'avez plus accès à la plateforme.<br />Merci de prendre contact avec le gestionnaire de cette plateforme afin qu\'il débloque votre compte.</h1>';
+
+			// Second level
+			$storage_value['second_level'] = 1;
+			$storage_value['second_level_redirect'] = 1;
+			$storage_value['second_level_limit_words'] = 3;
+			$storage_value['second_level_words'] = 'ZHJvcCx1cGRhdGUsc2V0LGFkbWluLHNlbGVjdCx1c2VyLHBhc3N3b3JkLGNvbmNhdCxsb2dpbixsb2FkX2ZpbGUsYXNjaWksY2hhcix1bmlvbixncm91cCBieSxvcmRlciBieSxpbnNlcnQsdmFsdWVzLHBhc3Msd2hlcmUsc3Vic3RyaW5nLGJlbmNobWFyayxtZDUsc2hhMSxzY2hlbWEsdmVyc2lvbixyb3dfY291bnQsY29tcHJlc3MsZW5jb2RlLGluZm9ybWF0aW9uX3NjaGVtYSxzY3JpcHQsamF2YXNjcmlwdCxpbWcsc3JjLGlucHV0LGJvZHksaWZyYW1lLGZyYW1lLCRfUE9TVCxldmFsLCRfUkVRVUVTVCxiYXNlNjRfZGVjb2RlLGd6aW5mbGF0ZSxnenVuY29tcHJlc3MsZ3ppbmZsYXRlLHN0cnRyZXhlYyxwYXNzdGhydSxzaGVsbF9leGVjLGNyZWF0ZUVsZW1lbnQ=';
+
+			// Emails
+			$storage_value['email_active'] = 0;
+
+			// Exceptions
+			$storage_value['exclude_exceptions_if_vulnerable'] = 1;
+			$storage_value['check_header_referer'] = 1;
+			$storage_value['check_base_64'] = 1;
+			$storage_value['base64_exceptions'] = 'com_hikashop,com_emundus,com_fabrik';
+			$storage_value['strip_all_tags'] = 1;
+			$storage_value['strip_tags_exceptions'] = 'com_jdownloads,com_hikashop,com_emundus,com_fabrik';
+			$storage_value['duplicate_backslashes_exceptions'] = 'com_emundus,com_fabrik';
+			$storage_value['line_comments_exceptions'] = 'com_emundus,com_fabrik';
+			$storage_value['using_integers_exceptions'] = 'com_jce,com_fabrik';
+			$storage_value['escape_strings_exceptions'] = 'com_jce,com_fabrik';
+			$storage_value['lfi_exceptions'] = 'com_emundus,com_fabrik';
+			$storage_value['second_level_exceptions'] = '';
+
+			// Session
+			$storage_value['session_protection_active'] = 1;
+			$storage_value['session_hijack_protection'] = 1;
+			$storage_value['session_hijack_protection_what_to_check'] = 2;
+			$storage_value['session_protection_groups'] = ["11","3","5","2","10","1"];
+			$storage_value['track_failed_logins'] = 1;
+			$storage_value['logins_to_monitorize'] = 0;
+			$storage_value['write_log'] = 1;
+			$storage_value['actions_failed_login'] = 1;
+			$storage_value['email_on_admin_login'] = 0;
+			$storage_value['forbid_admin_frontend_login'] = 0;
+			$storage_value['forbid_new_admins'] = 1;
+
+			// Upload scanner
+			$storage_value['upload_scanner_enabled'] = 1;
+			$storage_value['check_multiple_extensions'] = 1;
+			$storage_value['mimetypes_blacklist'] = 'application/x-dosexec,application/x-msdownload ,text/x-php,application/x-php,application/x-httpd-php,application/x-httpd-php-source,application/javascript,application/xml';
+			$storage_value['extensions_blacklist'] = 'php,js,exe,xml';
+			$storage_value['delete_files'] = 1;
+			$storage_value['actions_upload_scanner'] = 1;
+
+			$query->clear()
+				->update($db->quoteName('#__securitycheckpro_storage'))
+				->set($db->quoteName('storage_value') . ' = ' . $db->quote(json_encode($storage_value)))
+				->where($db->quoteName('storage_key') . ' = ' . $db->quote('pro_plugin'));
+			$db->setQuery($query);
+			$db->execute();
+		}
+		//
+
 		return true;
 	}
 

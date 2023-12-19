@@ -1335,7 +1335,6 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $dataresult = array('start' => $start, 'limit'=>$limit, 'totalfile'=> $totalfile,'methode'=>0,'elts'=>$elts, 'objs'=> $objs, 'nbcol' => $nbcol,'file'=>$file );
         $result = array('status' => true, 'json' => $dataresult);
         echo json_encode((object) $result);
-        //var_dump($result);
         exit();
     }
 

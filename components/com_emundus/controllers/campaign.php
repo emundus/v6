@@ -233,8 +233,8 @@ class EmundusControllerCampaign extends JControllerLegacy {
                                 $state_values[1],
                                 [
                                     'key' => JText::_('COM_EMUNDUS_FILES_FILES'),
-                                    'value' => '<a target="_blank" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;">' . $campaign->nb_files . ' ' . ( $campaign->nb_files > 1 ? JText::_('COM_EMUNDUS_FILES_FILES') : JText::_('COM_EMUNDUS_FILES_FILE')) . '</a>',
-                                    'classes' => 'em-p-5-12 em-font-weight-600  em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius go-to-campaign-link',
+                                    'value' => '<a  class="em-font-weight-600 em-profile-color em-font-size-14" target="_blank" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;">' . $campaign->nb_files . ' ' . ( $campaign->nb_files > 1 ? JText::_('COM_EMUNDUS_FILES_FILES') : JText::_('COM_EMUNDUS_FILES_FILE')) . '</a>',
+                                    'classes' => 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-border-radius go-to-campaign-link',
                                 ]
                             ],
                             'classes' => 'em-mt-8 em-mb-8',

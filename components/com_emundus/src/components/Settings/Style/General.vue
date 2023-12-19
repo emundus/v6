@@ -19,7 +19,7 @@
         </div>
 
         <div class="em-logo-box pointer em-mt-16" v-if="!logo_updating">
-          <img class="logo-settings" v-if="!hideLogo" :src="imageLink" :srcset="'/'+imageLink"  @error="hideLogo = true">
+          <img id="logo-img" class="logo-settings" v-if="!hideLogo" :src="imageLink" :srcset="'/'+imageLink"  @error="hideLogo = true">
           <p v-if="hideLogo">{{ translate('COM_EMUNDUS_ONBOARD_INSERT_LOGO') }}</p>
         </div>
         <div class="em-mt-16" v-if="logo_updating">
@@ -40,7 +40,7 @@
           </vue-dropzone>
         </div>
 
-        <button @click="logo_updating = !logo_updating" class="em-mt-8 em-primary-button">
+        <button id="btn-update-logo" @click="logo_updating = !logo_updating" class="em-mt-8 em-primary-button">
           <span v-if="!logo_updating">{{ translate("COM_EMUNDUS_ONBOARD_UPDATE_LOGO") }}</span>
           <span v-else>{{ translate('COM_EMUNDUS_ONBOARD_CANCEL') }}</span>
         </button>
@@ -81,7 +81,7 @@
           </vue-dropzone>
         </div>
 
-        <button @click="favicon_updating = !favicon_updating" class="em-mt-8 em-primary-button">
+        <button id="btn-update-favicon" @click="favicon_updating = !favicon_updating" class="em-mt-8 em-primary-button">
           <span v-if="!favicon_updating">{{ translate("COM_EMUNDUS_ONBOARD_UPDATE_ICON") }}</span>
           <span v-else>{{ translate('COM_EMUNDUS_ONBOARD_CANCEL') }}</span>
         </button>
@@ -142,7 +142,7 @@
           </vue-dropzone>
         </div>
 
-        <button @click="banner_updating = !banner_updating" class="em-mt-8 em-primary-button">
+        <button id="btn-update-banner" @click="banner_updating = !banner_updating" class="em-mt-8 em-primary-button">
           <span v-if="!banner_updating">{{ translate("COM_EMUNDUS_ONBOARD_UPDATE_BANNER") }}</span>
           <span v-else>{{ translate('COM_EMUNDUS_ONBOARD_CANCEL') }}</span>
         </button>
@@ -334,8 +334,12 @@ export default {
   methods:{
     updateView(response) {
       this.hideLogo = false;
-      this.imageLink = 'images/custom/'+response.filename+'?' + new Date().getTime();
-      document.querySelector('img[src="/images/custom/'+response.old_logo+'"]').src = '/images/custom/'+response.filename+'?' + new Date().getTime();
+      this.imageLink = 'images/custom/' + response.filename + '?' + new Date().getTime();
+
+      const oldLogo = document.querySelector('img[src="/images/custom/'+response.old_logo+'"]');
+      if (oldLogo) {
+        oldLogo.src = '/' + this.imageLink;
+      }
       this.$forceUpdate();
     },
     updateIcon(response) {
@@ -347,10 +351,6 @@ export default {
     },
     updateBanner(ext = 'png') {
       this.bannerLink = 'images/custom/default_banner.'+ext+'?' + new Date().getTime();
-      this.$forceUpdate();
-    },
-    updateBanner() {
-      this.bannerLink = 'images/custom/default_banner.png?' + new Date().getTime();
       this.$forceUpdate();
     },
     updateColors(colors){

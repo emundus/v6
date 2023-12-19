@@ -126,6 +126,10 @@ p,
   padding-top: 40px !important;
 }
 
+.mon-profil .plg-databasejoin.span12 .chzn-container.chzn-container-single {
+  width: 100% !important;
+}
+
 #g-container-main .g-container {
   padding: 0 20px;
 }
@@ -3512,6 +3516,9 @@ div#em-appli-block {
 
     .comment-name, .comment-date a {
       color: var(--neutral-900);
+      &:hover, &:active, &:focus {
+        text-decoration: none;
+      }
     }
 
     .list-group-item .ctext {
@@ -3522,7 +3529,7 @@ div#em-appli-block {
       color: var(--night-blue);
     }
 
-    .em-list-status-date {
+    .mic-info.comment-date {
       padding: 10px 0;
     }
 
@@ -3939,7 +3946,7 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
   .span12 {
 
     /* INTRO FORMULAIRE */
-    .emundus-form {
+    *:not(.view-registration) .emundus-form {
       margin-top: 0;
       margin-bottom: 64px;
       border-radius: var(--em-form-br-block) !important;
@@ -5437,7 +5444,7 @@ screen and (max-height: 769px) {
   #g-container-main {
     padding: 20px 20px 20px 20px;
   }
-  .gantry.view-form:not(.applicant-form) #g-container-main {
+  .gantry.view-form:not(.applicant-form):not(.view-registration):not(.mon-profil) #g-container-main {
     padding-right: 0;
   }
 }

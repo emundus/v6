@@ -1204,18 +1204,18 @@ form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calen
             }
 /* YES / NO */
 /* And radio buttons grouped together */
-form.fabrikForm .row-fluid .plg-yesno.span12,
+form.fabrikForm .row-fluid .plg-yesno.span12 .fabrikElement,
     form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .btn-group {
       width: 48.93617021276595%;
     }
 @media only all and (min-width: 48rem) and (max-width: 59.99rem) {
-      form.fabrikForm .row-fluid .plg-yesno.span12,
+      form.fabrikForm .row-fluid .plg-yesno.span12 .fabrikElement,
       form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .btn-group {
         width: 48.6187845304% !important;
       }
     }
 @media only all and (max-width: 48rem) {
-      form.fabrikForm .row-fluid .plg-yesno.span12,
+      form.fabrikForm .row-fluid .plg-yesno.span12 .fabrikElement,
       form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .btn-group {
         width: 100% !important;
       }
@@ -1655,9 +1655,16 @@ form.fabrikForm .currencyElement input:focus + select,form.fabrikForm .currencyE
 form.fabrikForm .control-group.error label {
         color: var(--em-form-label-color-error);
       }
+form.fabrikForm .control-group.\!error label {
+        color: var(--em-form-label-color-error) !important;
+      }
 form.fabrikForm .control-group.error input,form.fabrikForm .control-group.error textarea,form.fabrikForm .control-group.error select {
         border-color: var(--em-form-bc-error);
         color: var(--em-default-text-color-1);
+      }
+form.fabrikForm .control-group.\!error input,form.fabrikForm .control-group.\!error textarea,form.fabrikForm .control-group.\!error select {
+        border-color: var(--em-form-bc-error) !important;
+        color: var(--em-default-text-color-1) !important;
       }
 form.fabrikForm .fabrikError.plg-checkbox .fabrikElement .fabrikSubElementContainer {
           border-color: var(--em-form-checkbox-bc-error);
@@ -1995,6 +2002,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .sticky {
   position: sticky;
 }
+.isolate {
+  isolation: isolate;
+}
 .float-right {
   float: right;
 }
@@ -2106,6 +2116,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .inline-block {
   display: inline-block;
+}
+.\!inline {
+  display: inline !important;
 }
 .inline {
   display: inline;

@@ -187,7 +187,7 @@
                 <div class="mb-4" style="display: none">
                   <label for="prog_color">{{ translate('COM_EMUNDUS_ONBOARD_PROGCOLOR') }}</label>
                   <div class="flex">
-                    <div v-for="(color,index) in colors">
+                    <div v-for="(color,index) in colors" :key="color.text">
                       <div class="em-color-round cursor-pointer flex justify-center"
                            :class="index != 0 ? 'ml-2' : ''"
                            :style="selectedColor == color.text ? 'background-color:' + color.text + ';border: 2px solid ' + color.background : 'background-color:' + color.text"

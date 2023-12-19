@@ -293,10 +293,17 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
 
         switch($form_type) {
             case 'user':
-                $campaign_id = is_array($jinput->getInt('jos_emundus_users___campaign_id_raw')) ? $jinput->getInt('jos_emundus_users___campaign_id_raw')[0] : $jinput->getInt('jos_emundus_users___campaign_id_raw');
+                $campaign_id = $jinput->getInt('jos_emundus_users___campaign_id_raw', 0);
+
                 if (empty($campaign_id)) {
-                    return;
+                    $campaign_id = $jinput->getInt('jos_emundus_users___campaign_id', 0);
                 }
+
+                $campaign_id = is_array($campaign_id) ? $campaign_id[0] : $campaign_id;
+                if (empty($campaign_id)) {
+                    return false;
+                }
+
                 // Check if the campaign limit has been obtained
                 if ($m_campaign->isLimitObtained($campaign_id) === true) {
                     $this->getModel()->formErrorMsg = '';
@@ -306,7 +313,16 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
                 break;
 
             case 'cc':
-                $campaign_id = is_array($jinput->getInt('jos_emundus_campaign_candidature___campaign_id_raw')) ? $jinput->getInt('jos_emundus_campaign_candidature___campaign_id_raw')[0] : $jinput->getInt('jos_emundus_campaign_candidature___campaign_id_raw');
+                $campaign_id = $jinput->getInt('jos_emundus_campaign_candidature___campaign_id_raw', 0);
+
+                if (empty($campaign_id)) {
+                    $campaign_id = $jinput->getInt('jos_emundus_campaign_candidature___campaign_id', 0);
+                }
+
+                $campaign_id = is_array($campaign_id) ? $campaign_id[0] : $campaign_id;
+                if (empty($campaign_id)) {
+                    return false;
+                }
 
                 // Check if the campaign limit has been obtained
                 if ($m_campaign->isLimitObtained($campaign_id) === true) {
