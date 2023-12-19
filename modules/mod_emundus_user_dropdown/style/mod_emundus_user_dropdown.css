@@ -293,6 +293,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     line-height: normal;
     letter-spacing: normal;
     font-size: var(--em-applicant-font-size);
+    margin-top: 16px !important;
 }
 
 #header-c #userDropdownMenu a.edit-button-user:hover,

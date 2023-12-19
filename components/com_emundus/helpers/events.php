@@ -422,6 +422,7 @@ class EmundusHelperEvents {
 							if (!empty($fnum_linked)) {
 								$query->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum_linked));
 							}
+                            $query->order('id DESC');
 							$db->setQuery($query);
 							$stored = $db->loadAssoc();
 
@@ -1128,7 +1129,7 @@ class EmundusHelperEvents {
 
         return true;
     }
-	
+
 	function onAfterProgramCreate($params) : bool{
 		jimport('joomla.log.log');
 		JLog::addLogger(array('text_file' => 'com_emundus.helper_events.php'), JLog::ALL, array('com_emundus.helper_events'));

@@ -3516,6 +3516,9 @@ div#em-appli-block {
 
     .comment-name, .comment-date a {
       color: var(--neutral-900);
+      &:hover, &:active, &:focus {
+        text-decoration: none;
+      }
     }
 
     .list-group-item .ctext {
@@ -3526,7 +3529,7 @@ div#em-appli-block {
       color: var(--night-blue);
     }
 
-    .em-list-status-date {
+    .mic-info.comment-date {
       padding: 10px 0;
     }
 
