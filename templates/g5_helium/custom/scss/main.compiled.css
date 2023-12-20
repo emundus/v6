@@ -3159,6 +3159,7 @@ body {
     background-position: top -6px right 30px;
     width: 100%;
     padding-right: 28%;
+    min-height: 150px;
 }
 /* Connexion */
 .login > #g-page-surround {
