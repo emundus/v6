@@ -4454,7 +4454,6 @@ class EmundusHelperFiles
 				                        if (!empty($joins)) {
 					                        $leftJoins .= $this->writeJoins($joins, $already_joined);
 
-					                        // $fabrik_element_data['db_table_name']
 					                        // get joins last entry table_join
 					                        $table_to_join = end($joins)['table_join'];
 					                        $joins = $this->findJoinsBetweenTablesRecursively($table_to_join, $fabrik_element_data['db_table_name']);
@@ -4465,6 +4464,24 @@ class EmundusHelperFiles
 						                        foreach($joins as $join) {
 							                        if ($join['table_join'] === $fabrik_element_data['db_table_name']) {
 								                        $table_column_to_count = $join['table_join'] . '.' . $join['table_join_key'];
+							                        }
+						                        }
+					                        } else {
+						                        if (!empty($join_informations['params'])) {
+							                        $join_informations['params'] = json_decode($join_informations['params'], true);
+
+							                        if ($join_informations['params']['type'] === 'element') {
+								                        $joins = [
+									                        [
+										                        'table_key' => 'id',
+										                        'join_from_table' => $fabrik_element_data['db_table_name'],
+										                        'table_join' => $table_to_join,
+										                        'table_join_key' => $join_informations['params']['join-label']
+									                        ]
+								                        ];
+								                        $leftJoins .= $this->writeJoins($joins, $already_joined);
+
+								                        $table_column_to_count = $table_to_join . '.' .  $join_informations['params']['join-label'];
 							                        }
 						                        }
 					                        }
