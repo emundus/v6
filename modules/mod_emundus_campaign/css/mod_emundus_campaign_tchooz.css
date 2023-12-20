@@ -184,6 +184,7 @@
     padding: var(--p-16);
     position: absolute;
     background: var(--neutral-0);
+    z-index: 10;
 }
 
 .mod_emundus_campaign__header_sort__values a:hover {
