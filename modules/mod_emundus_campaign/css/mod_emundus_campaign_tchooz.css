@@ -208,6 +208,7 @@
     position: absolute;
     background: var(--neutral-0);
     min-width: 44rem;
+    z-index: 10;
 }
 
 .mod_emundus_campaign__header_filter span:not(.material-icons-outlined){
