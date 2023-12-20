@@ -3628,6 +3628,10 @@ structure:
 					->set($db->quoteName('view_only_template') . ' = ' . $db->quote('emundus'));
 				$db->setQuery($query);
 				$db->execute();
+
+				EmundusHelperUpdate::addCustomEvents([
+					['label' => 'onAfterSubmitFile', 'category' => 'File']
+				]);
 			}
 		}
 
