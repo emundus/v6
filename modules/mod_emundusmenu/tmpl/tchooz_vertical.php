@@ -117,7 +117,7 @@ defined('_JEXEC') or die;
 
     .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo img {
         width: 30px;
-        height: fit-content;
+        height: 30px;
     }
 
     #g-navigation .g-main-nav .g-sublevel > li:not(:last-child) > .g-menu-item-container{

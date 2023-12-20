@@ -13,6 +13,7 @@ $layout = $params->get('layout', 'default');
 // Include the syndicate functions only once
 require_once dirname(__FILE__).'/helper.php';
 include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
+include_once(JPATH_BASE.'/components/com_emundus/models/users.php');
 
 $user = JFactory::getSession()->get('emundusUser');
 
@@ -114,6 +115,17 @@ $is_anonym_user = $user->anonym;
 $allow_anonym_files = $eMConfig->get('allow_anonym_files', false);
 if ($is_anonym_user && !$allow_anonym_files) {
     return;
+}
+
+$m_users = new EmundusModelUsers;
+$profile_details = new stdClass();
+if (!JFactory::getUser()->guest) {
+	if (!empty($user->profile)) {
+		$profile_details = $m_users->getProfileDetails($user->profile);
+	} else {
+		$profile_details->class = '';
+		$profile_details->published = '';
+	}
 }
 
 require JModuleHelper::getLayoutPath('mod_emundus_user_dropdown', $layout);

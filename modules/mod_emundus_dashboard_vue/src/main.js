@@ -32,6 +32,8 @@ if (document.getElementById('em-dashboard-vue')) {
           displayName: element.attributes['displayName'].value,
           name: element.attributes['name'].value,
           language: element.attributes['language'].value,
+          profile_name: element.attributes['profile_name'].value,
+          profile_description: element.attributes['profile_description'].value,
         }
       });
     }

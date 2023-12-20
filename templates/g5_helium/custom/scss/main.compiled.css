@@ -855,7 +855,8 @@ video {
     .view-registration.em-formRegistrationCenter .emundus-form {
         flex: 0 0 30rem;
         max-width: 30rem;
-        margin: 16px auto
+        margin: 0 auto;
+        padding-top: 0
 
     }
       }
@@ -863,7 +864,8 @@ video {
     .view-registration.em-formRegistrationCenter .emundus-form {
         flex: 0 0 30rem;
         max-width: 30rem;
-        margin: 16px auto
+        margin: 0 auto;
+        padding-top: 0
 
     }
       }
