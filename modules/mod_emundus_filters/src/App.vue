@@ -198,9 +198,21 @@ export default {
 
 				newFilter.uid = new Date().getTime();
 				newFilter.default = false;
-				newFilter.operator = newFilter.type === 'select' ? 'IN' : '=';
+				newFilter.operator = '=';
 				newFilter.andorOperator = 'OR';
-				newFilter.value = newFilter.type === 'select' ? ['all'] : '';
+
+				switch (newFilter.type) {
+					case 'select':
+						newFilter.value = ['all'];
+						newFilter.operator = 'IN';
+						break;
+					case 'date':
+						newFilter.value = ['', ''];
+						break;
+					default:
+						newFilter.value = '';
+						break;
+				}
 
 				if (newFilter.type === 'select' && newFilter.values.length < 1) {
 					filtersService.getFilterValues(newFilter.id).then((values) => {

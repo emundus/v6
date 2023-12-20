@@ -76,13 +76,13 @@ export default {
 		}
 	},
 	mounted () {
+		if (this.filter.value === '' || this.filter.value === null || this.filter.value == 0) {
+			this.filter.value = ['', ''];
+		}
+
 		this.originalFilterValue = JSON.parse(JSON.stringify(this.filter.value));
 		this.originalFilterOperator = this.filter.operator;
 		document.addEventListener('click', this.handleClickOutside);
-
-		if (typeof this.filter.value !== 'array') {
-			this.filter.value = ['', ''];
-		}
 	},
 	beforeUnmount() {
 		document.removeEventListener('click', this.handleClickOutside);
