@@ -555,6 +555,7 @@ export default {
     padding: 4px 8px !important;
     border-radius: 4px;
     margin-bottom: 0;
+    height: 30px;
 
     &:focus {
       background-color: #DFF5E9;

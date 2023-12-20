@@ -582,9 +582,9 @@ if ($user != null) {
 	<?php endif; ?>
     <div class="header-right" style="text-align: right;">
         <?php if ($show_registration) { ?>
-            <a class="btn btn-danger" href="<?= $link_register; ?>" data-toggle="sc-modal"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
+            <a class="btn btn-danger" href="<?= JRoute::_($link_register); ?>" data-toggle="sc-modal"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
         <?php } ?>
-        <a class="btn btn-danger btn-creer-compte" href="<?= $link_login; ?>" data-toggle="sc-modal"><?= JText::_('CONNEXION_LABEL'); ?></a>
+        <a class="btn btn-danger btn-creer-compte" href="<?= JRoute::_($link_login); ?>" data-toggle="sc-modal"><?= JText::_('CONNEXION_LABEL'); ?></a>
     </div>
     <script>
         <?php if ($guest): ?>

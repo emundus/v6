@@ -17,7 +17,7 @@
         >
           <span class="material-icons-outlined">{{ element.icon }}</span>
           <span class="em-w-100 em-p-16">{{ translate(element.name) }}</span>
-          <span class="material-icons-outlined"> drag_indicator</span>
+          <span class="material-icons-outlined">drag_indicator</span>
         </div>
       </transition-group>
     </draggable>
