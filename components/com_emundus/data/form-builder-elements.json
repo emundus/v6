@@ -98,11 +98,18 @@
     "published": true
   },
   {
+    "id": 17,
+    "value": "emundus_phonenumber",
+    "icon": "phone",
+    "name": "COM_EMUNDUS_ONBOARD_TYPE_PHONE_NUMBER",
+    "published": true
+  },
+  {
     "id": 15,
     "value": "currency",
     "icon": "money",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_CURRENCY",
-    "published": false
+    "published": true
   },
   {
     "id": 7,
