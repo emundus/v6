@@ -308,12 +308,14 @@ if ($user != null) {
         let profile_color = '<?php echo $profile_details->class; ?>';
         let profile_state = <?php echo $profile_details->published; ?>;
 
-        // if session storage is empty, get profile color and state from server
-        if(profile_color === null || profile_state === null) {
-            getProfileColorAndState();
-        } else {
-            applyColors(profile_color, profile_state);
-        }
+        document.addEventListener("DOMContentLoaded", function() {
+            // if session storage is empty, get profile color and state from server
+            if (profile_color === null || profile_state === null) {
+                getProfileColorAndState();
+            } else {
+                applyColors(profile_color, profile_state);
+            }
+        });
 
         function getProfileColorAndState() {
             fetch('/index.php?option=com_emundus&controller=users&task=getcurrentprofile', {
