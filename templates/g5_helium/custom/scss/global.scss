@@ -3922,6 +3922,11 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
   z-index: 1;
 }
 
+/* CHOSEN */
+.chzn-container-multi .chzn-choices li.search-choice .search-choice-close:hover {
+  transition: inherit;
+}
+
 /* VIEW FORM - FORMULAIRE */
 
 .view-form:not(.com_emundus),
