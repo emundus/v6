@@ -3946,7 +3946,7 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
   .span12 {
 
     /* INTRO FORMULAIRE */
-    *:not(.view-registration) .emundus-form {
+    &> .emundus-form {
       margin-top: 0;
       margin-bottom: 64px;
       border-radius: var(--em-form-br-block) !important;
