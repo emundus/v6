@@ -2,10 +2,10 @@
   <div id="app">
     <div class="profile_widget">
       <div class="profile_widget-text">
-        <h1 v-if="language == 1">{{ translate('COM_EMUNDUS_DASHBOARD_AREA')}} <span class="em-lowercase" v-if="data.label !== ''">{{ data.label }}</span><span v-else>{{ translate('COM_EMUNDUS_DASHBOARD_EMPTY_LABEL')}}</span></h1>
-        <h1 v-else><span v-if="data.label !== ''">{{ data.label }}</span><span v-else>{{ translate('COM_EMUNDUS_DASHBOARD_EMPTY_LABEL')}}</span> <span class="em-lowercase">{{ translate('COM_EMUNDUS_DASHBOARD_AREA')}}</span></h1>
+        <h1 v-if="language == 1">{{ translate('COM_EMUNDUS_DASHBOARD_AREA')}} <span class="em-lowercase" v-if="profile_name !== ''">{{ profile_name }}</span><span v-else>{{ translate('COM_EMUNDUS_DASHBOARD_EMPTY_LABEL')}}</span></h1>
+        <h1 v-else><span v-if="profile_name!== ''">{{ profile_name }}</span><span v-else>{{ translate('COM_EMUNDUS_DASHBOARD_EMPTY_LABEL')}}</span> <span class="em-lowercase">{{ translate('COM_EMUNDUS_DASHBOARD_AREA')}}</span></h1>
         <p v-if="displayName == 1">{{ translate('COM_EMUNDUS_DASHBOARD_HELLO') }} {{name}} {{ translate('COM_EMUNDUS_DASHBOARD_WELCOME') }}</p>
-        <p v-if="displayDescription == 1">{{data.description}}</p>
+        <p v-if="displayDescription == 1">{{profile_description}}</p>
       </div>
       <div class="profile_widget-container"></div>
     </div>
@@ -47,6 +47,8 @@ export default {
     displayName: Number,
     name: Text,
     language: Number,
+    profile_name: String,
+    profile_description: String,
   },
   components: {
     Custom,
@@ -64,16 +66,11 @@ export default {
       },
       status: null,
       enableDrag: false,
-      data: {
-        label: "",
-        description: "",
-      },
     }
   },
   created() {
     this.getTranslations();
     this.getWidgets();
-    this.getProfileDetails();
     if(this.programmeFilter == 1){
       this.getProgrammes();
     }
@@ -101,25 +98,6 @@ export default {
         url: "index.php?option=com_emundus&controller=program&task=getallprogram",
       }).then(response => {
         this.programmes = response.data.data;
-      });
-    },
-
-    getProfileDetails(){
-      let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=getcurrentprofile';
-      fetch(url, {
-        method: 'GET',
-      }).then((response) => {
-
-         if (response.ok) {
-          return response.json();
-        }
-      }).then((result) => {
-        if(result.status) {
-          this.data = {
-            label: result.data.label,
-            description: result.data.description,
-          };
-        }
       });
     },
   }

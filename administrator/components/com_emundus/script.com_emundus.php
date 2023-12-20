@@ -3622,6 +3622,12 @@ structure:
 
 				EmundusHelperUpdate::installExtension('plg_fabrik_element_emundus_geolocalisation', 'emundus_geolocalisation', '{"name":"plg_fabrik_element_emundus_geolocalisation","type":"plugin","creationDate":"September 2023","author":"eMundus - LEGENDRE J\u00e9r\u00e9my","copyright":"Copyright (C) 2005-2023 Media A-Team, Inc. - All rights reserved.","authorEmail":"dev@emundus.io","authorUrl":"www.emundus.fr","version":"3.10","description":"PLG_ELEMENT_FIELD_DESCRIPTION","group":"","filename":"emundus_geolocalisation"}', 'plugin', 1, 'fabrik_element');
 				EmundusHelperUpdate::enableEmundusPlugins('emundus_geolocalisation', 'fabrik_element');
+
+				$query->clear()
+					->update($db->quoteName('#__fabrik_forms'))
+					->set($db->quoteName('view_only_template') . ' = ' . $db->quote('emundus'));
+				$db->setQuery($query);
+				$db->execute();
 			}
 		}
 
