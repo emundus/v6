@@ -160,7 +160,7 @@ $timezone = new DateTimeZone($offset);
                                         <?php endif; ?>
                                     </td>
                                 <?php elseif ($k == 'o_profiles') : ?>
-                                    <td>
+                                    <td class="em-cell-scroll">
                                         <div class="em-cell" >
 	                                        <?php echo $value;?>
                                         </div>

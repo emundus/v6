@@ -1262,7 +1262,7 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $profile .= '<div class="form-group em-filter" id="o_profiles">
                                     <div class="em_label">
-                                    	<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_USERS_OTHER_PROFILES').'&ensp; <a href="javascript:clearchosen(\'#select_oprofiles\')"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
+                                    	<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_O_PROFILES').'&ensp; <a href="javascript:clearchosen(\'#select_oprofiles\')"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
                                     </div>';
             }
 

@@ -3680,6 +3680,43 @@ structure:
 					$db->setQuery($query);
 					$db->execute();
 				}
+
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_elements'))
+					->where($db->quoteName('name') . ' LIKE ' . $db->quote('date_time'))
+					->where($db->quoteName('group_id') . ' = 111');
+				$db->setQuery($query);
+				$date_history_emails = $db->loadObject();
+
+				if(!empty($date_history_emails->id)) {
+					$params = json_decode($date_history_emails->params, true);
+
+					$params['date_store_as_local'] = 0;
+					$params['date_table_format'] = "d\/m\/Y H:i";
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_elements'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($date_history_emails->id));
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				$query->clear()
+					->update($db->quoteName('#__fabrik_elements'))
+					->set($db->quoteName('filter_type') . ' = ' . $db->quote('field'))
+					->where($db->quoteName('name') . ' LIKE ' . $db->quote('subject'))
+					->where($db->quoteName('group_id') . ' = 111');
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->update($db->quoteName('#__fabrik_lists'))
+					->set($db->quoteName('filter_action') . ' = ' . $db->quote('submitform'))
+					->where($db->quoteName('label') . ' LIKE ' . $db->quote('TABLE_SETUP_EMAIL_HISTORY'));
+				$db->setQuery($query);
+				$db->execute();
 			}
 		}
 
