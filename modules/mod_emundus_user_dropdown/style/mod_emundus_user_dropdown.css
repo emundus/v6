@@ -376,7 +376,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 #background-shapes {
     position: absolute;
     height: 100%;
-    top: 0;
+    top: -7px;
     right: 0;
     pointer-events: none;
     z-index: -1;

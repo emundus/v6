@@ -480,12 +480,14 @@ div#frame.outline {
   height: 72px;
   background: var(--neutral-0);
   top: 0;
+  overflow: hidden;
 
   .g-container {
     padding: 16px 12px;
     width: 100%;
     position: sticky;
     margin: auto !important;
+    overflow: hidden;
   }
 
   #header-a {
@@ -494,6 +496,11 @@ div#frame.outline {
     align-items: center;
     transition: all 0.3s ease-in-out;
     max-height: 40px;
+    left: 70px;
+
+    .logo {
+      top: 7px !important;
+    }
   }
 }
 
@@ -6662,10 +6669,12 @@ tbody .el-table__row:nth-child(odd){
   display: flex;
   justify-content: center;
   align-items: center;
+  pointer-events: none;
   .selected-rows-tip__content{
     padding: 10px 12px;
     border-radius: 8px;
     background: var(--main-900);
+    pointer-events: all;
     span{
       color: var(--neutral-300);
     }
