@@ -137,7 +137,6 @@ export default {
 
     onComplete: function(response){
       this.message_input = '';
-      console.log(response);
       if(response.status == 'success'){
         this.$emit("pushAttachmentMessage",JSON.parse(response.xhr.response).data);
       }

@@ -28,7 +28,7 @@
         <div class="messages__actions_bar">
           <img class="messages__send-icon" src="/images/emundus/messenger/attached.svg" @click="attachDocument"/>
         </div>
-        <button type="button" class="messages__send_button" @click="sendMessage">
+        <button type="button" class="messages__send_button btn btn-primary" @click="sendMessage">
           {{ translations.send }}
         </button>
       </div>
