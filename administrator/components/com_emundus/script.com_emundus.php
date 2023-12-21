@@ -3659,6 +3659,27 @@ structure:
 					$db->setQuery($query);
 					$db->execute();
 				}
+
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_elements'))
+					->where($db->quoteName('name') . ' LIKE ' . $db->quote('copy_tag'))
+					->where($db->quoteName('group_id') . ' = 254');
+				$db->setQuery($query);
+				$copy_tag_elt = $db->loadObject();
+
+				if(!empty($copy_tag_elt->id)) {
+					$params = json_decode($copy_tag_elt->params, true);
+
+					$params['sub_options']['sub_initial_selection'] = ["0"];
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_elements'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($copy_tag_elt->id));
+					$db->setQuery($query);
+					$db->execute();
+				}
 			}
 		}
 
