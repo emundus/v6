@@ -219,7 +219,11 @@ export default {
       } else {
         if (this.attachment_input) {
           this.message_input = 'Demande de document : ';
-          this.message_input += message;
+	        const type = this.types.find(type => type.id == this.attachment_input);
+					if (type) {
+						this.message_input += type.value;
+					}
+
           this.askAttachment();
         }
       }
