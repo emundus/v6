@@ -60,6 +60,24 @@ class EmundusViewUsers extends JViewLegacy
 		$m_users = new EmundusModelUsers();
         $m_users->filts_details = $this->filts_details;
 		$users = $m_users->getUsers();
+		$applicant_profiles = $m_users->getApplicantProfiles();
+		$applicant_profiles = array_column($applicant_profiles, 'id');
+
+		foreach ($users as $user) {
+			if(!empty($user->o_profiles)) {
+				$o_profiles = explode(',', $user->o_profiles);
+				$profile_details = $m_users->getProfilesByIDs($o_profiles);
+				$user->o_profiles = array_map((function($a) use ($applicant_profiles,$profile_details) {
+					if(in_array($a, $applicant_profiles)) {
+						return JText::_('COM_EMUNDUS_APPLICANT');
+					} else {
+						return $profile_details[$a]->label;
+					}
+				}), $o_profiles);
+
+				$user->o_profiles = implode('<br>', $user->o_profiles);
+			}
+		}
 		$this->assignRef('users', $users);
 
 		$pagination = $m_users->getPagination();
