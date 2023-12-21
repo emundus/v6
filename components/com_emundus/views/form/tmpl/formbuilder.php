@@ -451,6 +451,7 @@ $hash = EmundusHelperCache::getCurrentGitHash();
 
 $mode = JFactory::getApplication()->input->get('mode', '');
 
+JHTML::script('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js');
 ?>
 
 <div id="em-component-vue"

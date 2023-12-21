@@ -35,8 +35,9 @@
           @update-element="$emit('update-element')"
       ></form-builder-element-options>
       <form-builder-element-wysiwig v-else-if="element.plugin === 'display'" :element="element" type="display" @update-element="$emit('update-element')"></form-builder-element-wysiwig>
-      <form-builder-element-phone-number v-else-if="element.plugin === 'emundus_phonenumber'" type="phonenumber" element="element"></form-builder-element-phone-number>
-      <form-builder-element-currency v-else-if="element.plugin === 'currency'" type="currency" element="element"></form-builder-element-currency>
+      <form-builder-element-phone-number v-else-if="element.plugin === 'emundus_phonenumber'" type="phonenumber" :element="element"></form-builder-element-phone-number>
+      <form-builder-element-currency v-else-if="element.plugin === 'currency'" type="currency" :element="element"></form-builder-element-currency>
+      <form-builder-element-geolocation v-else-if="element.plugin === 'emundus_geolocalisation'" type="geolocation" :element="element"></form-builder-element-geolocation>
       <div v-else v-html="element.element" class="fabrikElement"></div>
     </div>
   </div>
@@ -52,9 +53,12 @@ import FormBuilderElementPhoneNumber
   from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementPhoneNumber.vue";
 import FormBuilderElementCurrency
   from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementCurrency.vue";
+import FormBuilderElementGeolocation
+  from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementGeolocation.vue";
 
 export default {
   components: {
+    FormBuilderElementGeolocation,
     FormBuilderElementCurrency,
     FormBuilderElementPhoneNumber,
     FormBuilderElementWysiwig,

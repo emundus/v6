@@ -12,6 +12,7 @@
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
@@ -366,12 +367,10 @@ class EmundusControllersettings extends JControllerLegacy {
     }
 
     public function updateicon() {
+		$result = ['status' => 0, 'msg' => Text::_('ACCESS_DENIED'), 'filename' => '', 'old_favicon' => ''];
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
             $image = $jinput->files->get('file');
 
@@ -395,16 +394,20 @@ class EmundusControllersettings extends JControllerLegacy {
 	                $cache = JCache::getInstance('callback');
 	                $cache->clean(null, 'notgroup');
 
-                    $tab = array('status' => 1, 'msg' => JText::_('ICON_UPDATED'), 'filename' => 'favicon.' . $ext, 'old_favicon' => $old_favicon[0]);
+					$result['status'] = 1;
+					$result['msg'] = Text::_('ICON_UPDATED');
+					$result['filename'] = 'favicon.' . $ext;
+					$result['old_favicon'] = $old_favicon[0];
                 } else {
-                    $tab = array('status' => 0, 'msg' => JText::_('ICON_NOT_UPDATED'));
+					$resul['msg'] = Text::_('ICON_NOT_UPDATED');
                 }
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ICON_NOT_UPDATED'));
-            }
-            echo json_encode((object)$tab);
-            exit;
+				$result['msg'] = Text::_('ICON_NOT_UPDATED');
+			}
         }
+
+	    echo json_encode((object)$result);
+	    exit;
     }
 
     public function removeicon(){
