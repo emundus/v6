@@ -562,5 +562,16 @@
       "published": true,
       "sysadmin_only": false
     }
+  ],
+  "emundus_phonenumber": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
+      "name": "rollover",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    }
   ]
 }

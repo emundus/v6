@@ -2152,6 +2152,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .w-1 {
   width: var(--em-spacing-1);
 }
+.w-11\/12 {
+  width: 91.666667%;
+}
 .w-full {
   width: 100%;
 }
@@ -2203,6 +2206,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .items-start {
   align-items: flex-start;
+}
+.items-end {
+  align-items: flex-end;
 }
 .items-center {
   align-items: center;
