@@ -3566,48 +3566,55 @@ structure:
 					->from($db->quoteName('#__fabrik_elements'))
 					->where($db->quoteName('name') . ' LIKE ' . $db->quote('class'))
 					->where($db->quoteName('plugin') . ' LIKE ' . $db->quote('dropdown'))
-					->where($db->quoteName('group_id') . ' = 112');
+					->where($db->quoteName('group_id') . ' IN (112,139)');
 				$db->setQuery($query);
-				$class_elt = $db->loadObject();
+				$class_elts = $db->loadObjectList();
 
-				if(!empty($class_elt)) {
-					$params = json_decode($class_elt->params, true);
-					$colors_to_remove = ['label-lightblue', 'label-lightyellow', 'label-yellow', 'label-darkyellow', 'label-lightgreen', 'label-darkgreen', 'label-lightgreen', 'label-darkgreen', 'label-lightorange', 'label-darkorange', 'label-lightred', 'label-darkred', 'label-lightpurple', 'label-darkpurple'];
+				foreach ($class_elts as $class_elt) {
+					if (!empty($class_elt)) {
+						$params           = json_decode($class_elt->params, true);
+						$colors_to_remove = ['label-lightblue', 'label-lightyellow', 'label-yellow', 'label-darkyellow', 'label-lightgreen', 'label-darkgreen', 'label-lightgreen', 'label-darkgreen', 'label-lightorange', 'label-darkorange', 'label-lightred', 'label-darkred', 'label-lightpurple', 'label-darkpurple'];
 
-					if(!empty($params['sub_options'])) {
-						foreach ($colors_to_remove as $color_to_remove) {
-							$index = array_search($color_to_remove, $params['sub_options']['sub_values']);
-							if($index !== false) {
-								unset($params['sub_options']['sub_values'][$index]);
-								unset($params['sub_options']['sub_labels'][$index]);
+						if (!empty($params['sub_options'])) {
+							foreach ($colors_to_remove as $color_to_remove) {
+								$index = array_search($color_to_remove, $params['sub_options']['sub_values']);
+								if ($index !== false) {
+									unset($params['sub_options']['sub_values'][$index]);
+									unset($params['sub_options']['sub_labels'][$index]);
+								}
+							}
+
+							$params['sub_options']['sub_values'] = array_values($params['sub_options']['sub_values']);
+							$params['sub_options']['sub_labels'] = array_values($params['sub_options']['sub_labels']);
+
+							if (!in_array('label-pink', $params['sub_options']['sub_values'])) {
+								$params['sub_options']['sub_values'][] = 'label-pink';
+								$params['sub_options']['sub_labels'][] = 'Pink';
+							}
+
+							if (!in_array('label-pink', $params['sub_options']['sub_values'])) {
+								$params['sub_options']['sub_values'][] = 'label-pink';
+								$params['sub_options']['sub_labels'][] = 'Pink';
 							}
 						}
 
-						$params['sub_options']['sub_values'] = array_values($params['sub_options']['sub_values']);
-						$params['sub_options']['sub_labels'] = array_values($params['sub_options']['sub_labels']);
+						$colors_to_remove = array_map((function ($value) use ($db) {
+							return $db->quote($value);
+						}), $colors_to_remove);
+						$query->clear()
+							->update($db->quoteName('#__emundus_setup_profiles'))
+							->set($db->quoteName('class') . ' = ' . $db->quote('label-default'))
+							->where($db->quoteName('class') . 'IN (' . implode(',', $colors_to_remove) . ')');
+						$db->setQuery($query);
+						$db->execute();
 
-						if(!in_array('label-pink', $params['sub_options']['sub_values'])) {
-							$params['sub_options']['sub_values'][] = 'label-pink';
-							$params['sub_options']['sub_labels'][] = 'Pink';
-						}
+						$query->clear()
+							->update($db->quoteName('#__fabrik_elements'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+							->where($db->quoteName('id') . ' = ' . $db->quote($class_elt->id));
+						$db->setQuery($query);
+						$db->execute();
 					}
-
-					$colors_to_remove = array_map((function($value) use ($db) {
-						return $db->quote($value);
-					}), $colors_to_remove);
-					$query->clear()
-						->update($db->quoteName('#__emundus_setup_profiles'))
-						->set($db->quoteName('class') . ' = ' . $db->quote('label-default'))
-						->where($db->quoteName('class') . 'IN ('.implode(',',$colors_to_remove).')');
-					$db->setQuery($query);
-					$db->execute();
-
-					$query->clear()
-						->update($db->quoteName('#__fabrik_elements'))
-						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-						->where($db->quoteName('id') . ' = ' . $db->quote($class_elt->id));
-					$db->setQuery($query);
-					$db->execute();
 				}
 
 				$query->clear()
@@ -3632,6 +3639,26 @@ structure:
 				EmundusHelperUpdate::addCustomEvents([
 					['label' => 'onAfterSubmitFile', 'category' => 'File']
 				]);
+
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_forms'))
+					->where($db->quoteName('label') . ' LIKE ' . $db->quote('SETUP_GROUPS'));
+				$db->setQuery($query);
+				$setup_groups_form = $db->loadObject();
+
+				if(!empty($setup_groups_form->id)) {
+					$params = json_decode($setup_groups_form->params, true);
+
+					$params['plugin_events'][0] = 'both';
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_forms'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($setup_groups_form->id));
+					$db->setQuery($query);
+					$db->execute();
+				}
 			}
 		}
 
