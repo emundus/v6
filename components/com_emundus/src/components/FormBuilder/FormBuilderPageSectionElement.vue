@@ -4,7 +4,7 @@
        v-show="(!element.hidden && element.publish !== -2) || (element.hidden && sysadmin)"
        :class="{'unpublished': !element.publish || element.hidden, 'properties-active':propertiesOpened == element.id}">
     <div class="flex items-start justify-between w-full mb-2">
-      <div>
+      <div class="w-11/12">
         <label class="em-w-100 flex items-center fabrikLabel control-label mb-0" @click="triggerElementProperties">
           <span v-if="element.FRequire" class="material-icons text-xxs text-red-500 mr-0" style="top: -5px;position: relative">emergency</span>
           <input
@@ -21,7 +21,7 @@
         </label>
         <span class="fabrikElementTip fabrikElementTipAbove">{{ element.params.rollover.replace(/(<([^>]+)>)/gi, "") }}</span>
       </div>
-      <div id="element-action-icons" class="em-flex-row">
+      <div id="element-action-icons" class="flex items-end mt-2">
         <span class="material-icons-outlined handle em-grab">drag_indicator</span>
         <span id="delete-element" class="material-icons-outlined em-red-500-color em-pointer" @click="deleteElement">delete</span>
         <span v-if="sysadmin" class="material-icons-outlined em-pointer em-ml-8" @click="openAdmin">content_copy</span>
