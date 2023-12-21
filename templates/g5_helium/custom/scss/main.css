@@ -102,6 +102,7 @@ body {
     background-position: top 120px left 20px, bottom 50px right 20px;
     background-repeat : no-repeat, no-repeat;
     background-size : 25%, 25%;
+    overflow: hidden;
 }
 
 .login #g-navigation .g-container {

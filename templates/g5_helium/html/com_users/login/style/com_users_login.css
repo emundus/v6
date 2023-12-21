@@ -164,6 +164,7 @@ ul.nav.nav-tabs.nav-stacked {
     right: 4.1vw;
     z-index: 0;
     transform: scale(2.5);
+    max-width: 250px;
 }
 
 .background-shaped-bottom {
@@ -173,6 +174,7 @@ ul.nav.nav-tabs.nav-stacked {
     z-index: 0;
     transform: scale(2.5);
     rotate: 180deg;
+    max-width: 250px;
 }
 
 .view-login #g-container-main {

@@ -20,15 +20,16 @@ describe('General.vue', () => {
     // it should have 3 btns to update banner, logo and favicon
     // #btn-update-favicon, #btn-update-logo, #btn-update-banner
     wrapper.vm.bannerLink = 'https://vanilla.tchooz.io';
+    wrapper.vm.$data.logo_updating = false;
+    wrapper.vm.$data.hideLogo = false;
+    wrapper.vm.$data.imageLink = 'images/custom/logo.png';
+    wrapper.vm.$data.loading = false;
     it('should have 3 btns to update banner, logo and favicon', () => {
         expect(wrapper.find('button#btn-update-favicon').exists()).toBe(true);
         expect(wrapper.find('button#btn-update-logo').exists()).toBe(true);
         expect(wrapper.find('button#btn-update-banner').exists()).toBe(true);
     });
 
-    wrapper.vm.$data.logo_updating = false;
-    wrapper.vm.$data.hideLogo = false;
-    wrapper.vm.$data.imageLink = 'images/custom/logo.png';
     it('updateView beahviour', () => {
         wrapper.vm.updateView({
             old_logo: 'logo.png',

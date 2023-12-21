@@ -161,6 +161,17 @@
       "sysadmin_only": false
     }
   ],
+  "dropdown": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
+      "name": "rollover",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    }
+  ],
   "checkbox": [
     {
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_CHECKBOX_OPTIONS_PER_ROW",

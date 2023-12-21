@@ -1034,7 +1034,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
              $newTranslation = $jinput->getString("newTranslation");
              $lang = $jinput->getString("lang");
 
-             if (!empty($element) && !empty($options) && !empty($newTranslation)) {
+             if (!empty($element) && !empty($options) && $newTranslation !== '') {
                  $translated = $this->m_formbuilder->updateElementOption($element, $options, $index, $newTranslation, $lang);
                  $tab = array('status' => $translated);
              } else {
