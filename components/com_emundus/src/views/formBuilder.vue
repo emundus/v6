@@ -206,7 +206,7 @@ export default {
 				]
 	    },
       showInRightPanel: 'hierarchy',
-      createDocumentMandatory: true,
+      createDocumentMandatory: '1',
       lastSave: null,
       leftPanel: {
         tabs: [
