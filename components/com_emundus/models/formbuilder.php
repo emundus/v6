@@ -851,7 +851,7 @@ class EmundusModelFormbuilder extends JModelList {
             $group = $this->createGroup($group_label,$formid);
 
             $eid = $this->createElement('declare',$group['group_id'],'checkbox','Confirmation','',0,0,0);
-            EmundusHelperFabrik::addOption($eid,'CONFIRM_POST',1);
+            EmundusHelperFabrik::addOption($eid,'CONFIRM_POST','JYES');
             EmundusHelperFabrik::addNotEmptyValidation($eid);
             //
 
