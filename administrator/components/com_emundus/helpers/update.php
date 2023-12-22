@@ -3356,6 +3356,15 @@ class EmundusHelperUpdate
 			->where($db->quoteName('id') . ' = ' . $db->quote($back_button->id));
 		$db->setQuery($query);
 		$db->execute();
+
+		$query->clear()
+			->update($db->quoteName('#__falang_content'))
+			->set($db->quoteName('value') . ' = ' . $db->quote($back_button->content))
+			->where($db->quoteName('reference_id') . ' = ' . $db->quote($back_button->id))
+			->where($db->quoteName('reference_table') . ' = ' . $db->quote('modules'))
+			->where($db->quoteName('reference_field') . ' = ' . $db->quote('content'));
+		$db->setQuery($query);
+		$db->execute();
 		//
 
 		// Remove appli emundus yaml assets

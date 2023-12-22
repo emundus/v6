@@ -6,7 +6,7 @@ use Joomla\CMS\Date\Date;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 
-function pdf_decision($user_id, $fnum = null, $output = true, $name = null, $options = null) {
+function pdf_decision($user_id, $fnum = null, $output = true, $name = null, $options = []) {
 	jimport( 'joomla.html.parameter' );
 	set_time_limit(0);
 	require_once (JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'date.php');

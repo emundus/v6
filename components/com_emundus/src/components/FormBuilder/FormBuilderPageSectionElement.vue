@@ -474,5 +474,17 @@ export default {
     color: var(--em-form-yesno-color-not-active);
     word-wrap: break-word;
   }
+
+  /** PANEL **/
+  .fabrikElementpanel .fabrikElement .fabrikinput {
+    display: flex;
+    padding: var(--em-spacing-5);
+    border-radius: 0.25rem;
+
+    .fabrikElementContent {
+      margin-left: var(--em-spacing-3);
+      line-height: 24px;
+    }
+  }
 }
 </style>
