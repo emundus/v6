@@ -3,8 +3,9 @@
     <div v-if="loading" class="em-loader"></div>
     <div v-else>
       <div class="flex items-center">
-        <div class="h-10 country-select flex items-center p-2">
-          <img src="images/emundus/flags/fr.png">
+        <div class="h-10 country-select flex items-center p-2 justify-center">
+          <img v-if="element.params.default_country" :src="'images/emundus/flags/'+element.params.default_country.toLowerCase()+'.png'">
+          <img v-else src="images/emundus/flags/fr.png">
         </div>
         <div class="w-full">
           <input class="phonenumber" readonly type="text" value="+33 6 12 34 56 78">
