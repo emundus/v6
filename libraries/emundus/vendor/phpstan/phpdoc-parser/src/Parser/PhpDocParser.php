@@ -14,6 +14,7 @@ use PHPStan\ShouldNotHappenException;
 use function array_key_exists;
 use function array_values;
 use function count;
+use function rtrim;
 use function str_replace;
 use function trim;
 
@@ -34,6 +35,9 @@ class PhpDocParser
 	/** @var ConstExprParser */
 	private $constantExprParser;
 
+	/** @var ConstExprParser */
+	private $doctrineConstantExprParser;
+
 	/** @var bool */
 	private $requireWhitespaceBeforeDescription;
 
@@ -49,6 +53,9 @@ class PhpDocParser
 	/** @var bool */
 	private $useIndexAttributes;
 
+	/** @var bool */
+	private $textBetweenTagsBelongsToDescription;
+
 	/**
 	 * @param array{lines?: bool, indexes?: bool} $usedAttributes
 	 */
@@ -58,16 +65,19 @@ class PhpDocParser
 		bool $requireWhitespaceBeforeDescription = false,
 		bool $preserveTypeAliasesWithInvalidTypes = false,
 		array $usedAttributes = [],
-		bool $parseDoctrineAnnotations = false
+		bool $parseDoctrineAnnotations = false,
+		bool $textBetweenTagsBelongsToDescription = false
 	)
 	{
 		$this->typeParser = $typeParser;
 		$this->constantExprParser = $constantExprParser;
+		$this->doctrineConstantExprParser = $constantExprParser->toDoctrine();
 		$this->requireWhitespaceBeforeDescription = $requireWhitespaceBeforeDescription;
 		$this->preserveTypeAliasesWithInvalidTypes = $preserveTypeAliasesWithInvalidTypes;
 		$this->parseDoctrineAnnotations = $parseDoctrineAnnotations;
 		$this->useLinesAttributes = $usedAttributes['lines'] ?? false;
 		$this->useIndexAttributes = $usedAttributes['indexes'] ?? false;
+		$this->textBetweenTagsBelongsToDescription = $textBetweenTagsBelongsToDescription;
 	}
 
 
@@ -214,23 +224,52 @@ class PhpDocParser
 	{
 		$text = '';
 
-		while (!$tokens->isCurrentTokenType(Lexer::TOKEN_PHPDOC_EOL)) {
-			$text .= $tokens->getSkippedHorizontalWhiteSpaceIfAny() . $tokens->joinUntil(Lexer::TOKEN_PHPDOC_EOL, Lexer::TOKEN_CLOSE_PHPDOC, Lexer::TOKEN_END);
+		$endTokens = [Lexer::TOKEN_PHPDOC_EOL, Lexer::TOKEN_CLOSE_PHPDOC, Lexer::TOKEN_END];
+		if ($this->textBetweenTagsBelongsToDescription) {
+			$endTokens = [Lexer::TOKEN_CLOSE_PHPDOC, Lexer::TOKEN_END];
+		}
 
+		$savepoint = false;
+
+		// if the next token is EOL, everything below is skipped and empty string is returned
+		while ($this->textBetweenTagsBelongsToDescription || !$tokens->isCurrentTokenType(Lexer::TOKEN_PHPDOC_EOL)) {
+			$tmpText = $tokens->getSkippedHorizontalWhiteSpaceIfAny() . $tokens->joinUntil(Lexer::TOKEN_PHPDOC_EOL, ...$endTokens);
+			$text .= $tmpText;
+
+			// stop if we're not at EOL - meaning it's the end of PHPDoc
 			if (!$tokens->isCurrentTokenType(Lexer::TOKEN_PHPDOC_EOL)) {
 				break;
+			}
+
+			if ($this->textBetweenTagsBelongsToDescription) {
+				if (!$savepoint) {
+					$tokens->pushSavePoint();
+					$savepoint = true;
+				} elseif ($tmpText !== '') {
+					$tokens->dropSavePoint();
+					$tokens->pushSavePoint();
+				}
 			}
 
 			$tokens->pushSavePoint();
 			$tokens->next();
 
-			if ($tokens->isCurrentTokenType(Lexer::TOKEN_PHPDOC_TAG, Lexer::TOKEN_DOCTRINE_TAG, Lexer::TOKEN_PHPDOC_EOL, Lexer::TOKEN_CLOSE_PHPDOC, Lexer::TOKEN_END)) {
+			// if we're at EOL, check what's next
+			// if next is a PHPDoc tag, EOL, or end of PHPDoc, stop
+			if ($tokens->isCurrentTokenType(Lexer::TOKEN_PHPDOC_TAG, Lexer::TOKEN_DOCTRINE_TAG, ...$endTokens)) {
 				$tokens->rollback();
 				break;
 			}
 
+			// otherwise if the next is text, continue building the description string
+
 			$tokens->dropSavePoint();
-			$text .= "\n";
+			$text .= $tokens->getDetectedNewline() ?? "\n";
+		}
+
+		if ($savepoint) {
+			$tokens->rollback();
+			$text = rtrim($text, $tokens->getDetectedNewline() ?? "\n");
 		}
 
 		return new Ast\PhpDoc\PhpDocTextNode(trim($text, " \t"));
@@ -241,9 +280,19 @@ class PhpDocParser
 	{
 		$text = '';
 
-		while (!$tokens->isCurrentTokenType(Lexer::TOKEN_PHPDOC_EOL)) {
-			$text .= $tokens->getSkippedHorizontalWhiteSpaceIfAny() . $tokens->joinUntil(Lexer::TOKEN_PHPDOC_TAG, Lexer::TOKEN_DOCTRINE_TAG, Lexer::TOKEN_PHPDOC_EOL, Lexer::TOKEN_CLOSE_PHPDOC, Lexer::TOKEN_END);
+		$endTokens = [Lexer::TOKEN_PHPDOC_EOL, Lexer::TOKEN_CLOSE_PHPDOC, Lexer::TOKEN_END];
+		if ($this->textBetweenTagsBelongsToDescription) {
+			$endTokens = [Lexer::TOKEN_CLOSE_PHPDOC, Lexer::TOKEN_END];
+		}
 
+		$savepoint = false;
+
+		// if the next token is EOL, everything below is skipped and empty string is returned
+		while ($this->textBetweenTagsBelongsToDescription || !$tokens->isCurrentTokenType(Lexer::TOKEN_PHPDOC_EOL)) {
+			$tmpText = $tokens->getSkippedHorizontalWhiteSpaceIfAny() . $tokens->joinUntil(Lexer::TOKEN_PHPDOC_TAG, Lexer::TOKEN_DOCTRINE_TAG, Lexer::TOKEN_PHPDOC_EOL, ...$endTokens);
+			$text .= $tmpText;
+
+			// stop if we're not at EOL - meaning it's the end of PHPDoc
 			if (!$tokens->isCurrentTokenType(Lexer::TOKEN_PHPDOC_EOL)) {
 				if (!$tokens->isPrecededByHorizontalWhitespace()) {
 					return trim($text . $this->parseText($tokens)->text, " \t");
@@ -278,16 +327,35 @@ class PhpDocParser
 				break;
 			}
 
+			if ($this->textBetweenTagsBelongsToDescription) {
+				if (!$savepoint) {
+					$tokens->pushSavePoint();
+					$savepoint = true;
+				} elseif ($tmpText !== '') {
+					$tokens->dropSavePoint();
+					$tokens->pushSavePoint();
+				}
+			}
+
 			$tokens->pushSavePoint();
 			$tokens->next();
 
-			if ($tokens->isCurrentTokenType(Lexer::TOKEN_PHPDOC_TAG, Lexer::TOKEN_DOCTRINE_TAG, Lexer::TOKEN_PHPDOC_EOL, Lexer::TOKEN_CLOSE_PHPDOC, Lexer::TOKEN_END)) {
+			// if we're at EOL, check what's next
+			// if next is a PHPDoc tag, EOL, or end of PHPDoc, stop
+			if ($tokens->isCurrentTokenType(Lexer::TOKEN_PHPDOC_TAG, Lexer::TOKEN_DOCTRINE_TAG, ...$endTokens)) {
 				$tokens->rollback();
 				break;
 			}
 
+			// otherwise if the next is text, continue building the description string
+
 			$tokens->dropSavePoint();
-			$text .= "\n";
+			$text .= $tokens->getDetectedNewline() ?? "\n";
+		}
+
+		if ($savepoint) {
+			$tokens->rollback();
+			$text = rtrim($text, $tokens->getDetectedNewline() ?? "\n");
 		}
 
 		return trim($text, " \t");
@@ -614,24 +682,34 @@ class PhpDocParser
 			$tokens->dropSavePoint(); // because of ConstFetchNode
 		}
 
-		$exception = new ParserException(
-			$tokens->currentTokenValue(),
-			$tokens->currentTokenType(),
-			$tokens->currentTokenOffset(),
-			Lexer::TOKEN_IDENTIFIER,
-			null,
-			$tokens->currentTokenLine()
-		);
+		$currentTokenValue = $tokens->currentTokenValue();
+		$currentTokenType = $tokens->currentTokenType();
+		$currentTokenOffset = $tokens->currentTokenOffset();
+		$currentTokenLine = $tokens->currentTokenLine();
 
 		try {
-			$constExpr = $this->constantExprParser->parse($tokens, true);
+			$constExpr = $this->doctrineConstantExprParser->parse($tokens, true);
 			if ($constExpr instanceof Ast\ConstExpr\ConstExprArrayNode) {
-				throw $exception;
+				throw new ParserException(
+					$currentTokenValue,
+					$currentTokenType,
+					$currentTokenOffset,
+					Lexer::TOKEN_IDENTIFIER,
+					null,
+					$currentTokenLine
+				);
 			}
 
 			return $constExpr;
 		} catch (LogicException $e) {
-			throw $exception;
+			throw new ParserException(
+				$currentTokenValue,
+				$currentTokenType,
+				$currentTokenOffset,
+				Lexer::TOKEN_IDENTIFIER,
+				null,
+				$currentTokenLine
+			);
 		}
 	}
 
@@ -686,14 +764,15 @@ class PhpDocParser
 			$key = new Ast\ConstExpr\ConstExprIntegerNode(str_replace('_', '', $tokens->currentTokenValue()));
 			$tokens->next();
 
-		} elseif ($tokens->isCurrentTokenType(Lexer::TOKEN_SINGLE_QUOTED_STRING)) {
-			$key = new Ast\ConstExpr\QuoteAwareConstExprStringNode(StringUnescaper::unescapeString($tokens->currentTokenValue()), Ast\ConstExpr\QuoteAwareConstExprStringNode::SINGLE_QUOTED);
+		} elseif ($tokens->isCurrentTokenType(Lexer::TOKEN_DOCTRINE_ANNOTATION_STRING)) {
+			$key = new Ast\ConstExpr\DoctrineConstExprStringNode(Ast\ConstExpr\DoctrineConstExprStringNode::unescape($tokens->currentTokenValue()));
+
 			$tokens->next();
 
 		} elseif ($tokens->isCurrentTokenType(Lexer::TOKEN_DOUBLE_QUOTED_STRING)) {
-			$key = new Ast\ConstExpr\QuoteAwareConstExprStringNode(StringUnescaper::unescapeString($tokens->currentTokenValue()), Ast\ConstExpr\QuoteAwareConstExprStringNode::DOUBLE_QUOTED);
-
+			$value = $tokens->currentTokenValue();
 			$tokens->next();
+			$key = $this->doctrineConstantExprParser->parseDoctrineString($value, $tokens);
 
 		} else {
 			$currentTokenValue = $tokens->currentTokenValue();
@@ -722,7 +801,7 @@ class PhpDocParser
 			}
 
 			$tokens->rollback();
-			$constExpr = $this->constantExprParser->parse($tokens, true);
+			$constExpr = $this->doctrineConstantExprParser->parse($tokens, true);
 			if (!$constExpr instanceof Ast\ConstExpr\ConstFetchNode) {
 				throw new ParserException(
 					$tokens->currentTokenValue(),
@@ -1048,15 +1127,13 @@ class PhpDocParser
 	{
 		if ($tokens->isCurrentTokenType(Lexer::TOKEN_THIS_VARIABLE)) {
 			$parameter = '$this';
-			$requirePropertyOrMethod = true;
 			$tokens->next();
 		} else {
 			$parameter = $tokens->currentTokenValue();
-			$requirePropertyOrMethod = false;
 			$tokens->consumeTokenType(Lexer::TOKEN_VARIABLE);
 		}
 
-		if ($requirePropertyOrMethod || $tokens->isCurrentTokenType(Lexer::TOKEN_ARROW)) {
+		if ($tokens->isCurrentTokenType(Lexer::TOKEN_ARROW)) {
 			$tokens->consumeTokenType(Lexer::TOKEN_ARROW);
 
 			$propertyOrMethod = $tokens->currentTokenValue();
