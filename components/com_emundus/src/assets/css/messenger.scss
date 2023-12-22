@@ -233,6 +233,7 @@ hr{
     margin-left: 20px;
     hr {
         width: 100%;
+        z-index: 1;
     }
     p{
         padding: 0 20px;
@@ -246,20 +247,25 @@ hr{
 
 /** ATTACH DOCUMENTS **/
 .messages__attach_content {
-    padding: 40px;
+    padding: 0 16px 16px 16px;
+}
+
+.messages_action_container {
+    border-top: 1px solid;
+    border-top-color: #f8F8F8;
 }
 
 .messages__attach_actions_tabs {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: left;
     list-style-type: none;
 }
 
 .messages__attach_action {
     padding: 8px 16px;
-    margin: 0 8px;
-    border-radius: 4px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
     height: 40px;
     cursor: pointer;
 }
