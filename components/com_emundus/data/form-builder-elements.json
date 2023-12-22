@@ -112,6 +112,13 @@
     "published": true
   },
   {
+    "id": 18,
+    "value": "panel",
+    "icon": "view_agenda",
+    "name": "COM_EMUNDUS_ONBOARD_TYPE_PANEL",
+    "published": true
+  },
+  {
     "id": 7,
     "value": "emundus_fileupload",
     "icon": "file_upload",
