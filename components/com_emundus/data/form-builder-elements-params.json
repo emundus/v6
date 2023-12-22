@@ -572,6 +572,20 @@
       "placeholder": "",
       "published": true,
       "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_PHONENUMBER_DEFAULT_COUNTRY",
+      "name": "default_country",
+      "type": "sqldropdown",
+      "table": "data_country",
+      "key": "iso2",
+      "value": "label",
+      "translate": true,
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false,
+      "options": []
     }
   ]
 }
