@@ -390,7 +390,7 @@ class EmundusHelperFiles
 
     public static function getApplicants() {
         $db = JFactory::getDBO();
-        $query = 'SELECT esp.id, esp.label
+        $query = 'SELECT esp.id, esp.label, esp.published
         FROM #__emundus_setup_profiles esp
         WHERE esp.status=1 and esp.id <> 1';
         $db->setQuery( $query );
@@ -1242,6 +1242,10 @@ class EmundusHelperFiles
                          	<option value="0">'.JText::_('COM_EMUNDUS_ACTIONS_ALL').'</option>';
 
             $profiles = $h_files->getApplicants();
+			$profiles = array_filter($profiles, function($profile) {
+				return $profile->published == 0;
+			});
+
             foreach ($profiles as $prof) {
                 $profile .= '<option title="' . $prof->label . '" value="' . $prof->id . '"';
                 if (!empty($current_profile) && (in_array($prof->id, $current_profile) || $prof->id == $current_profile)) {
