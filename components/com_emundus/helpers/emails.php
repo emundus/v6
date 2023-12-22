@@ -856,7 +856,7 @@ class EmundusHelperEmails {
         return $is_correct;
     }
 
-    function getLogo(): string {
+    static function getLogo(): string {
         $logo = '';
         $app = JFactory::getApplication();
         $template = $app->getTemplate(true);

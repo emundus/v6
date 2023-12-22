@@ -3747,6 +3747,13 @@ structure:
 					$db->setQuery($query);
 					$db->execute();
 				}
+
+				$query->clear()
+					->update($db->quoteName('#__emundus_setup_profiles'))
+					->set($db->quoteName('class') . ' = ' . $db->quote('label-green-1'))
+					->where($db->quoteName('menutype') . ' LIKE ' . $db->quote('coordinatormenu'));
+				$db->setQuery($query);
+				$db->execute();
 			}
 		}
 
