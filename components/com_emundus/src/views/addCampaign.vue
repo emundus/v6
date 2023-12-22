@@ -96,6 +96,23 @@
             </div>
             <span for="published" class="ml-2">{{ translate('COM_EMUNDUS_ONBOARD_FILTER_PUBLISH') }}</span>
           </div>
+
+          <div class="mb-4 flex items-center">
+            <div class="em-toggle">
+              <input type="checkbox"
+                     true-value="1"
+                     false-value="0"
+                     class="em-toggle-check"
+                     id="pinned"
+                     name="pinned"
+                     v-model="form.pinned"
+                     @click="onFormChange()"
+              />
+              <strong class="b em-toggle-switch"></strong>
+              <strong class="b em-toggle-track"></strong>
+            </div>
+            <span for="pinned" class="ml-2">{{ translate('COM_EMUNDUS_CAMPAIGNS_PIN') }}</span>
+          </div>
         </div>
 
         <hr/>
@@ -291,6 +308,7 @@ export default {
       profile_id: 9,
       limit: 50,
       limit_status: [],
+      pinned: 0,
     },
     programForm: {
       code: "",

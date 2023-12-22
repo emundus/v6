@@ -4040,6 +4040,8 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function getAttachmentsAssignedToEmundusGroups($group_ids) {
 
+		$attachments_assigned = [];
+
         if (!is_array($group_ids)) {
             $group_ids = [$group_ids];
         }
@@ -4058,7 +4060,7 @@ class EmundusModelFiles extends JModelLegacy
 
             // If the group has no anonymization, then the user can see all the attachments
             if ($anonymize == 0) {
-                return true;
+                return $attachments_assigned;
             } else {
                 $query->clear()
                     ->select($db->quoteName('attachment_id_link'))
@@ -4071,20 +4073,18 @@ class EmundusModelFiles extends JModelLegacy
 
                     // In the case of a group having no assigned Fabrik groups, it can get them all.
                     if (empty($attachments)) {
-                        return true;
+                        return $attachments_assigned;
                     }
 
-                    $result = array_merge($result, $attachments);
+	                $attachments_assigned = array_merge($result, $attachments);
                 } catch (Exception $e) {
-                    return false;
+                    return [];
                 }
             }
         }
 
-        if (empty($result)) {
-            return true;
-        } else {
-            return array_keys(array_flip($result));
+        if (!empty($attachments_assigned)) {
+            return array_keys(array_flip($attachments_assigned));
         }
     }
 

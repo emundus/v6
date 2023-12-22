@@ -447,7 +447,6 @@ a.em-blue-400-color:hover {
     align-items: flex-start;
     padding: 0;
     gap: var(--p-32);
-    width: 60%;
 }
 
 .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content {

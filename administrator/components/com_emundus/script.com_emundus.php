@@ -3717,6 +3717,36 @@ structure:
 					->where($db->quoteName('label') . ' LIKE ' . $db->quote('TABLE_SETUP_EMAIL_HISTORY'));
 				$db->setQuery($query);
 				$db->execute();
+
+				EmundusHelperUpdate::insertTranslationsTag('ACCOUNT_FORM', 'Espace profil');
+				EmundusHelperUpdate::insertTranslationsTag('ACCOUNT_FORM', 'Profile area', 'override', null, null, null, 'en-GB');
+
+				$query->clear()
+					->select('form_id')
+					->from($db->quoteName('#__emundus_setup_formlist'))
+					->where($db->quoteName('type') . ' LIKE ' . $db->quote('profile'));
+				$db->setQuery($query);
+				$profile_form_id = $db->loadResult();
+
+				if(!empty($profile_form_id)) {
+					$query->clear()
+						->select('params')
+						->from($db->quoteName('#__fabrik_forms'))
+						->where($db->quoteName('id') . ' = ' . $db->quote($profile_form_id));
+					$db->setQuery($query);
+					$profile_form_params = $db->loadResult();
+
+					$profile_form_params = json_decode($profile_form_params);
+					$profile_form_params->submit_button_label = 'SAVE_CONTINUE';
+					$profile_form_params->goback_button_label = 'GO_BACK';
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_forms'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($profile_form_params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($profile_form_id));
+					$db->setQuery($query);
+					$db->execute();
+				}
 			}
 		}
 
