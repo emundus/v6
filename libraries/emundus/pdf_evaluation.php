@@ -9,7 +9,7 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 use Dompdf\Css;
 
-function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $options = null) {
+function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $options = []) {
     jimport( 'joomla.html.parameter' );
     set_time_limit(0);
 	require_once (JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'date.php');
