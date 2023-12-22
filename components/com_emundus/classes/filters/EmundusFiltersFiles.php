@@ -562,13 +562,15 @@ class EmundusFiltersFiles extends EmundusFilters
 	}
 
     private function checkFiltersAvailability() {
-        // get campaign filter by uid
-        $campaign_filter = null;
+        $campaign_availables = $this->user_campaigns;
 
+        $campaign_filter = null;
+        $program_filter = null;
         foreach($this->applied_filters as $filter) {
             if($filter['uid'] == 'campaigns') {
                 $campaign_filter = $filter;
-                break;
+            } else if ($filter['uid'] == 'programs') {
+                $program_filter = $filter;
             }
         }
 
@@ -583,18 +585,48 @@ class EmundusFiltersFiles extends EmundusFilters
                     $campaign_availables = array_intersect($this->user_campaigns, $campaign_filter['value']);
                     break;
             }
+        }
 
-            if (!empty($campaign_availables)) {
-                $filtered_profiles = $this->getProfilesFromCampaignId($campaign_availables);
+        if (!empty($program_filter) && !empty($program_filter['value'])) {
+            // get campaigns associated to programs
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-                if (!empty($filtered_profiles)) {
-                    $element_ids_available = $this->getElementIdsAssociatedToProfile($filtered_profiles);
+            $query->select('DISTINCT esc.id')
+                ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
+                ->join('INNER', $db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON (' . $db->quoteName('esc.training') . ' = ' . $db->quoteName('esp.code') . ')')
+                ->where($db->quoteName('esp.id') . ' IN (' . implode(',', $program_filter['value']) . ')')
+                ->where('esc.published = 1')
+                ->andWhere('esc.id IN (' . implode(',', $this->user_campaigns) . ')');
 
-                    // TODO: this should not be applied if element filter comes from config more_fabrik_forms
-                    foreach($this->filters as $key => $filter) {
-                        if (!in_array($filter['id'], $element_ids_available)) {
-                            $this->filters[$key]['available'] = false;
-                        }
+            $db->setQuery($query);
+            $campaigns_of_program = $db->loadColumn();
+
+            if (!empty($campaigns_of_program)) {
+                // if the operator is NOT IN or !=, we need to get fabrik elements associated to campaigns that are not in the filter
+                switch($program_filter['operator']) {
+                    case 'NOT IN':
+                    case '!=':
+                        $campaign_availables = array_diff($this->user_campaigns, $campaigns_of_program);
+                        break;
+                    default:
+                        $campaign_availables = array_intersect($this->user_campaigns, $campaigns_of_program);
+                        break;
+                }
+            }
+        }
+
+
+        if (!empty($campaign_availables)) {
+            $filtered_profiles = $this->getProfilesFromCampaignId($campaign_availables);
+
+            if (!empty($filtered_profiles)) {
+                $element_ids_available = $this->getElementIdsAssociatedToProfile($filtered_profiles);
+
+                // TODO: this should not be applied if element filter comes from config more_fabrik_forms
+                foreach($this->filters as $key => $filter) {
+                    if (!in_array($filter['id'], $element_ids_available)) {
+                        $this->filters[$key]['available'] = false;
                     }
                 }
             }
