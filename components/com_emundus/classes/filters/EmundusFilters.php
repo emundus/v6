@@ -255,6 +255,10 @@ class EmundusFilters
 				break;
 		}
 
+        foreach($values as $key => $value) {
+           $values[$key]['label'] = JText::_($value['label']);
+        }
+
 		return $values;
 	}
 

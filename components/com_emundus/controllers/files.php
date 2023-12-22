@@ -4126,6 +4126,50 @@ class EmundusControllerFiles extends JControllerLegacy
 		exit;
 	}
 
+    public function getFiltersAvailable()
+    {
+        $response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
+        $user = JFactory::getUser();
+
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+            $response['msg'] = JText::_('MISSING_PARAMS');
+            $module_id = JFactory::getApplication()->input->getInt('module_id', 0);
+
+            if (!empty($module_id)) {
+                $response['msg'] = JText::_('NO_CALCULATION_FOR_THIS_MODULE');
+
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select('params')
+                    ->from('#__modules')
+                    ->where('id = ' . $db->quote($module_id));
+
+                $db->setQuery($query);
+                $module_params = $db->loadResult();
+                $module_params = json_decode($module_params, true);
+
+                try {
+                    if (!class_exists('EmundusFiltersFiles')) {
+                        require_once(JPATH_ROOT . '/components/com_emundus/classes/filters/EmundusFiltersFiles.php');
+                    }
+                    $m_filters = new EmundusFiltersFiles($module_params);
+
+                    $response['data'] = $m_filters->getFilters();
+                    $response['status'] = true;
+                    $response['code'] = 200;
+                } catch (Exception $e) {
+                    $response['code'] = 500;
+                    $response['msg'] = $e->getMessage();
+                }
+            }
+        }
+
+        echo json_encode($response);
+        exit;
+    }
+
+
     public function setFiltersValuesAvailability()
     {
         $response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];

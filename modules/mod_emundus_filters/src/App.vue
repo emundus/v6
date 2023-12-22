@@ -90,7 +90,7 @@ export default {
 			type: Array,
 			default: () => []
 		},
-		filters: {
+		defaultFilters: {
 			type: Array,
 			default: () => []
 		},
@@ -114,11 +114,13 @@ export default {
 			globalSearch: [],
 			currentGlobalSearchScope: 'everywhere',
 			globalSearchScopes: [],
+      filters: [],
 		}
 	},
 	mounted() {
 		this.applySuccessEvent = new Event('emundus-apply-filters-success');
 		this.startApplyFilters = new Event('emundus-start-apply-filters');
+    this.filters = this.defaultFilters;
 
 		this.getRegisteredFilters();
 		this.selectedRegisteredFilter = sessionStorage.getItem('emundus-current-filter') || 0;
@@ -223,7 +225,6 @@ export default {
 						this.applyFilters();
 
 						return true;
-
 					});
 				} else {
 					this.appliedFilters.push(newFilter);
@@ -248,6 +249,13 @@ export default {
             }
           });
         }
+
+        filtersService.getFiltersAvailable(this.moduleId).then((filters) => {
+          console.log(filters);
+          this.filters = filters;
+        }).catch((error) => {
+          console.error(error);
+        });
       });
 		},
 		clearFilters() {
