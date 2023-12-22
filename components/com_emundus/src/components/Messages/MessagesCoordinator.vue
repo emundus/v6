@@ -19,14 +19,22 @@
         </div>
       </div>
       <transition :name="'slide-up'" type="transition">
-        <AttachDocument :user="user" :fnum="fnum" :applicant="false" v-if="attachOpen" @pushAttachmentMessage="pushAttachmentMessage" ref="attachment"/>
+        <AttachDocument :user="user" :fnum="fnum" :applicant="false" v-if="attachOpen" @pushAttachmentMessage="pushAttachmentMessage" @close="attachDocument" ref="attachment"/>
       </transition>
       <div class="messages__bottom-input">
-        <textarea type="text" class="messages__input_text" rows="1" spellcheck="true" v-model="message" :placeholder="translations.writeMessage" @keydown.enter.exact.prevent="sendMessage($event)"/>
+        <textarea type="text"
+                  class="messages__input_text"
+                  :disabled="attachOpen"
+                  rows="1"
+                  spellcheck="true"
+                  v-model="message"
+                  :placeholder="translations.writeMessage"
+                  @keydown.enter.exact.prevent="sendMessage($event)"
+        />
       </div>
       <div class="messages__bottom-input-actions">
         <div class="messages__actions_bar">
-          <img class="messages__send-icon" src="/images/emundus/messenger/attached.svg" @click="attachDocument"/>
+          <span class="material-icons-outlined em-pointer"  @click="attachDocument">attach_file</span>
         </div>
         <button type="button" class="messages__send_button btn btn-primary" @click="sendMessage">
           {{ translations.send }}
@@ -222,8 +230,9 @@ export default {
 .messages__vue_attach_document{
   width: 100%;
   position: absolute;
-  background: #f8f8f8;
+  background: white;
   bottom: 120px;
+	z-index: 9999;
 }
 .messages__list-block{
   padding: 0px 55px;
@@ -231,5 +240,14 @@ export default {
 
 .messages__attach_content {
   padding: 0 70px;
+}
+
+.messages__actions_bar .material-icons-outlined {
+	font-size: 20px;
+}
+
+.messages__bottom-input, .messages__bottom-input-actions {
+	padding-left: 16px;
+	padding-right: 16px;
 }
 </style>

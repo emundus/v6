@@ -1,6 +1,6 @@
 <template>
   <div class="messages__vue_attach_document">
-    <span :id="'attach_documents' + fnum">
+    <div :id="'attach_documents' + fnum">
       <div
           :name="'attach_documents' + fnum"
           transition="nice-modal-fade"
@@ -13,52 +13,57 @@
           @closed="beforeClose"
           @opened="getTypesByCampaign"
       >
+	      <div class="messages__attach_header em-p-16 em-w-100 em-flex-row-justify-end">
+		      <span class="material-icons-outlined em-pointer" @click="$emit('close')">close</span>
+	      </div>
         <div class="messages__attach_content">
           <ul class="messages__attach_actions_tabs" v-if="!applicant">
-            <li class="messages__attach_action" @click="action = 1" :class="action === 1 ? 'messages__attach_action__current' : ''">{{translations.sendDocument}}</li>
-            <li class="messages__attach_action" @click="action = 2" :class="action === 2 ? 'messages__attach_action__current' : ''">{{translations.askDocument}}</li>
+            <li class="messages__attach_action em-mr-8" @click="action = 1" :class="action === 1 ? 'messages__attach_action__current' : ''">{{translations.sendDocument}}</li>
+            <li class="messages__attach_action em-mr-8" @click="action = 2" :class="action === 2 ? 'messages__attach_action__current' : ''">{{translations.askDocument}}</li>
           </ul>
 
-          <div v-if="action === 1">
-            <label v-if="applicant">{{translations.sendDocument}}</label>
-            <div v-if="applicant && types.length > 0" class="messages__attach_applicant_doc">
-              <label for="applicant_attachment_input">{{translations.typeAttachment}}</label>
-              <select v-model="attachment_input" id="applicant_attachment_input">
-                <option :value="0">{{translations.pleaseSelect }}</option>
-                <option v-for="type in types" :value="type.id">{{type.value}}</option>
-              </select>
-            </div>
-            <vue-dropzone
-                ref="dropzone"
-                id="customdropzone_messenger"
-                :include-styling="false"
-                :options="dropzoneOptions"
-                :useCustomSlot=true
-                v-on:vdropzone-file-added="afterAdded"
-                v-on:vdropzone-thumbnail="thumbnail"
-                v-on:vdropzone-removed-file="afterRemoved"
-                v-on:vdropzone-complete="onComplete"
-                v-on:vdropzone-error="catchError"
-                v-on:vdropzone-sending="sendingEvent">
-              <div class="dropzone-custom-content" id="dropzone-message">
-                <em class="fas fa-file-image"></em>
-                {{translations.DropHere}}
-              </div>
-            </vue-dropzone>
-            <button type="button" class="messages__send_button" @click="sendMessage" v-if="applicant">
-                  {{ translations.send }}
-            </button>
-          </div>
-          <div v-if="action === 2">
-            <label for="attachment_input">{{translations.typeAttachment}}</label>
-            <select v-model="attachment_input" id="attachment_input">
-              <option :value="0">{{translations.pleaseSelect }}</option>
-              <option v-for="type in types" :value="type.id">{{type.value}}</option>
-            </select>
-          </div>
+	        <div class="messages_action_container em-pt-16">
+		        <div v-if="action === 1">
+	            <label v-if="applicant">{{translations.sendDocument}}</label>
+	            <div v-if="applicant && types.length > 0" class="messages__attach_applicant_doc">
+	              <label for="applicant_attachment_input">{{translations.typeAttachment}}</label>
+	              <select v-model="attachment_input" id="applicant_attachment_input">
+	                <option :value="0">{{translations.pleaseSelect }}</option>
+	                <option v-for="type in types" :value="type.id">{{type.value}}</option>
+	              </select>
+	            </div>
+	            <vue-dropzone
+			            ref="dropzone"
+			            id="customdropzone_messenger"
+			            :include-styling="false"
+			            :options="dropzoneOptions"
+			            :useCustomSlot=true
+			            v-on:vdropzone-file-added="afterAdded"
+			            v-on:vdropzone-thumbnail="thumbnail"
+			            v-on:vdropzone-removed-file="afterRemoved"
+			            v-on:vdropzone-complete="onComplete"
+			            v-on:vdropzone-error="catchError"
+			            v-on:vdropzone-sending="sendingEvent">
+	              <div class="dropzone-custom-content" id="dropzone-message">
+	                <em class="fas fa-file-image"></em>
+	                {{translations.DropHere}}
+	              </div>
+	            </vue-dropzone>
+	            <button type="button" class="messages__send_button" @click="sendMessage" v-if="applicant">
+	                  {{ translations.send }}
+	            </button>
+	          </div>
+	          <div v-else>
+	            <label for="attachment_input">{{translations.typeAttachment}}</label>
+	            <select v-model="attachment_input" id="attachment_input">
+	              <option :value="0">{{translations.pleaseSelect }}</option>
+	              <option v-for="type in types" :value="type.id">{{type.value}}</option>
+	            </select>
+	          </div>
+	        </div>
         </div>
       </div>
-    </span>
+    </div>
     <div class="loader" v-if="loading"></div>
   </div>
 </template>
@@ -233,6 +238,10 @@ export default {
 </script>
 
 <style scoped>
+.messages__vue_attach_document {
+	background-color: white;
+}
+
 .messages__send_button{
   margin: 20px 0;
   float: right;
