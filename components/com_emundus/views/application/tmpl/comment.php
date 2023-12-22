@@ -141,8 +141,9 @@ $now = EmundusHelperDate::displayDate(date('Y-m-d H:i:s'), 'DATE_FORMAT_LC2', 0)
 							$i++;
 						}
 					}
-					else echo JText::_('COM_EMUNDUS_COMMENTS_NO_COMMENT');
-					?>
+					else { ?>
+                    <p id="no_comment_text"> <?php echo JText::_('COM_EMUNDUS_COMMENTS_NO_COMMENT'); ?></p>
+					<?php } ?>
                 </ul>
             </div>
 
@@ -178,7 +179,19 @@ $now = EmundusHelperDate::displayDate(date('Y-m-d H:i:s'), 'DATE_FORMAT_LC2', 0)
                 if (result.status) {
 
                     $('.comments li#' + id).empty();
-                    $('.comments li#' + id).append(result.msg);
+                    $('.comments li#' + id).append('<p class="text-danger" id="comment_deleted"><strong>' + result.msg + '</strong></p>');
+
+                    setTimeout(() => {
+                        $('.comments li#' + id).remove();
+                    }, 3000);
+
+                    const notifications_counter = document.querySelector('a[href*="layout=comment"] span.notifications-counter')
+                    if(notifications_counter) {
+                        let count = parseInt(notifications_counter.innerText);
+                        count--;
+                        notifications_counter.innerText = count;
+                    }
+
                     var nbCom = parseInt($('.panel-default.widget .panel-heading .label.label-info').text().trim());
                     nbCom--;
                     $('.panel-default.widget .panel-heading .label.label-info').html(nbCom);
@@ -225,6 +238,17 @@ $now = EmundusHelperDate::displayDate(date('Y-m-d H:i:s'), 'DATE_FORMAT_LC2', 0)
 
                 $('#form').empty();
                 if (result.status) {
+                    const no_comment_text = document.getElementById('no_comment_text');
+                    if(no_comment_text) {
+                        no_comment_text.remove();
+                    }
+
+                    const notifications_counter = document.querySelector('a[href*="layout=comment"] span.notifications-counter')
+                    if(notifications_counter) {
+                        let count = parseInt(notifications_counter.innerText);
+                        count++;
+                        notifications_counter.innerText = count;
+                    }
 
                     $('#form').append('<p class="text-success" id="comment_added"><strong>' + result.msg + '</strong></p>');
                     setTimeout(() => {

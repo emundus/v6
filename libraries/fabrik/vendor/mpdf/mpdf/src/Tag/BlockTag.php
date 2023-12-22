@@ -4,7 +4,7 @@ namespace Mpdf\Tag;
 
 use Mpdf\Conversion\DecToAlpha;
 use Mpdf\Conversion\DecToRoman;
-
+use Mpdf\Mpdf;
 use Mpdf\Utils\Arrays;
 use Mpdf\Utils\UtfString;
 
@@ -126,7 +126,7 @@ abstract class BlockTag extends Tag
 			}
 			// Cannot set block properties inside table - use Bold to indicate h1-h6
 			if ($tag === 'CENTER' && $this->mpdf->tdbegin) {
-				$this->mpdf->cell[$this->mpdf->row][$this->mpdf->col]['a'] = self::ALIGN['center'];
+				$this->mpdf->cell[$this->mpdf->row][$this->mpdf->col]['a'] = $this->getAlign('center');
 			}
 
 			$this->mpdf->InlineProperties['BLOCKINTABLE'] = $this->mpdf->saveInlineProperties();
@@ -165,7 +165,7 @@ abstract class BlockTag extends Tag
 					$this->mpdf->listcounter[$this->mpdf->listlvl] = 0;
 				}
 
-				$this->mpdf->listcounter[$this->mpdf->listlvl] ++;
+				$this->mpdf->listcounter[$this->mpdf->listlvl]++;
 				$this->mpdf->listitem = [];
 				//if in table - output here as a tabletextbuffer
 				//position:inside OR position:outside (always output in table as position:inside)
@@ -248,10 +248,8 @@ abstract class BlockTag extends Tag
 
 		// If page-box has changed AND/OR PAGE-BREAK-BEFORE
 		// mPDF 6 (uses $p - preview of properties so blklvl can be imcremented after page-break)
-		if (!$this->mpdf->tableLevel && (($pagesel && (!isset($this->mpdf->page_box['current'])
-						|| $pagesel != $this->mpdf->page_box['current']))
-				|| (isset($p['PAGE-BREAK-BEFORE'])
-					&& $p['PAGE-BREAK-BEFORE']))) {
+		if (!$this->mpdf->tableLevel && (($pagesel && (!$this->mpdf->page_box['current'] || $pagesel != $this->mpdf->page_box['current']))
+				|| (isset($p['PAGE-BREAK-BEFORE']) && $p['PAGE-BREAK-BEFORE']))) {
 			// mPDF 6 pagebreaktype
 			$startpage = $this->mpdf->page;
 			$pagebreaktype = $this->mpdf->defaultPagebreakType;
@@ -259,7 +257,7 @@ abstract class BlockTag extends Tag
 			if ($this->mpdf->ColActive) {
 				$pagebreaktype = 'cloneall';
 			}
-			if ($pagesel && (!isset($this->mpdf->page_box['current']) || $pagesel != $this->mpdf->page_box['current'])) {
+			if ($pagesel && (!$this->mpdf->page_box['current'] || $pagesel != $this->mpdf->page_box['current'])) {
 				$pagebreaktype = 'cloneall';
 			}
 			$this->mpdf->_preForcedPagebreak($pagebreaktype);
@@ -318,7 +316,7 @@ abstract class BlockTag extends Tag
 				} // *CSS-PAGE*
 			} /* -- CSS-PAGE -- */
 			// Must Add new page if changed page properties
-			elseif (!isset($this->mpdf->page_box['current']) || $pagesel != $this->mpdf->page_box['current']) {
+			elseif (!$this->mpdf->page_box['current'] || $pagesel != $this->mpdf->page_box['current']) {
 				$this->mpdf->AddPage($this->mpdf->CurOrientation, '', '', '', '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, 0, $pagesel);
 			}
 			/* -- END CSS-PAGE -- */
@@ -398,7 +396,7 @@ abstract class BlockTag extends Tag
 
 		// mPDF 6
 		if (!empty($attr['ALIGN'])) {
-			$currblk['block-align'] = self::ALIGN[strtolower($attr['ALIGN'])];
+			$currblk['block-align'] = $this->getAlign($attr['ALIGN']);
 		}
 
 
@@ -428,6 +426,9 @@ abstract class BlockTag extends Tag
 			$this->mpdf->ClearFloats(strtoupper($properties['CLEAR']), $this->mpdf->blklvl - 1);
 		} // *CSS-FLOAT*
 
+		$currblk['padding_left'] = is_numeric($currblk['padding_left']) ? $currblk['padding_left'] : 0;
+		$currblk['padding_right'] = is_numeric($currblk['padding_right']) ? $currblk['padding_right'] : 0;
+
 		$container_w = $prevblk['inner_width'];
 		$bdr = $currblk['border_right']['w'];
 		$bdl = $currblk['border_left']['w'];
@@ -444,7 +445,7 @@ abstract class BlockTag extends Tag
 
 			// Cancel Keep-Block-together
 			$currblk['keep_block_together'] = false;
-			$this->mpdf->kt_y00 = '';
+			$this->mpdf->kt_y00 = 0;
 			$this->mpdf->keep_block_together = 0;
 
 			$this->mpdf->blockContext++;
@@ -495,7 +496,7 @@ abstract class BlockTag extends Tag
 		} elseif (isset($properties['FLOAT']) && strtoupper($properties['FLOAT']) === 'LEFT' && !$this->mpdf->ColActive) {
 			// Cancel Keep-Block-together
 			$currblk['keep_block_together'] = false;
-			$this->mpdf->kt_y00 = '';
+			$this->mpdf->kt_y00 = 0;
 			$this->mpdf->keep_block_together = 0;
 
 			$this->mpdf->blockContext++;
@@ -737,9 +738,6 @@ abstract class BlockTag extends Tag
 
 		$currblk['width'] = $this->mpdf->pgwidth - ($currblk['outer_right_margin'] + $currblk['outer_left_margin']);
 
-		$currblk['padding_left'] = is_numeric($currblk['padding_left']) ? $currblk['padding_left'] : 0;
-		$currblk['padding_right'] = is_numeric($currblk['padding_right']) ? $currblk['padding_right'] : 0;
-
 		$currblk['inner_width'] = $currblk['width']
 			- ($currblk['border_left']['w'] + $currblk['padding_left'] + $currblk['border_right']['w'] + $currblk['padding_right']);
 
@@ -884,14 +882,17 @@ abstract class BlockTag extends Tag
 			}
 		}
 
-
 		// mPDF 6  Lists
 		if ($tag === 'LI') {
-			if ($this->mpdf->listlvl == 0) { //in case of malformed HTML code. Example:(...)</p><li>Content</li><p>Paragraph1</p>(...)
+			if ($this->mpdf->listlvl == 0) { // in case of malformed HTML code. Example:(...)</p><li>Content</li><p>Paragraph1</p>(...)
 				$this->mpdf->listlvl++; // first depth level
 				$this->mpdf->listcounter[$this->mpdf->listlvl] = 0;
 			}
-			$this->mpdf->listcounter[$this->mpdf->listlvl] ++;
+
+			if (!isset($attr['PAGEBREAKAVOIDCHECKED']) || !$attr['PAGEBREAKAVOIDCHECKED']) {
+				$this->mpdf->listcounter[$this->mpdf->listlvl]++;
+			}
+
 			$this->mpdf->listitem = [];
 
 			// Listitem-type
@@ -990,7 +991,7 @@ abstract class BlockTag extends Tag
 					$content = $this->mpdf->textbuffer[0][0];
 				} else {
 					for ($i = 0; $i < count($this->mpdf->textbuffer); $i++) {
-						if (0 !== strpos($this->mpdf->textbuffer[$i][0], "\xbb\xa4\xac")) { //inline object
+						if (0 !== strpos($this->mpdf->textbuffer[$i][0], Mpdf::OBJECT_IDENTIFIER)) { //inline object
 							$content .= $this->mpdf->textbuffer[$i][0];
 						}
 					}
@@ -1001,7 +1002,7 @@ abstract class BlockTag extends Tag
 					$objattr['type'] = 'toc';
 					$objattr['toclevel'] = $this->mpdf->h2toc[$tag];
 					$objattr['CONTENT'] = htmlspecialchars($content);
-					$e = "\xbb\xa4\xactype=toc,objattr=" . serialize($objattr) . "\xbb\xa4\xac";
+					$e = Mpdf::OBJECT_IDENTIFIER . "type=toc,objattr=" . serialize($objattr) . Mpdf::OBJECT_IDENTIFIER;
 					array_unshift($this->mpdf->textbuffer, [$e]);
 				}
 				/* -- END TOC -- */
@@ -1011,7 +1012,7 @@ abstract class BlockTag extends Tag
 					$objattr['type'] = 'bookmark';
 					$objattr['bklevel'] = $this->mpdf->h2bookmarks[$tag];
 					$objattr['CONTENT'] = $content;
-					$e = "\xbb\xa4\xactype=toc,objattr=" . serialize($objattr) . "\xbb\xa4\xac";
+					$e = Mpdf::OBJECT_IDENTIFIER . "type=toc,objattr=" . serialize($objattr) . Mpdf::OBJECT_IDENTIFIER;
 					array_unshift($this->mpdf->textbuffer, [$e]);
 				}
 				/* -- END BOOKMARKS -- */
@@ -1063,7 +1064,7 @@ abstract class BlockTag extends Tag
 				$this->mpdf->pageoutput[$this->mpdf->page] = [];
 			}
 			// mod changes operands to integers before processing
-			$this->mpdf->y = (($this->mpdf->blk[$this->mpdf->blklvl]['float_endpos'] * 1000) % 1000000) / 1000;
+			$this->mpdf->y = (round($this->mpdf->blk[$this->mpdf->blklvl]['float_endpos'] * 1000) % 1000000) / 1000;
 		}
 		/* -- END CSS-FLOAT -- */
 
@@ -1079,7 +1080,7 @@ abstract class BlockTag extends Tag
 
 		// called from after e.g. </table> </div> </div> ...    Outputs block margin/border and padding
 		if (count($this->mpdf->textbuffer) && $this->mpdf->textbuffer[count($this->mpdf->textbuffer) - 1]) {
-			if (0 !== strpos($this->mpdf->textbuffer[count($this->mpdf->textbuffer) - 1][0], "\xbb\xa4\xac")) { // not special content
+			if (0 !== strpos($this->mpdf->textbuffer[count($this->mpdf->textbuffer) - 1][0], Mpdf::OBJECT_IDENTIFIER)) { // not special content
 				// Right trim last content and adjust OTLdata
 				if (preg_match('/[ ]+$/', $this->mpdf->textbuffer[count($this->mpdf->textbuffer) - 1][0], $m)) {
 					$strip = strlen($m[0]);
@@ -1221,7 +1222,7 @@ abstract class BlockTag extends Tag
 			$page_break_after = $this->mpdf->blk[$this->mpdf->blklvl]['page_break_after'];
 		}
 
-		//Reset values
+		// Reset values
 		$this->mpdf->Reset();
 
 		if (isset($this->mpdf->blk[$this->mpdf->blklvl]['z-index']) && $this->mpdf->blk[$this->mpdf->blklvl]['z-index'] > 0) {
@@ -1254,6 +1255,7 @@ abstract class BlockTag extends Tag
 			$this->mpdf->pageoutput[$this->mpdf->page] = [];
 
 			$this->mpdf->y = $this->mpdf->kt_y00;
+
 			$ihtml = $this->mpdf->blk[$this->mpdf->blklvl]['array_i'] - 1;
 
 			$ahtml[$ihtml + 1] .= ' pagebreakavoidchecked="true";'; // avoid re-iterating; read in OpenTag()
