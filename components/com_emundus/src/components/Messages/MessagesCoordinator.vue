@@ -241,13 +241,4 @@ export default {
 .messages__attach_content {
   padding: 0 70px;
 }
-
-.messages__actions_bar .material-icons-outlined {
-	font-size: 20px;
-}
-
-.messages__bottom-input, .messages__bottom-input-actions {
-	padding-left: 16px;
-	padding-right: 16px;
-}
 </style>

@@ -34,12 +34,12 @@
 		        </select>
 	        </div>
 
-          <div class="messages__list em-w-100 em-h-100">
-            <div class="message__header">
+          <div class="messages__list em-w-100 em-h-100 em-flex-column em-flex-space-between">
+            <div class="message__header em-w-100">
               <label class="text-center" style="width: 100%">{{translations.messages}}</label>
               <i class="fas fa-times pointer" @click="$modal.hide('messages')"></i>
             </div>
-            <div class="messages__list-block em-h-80" id="messages__list">
+            <div class="messages__list-block em-w-100 em-h-100" id="messages__list">
               <div v-for="date in messageByDates">
                 <div class="messages__date-section">
                   <hr>
@@ -61,19 +61,27 @@
                 </div>
               </div>
               <transition :name="'slide-up'" type="transition">
-               <AttachDocument :user="user" :fnum="fileSelected" v-if="attachOpen" :applicant="true" @pushAttachmentMessage="pushAttachmentMessage" ref="attachment"/>
+               <AttachDocument :user="user" :fnum="fileSelected" v-if="attachOpen" :applicant="true" @pushAttachmentMessage="pushAttachmentMessage" @close="attachDocument" ref="attachment"/>
               </transition>
             </div>
 
-            <div style="position: sticky;bottom: 15px;padding: 0 15px;margin-right: 15px;">
+            <div style="position: sticky;bottom: 15px;padding: 0 15px;margin-right: 15px;" class="em-w-100">
               <div class="messages__bottom-input">
-                <textarea type="text" class="messages__input_text" rows="1" :disabled="send_progress" spellcheck="true" :placeholder="translations.writeMessage" v-model="message" @keydown.enter.exact.prevent="sendMessage($event)"/>
+                <textarea type="text"
+                          class="messages__input_text em-p-8"
+                          rows="1"
+                          :disabled="send_progress || attachOpen"
+                          spellcheck="true"
+                          :placeholder="translations.writeMessage"
+                          v-model="message"
+                          @keydown.enter.exact.prevent="sendMessage($event)"
+                />
               </div>
               <div class="messages__bottom-input-actions">
                 <div class="messages__actions_bar">
-                  <img class="messages__send-icon" src="/images/emundus/messenger/attached.svg" @click="attachDocument"/>
+                  <span class="material-icons-outlined em-pointer" @click="attachDocument">attach_file</span>
                 </div>
-                <button type="button" class="messages__send_button" @click="sendMessage">
+                <button type="button" class="messages__send_button btn btn-primary" @click="sendMessage">
                     {{ translations.send }}
                 </button>
               </div>
@@ -300,4 +308,8 @@ export default {
 
 <style lang="scss">
 @import url("../../assets/css/messenger.scss");
+
+.messages__vue_attach_document{
+  background: #f8f8f8;
+}
 </style>

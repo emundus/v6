@@ -69,7 +69,6 @@ hr{
 
 .messages__list-block{
     min-height: 50vh;
-    max-height: 85%;
     overflow-y: auto;
     overflow-x: hidden;
     -ms-overflow-style: none;
@@ -200,6 +199,15 @@ hr{
     background: var(--night-blue);
     padding: 8px 16px;
     color: white;
+}
+
+.messages__actions_bar .material-icons-outlined {
+    font-size: 20px;
+}
+
+.messages__bottom-input, .messages__bottom-input-actions {
+    padding-left: 16px;
+    padding-right: 16px;
 }
 
 .loader {
