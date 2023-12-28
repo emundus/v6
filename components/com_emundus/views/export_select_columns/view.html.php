@@ -59,17 +59,17 @@ class EmundusViewExport_select_columns extends JViewLegacy
         }
 
         $camps = array();
-        
+
         $camps[] = $camp;
         $current_user = JFactory::getUser();
-        
+
         if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
 	        die(JText::_('ACCESS_DENIED'));
         }
 
         $m_admission = new EmundusModelAdmission;
         $m_eval = new EmundusModelEvaluation;
-        
+
         //TODO fix bug when a different application form is created for the same programme. Need to now the campaign id, then associated profile and menu links...
 	    // To fix this : Get all campaigns, get profile, get menu, check form IDs, for each unique ID: make an array containing the code below (or some variety of it).
 	    // When displaying the results: make tabs or panels separating the different forms for the programme.
@@ -84,10 +84,12 @@ class EmundusViewExport_select_columns extends JViewLegacy
         } else {
 	        $elements = EmundusHelperFiles::getElements($code, $camps, [], $profile);
         }
-        
+
         $this->assignRef('elements', $elements);
         $this->assignRef('form', $form);
-        $this->assignRef('program', $program->label);
+        if (isset($program)) {
+            $this->assignRef('program', $program->label);
+        }
 		parent::display($tpl);
     }
 }
