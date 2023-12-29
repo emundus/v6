@@ -91,6 +91,13 @@
     "published": true
   },
   {
+    "id": 16,
+    "value": "emundus_geolocalisation",
+    "icon": "location_on",
+    "name": "COM_EMUNDUS_ONBOARD_TYPE_GEOLOCATION",
+    "published": true
+  },
+  {
     "id": 15,
     "value": "currency",
     "icon": "money",

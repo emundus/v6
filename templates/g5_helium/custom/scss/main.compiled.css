@@ -6,6 +6,325 @@
     gap: 16px;
   }
 }
+/*******************
+ * TCHOOZY CLASSES
+ *******************/
+/* backgrounds */
+.circle-background {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/backgrounds/circle-background.svg");
+}
+.corner-bottom-left-background {
+  background-image: var(--display-corner-bottom-left-background);
+}
+.corner-top-right-background {
+  background-image: var(--display-corner-top-right-background);
+}
+.corner-bottom-right-background {
+  background-image: var(--display-corner-bottom-right-background);
+}
+.floor-shapes-background {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/backgrounds/floor-shapes-background.svg");
+}
+.wide-background {
+  background-image: var(--display-wide-background);
+}
+/* body-expressions */
+.angry {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/angry.svg");
+}
+.clever {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/clever.svg");
+}
+.concerned {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/concerned.svg");
+}
+.disagreeing {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/disagreeing.svg");
+}
+.embarrassed {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/embarrassed.svg");
+}
+.endearing {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/endearing.svg");
+}
+.fine {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/fine.svg");
+}
+.happy {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/happy.svg");
+}
+.in-love {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/in-love.svg");
+}
+.joyful {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/joyful.svg");
+}
+.laughing {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/laughing.svg");
+}
+.neutral {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/neutral.svg");
+}
+.sad {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/sad.svg");
+}
+.shocked {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/shocked.svg");
+}
+.sick {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/sick.svg");
+}
+.sleepy {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/sleepy.svg");
+}
+.surprised {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/surprised.svg");
+}
+.thinking {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/thinking.svg");
+}
+.tired {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/tired.svg");
+}
+.whistling {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/body-expressions/whistling.svg");
+}
+/* complex-illustrations */
+.aim-for-the-center {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/aim-for-the-center.svg");
+}
+.archives {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/archives.svg");
+}
+.behind-schedule {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/behind-schedule.svg");
+}
+.brilliant-idea {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/brilliant-idea.svg");
+}
+.building {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/building.svg");
+}
+.candidate-button {
+  background-image: var(--display-candidate-button);
+}
+.celebrating {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/celebrating.svg");
+}
+.checklist {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/checklist.svg");
+}
+.demonstration {
+  background-image: var(--display-demonstration);
+}
+.digital-testing {
+  background-image: var(--display-corner-bottom-left-background);
+}
+.emundus-help-center {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/emundus-help-center.svg");
+}
+.FAQ {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/FAQ.svg");
+}
+.fast-and-efficient {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/fast-and-efficient.svg");
+}
+.goal-achieved {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/goal-achieved.svg");
+}
+.goal-achieved-together {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/goal-achieved-together.svg");
+}
+.handshake {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/handshake.svg");
+}
+.heart-hug {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/heart-hug.svg");
+}
+.help-center {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/help-center.svg");
+}
+.hiding {
+  background-image: var(--display-corner-bottom-left-background);
+}
+.high-workload {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/high-workload.svg");
+}
+.looking-for-something {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/looking-for-something.svg");
+}
+.message-sent {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/message-sent.svg");
+}
+.money-saving {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/money-saving.svg");
+}
+.multitasking.svg {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/multitasking.svg");
+}
+.no-result {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg");
+}
+.notes-taking {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/notes-taking.svg");
+}
+.number-one {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/number-one.svg");
+}
+.page-not-found {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/page-not-found.svg");
+}
+.plug-connection {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/plug-connection.svg");
+}
+.post-a-letter {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/post-a-letter.svg");
+}
+.questions {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/questions.svg");
+}
+.reading-and-learning {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/reading-and-learning.svg");
+}
+.ready-to-send {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/ready-to-send.svg");
+}
+.rocket-take-off {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/rocket-take-off.svg");
+}
+.sending-message {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/sending-message.svg");
+}
+.serenity {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/serenity.svg");
+}
+.setting-tools {
+  background-image: var(--display-setting-tools);
+}
+.social-networks {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/social-networks.svg");
+}
+.solve-a-puzzle {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/solve-a-puzzle.svg");
+}
+.solving-problem {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/solving-problem.svg");
+}
+.solving-rubiks-cube {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/solving-rubiks-cube.svg");
+}
+.sporty-activity {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/sporty-activity.svg");
+}
+.team-presentation {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/team-presentation.svg");
+}
+.team-talk {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/team-talk.svg");
+}
+.workflow-building {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/workflow-building.svg");
+}
+/* facial-expressions */
+.angry-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/angry-face.svg");
+}
+.clever-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/clever-face.svg");
+}
+.concerned-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/concerned-face.svg");
+}
+.disagreeing-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/disagreeing-face.svg");
+}
+.embarrassed-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/embarrassed-face.svg");
+}
+.endearing-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/endearing-face.svg");
+}
+.fine-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/fine-face.svg");
+}
+.happy-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/happy-face.svg");
+}
+.in-love-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/in-love-face.svg");
+}
+.joyful-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/joyful-face.svg");
+}
+.laughing-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/laughing-face.svg");
+}
+.neutral-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/neutral-face.svg");
+}
+.sad-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/sad-face.svg");
+}
+.shocked-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/shocked-face.svg");
+}
+.sick-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/sick-face.svg");
+}
+.sleepy-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/sleepy-face.svg");
+}
+.surprised-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/surprised-face.svg");
+}
+.thinking-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/thinking-face.svg");
+}
+.tired-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/tired-face.svg");
+}
+.whistling-face {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/facial-expressions/whistling-face.svg");
+}
+/* objects-illustrations */
+.account-settings {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/account-settings.svg");
+}
+.gantry .wide-background {
+   background-image: url("../../../../media/com_emundus/images/tchoozy/backgrounds/wide-background.svg") ;
+ }
+.cookie-policy.svg {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/cookie-policy.svg");
+}
+.email-history {
+  background-image: var(--display-email-history);
+}
+.groups {
+  background-image: var(--display-groups);
+}
+.indicators {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/indicators.svg");
+}
+.legal-notice {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/legal-notice.svg");
+}
+.privacy-policy {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/privacy-policy.svg");
+}
+.profiles {
+  background-image: var(--display-profiles);
+}
+.rights-management {
+  background-image: url("../../../../media/com_emundus/images/tchoozy/objects-illustrations/rights-management.svg");
+}
+/* Surcharge de l'id g-page-surround pour voir l'illustration */
+.wide-background #g-page-surround {
+  background : none !important;
+}
+/*.test-tchoozy {
+  background : gray;
+  border: 3px solid yellow;
+}*/
 /* ! tailwindcss v3.3.2 | MIT License | https://tailwindcss.com */
 /*
 1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
@@ -471,19 +790,19 @@ video {
         border-radius: var(--em-coordinator-br);
         border: unset;
         color: var(--neutral-0);
-        background-color: var(--em-coordinator-primary-color);
+        background-color: var(--em-profile-color);
         border: solid 1px transparent;
         font-family: var(--em-coordinator-font);
         font-size: var(--em-coordinator-font-size) !important;
     }
 .em-primary-button:hover, .em-primary-button:focus, .em-primary-button:active {
             background-color: var(--neutral-0);
-            color: var(--em-coordinator-primary-color);
-            border: 1px solid var(--em-coordinator-primary-color);
+            color: var(--em-profile-color);
+            border: 1px solid var(--em-profile-color);
             text-decoration: none;
         }
 .em-primary-button:hover .material-icons, .em-primary-button:focus .material-icons, .em-primary-button:active .material-icons {
-                color: var(--em-coordinator-primary-color) !important;
+                color: var(--em-profile-color) !important;
             }
 .em-primary-button .material-icons {
             color: var(--white);
@@ -509,12 +828,12 @@ video {
 .emundus-form .page-header h1 {
   color: var(--em-default-title-color-1);
   font-family: var(--em-applicant-font-title);
-  font-size: var(--em-coordinator-h1);
+  font-size: var(--em-applicant-h1);
   font-style: normal;
   line-height: 28.8px;
-  font-weight: 500;
+  font-weight: var(--em-font-weight-500);
 }
-.emundus-form .em-form-intro * {
+.emundus-form .em-form-intro p {
         color: var(--neutral-600);
       }
 .emundus-form .groupintro {
@@ -678,10 +997,8 @@ form.fabrikForm .fabrikElementTip {
       font-weight: 400;
       font-family: var(--em-applicant-font);
       font-style: normal;
+      display: flex;
     }
-form.fabrikForm .fabrikElementTip * {
-        color: var(--em-form-tip-color);
-      }
 form.fabrikForm .fabrikElementTip i.icon-question-sign  {
         display: none;
       }
@@ -1167,7 +1484,6 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio la
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label input, form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label input, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .fabrikgrid_radio label input, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label input {
               accent-color: var(--em-form-radio-color-checked);
               width: var(--em-form-radio-width);
-              min-width: var(--em-form-radio-width);
               height: var(--em-form-radio-height);
               margin-right: var(--em-form-radio-margin-right);
               margin-left: 0;
@@ -1809,6 +2125,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .table-column {
   display: table-column;
 }
+.table-row {
+  display: table-row;
+}
 .grid {
   display: grid;
 }
@@ -1830,6 +2149,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .w-full {
   width: 100%;
+}
+.shrink {
+  flex-shrink: 1;
 }
 .flex-grow {
   flex-grow: 1;
@@ -1918,6 +2240,16 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .border {
   border-width: 1px;
 }
+.border-t {
+  border-top-width: 1px;
+}
+.border-neutral-300 {
+  --tw-border-opacity: 1;
+  border-color: rgb(212 212 212 / var(--tw-border-opacity));
+}
+.bg-transparent {
+  background-color: transparent;
+}
 .p-0 {
   padding: 0px;
 }
@@ -1930,6 +2262,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .p-6 {
   padding: var(--em-spacing-6);
 }
+.px-2 {
+  padding-left: var(--em-spacing-2);
+  padding-right: var(--em-spacing-2);
+}
 .px-6 {
   padding-left: var(--em-spacing-6);
   padding-right: var(--em-spacing-6);
@@ -1937,6 +2273,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .py-3 {
   padding-top: var(--em-spacing-3);
   padding-bottom: var(--em-spacing-3);
+}
+.pt-6 {
+  padding-top: var(--em-spacing-6);
 }
 .text-center {
   text-align: center;
@@ -1947,6 +2286,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .font-normal {
   font-weight: 400;
+}
+.font-semibold {
+  font-weight: 600;
 }
 .uppercase {
   text-transform: uppercase;
@@ -1959,6 +2301,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .italic {
   font-style: italic;
+}
+.text-green-500 {
+  color: var(--main-500);
 }
 .text-neutral-600 {
   color: var(--neutral-600);
@@ -2018,35 +2363,38 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .ease-in-out {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
+.ease-out {
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
 h1 {
   color: var(--em-default-title-color-1);
   font-family: var(--em-applicant-font-title);
-  font-size: var(--em-coordinator-h1);
+  font-size: var(--em-applicant-h1);
   font-style: normal;
   line-height: 28.8px;
-  font-weight: 500;
+  font-weight: var(--em-font-weight-500);
 }
 h2 {
   color: var(--em-default-title-color-1);
   font-family: var(--em-applicant-font-title);
-  font-size: var(--em-coordinator-h2);
+  font-size: var(--em-applicant-h2);
   font-style: normal;
   line-height: 26.4px;
-  font-weight: 500;
+  font-weight: var(--em-font-weight-500);
 }
 h3 {
   color: var(--em-default-title-color-1);
   font-family: var(--em-applicant-font-title);
-  font-size: var(--em-coordinator-h3);
+  font-size: var(--em-applicant-h3);
   font-style: normal;
   line-height: 24.2px;
-  font-weight: 500;
+  font-weight: var(--em-font-weight-500);
 }
 h4 {
         font-family: var(--em-default-font);
         font-style: normal;
         font-weight: 500;
-        font-size: var(--em-coordinator-h4);
+        font-size: var(--em-applicant-h4);
         line-height: 23px;
         color: var(--em-default-title-color-1);
     }
@@ -2054,7 +2402,7 @@ h5 {
         font-family: var(--em-default-font);
         font-style: normal;
         font-weight: 500;
-        font-size: var(--em-coordinator-h5);
+        font-size: var(--em-applicant-h5);
         line-height: 20px;
         color: var(--em-default-title-color-1);
     }
@@ -2062,7 +2410,7 @@ h6 {
         font-family: var(--em-default-font);
         font-style: normal;
         font-weight: 500;
-        font-size: var(--em-coordinator-h6);
+        font-size: var(--em-applicant-h6);
         line-height: 16px;
         color: var(--em-default-title-color-1);
     }
@@ -2155,7 +2503,6 @@ hr {
     }
 ul {
         list-style: initial;
-        padding-left: 20px;
     }
 legend {
         margin: 10px 0 20px 0;
@@ -2246,9 +2593,10 @@ legend {
 .swal2-container .swal2-header .swal2-title {
   color: var(--em-default-title-color-1);
   font-family: var(--em-applicant-font-title);
-  font-size: var(--em-coordinator-h3);
+  font-size: var(--em-applicant-h3);
   font-style: normal;
   line-height: 24.2px;
+  font-weight: var(--em-font-weight-500);
   margin: 0px;
                  font-weight: 600;
 }
@@ -2680,6 +3028,7 @@ button.swal2-cancel.goback-btn:hover,
 .label-grey-1 {
         background-color: var(--em-grey-1);
         text-shadow: none;
+        color: var(--neutral-900);
     }
 .label-text-grey-1 {
         color: var(--em-grey-1);
@@ -2776,6 +3125,151 @@ button.swal2-cancel.goback-btn:hover,
 body {
     font-family: var(--em-default-font);
 }
+/***********
+/* TCHOOZY *
+ ***********/
+/* Accueil */
+.homepage #g-container-main .g-container .mod_emundus_campaign__intro {
+    background-image: var(--display-demonstration);
+    background-size: 250px;
+    background-repeat: no-repeat;
+    background-position: top -6px right 30px;
+    width: 100%;
+    padding-right: 28%;
+}
+/* Connexion */
+.login > #g-page-surround {
+    background-image: var(--display-digital-testing), var(--display-candidate-button);
+    background-position: top 120px left 20px, bottom 50px right 20px;
+    background-repeat : no-repeat, no-repeat;
+    background-size : 25%, 25%;
+}
+.login #g-navigation .g-container {
+    background : transparent;
+}
+#g-container-main div.login {
+    background : none;
+}
+/* Pop-up aide */
+.icone-aide-tchoozy {
+    width: 20px;
+    margin-right: 5px;
+}
+/* Page settings */
+.com_emundus.view-settings #g-page-surround {
+    background-image: var(--display-setting-tools), var(--display-corner-bottom-right-background);
+    background-position: bottom 65px right, bottom 60px right ;
+    background-repeat : no-repeat, no-repeat ;
+    background-size :  30%, 50% ;
+}
+/* Historique des emails */
+.view-list.email-history-indicators-page #g-container-main {
+    background-image: var(--display-email-history);
+    background-position: top -10px right -10px;
+    background-repeat: no-repeat;
+    background-size: 350px;
+}
+/* Groupes */
+.view-list.groups-setup-page #g-container-main {
+    background-image: var(--display-groups);
+    background-position: top 30px right;
+    background-repeat: no-repeat;
+    background-size: 350px;
+}
+/* Profils */
+.view-list.users-profile-setup-page #g-container-main {
+    background-image: var(--display-profiles);
+    background-position: top -10px right -10px;
+    background-repeat: no-repeat;
+    background-size: 350px;
+}
+/* TABLETTE */
+@media screen and (min-width: 768px) and (max-width: 959px) {
+
+    /* Accueil */
+    .homepage #g-container-main .g-container {
+        background-image : none;
+    }
+
+    /* Connexion */
+    .login > #g-page-surround {
+        background-position: top 120px left 20px, top 500px right 20px;
+        background-size : 25%, 25%;
+    }
+
+    /* Page settings */
+    .com_emundus.view-settings #g-page-surround {
+        background-image: var(--display-corner-bottom-right-background);
+        background-position: bottom 60px right;
+        background-repeat : no-repeat;
+        background-size : 90%;
+    }
+
+    /* Coin haut droite des pages mentions légales, cookies, indicateurs, groupes, campagnes... */
+    .view-article #g-page-surround, .view-list #g-page-surround, .view-form #g-page-surround, .view-emails #g-page-surround, .view-campaigns #g-page-surround {
+        background-size: 90%;
+    }
+
+    /* Historique des emails */
+    .view-list.email-history-indicators-page #g-container-main {
+        background-size: 30%;
+    }
+
+    /* Groupes */
+    .view-list.groups-setup-page #g-container-main {
+        background-size: 35%;
+    }
+
+    /* Profils */
+    .view-list.users-profile-setup-page #g-container-main {
+        background-size: 45%;
+    }
+}
+/* MOBILE */
+@media screen and (max-width: 767px) {
+
+    /* Accueil */
+    .homepage #g-container-main .g-container {
+        background-image : none;
+    }
+
+    /* Connexion */
+    .login > #g-page-surround {
+        background-image : none, none;
+        background-size : 80%, 80%;
+    }
+
+    /* Page settings */
+    .com_emundus.view-settings #g-page-surround {
+        background-image: var(--display-corner-bottom-right-background);
+        background-position: bottom 60px right;
+        background-repeat : no-repeat;
+        background-size : 100%;
+    }
+
+    /* Coin haut droite des pages mentions légales, cookies, indicateurs, groupes, campagnes... */
+    .view-article #g-page-surround, .view-list #g-page-surround, .view-form #g-page-surround, .view-emails #g-page-surround, .view-campaigns #g-page-surround {
+        background-size: 100%;
+    }
+
+    /* Historique des emails */
+    .view-list.email-history-indicators-page #g-container-main {
+        background-image: none;
+    }
+
+    /* Groupes */
+    .view-list.groups-setup-page #g-container-main {
+        background-image: none;
+    }
+
+    /* Profils */
+    .view-list.users-profile-setup-page #g-container-main {
+        background-image: none;
+    }
+}
+/***************
+/* FIN TCHOOZY *
+ ***************/
 .after-em-border::after{
     content: "";
     width: 40px;

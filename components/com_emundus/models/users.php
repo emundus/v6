@@ -444,6 +444,35 @@ class EmundusModelUsers extends JModelList {
         return $db->loadResult();
     }
 
+	function getProfileDetails($profile_id)
+	{
+		$profile_info = null;
+
+		if (!empty($profile_id)) {
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
+			$h_cache = new EmundusHelperCache();
+			$profile_info = $h_cache->get('profile_details_'.$profile_id);
+
+			if (empty($profile_info)) {
+				$query = $this->_db->getQuery(true);
+
+				$query->select('id,label,description,class,published')
+					->from($this->_db->quoteName('#__emundus_setup_profiles'))
+					->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($profile_id));
+
+				try {
+					$this->_db->setQuery($query);
+					$profile_info = $this->_db->loadObject();
+					$h_cache->set('profile_details_'.$profile_id, $profile_info);
+				} catch (Exception $e){
+					JLog::add('component/com_emundus/models/users | Error when try to get profile details : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
+				}
+			}
+		}
+
+		return  $profile_info;
+	}
+
     public function changeCurrentUserProfile($uid, $pid) {
         $db = JFactory::getDBO();
         $query = 'UPDATE #__emundus_users SET profile ="'.(int)$pid.'" WHERE user_id='.(int)$uid;
@@ -2496,6 +2525,14 @@ class EmundusModelUsers extends JModelList {
         $mailer->setBody($body);
 
 		// Send the password reset request email.
+
+		require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+		$custom_email_tag = EmundusHelperEmails::getCustomHeader();
+		if(!empty($custom_email_tag))
+		{
+			$mailer->addCustomHeader($custom_email_tag);
+		}
+
 		$send = $mailer->Send();
 
 		// Check for an error.

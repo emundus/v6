@@ -769,8 +769,15 @@ class EmundusControllerMessages extends JControllerLegacy {
 
             $mailer->addAttachment(array_unique($toAttach));
 
+	        $custom_email_tag = EmundusHelperEmails::getCustomHeader();
+	        if(!empty($custom_email_tag))
+	        {
+		        $mailer->addCustomHeader($custom_email_tag);
+	        }
+
             // Send and log the email.
             $send = $mailer->Send();
+
             if ($send !== true) {
                 $failed[] = $fnum->email;
                 echo 'Error sending email: ' . $send->__toString();
@@ -963,8 +970,15 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 			$mailer->addAttachment($toAttach);
 
+			$custom_email_tag = EmundusHelperEmails::getCustomHeader();
+			if(!empty($custom_email_tag))
+			{
+				$mailer->addCustomHeader($custom_email_tag);
+			}
+
 			// Send and log the email.
 			$send = $mailer->Send();
+
 			if ($send !== true) {
 				$failed[] = $user->email;
 				echo 'Error sending email: ' . $send->__toString();
@@ -1198,6 +1212,13 @@ class EmundusControllerMessages extends JControllerLegacy {
         if (!empty($toAttach)) {
 	        $mailer->addAttachment($toAttach);
         }
+
+	    $custom_email_tag = EmundusHelperEmails::getCustomHeader();
+	    if(!empty($custom_email_tag))
+	    {
+		    $mailer->addCustomHeader($custom_email_tag);
+	    }
+
 	    // Send and log the email.
         $send = $mailer->Send();
 
@@ -1351,7 +1372,15 @@ class EmundusControllerMessages extends JControllerLegacy {
 			$mailer->addAttachment($toAttach);
 		}
 
+		require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+		$custom_email_tag = EmundusHelperEmails::getCustomHeader();
+		if(!empty($custom_email_tag))
+		{
+			$mailer->addCustomHeader($custom_email_tag);
+		}
+
 		$send = $mailer->Send();
+
 		if ($send !== true) {
 			if ($send === false) {
 				JLog::add('Tried sending email with mailer disabled in site settings.', JLog::ERROR, 'com_emundus');

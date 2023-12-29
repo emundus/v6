@@ -739,7 +739,7 @@ class EmundusHelperEvents {
         return true;
     }
 
-    function redirect($params) : bool{
+    function redirect($params) {
         $db = JFactory::getDBO();
         $user = JFactory::getSession()->get('emundusUser');
 

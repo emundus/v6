@@ -42,17 +42,23 @@ JText::script('COM_EMUNDUS_DASHBOARD_2ND_SESSION');
 JText::script('COM_EMUNDUS_DASHBOARD_JUNE_SESSION');
 JText::script('COM_EMUNDUS_DASHBOARD_JULY_SESSION');
 
+JText::script('COM_EMUNDUS_DASHBOARD_OK');
+
+JText::script('COM_EMUNDUS_DASHBOARD_AREA');
+JText::script('COM_EMUNDUS_DASHBOARD_EMPTY_LABEL');
+JText::script('COM_EMUNDUS_DASHBOARD_HELLO');
+JText::script('COM_EMUNDUS_DASHBOARD_WELCOME');
+
 $user = JFactory::getSession()->get('emundusUser');
 
 $m_profiles = new EmundusModelProfile;
 $applicant_profiles = $m_profiles->getApplicantsProfilesArray();
-if(!in_array($user->profile, $applicant_profiles)){
-    if($programme_filter) {
-        echo '<div id="em-dashboard-vue" programmeFilter="1"></div>';
-    } else {
-        echo '<div id="em-dashboard-vue" programmeFilter="0"></div>';
-    }
+
+if(!in_array($user->profile, $applicant_profiles)) {
+    ?>
+    <div id="em-dashboard-vue" programmeFilter="<?= $programme_filter ?>" displayDescription="<?= $display_description ?>" name="<?= $name ?>" language="<?= $language ?>" displayName="<?= $display_name ?>"></div>
+
+    <script src="media/mod_emundus_dashboard_vue/app.js"></script>
+	<?php
 }
 ?>
-
-<script src="media/mod_emundus_dashboard_vue/app.js"></script>

@@ -6,7 +6,7 @@
       @apply em-default-title-1;
     }
     .em-form-intro {
-      * {
+      p {
         color: var(--neutral-600);
       }
     }
@@ -198,10 +198,7 @@
       font-weight: 400;
       font-family: var(--em-applicant-font);
       font-style: normal;
-
-      * {
-        color: var(--em-form-tip-color);
-      }
+      display: flex;
 
       i.icon-question-sign  {
         display: none;
@@ -659,7 +656,6 @@
             input {
               accent-color: var(--em-form-radio-color-checked);
               width: var(--em-form-radio-width);
-              min-width: var(--em-form-radio-width);
               height: var(--em-form-radio-height);
               margin-right: var(--em-form-radio-margin-right);
               margin-left: 0;

@@ -265,19 +265,21 @@ class EmundusUnittestHelperSamples
 		return $program;
 	}
 
-	public function createSampleCampaign($program)
+	public function createSampleCampaign($program, $force_new = false)
 	{
 		$campaign_id = 0;
 
 		if (!empty($program)) {
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
-			$query->select('id')
-				->from('#__emundus_setup_campaigns')
-				->where('training = ' . $db->quote($program['programme_code']))
-				->andWhere('label = ' . $db->quote('Campagne test unitaire'));
-			$db->setQuery($query);
-			$campaign_id = $db->loadResult();
+			if (!$force_new) {
+				$db = JFactory::getDbo();
+				$query = $db->getQuery(true);
+				$query->select('id')
+					->from('#__emundus_setup_campaigns')
+					->where('training = ' . $db->quote($program['programme_code']))
+					->andWhere('label = ' . $db->quote('Campagne test unitaire'));
+				$db->setQuery($query);
+				$campaign_id = $db->loadResult();
+			}
 
 			if (empty($campaign_id)) {
 				$m_campaign = new EmundusModelCampaign;
@@ -655,4 +657,35 @@ class EmundusUnittestHelperSamples
 
         return $form_id;
     }
+
+	public function getSamplePaymentProduct() {
+		$product = null;
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('product_id')
+			->from('#__hikashop_product')
+			->where('product_published = 1')
+			->where('product_sort_price > 0');
+
+		$db->setQuery($query);
+		$product_id = $db->loadResult();
+
+		return $product_id;
+	}
+
+	public function createSampleOrderItem($order_id, $product_id)
+	{
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->insert('#__hikashop_order_product')
+			->columns(['order_id', 'product_id', 'order_product_quantity'])
+			->values($order_id . ', ' . $product_id . ', 1');
+
+		$db->setQuery($query);
+		$created = $db->execute();
+
+		return $created;
+	}
 }

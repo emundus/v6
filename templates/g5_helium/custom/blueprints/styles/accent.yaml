@@ -55,7 +55,7 @@ form:
     green-2:
       type: input.colorpicker
       label: Green 2
-      default: "#008a35"
+      default: "#015822"
     yellow-1:
       type: input.colorpicker
       label: Yellow 1

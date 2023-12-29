@@ -253,7 +253,7 @@ export  default {
     }
 
     .section-content {
-      border-top: 4px solid var(--em-coordinator-primary-color);
+      border-top: 4px solid var(--em-profile-color);
       background-color: white;
       transition: all 0.3s ease-in-out;
 

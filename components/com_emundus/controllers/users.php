@@ -202,6 +202,12 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$mailer->Encoding = 'base64';
 		$mailer->setBody($body);
 
+		$custom_email_tag = EmundusHelperEmails::getCustomHeader();
+		if(!empty($custom_email_tag))
+		{
+			$mailer->addCustomHeader($custom_email_tag);
+		}
+
 		try {
 			$send = $mailer->Send();
 
@@ -1186,7 +1192,6 @@ class EmundusControllerUsers extends JControllerLegacy {
 		exit;
 	}
 
-
     public function activation()
     {
         require_once(JPATH_COMPONENT . '/models/user.php');
@@ -1386,4 +1391,27 @@ class EmundusControllerUsers extends JControllerLegacy {
         echo json_encode($currentUser);
         exit;
     }
+
+	function getcurrentprofile()
+	{
+		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+		$user = JFactory::getUser();
+
+		if (!$user->guest) {
+			$em_users = JFactory::getSession()->get('emundusUser');
+			$m_users = $this->getModel('Users');
+
+			if (!empty($em_users->profile)) {
+				$response['data'] = $m_users->getProfileDetails($em_users->profile);
+				$response['status'] = true;
+				$response['msg'] = JText::_('COM_EMUNDUS_SUCCESS');
+			} else {
+				$response['msg'] = 'No profile found';
+			}
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
 }

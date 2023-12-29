@@ -152,19 +152,19 @@ requirejs(['fab/fabrik'], function () {
             let repeat_groups = form.repeatGroupMarkers;
             repeat_groups.forEach(function (repeatGroupsMarked, group) {
                 if(repeatGroupsMarked !== 0) {
-                    let maxRepeat = form.options.maxRepeat[group];
                     let minRepeat = form.options.minRepeat[group];
+                    let maxRepeat = form.options.maxRepeat[group];
 
                     let deleteButtons = document.querySelectorAll('#group' + group + ' .fabrikGroupRepeater.pull-right');
 
-                    if (repeatGroupsMarked > 1 || minRepeat === 0) {
-                        deleteButtons.forEach(function (button, index) {
+                    if (repeatGroupsMarked > 1) {
+                        deleteButtons.forEach(function (button) {
                             button.show();
-                        })
-                    } else {
-                        deleteButtons.forEach(function (button, index) {
+                        });
+                    } else if (minRepeat > 0) {
+                        deleteButtons.forEach(function (button) {
                             button.hide();
-                        })
+                        });
                     }
 
                     let addButtons = document.querySelectorAll('#group' + group + ' .fabrikGroupRepeater .addGroup');

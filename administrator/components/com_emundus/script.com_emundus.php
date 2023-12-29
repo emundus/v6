@@ -1364,9 +1364,11 @@ try {
 			if (version_compare($cache_version, '1.36.0', '<=') || $firstrun)
 			{
 				EmundusHelperUpdate::addCustomEvents([
+                    ['label' => 'onBeforeEmundusRedirectToHikashopCart', 'category' => 'Hikashop'],
+                    ['label' => 'onBeforeApplicantEnterApplication', 'category' => 'Files'],
+                    ['label' => 'onAccessDenied', 'category' => 'Access'],
 					['label' => 'onBeforeEmundusRedirectToHikashopCart', 'category' => 'Hikashop'],
-					['label' => 'onBeforeApplicantEnterApplication', 'category' => 'Files'],
-					['label' => 'onAccessDenied', 'category' => 'Access']
+					['label' => 'onBeforeApplicantEnterApplication', 'category' => 'Files']
 				]);
 
 				// Campaign candidature tabs
@@ -3345,6 +3347,280 @@ try {
                 );
                 EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_FILES_ASSOCIATED_BY_STATUS', $dashboard_files_associated_by_status_params);
             }
+
+			if (version_compare($cache_version, '1.38.0', '<=') || $firstrun) {
+				EmundusHelperUpdate::updateYamlVariable('error-4677', 'Error', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/index.yaml', 'error');
+				$full_layout_error = "version: 2
+preset:
+  image: 'gantry-admin://images/layouts/3-col.png'
+  name: _joomla_-_gantry4
+  timestamp: 1530009501
+layout:
+  drawer: {  }
+  top: {  }
+  navigation: {  }
+  showcase: {  }
+  feature: {  }
+  utility: {  }
+  breadcrumb: {  }
+  maintop: {  }
+  /container-main/:
+    -
+      -
+        'main-mainbody 75':
+          -
+            - error-4677
+      -
+        'sidebar 25': {  }
+  mainbottom: {  }
+  extension: {  }
+  bottom: {  }
+  footer: {  }
+  copyright: {  }
+  offcanvas: {  }
+structure:
+  drawer:
+    type: section
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+  top:
+    type: section
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+  navigation:
+    type: section
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+  showcase:
+    type: section
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+  feature:
+    type: section
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+  utility:
+    type: section
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+  breadcrumb:
+    type: section
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+  maintop:
+    type: section
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+  main-mainbody:
+    title: Mainbody
+    attributes:
+      class: ''
+  sidebar:
+    type: section
+    subtype: aside
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+    block:
+      fixed: 1
+  container-main:
+    attributes:
+      boxed: ''
+  mainbottom:
+    type: section
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+  extension:
+    type: section
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+  bottom:
+    type: section
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+  footer:
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+  copyright:
+    type: section
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+  offcanvas:
+    inherit:
+      outline: default
+      include:
+        - attributes
+        - block
+        - children
+";
+				EmundusHelperUpdate::updateYamlVariable('', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/layout.yaml', '', $full_layout_error);
+
+				EmundusHelperUpdate::addYamlVariable('email-history', 'url("/media/com_emundus/images/tchoozy/objects-illustrations/email-history.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
+				EmundusHelperUpdate::addYamlVariable('wide-background', 'url("/media/com_emundus/images/tchoozy/backgrounds/wide-background.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
+				EmundusHelperUpdate::addYamlVariable('demonstration', 'url("/media/com_emundus/images/tchoozy/complex-illustrations/demonstration.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
+				EmundusHelperUpdate::addYamlVariable('corner-bottom-left-background', 'block")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
+				EmundusHelperUpdate::addYamlVariable('corner-top-right-background', 'block")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
+				EmundusHelperUpdate::addYamlVariable('candidate-button', 'url("/media/com_emundus/images/tchoozy/complex-illustrations/candidate-button.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
+				EmundusHelperUpdate::addYamlVariable('digital-testing', 'url("/media/com_emundus/images/tchoozy/complex-illustrations/digital-testing.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
+				EmundusHelperUpdate::addYamlVariable('corner-bottom-right-background', 'url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-right-background.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
+				EmundusHelperUpdate::addYamlVariable('setting-tools', 'url("/media/com_emundus/images/tchoozy/complex-illustrations/setting-tools.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
+				EmundusHelperUpdate::addYamlVariable('groups', 'url("/media/com_emundus/images/tchoozy/objects-illustrations/groups.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
+				EmundusHelperUpdate::addYamlVariable('profiles', 'block', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
+				EmundusHelperUpdate::addYamlVariable('hiding', 'url("/media/com_emundus/images/tchoozy/complex-illustrations/hiding.svg")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
+
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature', 'copy_users_assoc', 'INT');
+				$datas = array(
+					'name' => 'copy_users_assoc',
+					'group_id' => 254,
+					'plugin' => 'radiobutton',
+					'label' => 'COPY_USERS_ASSOC'
+				);
+				$params = array(
+					'sub_options' => array(
+						'sub_values' => array(0,1),
+						'sub_labels' => array('JNO','JYES'),
+						'sub_initial_selection' => array('0')
+					)
+				);
+				EmundusHelperUpdate::addFabrikElement($datas,$params);
+				EmundusHelperUpdate::insertTranslationsTag('COPY_USERS_ASSOC', 'Copier les utilisateurs associés', 'override', null, 'fabrik_elements', 'label');
+				EmundusHelperUpdate::insertTranslationsTag('COPY_USERS_ASSOC', 'Copy associated users', 'override', null, 'fabrik_elements', 'label', 'en-GB');
+
+				EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature', 'copy_groups_assoc', 'INT');
+				$datas = array(
+					'name' => 'copy_groups_assoc',
+					'group_id' => 254,
+					'plugin' => 'radiobutton',
+					'label' => 'COPY_GROUPS_ASSOC',
+				);
+				$params = array(
+					'sub_options' => array(
+						'sub_values' => array(0,1),
+						'sub_labels' => array('JNO','JYES'),
+						'sub_initial_selection' => array('0'),
+					)
+				);
+				EmundusHelperUpdate::addFabrikElement($datas,$params);
+				EmundusHelperUpdate::insertTranslationsTag('COPY_GROUPS_ASSOC', 'Copier les groupes associés', 'override', null, 'fabrik_elements', 'label');
+				EmundusHelperUpdate::insertTranslationsTag('COPY_GROUPS_ASSOC', 'Copy associated groups', 'override', null, 'fabrik_elements', 'label', 'en-GB');
+
+				EmundusHelperUpdate::installExtension('plg_fabrik_element_insee', 'insee', '{"name":"plg_fabrik_element_insee","type":"plugin","creationDate":"August 2023","author":"eMundus","copyright":"Copyright (C) 2005-2023 eMundus - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"3.10","description":"PLG_ELEMENT_INSEE_DESCRIPTION","group":"","filename":"insee"}', 'plugin', 1, 'fabrik_element');
+
+				//Remove some colors from fabrik element
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_elements'))
+					->where($db->quoteName('name') . ' LIKE ' . $db->quote('class'))
+					->where($db->quoteName('plugin') . ' LIKE ' . $db->quote('dropdown'))
+					->where($db->quoteName('group_id') . ' = 112');
+				$db->setQuery($query);
+				$class_elt = $db->loadObject();
+
+				if(!empty($class_elt)) {
+					$params = json_decode($class_elt->params, true);
+					$colors_to_remove = ['label-lightblue', 'label-lightyellow', 'label-yellow', 'label-darkyellow', 'label-lightgreen', 'label-darkgreen', 'label-lightgreen', 'label-darkgreen', 'label-lightorange', 'label-darkorange', 'label-lightred', 'label-darkred', 'label-lightpurple', 'label-darkpurple'];
+
+					if(!empty($params['sub_options'])) {
+						foreach ($colors_to_remove as $color_to_remove) {
+							$index = array_search($color_to_remove, $params['sub_options']['sub_values']);
+							if($index !== false) {
+								unset($params['sub_options']['sub_values'][$index]);
+								unset($params['sub_options']['sub_labels'][$index]);
+							}
+						}
+
+						$params['sub_options']['sub_values'] = array_values($params['sub_options']['sub_values']);
+						$params['sub_options']['sub_labels'] = array_values($params['sub_options']['sub_labels']);
+
+						if(!in_array('label-pink', $params['sub_options']['sub_values'])) {
+							$params['sub_options']['sub_values'][] = 'label-pink';
+							$params['sub_options']['sub_labels'][] = 'Pink';
+						}
+					}
+
+					$colors_to_remove = array_map((function($value) use ($db) {
+						return $db->quote($value);
+					}), $colors_to_remove);
+					$query->clear()
+						->update($db->quoteName('#__emundus_setup_profiles'))
+						->set($db->quoteName('class') . ' = ' . $db->quote('label-default'))
+						->where($db->quoteName('class') . 'IN ('.implode(',',$colors_to_remove).')');
+					$db->setQuery($query);
+					$db->execute();
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_elements'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($class_elt->id));
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				$query->clear()
+					->update($db->quoteName('#__menu'))
+					->set($db->quoteName('title') . ' = ' . $db->quote('Emails envoyés'))
+					->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_emundus&view=application&format=raw&layout=mail'))
+					->where($db->quoteName('menutype') . ' LIKE ' . $db->quote('application'));
+				$db->setQuery($query);
+				$db->execute();
+
+				EmundusHelperUpdate::addColumn('jos_emundus_setup_attachments', 'max_filesize', 'DOUBLE(6,2)');
+			}
 		}
 
 		return $succeed;

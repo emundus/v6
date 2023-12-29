@@ -419,26 +419,29 @@ class EmundusHelperUpdate
      *
      * @since version 1.33.0
      */
-    public static function updateConfigurationFile($param, $value) {
-		if(!empty($param) && !empty($value) && !in_array($param,['host','user','password','db','secret','mailfrom','smtpuser','smpthost','smtppass','smtpsecure','smtpport','webhook_token'])) {
-			$formatter = new JRegistryFormatPHP();
-			$config    = new JConfig();
+	public static function updateConfigurationFile($param, $value)
+	{
+		$updated = false;
 
-			$config->$param = $value;
-			$params         = array('class' => 'JConfig', 'closingtag' => false);
-			$str            = $formatter->objectToString($config, $params);
-			$config_file    = JPATH_CONFIGURATION . '/configuration.php';
+		if (!empty($param) && !empty($value) && !in_array($param, ['host', 'user', 'password', 'db', 'secret', 'mailfrom', 'smtpuser', 'smpthost', 'smtppass', 'smtpsecure', 'smtpport'])) {
+			require_once(JPATH_SITE . '/components/com_config/model/cms.php');
+			require_once(JPATH_SITE . '/components/com_config/model/form.php');
+			require_once(JPATH_ROOT . '/administrator/components/com_config/model/application.php');
 
-			if (file_exists($config_file) and is_writable($config_file)) {
-				file_put_contents($config_file, $str);
-			}
-			else {
-				echo("Update Configuration file failed");
-			}
-		} else {
-			echo("Update Configuration file failed");
+			$model = new ConfigModelApplication();
+
+			$oldData = $model->getData();
+
+			$data         = array();
+			$data[$param] = $value;
+
+			$data = array_replace($oldData, $data);
+
+			$updated = $model->save($data);
 		}
-    }
+
+		return $updated;
+	}
 
     /**
      * Update a variable in a yaml file like Gantry configuration files
@@ -3148,7 +3151,7 @@ class EmundusHelperUpdate
 				'blue-2' => '#0073e5',
 				'blue-3' => '#0644ae',
 				'green-1' => '#98d432',
-				'green-2' => '#008a35',
+				'green-2' => '#015822',
 				'yellow-1' => '#ffe014',
 				'yellow-2' => '#ffae00',
 				'orange-1' => '#ff6900',
@@ -3301,11 +3304,10 @@ class EmundusHelperUpdate
 			'coordinator' => [
 				'background' => '#f8f8f8',
 				'interface' => '#353544',
-				'primary-color' => '#20835F',
 				'secondary-color' => '#353544',
 				'tertiary-color' => '#5A5A72',
 				'text-color' => '#4B4B4B',
-				'title-color' => '#000000',
+				'title-color' => '#0b0c0f',
 				'family-text' => 'Inter',
 				'family-title' => 'Inter',
 				'size-h1' => '24px',
