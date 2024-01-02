@@ -3206,7 +3206,7 @@ class EmundusModelEmails extends JModelList {
                 }
             }
 
-            if (!empty($toAttach)) {
+            if (!empty($toAttach) && !empty($toAttach[0])) {
                 $mailer->addAttachment($toAttach);
             }
 
