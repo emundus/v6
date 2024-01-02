@@ -3111,7 +3111,7 @@ class EmundusModelEmails extends JModelList {
             // Check if user defined a cc address
             $cc = [];
             $emundus_user = $m_users->getUserById($fnum['applicant_id'])[0];
-            if(isset($emundus_user->email_cc) && !empty($emundus_user->email_cc)) {
+            if(!empty($emundus_user->email_cc)) {
                 if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
                     $cc[] = $emundus_user->email_cc;
                 }
