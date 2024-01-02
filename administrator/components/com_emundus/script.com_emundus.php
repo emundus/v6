@@ -3754,6 +3754,13 @@ structure:
 					->where($db->quoteName('menutype') . ' LIKE ' . $db->quote('coordinatormenu'));
 				$db->setQuery($query);
 				$db->execute();
+
+				$query->clear()
+					->update($db->quoteName('#__fabrik_forms'))
+					->set($db->quoteName('params') . ' = JSON_REPLACE(' . $db->quoteName('params') . ', ' . $db->quote('$.tiplocation') . ', ' . $db->quote('above') . ')')
+					->where('JSON_EXTRACT(' . $db->quoteName('params') . ', ' . $db->quote('$.tiplocation') . ') = ' . $db->quote('tip'));
+				$db->setQuery($query);
+				$db->execute();
 			}
 		}
 
