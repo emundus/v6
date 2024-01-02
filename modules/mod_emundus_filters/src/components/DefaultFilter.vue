@@ -105,6 +105,10 @@ export default {
 				event.stopPropagation();
 			}
 
+			if (this.opened) {
+				this.opened = false;
+			}
+
 			const valueDifferences = this.filter.value != this.originalFilterValue;
 			const operatorDifferences = this.filter.operator !== this.originalFilterOperator;
 
