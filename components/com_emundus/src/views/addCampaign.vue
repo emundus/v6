@@ -111,7 +111,9 @@
               <strong class="b em-toggle-switch"></strong>
               <strong class="b em-toggle-track"></strong>
             </div>
-            <span for="pinned" class="ml-2">{{ translate('COM_EMUNDUS_CAMPAIGNS_PIN') }}<span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayPinnedCampaignTip">help_outline</span></span>
+            <span for="pinned" class="ml-2 flex items-center">{{ translate('COM_EMUNDUS_CAMPAIGNS_PIN') }}
+              <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayPinnedCampaignTip">help_outline</span>
+            </span>
           </div>
         </div>
 
