@@ -480,14 +480,12 @@ div#frame.outline {
   height: 72px;
   background: var(--neutral-0);
   top: 0;
-  overflow: hidden;
 
   .g-container {
     padding: 16px 12px;
     width: 100%;
     position: sticky;
     margin: auto !important;
-    overflow: hidden;
   }
 
   #header-a {
@@ -497,10 +495,6 @@ div#frame.outline {
     transition: all 0.3s ease-in-out;
     max-height: 40px;
     left: 70px;
-
-    .logo {
-      top: 7px !important;
-    }
   }
 }
 
