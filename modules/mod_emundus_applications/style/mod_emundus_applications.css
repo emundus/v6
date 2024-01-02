@@ -749,7 +749,8 @@ circle.circle {
     height: 100%;
     width: 100%;
     border-radius: 16px;
-    transform: rotate(4.43deg);
+    transform: rotate(2deg);
+    opacity: 0.3;
     transition: transform .3s;
 }
 
@@ -784,7 +785,7 @@ circle.circle {
 }
 
 .hover-and-tile-container:hover > #tile-hover-offset-request {
-    transform: rotate(6deg);
+    transform: rotate(3deg);
 }
 
 .view-featured .mod_emundus_applications__list_content--default {
