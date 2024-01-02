@@ -206,6 +206,16 @@ button.close {
     background: #ebebeb;
 }
 
+.em-personalDetail-table-multiplleLine.table-striped {
+    border-width: 2px 0 2px 0;
+    border-radius: 0;
+}
+
+.em-personalDetail-table-multiplleLine.table-striped thead tr th {
+    box-shadow: unset;
+    border-radius: 0;
+}
+
 .em-personalDetail-table-multiplleLine.table-striped tbody tr:nth-child(2n+1) td, .em-personalDetail-table-multiplleLine.table-striped tbody tr:nth-child(2n+1) th {
     background: var(--neutral-100);
 }

@@ -261,7 +261,7 @@ export default {
 
     async deleteComment(cid){
         try {
-            const response = await client().delete('index.php?option=com_emundus&controller=file&task=deletecomment', {
+            const response = await client().post('index.php?option=com_emundus&controller=file&task=deletecomment', {
                 params: {
                     cid: cid,
                 }
