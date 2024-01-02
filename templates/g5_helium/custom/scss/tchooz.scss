@@ -1986,7 +1986,8 @@ button.em-swal-delete-button:hover{
   height: 100%;
   width: 100%;
   border-radius: 16px;
-  transform: rotate(4.43deg);
+  transform: rotate(3deg);
+  opacity: 0.3;
   transition: transform .3s;
 }
 
@@ -1996,15 +1997,15 @@ button.em-swal-delete-button:hover{
 }
 
 .mod_emundus_campaign__pinned_campaign #tile-hover-offset-procedure {
-  transform: rotate(3deg); /* rotation de base des cards longues */
+  transform: rotate(2deg); /* rotation de base des cards longues */
 }
 
 div[id^='current_'] .hover-and-tile-container:hover > #tile-hover-offset-procedure {
-  transform: rotate(7deg); /* rotation cards normales */
+  transform: rotate(5deg); /* rotation cards normales */
 }
 
 .mod_emundus_campaign__pinned_campaign .hover-and-tile-container:hover > #tile-hover-offset-procedure {
-  transform: rotate(4deg); /* rotation cards épinglées (longues) */
+  transform: rotate(3deg); /* rotation cards épinglées (longues) */
 }
 
 /* Tuile */
