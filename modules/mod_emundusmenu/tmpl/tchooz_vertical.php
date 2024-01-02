@@ -553,7 +553,7 @@ defined('_JEXEC') or die;
             if(elmnt !== null) {
                 jQuery(".logo").css("top", "-37px");
             } else {
-                jQuery(".logo").css("top", "7px");
+                jQuery(".logo").css("top", "0");
             }
             setTimeout(() =>{
                 jQuery(".image-title").css("display","block");
