@@ -186,7 +186,7 @@ if ($user != null) {
 <!-- Button which opens up the dropdown menu. -->
 <div class='dropdown' tabindex="0" id="userDropdown" style="float: right;">
 	<?php if ($display_svg == 1) : ?>
-    <iframe id="background-shapes" src="/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg" alt="<?= JText::_('COM_EMUNDUS_USERDROPDOWN_IFRAME') ?>"></iframe>
+    <div id="background-shapes"></div>
 	<?php endif; ?>
     <?php if(!empty($profile_picture)): ?>
     <div id="userDropdownLabel">
@@ -308,6 +308,13 @@ if ($user != null) {
         let profile_color = '<?php echo $profile_details->class; ?>';
         let profile_state = <?php echo $profile_details->published; ?>;
 
+        // if session storage is empty, get profile color and state from server
+        if (profile_color === null || profile_state === null) {
+            getProfileColorAndState();
+        } else {
+            applyColors(profile_color, profile_state);
+        }
+
         function getProfileColorAndState() {
             fetch('/index.php?option=com_emundus&controller=users&task=getcurrentprofile', {
                 method: 'GET',
@@ -325,7 +332,7 @@ if ($user != null) {
                     // save profile color and state in local storage
                     sessionStorage.setItem('profile_color', profile_color);
                     sessionStorage.setItem('profile_state', profile_state);
-                    applyColors(profile_color, profile_state);
+                    //applyColors(profile_color, profile_state);
                 }
             });
         }
@@ -382,46 +389,10 @@ if ($user != null) {
                 document.getElementById('profile').style.display = 'block';
                 document.querySelector('#header-c .g-content').style.alignItems = 'start';
             }
-
-            // if session storage is empty, get profile color and state from server
-            if (profile_color === null || profile_state === null) {
-                getProfileColorAndState();
-            } else {
-                applyColors(profile_color, profile_state);
-            }
         });
 
         function updateSvgColors(css_var) {
             document.documentElement.style.setProperty("--em-profile-color", css_var);
-
-
-            // header background color
-            let iframeElements_2 = document.querySelectorAll("#background-shapes");
-
-            if(iframeElements_2 !== null) {
-                iframeElements_2.forEach((iframeElement) => {
-                    let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
-                    let styleElement = iframeDocument.querySelector("style");
-                    let pathElements = iframeDocument.querySelectorAll("path");
-
-                    if (styleElement) {
-                        let styleContent = styleElement.textContent;
-                        styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + css_var + ";");
-                        styleElement.textContent = styleContent;
-                    }
-
-                    if (pathElements) {
-                        pathElements.forEach((pathElement) => {
-                            let pathStyle = pathElement.getAttribute("style");
-                            if (pathStyle && pathStyle.includes("fill:grey;")) {
-                                pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + css_var + ";");
-                                pathElement.setAttribute("style", pathStyle);
-
-                            }
-                        });
-                    }
-                });
-            }
         }
 
         function displayUserOptions(){

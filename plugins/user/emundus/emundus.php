@@ -51,6 +51,7 @@ class plgUserEmundus extends JPlugin
 
         $db->setQuery('SHOW TABLES');
         $tables = $db->loadColumn();
+
         foreach($tables as $table) {
             if (strpos($table, '_messages')>0 && !strpos($table, '_eb_'))
                 $query = 'DELETE FROM '.$table.' WHERE user_id_from = '.(int) $user['id'].' OR user_id_to = '.(int) $user['id'];
@@ -77,15 +78,22 @@ class plgUserEmundus extends JPlugin
         }
 
         $dir = EMUNDUS_PATH_ABS.$user['id'].DS;
-        if (!$dh = @opendir($dir))
-            return false;
-        while (false !== ($obj = readdir($dh))) {
-            if ($obj == '.' || $obj == '..') continue;
-            if (!@unlink($dir.$obj))
-                JFactory::getApplication()->enqueueMessage(JText::_("FILE_NOT_FOUND")." : ".$obj."\n", 'error');
-        }
-        closedir($dh);
-        @rmdir($dir);
+		if(is_dir($dir)) {
+			if (!$dh = opendir($dir)) {
+				JFactory::getApplication()->enqueueMessage(JText::_("JERROR_AN_ERROR_HAS_OCCURRED"), 'error');
+				return false;
+			}
+
+			while (false !== ($obj = readdir($dh))) {
+				if ($obj == '.' || $obj == '..') continue;
+				if (!unlink($dir . $obj)) {
+					JFactory::getApplication()->enqueueMessage(JText::_("FILE_NOT_FOUND") . " : " . $obj . "\n", 'error');
+				}
+			}
+
+			closedir($dh);
+			rmdir($dir);
+		}
 
 	    // Send email to inform applicant
 	    if($this->params->get('send_email_delete', 0) == 1) {

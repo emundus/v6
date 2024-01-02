@@ -97,7 +97,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         <hr>
         <div class="mod_emundus_campaign__list_content--default">
             <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
+                <div id="background-shapes" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
             <?php endif; ?>
             <h2 class="em-applicant-title-font em-mb-16 em-profile-color"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN') ?></h2>
             <?php if(JFactory::getUser()->guest) : ?>
@@ -149,7 +149,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                             <?php endif; ?>
 
                             <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                                <iframe <?php if(sizeof($campaigns_pinned) == 1) : ?>class="single-campaign-pinned"<?php endif; ?> id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
+                                <div <?php if(sizeof($campaigns_pinned) == 1) : ?>class="single-campaign-pinned"<?php endif; ?> id="background-shapes" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
                             <?php endif; ?>
 
                             <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
@@ -528,7 +528,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 	                    <?php endif; ?>
                         <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
 	                        <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                                <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
+                                <div id="background-shapes" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
 	                        <?php endif; ?>
 
                                 <?php  else : ?>
@@ -539,7 +539,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 	                                <?php endif; ?>
                                      <div class="mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
 	                                     <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                                             <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></iframe>
+                                             <div id="background-shapes" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
 	                                     <?php endif; ?>
 
                                          <?php endif; ?>
@@ -1015,75 +1015,21 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         }
     });
 
-    /* Modification de la couleur du background avec les formes */
-    iframeElements = document.querySelectorAll("#background-shapes");
-    if(iframeElements !== null) {
-    let emProfileColor1 = getComputedStyle(document.documentElement).getPropertyValue('--em-profile-color');
-
-    iframeElements.forEach((iframeElement) => {
-        iframeElement.addEventListener("load", function () {
-
-            let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
-            let pathElements = iframeDocument.querySelectorAll("path");
-
-            let styleElement = iframeDocument.querySelector("style");
-
-            if (styleElement) {
-                let styleContent = styleElement.textContent;
-                styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + emProfileColor1 + ";");
-                styleElement.textContent = styleContent;
-            }
-
-            if(pathElements) {
-                pathElements.forEach((pathElement) => {
-                    let pathStyle = pathElement.getAttribute("style");
-                    if (pathStyle && pathStyle.includes("fill:grey;")) {
-                        pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + emProfileColor1 + ";");
-                        pathElement.setAttribute("style", pathStyle);
-                    }
-                });
-            }
-        });
-    });
-    }
-
-    /* Couleur des campagnes clôturées */
-    let divElements = document.querySelectorAll(".mod_emundus_campaign__list_content--closed");
-
-     divElements.forEach((divElement) => {
-        let iframeElement = divElement.querySelector("#background-shapes");
-
-         if(iframeElement !== null) {
-             iframeElement.onload = function () {
-                 let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
-                 let pathElements = iframeDocument.querySelectorAll("path");
-                 let neutral600 = getComputedStyle(document.documentElement).getPropertyValue('--neutral-600');
-
-                 /* Coloration de tous les éléments "path" */
-                 pathElements.forEach((pathElement) => {
-                     let pathStyle = pathElement.getAttribute("style");
-                     pathStyle = pathStyle.replace(/fill:#[0-9A-Fa-f]{6};/, "fill" + neutral600 + ";");
-                     pathElement.setAttribute("style", pathStyle);
-                 });
-             }
-         }
-    });
-
     /* Changement de couleur des formes au hover de la card */
     let divsHover = document.querySelectorAll(".hover-and-tile-container");
     let iframeElementHover = document.getElementById('background-shapes');
 
     divsHover.forEach((divHover) => {
 
-        let iframeElementHover = divHover.querySelector('iframe');
+        let iframeElementHover = divHover.querySelector('div#background-shapes');
         if(iframeElementHover !== null) {
 
             divHover.addEventListener('mouseenter', function () {
-                iframeElementHover.src = '/modules/mod_emundus_campaign/assets/fond-fonce.svg';
+                iframeElementHover.style.maskImage = 'url("/modules/mod_emundus_campaign/assets/fond-fonce.svg")';
             });
 
             divHover.addEventListener('mouseleave', function () {
-                iframeElementHover.src = '/modules/mod_emundus_campaign/assets/fond-clair.svg';
+                iframeElementHover.style.maskImage = 'url("/modules/mod_emundus_campaign/assets/fond-clair.svg")';
             });
         }
     })

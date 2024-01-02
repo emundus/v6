@@ -279,7 +279,7 @@ $current_tab = 0;
         <hr>
         <div class="mod_emundus_applications__list_content--default mt-2">
             <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-fonce.svg" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></iframe>
+                <div id="background-shapes" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
             <?php endif; ?>
             <?php if (!empty($override_default_content)) {
                 echo $override_default_content;
@@ -373,7 +373,7 @@ $current_tab = 0;
                                                      id="application_content<?php echo $application->fnum ?>"
                                                      onclick="openFile(event,'<?php echo $first_page_url ?>')">
 											        <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                                                        <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-fonce.svg" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></iframe>
+                                                        <div id="background-shapes" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
 											        <?php endif; ?>
                                                     <div class="em-w-100">
                                                         <div class="em-flex-row em-flex-space-between em-mb-12">
@@ -599,7 +599,7 @@ $current_tab = 0;
         <hr>
         <div class="mod_emundus_applications__list_content--default">
             <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-formes-header-fonce.svg" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></iframe>
+                <div id="background-shapes" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
             <?php endif; ?>
             <?php if (!empty($override_default_content)) {
                 echo $override_default_content;
@@ -705,7 +705,7 @@ $current_tab = 0;
                                                 onclick="openFile(event,'<?php echo $first_page_url ?>')">
                                                 <td style="width: 23.75%;">
                                                     <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                                                        <iframe id="background-shapes" src="/modules/mod_emundus_user_dropdown/assets/fond-formes-header-fonce.svg" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></iframe>
+                                                        <div id="background-shapes" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
                                                     <?php endif; ?>
 													<?php if (empty($application->name)) : ?>
                                                         <a href="<?= JRoute::_($first_page_url); ?>"
@@ -1566,39 +1566,6 @@ $current_tab = 0;
                             });
                     }
                 })
-            });
-        });
-    }
-
-    /* Modification de la couleur du background avec les formes dans les cards et le header */
-    let iframeElements = document.querySelectorAll("#background-shapes");
-    let emProfileColor3 = getComputedStyle(document.documentElement).getPropertyValue('--em-profile-color');
-
-    if(iframeElements !== null) {
-
-        iframeElements.forEach((iframeElement) => {
-            iframeElement.addEventListener("load", function () {
-
-                let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
-                let pathElements = iframeDocument.querySelectorAll("path");
-
-                let styleElement = iframeDocument.querySelector("style");
-
-                if (styleElement) {
-                    let styleContent = styleElement.textContent;
-                    styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + emProfileColor3 + ";");
-                    styleElement.textContent = styleContent;
-                }
-
-                if (pathElements) {
-                    pathElements.forEach((pathElement) => {
-                        let pathStyle = pathElement.getAttribute("style");
-                        if (pathStyle && pathStyle.includes("fill:grey;")) {
-                            pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + emProfileColor3 + ";");
-                            pathElement.setAttribute("style", pathStyle);
-                        }
-                    });
-                }
             });
         });
     }

@@ -246,7 +246,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     padding: 8px;
 }
 #userDropdown:hover .em-profile-container{
-    background: var(--neutral-200);
+    background: transparent;
     border-radius: var(--em-default-br);
 }
 
@@ -362,14 +362,17 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 
 /* Gestionnaire plateforme et programme */
 .dropdown #background-shapes {
+    mask-image: url(/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg);
+    height: 72px;
+    background: var(--em-profile-color);
     position: absolute;
-    height: 100%;
-    width: 250px;
+    width: 300px;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: 300px;
+    mask-origin: border-box;
+    right: -10px;
     top: 0;
-    right: 53px;
-    transform: scale(1.8);
-    pointer-events: none;
-    z-index: -1;
 }
 
 /* Déconnecté */
