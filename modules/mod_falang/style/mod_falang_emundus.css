@@ -98,7 +98,7 @@ div.advanced-dropdown span.caret{
     justify-content: center;
     align-items: flex-start;
     background-color: var(--neutral-0);
-    position: absolute;
+    position: fixed;
 }
 
 .mod_falang_emundus___other_languages span{

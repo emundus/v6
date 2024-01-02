@@ -9,7 +9,7 @@
 .notifications__counter{
   position: absolute;
   top: 12px;
-  right: 164px;
+  right: 178px;
   background: var(--red-500);
   padding: 8px;
   border-radius: 50%;

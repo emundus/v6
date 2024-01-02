@@ -338,6 +338,7 @@ die("<script>
 
     static function prepareElementParameters($plugin, $notempty = true, $attachementId = 0) {
 
+	    $plugin_no_required = ['display','panel'];
 		$plugin_to_setup = '';
         if ($plugin == 'nom' || $plugin == 'prenom' || $plugin == 'email') {
 	        $plugin_to_setup = $plugin;
@@ -415,7 +416,7 @@ die("<script>
             'validations' => array(),
         );
 
-        if($notempty && $plugin != 'display'){
+        if($notempty && !in_array($plugin, $plugin_no_required)){
             $params['validations'] = array(
                 'plugin' => array(
                     "notempty",
@@ -683,6 +684,13 @@ die("<script>
 		if($plugin == 'emundus_phonenumber') {
 			$params['default_country'] = 'FR';
 		}
+
+	    if($plugin == 'panel'){
+		    $params['type'] = '1';
+		    $params['accordion'] = '0';
+		    $params['title'] = '';
+	    }
+
         return $params;
     }
 
@@ -717,8 +725,8 @@ die("<script>
 
         if ($plugin == 'email') {
             $label = array(
-                'fr' => 'Email',
-                'en' => 'Email',
+                'fr' => 'Adresse email',
+                'en' => 'Email address',
             );
         }
 
@@ -813,7 +821,8 @@ die("<script>
             $params['validations']['must_validate'][] = '0';
             $params['validations']['show_icon'][] = '1';
 
-            $query->update($db->quoteName('#__fabrik_elements'))
+            $query->clear()
+	            ->update($db->quoteName('#__fabrik_elements'))
                 ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($eid));
             $db->setQuery($query);

@@ -74,7 +74,7 @@ class EmundusViewUsers extends JViewLegacy
 						return $profile_details[$a]->label;
 					}
 				}), $o_profiles);
-
+				$user->o_profiles = array_unique($user->o_profiles);
 				$user->o_profiles = implode('<br>', $user->o_profiles);
 			}
 		}
@@ -199,8 +199,9 @@ class EmundusViewUsers extends JViewLegacy
 
 	function display($tpl = null) {
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-			die("ACCESS_DENIED");
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id) || !EmundusHelperAccess::asAccessAction(12,'r',JFactory::getUser()->id)) {
+			die(JText::_("ACCESS_DENIED"));
+		}
 
 		$layout = JFactory::getApplication()->input->getString('layout', null);
         $m_files = new EmundusModelFiles();

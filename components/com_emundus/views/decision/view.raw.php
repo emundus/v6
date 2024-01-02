@@ -242,12 +242,19 @@ class EmundusViewDecision extends JViewLegacy
 							}
 
 							elseif ($key == 'evaluator') {
-								if ($evaluators_can_see_other_eval || EmundusHelperAccess::asAccessAction(29,'r',$this->_user->id)) {
-									$userObj->val = !empty($value) ? '<a href="' . $form_url_view.$user['evaluation_id'] . '"  target="_blank" data-remote="'.$form_url_view.$user['evaluation_id'].'" id="em_form_eval_'.$i.'-'.$user['evaluation_id'].'">
-											<span class="glyphicon icon-eye-open" title="'.JText::_('COM_EMUNDUS_DETAILS').'">  </span>
-										</a>'.$value : '';
-                                }
-								else {
+								if(!empty($value)) {
+									if ($evaluators_can_see_other_eval || EmundusHelperAccess::asAccessAction(29, 'r', $this->_user->id)) {
+										$link_view = '<a href="' . $form_url_view . $user['evaluation_id'] . '"  target="_blank" data-remote="' . $form_url_view . $user['evaluation_id'] . '" id="em_form_eval_' . $i . '-' . $user['evaluation_id'] . '">
+											<span class="glyphicon icon-eye-open" title="' . JText::_('COM_EMUNDUS_DETAILS') . '">  </span>
+										</a>' . $value;
+									}
+
+									if (EmundusHelperAccess::asAccessAction(29, 'u', $this->_user->id)) {
+										$link_edit = '<a href="' . $form_url_edit . $user['evaluation_id'] . '" target="_blank"><span class="glyphicon icon-edit" title="' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '"> </span></a>';
+									}
+
+									$userObj->val = $link_view.' '.$link_edit.' '.$value;
+								} else {
 									$userObj->val = $value;
 								}
 
