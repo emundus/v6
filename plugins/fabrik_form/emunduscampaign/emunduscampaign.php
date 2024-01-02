@@ -13,6 +13,8 @@
  */
 
 // No direct access
+use Joomla\CMS\Log\Log;
+
 defined('_JEXEC') or die('Restricted access');
 
 // Require the abstract plugin class
@@ -92,7 +94,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
     public function onAfterProcess() {
 
         jimport('joomla.log.log');
-        JLog::addLogger(array('text_file' => 'com_emundus.campaign.php'), JLog::ALL, array('com_emundus'));
+        Log::addLogger(array('text_file' => 'com_emundus.campaign.php'), Log::ALL, array('com_emundus'));
 
         include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
         $m_profile = new EmundusModelProfile;
@@ -196,7 +198,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
             $dispatcher->trigger('callEventHandler', ['onCreateNewFile', ['user_id' => $user->id, 'fnum' => $fnum, 'cid' => $campaign_id]]);
 
         } catch (Exception $e) {
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            Log::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), Log::ERROR, 'com_emundus');
             JError::raiseError(500, $query->__toString());
         }
 
@@ -211,7 +213,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
             $campaign = $db->loadAssoc();
 
         } catch (Exception $e) {
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+            Log::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, Log::ERROR, 'com_emundus');
             JError::raiseError(500, $query);
         }
 
@@ -234,7 +236,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
                 $db->setQuery($query);
                 $db->execute();
             } catch (Exception $e) {
-                JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+                Log::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, Log::ERROR, 'com_emundus');
                 JError::raiseError(500, $query);
             }
         }
@@ -252,12 +254,12 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
                 try {
                     $db->execute();
                 } catch (Exception $e) {
-                    JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+                    Log::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, Log::ERROR, 'com_emundus');
                     JError::raiseError(500, $query);
                 }
             }
         } catch(Exception $e) {
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+            Log::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, Log::ERROR, 'com_emundus');
             JError::raiseError(500, $query);
         }
 
@@ -286,52 +288,31 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
         $m_campaign     = new EmundusModelCampaign;
 
-        $app = JFactory::getApplication();
-        $jinput = $app->input;
-
         $form_type = $this->getParam('form_type', 'cc');
 
         switch($form_type) {
             case 'user':
-                $campaign_id = $jinput->getInt('jos_emundus_users___campaign_id_raw', 0);
+				$campaign_id = is_array($this->app->input->get('jos_emundus_users___campaign_id_raw')) ? $this->app->input->get('jos_emundus_users___campaign_id_raw')[0] : $this->app->input->getInt('jos_emundus_users___campaign_id_raw');
 
-                if (empty($campaign_id)) {
-                    $campaign_id = $jinput->getInt('jos_emundus_users___campaign_id', 0);
-                }
-
-                $campaign_id = is_array($campaign_id) ? $campaign_id[0] : $campaign_id;
-                if (empty($campaign_id)) {
-                    return false;
-                }
-
-                // Check if the campaign limit has been obtained
-                if ($m_campaign->isLimitObtained($campaign_id) === true) {
-                    $this->getModel()->formErrorMsg = '';
-                    $this->getModel()->getForm()->error= JText::_('LIMIT_OBTAINED');
-                    return;
-                }
                 break;
 
             case 'cc':
-                $campaign_id = $jinput->getInt('jos_emundus_campaign_candidature___campaign_id_raw', 0);
+				$campaign_id = is_array($this->app->input->get('jos_emundus_campaign_candidature___campaign_id_raw')) ? $this->app->input->get('jos_emundus_campaign_candidature___campaign_id_raw')[0] : $this->app->input->getInt('jos_emundus_campaign_candidature___campaign_id_raw');
 
-                if (empty($campaign_id)) {
-                    $campaign_id = $jinput->getInt('jos_emundus_campaign_candidature___campaign_id', 0);
+				break;
                 }
 
-                $campaign_id = is_array($campaign_id) ? $campaign_id[0] : $campaign_id;
-                if (empty($campaign_id)) {
-                    return false;
-                }
-
+		if (!empty($campaign_id)) {
                 // Check if the campaign limit has been obtained
                 if ($m_campaign->isLimitObtained($campaign_id) === true) {
                     $this->getModel()->formErrorMsg = '';
-                    $this->getModel()->getForm()->error= JText::_('LIMIT_OBTAINED');
+				$this->getModel()->getForm()->error = Text::_('LIMIT_OBTAINED');
+
                     return false;
                 }
-                break;
         }
+
+		return true;
     }
     /**
      * Raise an error - depends on whether you are in admin or not as to what to do
