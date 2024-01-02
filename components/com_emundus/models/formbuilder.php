@@ -1255,8 +1255,8 @@ class EmundusModelFormbuilder extends JModelList {
                 case 'email':
 
                     $label = array(
-                        'fr' => 'Email',
-                        'en' => 'Email',
+                        'fr' => 'Adresse email',
+                        'en' => 'Email address',
                     );
 
                     $created_elements[] = $this->createSimpleElement($gid, $plugin, null, $evaluation, $label);
@@ -1418,7 +1418,7 @@ class EmundusModelFormbuilder extends JModelList {
 				$dbnull = 'NULL';
 				$default = '';
 
-				if ($plugin === 'display') {
+				if ($plugin === 'display' || $plugin === 'panel') {
 					$default = 'Ajoutez du texte personnalisé pour vos candidats';
 				}
 

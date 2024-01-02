@@ -587,5 +587,58 @@
       "sysadmin_only": false,
       "options": []
     }
+  ],
+  "panel": [
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE",
+      "name": "type",
+      "type": "dropdown",
+      "options": [
+        {
+          "value": 1,
+          "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_INFORMATION"
+        },
+        {
+          "value": 2,
+          "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_WARNING"
+        },
+        {
+          "value": 3,
+          "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_ERROR"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_ACCORDION",
+      "name": "accordion",
+      "type": "dropdown",
+      "options": [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_ACCORDION_TITLE",
+      "name": "title",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    }
   ]
 }
