@@ -346,6 +346,10 @@
         border: 1px solid var(--em-secondary-color) !important;
         border-radius: var(--em-coordinator-br) !important;
         color: var(--neutral-0) !important;
+        text-transform: inherit;
+        font-size: 16px;
+        padding: 8px 12px;
+        font-weight: 400;
     }
 
     button.swal2-cancel.goback-btn:hover,

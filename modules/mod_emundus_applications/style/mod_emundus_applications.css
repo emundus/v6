@@ -760,7 +760,6 @@ circle.circle {
     transition: background-image .3s;
     height: 286px;
     z-index: 3;
-    overflow: hidden;
 }
 
 /* Fond formes */
