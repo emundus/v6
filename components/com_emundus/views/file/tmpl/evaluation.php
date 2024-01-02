@@ -49,6 +49,7 @@ JText::script('COM_EMUNDUS_FILES_PAGE_ON');
 JText::script('COM_EMUNDUS_ERROR_OCCURED');
 JText::script('COM_EMUNDUS_ACTIONS_CANCEL');
 JText::script('COM_EMUNDUS_OK');
+JText::script('COM_EMUNDUS_FILES_FILTER_NO_ELEMENTS_FOUND');
 
 JHtml::styleSheet('components/com_emundus/src/assets/css/element-ui/theme-chalk/index.css');
 
