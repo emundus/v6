@@ -1674,7 +1674,7 @@ input:focus + .em-slider {
   padding: 32px;
 }
 
-.go-to-campaign-link a:hover {
+.go-to-campaign-link:hover {
   filter: brightness(0.8);
   color: var(--em-profile-color);
 }

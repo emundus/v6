@@ -90,8 +90,7 @@ $limits = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 15 => 15,
                         <tr>
                             <?php foreach ($line as $k => $value):?>
                                 <?php if ($k != 'evaluation_id'): ?>
-
-                                    <td <?php if($k == 'check' && $value->class != null) {echo 'class="'.$value->class.'"';}?>>
+                                    <td <?php if($k == 'check' && $value->class != null) {echo 'class="'.$value->class.'"';} if ($k == 'jecc___campaign_id') { echo 'class="em-cell-scroll"'; }?>>
                                         <div class="em-cell" >
                                             <?php if($k == 'check'): ?>
                                                 <label for = "<?php echo $line['fnum']->val ?>_check">

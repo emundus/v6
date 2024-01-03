@@ -84,13 +84,12 @@ $now = EmundusHelperDate::displayDate(date('Y-m-d H:i:s'), 'DATE_FORMAT_LC2', 0)
                                 <div class="row">
                                     <div class="col-xs-10 col-md-11">
                                         <div class="em-list-status">
-                                            <a href="#"
-                                               class="comment-name"><?php echo htmlspecialchars($comment->reason, ENT_QUOTES, 'UTF-8'); ?></a>
+                                            <p class="comment-name"><?php echo htmlspecialchars($comment->reason, ENT_QUOTES, 'UTF-8'); ?></p>
                                             <input style="display: none;" name="cname" type="text"
                                                    value="<?php echo htmlspecialchars($comment->reason, ENT_QUOTES, 'UTF-8'); ?>">
                                             <div class="mic-info comment-date em-list-status-date">
-                                                <a href="#"><?php echo $comment->name; ?></a>
-                                                - <?php echo $comment->date; ?>
+                                                <p><?php echo $comment->name; ?>
+                                                    - <?php echo $comment->date; ?></p>
                                             </div>
                                         </div>
                                         <div class="comment-text em-list-status-comment"><?php echo str_replace(["\r\n", "\r", "\n"], "<br/>", htmlspecialchars($comment->comment, ENT_QUOTES, 'UTF-8')); ?></div>

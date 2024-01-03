@@ -238,6 +238,24 @@ a.advanced-search-link-NOT {
     color: black !important;
 }
 
+.view-list .fabrikDataContainer .table .heading .fabrik_action .dropdown-menu a:hover {
+    background: #EBECF0 !important;
+    border-radius: 4px !important;
+    color: var(--neutral-900) !important;
+}
+
+.view-list .fabrikDataContainer .table .heading .fabrik_action .dropdown-menu {
+    background: #FFFFFF;
+    border: 1px solid #EBECF0;
+    box-shadow: 0px 8px 24px rgba(32, 35, 44, 0.1);
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.view-list .fabrikDataContainer .table .heading .fabrik_action .dropdown-menu a i {
+    display: none;
+}
+
 .view-list .fabrikDataContainer .table .fabrik_row .fabrik_actions .dropdown-menu a i {
     display: none;
 }
