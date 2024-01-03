@@ -165,7 +165,7 @@ if ($user != null) {
 
         .em-profile-container p:nth-child(2) {
             overflow: hidden;
-            width: 140px;
+            max-width: 140px;
             max-height: 30px;
             font-family: var(--em-applicant-font);
             font-size: 12px;

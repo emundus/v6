@@ -199,7 +199,7 @@ class EmundusViewUsers extends JViewLegacy
 
 	function display($tpl = null) {
 
-		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id) || !EmundusHelperAccess::asAccessAction(12,'r',JFactory::getUser()->id)) {
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			die(JText::_("ACCESS_DENIED"));
 		}
 
@@ -207,24 +207,46 @@ class EmundusViewUsers extends JViewLegacy
         $m_files = new EmundusModelFiles();
 		switch ($layout) {
 			case 'user':
+				if (!EmundusHelperAccess::asAccessAction(12,'r',$this->_user->id)) {
+					die(JText::_("ACCESS_DENIED"));
+				}
+
 				$this->_loadData();
 				break;
 			case 'filter':
-				$this->_loadFilter();
+				if (EmundusHelperAccess::asAccessAction(12,'r',$this->_user->id)) {
+					$this->_loadFilter();
+				}
 				break;
 			case 'adduser':
+				if (!EmundusHelperAccess::asAccessAction(12,'c',$this->_user->id)) {
+					die(JText::_("ACCESS_DENIED"));
+				}
+
 				$this->_loadUserForm();
 				break;
 			case 'addgroup':
+				if (!EmundusHelperAccess::asAccessAction(19,'c',$this->_user->id)) {
+					die(JText::_("ACCESS_DENIED"));
+				}
+
 				$this->_loadGroupForm();
 				break;
 			case 'affectintranetlascala':
 				$this->_loadAffectIntranetForm();
 				break;
 			case 'affectgroup':
+				if (!EmundusHelperAccess::asAccessAction(12,'u',$this->_user->id)) {
+					die(JText::_("ACCESS_DENIED"));
+				}
+
 				$this->_loadAffectForm();
 				break;
 			case 'showrights':
+				if (!EmundusHelperAccess::asAccessAction(12,'r',$this->_user->id)) {
+					die(JText::_("ACCESS_DENIED"));
+				}
+
 				$this->_loadRightsForm();
 				break;
 			case 'menuactions':

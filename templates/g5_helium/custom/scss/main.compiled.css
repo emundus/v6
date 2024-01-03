@@ -2961,6 +2961,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .justify-between {
   justify-content: space-between;
 }
+.justify-around {
+  justify-content: space-around;
+}
 .gap-0 {
   gap: 0px;
 }
@@ -5071,6 +5074,9 @@ body {
     /* Accueil */
     .homepage #g-container-main .g-container {
         background-image : none;
+    }
+    .homepage #g-container-main .g-container .mod_emundus_campaign__intro {
+        background-position: top -6px right -75px;
     }
 
     /* Connexion */

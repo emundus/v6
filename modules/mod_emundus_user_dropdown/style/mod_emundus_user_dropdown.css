@@ -350,7 +350,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 .dropdown #userDropdownLabel div  {
     cursor: pointer;
     position: relative;
-    width: max-content;
+    width: fit-content;
 }
 
 #g-navigation .g-content .platform-content:nth-child(1){
