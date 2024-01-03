@@ -526,7 +526,7 @@ if ($user != null) {
     </script>
 <?php } else { ?>
 	<?php if ($display_svg == 1) : ?>
-    <iframe id="background-shapes" src="/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg" alt="<?= JText::_('COM_EMUNDUS_USERDROPDOWN_IFRAME') ?>"></iframe>
+    <iframe id="background-shapes" alt="<?= JText::_('COM_EMUNDUS_USERDROPDOWN_IFRAME') ?>"></iframe>
 	<?php endif; ?>
     <div class="header-right" style="text-align: right;">
         <?php if ($show_registration) { ?>

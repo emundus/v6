@@ -3895,6 +3895,11 @@ div#em-appli-block {
     left: 237px;
     pointer-events: none;
     border-bottom-right-radius: 14px;
+    mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
+    background: var(--em-profile-color);
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
   }
 }
 
