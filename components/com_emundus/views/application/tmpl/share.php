@@ -94,9 +94,9 @@
                                                         }
 
                                                         if ($groups['actions'][$def_action_id][$crud] > 0) {
-                                                            $td .= '<span class="material-icons-outlined" title="' . JText::_('COM_EMUNDUS_ACTIONS_ACTIVE') . '">check_box</span>';
+                                                            $td .= '<span class="material-icons-outlined em-green-500-color" title="' . JText::_('COM_EMUNDUS_ACTIONS_ACTIVE') . '">check_box</span>';
                                                         } else if ($groups['actions'][$def_action_id][$crud] < 0) {
-                                                            $td .= '<span class="material-icons-outlined" title="' . JText::_('BLOCKED') . '">block</span>';
+                                                            $td .= '<span class="material-icons-outlined em-red-500-color" title="' . JText::_('BLOCKED') . '">block</span>';
                                                         } else {
                                                             $td .= '<span class="material-icons-outlined" title="' . JText::_('UNDEFINED') . '">check_box_outline_blank</span>';
                                                         }
@@ -191,9 +191,9 @@
                                         }
 
                                         if ($groups['actions'][$def_action_id][$crud] > 0) {
-                                            $td .= '<span class="material-icons-outlined" title="' . JText::_('COM_EMUNDUS_ACTIONS_ACTIVE') . '">check_box</span>';
+                                            $td .= '<span class="material-icons-outlined em-green-500-color" title="' . JText::_('COM_EMUNDUS_ACTIONS_ACTIVE') . '">check_box</span>';
                                         } else if ($groups['actions'][$def_action_id][$crud] < 0) {
-                                            $td .= '<span class="material-icons-outlined" title="' . JText::_('BLOCKED') . '">block</span>';
+                                            $td .= '<span class="material-icons-outlined em-red-500-color" title="' . JText::_('BLOCKED') . '">block</span>';
                                         } else {
                                             $td .= '<span class="material-icons-outlined" title="' . JText::_('UNDEFINED') . '">check_box_outline_blank</span>';
                                         }
@@ -217,8 +217,12 @@
 <?php endif;?>
 
 <script type="text/javascript">
-	var fnum = "<?= $this->fnum?>";
-	iconArray = ["block", "check_box_outline_blank", "check_box"];
+	const fnum = "<?= $this->fnum?>";
+	const iconArray = [
+        {icon: "block", class: "em-red-500-color"},
+        {icon: "check_box_outline_blank", class: ""},
+        {icon: "check_box", class: "em-green-500-color"},
+    ];
 	$(document).off('click', '.table-right td.can-update');
 	$(document).on('click', '.table-right td.can-update', function(e)
 	{
@@ -245,8 +249,8 @@
 			}
             // set inner text  of span icon refresh
 			$(this).children('span').text('refresh');
-			var type = $(this).parents('table').attr('id').split('-');
-			var accessId = $(this).attr('id');
+			let type = $(this).parents('table').attr('id').split('-');
+			let accessId = $(this).attr('id');
             $.ajax({
                 type:'post',
                 url:'/index.php?option=com_emundus&controller=application&task=updateaccess',
@@ -255,10 +259,21 @@
                 success: function(result)
                 {
                     const element = document.getElementById(accessId)
+                    const span = element.querySelector('span');
+
+                    // remove all classes that are not material-icons-outlined
+                    span.classList.forEach((className) => {
+                        if (className !== 'material-icons-outlined') {
+                            span.classList.remove(className);
+                        }
+                    });
 
                     if(result.status)
                     {
-                        element.querySelector('span').innerText = iconArray[index];
+                        span.innerText = iconArray[index].icon;
+                        if (iconArray[index].class !== '') {
+                            span.classList.add(iconArray[index].class);
+                        }
                         element.setAttribute("state", state);
                     }
                     else
@@ -275,7 +290,10 @@
                             state = 1;
                             index = 2;
                         }
-                        element.querySelector('span').innerText = iconArray[index];
+                        span.innerText = iconArray[index].icon;
+                        if (iconArray[index].class !== '') {
+                            span.classList.add(iconArray[index].class);
+                        }
                         element.setAttribute("state", state);
                         alert(result.msg);
                     }
