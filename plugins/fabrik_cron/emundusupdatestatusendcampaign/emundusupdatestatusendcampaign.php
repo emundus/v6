@@ -72,11 +72,17 @@ class PlgFabrik_Cronemundusupdatestatusendcampaign extends PlgFabrik_Cron {
 
         $now_offset = DateTime::createFromFormat('Y-m-d H:i:s', $now)->modify('-'.$end_offset.' day')->format('Y-m-d H:i:s');
 
+        if (!empty($exclude_campaigns)) {
+            $exclude_campaigns = explode(',',$exclude_campaigns);
+        }
+
         // get all campaigns of the platform that are over
         $query->select($db->quoteName('id'))
             ->from($db->quoteName('#__emundus_setup_campaigns'))
-            ->where($db->quoteName('end_date').' < '.$db->quote($now_offset))
-            ->andWhere($db->quoteName('id').' NOT IN ('.$exclude_campaigns.')');
+            ->where($db->quoteName('end_date').' < '.$db->quote($now_offset));
+        if (!empty($exclude_campaigns)) {
+            $query->andWhere($db->quoteName('id').' NOT IN ('.implode(',',$db->quote($exclude_campaigns)).')');
+        }
         $db->setQuery($query);
         $campaigns = $db->loadColumn();
 

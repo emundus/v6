@@ -75,13 +75,19 @@ class PlgFabrik_Cronemundusdeleteoldfiles extends PlgFabrik_Cron {
         $now_end_campaign_offset = DateTime::createFromFormat('Y-m-d H:i:s', $now)->modify('-'.$end_campaign_offset.' day')->format('Y-m-d H:i:s');
         $now_time_publish_offset = DateTime::createFromFormat('Y-m-d H:i:s', $now)->modify('-'.$time_publish_offset.' day')->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d H:i:s');
 
+        if (!empty($exclude_campaigns)) {
+            $exclude_campaigns = explode(',',$exclude_campaigns);
+        }
+
         /////////// SET STATE OF OLD FILES TO DELETED ///////////
 
         // get all campaigns of the platform that are over since now - the offset
         $query->select($db->quoteName('id'))
             ->from($db->quoteName('#__emundus_setup_campaigns'))
-            ->where($db->quoteName('end_date').' < '.$db->quote($now_end_campaign_offset))
-            ->andWhere($db->quoteName('id').' NOT IN ('.$exclude_campaigns.')');
+            ->where($db->quoteName('end_date').' < '.$db->quote($now_end_campaign_offset));
+        if (!empty($exclude_campaigns)) {
+            $query->andWhere($db->quoteName('id').' NOT IN ('.implode(',',$db->quote($exclude_campaigns)).')');
+        }
         $db->setQuery($query);
         $campaigns = $db->loadColumn();
 
@@ -143,6 +149,5 @@ class PlgFabrik_Cronemundusdeleteoldfiles extends PlgFabrik_Cron {
         } else {
             return $files_updated;
         }
-        return false;
     }
 }
