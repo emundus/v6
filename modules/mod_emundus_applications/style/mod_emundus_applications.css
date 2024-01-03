@@ -505,9 +505,9 @@ a.btn.btn-success:not(.btn-xs) {
     position: absolute;
     background: var(--neutral-0);
     z-index: 9999;
-    margin-top: 34px;
     width: max-content;
     right: 20px;
+    top: 60px;
 }
 
 .mod_emundus_applications__actions a:hover,
@@ -760,6 +760,7 @@ circle.circle {
     transition: background-image .3s;
     height: 286px;
     z-index: 3;
+    overflow: hidden;
 }
 
 /* Fond formes */
