@@ -3761,6 +3761,40 @@ structure:
 					->where('JSON_EXTRACT(' . $db->quoteName('params') . ', ' . $db->quote('$.tiplocation') . ') = ' . $db->quote('tip'));
 				$db->setQuery($query);
 				$db->execute();
+
+                // Remove pin and unpin actions from campaign list
+                $query->clear()
+                    ->select('value')
+                    ->from($db->quoteName('#__emundus_setup_config'))
+                    ->where($db->quoteName('namekey') . ' LIKE ' . $db->quote('onboarding_lists'));
+                $db->setQuery($query);
+                $list_config = $db->loadResult();
+
+                if (!empty($list_config)) {
+                    $changed = false;
+                    $list_config = json_decode($list_config, true);
+
+                    if (!empty($list_config['campaigns'])) {
+                        foreach($list_config['campaigns']['tabs'] as $tab_key => $tab) {
+                            foreach($tab['actions'] as $action_key => $action) {
+                                if ($action['action'] == 'pincampaign' || $action['action'] == 'unpincampaign') {
+                                    unset($tab['actions'][$action_key]);
+                                    $list_config['campaigns']['tabs'][$tab_key]['actions'] = array_values($tab['actions']);
+                                    $changed = true;
+                                }
+                            }
+                        }
+                    }
+
+                    if ($changed) {
+                        $query->clear()
+                            ->update($db->quoteName('#__emundus_setup_config'))
+                            ->set($db->quoteName('value') . ' = ' . $db->quote(json_encode($list_config)))
+                            ->where($db->quoteName('namekey') . ' LIKE ' . $db->quote('onboarding_lists'));
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
 			}
 		}
 
