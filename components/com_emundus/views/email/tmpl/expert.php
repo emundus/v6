@@ -104,7 +104,8 @@ foreach ($fnums as $fnum => $fnumInfo) {
         }
     </script>
 <?php
-$attachment_types = @EmundusHelperfilters::setEvaluationList(0);
+$h_files = new EmundusHelperFilters();
+$attachment_types = $h_files->setEvaluationList(0);
 if (!empty($attachment_types)) :?>
 
     <?php foreach ($fnums as $fnum => $fnumInfo) :?>
@@ -169,7 +170,7 @@ var mail_from_name = document.getElementById("mail_from_name");
 mail_body.value = '<?= str_replace("'", "\'", preg_replace('~[[:cntrl:]]~', '', $email->message)); ?>';
 mail_subject.value = "<?= $email->subject; ?>";
 mail_attachments.value = "<?= $files_path; ?>";
-mail_to.value = "<?= implode(',', $experts_email); ?>";
+mail_to.value = "<?= !empty($experts_email) ? implode(',', $experts_email) : ''; ?>";
 mail_from.value = "<?= $email->emailfrom; ?>";
 mail_from_name.value = "<?= $email->name; ?>";
 
