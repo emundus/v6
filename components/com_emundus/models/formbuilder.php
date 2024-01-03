@@ -2358,6 +2358,26 @@ class EmundusModelFormbuilder extends JModelList {
         return ${"element".$element};
     }
 
+	function getSimpleElement($eid) {
+		$db = $this->getDbo();
+		$query = $db->getQuery(true);
+
+		$element = [];
+
+		try {
+			$query->select('*')
+				->from($db->quoteName('#__fabrik_elements'))
+				->where($db->quoteName('id') . ' = ' . $db->quote($eid));
+			$db->setQuery($query);
+			$element = $db->loadAssoc();
+		}
+		catch (Exception $e) {
+			JLog::add('component/com_emundus/models/formbuilder | Cannot get simple element : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+		}
+
+		return $element;
+	}
+
     function deleteElement($elt) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
