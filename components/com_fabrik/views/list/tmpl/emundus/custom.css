@@ -252,6 +252,10 @@ a.advanced-search-link-NOT {
     padding: 8px;
 }
 
+.view-list .fabrikDataContainer .table .heading .fabrik_action .dropdown-menu a i {
+    display: none;
+}
+
 .view-list .fabrikDataContainer .table .fabrik_row .fabrik_actions .dropdown-menu a i {
     display: none;
 }
