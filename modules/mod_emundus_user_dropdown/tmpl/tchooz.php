@@ -387,6 +387,12 @@ if ($user != null) {
                 document.getElementById('profile').style.display = 'block';
                 document.querySelector('#header-c .g-content').style.alignItems = 'start';
             }
+
+            let elmnt2 = document.getElementById("g-top");
+            if(elmnt2 !== null) {
+                let hauteurTotaleElem = elmnt2.offsetHeight;
+                document.getElementById("g-navigation").style.top = hauteurTotaleElem + 'px';
+            }
         });
 
         function updateSvgColors(css_var) {
