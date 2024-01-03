@@ -95,7 +95,7 @@
     "value": "emundus_geolocalisation",
     "icon": "location_on",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_GEOLOCATION",
-    "published": true
+    "published": false
   },
   {
     "id": 17,
