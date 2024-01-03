@@ -3742,6 +3742,7 @@ structure:
 
 					$query->clear()
 						->update($db->quoteName('#__fabrik_forms'))
+						->set($db->quoteName('label') . ' = ' . $db->quote('ACCOUNT_FORM'))
 						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($profile_form_params)))
 						->where($db->quoteName('id') . ' = ' . $db->quote($profile_form_id));
 					$db->setQuery($query);
@@ -3795,6 +3796,8 @@ structure:
                         $db->execute();
                     }
                 }
+
+				EmundusHelperUpdate::insertTranslationsTag('JLOGIN_DESC', 'To access your personal space', 'override', null, null, null, 'en-GB');
 			}
 		}
 
