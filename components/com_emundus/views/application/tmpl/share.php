@@ -80,60 +80,38 @@
                             <tbody>
                             <?php foreach($this->access['groups'] as $gid => $groups):?>
                                 <tr>
-                                    <?php foreach($groups['actions'] as $aid => $actions):?>
-                                        <?php if($this->defaultActions[$aid]['c'] == 1):?>
-                                            <td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-c'?>" state="<?= $actions['c']?>">
-                                                <?php if($actions['c'] > 0): ?>
-                                                    <span class="glyphicon glyphicon-ok green" title="<?= JText::_('COM_EMUNDUS_ACTIONS_ACTIVE')?>"></span>
-                                                <?php elseif($actions['c'] < 0):?>
-                                                    <span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
-                                                <?php else:?>
-                                                    <span class="glyphicon glyphicon-unchecked" title="<?= JText::_('UNDEFINED')?>"></span>
-                                                <?php endif?>
-                                            </td>
-                                        <?php else:?>
-                                            <td></td>
-                                        <?php endif;?>
-                                        <?php if($this->defaultActions[$aid]['r'] == 1):?>
-                                            <td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-r'?>" state="<?= $actions['r']?>">
-                                                <?php if($actions['r'] > 0): ?>
-                                                    <span class="glyphicon glyphicon-ok green" title="<?= JText::_('COM_EMUNDUS_ACTIONS_ACTIVE')?>"></span>
-                                                <?php elseif($actions['r'] < 0):?>
-                                                    <span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
-                                                <?php else:?>
-                                                    <span class="glyphicon glyphicon-unchecked" title="<?= JText::_('UNDEFINED')?>"></span>
-                                                <?php endif?>
-                                            </td>
-                                        <?php else:?>
-                                            <td></td>
-                                        <?php endif;?>
-                                        <?php if($this->defaultActions[$aid]['u'] == 1): ?>
-                                            <td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-u'?>" state="<?= $actions['u']?>">
-                                                <?php if($actions['u'] > 0): ?>
-                                                    <span class="glyphicon glyphicon-ok green" title="<?= JText::_('COM_EMUNDUS_ACTIONS_ACTIVE')?>"></span>
-                                                <?php elseif($actions['u'] < 0):?>
-                                                    <span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
-                                                <?php else:?>
-                                                    <span class="glyphicon glyphicon-unchecked" title="<?= JText::_('UNDEFINED')?>"></span>
-                                                <?php endif?>
-                                            </td>
-                                        <?php else:?>
-                                            <td></td>
-                                        <?php endif;?>
-                                        <?php if($this->defaultActions[$aid]['d'] == 1):?>
-                                            <td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-d'?>" state="<?= $actions['d']?>">
-                                                <?php if($actions['d'] > 0): ?>
-                                                    <span class="glyphicon glyphicon-ok green" title="<?= JText::_('COM_EMUNDUS_ACTIONS_ACTIVE')?>"></span>
-                                                <?php elseif($actions['d'] < 0):?>
-                                                    <span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
-                                                <?php else:?>
-                                                    <span class="glyphicon glyphicon-unchecked" title="<?= JText::_('UNDEFINED')?>"></span>
-                                                <?php endif?>
-                                            </td>
-                                        <?php else:?>
-                                            <td></td>
-                                        <?php endif;?>
-                                    <?php endforeach;?>
+                                    <?php
+                                        $cruds = ['c', 'r', 'u', 'd'];
+                                        foreach($this->defaultActions as $def_action_id => $default_action) {
+                                            if ($default_action['status'] == 1) {
+                                                foreach($cruds as $crud) {
+                                                    $td = '';
+                                                    if ($default_action[$crud] == 1) {
+                                                        if ($this->canUpdate) {
+                                                            $td .= '<td class="can-update" id="' . $gid . '-' . $def_action_id . '-' . $crud . '" state="' . $groups['actions'][$def_action_id][$crud] . '">';
+                                                        } else {
+                                                            $td .= '<td id="' . $gid . '-' . $def_action_id . '-' . $crud . '" state="' . $groups['actions'][$def_action_id][$crud] . '">';
+                                                        }
+
+                                                        if ($groups['actions'][$def_action_id][$crud] > 0) {
+                                                            $td .= '<span class="material-icons-outlined" title="' . JText::_('COM_EMUNDUS_ACTIONS_ACTIVE') . '">check_box</span>';
+                                                        } else if ($groups['actions'][$def_action_id][$crud] < 0) {
+                                                            $td .= '<span class="material-icons-outlined" title="' . JText::_('BLOCKED') . '">block</span>';
+                                                        } else {
+                                                            $td .= '<span class="material-icons-outlined" title="' . JText::_('UNDEFINED') . '">check_box_outline_blank</span>';
+                                                        }
+                                                        $td .= '</td>';
+
+                                                    } else {
+                                                        $td = '<td id="' . $gid . '-' . $def_action_id . '-' . $crud . '"></td>';
+                                                    }
+
+                                                    echo $td;
+                                                }
+
+                                            }
+                                        }
+                                    ?>
                                 </tr>
                             <?php endforeach;?>
                             </tbody>
@@ -192,69 +170,44 @@
 							<th><?= JText::_('COM_EMUNDUS_ACCESS_UPDATE')?></th>
 							<th><?= JText::_('COM_EMUNDUS_ACTIONS_DELETE')?></th>
 						<?php endforeach;?>
-						<?php break; endforeach;?>
+
+                        <?php break; endforeach;?>
 				</tr>
 				</thead>
 				<tbody>
 				<?php foreach($this->access['users'] as $gid => $groups):?>
 					<tr>
-						<?php foreach($groups['actions'] as $aid => $actions):?>
-							<?php if($this->defaultActions[$aid]['c'] == 1): ?>
-								<td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-c'?>" state="<?= $actions['c']?>">
-										<?php if($actions['c'] > 0): ?>
-											<span class="glyphicon glyphicon-ok green" title="<?= JText::_('COM_EMUNDUS_ACTIONS_ACTIVE')?>"></span>
-										<?php elseif($actions['c'] < 0):?>
-											<span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
-										<?php else:?>
-											<span class="glyphicon glyphicon-unchecked" title="<?= JText::_('UNDEFINED')?>"></span>
-										<?php endif?>
-								</td>
-							<?php else:?>
-								<td></td>
-							<?php endif;?>
-							<?php if($this->defaultActions[$aid]['r'] == 1):?>
-								<td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-r'?>" state="<?= $actions['r']?>">
+                        <?php
+                        $cruds = ['c', 'r', 'u', 'd'];
+                        foreach($this->defaultActions as $def_action_id => $default_action) {
+                            foreach($cruds as $crud) {
+                                $td = '';
+                                if ($default_action['status'] == 1) {
+                                    if ($default_action[$crud] == 1) {
+                                        if ($this->canUpdate) {
+                                            $td .= '<td class="can-update" id="' . $gid . '-' . $def_action_id . '-' . $crud . '" state="' . $groups['actions'][$def_action_id][$crud] . '">';
+                                        } else {
+                                            $td .= '<td id="' . $gid . '-' . $def_action_id . '-' . $crud . '" state="' . $groups['actions'][$def_action_id][$crud] . '">';
+                                        }
 
-										<?php if($actions['r'] > 0): ?>
-											<span class="glyphicon glyphicon-ok green" title="<?= JText::_('COM_EMUNDUS_ACTIONS_ACTIVE')?>"></span>
-										<?php elseif($actions['r'] < 0):?>
-											<span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
-										<?php else:?>
-											<span class="glyphicon glyphicon-unchecked" title="<?= JText::_('UNDEFINED')?>"></span>
-										<?php endif?>
-								</td>
-							<?php else:?>
-								<td></td>
-							<?php endif;?>
-							<?php if($this->defaultActions[$aid]['u'] == 1):?>
-								<td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-u'?>" state="<?= $actions['u']?>">
+                                        if ($groups['actions'][$def_action_id][$crud] > 0) {
+                                            $td .= '<span class="material-icons-outlined" title="' . JText::_('COM_EMUNDUS_ACTIONS_ACTIVE') . '">check_box</span>';
+                                        } else if ($groups['actions'][$def_action_id][$crud] < 0) {
+                                            $td .= '<span class="material-icons-outlined" title="' . JText::_('BLOCKED') . '">block</span>';
+                                        } else {
+                                            $td .= '<span class="material-icons-outlined" title="' . JText::_('UNDEFINED') . '">check_box_outline_blank</span>';
+                                        }
+                                        $td .= '</td>';
 
-									<?php if($actions['u'] > 0): ?>
-										<span class="glyphicon glyphicon-ok green" title="<?= JText::_('COM_EMUNDUS_ACTIONS_ACTIVE')?>"></span>
-									<?php elseif($actions['u'] < 0):?>
-										<span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
-									<?php else:?>
-										<span class="glyphicon glyphicon-unchecked" title="<?= JText::_('UNDEFINED')?>"></span>
-									<?php endif?>
-								</td>
-							<?php else:?>
-								<td></td>
-							<?php endif;?>
-							<?php if($this->defaultActions[$aid]['d'] == 1):?>
-								<td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-d'?>" state="<?= $actions['d']?>">
-									<?php if($actions['d'] > 0): ?>
-										<span class="glyphicon glyphicon-ok green" title="<?= JText::_('COM_EMUNDUS_ACTIONS_ACTIVE')?>"></span>
-									<?php elseif($actions['d'] < 0):?>
-										<span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
-									<?php else:?>
-										<span class="glyphicon glyphicon-unchecked" title="<?= JText::_('UNDEFINED')?>"></span>
-									<?php endif?>
-								</td>
-							<?php else:?>
-								<td></td>
-							<?php endif;?>
+                                    } else {
+                                        $td = '<td id="' . $gid . '-' . $def_action_id . '-' . $crud . '"></td>';
+                                    }
+                                }
 
-						<?php endforeach;?>
+                                echo $td;
+                            }
+                        }
+                        ?>
 					</tr>
 				<?php endforeach;?>
 				</tbody>
@@ -265,7 +218,7 @@
 
 <script type="text/javascript">
 	var fnum = "<?= $this->fnum?>";
-	glyphArray = ["glyphicon glyphicon-ban-circle red", "glyphicon glyphicon-unchecked","glyphicon glyphicon-ok green"];
+	iconArray = ["block", "check_box_outline_blank", "check_box"];
 	$(document).off('click', '.table-right td.can-update');
 	$(document).on('click', '.table-right td.can-update', function(e)
 	{
@@ -290,8 +243,8 @@
 				state = -2;
 				index = 0;
 			}
-			$(this).children('span').removeClass();
-			$(this).children('span').addClass("glyphicon glyphicon-refresh");
+            // set inner text  of span icon refresh
+			$(this).children('span').text('refresh');
 			var type = $(this).parents('table').attr('id').split('-');
 			var accessId = $(this).attr('id');
 			$.ajax({
@@ -301,15 +254,15 @@
 					data:{access_id: $(this).attr('id'), fnum:fnum, state: state, type: type[0]},
 					success: function(result)
 					{
+                        const element = document.getElementById(accessId)
+
 						if(result.status)
 						{
-							$("#"+accessId).children('span').removeClass();
-							$("#"+accessId).children('span').addClass(glyphArray[index]);
-							$("#"+accessId).attr("state", state);
+                            element.querySelector('span').innerText = iconArray[index];
+                            element.setAttribute("state", state);
 						}
 						else
 						{
-							$("#"+accessId).children('span').removeClass();
 							state--;
 							index--;
 							if(state < 0)
@@ -322,8 +275,8 @@
 								state = 1;
 								index = 2;
 							}
-							$("#"+accessId).children('span').addClass(glyphArray[index]);
-							$("#"+accessId).attr("state", state);
+                            element.querySelector('span').innerText = iconArray[index];
+                            element.setAttribute("state", state);
 							alert(result.msg);
 						}
 					},
