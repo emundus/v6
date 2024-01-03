@@ -382,4 +382,8 @@
     #groups-access-table tbody tr td:nth-child(4n):not(:last-child), #users-access-table tbody tr td:nth-child(4n):not(:last-child) {
         border-right: 1px solid #dddddd;
     }
+
+    #groups-table, #users-table {
+        min-width: 200px;
+    }
 </style>
