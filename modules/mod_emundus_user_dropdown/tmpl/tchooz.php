@@ -165,19 +165,17 @@ if ($user != null) {
 
         .em-profile-container p:nth-child(2) {
             overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            /*text-overflow: ellipsis;*/
-            width: 85px;
+            width: 140px;
             max-height: 30px;
-
             font-family: var(--em-applicant-font);
             font-size: 12px;
             font-style: normal;
             font-weight: 400;
             line-height: 15px;
             letter-spacing: 0.004em;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
     </style>
 

@@ -350,6 +350,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 .dropdown #userDropdownLabel div  {
     cursor: pointer;
     position: relative;
+    width: max-content;
 }
 
 #g-navigation .g-content .platform-content:nth-child(1){
@@ -372,7 +373,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     mask-size: 300px;
     mask-origin: border-box;
     right: -10px;
-    top: 0;
+    top: -6px;
 }
 
 /* Déconnecté */
