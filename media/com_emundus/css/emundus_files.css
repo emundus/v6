@@ -711,24 +711,9 @@ div#em-appli-block tr:nth-child(odd) {
     background-color: var(--neutral-100);
 }
 
-table#groups-table a {
-    background: #4E5B6D;
-    box-shadow: none;
-    border: 1px solid #4E5B6D;
-    color: var(--neutral-0);
-}
-
-table#groups-table a:hover {
-    background: #404B5A;
-    box-shadow: none;
-    border: 1px solid #404B5A;
-    color: var(--neutral-0);
-}
-
 .comment-text h2 {
     font-size: 17px;
 }
-
 
 /* MODALS */
 
@@ -1867,7 +1852,6 @@ thead th:hover {
 }
 
 .access-table {
-    margin-bottom: 15px;
     overflow: auto;
 }
 
@@ -1886,7 +1870,7 @@ thead th:hover {
 
 #em-appli-block .table th,
 #em-appli-block .table td {
-    height: 61px;
+    height: 62px;
 }
 
 .holds-iframe {
@@ -2761,19 +2745,6 @@ div#em-modal-actions .panel-heading h5 {
     color: var(--neutral-900);
     border: 0;
 }
-
-table#groups-table a {
-    background: #4E5B6D !important;
-    box-shadow: none;
-    border: 1px solid #4E5B6D !important;
-    color: var(--neutral-0);
-}
-table#groups-table a:hover {
-     background: #404B5A !important;
-     box-shadow: none;
-     border: 1px solid #404B5A !important;
-     color: var(--neutral-0);
- }
 
 /* MENU ACTIONS */
 .navbar.navbar-inverse {

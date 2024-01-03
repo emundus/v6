@@ -20,9 +20,9 @@
                 </div>
             </div>
             <div class="panel-body em-container-share-body">
-                <div class="active content em-container-share-table">
-                    <div class="col-md-2 table-left em-container-share-table-left">
-                        <table class="table table-bordered" id="groups-table">
+                <div class="active content em-container-share-table em-flex-row">
+                    <div class="table-left em-container-share-table-left">
+                        <table id="groups-table" class="table table-bordered">
                             <thead>
                             <tr>
                                 <th></th>
@@ -34,16 +34,16 @@
                             <tbody>
                             <?php foreach($this->access['groups'] as $gid => $groups) :?>
                                 <tr>
-                                    <td>
-                                        <?= $groups['gname']?>
+                                    <td class="em-flex-row em-flex-space-between">
+                                        <span><?= $groups['gname']?></span>
                                         <?php if ($groups['isAssoc'] && EmundusHelperAccess::asAccessAction(11, 'd', $this->_user->id, $this->fnum)) :?>
                                             <?php if($groups['isACL']):?>
-                                                <a class = "btn btn-info btn-xs pull-right em-del-access" href="index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?= $this->fnum ?>&id=<?= $gid ?>&type=groups">
-                                                    <span class = "glyphicon glyphicon-retweet"></span>
+                                                <a class="em-flex-row em-del-access" href="index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?= $this->fnum ?>&id=<?= $gid ?>&type=groups">
+                                                    <span class="material-icons-outlined">autorenew</span>
                                                 </a>
                                             <?php else :?>
-                                                <a class = "btn btn-danger btn-xs pull-right em-del-access" href="index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?= $this->fnum ?>&id=<?= $gid ?>&type=groups">
-                                                    <span class = "glyphicon glyphicon-remove"></span>
+                                                <a class="em-flex-row em-del-access" href="index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?= $this->fnum ?>&id=<?= $gid ?>&type=groups">
+                                                    <span class="material-icons-outlined">close</span>
                                                 </a>
                                             <?php endif; ?>
                                         <?php endif; ?>
@@ -53,8 +53,8 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="access-table col-md-10 table-right em-container-share-table-right">
-                        <table class="table table-bordered" id="groups-access-table" >
+                    <div class="access-table table-right em-container-share-table-right">
+                        <table class="table table-bordered" id="groups-access-table">
                             <thead>
                             <tr>
                                 <?php foreach ($this->access['groups'] as $gid => $groups) :?>
@@ -123,7 +123,7 @@
 	</div>
 <?php endif;?>
 <?php if(!empty($this->access['users'])):?>
-	<div class="row" style="display: flex;">
+	<div class="row em-w-100 em-p-16" style="display: flex">
 		<div class="table-left em-container-share-table-left">
 			<table class="table table-bordered" id="users-table">
 				<thead>
@@ -137,11 +137,11 @@
 				<tbody>
 				<?php foreach($this->access['users'] as $gid => $groups):?>
 					<tr>
-						<td>
-							<?= ucfirst($groups['uname']) ?>
+						<td class="em-flex-row em-flex-space-between">
+							<span><?= ucfirst($groups['uname']) ?></span>
 							<?php if(EmundusHelperAccess::asAccessAction(11, 'd', $this->_user->id, $this->fnum)):?>
-								<a class = "btn btn-danger btn-xs pull-right em-del-access" href = "/index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?= $this->fnum ?>&id=<?= $gid ?>&type=users">
-									<span class = "glyphicon glyphicon-remove"></span>
+								<a class="em-flex-row em-del-access" href = "/index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?= $this->fnum ?>&id=<?= $gid ?>&type=users">
+									<span class="material-icons-outlined">close</span>
 								</a>
 							<?php endif;?>
 						</td>
@@ -150,7 +150,7 @@
 				</tbody>
 			</table>
 		</div>
-		<div class="access-table col-md-10 table-right em-container-share-table-right">
+		<div class="access-table table-right em-container-share-table-right">
 			<table class="table table-bordered" id="users-access-table" >
 				<thead>
 				<tr>
@@ -247,44 +247,44 @@
 			$(this).children('span').text('refresh');
 			var type = $(this).parents('table').attr('id').split('-');
 			var accessId = $(this).attr('id');
-			$.ajax({
-					type:'post',
-					url:'/index.php?option=com_emundus&controller=application&task=updateaccess',
-					dataType:'json',
-					data:{access_id: $(this).attr('id'), fnum:fnum, state: state, type: type[0]},
-					success: function(result)
-					{
-                        const element = document.getElementById(accessId)
+            $.ajax({
+                type:'post',
+                url:'/index.php?option=com_emundus&controller=application&task=updateaccess',
+                dataType:'json',
+                data:{access_id: $(this).attr('id'), fnum:fnum, state: state, type: type[0]},
+                success: function(result)
+                {
+                    const element = document.getElementById(accessId)
 
-						if(result.status)
-						{
-                            element.querySelector('span').innerText = iconArray[index];
-                            element.setAttribute("state", state);
-						}
-						else
-						{
-							state--;
-							index--;
-							if(state < 0)
-							{
-								state = -2;
-								index = 0;
-							}
-							if(state < -2)
-							{
-								state = 1;
-								index = 2;
-							}
-                            element.querySelector('span').innerText = iconArray[index];
-                            element.setAttribute("state", state);
-							alert(result.msg);
-						}
-					},
-					error: function (jqXHR, textStatus, errorThrown)
-					{
-					    console.log(jqXHR.responseText);
-					}
-				})
+                    if(result.status)
+                    {
+                        element.querySelector('span').innerText = iconArray[index];
+                        element.setAttribute("state", state);
+                    }
+                    else
+                    {
+                        state--;
+                        index--;
+                        if(state < 0)
+                        {
+                            state = -2;
+                            index = 0;
+                        }
+                        if(state < -2)
+                        {
+                            state = 1;
+                            index = 2;
+                        }
+                        element.querySelector('span').innerText = iconArray[index];
+                        element.setAttribute("state", state);
+                        alert(result.msg);
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    console.log(jqXHR.responseText);
+                }
+            })
 		}
 	});
 
@@ -295,48 +295,73 @@
 		if(e.handle !== true)
 		{
 			e.handle = true;
-			var r = confirm("<?= JText::_("COM_EMUNDUS_ACCESS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS")?>");
-			if(r)
-			{
-				var url = $(this).attr('href');
-				$.ajax({
-					       type:'post',
-					       url:url,
-					       dataType:'json',
-					       success: function(result)
-					       {
-						       if(result.status)
-						       {
-								   var url = "index.php?option=com_emundus&view=application&format=raw&layout=share&fnum=<?= $this->fnum; ?>";
+			let r = confirm("<?= JText::_("COM_EMUNDUS_ACCESS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS")?>");
 
-								   $.ajax({
-									   type:"get",
-									   url:url,
-									   dataType:'html',
-									   success: function(result)
-									   {
-										   $('#em-appli-block').empty();
-										   $('#em-appli-block').append(result);
-									   },
-									   error: function (jqXHR, textStatus, errorThrown)
-									   {
-										   console.log(jqXHR.responseText);
-									   }
-								   });
+            if(r) {
+                $.ajax({
+                    type: 'post',
+                    url: $(this).attr('href'),
+                    dataType:'json',
+                    success: function(result)
+                    {
+                        if(result.status) {
+                            const url = "index.php?option=com_emundus&view=application&format=raw&layout=share&fnum=<?= $this->fnum; ?>";
 
-							       //$('#em-appli-menu .list-group-item#1410').trigger('click');
-						       }
-						       else
-						       {
-							       alert(result.msg);
-						       }
-					       },
-					       error: function (jqXHR, textStatus, errorThrown)
-					       {
-						       console.log(jqXHR.responseText);
-					       }
-				       });
+                            $.ajax({
+                                type: "get",
+                                url: url,
+                                dataType: 'html',
+                                success: function(result)
+                                {
+                                    $('#em-appli-block').empty();
+                                    $('#em-appli-block').append(result);
+                                },
+                                error: function (jqXHR, textStatus, errorThrown)
+                                {
+                                    console.log(jqXHR.responseText);
+                                }
+                            });
+
+                        } else {
+                            alert(result.msg);
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown)
+                    {
+                        console.log(jqXHR.responseText);
+                    }
+                });
 			}
 		}
 	});
 </script>
+
+<style>
+    #groups-access-table, #users-access-table {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    .table-left table {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        border-left: 1px solid #dddddd;
+    }
+
+    #groups-access-table td, #groups-access-table th, #users-access-table td, #users-access-table th {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    #groups-access-table thead tr:nth-child(1) th:not(:last-child), #users-access-table thead tr:nth-child(1) th:not(:last-child) {
+        border-right: 1px solid #dddddd;
+    }
+
+    #groups-access-table thead tr:nth-child(2) th:nth-child(4n):not(:last-child), #users-access-table thead tr:nth-child(2) th:nth-child(4n):not(:last-child) {
+        border-right: 1px solid #dddddd;
+    }
+
+    #groups-access-table tbody tr td:nth-child(4n):not(:last-child), #users-access-table tbody tr td:nth-child(4n):not(:last-child) {
+        border-right: 1px solid #dddddd;
+    }
+</style>
