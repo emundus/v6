@@ -3279,6 +3279,9 @@ body {
     .homepage #g-container-main .g-container {
         background-image : none;
     }
+    .homepage #g-container-main .g-container .mod_emundus_campaign__intro {
+        background-position: top -6px right -75px;
+    }
 
     /* Connexion */
     .login > #g-page-surround {

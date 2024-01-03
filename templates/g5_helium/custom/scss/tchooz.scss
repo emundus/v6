@@ -2479,14 +2479,16 @@ div[id^='current_'] .mod_emundus_campaign__list_content h4 {
   /* Peps */
   div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
     display: block;
-    width: 82%;
-    height: 64%;
+    width: 76%;
+    height: 71%;
+    transform: scale(1);
   }
 
   .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content #background-shapes {
-    width: 81%;
-    height: 65%;
+    width: 76%;
+    height: 71%;
     display: block;
+    transform: scale(1);
   }
 
   .mod_emundus_campaign__list_content--default {
@@ -2516,7 +2518,10 @@ div[id^='current_'] .mod_emundus_campaign__list_content h4 {
   }
 
   .mod_emundus_campaign__details_content #background-shapes {
-    display: none;
+    display: block !important;
+    width: 124%;
+    height: 122%;
+    transform: scale(1);
   }
 
   .mod_emundus_campaign__pinned_campaign {
