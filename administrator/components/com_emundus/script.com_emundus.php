@@ -3822,6 +3822,30 @@ structure:
 					$db->setQuery($query);
 					$db->execute();
 				}
+
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_forms'))
+					->where($db->quoteName('label') . ' LIKE ' . $db->quote('SETUP_PROGRAM'));
+				$db->setQuery($query);
+				$setup_program_form = $db->loadObject();
+
+				if(!empty($setup_program_form->id)) {
+					$params = json_decode($setup_program_form->params, true);
+
+					foreach ($params['plugin_description'] as $key => $plugin) {
+						if($plugin == 'onAfterProgramCreate') {
+							$params['plugin_events'][$key] = 'both';
+						}
+					}
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_forms'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($setup_program_form->id));
+					$db->setQuery($query);
+					$db->execute();
+				}
 			}
 		}
 
