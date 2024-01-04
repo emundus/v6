@@ -24,8 +24,11 @@
         <div v-for="(preset) in presets" :key="preset.id" class="preset-presentation"
              :class="preset.selected ? 'outline-green-500' : ''"
              :style="'background-color:' + preset.primary + ';border-right: 50px solid' + preset.secondary"
-             @click="changeColors(preset)"></div>
-        <div class="preset-presentation flex items-center justify-center" @click="openCustomPalette">
+             @click="!preset.custom ? changeColors(preset) : openCustomPalette()">
+          <span class="material-icons-outlined text-white p-3" v-if="preset.custom">color_lens</span>
+          <span class="material-icons-outlined text-yellow-500" v-if="!preset.rgaa">warning</span>
+        </div>
+        <div class="preset-presentation flex items-center justify-center" v-if="presets[presets.length-1].custom === false" @click="openCustomPalette">
           <span class="material-icons-outlined !text-6xl">add_circle_outline</span>
         </div>
       </div>
@@ -49,12 +52,12 @@ export default {
   data() {
     return {
       presets: [
-        {id: 1, primary: '#1b1f3c', secondary: '#de6339', selected: false},
-        {id: 2, primary: '#DA3832', secondary: '#204382', selected: false},
-        {id: 3, primary: '#727378', secondary: '#A0BD51', selected: false},
-        {id: 4, primary: '#727378', secondary: '#000000', selected: false},
-        {id: 5, primary: '#000000', secondary: '#5AA6DC', selected: false},
-        {id: 6, primary: '#A0BD51', secondary: '#204382', selected: false},
+        {id: 1, primary: '#1b1f3c', secondary: '#de6339', selected: false, custom: false, rgaa: true},
+        {id: 2, primary: '#DA3832', secondary: '#204382', selected: false, custom: false, rgaa: true},
+        {id: 3, primary: '#727378', secondary: '#A0BD51', selected: false, custom: false, rgaa: true},
+        {id: 4, primary: '#727378', secondary: '#000000', selected: false, custom: false, rgaa: true},
+        {id: 5, primary: '#000000', secondary: '#5AA6DC', selected: false, custom: false, rgaa: true},
+        {id: 6, primary: '#A0BD51', secondary: '#204382', selected: false, custom: false, rgaa: true},
       ],
       updateColors: this.translate("COM_EMUNDUS_ONBOARD_UPDATE_COLORS"),
       Retour: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
@@ -64,7 +67,7 @@ export default {
   },
 
   mounted() {
-    let new_preset = {id: 7, primary: this.$props.primary, secondary: this.$props.secondary, selected: true};
+    let new_preset = {id: 7, primary: this.$props.primary, secondary: this.$props.secondary, selected: true, custom: true, rgaa: true};
     this.presets.forEach((preset) => {
       if(preset.primary == this.primary && preset.secondary == this.secondary) {
         new_preset = null;
@@ -73,6 +76,14 @@ export default {
     });
 
     if(new_preset) {
+      const primary_contrast = checkContrast('#FFFFFF', this.primary);
+      const secondary_contrast = checkContrast('#FFFFFF', this.secondary);
+      const similiraty = checkSimilarity(this.primary, this.secondary);
+
+      if(!primary_contrast || !secondary_contrast || !similiraty) {
+        new_preset.rgaa = false;
+      }
+
       this.presets.push(new_preset);
     }
   },
@@ -97,7 +108,7 @@ export default {
     openCustomPalette() {
       Swal.fire({
         title: this.translate("COM_EMUNDUS_ONBOARD_CUSTOM_PALETTE"),
-        html: `<div><div><label>`+this.translate("COM_EMUNDUS_ONBOARD_PRIMARY_COLOR")+`</label><div class="flex items-center"><input type="color" onchange="document.querySelector('#hexacode-primary').innerHTML = event.srcElement.value;" class="custom-color-picker" value="#1b1f3c" id="primary_color" /><span id="hexacode-primary" class="ml-4">#1b1f3c</span></div></div><div class="mt-4"><label>`+this.translate("COM_EMUNDUS_ONBOARD_SECONDARY_COLOR")+`</label><div><input type="color" value="#de6339" class="custom-color-picker" id="secondary_color" onchange="document.querySelector('#hexacode-secondary').innerHTML = event.srcElement.value;" /><span id="hexacode-secondary" class="ml-4">#de6339</span></div></div></div>`,
+        html: `<div><label>`+this.translate("COM_EMUNDUS_ONBOARD_PRIMARY_COLOR")+`</label><div class="flex items-center"><input type="color" onchange="document.querySelector('#hexacode-primary').innerHTML = event.srcElement.value;checkContrast('#FFFFFF',event.srcElement.value,'#swal2-content');checkSimilarity(event.srcElement.value,document.querySelector('#secondary_color').value,'#swal2-content')" class="custom-color-picker" value="`+this.primary+`" id="primary_color" /><span id="hexacode-primary" class="ml-4">`+this.primary+`</span></div></div><div class="mt-4 mb-3"><label>`+this.translate("COM_EMUNDUS_ONBOARD_SECONDARY_COLOR")+`</label><div><input type="color" value="`+this.secondary+`" class="custom-color-picker" id="secondary_color" onchange="document.querySelector('#hexacode-secondary').innerHTML = event.srcElement.value;checkContrast('#FFFFFF',event.srcElement.value,'#swal2-content');checkSimilarity(event.srcElement.value,document.querySelector('#primary_color').value,'#swal2-content')" /><span id="hexacode-secondary" class="ml-4">`+this.secondary+`</span></div></div></div>`,
         showCancelButton: true,
         confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
         cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
@@ -157,6 +168,10 @@ export default {
           });
         }
       });
+
+      checkContrast('#FFFFFF',this.primary,'#swal2-content');
+      checkContrast('#FFFFFF',this.secondary,'#swal2-content');
+      checkSimilarity(this.primary,this.secondary,'#swal2-content');
     },
   }
 };
