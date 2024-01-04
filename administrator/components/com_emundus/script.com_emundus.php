@@ -3798,6 +3798,30 @@ structure:
                 }
 
 				EmundusHelperUpdate::insertTranslationsTag('JLOGIN_DESC', 'To access your personal space', 'override', null, null, null, 'en-GB');
+
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_forms'))
+					->where($db->quoteName('label') . ' LIKE ' . $db->quote('SETUP_UPLOAD_FILE_FOR_APPLICANT'));
+				$db->setQuery($query);
+				$setup_upload_file_for_applicant_form = $db->loadObject();
+
+				if(!empty($setup_upload_file_for_applicant_form->id)) {
+					$params = json_decode($setup_upload_file_for_applicant_form->params, true);
+
+					foreach ($params['plugin_description'] as $key => $plugin) {
+						if($plugin == 'saved') {
+							$params['curl_code'][$key] = str_replace("parent.$('#em-modal-actions').modal('hide');", "window.parent.document.querySelector('.em-modal-actions .swal2-close').click();", $params['curl_code'][$key]);
+						}
+					}
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_forms'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($setup_upload_file_for_applicant_form->id));
+					$db->setQuery($query);
+					$db->execute();
+				}
 			}
 		}
 

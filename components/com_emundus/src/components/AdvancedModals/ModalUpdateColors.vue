@@ -39,6 +39,7 @@
 <script>
 import axios from "axios";
 import Swal from "sweetalert2";
+import {checkContrast, checkSimilarity} from "../../../../../media/com_emundus/js/settings.js";
 
 const qs = require("qs");
 
