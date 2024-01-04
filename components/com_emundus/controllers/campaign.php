@@ -179,8 +179,11 @@ class EmundusControllerCampaign extends JControllerLegacy {
                         $campaign_time_state_class = 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius';
                     }
 
-                    $start_date = date('d/m/Y H\hi', strtotime($campaign->start_date));
-                    $end_date = date('d/m/Y H\hi', strtotime($campaign->end_date));
+                    if (!class_exists('EmundusHelperDate')) {
+                        require_once JPATH_ROOT . '/components/com_emundus/helpers/date.php';
+                    }
+                    $start_date = EmundusHelperDate::displayDate($campaign->start_date, 'DATE_FORMAT_LC5');
+                    $end_date = EmundusHelperDate::displayDate($campaign->end_date, 'DATE_FORMAT_LC5');
 
                     $state_values = [
                         [
