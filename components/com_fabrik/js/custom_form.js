@@ -78,7 +78,11 @@ requirejs(['fab/fabrik'], function () {
                     });
                 } else {
                     if(e.srcElement.classList.contains('goback-btn')) {
-                        window.history.back();
+                        if(window.history.length > 1) {
+                            window.history.back();
+                        } else {
+                            window.close();
+                        }
                     }
                 }
             }
