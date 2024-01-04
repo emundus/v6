@@ -775,10 +775,14 @@ circle.circle {
     pointer-events: none;
     transition: transform .3s;
     mask-image: url('/modules/mod_emundus_campaign/assets/fond-fonce.svg');
+    -webkit-mask-image: url('/modules/mod_emundus_campaign/assets/fond-fonce.svg');
     background: var(--em-profile-color);
     mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
     mask-position: center;
+    -webkit-mask-position: center;
     mask-size: contain;
+    -webkit-mask-size: contain;
 }
 
 .mod_emundus_applications___content_app #background-shapes {
