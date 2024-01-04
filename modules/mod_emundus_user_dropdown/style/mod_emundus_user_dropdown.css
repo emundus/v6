@@ -401,8 +401,7 @@ div#userDropdown {
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
      #background-shapes {
-        top: 0;
-        right: -4px;
+         display: none;
     }
 
 }

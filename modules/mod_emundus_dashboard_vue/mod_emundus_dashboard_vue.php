@@ -19,6 +19,8 @@ if(in_array(JFactory::getSession()->get('emundusUser')->profile, $profiles)) {
     $programme_filter = $params->get('filter_programmes', 0);
 
 	$display_description = $params->get('display_description', 0);
+	$display_shapes = $params->get('display_shapes', 1);
+	$display_tchoozy = $params->get('display_dashboard_tchoozy', 1);
 	$display_name = $params->get('display_name', 0);
 	$name = JFactory::getSession()->get('emundusUser')->name;
 

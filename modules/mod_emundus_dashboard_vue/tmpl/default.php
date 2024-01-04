@@ -59,6 +59,8 @@ if(!in_array($user->profile, $applicant_profiles)) {
     <div id="em-dashboard-vue"
          programmeFilter="<?= $programme_filter ?>"
          displayDescription="<?= $display_description ?>"
+         displayShapes="<?= $display_shapes ?>"
+         displayTchoozy="<?= $display_tchoozy ?>"
          name="<?= $name ?>"
          language="<?= $language ?>"
          displayName="<?= $display_name ?>"
