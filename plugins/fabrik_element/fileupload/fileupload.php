@@ -3291,6 +3291,11 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 			{
 				foreach ($rows as $row)
 				{
+					if (is_object($row))
+					{
+						$row = (array) $row;
+					}
+
 					if (array_key_exists($elName . '_raw', $row))
 					{
 						if ($this->isJoin())
