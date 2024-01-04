@@ -9,19 +9,19 @@
         border-radius: var(--em-coordinator-br);
         border: unset;
         color: var(--neutral-0);
-        background-color: var(--em-coordinator-primary-color);
+        background-color: var(--em-profile-color);
         border: solid 1px transparent;
         font-family: var(--em-coordinator-font);
         font-size: var(--em-coordinator-font-size) !important;
 
         &:hover, &:focus, &:active {
             background-color: var(--neutral-0);
-            color: var(--em-coordinator-primary-color);
-            border: 1px solid var(--em-coordinator-primary-color);
+            color: var(--em-profile-color);
+            border: 1px solid var(--em-profile-color);
             text-decoration: none;
 
             .material-icons {
-                color: var(--em-coordinator-primary-color) !important;
+                color: var(--em-profile-color) !important;
             }
         }
 

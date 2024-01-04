@@ -8,18 +8,28 @@
 
 .notifications__counter{
   position: absolute;
-  top: 20px;
-  right: 98px;
-  background: red;
-  padding: 10px;
+  top: 12px;
+  right: 153px;
+  background: var(--red-500);
+  padding: 8px;
   border-radius: 50%;
-  width: 20px;
-  height: 21px;
-  color: white;
+  width: 16px;
+  height: 16px;
+  color: var(--neutral-0);
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 16px;
+  font-size: 12px;
+}
+
+.em-messages-container {
+  display: flex;
+  align-items: center;
+}
+
+span[class*="material-icons"].em-messages-modal {
+  color: var(--em-profile-color);
+  font-size: 24px;
 }
 
 @media screen and (max-width: 767px) {

@@ -10,6 +10,8 @@ var loading;
 var moduleFilters = null;
 var refreshModuleFiltersEvent = new Event('refresh-emundus-module-filters');
 
+var $ = jQuery.noConflict();
+
 // to abort all AJAX query at once
 $.ajaxQ = (function(){
     var id = 0, Q = {};
@@ -1111,7 +1113,7 @@ function runAction(action, url = '', option = '') {
 
                                         $('#em-modal-actions').modal('hide');
 
-                                        reloadData();
+                                        reloadData($('#view').val());
                                         reloadActions($('#view').val(), undefined, false);
                                         $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
                                         $('body').removeClass('modal-open');
@@ -1166,7 +1168,7 @@ function runAction(action, url = '', option = '') {
 
                                 $('#em-modal-actions').modal('hide');
 
-                                reloadData();
+                                reloadData($('#view').val());
                                 reloadActions($('#view').val(), undefined, false);
                                 $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
                                 $('body').removeClass('modal-open');
@@ -1234,7 +1236,7 @@ function runAction(action, url = '', option = '') {
 
                     $('#em-modal-actions').modal('hide');
 
-                    reloadData();
+                    reloadData($('#view').val());
                     reloadActions($('#view').val(), undefined, false);
                     $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
                     $('body').removeClass('modal-open');
@@ -1285,7 +1287,7 @@ function runAction(action, url = '', option = '') {
                             window.dispatchEvent(refreshModuleFiltersEvent);
                         }
 
-                        reloadData();
+                        reloadData($('#view').val());
                         reloadActions($('#view').val(), undefined, false);
                         $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
                         $('body').removeClass('modal-open');
@@ -1438,7 +1440,7 @@ function runAction(action, url = '', option = '') {
                         });
                     }
 
-                    reloadData();
+                    reloadData($('#view').val());
                     reloadActions($('#view').val(), undefined, false);
                 },
                 error: function (jqXHR) {
@@ -4805,22 +4807,34 @@ $(document).ready(function() {
                 title = 'COM_EMUNDUS_ACCESS_MAIL_EXPERT';
                 html = '<div id="data" class="em-mt-32 em-w-100"><div id="email-loader" class="em-loader" style="margin: auto;"></div></div>';
 
-                $.ajax({
-                    type:'POST',
-                    url:url,
-                    data: {
+                fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify({
                         fnums: fnums
-                    },
-                    success: function(result) {
-                        $('#data').append(result);
+                    })
+                }).then(function (response) {
+                    // The API call was successful!
+                    return response.text();
+                }).then(function (html) {
+                    // This is the HTML from our response as a text string
+                    const dataWrapper = document.getElementById('data');
+
+                    if (dataWrapper) {
+                        dataWrapper.innerHTML = html;
                         document.querySelector('.em-swal-confirm-button').style.opacity = '0';
                         $('#email-loader').remove();
-                        $('#data').removeClass('em-loader');
-                    },
-                    error: function (jqXHR) {
-                        console.log(jqXHR.responseText);
+                        dataWrapper.classList.remove('em-loader');
+                    }
+                }).catch(function (err) {
+                    // There was an error
+                    const dataWrapper = document.getElementById('data');
+                    if (dataWrapper) {
+                        dataWrapper.classList.remove('em-loader');
+                        dataWrapper.innerHTML = '<p class="alert alert-error">' + Joomla.JText._('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE') +'</p>';
+                        console.warn(err);
                     }
                 });
+
                 break;
 
             default:
@@ -5807,7 +5821,7 @@ $(document).ready(function() {
                                                 $('#em-modal-sending-emails').css('display', 'none');
                                                 $('#em-modal-actions').modal('hide');
 
-                                                reloadData();
+                                                reloadData($('#view').val());
                                                 reloadActions($('#view').val(), undefined, false);
                                                 $('.modal-backdrop, .modal-backdrop.fade.in').css('display', 'none');
                                                 $('body').removeClass('modal-open');
@@ -5852,7 +5866,7 @@ $(document).ready(function() {
                                                 $('#em-modal-sending-emails').css('display', 'none');
                                                 $('#em-modal-actions').modal('hide');
 
-                                                reloadData();
+                                                reloadData($('#view').val());
                                                 reloadActions($('#view').val(), undefined, false);
                                                 $('.modal-backdrop, .modal-backdrop.fade.in').css('display', 'none');
                                                 $('body').removeClass('modal-open');
@@ -6735,7 +6749,7 @@ function sendMail(data)
 
                     addLoader();
 
-                    reloadData();
+                    reloadData($('#view').val());
                     reloadActions($('#view').val(), undefined, false);
 
                     Swal.fire({
@@ -6786,7 +6800,7 @@ function sendMail(data)
                     success: function(tags) {
                         addLoader();
 
-                        reloadData();
+                        reloadData($('#view').val());
                         reloadActions($('#view').val(), undefined, false);
 
                         Swal.fire({

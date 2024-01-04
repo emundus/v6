@@ -83,7 +83,7 @@ echo <<<EOT
 
 .pagination ul > .suivantPagination > a, .pagination ul > .active > a {
 	background-color:white!important;
-	color:#de6339 !important;
+	color: var(--em-profile-color) !important;
 }
 
 .fabrikButtonsContainer a {

@@ -246,7 +246,7 @@ class PlgUserJoomla extends JPlugin
 		if ($instance->block == 1)
 		{
 			$this->app->enqueueMessage(Text::_('JERROR_NOLOGIN_BLOCKED'), 'warning');
-			$this->app->logout($instance->id);
+
 			return false;
 		}
 

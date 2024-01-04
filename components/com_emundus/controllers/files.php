@@ -1318,19 +1318,15 @@ class EmundusControllerFiles extends JControllerLegacy
 	    $query = $db->getQuery(true);
 
         foreach ($fnums as $fnum) {
-            if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum) && $fnum != 'em-check-all-all' && $fnum != 'em-check-all') {
+            if ($fnum != 'em-check-all-all' && $fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
                 $validFnums[] = $fnum;
-
-				$query->clear()
-					->select('applicant_id')
-					->from($db->quoteName('#__emundus_campaign_candidature'))
-					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
-				$db->setQuery($query);
-				$applicant_id = $db->loadResult();
-
-	            EmundusModelLogs::log(JFactory::getUser()->id, (int) $applicant_id, $fnum, 6, 'c', 'COM_EMUNDUS_ACCESS_EXPORT_EXCEL');
-            }
+			}
         }
+
+		if (!empty($validFnums)) {
+			EmundusModelLogs::logs(JFactory::getUser()->id, $validFnums, 6, 'c', 'COM_EMUNDUS_ACCESS_EXPORT_EXCEL');
+		}
+
         $totalfile = count($validFnums);
 
         $session = JFactory::getSession();
@@ -1435,6 +1431,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $opts       = $jinput->getString('opts', null);
         $methode    = $jinput->getString('methode', null);
         $objclass   = $jinput->get('objclass', null);
+	    $lines      = $jinput->get('lines', 0);
         $excel_file_name = $jinput->get('excelfilename', null);
         $opts = $this->getcolumn($opts);
 
@@ -1460,7 +1457,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $ordered_elements[$c] = $elements[$c];
         }
 
-		$failed_with_old_method = false;
+	    $failed_with_old_method = false;
 		if ($methode == 2) {
 			$fnumsArray = $m_files->getFnumArray($fnums, $ordered_elements, $methode, $start, $limit, 0);
 			if ($fnumsArray === false) {
@@ -1677,6 +1674,7 @@ class EmundusControllerFiles extends JControllerLegacy
 					$encryption_key = JFactory::getConfig()->get('secret');
 				}
 
+				$already_counted_fnums = array();
 				// On parcours les fnums
 				foreach ($fnumsArray as $fnum) {
 					// On traite les données du fnum
@@ -1810,8 +1808,14 @@ class EmundusControllerFiles extends JControllerLegacy
 					}
 					// On met les données du fnum dans le CSV
 					$element_csv[] = $line;
-					$line = "";
-					$i++;
+					$line = '';
+
+					if (!in_array($fnum['fnum'], $already_counted_fnums, true)) {
+						$already_counted_fnums[] = $fnum['fnum'];
+						$i++;
+					}
+
+					$lines++;
 				}
 			}
 
@@ -1832,7 +1836,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 			$start = $i;
 
-			$dataresult = array('start' => $start, 'limit'=>$limit, 'totalfile'=> $totalfile,'methode'=>$methode,'elts'=>$elts, 'objs'=> $objs, 'nbcol' => $nbcol,'file'=>$file, 'excelfilename'=>$excel_file_name );
+			$dataresult = array('start' => $start, 'limit'=>$limit, 'totalfile'=> $totalfile,'methode'=>$methode,'elts'=>$elts, 'objs'=> $objs, 'nbcol' => $nbcol,'file'=>$file, 'excelfilename'=>$excel_file_name, 'lines' => $lines);
 			$result = array('status' => true, 'json' => $dataresult);
 		} else {
 			$result = array('status' => false, 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FAILED'));
@@ -2090,9 +2094,6 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
                     if ($attachment || !empty($attachment_to_export)) {
                         $files = $m_application->getAttachmentsByFnum($fnum, $ids, $attachment_to_export);
-                        if ($options[0] != "0") {
-                            $files_list[] = EmundusHelperExport::buildHeaderPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $options);
-                        }
                         $files_export = EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
                     }
                 }
@@ -2796,7 +2797,6 @@ class EmundusControllerFiles extends JControllerLegacy
                         $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('COM_EMUNDUS_ASSOCIATED_USERS'));
                         break;
                     case 'overall':
-						echo '<pre>'; var_dump('here'); echo '</pre>'; die;
                         $objPHPSpreadsheet->getActiveSheet()->setCellValue([$col, $line], JText::_('COM_EMUNDUS_EVALUATIONS_OVERALL'));
                         break;
                 }
@@ -3064,48 +3064,49 @@ class EmundusControllerFiles extends JControllerLegacy
 		                    }
 	                    }
 
-						// TODO: weird to use attachment_to_export here, should be $file_ids instead ? it has been like this for a long time, so I'm not sure
-                        $setup_attachments = $m_files->getSetupAttachmentsById($attachment_to_export);
-                        if (!empty($setup_attachments) && !empty($files)) {
-                            foreach($setup_attachments as $att) {
-                                if (!empty($files)) {
-                                    foreach ($files as $file) {
-                                        if ($file['attachment_id'] == $att['id']) {
-                                            $filename = $application_form_name . DS . $file['filename'];
-                                            $dossier = EMUNDUS_PATH_ABS . $users[$file['fnum']]->id . DS;
-                                            if (file_exists($dossier . $file['filename'])) {
-                                                if (!$zip->addFile($dossier . $file['filename'], $filename)) {
-                                                    continue;
-                                                }
-                                            } else {
-                                                $zip->addFromString($filename."-missing.txt", '');
-                                            }
-                                        } elseif (!in_array($att['id'], $file_ids)) {
-                                            $zip->addFromString($application_form_name.DS.str_replace('_', "", $att['lbl'])."-notfound.txt", '');
-                                        }
-                                    }
-                                } elseif (empty($files)) {
-                                    foreach ($setup_attachments as $att) {
-                                        $zip->addFromString($application_form_name . DS .str_replace('_', "", $att['lbl']) ."-notfound.txt", '');
-                                    }
-                                }
-                            }
-                        } elseif (!empty($files)) {
-                            foreach ($files as $file) {
-                                $filename = $application_form_name . DS . $file['filename'];
-                                $dossier = EMUNDUS_PATH_ABS . $users[$file['fnum']]->id . DS;
-                                if (file_exists($dossier . $file['filename'])) {
-                                    if (!$zip->addFile($dossier . $file['filename'], $filename)) {
-                                        continue;
-                                    }
-                                } else {
-                                    $zip->addFromString($filename."-missing.txt", '');
-                                }
-                            }
-                        } elseif (empty($files)) {
-                            foreach ($setup_attachments as $att) {
-                                $zip->addFromString($application_form_name . DS .str_replace('_', "", $att['lbl']) ."-notfound.txt", '');
-                            }
+						if(!empty($file_ids)) {
+	                        $setup_attachments = $m_files->getSetupAttachmentsById($file_ids);
+	                        if (!empty($setup_attachments) && !empty($files)) {
+	                            foreach($setup_attachments as $att) {
+	                                if (!empty($files)) {
+	                                    foreach ($files as $file) {
+	                                        if ($file['attachment_id'] == $att['id']) {
+	                                            $filename = $application_form_name . DS . $file['filename'];
+	                                            $dossier = EMUNDUS_PATH_ABS . $users[$file['fnum']]->id . DS;
+	                                            if (file_exists($dossier . $file['filename'])) {
+	                                                if (!$zip->addFile($dossier . $file['filename'], $filename)) {
+	                                                    continue;
+	                                                }
+	                                            } else {
+	                                                $zip->addFromString($filename."-missing.txt", '');
+	                                            }
+	                                        } elseif (!in_array($att['id'], $file_ids)) {
+	                                            $zip->addFromString($application_form_name.DS.str_replace('_', "", $att['lbl'])."-notfound.txt", '');
+	                                        }
+	                                    }
+	                                } elseif (empty($files)) {
+	                                    foreach ($setup_attachments as $att) {
+	                                        $zip->addFromString($application_form_name . DS .str_replace('_', "", $att['lbl']) ."-notfound.txt", '');
+	                                    }
+	                                }
+	                            }
+	                        } elseif (!empty($files)) {
+	                            foreach ($files as $file) {
+	                                $filename = $application_form_name . DS . $file['filename'];
+	                                $dossier = EMUNDUS_PATH_ABS . $users[$file['fnum']]->id . DS;
+	                                if (file_exists($dossier . $file['filename'])) {
+	                                    if (!$zip->addFile($dossier . $file['filename'], $filename)) {
+	                                        continue;
+	                                    }
+	                                } else {
+	                                    $zip->addFromString($filename."-missing.txt", '');
+	                                }
+	                            }
+	                        } elseif (empty($files)) {
+	                            foreach ($setup_attachments as $att) {
+	                                $zip->addFromString($application_form_name . DS .str_replace('_', "", $att['lbl']) ."-notfound.txt", '');
+	                            }
+	                        }
                         }
                     }
                 }
@@ -4124,6 +4125,50 @@ class EmundusControllerFiles extends JControllerLegacy
 		echo json_encode($response);
 		exit;
 	}
+
+    public function getFiltersAvailable()
+    {
+        $response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
+        $user = JFactory::getUser();
+
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+            $response['msg'] = JText::_('MISSING_PARAMS');
+            $module_id = JFactory::getApplication()->input->getInt('module_id', 0);
+
+            if (!empty($module_id)) {
+                $response['msg'] = JText::_('NO_CALCULATION_FOR_THIS_MODULE');
+
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select('params')
+                    ->from('#__modules')
+                    ->where('id = ' . $db->quote($module_id));
+
+                $db->setQuery($query);
+                $module_params = $db->loadResult();
+                $module_params = json_decode($module_params, true);
+
+                try {
+                    if (!class_exists('EmundusFiltersFiles')) {
+                        require_once(JPATH_ROOT . '/components/com_emundus/classes/filters/EmundusFiltersFiles.php');
+                    }
+                    $m_filters = new EmundusFiltersFiles($module_params);
+
+                    $response['data'] = $m_filters->getFilters();
+                    $response['status'] = true;
+                    $response['code'] = 200;
+                } catch (Exception $e) {
+                    $response['code'] = 500;
+                    $response['msg'] = $e->getMessage();
+                }
+            }
+        }
+
+        echo json_encode($response);
+        exit;
+    }
+
 
     public function setFiltersValuesAvailability()
     {

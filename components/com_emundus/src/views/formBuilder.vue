@@ -51,7 +51,7 @@
             </div>
           </div>
           <div class="tab-content em-flex-start">
-            <form-builder-elements v-if="leftPanelActiveTab === 'Elements'" @element-created="onElementCreated">
+            <form-builder-elements v-if="leftPanelActiveTab === 'Elements'" @element-created="onElementCreated" :form="currentPage">
             </form-builder-elements>
             <form-builder-document-formats
                 v-else-if="leftPanelActiveTab === 'Documents'"
@@ -206,7 +206,7 @@ export default {
 				]
 	    },
       showInRightPanel: 'hierarchy',
-      createDocumentMandatory: true,
+      createDocumentMandatory: '1',
       lastSave: null,
       leftPanel: {
         tabs: [
@@ -555,6 +555,7 @@ export default {
     padding: 4px 8px !important;
     border-radius: 4px;
     margin-bottom: 0;
+    height: 30px;
 
     &:focus {
       background-color: #DFF5E9;

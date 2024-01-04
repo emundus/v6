@@ -13,7 +13,7 @@ class EmundusFiltersFiles extends EmundusFilters
 	private $menu_params = null;
 	private $h_cache = null;
 
-	public function __construct($config = array())
+	public function __construct($config = array(), $skip = false)
 	{
 		JLog::addLogger(['text_file' => 'com_emundus.filters.php'], JLog::ALL, 'com_emundus.filters');
 		$this->user = JFactory::getUser();
@@ -28,36 +28,67 @@ class EmundusFiltersFiles extends EmundusFilters
 		$this->user_campaigns = $this->m_users->getAllCampaignsAssociatedToUser($this->user->id);
 		$this->user_programs = $this->m_users->getUserGroupsProgrammeAssoc($this->user->id, 'jesp.id');
 
-		$this->setMenuParams();
+		if (!$skip) {
+			$this->setMenuParams();
+			$this->setProfiles();
+            $this->setDefaultFilters($config);
+            $this->setFilters();
 
-		$this->setProfiles();
-		$this->setDefaultFilters($config);
-		$this->setFilters();
+			$session_filters = JFactory::getSession()->get('em-applied-filters', null);
+			if (!empty($session_filters)) {
+				$this->addSessionFilters($session_filters);
+				$this->checkFiltersAvailability();
+			}
 
-		$session_filters = JFactory::getSession()->get('em-applied-filters', null);
-		if (!empty($session_filters)) {
-			$this->addSessionFilters($session_filters);
-			$this->checkFiltersAvailability();
+			$quick_search_filters = JFactory::getSession()->get('em-quick-search-filters', null);
+			if (!empty($quick_search_filters)) {
+				$this->setQuickSearchFilters($quick_search_filters);
+			}
+
+			$this->saveFiltersAllValues();
+
+			if ($this->config['count_filter_values']) {
+				require_once JPATH_ROOT . '/components/com_emundus/helpers/files.php';
+				$helper_files = new EmundusHelperFiles();
+				$this->applied_filters = $helper_files->setFiltersValuesAvailability($this->applied_filters);
+			}
 		}
-
-		$quick_search_filters = JFactory::getSession()->get('em-quick-search-filters', null);
-		if (!empty($quick_search_filters)) {
-			$this->setQuickSearchFilters($quick_search_filters);
-		}
-
-        $this->saveFiltersAllValues();
-
-        if ($this->config['count_filter_values']) {
-            require_once JPATH_ROOT . '/components/com_emundus/helpers/files.php';
-            $helper_files = new EmundusHelperFiles();
-            $this->applied_filters = $helper_files->setFiltersValuesAvailability($this->applied_filters);
-        }
     }
 
 	private function setMenuParams() {
 		$menu = JFactory::getApplication()->getMenu();
-		$active = $menu->getActive();
-		$this->menu_params = $active->params;
+        $active = $menu->getActive();
+        if (!empty($active)) {
+            $this->menu_params = $active->params;
+        } else {
+            // get default file menu of current user profile
+            $profile_id = $this->m_users->getCurrentUserProfile($this->user->id);
+
+            if (!empty($profile_id)) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select('menu.id')
+                    ->from($db->quoteName('#__menu', 'menu'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'profile') . ' ON ' . $db->quoteName('profile.menutype') . ' = ' . $db->quoteName('menu.menutype'))
+                    ->where('profile.id = '. $db->quote($profile_id))
+                    ->andWhere('menu.published = 1')
+                    ->andWhere('menu.link LIKE "%index.php?option=com_emundus&view=files%"');
+
+                $db->setQuery($query);
+                $menu_id = $db->loadResult();
+
+                // get menu params
+                if (!empty($menu_id)) {
+                    $menu = $menu->getItem($menu_id);
+                    $this->menu_params = $menu->params;
+                }
+            }
+        }
+
+        if (empty($this->menu_params)) {
+            throw new Exception('Menu params not found', 404);
+        }
 	}
 
 	private function setProfiles()
@@ -204,8 +235,8 @@ class EmundusFiltersFiles extends EmundusFilters
 							$elements_by_form[$element['element_form_id']][] = $element;
 						}
 
-						foreach($elements_by_form as $form_id => $elements) {
-							$this->h_cache->set('elements_from_form_' . $form_id, $elements);
+						foreach($elements_by_form as $form_id => $element_by_form) {
+							$this->h_cache->set('elements_from_form_' . $form_id, $element_by_form);
 						}
 					}
 				} catch (Exception $e) {
@@ -222,15 +253,18 @@ class EmundusFiltersFiles extends EmundusFilters
 
 		if ($this->h_cache->isEnabled()) {
 			$menu = JFactory::getApplication()->getMenu();
-			$active_menu = $menu->getActive();
-			if (!empty($active_menu)) {
-				$cache_default_filters = $this->h_cache->get('em_default_filters_' . $active_menu->id);
 
-				if (!empty($cache_default_filters)) {
-					$this->applied_filters = array_merge($this->applied_filters, $cache_default_filters);
-					$found_from_cache = true;
-				}
-			}
+            if (!empty($menu)) {
+                $active_menu = $menu->getActive();
+                if (!empty($active_menu)) {
+                    $cache_default_filters = $this->h_cache->get('em_default_filters_' . $active_menu->id);
+
+                    if (!empty($cache_default_filters)) {
+                        $this->applied_filters = array_merge($this->applied_filters, $cache_default_filters);
+                        $found_from_cache = true;
+                    }
+                }
+            }
 		}
 
 		if (!$found_from_cache) {
@@ -528,43 +562,81 @@ class EmundusFiltersFiles extends EmundusFilters
 	}
 
     private function checkFiltersAvailability() {
-        // get campaign filter by uid
-        $campaign_filter = null;
+        $campaign_availables = $this->user_campaigns;
 
+        $campaign_filter = null;
+        $program_filter = null;
         foreach($this->applied_filters as $filter) {
             if($filter['uid'] == 'campaigns') {
                 $campaign_filter = $filter;
-                break;
+            } else if ($filter['uid'] == 'programs') {
+                $program_filter = $filter;
             }
         }
 
         if (!empty($campaign_filter) && !empty($campaign_filter['value'])) {
-            // if the operator is NOT IN or !=, we need to get fabrik elements associated to campaigns that are not in the filter
-            switch($campaign_filter['operator']) {
-                case 'NOT IN':
-                case '!=':
-                    $campaign_availables = array_diff($this->user_campaigns, $campaign_filter['value']);
-                    break;
-                default:
-                    $campaign_availables = array_intersect($this->user_campaigns, $campaign_filter['value']);
-                    break;
-            }
-
-            if (!empty($campaign_availables)) {
-                $filtered_profiles = $this->getProfilesFromCampaignId($campaign_availables);
-
-                if (!empty($filtered_profiles)) {
-                    $element_ids_available = $this->getElementIdsAssociatedToProfile($filtered_profiles);
-
-                    // TODO: this should not be applied if element filter comes from config more_fabrik_forms
-                    foreach($this->filters as $key => $filter) {
-                        if (!in_array($filter['id'], $element_ids_available)) {
-                            $this->filters[$key]['available'] = false;
-                        }
-                    }
-                }
-            }
+			if (is_array($campaign_filter['value']) && in_array('all', $campaign_filter['value'])) {
+				// stop here, all campaigns are selected
+			} else {
+				// if the operator is NOT IN or !=, we need to get fabrik elements associated to campaigns that are not in the filter
+				switch($campaign_filter['operator']) {
+					case 'NOT IN':
+					case '!=':
+						$campaign_availables = array_diff($this->user_campaigns, $campaign_filter['value']);
+						break;
+					default:
+						$campaign_availables = array_intersect($this->user_campaigns, $campaign_filter['value']);
+						break;
+				}
+			}
         }
+
+        if (!empty($program_filter) && !empty($program_filter['value'])) {
+	        if (is_array($program_filter['value']) && in_array('all', $program_filter['value'])) {
+		        // stop here, all campaigns are selected
+	        } else {
+		        // get campaigns associated to programs
+		        $db = JFactory::getDbo();
+		        $query = $db->getQuery(true);
+
+		        $query->select('DISTINCT esc.id')
+			        ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
+			        ->join('INNER', $db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON (' . $db->quoteName('esc.training') . ' = ' . $db->quoteName('esp.code') . ')')
+			        ->where($db->quoteName('esp.id') . ' IN (' . implode(',', $program_filter['value']) . ')')
+			        ->where('esc.published = 1')
+			        ->andWhere('esc.id IN (' . implode(',', $this->user_campaigns) . ')');
+
+		        $db->setQuery($query);
+		        $campaigns_of_program = $db->loadColumn();
+
+		        if (!empty($campaigns_of_program)) {
+			        // if the operator is NOT IN or !=, we need to get fabrik elements associated to campaigns that are not in the filter
+			        switch($program_filter['operator']) {
+				        case 'NOT IN':
+				        case '!=':
+					        $campaign_availables = array_diff($this->user_campaigns, $campaigns_of_program);
+					        break;
+				        default:
+					        $campaign_availables = array_intersect($this->user_campaigns, $campaigns_of_program);
+					        break;
+			        }
+		        }
+	        }
+		}
+
+	    if (!empty($campaign_availables)) {
+		    $filtered_profiles = $this->getProfilesFromCampaignId($campaign_availables);
+
+		    if (!empty($filtered_profiles)) {
+			    $element_ids_available = $this->getElementIdsAssociatedToProfile($filtered_profiles);
+
+			    foreach($this->filters as $key => $filter) {
+				    if (!in_array($filter['id'], $element_ids_available)) {
+					    $this->filters[$key]['available'] = false;
+				    }
+			    }
+		    }
+	    }
     }
 
 	private function getElementIdsAssociatedToProfile($profile_ids)
@@ -572,23 +644,59 @@ class EmundusFiltersFiles extends EmundusFilters
         $element_ids = [];
 
         if (!empty($profile_ids)) {
-            $menus = [];
-            foreach ($profile_ids as $profile) {
-                $menus[] = 'menu-profile' . $profile;
-            }
-
-            // get all forms associated to the user's profiles
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
 
-            $query->select('link')
-                ->from('#__menu')
-                ->where('menutype IN (' . implode(',', $db->quote($menus)) . ')')
-                ->andWhere('link LIKE "index.php?option=com_fabrik&view=form&formid=%"')
-                ->andWhere('published = 1');
+            $menus = [];
+            $form_links = [];
+            foreach ($profile_ids as $profile) {
+                if ($this->h_cache->isEnabled()) {
+                    $profile_form_links = $this->h_cache->get('em-filters-profile-' . $profile . '-form');
 
-            $db->setQuery($query);
-            $form_links = $db->loadColumn();
+                    if (!empty($profile_form_links)) {
+                        $form_links = array_merge($form_links, $profile_form_links);
+                        continue;
+                    }
+                }
+
+                $menus[] = 'menu-profile' . $profile;
+            }
+
+            if (!empty($menus)) {
+                if ($this->h_cache->isEnabled()) {
+                    $query->select('link, menutype')
+                        ->from('#__menu')
+                        ->where('menutype IN (' . implode(',', $db->quote($menus)) . ')')
+                        ->andWhere('link LIKE "index.php?option=com_fabrik&view=form&formid=%"')
+                        ->andWhere('published = 1');
+
+                    $db->setQuery($query);
+                    $form_menus = $db->loadAssocList();
+
+                    $form_links_by_profile = [];
+
+                    foreach($form_menus as $form_menu) {
+                        $profile_id = (int)str_replace('menu-profile', '', $form_menu['menutype']);
+                        $form_links[] = $form_menu['link'];
+                        $form_links_by_profile[$profile_id][] = $form_menu['link'];
+                    }
+
+                    foreach ($profile_ids as $profile) {
+                        if (!empty($form_links_by_profile[$profile])) {
+                            $this->h_cache->set('em-filters-profile-' . $profile . '-form', $form_links_by_profile[$profile]);
+                        }
+                    }
+                } else {
+                    $query->select('link')
+                        ->from('#__menu')
+                        ->where('menutype IN (' . implode(',', $db->quote($menus)) . ')')
+                        ->andWhere('link LIKE "index.php?option=com_fabrik&view=form&formid=%"')
+                        ->andWhere('published = 1');
+
+                    $db->setQuery($query);
+                    $form_links = $db->loadColumn();
+                }
+            }
 
             if (!empty($form_links)) {
                 $form_ids = [];
@@ -597,20 +705,63 @@ class EmundusFiltersFiles extends EmundusFilters
                 }
                 $form_ids = array_unique($form_ids);
 
-                $query->clear()
-                    ->select('jfe.id')
-                    ->from('jos_fabrik_elements as jfe')
-                    ->join('inner', 'jos_fabrik_formgroup as jffg ON jfe.group_id = jffg.group_id')
-                    ->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
-                    ->where('jffg.form_id IN (' . implode(',', $form_ids) . ')')
-                    ->andWhere('jfe.published = 1')
-                    ->andWhere('jfe.hidden = 0');
+                if ($this->h_cache->isEnabled()) {
+                    $form_ids_cached = [];
+                    foreach ($form_ids as $form_id) {
+                        $form_element_ids = $this->h_cache->get('em-filters-form-' . $form_id . '-element');
 
-                try {
-                    $db->setQuery($query);
-                    $element_ids = $db->loadColumn();
-                } catch (Exception $e) {
-                    JLog::add('Failed to get elements associated to profiles that current user can access : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+                        if (!empty($form_element_ids)) {
+                            $element_ids = array_merge($element_ids, $form_element_ids);
+                            $form_ids_cached[] = $form_id;
+                        }
+                    }
+
+                    $form_ids = array_diff($form_ids, $form_ids_cached);
+                    if (!empty($form_ids)) {
+                        $query->clear()
+                            ->select('jfe.id as element_id, jff.id as form_id')
+                            ->from('jos_fabrik_elements as jfe')
+                            ->join('inner', 'jos_fabrik_formgroup as jffg ON jfe.group_id = jffg.group_id')
+                            ->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
+                            ->where('jffg.form_id IN (' . implode(',', $form_ids) . ')')
+                            ->andWhere('jfe.published = 1')
+                            ->andWhere('jfe.hidden = 0');
+
+                        try {
+                            $db->setQuery($query);
+                            $ids = $db->loadAssocList();
+
+                            $element_ids_by_form = [];
+                            foreach ($ids as $id) {
+                                $element_ids_by_form[$id['form_id']][] = $id['element_id'];
+                                $element_ids[] = $id['element_id'];
+                            }
+
+                            foreach ($form_ids as $form_id) {
+                                if (!empty($element_ids_by_form[$form_id])) {
+                                    $this->h_cache->set('em-filters-form-' . $form_id . '-elements', $element_ids_by_form[$form_id]);
+                                }
+                            }
+                        } catch (Exception $e) {
+                            JLog::add('Failed to get elements associated to profiles that current user can access : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+                        }
+                    }
+                } else {
+                    $query->clear()
+                        ->select('jfe.id')
+                        ->from('jos_fabrik_elements as jfe')
+                        ->join('inner', 'jos_fabrik_formgroup as jffg ON jfe.group_id = jffg.group_id')
+                        ->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
+                        ->where('jffg.form_id IN (' . implode(',', $form_ids) . ')')
+                        ->andWhere('jfe.published = 1')
+                        ->andWhere('jfe.hidden = 0');
+
+                    try {
+                        $db->setQuery($query);
+                        $element_ids = $db->loadColumn();
+                    } catch (Exception $e) {
+                        JLog::add('Failed to get elements associated to profiles that current user can access : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+                    }
                 }
             }
         }

@@ -1,5 +1,15 @@
 <template>
   <div id="app">
+    <div class="profile_widget">
+      <div class="profile_widget-text">
+        <h1 v-if="language == 1">{{ translate('COM_EMUNDUS_DASHBOARD_AREA')}} <span class="em-lowercase" v-if="profile_name !== ''">{{ profile_name }}</span><span v-else>{{ translate('COM_EMUNDUS_DASHBOARD_EMPTY_LABEL')}}</span></h1>
+        <h1 v-else><span v-if="profile_name!== ''">{{ profile_name }}</span><span v-else>{{ translate('COM_EMUNDUS_DASHBOARD_EMPTY_LABEL')}}</span> <span class="em-lowercase">{{ translate('COM_EMUNDUS_DASHBOARD_AREA')}}</span></h1>
+        <p v-if="displayName == 1">{{ translate('COM_EMUNDUS_DASHBOARD_HELLO') }} {{name}} {{ translate('COM_EMUNDUS_DASHBOARD_WELCOME') }}</p>
+        <p v-if="displayDescription == 1">{{profile_description}}</p>
+      </div>
+      <div class="profile_widget-container"></div>
+    </div>
+
     <draggable
         v-model="widgets"
         :disabled="!enableDrag"
@@ -32,7 +42,13 @@ import Custom from "@/components/Custom";
 export default {
   name: 'App',
   props: {
-    programmeFilter: Number
+    programmeFilter: Number,
+    displayDescription: Number,
+    displayName: Number,
+    name: Text,
+    language: Number,
+    profile_name: String,
+    profile_description: String,
   },
   components: {
     Custom,
@@ -49,13 +65,12 @@ export default {
         filterByProgram: "",
       },
       status: null,
-      enableDrag: false
+      enableDrag: false,
     }
   },
   created() {
     this.getTranslations();
     this.getWidgets();
-    this.getPaletteColors();
     if(this.programmeFilter == 1){
       this.getProgrammes();
     }
@@ -65,6 +80,7 @@ export default {
       this.translations = {
         all: this.translate("COM_EMUNDUS_DASHBOARD_ALL_PROGRAMMES"),
         filterByProgram: this.translate("COM_EMUNDUS_DASHBOARD_FILTER_BY_PROGRAMMES"),
+        profilArea: this.translate("COM_EMUNDUS_DASHBOARD_OK "),
       };
     },
     getWidgets(){
@@ -73,15 +89,6 @@ export default {
         url: "index.php?option=com_emundus&controller=dashboard&task=getwidgets",
       }).then(response => {
         this.widgets = response.data.data;
-      });
-    },
-
-    getPaletteColors(){
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus&controller=dashboard&task=getpalettecolors",
-      }).then(response => {
-        this.colors = response.data.data;
       });
     },
 
@@ -98,6 +105,7 @@ export default {
 </script>
 
 <style scoped>
+
 #app > div{
   display: flex;
   flex-wrap: wrap;

@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## 2.7.0 - UPCOMING
+
+* Fixed flattening in arrays starting with null
+* Drop support for HHVM and PHP earlier than 7.2.5.
+* Add support for PHP 8.1, 8.2, and 8.3.
+
+## 2.6.0 - 2020-07-31
+
+* Support for PHP 8.0.
+
+## 2.5.0 - 2019-12-30
+
+* Full support for PHP 7.0-7.4.
+* Fixed autoloading when run from within vendor folder.
+* Full multibyte (UTF-8) string support.
+
 ## 2.4.0 - 2016-12-03
 
 * Added support for floats when interpreting data.

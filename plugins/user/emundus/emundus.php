@@ -9,6 +9,9 @@
  */
 
 // No direct access
+use Joomla\CMS\User\User;
+use Joomla\CMS\User\UserHelper;
+
 defined('_JEXEC') or die( 'Restricted access' );
 
 jimport('joomla.plugin.plugin');
@@ -48,6 +51,7 @@ class plgUserEmundus extends JPlugin
 
         $db->setQuery('SHOW TABLES');
         $tables = $db->loadColumn();
+
         foreach($tables as $table) {
             if (strpos($table, '_messages')>0 && !strpos($table, '_eb_'))
                 $query = 'DELETE FROM '.$table.' WHERE user_id_from = '.(int) $user['id'].' OR user_id_to = '.(int) $user['id'];
@@ -74,15 +78,22 @@ class plgUserEmundus extends JPlugin
         }
 
         $dir = EMUNDUS_PATH_ABS.$user['id'].DS;
-        if (!$dh = @opendir($dir))
-            return false;
-        while (false !== ($obj = readdir($dh))) {
-            if ($obj == '.' || $obj == '..') continue;
-            if (!@unlink($dir.$obj))
-                JFactory::getApplication()->enqueueMessage(JText::_("FILE_NOT_FOUND")." : ".$obj."\n", 'error');
-        }
-        closedir($dh);
-        @rmdir($dir);
+		if(is_dir($dir)) {
+			if (!$dh = opendir($dir)) {
+				JFactory::getApplication()->enqueueMessage(JText::_("JERROR_AN_ERROR_HAS_OCCURRED"), 'error');
+				return false;
+			}
+
+			while (false !== ($obj = readdir($dh))) {
+				if ($obj == '.' || $obj == '..') continue;
+				if (!unlink($dir . $obj)) {
+					JFactory::getApplication()->enqueueMessage(JText::_("FILE_NOT_FOUND") . " : " . $obj . "\n", 'error');
+				}
+			}
+
+			closedir($dh);
+			rmdir($dir);
+		}
 
 	    // Send email to inform applicant
 	    if($this->params->get('send_email_delete', 0) == 1) {
@@ -274,15 +285,17 @@ class plgUserEmundus extends JPlugin
             if ($isnew) {
 
                 // Update name and firstname from #__users
-                $db->setQuery(' UPDATE #__users SET name='.$db->quote(ucfirst($firstname)).' '.$db->quote(strtoupper($lastname)).',
+                $query = 'UPDATE #__users SET name='.$db->quote(ucfirst($firstname)).' '.$db->quote(strtoupper($lastname)).',
                                 usertype = (SELECT u.title FROM #__usergroups AS u
                                                 LEFT JOIN #__user_usergroup_map AS uum ON u.id=uum.group_id
                                                 WHERE uum.user_id='.$user['id'].' ORDER BY uum.group_id DESC LIMIT 1) 
-                                WHERE id='.$user['id']);
+                                WHERE id='.$user['id'];
+                $db->setQuery($query);
                 try {
                     $db->execute();
                 } catch (Exception $e) {
                     // catch any database errors.
+                    JLog::add('Error at query: ' . $query . ' -> ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
                 }
 
                 if (isset($campaign_id) && !empty($campaign_id)) {
@@ -308,6 +321,7 @@ class plgUserEmundus extends JPlugin
                     $db->execute();
                 } catch (Exception $e) {
                     // catch any database errors.
+                    JLog::add('Error at query: ' . $query . ' -> ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
                 }
 
                 // Insert data in #__emundus_users_profiles
@@ -325,6 +339,7 @@ class plgUserEmundus extends JPlugin
                     $db->execute();
                 } catch (Exception $e) {
                     // catch any database errors.
+                    JLog::add('Error at query: ' . $query . ' -> ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
                 }
 
                 if (isset($campaign_id) && !empty($campaign_id)) {
@@ -335,6 +350,7 @@ class plgUserEmundus extends JPlugin
                         $db->execute();
                     } catch (Exception $e) {
                         // catch any database errors.
+                        JLog::add('Error at query: ' . $query . ' -> ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
                     }
                 }
 
@@ -360,7 +376,7 @@ class plgUserEmundus extends JPlugin
 	                    $e_session->email = $details['email1'];
 						JFactory::getSession()->set('emundusUser', $e_session);
                     }
-					
+
                 } catch (Exception $e) {
                     JLog::add('Error at line ' . __LINE__ . ' of file ' . __FILE__ . ' : ' . '. Error is : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
                 }
@@ -390,6 +406,19 @@ class plgUserEmundus extends JPlugin
         $app = JFactory::getApplication();
         $jinput = JFactory::getApplication()->input;
         $redirect = $jinput->get->getBase64('redirect');
+
+	    $instance = User::getInstance();
+	    $id = (int) UserHelper::getUserId($user['username']);
+
+	    if ($id)
+	    {
+		    $instance->load($id);
+	    }
+
+	    if ($instance->block == 1)
+	    {
+		    return false;
+	    }
 
         if (empty($redirect)) {
             parse_str($jinput->server->getVar('HTTP_REFERER'), $return_url);

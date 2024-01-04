@@ -147,7 +147,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
             $filter = $jinput->getString('filter', '');
             $sort = $jinput->getString('sort', '');
             $recherche = $jinput->getString('recherche', '');
-            $lim = $jinput->getInt('lim', 25);
+            $lim = $jinput->getInt('lim', 0);
             $page = $jinput->getInt('page', 0);
             $program = $jinput->getString('program', 'all');
             $session = $jinput->getString('session', 'all');
@@ -179,8 +179,11 @@ class EmundusControllerCampaign extends JControllerLegacy {
                         $campaign_time_state_class = 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius';
                     }
 
-                    $start_date = date('d/m/Y H\hi', strtotime($campaign->start_date));
-                    $end_date = date('d/m/Y H\hi', strtotime($campaign->end_date));
+                    if (!class_exists('EmundusHelperDate')) {
+                        require_once JPATH_ROOT . '/components/com_emundus/helpers/date.php';
+                    }
+                    $start_date = EmundusHelperDate::displayDate($campaign->start_date, 'DATE_FORMAT_LC5');
+                    $end_date = EmundusHelperDate::displayDate($campaign->end_date, 'DATE_FORMAT_LC5');
 
                     $state_values = [
                         [
@@ -233,8 +236,8 @@ class EmundusControllerCampaign extends JControllerLegacy {
                                 $state_values[1],
                                 [
                                     'key' => JText::_('COM_EMUNDUS_FILES_FILES'),
-                                    'value' => '<a target="_blank" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;">' . $campaign->nb_files . ' ' . ( $campaign->nb_files > 1 ? JText::_('COM_EMUNDUS_FILES_FILES') : JText::_('COM_EMUNDUS_FILES_FILE')) . '</a>',
-                                    'classes' => 'em-p-5-12 em-font-weight-600  em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius go-to-campaign-link',
+                                    'value' => '<a class="go-to-campaign-link em-font-weight-600 em-profile-color em-flex-row" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;font-size:14px;text-decoration: underline;">' . $campaign->nb_files . ' ' . ( $campaign->nb_files > 1 ? JText::_('COM_EMUNDUS_FILES_FILES') : JText::_('COM_EMUNDUS_FILES_FILE')) . '</a>',
+                                    'classes' => 'py-1',
                                 ]
                             ],
                             'classes' => 'em-mt-8 em-mb-8',

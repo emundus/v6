@@ -350,7 +350,6 @@ class EmundusModelEvaluation extends JModelList {
 
         if ($session->has('filt_params'))
         {
-            //var_dump($session->get('filt_params'));
             $element_id = array();
             $filt_params = $session->get('filt_params');
 
@@ -388,7 +387,7 @@ class EmundusModelEvaluation extends JModelList {
                 }
             }
         }
-//die(var_dump($elements_id));
+
         return @$elements_id;
     }
 
@@ -413,7 +412,7 @@ class EmundusModelEvaluation extends JModelList {
 
             if (!empty($code)) {
                 $programmes = array_unique($code);
-            } elseif ($filt_params['programme'][0] !== '%' && is_array(@$filt_params['programme']) && count(@$filt_params['programme']) > 0) {
+            } elseif ($filt_params['programme'][0] !== '%' && is_array($filt_params['programme']) && !empty($filt_params['programme'])) {
                 $programmes = array_unique($filt_params['programme']);
             } else {
                 return array();
@@ -426,7 +425,7 @@ class EmundusModelEvaluation extends JModelList {
                 } else {
                     $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
 
-                    if (count($eval_elt_list) > 0) {
+                    if (!empty($eval_elt_list)) {
                         foreach ($eval_elt_list as $eel) {
                             if (isset($eel->element_id) && !empty($eel->element_id)) {
                                 $elements[] = $h_list->getElementsDetailsByID($eel->element_id)[0];
@@ -456,7 +455,6 @@ class EmundusModelEvaluation extends JModelList {
         $fnums = $jinput->getString('cfnums', null);
 
         if ($session->has('filt_params')) {
-            //var_dump($session->get('filt_params'));
             $elements_id = array();
             $filt_params = $session->get('filt_params');
 
@@ -507,7 +505,6 @@ class EmundusModelEvaluation extends JModelList {
 
         if ($session->has('filt_params'))
         {
-            //var_dump($session->get('filt_params'));
             $elements_id = array();
             $filt_params = $session->get('filt_params');
 
@@ -860,76 +857,80 @@ class EmundusModelEvaluation extends JModelList {
 
         $query = 'select jecc.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class, sp.code ';
 
-	    $already_joined_tables = [
-		    'jecc' => 'jos_emundus_campaign_candidature',
-		    'ss' => 'jos_emundus_setup_status',
-		    'esc' => 'jos_emundus_setup_campaigns',
-		    'sp' => 'jos_emundus_setup_programmes',
-		    'u' => 'jos_users',
-		    'eu' => 'jos_emundus_users',
-		    'eta' => 'jos_emundus_tag_assoc',
-		    'jos_emundus_evaluations' => 'jos_emundus_evaluations'
-	    ];
+        $group_by = 'GROUP BY jecc.fnum ';
 
-	    $leftJoin = '';
-	    if (!empty($this->_elements)) {
-		    $h_files = new EmundusHelperFiles();
+        $already_joined_tables = [
+            'jecc' => 'jos_emundus_campaign_candidature',
+            'ss' => 'jos_emundus_setup_status',
+            'esc' => 'jos_emundus_setup_campaigns',
+            'sp' => 'jos_emundus_setup_programmes',
+            'u' => 'jos_users',
+            'eu' => 'jos_emundus_users',
+            'eta' => 'jos_emundus_tag_assoc',
+            'jos_emundus_evaluations' => 'jos_emundus_evaluations'
+        ];
 
-		    foreach ($this->_elements as $elt) {
-			    $table_to_join = !empty($elt->table_join) ? $elt->table_join : $elt->tab_name;
-			    $already_join_alias = array_keys($already_joined_tables);
+        $leftJoin = '';
+        if (!empty($this->_elements)) {
+            $h_files = new EmundusHelperFiles();
 
-			    if (!(in_array($table_to_join, $already_joined_tables)) && !(in_array($table_to_join, $already_join_alias, true))) {
-				    if ($h_files->isTableLinkedToCampaignCandidature($table_to_join)) {
-					    $leftJoin .= 'LEFT JOIN ' . $table_to_join .  ' ON '. $table_to_join .'.fnum = jecc.fnum ';
-					    $already_joined_tables[] = $table_to_join;
-				    } else {
-					    $joined = false;
-					    $query_find_join = $dbo->getQuery(true);
-					    foreach ($already_joined_tables as $already_join_alias => $already_joined_table_name) {
-						    $query_find_join->clear()
-							    ->select('*')
-							    ->from('#__fabrik_joins')
-							    ->where('table_join = ' . $dbo->quote($already_joined_table_name))
-							    ->andWhere('join_from_table = ' . $dbo->quote($table_to_join))
-							    ->andWhere('table_key = ' . $dbo->quote('id'))
-							    ->andWhere('list_id = ' . $dbo->quote($elt->table_list_id));
+            foreach ($this->_elements as $elt) {
+                $table_to_join = !empty($elt->table_join) ? $elt->table_join : $elt->tab_name;
+                $already_join_alias = array_keys($already_joined_tables);
 
-						    $dbo->setQuery($query_find_join);
-						    $join_informations = $dbo->loadAssoc();
+                if (!(in_array($table_to_join, $already_joined_tables)) && !(in_array($table_to_join, $already_join_alias, true))) {
+                    if ($h_files->isTableLinkedToCampaignCandidature($table_to_join)) {
+                        $leftJoin .= 'LEFT JOIN ' . $table_to_join .  ' ON '. $table_to_join .'.fnum = jecc.fnum ';
+                        $already_joined_tables[] = $table_to_join;
+                    } else {
+                        $joined = false;
+                        $query_find_join = $dbo->getQuery(true);
+                        foreach ($already_joined_tables as $already_join_alias => $already_joined_table_name) {
+                            $query_find_join->clear()
+                                ->select('*')
+                                ->from('#__fabrik_joins')
+                                ->where('table_join = ' . $dbo->quote($already_joined_table_name))
+                                ->andWhere('join_from_table = ' . $dbo->quote($table_to_join))
+                                ->andWhere('table_key = ' . $dbo->quote('id'))
+                                ->andWhere('list_id = ' . $dbo->quote($elt->table_list_id));
 
-						    if (!empty($join_informations)) {
-							    $already_joined_tables[] = $table_to_join;
+                            $dbo->setQuery($query_find_join);
+                            $join_informations = $dbo->loadAssoc();
 
-							    $leftJoin .= ' LEFT JOIN ' . $dbo->quoteName($join_informations['join_from_table']) . ' ON ' . $dbo->quoteName($join_informations['join_from_table'] . '.' . $join_informations['table_key']) . ' = ' . $dbo->quoteName($already_join_alias . '.' . $join_informations['table_join_key']);
-							    $joined = true;
-							    break;
-						    }
-					    }
+                            if (!empty($join_informations)) {
+                                $already_joined_tables[] = $table_to_join;
 
-					    if (!$joined) {
-						    $element_joins = $h_files->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', $table_to_join);
+                                $leftJoin .= ' LEFT JOIN ' . $dbo->quoteName($join_informations['join_from_table']) . ' ON ' . $dbo->quoteName($join_informations['join_from_table'] . '.' . $join_informations['table_key']) . ' = ' . $dbo->quoteName($already_join_alias . '.' . $join_informations['table_join_key']);
+                                $joined = true;
+                                break;
+                            }
+                        }
 
-						    if (!empty($element_joins)) {
-							    $leftJoin .= $h_files->writeJoins($element_joins, $already_joined_tables);
-						    }
-					    }
-				    }
-			    }
-		    }
-	    }
+                        if (!$joined) {
+                            $element_joins = $h_files->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', $table_to_join);
 
-	    $query .= ', jos_emundus_evaluations.id AS evaluation_id, CONCAT(eue.lastname," ",eue.firstname) AS evaluator';
+                            if (!empty($element_joins)) {
+                                $leftJoin .= $h_files->writeJoins($element_joins, $already_joined_tables);
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-	    if (!empty($this->_elements_default)) {
-		    $query .= ', '.implode(',', $this->_elements_default);
-	    }
+        $query .= ', jos_emundus_evaluations.id AS evaluation_id, CONCAT(eue.lastname," ",eue.firstname) AS evaluator';
+        $group_by .= ', evaluation_id';
+
+        if (!empty($this->_elements_default)) {
+            $query .= ', '.implode(',', $this->_elements_default);
+        }
         $query .= ' FROM #__emundus_campaign_candidature as jecc
 					LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
 					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
 					LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
-					LEFT JOIN #__users as u on u.id = jecc.applicant_id';
+					LEFT JOIN #__users as u on u.id = jecc.applicant_id
+                    LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum = jecc.fnum ';
         $q = $this->_buildWhere($already_joined_tables);
 
         if (EmundusHelperAccess::isCoordinator($current_user->id)
@@ -955,7 +956,8 @@ class EmundusModelEvaluation extends JModelList {
         $query .= ' AND esc.published = 1 ';
 
         $query .= $q['q'];
-        
+        $query .= ' ' . $group_by;
+
         $query .=  $this->_buildContentOrderBy();
 
         $dbo->setQuery($query);
@@ -975,7 +977,7 @@ class EmundusModelEvaluation extends JModelList {
             $dbo->setQuery($query);
             return $dbo->loadAssocList();
         } catch(Exception $e) {
-            echo $query . ' ' . $e->getMessage();
+	        echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.str_replace('#_', 'jos', $query), JLog::ERROR, 'com_emundus');
         }
     }

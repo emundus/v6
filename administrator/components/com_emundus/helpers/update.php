@@ -419,26 +419,29 @@ class EmundusHelperUpdate
      *
      * @since version 1.33.0
      */
-    public static function updateConfigurationFile($param, $value) {
-		if(!empty($param) && !empty($value) && !in_array($param,['host','user','password','db','secret','mailfrom','smtpuser','smpthost','smtppass','smtpsecure','smtpport','webhook_token'])) {
-			$formatter = new JRegistryFormatPHP();
-			$config    = new JConfig();
+	public static function updateConfigurationFile($param, $value)
+	{
+		$updated = false;
 
-			$config->$param = $value;
-			$params         = array('class' => 'JConfig', 'closingtag' => false);
-			$str            = $formatter->objectToString($config, $params);
-			$config_file    = JPATH_CONFIGURATION . '/configuration.php';
+		if (!empty($param) && !empty($value) && !in_array($param, ['host', 'user', 'password', 'db', 'secret', 'mailfrom', 'smtpuser', 'smpthost', 'smtppass', 'smtpsecure', 'smtpport'])) {
+			require_once(JPATH_SITE . '/components/com_config/model/cms.php');
+			require_once(JPATH_SITE . '/components/com_config/model/form.php');
+			require_once(JPATH_ROOT . '/administrator/components/com_config/model/application.php');
 
-			if (file_exists($config_file) and is_writable($config_file)) {
-				file_put_contents($config_file, $str);
-			}
-			else {
-				echo("Update Configuration file failed");
-			}
-		} else {
-			echo("Update Configuration file failed");
+			$model = new ConfigModelApplication();
+
+			$oldData = $model->getData();
+
+			$data         = array();
+			$data[$param] = $value;
+
+			$data = array_replace($oldData, $data);
+
+			$updated = $model->save($data);
 		}
-    }
+
+		return $updated;
+	}
 
     /**
      * Update a variable in a yaml file like Gantry configuration files
@@ -3016,6 +3019,54 @@ class EmundusHelperUpdate
         return true;
     }
 
+
+	/**
+	 * @param $file string file to update
+	 * @param $linesToRemove array of lines to remove
+	 * @return bool true if success, false otherwise. If lines to remove are not found, it returns false.
+	 */
+	public static function removeFromFile($file, $linesToRemove)
+	{
+		$removed = false;
+
+		if (empty($file)) {
+			echo "ERROR: Please specify a file." . PHP_EOL;
+			return false;
+		} elseif (!file_exists($file)) {
+			echo "ERROR: The file {$file} does not exist." . PHP_EOL;
+			return false;
+		} elseif (!is_writable($file)) {
+			echo "ERROR: Please specify a writable file ({$file})" . PHP_EOL;
+			return false;
+		} elseif (empty($linesToRemove)) {
+			echo "ERROR: Please specify content to remove." . PHP_EOL;
+			return false;
+		}
+
+		$file_content = file_get_contents($file);
+		if (!empty($file_content)) {
+			$changed = false;
+
+			foreach($linesToRemove as $line) {
+				if (strpos($file_content, $line) !== false) {
+					echo " - Remove {$file} file this content: " . PHP_EOL . $line . PHP_EOL;
+					$file_content = str_replace($line, '', $file_content);
+					$changed = true;
+				}
+			}
+
+			if ($changed) {
+				if (file_put_contents($file, $file_content) !== false) {
+					$removed = true;
+				} else {
+					echo "ERROR: Failed to write content to the file." . PHP_EOL;
+				}
+			}
+		}
+
+		return $removed;
+	}
+
 	public static function updateNewColors() {
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -3100,7 +3151,7 @@ class EmundusHelperUpdate
 				'blue-2' => '#0073e5',
 				'blue-3' => '#0644ae',
 				'green-1' => '#98d432',
-				'green-2' => '#008a35',
+				'green-2' => '#015822',
 				'yellow-1' => '#ffe014',
 				'yellow-2' => '#ffae00',
 				'orange-1' => '#ff6900',
@@ -3253,11 +3304,10 @@ class EmundusHelperUpdate
 			'coordinator' => [
 				'background' => '#f8f8f8',
 				'interface' => '#353544',
-				'primary-color' => '#20835F',
 				'secondary-color' => '#353544',
 				'tertiary-color' => '#5A5A72',
 				'text-color' => '#4B4B4B',
-				'title-color' => '#000000',
+				'title-color' => '#0b0c0f',
 				'family-text' => 'Inter',
 				'family-title' => 'Inter',
 				'size-h1' => '24px',
@@ -3304,6 +3354,15 @@ class EmundusHelperUpdate
 			->update($db->quoteName('#__modules'))
 			->set($db->quoteName('content') . ' = ' . $db->quote($back_button->content))
 			->where($db->quoteName('id') . ' = ' . $db->quote($back_button->id));
+		$db->setQuery($query);
+		$db->execute();
+
+		$query->clear()
+			->update($db->quoteName('#__falang_content'))
+			->set($db->quoteName('value') . ' = ' . $db->quote($back_button->content))
+			->where($db->quoteName('reference_id') . ' = ' . $db->quote($back_button->id))
+			->where($db->quoteName('reference_table') . ' = ' . $db->quote('modules'))
+			->where($db->quoteName('reference_field') . ' = ' . $db->quote('content'));
 		$db->setQuery($query);
 		$db->execute();
 		//
@@ -3468,6 +3527,90 @@ class EmundusHelperUpdate
 				->update($db->quoteName('#__extensions'))
 				->set($db->quoteName('enabled') . ' = 1')
 				->where($db->quoteName('extension_id') . ' = ' . $db->quote($emundus_dropfiles_plugin));
+			$db->setQuery($query);
+			$db->execute();
+		}
+		//
+
+		// Manage SCP configuration
+		$query->clear()
+			->select('storage_value')
+			->from($db->quoteName('#__securitycheckpro_storage'))
+			->where($db->quoteName('storage_key') . ' LIKE ' . $db->quote('pro_plugin'));
+		$db->setQuery($query);
+		$scp_plugin = $db->loadResult();
+
+		if(!empty($scp_plugin)) {
+			$storage_value = json_decode($scp_plugin, true);
+
+			// Blacklist
+			$storage_value['dynamic_blacklist'] = 1;
+			$storage_value['dynamic_blacklist_counter'] = 5;
+			$storage_value['dynamic_blacklist_time'] = 300;
+			$storage_value['blacklist_email'] = 0;
+
+			// Strict mode
+			$storage_value['mode'] = 1;
+
+			// Logs
+			$storage_value['logs_attacks'] = 1;
+			$storage_value['scp_delete_period'] = 90;
+			$storage_value['log_limits_per_ip_and_day'] = 5;
+			$storage_value['add_access_attempts_logs'] = 1;
+
+			// Redirect
+			$storage_value['redirect_after_attack'] = 1;
+			$storage_value['redirect_options'] = 1;
+			$storage_value['custom_code'] = '<h1 style="text-align: center;">The application\'s firewall has been triggered by your use of the platform.<br />You no longer have access to the platform.<br />Please contact the platform manager so that he can unblock your account.</h1><hr /><h1 style="text-align: center;">Le pare-feu de l\'application vient de se déclencher suite à votre utilisation de la plateforme.<br />Vous n\'avez plus accès à la plateforme.<br />Merci de prendre contact avec le gestionnaire de cette plateforme afin qu\'il débloque votre compte.</h1>';
+
+			// Second level
+			$storage_value['second_level'] = 1;
+			$storage_value['second_level_redirect'] = 1;
+			$storage_value['second_level_limit_words'] = 3;
+			$storage_value['second_level_words'] = 'ZHJvcCx1cGRhdGUsc2V0LGFkbWluLHNlbGVjdCx1c2VyLHBhc3N3b3JkLGNvbmNhdCxsb2dpbixsb2FkX2ZpbGUsYXNjaWksY2hhcix1bmlvbixncm91cCBieSxvcmRlciBieSxpbnNlcnQsdmFsdWVzLHBhc3Msd2hlcmUsc3Vic3RyaW5nLGJlbmNobWFyayxtZDUsc2hhMSxzY2hlbWEsdmVyc2lvbixyb3dfY291bnQsY29tcHJlc3MsZW5jb2RlLGluZm9ybWF0aW9uX3NjaGVtYSxzY3JpcHQsamF2YXNjcmlwdCxpbWcsc3JjLGlucHV0LGJvZHksaWZyYW1lLGZyYW1lLCRfUE9TVCxldmFsLCRfUkVRVUVTVCxiYXNlNjRfZGVjb2RlLGd6aW5mbGF0ZSxnenVuY29tcHJlc3MsZ3ppbmZsYXRlLHN0cnRyZXhlYyxwYXNzdGhydSxzaGVsbF9leGVjLGNyZWF0ZUVsZW1lbnQ=';
+
+			// Emails
+			$storage_value['email_active'] = 0;
+
+			// Exceptions
+			$storage_value['exclude_exceptions_if_vulnerable'] = 1;
+			$storage_value['check_header_referer'] = 1;
+			$storage_value['check_base_64'] = 1;
+			$storage_value['base64_exceptions'] = 'com_hikashop,com_emundus,com_fabrik';
+			$storage_value['strip_all_tags'] = 1;
+			$storage_value['strip_tags_exceptions'] = 'com_jdownloads,com_hikashop,com_emundus,com_fabrik';
+			$storage_value['duplicate_backslashes_exceptions'] = 'com_emundus,com_fabrik';
+			$storage_value['line_comments_exceptions'] = 'com_emundus,com_fabrik';
+			$storage_value['using_integers_exceptions'] = 'com_jce,com_fabrik';
+			$storage_value['escape_strings_exceptions'] = 'com_jce,com_fabrik';
+			$storage_value['lfi_exceptions'] = 'com_emundus,com_fabrik';
+			$storage_value['second_level_exceptions'] = '';
+
+			// Session
+			$storage_value['session_protection_active'] = 1;
+			$storage_value['session_hijack_protection'] = 1;
+			$storage_value['session_hijack_protection_what_to_check'] = 2;
+			$storage_value['session_protection_groups'] = ["11","3","5","2","10","1"];
+			$storage_value['track_failed_logins'] = 1;
+			$storage_value['logins_to_monitorize'] = 0;
+			$storage_value['write_log'] = 1;
+			$storage_value['actions_failed_login'] = 1;
+			$storage_value['email_on_admin_login'] = 0;
+			$storage_value['forbid_admin_frontend_login'] = 0;
+			$storage_value['forbid_new_admins'] = 1;
+
+			// Upload scanner
+			$storage_value['upload_scanner_enabled'] = 1;
+			$storage_value['check_multiple_extensions'] = 1;
+			$storage_value['mimetypes_blacklist'] = 'application/x-dosexec,application/x-msdownload ,text/x-php,application/x-php,application/x-httpd-php,application/x-httpd-php-source,application/javascript,application/xml';
+			$storage_value['extensions_blacklist'] = 'php,js,exe,xml';
+			$storage_value['delete_files'] = 1;
+			$storage_value['actions_upload_scanner'] = 1;
+
+			$query->clear()
+				->update($db->quoteName('#__securitycheckpro_storage'))
+				->set($db->quoteName('storage_value') . ' = ' . $db->quote(json_encode($storage_value)))
+				->where($db->quoteName('storage_key') . ' = ' . $db->quote('pro_plugin'));
 			$db->setQuery($query);
 			$db->execute();
 		}

@@ -126,6 +126,24 @@ class EmundusHelperEvents {
                 } else {
                     $this->confirmpost($params);
                 }
+            } else {
+	            $fnum = '';
+	            $keys = array_keys(JFactory::getApplication()->input->getArray());
+	            foreach ($keys as $key) {
+		            if(strpos($key, '___fnum')) {
+			            $fnum = JFactory::getApplication()->input->getString($key, '');
+			            break;
+		            }
+	            }
+
+	            if(!empty($fnum)) {
+		            require_once (JPATH_SITE.'/components/com_emundus/models/files.php');
+		            $mFile = new EmundusModelFiles();
+		            $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+		            EmundusModelLogs::log($user->id, $applicant_id, $fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'COM_EMUNDUS_ACCESS_FILE_UPDATED_BY_COORDINATOR');
+		            $this->applicationUpdating($fnum);
+	            }
             }
 
             return true;
@@ -404,6 +422,7 @@ class EmundusHelperEvents {
 							if (!empty($fnum_linked)) {
 								$query->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum_linked));
 							}
+                            $query->order('id DESC');
 							$db->setQuery($query);
 							$stored = $db->loadAssoc();
 
@@ -721,7 +740,7 @@ class EmundusHelperEvents {
         return true;
     }
 
-    function redirect($params) : bool{
+    function redirect($params) {
         $db = JFactory::getDBO();
         $user = JFactory::getSession()->get('emundusUser');
 
@@ -1110,7 +1129,7 @@ class EmundusHelperEvents {
 
         return true;
     }
-	
+
 	function onAfterProgramCreate($params) : bool{
 		jimport('joomla.log.log');
 		JLog::addLogger(array('text_file' => 'com_emundus.helper_events.php'), JLog::ALL, array('com_emundus.helper_events'));

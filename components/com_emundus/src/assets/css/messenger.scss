@@ -69,7 +69,6 @@ hr{
 
 .messages__list-block{
     min-height: 50vh;
-    max-height: 85%;
     overflow-y: auto;
     overflow-x: hidden;
     -ms-overflow-style: none;
@@ -202,6 +201,15 @@ hr{
     color: white;
 }
 
+.messages__actions_bar .material-icons-outlined {
+    font-size: 20px;
+}
+
+.messages__bottom-input, .messages__bottom-input-actions {
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
 .loader {
     border: 5px solid #f3f3f4; /* Light grey */
     border-top: 5px solid #7886ae; /* Blue */
@@ -233,6 +241,7 @@ hr{
     margin-left: 20px;
     hr {
         width: 100%;
+        z-index: 1;
     }
     p{
         padding: 0 20px;
@@ -246,20 +255,25 @@ hr{
 
 /** ATTACH DOCUMENTS **/
 .messages__attach_content {
-    padding: 40px;
+    padding: 0 16px 16px 16px;
+}
+
+.messages_action_container {
+    border-top: 1px solid;
+    border-top-color: #f8F8F8;
 }
 
 .messages__attach_actions_tabs {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: left;
     list-style-type: none;
 }
 
 .messages__attach_action {
     padding: 8px 16px;
-    margin: 0 8px;
-    border-radius: 4px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
     height: 40px;
     cursor: pointer;
 }

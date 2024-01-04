@@ -326,6 +326,6 @@ twig/index.html.twig	46e544632529f89311fc58042a924b33
 twig/offline.html.twig	f31aad1abfaedb89d95b36c7c0a6c425
 twig/partials/error_head.html.twig	ac81cdedcda6505528b4c469c0332671
 twig/partials/page.html.twig	9562d8f85452a3103a358c05d3f1cb6c
-twig/partials/page_head.html.twig	791f4cb71bbb77fbc56a27ea807f468f
+twig/partials/page_head.html.twig	9f5a9a2dab950ad44578b05ddc20c030
 twig/raw.html.twig	74ace7bdd0a7962855032a2655a3b22b
 yarn.lock	add15b7eb0d2628efd9438c69dbd6f3c

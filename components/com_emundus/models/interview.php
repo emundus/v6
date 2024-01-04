@@ -121,7 +121,6 @@ class EmundusModelInterview extends JModelList
         $fnums = $jinput->getString('cfnums', null);
 
         if ($session->has('filt_params')) {
-            //var_dump($session->get('filt_params'));
             $elements_id = array();
             $filt_params = $session->get('filt_params');
 

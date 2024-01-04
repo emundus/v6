@@ -9,7 +9,7 @@
     border-radius: var(--em-default-br);
 }
 #em_user_menu li.active{
-    background: #F3F3F3;
+    background: var(--neutral-200);
 }
 #em_user_menu li:not(:first-child){
     margin-left: 12px;

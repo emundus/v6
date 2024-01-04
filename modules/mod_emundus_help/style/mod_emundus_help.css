@@ -64,7 +64,7 @@
 
 .mod_emundus_help__popover .material-icons{
     font-size: 24px !important;
-    color: rgb(94, 100, 110);
+    color: var(--em-profile-color);
 }
 
 .mod_emundus_help__popover .material-icons:hover{

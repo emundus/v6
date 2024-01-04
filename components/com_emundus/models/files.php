@@ -1427,6 +1427,7 @@ class EmundusModelFiles extends JModelLegacy
                 $query ="insert into #__emundus_tag_assoc (fnum, id_tag, date_time, user_id) VALUES ";
 
                 $logger = array();
+				$insert_tags = false;
                 foreach ($fnums as $fnum) {
                     // Get tags already associated to this fnum by the current user
                     $query_associated_tags->clear()
@@ -1440,6 +1441,8 @@ class EmundusModelFiles extends JModelLegacy
                     // Insert valid tags
                     foreach ($tags as $tag) {
                         if (!in_array($tag, $tags_already_associated)) {
+	                        $insert_tags = true;
+
                             $query .= '("' . $fnum . '", ' . $tag . ',"' . $now . '",' . $user . '),';
                             $query_log = 'SELECT label
                                 FROM #__emundus_setup_action_tag
@@ -1459,9 +1462,13 @@ class EmundusModelFiles extends JModelLegacy
                     }
                 }
 
-                $query = substr_replace($query, ';', -1);
-                $db->setQuery($query);
-                $tagged = $db->execute();
+				if($insert_tags) {
+					$query = substr_replace($query, ';', -1);
+					$db->setQuery($query);
+					$tagged = $db->execute();
+				} else {
+					$tagged = true;
+				}
             } catch (Exception $e) {
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
             }
@@ -1817,31 +1824,37 @@ class EmundusModelFiles extends JModelLegacy
      * @return bool|mixed
      */
     public static function getFnumInfos($fnum) {
-        try {
-            $db = JFactory::getDBO();
-            $query = $db->getQuery(true);
-            $query->select('u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, cc.form_progress, cc.attachment_progress, ss.value, ss.class, c.*, cc.campaign_id')
-                ->from($db->quoteName('#__emundus_campaign_candidature','cc'))
-                ->leftJoin($db->quoteName('#__emundus_setup_campaigns','c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('cc.campaign_id'))
-                ->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('u.id').' = '.$db->quoteName('cc.applicant_id'))
-                ->leftJoin($db->quoteName('#__emundus_setup_status','ss').' ON '.$db->quoteName('ss.step').' = '.$db->quoteName('cc.status'))
-                ->where($db->quoteName('cc.fnum').' LIKE '.$db->quote($fnum));
-            $db->setQuery($query);
-            $fnumInfos = $db->loadAssoc();
+		$fnumInfos = false;
 
-            $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-            if ($anonymize_data) {
-                $fnumInfos['name'] = $fnum;
-                $fnumInfos['email'] = $fnum;
-            }
+		if (!empty($fnum)) {
+			try {
+				$db = JFactory::getDBO();
+				$query = $db->getQuery(true);
+				$query->select('u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, cc.form_progress, cc.attachment_progress, ss.value, ss.class, c.*, cc.campaign_id')
+					->from($db->quoteName('#__emundus_campaign_candidature','cc'))
+					->leftJoin($db->quoteName('#__emundus_setup_campaigns','c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('cc.campaign_id'))
+					->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('u.id').' = '.$db->quoteName('cc.applicant_id'))
+					->leftJoin($db->quoteName('#__emundus_setup_status','ss').' ON '.$db->quoteName('ss.step').' = '.$db->quoteName('cc.status'))
+					->where($db->quoteName('cc.fnum').' LIKE '.$db->quote($fnum));
+				$db->setQuery($query);
+				$fnumInfos = $db->loadAssoc();
 
-            return $fnumInfos;
+				if (!class_exists('EmundusHelperAccess')) {
+					require_once(JPATH_ROOT.'/components/com_emundus/helpers/access.php');
+				}
 
-        } catch (Exception $e) {
-            echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-            return false;
-        }
+				$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+				if ($anonymize_data) {
+					$fnumInfos['name'] = $fnum;
+					$fnumInfos['email'] = $fnum;
+				}
+			} catch (Exception $e) {
+				echo $e->getMessage();
+				JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $fnumInfos;
     }
 
     /**
@@ -2485,6 +2498,8 @@ class EmundusModelFiles extends JModelLegacy
         $data = [];
 
         if (!empty($fnums) && !empty($elements)) {
+			$fnums = !is_array($fnums) ? [$fnums] : $fnums;
+			$fnums = array_unique($fnums);
 	        $method = (int) $method;
 
             $h_files = new EmundusHelperFiles;
@@ -2840,7 +2855,7 @@ class EmundusModelFiles extends JModelLegacy
 	            return false;
             }
 
-            if (!empty($rows)) {
+	        if (!empty($rows)) {
                 $data_by_fnums = [];
 
 				if ($method === 1) { // one line per repeat
@@ -2877,18 +2892,39 @@ class EmundusModelFiles extends JModelLegacy
                         }
 
                         if (is_array($value)) {
-                            $data[$d_key][$r_key] = implode(', ', $value);
+                            $data[$d_key][$r_key] = '"' . implode(', ', $value) . '"';
+                        } else if (!empty($value) && is_string($value)) {
+							$data[$d_key][$r_key] = str_replace('-', '\-', $value);
                         }
                     }
                 }
 
-				if (!empty($limit) && count($data) < $limit && count($rows) == $limit) {
+		        /**
+		         * I made that in order to handle repeat lines that are not complete, because of the limit
+		         * If we have a limit of 10, and we have 10 rows, but the last row is not complete, we need to retrieve the last row
+		         * in order to have all the data
+		         */
+				if (!empty($limit) && count($rows) == $limit && (count($data) < $limit || $method === 1)) {
 					// it means that we have repeated rows, so we need to retrieve last row all entries, because it may be incomplete (chunked by the limit)
 					$last_row = array_pop($rows);
-					$last_row_data = $this->getFnumArray2($last_row['fnum'], $elements, $start, 0, $method);
-					$data[$last_row['fnum']] = $last_row_data[$last_row['fnum']];
+					$last_row_data = $this->getFnumArray2([$last_row['fnum']], $elements, $start, 0, $method);
+
+					if ($method !== 1) {
+						$data[$last_row['fnum']] = $last_row_data[$last_row['fnum']];
+					} else {
+						// in methode 1, data is not an associative array, so we need to do some stuff
+						// remove from $data all rows with the same fnum
+						foreach($data as $d_key => $row) {
+							if ($row['fnum'] === $last_row['fnum']) {
+								unset($data[$d_key]);
+							}
+						}
+
+						// add the last row array to the data
+						$data = array_merge($data, $last_row_data);
+					}
 				}
-			}
+	        }
         }
 
         return $data;
@@ -4022,55 +4058,59 @@ class EmundusModelFiles extends JModelLegacy
      *
      * @since version
      */
-    public function getAttachmentsAssignedToEmundusGroups($group_ids) {
+	public function getAttachmentsAssignedToEmundusGroups($group_ids)
+	{
 
-        if (!is_array($group_ids)) {
-            $group_ids = [$group_ids];
-        }
+		if (!is_array($group_ids)) {
+			$group_ids = [$group_ids];
+		}
 
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
 
-        $result = [];
-        foreach ($group_ids as $group_id) {
-            $query->clear()
-                ->select($db->quoteName('anonymize'))
-                ->from($db->quoteName('#__emundus_setup_groups'))
-                ->where($db->quoteName('id').' = '.$group_id);
-            $db->setQuery($query);
-            $anonymize = $db->loadResult();
+		$result = [];
+		foreach ($group_ids as $group_id) {
+			$query->clear()
+				->select($db->quoteName('anonymize'))
+				->from($db->quoteName('#__emundus_setup_groups'))
+				->where($db->quoteName('id') . ' = ' . $group_id);
+			$db->setQuery($query);
+			$anonymize = $db->loadResult();
 
-            // If the group has no anonymization, then the user can see all the attachments
-            if ($anonymize == 0) {
-                return true;
-            } else {
-                $query->clear()
-                    ->select($db->quoteName('attachment_id_link'))
-                    ->from($db->quoteName('#__emundus_setup_groups_repeat_attachment_id_link'))
-                    ->where($db->quoteName('parent_id').' = '.$group_id);
-                $db->setQuery($query);
+			// If the group has no anonymization, then the user can see all the attachments
+			if ($anonymize == 0) {
+				return true;
+			}
+			else {
+				$query->clear()
+					->select($db->quoteName('attachment_id_link'))
+					->from($db->quoteName('#__emundus_setup_groups_repeat_attachment_id_link'))
+					->where($db->quoteName('parent_id') . ' = ' . $group_id);
+				$db->setQuery($query);
 
-                try {
-                    $attachments = $db->loadColumn();
+				try {
+					$attachments = $db->loadColumn();
 
-                    // In the case of a group having no assigned Fabrik groups, it can get them all.
-                    if (empty($attachments)) {
-                        return true;
-                    }
+					// In the case of a group having no assigned Fabrik groups, it can get them all.
+					if (empty($attachments)) {
+						return true;
+					}
 
-                    $result = array_merge($result, $attachments);
-                } catch (Exception $e) {
-                    return false;
-                }
-            }
-        }
+					$result = array_merge($result, $attachments);
+				}
+				catch (Exception $e) {
+					return false;
+				}
+			}
+		}
 
-        if (empty($result)) {
-            return true;
-        } else {
-            return array_keys(array_flip($result));
-        }
-    }
+		if (empty($result)) {
+			return true;
+		}
+		else {
+			return array_keys(array_flip($result));
+		}
+	}
 
     public function getFormProgress($fnums) {
         $db = JFactory::getDBO();

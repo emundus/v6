@@ -60,6 +60,24 @@ class EmundusViewUsers extends JViewLegacy
 		$m_users = new EmundusModelUsers();
         $m_users->filts_details = $this->filts_details;
 		$users = $m_users->getUsers();
+		$applicant_profiles = $m_users->getApplicantProfiles();
+		$applicant_profiles = array_column($applicant_profiles, 'id');
+
+		foreach ($users as $user) {
+			if(!empty($user->o_profiles)) {
+				$o_profiles = explode(',', $user->o_profiles);
+				$profile_details = $m_users->getProfilesByIDs($o_profiles);
+				$user->o_profiles = array_map((function($a) use ($applicant_profiles,$profile_details) {
+					if(in_array($a, $applicant_profiles)) {
+						return JText::_('COM_EMUNDUS_APPLICANT');
+					} else {
+						return $profile_details[$a]->label;
+					}
+				}), $o_profiles);
+				$user->o_profiles = array_unique($user->o_profiles);
+				$user->o_profiles = implode('<br>', $user->o_profiles);
+			}
+		}
 		$this->assignRef('users', $users);
 
 		$pagination = $m_users->getPagination();
@@ -181,31 +199,54 @@ class EmundusViewUsers extends JViewLegacy
 
 	function display($tpl = null) {
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-			die("ACCESS_DENIED");
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			die(JText::_("ACCESS_DENIED"));
+		}
 
 		$layout = JFactory::getApplication()->input->getString('layout', null);
         $m_files = new EmundusModelFiles();
 		switch ($layout) {
 			case 'user':
+				if (!EmundusHelperAccess::asAccessAction(12,'r',$this->_user->id)) {
+					die(JText::_("ACCESS_DENIED"));
+				}
+
 				$this->_loadData();
 				break;
 			case 'filter':
-				$this->_loadFilter();
+				if (EmundusHelperAccess::asAccessAction(12,'r',$this->_user->id)) {
+					$this->_loadFilter();
+				}
 				break;
 			case 'adduser':
+				if (!EmundusHelperAccess::asAccessAction(12,'c',$this->_user->id)) {
+					die(JText::_("ACCESS_DENIED"));
+				}
+
 				$this->_loadUserForm();
 				break;
 			case 'addgroup':
+				if (!EmundusHelperAccess::asAccessAction(19,'c',$this->_user->id)) {
+					die(JText::_("ACCESS_DENIED"));
+				}
+
 				$this->_loadGroupForm();
 				break;
 			case 'affectintranetlascala':
 				$this->_loadAffectIntranetForm();
 				break;
 			case 'affectgroup':
+				if (!EmundusHelperAccess::asAccessAction(12,'u',$this->_user->id)) {
+					die(JText::_("ACCESS_DENIED"));
+				}
+
 				$this->_loadAffectForm();
 				break;
 			case 'showrights':
+				if (!EmundusHelperAccess::asAccessAction(12,'r',$this->_user->id)) {
+					die(JText::_("ACCESS_DENIED"));
+				}
+
 				$this->_loadRightsForm();
 				break;
 			case 'menuactions':
