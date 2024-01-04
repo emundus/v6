@@ -1,6 +1,10 @@
 <template>
   <div>
     <ModalUpdateColors
+        :key="primary + secondary"
+        v-if="primary && secondary"
+        :primary="primary"
+        :secondary="secondary"
         @UpdateColors="updateColors"
     />
 
