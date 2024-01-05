@@ -3805,7 +3805,18 @@ structure:
                 // Create user for automated tasks
                 // check if parameter is already filled
                 $eMConfig = JComponentHelper::getParams('com_emundus');
-                $automated_task_user = $eMConfig->get('automated_task_user','');
+                $automated_task_user_param = $eMConfig->get('automated_task_user','');
+                if (!empty($automated_task_user_param)) {
+                    $query->clear()
+                        ->select('id')
+                        ->from($db->quoteName('#__users'))
+                        ->where($db->quoteName('id').' = '.$db->quote($automated_task_user_param));
+                    $db->setQuery($query);
+                    $automated_task_user = $db->loadResult();
+                } else {
+                    $automated_task_user = '';
+                }
+
                 if (empty($automated_task_user)) {
                     // Get an available user id
                     $available_user_id = '';
@@ -3824,14 +3835,14 @@ structure:
 
                     require_once(JPATH_SITE.'/components/com_emundus/helpers/users.php');
                     $h_users = new EmundusHelperUsers;
-                    $password = $h_users->generateStrongPassword();
+                    $password = $h_users->generateStrongPassword(30);
 
                     require_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
-                    $h_samples = new EmundusUnittestHelperSamples();
+                    $h_samples = new EmundusUnittestHelperSamples;
                     if (!empty($available_user_id)) {
-                        $user_created = $h_samples->createSampleUser(9,'automatedtask@emundus.fr',$password,[2],$available_user_id,'Task AUTOMATED');
+                        $user_created = $h_samples->createSampleUser(9,'automatedtask@emundus.fr',$password,[2],$available_user_id,'Task', 'AUTOMATED');
                     } else {
-                        $user_created = $h_samples->createSampleUser(9,'automatedtask@emundus.fr',$password,[2],0,'Task AUTOMATED');
+                        $user_created = $h_samples->createSampleUser(9,'automatedtask@emundus.fr',$password,[2],0,'Task', 'AUTOMATED');
                     }
 
                     if ($user_created) {

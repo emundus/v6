@@ -67,9 +67,11 @@ class EmundusUnittestHelperSamples
 		return $user_id;
 	}
 
-    public function createSampleUser($profile = 9, $username = 'user.test@emundus.fr', $password = 'test1234', $j_groups = [2], $user_id = 0, $name = 'Test USER')
+    public function createSampleUser($profile = 9, $username = 'user.test@emundus.fr', $password = 'test1234', $j_groups = [2], $user_id = 0, $firstname = 'Test', $lastname = 'USER')
     {
         $m_users = new EmundusModelUsers;
+
+        $name = $firstname.' '.$lastname;
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -116,8 +118,8 @@ class EmundusUnittestHelperSamples
 				}
 			}
 
-            $other_param['firstname'] 		= 'Test';
-            $other_param['lastname'] 		= 'USER';
+            $other_param['firstname'] 		= $firstname;
+            $other_param['lastname'] 		= $lastname;
             $other_param['profile'] 		= $profile;
             $other_param['em_oprofiles'] 	= '';
             $other_param['univ_id'] 		= 0;
