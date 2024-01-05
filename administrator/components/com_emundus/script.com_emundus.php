@@ -3846,6 +3846,41 @@ structure:
 					$db->setQuery($query);
 					$db->execute();
 				}
+
+				$query->clear()
+					->select('jfe.id, jfe.name')
+					->from('#__fabrik_elements AS jfe')
+					->leftJoin('#__fabrik_formgroup AS jffg ON jffg.group_id = jfe.group_id')
+					->leftJoin('#__fabrik_lists AS jfl ON jfl.form_id = jffg.form_id')
+					->where('jfl.db_table_name = ' . $db->quote('jos_emundus_campaign_workflow'))
+					->where('jfe.name IN (' . $db->quote('start_date') . ', ' . $db->quote('end_date') . ')');
+
+				$db->setQuery($query);
+				$elements = $db->loadObjectList();
+
+				$start_date_element = null;
+				$end_date_element = null;
+
+				foreach ($elements as $element) {
+					if($element->name == 'start_date') {
+						$start_date_element = $element;
+					}
+
+					if($element->name == 'end_date') {
+						$end_date_element = $element;
+					}
+				}
+
+				if(!empty($start_date_element) && !empty($end_date_element)) {
+					$params = '{"bootstrap_class":"input-xxlarge","date_showtime":"1","date_which_time_picker":"clock","date_show_seconds":"0","date_24hour":"1","bootstrap_time_class":"input-xxlarge","placeholder":"","date_store_as_local":"1","date_table_format":"d/m/Y H\\\hi","date_form_format":"d/m/Y","date_defaulttotoday":"0","date_alwaystoday":"0","date_firstday":"1","date_allow_typing_in_field":"1","date_csv_offset_tz":"0","date_advanced":"0","date_allow_func":"","date_allow_php_func":"","date_observe":"","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"1","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"1","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"1","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"1","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","isgreaterorlessthan-message":["La date de fin doit être supérieure à la date de début"],"isgreaterorlessthan-greaterthan":["3"],"isgreaterorlessthan-comparewith":["' . $start_date_element->id . '"],"compare_value":[""],"isgreaterorlessthan-allow_empty":["0"],"isgreaterorlessthan-validation_condition":["if (empty($data)) {\r\n  return false;\r\n}\r\n\r\nreturn true;"],"tip_text":["La date de fin doit être supérieure à la date de début"],"icon":[""],"validations":{"plugin":["isgreaterorlessthan"],"plugin_published":["1"],"validate_in":["both"],"validation_on":["both"],"validate_hidden":["1"],"must_validate":["0"],"show_icon":["1"]}}';
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_elements'))
+						->set($db->quoteName('params') . ' = ' . $db->quote($params))
+						->where($db->quoteName('id') . ' = ' . $db->quote($end_date_element->id));
+					$db->setQuery($query);
+					$params_updated = $db->execute();
+				}
 			}
 		}
 
