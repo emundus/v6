@@ -35,7 +35,7 @@ class EmundusHelperUsers {
      *
      * @since version
      */
-    static function generateStrongPassword($length = 8, $add_dashes = false, $available_sets = 'luds') {
+    static function generateStrongPassword($length = 12, $add_dashes = false, $available_sets = 'luds') {
         $sets = array();
         if(strpos($available_sets, 'l') !== false)
             $sets[] = 'abcdefghjkmnpqrstuvwxyz';
