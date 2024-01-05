@@ -50,6 +50,9 @@ class PlgFabrik_Cronemundusupdatestatusendcampaign extends PlgFabrik_Cron {
         JLog::addLogger(['text_file' => 'com_emundus.changestatusendcampaign.info.php'], JLog::INFO, 'com_emundus');
         JLog::addLogger(['text_file' => 'com_emundus.changestatusendcampaign.error.php'], JLog::ERROR, 'com_emundus');
 
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $automated_task_user_id = $eMConfig->get('automated_task_user');
+
         $params = $this->getParams();
 
         $exclude_campaigns = $params->get('exclude_campaigns','');
@@ -113,7 +116,7 @@ class PlgFabrik_Cronemundusupdatestatusendcampaign extends PlgFabrik_Cron {
 
                     if (!empty($files_to_change)) {
                         // change these files to the set output status
-                        $m_files->updateState($files_to_change,$update->output_status,2);
+                        $m_files->updateState($files_to_change,$update->output_status,$automated_task_user_id);
                     }
                 }
 

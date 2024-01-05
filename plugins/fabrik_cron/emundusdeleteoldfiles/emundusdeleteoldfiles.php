@@ -59,6 +59,7 @@ class PlgFabrik_Cronemundusdeleteoldfiles extends PlgFabrik_Cron {
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $are_logs_enabled = $eMConfig->get('logs', 0);
+        $automated_task_user_id = $eMConfig->get('automated_task_user');
 
         require_once (JPATH_SITE.'/components/com_emundus/helpers/date.php');
         require_once (JPATH_SITE.'/components/com_emundus/models/files.php');
@@ -114,7 +115,7 @@ class PlgFabrik_Cronemundusdeleteoldfiles extends PlgFabrik_Cron {
 
                 if (!empty($files_to_change)) {
                     // change these files to the deleted state
-                    $m_files->updatePublish($files_to_change,-1,2);
+                    $m_files->updatePublish($files_to_change,-1,$automated_task_user_id);
                 }
             }
         }
