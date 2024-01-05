@@ -74,6 +74,7 @@ hr{
     -ms-overflow-style: none;
     scrollbar-width: none;
     padding: 0 15px;
+    margin-bottom: 16px;
 }
 
 .messages__list-block::-webkit-scrollbar {
@@ -194,11 +195,23 @@ hr{
     padding: 0 25px;
 }
 
-.messages__send_button{
-    border-radius: 8px;
-    background: var(--night-blue);
-    padding: 8px 16px;
-    color: white;
+.messages_action_container .messages__send_button, .messages__bottom-input-actions .messages__send_button.btn-primary{
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    color: var(--neutral-0);
+    background: var(--night-blue) !important;
+    border: 1px solid var(--night-blue);
+    font-size: 16px;
+    font-family: var(--em-default-font);
+    letter-spacing: normal;
+}
+
+.messages_action_container .messages__send_button:hover, .messages__bottom-input-actions .messages__send_button.btn-primary:hover{
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    color: var(--night-blue);
+    background: var(--neutral-0) !important;
+    border: 1px solid var(--night-blue) !important;
 }
 
 .messages__actions_bar .material-icons-outlined {
@@ -327,6 +340,9 @@ hr{
         .dz-image {
             width: auto;
             height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             >div {
                 width: inherit;
                 height: inherit;
