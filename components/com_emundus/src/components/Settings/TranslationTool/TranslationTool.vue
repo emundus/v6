@@ -59,7 +59,16 @@ import translationsService from "com_emundus/src/services/translations";
 
 export default {
   name: "translationTool",
-  props: { },
+  props: {
+		showModalOnLoad: {
+			type: Number,
+			default: 0
+		},
+	  defaultMenuIndex: {
+		  type: Number,
+		  default: 1
+	  }
+  },
   components: {Orphelins, Translations, Global},
   data() {
     return {
@@ -86,6 +95,25 @@ export default {
       last_save: null,
     }
   },
+	created() {
+		const data = this.$store.getters['global/datas'];
+
+		if (this.showModalOnLoad === 0) {
+			if (data.showModalOnLoad !== undefined) {
+				this.showModalOnLoad = Number(data.showModalOnLoad.value) || 0;
+			}
+		}
+
+		if (data.hasOwnProperty('defaultMenuIndex')) {
+			this.defaultMenuIndex = Number(data.defaultMenuIndex.value) || 1;
+		}
+
+		if (this.showModalOnLoad > 0) {
+			setTimeout(() => {
+				this.$modal.show('translationTool');
+			}, 1000);
+		}
+	},
   methods:{
     beforeClose(event) {
       this.$emit('resetMenuIndex');
@@ -103,14 +131,14 @@ export default {
             if(result.data === 1){
               this.loading = false;
               this.setup_success = true;
-              this.currentMenu = 1;
+              this.currentMenu = this.defaultMenuIndex;
               setTimeout(() => {
                 this.setup_success = false;
               },2700)
             }
           });
         } else {
-          this.currentMenu = 1;
+          this.currentMenu = this.defaultMenuIndex;
         }
       })
     },

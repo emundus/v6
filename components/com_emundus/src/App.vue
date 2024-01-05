@@ -46,6 +46,7 @@ import messages from "./components/Messages/Messages";
 
 import settingsService from "./services/settings.js";
 import ApplicationSingle from "@/components/Files/ApplicationSingle.vue";
+import TranslationTool from "./components/Settings/TranslationTool/TranslationTool.vue";
 
 export default {
 	props: {
@@ -79,7 +80,8 @@ export default {
     messagescoordinator,
     messages,
     Files,
-		list_v2
+		list_v2,
+		TranslationTool
 	},
 
   created() {
