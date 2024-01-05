@@ -49,11 +49,18 @@ class PlatformStandardScan extends JApplicationCli
     {
 
         $structureFromDump = $this->getTableStructure('dump', 'jos_menu');
-        $structureFromLocal = $this->getTableStructure('local', 'jos_menu');
+        $structureFromStandard = $this->getTableStructure('local', 'jos_menu');
 
-        $difference = $this->getTableStructureDifference($structureFromDump, $structureFromLocal);
-        echo "<pre>----- HEY defiiferences------</pre>";
-        echo "<pre>$difference</pre>";
+        $difference = $this->getTableStructureDifference($structureFromDump, $structureFromStandard);
+
+        $filePath = '/var/www/html/cli/diff_out_put.txt';
+        try {
+            // Write the SHOW CREATE TABLE statement to the file
+            file_put_contents($filePath, $difference);
+        } catch (Exception $e) {
+            echo "Error: " . $e->getMessage() . "\n";
+        }
+
     }
 
 
@@ -65,7 +72,7 @@ class PlatformStandardScan extends JApplicationCli
                 $structure = $this->getTableStructureFromDump($table);
                 break;
             default:
-                $structure = $this->getTableStructureFromLocal($table);
+                $structure = $this->getTableStructureFromStandard($table);
                 break;
         }
 
@@ -75,43 +82,74 @@ class PlatformStandardScan extends JApplicationCli
 
     function getTableStructureFromDump($table)
     {
-        $dumpSourceFile = JPATH_BASE . "/cli/standard.sql";
-        $dumpSourceContent = file_get_contents($dumpSourceFile);
-
-        $matchesSource = [];
-        preg_match('/CREATE TABLE `' . $table . '` (.+?)(?=CREATE|$)/s', $dumpSourceContent, $matchesSource);
-        return $matchesSource[0] ?? "";
-
-    }
-
-    function getTableStructureFromLocal($table)
-    {
         $dumpSourceFile = JPATH_BASE . "/cli/kit_last.sql";
         $dumpSourceContent = file_get_contents($dumpSourceFile);
 
         $matchesSource = [];
         preg_match('/CREATE TABLE `' . $table . '` (.+?)(?=CREATE|$)/s', $dumpSourceContent, $matchesSource);
         return $matchesSource[0] ?? "";
+
     }
 
-    function getTableStructureDifference($structure1, $structure2): false|string|null
+    function getTableStructureFromStandard($table)
+    {
+        $dumpSourceFile = JPATH_BASE . "/cli/vanilla.sql";
+        $dumpSourceContent = file_get_contents($dumpSourceFile);
+
+        $matchesSource = [];
+        preg_match('/CREATE TABLE `' . $table . '` (.+?)(?=CREATE|$)/s', $dumpSourceContent, $matchesSource);
+        return $matchesSource[0] ?? "";
+    }
+
+    function getTableStructureDifference($structureFromDump, $structureFromStandard)
     {
         // Create temporary files with the structures
-        $file1 = tempnam(sys_get_temp_dir(), 'structure_');
-        $file2 = tempnam(sys_get_temp_dir(), 'structure_');
+        $dumpFile = tempnam(sys_get_temp_dir(), 'structure_dump_');
+        $standardFile = tempnam(sys_get_temp_dir(), 'structure_standard_');
 
-        file_put_contents($file1, $structure1);
-        file_put_contents($file2, $structure2);
+        file_put_contents($standardFile, $structureFromStandard);
+        file_put_contents($dumpFile, $structureFromDump);
 
         // Use the diff command to compare the two structures
-        $diffCommand = "diff -u $file1 $file2";
+        $diffCommand = "diff -u $standardFile $dumpFile";
         $diffOutput = shell_exec($diffCommand);
 
-        // Clean up temporary files
-        unlink($file1);
-        unlink($file2);
+        // Split the diff output into sections starting with @@
+        $sections = preg_split('/^@@.*@@$/m', $diffOutput, -1, PREG_SPLIT_NO_EMPTY);
 
-        return $diffOutput;
+        // Start building the HTML
+        $html = '<pre><code>';
+
+        foreach ($sections as $section) {
+            // Split each section into lines
+            $lines = explode("\n", $section);
+
+            foreach ($lines as $line) {
+                // Apply different styles based on the type of line
+                if (strpos($line, '-') === 0) {
+                    // Lines starting with '-' (removed) will be styled in red
+                    $html .= '<span style="color:red;">' . htmlspecialchars($line) . '</span>' . "\n";
+                } elseif (strpos($line, '+') === 0) {
+                    // Lines starting with '+' (added) will be styled in yellow
+                    $html .= '<span style="color:green;">' . htmlspecialchars($line) . '</span>' . "\n";
+                } else {
+                    // Lines that are unchanged
+                    $html .= htmlspecialchars($line) . "\n";
+                }
+            }
+
+            // Add a separator between sections
+            $html .= '<hr>';
+        }
+
+        // Closing the HTML tags
+        $html .= '</code></pre>';
+        // Clean up temporary files
+        unlink($dumpFile);
+        unlink($standardFile);
+
+        return $html;
+        //return $diffOutput;
     }
 
 
