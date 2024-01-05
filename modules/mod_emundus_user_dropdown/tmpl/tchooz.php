@@ -203,8 +203,8 @@ if ($user != null) {
         </div>
     </div>
     <?php else : ?>
-    <div class="em-flex-row em-flex-end em-profile-container" id="userDropdownLabel" onclick="manageHeight()">
-        <div class="em-flex-row">
+    <div  id="userDropdownLabel" onclick="manageHeight()">
+        <div class="em-flex-row em-flex-end em-profile-container">
             <div class="mr-4">
                 <?php if(!empty($user)) : ?>
                 <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0]. '.'; ?></p>
@@ -213,7 +213,7 @@ if ($user != null) {
                 <p class="em-profile-color em-text-italic"><?= $profile_label; ?></p>
                 <?php endif; ?>
             </div>
-            <div class="em-user-dropdown-button" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
+            <div class="em-user-dropdown-button" aria-haspopup="true" aria-expanded="false">
                 <span class="material-icons-outlined em-user-dropdown-icon" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">account_circle</span>
             </div>
 
