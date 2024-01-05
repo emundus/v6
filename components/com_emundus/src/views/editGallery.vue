@@ -146,7 +146,7 @@ export default {
           .then(response => response.json())
           .then(response => {
             if (response.status == 1) {
-              this.image_attachments = response.data;
+              this.image_attachments = Object.values(response.data);
             }
           }).catch((error) => {
 						console.error('Error:', error);
