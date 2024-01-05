@@ -67,24 +67,37 @@ class EmundusUnittestHelperSamples
 		return $user_id;
 	}
 
-    public function createSampleUser($profile = 9, $username = 'user.test@emundus.fr', $password = 'test1234', $j_groups = [2])
+    public function createSampleUser($profile = 9, $username = 'user.test@emundus.fr', $password = 'test1234', $j_groups = [2], $user_id = 0, $name = 'Test USER')
     {
-        $user_id = 0;
         $m_users = new EmundusModelUsers;
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query->insert('#__users')
-            ->columns('name, username, email, password')
-            ->values($db->quote('Test USER') . ', ' . $db->quote($username) .  ', ' . $db->quote($username) . ',' .  $db->quote(md5($password)));
+        if ($user_id == 0) {
+            $query->insert('#__users')
+                ->columns('name, username, email, password')
+                ->values($db->quote($name) . ', ' . $db->quote($username) .  ', ' . $db->quote($username) . ',' .  $db->quote(md5($password)));
 
-        try {
-            $db->setQuery($query);
-            $db->execute();
-            $user_id = $db->insertid();
-        } catch (Exception $e) {
-            JLog::add("Failed to insert jos_users" . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            try {
+                $db->setQuery($query);
+                $db->execute();
+                $user_id = $db->insertid();
+            } catch (Exception $e) {
+                JLog::add("Failed to insert jos_users" . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            }
+        } else {
+            $query->insert('#__users')
+                ->columns('id, name, username, email, password')
+                ->values($user_id . ',' . $db->quote($name) . ', ' . $db->quote($username) .  ', ' . $db->quote($username) . ',' .  $db->quote(md5($password)));
+
+            try {
+                $db->setQuery($query);
+                $db->execute();
+            } catch (Exception $e) {
+                JLog::add("Failed to insert jos_users" . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                $user_id = '';
+            }
         }
 
         if (!empty($user_id)) {

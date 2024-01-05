@@ -167,10 +167,11 @@ class EmundusModelUsers extends JModelList {
             }
         }
 
-        $eMConfig           = JComponentHelper::getParams('com_emundus');
-        $showUniversities   = $eMConfig->get('showUniversities');
-        $showJoomlagroups   = $eMConfig->get('showJoomlagroups',0);
-        $showNewsletter     = $eMConfig->get('showNewsletter');
+        $eMConfig            = JComponentHelper::getParams('com_emundus');
+        $showUniversities    = $eMConfig->get('showUniversities');
+        $showJoomlagroups    = $eMConfig->get('showJoomlagroups',0);
+        $showNewsletter      = $eMConfig->get('showNewsletter');
+        $automated_task_user = $eMConfig->get('automated_task_user');
 
         $query = 'SELECT DISTINCT(u.id), e.lastname, e.firstname, u.email, u.username,  espr.label as profile,group_concat(DISTINCT eup.profile_id) as o_profiles, espr.published as is_applicant_profile, ';
 
@@ -210,7 +211,11 @@ class EmundusModelUsers extends JModelList {
             $query .= 'LEFT JOIN #__emundus_final_grade AS efg ON u.id = efg.student_id ';
         }
 
-        $query .= ' where 1=1 AND u.id NOT IN (1,2,62) ';
+        $exclude_users = [1,62];
+        if (!empty($automated_task_user)) {
+            $exclude_users[] = $automated_task_user;
+        }
+        $query .= ' where 1=1 AND u.id NOT IN ('.implode(',',$exclude_users).') ';
 
         if (isset($programme) && !empty($programme) && $programme[0] != '%') {
             $query .= ' AND ( esc.training IN ("'.implode('","', $programme).'")
