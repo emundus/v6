@@ -866,6 +866,10 @@ input:focus + .em-slider {
 
 .em-profile-color{
   color: var(--em-profile-color);
+  &:hover {
+    color: var(--em-profile-color);
+    filter: brightness(0.8);
+  }
 }
 
 .em-form-success-color{

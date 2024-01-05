@@ -14,6 +14,12 @@ $session = JFactory::getSession();
 $s_elements = $session->get('s_elements');
 $comments = $session->get('comments');
 
+$currentLanguage = JFactory::getLanguage()->getTag();
+$languages = JLanguageHelper::getLanguages('lang_code');
+
+// Get the SEF tag of current language.
+$sefTag = $languages[$currentLanguage]->sef;
+
 JText::script('COM_EMUNDUS_TAG_APPLICANT_CAMPAIGN_YEAR');
 JText::script('COM_EMUNDUS_TAG_APPLICANT_CAMPAIGN_START');
 JText::script('COM_EMUNDUS_TAG_APPLICANT_CAMPAIGN_END');
@@ -249,7 +255,7 @@ JText::script('COM_EMUNDUS_TAG_APPLICANT_APPLICATION_STATUS');
                     document.querySelector('#result .em-program-title h1').innerHTML = document.querySelector('#result .em-program-title h1').innerHTML + " - "+camp.text;
                 }
             };
-            httpRequest.open("GET", '<?= JURI::base(); ?>index.php?option=com_emundus&view=export_select_columns&format=raw&code='+course+'&layout=programme&camp='+camp.value+'&all=1', true);
+            httpRequest.open("GET", '<?= JURI::base() . $sefTag; ?>/index.php?option=com_emundus&view=export_select_columns&format=raw&code='+course+'&layout=programme&camp='+camp.value+'&all=1', true);
             httpRequest.send();
         }
 
