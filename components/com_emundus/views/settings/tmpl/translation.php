@@ -82,6 +82,7 @@ $default_menu = $app->input->getInt('default_menu', 1);
      manyLanguages="<?= $many_languages ?>"
      showModalOnLoad="1"
      defaultMenuIndex="<?= $default_menu ?>"
+     redirectOnClose="/parametres-globaux"
 ></div>
 
 <script src="media/com_emundus/js/settings.js?<?php echo $hash ?>"></script>

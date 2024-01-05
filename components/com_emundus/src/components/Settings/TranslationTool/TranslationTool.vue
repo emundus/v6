@@ -116,7 +116,12 @@ export default {
 	},
   methods:{
     beforeClose(event) {
-      this.$emit('resetMenuIndex');
+	    const data = this.$store.getters['global/datas'];
+	    if (data.hasOwnProperty('redirectOnClose')) {
+		    window.location.href = data.redirectOnClose.value;
+	    }
+
+	    this.$emit('resetMenuIndex');
     },
 
     updateOrphelinsCount(count) {
