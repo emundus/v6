@@ -1,6 +1,10 @@
 <?php
 namespace Aws\Api;
 
+use Aws\Api\Serializer\QuerySerializer;
+use Aws\Api\Serializer\Ec2ParamBuilder;
+use Aws\Api\Parser\QueryParser;
+
 /**
  * Represents a web service API model.
  */
@@ -15,9 +19,6 @@ class Service extends AbstractModel
     /** @var string */
     private $apiVersion;
 
-    /** @var array */
-    private $clientContextParams = [];
-
     /** @var Operation[] */
     private $operations = [];
 
@@ -26,9 +27,6 @@ class Service extends AbstractModel
 
     /** @var array */
     private $waiters = null;
-
-    /** @var boolean */
-    private $modifiedModel = false;
 
     /**
      * @param array    $definition
@@ -41,12 +39,10 @@ class Service extends AbstractModel
         static $defaults = [
             'operations' => [],
             'shapes'     => [],
-            'metadata'   => [],
-            'clientContextParams' => []
+            'metadata'   => []
         ], $defaultMeta = [
             'apiVersion'       => null,
             'serviceFullName'  => null,
-            'serviceId'        => null,
             'endpointPrefix'   => null,
             'signingName'      => null,
             'signatureVersion' => null,
@@ -65,10 +61,8 @@ class Service extends AbstractModel
         } else {
             $this->serviceName = $this->getEndpointPrefix();
         }
+
         $this->apiVersion = $this->getApiVersion();
-        if (isset($definition['clientContextParams'])) {
-           $this->clientContextParams = $definition['clientContextParams'];
-        }
     }
 
     /**
@@ -83,20 +77,18 @@ class Service extends AbstractModel
     public static function createSerializer(Service $api, $endpoint)
     {
         static $mapping = [
-            'json'      => Serializer\JsonRpcSerializer::class,
-            'query'     => Serializer\QuerySerializer::class,
-            'rest-json' => Serializer\RestJsonSerializer::class,
-            'rest-xml'  => Serializer\RestXmlSerializer::class
+            'json'      => 'Aws\Api\Serializer\JsonRpcSerializer',
+            'query'     => 'Aws\Api\Serializer\QuerySerializer',
+            'rest-json' => 'Aws\Api\Serializer\RestJsonSerializer',
+            'rest-xml'  => 'Aws\Api\Serializer\RestXmlSerializer'
         ];
 
         $proto = $api->getProtocol();
 
         if (isset($mapping[$proto])) {
             return new $mapping[$proto]($api, $endpoint);
-        }
-
-        if ($proto == 'ec2') {
-            return new Serializer\QuerySerializer($api, $endpoint, new Serializer\Ec2ParamBuilder());
+        } elseif ($proto == 'ec2') {
+            return new QuerySerializer($api, $endpoint, new Ec2ParamBuilder());
         }
 
         throw new \UnexpectedValueException(
@@ -107,25 +99,23 @@ class Service extends AbstractModel
     /**
      * Creates an error parser for the given protocol.
      *
-     * Redundant method signature to preserve backwards compatibility.
-     *
      * @param string $protocol Protocol to parse (e.g., query, json, etc.)
      *
      * @return callable
      * @throws \UnexpectedValueException
      */
-    public static function createErrorParser($protocol, Service $api = null)
+    public static function createErrorParser($protocol)
     {
         static $mapping = [
-            'json'      => ErrorParser\JsonRpcErrorParser::class,
-            'query'     => ErrorParser\XmlErrorParser::class,
-            'rest-json' => ErrorParser\RestJsonErrorParser::class,
-            'rest-xml'  => ErrorParser\XmlErrorParser::class,
-            'ec2'       => ErrorParser\XmlErrorParser::class
+            'json'      => 'Aws\Api\ErrorParser\JsonRpcErrorParser',
+            'query'     => 'Aws\Api\ErrorParser\XmlErrorParser',
+            'rest-json' => 'Aws\Api\ErrorParser\RestJsonErrorParser',
+            'rest-xml'  => 'Aws\Api\ErrorParser\XmlErrorParser',
+            'ec2'       => 'Aws\Api\ErrorParser\XmlErrorParser'
         ];
 
         if (isset($mapping[$protocol])) {
-            return new $mapping[$protocol]($api);
+            return new $mapping[$protocol]();
         }
 
         throw new \UnexpectedValueException("Unknown protocol: $protocol");
@@ -141,19 +131,17 @@ class Service extends AbstractModel
     public static function createParser(Service $api)
     {
         static $mapping = [
-            'json'      => Parser\JsonRpcParser::class,
-            'query'     => Parser\QueryParser::class,
-            'rest-json' => Parser\RestJsonParser::class,
-            'rest-xml'  => Parser\RestXmlParser::class
+            'json'      => 'Aws\Api\Parser\JsonRpcParser',
+            'query'     => 'Aws\Api\Parser\QueryParser',
+            'rest-json' => 'Aws\Api\Parser\RestJsonParser',
+            'rest-xml'  => 'Aws\Api\Parser\RestXmlParser'
         ];
 
         $proto = $api->getProtocol();
         if (isset($mapping[$proto])) {
             return new $mapping[$proto]($api);
-        }
-
-        if ($proto == 'ec2') {
-            return new Parser\QueryParser($api, null, false);
+        } elseif ($proto == 'ec2') {
+            return new QueryParser($api, null, false);
         }
 
         throw new \UnexpectedValueException(
@@ -169,16 +157,6 @@ class Service extends AbstractModel
     public function getServiceFullName()
     {
         return $this->definition['metadata']['serviceFullName'];
-    }
-
-    /**
-     * Get the service id
-     *
-     * @return string
-     */
-    public function getServiceId()
-    {
-        return $this->definition['metadata']['serviceId'];
     }
 
     /**
@@ -284,11 +262,6 @@ class Service extends AbstractModel
                 $this->definition['operations'][$name],
                 $this->shapeMap
             );
-        } else if ($this->modifiedModel) {
-            $this->operations[$name] = new Operation(
-                $this->definition['operations'][$name],
-                $this->shapeMap
-            );
         }
 
         return $this->operations[$name];
@@ -310,24 +283,6 @@ class Service extends AbstractModel
     }
 
     /**
-     * Get all of the error shapes of the service
-     *
-     * @return array
-     */
-    public function getErrorShapes()
-    {
-        $result = [];
-        foreach ($this->definition['shapes'] as $name => $definition) {
-            if (!empty($definition['exception'])) {
-                $definition['name'] = $name;
-                $result[] = new StructureShape($definition, $this->getShapeMap());
-            }
-        }
-
-        return $result;
-    }
-
-    /**
      * Get all of the service metadata or a specific metadata key value.
      *
      * @param string|null $key Key to retrieve or null to retrieve all metadata
@@ -338,9 +293,7 @@ class Service extends AbstractModel
     {
         if (!$key) {
             return $this['metadata'];
-        }
-
-        if (isset($this->definition['metadata'][$key])) {
+        } elseif (isset($this->definition['metadata'][$key])) {
             return $this->definition['metadata'][$key];
         }
 
@@ -474,62 +427,5 @@ class Service extends AbstractModel
     public function getShapeMap()
     {
         return $this->shapeMap;
-    }
-
-    /**
-     * Get all the context params of the description.
-     *
-     * @return array
-     */
-    public function getClientContextParams()
-    {
-        return $this->clientContextParams;
-    }
-
-    /**
-     * Get the service's api provider.
-     *
-     * @return callable
-     */
-    public function getProvider()
-    {
-        return $this->apiProvider;
-    }
-
-    /**
-     * Get the service's definition.
-     *
-     * @return callable
-     */
-    public function getDefinition()
-    {
-        return $this->definition;
-    }
-
-    /**
-     * Sets the service's api definition.
-     * Intended for internal use only.
-     *
-     * @return void
-     *
-     * @internal
-     */
-    public function setDefinition($definition)
-    {
-        $this->definition = $definition;
-        $this->modifiedModel = true;
-    }
-
-    /**
-     * Denotes whether or not a service's definition has
-     * been modified.  Intended for internal use only.
-     *
-     * @return bool
-     *
-     * @internal
-     */
-    public function isModifiedModel()
-    {
-        return $this->modifiedModel;
     }
 }

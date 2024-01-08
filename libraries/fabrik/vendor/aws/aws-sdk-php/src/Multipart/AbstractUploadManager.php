@@ -10,6 +10,7 @@ use Aws\Result;
 use Aws\ResultInterface;
 use GuzzleHttp\Promise;
 use GuzzleHttp\Promise\PromiseInterface;
+use GuzzleHttp\Psr7;
 use InvalidArgumentException as IAE;
 use Psr\Http\Message\RequestInterface;
 
@@ -24,14 +25,13 @@ abstract class AbstractUploadManager implements Promise\PromisorInterface
 
     /** @var array Default values for base multipart configuration */
     private static $defaultConfig = [
-        'part_size'           => null,
-        'state'               => null,
-        'concurrency'         => self::DEFAULT_CONCURRENCY,
-        'prepare_data_source' => null,
-        'before_initiate'     => null,
-        'before_upload'       => null,
-        'before_complete'     => null,
-        'exception_class'     => MultipartUploadException::class,
+        'part_size'       => null,
+        'state'           => null,
+        'concurrency'     => self::DEFAULT_CONCURRENCY,
+        'before_initiate' => null,
+        'before_upload'   => null,
+        'before_complete' => null,
+        'exception_class' => 'Aws\Exception\MultipartUploadException',
     ];
 
     /** @var Client Client used for the upload. */
@@ -88,26 +88,19 @@ abstract class AbstractUploadManager implements Promise\PromisorInterface
      *
      * @return PromiseInterface
      */
-    public function promise(): PromiseInterface
+    public function promise()
     {
         if ($this->promise) {
             return $this->promise;
         }
 
-        return $this->promise = Promise\Coroutine::of(function () {
+        return $this->promise = Promise\coroutine(function () {
             // Initiate the upload.
             if ($this->state->isCompleted()) {
                 throw new \LogicException('This multipart upload has already '
                     . 'been completed or aborted.'
                 );
-            }
-
-            if (!$this->state->isInitiated()) {
-                // Execute the prepare callback.
-                if (is_callable($this->config["prepare_data_source"])) {
-                    $this->config["prepare_data_source"]();
-                }
-
+            } elseif (!$this->state->isInitiated()) {
                 $result = (yield $this->execCommand('initiate', $this->getInitiateParams()));
                 $this->state->setUploadId(
                     $this->info['id']['upload_id'],
@@ -137,29 +130,13 @@ abstract class AbstractUploadManager implements Promise\PromisorInterface
             // Complete the multipart upload.
             yield $this->execCommand('complete', $this->getCompleteParams());
             $this->state->setStatus(UploadState::COMPLETED);
-        })->otherwise($this->buildFailureCatch());
-    }
-
-    private function transformException($e)
-    {
-        // Throw errors from the operations as a specific Multipart error.
-        if ($e instanceof AwsException) {
-            $e = new $this->config['exception_class']($this->state, $e);
-        }
-        throw $e;
-    }
-
-    private function buildFailureCatch()
-    {
-        if (interface_exists("Throwable")) {
-            return function (\Throwable $e) {
-                return $this->transformException($e);
-            };
-        } else {
-            return function (\Exception $e) {
-                return $this->transformException($e);
-            };
-        }
+        })->otherwise(function (\Exception $e) {
+            // Throw errors from the operations as a specific Multipart error.
+            if ($e instanceof AwsException) {
+                $e = new $this->config['exception_class']($this->state, $e);
+            }
+            throw $e;
+        });
     }
 
     protected function getConfig()
@@ -218,8 +195,10 @@ abstract class AbstractUploadManager implements Promise\PromisorInterface
     /**
      * Based on the config and service-specific workflow info, creates a
      * `Promise` for an `UploadState` object.
+     *
+     * @return PromiseInterface A `Promise` that resolves to an `UploadState`.
      */
-    private function determineState(): UploadState
+    private function determineState()
     {
         // If the state was provided via config, then just use it.
         if ($this->config['state'] instanceof UploadState) {
@@ -252,7 +231,7 @@ abstract class AbstractUploadManager implements Promise\PromisorInterface
      *
      * @return PromiseInterface
      */
-    protected function execCommand($operation, array $params)
+    private function execCommand($operation, array $params)
     {
         // Create the command.
         $command = $this->client->getCommand(
@@ -282,7 +261,7 @@ abstract class AbstractUploadManager implements Promise\PromisorInterface
      *
      * @return callable
      */
-    protected function getResultHandler(&$errors = [])
+    private function getResultHandler(&$errors = [])
     {
         return function (callable $handler) use (&$errors) {
             return function (

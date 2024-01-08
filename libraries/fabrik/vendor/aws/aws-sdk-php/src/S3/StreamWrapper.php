@@ -94,12 +94,6 @@ class StreamWrapper
     /** @var string The opened protocol (e.g., "s3") */
     private $protocol = 's3';
 
-    /** @var bool Keeps track of whether stream has been flushed since opening */
-    private $isFlushed = false;
-
-    /** @var bool Whether or not to use V2 bucket and object existence methods */
-    private static $useV2Existence = false;
-
     /**
      * Register the 's3://' stream wrapper
      *
@@ -110,10 +104,8 @@ class StreamWrapper
     public static function register(
         S3ClientInterface $client,
         $protocol = 's3',
-        CacheInterface $cache = null,
-        $v2Existence = false
+        CacheInterface $cache = null
     ) {
-        self::$useV2Existence = $v2Existence;
         if (in_array($protocol, stream_get_wrappers())) {
             stream_wrapper_unregister($protocol);
         }
@@ -135,19 +127,12 @@ class StreamWrapper
 
     public function stream_close()
     {
-        if (!$this->isFlushed
-            && empty($this->body->getSize())
-            && $this->mode !== 'r'
-        ) {
-            $this->stream_flush();
-        }
         $this->body = $this->cache = null;
     }
 
     public function stream_open($path, $mode, $options, &$opened_path)
     {
         $this->initProtocol($path);
-        $this->isFlushed = false;
         $this->params = $this->getBucketKey($path);
         $this->mode = rtrim($mode, 'bt');
 
@@ -155,11 +140,11 @@ class StreamWrapper
             return $this->triggerError($errors);
         }
 
-        return $this->boolCall(function() {
+        return $this->boolCall(function() use ($path) {
             switch ($this->mode) {
-                case 'r': return $this->openReadStream();
-                case 'a': return $this->openAppendStream();
-                default: return $this->openWriteStream();
+                case 'r': return $this->openReadStream($path);
+                case 'a': return $this->openAppendStream($path);
+                default: return $this->openWriteStream($path);
             }
         });
     }
@@ -171,15 +156,6 @@ class StreamWrapper
 
     public function stream_flush()
     {
-        // Check if stream body size has been
-        // calculated via a flush or close
-        if($this->body->getSize() === null && $this->mode !== 'r') {
-            return $this->triggerError(
-                "Unable to determine stream size. Did you forget to close or flush the stream?"
-            );
-        }
-
-        $this->isFlushed = true;
         if ($this->mode == 'r') {
             return false;
         }
@@ -193,12 +169,12 @@ class StreamWrapper
         // Attempt to guess the ContentType of the upload based on the
         // file extension of the key
         if (!isset($params['ContentType']) &&
-            ($type = Psr7\MimeType::fromFilename($params['Key']))
+            ($type = Psr7\mimetype_from_filename($params['Key']))
         ) {
             $params['ContentType'] = $type;
         }
 
-        $this->clearCacheKey("{$this->protocol}://{$params['Bucket']}/{$params['Key']}");
+        $this->clearCacheKey("s3://{$params['Bucket']}/{$params['Key']}");
         return $this->boolCall(function () use ($params) {
             return (bool) $this->getClient()->putObject($params);
         });
@@ -305,10 +281,10 @@ class StreamWrapper
                     // Return as if it is a bucket to account for console
                     // bucket objects (e.g., zero-byte object "foo/")
                     return $this->formatUrlStat($path);
+                } else {
+                    // Attempt to stat and cache regular object
+                    return $this->formatUrlStat($result->toArray());
                 }
-
-                // Attempt to stat and cache regular object
-                return $this->formatUrlStat($result->toArray());
             } catch (S3Exception $e) {
                 // Maybe this isn't an actual key, but a prefix. Do a prefix
                 // listing of objects to determine.
@@ -328,10 +304,8 @@ class StreamWrapper
     private function statDirectory($parts, $path, $flags)
     {
         // Stat "directories": buckets, or "s3://"
-        $method = self::$useV2Existence ? 'doesBucketExistV2' : 'doesBucketExist';
-
         if (!$parts['Bucket'] ||
-            $this->getClient()->$method($parts['Bucket'])
+            $this->getClient()->doesBucketExist($parts['Bucket'])
         ) {
             return $this->formatUrlStat($path);
         }
@@ -472,7 +446,7 @@ class StreamWrapper
      */
     public function dir_rewinddir()
     {
-        return $this->boolCall(function() {
+        $this->boolCall(function() {
             $this->objectIterator = null;
             $this->dir_opendir($this->openedPath, null);
             return true;
@@ -599,16 +573,16 @@ class StreamWrapper
                 . "Use one 'r', 'w', 'a', or 'x'.";
         }
 
-        if ($mode === 'x') {
-            $method = self::$useV2Existence ? 'doesObjectExistV2' : 'doesObjectExist';
-
-            if ($this->getClient()->$method(
+        // When using mode "x" validate if the file exists before attempting
+        // to read
+        if ($mode == 'x' &&
+            $this->getClient()->doesObjectExist(
                 $this->getOption('Bucket'),
                 $this->getOption('Key'),
                 $this->getOptions(true)
-            )) {
-                $errors[] = "{$path} already exists on Amazon S3";
-            }
+            )
+        ) {
+            $errors[] = "{$path} already exists on Amazon S3";
         }
 
         return $errors;
@@ -811,13 +785,10 @@ class StreamWrapper
      */
     private function createBucket($path, array $params)
     {
-        $method = self::$useV2Existence ? 'doesBucketExistV2' : 'doesBucketExist';
-
-        if ($this->getClient()->$method($params['Bucket'])) {
+        if ($this->getClient()->doesBucketExist($params['Bucket'])) {
             return $this->triggerError("Bucket already exists: {$path}");
         }
 
-        unset($params['ACL']);
         return $this->boolCall(function () use ($params, $path) {
             $this->getClient()->createBucket($params);
             $this->clearCacheKey($path);
@@ -840,12 +811,10 @@ class StreamWrapper
         $params['Body'] = '';
 
         // Fail if this pseudo directory key already exists
-        $method = self::$useV2Existence ? 'doesObjectExistV2' : 'doesObjectExist';
-
-        if ($this->getClient()->$method(
+        if ($this->getClient()->doesObjectExist(
             $params['Bucket'],
-            $params['Key']
-        )) {
+            $params['Key'])
+        ) {
             return $this->triggerError("Subfolder already exists: {$path}");
         }
 
@@ -976,6 +945,6 @@ class StreamWrapper
     {
         $size = $this->body->getSize();
 
-        return !empty($size) ? $size : $this->size;
+        return $size !== null ? $size : $this->size;
     }
 }

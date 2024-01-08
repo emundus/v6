@@ -2,7 +2,6 @@
 
 namespace Mpdf\Tag;
 
-use Mpdf\Mpdf;
 use Mpdf\Utils\NumericString;
 
 class Hr extends Tag
@@ -55,9 +54,9 @@ class Hr extends Tag
 			$objattr['width'] = $this->sizeConverter->convert($attr['WIDTH'], $this->mpdf->blk[$this->mpdf->blklvl]['inner_width']);
 		}
 		if (isset($properties['TEXT-ALIGN'])) {
-			$objattr['align'] = $this->getAlign($properties['TEXT-ALIGN']);
+			$objattr['align'] = self::ALIGN[strtolower($properties['TEXT-ALIGN'])];
 		} elseif (isset($attr['ALIGN']) && $attr['ALIGN'] != '') {
-			$objattr['align'] = $this->getAlign($attr['ALIGN']);
+			$objattr['align'] = self::ALIGN[strtolower($attr['ALIGN'])];
 		}
 
 		if (isset($properties['MARGIN-LEFT']) && strtolower($properties['MARGIN-LEFT']) === 'auto') {
@@ -101,7 +100,7 @@ class Hr extends Tag
 
 		$objattr['type'] = 'hr';
 		$objattr['height'] = $objattr['linewidth'] + $objattr['margin_top'] + $objattr['margin_bottom'];
-		$e = Mpdf::OBJECT_IDENTIFIER . "type=image,objattr=" . serialize($objattr) . Mpdf::OBJECT_IDENTIFIER;
+		$e = "\xbb\xa4\xactype=image,objattr=" . serialize($objattr) . "\xbb\xa4\xac";
 
 		/* -- TABLES -- */
 		// Output it to buffers
