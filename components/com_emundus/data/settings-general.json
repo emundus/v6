@@ -53,6 +53,7 @@
     "component": "emundus",
     "label": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_OTHER_USER_EDITING_SAME_FILE",
     "param": "display_other_user_editing_same_file",
+    "helptext": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_OTHER_USER_EDITING_SAME_FILE_HELPTEXT",
     "options": [
       {
         "label": "JNO",

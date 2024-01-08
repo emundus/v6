@@ -348,6 +348,7 @@ die("<script>
 	static function prepareElementParameters($plugin, $notempty = true, $attachementId = 0)
 	{
 
+	    $plugin_no_required = ['display','panel'];
 		$plugin_to_setup = '';
 		if ($plugin == 'nom' || $plugin == 'prenom' || $plugin == 'email') {
 			$plugin_to_setup = $plugin;
@@ -425,33 +426,33 @@ die("<script>
 			'validations'             => array(),
 		);
 
-		if ($notempty && $plugin != 'display') {
-			$params['validations']                   = array(
-				'plugin'           => array(
-					"notempty",
-				),
-				'plugin_published' => array(
-					"1",
-				),
-				'validate_in'      => array(
-					"both",
-				),
-				'validation_on'    => array(
-					"both",
-				),
-				'validate_hidden'  => array(
-					"0",
-				),
-				'must_validate'    => array(
-					"0",
-				),
-				'show_icon'        => array(
-					"1",
-				),
-			);
-			$params['notempty-message']              = array();
-			$params['notempty-validation_condition'] = array();
-		}
+        if($notempty && !in_array($plugin, $plugin_no_required)){
+            $params['validations'] = array(
+                'plugin' => array(
+                    "notempty",
+                ),
+                'plugin_published' => array(
+                    "1",
+                ),
+                'validate_in' => array(
+                    "both",
+                ),
+                'validation_on' => array(
+                    "both",
+                ),
+                'validate_hidden' => array(
+                    "0",
+                ),
+                'must_validate' => array(
+                    "0",
+                ),
+                'show_icon' => array(
+                    "1",
+                ),
+            );
+            $params['notempty-message'] = array();
+            $params['notempty-validation_condition'] = array();
+        }
 
 		if ($plugin == 'date') {
 			$params['bootstrap_class']            = 'input-xlarge';
@@ -680,19 +681,29 @@ die("<script>
 
 		if ($plugin == 'currency') {
 
-			$object                                                      = (object) [
-				'iso3'               => 'EUR',
-				'minimal_value'      => '0.00',
-				'maximal_value'      => '10000.00',
-				'thousand_separator' => ' ',
-				'decimal_separator'  => ',',
-				'decimal_numbers'    => '2'
-			];
-			$params['all_currencies_options']['all_currencies_options0'] = $object;
+            $object = (object) [
+                'iso3' => 'EUR',
+                'minimal_value' => '0.00',
+                'maximal_value' => '1000000.00',
+                'thousand_separator' => ' ',
+                'decimal_separator' => ',',
+                'decimal_numbers' => '2'
+            ];
+            $params['all_currencies_options']['all_currencies_options0'] = $object;
+        }
+
+		if($plugin == 'emundus_phonenumber') {
+			$params['default_country'] = 'FR';
 		}
 
-		return $params;
-	}
+	    if($plugin == 'panel'){
+		    $params['type'] = '1';
+		    $params['accordion'] = '0';
+		    $params['title'] = '';
+	    }
+
+        return $params;
+    }
 
 	static function getDBType($plugin)
 	{
@@ -725,12 +736,12 @@ die("<script>
 			);
 		}
 
-		if ($plugin == 'email') {
-			$label = array(
-				'fr' => 'Email',
-				'en' => 'Email',
-			);
-		}
+        if ($plugin == 'email') {
+            $label = array(
+                'fr' => 'Adresse email',
+                'en' => 'Email address',
+            );
+        }
 
 		if (empty($label)) {
 			$label = array(
@@ -829,19 +840,17 @@ die("<script>
 			$params['validations']['must_validate'][]    = '0';
 			$params['validations']['show_icon'][]        = '1';
 
-			$query->update($db->quoteName('#__fabrik_elements'))
-				->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-				->where($db->quoteName('id') . ' = ' . $db->quote($eid));
-			$db->setQuery($query);
-
-			return $db->execute();
-		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/helpers/fabrik | Cannot add notempty validation for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-
-			return false;
-		}
-	}
+            $query->clear()
+	            ->update($db->quoteName('#__fabrik_elements'))
+                ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($eid));
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/helpers/fabrik | Cannot add notempty validation for element ' . $eid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
 
 	static function checkFabrikJoins($eid, $name, $plugin, $group_id)
 	{
@@ -1227,14 +1236,14 @@ die("<script>
 		$result['status'] = true;
 		return $result;
 	}
-	
+
 	public static function createPrefilterList($lid,$elt_name,$value,$condition = 'equals',$eval = 0,$grouped = 0,$access = 1)
 	{
 		$created = false;
 
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
-		
+
 		$query->select('fl.params,fl.db_table_name')
 			->from($db->quoteName('#__fabrik_lists','fl'))
 			->where($db->quoteName('fl.id') . ' = ' . $db->quote($lid));

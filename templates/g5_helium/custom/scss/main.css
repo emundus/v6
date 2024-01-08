@@ -93,6 +93,7 @@ body {
     background-position: top -6px right 30px;
     width: 100%;
     padding-right: 28%;
+    min-height: 150px;
 }
 
 /* Connexion */
@@ -101,6 +102,7 @@ body {
     background-position: top 120px left 20px, bottom 50px right 20px;
     background-repeat : no-repeat, no-repeat;
     background-size : 25%, 25%;
+    overflow: hidden;
 }
 
 .login #g-navigation .g-container {
@@ -198,6 +200,9 @@ body {
     /* Accueil */
     .homepage #g-container-main .g-container {
         background-image : none;
+    }
+    .homepage #g-container-main .g-container .mod_emundus_campaign__intro {
+        background-position: top -6px right -75px;
     }
 
     /* Connexion */

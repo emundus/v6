@@ -3,6 +3,8 @@
 defined('_JEXEC') or die('Restricted access');
 require_once JPATH_CONFIGURATION . '/configuration.php';
 
+define('DS', DIRECTORY_SEPARATOR);
+
 
 class com_emundusInstallerScript
 {
@@ -1364,9 +1366,11 @@ try {
 			if (version_compare($cache_version, '1.36.0', '<=') || $firstrun)
 			{
 				EmundusHelperUpdate::addCustomEvents([
+                    ['label' => 'onBeforeEmundusRedirectToHikashopCart', 'category' => 'Hikashop'],
+                    ['label' => 'onBeforeApplicantEnterApplication', 'category' => 'Files'],
+                    ['label' => 'onAccessDenied', 'category' => 'Access'],
 					['label' => 'onBeforeEmundusRedirectToHikashopCart', 'category' => 'Hikashop'],
-					['label' => 'onBeforeApplicantEnterApplication', 'category' => 'Files'],
-					['label' => 'onAccessDenied', 'category' => 'Access']
+					['label' => 'onBeforeApplicantEnterApplication', 'category' => 'Files']
 				]);
 
 				// Campaign candidature tabs
@@ -1663,7 +1667,6 @@ try {
 				$form_id = $db->loadResult();
 
 				EmundusHelperUpdate::installExtension('plg_fabrik_element_emundusphonenumber', 'emundus_phonenumber', '{"name":"plg_fabrik_element_emundusphonenumber","type":"plugin","creationDate":"April 2023","author":"eMundus - Thibaud Grignon","copyright":"Copyright (C) 2005-2021 Media A-Team, Inc. - All rights reserved.","authorEmail":"rob@pollen-8.co.uk","authorUrl":"www.fabrikar.com","version":"3.10","description":"PLG_ELEMENT_FIELD_DESCRIPTION","group":"","filename":"emundus_phonenumber"}', 'plugin', 1, 'fabrik_element');
-
 				EmundusHelperUpdate::addColumn('jos_emundus_users', 'token', 'VARCHAR', 50);
 				EmundusHelperUpdate::addColumn('jos_emundus_users', 'anonym_user', 'TINYINT', 1);
 
@@ -3565,48 +3568,55 @@ structure:
 					->from($db->quoteName('#__fabrik_elements'))
 					->where($db->quoteName('name') . ' LIKE ' . $db->quote('class'))
 					->where($db->quoteName('plugin') . ' LIKE ' . $db->quote('dropdown'))
-					->where($db->quoteName('group_id') . ' = 112');
+					->where($db->quoteName('group_id') . ' IN (112,139)');
 				$db->setQuery($query);
-				$class_elt = $db->loadObject();
+				$class_elts = $db->loadObjectList();
 
-				if(!empty($class_elt)) {
-					$params = json_decode($class_elt->params, true);
-					$colors_to_remove = ['label-lightblue', 'label-lightyellow', 'label-yellow', 'label-darkyellow', 'label-lightgreen', 'label-darkgreen', 'label-lightgreen', 'label-darkgreen', 'label-lightorange', 'label-darkorange', 'label-lightred', 'label-darkred', 'label-lightpurple', 'label-darkpurple'];
+				foreach ($class_elts as $class_elt) {
+					if (!empty($class_elt)) {
+						$params           = json_decode($class_elt->params, true);
+						$colors_to_remove = ['label-lightblue', 'label-lightyellow', 'label-yellow', 'label-darkyellow', 'label-lightgreen', 'label-darkgreen', 'label-lightgreen', 'label-darkgreen', 'label-lightorange', 'label-darkorange', 'label-lightred', 'label-darkred', 'label-lightpurple', 'label-darkpurple'];
 
-					if(!empty($params['sub_options'])) {
-						foreach ($colors_to_remove as $color_to_remove) {
-							$index = array_search($color_to_remove, $params['sub_options']['sub_values']);
-							if($index !== false) {
-								unset($params['sub_options']['sub_values'][$index]);
-								unset($params['sub_options']['sub_labels'][$index]);
+						if (!empty($params['sub_options'])) {
+							foreach ($colors_to_remove as $color_to_remove) {
+								$index = array_search($color_to_remove, $params['sub_options']['sub_values']);
+								if ($index !== false) {
+									unset($params['sub_options']['sub_values'][$index]);
+									unset($params['sub_options']['sub_labels'][$index]);
+								}
+							}
+
+							$params['sub_options']['sub_values'] = array_values($params['sub_options']['sub_values']);
+							$params['sub_options']['sub_labels'] = array_values($params['sub_options']['sub_labels']);
+
+							if (!in_array('label-pink', $params['sub_options']['sub_values'])) {
+								$params['sub_options']['sub_values'][] = 'label-pink';
+								$params['sub_options']['sub_labels'][] = 'Pink';
+							}
+
+							if (!in_array('label-pink', $params['sub_options']['sub_values'])) {
+								$params['sub_options']['sub_values'][] = 'label-pink';
+								$params['sub_options']['sub_labels'][] = 'Pink';
 							}
 						}
 
-						$params['sub_options']['sub_values'] = array_values($params['sub_options']['sub_values']);
-						$params['sub_options']['sub_labels'] = array_values($params['sub_options']['sub_labels']);
+						$colors_to_remove = array_map((function ($value) use ($db) {
+							return $db->quote($value);
+						}), $colors_to_remove);
+						$query->clear()
+							->update($db->quoteName('#__emundus_setup_profiles'))
+							->set($db->quoteName('class') . ' = ' . $db->quote('label-default'))
+							->where($db->quoteName('class') . 'IN (' . implode(',', $colors_to_remove) . ')');
+						$db->setQuery($query);
+						$db->execute();
 
-						if(!in_array('label-pink', $params['sub_options']['sub_values'])) {
-							$params['sub_options']['sub_values'][] = 'label-pink';
-							$params['sub_options']['sub_labels'][] = 'Pink';
-						}
+						$query->clear()
+							->update($db->quoteName('#__fabrik_elements'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+							->where($db->quoteName('id') . ' = ' . $db->quote($class_elt->id));
+						$db->setQuery($query);
+						$db->execute();
 					}
-
-					$colors_to_remove = array_map((function($value) use ($db) {
-						return $db->quote($value);
-					}), $colors_to_remove);
-					$query->clear()
-						->update($db->quoteName('#__emundus_setup_profiles'))
-						->set($db->quoteName('class') . ' = ' . $db->quote('label-default'))
-						->where($db->quoteName('class') . 'IN ('.implode(',',$colors_to_remove).')');
-					$db->setQuery($query);
-					$db->execute();
-
-					$query->clear()
-						->update($db->quoteName('#__fabrik_elements'))
-						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-						->where($db->quoteName('id') . ' = ' . $db->quote($class_elt->id));
-					$db->setQuery($query);
-					$db->execute();
 				}
 
 				$query->clear()
@@ -3618,6 +3628,322 @@ structure:
 				$db->execute();
 
 				EmundusHelperUpdate::addColumn('jos_emundus_setup_attachments', 'max_filesize', 'DOUBLE(6,2)');
+
+				EmundusHelperUpdate::installExtension('plg_fabrik_element_emundus_geolocalisation', 'emundus_geolocalisation', '{"name":"plg_fabrik_element_emundus_geolocalisation","type":"plugin","creationDate":"September 2023","author":"eMundus - LEGENDRE J\u00e9r\u00e9my","copyright":"Copyright (C) 2005-2023 Media A-Team, Inc. - All rights reserved.","authorEmail":"dev@emundus.io","authorUrl":"www.emundus.fr","version":"3.10","description":"PLG_ELEMENT_FIELD_DESCRIPTION","group":"","filename":"emundus_geolocalisation"}', 'plugin', 1, 'fabrik_element');
+				EmundusHelperUpdate::enableEmundusPlugins('emundus_geolocalisation', 'fabrik_element');
+
+				$query->clear()
+					->update($db->quoteName('#__fabrik_forms'))
+					->set($db->quoteName('view_only_template') . ' = ' . $db->quote('emundus'));
+				$db->setQuery($query);
+				$db->execute();
+
+				EmundusHelperUpdate::addCustomEvents([
+					['label' => 'onAfterSubmitFile', 'category' => 'File']
+				]);
+
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_forms'))
+					->where($db->quoteName('label') . ' LIKE ' . $db->quote('SETUP_GROUPS'));
+				$db->setQuery($query);
+				$setup_groups_form = $db->loadObject();
+
+				if(!empty($setup_groups_form->id)) {
+					$params = json_decode($setup_groups_form->params, true);
+
+					$params['plugin_events'][0] = 'both';
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_forms'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($setup_groups_form->id));
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_elements'))
+					->where($db->quoteName('name') . ' LIKE ' . $db->quote('copy_tag'))
+					->where($db->quoteName('group_id') . ' = 254');
+				$db->setQuery($query);
+				$copy_tag_elt = $db->loadObject();
+
+				if(!empty($copy_tag_elt->id)) {
+					$params = json_decode($copy_tag_elt->params, true);
+
+					$params['sub_options']['sub_initial_selection'] = ["0"];
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_elements'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($copy_tag_elt->id));
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_elements'))
+					->where($db->quoteName('name') . ' LIKE ' . $db->quote('date_time'))
+					->where($db->quoteName('group_id') . ' = 111');
+				$db->setQuery($query);
+				$date_history_emails = $db->loadObject();
+
+				if(!empty($date_history_emails->id)) {
+					$params = json_decode($date_history_emails->params, true);
+
+					$params['date_store_as_local'] = 0;
+					$params['date_table_format'] = "d\/m\/Y H:i";
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_elements'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($date_history_emails->id));
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				$query->clear()
+					->update($db->quoteName('#__fabrik_elements'))
+					->set($db->quoteName('filter_type') . ' = ' . $db->quote('field'))
+					->where($db->quoteName('name') . ' LIKE ' . $db->quote('subject'))
+					->where($db->quoteName('group_id') . ' = 111');
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->update($db->quoteName('#__fabrik_lists'))
+					->set($db->quoteName('filter_action') . ' = ' . $db->quote('submitform'))
+					->where($db->quoteName('label') . ' LIKE ' . $db->quote('TABLE_SETUP_EMAIL_HISTORY'));
+				$db->setQuery($query);
+				$db->execute();
+
+				EmundusHelperUpdate::insertTranslationsTag('ACCOUNT_FORM', 'Espace profil');
+				EmundusHelperUpdate::insertTranslationsTag('ACCOUNT_FORM', 'Profile area', 'override', null, null, null, 'en-GB');
+
+				$query->clear()
+					->select('form_id')
+					->from($db->quoteName('#__emundus_setup_formlist'))
+					->where($db->quoteName('type') . ' LIKE ' . $db->quote('profile'));
+				$db->setQuery($query);
+				$profile_form_id = $db->loadResult();
+
+				if(!empty($profile_form_id)) {
+					$query->clear()
+						->select('params')
+						->from($db->quoteName('#__fabrik_forms'))
+						->where($db->quoteName('id') . ' = ' . $db->quote($profile_form_id));
+					$db->setQuery($query);
+					$profile_form_params = $db->loadResult();
+
+					$profile_form_params = json_decode($profile_form_params);
+					$profile_form_params->submit_button_label = 'SAVE_CONTINUE';
+					$profile_form_params->goback_button_label = 'GO_BACK';
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_forms'))
+						->set($db->quoteName('label') . ' = ' . $db->quote('ACCOUNT_FORM'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($profile_form_params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($profile_form_id));
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				$query->clear()
+					->update($db->quoteName('#__emundus_setup_profiles'))
+					->set($db->quoteName('class') . ' = ' . $db->quote('label-green-1'))
+					->where($db->quoteName('menutype') . ' LIKE ' . $db->quote('coordinatormenu'));
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->update($db->quoteName('#__fabrik_forms'))
+					->set($db->quoteName('params') . ' = JSON_REPLACE(' . $db->quoteName('params') . ', ' . $db->quote('$.tiplocation') . ', ' . $db->quote('above') . ')')
+					->where('JSON_EXTRACT(' . $db->quoteName('params') . ', ' . $db->quote('$.tiplocation') . ') = ' . $db->quote('tip'));
+				$db->setQuery($query);
+				$db->execute();
+
+                // Remove pin and unpin actions from campaign list
+                $query->clear()
+                    ->select('value')
+                    ->from($db->quoteName('#__emundus_setup_config'))
+                    ->where($db->quoteName('namekey') . ' LIKE ' . $db->quote('onboarding_lists'));
+                $db->setQuery($query);
+                $list_config = $db->loadResult();
+
+                if (!empty($list_config)) {
+                    $changed = false;
+                    $list_config = json_decode($list_config, true);
+
+                    if (!empty($list_config['campaigns'])) {
+                        foreach($list_config['campaigns']['tabs'] as $tab_key => $tab) {
+                            foreach($tab['actions'] as $action_key => $action) {
+                                if ($action['action'] == 'pincampaign' || $action['action'] == 'unpincampaign') {
+                                    unset($tab['actions'][$action_key]);
+                                    $list_config['campaigns']['tabs'][$tab_key]['actions'] = array_values($tab['actions']);
+                                    $changed = true;
+                                }
+                            }
+                        }
+                    }
+
+                    if ($changed) {
+                        $query->clear()
+                            ->update($db->quoteName('#__emundus_setup_config'))
+                            ->set($db->quoteName('value') . ' = ' . $db->quote(json_encode($list_config)))
+                            ->where($db->quoteName('namekey') . ' LIKE ' . $db->quote('onboarding_lists'));
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
+
+				EmundusHelperUpdate::insertTranslationsTag('JLOGIN_DESC', 'To access your personal space', 'override', null, null, null, 'en-GB');
+
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_forms'))
+					->where($db->quoteName('label') . ' LIKE ' . $db->quote('SETUP_UPLOAD_FILE_FOR_APPLICANT'));
+				$db->setQuery($query);
+				$setup_upload_file_for_applicant_form = $db->loadObject();
+
+				if(!empty($setup_upload_file_for_applicant_form->id)) {
+					$params = json_decode($setup_upload_file_for_applicant_form->params, true);
+
+					foreach ($params['plugin_description'] as $key => $plugin) {
+						if($plugin == 'saved') {
+							$params['curl_code'][$key] = str_replace("parent.$('#em-modal-actions').modal('hide');", "window.parent.document.querySelector('.em-modal-actions .swal2-close').click();", $params['curl_code'][$key]);
+						}
+					}
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_forms'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($setup_upload_file_for_applicant_form->id));
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_forms'))
+					->where($db->quoteName('label') . ' LIKE ' . $db->quote('SETUP_PROGRAM'));
+				$db->setQuery($query);
+				$setup_program_form = $db->loadObject();
+
+				if(!empty($setup_program_form->id)) {
+					$params = json_decode($setup_program_form->params, true);
+
+					foreach ($params['plugin_description'] as $key => $plugin) {
+						if($plugin == 'onAfterProgramCreate') {
+							$params['plugin_events'][$key] = 'both';
+						}
+					}
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_forms'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($setup_program_form->id));
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				$query->clear()
+					->select('jfe.id, jfe.name')
+					->from('#__fabrik_elements AS jfe')
+					->leftJoin('#__fabrik_formgroup AS jffg ON jffg.group_id = jfe.group_id')
+					->leftJoin('#__fabrik_lists AS jfl ON jfl.form_id = jffg.form_id')
+					->where('jfl.db_table_name = ' . $db->quote('jos_emundus_campaign_workflow'))
+					->where('jfe.name IN (' . $db->quote('start_date') . ', ' . $db->quote('end_date') . ')');
+
+				$db->setQuery($query);
+				$elements = $db->loadObjectList();
+
+				$start_date_element = null;
+				$end_date_element = null;
+
+				foreach ($elements as $element) {
+					if($element->name == 'start_date') {
+						$start_date_element = $element;
+					}
+
+					if($element->name == 'end_date') {
+						$end_date_element = $element;
+					}
+				}
+
+				if(!empty($start_date_element) && !empty($end_date_element)) {
+					$params = '{"bootstrap_class":"input-xxlarge","date_showtime":"1","date_which_time_picker":"clock","date_show_seconds":"0","date_24hour":"1","bootstrap_time_class":"input-xxlarge","placeholder":"","date_store_as_local":"1","date_table_format":"d/m/Y H\\\hi","date_form_format":"d/m/Y","date_defaulttotoday":"0","date_alwaystoday":"0","date_firstday":"1","date_allow_typing_in_field":"1","date_csv_offset_tz":"0","date_advanced":"0","date_allow_func":"","date_allow_php_func":"","date_observe":"","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"1","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"1","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"1","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"1","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","isgreaterorlessthan-message":["La date de fin doit être supérieure à la date de début"],"isgreaterorlessthan-greaterthan":["3"],"isgreaterorlessthan-comparewith":["' . $start_date_element->id . '"],"compare_value":[""],"isgreaterorlessthan-allow_empty":["0"],"isgreaterorlessthan-validation_condition":["if (empty($data)) {\r\n  return false;\r\n}\r\n\r\nreturn true;"],"tip_text":["La date de fin doit être supérieure à la date de début"],"icon":[""],"validations":{"plugin":["isgreaterorlessthan"],"plugin_published":["1"],"validate_in":["both"],"validation_on":["both"],"validate_hidden":["1"],"must_validate":["0"],"show_icon":["1"]}}';
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_elements'))
+						->set($db->quoteName('params') . ' = ' . $db->quote($params))
+						->where($db->quoteName('id') . ' = ' . $db->quote($end_date_element->id));
+					$db->setQuery($query);
+					$params_updated = $db->execute();
+				}
+
+				$current_favicon = EmundusHelperUpdate::getYamlVariable('favicon', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml');
+				$current_favicon = str_replace('gantry-media:/', 'images', $current_favicon);
+
+				if(!file_exists($current_favicon)) {
+					$current_favicon = 'gantry-media://custom/default_favicon.ico';
+
+					EmundusHelperUpdate::updateYamlVariable('favicon', $current_favicon, JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml');
+				}
+
+				EmundusHelperUpdate::installExtension('plg_fabrik_cron_emundusupdatestatusendcampaign','emundusupdatestatusendcampaign','{"name":"plg_fabrik_cron_emundusupdatestatusendcampaign","type":"plugin","creationDate":"October 2023","author":"Bazile Binson","copyright":"Copyright (C) 2015 emundus.fr - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"6.1","description":"PLG_FABRIK_CRON_EMUNDUSUPDATESTATUSENDCAMPAIGN_DESCRIPTION","group":"","filename":"emundusupdatestatusendcampaign"}','plugin',1,'fabrik_cron');
+				EmundusHelperUpdate::installExtension('plg_fabrik_cron_emundusdeleteoldfiles','emundusdeleteoldfiles','{"name":"plg_fabrik_cron_emundusdeleteoldfiles","type":"plugin","creationDate":"November 2023","author":"Bazile Binson","copyright":"Copyright (C) 2015 emundus.fr - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"6.1","description":"PLG_FABRIK_CRON_EMUNDUSDELETEOLDFILES_DESCRIPTION","group":"","filename":"emundusdeleteoldfiles"}','plugin',1,'fabrik_cron');
+
+				// Create user for automated tasks
+				// check if parameter is already filled
+				$eMConfig = JComponentHelper::getParams('com_emundus');
+				$automated_task_user_param = $eMConfig->get('automated_task_user','');
+				if (!empty($automated_task_user_param)) {
+					$query->clear()
+						->select('id')
+						->from($db->quoteName('#__users'))
+						->where($db->quoteName('id').' = '.$db->quote($automated_task_user_param));
+					$db->setQuery($query);
+					$automated_task_user = $db->loadResult();
+				} else {
+					$automated_task_user = '';
+				}
+
+				if (empty($automated_task_user)) {
+					// Get an available user id
+					$available_user_id = '';
+					for ($i = 2; $i < 62; $i++) {
+						$query->clear()
+							->select('id')
+							->from($db->quoteName('#__users'))
+							->where($db->quoteName('id').' = '.$db->quote($i));
+						$db->setQuery($query);
+						$user_found = $db->loadResult();
+						if (empty($user_found)) {
+							$available_user_id = $i;
+							break;
+						}
+					}
+
+					require_once(JPATH_SITE.'/components/com_emundus/helpers/users.php');
+					$h_users = new EmundusHelperUsers;
+					$password = $h_users->generateStrongPassword(30);
+
+					require_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
+					$h_samples = new EmundusUnittestHelperSamples;
+					if (!empty($available_user_id)) {
+						$user_created = $h_samples->createSampleUser(9,'automatedtask@emundus.fr',$password,[2],$available_user_id,'Task', 'AUTOMATED');
+					} else {
+						$user_created = $h_samples->createSampleUser(9,'automatedtask@emundus.fr',$password,[2],0,'Task', 'AUTOMATED');
+					}
+
+					if ($user_created) {
+						EmundusHelperUpdate::updateComponentParameter('com_emundus', 'automated_task_user', $user_created);
+					}
+				}
+
 
 				$columns      = [
 					[
@@ -4132,10 +4458,9 @@ structure:
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$payment_activated = $eMConfig->get('application_fee');
 
-		if ($payment_activated) {
-			EmundusHelperUpdate::removeFromFile(JPATH_ROOT . '/.htaccess', ['php_value session.cookie_samesite Strict' . PHP_EOL]);
-		} else {
-			EmundusHelperUpdate::insertIntoFile(JPATH_ROOT . '/.htaccess', "php_value session.cookie_samesite Strict" . PHP_EOL);
+		EmundusHelperUpdate::removeFromFile(JPATH_ROOT . '/.htaccess', ['php_value session.cookie_samesite Strict']);
+		if (!$payment_activated) {
+			EmundusHelperUpdate::insertIntoFile(JPATH_ROOT . '/.htaccess', "php_value session.cookie_samesite Lax" . PHP_EOL);
 		}
 
 		return true;

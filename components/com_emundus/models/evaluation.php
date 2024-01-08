@@ -350,7 +350,6 @@ class EmundusModelEvaluation extends JModelList {
 
         if ($session->has('filt_params'))
         {
-            //var_dump($session->get('filt_params'));
             $element_id = array();
             $filt_params = $session->get('filt_params');
 
@@ -388,7 +387,7 @@ class EmundusModelEvaluation extends JModelList {
                 }
             }
         }
-//die(var_dump($elements_id));
+
         return @$elements_id;
     }
 
@@ -413,7 +412,7 @@ class EmundusModelEvaluation extends JModelList {
 
             if (!empty($code)) {
                 $programmes = array_unique($code);
-            } elseif ($filt_params['programme'][0] !== '%' && is_array(@$filt_params['programme']) && count(@$filt_params['programme']) > 0) {
+            } elseif ($filt_params['programme'][0] !== '%' && is_array($filt_params['programme']) && !empty($filt_params['programme'])) {
                 $programmes = array_unique($filt_params['programme']);
             } else {
                 return array();
@@ -426,7 +425,7 @@ class EmundusModelEvaluation extends JModelList {
                 } else {
                     $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
 
-                    if (count($eval_elt_list) > 0) {
+                    if (!empty($eval_elt_list)) {
                         foreach ($eval_elt_list as $eel) {
                             if (isset($eel->element_id) && !empty($eel->element_id)) {
                                 $elements[] = $h_list->getElementsDetailsByID($eel->element_id)[0];
@@ -456,7 +455,6 @@ class EmundusModelEvaluation extends JModelList {
         $fnums = $jinput->getString('cfnums', null);
 
         if ($session->has('filt_params')) {
-            //var_dump($session->get('filt_params'));
             $elements_id = array();
             $filt_params = $session->get('filt_params');
 
@@ -507,7 +505,6 @@ class EmundusModelEvaluation extends JModelList {
 
         if ($session->has('filt_params'))
         {
-            //var_dump($session->get('filt_params'));
             $elements_id = array();
             $filt_params = $session->get('filt_params');
 
@@ -980,7 +977,7 @@ class EmundusModelEvaluation extends JModelList {
             $dbo->setQuery($query);
             return $dbo->loadAssocList();
         } catch(Exception $e) {
-            echo $query . ' ' . $e->getMessage();
+	        echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.str_replace('#_', 'jos', $query), JLog::ERROR, 'com_emundus');
         }
     }

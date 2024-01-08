@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <form>
 	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
-
 		<fieldset name="plg-form-emunduscampaigncheck" label="PLG_FABRIK_FORM_EMUNDUSCAMPAIGNCHECK_FIELDS">
-
 			<field name="applicant_can_renew" type="list" default="em_config" description="PLG_FABRIK_FORM_EMUNDUSCAMPAIGNCHECK_CAN_RENEW_DESC" label="PLG_FABRIK_FORM_EMUNDUSCAMPAIGNCHECK_CAN_RENEW" >
 				<option value="em_config">USE_EM_CONFIG</option>
 				<option value="0">JNO</option>
@@ -12,7 +10,10 @@
 				<option value="3">COM_EMUNDUS_APPLICANT_CAN_RENEW_YEAR</option>
 			</field>
 
+			<field name="count_archived_files" type="list" default="1" label="PLG_FABRIK_FORM_EMUNDUSCAMPAIGNCHECK_COUNT_ARCHIVED_FILES" description="PLG_FABRIK_FORM_EMUNDUSCAMPAIGNCHECK_COUNT_ARCHIVED_FILES_DESC">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
 		</fieldset>
-
 	</fields>
 </form>

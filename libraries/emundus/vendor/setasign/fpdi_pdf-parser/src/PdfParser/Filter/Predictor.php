@@ -4,7 +4,7 @@
  * This file is part of FPDI PDF-Parser
  *
  * @package   setasign\FpdiPdfParser
- * @copyright Copyright (c) 2021 Setasign GmbH & Co. KG (https://www.setasign.com)
+ * @copyright Copyright (c) 2023 Setasign GmbH & Co. KG (https://www.setasign.com)
  * @license   FPDI PDF-Parser Commercial Developer License Agreement (see LICENSE file within this package)
  */
 
@@ -51,7 +51,7 @@ class Predictor
         $bitsPerComponent = null,
         $columns = null
     ) {
-        if ($predictor !== null && $predictor != 1) {
+        if ($predictor !== null && $predictor !== 1) {
             $this->predictor = (int) $predictor;
 
             if ($colors !== null) {

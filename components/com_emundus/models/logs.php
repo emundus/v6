@@ -53,9 +53,9 @@ class EmundusModelLogs extends JModelList {
 
         if (!empty($user_from)) {
             $eMConfig = JComponentHelper::getParams('com_emundus');
-            $log_actions = $eMConfig->get('log_actions', null);
-            $log_actions_exclude = $eMConfig->get('log_actions_exclude', null);
-            $log_actions_exclude_user = $eMConfig->get('log_actions_exclude_user', 62);
+            $log_actions = $eMConfig->get('log_actions', '');
+            $log_actions_exclude = $eMConfig->get('log_actions_exclude', '');
+            $log_actions_exclude_user = $eMConfig->get('log_actions_exclude_user', '62');
 
             if ($eMConfig->get('logs', 0) && (empty($log_actions) || in_array($action, explode(',',$log_actions)))) {
                 if (!in_array($action, explode(',', $log_actions_exclude))) {
@@ -243,46 +243,49 @@ class EmundusModelLogs extends JModelList {
 	 */
 	public function getActionsOnFnum($fnum, $user_from = null, $action = null, $crud = null, $offset = null, $limit = 100) {
 		$results = [];
-        $db = JFactory::getDbo();
-		$query = $db->getQuery(true);
 
-        $user_from = is_array($user_from) ? implode(',', $user_from) : $user_from;
-        $action = is_array($action) ? implode(',', $action) : $action;
-        $crud = is_array($crud) ? implode(',', $db->quote($crud)) : $crud;
+        if (!empty($fnum)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-        $eMConfig = JComponentHelper::getParams('com_emundus');
-        $showTimeFormat = $eMConfig->get('log_show_timeformat', 0);
-        $showTimeOrder = $eMConfig->get('log_show_timeorder', 'DESC');
+            $user_from = is_array($user_from) ? implode(',', $user_from) : $user_from;
+            $action = is_array($action) ? implode(',', $action) : $action;
+            $crud = is_array($crud) ? implode(',', $db->quote($crud)) : $crud;
 
-		// Build a where depending on what params are present.
-        $where = $db->quoteName('fnum_to').' LIKE '.$db->quote($fnum);
-        if (!empty($user_from))
-            $where .= ' AND '.$db->quoteName('user_id_from').' IN ('.$user_from . ')';
-        if (!empty($action))
-            $where .= ' AND '.$db->quoteName('action_id').' IN ('. $action . ')';
-        if (!empty($crud))
-            $where .= ' AND '.$db->quoteName('verb').' IN ( '. $crud . ')';
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $showTimeFormat = $eMConfig->get('log_show_timeformat', 0);
+            $showTimeOrder = $eMConfig->get('log_show_timeorder', 'DESC');
 
-        $query->select('lg.*, us.firstname, us.lastname')
-			->from($db->quoteName('#__emundus_logs', 'lg'))
-			->leftJoin($db->quoteName('#__emundus_users', 'us').' ON '.$db->QuoteName('us.user_id').' = '.$db->QuoteName('lg.user_id_from'))
-			->where($where)
-            ->order($db->quoteName('lg.timestamp') . ' ' . $showTimeOrder);
+            // Build a where depending on what params are present.
+            $where = $db->quoteName('fnum_to').' LIKE '.$db->quote($fnum);
+            if (!empty($user_from))
+                $where .= ' AND '.$db->quoteName('user_id_from').' IN ('.$user_from . ')';
+            if (!empty($action))
+                $where .= ' AND '.$db->quoteName('action_id').' IN ('. $action . ')';
+            if (!empty($crud))
+                $where .= ' AND '.$db->quoteName('verb').' IN ( '. $crud . ')';
 
-        if(!is_null($offset)) {
-            $query->setLimit($limit, $offset);
-        }
+            $query->select('lg.*, us.firstname, us.lastname')
+                ->from($db->quoteName('#__emundus_logs', 'lg'))
+                ->leftJoin($db->quoteName('#__emundus_users', 'us').' ON '.$db->QuoteName('us.user_id').' = '.$db->QuoteName('lg.user_id_from'))
+                ->where($where)
+                ->order($db->quoteName('lg.timestamp') . ' ' . $showTimeOrder);
 
-        try {
-            $db->setQuery($query);
-            $results = $db->loadObjectList();
-
-            foreach ($results as $result) {
-                $result->date = EmundusHelperDate::displayDate($result->timestamp,'DATE_FORMAT_LC2',(int)$showTimeFormat);
+            if(!is_null($offset)) {
+                $query->setLimit($limit, $offset);
             }
-		} catch (Exception $e) {
-            JLog::add('Could not getActionsOnFnum in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-		}
+
+            try {
+                $db->setQuery($query);
+                $results = $db->loadObjectList();
+
+                foreach ($results as $result) {
+                    $result->date = EmundusHelperDate::displayDate($result->timestamp,'DATE_FORMAT_LC2',(int)$showTimeFormat);
+                }
+            } catch (Exception $e) {
+                JLog::add('Could not getActionsOnFnum in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            }
+        }
 
         return $results;
 	}

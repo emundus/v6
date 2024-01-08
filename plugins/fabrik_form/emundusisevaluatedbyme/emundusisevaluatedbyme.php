@@ -73,7 +73,7 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
             \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onRenderEvaluation', ['event_datas' => $event_datas]]);
         }
 
-        $app->enqueueMessage($evaluation['message']);
+        $app->enqueueMessage(JText::_($evaluation['message']));
         if($r != 1) {
             $app->redirect($evaluation['url']);
         }

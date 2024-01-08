@@ -4,8 +4,8 @@
       <label>{{ translate(param.label) }}</label>
 
       <!-- DROPDOWN -->
-      <div v-if="param.type === 'dropdown'">
-        <select v-model="element.params[param.name]" class="em-w-100">
+      <div v-if="param.type === 'dropdown' || param.type === 'sqldropdown'">
+        <select v-model="element.params[param.name]" class="em-w-100" v-if="param.options.length > 0">
           <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
         </select>
       </div>
@@ -87,6 +87,14 @@ export default {
             this.updateDatabasejoinParams();
           }
         }
+      }
+
+      if (param.type === 'sqldropdown') {
+        this.loading = true;
+        formBuilderService.getSqlDropdownOptions(param.table,param.key,param.value,param.translate).then((response) => {
+          param.options = response.data;
+          this.loading = false;
+        });
       }
     })
   },

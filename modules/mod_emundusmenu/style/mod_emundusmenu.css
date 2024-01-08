@@ -1,8 +1,13 @@
 /* MENU */
 #header-b #em_user_menu ul.tchooz-vertical-toplevel a span.simple-letter,
 #header-b #em_user_menu ul.tchooz-vertical-toplevel a span[class*="material-icon"] {
-    color: var(--em-profile-color);
+    color: var(--neutral-900) !important;
     text-decoration: none;
+}
+
+#header-b #em_user_menu ul.tchooz-vertical-toplevel .active a span.simple-letter,
+#header-b #em_user_menu ul.tchooz-vertical-toplevel .active a span[class*="material-icon"] {
+    color: var(--em-profile-color) !important;
 }
 
 #header-b #em_user_menu a.item span.image-title {

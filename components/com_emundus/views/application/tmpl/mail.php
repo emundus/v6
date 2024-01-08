@@ -2,6 +2,8 @@
 defined('_JEXEC') or die('Restricted access');
 JFactory::getSession()->set('application_layout', 'mail');
 
+require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'date.php');
+
 $fnum = JFactory::getApplication()->input->getString('fnum', 0);
 
 ?>
@@ -13,7 +15,8 @@ $fnum = JFactory::getApplication()->input->getString('fnum', 0);
     }
 
     div#em-appli-block div.em-container-mail-content div.em-container-mail-content-heading.panel-heading {
-        border-radius: var(--em-coordinator-br);
+        border-top-left-radius: var(--em-coordinator-br);
+        border-top-right-radius: var(--em-coordinator-br);
         margin-top: 0;
         align-items: start;
         background: var(--neutral-300);
@@ -77,7 +80,7 @@ $fnum = JFactory::getApplication()->input->getString('fnum', 0);
                             <div class='message_<?php echo $message->fnum_to ?> panel panel-default em-container-mail-content' <?php if($message->fnum_to != $fnum) : ?>style="display: none"<?php endif; ?>>
                                 <div class="panel-heading em-container-mail-content-heading flex flex-col"><h3
                                             class="w-full"><?= $message->subject; ?></h3>
-                                    <small class="mb-1"> <?= JText::_('COM_EMUNDUS_EMAILS_MESSAGE_FROM') . ': ' . JFactory::getUser($message->user_id_from)->name . ' ' . date('d/m/Y H:i:s', strtotime($message->date_time)); ?> </small>
+                                    <small class="mb-1"> <?= JText::_('COM_EMUNDUS_EMAILS_MESSAGE_FROM') . ': ' . JFactory::getUser($message->user_id_from)->name . ' ' . EmundusHelperDate::displayDate($message->date_time,'DATE_FORMAT_LC2',0); ?> </small>
                                     <?php if(!empty($message->fnum_to) && $message->fnum_to != $fnum) : ?>
                                     <small><?= JText::_('COM_EMUNDUS_EMAIL_ON_FILE') ?> <a href="#<?php echo $message->fnum_to ?>" target="_blank"><?php echo $message->fnum_to ?></a> </small>
                                     <?php endif; ?>
@@ -87,7 +90,14 @@ $fnum = JFactory::getApplication()->input->getString('fnum', 0);
                                     <i><?= JText::_('COM_EMUNDUS_EMAIL_PEOPLE_CC') . ' ' . $message->email_cc; ?></i>
                                     </div><?php endif; ?>
                                 <div class="panel-body em-container-mail-content-body">
-                                    <?= $message->message; ?>
+                                    <?php
+                                        $length = strlen($message->message);
+                                        if ($length > 1000000) {
+                                            echo '<strong>' . JText::sprintf('COM_EMUNDUS_ERROR_TOO_LARGE_EMAIL', $length). '</strong>';
+                                        } else {
+                                            echo $message->message;
+                                        }
+                                    ?>
                                 </div>
                             </div>
 					<?php endforeach; ?>

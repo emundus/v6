@@ -800,7 +800,7 @@ function data_to_img($match) {
  * @return false|string|void
  * @throws Exception
  */
-function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null, $attachments = true) {
+function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = [], $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null, $attachments = true) {
 	jimport('joomla.html.parameter');
     set_time_limit(0);
     require_once (JPATH_SITE.'/components/com_emundus/helpers/date.php');
@@ -1454,9 +1454,9 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     }
 
 
-    @chdir('tmp');
+    chdir('tmp');
     if ($output) {
-        if (!isset($current_user->applicant) && @$current_user->applicant != 1) {
+        if (!isset($current_user->applicant) || $current_user->applicant != 1) {
             //$output?'FI':'F'
             $name = 'application_header_' . date('Y-m-d_H-i-s') . '.pdf';
             $pdf->Output(EMUNDUS_PATH_ABS . $item->user_id . DS . $name, 'FI');

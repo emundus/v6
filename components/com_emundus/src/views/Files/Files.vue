@@ -81,7 +81,9 @@
 							  :searchable="true"
 							  :allow-empty="true"
 							  width="250px"
-					    ></multiselect>
+					    >
+                <span slot="noResult">{{translate('COM_EMUNDUS_FILES_FILTER_NO_ELEMENTS_FOUND')}}</span>
+              </multiselect>
 					    <span class="material-icons-outlined cursor-pointer em-red-500-color ml-3" @click="removeFilter(filter)">close</span>
 				    </div>
 			    </div>

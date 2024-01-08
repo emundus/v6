@@ -583,17 +583,77 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
             $gid = $jinput->getInt('gid', 0);
-            $plugin = $jinput->getString('plugins');
+            $fid = $jinput->getInt('fid', 0);
 	        $mode = $jinput->getString('mode', 'form');
+	        $evaluation = $mode == 'eval';
+	        $section_to_insert = array();
+	        $elements = array();
+			
+			if(!empty($gid) && !empty($fid)) {
 
-			if (!empty($gid)) {
-				$response['data'] = $this->m_formbuilder->createSectionSimpleElements($gid, $plugin, $mode);
+				if (is_file(JPATH_ROOT . '/components/com_emundus/data/form-builder-sections.json')) {
+					$sections_available = json_decode(file_get_contents(JPATH_ROOT . '/components/com_emundus/data/form-builder-sections.json'), true);
 
-				if (!empty($response['data'])) {
-					$response['status'] = true;
-					$response['msg'] = JText::_('ELEMENTS_CREATED');
-				} else {
-					$response['msg'] = JText::_('ELEMENTS_NOT_CREATED');
+					if (!empty($sections_available)) {
+						foreach ($sections_available as $section) {
+							if ($section['id'] == $gid) {
+								$section_to_insert = $section;
+								break;
+							}
+						}
+					}
+				}
+
+				if (!empty($section_to_insert)) {
+					$elements = $section_to_insert['elements'];
+				}
+
+				if (!empty($elements)) {
+					$group = $this->m_formbuilder->createGroup($section_to_insert['labels'], $fid);
+
+					if(!empty($group['group_id'])) {
+						foreach ($elements as $element) {
+							$labels = !empty($element['labels']) ? $element['labels'] : null;
+							$elementId = $this->m_formbuilder->createSimpleElement($group['group_id'], $element['value'], 0, $evaluation, $labels);
+
+							if(!empty($elementId)) {
+								$response['data'][] = $elementId;
+								$new_element = $this->m_formbuilder->getSimpleElement($elementId);
+
+								if(!empty($element['params'])) {
+									$new_element['params'] = json_decode($new_element['params'], true);
+									$new_element['params'] = array_merge($new_element['params'], $element['params']);
+									$new_element['FRequire'] = !empty($element['required']) ? $element['required'] : 'true';
+
+									$this->m_formbuilder->updateParams($new_element, $user->id);
+								}
+
+								if(!empty($element['options'])) {
+									$this->m_formbuilder->deleteElementSubOption($elementId,0);
+									foreach ($element['options'] as $option) {
+										$sub_options = $this->m_formbuilder->addElementSubOption($elementId, $option['value'],'fr');
+
+										if(!empty($sub_options)) {
+											$this->m_formbuilder->updateTranslation($sub_options['sub_labels'][sizeof($sub_options['sub_labels'])-1], $option['labels'], 'fabrik_elements',$elementId);
+										}
+									}
+								}
+							}
+						}
+					} else {
+						$response['msg'] = JText::_('GROUP_NOT_CREATED');
+					}
+
+					if (!empty($response['data'])) {
+						$response['status'] = true;
+						$response['msg']    = JText::_('ELEMENTS_CREATED');
+					}
+					else {
+						$response['msg'] = JText::_('ELEMENTS_NOT_CREATED');
+					}
+				}
+				else {
+					$response['msg'] = JText::_('NO_ELEMENTS_AVAILABLE');
 				}
 			} else {
 				$response['msg'] = JText::_('MISSING_PARAMS');
@@ -1034,7 +1094,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
              $newTranslation = $jinput->getString("newTranslation");
              $lang = $jinput->getString("lang");
 
-             if (!empty($element) && !empty($options) && !empty($newTranslation)) {
+             if (!empty($element) && !empty($options) && $newTranslation !== '') {
                  $translated = $this->m_formbuilder->updateElementOption($element, $options, $index, $newTranslation, $lang);
                  $tab = array('status' => $translated);
              } else {
@@ -1258,6 +1318,30 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 		}
 
 		echo json_encode((object)$response);
+		exit;
+	}
+
+	public function getsqldropdownoptions() {
+		$user     = JFactory::getUser();
+		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'), 'code' => 403, 'data' => []);
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$response = array('status' => false, 'msg' => JText::_('MISSING_PARAMS'));
+
+			$jinput = JFactory::getApplication()->input;
+			$table = $jinput->getString('table', '');
+			$key  = $jinput->getString('key', '');
+			$value  = $jinput->getString('value', '');
+			$translate  = $jinput->getBool('translate', false);
+
+
+			if(!empty($table) && !empty($key) && !empty($value)) {
+				$options = $this->m_formbuilder->getSqlDropdownOptions($table, $key, $value, $translate);
+				$response = array('status' => true, 'msg' => JText::_('SUCCESS'), 'code' => 200, 'data' => $options);
+			}
+		}
+
+		echo json_encode((object) $response);
 		exit;
 	}
 }

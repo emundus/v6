@@ -239,8 +239,12 @@ class EmundusViewFiles extends JViewLegacy
 				$this->assignRef('code', $m_files->code);
 				$this->assignRef('fnum_assoc', $m_files->fnum_assoc);
 
-				// get applications files
-				$users = $m_files->getUsers();
+				if(!empty($m_files->fnum_assoc) || !empty($m_files->code)) {
+					// get applications files
+					$users = $m_files->getUsers();
+				} else {
+					$users = array();
+				}
 
 				// Get elements from model and proccess them to get an easy to use array containing the element type
 				$elements = $m_files->getElementsVar();

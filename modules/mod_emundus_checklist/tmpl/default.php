@@ -74,7 +74,13 @@ if($show_preliminary_documents && !empty($preliminary_documents)): ?>
                     $cpt = $db->loadResult();
                     $class = $cpt==0?'need_missing':'need_ok';
                     $step = $index+1;
-                    $form_title = explode(' - ',$form->title)[1] ?: $form->title;
+
+                    if (strpos($form->label, ' - ') !== false) {
+                        $form_title = explode(' - ',$form->label)[1];
+                    } else {
+                        $form_title = $form->label;
+                    }
+
                     ?>
                     <div id="mlf<?php echo $form->id; ?>"
                          class="<?php if($form->id == $menuid) echo 'active'?> mod_emundus_checklist_<?php echo $class; ?> mod_emundus_checklist___form_item">

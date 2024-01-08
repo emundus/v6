@@ -170,7 +170,7 @@ export default {
       document: {
         id: null,
         type: {},
-        mandatory: '1',
+        mandatory: this.$props.mandatory,
         nbmax: 1,
         description: {
           fr: '',

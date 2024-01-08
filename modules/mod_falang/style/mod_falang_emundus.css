@@ -98,7 +98,7 @@ div.advanced-dropdown span.caret{
     justify-content: center;
     align-items: flex-start;
     background-color: var(--neutral-0);
-    position: absolute;
+    position: fixed;
 }
 
 .mod_falang_emundus___other_languages span{
@@ -109,7 +109,7 @@ div.advanced-dropdown span.caret{
 }
 
 .mod_falang_emundus___other_languages span:hover:not(.mod_falang_emundus___other_languages_selected){
-    background-color: var(--em-profile-color);
+    background-color: var(--neutral-300);
 }
 
 .mod_falang_emundus___other_languages_selected{

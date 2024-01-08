@@ -474,4 +474,23 @@ class EmundusModelFormbuilderTest extends TestCase
 			}
 		}
 	}
+
+	public function testgetSqlDropdownOptions() {
+		$table = 'data_country';
+		$column = 'iso2';
+		$label = 'label';
+
+		$datas = $this->m_formbuilder->getSqlDropdownOptions($table, $column, $label,1);
+		$this->assertNotEmpty($datas, 'getSqlDropdownOptions returns the datas');
+
+		$datas = $this->m_formbuilder->getSqlDropdownOptions($table, $column, $label,0);
+		$this->assertEmpty($datas, 'getSqlDropdownOptions returns empty datas because data_country need to be translated');
+
+		$table = 'jos_emundus_campaign_candidature';
+		$column = 'id';
+		$label = 'fnum';
+		$datas = $this->m_formbuilder->getSqlDropdownOptions($table, $column, $label,0);
+		$this->assertEmpty($datas, 'getSqlDropdownOptions returns empty datas because we do not have rights to get tables not available in elements params');
+
+	}
 }

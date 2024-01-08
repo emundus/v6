@@ -37,8 +37,6 @@ class EmundusViewForm extends FabrikViewFormBase
             JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
             JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models');
 
-            error_reporting(E_ALL ^ E_NOTICE);
-
             /**
              *   *Instanciation des variables du form
              */

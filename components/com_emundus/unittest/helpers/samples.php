@@ -18,12 +18,12 @@ jimport('joomla.user.helper');
 jimport( 'joomla.application.application' );
 jimport('joomla.plugin.helper');
 
-include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
-include_once(JPATH_SITE.'/components/com_emundus/models/formbuilder.php');
-include_once(JPATH_SITE.'/components/com_emundus/models/settings.php');
-include_once(JPATH_SITE.'/components/com_emundus/classes/api/FileSynchronizer.php');
-include_once(JPATH_SITE.'/components/com_emundus/models/campaign.php');
-include_once(JPATH_SITE.'/components/com_emundus/models/programme.php');
+require_once(JPATH_SITE.'/components/com_emundus/models/users.php');
+require_once(JPATH_SITE.'/components/com_emundus/models/formbuilder.php');
+require_once(JPATH_SITE.'/components/com_emundus/models/settings.php');
+require_once(JPATH_SITE.'/components/com_emundus/classes/api/FileSynchronizer.php');
+require_once(JPATH_SITE.'/components/com_emundus/models/campaign.php');
+require_once(JPATH_SITE.'/components/com_emundus/models/programme.php');
 
 /**
  * eMundus Component Query Helper
@@ -67,24 +67,39 @@ class EmundusUnittestHelperSamples
 		return $user_id;
 	}
 
-    public function createSampleUser($profile = 9, $username = 'user.test@emundus.fr', $password = 'test1234', $j_groups = [2])
+    public function createSampleUser($profile = 9, $username = 'user.test@emundus.fr', $password = 'test1234', $j_groups = [2], $user_id = 0, $firstname = 'Test', $lastname = 'USER')
     {
-        $user_id = 0;
         $m_users = new EmundusModelUsers;
+
+        $name = $firstname.' '.$lastname;
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query->insert('#__users')
-            ->columns('name, username, email, password')
-            ->values($db->quote('Test USER') . ', ' . $db->quote($username) .  ', ' . $db->quote($username) . ',' .  $db->quote(md5($password)));
+        if ($user_id == 0) {
+            $query->insert('#__users')
+                ->columns('name, username, email, password')
+                ->values($db->quote($name) . ', ' . $db->quote($username) .  ', ' . $db->quote($username) . ',' .  $db->quote(md5($password)));
 
-        try {
-            $db->setQuery($query);
-            $db->execute();
-            $user_id = $db->insertid();
-        } catch (Exception $e) {
-            JLog::add("Failed to insert jos_users" . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            try {
+                $db->setQuery($query);
+                $db->execute();
+                $user_id = $db->insertid();
+            } catch (Exception $e) {
+                JLog::add("Failed to insert jos_users" . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            }
+        } else {
+            $query->insert('#__users')
+                ->columns('id, name, username, email, password')
+                ->values($user_id . ',' . $db->quote($name) . ', ' . $db->quote($username) .  ', ' . $db->quote($username) . ',' .  $db->quote(md5($password)));
+
+            try {
+                $db->setQuery($query);
+                $db->execute();
+            } catch (Exception $e) {
+                JLog::add("Failed to insert jos_users" . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                $user_id = '';
+            }
         }
 
         if (!empty($user_id)) {
@@ -103,8 +118,8 @@ class EmundusUnittestHelperSamples
 				}
 			}
 
-            $other_param['firstname'] 		= 'Test';
-            $other_param['lastname'] 		= 'USER';
+            $other_param['firstname'] 		= $firstname;
+            $other_param['lastname'] 		= $lastname;
             $other_param['profile'] 		= $profile;
             $other_param['em_oprofiles'] 	= '';
             $other_param['univ_id'] 		= 0;
@@ -727,4 +742,35 @@ class EmundusUnittestHelperSamples
 
         return $form_id;
     }
+
+	public function getSamplePaymentProduct() {
+		$product = null;
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('product_id')
+			->from('#__hikashop_product')
+			->where('product_published = 1')
+			->where('product_sort_price > 0');
+
+		$db->setQuery($query);
+		$product_id = $db->loadResult();
+
+		return $product_id;
+	}
+
+	public function createSampleOrderItem($order_id, $product_id)
+	{
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->insert('#__hikashop_order_product')
+			->columns(['order_id', 'product_id', 'order_product_quantity'])
+			->values($order_id . ', ' . $product_id . ', 1');
+
+		$db->setQuery($query);
+		$created = $db->execute();
+
+		return $created;
+	}
 }

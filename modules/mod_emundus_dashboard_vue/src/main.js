@@ -29,9 +29,13 @@ if (document.getElementById('em-dashboard-vue')) {
         props: {
           programmeFilter: element.attributes['programmeFilter'].value,
           displayDescription: element.attributes['displayDescription'].value,
+          displayShapes: element.attributes['displayShapes'].value,
+          displayTchoozy: element.attributes['displayTchoozy'].value,
           displayName: element.attributes['displayName'].value,
           name: element.attributes['name'].value,
           language: element.attributes['language'].value,
+          profile_name: element.attributes['profile_name'].value,
+          profile_description: element.attributes['profile_description'].value,
         }
       });
     }

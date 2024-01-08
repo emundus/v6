@@ -46,6 +46,16 @@
                     <option value="1">JYes</option>
                 </field>
 
+                <field name="display_shapes" type="radio" default="1" label="COM_EMUNDUS_DASHBOARD_SHAPES" description="COM_EMUNDUS_DASHBOARD_SHAPES_DESC" class="btn-group btn-group-yesno">
+                    <option value="0">JNo</option>
+                    <option value="1">JYes</option>
+                </field>
+
+                <field name="display_dashboard_tchoozy" type="radio" default="1" label="COM_EMUNDUS_DASHBOARD_TCHOOZY_DASHBOARD" description="COM_EMUNDUS_DASHBOARD_TCHOOZY_DASHBOARD_DESC" class="btn-group btn-group-yesno">
+                    <option value="0">JNo</option>
+                    <option value="1">JYes</option>
+                </field>
+
             </fieldset>
         </fields>
     </config>

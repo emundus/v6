@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a class="em-pointer" @click="addNewForm">{{ translate('COM_EMUNDUS_ONBOARD_NO_FORM_FOUND_ADD_FORM') }}</a>
+    <a class="em-pointer em-profile-color" @click="addNewForm">{{ translate('COM_EMUNDUS_ONBOARD_NO_FORM_FOUND_ADD_FORM') }}</a>
 
     <div class="em-mb-4 em-mt-16 em-text-color">{{ChooseForm}} : </div>
     <div class="em-mb-4">
@@ -10,7 +10,7 @@
         </option>
       </select>
     </div>
-    <a class="em-pointer" @click="formbuilder">{{ translate('COM_EMUNDUS_ONBOARD_EDIT_FORM') }}</a>
+    <a class="em-pointer em-profile-color" @click="formbuilder">{{ translate('COM_EMUNDUS_ONBOARD_EDIT_FORM') }}</a>
 
     <hr/>
     <h5>{{ translate('COM_EMUNDUS_FORM_PAGES_PREVIEW')}}</h5>
