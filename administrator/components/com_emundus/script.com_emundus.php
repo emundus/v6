@@ -3,6 +3,8 @@
 defined('_JEXEC') or die('Restricted access');
 require_once JPATH_CONFIGURATION . '/configuration.php';
 
+define('DS', DIRECTORY_SEPARATOR);
+
 
 class com_emundusInstallerScript
 {
@@ -3881,14 +3883,65 @@ structure:
 					$db->setQuery($query);
 					$params_updated = $db->execute();
 				}
-				
+
 				$current_favicon = EmundusHelperUpdate::getYamlVariable('favicon', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml');
 				$current_favicon = str_replace('gantry-media:/', 'images', $current_favicon);
-				
+
 				if(!file_exists($current_favicon)) {
 					$current_favicon = 'gantry-media://custom/default_favicon.ico';
 
 					EmundusHelperUpdate::updateYamlVariable('favicon', $current_favicon, JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml');
+				}
+
+				EmundusHelperUpdate::installExtension('plg_fabrik_cron_emundusupdatestatusendcampaign','emundusupdatestatusendcampaign','{"name":"plg_fabrik_cron_emundusupdatestatusendcampaign","type":"plugin","creationDate":"October 2023","author":"Bazile Binson","copyright":"Copyright (C) 2015 emundus.fr - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"6.1","description":"PLG_FABRIK_CRON_EMUNDUSUPDATESTATUSENDCAMPAIGN_DESCRIPTION","group":"","filename":"emundusupdatestatusendcampaign"}','plugin',1,'fabrik_cron');
+				EmundusHelperUpdate::installExtension('plg_fabrik_cron_emundusdeleteoldfiles','emundusdeleteoldfiles','{"name":"plg_fabrik_cron_emundusdeleteoldfiles","type":"plugin","creationDate":"November 2023","author":"Bazile Binson","copyright":"Copyright (C) 2015 emundus.fr - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"6.1","description":"PLG_FABRIK_CRON_EMUNDUSDELETEOLDFILES_DESCRIPTION","group":"","filename":"emundusdeleteoldfiles"}','plugin',1,'fabrik_cron');
+
+				// Create user for automated tasks
+				// check if parameter is already filled
+				$eMConfig = JComponentHelper::getParams('com_emundus');
+				$automated_task_user_param = $eMConfig->get('automated_task_user','');
+				if (!empty($automated_task_user_param)) {
+					$query->clear()
+						->select('id')
+						->from($db->quoteName('#__users'))
+						->where($db->quoteName('id').' = '.$db->quote($automated_task_user_param));
+					$db->setQuery($query);
+					$automated_task_user = $db->loadResult();
+				} else {
+					$automated_task_user = '';
+				}
+
+				if (empty($automated_task_user)) {
+					// Get an available user id
+					$available_user_id = '';
+					for ($i = 2; $i < 62; $i++) {
+						$query->clear()
+							->select('id')
+							->from($db->quoteName('#__users'))
+							->where($db->quoteName('id').' = '.$db->quote($i));
+						$db->setQuery($query);
+						$user_found = $db->loadResult();
+						if (empty($user_found)) {
+							$available_user_id = $i;
+							break;
+						}
+					}
+
+					require_once(JPATH_SITE.'/components/com_emundus/helpers/users.php');
+					$h_users = new EmundusHelperUsers;
+					$password = $h_users->generateStrongPassword(30);
+
+					require_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
+					$h_samples = new EmundusUnittestHelperSamples;
+					if (!empty($available_user_id)) {
+						$user_created = $h_samples->createSampleUser(9,'automatedtask@emundus.fr',$password,[2],$available_user_id,'Task', 'AUTOMATED');
+					} else {
+						$user_created = $h_samples->createSampleUser(9,'automatedtask@emundus.fr',$password,[2],0,'Task', 'AUTOMATED');
+					}
+
+					if ($user_created) {
+						EmundusHelperUpdate::updateComponentParameter('com_emundus', 'automated_task_user', $user_created);
+					}
 				}
 			}
 		}

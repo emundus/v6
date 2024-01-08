@@ -437,6 +437,7 @@
 			<option value="1">JYES</option>
 		</field>
 		<field name="allowed_non_applicant_profiles" type="text" default="" label="COM_EMUNDUS_ALLOWED_NON_APPLICANT_PROFILES" description="COM_EMUNDUS_ALLOWED_NON_APPLICANT_PROFILES_DESC" />
+		<field name="automated_task_user" type="number" default="" label="COM_EMUNDUS_AUTOMATED_TASK_USER" description="COM_EMUNDUS_AUTOMATED_TASK_USER_DESC" />
 		<field name="all_rights_group" type="number" default="1" label="COM_EMUNDUS_ALL_RIGHTS_GROUP" description="COM_EMUNDUS_ALL_RIGHTS_GROUP_DESC" />
 		<field name="evaluator_group" type="number" default="2" label="COM_EMUNDUS_EVALUATOR_GROUP" description="COM_EMUNDUS_EVALUATOR_GROUP_DESC" />
 		<field name="program_manager_group" type="number" default="3" label="COM_EMUNDUS_PROGRAM_MANAGER_GROUP" description="COM_EMUNDUS_PROGRAM_MANAGER_GROUP_DESC" />
