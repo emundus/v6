@@ -17,23 +17,11 @@ class JsonParser
 
         switch ($shape['type']) {
             case 'structure':
-                if (isset($shape['document']) && $shape['document']) {
-                    return $value;
-                }
                 $target = [];
                 foreach ($shape->getMembers() as $name => $member) {
                     $locationName = $member['locationName'] ?: $name;
                     if (isset($value[$locationName])) {
                         $target[$name] = $this->parse($member, $value[$locationName]);
-                    }
-                }
-                if (isset($shape['union'])
-                    && $shape['union']
-                    && is_array($value)
-                    && empty($target)
-                ) {
-                    foreach ($value as $key => $val) {
-                        $target['Unknown'][$key] = $val;
                     }
                 }
                 return $target;
@@ -55,10 +43,10 @@ class JsonParser
                 return $target;
 
             case 'timestamp':
-                return DateTimeResult::fromTimestamp(
-                    $value,
-                    !empty($shape['timestampFormat']) ? $shape['timestampFormat'] : null
-                );
+                // The Unix epoch (or Unix time or POSIX time or Unix
+                // timestamp) is the number of seconds that have elapsed since
+                // January 1, 1970 (midnight UTC/GMT).
+                return DateTimeResult::fromEpoch($value);
 
             case 'blob':
                 return base64_decode($value);
@@ -68,4 +56,3 @@ class JsonParser
         }
     }
 }
-
