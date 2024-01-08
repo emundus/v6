@@ -3,6 +3,8 @@
 defined('_JEXEC') or die('Restricted access');
 require_once JPATH_CONFIGURATION . '/configuration.php';
 
+define('DS', DIRECTORY_SEPARATOR);
+
 
 class com_emundusInstallerScript
 {

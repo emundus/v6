@@ -18,12 +18,12 @@ jimport('joomla.user.helper');
 jimport( 'joomla.application.application' );
 jimport('joomla.plugin.helper');
 
-include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
-include_once(JPATH_SITE.'/components/com_emundus/models/formbuilder.php');
-include_once(JPATH_SITE.'/components/com_emundus/models/settings.php');
-include_once(JPATH_SITE.'/components/com_emundus/classes/api/FileSynchronizer.php');
-include_once(JPATH_SITE.'/components/com_emundus/models/campaign.php');
-include_once(JPATH_SITE.'/components/com_emundus/models/programme.php');
+require_once(JPATH_SITE.'/components/com_emundus/models/users.php');
+require_once(JPATH_SITE.'/components/com_emundus/models/formbuilder.php');
+require_once(JPATH_SITE.'/components/com_emundus/models/settings.php');
+require_once(JPATH_SITE.'/components/com_emundus/classes/api/FileSynchronizer.php');
+require_once(JPATH_SITE.'/components/com_emundus/models/campaign.php');
+require_once(JPATH_SITE.'/components/com_emundus/models/programme.php');
 
 /**
  * eMundus Component Query Helper
