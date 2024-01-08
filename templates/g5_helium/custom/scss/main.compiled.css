@@ -1441,49 +1441,66 @@ form.fabrikForm select.input-small {
       }
 /** RADIO **/
 @media all and (max-width: 767px) {
-      form.fabrikForm .plg-radiobutton .fabrikSubElementContainer {
+      form.fabrikForm .plg-radiobutton .fabrikSubElementContainer, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer {
           width: 100%
       }
         }
-form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio {
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"][class*="span"], form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"][class*="span"] {
+             margin-right: var(--em-form-radio-margin-right);
+           }
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"][class*="span"] label, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"][class*="span"] label {
+               width: 100%;
+               margin-right: 0;
+             }
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label {
+            width: -moz-fit-content;
+            width: fit-content;
+          }
+@media all and (max-width: 767px) {
+
+          form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label {
+              width: 100%
+          }
+            }
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio, form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"], form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .fabrikgrid_radio, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"] {
   padding-top: var(--em-spacing-1);
   padding-bottom: var(--em-spacing-1);
   margin-bottom: var(--em-spacing-1);
   align-items: center;
   margin-left: 0px;
 }
-form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio.span12 {
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio.span12, form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"].span12, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .fabrikgrid_radio.span12, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"].span12 {
             width: auto;
           }
-form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label {
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label, form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .fabrikgrid_radio label, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label {
   margin-bottom: 0px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
             padding: var(--em-form-radio-padding);
             border: var(--em-form-radio-bw) solid var(--em-form-radio-bc);
             border-radius: var(--em-form-radio-br);
             margin-right: var(--em-form-radio-margin-right);
 }
-form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label input {
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label input, form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label input, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .fabrikgrid_radio label input, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label input {
               accent-color: var(--em-form-radio-color-checked);
               width: var(--em-form-radio-width);
               height: var(--em-form-radio-height);
               margin-right: var(--em-form-radio-margin-right);
               margin-left: 0;
-              margin-top: 0;
+              margin-top: 2px !important;
             }
-form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label span{
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label span,form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label span,form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .fabrikgrid_radio label span,form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label span{
               word-wrap: break-word;
               word-break: break-all;
             }
 @supports selector(:has(*)) {
-              form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label:has(input[type='radio']:checked) {
+              form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label:has(input[type='radio']:checked), form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label:has(input[type='radio']:checked), form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .fabrikgrid_radio label:has(input[type='radio']:checked), form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label:has(input[type='radio']:checked) {
                 background-color: var(--em-form-radio-bgc-checked);
                 border-color: var(--em-form-radio-bc-checked);
               }
             }
 @supports not (selector(:has(*))) {
-              form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label.radio {
+              form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label.radio, form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label.radio, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .fabrikgrid_radio label.radio, form.fabrikForm .plg-databasejoin .fabrikSubElementContainer .row-fluid div[data-role="suboption"] label.radio {
                 border: none;
               }
             }
@@ -1749,6 +1766,19 @@ form.fabrikForm .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn.btn-s
         border-color: var(--em-form-bc-focus);
         background-color: var(--em-form-bgc-focus);
       }
+/** MULTISELECT **/
+.com_emundus .multiselect .multiselect__input:focus {
+        outline: unset !important;
+      }
+.com_emundus .multiselect .multiselect__single {
+        color: var(--neutral-900);
+      }
+.com_emundus .multiselect .multiselect__content .multiselect__element .multiselect__option span {
+              color: var(--neutral-900);
+            }
+.com_emundus .multiselect .multiselect__content .multiselect__element .multiselect__option:not(.multiselect__option--group) {
+              padding-left: var(--em-spacing-4);
+            }
 input[type="text"],
   input[type="password"],
   input[type="datetime"],
@@ -2003,6 +2033,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .mb-1\.5 {
   margin-bottom: 0.375rem;
 }
+.mb-12 {
+  margin-bottom: var(--em-spacing-12);
+}
 .mb-2 {
   margin-bottom: var(--em-spacing-2);
 }
@@ -2070,6 +2103,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .mt-1\.5 {
   margin-top: 0.375rem;
 }
+.mt-10 {
+  margin-top: var(--em-spacing-10);
+}
 .mt-12 {
   margin-top: var(--em-spacing-12);
 }
@@ -2094,11 +2130,26 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .mt-8 {
   margin-top: var(--em-spacing-8);
 }
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.line-clamp-4 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
 .block {
   display: block;
 }
 .inline-block {
   display: inline-block;
+}
+.\!inline {
+  display: inline !important;
 }
 .inline {
   display: inline;
@@ -2133,15 +2184,35 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .h-0 {
   height: 0px;
 }
+.h-14 {
+  height: 3.5rem;
+}
+.h-20 {
+  height: 5rem;
+}
 .h-max {
   height: -moz-max-content;
   height: max-content;
 }
+.min-h-\[100px\] {
+  min-height: 100px;
+}
 .w-1 {
   width: var(--em-spacing-1);
 }
+.w-2\/4 {
+  width: 50%;
+}
 .w-full {
   width: 100%;
+}
+.w-max {
+  width: -moz-max-content;
+  width: max-content;
+}
+.w-min {
+  width: -moz-min-content;
+  width: min-content;
 }
 .flex-grow {
   flex-grow: 1;
@@ -2192,6 +2263,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .items-center {
   align-items: center;
 }
+.justify-start {
+  justify-content: flex-start;
+}
 .justify-end {
   justify-content: flex-end;
 }
@@ -2209,6 +2283,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .gap-2 {
   gap: var(--em-spacing-2);
+}
+.gap-8 {
+  gap: var(--em-spacing-8);
 }
 .overflow-hidden {
   overflow: hidden;
@@ -2230,6 +2307,13 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .border {
   border-width: 1px;
 }
+.border-b {
+  border-bottom-width: 1px;
+}
+.border-neutral-400 {
+  --tw-border-opacity: 1;
+  border-color: rgb(163 163 163 / var(--tw-border-opacity));
+}
 .p-0 {
   padding: 0px;
 }
@@ -2242,6 +2326,13 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .p-6 {
   padding: var(--em-spacing-6);
 }
+.p-8 {
+  padding: var(--em-spacing-8);
+}
+.px-4 {
+  padding-left: var(--em-spacing-4);
+  padding-right: var(--em-spacing-4);
+}
 .px-6 {
   padding-left: var(--em-spacing-6);
   padding-right: var(--em-spacing-6);
@@ -2249,6 +2340,16 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .py-3 {
   padding-top: var(--em-spacing-3);
   padding-bottom: var(--em-spacing-3);
+}
+.py-8 {
+  padding-top: var(--em-spacing-8);
+  padding-bottom: var(--em-spacing-8);
+}
+.pb-2 {
+  padding-bottom: var(--em-spacing-2);
+}
+.pl-3 {
+  padding-left: var(--em-spacing-3);
 }
 .text-center {
   text-align: center;
@@ -3267,4 +3368,7 @@ small {
 .after\:bg-red-800::after {
   content: var(--tw-content);
   background-color: var(--red-800);
+}
+.hover\:no-underline:hover {
+  text-decoration-line: none;
 }
