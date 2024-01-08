@@ -1,7 +1,8 @@
 <?php
 namespace Clickatell;
 
-use PHPUnit_Framework_TestCase;
+use Clickatell\Decoder;
+use \PHPUnit_Framework_TestCase;
 
 class DecoderTest extends PHPUnit_Framework_TestCase
 {

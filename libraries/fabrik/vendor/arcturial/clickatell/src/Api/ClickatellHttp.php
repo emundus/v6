@@ -15,7 +15,7 @@ namespace Clickatell\Api;
 
 use Clickatell\Clickatell;
 use Clickatell\Diagnostic;
-use Exception;
+use \Exception;
 
 /**
  * The HTTP API usage class.

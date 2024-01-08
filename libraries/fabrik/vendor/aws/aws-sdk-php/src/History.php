@@ -11,7 +11,7 @@ use Aws\Exception\AwsException;
 class History implements \Countable, \IteratorAggregate
 {
     private $maxEntries;
-    private $entries = array();
+    private $entries;
 
     /**
      * @param int $maxEntries Maximum number of entries to store.
@@ -21,16 +21,11 @@ class History implements \Countable, \IteratorAggregate
         $this->maxEntries = $maxEntries;
     }
 
-    /**
-     * @return int
-     */
-    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->entries);
     }
 
-    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new \ArrayIterator(array_values($this->entries));
@@ -82,13 +77,11 @@ class History implements \Countable, \IteratorAggregate
 
         if (isset($last['result'])) {
             return $last['result'];
-        }
-
-        if (isset($last['exception'])) {
+        } elseif (isset($last['exception'])) {
             return $last['exception'];
+        } else {
+            throw new \LogicException('No return value for last entry.');
         }
-
-        throw new \LogicException('No return value for last entry.');
     }
 
     /**
@@ -122,9 +115,7 @@ class History implements \Countable, \IteratorAggregate
     {
         if (!isset($this->entries[$ticket])) {
             throw new \InvalidArgumentException('Invalid history ticket');
-        }
-
-        if (isset($this->entries[$ticket]['result'])
+        } elseif (isset($this->entries[$ticket]['result'])
             || isset($this->entries[$ticket]['exception'])
         ) {
             throw new \LogicException('History entry is already finished');

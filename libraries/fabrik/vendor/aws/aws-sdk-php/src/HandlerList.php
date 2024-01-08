@@ -35,7 +35,6 @@ class HandlerList implements \Countable
     const VALIDATE = 'validate';
     const BUILD = 'build';
     const SIGN = 'sign';
-    const ATTEMPT = 'attempt';
 
     /** @var callable */
     private $handler;
@@ -51,7 +50,6 @@ class HandlerList implements \Countable
 
     /** @var array Steps (in reverse order) */
     private $steps = [
-        self::ATTEMPT  => [],
         self::SIGN     => [],
         self::BUILD    => [],
         self::VALIDATE => [],
@@ -204,28 +202,6 @@ class HandlerList implements \Countable
     }
 
     /**
-     * Append a middleware to the attempt step.
-     *
-     * @param callable $middleware Middleware function to add.
-     * @param string   $name       Name of the middleware.
-     */
-    public function appendAttempt(callable $middleware, $name = null)
-    {
-        $this->add(self::ATTEMPT, $name, $middleware);
-    }
-
-    /**
-     * Prepend a middleware to the attempt step.
-     *
-     * @param callable $middleware Middleware function to add.
-     * @param string   $name       Name of the middleware.
-     */
-    public function prependAttempt(callable $middleware, $name = null)
-    {
-        $this->add(self::ATTEMPT, $name, $middleware, true);
-    }
-
-    /**
      * Add a middleware before the given middleware by name.
      *
      * @param string|callable $findName   Add before this
@@ -305,17 +281,12 @@ class HandlerList implements \Countable
         return $prev;
     }
 
-    /**
-     * @return int
-     */
-    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->steps[self::INIT])
             + count($this->steps[self::VALIDATE])
             + count($this->steps[self::BUILD])
-            + count($this->steps[self::SIGN])
-            + count($this->steps[self::ATTEMPT]);
+            + count($this->steps[self::SIGN]);
     }
 
     /**
@@ -363,14 +334,12 @@ class HandlerList implements \Countable
     {
         if (is_string($fn)) {
             return "callable({$fn})";
-        }
-
-        if (is_array($fn)) {
+        } elseif (is_array($fn)) {
             $ele = is_string($fn[0]) ? $fn[0] : get_class($fn[0]);
             return "callable(['{$ele}', '{$fn[1]}'])";
+        } else {
+            return 'callable(' . spl_object_hash($fn) . ')';
         }
-
-        return 'callable(' . spl_object_hash($fn) . ')';
     }
 
     /**

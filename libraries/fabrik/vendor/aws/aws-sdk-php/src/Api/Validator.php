@@ -90,19 +90,7 @@ class Validator
 
     private function check_structure(StructureShape $shape, $value)
     {
-        $isDocument = (isset($shape['document']) && $shape['document']);
-        $isUnion = (isset($shape['union']) && $shape['union']);
-        if ($isDocument) {
-            if (!$this->checkDocumentType($value)) {
-                $this->addError("is not a valid document type");
-                return;
-            }
-        } elseif ($isUnion) {
-            if (!$this->checkUnion($value)) {
-                $this->addError("is a union type and must have exactly one non null value");
-                return;
-            }
-        } elseif (!$this->checkAssociativeArray($value)) {
+        if (!$this->checkAssociativeArray($value)) {
             return;
         }
 
@@ -115,16 +103,15 @@ class Validator
                 }
             }
         }
-        if (!$isDocument) {
-            foreach ($value as $name => $v) {
-                if ($shape->hasMember($name)) {
-                    $this->path[] = $name;
-                    $this->dispatch(
-                        $shape->getMember($name),
-                        isset($value[$name]) ? $value[$name] : null
-                    );
-                    array_pop($this->path);
-                }
+
+        foreach ($value as $name => $v) {
+            if ($shape->hasMember($name)) {
+                $this->path[] = $name;
+                $this->dispatch(
+                    $shape->getMember($name),
+                    isset($value[$name]) ? $value[$name] : null
+                );
+                array_pop($this->path);
             }
         }
     }
@@ -202,21 +189,12 @@ class Validator
 
     private function check_string(Shape $shape, $value)
     {
-        if ($shape['jsonvalue']) {
-            if (!self::canJsonEncode($value)) {
-                $this->addError('must be a value encodable with \'json_encode\'.'
-                    . ' Found ' . Aws\describe_type($value));
-            }
-            return;
-        }
-
         if (!$this->checkCanString($value)) {
             $this->addError('must be a string or an object that implements '
                 . '__toString(). Found ' . Aws\describe_type($value));
             return;
         }
 
-        $value = isset($value) ? $value : '';
         $this->validateRange($shape, strlen($value), "string length");
 
         if ($this->constraints['pattern']) {
@@ -246,21 +224,6 @@ class Validator
         }
     }
 
-    private function checkArray($arr)
-    {
-        return $this->isIndexed($arr) || $this->isAssociative($arr);
-    }
-
-    private function isAssociative($arr)
-    {
-        return count(array_filter(array_keys($arr), "is_string")) == count($arr);
-    }
-
-    private function isIndexed(array $arr)
-    {
-        return $arr == array_values($arr);
-    }
-
     private function checkCanString($value)
     {
         static $valid = [
@@ -278,20 +241,7 @@ class Validator
 
     private function checkAssociativeArray($value)
     {
-        $isAssociative = false;
-
-        if (is_array($value)) {
-            $expectedIndex = 0;
-            $key = key($value);
-
-            do {
-                $isAssociative = $key !== $expectedIndex++;
-                next($value);
-                $key = key($value);
-            } while (!$isAssociative && null !== $key);
-        }
-
-        if (!$isAssociative) {
+        if (!is_array($value) || isset($value[0])) {
             $this->addError('must be an associative array. Found '
                 . Aws\describe_type($value));
             return false;
@@ -300,47 +250,11 @@ class Validator
         return true;
     }
 
-    private function checkDocumentType($value)
-    {
-        if (is_array($value)) {
-            $typeOfFirstKey = gettype(key($value));
-            foreach ($value as $key => $val) {
-               if (!$this->checkDocumentType($val) || gettype($key) != $typeOfFirstKey) {
-                   return false;
-               }
-            }
-            return $this->checkArray($value);
-        }
-        return is_null($value)
-            || is_numeric($value)
-            || is_string($value)
-            || is_bool($value);
-    }
-
-    private function checkUnion($value)
-    {
-        if (is_array($value)) {
-            $nonNullCount = 0;
-            foreach ($value as $key => $val) {
-                if (!is_null($val) && !(strpos($key, "@") === 0)) {
-                    $nonNullCount++;
-                }
-            }
-            return $nonNullCount == 1;
-        }
-        return !is_null($value);
-    }
-
     private function addError($message)
     {
         $this->errors[] =
             implode('', array_map(function ($s) { return "[{$s}]"; }, $this->path))
             . ' '
             . $message;
-    }
-
-    private function canJsonEncode($data)
-    {
-        return !is_resource($data);
     }
 }

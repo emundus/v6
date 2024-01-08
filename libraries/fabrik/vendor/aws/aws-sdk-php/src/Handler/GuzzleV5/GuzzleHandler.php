@@ -1,6 +1,7 @@
 <?php
 namespace Aws\Handler\GuzzleV5;
 
+use Aws\Sdk;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
@@ -10,7 +11,6 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Message\ResponseInterface as GuzzleResponse;
 use GuzzleHttp\Promise;
 use GuzzleHttp\Psr7\Response as Psr7Response;
-use GuzzleHttp\Stream\Stream;
 use Psr\Http\Message\RequestInterface as Psr7Request;
 use Psr\Http\Message\StreamInterface as Psr7StreamInterface;
 
@@ -26,16 +26,14 @@ use Psr\Http\Message\StreamInterface as Psr7StreamInterface;
 class GuzzleHandler
 {
     private static $validOptions = [
-        'proxy'             => true,
-        'expect'            => true,
-        'cert'              => true,
-        'verify'            => true,
-        'timeout'           => true,
-        'debug'             => true,
-        'connect_timeout'   => true,
-        'stream'            => true,
-        'delay'             => true,
-        'sink'              => true,
+        'proxy'           => true,
+        'verify'          => true,
+        'timeout'         => true,
+        'debug'           => true,
+        'connect_timeout' => true,
+        'stream'          => true,
+        'delay'           => true,
+        'sink'            => true,
     ];
 
     /** @var ClientInterface */
@@ -51,9 +49,9 @@ class GuzzleHandler
 
     /**
      * @param Psr7Request $request
-     * @param array $options
-     * @return Promise\Promise|Promise\PromiseInterface
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @param array       $options
+     *
+     * @return Promise\Promise
      */
     public function __invoke(Psr7Request $request, array $options = [])
     {
@@ -81,21 +79,7 @@ class GuzzleHandler
                 // Adapt the Guzzle 5 Future to a Guzzle 6 ResponsePromise.
                 return $this->createPsr7Response($response);
             },
-            function (Exception $exception) use ($options) {
-                // If we got a 'sink' that's a path, set the response body to
-                // the contents of the file. This will build the resulting
-                // exception with more information.
-                if ($exception instanceof RequestException) {
-                    if (isset($options['sink'])) {
-                        if (!($options['sink'] instanceof Psr7StreamInterface)) {
-                            $exception->getResponse()->setBody(
-                                Stream::factory(
-                                    file_get_contents($options['sink'])
-                                )
-                            );
-                        }
-                    }
-                }
+            function (Exception $exception) {
                 // Reject with information about the error.
                 return new Promise\RejectedPromise($this->prepareErrorData($exception));
             }

@@ -1,8 +1,8 @@
 <?php
 namespace Clickatell;
 
-use PHPUnit_Framework_TestCase;
-use ReflectionClass;
+use \PHPUnit_Framework_TestCase;
+use \ReflectionClass;
 
 class ClickatellTest extends PHPUnit_Framework_TestCase
 {

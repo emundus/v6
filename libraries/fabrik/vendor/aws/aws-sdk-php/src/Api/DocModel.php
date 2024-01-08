@@ -97,17 +97,7 @@ class DocModel
         }
 
         if (isset($d['append'])) {
-            if (!isset($d['excludeAppend'])
-                || !in_array($parentName, $d['excludeAppend'])
-            ) {
-                $result .= $d['append'];
-            }
-        }
-
-        if (isset($d['appendOnly'])
-           && in_array($parentName, $d['appendOnly']['shapes'])
-        ) {
-            $result .= $d['appendOnly']['message'];
+            $result .= $d['append'];
         }
 
         return $this->clean($result);
@@ -119,7 +109,7 @@ class DocModel
             return '';
         }
 
-        $tidy = new \tidy();
+        $tidy = new \Tidy();
         $tidy->parseString($content, [
             'indent' => true,
             'doctype' => 'omit',

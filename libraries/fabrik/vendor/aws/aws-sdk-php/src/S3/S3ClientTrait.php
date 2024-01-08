@@ -1,16 +1,13 @@
 <?php
 namespace Aws\S3;
 
-use Aws\Api\Parser\PayloadParserTrait;
 use Aws\CommandInterface;
 use Aws\Exception\AwsException;
 use Aws\HandlerList;
 use Aws\ResultInterface;
-use Aws\S3\Exception\PermanentRedirectException;
 use Aws\S3\Exception\S3Exception;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Promise\RejectedPromise;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * A trait providing S3-specific functionality. This is meant to be used in
@@ -18,8 +15,6 @@ use Psr\Http\Message\ResponseInterface;
  */
 trait S3ClientTrait
 {
-    use PayloadParserTrait;
-
     /**
      * @see S3ClientInterface::upload()
      */
@@ -97,19 +92,6 @@ trait S3ClientTrait
     public function registerStreamWrapper()
     {
         StreamWrapper::register($this);
-    }
-
-    /**
-     * @see S3ClientInterface::registerStreamWrapperV2()
-     */
-    public function registerStreamWrapperV2()
-    {
-        StreamWrapper::register(
-            $this,
-            's3',
-            null,
-            true
-        );
     }
 
     /**
@@ -231,37 +213,13 @@ trait S3ClientTrait
         return $handler($command)
             ->then(static function (ResultInterface $result) {
                 return $result['@metadata']['headers']['x-amz-bucket-region'];
-            }, function (AwsException $e) {
-                $response = $e->getResponse();
+            }, static function (AwsException $exception) {
+                $response = $exception->getResponse();
                 if ($response === null) {
-                    throw $e;
+                    throw $exception;
                 }
-
-                if ($e->getAwsErrorCode() === 'AuthorizationHeaderMalformed') {
-                    $region = $this->determineBucketRegionFromExceptionBody(
-                        $response
-                    );
-                    if (!empty($region)) {
-                        return $region;
-                    }
-                    throw $e;
-                }
-
                 return $response->getHeaderLine('x-amz-bucket-region');
             });
-    }
-
-    private function determineBucketRegionFromExceptionBody(ResponseInterface $response)
-    {
-        try {
-            $element = $this->parseXml($response->getBody(), $response);
-            if (!empty($element->Region)) {
-                return (string)$element->Region;
-            }
-        } catch (\Exception $e) {
-            // Fallthrough on exceptions from parsing
-        }
-        return false;
     }
 
     /**
@@ -275,30 +233,6 @@ trait S3ClientTrait
     }
 
     /**
-     * @see S3ClientInterface::doesBucketExistV2()
-     */
-    public function doesBucketExistV2($bucket, $accept403 = false)
-    {
-        $command = $this->getCommand('HeadBucket', ['Bucket' => $bucket]);
-
-        try {
-            $this->execute($command);
-            return true;
-        } catch (S3Exception $e) {
-            if (
-                ($accept403 && $e->getStatusCode() === 403)
-                || $e instanceof PermanentRedirectException
-            ) {
-                return true;
-            }
-            if ($e->getStatusCode() === 404)  {
-                return false;
-            }
-            throw $e;
-        }
-    }
-
-    /**
      * @see S3ClientInterface::doesObjectExist()
      */
     public function doesObjectExist($bucket, $key, array $options = [])
@@ -309,44 +243,6 @@ trait S3ClientTrait
                     'Key'    => $key
                 ] + $options)
         );
-    }
-
-    /**
-     * @see S3ClientInterface::doesObjectExistV2()
-     */
-    public function doesObjectExistV2(
-        $bucket,
-        $key,
-        $includeDeleteMarkers = false,
-        array $options = []
-    ){
-        $command = $this->getCommand('HeadObject', [
-                'Bucket' => $bucket,
-                'Key'    => $key
-            ] + $options
-        );
-
-        try {
-            $this->execute($command);
-            return true;
-        } catch (S3Exception $e) {
-            if ($includeDeleteMarkers
-                && $this->useDeleteMarkers($e)
-            ) {
-                return true;
-            }
-            if ($e->getStatusCode() === 404) {
-                return false;
-            }
-            throw $e;
-        }
-    }
-
-    private function useDeleteMarkers($exception)
-    {
-        $response = $exception->getResponse();
-        return !empty($response)
-            && $response->getHeader('x-amz-delete-marker');
     }
 
     /**
