@@ -252,16 +252,7 @@ defined('_JEXEC') or die;
 
         <?php
 
-        $target_dir = "images/custom/";
-        $filename = 'favicon';
-        $favicon = glob("{$target_dir}{$filename}.*");
-
-        if(file_exists(JPATH_SITE . '/' . $favicon[0])){
-            $favicon = JURI::base().'/' . $favicon[0];
-        } else {
-            $favicon = JURI::base().'/images/emundus/tchooz_favicon.png';
-        }
-        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo"><a class="item" title="'.JText::_('MOD_EMUNDUSMENU_HOME').'" href="'.$favicon_link.'"><img src="'.$favicon.'" alt="'.JText::_('MOD_EMUNDUSMENU_HOME').'"></a>
+        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo"><a class="item" title="'.JText::_('MOD_EMUNDUSMENU_HOME').'" href="'.$favicon_link.'"><img src="'.JURI::base().'/'.$favicon.'" alt="'.JText::_('MOD_EMUNDUSMENU_HOME').'"></a>
         </li>';
 
         if ($display_tchooz) :

@@ -111,7 +111,7 @@ li>a:hover {
     align-items: center;
     z-index: 9999;
     position: relative;
-    width: 45px;
+    width: 45px !important;
     height: 45px;
     min-width: 30px;
 }
@@ -302,6 +302,14 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
      background: transparent !important;
  }
 
+
+#header-c .platform-content #userDropdownLabel .em-profile-container p.em-font-weight-500 {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
 @media all and (min-width: 480px) and (max-width: 767px) {
 
     .header-right {
@@ -385,10 +393,14 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     pointer-events: none;
     z-index: -1;
     mask-image: url('/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg');
+    -webkit-mask-image: url('/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg');
     background: var(--em-profile-color);
     mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
     mask-position: center;
+    -webkit-mask-position: center;
     mask-size: contain;
+    -webkit-mask-size: contain;
 }
 
 div#userDropdown {
@@ -397,10 +409,24 @@ div#userDropdown {
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
      #background-shapes {
-        top: 0;
-        right: -4px;
+         display: none;
     }
 
+    #header-c .platform-content #userDropdownLabel .em-profile-container p.em-font-weight-500 {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 150px;
+    }
+}
+
+@media screen and (min-width: 960px) and (max-width: 1023px) {
+     #header-c .platform-content #userDropdownLabel .em-profile-container p.em-font-weight-500 {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 180px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -408,3 +434,24 @@ div#userDropdown {
         display: none;
     }
 }
+
+@media (max-width: 479px) {
+    #header-c .platform-content #userDropdownLabel .em-profile-container p.em-font-weight-500 {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 160px;
+    }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+    #header-c .platform-content #userDropdownLabel .em-profile-container p.em-font-weight-500 {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 120px;
+    }
+}
+
+
+

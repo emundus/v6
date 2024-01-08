@@ -1146,6 +1146,19 @@ class EmundusHelperEvents {
 				$eMConfig            = JComponentHelper::getParams('com_emundus');
 				$all_rights_group_id = $eMConfig->get('all_rights_group', 1);
 
+				$query->clear()
+					->select('id')
+					->from($db->quoteName('#__emundus_setup_groups_repeat_course'))
+					->where($db->quoteName('course') . ' LIKE ' . $db->quote($code))
+					->where($db->quoteName('parent_id') . ' = ' . $db->quote($all_rights_group_id));
+				$db->setQuery($query);
+				$exists = $db->loadResult();
+
+				if(!empty($exists))
+				{
+					return true;
+				}
+
 				$columns = array('parent_id', 'course');
 				$values  = array($db->quote($all_rights_group_id), $db->quote($code));
 

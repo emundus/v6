@@ -211,7 +211,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                     Fabrik.fireEvent('fabrik.fileupload.delete.complete', this);
                 }
 
-                b.remove();
+                b[0].parentElement.remove();
 	            var el = jQuery(this.element);
 	            var i = el.closest('.fabrikElement').find('img');
 	            i.attr('src', this.options.defaultImage !== '' ? Fabrik.liveSite + this.options.defaultImage : '');

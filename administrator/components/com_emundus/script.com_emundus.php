@@ -3799,56 +3799,148 @@ structure:
 
 				EmundusHelperUpdate::insertTranslationsTag('JLOGIN_DESC', 'To access your personal space', 'override', null, null, null, 'en-GB');
 
-                EmundusHelperUpdate::installExtension('plg_fabrik_cron_emundusupdatestatusendcampaign','emundusupdatestatusendcampaign','{"name":"plg_fabrik_cron_emundusupdatestatusendcampaign","type":"plugin","creationDate":"October 2023","author":"Bazile Binson","copyright":"Copyright (C) 2015 emundus.fr - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"6.1","description":"PLG_FABRIK_CRON_EMUNDUSUPDATESTATUSENDCAMPAIGN_DESCRIPTION","group":"","filename":"emundusupdatestatusendcampaign"}','plugin',1,'fabrik_cron');
-                EmundusHelperUpdate::installExtension('plg_fabrik_cron_emundusdeleteoldfiles','emundusdeleteoldfiles','{"name":"plg_fabrik_cron_emundusdeleteoldfiles","type":"plugin","creationDate":"November 2023","author":"Bazile Binson","copyright":"Copyright (C) 2015 emundus.fr - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"6.1","description":"PLG_FABRIK_CRON_EMUNDUSDELETEOLDFILES_DESCRIPTION","group":"","filename":"emundusdeleteoldfiles"}','plugin',1,'fabrik_cron');
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_forms'))
+					->where($db->quoteName('label') . ' LIKE ' . $db->quote('SETUP_UPLOAD_FILE_FOR_APPLICANT'));
+				$db->setQuery($query);
+				$setup_upload_file_for_applicant_form = $db->loadObject();
 
-                // Create user for automated tasks
-                // check if parameter is already filled
-                $eMConfig = JComponentHelper::getParams('com_emundus');
-                $automated_task_user_param = $eMConfig->get('automated_task_user','');
-                if (!empty($automated_task_user_param)) {
-                    $query->clear()
-                        ->select('id')
-                        ->from($db->quoteName('#__users'))
-                        ->where($db->quoteName('id').' = '.$db->quote($automated_task_user_param));
-                    $db->setQuery($query);
-                    $automated_task_user = $db->loadResult();
-                } else {
-                    $automated_task_user = '';
-                }
+				if(!empty($setup_upload_file_for_applicant_form->id)) {
+					$params = json_decode($setup_upload_file_for_applicant_form->params, true);
 
-                if (empty($automated_task_user)) {
-                    // Get an available user id
-                    $available_user_id = '';
-                    for ($i = 2; $i < 62; $i++) {
-                        $query->clear()
-                            ->select('id')
-                            ->from($db->quoteName('#__users'))
-                            ->where($db->quoteName('id').' = '.$db->quote($i));
-                        $db->setQuery($query);
-                        $user_found = $db->loadResult();
-                        if (empty($user_found)) {
-                            $available_user_id = $i;
-                            break;
-                        }
-                    }
+					foreach ($params['plugin_description'] as $key => $plugin) {
+						if($plugin == 'saved') {
+							$params['curl_code'][$key] = str_replace("parent.$('#em-modal-actions').modal('hide');", "window.parent.document.querySelector('.em-modal-actions .swal2-close').click();", $params['curl_code'][$key]);
+						}
+					}
 
-                    require_once(JPATH_SITE.'/components/com_emundus/helpers/users.php');
-                    $h_users = new EmundusHelperUsers;
-                    $password = $h_users->generateStrongPassword(30);
+					$query->clear()
+						->update($db->quoteName('#__fabrik_forms'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($setup_upload_file_for_applicant_form->id));
+					$db->setQuery($query);
+					$db->execute();
+				}
 
-                    require_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
-                    $h_samples = new EmundusUnittestHelperSamples;
-                    if (!empty($available_user_id)) {
-                        $user_created = $h_samples->createSampleUser(9,'automatedtask@emundus.fr',$password,[2],$available_user_id,'Task', 'AUTOMATED');
-                    } else {
-                        $user_created = $h_samples->createSampleUser(9,'automatedtask@emundus.fr',$password,[2],0,'Task', 'AUTOMATED');
-                    }
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_forms'))
+					->where($db->quoteName('label') . ' LIKE ' . $db->quote('SETUP_PROGRAM'));
+				$db->setQuery($query);
+				$setup_program_form = $db->loadObject();
 
-                    if ($user_created) {
-                        EmundusHelperUpdate::updateComponentParameter('com_emundus', 'automated_task_user', $user_created);
-                    }
-                }
+				if(!empty($setup_program_form->id)) {
+					$params = json_decode($setup_program_form->params, true);
+
+					foreach ($params['plugin_description'] as $key => $plugin) {
+						if($plugin == 'onAfterProgramCreate') {
+							$params['plugin_events'][$key] = 'both';
+						}
+					}
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_forms'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($setup_program_form->id));
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				$query->clear()
+					->select('jfe.id, jfe.name')
+					->from('#__fabrik_elements AS jfe')
+					->leftJoin('#__fabrik_formgroup AS jffg ON jffg.group_id = jfe.group_id')
+					->leftJoin('#__fabrik_lists AS jfl ON jfl.form_id = jffg.form_id')
+					->where('jfl.db_table_name = ' . $db->quote('jos_emundus_campaign_workflow'))
+					->where('jfe.name IN (' . $db->quote('start_date') . ', ' . $db->quote('end_date') . ')');
+
+				$db->setQuery($query);
+				$elements = $db->loadObjectList();
+
+				$start_date_element = null;
+				$end_date_element = null;
+
+				foreach ($elements as $element) {
+					if($element->name == 'start_date') {
+						$start_date_element = $element;
+					}
+
+					if($element->name == 'end_date') {
+						$end_date_element = $element;
+					}
+				}
+
+				if(!empty($start_date_element) && !empty($end_date_element)) {
+					$params = '{"bootstrap_class":"input-xxlarge","date_showtime":"1","date_which_time_picker":"clock","date_show_seconds":"0","date_24hour":"1","bootstrap_time_class":"input-xxlarge","placeholder":"","date_store_as_local":"1","date_table_format":"d/m/Y H\\\hi","date_form_format":"d/m/Y","date_defaulttotoday":"0","date_alwaystoday":"0","date_firstday":"1","date_allow_typing_in_field":"1","date_csv_offset_tz":"0","date_advanced":"0","date_allow_func":"","date_allow_php_func":"","date_observe":"","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"1","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"1","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"1","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"1","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","isgreaterorlessthan-message":["La date de fin doit être supérieure à la date de début"],"isgreaterorlessthan-greaterthan":["3"],"isgreaterorlessthan-comparewith":["' . $start_date_element->id . '"],"compare_value":[""],"isgreaterorlessthan-allow_empty":["0"],"isgreaterorlessthan-validation_condition":["if (empty($data)) {\r\n  return false;\r\n}\r\n\r\nreturn true;"],"tip_text":["La date de fin doit être supérieure à la date de début"],"icon":[""],"validations":{"plugin":["isgreaterorlessthan"],"plugin_published":["1"],"validate_in":["both"],"validation_on":["both"],"validate_hidden":["1"],"must_validate":["0"],"show_icon":["1"]}}';
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_elements'))
+						->set($db->quoteName('params') . ' = ' . $db->quote($params))
+						->where($db->quoteName('id') . ' = ' . $db->quote($end_date_element->id));
+					$db->setQuery($query);
+					$params_updated = $db->execute();
+				}
+
+				$current_favicon = EmundusHelperUpdate::getYamlVariable('favicon', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml');
+				$current_favicon = str_replace('gantry-media:/', 'images', $current_favicon);
+
+				if(!file_exists($current_favicon)) {
+					$current_favicon = 'gantry-media://custom/default_favicon.ico';
+
+					EmundusHelperUpdate::updateYamlVariable('favicon', $current_favicon, JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml');
+				}
+
+				EmundusHelperUpdate::installExtension('plg_fabrik_cron_emundusupdatestatusendcampaign','emundusupdatestatusendcampaign','{"name":"plg_fabrik_cron_emundusupdatestatusendcampaign","type":"plugin","creationDate":"October 2023","author":"Bazile Binson","copyright":"Copyright (C) 2015 emundus.fr - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"6.1","description":"PLG_FABRIK_CRON_EMUNDUSUPDATESTATUSENDCAMPAIGN_DESCRIPTION","group":"","filename":"emundusupdatestatusendcampaign"}','plugin',1,'fabrik_cron');
+				EmundusHelperUpdate::installExtension('plg_fabrik_cron_emundusdeleteoldfiles','emundusdeleteoldfiles','{"name":"plg_fabrik_cron_emundusdeleteoldfiles","type":"plugin","creationDate":"November 2023","author":"Bazile Binson","copyright":"Copyright (C) 2015 emundus.fr - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"6.1","description":"PLG_FABRIK_CRON_EMUNDUSDELETEOLDFILES_DESCRIPTION","group":"","filename":"emundusdeleteoldfiles"}','plugin',1,'fabrik_cron');
+
+				// Create user for automated tasks
+				// check if parameter is already filled
+				$eMConfig = JComponentHelper::getParams('com_emundus');
+				$automated_task_user_param = $eMConfig->get('automated_task_user','');
+				if (!empty($automated_task_user_param)) {
+					$query->clear()
+						->select('id')
+						->from($db->quoteName('#__users'))
+						->where($db->quoteName('id').' = '.$db->quote($automated_task_user_param));
+					$db->setQuery($query);
+					$automated_task_user = $db->loadResult();
+				} else {
+					$automated_task_user = '';
+				}
+
+				if (empty($automated_task_user)) {
+					// Get an available user id
+					$available_user_id = '';
+					for ($i = 2; $i < 62; $i++) {
+						$query->clear()
+							->select('id')
+							->from($db->quoteName('#__users'))
+							->where($db->quoteName('id').' = '.$db->quote($i));
+						$db->setQuery($query);
+						$user_found = $db->loadResult();
+						if (empty($user_found)) {
+							$available_user_id = $i;
+							break;
+						}
+					}
+
+					require_once(JPATH_SITE.'/components/com_emundus/helpers/users.php');
+					$h_users = new EmundusHelperUsers;
+					$password = $h_users->generateStrongPassword(30);
+
+					require_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
+					$h_samples = new EmundusUnittestHelperSamples;
+					if (!empty($available_user_id)) {
+						$user_created = $h_samples->createSampleUser(9,'automatedtask@emundus.fr',$password,[2],$available_user_id,'Task', 'AUTOMATED');
+					} else {
+						$user_created = $h_samples->createSampleUser(9,'automatedtask@emundus.fr',$password,[2],0,'Task', 'AUTOMATED');
+					}
+
+					if ($user_created) {
+						EmundusHelperUpdate::updateComponentParameter('com_emundus', 'automated_task_user', $user_created);
+					}
+				}
 			}
 		}
 

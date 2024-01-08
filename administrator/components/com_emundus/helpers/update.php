@@ -443,6 +443,26 @@ class EmundusHelperUpdate
 		return $updated;
 	}
 
+	public static function getYamlVariable($key1,$file,$key2 = null) {
+		$yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents($file));
+		$result = null;
+
+		if (!empty($key2))
+		{
+			$result = $yaml[$key1][$key2];
+		}
+		elseif (isset($yaml[$key1]))
+		{
+			$result = $yaml[$key1];
+		}
+		else
+		{
+			echo("Key " . $key1 . ' not found in file ' . $file);
+		}
+
+		return $result;
+	}
+
     /**
      * Update a variable in a yaml file like Gantry configuration files
      *

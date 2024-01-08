@@ -100,6 +100,7 @@ button#back:hover, button#back:active, button#back:focus,
     border: 1px solid var(--red-500) !important;
     color: var(--neutral-0) !important;
     padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
+    border-radius: var(--em-coordinator-br);
 }
 
 .swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:hover,
@@ -775,10 +776,14 @@ circle.circle {
     pointer-events: none;
     transition: transform .3s;
     mask-image: url('/modules/mod_emundus_campaign/assets/fond-fonce.svg');
+    -webkit-mask-image: url('/modules/mod_emundus_campaign/assets/fond-fonce.svg');
     background: var(--em-profile-color);
     mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
     mask-position: center;
+    -webkit-mask-position: center;
     mask-size: contain;
+    -webkit-mask-size: contain;
 }
 
 .mod_emundus_applications___content_app #background-shapes {

@@ -1,6 +1,5 @@
 <?php
-$d             = $displayData;
-
+$d = $displayData;
 ?>
 
 <div id="<?php echo $d->id; ?>" class="fabrikinput fabrikElementReadOnly" style="background-color: <?php echo $d->backgroundColor ?>">
@@ -23,7 +22,7 @@ $d             = $displayData;
 		    <?php if (!empty($d->title) && $d->accordion == 0) : ?>
                 <h3><?php echo $d->title ?></h3>
 		    <?php endif; ?>
-            <div class="<?php if (!empty($d->title)) : ?>mt-2<?php else : ?>mt-0.5<?php endif; ?>">
+            <div class="<?php if (!empty($d->title)) : ?>mt-2<?php endif; ?>">
 		        <?php echo $d->value;?>
             </div>
         </div>

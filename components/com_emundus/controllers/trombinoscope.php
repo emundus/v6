@@ -106,7 +106,7 @@ class EmundusControllerTrombinoscope extends EmundusController {
      * @since version
      */
     public function generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $templHeader, $templFooter,  $generate, $preview = false, $checkHeader = false, $border = null, $headerHeight = null) {
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        require_once (JPATH_SITE . '/components/com_emundus/models/files.php');
         $m_files = new EmundusModelFiles();
         // Traitement du nombre de colonnes max par ligne
         $nb_col_max = $gridL;
@@ -162,7 +162,10 @@ class EmundusControllerTrombinoscope extends EmundusController {
             $tab_body[] = $body_tmp;
             $nb_cell++;
         }
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'trombinoscope.php');
+
+		if (!class_exists('EmundusModelTrombinoscope')) {
+			require_once (JPATH_ROOT . '/components/com_emundus/models/trombinoscope.php');
+		}
         $trombi = new EmundusModelTrombinoscope();
         $programme = $trombi->getProgByFnum($post['FNUM']);
         // Marge gauche + droite
@@ -191,7 +194,6 @@ class EmundusControllerTrombinoscope extends EmundusController {
         } else {
             $borderCSS = '0';
         }
-        $trombi = new EmundusModelTrombinoscope();
         $htmlLetters = $trombi->selectHTMLLetters();
         $templ = [];
         foreach ($htmlLetters as $letter){
@@ -328,7 +330,9 @@ footer {
 					$html_content = $this->generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $header, $footer, $generate, false, $checkHeader, $border, $headerHeight);
 
 					if (!empty($html_content)) {
-						require_once (JPATH_COMPONENT.'/models/trombinoscope.php');
+						if (!class_exists('EmundusModelTrombinoscope')) {
+							require_once (JPATH_ROOT . '/components/com_emundus/models/trombinoscope.php');
+						}
 						$m_trombinoscrope = new EmundusModelTrombinoscope();
 						$response['pdf_url'] = $m_trombinoscrope->generate_pdf($html_content, $format);
 						$response['status'] = true;

@@ -866,6 +866,10 @@ input:focus + .em-slider {
 
 .em-profile-color{
   color: var(--em-profile-color);
+  &:hover {
+    color: var(--em-profile-color);
+    filter: brightness(0.8);
+  }
 }
 
 .em-form-success-color{
@@ -2042,11 +2046,16 @@ div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
   right: 0;
   pointer-events: none;
   mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
+  -webkit-mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
   background: var(--em-profile-color);
   mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
   mask-position: center;
+  -webkit-mask-position: center;
   mask-size: 300px;
+  -webkit-mask-size: 300px;
   mask-origin: border-box;
+  -webkit-mask-origin: border-box;
 }
 
 .mod_emundus_campaign__list_content #background-shapes.single-campaign-pinned {
