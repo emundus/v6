@@ -1484,7 +1484,7 @@ input:focus + .em-slider {
 }
 
 .em-applicant-title-font {
-  font-family: var(--em-applicant-font-title);
+  font-family: var(--em-applicant-font-title) !important;
 }
 
 .em-default-font {

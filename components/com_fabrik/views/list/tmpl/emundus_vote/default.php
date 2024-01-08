@@ -40,7 +40,7 @@ endif;
 
 if ($this->showTitle == 1) : ?>
     <div class="page-header em-flex-row em-flex-space-between emundus-list-page-header">
-        <h1 class="after-em-border after:bg-red-800 em-applicant-title-font"><?php echo $this->table->label; ?></h1>
+        <h1 class="after-em-border after:bg-red-800 em-applicant-title-font em-font-weight-700"><?php echo $this->table->label; ?></h1>
     </div>
 <?php
 endif;
