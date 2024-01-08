@@ -239,7 +239,7 @@ endif;
 						$elt = explode('___', $gallery->title)[1];
 						?>
 						<?php if (isset($this->elements[$elt])) : ?>
-                            <h2 class="line-clamp-2">
+                            <h2 class="line-clamp-2 em-font-weight-700">
 								<?php echo $this->elements[$elt]->element_ro; ?>
                             </h2>
 						<?php endif; ?>

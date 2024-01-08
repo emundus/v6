@@ -117,6 +117,11 @@ button.em-applicant-primary-button[disabled] {
 }
 
 @media all and (max-width: 767px) {
+
+    button.em-applicant-primary-button {
+        white-space: normal;
+    }
+
     .voting-pop {
         position: static;
         margin: 0 auto;
