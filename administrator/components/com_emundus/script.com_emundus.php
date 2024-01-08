@@ -3934,9 +3934,9 @@ structure:
 					require_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
 					$h_samples = new EmundusUnittestHelperSamples;
 					if (!empty($available_user_id)) {
-						$user_created = $h_samples->createSampleUser(9,'automatedtask@emundus.fr',$password,[2],$available_user_id,'Task', 'AUTOMATED');
+						$user_created = $h_samples->createSampleUser(1000,'automatedtask@emundus.fr',$password,[2],$available_user_id,'Task', 'AUTOMATED');
 					} else {
-						$user_created = $h_samples->createSampleUser(9,'automatedtask@emundus.fr',$password,[2],0,'Task', 'AUTOMATED');
+						$user_created = $h_samples->createSampleUser(1000,'automatedtask@emundus.fr',$password,[2],0,'Task', 'AUTOMATED');
 					}
 
 					if ($user_created) {
