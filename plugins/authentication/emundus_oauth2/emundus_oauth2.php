@@ -55,14 +55,30 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
     {
         parent::__construct($subject, $config);
         $this->loadLanguage();
+
+
+        jimport('joomla.log.log');
+        JLog::addLogger(array('text_file' => 'com_emundus.oauth2.php'), JLog::ALL, array('com_emundus'));
+
+		$type = filter_input(INPUT_GET, 'type', FILTER_SANITIZE_STRING);
+	    if (!empty($type)) {
+			$second_configuration_type = $this->params->get('type_2', '');
+
+		    if (!empty($second_configuration_type) && $type === $second_configuration_type) {
+			    // it means we should use the confiration n°2
+			    $parameters = ['client_id', 'client_secret', 'scopes', 'auth_url', 'token_url', 'redirect_url', 'sso_account_url', 'emundus_profile', 'email_id', 'logout_url', 'platform_redirect_url', 'attributes', 'debug_mode'];
+
+			    foreach ($parameters as $parameter) {
+				    $this->params->set($parameter, $this->params->get($parameter . '_2'));
+			    }
+		    }
+	    }
+
         $this->scopes = explode(',', $this->params->get('scopes', 'openid'));
         $this->authUrl = $this->params->get('auth_url');
         $this->domain = $this->params->get('domain');
         $this->tokenUrl = $this->params->get('token_url');
         $this->logoutUrl = $this->params->get('logout_url');
-
-        jimport('joomla.log.log');
-        JLog::addLogger(array('text_file' => 'com_emundus.oauth2.php'), JLog::ALL, array('com_emundus'));
     }
 
     /**
@@ -122,8 +138,8 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
 	                }
 
                     foreach ($this->attributes->column_name as $key => $column) {
-                        if ($this->attributes->table_name[$key] == 'jos_users') {
-                            $response->{$column} = $body->{$this->attributes->attribute_name[$key]};
+		                if ($this->attributes->table_name[$key] == 'jos_users' || (in_array($column, ['firstname', 'lastname']))) {
+			                $response->{$column} = !empty($body->attributes) && isset($body->attributes->{$this->attributes->attribute_name[$key]}) ? $body->attributes->{$this->attributes->attribute_name[$key]} : $body->{$this->attributes->attribute_name[$key]};
                         }
                     }
 					
@@ -263,10 +279,10 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
             $result = $oauth2->authenticate();
         } catch (Exception $e) {
             $app = JFactory::getApplication();
-
-            JLog::add('Error when try to connect with oauth2 : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-
-            $app->enqueueMessage(JText::_('PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CONNECT_DOWN'), 'error');
+            JLog::add('Error when try to connect with oauth2 : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.oauth2');
+            $app->enqueueMessage(JText::_('PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CONNECT_DOWN') . $e->getMessage() . ' params : ' . json_encode(array(
+                'redirect_uri' => $this->params->get('redirect_url'),
+            )), 'error');
             $app->redirect(JRoute::_('connexion'));
         }
 
