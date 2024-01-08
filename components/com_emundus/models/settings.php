@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Component\ComponentHelper;
+use Symfony\Component\Yaml\Yaml;
 
 class EmundusModelsettings extends JModelList {
 
@@ -1547,5 +1548,25 @@ class EmundusModelsettings extends JModelList {
 		}
 
 		return $updated;
+	}
+
+	public function getFavicon() {
+		$favicon = 'images/custom/default_favicon.ico';
+
+		$yaml = Yaml::parse(file_get_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml'));
+
+		if(!empty($yaml)) {
+			$favicon_gantry = $yaml['favicon'];
+
+			if (!empty($favicon_gantry)) {
+				$favicon = str_replace('gantry-media:/', 'images', $favicon_gantry);
+
+				if (!file_exists(JPATH_ROOT . '/' . $favicon)) {
+					$favicon = 'images/custom/default_favicon.ico';
+				}
+			}
+		}
+
+		return $favicon;
 	}
 }
