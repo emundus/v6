@@ -10,16 +10,8 @@
           "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_TEXT"
         },
         {
-          "value": 3,
-          "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_EMAIL"
-        },
-        {
           "value": 5,
           "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_LINK"
-        },
-        {
-          "value": 6,
-          "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_NUMBER"
         }
       ],
       "helptext": "",
@@ -158,6 +150,15 @@
       "placeholder": "",
       "published": true,
       "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
+      "name": "rollover",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
     }
   ],
   "checkbox": [
@@ -169,6 +170,15 @@
       "placeholder": "",
       "published": true,
       "sysadmin_only": true
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
+      "name": "rollover",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
     }
   ],
   "radiobutton": [
@@ -180,6 +190,15 @@
       "placeholder": "",
       "published": true,
       "sysadmin_only": true
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
+      "name": "rollover",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
     }
   ],
   "birthday": [
@@ -265,6 +284,15 @@
       "placeholder": "",
       "published": true,
       "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
+      "name": "rollover",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
     }
   ],
   "yesno": [
@@ -282,6 +310,15 @@
           "label": "JYES"
         }
       ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
+      "name": "rollover",
+      "type": "text",
       "helptext": "",
       "placeholder": "",
       "published": true,
@@ -405,6 +442,15 @@
       "placeholder": "",
       "published": true,
       "sysadmin_only": true
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
+      "name": "rollover",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
     }
   ],
   "date": [
@@ -441,6 +487,15 @@
           "label": "COM_EMUNDUS_ONBOARD_BUILDER_CALENDAR_MONDAY"
         }
       ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
+      "name": "rollover",
+      "type": "text",
       "helptext": "",
       "placeholder": "",
       "published": true,
@@ -544,8 +599,67 @@
           "helptext": "",
           "published": true,
           "sysadmin_only": false
+        },
+        {
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
+          "name": "rollover",
+          "type": "text",
+          "helptext": "",
+          "placeholder": "",
+          "published": true,
+          "sysadmin_only": false
         }
       ]
+    }
+  ],
+  "emundus_geolocalisation": [
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_DEFAULT_LNG",
+      "name": "default_lng",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_DEFAULT_LAT",
+      "name": "default_lat",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_DEFAULT_ZOOM",
+      "name": "default_zoom",
+      "type": "number",
+      "minlength": 1,
+      "maxlength": 20,
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_GET_LOCATION",
+      "name": "get_location",
+      "type": "dropdown",
+      "options": [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
     }
   ]
 }

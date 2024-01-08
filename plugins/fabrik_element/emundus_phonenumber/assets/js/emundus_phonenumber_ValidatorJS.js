@@ -50,6 +50,11 @@ class ValidatorJS {
         this.input.addEventListener('input', this.inputValidation.bind(this));
         this.input.addEventListener('focusout', this.handlerFocusOut.bind(this));
         this.input.addEventListener('focusin', this.handlerInputFocusIn.bind(this));
+
+        if (this.mustValidate)
+        {
+            this.inputValidation();
+        }
     }
 
     inputValidation(e)

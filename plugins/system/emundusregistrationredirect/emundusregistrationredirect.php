@@ -60,6 +60,11 @@ class plgSystemEmundusregistrationredirect extends JPlugin {
 				$url_itemid .= '&Itemid='.$Itemid;
 			}
 
+            $cid = $jinput->get('cid');
+            if (!empty($cid)) {
+                $url .= '?cid=' . $cid;
+            }
+
 			// In case the URL set in the params already contains an item id, we need to remove it so we can append our own.
 			$parsed_url = parse_url($url);
 			parse_str($parsed_url['query'], $params);

@@ -772,7 +772,7 @@ class EmundusModelDecision extends JModelList
 					$name = explode('.', $c);
 					if (!in_array($name[0] . '__' . $name[1], $head_val)) {
 
-						if ($this->details->{$name[0] . '__' . $name[1]}['group_by'] && array_key_exists($name[0] . '__' . $name[1], $this->subquery) && array_key_exists($applicant->user_id, $this->subquery[$name[0] . '__' . $name[1]])) {
+						if (!empty($this->subquery) && $this->details->{$name[0] . '__' . $name[1]}['group_by'] && array_key_exists($name[0] . '__' . $name[1], $this->subquery) && array_key_exists($applicant->user_id, $this->subquery[$name[0] . '__' . $name[1]])) {
 							$eval_list[$name[0] . '__' . $name[1]] = @EmundusHelperList::createHtmlList(explode(",",
 								$this->subquery[$name[0] . '__' . $name[1]][$applicant->user_id]));
 						} elseif ($name[0] == 'jos_emundus_training') {
@@ -865,14 +865,14 @@ class EmundusModelDecision extends JModelList
 		$query .= ' FROM #__emundus_campaign_candidature as jecc
 					LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
 					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
-					LEFT JOIN #__emundus_setup_programmes as sp on sp.code LIKE esc.training
+					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
 					LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
 					LEFT JOIN #__users as u on u.id = jecc.applicant_id
-					LEFT JOIN #__emundus_final_grade as jos_emundus_final_grade on jos_emundus_final_grade.fnum LIKE jecc.fnum
-					LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum LIKE jecc.fnum  ';
+					LEFT JOIN #__emundus_final_grade as jos_emundus_final_grade on jos_emundus_final_grade.fnum = jecc.fnum
+					LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum = jecc.fnum  ';
 
 		if (in_array('overall', $em_other_columns)) {
-			$query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum LIKE jecc.fnum ';
+			$query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum = jecc.fnum ';
 		}
 
 
@@ -1384,6 +1384,107 @@ class EmundusModelDecision extends JModelList
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
     }
+
+	public function getDecisionUrl($fnum, $formid, $rowid = 0, $student_id = 0, $redirect = 0, $view = 'form') {
+		$url = 'index.php';
+		$message = '';
+
+		try {
+			$app = JFactory::getApplication();
+			$db = JFactory::getDBO();
+			$query = $db->getQuery(true);
+			$user =  JFactory::getUser();
+
+			if(is_array($fnum)){
+				$fnum = $fnum['value'];
+			}
+			if(is_array($student_id)){
+				$student_id = $student_id['value'];
+			}
+
+			$create_access = EmundusHelperAccess::asAccessAction(29, 'c', $user->id, $fnum);
+			$update_access = EmundusHelperAccess::asAccessAction(29, 'u', $user->id, $fnum);
+			$read_access = EmundusHelperAccess::asAccessAction(29, 'r', $user->id, $fnum);
+
+			$offset = $app->get('offset', 'UTC');
+			$date_time = new DateTime(gmdate('Y-m-d H:i:s'), new DateTimeZone('UTC'));
+			$date_time = $date_time->setTimezone(new DateTimeZone($offset));
+			$now = $date_time->format('Y-m-d H:i:s');
+
+			$params = JComponentHelper::getParams('com_emundus');
+
+			$query->select('ecc.campaign_id,ecc.applicant_id as student_id')
+				->from($db->quoteName('#__emundus_campaign_candidature','ecc'))
+				->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
+			$db->setQuery($query);
+			$decision_details = $db->loadObject();
+
+			if(empty($student_id)) {
+				$student_id = $decision_details->student_id;
+			}
+
+			// If we try to open an decision with rowid in url
+			if(!empty($rowid) ) {
+				// If we open an decision
+				$query->clear()
+					->select('id,user')
+					->from($db->quoteName('#__emundus_final_grade'))
+					->where($db->quoteName('id') . ' = ' . $db->quote($rowid));
+			}
+			else {
+				$query->clear()
+					->select('id,user')
+					->from($db->quoteName('#__emundus_final_grade'))
+					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+			}
+			$db->setQuery($query);
+			$decision = $db->loadObject();
+
+			$form_url = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&jos_emundus_final_grade___student_id[value]='.$student_id.'&jos_emundus_final_grade___campaign_id[value]='.$decision_details->campaign_id.'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$student_id.'&tmpl=component&iframe=1';
+			$details_url = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&jos_emundus_final_grade___student_id[value]='.$student_id.'&jos_emundus_final_grade___campaign_id[value]='.$decision_details->campaign_id.'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$student_id.'&tmpl=component&iframe=1';
+
+			if(!empty($decision)) {
+				$form_url = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&jos_emundus_final_grade___student_id[value]='.$student_id.'&jos_emundus_final_grade___campaign_id[value]='.$decision_details->campaign_id.'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$student_id.'&tmpl=component&iframe=1&rowid='.$decision->id;
+				$details_url = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&jos_emundus_final_grade___student_id[value]='.$student_id.'&jos_emundus_final_grade___campaign_id[value]='.$decision_details->campaign_id.'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$student_id.'&tmpl=component&iframe=1&rowid='.$decision->id;
+
+				if ($update_access || ($create_access && $decision->user == $user->id)) {
+					$url = $view == 'form' ? $form_url : $details_url;
+				}
+				elseif ($read_access){
+					$url = $details_url;
+				}
+				// If we do not have any rights on decision
+				else {
+					$message = 'COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS';
+					$url = '';
+				}
+			}
+			// If no decision found but period is not started or passed
+			if($create_access) {
+				$url = $view == 'form' ? $form_url : $details_url;
+			}
+			elseif ($read_access) {
+				$url = $details_url;
+			}
+			// I don't have rights to do anything
+			else {
+				$message = 'COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS';
+				$url = '';
+			}
+		} catch (Exception $e) {
+			$message = 'COM_EMUNDUS_ERROR';
+			$url = '';
+			JLog::add('Cannot get decision URL with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
+
+		if(!empty($url)){
+			if($redirect === 1) {
+				$url .= '&r=1';
+			}
+		}
+
+		return ['url' => $url, 'message' => $message];
+	}
 }
 
 ?>

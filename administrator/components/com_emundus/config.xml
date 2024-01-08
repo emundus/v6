@@ -14,7 +14,7 @@
 		-->
 		<field name="log_actions" label="LOG_ACTIONS" default="1,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37" type="field" description="LOG_ACTIONS_DESC"/>
 		<field name="log_actions_exclude" label="LOG_ACTIONS_EXCLUDE" type="field" description="LOG_ACTIONS_EXCLUDE_DESC"/>
-		<field name="log_actions_exclude_user" label="LOG_ACTIONS_EXCLUDE_USER" default="62" type="field" description="LOG_ACTIONS_EXCLUDE_USER_DESC"/>
+		<field name="log_actions_exclude_user" label="LOG_ACTIONS_EXCLUDE_USER" default="" type="field" description="LOG_ACTIONS_EXCLUDE_USER_DESC"/>
 		<field name="log_forms_update" type="radio" default="0" label="COM_EMUNDUS_LOG_FORMS_UPDATE" description="COM_EMUNDUS_LOG_FORMS_UPDATE_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
@@ -80,6 +80,8 @@
 			<option value="0">COM_EMUNDUS_REQUIRED_POSITION_ICON_BEFORE</option>
 			<option value="1">COM_EMUNDUS_REQUIRED_POSITION_ICON_AFTER</option>
 		</field>
+
+		<field name="repeat_icon" type="text" label="COM_EMUNDUS_REPEAT_GROUP_ICON" default="clear" description="COM_EMUNDUS_REPEAT_GROUP_ICON_DESC" size="60"/>
 
 		<field
 				name="spacer0"
@@ -164,6 +166,10 @@
 			<option value="1">JYES</option>
 		</field>
 		<field name="can_edit_after_deadline" menu="hide" type="list" default="0" label="COM_EMUNDUS_CAN_EDIT_AFTER_DEADLINE" description="COM_EMUNDUS_CAN_EDIT_AFTER_DEADLINE_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="referent_can_edit_after_deadline" menu="hide" type="list" default="1" label="COM_EMUNDUS_REFERENT_CAN_EDIT_AFTER_DEADLINE" description="COM_EMUNDUS_REFERENT_CAN_EDIT_AFTER_DEADLINE_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
@@ -361,6 +367,7 @@
 	<fieldset label="COM_EMUNDUS_EMAIL_REMINDER" name="email" description="COM_EMUNDUS_EMAIL_REMINDER_DESC">
 		<field name="nb_email_per_batch" type="text" size="3" default="50" label="NB_EMAIL_PER_BATCH" description="NB_EMAIL_PER_BATCH_DESC" />
 		<field name="time_sleep_per_batch" type="text" size="6" default="1000" label="TIME_SLEEP_PER_BATCH" description="TIME_SLEEP_PER_BATCH_DESC" />
+		<field name="email_custom_tag" type="text" default="" label="COM_EMUNDUS_EMAIL_CUSTOM_TAG" description="COM_EMUNDUS_EMAIL_CUSTOM_TAG_DESC" />
 		<field
 				name="spacer1"
 				type="spacer"
@@ -638,6 +645,14 @@
 			<field name="glpi_api_base_url" type="text" label="COM_EMUNDUS_GLPI_BASE_URL"/>
 			<field name="glpi_api_app_token" type="text" label="COM_EMUNDUS_GLPI_APP_TOKEN"/>
 			<field name="glpi_api_user_token" type="text" label="COM_EMUNDUS_GLPI_USER_TOKEN"/>
+		</fieldset>
+
+		<field name="spacer13" type="spacer" hr="true"/>
+		<field name="insee" type="note" label="COM_EMUNDUS_INSEE_API"/>
+		<fieldset label="COM_EMUNDUS_INSEE_API">
+			<field name="insee_api_base_url" type="text" label="COM_EMUNDUS_INSEE_BASE_URL" default="https://api.insee.fr"/>
+			<field name="insee_api_consumer_key" type="text" label="COM_EMUNDUS_INSEE_CONSUMER_KEY"/>
+			<field name="insee_api_consumer_secret" type="text" label="COM_EMUNDUS_INSEE_CONSUMER_SECRET"/>
 		</fieldset>
 
 	</fieldset>

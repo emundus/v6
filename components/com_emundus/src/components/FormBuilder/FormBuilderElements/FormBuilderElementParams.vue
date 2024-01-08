@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-for="param in params" v-if="(param.published && !param.sysadmin_only) || (sysadmin && param.sysadmin_only && param.published)" class="form-group em-mb-8">
+    <div v-for="param in params" v-if="(param.published && !param.sysadmin_only) || (sysadmin && param.sysadmin_only && param.published)" class="form-group mb-4">
       <label>{{ translate(param.label) }}</label>
 
       <!-- DROPDOWN -->

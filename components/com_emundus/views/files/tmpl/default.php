@@ -32,15 +32,15 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
                             <?php
                                 if ($this->use_module_for_filters) {
                                     ?>
-                                    <label for="save-filter" class="em-mr-8" style="margin-bottom: 0;">
+                                    <label for="save-filter" class="em-mr-8 em-flex-row" style="margin-bottom: 0;">
                                         <span class="material-icons-outlined em-pointer em-color-white" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_SAVE_BTN');?>">save</span>
                                     </label>
                                     <input type="button" style="display: none" id="save-filter" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_SAVE_BTN');?>"/>
 	                                <?php
                                 }
                             ?>
-                            <label for="clear-search">
-                                <span class="material-icons-outlined em-pointer em-color-white" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN');?>">filter_list_off</span>
+                            <label for="clear-search" class="em-flex-row">
+                                <span class="material-icons-outlined em-pointer em-color-white" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN');?>">filter_alt_off</span>
                             </label>
                             <input type="button" style="display: none" id="clear-search" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN');?>"/>
                         </div>

@@ -41,12 +41,22 @@
 
 					<field type="text" name="mod_em_campaign_date_format" label="MOD_EM_CAMPAIGN_DATE_FORMAT" description="MOD_EM_CAMPAIGN_DATE_FORMAT_DESC" default="d/m/Y H:i" hint="d/m/Y H:i"/>
 
+					<field name="mod_em_campaign_display_svg" type="radio" default="1" label="MOD_EM_CAMPAIGN_DISPLAY_SVG" description="MOD_EM_CAMPAIGN_DISPLAY_SVG_DESC" class="btn-group btn-group-yesno">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
+
+					<field name="mod_em_campaign_display_hover_offset" type="radio" default="1" label="MOD_EM_CAMPAIGN_DISPLAY_HOVER_OFFSET" description="MOD_EM_CAMPAIGN_DISPLAY_HOVER_OFFSET_DESC" class="btn-group btn-group-yesno" >
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
+
 					<field showon="mod_em_campaign_layout!:default_tchooz" type="list" name="mod_em_campaign_get_link" label="MOD_EM_CAMPAIGN_GET_LINK" description="MOD_EM_CAMPAIGN_GET_LINK_DESC" default="0">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
 
-					<field type="list" name="mod_em_campaign_show_camp_start_date" label="MOD_EM_CAMPAIGN_SHOW_CAMP_START_DATE" description="MOD_EM_CAMPAIGN_SHOW_CAMP_START_DATE_DESC" default="1">
+					<field type="list" showon="mod_em_campaign_layout!:default_tchooz" name="mod_em_campaign_show_camp_start_date" label="MOD_EM_CAMPAIGN_SHOW_CAMP_START_DATE" description="MOD_EM_CAMPAIGN_SHOW_CAMP_START_DATE_DESC" default="1">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
@@ -66,12 +76,12 @@
 						<option value="1">JYES</option>
 					</field>
 
-					<field type="list" name="mod_em_campaign_show_admission_start_date" label="MOD_EM_CAMPAIGN_SHOW_ADMISSION_START_DATE" description="MOD_EM_CAMPAIGN_SHOW_ADMISSION_START_DATE_DESC" default="0">
+					<field type="list" showon="mod_em_campaign_layout!:default_tchooz" name="mod_em_campaign_show_admission_start_date" label="MOD_EM_CAMPAIGN_SHOW_ADMISSION_START_DATE" description="MOD_EM_CAMPAIGN_SHOW_ADMISSION_START_DATE_DESC" default="0">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
 
-					<field type="list" name="mod_em_campaign_show_admission_end_date" label="MOD_EM_CAMPAIGN_SHOW_ADMISSION_END_DATE" description="MOD_EM_CAMPAIGN_SHOW_ADMISSION_END_DATE_DESC" default="0">
+					<field type="list" showon="mod_em_campaign_layout!:default_tchooz" name="mod_em_campaign_show_admission_end_date" label="MOD_EM_CAMPAIGN_SHOW_ADMISSION_END_DATE" description="MOD_EM_CAMPAIGN_SHOW_ADMISSION_END_DATE_DESC" default="0">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
@@ -109,7 +119,7 @@
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
-					<field type="list" name="mod_em_campaign_show_results" label="MOD_EM_CAMPAIGN_SHOW_RESULTS" default="1">
+					<field type="list" showon="mod_em_campaign_layout!:default_tchooz" name="mod_em_campaign_show_results" label="MOD_EM_CAMPAIGN_SHOW_RESULTS" default="1">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>

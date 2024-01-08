@@ -9,6 +9,6 @@ $d = $displayData;
 ?>
 
 <a class="addGroup em-flex-row em-pointer"  href="#">
-    <span class="material-icons-outlined em-form-success-color em-mr-8">add</span>
-    <p class="em-form-success-color"><?php echo FText::_('COM_FABRIK_ADD_GROUP');?></p>
+    <span class="material-icons-outlined em-mr-8">add</span>
+    <p><?php echo FText::_('COM_FABRIK_ADD_GROUP');?></p>
 </a>

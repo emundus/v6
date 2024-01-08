@@ -804,8 +804,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	jimport('joomla.html.parameter');
     set_time_limit(0);
     require_once (JPATH_SITE.'/components/com_emundus/helpers/date.php');
-    require_once (JPATH_SITE.'/components/com_emundus/helpers/menu.php');
-
     require_once(JPATH_SITE.'/components/com_emundus/models/application.php');
     require_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
     require_once(JPATH_SITE.'/components/com_emundus/models/files.php');
@@ -813,7 +811,10 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 	$db = JFactory::getDBO();
 	$app = JFactory::getApplication();
-	$current_user = JFactory::getUser();
+
+	if (is_null($options)) {
+		$options = [];
+	}
 
     if (empty($file_lbl)) {
         $file_lbl = "_application";
@@ -821,12 +822,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
     $cTitle = $eMConfig->get('export_application_pdf_title_color', '#000000'); //déclaration couleur principale
-    $profile_color = '#20835F';
 
     $config = JFactory::getConfig();
-    $offset = $config->get('offset');
 
-    $h_menu = new EmundusHelperMenu;
 
     $m_profile = new EmundusModelProfile;
     $m_application = new EmundusModelApplication;
@@ -1222,7 +1220,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	    }
 	    /** END */
 
-        @chdir('tmp');
+        chdir('tmp');
     }
 }
 
@@ -1239,8 +1237,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 function application_header_pdf($user_id, $fnum = null, $output = true, $options = null) {
     jimport('joomla.html.parameter');
     set_time_limit(0);
-
-    require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'tcpdf' . DS . 'tcpdf.php');
 
     require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
     require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
@@ -1266,7 +1262,6 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     $htmldata = '';
 
     // Create PDF object
-    //$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
     $pdf = new Fpdi();
 
     $pdf->SetCreator(PDF_CREATOR);
@@ -1459,9 +1454,9 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     }
 
 
-    @chdir('tmp');
+    chdir('tmp');
     if ($output) {
-        if (!isset($current_user->applicant) && @$current_user->applicant != 1) {
+        if (!isset($current_user->applicant) || $current_user->applicant != 1) {
             //$output?'FI':'F'
             $name = 'application_header_' . date('Y-m-d_H-i-s') . '.pdf';
             $pdf->Output(EMUNDUS_PATH_ABS . $item->user_id . DS . $name, 'FI');

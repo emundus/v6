@@ -10,10 +10,6 @@ $now = $dateTime->format('Y-m-d H:i:s');
 ?>
 
 <style>
-    .mod_emundus_flow___print .material-icons-outlined{
-        color: var(--em-primary-color);
-    }
-
     .btn.btn-primary.mod_emundus_flow___print:hover,
     .btn.btn-primary.mod_emundus_flow___print:active,
     .btn.btn-primary.mod_emundus_flow___print:focus{
@@ -31,9 +27,10 @@ $now = $dateTime->format('Y-m-d H:i:s');
     .mod_emundus_flow___print{
         display: flex !important;
         align-items: center;
+        gap: 4px;
     }
     .btn-primary.mod_emundus_flow___print{
-        background: transparent;
+        background: white;
     }
 
     .mod_emundus_flow___infos{
@@ -57,11 +54,12 @@ $now = $dateTime->format('Y-m-d H:i:s');
 
     .em-programme-tag {
         overflow: visible;
+        white-space: initial;
     }
 
-    @media all and (max-width: 767px) {
+    @media all and (max-width: 479px) {
         .mod_emundus_flow___intro{
-           flex-direction: column;
+            flex-direction: column;
             justify-content: flex-start;
             align-items: flex-start;
             row-gap: 8px !important;
@@ -70,13 +68,58 @@ $now = $dateTime->format('Y-m-d H:i:s');
         .mod_emundus_flow___infos div:first-child{
             margin-bottom: 6px;
         }
+
+        .mod_emundus_flow___buttons {
+            flex-direction: column;
+            align-items: flex-start;
+            row-gap: 8px;
+        }
+
+        .view-form #g-utility .g-container,
+        .view-details #g-utility .g-container,
+        .view-checklist #g-utility .g-container {
+            width: 100%;
+        }
+
+        .mod_emundus_flow___container {
+            padding: 0 20px !important;
+        }
+    }
+
+    @media all and (min-width: 480px) and (max-width: 767px) {
+        .mod_emundus_flow___intro{
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            row-gap: 8px !important;
+            display: flex !important;
+        }
+        .mod_emundus_flow___infos div:first-child{
+            margin-bottom: 6px;
+        }
+
+        .mod_emundus_flow___buttons {
+            flex-direction: column;
+            align-items: flex-start;
+            row-gap: 8px;
+        }
+
+        .view-form #g-utility .g-container,
+        .view-details #g-utility .g-container,
+        .view-checklist #g-utility .g-container {
+            width: 100%;
+        }
+
+        .mod_emundus_flow___container {
+            padding: 0 40px !important;
+        }
     }
 </style>
 
-<div style="padding: 0 20px">
+<div class="mod_emundus_flow___container" style="padding: 0 20px">
     <div class="flex justify-between mod_emundus_flow___intro">
         <div class="flex items-center">
-            <h2 class="em-mb-0-important"><?php echo $campaign_name ?></h2>
+            <h1 class="em-mb-0-important"><?php echo $campaign_name ?></h1>
             <?php
             $color = '#0A53CC';
             $background = '#C8E1FE';
@@ -96,15 +139,16 @@ $now = $dateTime->format('Y-m-d H:i:s');
             }
             ?>
         </div>
-        <div class="flex items-center justify-end">
+        <div class="flex items-center justify-end mod_emundus_flow___buttons">
             <?php if ($show_back_button == 1) : ?>
-            <a href="<?php echo $home_link ?>" title="<?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?>">
+            <a href="<?php echo $home_link ?>" title="<?php echo strip_tags(JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT')) ?>">
                 <button class="btn btn-primary mr-4"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
             </a>
             <?php endif; ?>
-            <a href="/component/emundus/?task=pdf&amp;fnum=<?= $current_application->fnum ?>" target="_blank" title="<?php echo JText::_('PRINT') ?>">
-                <button class="btn btn-primary mod_emundus_flow___print">
+            <a href="<?php echo JURI::base() ?>component/emundus/?task=pdf&amp;fnum=<?= $current_application->fnum ?>" target="_blank" title="<?php echo JText::_('PRINT') ?>">
+                <button class="btn-tertiary mod_emundus_flow___print">
                     <span class="material-icons-outlined" style="font-size: 19px">print</span>
+                    <p><?php echo JText::_('PRINT') ?></p>
                 </button>
             </a>
         </div>
@@ -119,7 +163,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
         <?php endif; ?>
 
         <?php if ($show_programme==1) : ?>
-        <div class="flex items-center">
+        <div class="flex items-center em-flex-wrap">
             <p class="em-text-neutral-600 mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_PROGRAMME'); ?> : </p>
             <p class="em-programme-tag" style="color: <?php echo $color ?>;margin: unset;padding: 0">
                 <?php  echo $current_application->prog_label; ?>

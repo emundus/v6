@@ -12,10 +12,6 @@ form:
       type: input.colorpicker
       label: Files view color
       default: "#353544"
-    primary-color:
-      type: input.colorpicker
-      label: Primary color
-      default: "#238C69"
     secondary-color:
       type: input.colorpicker
       label: Secondary color
@@ -31,7 +27,7 @@ form:
     title-color:
       type: input.colorpicker
       label: Title color
-      default: "#000000"
+      default: "#0b0c0f"
     family-text:
       type: input.fonts
       label: Body Font

@@ -27,7 +27,7 @@
 }
 
 #chart-container{
-  background: white;
+  background: var(--neutral-0);
 }
 
 /** Loader **/
@@ -131,6 +131,10 @@
 /** END **/
 
 /** Files by status - number **/
+.widget-files-status-number .section-sub-menu {
+  overflow: scroll;
+}
+
 .widget-files-status-number .widget-files-status-number-block{
   display: flex;
   align-items: center;
@@ -150,7 +154,6 @@
 
 #g-container-main .g-container{
   width: 100%;
-  padding-left: 100px !important;
 }
 
 .tchooz-widget__select {
@@ -160,4 +163,53 @@
 .custom-widget__messages-gestionnaire .tchooz-widget.widget__messages-gestionnaire .section-sub-menu,
 .custom-widget__messages__gestionnaire .tchooz-widget.widget__messages__gestionnaire .section-sub-menu {
     overflow-y: scroll;
+}
+
+/* Widget de bienvenue */
+.profile_widget {
+  box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+  width: 100%;
+  margin-bottom: var(--m-24);
+  position: relative;
+  z-index: 1;
+  border-radius: 16px;
+}
+
+.profile_widget .profile_widget-container  {
+  opacity: 0.2;
+  background: var(--em-profile-color);
+  padding: 32px !important;
+  margin: 0 !important;
+  border-radius: 16px;
+  position: absolute;
+  z-index: 2;
+  height: 100%;
+}
+
+.profile_widget .profile_widget-text  {
+  gap: 8px;
+  position: relative;
+  z-index: 3;
+  padding: var(--p-32);
+  display: flex;
+  flex-direction: column !important;
+  border: 1px solid var(--em-profile-color);
+  border-radius: 16px;
+  margin: 0 !important;
+
+}
+
+.profile_widget-text h1,
+.profile_widget-text h1 span {
+  color: var(--em-profile-color);
+  font-family: var(--em-coordinator-font-title);
+  font-size: var(--em-coordinator-h1);
+  font-style: normal;
+  line-height: 28.8px;
+  font-weight: 500;
+}
+
+.profile_widget p {
+  color: var(--neutral-600);
+  font-size: var(--em-coordinator-h6);
 }

@@ -30,7 +30,7 @@
           </transition-group>
         </draggable>
       </div>
-      <button id="add-document" class="em-secondary-button" @click="addDocument('1')">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_REQUIRED_DOCUMENT') }}</button>
+      <button id="add-document" class="em-primary-button px-6 py-3" @click="addDocument('1')">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_REQUIRED_DOCUMENT') }}</button>
     </div>
     <div id="optional-documents" class="em-w-100 em-mb-32 em-mt-32">
       <p class="em-font-size-24 em-font-weight-600">{{ translate('COM_EMUNDUS_FORM_BUILDER_OPTIONAL_DOCUMENTS') }}</p>
@@ -61,7 +61,7 @@
           </transition-group>
         </draggable>
       </div>
-      <button id="add-document" class="em-secondary-button" @click="addDocument('0')">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_OPTIONAL_DOCUMENT') }}</button>
+      <button id="add-document" class="em-primary-button px-6 py-3" @click="addDocument('0')">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_OPTIONAL_DOCUMENT') }}</button>
     </div>
   </div>
 </template>
@@ -263,9 +263,7 @@ export default {
 
   #add-document {
     width: fit-content;
-    padding: 24px;
     margin: auto;
-    background-color: #fff;
   }
 
   .empty-documents {

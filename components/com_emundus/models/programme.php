@@ -82,31 +82,35 @@ class EmundusModelProgramme extends JModelList {
      * get list of declared programmes
      */
     public function getProgrammes($published = null, $codeList = array()) {
-        $db = JFactory::getDbo();
+		$programmes = [];
 
-        $query = 'select *
-                  from #__emundus_setup_programmes
-                  WHERE 1 = 1 ';
-        if (isset($published) && !empty($published)) {
-            $query .= ' AND published = '.$published;
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select('*')
+			->from($db->quoteName('#__emundus_setup_programmes'))
+			->where('1 = 1');
+
+        if (isset($published)) {
+	        $query->andWhere('published = '.$published);
         }
 
         if (!empty($codeList)) {
-            if (count($codeList['IN']) > 0) {
-                $query .= ' AND code IN ('.implode(',', $db->Quote($codeList['IN'])).')';
+            if (!empty($codeList['IN'])) {
+	            $query->andWhere('code IN ('.implode(',', $db->quote($codeList['IN'])).')');
             }
-            if (count($codeList['NOT_IN']) > 0) {
-                $query .= ' AND code NOT IN ('.implode(',', $db->Quote($codeList['NOT_IN'])).')';
+            if (!empty($codeList['NOT_IN'])) {
+				$query->andWhere('code NOT IN ('.implode(',', $db->quote($codeList['NOT_IN'])).')');
             }
         }
 
         try {
             $db->setQuery($query);
-            return $db->loadAssocList('code');
+            $programmes = $db->loadAssocList('code');
         } catch(Exception $e) {
             error_log($e->getMessage(), 0);
-            return array();
         }
+
+		return $programmes;
     }
 
     /**
@@ -426,7 +430,7 @@ class EmundusModelProgramme extends JModelList {
      *
      * @since version 1.0
      */
-    function getAllPrograms($lim, $page, $filter, $sort, $recherche) {
+    function getAllPrograms($lim = 'all', $page = 0, $filter = null, $sort = 'DESC', $recherche = null) {
         $all_programs = [];
 
         // Get affected programs
@@ -435,9 +439,13 @@ class EmundusModelProgramme extends JModelList {
         //
 
         if (!empty($programs)) {
-            $limit = empty($lim) ? 25 : $lim;
+            if (empty($lim) || $lim == 'all') {
+                $limit = '';
+            } else {
+                $limit = $lim;
+            }
 
-            if (empty($page)) {
+            if (empty($page) || empty($limit)) {
                 $offset = 0;
             } else {
                 $offset = ($page-1) * $limit;
@@ -482,11 +490,7 @@ class EmundusModelProgramme extends JModelList {
 	            $db->setQuery($query);
 				$all_programs['count'] = count($db->loadObjectList());
 
-                if(empty($lim)) {
-                    $db->setQuery($query, $offset);
-                } else {
-                    $db->setQuery($query, $offset, $limit);
-                }
+                $db->setQuery($query, $offset, $limit);
 
                 $programs = $db->loadObjectList();
 				

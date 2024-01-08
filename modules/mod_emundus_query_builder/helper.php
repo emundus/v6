@@ -212,7 +212,7 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Create the stat module
 	  */
-	public function createModuleAjax() {
+	public static function createModuleAjax() {
 		$jinput = JFactory::getApplication()->input;
 		$nameGraph = str_replace("'", " ", str_replace("\"", " ", $jinput->post->getString('titleModule')));
 		$typeModule = $jinput->post->get('typeModule');

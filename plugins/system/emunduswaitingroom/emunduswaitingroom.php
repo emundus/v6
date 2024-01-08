@@ -98,8 +98,7 @@ class plgSystemEmunduswaitingroom extends JPlugin
 				$db = JFactory::getDBo();
 				$query = $db->getQuery(true);
 				$query->select('count(userid)')
-					->from($db->quoteName('#__session'))
-					->where($db->quoteName('guest').' = 0');
+					->from($db->quoteName('#__session'));
 				$db->setQuery($query);
 
 				try {

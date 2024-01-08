@@ -88,7 +88,7 @@ function export_excel(fnums, letter) {
 
     $.ajax({
         type: 'post',
-        url: 'index.php?option=com_emundus&controller=files&task=getfnums_csv',
+        url: 'index.php?option=com_emundus&controller=files&task=getfnums_csv&Itemid='+itemId,
         dataType: 'JSON',
         data: {fnums: fnums},
         success: function (result) {
@@ -102,10 +102,16 @@ function export_excel(fnums, letter) {
                     success: function (result) {
                         if (result.status) {
                             $('#extractstep').replaceWith('<div id="extractstep"><div id="addatatext"><p>' + Joomla.JText._('COM_EMUNDUS_ADD_DATA_TO_CSV') + '</p></div><div id="datasbs"</div>');
-                            var start = 0;
-                            var limit = 100;
-                            var file = result.file;
-                            var json = jQuery.parseJSON('{"start":"' + start + '","limit":"' + limit + '","totalfile":"' + totalfile + '","nbcol":"0","methode":"' + methode + '","file":"' + file + '","excelfilename":"' + excel_file_name + '"}');
+                            var json = {
+                                start: 0,
+                                limit: 100,
+                                totalfile: totalfile,
+                                nbcol: 0,
+                                methode: methode,
+                                file: result.file,
+                                excelfilename: excel_file_name,
+                                lines: 0
+                            }
 
                             if ((methode == 0) && ($('#view').val() != 'evaluation')) {
                                 $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>0 / ' + totalfile + '</p></div>');
@@ -135,6 +141,7 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter) {
     var start = json.start;
     var limit = json.limit;
     var totalfile = json.totalfile;
+    let lines = json.lines;
     var file = json.file;
     var nbcol = json.nbcol;
     var methode = json.methode;
@@ -158,6 +165,7 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter) {
                 opts: options,
                 objclass: objclass,
                 excelfilename:json.excelfilename,
+                lines: lines
             },
             success: function(result) {
                 var json = result.json;
@@ -168,7 +176,7 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter) {
                         $('#datasbs').replaceWith('<div id="datasbs" data-start="' + result.json.start + '"><p>' + result.json.start + '</p></div>');
 
                     }
-                    if (start != json.start) {
+                    if (start != json.start && totalfile > json.start) {
                         generate_csv(json, eltJson, objJson, options, objclass, letter);
                     } else {
                         $('#extractstep').replaceWith('<div id="extractstep"><p>' + Joomla.JText._('COM_EMUNDUS_XLS_GENERATION') + '</p></div>');
@@ -180,7 +188,7 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter) {
                                 data: {
                                     csv: file,
                                     nbcol: nbcol,
-                                    start: start,
+                                    start: json.lines ? json.lines : json.start,
                                     excelfilename: result.json.excelfilename
                                 },
                                 success: function (result) {
@@ -637,6 +645,7 @@ function export_zip(fnums){
             actions: swal_actions_class
         },
     });
+    document.querySelector('.em-swal-confirm-button').style.opacity = '0';
 
     var url = 'index.php?option=com_emundus&controller=files&task=zip&Itemid='+itemId;
     $.ajax({
@@ -911,13 +920,13 @@ function generate_trombinoscope(fnums, data)
             if (data.status && data.pdf_url !== undefined && data.pdf_url !== null) {
                 Swal.fire({
                     title: Joomla.JText._('COM_EMUNDUS_TROMBI_DOWNLOAD'),
-                    html: '<a href="' +data.pdf_url + '" target="_blank">Télécharger le fichier</a>',
+                    html: Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED'),
                     customClass: {
                         title: 'em-swal-title',
-                        confirmButton: 'em-swal-confirm-button',
                         actions: 'em-swal-single-action'
                     },
                 });
+                $('.swal2-confirm').replaceWith('<a class="em-primary-button em-w-auto" href="' +data.pdf_url + '" target="_blank">Télécharger le fichier</a>')
             } else {
                 Swal.fire({
                     title: Joomla.JText._('COM_EMUNDUS_ERROR'),

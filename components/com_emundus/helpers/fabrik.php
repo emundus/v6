@@ -338,13 +338,15 @@ die("<script>
 
     static function prepareElementParameters($plugin, $notempty = true, $attachementId = 0) {
 
+		$plugin_to_setup = '';
         if ($plugin == 'nom' || $plugin == 'prenom' || $plugin == 'email') {
+	        $plugin_to_setup = $plugin;
             $plugin = 'field';
         }
 
         $params = array(
             'show_in_rss_feed' => '0',
-            'bootstrap_class' => 'input-medium',
+            'bootstrap_class' => 'input-large',
             'show_label_in_rss_feed' => '0',
             'use_as_rss_enclosure' => '0',
             'rollover' => '',
@@ -465,6 +467,7 @@ die("<script>
         }
 
         if ($plugin == 'databasejoin') {
+	        $params['bootstrap_class'] = 'span12';
             $params['database_join_display_type'] = 'dropdown';
             $params['join_db_name'] = '';
             $params['join_key_column'] = '';
@@ -552,6 +555,23 @@ die("<script>
             $params['rel'] = '';
             $params['link_title'] = '';
             $params['link_attributes'] = '';
+
+	        if($plugin_to_setup == 'email') {
+		        $params['password'] = 3;
+
+		        $params['validations']['plugin'][] = 'isemail';
+		        $params['validations']['plugin_published'][] = '1';
+		        $params['validations']['validate_in'][] = 'both';
+		        $params['validations']['validation_on'][] = 'both';
+		        $params['validations']['validate_hidden'][] = '0';
+		        $params['validations']['must_validate'][] = '0';
+		        $params['validations']['show_icon'][] = '1';
+
+		        $params['isemail-message'] = array('','');
+		        $params['isemail-validation_condition'] = array('','');
+		        $params['isemail-allow_empty'] = array('','1');
+		        $params['isemail-check_mx'] = array('','0');
+	        }
         }
 
         if($plugin == 'textarea'){

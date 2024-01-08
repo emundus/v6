@@ -46,7 +46,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $show_mandatory_documents = $params->get('show_mandatory_documents', 1);
     $show_optional_documents = $params->get('show_optional_documents', 0);
     $show_duplicate_documents = $params->get('show_duplicate_documents', 1);
-	$show_preliminary_documents = $params->get('show_preliminary_documents', 1);
+	$show_preliminary_documents = $params->get('show_preliminary_documents', 0);
 	$forms_title = $params->get('forms_title', JText::_('FORMS'));
     $mandatory_documents_title = $params->get('mandatory_documents_title', JText::_('MANDATORY_DOCUMENTS'));
     $optional_documents_title = $params->get('optional_documents_title', JText::_('OPTIONAL_DOCUMENTS'));
@@ -163,22 +163,38 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $db->setQuery($query);
     $uploads = $db->loadObjectList();
 
-    foreach ($uploads as $upload){
+	$units = array( 'B', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb', 'Eb', 'Zb', 'Yb');
+
+	foreach ($uploads as $upload){
         $file = $applicant_files_path . $user->id . '/' . $upload->filename;
         $bytes = filesize($file);
 
         if($bytes) {
-            $decimals = 0;
+	        $power = $bytes > 0 ? floor(log($bytes, 1024)) : 0;
+	        $upload->filesize = number_format($bytes / pow(1024, $power), 0, '.', ',') . ' ' . $units[$power];
+            /*$decimals = 0;
 
             $factor = floor((strlen($bytes) - 1) / 3);
             if ($factor > 0) $sz = 'KMGT';
-            $upload->filesize = sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor - 1] . 'o';
+            $upload->filesize = sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor - 1] . 'o';*/
         } else {
             $upload->filesize = 0;
         }
     }
 
     $forms = @EmundusHelperMenu::buildMenuQuery($user->profile);
+	$keys_to_remove = array();
+	foreach($forms as $key => $form) {
+		$m_params = json_decode($form->menu_params, true);
+		if(isset($m_params['menu_show']) && $m_params['menu_show'] == 0)
+		{
+			$keys_to_remove[] = $key;
+		}
+	}
+	foreach($keys_to_remove as $key) {
+		unset($forms[$key]);
+	}
+	$forms = array_values($forms);
 
     // Prepare display of send button
     $application = @modEmundusChecklistHelper::getApplication($user->fnum);

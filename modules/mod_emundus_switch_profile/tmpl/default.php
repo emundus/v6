@@ -32,9 +32,11 @@ if($just_logged && !$only_applicant) {
         margin-bottom: 8px;
         margin-top: 8px;
     }
-    .em-switch-profile-swal-container h2{
-        margin-bottom: 0 !important;
+
+    .em-switch-profile-swal-container h1,  .em-switch-profile-swal-container h2 {
+        font-family: var(--em-coordinator-font-title);
     }
+
     .em-switch-profile-swal-container .swal2-modal {
         width: 40vw;
     }
@@ -44,7 +46,7 @@ if($just_logged && !$only_applicant) {
     }
 
     .swal2-content p.em-text-align-center.em-font-size-24 {
-        color: var(--em-coordinator-primary-color);
+        color: var(--em-profile-color);
     }
 
     @media (max-width: 1368px) {
@@ -59,14 +61,14 @@ if($just_logged && !$only_applicant) {
     }
     .em-switch-profile-card{
         text-align: center;
-        border: solid 1px var(--em-coordinator-primary-color);
+        border: solid 1px var(--em-profile-color);
         display: flex;
         justify-content: center;
         align-items: center;
         border-radius: var(--em-coordinator-br);
         flex-direction: column;
         cursor: pointer;
-        color: var(--em-coordinator-primary-color);
+        color: var(--em-profile-color);
         transition: all 0.3s ease-in-out;
         width: auto;
         margin: 10px;
@@ -74,8 +76,8 @@ if($just_logged && !$only_applicant) {
         font-size: var(--em-coordinator-font-size);
     }
     .em-switch-profile-card:hover {
-        background: var(--em-coordinator-primary-color);
-        color: var(--neutral-50);
+        background: var(--em-profile-color);
+        color: var(--neutral-0);
     }
     .em-switch-profile-card .material-icons-outlined{
         font-size: 64px;
@@ -106,7 +108,7 @@ if($just_logged && !$only_applicant) {
         Swal.fire({
             position: 'center',
             iconHtml: '',
-            title: "<span class='em-main-500-color'><?php echo JText::_('MOD_EMUNDUS_SWITCH_PROFILE_WELCOME') . ' ' . $user->name ?></span>",
+            title: "<h1 class='em-main-500-color'><?php echo JText::_('MOD_EMUNDUS_SWITCH_PROFILE_WELCOME') . ' ' . $user->name ?></h1>",
             html: "<?php echo $text ?>",
             showConfirmButton: false,
             reverseButtons: true,

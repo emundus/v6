@@ -15,7 +15,7 @@
           @opened="getFilesByUser"
       >
         <div class="em-flex-row em-flex-align-start em-w-100 em-h-100 em-small-flex-column">
-          <div class="messages__campaigns-list">
+          <div class="messages__campaigns-list em-h-100">
             <div v-for="file in files" @click="fileSelected = file.fnum" :class="file.fnum == fileSelected ? 'messages__active-campaign' : ''" class="messages__block">
               <div class="messages__campaign-block em-w-100">
                 <div class="em-w-100">

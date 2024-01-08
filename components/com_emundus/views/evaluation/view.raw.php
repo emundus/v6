@@ -111,6 +111,7 @@ class EmundusViewEvaluation extends JViewLegacy
 				// reset filter
 				$filters = @EmundusHelperFiles::resetFilter();
 				$this->assignRef('filters', $filters);
+				$this->assignRef('cfnum', $cfnum);
 
 				// Do not display photos unless specified in params
 				$displayPhoto = false;
@@ -153,7 +154,8 @@ class EmundusViewEvaluation extends JViewLegacy
 
 				$fnumArray = array();
 
-			    $this->assignRef('form_url_edit', $form_url_edit);
+				$form_url_edit = '';
+				$this->assignRef('form_url_edit', $form_url_edit);
 
 				if (!empty($users)) {
 

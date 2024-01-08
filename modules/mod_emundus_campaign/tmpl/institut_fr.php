@@ -153,11 +153,11 @@ $site_offset = $config->get('offset');
                                 <?php if ($result->apply_online == 1 && $m_campaign->isLimitObtained($result->id) !== true) : ?>
                                     <?php if ($mod_em_campaign_get_link) : ?>
                                         <a class="btn btn-primary btn-creux btn-orange" role="button"
-                                           href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'
+                                           href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'
                                            target="_blank" data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
                                     <?php else : ?>
                                         <a class="btn btn-primary btn-creux btn-orange" role="button"
-                                           href='<?php echo "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'
+                                           href='<?php echo JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'
                                            data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
                                     <?php endif; ?>
                                     <?php
@@ -176,11 +176,11 @@ $site_offset = $config->get('offset');
                                 <?php else : ?>
                                     <?php if ($mod_em_campaign_get_link) : ?>
                                         <a class="btn btn-primary btn-plein btn-blue" role="button"
-                                           href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'
+                                           href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'
                                            target="_blank" data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
                                     <?php else : ?>
                                         <a class="btn btn-primary btn-plein btn-blue" role="button"
-                                           href='<?php echo "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'
+                                           href='<?php echo JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'
                                            data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
                                     <?php endif; ?>
                                 <?php endif; ?>

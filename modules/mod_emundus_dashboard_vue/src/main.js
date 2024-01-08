@@ -20,11 +20,19 @@ Vue.use(VTooltip);
 Vue.mixin(translate);
 
 if (document.getElementById('em-dashboard-vue')) {
+  const element = document.getElementById('em-dashboard-vue');
+
   const vue = new Vue({
     el: '#em-dashboard-vue',
     render(h) {
       return h(Dashboard, {
-        props: {}
+        props: {
+          programmeFilter: element.attributes['programmeFilter'].value,
+          displayDescription: element.attributes['displayDescription'].value,
+          displayName: element.attributes['displayName'].value,
+          name: element.attributes['name'].value,
+          language: element.attributes['language'].value,
+        }
       });
     }
   });

@@ -1144,7 +1144,7 @@ class EmundusHelperFiles
         // Quick filter
        $filters = '<div id="filters">
                  <p>'.JText::_('COM_EMUNDUS_FILTERS_RAPID_SEARCH').'</p>
-                    <div id="quick" class="form-group">
+                    <div id="quick" class="form-group flex items-center gap-2">
                         <input type="text" id="input-tags" class="input-tags demo-default" value="'.$cs.'" placeholder="'.JText::_('COM_EMUNDUS_ACTIONS_SEARCH').' ...">
                        <input value="&#xf002" type="button" class="btn btn-sm btn-info" id="search" style="font-family: \'FontAwesome\';" title="'.JText::_('COM_EMUNDUS_ACTIONS_SEARCH_BTN').'"/>'.
 
@@ -1243,7 +1243,7 @@ class EmundusHelperFiles
 
             $profiles = $h_files->getApplicants();
             foreach ($profiles as $prof) {
-                $profile .= '<option value="'.$prof->id.'"';
+                $profile .= '<option title="' . $prof->label . '" value="' . $prof->id . '"';
                 if (!empty($current_profile) && (in_array($prof->id, $current_profile) || $prof->id == $current_profile)) {
 	                $profile .= ' selected="true"';
                 }
@@ -1269,8 +1269,7 @@ class EmundusHelperFiles
             $profile .= ' <select class="testSelAll em-filt-select" id="select_oprofiles" multiple="multiple" name="o_profiles" '.($hidden ? 'style="height: 100%;visibility:hidden;max-height:0px;width:0px;" >' : 'style="height: 100%;">');
 
             foreach ($profiles as $prof) {
-                $profile .= '<option value="'.$prof->id.'"';
-                $profile .= '>'.$prof->label.'</option>';
+                $profile .= '<option title="' . $prof->label . '" value="'.$prof->id.'" >'.$prof->label.'</option>';
             }
             $profile .= '</select>';
 
@@ -1301,7 +1300,7 @@ class EmundusHelperFiles
 
             foreach ($profile_users as $profu) {
                 if (!$prefilter || ($prefilter && in_array($profu->id, $params['profile_users']))) {
-                    $profile_user .= '<option value="' . $profu->id . '"';
+                    $profile_user .= '<option title="' . $profu->label . '" value="' . $profu->id . '"';
                     if ($current_user_profile == $profu->id)
                         $profile_user .= ' selected="true"';
                     $profile_user .= '>' . $profu->label . '</option>';
@@ -1332,7 +1331,7 @@ class EmundusHelperFiles
 
             $evaluators = $h_files->getEvaluators();
             foreach ($evaluators as $evaluator) {
-                $eval .= '<option value="'.$evaluator->id.'"';
+                $eval .= '<option title="' . $evaluator->name . '" value="'.$evaluator->id.'"';
                 if ($current_eval == $evaluator->id) {
 	                $eval .= ' selected="true"';
                 }
@@ -1364,7 +1363,7 @@ class EmundusHelperFiles
 
             $groups = $h_files->getGroups();
             foreach ($groups as $group) {
-                $group_eval .= '<option value="'.$group->id.'"';
+                $group_eval .= '<option title="' . $group->label . '" value="'.$group->id.'"';
                 if ($current_group_eval == $group->id) {
 	                $group_eval .= ' selected="true"';
                 }
@@ -1401,7 +1400,7 @@ class EmundusHelperFiles
             $groupe = "";
             for ($i = 0; $i < count($final_gradeList); $i++) {
                 $val = substr($p_grade[$i], 1, 1);
-                $final_grade .= '<option value="'.$val.'"';
+                $final_grade .= '<option title="' . $final_gradeList[$i] . '" value="'.$val.'"';
                 if ($val == $current_finalgrade) {
 	                $final_grade .= ' selected="true"';
                 }
@@ -1432,7 +1431,7 @@ class EmundusHelperFiles
 
 	        $missing_docList = $h_files->getMissing_doc();
             foreach ($missing_docList as $md) {
-                $missing_doc .= '<option value="'.$md->attachment_id.'"';
+                $missing_doc .= '<option title="' . $md->value . '"  value="'.$md->attachment_id.'"';
                 if ($miss_doc == $md->attachment_id) {
 	                $missing_doc .= ' selected="true"';
                 }
@@ -1528,7 +1527,7 @@ class EmundusHelperFiles
 
 	        $campaignList = $h_files->getCampaigns();
             foreach ($campaignList as $c) {
-                $campaign .= '<option value="'.$c->id.'"';
+                $campaign .= '<option title="' . $c->label.' - '.$c->year . '" value="'.$c->id.'"';
                 if (!empty($current_campaign) && in_array($c->id, $current_campaign)) {
 	                $campaign .= ' selected="true"';
                 }
@@ -1559,7 +1558,7 @@ class EmundusHelperFiles
 
 	        $schoolyearList = $h_files->getSchoolyears();
             foreach ($schoolyearList as $key => $value) {
-                $schoolyear .= '<option value="'.$value->schoolyear.'"';
+                $schoolyear .= '<option title="' . $value->schoolyear . '" value="'.$value->schoolyear.'"';
                 if (!empty($current_schoolyear) && in_array($value->schoolyear, $current_schoolyear)) {
 	                $schoolyear .= ' selected="true"';
                 }
@@ -1588,7 +1587,7 @@ class EmundusHelperFiles
 
 	        $programmeList = $h_files->getProgrammes($params['programme']);
             foreach ($programmeList as $p) {
-                $programme .= '<option value="'.$p->code.'"';
+                $programme .= '<option title="' . $p->label . ' - ' . $p->code . '" value="'.$p->code.'"';
                 if (!empty($current_programme) && in_array($p->code, $current_programme)){
                     $programme .= ' selected="true"';
                     $program_selected = true;
@@ -1628,7 +1627,7 @@ class EmundusHelperFiles
             $status .= '<select '.(!$hidden ? 'class="testSelAll em-filt-select" ' : '').' id="select_multiple_status" name="status" multiple="multiple" '.($hidden ? 'style="height: 100%;visibility:hidden;max-height:0px;width:0px;" >' : 'style="height: 100%;">');
 
             foreach ($statusList as $p) {
-                $status .= '<option value="'.$p->step.'"';
+                $status .= '<option title="' . $p->value . '" value="'.$p->step.'"';
                 if (!empty($current_status) && in_array($p->step, $current_status)) {
 	                $status .= ' selected="true"';
                 }
@@ -1709,7 +1708,7 @@ class EmundusHelperFiles
 
 	        foreach ($tagList as $p) {
 	            if (empty($not_in) || !in_array($p['id'], $not_in)) {
-			        $tag .= '<option value="'.$p['id'].'"';
+			        $tag .= '<option title="' . $p['label'] . '"  value="'.$p['id'].'"';
 			        if (!empty($current_tag) && in_array($p['id'], (array) $current_tag)) {
 				        $tag .= ' selected="true"';
 			        }
@@ -1739,7 +1738,7 @@ class EmundusHelperFiles
 
 		    $groupList = $m_files->getUserAssocGroups();
 		    foreach ($groupList as $p) {
-			    $group_assoc .= '<option value="'.$p['id'].'"';
+			    $group_assoc .= '<option title="' . $p['label'] . '" value="'.$p['id'].'"';
 			    if (!empty($current_group_assoc) && in_array($p['id'], (array)$current_group_assoc)) {
 				    $group_assoc .= ' selected="true"';
 			    }
@@ -1875,7 +1874,7 @@ class EmundusHelperFiles
 
 	        $groupList = $m_files->getAllGroups();
             foreach ($groupList as $p) {
-                $group .= '<option value="'.$p['id'].'"';
+                $group .= '<option title="' . $p['label'] . '" value="'.$p['id'].'"';
                 if (!empty($current_group) && in_array($p['id'], $current_group)) {
 	                $group .= ' selected="true"';
                 }
@@ -2341,96 +2340,137 @@ class EmundusHelperFiles
     }
 
     // getEvaluation
-    public static function getEvaluation($format='html', $fnums = []) {
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+	public static function getEvaluation($format = 'html', $fnums = [])
+	{
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
 
-        $eMConfig = JComponentHelper::getParams('com_emundus');
-        $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
 
-        $m_evaluation   = new EmundusModelEvaluation();
-        $m_files        = new EmundusModelFiles;
-        $h_files        = new EmundusHelperFiles;
+		$eMConfig          = JComponentHelper::getParams('com_emundus');
+		$show_empty_fields = $eMConfig->get('show_empty_fields', 1);
 
-        if (!is_array($fnums)) {
-            $fnumInfo = $m_files->getFnumInfos($fnums);
-            $fnums = array($fnums);
-        } else {
-            $fnumInfo = $m_files->getFnumInfos($fnums[0]);
-        }
+		$m_evaluation = new EmundusModelEvaluation();
+		$m_files      = new EmundusModelFiles;
+		$h_files      = new EmundusHelperFiles;
 
-        $element_id = $m_evaluation->getAllEvaluationElements(1, $fnumInfo['training']);
-        $elements = $h_files->getElementsName(implode(',',$element_id));
-        $evaluations = $m_files->getFnumArray($fnums, $elements,0,0,0,1);
+		if (!is_array($fnums))
+		{
+			$fnumInfo = $m_files->getFnumInfos($fnums);
+			$fnums    = array($fnums);
+		}
+		else
+		{
+			$fnumInfo = $m_files->getFnumInfos($fnums[0]);
+		}
 
-        $data = array();
-        foreach ($evaluations as $eval) {
+		$element_id  = $m_evaluation->getAllEvaluationElements(1, $fnumInfo['training']);
+		$elements    = $h_files->getElementsName(implode(',', $element_id));
+		$evaluations = $m_files->getFnumArray($fnums, $elements, 0, 0, 0, 0);
 
-            if ($eval['jos_emundus_evaluations___user'] > 0 && ($eval['jos_emundus_evaluations___user'] == JFactory::getUser()->id || EmundusHelperAccess::asAccessAction(5,'r'))) {
-                $str = '<br><hr>';
-                $str .= '<p><em style="font-size: 14px">'.JText::_('COM_EMUNDUS_EVALUATION_EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.$fnumInfo['name'].'</em></p>';
-                $str .= '<h2>'.JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR').': '.JFactory::getUser($eval['jos_emundus_evaluations___user'])->name.'</h2>';
-                $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
+		$data = array();
+		foreach ($evaluations as $eval)
+		{
 
-                foreach ($elements as $element) {
-                    if($element->table_join == null){
-                        $k = $element->tab_name.'___'.$element->element_name;
-                    }
-                    else{
-                        $k = $element->table_join.'___'.$element->element_name;
-                    }
+			$str = '<br><hr>';
+			$str .= '<p><em style="font-size: 14px">' . JText::_('COM_EMUNDUS_EVALUATION_EVALUATED_ON') . ' : ' . JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')) . ' - ' . $fnumInfo['name'] . '</em></p>';
+			$str .= '<h2>' . JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR') . ': ' . JFactory::getUser($eval['jos_emundus_evaluations___user'])->name . '</h2>';
+			$str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
 
-                    if ($element->element_name != 'id' &&
-                        $element->element_name != 'time_date' &&
-                        $element->element_name != 'campaign_id' &&
-                        $element->element_name != 'student_id'&&
-                        $element->element_name != 'user' &&
-                        $element->element_name != 'fnum' &&
-                        $element->element_name != 'email' &&
-                        $element->element_name != 'label' &&
-                        $element->element_name != 'code' &&
-                        $element->element_name != 'spacer' &&
-                        $element->element_name != 'parent_id' &&
-                        $element->element_hidden == 0 &&
-                        array_key_exists($k, $eval))
-                    {
-                        if($show_empty_fields == 0 && empty($eval[$k])) {
-                            $str .= '';
-                        } else {
-                            $str .= '<tr>';
-                            if (strpos($element->element_name, 'comment') !== false) {
-                                $str .= '<td colspan="2"><b>'.JText::_(trim($element->element_label)).'</b> <br>'.JText::_($eval[$k]).'</td>';
-                            } else {
-                                $str .= '<td width="30%"><b>'.JText::_(trim($element->element_label)).'</b> </td><td width="70%">'.JText::_($eval[$k]).'</td>';
-                            }
-                            $str .= '</tr>';
-                        }
-                    }
-                }
+			foreach ($elements as $element)
+			{
+				if ($element->table_join == null)
+				{
+					$k = $element->tab_name . '___' . $element->element_name;
+				}
+				else
+				{
+					$k = $element->table_join . '___' . $element->element_name;
+				}
 
-                $str .= '</table>';
-                $str .= '<p></p><hr>';
+				if ($element->element_name != 'id' &&
+					$element->element_name != 'time_date' &&
+					$element->element_name != 'campaign_id' &&
+					$element->element_name != 'student_id' &&
+					$element->element_name != 'user' &&
+					$element->element_name != 'fnum' &&
+					$element->element_name != 'email' &&
+					$element->element_name != 'label' &&
+					$element->element_name != 'code' &&
+					$element->element_name != 'spacer' &&
+					$element->element_name != 'parent_id' &&
+					$element->element_hidden == 0 &&
+					array_key_exists($k, $eval))
+				{
+					if ($show_empty_fields == 0 && empty($eval[$k]))
+					{
+						$str .= '';
+					}
+					else
+					{
+						$str .= '<tr>';
+						if (strpos($element->element_name, 'comment') !== false)
+						{
+							$str .= '<td colspan="2"><b>' . JText::_(trim($element->element_label)) . '</b> <br>' . JText::_($eval[$k]) . '</td>';
+						}
+						else
+						{
+							if($element->element_plugin == 'emundus_fileupload' && EmundusHelperAccess::asAccessAction(4,'r',JFactory::getUser()->id,$eval['fnum'])) {
+								$filepath = '';
+								$params = json_decode($element->element_attribs,true);
 
-                if ($format != 'html') {
-                    $str = str_replace('<br>', chr(10), $str);
-                    $str = str_replace('<br />', chr(10), $str);
-                    $str = str_replace('<h1>', '* ', $str);
-                    $str = str_replace('</h1>', ' : ', $str);
-                    $str = str_replace('<b>', chr(10), $str);
-                    $str = str_replace('</b>', ' : ', $str);
-                    $str = str_replace('&nbsp;', ' ', $str);
-                    $str = strip_tags($str, '<h1>');
-                }
+								if(!empty($params['attachmentId'])) {
+									$query->clear()
+										->select('filename')
+										->from($db->quoteName('#__emundus_uploads'))
+										->where($db->quoteName('attachment_id') . ' = ' . $db->quote($params['attachmentId']));
+									$db->setQuery($query);
+									$filename = $db->loadResult();
 
-                if ($format == "simple") {
-	                $str = $eval['label'].' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.JFactory::getUser($eval['jos_emundus_evaluations___user_raw'])->name;
-                }
+									if(!empty($filename)) {
+										$filepath = EMUNDUS_PATH_REL.$eval['jos_emundus_evaluations___student_id'].'/'.$filename;
+									}
+								}
 
-                $data[$eval['fnum']][$eval['jos_emundus_evaluations___user']] = $str;
-            }
-        }
-        return $data;
-    }
+								if(!empty($filepath))
+								{
+									$str .= '<td width="30%"><b>' . JText::_(trim($element->element_label)) . '</b> </td><td width="70%"><a href="/' . $filepath . '" target="_blank">' . JText::_($eval[$k]) . '</a></td>';
+								}
+							} else {
+								$str .= '<td width="30%"><b>' . JText::_(trim($element->element_label)) . '</b> </td><td width="70%">' . JText::_($eval[$k]) . '</td>';
+							}
+						}
+						$str .= '</tr>';
+					}
+				}
+			}
+
+			$str .= '</table>';
+			$str .= '<p></p><hr>';
+
+			if ($format != 'html')
+			{
+				$str = str_replace('<br>', chr(10), $str);
+				$str = str_replace('<br />', chr(10), $str);
+				$str = str_replace('<h1>', '* ', $str);
+				$str = str_replace('</h1>', ' : ', $str);
+				$str = str_replace('<b>', chr(10), $str);
+				$str = str_replace('</b>', ' : ', $str);
+				$str = str_replace('&nbsp;', ' ', $str);
+				$str = strip_tags($str, '<h1>');
+			}
+
+			if ($format == "simple")
+			{
+				$str = $eval['label'] . ' : ' . JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')) . ' - ' . JFactory::getUser($eval['jos_emundus_evaluations___user_raw'])->name;
+			}
+
+			$data[$eval['fnum']][$eval['jos_emundus_evaluations___user']] = $str;
+		}
+
+		return $data;
+	}
 
     // getDecision
     function getDecision($format='html', $fnums = []) {
@@ -2746,7 +2786,7 @@ class EmundusHelperFiles
      * @return  string      FNUM for application.
      * @since   1.6
      */
-    public function createFnum($campaign_id, $user_id, $redirect = true){
+    public static function createFnum($campaign_id, $user_id, $redirect = true){
 		$fnum = '';
 	    $app = JFactory::getApplication();
 	    JLog::addLogger(array('text_file' => 'com_emundus.fnum.php'), JLog::ALL, 'com_emundus.fnum');
@@ -2865,16 +2905,17 @@ class EmundusHelperFiles
                     ->values(implode(',', $db->quote(array_values($params))));
 
                 $db->setQuery($query);
-                $db->execute();
-                return array('id' => $db->insertid(), 'name' => $params['name']);
+                $inserted = $db->execute();
+
+				if ($inserted) {
+					return array('id' => $db->insertid(), 'name' => $params['name']);
+				}
             } catch (Exception $e) {
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-                return false;
             }
         }
-        else {
-            return false;
-        }
+
+		return false;
     }
 
     // delete pdf filter
@@ -3544,6 +3585,7 @@ class EmundusHelperFiles
 		}
 
 		$and = ' AND ';
+        $sql_code = '1=1';
 		if (isset($filt_menu['programme'])) {
 			if (isset($filt_menu['programme'][0]) && $filt_menu['programme'][0] == "%") {
 				$sql_code = '1=1';
@@ -3693,7 +3735,7 @@ class EmundusHelperFiles
                         continue;
                     }
 
-                    if (!in_array('all', $filter['value']) && (!empty($filter['value']) || $filter['value'] == '0')) {
+                    if (!in_array('all', $filter['value'], true) && (!empty($filter['value']) || $filter['value'] == '0')) {
                         $filter_id = str_replace(['filter-', 'default-filter-'], '', $filter['id']);
 
                         if (is_numeric($filter_id)) {
@@ -3762,9 +3804,7 @@ class EmundusHelperFiles
                                             $parent_table_alias = '';
                                             $parent_table = $join_informations['join_from_table'];
 
-                                            if (!in_array($parent_table, $already_joined) && !$this->isTableLinkedToCampaignCandidature($parent_table)) {
-                                                // todo: what if column fnum is not in the join table?
-                                            } else {
+                                            if (in_array($parent_table, $already_joined) || !$this->isTableLinkedToCampaignCandidature($parent_table)) {
                                                 if (!in_array($parent_table, $already_joined)) {
                                                     $already_joined[] = $parent_table;
                                                     $where['join'] .= ' LEFT JOIN ' . $db->quoteName($parent_table) . ' ON ' . $parent_table . '.fnum = jecc.fnum ';
@@ -3850,7 +3890,7 @@ class EmundusHelperFiles
             $where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.published', 1, '=');
         }
 
-		return $where;
+        return $where;
     }
 
 	public function getFabrikElementData(int $element_id): array
@@ -4128,9 +4168,17 @@ class EmundusHelperFiles
 					switch ($operator) {
 						case '=':
 							$query = $element . ' = ' . $db->quote($from);
+
+							if ($type === 'date' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $from)) {
+								$query = $element . ' LIKE ' . $db->quote($from . '%');
+							}
 							break;
 						case '!=':
 							$query = $element . ' != ' . $db->quote($from);
+
+							if ($type === 'date' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $from)) {
+								$query = $element . ' NOT LIKE ' . $db->quote($from . '%');
+							}
 							break;
 						case 'superior':
 							$query = $element . ' > ' . $db->quote($from);
@@ -4143,6 +4191,10 @@ class EmundusHelperFiles
 							break;
 						case 'inferior_or_equal':
 							$query = $element . ' <= ' . $db->quote($from);
+
+							if ($type === 'date' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $from)) {
+								$query = '(' . $element . ' < ' .$db->quote($from) . ' OR ' . $element . ' LIKE ' . $db->quote($from . '%') . ')';
+							}
 							break;
 						case 'between':
 							if (!empty($to)) {
@@ -4197,12 +4249,27 @@ class EmundusHelperFiles
 						}
 						break;
 					case 'IN':
-						if (is_array($values)) {
-							$values = implode(',', $db->quote($values));
-						} else {
-							$values = $db->quote($values);
-						}
-						$query = $element . ' IN (' . $values . ')';
+                        if ($fabrik_element_data['plugin'] === 'checkbox') { // value is stored as a serialized array
+
+                            if (is_array($values)) {
+                                foreach($values as $key => $value) {
+                                    if ($key == 0) {
+                                        $query = $element . ' LIKE ' . $db->quote('%"' . $value . '"%');
+                                    } else {
+                                        $query .= ' OR ' . $element . ' LIKE ' . $db->quote('%"' . $value . '"%');
+                                    }
+                                }
+                            } else {
+                                $query = $element . ' LIKE ' . $db->quote('%"' . $values . '"%');
+                            }
+                        } else {
+                            if (is_array($values)) {
+                                $values = implode(',', $db->quote($values));
+                            } else {
+                                $values = $db->quote($values);
+                            }
+                            $query = $element . ' IN (' . $values . ')';
+                        }
 						break;
 					case 'NOT IN':
 						$query = $this->notInQuery($element, $values, $fabrik_element_data);
@@ -4219,11 +4286,18 @@ class EmundusHelperFiles
 		$simple_case = false;
 
 		$db = JFactory::getDbo();
-		if (is_array($values)) {
-			$values = implode(',', $db->quote($values));
-		} else {
-			$values = $db->quote($values);
-		}
+
+        if ($fabrik_element_data['plugin'] === 'checkbox') {
+            if (is_array($values)) {
+                $values = implode(',', $values);
+            }
+        } else {
+            if (is_array($values)) {
+                $values = implode(',', $db->quote($values));
+            } else {
+                $values = $db->quote($values);
+            }
+        }
 
 		// if it is not given, we assume that we are not creating a filter from a fabrik element so it is a simple case
 		if (empty($fabrik_element_data)) {
@@ -4254,7 +4328,20 @@ class EmundusHelperFiles
 					$already_joined_tables = [];
 					$subquery .= $this->writeJoins($joins, $already_joined_tables);
 
-					$subquery .= ' WHERE ' . $element . ' IN (' . $values . ')';
+                    if ($fabrik_element_data['plugin'] === 'checkbox') {
+                        $values = explode(',', $values);
+
+                        foreach ($values as $key => $value) {
+                            if ($key == 0) {
+                                $subquery .= ' WHERE ' . $element .  ' LIKE ' . $db->quote('%"' . $value . '"%');
+                            } else {
+                                $subquery .= ' OR ' . $element .  ' LIKE ' . $db->quote('%"' . $value . '"%');
+                            }
+                        }
+
+                    } else {
+                        $subquery .= ' WHERE ' . $element . ' IN (' . $values . ')';
+                    }
 				}
 
 				if (!empty($subquery)) {
@@ -4266,8 +4353,22 @@ class EmundusHelperFiles
 		}
 
 		if ($simple_case) {
-			$query = '(' . $element .  ' NOT IN (' . $values . ')' . ' OR ' . $element . ' IS NULL) ';
-		}
+            if ($fabrik_element_data['plugin'] === 'checkbox') {
+                $values = explode(',', $values);
+                foreach ($values as $key => $value) {
+                    if ($key == 0) {
+                        $query = '(' . $element .  ' NOT LIKE ' . $db->quote("%\"$value\"%") . ' ';
+
+                    } else {
+                        $query .= ' AND ' . $element . ' NOT LIKE ' . $db->quote("%\"$value\"%") . ' ';
+                    }
+                }
+
+                $query .= ' OR ' . $element . ' IS NULL) ';
+            } else {
+                $query = '(' . $element .  ' NOT IN (' . $values . ')' . ' OR ' . $element . ' IS NULL) ';
+            }
+        }
 
 		return $query;
 	}
@@ -4313,7 +4414,8 @@ class EmundusHelperFiles
                                 $table_column_to_count = 'jecc.campaign_id';
                                 break;
                             case 'programmes':
-                                $table_column_to_count = 'esc.training';
+                            case 'programs':
+                                $table_column_to_count = 'sp.id';
                                 break;
                             case 'tags':
                                 $table_column_to_count = 'eta.id_tag';
@@ -4359,7 +4461,8 @@ class EmundusHelperFiles
                     if (!empty($table_column_to_count)) {
                         $db = JFactory::getDbo();
 
-                        $query = 'SELECT ' . $table_column_to_count . ' as count_value, COUNT(1) as count
+                        if ($applied_filter['plugin'] === 'checkbox') { // checkbox is a specific case because data is registered as following example '["x", "y",... "n"]', so we can not count like other columns
+                            $query = 'SELECT ' . $table_column_to_count . '
                             FROM #__emundus_campaign_candidature as jecc
                             LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
                             LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
@@ -4368,20 +4471,68 @@ class EmundusHelperFiles
                             LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
                             LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
 
-                        if (!empty($leftJoins)) {
-                            $query .= $leftJoins;
+                            if (!empty($leftJoins)) {
+                                $query .= $leftJoins;
+                            }
+
+                            $whereConditions = $this->_moduleBuildWhere($already_joined, 'files', ['code' => $user_programmes, 'fnum_assoc' => $user_fnums_assoc], [$applied_filter['uid']]);
+
+                            $query .= $whereConditions['join'];
+                            $query .= ' WHERE u.block=0 ' . $whereConditions['q'];
+                            $query .= ' GROUP BY ' . $table_column_to_count . ' ORDER BY ' . $table_column_to_count . ' ASC';
+
+                            try {
+                                $db->setQuery($query);
+                                $all_values = $db->loadColumn();
+                            } catch (Exception $e) {
+                                JLog::add('Failed to get available values for filter ' . $applied_filter['uid'] . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+                            }
+
+
+                            $available_values = [];
+                            foreach($all_values as $value) {
+                                $row_values = json_decode($value);
+
+                                if (!empty($row_values)) {
+                                    foreach($row_values as $row_value) {
+                                        if (!isset($available_values[$row_value])) {
+                                            $available_values[$row_value] = 1;
+                                        } else {
+                                            $available_values[$row_value]++;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else {
+                            $query = 'SELECT ' . $table_column_to_count . ' as count_value, COUNT(DISTINCT jecc.fnum) as count
+                            FROM #__emundus_campaign_candidature as jecc
+                            LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
+                            LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
+                            LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
+                            LEFT JOIN #__users as u on u.id = jecc.applicant_id
+                            LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
+                            LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
+
+                            if (!empty($leftJoins)) {
+                                $query .= $leftJoins;
+                            }
+
+                            $whereConditions = $this->_moduleBuildWhere($already_joined, 'files', ['code' => $user_programmes, 'fnum_assoc' => $user_fnums_assoc], [$applied_filter['uid']]);
+
+                            $query .= $whereConditions['join'];
+                            $query .= ' WHERE u.block=0 ' . $whereConditions['q'];
+                            $query .= ' GROUP BY ' . $table_column_to_count . ' ORDER BY ' . $table_column_to_count . ' ASC';
+
+                            try {
+                                $db->setQuery($query);
+                                $available_values = $db->loadAssocList('count_value');
+                            } catch (Exception $e) {
+                                JLog::add('Failed to get available values for filter ' . $applied_filter['uid'] . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+                            }
                         }
 
-                        $whereConditions = $this->_moduleBuildWhere($already_joined, 'files', ['code' => $user_programmes, 'fnum_assoc' => $user_fnums_assoc], [$applied_filter['uid']]);
-
-                        $query .= $whereConditions['join'];
-                        $query .= ' WHERE u.block=0 ' . $whereConditions['q'];
-                        $query .= ' GROUP BY ' . $table_column_to_count . ' ORDER BY ' . $table_column_to_count . ' ASC';
-
-                        try {
-                            $db->setQuery($query);
-                            $available_values = $db->loadAssocList('count_value');
-
+                        if (!empty($available_values)) {
                             foreach($applied_filter['values'] as $key => $value) {
                                 if (isset($available_values[$value['value']])) {
                                     $applied_filters[$applied_filter_key]['values'][$key]['count'] = $available_values[$value['value']]['count'];
@@ -4389,8 +4540,6 @@ class EmundusHelperFiles
                                     $applied_filters[$applied_filter_key]['values'][$key]['count'] = 0;
                                 }
                             }
-                        } catch (Exception $e) {
-                            JLog::add('Failed to get available values for filter ' . $applied_filter['uid'] . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
                         }
                     }
                 }

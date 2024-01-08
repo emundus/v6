@@ -291,6 +291,7 @@ class EmundusModelFilesTest extends TestCase{
 		}
 		if ($databasejoin_element) {
 			$data = $this->m_files->getFnumArray2([$fnum], [$databasejoin_element]);
+			$this->assertNotFalse($data, 'getFnumArray does not encounter an error');
 			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with databasejoin element');
 			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
 			$this->assertArrayHasKey($databasejoin_element->tab_name . '___' . $databasejoin_element->element_name, $data[$fnum], 'the data contains the databasejoin element');
@@ -310,8 +311,8 @@ class EmundusModelFilesTest extends TestCase{
 			$data = $this->m_files->getFnumArray2([$fnum], [$databasejoin_multi_element]);
 			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with databasejoin multi element');
 			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
-			$this->assertArrayHasKey($databasejoin_multi_element->tab_name . '___' . $databasejoin_multi_element->element_name, $data[$fnum], 'the data contains the databasejoin multi element');
-            $this->assertStringContainsString('Charente-Maritime', $data[$fnum][$databasejoin_multi_element->tab_name . '___' . $databasejoin_multi_element->element_name], 'the databasejoin multi element contains the correct value');
+			$this->assertArrayHasKey($databasejoin_multi_element->table_join . '___' . $databasejoin_multi_element->element_name, $data[$fnum], 'the data contains the databasejoin multi element');
+            $this->assertStringContainsString('Charente\-Maritime', $data[$fnum][$databasejoin_multi_element->table_join . '___' . $databasejoin_multi_element->element_name], 'the databasejoin multi element contains the correct value, and escaped data');
 		}
 
 		$radio_element = null;

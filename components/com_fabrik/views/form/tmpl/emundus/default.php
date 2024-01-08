@@ -22,6 +22,19 @@ $display_required_icon = $eMConfig->get('display_required_icon', 1);
 
 $pageClass = $this->params->get('pageclass_sfx', '');
 
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+$m_users = new EmundusModelUsers();
+$profile_form = $m_users->getProfileForm();
+
+JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TITLE');
+JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TEXT');
+JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CONFIRM');
+JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CANCEL');
+JText::script('PLEASE_CHECK_THIS_FIELD');
+
+JText::script('COM_EMUNDUS_FABRIK_NEW_FILE');
+JText::script('COM_EMUNDUS_FABRIK_NEW_FILE_DESC');
+
 if ($pageClass !== '') :
 	echo '<div class="' . $pageClass . '">';
 endif;
@@ -34,26 +47,34 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 endif;
 ?>
 <div class="emundus-form p-6">
+    <?php  if($form->id == $profile_form) : ?>
+        <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
+    <?php endif; ?>
     <div class="mb-0 fabrikMainError alert alert-error fabrikError<?php echo $active ?>">
         <span class="material-icons">cancel</span>
 		<?php echo $form->error; ?>
     </div>
     <div class="mb-8">
-        <?php if ($this->params->get('show-title', 1)) : ?>
-            <div class="page-header mt-8">
-                <?php $title = trim(preg_replace('/^([^-]+ - )/', '', $form->label)); ?>
-                <h1 class="after-em-border after:bg-red-800"><?= JText::_($title) ?></h1>
+        <div class="em-mt-8">
+	        <?php if ($this->params->get('show-title', 1)) : ?>
+                <?php if($display_required_icon == 0) : ?>
+                    <p class="mb-5 text-neutral-600"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
+                <?php endif; ?>
+                <div class="page-header">
+			        <?php $title = trim(preg_replace('/^([^-]+ - )/', '', $form->label)); ?>
+                    <h2 class="after-em-border after:bg-red-800"><?= JText::_($title) ?></h2>
+                </div>
+	        <?php endif; ?>
+        </div>
+
+
+	    <?php if(!empty($form->intro)) : ?>
+            <div class="em-form-intro mt-4">
+                <?php
+                echo trim($form->intro);
+                ?>
             </div>
         <?php endif; ?>
-
-        <div class="em-form-intro mt-4">
-	        <?php if($display_required_icon == 0) : ?>
-                <p class="mb-2"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
-	        <?php endif; ?>
-            <?php
-            echo trim($form->intro);
-            ?>
-        </div>
     </div>
     <form method="post" <?php echo $form->attribs ?>>
 		<?php
@@ -92,7 +113,7 @@ endif;
                 <div class="mb-7">
                     <?php
                     if ($group->showLegend) :?>
-                        <h2 class="after-em-border after:bg-neutral-500"><?php echo $group->title; ?></h2>
+                        <h3 class="after-em-border after:bg-neutral-500"><?php echo $group->title; ?></h3>
                     <?php
                     endif;
 
@@ -162,7 +183,7 @@ endif;
         // Load skeleton
         let header = document.querySelector('.page-header');
         if (header) {
-            document.querySelector('.page-header h1').style.opacity = 0;
+            document.querySelector('.page-header h2').style.opacity = 0;
             header.classList.add('skeleton');
         }
         let intro = document.querySelector('.em-form-intro');
@@ -179,9 +200,15 @@ endif;
         for (title of grouptitle) {
             title.style.opacity = 0;
         }
-        let groupintro = document.querySelector('.groupintro');
-        if (groupintro) {
-            groupintro.style.opacity = 0;
+        grouptitle = document.querySelectorAll('.fabrikGroup h2, .fabrikGroup h3');
+        for (title of grouptitle){
+            title.style.opacity = 0;
+        }
+        let groupintros = document.querySelectorAll('.groupintro');
+        if (groupintros) {
+            groupintros.forEach((groupintro) => {
+                groupintro.style.opacity = 0;
+            });
         }
 
         let elements = document.querySelectorAll('.fabrikGroup .row-fluid');
@@ -197,4 +224,9 @@ endif;
             elt.classList.add('skeleton');
         }
     });
+
+    let displayTchoozy = getComputedStyle(document.documentElement).getPropertyValue('--display-profiles');
+    if (displayTchoozy !== 'block') {
+        document.querySelector('#background-shapes').style.display = 'none';
+    }
 </script>
