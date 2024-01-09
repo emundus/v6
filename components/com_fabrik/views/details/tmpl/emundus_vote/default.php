@@ -268,7 +268,7 @@ endif;
 					<?php if (empty($votes)) : ?>
                         <button onclick="vote('<?php echo $user->guest ?>','<?php echo $listid ?>','<?php echo $this->elements['id']->value ?>','<?php echo $user->email ?>')"
                                 type="button"
-                                class="em-applicant-primary-button w-full mt-3"
+                                class="em-applicant-primary-button w-full mt-3 em-white-space-normal"
                                 style="text-transform: unset">
 							<?php echo JText::_('COM_FABRIK_VOTE') ?>
                         </button>
