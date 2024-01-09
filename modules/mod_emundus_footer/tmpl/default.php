@@ -30,13 +30,14 @@ if($applicant = !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 
         <?php else : ?>
 
+
             <div class="em-col-1-footer">
-                <p><?= $mod_emundus_footer_texte_col_1; ?></p>
+                  <?= $mod_emundus_footer_texte_col_1; ?>
             </div>
 
             <div class="em-col-2-footer">
                 <div class="em-col-2-footer-texte">
-                    <p><?= $mod_emundus_footer_texte_col_2; ?></p>
+                      <?= $mod_emundus_footer_texte_col_2; ?>
                 </div>
             </div>
 
