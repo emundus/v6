@@ -30,7 +30,7 @@
     border-radius: 4px;
 }
 
-.view-details .fabrikDetails .details-tabs p {
+.view-details .fabrikDetails .details-tabs button {
     padding: 14px 28px;
     color: var(--em-primary-color);
     border-top: 1px solid #2E404F;
@@ -39,17 +39,17 @@
     cursor: pointer;
 }
 
-.view-details .fabrikDetails .details-tabs p.active {
+.view-details .fabrikDetails .details-tabs button.active {
     background: #2E404F;
     color: white;
     font-weight: 600;
 }
 
-.view-details .fabrikDetails .details-tabs p:nth-child(1) {
+.view-details .fabrikDetails .details-tabs button:nth-child(1) {
     border-radius: 4px 0 0 4px;
 }
 
-.view-details .fabrikDetails .details-tabs p:last-child {
+.view-details .fabrikDetails .details-tabs button:last-child {
     border-radius: 0 4px 4px 0;
     border-right: 1px solid #2E404F;
 }
