@@ -106,14 +106,14 @@ foreach ($votes as $vote) {
         </div>
 
         <div class="inferior-infos-container">
-            <a href="<?php echo $this->_row->data->fabrik_view_url ?>" class="em-applicant-secondary-button w-full"
+            <a href="<?php echo $this->_row->data->fabrik_view_url ?>" class="em-applicant-secondary-button w-full em-white-space-normal"
                style="text-transform: unset"><?php echo JText::_('COM_FABRIK_VOTING_GO_DETAILS') ?></a>
 
             <?php if ($gallery->is_voting == 1) : ?>
                 <?php if (empty($votes)) : ?>
                     <button onclick="vote('<?php echo $user->guest ?>','<?php echo $listid ?>','<?php echo $this->_row->data->{$db_table_name . '___id'} ?>','<?php echo $user->email ?>')"
                             type="button"
-                            class="em-applicant-primary-button w-full mt-3"
+                            class="em-applicant-primary-button w-full mt-3 em-white-space-normal"
                             style="text-transform: unset">
                         <?php echo JText::_('COM_FABRIK_VOTE') ?>
                     </button>
@@ -121,7 +121,7 @@ foreach ($votes as $vote) {
                     <?php if (!$voted) : ?>
                         <button <?php if(count($votes) < $gallery->max) : ?>onclick="vote('<?php echo $user->guest ?>','<?php echo $listid ?>','<?php echo $this->_row->data->{$db_table_name . '___id'} ?>','<?php echo $user->email ?>')"<?php else : ?>disabled<?php endif; ?>
                                 type="button"
-                                class="em-applicant-primary-button w-full mt-3"
+                                class="em-applicant-primary-button w-full mt-3 em-white-space-normal"
                                 style="text-transform: unset">
                         <?php if(count($votes) < $gallery->max) : ?>
                             <?php echo JText::_('COM_FABRIK_VOTE') ?>
@@ -132,7 +132,7 @@ foreach ($votes as $vote) {
                     <?php else : ?>
                         <button disabled
                                 type="button"
-                                class="em-applicant-primary-button w-full mt-3"
+                                class="em-applicant-primary-button w-full mt-3 em-white-space-normal"
                                 style="text-transform: unset">
                             <?php echo JText::_('COM_FABRIK_ALREADY_VOTED') ?>
                         </button>

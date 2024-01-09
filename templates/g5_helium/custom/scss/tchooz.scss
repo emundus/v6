@@ -1557,6 +1557,10 @@ input:focus + .em-slider {
   border-radius: var(--em-applicant-br);
 }
 
+.em-white-space-normal {
+  white-space: normal;
+}
+
 @supports (background-clip: text) {
   .em-gradient-icons {
     background: linear-gradient(90deg, #26CAEA 0%, #32EE5F 100%);
