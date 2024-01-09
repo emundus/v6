@@ -99,7 +99,7 @@ foreach ($votes as $vote) {
                 </div>
             <?php endif; ?>
             <?php if (!empty($gallery->resume)) : ?>
-                <p class="mb-3 line-clamp-4 h-20">
+                <p class="mb-3 line-clamp-4 h-20 em-default-font">
                     <?php echo isset($this->_row->data) ? $this->_row->data->{$gallery->resume} : ''; ?>
                 </p>
             <?php endif; ?>

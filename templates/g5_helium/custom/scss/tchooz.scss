@@ -1488,7 +1488,7 @@ input:focus + .em-slider {
 }
 
 .em-default-font {
-  font-family: $font-family-text;
+  font-family: $font-family-text !important;
 }
 
 .em-caption{
