@@ -142,9 +142,9 @@ endif;
                 $elt = explode('___', $gallery->title)[1];
                 ?>
                 <?php if (isset($this->elements[$elt])) : ?>
-                    <h2 class="mt-2 mb-6 em-font-weight-700">
+                    <h1 class="mt-2 mb-6 em-font-weight-700">
                         <?php echo $this->elements[$elt]->element_ro; ?>
-                    </h2>
+                    </h1>
                 <?php endif; ?>
             <?php endif; ?>
 
@@ -153,9 +153,9 @@ endif;
                 $elt = explode('___', $gallery->resume)[1];
                 ?>
                 <?php if (isset($this->elements[$elt])) : ?>
-                    <p class="mb-3">
+                    <h2 class="mb-3">
                         <?php echo $this->elements[$elt]->element_ro; ?>
-                    </p>
+                    </h2>
                 <?php endif; ?>
             <?php endif; ?>
 
