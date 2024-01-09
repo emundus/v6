@@ -447,9 +447,13 @@ function vote(guest,listid,id,email) {
                                     customClass: {
                                         confirmButton: 'em-swal-confirm-button',
                                     },
-                                }).then(() => {
+                                }).then((result) => {
+                                    if(result.value) {
+                                        window.location.href = Joomla.JText._('COM_FABRIK_VOTE_MODAL_HOME_LINK');
+                                    }
+
                                     window.location.reload();
-                                })
+                                });
                             } else {
                                 Swal.fire({
                                     icon: 'error',
@@ -457,7 +461,7 @@ function vote(guest,listid,id,email) {
                                     text: Joomla.JText._('COM_FABRIK_VOTE_MODAL_ERROR_TEXT'),
                                     showConfirmButton: false,
                                     timer: 2000
-                                })
+                                });
                             }
                         })
                         .catch((error) => {

@@ -4304,6 +4304,9 @@ structure:
 				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_GO_BACK', 'Retour aux projets');
 				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_GO_BACK', 'Back to projects', 'override', null, null, null, 'en-GB');
 
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_HOME_LINK', '/home');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_HOME_LINK', '/home', 'override', null, null, null, 'en-GB');
+
 				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_NO', 'Non, retour aux projets');
 				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_NO', 'No, back to projects', 'override', null, null, null, 'en-GB');
 
