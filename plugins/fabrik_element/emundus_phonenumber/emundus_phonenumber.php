@@ -47,7 +47,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
         $opts                = array('runplugins' => 1);
 
         $value = $this->getValue($data, $repeatCounter, $opts);
-        $value = $this->DBFormatToE164Format($value);
+        $value = is_array($value) ? $value['country_code'].$value['num_tel'] : $this->DBFormatToE164Format($value);
         $this->countries = $this->DBRequest(); // avoid multiple call on DB
 
         if ($this->isEditable())
@@ -74,13 +74,14 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 		$bits = $this->inputProperties($repeatCounter);
 
 		$value = $this->getValue($data, $repeatCounter);
-        $bits['inputValue'] = $this->DBFormatToE164Format($value);
-        $bits['selectValue'] = substr($value, 0, 2);
 
-        if (is_array($value)) // validation error
+        if (is_array($value)) // data from validation error
         {
             $bits['inputValue'] = $value['country_code'].$value['num_tel'];
             $bits['selectValue'] = $value['country'];
+        } else { // data from database
+            $bits['inputValue'] = $this->DBFormatToE164Format($value);
+            $bits['selectValue'] = substr($value, 0, 2);
         }
 
         $bits['mustValidate'] = $this->validator->hasValidations(); // is the element mandatory ?
@@ -256,7 +257,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 	    }
 
 	    $opts->allCountries = array_values($opts->allCountries);
-		
+
 
         return array('FbPhoneNumber', $id, $opts);
     }

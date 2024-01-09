@@ -51,7 +51,7 @@
             </div>
           </div>
           <div class="tab-content em-flex-start">
-            <form-builder-elements v-if="leftPanelActiveTab === 'Elements'" @element-created="onElementCreated">
+            <form-builder-elements v-if="leftPanelActiveTab === 'Elements'" @element-created="onElementCreated" :form="currentPage">
             </form-builder-elements>
             <form-builder-document-formats
                 v-else-if="leftPanelActiveTab === 'Documents'"
@@ -206,7 +206,7 @@ export default {
 				]
 	    },
       showInRightPanel: 'hierarchy',
-      createDocumentMandatory: true,
+      createDocumentMandatory: '1',
       lastSave: null,
       leftPanel: {
         tabs: [
@@ -227,7 +227,7 @@ export default {
             icon: 'translate',
             active: false,
             displayed: true,
-            url: '/parametres-globaux'
+            url: '/parametres-globaux?layout=translation&default_menu=2&object=emundus_setup_profiles'
           },
         ],
       },
@@ -252,6 +252,8 @@ export default {
 				this.form_id = this.profile_id;
 				this.profile_id = 0;
 			}
+		} else {
+			this.leftPanel.tabs[2].url += '&data=' + this.profile_id;
 		}
 
     this.getFormTitle();
@@ -555,6 +557,7 @@ export default {
     padding: 4px 8px !important;
     border-radius: 4px;
     margin-bottom: 0;
+    height: 30px;
 
     &:focus {
       background-color: #DFF5E9;

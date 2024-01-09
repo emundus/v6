@@ -4,7 +4,7 @@
  * This file is part of FPDI PDF-Parser
  *
  * @package   setasign\FpdiPdfParser
- * @copyright Copyright (c) 2021 Setasign GmbH & Co. KG (https://www.setasign.com)
+ * @copyright Copyright (c) 2023 Setasign GmbH & Co. KG (https://www.setasign.com)
  * @license   FPDI PDF-Parser Commercial Developer License Agreement (see LICENSE.txt file within this package)
  */
 
@@ -16,6 +16,7 @@ use setasign\Fpdi\PdfParser\CrossReference\ReaderInterface;
 use setasign\Fpdi\PdfParser\Filter\FilterException;
 use setasign\Fpdi\PdfParser\PdfParserException;
 use setasign\Fpdi\PdfParser\StreamReader;
+use setasign\Fpdi\PdfParser\Type\PdfDictionary;
 use setasign\Fpdi\PdfParser\Type\PdfIndirectObject;
 use setasign\Fpdi\PdfParser\Type\PdfNumeric;
 use setasign\Fpdi\PdfParser\Type\PdfStream;
@@ -71,11 +72,11 @@ class CrossReference extends FpdiCrossReference
                 throw $e;
             }
 
-            $this->readers[] = new CorruptedReader($this->parser);
+            $this->readers[] = new CorruptedReader($this->parser, $fileHeaderOffset);
         }
 
         // let's check for a CorruptedReader instance because
-        $corrupted = \array_filter($this->readers, function ($reader) {
+        $corrupted = \array_filter($this->readers, static function ($reader) {
             return $reader instanceof CorruptedReader;
         });
 
@@ -89,7 +90,7 @@ class CrossReference extends FpdiCrossReference
      * Get the offset by an object number.
      *
      * @param int $objectNumber
-     * @return integer|array|bool
+     * @return integer|array|false
      * @throws CrossReferenceException
      * @throws PdfParserException
      * @throws PdfTypeException
@@ -153,7 +154,7 @@ class CrossReference extends FpdiCrossReference
             }
 
             if ($e->getCode() !== CrossReferenceException::COMPRESSED_XREF) {
-                return new CorruptedReader($this->parser);
+                return new CorruptedReader($this->parser, $this->fileHeaderOffset);
             }
 
             $stream = PdfStream::ensure(PdfType::resolve($initValue, $this->parser));
@@ -188,7 +189,7 @@ class CrossReference extends FpdiCrossReference
             $parser->getStreamReader()->reset($offset + $this->fileHeaderOffset);
 
             $object = $parser->readValue();
-            if ($object === false || !($object instanceof PdfIndirectObject)) {
+            if (!($object instanceof PdfIndirectObject)) {
                 throw new CrossReferenceException(
                     \sprintf('Object (id:%s) not found at location (%s).', $objectNumber, $offset),
                     CrossReferenceException::OBJECT_NOT_FOUND
@@ -245,5 +246,13 @@ class CrossReference extends FpdiCrossReference
         }
 
         return $object;
+    }
+
+    /**
+     * Bypass check for encryption and handle this afterwards
+     */
+    protected function checkForEncryption(PdfDictionary $dictionary)
+    {
+        // encryption is handled in the PdfParser instance afterward.
     }
 }

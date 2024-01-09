@@ -167,12 +167,13 @@ class EmundusModelUsers extends JModelList {
             }
         }
 
-        $eMConfig           = JComponentHelper::getParams('com_emundus');
-        $showUniversities   = $eMConfig->get('showUniversities');
-        $showJoomlagroups   = $eMConfig->get('showJoomlagroups',0);
-        $showNewsletter     = $eMConfig->get('showNewsletter');
+        $eMConfig            = JComponentHelper::getParams('com_emundus');
+        $showUniversities    = $eMConfig->get('showUniversities');
+        $showJoomlagroups    = $eMConfig->get('showJoomlagroups',0);
+        $showNewsletter      = $eMConfig->get('showNewsletter');
+        $automated_task_user = $eMConfig->get('automated_task_user');
 
-        $query = 'SELECT DISTINCT(u.id), e.lastname, e.firstname, u.email, u.username,  espr.label as profile, espr.published as is_applicant_profile, ';
+        $query = 'SELECT DISTINCT(u.id), e.lastname, e.firstname, u.email, u.username,  espr.label as profile,group_concat(DISTINCT eup.profile_id) as o_profiles, espr.published as is_applicant_profile, ';
 
         if ($showNewsletter == 1)
             $query .= 'up.profile_value as newsletter, ';
@@ -189,7 +190,7 @@ class EmundusModelUsers extends JModelList {
         $query .= 'u.activation as active,u.block as block
                     FROM #__users AS u
                     LEFT JOIN #__emundus_users AS e ON u.id = e.user_id
-                    LEFT JOIN #__emundus_users_profiles AS eup ON e.user_id = eup.user_id
+                    LEFT JOIN #__emundus_users_profiles AS eup ON e.user_id = eup.user_id and eup.profile_id != e.profile
                     LEFT JOIN #__emundus_groups AS egr ON egr.user_id = u.id
                     LEFT JOIN #__emundus_setup_groups AS esgr ON esgr.id = egr.group_id
                     LEFT JOIN #__emundus_setup_profiles AS espr ON espr.id = e.profile
@@ -210,7 +211,11 @@ class EmundusModelUsers extends JModelList {
             $query .= 'LEFT JOIN #__emundus_final_grade AS efg ON u.id = efg.student_id ';
         }
 
-        $query .= ' where 1=1 AND u.id NOT IN (1,62) ';
+        $exclude_users = [1,62];
+        if (!empty($automated_task_user)) {
+            $exclude_users[] = $automated_task_user;
+        }
+        $query .= ' where 1=1 AND u.id NOT IN ('.implode(',',$exclude_users).') ';
 
         if (isset($programme) && !empty($programme) && $programme[0] != '%') {
             $query .= ' AND ( esc.training IN ("'.implode('","', $programme).'")
@@ -233,8 +238,7 @@ class EmundusModelUsers extends JModelList {
             $query.= ' u.id='.(int)$uid;
         } else {
             $and = true;
-            /*var_dump($this->filts_details['profile']);
-            if(isset($this->filts_details['profile']) && !empty($this->filts_details['profile'])){
+            /*if(isset($this->filts_details['profile']) && !empty($this->filts_details['profile'])){
                 $query.= ' AND e.profile IN ('.implode(',', $this->filts_details['profile']).') ';
                 $and = true;
             }*/
@@ -443,6 +447,35 @@ class EmundusModelUsers extends JModelList {
         $db->setQuery($query);
         return $db->loadResult();
     }
+
+	function getProfileDetails($profile_id)
+	{
+		$profile_info = null;
+
+		if (!empty($profile_id)) {
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
+			$h_cache = new EmundusHelperCache();
+			$profile_info = $h_cache->get('profile_details_'.$profile_id);
+
+			if (empty($profile_info)) {
+				$query = $this->_db->getQuery(true);
+
+				$query->select('id,label,description,class,published')
+					->from($this->_db->quoteName('#__emundus_setup_profiles'))
+					->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($profile_id));
+
+				try {
+					$this->_db->setQuery($query);
+					$profile_info = $this->_db->loadObject();
+					$h_cache->set('profile_details_'.$profile_id, $profile_info);
+				} catch (Exception $e){
+					JLog::add('component/com_emundus/models/users | Error when try to get profile details : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
+				}
+			}
+		}
+
+		return  $profile_info;
+	}
 
     public function changeCurrentUserProfile($uid, $pid) {
         $db = JFactory::getDBO();
@@ -796,6 +829,95 @@ class EmundusModelUsers extends JModelList {
 
         return $this->data;
     }
+
+	public function addUserFromParams($params, $current_user) {
+		$created = false;
+
+		if (!empty($params['username']) && !empty($params['email'])) {
+			$user = clone(JFactory::getUser(0));
+
+			if (preg_match('/^[0-9a-zA-Z\_\@\+\-\.]+$/', $params['username']) !== 1) {
+				throw new Exception(JText::_('COM_EMUNDUS_USERS_ERROR_USERNAME_NOT_GOOD'));
+			}
+
+			require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+			$h_emails = new EmundusHelperEmails();
+			if (!$h_emails->correctEmail($params['email'])) {
+				throw new Exception(JText::_('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_EMAIL'));
+			}
+
+			$user->name = $params['name'];
+			$user->username = $params['username'];
+			$user->email = $params['email'];
+			if ($params['ldap'] == 0) {
+				// If we are creating a new user from the LDAP system, he does not have a password.
+				include_once(JPATH_SITE.'/components/com_emundus/helpers/users.php');
+				$h_users = new EmundusHelperUsers;
+				$password = $h_users->generateStrongPassword();
+				$user->password = md5($password);
+			}
+			$now = EmundusHelperDate::getNow();
+			$user->registerDate = $now;
+			$user->lastvisitDate = null;
+			$user->groups = array($params['jgr']);
+			$user->block = 0;
+
+			$other_param['firstname'] 		= $params['firstname'];
+			$other_param['lastname'] 		= $params['lastname'];
+			$other_param['profile'] 		= $params['profile'];
+			$other_param['em_oprofiles'] 	= !empty($params['oprofiles']) ? explode(',', $params['oprofiles']): $params['oprofiles'];
+			$other_param['univ_id'] 		= $params['univ_id'];
+			$other_param['em_groups'] 		= !empty($params['groups']) ? explode(',', $params['groups']): $params['groups'];
+			$other_param['em_campaigns'] 	= !empty($params['campaigns']) ? explode(',', $params['campaigns']): $params['campaigns'];
+			$other_param['news'] 			= $params['news'];
+
+			$acl_aro_groups = $this->getDefaultGroup($params['profile']);
+			$user->groups = $acl_aro_groups;
+
+			$usertype = $this->found_usertype($acl_aro_groups[0]);
+			$user->usertype = $usertype;
+
+			$uid = $this->adduser($user, $other_param);
+
+			if (is_array($uid)) {
+				throw new Exception(JText::_('COM_EMUNDUS_USERS_ERROR'));
+			} else if (empty($uid)) {
+				throw new Exception($user->getError());
+			}
+
+			// If index.html does not exist, create the file otherwise the process will stop with the next step
+			if (!file_exists(EMUNDUS_PATH_ABS.'index.html')) {
+				$filename = EMUNDUS_PATH_ABS.'index.html';
+				$file = fopen($filename, 'w');
+				fwrite($file, '');
+				fclose($file);
+			}
+
+			if (!mkdir(EMUNDUS_PATH_ABS.$uid, 0755) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$uid.DS.'index.html')) {
+				throw new Exception(JText::_('COM_EMUNDUS_USERS_CANT_CREATE_USER_FOLDER_CONTACT_ADMIN'));
+			}
+
+			// Envoi de la confirmation de création de compte par email
+			if (!class_exists('EmundusModelEmails')) {
+				require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
+			}
+			$m_emails = new EmundusModelEmails();
+
+			$email = $params['ldap'] == 1 ? 'new_ldap_account' : 'new_account';
+			$pswd = $params['ldap'] == 0 ? $password : null;
+			$post = $params['ldap'] == 0 ? array('PASSWORD' => $pswd) : array();
+
+			$sent = $m_emails->sendEmailNoFnum($user->email, $email, $post, $user->id, [], null, false);
+
+			if (!$sent) {
+				throw new Exception(JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT'));
+			}
+
+			$created = true;
+		}
+
+		return $created;
+	}
 
 	/** Adds a user to Joomla as well as the eMundus tables.
 	 * @param $user
@@ -1502,7 +1624,6 @@ class EmundusModelUsers extends JModelList {
                       left join #__emundus_users as eu on eu.user_id = u.id
                       left join #__user_profiles as up on (up.user_id = u.id and up.profile_key like "emundus_profile.newsletter")
                       where u.id = ' .$uid;
-            //var_dump($query);die;
             $db = $this->getDbo();
             $db->setQuery($query);
             return $db->loadAssoc();
@@ -2496,6 +2617,14 @@ class EmundusModelUsers extends JModelList {
         $mailer->setBody($body);
 
 		// Send the password reset request email.
+
+		require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+		$custom_email_tag = EmundusHelperEmails::getCustomHeader();
+		if(!empty($custom_email_tag))
+		{
+			$mailer->addCustomHeader($custom_email_tag);
+		}
+
 		$send = $mailer->Send();
 
 		// Check for an error.

@@ -851,7 +851,7 @@ class EmundusModelFormbuilder extends JModelList {
             $group = $this->createGroup($group_label,$formid);
 
             $eid = $this->createElement('declare',$group['group_id'],'checkbox','Confirmation','',0,0,0);
-            EmundusHelperFabrik::addOption($eid,'CONFIRM_POST',1);
+            EmundusHelperFabrik::addOption($eid,'CONFIRM_POST','JYES');
             EmundusHelperFabrik::addNotEmptyValidation($eid);
             //
 
@@ -1255,8 +1255,8 @@ class EmundusModelFormbuilder extends JModelList {
                 case 'email':
 
                     $label = array(
-                        'fr' => 'Email',
-                        'en' => 'Email',
+                        'fr' => 'Adresse email',
+                        'en' => 'Email address',
                     );
 
                     $created_elements[] = $this->createSimpleElement($gid, $plugin, null, $evaluation, $label);
@@ -1418,7 +1418,7 @@ class EmundusModelFormbuilder extends JModelList {
 				$dbnull = 'NULL';
 				$default = '';
 
-				if ($plugin === 'display') {
+				if ($plugin === 'display' || $plugin === 'panel') {
 					$default = 'Ajoutez du texte personnalisé pour vos candidats';
 				}
 
@@ -1798,7 +1798,10 @@ class EmundusModelFormbuilder extends JModelList {
             $old_params['notempty-validation_condition'] = array("");
             $eval = 1;
         } else {
-            $key = array_search("notempty",$old_params['validations']['plugin']);
+			$key = false;
+			if(is_array($old_params['validations']['plugin'])) {
+            	$key = array_search("notempty",$old_params['validations']['plugin']);
+			}
             unset($old_params['validations']['plugin'][$key]);
             unset($old_params['validations']['plugin_published'][$key]);
             unset($old_params['validations']['validate_in'][$key]);
@@ -1864,7 +1867,10 @@ class EmundusModelFormbuilder extends JModelList {
             $db->setQuery($query);
             $db_element = $db->loadObject();
 
-            $key = array_search("notempty", $element['params']['validations']['plugin']);
+			$key = false;
+			if(is_array($element['params']['validations']['plugin'])) {
+            	$key = array_search("notempty", $element['params']['validations']['plugin']);
+			}
             if($element['FRequire'] != "true") {
                 if($key !== false && $key !== null) {
                     unset($element['params']['validations']['plugin'][$key]);
@@ -1945,7 +1951,10 @@ class EmundusModelFormbuilder extends JModelList {
             }
 
             if ($element['plugin'] === 'field') {
-                $key = array_search("isemail", $element['params']['validations']['plugin']);
+				$key = false;
+				if(is_array($element['params']['validations']['plugin'])) {
+                	$key = array_search("isemail", $element['params']['validations']['plugin']);
+				}
 
                 if ($element['params']['password'] == 3) {
                     if($key === false || $key === null) {
@@ -1962,7 +1971,10 @@ class EmundusModelFormbuilder extends JModelList {
                         $element['params']['validations']['show_icon'][] = "0";
                     }
                 } else {
-                    $key = array_search("isemail", $element['params']['validations']['plugin']);
+					$key = false;
+					if(is_array($element['params']['validations']['plugin'])) {
+                    	$key = array_search("isemail", $element['params']['validations']['plugin']);
+					}
                     if($key !== false && $key !== null) {
                         unset($element['params']['validations']['plugin'][$key]);
                         unset($element['params']['validations']['plugin_published'][$key]);
@@ -2345,6 +2357,26 @@ class EmundusModelFormbuilder extends JModelList {
 
         return ${"element".$element};
     }
+
+	function getSimpleElement($eid) {
+		$db = $this->getDbo();
+		$query = $db->getQuery(true);
+
+		$element = [];
+
+		try {
+			$query->select('*')
+				->from($db->quoteName('#__fabrik_elements'))
+				->where($db->quoteName('id') . ' = ' . $db->quote($eid));
+			$db->setQuery($query);
+			$element = $db->loadAssoc();
+		}
+		catch (Exception $e) {
+			JLog::add('component/com_emundus/models/formbuilder | Cannot get simple element : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+		}
+
+		return $element;
+	}
 
     function deleteElement($elt) {
         $db = $this->getDbo();
@@ -4206,5 +4238,55 @@ class EmundusModelFormbuilder extends JModelList {
 		if (!is_array($document)) $document = array();
 
 		return $document;
+	}
+
+	public function getSqlDropdownOptions($table,$key,$value,$translate)
+	{
+		$datas = [];
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$tables_allowed = [];
+		$elements_params = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/form-builder-elements-params.json');
+		if(!empty($elements_params)) {
+			$elements_params = json_decode($elements_params, true);
+
+			foreach ($elements_params as $params) {
+				foreach ($params as $param) {
+					if($param['type'] == 'sqldropdown') {
+						$tables_allowed[] = $param['table'];
+					}
+				}
+			}
+		}
+
+		if(!in_array($table, $tables_allowed)) {
+			return $datas;
+		}
+
+		try {
+			if($translate) {
+				$query->select('sef')
+					->from($db->quoteName('#__languages'))
+					->where($db->quoteName('lang_code') . ' = ' . $db->quote(JFactory::getLanguage()->getTag()));
+				$db->setQuery($query);
+				$language = $db->loadResult();
+
+				$query->clear()
+					->select($key . ' as value, ' . $value . '_' . $language . ' as label');
+			} else {
+				$query->select($key . ' as value, ' . $value . ' as label');
+			}
+			
+			$query->from($db->quoteName($table));
+			$db->setQuery($query);
+			$datas = $db->loadAssocList();
+		}
+		catch (Exception $e) {
+			JLog::add('component/com_emundus/models/formbuilder | Error at getting sql dropdown options : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+		}
+
+		return $datas;
 	}
 }

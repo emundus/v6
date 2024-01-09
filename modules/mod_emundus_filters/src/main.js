@@ -12,12 +12,12 @@ if (modFilters) {
     const app = createApp(App, {
         moduleId: parseInt(modFilters.getAttribute('data-module-id')),
         defaultAppliedFilters: appliedFilters,
-        filters: filters,
+        defaultFilters: filters,
         defaultQuickSearchFilters: JSON.parse(atob(modFilters.getAttribute('data-quick-search-filters'))),
         countFilterValues: modFilters.getAttribute('data-count-filter-values') === '1',
     }).use(Vuex).mixin(translate);
 
     app.config.productionTip = true;
-    app.config.devtools = false;
+    app.config.devtools = true;
     app.mount('#em-filters-vue');
 }

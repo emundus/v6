@@ -392,9 +392,12 @@ var FbFileUpload = {
             showCancelButton: true,
             reverseButtons: true,
             confirmButtonText: Joomla.JText._('PLG_ELEMENT_FIELD_CONFIRM'),
-            confirmButtonClass: 'btn btn-primary save-btn sauvegarder button save_continue',
             cancelButtonText: Joomla.JText._('PLG_ELEMENT_FIELD_CANCEL'),
-            cancelButtonClass: 'btn goback-btn button',
+            customClass: {
+                title: 'em-swal-title',
+                cancelButton: 'em-swal-cancel-button',
+                confirmButton: 'em-swal-confirm-button',
+            }
         }).then(answser => {
             if (answser.value) {
                 var div = document.querySelector('div#'+elementId+'_attachment');

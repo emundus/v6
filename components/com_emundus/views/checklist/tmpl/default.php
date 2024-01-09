@@ -68,7 +68,6 @@ function return_bytes($val) {
 	return $val;
 }
 
-
 if (!empty($this->custom_title)) :?>
     <h1 class="em-checklist-title"><?= $this->custom_title; ?></h1>
 <?php endif; ?>
@@ -104,6 +103,7 @@ if (!empty($this->custom_title)) :?>
 <?php if (count($this->attachments) > 0) :?>
 
     <div id="attachment_list" class="em-attachmentList em-repeat-card p-6">
+        <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
         <h2 class="after-em-border after:bg-red-800 mb-4"><?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_TITLE') ?></h2>
         <div class="alert alert-info flex items-center gap-1 mt-1">
             <span class="material-icons">info</span>
@@ -175,7 +175,7 @@ if (!empty($this->custom_title)) :?>
                     } else {
 	                    $div .= JText::_('COM_EMUNDUS_ONBOARD_TYPE_FILE') . ' ' . $nb;
                     }
-                    $div .= ' | <span style="font-size: 13px">' . JString::ucfirst(JHTML::Date(strtotime($item->timedate), "DATE_FORMAT_LC2")) . '</span>';
+                    $div .= ' | <span style="font-size: 13px">' . JString::ucfirst(EmundusHelperDate::displayDate($item->timedate, 'DATE_FORMAT_LC2', 0)) . '</span>';
                     if ($this->show_shortdesc_input) {
 	                    $div .= ' | ';
                         $div .= empty($item->description)?JText::_('COM_EMUNDUS_ATTACHMENTS_NO_DESC'):$item->description;
@@ -261,8 +261,8 @@ if (!empty($this->custom_title)) :?>
                         }
             
                         recorderInserted.onUploadDone = function(recorderId, streamName, streamDuration, audioCodec, videoCodec, fileType, audioOnly, location){
-                            //var args = Array.prototype.slice.call(arguments);
-                            //__log("onUploadDone("+args.join(\', \')+")");
+                            document.querySelector(".em-page-loader").style.display = "block";    
+                            __log("onUploadDone("+args.join(\', \')+")");
                             recorderInserted.save();
                         }
             
@@ -318,6 +318,7 @@ if (!empty($this->custom_title)) :?>
             
                         recorderInserted.onDesktopVideoUploadStarted = function(recorderId, filename, filetype, audioOnly){
                             //var args = Array.prototype.slice.call(arguments);
+                            document.querySelector(".em-page-loader").style.display = "block";
                             __log("'.JText::_('VIDEO_INSTR_UPLOADING').'");
                         }
             
@@ -338,6 +339,7 @@ if (!empty($this->custom_title)) :?>
                         //MOBILE EVENTS API
                         recorderInserted.onVideoUploadStarted = function(recorderId, filename, filetype, audioOnly){
                             //var args = Array.prototype.slice.call(arguments);
+                            document.querySelector(".em-page-loader").style.display = "block";
                             __log("'.JText::_('VIDEO_INSTR_RECORD_SAVED').'");
                         }
     
@@ -810,7 +812,7 @@ $(document).ready(() => {
 
 //ADDPIPE check if video is uploaded. If yes, reaload page
 function is_file_uploaded(fnum, aid, applicant_id) {
-    setInterval(function(){
+    let is_file_uploaded_timer = setInterval(function(){
 
         $.ajax({
             type: 'POST',
@@ -822,14 +824,43 @@ function is_file_uploaded(fnum, aid, applicant_id) {
                 applicant_id: applicant_id
             }),
             success: function(result) {
-                //console.log(result.status + " :: " + result.fnum + " :: " + result.aid + " :: " + result.applicant_id + " :: " + result.user_id + " :: " + result.user_fnum + " :: " + result.query);
+                //console.log(result.status + " :: " + result.fnum + " :: " + result.aid + " :: " + result.applicant_id + " :: " + result.user_id + " :: " + result.user_fnum + " :: " + result.query)
                 if (result.status) {
-                    clearInterval();
+                    document.querySelector(".em-page-loader").style.display = "none";
+
+                    clearInterval(is_file_uploaded_timer);
+
+                    Swal.fire({
+                        position: 'top',
+                        type: 'success',
+                        title: "<?= JText::_('COM_EMUNDUS_UPLOAD_SUCCESS'); ?>",
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        customClass: {
+                            title: 'em-swal-title'
+                        },
+                        timer: 3000
+                    }).then(() => {
                     window.location.reload(true);
+                    });
                 }
             },
             error: function(jqXHR) {
                 console.log("ERROR: "+jqXHR.responseText);
+
+                Swal.fire({
+                    position: 'top',
+                    type: 'error',
+                    title: "<?= JText::_('COM_EMUNDUS_ERROR_OCCURED'); ?>",
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    customClass: {
+                        title: 'em-swal-title'
+                    },
+                    timer: 3000
+                }).then(() => {
+                    window.location.reload(true);
+                });
             }
         });
     }, 500);

@@ -11,13 +11,13 @@ namespace Aws;
  * cache, if the number of cached items exceeds the allowed number, the first
  * N number of items are removed from the array.
  */
-class LruArrayCache implements CacheInterface, \Countable
+class LruArrayCache implements CacheInterface
 {
     /** @var int */
     private $maxItems;
 
     /** @var array */
-    private $items = array();
+    private $items;
 
     /**
      * @param int $maxItems Maximum number of allowed cache items.
@@ -70,10 +70,5 @@ class LruArrayCache implements CacheInterface, \Countable
     public function remove($key)
     {
         unset($this->items[$key]);
-    }
-
-    public function count()
-    {
-        return count($this->items);
     }
 }

@@ -15,7 +15,7 @@
         font-family: var(--em-default-font);
         font-style: normal;
         font-weight: 500;
-        font-size: var(--em-coordinator-h4);
+        font-size: var(--em-applicant-h4);
         line-height: 23px;
         color: var(--em-default-title-color-1);
     }
@@ -24,7 +24,7 @@
         font-family: var(--em-default-font);
         font-style: normal;
         font-weight: 500;
-        font-size: var(--em-coordinator-h5);
+        font-size: var(--em-applicant-h5);
         line-height: 20px;
         color: var(--em-default-title-color-1);
     }
@@ -33,7 +33,7 @@
         font-family: var(--em-default-font);
         font-style: normal;
         font-weight: 500;
-        font-size: var(--em-coordinator-h6);
+        font-size: var(--em-applicant-h6);
         line-height: 16px;
         color: var(--em-default-title-color-1);
     }
@@ -136,7 +136,6 @@
 
     ul {
         list-style: initial;
-        padding-left: 20px;
     }
 
     legend {
@@ -347,6 +346,10 @@
         border: 1px solid var(--em-secondary-color) !important;
         border-radius: var(--em-coordinator-br) !important;
         color: var(--neutral-0) !important;
+        text-transform: inherit;
+        font-size: 16px;
+        padding: 8px 12px;
+        font-weight: 400;
     }
 
     button.swal2-cancel.goback-btn:hover,
@@ -363,6 +366,12 @@
     }
 
     /* ALERTES */
+    .files-board #system-message .alert {
+        width: calc(100% - 90px);
+        float: right;
+        margin: 8px 7px;
+    }
+
     #system-message .alert, .fabrikMainError {
         @apply flex;
         @apply p-5;
@@ -424,6 +433,10 @@
         border: solid 1px var(--red-500);
     }
 
+    .alert.alert-danger ul, .alert.alert-error ul {
+        padding-left: 20px;
+    }
+
     /* ALERT */
     .messenger__notifications_counter {
         background: var(--red-500);
@@ -463,11 +476,14 @@
     }
 
     .alert a {
-        font-size: 20px !important;
+        text-decoration: underline;
+        font-weight: normal;
     }
 
     .alert a:hover {
-        font-size: 20px;
+        font-weight: normal;
+        text-decoration: underline;
+        color: var(--blue-500);
     }
 
     .has-error .help-block,
@@ -811,6 +827,7 @@
     .label-grey-1 {
         background-color: var(--em-grey-1);
         text-shadow: none;
+        color: var(--neutral-900);
     }
 
     .label-text-grey-1 {

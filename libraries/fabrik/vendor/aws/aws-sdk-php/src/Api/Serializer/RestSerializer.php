@@ -9,8 +9,6 @@ use Aws\Api\StructureShape;
 use Aws\Api\TimestampShape;
 use Aws\CommandInterface;
 use GuzzleHttp\Psr7;
-use GuzzleHttp\Psr7\Uri;
-use GuzzleHttp\Psr7\UriResolver;
 use Psr\Http\Message\RequestInterface;
 
 /**
@@ -32,7 +30,7 @@ abstract class RestSerializer
     public function __construct(Service $api, $endpoint)
     {
         $this->api = $api;
-        $this->endpoint = Psr7\Utils::uriFor($endpoint);
+        $this->endpoint = Psr7\uri_for($endpoint);
     }
 
     /**
@@ -114,7 +112,7 @@ abstract class RestSerializer
         ) {
             // Streaming bodies or payloads that are strings are
             // always just a stream of data.
-            $opts['body'] = Psr7\Utils::streamFor($args[$name]);
+            $opts['body'] = Psr7\stream_for($args[$name]);
             return;
         }
 
@@ -123,20 +121,8 @@ abstract class RestSerializer
 
     private function applyHeader($name, Shape $member, $value, array &$opts)
     {
-        if ($member->getType() === 'timestamp') {
-            $timestampFormat = !empty($member['timestampFormat'])
-                ? $member['timestampFormat']
-                : 'rfc822';
-            $value = TimestampShape::format($value, $timestampFormat);
-        }
-        if ($member['jsonvalue']) {
-            $value = json_encode($value);
-            if (empty($value) && JSON_ERROR_NONE !== json_last_error()) {
-                throw new \InvalidArgumentException('Unable to encode the provided value'
-                    . ' with \'json_encode\'. ' . json_last_error_msg());
-            }
-
-            $value = base64_encode($value);
+        if ($member->getType() == 'timestamp') {
+            $value = TimestampShape::format($value, 'rfc822');
         }
 
         $opts['headers'][$member['locationName'] ?: $name] = $value;
@@ -160,16 +146,10 @@ abstract class RestSerializer
                 ? $opts['query'] + $value
                 : $value;
         } elseif ($value !== null) {
-            $type = $member->getType();
-            if ($type === 'boolean') {
+            if ($member->getType() === 'boolean') {
                 $value = $value ? 'true' : 'false';
-            } elseif ($type === 'timestamp') {
-                $timestampFormat = !empty($member['timestampFormat'])
-                    ? $member['timestampFormat']
-                    : 'iso8601';
-                $value = TimestampShape::format($value, $timestampFormat);
             }
-
+            
             $opts['query'][$member['locationName'] ?: $name] = $value;
         }
     }
@@ -195,31 +175,23 @@ abstract class RestSerializer
                 $k = $isGreedy ? substr($matches[1], 0, -1) : $matches[1];
                 if (!isset($varspecs[$k])) {
                     return '';
-                }
-
-                if ($isGreedy) {
+                } elseif ($isGreedy) {
                     return str_replace('%2F', '/', rawurlencode($varspecs[$k]));
+                } else {
+                    return rawurlencode($varspecs[$k]);
                 }
-
-                return rawurlencode($varspecs[$k]);
             },
             $operation['http']['requestUri']
         );
 
         // Add the query string variables or appending to one if needed.
         if (!empty($opts['query'])) {
-            $append = Psr7\Query::build($opts['query']);
+            $append = Psr7\build_query($opts['query']);
             $relative .= strpos($relative, '?') ? "&{$append}" : "?$append";
-        }
-
-        // If endpoint has path, remove leading '/' to preserve URI resolution.
-        $path = $this->endpoint->getPath();
-        if ($path && $relative[0] === '/') {
-            $relative = substr($relative, 1);
         }
 
         // Expand path place holders using Amazon's slightly different URI
         // template syntax.
-        return UriResolver::resolve($this->endpoint, new Uri($relative));
+        return Psr7\Uri::resolve($this->endpoint, $relative);
     }
 }

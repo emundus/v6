@@ -94,36 +94,35 @@ class EmundusModelApplication extends JModelList
         return $details;
     }
 
-    public function getUserCampaigns($id, $cid = null)
+    public function getUserCampaigns($id, $cid = null, $published_only = true)
     {
+		$user_campaigns = [];
+
         $query = $this->_db->getQuery(true);
-        if ($cid === null) {
-            $query->select('esc.*,ecc.date_submitted,ecc.submitted,ecc.id as campaign_candidature_id,efg.result_sent,efg.date_result_sent,efg.final_grade,ecc.fnum,ess.class,ess.step,ess.value as step_value')
-                ->from($this->_db->quoteName('#__emundus_users','eu'))
-                ->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature','ecc').' ON '.$this->_db->quoteName('ecc.applicant_id').' = '.$this->_db->quoteName('eu.user_id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$this->_db->quoteName('ecc.campaign_id').' = '.$this->_db->quoteName('esc.id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_final_grade','efg').' ON '.$this->_db->quoteName('efg.campaign_id').' = '.$this->_db->quoteName('esc.id').' AND '.$this->_db->quoteName('efg.student_id').' = '.$this->_db->quoteName('eu.user_id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_status','ess').' ON '.$this->_db->quoteName('ess.step').' = '.$this->_db->quoteName('ecc.status'))
-                ->where($this->_db->quoteName('eu.user_id').' = '.$this->_db->quote($id))
-                ->andWhere($this->_db->quoteName('esc.published').' = '.$this->_db->quote(1))
-                ->andWhere($this->_db->quoteName('ecc.published').' = '.$this->_db->quote(1));
+	    $query->select('esc.*,ecc.date_submitted,ecc.submitted,ecc.id as campaign_candidature_id,efg.result_sent,efg.date_result_sent,efg.final_grade,ecc.fnum,ess.class,ess.step,ess.value as step_value')
+		    ->from($this->_db->quoteName('#__emundus_users','eu'))
+		    ->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature','ecc').' ON '.$this->_db->quoteName('ecc.applicant_id').' = '.$this->_db->quoteName('eu.user_id'))
+		    ->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$this->_db->quoteName('ecc.campaign_id').' = '.$this->_db->quoteName('esc.id'))
+		    ->leftJoin($this->_db->quoteName('#__emundus_final_grade','efg').' ON '.$this->_db->quoteName('efg.campaign_id').' = '.$this->_db->quoteName('esc.id').' AND '.$this->_db->quoteName('efg.student_id').' = '.$this->_db->quoteName('eu.user_id'))
+		    ->leftJoin($this->_db->quoteName('#__emundus_setup_status','ess').' ON '.$this->_db->quoteName('ess.step').' = '.$this->_db->quoteName('ecc.status'))
+		    ->where($this->_db->quoteName('eu.user_id').' = '.$this->_db->quote($id))
+		    ->andWhere($this->_db->quoteName('ecc.published').' = '.$this->_db->quote(1));
+
+		if ($cid === null) {
+			if ($published_only) {
+				$query->andWhere($this->_db->quoteName('esc.published') . ' = ' . $this->_db->quote(1));
+	        }
 
             $this->_db->setQuery($query);
-            return $this->_db->loadObjectList();
+	        $user_campaigns = $this->_db->loadObjectList();
         } else {
-            $query->select('esc.*,ecc.date_submitted,ecc.submitted,ecc.id as campaign_candidature_id,efg.result_sent,efg.date_result_sent,efg.final_grade,ecc.fnum,ess.class,ess.step,ess.value as step_value')
-                ->from($this->_db->quoteName('#__emundus_users','eu'))
-                ->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature','ecc').' ON '.$this->_db->quoteName('ecc.applicant_id').' = '.$this->_db->quoteName('eu.user_id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$this->_db->quoteName('ecc.campaign_id').' = '.$this->_db->quoteName('esc.id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_final_grade','efg').' ON '.$this->_db->quoteName('efg.campaign_id').' = '.$this->_db->quoteName('esc.id').' AND '.$this->_db->quoteName('efg.student_id').' = '.$this->_db->quoteName('eu.user_id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_status','ess').' ON '.$this->_db->quoteName('ess.step').' = '.$this->_db->quoteName('ecc.status'))
-                ->where($this->_db->quoteName('eu.user_id').' = '.$this->_db->quote($id))
-                ->andWhere($this->_db->quoteName('ecc.published').' = '.$this->_db->quote(1))
-                ->andWhere($this->_db->quoteName('esc.id').' = '.$this->_db->quote($cid));
+			$query->andWhere($this->_db->quoteName('esc.id').' = '.$this->_db->quote($cid));
 
             $this->_db->setQuery($query);
-            return $this->_db->loadObject();
+	        $user_campaigns =  $this->_db->loadObject();
         }
+
+		return $user_campaigns;
     }
 
     public function getCampaignByFnum($fnum)
@@ -470,8 +469,10 @@ class EmundusModelApplication extends JModelList
         $logsParams = array('created' => [$logsStd]);
         EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($row['fnum'], -7), $row['fnum'], 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
+	    $now = EmundusHelperDate::getNow();
+
         $query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body, fnum)
-                VALUES('.$row['applicant_id'].','.$row['user_id'].','.$this->_db->Quote($row['reason']).',"'.date("Y.m.d H:i:s").'",'.$this->_db->Quote($row['comment_body']).','.$this->_db->Quote(@$row['fnum']).')';
+                VALUES('.$row['applicant_id'].','.$row['user_id'].','.$this->_db->Quote($row['reason']).',"'.$now.'",'.$this->_db->Quote($row['comment_body']).','.$this->_db->Quote(@$row['fnum']).')';
         $this->_db->setQuery($query);
 
         try {
@@ -2621,11 +2622,11 @@ class EmundusModelApplication extends JModelList
 
                                                 if ($show_empty_fields == 1 || !empty($elt)) {
                                                     if ($elements[$j]->plugin == 'display') {
-                                                        $forms .= '<tr><td colspan="2" style="background-color: #F3F3F3"><span style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">' . $elt . '</span></td></tr><br/>';
+                                                        $forms .= '<tr><td colspan="2" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">' . $elt . '</span></td></tr><br/>';
                                                     } elseif ($elements[$j]->plugin == 'textarea') {
-                                                        $forms .= '<tr><td colspan="2" style="background-color: #F3F3F3"><span style="color: #000000;">' .  (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '')  . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">    ' . JText::_($elt) . '</span></td></tr>';
+                                                        $forms .= '<tr><td colspan="2" style="background-color: var(--neutral-200);"><span style="color: #000000;">' .  (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '')  . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">    ' . JText::_($elt) . '</span></td></tr>';
                                                     } else {
-                                                        $forms .= '<tr><td colspan="1" style="background-color: #F3F3F3"><span style="color: #000000;">' . (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td> <td> ' . (($elements[$j]->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
+                                                        $forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td> <td> ' . (($elements[$j]->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
                                                     }
                                                 }
                                             }
@@ -2825,9 +2826,9 @@ class EmundusModelApplication extends JModelList
                                             if ($element->plugin == 'display') {
                                                 $forms .= '<tr><td colspan="2"><span style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">' . $elt . '</span></td></tr><br/>';
                                             } elseif ($element->plugin == 'textarea') {
-                                                $forms .= '<tr><td colspan="2" style="background-color: #F3F3F3"><span style="color: #000000;">' .  (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '')  . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">  ' . JText::_($elt) . '</span></td></tr>';
+                                                $forms .= '<tr><td colspan="2" style="background-color: var(--neutral-200);"><span style="color: #000000;">' .  (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '')  . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">  ' . JText::_($elt) . '</span></td></tr>';
                                             } else {
-                                                $forms .= '<tr><td colspan="1" style="background-color: #F3F3F3"><span style="color: #000000;">' . (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td> <td> ' . (($element->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
+                                                $forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td> <td> ' . (($element->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
                                             }
                                         }
                                     } elseif (empty($element->content) && $show_empty_fields == 1) {
@@ -3306,7 +3307,10 @@ class EmundusModelApplication extends JModelList
 
     public function getAccessFnum($fnum)
     {
-        $query = "SELECT jecc.fnum, jesg.label as gname, jea.*, jesa.label as aname FROM #__emundus_campaign_candidature as jecc
+        $access = [];
+
+        if (!empty($fnum)) {
+            $query = "SELECT jecc.fnum, jesg.label as gname, jea.*, jesa.label as aname FROM #__emundus_campaign_candidature as jecc
                     LEFT JOIN #__emundus_setup_campaigns as jesc on jesc.id = jecc.campaign_id
                     LEFT JOIN #__emundus_setup_programmes as jesp on jesp.code = jesc.training
                     LEFT JOIN #__emundus_setup_groups_repeat_course as jesgrc on jesgrc.course = jesp.code
@@ -3315,24 +3319,24 @@ class EmundusModelApplication extends JModelList
                     LEFT JOIN #__emundus_setup_actions as jesa on jesa.id = jea.action_id
                     WHERE jecc.fnum like '".$fnum."' and jesa.status = 1 order by jecc.fnum, jea.group_id, jea.action_id";
 
-        try
-        {
-            $db = $this->getDbo();
-            $db->setQuery($query);
-            $res = $db->loadAssocList();
-            $access = array();
-            foreach($res as $r)
+            try
             {
-                $access['groups'][$r['group_id']]['gname'] = $r['gname'];
-                $access['groups'][$r['group_id']]['isAssoc'] = false;
-                $access['groups'][$r['group_id']]['isACL'] = true;
-                $access['groups'][$r['group_id']]['actions'][$r['action_id']]['aname'] = $r['aname'];
-                $access['groups'][$r['group_id']]['actions'][$r['action_id']]['c'] = $r['c'];
-                $access['groups'][$r['group_id']]['actions'][$r['action_id']]['r'] = $r['r'];
-                $access['groups'][$r['group_id']]['actions'][$r['action_id']]['u'] = $r['u'];
-                $access['groups'][$r['group_id']]['actions'][$r['action_id']]['d'] = $r['d'];
-            }
-            $query = "SELECT jeacl.group_id, jeacl.action_id as acl_action_id, jeacl.c as acl_c, jeacl.r as acl_r, jeacl.u as acl_u, jeacl.d as acl_d,
+                $db = $this->getDbo();
+                $db->setQuery($query);
+                $res = $db->loadAssocList();
+
+                foreach($res as $r)
+                {
+                    $access['groups'][$r['group_id']]['gname'] = $r['gname'];
+                    $access['groups'][$r['group_id']]['isAssoc'] = false;
+                    $access['groups'][$r['group_id']]['isACL'] = true;
+                    $access['groups'][$r['group_id']]['actions'][$r['action_id']]['aname'] = $r['aname'];
+                    $access['groups'][$r['group_id']]['actions'][$r['action_id']]['c'] = $r['c'];
+                    $access['groups'][$r['group_id']]['actions'][$r['action_id']]['r'] = $r['r'];
+                    $access['groups'][$r['group_id']]['actions'][$r['action_id']]['u'] = $r['u'];
+                    $access['groups'][$r['group_id']]['actions'][$r['action_id']]['d'] = $r['d'];
+                }
+                $query = "SELECT jeacl.group_id, jeacl.action_id as acl_action_id, jeacl.c as acl_c, jeacl.r as acl_r, jeacl.u as acl_u, jeacl.d as acl_d,
                         jega.fnum, jega.action_id, jega.c, jega.r, jega.u, jega.d, jesa.label as aname,
                         jesg.label as gname
                         FROM jos_emundus_acl as jeacl
@@ -3341,67 +3345,64 @@ class EmundusModelApplication extends JModelList
                         LEFT JOIN jos_emundus_group_assoc as jega on jega.group_id=jesg.id
                         WHERE  jega.fnum like ".$db->quote($fnum)." and jesa.status = 1
                         ORDER BY jega.fnum, jega.group_id, jega.action_id";
-            $db->setQuery($query);
-            $res = $db->loadAssocList();
-            foreach($res as $r)
-            {
-                $ovverideAction = ($r['acl_action_id'] == $r['action_id']) ? true : false;
-                if(isset($access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]))
+                $db->setQuery($query);
+                $res = $db->loadAssocList();
+                foreach($res as $r)
                 {
-                    $access['groups'][$r['group_id']]['isAssoc'] = true;
-                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['c'] += ($ovverideAction) ? (($r['acl_c']==-2 || $r['c']==-2) ? -2 : max($r['acl_c'], $r['c'])) : $r['acl_c'];
-                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['r'] += ($ovverideAction) ? (($r['acl_r']==-2 || $r['r']==-2) ? -2 : max($r['acl_r'], $r['r'])) : $r['acl_r'];
-                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['u'] += ($ovverideAction) ? (($r['acl_u']==-2 || $r['u']==-2) ? -2 : max($r['acl_u'], $r['u'])) : $r['acl_u'];
-                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['d'] += ($ovverideAction) ? (($r['acl_d']==-2 || $r['d']==-2) ? -2 : max($r['acl_d'], $r['d'])) : $r['acl_d'];
+                    $overrideAction = ($r['acl_action_id'] == $r['action_id']) ? true : false;
+                    if(isset($access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]))
+                    {
+                        $access['groups'][$r['group_id']]['isAssoc'] = true;
+                        $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['c'] += ($overrideAction) ? (($r['acl_c']==-2 || $r['c']==-2) ? -2 : max($r['acl_c'], $r['c'])) : $r['acl_c'];
+                        $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['r'] += ($overrideAction) ? (($r['acl_r']==-2 || $r['r']==-2) ? -2 : max($r['acl_r'], $r['r'])) : $r['acl_r'];
+                        $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['u'] += ($overrideAction) ? (($r['acl_u']==-2 || $r['u']==-2) ? -2 : max($r['acl_u'], $r['u'])) : $r['acl_u'];
+                        $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['d'] += ($overrideAction) ? (($r['acl_d']==-2 || $r['d']==-2) ? -2 : max($r['acl_d'], $r['d'])) : $r['acl_d'];
+                    }
+                    else
+                    {
+                        $access['groups'][$r['group_id']]['gname'] = $r['gname'];
+                        $access['groups'][$r['group_id']]['isAssoc'] = true;
+                        $access['groups'][$r['group_id']]['isACL'] = false;
+                        $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['aname'] = $r['aname'];
+                        $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['c'] = ($overrideAction) ? (($r['acl_c']==-2 || $r['c']==-2) ? -2 : max($r['acl_c'], $r['c'])) : $r['acl_c'];
+                        $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['r'] = ($overrideAction) ? (($r['acl_r']==-2 || $r['r']==-2) ? -2 : max($r['acl_r'], $r['r'])) : $r['acl_r'];
+                        $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['u'] = ($overrideAction) ? (($r['acl_u']==-2 || $r['u']==-2) ? -2 : max($r['acl_u'], $r['u'])) : $r['acl_u'];
+                        $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['d'] = ($overrideAction) ? (($r['acl_d']==-2 || $r['d']==-2) ? -2 : max($r['acl_d'], $r['d'])) : $r['acl_d'];
+                    }
                 }
-                else
-                {
-                    $access['groups'][$r['group_id']]['gname'] = $r['gname'];
-                    $access['groups'][$r['group_id']]['isAssoc'] = true;
-                    $access['groups'][$r['group_id']]['isACL'] = false;
-                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['aname'] = $r['aname'];
-                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['c'] = ($ovverideAction) ? (($r['acl_c']==-2 || $r['c']==-2) ? -2 : max($r['acl_c'], $r['c'])) : $r['acl_c'];
-                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['r'] = ($ovverideAction) ? (($r['acl_r']==-2 || $r['r']==-2) ? -2 : max($r['acl_r'], $r['r'])) : $r['acl_r'];
-                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['u'] = ($ovverideAction) ? (($r['acl_u']==-2 || $r['u']==-2) ? -2 : max($r['acl_u'], $r['u'])) : $r['acl_u'];
-                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['d'] = ($ovverideAction) ? (($r['acl_d']==-2 || $r['d']==-2) ? -2 : max($r['acl_d'], $r['d'])) : $r['acl_d'];
-                }
-            }
 
-            $query = "SELECT jeua.*, ju.name as uname, jesa.label as aname
+                $query = "SELECT jeua.*, ju.name as uname, jesa.label as aname
                         FROM #__emundus_users_assoc as jeua
                         LEFT JOIN #__users as ju on ju.id = jeua.user_id
                         LEFT JOIN   #__emundus_setup_actions as jesa on jesa.id = jeua.action_id
                         where  jeua.fnum like '".$fnum."' and jesa.status = 1
                         ORDER BY jeua.fnum, jeua.user_id, jeua.action_id";
-            $db->setQuery($query);
-            $res = $db->loadAssocList();
-            foreach($res as $r)
-            {
-                if(isset($access['groups'][$r['user_id']]['actions'][$r['action_id']]))
+                $db->setQuery($query);
+                $res = $db->loadAssocList();
+                foreach($res as $r)
                 {
-                    $access['users'][$r['user_id']]['actions'][$r['action_id']]['c'] += $r['c'];
-                    $access['users'][$r['user_id']]['actions'][$r['action_id']]['r'] += $r['r'];
-                    $access['users'][$r['user_id']]['actions'][$r['action_id']]['u'] += $r['u'];
-                    $access['users'][$r['user_id']]['actions'][$r['action_id']]['d'] += $r['d'];
+                    if(isset($access['groups'][$r['user_id']]['actions'][$r['action_id']])) {
+                        $access['users'][$r['user_id']]['actions'][$r['action_id']]['c'] += $r['c'];
+                        $access['users'][$r['user_id']]['actions'][$r['action_id']]['r'] += $r['r'];
+                        $access['users'][$r['user_id']]['actions'][$r['action_id']]['u'] += $r['u'];
+                        $access['users'][$r['user_id']]['actions'][$r['action_id']]['d'] += $r['d'];
+                    } else {
+                        $access['users'][$r['user_id']]['uname'] = $r['uname'];
+                        $access['users'][$r['user_id']]['actions'][$r['action_id']]['aname'] = $r['aname'];
+                        $access['users'][$r['user_id']]['actions'][$r['action_id']]['c'] = $r['c'];
+                        $access['users'][$r['user_id']]['actions'][$r['action_id']]['r'] = $r['r'];
+                        $access['users'][$r['user_id']]['actions'][$r['action_id']]['u'] = $r['u'];
+                        $access['users'][$r['user_id']]['actions'][$r['action_id']]['d'] = $r['d'];
+                    }
                 }
-                else
-                {
-                    $access['users'][$r['user_id']]['uname'] = $r['uname'];
-                    $access['users'][$r['user_id']]['actions'][$r['action_id']]['aname'] = $r['aname'];
-                    $access['users'][$r['user_id']]['actions'][$r['action_id']]['c'] = $r['c'];
-                    $access['users'][$r['user_id']]['actions'][$r['action_id']]['r'] = $r['r'];
-                    $access['users'][$r['user_id']]['actions'][$r['action_id']]['u'] = $r['u'];
-                    $access['users'][$r['user_id']]['actions'][$r['action_id']]['d'] = $r['d'];
-                }
-
             }
-            return $access;
+            catch(Exception $e)
+            {
+                error_log($e->getMessage(), 0);
+            }   
         }
-        catch(Exception $e)
-        {
-            error_log($e->getMessage(), 0);
-            return false;
-        }
+
+        return $access;
     }
 
     public function getActions()
@@ -4056,7 +4057,7 @@ class EmundusModelApplication extends JModelList
      * @param $pid Int the profile_id to get list of forms
      * @return bool
      */
-    public function copyApplication($fnum_from, $fnum_to, $pid = null, $copy_attachment = 0, $campaign_id = null, $copy_tag = 0, $move_hikashop_command = 0, $delete_from_file = 0, $params = array()) {
+    public function copyApplication($fnum_from, $fnum_to, $pid = null, $copy_attachment = 0, $campaign_id = null, $copy_tag = 0, $move_hikashop_command = 0, $delete_from_file = 0, $params = array(), $copyUsersAssoc = 0, $copyGroupsAssoc = 0) {
         $db = JFactory::getDbo();
         $pids = [];
 
@@ -4096,7 +4097,7 @@ class EmundusModelApplication extends JModelList
                 $db->setQuery($query);
                 $stored = $db->loadAssoc();
 
-                if (count($stored) > 0) {
+                if (!empty($stored)) {
                     // update form data
                     $parent_id = $stored['id'];
                     unset($stored['id']);
@@ -4266,6 +4267,12 @@ class EmundusModelApplication extends JModelList
                 $db->setQuery($query);
                 $db->execute();
             }
+            if($copyUsersAssoc){
+                $this->copyUsersAssoc($fnum_from,$fnum_to);
+            }
+            if($copyGroupsAssoc){
+                $this->copyGroupsAssoc($fnum_from,$fnum_to);
+            }
         } catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$q.' :: '.$query, JLog::ERROR, 'com_emundus');
@@ -4350,6 +4357,85 @@ class EmundusModelApplication extends JModelList
                         }
                     } catch (Exception $e) {
                         $error = JUri::getInstance().' :: USER ID : '.$row['user_id'].' -> '.$e->getMessage();
+                        JLog::add($error, JLog::ERROR, 'com_emundus');
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+        return true;
+    }
+
+    public function copyUsersAssoc($fnum_from, $fnum_to)
+    {
+        $query = $this->_db->getQuery(true);
+
+        try {
+			$query->select('eua.*')
+				->from($this->_db->quoteName('#__emundus_users_assoc', 'eua'))
+				->where($this->_db->quoteName('eua.fnum') . ' LIKE ' . $this->_db->quote($fnum_from));
+
+	        $this->_db->setQuery($query);
+            $users_assoc = $this->_db->loadAssocList();
+
+            if (count($users_assoc) > 0) {
+                // 2. copy DB définition and duplicate files in applicant directory
+                foreach ($users_assoc as $user) {
+                    $user['fnum'] = $fnum_to;
+                    unset($user['id']);
+
+                    try {
+						$query->clear()
+							->insert($this->_db->quoteName('#__emundus_users_assoc'))
+							->columns(array_keys($user))
+							->values(implode(", ", $this->_db->quote($user)));
+	                    $this->_db->setQuery($query);
+	                    $this->_db->execute();
+                    } catch (Exception $e) {
+                        $error = JUri::getInstance().' :: USER ID : '.$user['user_id'].' -> '.$e->getMessage();
+                        JLog::add($error, JLog::ERROR, 'com_emundus');
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+        return true;
+    }
+
+    public function copyGroupsAssoc($fnum_from, $fnum_to)
+    {
+	    $query = $this->_db->getQuery(true);
+
+        try {
+			$query->select('ega.*')
+				->from($this->_db->quoteName('#__emundus_group_assoc', 'ega'))
+				->where($this->_db->quoteName('ega.fnum') . ' LIKE ' . $this->_db->quote($fnum_from));
+	        $this->_db->setQuery($query);
+            $groups_assoc = $this->_db->loadAssocList();
+
+            if (count($groups_assoc) > 0) {
+                // 2. copy DB définition and duplicate files in applicant directory
+                foreach ($groups_assoc as $group) {
+                    $group['fnum'] = $fnum_to;
+                    unset($group['id']);
+
+                    try {
+						$query->clear()
+							->insert($this->_db->quoteName('#__emundus_group_assoc'))
+							->columns(array_keys($group))
+							->values(implode(", ", $this->_db->quote($group)));
+	                    $this->_db->setQuery($query);
+	                    $this->_db->execute();
+                    } catch (Exception $e) {
+                        $error = JUri::getInstance().' :: fnum : '.$group['user_id'].' :: group : '.$group['group_id'].' -> '.$e->getMessage();
                         JLog::add($error, JLog::ERROR, 'com_emundus');
                     }
                 }
@@ -4487,20 +4573,18 @@ class EmundusModelApplication extends JModelList
                 return $redirect;
             }
 
-            $query->select(['id','link'])
+            $query->select('CONCAT(link,"&Itemid=", id) as link')
                 ->from($db->quoteName('#__menu'))
                 ->where($db->quoteName('published').'=1 AND '.$db->quoteName('menutype').' LIKE '.$db->quote($user->menutype).' AND '.$db->quoteName('link').' <> "" AND '.$db->quoteName('link').' <> "#"')
                 ->order($db->quoteName('lft').' ASC');
 
             try {
                 $db->setQuery($query);
-                $res = $db->loadObject();
-                return $res->link.'&Itemid='.$res->id;
+	            return $db->loadResult();
             } catch (Exception $e) {
                 JLog::add('Error getting first page of application at model/application in query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
                 return $redirect;
             }
-
         }
     }
 
@@ -5260,8 +5344,18 @@ class EmundusModelApplication extends JModelList
                     break;
                 case 'checkbox':
                     $elm = array();
-                    $index = array_intersect(json_decode(@$value), $params->sub_options->sub_values);
-                    foreach ($index as $sub_value) {
+	                $index = $params->sub_options->sub_values;
+	                if (!empty($value)) {
+		                $value_as_array = json_decode($value, true);
+
+		                if (!empty($value_as_array)) {
+			                $index = array_intersect($value_as_array, $params->sub_options->sub_values);
+		                } else {
+			                $index = $params->sub_options->sub_values;
+		                }
+	                }
+
+					foreach ($index as $sub_value) {
                         $key = array_search($sub_value,$params->sub_options->sub_values);
                         $elm[] = ' - ' . JText::_($params->sub_options->sub_labels[$key]);
                     }

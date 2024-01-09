@@ -13,6 +13,7 @@ $layout = $params->get('layout', 'default');
 // Include the syndicate functions only once
 require_once dirname(__FILE__).'/helper.php';
 include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
+include_once(JPATH_BASE.'/components/com_emundus/models/users.php');
 
 $user = JFactory::getSession()->get('emundusUser');
 
@@ -22,6 +23,7 @@ $switch_profile_redirect = $params->get('switch_profile_redirect', 'index.php');
 
 $primary_color = $params->get('primary_color', 'ECF0F1');
 $secondary_color = $params->get('secondary_color', 'F89406');
+$display_svg  = $params->get('display_svg', 1);
 $icon = $params->get('icon', 'big circular user outline icon');
 $show_logout = $params->get('show_logout', '1');
 $show_update = $params->get('show_update', '1');
@@ -77,6 +79,11 @@ if ($show_registration == 0 || ($show_registration == 1 && $user === null && mod
 $m_profiles = new EmundusModelProfile;
 $app_prof = $m_profiles->getApplicantsProfilesArray();
 
+if(!empty($user->profile)) {
+	$user_profile = $m_profiles->getProfileById($user->profile);
+	$profile_label = in_array($user->profile, $app_prof) ?  JText::_('APPLICANT') : $user_profile['label'];
+}
+
 $user_prof = [];
 foreach ($user->emProfiles as $prof) {
     $user_prof[] = $prof->id;
@@ -108,6 +115,17 @@ $is_anonym_user = $user->anonym;
 $allow_anonym_files = $eMConfig->get('allow_anonym_files', false);
 if ($is_anonym_user && !$allow_anonym_files) {
     return;
+}
+
+$m_users = new EmundusModelUsers;
+$profile_details = new stdClass();
+if (!JFactory::getUser()->guest) {
+	if (!empty($user->profile)) {
+		$profile_details = $m_users->getProfileDetails($user->profile);
+	} else {
+		$profile_details->class = '';
+		$profile_details->published = '';
+	}
 }
 
 require JModuleHelper::getLayoutPath('mod_emundus_user_dropdown', $layout);

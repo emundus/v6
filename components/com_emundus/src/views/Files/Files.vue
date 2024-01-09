@@ -81,7 +81,9 @@
 							  :searchable="true"
 							  :allow-empty="true"
 							  width="250px"
-					    ></multiselect>
+					    >
+                <span slot="noResult">{{translate('COM_EMUNDUS_FILES_FILTER_NO_ELEMENTS_FOUND')}}</span>
+              </multiselect>
 					    <span class="material-icons-outlined cursor-pointer em-red-500-color ml-3" @click="removeFilter(filter)">close</span>
 				    </div>
 			    </div>
@@ -173,8 +175,8 @@
               v-else
               min-width="180"
               :prop="column.name"
-            sortable
-            :sort-method="(a, b) => sortBy(a, b, column.name)">
+              sortable
+              :sort-method="(a, b) => sortBy(a, b, column.name)">
             <template slot="header" slot-scope="scope" >
               <span :title="column.label" class="em-neutral-700-color">{{column.label}}</span>
             </template>
@@ -309,6 +311,7 @@ export default {
 
   },
   methods: {
+
     formatter(row, column) {
       if(typeof row == 'string'){
         return row.charAt(0).toUpperCase() + row.slice(1);

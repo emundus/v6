@@ -69,6 +69,14 @@ export default {
     },
 
     async createCampaign(form){
+        // label, start_date and end_date are required
+        if (!form.label || !form.start_date || !form.end_date) {
+            return {
+                status: false,
+                msg: 'Label, start date and end date are required'
+            };
+        }
+
         try {
             const formData = new FormData();
             formData.append('label', JSON.stringify(form.label));
@@ -101,6 +109,14 @@ export default {
     },
 
     async pinCampaign(cid){
+        // cid must be an integer
+        if (cid < 1) {
+            return {
+                status: false,
+                msg: 'Invalid campaign ID'
+            };
+        }
+
         try {
             const formData = new FormData();
             formData.append('cid', cid);
@@ -120,4 +136,4 @@ export default {
             };
         }
     }
-}
+};

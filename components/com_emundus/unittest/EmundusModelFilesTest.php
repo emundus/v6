@@ -132,6 +132,12 @@ class EmundusModelFilesTest extends TestCase{
         $tags = $this->m_files->getAllTags();
         $tagged = $this->m_files->tagFile([$fnum], [$tags[0]['id']], 62);
         $this->assertTrue($tagged, 'tagFile returns true if a file and a tag are given');
+
+	    $tagged = $this->m_files->tagFile([$fnum], [$tags[0]['id']], 62);
+	    $this->assertTrue($tagged, 'tagFile should returns true if tag is already associated to the file by the same user');
+
+	    $tagged = $this->m_files->tagFile([$fnum], [$tags[0]['id']], 95);
+	    $this->assertTrue($tagged, 'tagFile should returns true if tag is already associated to the file but not by the same user');
     }
 
     public function testUpdateState() {

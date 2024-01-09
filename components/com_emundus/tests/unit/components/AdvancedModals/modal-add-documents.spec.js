@@ -18,6 +18,7 @@ describe('ModalAddDocuments.vue', () => {
             currentDoc: 1,
             langue: 'fr-FR',
             manyLanguages: 0,
+            mandatory: '1',
         },
         localVue
     });

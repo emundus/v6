@@ -123,12 +123,34 @@ class PlgFabrik_ElementPanel extends PlgFabrik_Element
 		$layout = $this->getLayout('form');
 		$displayData = new stdClass;
 		$displayData->id = $this->getHTMLId($repeatCounter);
+		$displayData->type = $params->get('type', 0);
 		$displayData->accordion = $params->get('accordion', '');
 		$displayData->title = $params->get('title', '');
-		$displayData->icon = $params->get('panel_icon', '');
-		$displayData->backgroundColor = $params->get('panel_background', '');
-		$displayData->iconColor = $params->get('panel_icon_color', '');
 		$displayData->iconType = $params->get('panel_icon_type', '');
+
+		switch ($displayData->type) {
+			case 1:
+				$displayData->backgroundColor = '#ebeefa';
+				$displayData->iconColor = '#525b85';
+				$displayData->icon = 'info';
+				break;
+			case 2:
+				$displayData->backgroundColor = '#fff6de';
+				$displayData->iconColor = '#b38405';
+				$displayData->icon = 'warning';
+				break;
+			case 3:
+				$displayData->backgroundColor = '#fae9e9';
+				$displayData->iconColor = '#a60e15';
+				$displayData->icon = 'error';
+				break;
+			default:
+				$displayData->backgroundColor = $params->get('panel_background', '#ebeefa');
+				$displayData->iconColor = $params->get('panel_icon_color', '#525b85');
+				$displayData->icon = $params->get('panel_icon', 'info');
+		}
+
+
 		$displayData->value = $this->getValue($data, $repeatCounter);
 
 		return $layout->render($displayData);

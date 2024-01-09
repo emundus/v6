@@ -206,4 +206,62 @@ class EmundusModelEmailsTest extends TestCase
 		$new_string_expected = 'Une chaine avec plusieurs tags fabriks existants ' . $campaign_label . ' et un tag fabrik inexistant  puis ' . $campaign_label;
 		$this->assertEquals($new_string_expected, $new_string, 'La chaine utilisant plusieurs tags fabriks existants et un tag fabrik inexistant retourne le résultat attendu');
 	}
+
+	public function testgetMessagesToFromUser()
+	{
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$program = $this->h_sample->createSampleProgram();
+		$campaign_id = $this->h_sample->createSampleCampaign($program);
+		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+
+		$messages = $this->m_emails->get_messages_to_from_user($user_id);
+		$this->assertEmpty($messages, 'La récupération des emails a échoué car aucun logs n\'a été créé sur cet utilisateur');
+
+		$log = [
+			'user_id_from'  => $user_id,
+			'user_id_to'    => $user_id,
+			'subject'       => 'Envoi de message',
+			'message'       => 'Corps du message',
+			'type'          => 1,
+			'email_id'      => 1,
+			'email_cc' => '',
+		];
+		$this->m_emails->logEmail($log,$fnum);
+
+		$messages = $this->m_emails->get_messages_to_from_user($user_id);
+		$this->assertNotEmpty($messages, 'La récupération des emails a réussi après avoir loggé l\'envoi d\'un email');
+		$this->assertObjectHasAttribute('fnum_to',$messages[0]);
+	}
+
+    public function testsendEmailNoFnum()
+    {
+        $email_address = '';
+        $email_id = 0;
+        $sent = $this->m_emails->sendEmailNoFnum($email_address, $email_id);
+        $this->assertFalse($sent, 'L\'envoi d\'un email sans adresse ou id a échoué');
+
+        $email_address = 'jeremy.legendre+test@emundus.fr';
+        $sent = $this->m_emails->sendEmailNoFnum($email_address, $email_id);
+        $this->assertFalse($sent, 'L\'envoi d\'un email sans id a échoué');
+
+        $data = [
+            'lbl' => 'Test d envoi de mail',
+            'subject' => 'Test d envoi de mail',
+            'name' => '',
+            'emailfrom' => '',
+            'message' => '<p>Test</p>',
+            'type' => 2,
+            'category' => '',
+            'published' => 1
+        ];
+
+        $email_id = $this->m_emails->createEmail($data);
+        $sent = $this->m_emails->sendEmailNoFnum('', $email_id);
+        $this->assertFalse($sent, 'L\'envoi d\'un email sans adresse a échoué');
+
+        /*
+         * $sent = $this->m_emails->sendEmailNoFnum($email_address, $email_id);
+         * todo: ajout d'un serveur smtp pour les tests
+         */
+    }
 }

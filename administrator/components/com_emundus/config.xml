@@ -367,6 +367,7 @@
 	<fieldset label="COM_EMUNDUS_EMAIL_REMINDER" name="email" description="COM_EMUNDUS_EMAIL_REMINDER_DESC">
 		<field name="nb_email_per_batch" type="text" size="3" default="50" label="NB_EMAIL_PER_BATCH" description="NB_EMAIL_PER_BATCH_DESC" />
 		<field name="time_sleep_per_batch" type="text" size="6" default="1000" label="TIME_SLEEP_PER_BATCH" description="TIME_SLEEP_PER_BATCH_DESC" />
+		<field name="email_custom_tag" type="text" default="" label="COM_EMUNDUS_EMAIL_CUSTOM_TAG" description="COM_EMUNDUS_EMAIL_CUSTOM_TAG_DESC" />
 		<field
 				name="spacer1"
 				type="spacer"
@@ -436,7 +437,14 @@
 			<option value="1">JYES</option>
 		</field>
 		<field name="allowed_non_applicant_profiles" type="text" default="" label="COM_EMUNDUS_ALLOWED_NON_APPLICANT_PROFILES" description="COM_EMUNDUS_ALLOWED_NON_APPLICANT_PROFILES_DESC" />
+		<field name="automated_task_user" type="number" default="" label="COM_EMUNDUS_AUTOMATED_TASK_USER" description="COM_EMUNDUS_AUTOMATED_TASK_USER_DESC" />
 		<field name="all_rights_group" type="number" default="1" label="COM_EMUNDUS_ALL_RIGHTS_GROUP" description="COM_EMUNDUS_ALL_RIGHTS_GROUP_DESC" />
+		<field name="evaluator_group" type="number" default="2" label="COM_EMUNDUS_EVALUATOR_GROUP" description="COM_EMUNDUS_EVALUATOR_GROUP_DESC" />
+		<field name="program_manager_group" type="number" default="3" label="COM_EMUNDUS_PROGRAM_MANAGER_GROUP" description="COM_EMUNDUS_PROGRAM_MANAGER_GROUP_DESC" />
+		<field name="create_program_groups" type="list" menu="hide" default="1" label="COM_EMUNDUS_CREATE_PROGRAM_GROUPS" description="COM_EMUNDUS_CREATE_PROGRAM_GROUPS_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_INTEGRATION" name="ametys" description="COM_EMUNDUS_INTEGRATION_DESC">
 
@@ -640,6 +648,14 @@
 			<field name="glpi_api_base_url" type="text" label="COM_EMUNDUS_GLPI_BASE_URL"/>
 			<field name="glpi_api_app_token" type="text" label="COM_EMUNDUS_GLPI_APP_TOKEN"/>
 			<field name="glpi_api_user_token" type="text" label="COM_EMUNDUS_GLPI_USER_TOKEN"/>
+		</fieldset>
+
+		<field name="spacer13" type="spacer" hr="true"/>
+		<field name="insee" type="note" label="COM_EMUNDUS_INSEE_API"/>
+		<fieldset label="COM_EMUNDUS_INSEE_API">
+			<field name="insee_api_base_url" type="text" label="COM_EMUNDUS_INSEE_BASE_URL" default="https://api.insee.fr"/>
+			<field name="insee_api_consumer_key" type="text" label="COM_EMUNDUS_INSEE_CONSUMER_KEY"/>
+			<field name="insee_api_consumer_secret" type="text" label="COM_EMUNDUS_INSEE_CONSUMER_SECRET"/>
 		</fieldset>
 
 	</fieldset>

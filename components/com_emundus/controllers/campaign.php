@@ -179,8 +179,11 @@ class EmundusControllerCampaign extends JControllerLegacy {
                         $campaign_time_state_class = 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius';
                     }
 
-                    $start_date = date('d/m/Y H\hi', strtotime($campaign->start_date));
-                    $end_date = date('d/m/Y H\hi', strtotime($campaign->end_date));
+                    if (!class_exists('EmundusHelperDate')) {
+                        require_once JPATH_ROOT . '/components/com_emundus/helpers/date.php';
+                    }
+                    $start_date = EmundusHelperDate::displayDate($campaign->start_date, 'DATE_FORMAT_LC5');
+                    $end_date = EmundusHelperDate::displayDate($campaign->end_date, 'DATE_FORMAT_LC5');
 
                     $state_values = [
                         [
@@ -216,8 +219,8 @@ class EmundusControllerCampaign extends JControllerLegacy {
                         ],
                         [
                             'key' => JText::_('COM_EMUNDUS_ONBOARD_NB_FILES'),
-                            'value' => $campaign->nb_files,
-                            'classes' => '',
+                            'value' => '<a target="_blank" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;">' . $campaign->nb_files . '</a>',
+                            'classes' => 'go-to-campaign-link',
                             'display' => 'table'
                         ],
                         [
@@ -233,8 +236,8 @@ class EmundusControllerCampaign extends JControllerLegacy {
                                 $state_values[1],
                                 [
                                     'key' => JText::_('COM_EMUNDUS_FILES_FILES'),
-                                    'value' => $campaign->nb_files . ' ' . ( $campaign->nb_files > 1 ? JText::_('COM_EMUNDUS_FILES_FILES') : JText::_('COM_EMUNDUS_FILES_FILE')),
-                                    'classes' => 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
+                                    'value' => '<a class="go-to-campaign-link em-font-weight-600 em-profile-color em-flex-row" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;font-size:14px;text-decoration: underline;">' . $campaign->nb_files . ' ' . ( $campaign->nb_files > 1 ? JText::_('COM_EMUNDUS_FILES_FILES') : JText::_('COM_EMUNDUS_FILES_FILE')) . '</a>',
+                                    'classes' => 'py-1',
                                 ]
                             ],
                             'classes' => 'em-mt-8 em-mb-8',
@@ -251,6 +254,53 @@ class EmundusControllerCampaign extends JControllerLegacy {
         }
         echo json_encode((object)$tab);
         exit;
+    }
+
+    public function goToCampaign()
+    {
+        $app = JFactory::getApplication();
+        $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+        if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+            $campaign_id = $app->input->getInt('campaign_id', 0);
+
+            // new filters
+            $campaign_filter = [
+                'uid' => 'campaigns',
+                'id' => 'campaigns',
+                'label' => 'Campagnes',
+                'type' => 'select',
+                'value' => !empty($campaign_id) ? [(string)$campaign_id] : [],
+                'default' => true,
+                'available' => true,
+                'operator' => 'IN',
+                'andorOperator' => 'OR'
+            ];
+            $session = JFactory::getSession();
+            $session->set('em-applied-filters', [$campaign_filter]);
+
+            // old filters
+            $session->set('filt_params', [
+                's' => [],
+                'campaign' => !empty($campaign_id) ? [$campaign_id] : [],
+                'schoolyear' => [],
+                'status' => [],
+                'tag' => [],
+                'programme' => ['%'],
+                'published' => 1
+            ]);
+
+            $menu = $app->getMenu();
+            $items = $menu->getItems('link', 'index.php?option=com_emundus&view=files', true);
+            if (!empty($items)) {
+                $app->redirect('/' . $items->alias);
+            } else {
+                $response['msg'] = JText::_('NO_FILES_VIEW_AVAILABLE');
+            }
+        }
+
+        $app->enqueueMessage($response['msg'], 'error');
+        $app->redirect('/');
     }
 
     /**

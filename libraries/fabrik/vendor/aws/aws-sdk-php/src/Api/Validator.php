@@ -189,14 +189,6 @@ class Validator
 
     private function check_string(Shape $shape, $value)
     {
-        if ($shape['jsonvalue']) {
-            if (!self::canJsonEncode($value)) {
-                $this->addError('must be a value encodable with \'json_encode\'.'
-                    . ' Found ' . Aws\describe_type($value));
-            }
-            return;
-        }
-
         if (!$this->checkCanString($value)) {
             $this->addError('must be a string or an object that implements '
                 . '__toString(). Found ' . Aws\describe_type($value));
@@ -249,20 +241,7 @@ class Validator
 
     private function checkAssociativeArray($value)
     {
-        $isAssociative = false;
-
-        if (is_array($value)) {
-            $expectedIndex = 0;
-            $key = key($value);
-
-            do {
-                $isAssociative = $key !== $expectedIndex++;
-                next($value);
-                $key = key($value);
-            } while (!$isAssociative && null !== $key);
-        }
-
-        if (!$isAssociative) {
+        if (!is_array($value) || isset($value[0])) {
             $this->addError('must be an associative array. Found '
                 . Aws\describe_type($value));
             return false;
@@ -277,10 +256,5 @@ class Validator
             implode('', array_map(function ($s) { return "[{$s}]"; }, $this->path))
             . ' '
             . $message;
-    }
-
-    private function canJsonEncode($data)
-    {
-        return !is_resource($data);
     }
 }
