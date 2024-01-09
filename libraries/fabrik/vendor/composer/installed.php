@@ -5,7 +5,7 @@
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '9119fec9dfbd3ad60c1c5d8ec17fe72537983f4e',
+        'reference' => 'dd155dc4059f95b19844a92ebe43aef89aae9850',
         'name' => '__root__',
         'dev' => true,
     ),
@@ -16,7 +16,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '9119fec9dfbd3ad60c1c5d8ec17fe72537983f4e',
+            'reference' => 'dd155dc4059f95b19844a92ebe43aef89aae9850',
             'dev_requirement' => false,
         ),
         'arcturial/clickatell' => array(
@@ -137,12 +137,12 @@
             'dev_requirement' => false,
         ),
         'phenx/php-font-lib' => array(
-            'pretty_version' => '0.5.4',
-            'version' => '0.5.4.0',
+            'pretty_version' => '0.5.5',
+            'version' => '0.5.5.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../phenx/php-font-lib',
             'aliases' => array(),
-            'reference' => 'dd448ad1ce34c63d09baccd05415e361300c35b4',
+            'reference' => '671df0f3516252011aa94f9e8e3b3b66199339f8',
             'dev_requirement' => false,
         ),
         'phenx/php-svg-lib' => array(

@@ -3933,10 +3933,20 @@ structure:
 
 					require_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
 					$h_samples = new EmundusUnittestHelperSamples;
+
+					$query->clear()
+						->select('id')
+						->from($db->quoteName('#__emundus_setup_profiles'))
+						->where($db->quoteName('published').' = 1')
+						->where($db->quoteName('status').' = 1');
+					$db->setQuery($query);
+					$profile_id = $db->loadResult();
+
+
 					if (!empty($available_user_id)) {
-						$user_created = $h_samples->createSampleUser(1000,'automatedtask@emundus.fr',$password,[2],$available_user_id,'Task', 'AUTOMATED');
+						$user_created = $h_samples->createSampleUser($profile_id,'automatedtask@emundus.fr',$password,[2],$available_user_id,'Task', 'AUTOMATED');
 					} else {
-						$user_created = $h_samples->createSampleUser(1000,'automatedtask@emundus.fr',$password,[2],0,'Task', 'AUTOMATED');
+						$user_created = $h_samples->createSampleUser($profile_id,'automatedtask@emundus.fr',$password,[2],0,'Task', 'AUTOMATED');
 					}
 
 					if ($user_created) {
