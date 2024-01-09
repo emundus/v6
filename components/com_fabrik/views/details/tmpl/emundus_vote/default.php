@@ -173,7 +173,7 @@ endif;
                     <?php
                     ?>
                     <?php foreach ($gallery->tabs as $key => $tab) : ?>
-                    <button type=”button” <?php if ($key == 0) : ?>class="active" aria-expanded=”true”<?php else: ?> aria-expanded=”false”<?php endif; ?>><?php echo $tab->title ?></button>
+                    <button type='button' <?php if ($key == 0) : ?>class='active' aria-expanded='true'<?php else: ?> aria-expanded='false'<?php endif; ?>><?php echo $tab->title ?></button>
                     <?php endforeach; ?>
                 </div>
                 <?php foreach ($gallery->tabs as $key => $tab) : ?>
@@ -187,11 +187,13 @@ endif;
                             ?>
                             <?php if (isset($this->elements[$elt])) : ?>
                                 <h3 class="mb-3 em-font-weight-700"><?php echo $this->elements[$elt]->label_raw ?></h3>
-                                <p>
+
                                     <div class="mb-5">
+                                        <p>
                                         <?php echo $this->elements[$elt]->element_ro; ?>
+                                        </p>
                                     </div>
-                                </p>
+
                             <?php endif; ?>
                         <?php endforeach; ?>
                     </div>
