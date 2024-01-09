@@ -121,7 +121,8 @@ input.fabrik_filter_submit.button {
 	padding: 6px 12px;
 	border-radius: 14px;
 	background: #F0F0F0;
-	color: #666666
+	color: #666666;
+	font-weight: 500;
 }
 .em-caption {
 	color: var(--neutral-600);

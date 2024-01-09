@@ -81,7 +81,7 @@ foreach ($votes as $vote) {
 
         <div class="superior-infos-container">
             <?php if (!empty($gallery->title)) : ?>
-                <h2 class="line-clamp-2 h-14 em-applicant-title-font em-font-weight-700">
+                <h2 class="line-clamp-2 mb-2 h-14 em-applicant-title-font em-font-weight-700">
                     <?php echo isset($this->_row->data) ? $this->_row->data->{$gallery->title} : ''; ?>
                 </h2>
             <?php endif; ?>
