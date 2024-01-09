@@ -256,7 +256,7 @@ endif;
 						$elt = explode('___', $gallery->subtitle)[1];
 						?>
 						<?php if (isset($this->elements[$elt])) : ?>
-                            <p class="em-caption mb-5 flex items-center" style="min-height: 15px">
+                            <p class="em-caption mb-5 mt-2 flex items-center" style="min-height: 15px">
 								<?php if (!empty($gallery->subtitle_icon)) : ?>
                                     <span class="material-icons-outlined mr-2"><?php echo $gallery->subtitle_icon; ?></span>
 								<?php endif; ?>
