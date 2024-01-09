@@ -444,6 +444,9 @@ function vote(guest,listid,id,email) {
                                     text: Joomla.JText._('COM_FABRIK_VOTE_MODAL_SUCCESS_TEXT'),
                                     showConfirmButton: true,
                                     confirmButtonText: Joomla.JText._('COM_FABRIK_VOTE_MODAL_GO_BACK'),
+                                    customClass: {
+                                        confirmButton: 'em-swal-confirm-button',
+                                    },
                                 }).then(() => {
                                     window.location.reload();
                                 })
