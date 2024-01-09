@@ -55,7 +55,7 @@
 }
 
 .view-details .voting-details-group .mb-5 p {
-    font-size: var(--em-applicant-font-size);
+    font-size: var(--em-applicant-font-size) !important;
 }
 
 .voting-pop {
