@@ -310,9 +310,9 @@ endif;
     document.addEventListener("DOMContentLoaded", function () {
         let tabs = document.querySelector('.details-tabs');
         if (tabs) {
-            tabs.querySelectorAll('p').forEach((tab, index) => {
+            tabs.querySelectorAll('button').forEach((tab, index) => {
                 tab.addEventListener('click', () => {
-                    tabs.querySelectorAll('p').forEach((tab) => {
+                    tabs.querySelectorAll('button').forEach((tab) => {
                         tab.classList.remove('active');
                     });
                     tab.classList.add('active');
