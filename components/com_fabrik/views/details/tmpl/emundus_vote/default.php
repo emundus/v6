@@ -191,7 +191,7 @@ endif;
                                 <h3 class="mb-3 em-font-weight-700"><?php echo $this->elements[$elt]->label_raw ?></h3>
 
                                     <div class="mb-5">
-                                        <p>
+                                        <p class="em-applicant-text-color">
                                         <?php echo $this->elements[$elt]->element_ro; ?>
                                         </p>
                                     </div>
