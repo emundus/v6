@@ -3942,6 +3942,7 @@ structure:
 					$db->setQuery($query);
 					$profile_id = $db->loadResult();
 
+
 					if (!empty($available_user_id)) {
 						$user_created = $h_samples->createSampleUser($profile_id,'automatedtask@emundus.fr',$password,[2],$available_user_id,'Task', 'AUTOMATED');
 					} else {
