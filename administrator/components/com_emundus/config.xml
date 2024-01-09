@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
 	<fieldset label="COM_EMUNDUS_GENERAL" name="general" description="COM_EMUNDUS_GENERAL_DESC">
+		<field name="logged_homepage_link"
+			   type="sql"
+			   default=""
+			   label="COM_EMUNDUS_LOGGED_HOMEPAGE_LINK"
+			   description=""
+			   query="SELECT alias, title as label FROM jos_menu WHERE published = 1"
+			   key_field="alias"
+			   value_field="label"
+		/>
+
 		<field name="logs" label="LOGS_ACTIVE" type="radio" default="0" description="LOGS_ACTIVE_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>

@@ -3954,6 +3954,17 @@ structure:
 					}
 				}
 			}
+
+			if (version_compare($cache_version, '1.38.2', '<=') || $firstrun) {
+				$query->clear()
+					->select('alias')
+					->from($db->quoteName('#__menu'))
+					->where($db->quoteName('home') . ' = 1');
+				$db->setQuery($query);
+				$home_menu = $db->loadResult();
+
+				EmundusHelperUpdate::updateExtensionParam('logged_homepage_link',$home_menu,'');
+			}
 		}
 
 		return $succeed;
