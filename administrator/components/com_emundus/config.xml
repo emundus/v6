@@ -93,6 +93,18 @@
 
 		<field name="repeat_icon" type="text" label="COM_EMUNDUS_REPEAT_GROUP_ICON" default="clear" description="COM_EMUNDUS_REPEAT_GROUP_ICON_DESC" size="60"/>
 
+		<field name="photo_attachment"
+			   type="sql"
+			   default=""
+			   label="COM_EMUNDUS_PHOTO_ATTACHMENT"
+			   description="COM_EMUNDUS_PHOTO_ATTACHMENT_DESC"
+			   query="SELECT id, value as label FROM jos_emundus_setup_attachments"
+			   key_field="id"
+			   value_field="label"
+		>
+			<option value="">Please select your option</option>
+		</field>
+
 		<field
 				name="spacer0"
 				type="spacer"

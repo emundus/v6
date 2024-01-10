@@ -69,6 +69,7 @@ class com_emundusInstallerScript
 		$succeed = [];
 
 		require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+		require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
 		$cache_version = $this->manifest_cache->version;
 
 		# Check first run
@@ -4053,6 +4054,30 @@ if(in_array($applicant,$exceptions)){
 					$db->setQuery($query);
 					$db->execute();
 				}
+
+				$query->clear()
+					->select('form_id')
+					->from($db->quoteName('#__emundus_setup_formlist'))
+					->where($db->quoteName('type') . ' LIKE ' . $db->quote('profile'));
+				$db->setQuery($query);
+				$profile_form_id = $db->loadResult();
+
+				if(!empty($profile_form_id)) {
+					$query->clear()
+						->select('fe.id')
+						->from($db->quoteName('#__fabrik_elements','fe'))
+						->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
+						->where($db->quoteName('ffg.form_id') . ' = ' . $db->quote($profile_form_id))
+						->where($db->quoteName('fe.name') . ' IN (' . implode(',',[$db->quote('firstname'),$db->quote('lastname')]) . ')');
+					$db->setQuery($query);
+					$elements = $db->loadColumn();
+
+					foreach ($elements as $element) {
+						EmundusHelperFabrik::addNotEmptyValidation($element);
+					}
+				}
+
+				EmundusHelperUpdate::updateExtensionParam('photo_attachment',10,'');
 			}
 		}
 

@@ -9,6 +9,8 @@
  */
 
 // No direct access
+use Joomla\CMS\Component\ComponentHelper;
+
 defined('_JEXEC') or die('Restricted access');
 /*
 if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
@@ -1723,24 +1725,32 @@ class EmundusModelFiles extends JModelLegacy
      * @return mixed|null
      */
     public function getPhotos($fnums = array()) {
-        try {
-            $db = $this->getDbo();
-            $query = 'select emu.id, emu.user_id, c.fnum, emu.filename
+		$attachment_id = ComponentHelper::getParams('com_emundus')->get('photo_attachment', '');
+
+		if(!empty($attachment_id)) {
+			try {
+				$db    = $this->getDbo();
+				$query = 'select emu.id, emu.user_id, c.fnum, emu.filename
                         from #__emundus_uploads as emu
                         left join #__emundus_campaign_candidature as c on c.applicant_id = emu.user_id
-                        where attachment_id = 10';
-            if (count($fnums) > 0) {
-                $query .= ' AND emu.fnum IN ('.implode(',', $db->quote($fnums)).') GROUP BY emu.fnum';
-            }
-            $db->setQuery($query);
-            return $db->loadAssocList('fnum');
+                        where attachment_id = ' . $attachment_id;
+				if (count($fnums) > 0) {
+					$query .= ' AND emu.fnum IN (' . implode(',', $db->quote($fnums)) . ') GROUP BY emu.fnum';
+				}
+				$db->setQuery($query);
 
-        } catch(Exception $e) {
-            echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-            return null;
-        }
+				return $db->loadAssocList('fnum');
 
+			}
+			catch (Exception $e) {
+				echo $e->getMessage();
+				JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+
+				return null;
+			}
+		} else {
+			return [];
+		}
     }
 
     /**
