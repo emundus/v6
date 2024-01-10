@@ -145,26 +145,22 @@ class EmundusFiltersFiles extends EmundusFilters
 
 	protected function getAllAssociatedElements($element_id = null)
 	{
-		$elements = [];
 		$profiles = $this->getProfiles();
         $profile_form_ids = [];
         $config_form_ids = [];
 
 		if (!empty($profiles)) {
-			$menus = [];
-			foreach ($profiles as $profile) {
-				$menus[] = 'menu-profile'. $profile;
-			}
-
 			// get all forms associated to the user's profiles
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
-			$query->select('link')
-				->from('#__menu')
-				->where('menutype IN ('. implode(',', $db->quote($menus)) .')')
-				->andWhere('link LIKE "index.php?option=com_fabrik&view=form&formid=%"')
-				->andWhere('published = 1');
+			$query->select('menu.link')
+				->from($db->quoteName('#__menu', 'menu'))
+				->leftJoin($db->quoteName('#__emundus_setup_profiles', 'profile') . ' ON ' . $db->quoteName('profile.menutype') . ' = ' . $db->quoteName('menu.menutype'))
+				->where('profile.id IN ('. implode(',', $db->quote($profiles)) .')')
+				->andWhere('profile.published = 1')
+				->andWhere('menu.link LIKE "index.php?option=com_fabrik&view=form&formid=%"')
+				->andWhere('menu.published = 1');
 
 			$db->setQuery($query);
 			$form_links = $db->loadColumn();

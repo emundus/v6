@@ -3608,7 +3608,7 @@ class EmundusHelperUpdate
 
 			// Session
 			$storage_value['session_protection_active'] = 1;
-			$storage_value['session_hijack_protection'] = 1;
+			$storage_value['session_hijack_protection'] = 0;
 			$storage_value['session_hijack_protection_what_to_check'] = 2;
 			$storage_value['session_protection_groups'] = ["11","3","5","2","10","1"];
 			$storage_value['track_failed_logins'] = 1;

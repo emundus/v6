@@ -375,7 +375,7 @@ if (!empty($this->custom_title)) :?>
                 <input type="hidden" name="required_desc" value="'.$this->required_desc.'"/>
                 <div>';
                 if ($this->show_shortdesc_input) {
-                    $div .= '<div class="row"><div><label><span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_SHORT_DESC').'</span></label><input type="text" class="em-w-100" maxlength="80" name="description" placeholder="'.(($this->required_desc != 0)?JText::_('EMUNDUS_REQUIRED_FIELD'):'').'" /></div></div>';
+                    $div .= '<div class="row"><div class="mb-2"><label><span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_SHORT_DESC').'</span></label><input type="text" class="em-w-100" maxlength="80" name="description" placeholder="'.(($this->required_desc != 0)?JText::_('EMUNDUS_REQUIRED_FIELD'):'').'" /></div></div>';
                 }
                 if ($this->show_browse_button) {
                     $div .= '<div class="row" id="upload-files-'.$file_upload.'"><div class="col-sm-12"><label for="file" class="custom-file-upload"><input class="em-send-attachment" id="em-send-attachment-'.$file_upload.'" type="file" name="file" multiple onchange="processSelectedFiles(this)"/><span style="display: none;" >'.JText::_("COM_EMUNDUS_SELECT_UPLOAD_FILE").'</span></label>';
