@@ -9,6 +9,8 @@
  */
 
 // No direct access
+use Joomla\CMS\Component\ComponentHelper;
+
 defined('_JEXEC') or die('Restricted access');
 /*
 if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
@@ -1723,12 +1725,14 @@ class EmundusModelFiles extends JModelLegacy
      * @return mixed|null
      */
     public function getPhotos($fnums = array()) {
+		$attachment_id = ComponentHelper::getParams('com_emundus')->get('photo_attachment', 10);
+
         try {
             $db = $this->getDbo();
             $query = 'select emu.id, emu.user_id, c.fnum, emu.filename
                         from #__emundus_uploads as emu
                         left join #__emundus_campaign_candidature as c on c.applicant_id = emu.user_id
-                        where attachment_id = 10';
+                        where attachment_id = '.$attachment_id;
             if (count($fnums) > 0) {
                 $query .= ' AND emu.fnum IN ('.implode(',', $db->quote($fnums)).') GROUP BY emu.fnum';
             }
