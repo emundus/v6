@@ -6,8 +6,8 @@
 			   default=""
 			   label="COM_EMUNDUS_LOGGED_HOMEPAGE_LINK"
 			   description=""
-			   query="SELECT alias, title as label FROM jos_menu WHERE published = 1"
-			   key_field="alias"
+			   query="SELECT id, title as label FROM jos_menu WHERE published = 1"
+			   key_field="id"
 			   value_field="label"
 		/>
 
