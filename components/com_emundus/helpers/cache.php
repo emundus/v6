@@ -96,7 +96,7 @@ class EmundusHelperCache
 
 			if($admin && !empty($group)) {
 				if(is_dir(JPATH_ADMINISTRATOR.'/cache/'.$group)) {
-					$cleaned = $this->deleteDir(JPATH_ADMINISTRATOR . '/cache/' . $group);
+					$cleaned = $this->deleteDir($group);
 				}
 			}
 		}
@@ -129,7 +129,9 @@ class EmundusHelperCache
 		return $hash;
 	}
 
-	private function deleteDir(string $dirPath) {
+	private function deleteDir($group) {
+		$dirPath = JPATH_ADMINISTRATOR . '/cache/' . $group;
+
 		if (!is_dir($dirPath)) {
 			throw new InvalidArgumentException("$dirPath must be a directory");
 		}
