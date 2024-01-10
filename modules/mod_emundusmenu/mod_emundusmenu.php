@@ -7,13 +7,13 @@
  */
 
 // no direct access
-use Symfony\Component\Yaml\Yaml;
 
 defined('_JEXEC') or die;
 $document 	= JFactory::getDocument();
 $document->addStyleSheet("modules/mod_emundusmenu/style/mod_emundusmenu.css" );
 // Include the syndicate functions only once
 require_once dirname(__FILE__).'/helper.php';
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'settings.php');
@@ -37,7 +37,7 @@ if($params->get('menu_style') == 'tchooz_vertical') {
 $display_applicant_menu = $params->get('display_applicant_menu', 1);
 $applicant_menu = $params->get('applicant_menu', '');
 $display_tchooz = $params->get('displayTchooz', 1);
-$favicon_link = $params->get('favicon_link', 'index.php');
+$favicon_link = EmundusHelperMenu::getHomepageLink($params->get('favicon_link', 'index.php'));
 
 // Get favicon
 $m_settings = new EmundusModelsettings();

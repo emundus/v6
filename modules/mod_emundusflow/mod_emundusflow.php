@@ -43,7 +43,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $admission  = $params->get('admission', 0);
     $layout = $params->get('layout', 'default');
     $offset = JFactory::getConfig()->get('offset');
-    $home_link = $params->get('home_link', 'index.php');
+    $home_link = EmundusHelperMenu::getHomepageLink($params->get('home_link', 'index.php'));
     $add_to_cart_icon = $params->get('add_to_cart_icon', 'large add to cart icon');
     $scholarship_icon = $params->get('scholarship_icon', 'large student icon');
     $file_tags = JText::_($params->get('tags', ''));
