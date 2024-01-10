@@ -118,5 +118,8 @@ class EmundusHelperCacheTest extends TestCase
 
 		$this->h_cache->clean();
 		$this->assertSame(false, $this->h_cache->get('foo'), 'clean() should remove all keys');
+
+		$cleaned = $this->h_cache->clean(true, 'NotADirectoryAtAll\$#');
+		$this->assertSame(false, $cleaned, 'clean() should return false if path is not a directory');
 	}
 }

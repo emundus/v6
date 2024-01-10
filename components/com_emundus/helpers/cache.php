@@ -88,20 +88,23 @@ class EmundusHelperCache
 		return $stored;
 	}
 
-	public function clean($admin = false,$group = '') {
+	public function clean($admin = false, $group = '') {
 		$cleaned = false;
 
 		if ($this->isEnabled()) {
 			$cleaned = $this->cache->__call('clean', array($this->group));
 
-			if($admin && !empty($group)) {
-				if(is_dir(JPATH_ADMINISTRATOR.'/cache/'.$group)) {
+			if ($admin && !empty($group)) {
+				if (is_dir(JPATH_ADMINISTRATOR.'/cache/'.$group)) {
 					try {
 						$cleaned = $this->deleteDir($group);
 					} catch (Exception $e) {
 						$cleaned = false;
 						JLog::add('Error cleaning cache of group ' . $group . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cache.error');
 					}
+				} else {
+					$cleaned = false;
+					JLog::add('Cache directory of group ' . $group . ' does not exists!', JLog::WARNING, 'com_emundus.cache.error');
 				}
 			}
 		}
