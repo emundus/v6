@@ -18,12 +18,17 @@ $username = JFactory::getApplication()->input->getString('username');
 
 $this->form->setValue('username', '', $username);
 
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'settings.php');
+$m_settings = new EmundusModelsettings();
+
+$favicon = $m_settings->getFavicon();
+
 ?>
 <div class="reset-confirm<?php echo $this->pageclass_sfx; ?>">
 
 		<div class="page-header">
-            <?php if (file_exists('images/custom/favicon.png')) : ?>
-                <a href="index.php" alt="Logo" class="em-profile-picture em-mb-32" style="width: 50px;height: 50px;background-image: url('images/custom/favicon.png')">
+            <?php if (file_exists($favicon)) : ?>
+                <a href="index.php" alt="Logo" class="em-profile-picture mb-8" style="width: 50px;height: 50px;background-image: url(<?php echo $favicon ?>)">
                 </a>
             <?php endif; ?>
             <h1 class="em-mb-8">

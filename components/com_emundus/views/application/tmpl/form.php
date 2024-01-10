@@ -34,9 +34,15 @@ $user = $this->userid;
                     <span class="material-icons">list_alt</span>
                     <?php echo JText::_('COM_EMUNDUS_APPLICATION_APPLICATION_FORM').' - '.$this->formsProgress." % ".JText::_("COM_EMUNDUS_APPLICATION_COMPLETED"); ?>
                     <?php if (EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum)):?>
-                        <a id="download-pdf" class="  clean" target="_blank" href="<?php echo JURI::base(); ?>index.php?option=com_emundus&task=pdf&user=<?php echo $this->sid; ?>&fnum=<?php echo $this->fnum; ?>">
-                            <button class="btn btn-default" data-title="<?php echo JText::_('COM_EMUNDUS_APPLICATION_DOWNLOAD_APPLICATION_FORM'); ?>" data-toggle="tooltip" data-placement="right" title="<?= JText::_('COM_EMUNDUS_APPLICATION_DOWNLOAD_APPLICATION_FORM'); ?>"><span class="material-icons">file_download</span></button>
-                        </a>
+                        <button id="download-all-phase-pdf"
+                                class="em-mt-8 em-ml-8"
+                                data-fnum="<?= $this->fnum ?>"
+                                data-toggle="tooltip"
+                                data-placement="right"
+                                title="<?= JText::_('COM_EMUNDUS_APPLICATION_DOWNLOAD_APPLICATION_FORM'); ?>"
+                        >
+                            <span class="material-icons-outlined" data-fnum="<?= $this->fnum ?>">download_2</span>
+                        </button>
                     <?php endif;?>
                 </h3>
                 <div class="btn-group pull-right">
@@ -125,5 +131,17 @@ $user = $this->userid;
 
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
-    })
+    });
+
+    document.getElementById('download-all-phase-pdf').addEventListener('click', function (e) {
+        const fnum = e.target.getAttribute('data-fnum');
+        if (fnum) {
+            // check if function  exists
+            if (typeof export_pdf === 'function') {
+                export_pdf(JSON.stringify({0: fnum}), null, true);
+            } else {
+                console.error('Function export_pdf does not exist');
+            }
+        }
+    });
 </script>

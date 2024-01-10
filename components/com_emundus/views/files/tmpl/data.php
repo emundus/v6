@@ -107,7 +107,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 
                         <?php foreach ($line as $k => $value) :?>
 
-                            <td <?php if ($k == 'check' && $value->class != null) { echo 'class="'.$value->class.'"'; } if ($k == 'access' || $k == 'id_tag') { echo 'class="em-cell-scroll"'; } ?>>
+                            <td <?php if ($k == 'check' && $value->class != null) { echo 'class="'.$value->class.'"'; } if ($k == 'access' || $k == 'id_tag' || $k == 'jecc___campaign_id') { echo 'class="em-cell-scroll"'; } ?>>
                                 <div class="em-cell" >
                                     <?php if ($k == 'check'): ?>
                                         <label for = "<?= $line['fnum']->val; ?>_check">

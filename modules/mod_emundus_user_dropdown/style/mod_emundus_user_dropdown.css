@@ -111,7 +111,7 @@ li>a:hover {
     align-items: center;
     z-index: 9999;
     position: relative;
-    width: 45px;
+    width: 45px !important;
     height: 45px;
     min-width: 30px;
 }
@@ -246,7 +246,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     padding: 8px;
 }
 #userDropdown:hover .em-profile-container{
-    background: var(--neutral-200);
+    background: transparent;
     border-radius: var(--em-default-br);
 }
 
@@ -293,6 +293,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     line-height: normal;
     letter-spacing: normal;
     font-size: var(--em-applicant-font-size);
+    margin-top: 16px !important;
 }
 
 #header-c #userDropdownMenu a.edit-button-user:hover,
@@ -300,6 +301,14 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 #header-c #userDropdownMenu a.edit-button-user:active {
      background: transparent !important;
  }
+
+
+#header-c .platform-content #userDropdownLabel .em-profile-container p.em-font-weight-500 {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
 
 @media all and (min-width: 480px) and (max-width: 767px) {
 
@@ -349,6 +358,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 .dropdown #userDropdownLabel div  {
     cursor: pointer;
     position: relative;
+    width: fit-content;
 }
 
 #g-navigation .g-content .platform-content:nth-child(1){
@@ -361,14 +371,17 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 
 /* Gestionnaire plateforme et programme */
 .dropdown #background-shapes {
+    mask-image: url(/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg);
+    height: 72px;
+    background: var(--em-profile-color);
     position: absolute;
-    height: 100%;
-    width: 250px;
-    top: 0;
-    right: 53px;
-    transform: scale(1.8);
-    pointer-events: none;
-    z-index: -1;
+    width: 300px;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: 300px;
+    mask-origin: border-box;
+    right: -10px;
+    top: -6px;
 }
 
 /* Déconnecté */
@@ -376,9 +389,18 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     position: absolute;
     height: 100%;
     top: 0;
-    right: 0;
+    right: -1px;
     pointer-events: none;
     z-index: -1;
+    mask-image: url('/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg');
+    -webkit-mask-image: url('/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg');
+    background: var(--em-profile-color);
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-position: center;
+    mask-size: contain;
+    -webkit-mask-size: contain;
 }
 
 div#userDropdown {
@@ -387,10 +409,24 @@ div#userDropdown {
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
      #background-shapes {
-        top: 0;
-        right: -4px;
+         display: none;
     }
 
+    #header-c .platform-content #userDropdownLabel .em-profile-container p.em-font-weight-500 {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 150px;
+    }
+}
+
+@media screen and (min-width: 960px) and (max-width: 1023px) {
+     #header-c .platform-content #userDropdownLabel .em-profile-container p.em-font-weight-500 {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 180px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -398,3 +434,24 @@ div#userDropdown {
         display: none;
     }
 }
+
+@media (max-width: 479px) {
+    #header-c .platform-content #userDropdownLabel .em-profile-container p.em-font-weight-500 {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 160px;
+    }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+    #header-c .platform-content #userDropdownLabel .em-profile-container p.em-font-weight-500 {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 120px;
+    }
+}
+
+
+

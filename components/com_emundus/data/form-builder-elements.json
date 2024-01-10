@@ -92,9 +92,9 @@
   },
   {
     "id": 16,
-    "value": "emundus_geolocalisation",
-    "icon": "location_on",
-    "name": "COM_EMUNDUS_ONBOARD_TYPE_GEOLOCATION",
+    "value": "emundus_phonenumber",
+    "icon": "phone",
+    "name": "COM_EMUNDUS_ONBOARD_TYPE_PHONE_NUMBER",
     "published": true
   },
   {
@@ -102,7 +102,14 @@
     "value": "currency",
     "icon": "money",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_CURRENCY",
-    "published": false
+    "published": true
+  },
+  {
+    "id": 17,
+    "value": "panel",
+    "icon": "view_agenda",
+    "name": "COM_EMUNDUS_ONBOARD_TYPE_PANEL",
+    "published": true
   },
   {
     "id": 7,

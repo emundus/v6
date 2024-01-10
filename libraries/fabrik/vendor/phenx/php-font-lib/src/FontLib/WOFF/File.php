@@ -1,7 +1,7 @@
 <?php
 /**
  * @package php-font-lib
- * @link    https://github.com/PhenX/php-font-lib
+ * @link    https://github.com/dompdf/php-font-lib
  * @author  Fabien Ménager <fabien.menager@gmail.com>
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
@@ -46,11 +46,11 @@ class File extends \FontLib\TrueType\File {
       $data = $this->read($entry->length);
 
       if ($entry->length < $entry->origLength) {
-        $data = gzuncompress($data);
+        $data = (string) gzuncompress($data);
       }
 
       // Prepare data ...
-      $length        = strlen($data);
+      $length        = mb_strlen($data, '8bit');
       $entry->length = $entry->origLength = $length;
       $entry->offset = $dataOffset;
 

@@ -28,12 +28,14 @@
       @media all and (min-width: 768px) {
         flex: 0 0 30rem;
         max-width: 30rem;
-        margin: 16px auto;
+        margin: 0 auto;
+        padding-top: 0;
       }
       @media all and (min-width: 1440px) {
         flex: 0 0 30rem;
         max-width: 30rem;
-        margin: 16px auto;
+        margin: 0 auto;
+        padding-top: 0;
       }
 
       .em-form-intro {
@@ -436,20 +438,20 @@
     /* YES / NO */
     /* And radio buttons grouped together */
 
-    .row-fluid .plg-yesno.span12,
+    .row-fluid .plg-yesno.span12 .fabrikElement,
     .plg-radiobutton .fabrikSubElementContainer .btn-group {
       width: 48.93617021276595%;
     }
 
     @media only all and (min-width: 48rem) and (max-width: 59.99rem) {
-      .row-fluid .plg-yesno.span12,
+      .row-fluid .plg-yesno.span12 .fabrikElement,
       .plg-radiobutton .fabrikSubElementContainer .btn-group {
         width: 48.6187845304% !important;
       }
     }
 
     @media only all and (max-width: 48rem) {
-      .row-fluid .plg-yesno.span12,
+      .row-fluid .plg-yesno.span12 .fabrikElement,
       .plg-radiobutton .fabrikSubElementContainer .btn-group {
         width: 100% !important;
       }
@@ -1215,10 +1217,14 @@
   }
 
   /* ADD PIPE */
+  pre#log {
+    display: none;
+  }
+
   div[id^='recorder-'] {
     margin-bottom: 12px;
 
-    .pipeRecordRTC {
+    > div:nth-child(1) {
       width: 100% !important;
     }
 

@@ -78,12 +78,12 @@ hr {
 
 .messages__list-block {
   min-height: 50vh;
-  max-height: 85%;
   overflow-y: auto;
   overflow-x: hidden;
   -ms-overflow-style: none;
   scrollbar-width: none;
   padding: 0 15px;
+  margin-bottom: 16px;
 }
 
 .messages__list-block::-webkit-scrollbar {
@@ -233,11 +233,32 @@ hr {
   padding: 0 25px;
 }
 
-.messages__send_button {
-  border-radius: 8px;
-  background: var(--night-blue);
-  padding: 8px 16px;
-  color: white;
+.messages_action_container .messages__send_button, .messages__bottom-input-actions .messages__send_button.btn-primary {
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  color: var(--neutral-0);
+  background: var(--night-blue) !important;
+  border: 1px solid var(--night-blue);
+  font-size: 16px;
+  font-family: var(--em-default-font);
+  letter-spacing: normal;
+}
+
+.messages_action_container .messages__send_button:hover, .messages__bottom-input-actions .messages__send_button.btn-primary:hover {
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  color: var(--night-blue);
+  background: var(--neutral-0) !important;
+  border: 1px solid var(--night-blue) !important;
+}
+
+.messages__actions_bar .material-icons-outlined {
+  font-size: 20px;
+}
+
+.messages__bottom-input, .messages__bottom-input-actions {
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 .loader {
@@ -296,6 +317,7 @@ hr {
 }
 .messages__date-section hr {
   width: 100%;
+  z-index: 1;
 }
 .messages__date-section p {
   padding: 0 20px;
@@ -312,7 +334,12 @@ hr {
 
 /** ATTACH DOCUMENTS **/
 .messages__attach_content {
-  padding: 40px;
+  padding: 0 16px 16px 16px;
+}
+
+.messages_action_container {
+  border-top: 1px solid;
+  border-top-color: #f8F8F8;
 }
 
 .messages__attach_actions_tabs {
@@ -322,16 +349,16 @@ hr {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  -webkit-box-pack: left;
+      -ms-flex-pack: left;
+          justify-content: left;
   list-style-type: none;
 }
 
 .messages__attach_action {
   padding: 8px 16px;
-  margin: 0 8px;
-  border-radius: 4px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
   height: 40px;
   cursor: pointer;
 }
@@ -398,6 +425,15 @@ hr {
 #customdropzone_messenger .dz-preview .dz-image {
   width: auto;
   height: 100px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
 #customdropzone_messenger .dz-preview .dz-image > div {
   width: inherit;
@@ -522,6 +558,9 @@ hr {
 
 /**** END ****/
 
+.messages__vue_attach_document[data-v-5dff2e5d] {
+	background-color: white;
+}
 .messages__send_button[data-v-5dff2e5d]{
   margin: 20px 0;
   float: right;
@@ -597,12 +636,12 @@ hr{
 }
 .messages__list-block{
     min-height: 50vh;
-    max-height: 85%;
     overflow-y: auto;
     overflow-x: hidden;
     -ms-overflow-style: none;
     scrollbar-width: none;
     padding: 0 15px;
+    margin-bottom: 16px;
 }
 .messages__list-block::-webkit-scrollbar {
     display: none;
@@ -729,11 +768,29 @@ hr{
             align-items: center;
     padding: 0 25px;
 }
-.messages__send_button{
-    border-radius: 8px;
-    background: var(--night-blue);
-    padding: 8px 16px;
-    color: white;
+.messages_action_container .messages__send_button, .messages__bottom-input-actions .messages__send_button.btn-primary{
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    color: var(--neutral-0);
+    background: var(--night-blue) !important;
+    border: 1px solid var(--night-blue);
+    font-size: 16px;
+    font-family: var(--em-default-font);
+    letter-spacing: normal;
+}
+.messages_action_container .messages__send_button:hover, .messages__bottom-input-actions .messages__send_button.btn-primary:hover{
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    color: var(--night-blue);
+    background: var(--neutral-0) !important;
+    border: 1px solid var(--night-blue) !important;
+}
+.messages__actions_bar .material-icons-outlined {
+    font-size: 20px;
+}
+.messages__bottom-input, .messages__bottom-input-actions {
+    padding-left: 16px;
+    padding-right: 16px;
 }
 .loader {
     border: 5px solid #f3f3f4; /* Light grey */
@@ -777,6 +834,7 @@ hr{
     margin-left: 20px;
 hr {
         width: 100%;
+        z-index: 1;
 }
 p{
         padding: 0 20px;
@@ -793,7 +851,11 @@ p{
 
 /** ATTACH DOCUMENTS **/
 .messages__attach_content {
-    padding: 40px;
+    padding: 0 16px 16px 16px;
+}
+.messages_action_container {
+    border-top: 1px solid;
+    border-top-color: #f8F8F8;
 }
 .messages__attach_actions_tabs {
     display: -webkit-box;
@@ -802,15 +864,15 @@ p{
     -webkit-box-align: center;
         -ms-flex-align: center;
             align-items: center;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
+    -webkit-box-pack: left;
+        -ms-flex-pack: left;
+            justify-content: left;
     list-style-type: none;
 }
 .messages__attach_action {
     padding: 8px 16px;
-    margin: 0 8px;
-    border-radius: 4px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
     height: 40px;
     cursor: pointer;
 }
@@ -871,6 +933,15 @@ label{
 .dz-image {
             width: auto;
             height: 100px;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-pack: center;
+                -ms-flex-pack: center;
+                    justify-content: center;
+            -webkit-box-align: center;
+                -ms-flex-align: center;
+                    align-items: center;
 >div {
                 width: inherit;
                 height: inherit;
@@ -979,7 +1050,9 @@ label{
 /**** END ****/
 
 
-
+.messages__vue_attach_document {
+  background: #f8f8f8;
+}
 
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

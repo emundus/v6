@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-cron-emundusdeleteoldfiles" label="COM_FABRIK_OPTIONS">
+
+			<field name="exclude_campaigns"
+				   type="text"
+				   description="PLG_CRON_EXCLUDE_CAMPAIGNS_DESC"
+				   label="PLG_CRON_EXCLUDE_CAMPAIGNS"
+				   size="30"
+				   default="" />
+
+			<field name="end_campaign_offset"
+				   type="text"
+				   description="PLG_CRON_END_CAMPAIGN_OFFSET_DESC"
+				   label="PLG_CRON_END_CAMPAIGN_OFFSET"
+				   size="30"
+				   default="90" />
+
+			<field name="statuses"
+					type="subform"
+					label="PLG_CRON_STATUSES"
+					description="PLG_CRON_STATUSES_DESC"
+					multiple="true"
+					layout="joomla.form.field.subform.repeatable-table">
+				<form>
+					<field name="status"
+							type="sql"
+							query="SELECT step, value FROM #__emundus_setup_status"
+							default=''
+							key_field="step"
+							value_field="value"
+							label="PLG_CRON_STATUS"
+							description="PLG_CRON_STATUS_DESC"
+					/>
+				</form>
+			</field>
+
+			<field name="time_publish_offset"
+				   type="text"
+				   description="PLG_CRON_TIME_PUBLISH_OFFSET_DESC"
+				   label="PLG_CRON_TIME_PUBLISH_OFFSET"
+				   size="30"
+				   default="180" />
+
+		</fieldset>
+
+	</fields>
+</form>

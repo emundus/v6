@@ -39,7 +39,6 @@ class EmundusModelAward extends JModelList
         $query->select($this->_db->quoteName('filename'));
         $query->from($this->_db->quoteName('#__emundus_uploads'));
         $query->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum). ' AND' . $this->_db->quoteName('campaign_id') . ' = ' . $this->_db->quote($cid). ' AND '.$this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($attachmentId) );
-        //var_dump($query->__toString()).die();
         $this->_db->setQuery($query);
 
         return $this->_db->loadResult();

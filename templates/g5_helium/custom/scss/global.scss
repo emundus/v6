@@ -126,6 +126,10 @@ p,
   padding-top: 40px !important;
 }
 
+.mon-profil .plg-databasejoin.span12 .chzn-container.chzn-container-single {
+  width: 100% !important;
+}
+
 #g-container-main .g-container {
   padding: 0 20px;
 }
@@ -459,7 +463,7 @@ div#frame.outline {
       display: flex;
       flex-direction: row;
       justify-content: flex-end;
-      align-items: center;
+      align-items: center !important;
 
       .platform-content {
         margin: 0 0 0 16px;
@@ -490,6 +494,7 @@ div#frame.outline {
     align-items: center;
     transition: all 0.3s ease-in-out;
     max-height: 40px;
+    left: 70px;
   }
 }
 
@@ -3512,6 +3517,9 @@ div#em-appli-block {
 
     .comment-name, .comment-date a {
       color: var(--neutral-900);
+      &:hover, &:active, &:focus {
+        text-decoration: none;
+      }
     }
 
     .list-group-item .ctext {
@@ -3522,7 +3530,7 @@ div#em-appli-block {
       color: var(--night-blue);
     }
 
-    .em-list-status-date {
+    .mic-info.comment-date {
       padding: 10px 0;
     }
 
@@ -3887,6 +3895,15 @@ div#em-appli-block {
     left: 237px;
     pointer-events: none;
     border-bottom-right-radius: 14px;
+    mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
+    -webkit-mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
+    background: var(--em-profile-color);
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-position: center;
+    mask-size: contain;
+    -webkit-mask-size: contain;
   }
 }
 
@@ -3915,6 +3932,11 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
   z-index: 1;
 }
 
+/* CHOSEN */
+.chzn-container-multi .chzn-choices li.search-choice .search-choice-close:hover {
+  transition: inherit;
+}
+
 /* VIEW FORM - FORMULAIRE */
 
 .view-form:not(.com_emundus),
@@ -3939,7 +3961,7 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
   .span12 {
 
     /* INTRO FORMULAIRE */
-    .emundus-form {
+    &> .emundus-form, .mon-profil .emundus-form, div:not(.view-registration) > .emundus-form {
       margin-top: 0;
       margin-bottom: 64px;
       border-radius: var(--em-form-br-block) !important;
@@ -5146,6 +5168,7 @@ screen and (max-height: 769px) {
 
     .emundus-form {
       margin-top: 0 !important;
+      padding-top: 0;
     }
   }
 
@@ -5437,7 +5460,7 @@ screen and (max-height: 769px) {
   #g-container-main {
     padding: 20px 20px 20px 20px;
   }
-  .gantry.view-form:not(.applicant-form) #g-container-main {
+  .gantry.view-form:not(.applicant-form):not(.view-registration):not(.mon-profil) #g-container-main {
     padding-right: 0;
   }
 }
@@ -6650,10 +6673,12 @@ tbody .el-table__row:nth-child(odd){
   display: flex;
   justify-content: center;
   align-items: center;
+  pointer-events: none;
   .selected-rows-tip__content{
     padding: 10px 12px;
     border-radius: 8px;
     background: var(--main-900);
+    pointer-events: all;
     span{
       color: var(--neutral-300);
     }

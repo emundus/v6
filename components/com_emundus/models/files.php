@@ -1427,6 +1427,7 @@ class EmundusModelFiles extends JModelLegacy
                 $query ="insert into #__emundus_tag_assoc (fnum, id_tag, date_time, user_id) VALUES ";
 
                 $logger = array();
+				$insert_tags = false;
                 foreach ($fnums as $fnum) {
                     // Get tags already associated to this fnum by the current user
                     $query_associated_tags->clear()
@@ -1440,6 +1441,8 @@ class EmundusModelFiles extends JModelLegacy
                     // Insert valid tags
                     foreach ($tags as $tag) {
                         if (!in_array($tag, $tags_already_associated)) {
+	                        $insert_tags = true;
+
                             $query .= '("' . $fnum . '", ' . $tag . ',"' . $now . '",' . $user . '),';
                             $query_log = 'SELECT label
                                 FROM #__emundus_setup_action_tag
@@ -1459,9 +1462,13 @@ class EmundusModelFiles extends JModelLegacy
                     }
                 }
 
-                $query = substr_replace($query, ';', -1);
-                $db->setQuery($query);
-                $tagged = $db->execute();
+				if($insert_tags) {
+					$query = substr_replace($query, ';', -1);
+					$db->setQuery($query);
+					$tagged = $db->execute();
+				} else {
+					$tagged = true;
+				}
             } catch (Exception $e) {
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
             }
@@ -1516,7 +1523,7 @@ class EmundusModelFiles extends JModelLegacy
      * @param $state
      * @return bool|mixed
      */
-    public function updateState($fnums, $state) {
+    public function updateState($fnums, $state, $user_id = null) {
         $res = false;
 
         if (!empty($fnums) && isset($state)) {
@@ -1543,8 +1550,11 @@ class EmundusModelFiles extends JModelLegacy
                 }
 
                 $all_status = $this->getStatus();
-                $user = JFactory::getUser();
-                $user_id = !empty($user->id) ? $user->id : 62;
+
+                if (empty($user_id)) {
+                    $user = JFactory::getUser();
+                    $user_id = !empty($user->id) ? $user->id : 62;
+                }
 
                 foreach ($fnums as $fnum) {
                     $query->clear()
@@ -1574,12 +1584,21 @@ class EmundusModelFiles extends JModelLegacy
                     $res = $db->execute();
 
                     $old_status_lbl = $all_status[$old_status_step]['value'];
+
+                    // get the applicant id
+                    $query->clear()
+                        ->select($db->quoteName('applicant_id'))
+                        ->from($db->quoteName('#__emundus_campaign_candidature'))
+                        ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
+                    $db->setQuery($query);
+                    $applicant_id = $db->loadResult();
+
                     if ($res) {
                         $logs_params = ['updated' => [['old' => $old_status_lbl, 'new' => $all_status[$state]['value'], 'old_id' => $old_status_step, 'new_id' => $state]]];
-                        EmundusModelLogs::log($user_id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+                        EmundusModelLogs::log($user_id, $applicant_id, $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
                     } else {
                         $logs_params = ['updated' => [['old' => $old_status_lbl, 'new' => $all_status[$state]['value'], 'old_id' => $old_status_step, 'new_id' => $state]]];
-                        EmundusModelLogs::log($user_id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE_FAILED', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+                        EmundusModelLogs::log($user_id, $applicant_id, $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE_FAILED', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
                     }
 
                     $dispatcher->trigger('onAfterStatusChange', [$fnum, $state]);
@@ -1616,7 +1635,7 @@ class EmundusModelFiles extends JModelLegacy
      * @param $publish
      * @return bool|mixed
      */
-    public function updatePublish($fnums, $publish) {
+    public function updatePublish($fnums, $publish, $user_id = null) {
 
         $dispatcher = JEventDispatcher::getInstance();
 
@@ -1636,37 +1655,45 @@ class EmundusModelFiles extends JModelLegacy
                 // Old publish status
                 switch ($old_publish) {
                     case(1):
-                        $old_publish = JText::_('PUBLISHED');
+                        $old_publish_lbl = JText::_('PUBLISHED');
                         break;
                     case(0):
-                        $old_publish = JText::_('ARCHIVED');
+                        $old_publish_lbl = JText::_('ARCHIVED');
                         break;
                     case(-1):
-                        $old_publish = JText::_('TRASHED');
+                        $old_publish_lbl = JText::_('TRASHED');
                         break;
                 }
                 // New publish status
                 switch ($publish) {
                     case(1):
-                        $new_publish = JText::_('PUBLISHED');
+                        $new_publish_lbl = JText::_('PUBLISHED');
                         break;
                     case(0):
-                        $new_publish = JText::_('ARCHIVED');
+                        $new_publish_lbl = JText::_('ARCHIVED');
                         break;
                     case(-1):
-                        $new_publish = JText::_('TRASHED');
+                        $new_publish_lbl = JText::_('TRASHED');
                         break;
                 }
+
                 // Log the update
-                $logsParams = array('updated' => []);
-                array_push($logsParams['updated'], ['old' => $old_publish, 'new' => $new_publish]);
+                $logsParams = ['updated' => [['old' => $old_publish_lbl, 'new' => $new_publish_lbl, 'old_id' => $old_publish, 'new_id' => $publish]]];
+
+                if (empty($user_id)) {
+                    $user = JFactory::getUser();
+                    $user_id = !empty($user->id) ? $user->id : 62;
+                }
+
+                // get the applicant id
                 $query->clear()
                     ->select($db->quoteName('applicant_id'))
                     ->from($db->quoteName('#__emundus_campaign_candidature'))
                     ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
                 $db->setQuery($query);
                 $applicant_id = $db->loadResult();
-                EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 28, 'u', 'COM_EMUNDUS_PUBLISH_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+
+                EmundusModelLogs::log($user_id, $applicant_id, $fnum, 28, 'u', 'COM_EMUNDUS_PUBLISH_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
                 // Update publish
                 $dispatcher->trigger('onBeforePublishChange', [$fnum, $publish]);
@@ -1797,31 +1824,37 @@ class EmundusModelFiles extends JModelLegacy
      * @return bool|mixed
      */
     public static function getFnumInfos($fnum) {
-        try {
-            $db = JFactory::getDBO();
-            $query = $db->getQuery(true);
-            $query->select('u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, cc.form_progress, cc.attachment_progress, ss.value, ss.class, c.*, cc.campaign_id')
-                ->from($db->quoteName('#__emundus_campaign_candidature','cc'))
-                ->leftJoin($db->quoteName('#__emundus_setup_campaigns','c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('cc.campaign_id'))
-                ->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('u.id').' = '.$db->quoteName('cc.applicant_id'))
-                ->leftJoin($db->quoteName('#__emundus_setup_status','ss').' ON '.$db->quoteName('ss.step').' = '.$db->quoteName('cc.status'))
-                ->where($db->quoteName('cc.fnum').' LIKE '.$db->quote($fnum));
-            $db->setQuery($query);
-            $fnumInfos = $db->loadAssoc();
+		$fnumInfos = false;
 
-            $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-            if ($anonymize_data) {
-                $fnumInfos['name'] = $fnum;
-                $fnumInfos['email'] = $fnum;
-            }
+		if (!empty($fnum)) {
+			try {
+				$db = JFactory::getDBO();
+				$query = $db->getQuery(true);
+				$query->select('u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, cc.form_progress, cc.attachment_progress, ss.value, ss.class, c.*, cc.campaign_id')
+					->from($db->quoteName('#__emundus_campaign_candidature','cc'))
+					->leftJoin($db->quoteName('#__emundus_setup_campaigns','c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('cc.campaign_id'))
+					->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('u.id').' = '.$db->quoteName('cc.applicant_id'))
+					->leftJoin($db->quoteName('#__emundus_setup_status','ss').' ON '.$db->quoteName('ss.step').' = '.$db->quoteName('cc.status'))
+					->where($db->quoteName('cc.fnum').' LIKE '.$db->quote($fnum));
+				$db->setQuery($query);
+				$fnumInfos = $db->loadAssoc();
 
-            return $fnumInfos;
+				if (!class_exists('EmundusHelperAccess')) {
+					require_once(JPATH_ROOT.'/components/com_emundus/helpers/access.php');
+				}
 
-        } catch (Exception $e) {
-            echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-            return false;
-        }
+				$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+				if ($anonymize_data) {
+					$fnumInfos['name'] = $fnum;
+					$fnumInfos['email'] = $fnum;
+				}
+			} catch (Exception $e) {
+				echo $e->getMessage();
+				JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $fnumInfos;
     }
 
     /**
@@ -4025,55 +4058,59 @@ class EmundusModelFiles extends JModelLegacy
      *
      * @since version
      */
-    public function getAttachmentsAssignedToEmundusGroups($group_ids) {
+	public function getAttachmentsAssignedToEmundusGroups($group_ids)
+	{
 
-        if (!is_array($group_ids)) {
-            $group_ids = [$group_ids];
-        }
+		if (!is_array($group_ids)) {
+			$group_ids = [$group_ids];
+		}
 
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
 
-        $result = [];
-        foreach ($group_ids as $group_id) {
-            $query->clear()
-                ->select($db->quoteName('anonymize'))
-                ->from($db->quoteName('#__emundus_setup_groups'))
-                ->where($db->quoteName('id').' = '.$group_id);
-            $db->setQuery($query);
-            $anonymize = $db->loadResult();
+		$result = [];
+		foreach ($group_ids as $group_id) {
+			$query->clear()
+				->select($db->quoteName('anonymize'))
+				->from($db->quoteName('#__emundus_setup_groups'))
+				->where($db->quoteName('id') . ' = ' . $group_id);
+			$db->setQuery($query);
+			$anonymize = $db->loadResult();
 
-            // If the group has no anonymization, then the user can see all the attachments
-            if ($anonymize == 0) {
-                return true;
-            } else {
-                $query->clear()
-                    ->select($db->quoteName('attachment_id_link'))
-                    ->from($db->quoteName('#__emundus_setup_groups_repeat_attachment_id_link'))
-                    ->where($db->quoteName('parent_id').' = '.$group_id);
-                $db->setQuery($query);
+			// If the group has no anonymization, then the user can see all the attachments
+			if ($anonymize == 0) {
+				return true;
+			}
+			else {
+				$query->clear()
+					->select($db->quoteName('attachment_id_link'))
+					->from($db->quoteName('#__emundus_setup_groups_repeat_attachment_id_link'))
+					->where($db->quoteName('parent_id') . ' = ' . $group_id);
+				$db->setQuery($query);
 
-                try {
-                    $attachments = $db->loadColumn();
+				try {
+					$attachments = $db->loadColumn();
 
-                    // In the case of a group having no assigned Fabrik groups, it can get them all.
-                    if (empty($attachments)) {
-                        return true;
-                    }
+					// In the case of a group having no assigned Fabrik groups, it can get them all.
+					if (empty($attachments)) {
+						return true;
+					}
 
-                    $result = array_merge($result, $attachments);
-                } catch (Exception $e) {
-                    return false;
-                }
-            }
-        }
+					$result = array_merge($result, $attachments);
+				}
+				catch (Exception $e) {
+					return false;
+				}
+			}
+		}
 
-        if (empty($result)) {
-            return true;
-        } else {
-            return array_keys(array_flip($result));
-        }
-    }
+		if (empty($result)) {
+			return true;
+		}
+		else {
+			return array_keys(array_flip($result));
+		}
+	}
 
     public function getFormProgress($fnums) {
         $db = JFactory::getDBO();

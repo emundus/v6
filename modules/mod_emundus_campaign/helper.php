@@ -96,7 +96,7 @@ class modEmundusCampaignHelper {
                 ->where('ca.published=1 AND "'.$this->now.'" <= ca.start_date '.$condition);
         } else {
             $query
-                ->select('ca.*, pr.apply_online, pr.link,pr.label as programme,pr.color as tag_color,pr.programmes as prog_type, pr.logo,MONTH(ca.'.$order.') as month,concat(MONTHNAME(ca.'.$order.'),"-",YEAR(ca.'.$order.')) as month_name')
+                ->select('ca.*, pr.apply_online, pr.code,pr.label as programme,pr.color as tag_color, pr.link,pr.programmes as prog_type, pr.logo,MONTH(ca.'.$order.') as month,concat(MONTHNAME(ca.'.$order.'),"-",YEAR(ca.'.$order.')) as month_name')
                 ->from('#__emundus_setup_campaigns as ca,#__emundus_setup_programmes as pr')
                 ->where('ca.training = pr.code AND ca.published=1 AND "'.$this->now.'" <= ca.start_date '.$condition);
         }

@@ -43,7 +43,6 @@ class Service extends AbstractModel
         ], $defaultMeta = [
             'apiVersion'       => null,
             'serviceFullName'  => null,
-            'serviceId'        => null,
             'endpointPrefix'   => null,
             'signingName'      => null,
             'signatureVersion' => null,
@@ -88,9 +87,7 @@ class Service extends AbstractModel
 
         if (isset($mapping[$proto])) {
             return new $mapping[$proto]($api, $endpoint);
-        }
-
-        if ($proto == 'ec2') {
+        } elseif ($proto == 'ec2') {
             return new QuerySerializer($api, $endpoint, new Ec2ParamBuilder());
         }
 
@@ -102,14 +99,12 @@ class Service extends AbstractModel
     /**
      * Creates an error parser for the given protocol.
      *
-     * Redundant method signature to preserve backwards compatibility.
-     *
      * @param string $protocol Protocol to parse (e.g., query, json, etc.)
      *
      * @return callable
      * @throws \UnexpectedValueException
      */
-    public static function createErrorParser($protocol, Service $api = null)
+    public static function createErrorParser($protocol)
     {
         static $mapping = [
             'json'      => 'Aws\Api\ErrorParser\JsonRpcErrorParser',
@@ -120,7 +115,7 @@ class Service extends AbstractModel
         ];
 
         if (isset($mapping[$protocol])) {
-            return new $mapping[$protocol]($api);
+            return new $mapping[$protocol]();
         }
 
         throw new \UnexpectedValueException("Unknown protocol: $protocol");
@@ -145,9 +140,7 @@ class Service extends AbstractModel
         $proto = $api->getProtocol();
         if (isset($mapping[$proto])) {
             return new $mapping[$proto]($api);
-        }
-
-        if ($proto == 'ec2') {
+        } elseif ($proto == 'ec2') {
             return new QueryParser($api, null, false);
         }
 
@@ -164,16 +157,6 @@ class Service extends AbstractModel
     public function getServiceFullName()
     {
         return $this->definition['metadata']['serviceFullName'];
-    }
-
-    /**
-     * Get the service id
-     *
-     * @return string
-     */
-    public function getServiceId()
-    {
-        return $this->definition['metadata']['serviceId'];
     }
 
     /**
@@ -300,24 +283,6 @@ class Service extends AbstractModel
     }
 
     /**
-     * Get all of the error shapes of the service
-     *
-     * @return array
-     */
-    public function getErrorShapes()
-    {
-        $result = [];
-        foreach ($this->definition['shapes'] as $name => $definition) {
-            if (!empty($definition['exception'])) {
-                $definition['name'] = $name;
-                $result[] = new StructureShape($definition, $this->getShapeMap());
-            }
-        }
-
-        return $result;
-    }
-
-    /**
      * Get all of the service metadata or a specific metadata key value.
      *
      * @param string|null $key Key to retrieve or null to retrieve all metadata
@@ -328,9 +293,7 @@ class Service extends AbstractModel
     {
         if (!$key) {
             return $this['metadata'];
-        }
-
-        if (isset($this->definition['metadata'][$key])) {
+        } elseif (isset($this->definition['metadata'][$key])) {
             return $this->definition['metadata'][$key];
         }
 

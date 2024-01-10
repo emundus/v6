@@ -350,7 +350,6 @@ class EmundusModelEvaluation extends JModelList {
 
         if ($session->has('filt_params'))
         {
-            //var_dump($session->get('filt_params'));
             $element_id = array();
             $filt_params = $session->get('filt_params');
 
@@ -388,7 +387,7 @@ class EmundusModelEvaluation extends JModelList {
                 }
             }
         }
-//die(var_dump($elements_id));
+
         return @$elements_id;
     }
 
@@ -456,7 +455,6 @@ class EmundusModelEvaluation extends JModelList {
         $fnums = $jinput->getString('cfnums', null);
 
         if ($session->has('filt_params')) {
-            //var_dump($session->get('filt_params'));
             $elements_id = array();
             $filt_params = $session->get('filt_params');
 
@@ -507,7 +505,6 @@ class EmundusModelEvaluation extends JModelList {
 
         if ($session->has('filt_params'))
         {
-            //var_dump($session->get('filt_params'));
             $elements_id = array();
             $filt_params = $session->get('filt_params');
 
@@ -980,7 +977,7 @@ class EmundusModelEvaluation extends JModelList {
             $dbo->setQuery($query);
             return $dbo->loadAssocList();
         } catch(Exception $e) {
-            echo $query . ' ' . $e->getMessage();
+	        echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.str_replace('#_', 'jos', $query), JLog::ERROR, 'com_emundus');
         }
     }

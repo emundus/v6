@@ -25,8 +25,8 @@ if(!empty($this->campaign)){
 <div class="login<?php echo $this->pageclass_sfx; ?>">
     <?php if ($this->params->get('show_page_heading')) : ?>
         <div class="page-header">
-            <?php if (file_exists('images/custom/favicon.png')) : ?>
-                <a href="index.php" alt="Logo" class="em-profile-picture mb-8" style="width: 50px;height: 50px;background-image: url('images/custom/favicon.png')">
+            <?php if (file_exists($this->favicon)) : ?>
+                <a href="index.php" alt="Logo" class="em-profile-picture mb-8" style="width: 50px;height: 50px;background-image: url(<?php echo $this->favicon ?>)">
                 </a>
             <?php endif; ?>
             <h1 class="em-mb-8">

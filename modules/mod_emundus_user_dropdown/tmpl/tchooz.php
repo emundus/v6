@@ -22,7 +22,9 @@ if ($user != null) {
     include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
     $m_profiles = new EmundusModelProfile();
     $app_prof = $m_profiles->getApplicantsProfilesArray();
-	$user_profile = $m_profiles->getProfileById($user->profile);
+    if(!empty($user->profile)) {
+        $user_profile = $m_profiles->getProfileById($user->profile);
+    }
 
     $user = JFactory::getSession()->get('emundusUser');
 
@@ -163,28 +165,26 @@ if ($user != null) {
 
         .em-profile-container p:nth-child(2) {
             overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            /*text-overflow: ellipsis;*/
-            width: 85px;
+            max-width: 140px;
             max-height: 30px;
-
             font-family: var(--em-applicant-font);
             font-size: 12px;
             font-style: normal;
             font-weight: 400;
             line-height: 15px;
             letter-spacing: 0.004em;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
     </style>
 
     <?= $intro; ?>
 
 <!-- Button which opens up the dropdown menu. -->
-<div class='dropdown <?php if($first_logged) : ?>userDropdown-tip<?php endif; ?>' tabindex="0" id="userDropdown" style="float: right;">
+<div class='dropdown' tabindex="0" id="userDropdown" style="float: right;">
 	<?php if ($display_svg == 1) : ?>
-    <iframe id="background-shapes" src="/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg" alt="<?= JText::_('COM_EMUNDUS_USERDROPDOWN_IFRAME') ?>"></iframe>
+    <div id="background-shapes"></div>
 	<?php endif; ?>
     <?php if(!empty($profile_picture)): ?>
     <div id="userDropdownLabel">
@@ -203,8 +203,8 @@ if ($user != null) {
         </div>
     </div>
     <?php else : ?>
-    <div class="em-flex-row em-flex-end em-profile-container" id="userDropdownLabel" onclick="manageHeight()">
-        <div class="em-flex-row">
+    <div  id="userDropdownLabel" onclick="manageHeight()">
+        <div class="em-flex-row em-flex-end em-profile-container">
             <div class="mr-4">
                 <?php if(!empty($user)) : ?>
                 <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0]. '.'; ?></p>
@@ -213,14 +213,8 @@ if ($user != null) {
                 <p class="em-profile-color em-text-italic"><?= $profile_label; ?></p>
                 <?php endif; ?>
             </div>
-            <div class="em-user-dropdown-button <?php if($first_logged) : ?>userDropdownLabel-tip<?php endif; ?>" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
-                <?php if($first_logged) : ?>
-                    <div class="em-user-dropdown-tip" id="userDropdownTip">
-                        <p><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_TEXT') ?></p><br/>
-                        <p class="em-user-dropdown-tip-link" onclick="closeTip()"><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_CLOSE') ?></p>
-                    </div>
-                <?php endif ;?>
-                <span class="material-icons-outlined em-user-dropdown-icon <?php if($first_logged) : ?>userDropdownIcon-tip<?php endif; ?>" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">account_circle</span>
+            <div class="em-user-dropdown-button" aria-haspopup="true" aria-expanded="false">
+                <span class="material-icons-outlined em-user-dropdown-icon" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">account_circle</span>
             </div>
 
         </div>
@@ -240,7 +234,7 @@ if ($user != null) {
             <div class="em-profile-picture-modal" style="background-image:url('<?php echo $profile_picture ?>');">
             </div>
 	        <?php else : ?>
-            <span class="material-icons-outlined em-profile-picture-modal-icon <?php if($first_logged) : ?>userDropdownIcon-tip<?php endif; ?>" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">account_circle</span>
+            <span class="material-icons-outlined em-profile-picture-modal-icon" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">account_circle</span>
 	        <?php endif; ?>
             <li class="dropdown-header em-text-align-center em-font-weight-500 em-text-neutral-900"><?= $user->firstname . ' ' . $user->lastname; ?></li>
             <li class="dropdown-header em-text-align-center em-text-neutral-600" title="<?= $user->email; ?>"><?= $user->email; ?></li>
@@ -309,11 +303,11 @@ if ($user != null) {
 
     <script>
         // get current profile color and state
-        let profile_color = sessionStorage.getItem('profile_color');
-        let profile_state = sessionStorage.getItem('profile_state');
+        let profile_color = '<?php echo $profile_details->class; ?>';
+        let profile_state = <?php echo $profile_details->published; ?>;
 
         // if session storage is empty, get profile color and state from server
-        if(profile_color === null || profile_state === null) {
+        if (profile_color === null || profile_state === null) {
             getProfileColorAndState();
         } else {
             applyColors(profile_color, profile_state);
@@ -336,7 +330,7 @@ if ($user != null) {
                     // save profile color and state in local storage
                     sessionStorage.setItem('profile_color', profile_color);
                     sessionStorage.setItem('profile_state', profile_state);
-                    applyColors(profile_color, profile_state);
+                    //applyColors(profile_color, profile_state);
                 }
             });
         }
@@ -370,35 +364,7 @@ if ($user != null) {
                 let root = document.querySelector(':root');
                 let css_var = getComputedStyle(root).getPropertyValue("--em-primary-color");
 
-                document.documentElement.style.setProperty("--em-profile-color", css_var);
-
-                // header background color
-                let iframeElements_2 = document.querySelectorAll("#background-shapes");
-
-                if(iframeElements_2 !== null) {
-                    iframeElements_2.forEach((iframeElement) => {
-                        let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
-                        let styleElement = iframeDocument.querySelector("style");
-                        let pathElements = iframeDocument.querySelectorAll("path");
-
-                        if (styleElement) {
-                            let styleContent = styleElement.textContent;
-                            styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + css_var + ";");
-                            styleElement.textContent = styleContent;
-                        }
-
-                        if (pathElements) {
-                            pathElements.forEach((pathElement) => {
-                                let pathStyle = pathElement.getAttribute("style");
-                                if (pathStyle && pathStyle.includes("fill:grey;")) {
-                                    pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + css_var + ";");
-                                    pathElement.setAttribute("style", pathStyle);
-
-                                }
-                            });
-                        }
-                    });
-                }
+                updateSvgColors(css_var);
             }
             else  { // it's a coordinator profile
                 if(profile_color != '') {
@@ -409,49 +375,30 @@ if ($user != null) {
                         let root = document.querySelector(':root');
                         let css_var = getComputedStyle(root).getPropertyValue(label_colors[profile_color]);
 
-                        document.documentElement.style.setProperty("--em-profile-color", css_var);
-
-                        // header background color
-                        let iframeElements_2 = document.querySelectorAll("#background-shapes");
-                        if(iframeElements_2 !== null) {
-                            iframeElements_2.forEach((iframeElement) => {
-                                let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
-                                let styleElement = iframeDocument.querySelector("style");
-                                let pathElements = iframeDocument.querySelectorAll("path");
-
-                                if (styleElement) {
-                                    let styleContent = styleElement.textContent;
-                                    styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + css_var + ";");
-                                    styleElement.textContent = styleContent;
-                                }
-
-                                if (pathElements) {
-                                    pathElements.forEach((pathElement) => {
-                                        let pathStyle = pathElement.getAttribute("style");
-                                        if (pathStyle && pathStyle.includes("fill:grey;")) {
-                                            pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + css_var + ";");
-                                            pathElement.setAttribute("style", pathStyle);
-
-                                        }
-                                    });
-                                }
-                            });
-                        }
+                        updateSvgColors(css_var);
                     }
                 }
             }
         }
 
-        <?php if($first_logged) : ?>
-        displayUserOptions();
-        <?php endif ?>
         document.addEventListener('DOMContentLoaded', function () {
             if(document.getElementById('profile_chzn') != null){
                 document.getElementById('profile_chzn').style.display = 'none';
                 document.getElementById('profile').style.display = 'block';
                 document.querySelector('#header-c .g-content').style.alignItems = 'start';
             }
+
+            let elmnt2 = document.getElementById("g-top");
+            if(elmnt2 !== null) {
+                let hauteurTotaleElem = elmnt2.offsetHeight;
+                document.getElementById("g-navigation").style.top = hauteurTotaleElem + 'px';
+            }
         });
+
+        function updateSvgColors(css_var) {
+            document.documentElement.style.setProperty("--em-profile-color", css_var);
+        }
+
         function displayUserOptions(){
             var dropdown = document.getElementById('userDropdown');
             var icon = document.getElementById('userDropdownIcon');
@@ -585,13 +532,13 @@ if ($user != null) {
     </script>
 <?php } else { ?>
 	<?php if ($display_svg == 1) : ?>
-    <iframe id="background-shapes" src="/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg" alt="<?= JText::_('COM_EMUNDUS_USERDROPDOWN_IFRAME') ?>"></iframe>
+    <iframe id="background-shapes" alt="<?= JText::_('COM_EMUNDUS_USERDROPDOWN_IFRAME') ?>"></iframe>
 	<?php endif; ?>
     <div class="header-right" style="text-align: right;">
         <?php if ($show_registration) { ?>
-            <a class="btn btn-danger" href="<?= $link_register; ?>" data-toggle="sc-modal"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
+            <a class="btn btn-danger" href="<?= JRoute::_($link_register); ?>" data-toggle="sc-modal"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
         <?php } ?>
-        <a class="btn btn-danger btn-creer-compte" href="<?= $link_login; ?>" data-toggle="sc-modal"><?= JText::_('CONNEXION_LABEL'); ?></a>
+        <a class="btn btn-danger btn-creer-compte" href="<?= JRoute::_($link_login); ?>" data-toggle="sc-modal"><?= JText::_('CONNEXION_LABEL'); ?></a>
     </div>
     <script>
         <?php if ($guest): ?>

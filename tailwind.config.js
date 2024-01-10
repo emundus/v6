@@ -15,6 +15,9 @@ module.exports = {
     safelist: [
         {
             pattern: /label-/
+        },
+        {
+            pattern: /(py|px|p)-/
         }
     ],
     theme: {
@@ -26,6 +29,9 @@ module.exports = {
                 neutral: {
                     500: 'var(--neutral-500)',
                     600: 'var(--neutral-600)',
+                },
+                green: {
+                    500: 'var(--main-500)',
                 }
             },
             spacing: {

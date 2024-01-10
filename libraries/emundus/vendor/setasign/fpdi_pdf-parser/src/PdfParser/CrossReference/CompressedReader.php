@@ -4,7 +4,7 @@
  * This file is part of FPDI PDF-Parser
  *
  * @package   setasign\FpdiPdfParser
- * @copyright Copyright (c) 2021 Setasign GmbH & Co. KG (https://www.setasign.com)
+ * @copyright Copyright (c) 2023 Setasign GmbH & Co. KG (https://www.setasign.com)
  * @license   FPDI PDF-Parser Commercial Developer License Agreement (see LICENSE.txt file within this package)
  */
 
@@ -19,6 +19,7 @@ use setasign\Fpdi\PdfParser\Type\PdfDictionary;
 use setasign\Fpdi\PdfParser\Type\PdfIndirectObjectReference;
 use setasign\Fpdi\PdfParser\Type\PdfNumeric;
 use setasign\Fpdi\PdfParser\Type\PdfStream;
+use setasign\Fpdi\PdfParser\Type\PdfTypeException;
 use setasign\FpdiPdfParser\PdfParser\PdfParser;
 
 /**
@@ -77,6 +78,7 @@ class CompressedReader implements ReaderInterface
      *
      * @param PdfParser $parser
      * @param PdfStream $stream
+     * @throws PdfTypeException
      */
     public function __construct(PdfParser $parser, PdfStream $stream)
     {
@@ -96,6 +98,7 @@ class CompressedReader implements ReaderInterface
 
     /**
      * Read the main cross-reference data.
+     * @throws PdfTypeException
      */
     protected function read()
     {
@@ -198,7 +201,7 @@ class CompressedReader implements ReaderInterface
     }
 
     /**
-     * Get the trailer related to this cross reference.
+     * Get the trailer related to this cross-reference.
      *
      * @return PdfDictionary
      */

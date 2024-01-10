@@ -100,7 +100,15 @@ export default {
 				document.addEventListener('click', this.handleClickOutside);
 			}
 		},
-		onCloseCard() {
+		onCloseCard(event = null) {
+			if (event !== null) {
+				event.stopPropagation();
+			}
+
+			if (this.opened) {
+				this.opened = false;
+			}
+
 			const valueDifferences = this.filter.value != this.originalFilterValue;
 			const operatorDifferences = this.filter.operator !== this.originalFilterOperator;
 

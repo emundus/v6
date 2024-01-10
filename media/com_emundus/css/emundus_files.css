@@ -206,6 +206,16 @@ button.close {
     background: #ebebeb;
 }
 
+.em-personalDetail-table-multiplleLine.table-striped {
+    border-width: 2px 0 2px 0;
+    border-radius: 0;
+}
+
+.em-personalDetail-table-multiplleLine.table-striped thead tr th {
+    box-shadow: unset;
+    border-radius: 0;
+}
+
 .em-personalDetail-table-multiplleLine.table-striped tbody tr:nth-child(2n+1) td, .em-personalDetail-table-multiplleLine.table-striped tbody tr:nth-child(2n+1) th {
     background: var(--neutral-100);
 }
@@ -392,6 +402,10 @@ table > thead > tr > th {
 
 /* FILTRES */
 
+.chzn-container-multi .chzn-choices li.search-choice .search-choice-close {
+    transition: unset;
+}
+
 .em_filters_filedset > label{
     color: var(--neutral-0) !important;
 }
@@ -462,6 +476,10 @@ button#em-close-file {
 .panel-default>div {
     padding-left: 13px;
     padding-bottom: 24px;
+}
+
+.panel-default.em-container-comment .form {
+    padding: 24px 13px;
 }
 
 .files-board .main-panel table#em-data thead th div,
@@ -634,6 +652,9 @@ div#em-appli-block .panel.panel-default.widget .panel-heading h3.panel-title + a
 div#em-appli-block .list-group-item {
     background-color: var(--neutral-0);
     border-radius: 4px;
+    border: 1px solid var(--neutral-300);
+    box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+    margin: 12px 0;
 }
 
 div#em-appli-block button.btn.btn-default:hover, div#em-appli-block button.btn.btn-default:focus, div#em-appli-block button.btn.btn-default:active {
@@ -667,6 +688,12 @@ div#em-appli-block .active.content fieldset {
 
 .panel-body.Marginpanel-body.em-container-form-body .em-personalDetail{
     overflow:scroll;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.panel-body.Marginpanel-body.em-container-form-body .em-personalDetail::-webkit-scrollbar {
+    display: none;
 }
 
 div#em-appli-block .legend {
@@ -677,7 +704,7 @@ div#em-appli-block .legend {
 
 div#em-appli-block .legend::before {
     content: '\f0da';
-    font-family: 'FontAwesome';
+    font-family: 'FontAwesome', sans-serif;
     color: #dddddd;
     padding-right: 10px;
 }
@@ -690,24 +717,9 @@ div#em-appli-block tr:nth-child(odd) {
     background-color: var(--neutral-100);
 }
 
-table#groups-table a {
-    background: #4E5B6D;
-    box-shadow: none;
-    border: 1px solid #4E5B6D;
-    color: var(--neutral-0);
-}
-
-table#groups-table a:hover {
-    background: #404B5A;
-    box-shadow: none;
-    border: 1px solid #404B5A;
-    color: var(--neutral-0);
-}
-
 .comment-text h2 {
     font-size: 17px;
 }
-
 
 /* MODALS */
 
@@ -1241,6 +1253,10 @@ div#em-synthesis .panel-heading h3 {
     padding: 13px 0 0 13px;
 }
 
+.col-md-9.main-panel div#em-appli-block .panel.panel-default.widget .panel-body.em-container-comment-body ul.list-group {
+    padding: 13px;
+}
+
 .col-md-9.main-panel div#em-appli-block .em-decision-form-content textarea {
     color: #353544;
 }
@@ -1449,7 +1465,8 @@ td:first-child>.em-cell {
 
 .em-cell-scroll > .em-cell {
     max-height: 85px;
-    width: max-content;
+    width: min-content;
+    min-width: 100%;
     overflow-x: hidden;
     overflow-y: scroll;
     -ms-overflow-style: none;
@@ -1842,7 +1859,6 @@ thead th:hover {
 }
 
 .access-table {
-    margin-bottom: 15px;
     overflow: auto;
 }
 
@@ -1861,7 +1877,7 @@ thead th:hover {
 
 #em-appli-block .table th,
 #em-appli-block .table td {
-    height: 61px;
+    height: 62px;
 }
 
 .holds-iframe {
@@ -2736,19 +2752,6 @@ div#em-modal-actions .panel-heading h5 {
     color: var(--neutral-900);
     border: 0;
 }
-
-table#groups-table a {
-    background: #4E5B6D !important;
-    box-shadow: none;
-    border: 1px solid #4E5B6D !important;
-    color: var(--neutral-0);
-}
-table#groups-table a:hover {
-     background: #404B5A !important;
-     box-shadow: none;
-     border: 1px solid #404B5A !important;
-     color: var(--neutral-0);
- }
 
 /* MENU ACTIONS */
 .navbar.navbar-inverse {

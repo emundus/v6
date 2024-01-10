@@ -260,12 +260,11 @@ export default {
     },
 
     async deleteComment(cid){
+        const formData = new FormData();
+        formData.append('cid', cid);
+
         try {
-            const response = await client().delete('index.php?option=com_emundus&controller=file&task=deletecomment', {
-                params: {
-                    cid: cid,
-                }
-            });
+            const response = await client().post('index.php?option=com_emundus&controller=file&task=deletecomment', formData);
 
             return response.data;
         } catch (e) {

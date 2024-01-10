@@ -26,7 +26,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 <div id="em_filters">
 <?php
     if (!$this->use_module_for_filters) {
-        echo @$this->filters;
+        echo $this->filters;
 
 ?>
 </div>
@@ -53,7 +53,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
         let differences = newValues
             .filter(newValue => !data[event.target.name].includes(newValue))
-            .concat(data[event.target.name].filter(oldVal => !newValues.includes(oldVal)));;
+            .concat(data[event.target.name].filter(oldVal => !newValues.includes(oldVal)));
 
         if (differences.length > 0) {
             setFiltersSumo(event);

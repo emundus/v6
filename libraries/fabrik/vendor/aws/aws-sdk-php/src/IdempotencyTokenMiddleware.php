@@ -105,13 +105,9 @@ class IdempotencyTokenMiddleware
     {
         if (function_exists('random_bytes')) {
             return 'random_bytes';
-        }
-
-        if (function_exists('openssl_random_pseudo_bytes')) {
+        } elseif (function_exists('openssl_random_pseudo_bytes')) {
             return 'openssl_random_pseudo_bytes';
-        }
-
-        if (function_exists('mcrypt_create_iv')) {
+        } elseif (function_exists('mcrypt_create_iv')) {
             return 'mcrypt_create_iv';
         }
     }

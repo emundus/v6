@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.19.2 - 2023-11-30
+
+- [#253](https://github.com/php-http/discovery/pull/253) - Symfony 7 dropped the deprecated PHP-HTTP `HttpClient` interface from their HTTP client, do not discover the version 7 client when lookig for the old interface.
+
+## 1.19.1 - 2023-07-11
+
+- [#250](https://github.com/php-http/discovery/pull/250) - Fix: Buzz client instantiation using deprecated Message Factory Discovery, use PSR-17 factory discovery instead.
+
 ## 1.19.0 - 2023-06-19
 
 - [#249](https://github.com/php-http/discovery/pull/249) - Have composer plugin correctly install Symfony http client when nothing explicitly requires psr 18 resp. httplug.

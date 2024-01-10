@@ -144,7 +144,9 @@ export default {
       children: null,
 
       loading: false,
-      init_translations: false
+      init_translations: false,
+	    firstLoadObjects: true,
+	    firstLoadDatas: true
     }
   },
 
@@ -193,6 +195,19 @@ export default {
 
       translationsService.getObjects().then((response) => {
         this.objects = response.data;
+
+				if (this.firstLoadObjects) {
+					// get url parameter object
+					const urlParams = new URLSearchParams(window.location.search);
+
+					const object = urlParams.get('object');
+					if (object) {
+						this.object = this.objects.find(obj => obj.table.name === object);
+					}
+
+					this.firstLoadObjects = false;
+				}
+
         this.loading = false;
       });
     },
@@ -208,7 +223,7 @@ export default {
       ).then(async (response) => {
         this.datas = response.data;
 
-        console.log(value.table);
+
 
         if (value.table.load_all === 'true') {
           let fields = [];
@@ -239,7 +254,21 @@ export default {
           }
           await build();
         } else if (value.table.load_first_data === 'true') {
-          this.data = this.datas[0];
+					if (this.firstLoadDatas) {
+						// get url parameter data
+						const urlParams = new URLSearchParams(window.location.search);
+
+						const dataParam = urlParams.get('data');
+						if (dataParam) {
+							this.data = this.datas.find(d => parseInt(d.id) === parseInt(dataParam));
+						} else {
+							this.data = this.datas[0];
+						}
+
+						this.firstLoadDatas = false;
+					} else {
+						this.data = this.datas[0];
+					}
         } else {
           this.loading = false;
         }

@@ -102,7 +102,10 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 
 	<form action="<?php echo JURI::base(); ?>index.php?option=com_emundus&controller=application&format=raw&task=upload_attachment" method="post" enctype="multipart/form-data" onsubmit="return AIM.submit(this, {'onStart' : startCallback, 'onComplete' : completeCallback})">
 		<div>
-			<?php echo EmundusHelperFilters::setEvaluationList($result_id); ?>
+			<?php
+    			$h_files = new EmundusHelperFilters();
+                echo $h_files->setEvaluationList($result_id);
+            ?>
 			<input name="campaign_id" type="hidden" value="<?php echo $evaluation[0]["campaign_id"]; ?>" />
 			<input name="uid" type="hidden" value="<?php echo $student_id; ?>" />
 			<input name="aid" type="hidden" value="26" />

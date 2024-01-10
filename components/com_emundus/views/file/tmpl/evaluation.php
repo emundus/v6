@@ -49,17 +49,19 @@ JText::script('COM_EMUNDUS_FILES_PAGE_ON');
 JText::script('COM_EMUNDUS_ERROR_OCCURED');
 JText::script('COM_EMUNDUS_ACTIONS_CANCEL');
 JText::script('COM_EMUNDUS_OK');
+JText::script('COM_EMUNDUS_FILES_FILTER_NO_ELEMENTS_FOUND');
 
 JHtml::styleSheet('components/com_emundus/src/assets/css/element-ui/theme-chalk/index.css');
 
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+require_once (JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 
+$ratio = '66/33';
 $menu = JFactory::getApplication()->getMenu();
-$current_menu = $menu->getActive();
+$current_menu = !empty($menu->getActive()) ? $menu->getActive() : $menu->getDefault();
 $params = $menu->getParams($current_menu->id)->get('params');
-if(empty($params->ratio_modal)) {
-    $params->ratio_modal = '66/33';
+if (!empty($params) && !empty($params->ratio_modal)) {
+	$ratio = $params->ratio_modal;
 }
 
 $app = Factory::getApplication();
@@ -70,11 +72,10 @@ $user = JFactory::getUser();
 ?>
 <div id="em-files"
      user=<?= $user->id ?>
-     ratio=<?= $params->ratio_modal ?>
+     ratio=<?= $ratio ?>
      type="evaluation"
      fnum=<?= $fnum ?>
->
-</div>
+></div>
 
 <script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
 
