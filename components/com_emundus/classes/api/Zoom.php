@@ -168,52 +168,66 @@ class Zoom
 		return $meeting;
 	}
 
-	public function createMeeting($host_id, $body)
-	{
-		$meeting = null;
+    public function createMeeting($host_id = 'me', $body)
+    {
+        $meeting = null;
 
-		if (!empty($host_id) && !empty($body)) {
-			$host = $this->getUserById($host_id);
+        if (!empty($host_id) && !empty($body)) {
+            if (is_array($body)) {
+                $body = json_encode($body);
+            }
 
-			if (!empty($host->id)) {
-				$meeting = $this->post("users/$host_id/meetings", $body);
-			} else {
-				JLog::add('[CREATE MEETING] Host not found', JLog::ERROR, 'com_emundus.zoom');
-			}
-		}
+            $host = $this->getUserById($host_id);
 
-		return $meeting;
-	}
+            if (!empty($host->id)) {
+                $meeting = $this->post("users/$host_id/meetings", $body);
+            } else {
+                JLog::add('[CREATE MEETING] Host not found', JLog::ERROR, 'com_emundus.zoom');
+            }
+        }
 
-	public function getUserById($user_id)
-	{
-		$user = null;
+        return $meeting;
+    }
 
-		if (!empty($user_id)) {
-			$user = $this->get('users/' . $user_id);
-		}
+    public function getUserById($user_id)
+    {
+        $user = null;
 
-		return $user;
-	}
+        if (!empty($user_id)) {
+            $user = $this->get('users/' . $user_id);
 
-	public function createUser($user)
-	{
-		$response = null;
+            if (is_string($user)) {
+                $user = null;
+            }
+        }
 
-		if (!empty($user['email'])) {
-			$response = $this->post('users', json_encode([
-				'action' => 'custCreate',
-				'user_info' => [
-					'email' => $user['email'],
-					'type' => !empty($user['type']) ? $user['type'] : 2,
-					'first_name' => $user['first_name'],
-					'last_name' => $user['last_name']
-				]
-			]));
-		}
+        return $user;
+    }
 
-		return $response;
-	}
+    public function createUser($user)
+    {
+        $response = null;
+
+        if (!empty($user['email'])) {
+            $existing_user = $this->getUserById($user['email']);
+
+            if (empty($existing_user)) {
+                $response = $this->post('users', json_encode([
+                    'action' => 'create',
+                    'user_info' => [
+                        'email' => $user['email'],
+                        'type' => !empty($user['type']) ? $user['type'] : 2,
+                        'first_name' => $user['first_name'],
+                        'last_name' => $user['last_name']
+                    ]
+                ]));
+            } else {
+                $response = $existing_user;
+            }
+        }
+
+        return $response;
+    }
 
 	public function updateMeeting($meeting_id, $body)
 	{
