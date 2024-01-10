@@ -117,8 +117,12 @@ class EmundusViewEvaluation extends JViewLegacy
 				// Do not display photos unless specified in params
 				$displayPhoto = false;
 
-				// get applications files
-				$users = $m_evaluation->getUsers($cfnum);
+                if(!empty($m_evaluation->fnum_assoc) || !empty($m_evaluation->code)) {
+                    // get applications files
+                    $users = $m_evaluation->getUsers($cfnum);
+                } else {
+                    $users = array();
+                }
 
 				// Get elements from model and proccess them to get an easy to use array containing the element type
 				$elements = $m_evaluation->getElementsVar();
