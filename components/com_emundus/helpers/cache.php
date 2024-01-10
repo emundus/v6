@@ -96,7 +96,12 @@ class EmundusHelperCache
 
 			if($admin && !empty($group)) {
 				if(is_dir(JPATH_ADMINISTRATOR.'/cache/'.$group)) {
-					$cleaned = $this->deleteDir($group);
+					try {
+						$cleaned = $this->deleteDir($group);
+					} catch (Exception $e) {
+						$cleaned = false;
+						JLog::add('Error cleaning cache of group ' . $group . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cache.error');
+					}
 				}
 			}
 		}
