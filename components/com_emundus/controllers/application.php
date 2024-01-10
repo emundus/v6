@@ -805,30 +805,38 @@ class EmundusControllerApplication extends JControllerLegacy
         exit;
     }
 
-    public function reorderapplications()
-    {
-        $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+	public function reorderapplications()
+	{
+		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
-        $current_user = JFactory::getUser();
-        $emundusUser = JFactory::getSession()->get('emundusUser');
-        $emundusUserFnums = array_keys($emundusUser->fnums);
+		$current_user = JFactory::getUser();
+		$emundusUser = JFactory::getSession()->get('emundusUser');
+		$emundusUserFnums = array_keys($emundusUser->fnums);
 
-        $jinput = JFactory::getApplication()->input;
-        $fnum_from = $jinput->getString('fnum_from', '');
-        $fnum_to = $jinput->getString('fnum_to', '');
-        $order_column = $jinput->getString('order_column', 'ordering');
+		$jinput = JFactory::getApplication()->input;
+		$fnum = $jinput->getString('fnum', '');
+		$direction = $jinput->getString('direction', 'up');
+		$order_column = $jinput->getString('order_column', 'ordering');
+		$redirect = $jinput->getString('redirect', true);
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id) || (in_array($fnum_from, $emundusUserFnums) && in_array($fnum_to, $emundusUserFnums))) {
-            $m_application = new EmundusModelApplication();
-            $reordered = $m_application->invertFnumsOrderByColumn($fnum_from, $fnum_to, $order_column);
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id) || in_array($fnum, $emundusUserFnums)) {
+			$m_application = new EmundusModelApplication();
+			try {
+				$reordered = $m_application->moveApplicationByColumn($fnum, $direction, $order_column);
+				$response['status'] = $reordered;
+				$response['msg'] =  $reordered ? JText::_('SUCCESS') : JText::_('FAILED');
+			} catch (Exception $e) {
+				$response['msg'] = $e->getMessage();
+			}
+		}
 
-            $response['status'] = $reordered;
-            $response['msg'] =  $reordered ? JText::_('SUCCESS') : JText::_('FAILED');
-        }
+		if ($redirect) {
+			JFactory::getApplication()->redirect('/index.php');
+		}
 
-        echo json_encode($response);
-        exit;
-    }
+		echo json_encode($response);
+		exit;
+	}
 
 	public function createtab(){
 		$response = array('tab' => 0, 'msg' => JText::_('FAILED'));

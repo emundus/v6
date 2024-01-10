@@ -5410,57 +5410,75 @@ class EmundusModelApplication extends JModelList
         return $elt;
     }
 
+	public function moveApplicationByColumn($fnum, $direction = 'up', $order_column = 'ordering')
+	{
+		$moved = false;
 
-    public function invertFnumsOrderByColumn($fnum_from, $target_fnum, $order_column = 'ordering')
-    {
-        $reordered = false;
+		$exclude_columns = ['fnum', 'id', 'user', 'user_id', 'applicant_id', 'status', 'submitted'];
+		if (in_array($order_column, $exclude_columns) || empty($order_column) || empty($fnum)) {
+			throw new Exception('Invalid order column or fnum');
+		}
 
-        $excluded_columns = ['fnum', 'id', 'user', 'user_id', 'applicant_id'];
-        if (!in_array($order_column, $excluded_columns) && !empty($order_column) && !empty($fnum_from) && !empty($target_fnum)) {
-            $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
 
-            $query->select($order_column)
-                ->from('#__emundus_campaign_candidature as ecc')
-                ->where('fnum LIKE ' . $db->quote($fnum_from));
+		$query->select($order_column)
+			->from('#__emundus_campaign_candidature as ecc')
+			->where('fnum LIKE ' . $db->quote($fnum));
 
-            $db->setQuery($query);
+		try {
+			$db->setQuery($query);
+			$current_position = $db->loadResult();
 
-            try {
-                $old_position = $db->loadResult();
+			$query->clear()
+				->select('esc.year, ecc.applicant_id')
+				->from('#__emundus_campaign_candidature as ecc')
+				->join('INNER', '#__emundus_setup_campaigns as esc ON esc.id = ecc.campaign_id')
+				->where('fnum LIKE ' . $db->quote($fnum));
 
-                $query->clear()
-                    ->select($order_column)
-                    ->from('#__emundus_campaign_candidature as ecc')
-                    ->where('fnum LIKE ' . $db->quote($target_fnum));
+			$db->setQuery($query);
+			$current_file_infos = $db->loadAssoc();
 
-                $db->setQuery($query);
-                $new_position = $db->loadResult();
+			$query->clear()
+				->select($order_column . ' as target_position, ecc.fnum')
+				->from('#__emundus_campaign_candidature as ecc')
+				->join('INNER', '#__emundus_setup_campaigns as esc ON esc.id = ecc.campaign_id')
+				->where('ecc.applicant_id = ' . $db->quote($current_file_infos['applicant_id']))
+				->andWhere('esc.year = ' . $db->quote($current_file_infos['year']))
+				->andWhere($db->quoteName($order_column) . ' ' . ($direction == 'up' ? '<' : '>') . ' ' . $db->quote($current_position))
+				->andWhere('ecc.published = 1')
+				->order($db->quoteName($order_column) . ' ' . ($direction == 'up' ? 'DESC' : 'ASC'))
+				->setLimit(1);
 
-                $query->clear()
-                    ->update('#__emundus_campaign_candidature')
-                    ->set($db->quoteName($order_column) . ' = ' . $new_position)
-                    ->where('fnum LIKE ' . $db->quote($fnum_from));
+			$db->setQuery($query);
+			$target_file = $db->loadAssoc();
 
-                $db->setQuery($query);
-                $reordered = $db->execute();
+			if (!empty($target_file)) {
+				$query->clear()
+					->update('#__emundus_campaign_candidature')
+					->set($db->quoteName($order_column) . ' = ' . $target_file['target_position'])
+					->where('fnum LIKE ' . $db->quote($fnum));
 
-                if ($reordered) {
-                    $query->clear()
-                        ->update('#__emundus_campaign_candidature')
-                        ->set($db->quoteName($order_column) . ' = ' . $old_position)
-                        ->where('fnum LIKE ' . $db->quote($target_fnum));
+				$db->setQuery($query);
+				$moved = $db->execute();
 
-                    $db->setQuery($query);
-                    $reordered = $db->execute();
-                }
-            } catch (Exception $e) {
-                JLog::add('Failed to get ' . $order_column . ' in __emundus_campaign_candidature for ' . $fnum_from . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-            }
-        }
+				if ($moved) {
+					$query->clear()
+						->update('#__emundus_campaign_candidature')
+						->set($db->quoteName($order_column) . ' = ' . $current_position)
+						->where('fnum LIKE ' . $db->quote($target_file['fnum']));
 
-        return $reordered;
-    }
+					$db->setQuery($query);
+					$moved = $db->execute();
+				}
+			}
+		} catch (Exception $e) {
+			JLog::add('Failed to get ' . $order_column . ' in #__emundus_campaign_candidature for ' . $fnum . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			throw new Exception($e->getMessage());
+		}
+
+		return $moved;
+	}
 
     private function getSelectFromDBJoinElementParams($params) {
         $db = JFactory::getDBO();
