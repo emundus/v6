@@ -3964,6 +3964,95 @@ structure:
 				$home_menu = $db->loadResult();
 
 				EmundusHelperUpdate::updateExtensionParam('logged_homepage_link',$home_menu,'');
+
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_forms'))
+					->where($db->quoteName('label') . ' LIKE ' . $db->quote('Exceptions'));
+				$db->setQuery($query);
+				$exceptions_form = $db->loadObject();
+
+				if (!empty($exceptions_form)) {
+					$params = json_decode($exceptions_form->params, true);
+
+					$params['plugin_events'][0] = 'both';
+					$params['curl_code'][0] = '$applicant = \'{jos_emundus_setup_exceptions___user_raw}\';
+
+$eMConfig = JComponentHelper::getParams(\'com_emundus\');
+$exceptions = explode(\',\',$eMConfig->get(\'id_applicants\'));
+
+if(!in_array($applicant,$exceptions)){
+  $eMConfig->set(\'id_applicants\', $eMConfig->get(\'id_applicants\') . \',\' . $applicant);
+
+	$componentid = JComponentHelper::getComponent(\'com_emundus\')->id;
+	$db = JFactory::getDBO();
+	$query = $db->getQuery(true);
+
+	$query->update($db->quoteName(\'#__extensions\'))
+		->set($db->quoteName(\'params\').\' = \'.$db->quote(json_encode($eMConfig)))
+						->where($db->quoteName(\'extension_id\').\' = \'.$db->quote($componentid));
+	$db->setQuery($query);
+	$db->execute();
+}
+
+				require_once (JPATH_SITE.\'/components/com_emundus/helpers/cache.php\');
+				$cache = new EmundusHelperCache(\'_system\');
+				$cache->clean();
+				$cache->clean(true,\'_system\');';
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_forms'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($exceptions_form->id));
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_lists'))
+					->where($db->quoteName('label') . ' LIKE ' . $db->quote('Exceptions'));
+				$db->setQuery($query);
+				$exceptions_list = $db->loadObject();
+
+				if (!empty($exceptions_list)) {
+					$params = json_decode($exceptions_list->params, true);
+
+					$params['list_phpevents_ondeleterows'][0] = '$applicant = $model->rowsToDelete[0][0]->jos_emundus_setup_exceptions___user_raw;
+
+$eMConfig = JComponentHelper::getParams(\'com_emundus\');
+$exceptions = explode(\',\',$eMConfig->get(\'id_applicants\'));
+
+if(in_array($applicant,$exceptions)){
+	$key = array_search($applicant, $exceptions);
+
+	unset($exceptions[$key]);
+
+	$eMConfig->set(\'id_applicants\', implode(\',\',$exceptions));
+
+	$componentid = JComponentHelper::getComponent(\'com_emundus\')->id;
+	$db = JFactory::getDBO();
+	$query = $db->getQuery(true);
+
+	$query->update($db->quoteName(\'#__extensions\'))
+		->set($db->quoteName(\'params\').\' = \'.$db->quote(json_encode($eMConfig)))
+						->where($db->quoteName(\'extension_id\').\' = \'.$db->quote($componentid));
+	$db->setQuery($query);
+	$db->execute();
+
+	require_once (JPATH_SITE.\'/components/com_emundus/helpers/cache.php\');
+	$cache = new EmundusHelperCache(\'_system\');
+	$cache->clean();
+	$cache->clean(true,\'_system\');
+}';
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_lists'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($exceptions_list->id));
+					$db->setQuery($query);
+					$db->execute();
+				}
 			}
 		}
 

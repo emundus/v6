@@ -88,11 +88,17 @@ class EmundusHelperCache
 		return $stored;
 	}
 
-	public function clean() {
+	public function clean($admin = false,$group = '') {
 		$cleaned = false;
 
 		if ($this->isEnabled()) {
 			$cleaned = $this->cache->__call('clean', array($this->group));
+
+			if($admin && !empty($group)) {
+				if(is_dir(JPATH_ADMINISTRATOR.'/cache/'.$group)) {
+					$cleaned = $this->deleteDir(JPATH_ADMINISTRATOR . '/cache/' . $group);
+				}
+			}
 		}
 
 		return $cleaned;
@@ -121,5 +127,24 @@ class EmundusHelperCache
 		}
 
 		return $hash;
+	}
+
+	private function deleteDir(string $dirPath) {
+		if (!is_dir($dirPath)) {
+			throw new InvalidArgumentException("$dirPath must be a directory");
+		}
+		if (substr($dirPath, strlen($dirPath) - 1, 1) != '/') {
+			$dirPath .= '/';
+		}
+		$files = glob($dirPath . '*', GLOB_MARK);
+		foreach ($files as $file) {
+			if (is_dir($file)) {
+				$this->deleteDir($file);
+			} else {
+				unlink($file);
+			}
+		}
+
+		return rmdir($dirPath);
 	}
 }
