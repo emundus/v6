@@ -4076,6 +4076,8 @@ if(in_array($applicant,$exceptions)){
 						EmundusHelperFabrik::addNotEmptyValidation($element);
 					}
 				}
+
+				EmundusHelperUpdate::updateExtensionParam('photo_attachment',10,'');
 			}
 		}
 
