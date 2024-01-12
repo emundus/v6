@@ -125,7 +125,6 @@ class Matrix
         return $matrix[$rowNum][$columnNum];
     }
 
-    /** @return mixed */
     private static function extractRowValue(array $matrix, array $rowKeys, int $rowNum)
     {
         if ($rowNum === 0) {
