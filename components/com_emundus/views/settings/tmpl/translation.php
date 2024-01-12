@@ -70,6 +70,16 @@ $hash = EmundusHelperCache::getCurrentGitHash();
 
 $app = JFactory::getApplication();
 $default_menu = $app->input->getInt('default_menu', 1);
+
+$redirect_on_close = '';
+$menus = $app->getMenu();
+$items = $menus->getItems('component', 'com_emundus');
+foreach ($items as $item) {
+	if ($item->query['view'] == 'settings') {
+		$redirect_on_close = $item->alias;
+		break;
+	}
+}
 ?>
 
 <div id="em-component-vue"
@@ -82,7 +92,7 @@ $default_menu = $app->input->getInt('default_menu', 1);
      manyLanguages="<?= $many_languages ?>"
      showModalOnLoad="1"
      defaultMenuIndex="<?= $default_menu ?>"
-     redirectOnClose="/parametres-globaux"
+     redirectOnClose="<?= $redirect_on_close ?>"
 ></div>
 
 <script src="media/com_emundus/js/settings.js?<?php echo $hash ?>"></script>

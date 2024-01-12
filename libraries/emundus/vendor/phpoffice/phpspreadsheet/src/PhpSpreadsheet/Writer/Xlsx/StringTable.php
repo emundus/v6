@@ -64,7 +64,7 @@ class StringTable extends WriterPart
     /**
      * Write string table to XML format.
      *
-     * @param (RichText|string)[] $stringTable
+     * @param (string|RichText)[] $stringTable
      *
      * @return string XML Output
      */
@@ -226,10 +226,9 @@ class StringTable extends WriterPart
             if ($element->getFont() !== null) {
                 // rPr
                 $objWriter->startElement($prefix . 'rPr');
-                $fontSize = $element->getFont()->getSize();
-                if (is_numeric($fontSize)) {
-                    $fontSize *= (($fontSize < 100) ? 100 : 1);
-                    $objWriter->writeAttribute('sz', (string) $fontSize);
+                $size = $element->getFont()->getSize();
+                if (is_numeric($size)) {
+                    $objWriter->writeAttribute('sz', (string) (int) ($size * 100));
                 }
 
                 // Bold
