@@ -3607,7 +3607,7 @@ class EmundusHelperUpdate
 			$storage_value['second_level_exceptions'] = '';
 
 			// Session
-			$storage_value['session_protection_active'] = 1;
+			$storage_value['session_protection_active'] = 0;
 			$storage_value['session_hijack_protection'] = 0;
 			$storage_value['session_hijack_protection_what_to_check'] = 2;
 			$storage_value['session_protection_groups'] = ["11","3","5","2","10","1"];
