@@ -120,6 +120,7 @@ class EmundusHelperEvents {
                 $submittion_page_id = (int)explode('=', $submittion_page->link)[3];
 
 				$this->applicationUpdating($user->fnum);
+	            $this->clearFormSession($user->fnum, $params['formModel']->id);
 
                 if ($submittion_page_id != $params['formModel']->id) {
                     $this->redirect($params);
@@ -1370,5 +1371,26 @@ class EmundusHelperEvents {
 		}
 
 		return $result;
+	}
+
+	private function clearFormSession($fnum, $form_id)
+	{
+		$session_delete = false;
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try {
+			$query->delete($db->quoteName('#__fabrik_form_sessions'))
+				->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
+				->where($db->quoteName('form_id') . ' = ' . $form_id);
+			$db->setQuery($query);
+			$session_delete = $db->execute();
+		}
+		catch (Exception $e) {
+			JLog::add('Error when try to clear form session: ' . __LINE__ . ' in file: ' . __FILE__ . ' with message: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+		}
+
+		return $session_delete;
 	}
 }

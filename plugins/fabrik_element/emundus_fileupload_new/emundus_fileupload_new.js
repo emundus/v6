@@ -12,26 +12,33 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             this.setPlugin('emundus_fileupload_new');
             this.parent(element, options);
 
-            this.watch();
+            this.watch(options.repeatCounter);
 
             document.getElementById('file_'+this.element.id).addEventListener('change', () => {
-                this.upload();
+                this.upload(options.repeatCounter);
             });
         },
 
-        watch: function () {
+        watch: function (repeatCounter) {
             var input = document.querySelector('input#file_' + this.element.id);
             let divCtrlGroup = input.parentElement.parentElement.parentElement;
             let div = input.parentElement;
 
             let formData = new FormData();
-            formData.append('attachId', this.options.attachment_id);
+            formData.append('uploads', document.getElementById(this.element.id).value);
             formData.append('fnum', this.options.fnum);
+            formData.append('element_id', this.options.elid);
+            formData.append('attachment_id', this.options.attachment_id);
+            formData.append('repeatCounter', repeatCounter);
 
-            let divAttachment = document.createElement('div');
-            divAttachment.setAttribute("id", this.element.id + '_attachment');
-            divAttachment.setAttribute("class", 'em-fileAttachment');
-            div.appendChild(divAttachment);
+            let divAttachment = document.getElementById(this.element.id + '_attachment');
+            if(!divAttachment) {
+                let divAttachment = document.createElement('div');
+                divAttachment.setAttribute("id", this.element.id + '_attachment');
+                divAttachment.setAttribute("class", 'em-fileAttachment');
+
+                div.appendChild(divAttachment);
+            }
 
             fetch('index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=emundus_fileupload_new&method=ajax_attachment', {
                 body: formData,
@@ -46,77 +53,43 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                         div.querySelector('div .btn-upload').hide();
                         div.querySelector('input#' + this.element.id).hide();
                         divCtrlGroup.querySelector('.control-label').style.cursor = 'default';
+                        input.hide();
                     } else {
                         div.querySelector('div .btn-upload').show();
                         div.querySelector('input#' + this.element.id).show();
                         divCtrlGroup.querySelector('.control-label').style.cursor = 'pointer';
+                        input.show();
                     }
 
-                    if (res.files) {
-                        if (!div.querySelector('.em-fileAttachmentTitle')) {
-                            var attachmentTitle = document.createElement('span');
-                            attachmentTitle.setAttribute("class", 'em-fileAttachmentTitle em-mt-8');
-                            attachmentTitle.innerText = Joomla.JText._('PLG_ELEMENT_FILEUPLOAD_UPLOADED_FILES');
-                            divAttachment.appendChild(attachmentTitle);
-                        } else {
-                            attachmentTitle = div.querySelector('.em-fileAttachmentTitle');
+                    res.files.forEach((file) => {
+                        if(file.repeatCounter !== null) {
+                            var inputHidden = document.querySelector('input#' + this.element.id);
+                            if (inputHidden.value !== '') {
+                                inputHidden.value += ',';
+                            }
+                            inputHidden.setAttribute("value", inputHidden.value + file.filename);
                         }
+                    });
 
-                        for (var i = 0; i < res.files.length; i++) {
-                            var divLink = document.createElement('div');
-                            divLink.setAttribute("id", this.element.id + '_attachment_link' + i);
-                            divLink.setAttribute("class", 'em-fileAttachment-link');
-
-                            if (!document.getElementById(divLink.id)) {
-                                divAttachment.appendChild(divLink);
-                            }
-
-                            if (res.files[i].can_be_viewed == 1) {
-                                var link = document.createElement('a');
-                                link.setAttribute("href", res.files[i].target);
-                                link.setAttribute("target", "_blank");
-                            } else {
-                                var link = document.createElement('p');
-                            }
-                            var linkText = document.createTextNode(res.files[i].local_filename);
-
-                            divLink.appendChild(link);
-                            link.appendChild(linkText);
-
-                            if (res.files[i].can_be_deleted == 1) {
-                                var deleteButton = document.createElement('a');
-                                deleteButton.setAttribute("class", 'em-pointer em-deleteFile em-ml-8');
-                                deleteButton.setAttribute('value', res.files[i].filename);
-
-                                var deleteIcon = document.createElement('span');
-                                deleteIcon.setAttribute("class", 'material-icons-outlined');
-                                deleteIcon.setAttribute("style", 'font-size: 16px');
-                                deleteIcon.appendChild(document.createTextNode('clear'));
-                                deleteButton.appendChild(deleteIcon);
-
-                                divLink.appendChild(deleteButton);
-
-                                var button = document.querySelector('#' + this.element.id + '_attachment_link' + i + ' > a.em-deleteFile');
-                                button.addEventListener('click', () => this.delete());
-                            }
-                        }
-                    }
+                    this.loadFilesBlock(res.files);
                 }
             });
         },
 
-        upload: function () {
+        upload: function (repeatCounter) {
 
             var formData = new FormData();
             var input = document.querySelector('input#file_' + this.element.id);
+            let divCtrlGroup = input.parentElement.parentElement.parentElement;
             var div = input.parentElement
             var deleteButton = document.querySelector('div#' + div.id + ' > a.em-deleteFile');
 
             formData.append('attachId', this.options.attachment_id);
-            formData.append('elementId', this.element.id);
+            formData.append('element_id', this.options.elid);
             formData.append('fnum', this.options.fnum);
             formData.append('size', this.options.size);
             formData.append('encrypt', this.options.encrypt);
+            formData.append('repeatCounter', repeatCounter);
 
             var file = [];
             for (var i = 0; i < input.files.length; i++) {
@@ -145,13 +118,14 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     });
                 }
 
+                let files = [];
                 for (var j = 0; j < res.length; j++) {
                     if (res[j].ext && res[j].size && !res[j].nbMax) {
                         var inputHidden = document.querySelector('input#' + this.element.id);
                         if(inputHidden.value !== '') {
                             inputHidden.value += ',';
                         }
-                        inputHidden.setAttribute("value", inputHidden.value + res[j].upload_id);
+                        inputHidden.setAttribute("value", inputHidden.value + res[j].filename);
 
                         Swal.fire({
                             title: Joomla.JText._('PLG_ELEMENT_FIELD_SUCCESS'),
@@ -163,6 +137,15 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                                 title: 'em-swal-title',
                             }
                         });
+
+                        let file = {
+                            'can_be_viewed': 1,
+                            'can_be_deleted': 1,
+                            'filename': res[j].filename,
+                            'local_filename': res[j].local_filename,
+                            'target': res[j].target,
+                        };
+                        files.push(file);
                     }
 
                     if (!res[j].ext) {
@@ -229,8 +212,16 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                             deleteButton.style.display = 'none';
                         }
                     }
+
+                    if(res[j].noMoreUploads) {
+                        div.querySelector('div .btn-upload').hide();
+                        div.querySelector('input#' + this.element.id).hide();
+                        divCtrlGroup.querySelector('.control-label').style.cursor = 'default';
+                        input.hide();
+                    }
                 }
-                this.watch();
+
+                this.loadFilesBlock(files);
             });
         },
 
@@ -259,8 +250,9 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                 if (answser.value) {
                     const formData = new FormData();
                     formData.append('filename', fileName);
-                    formData.append('attachId', this.options.attachment_id);
+                    formData.append('attachment_id', this.options.attachment_id);
                     formData.append('fnum', this.options.fnum);
+                    formData.append('element_id', this.options.elid);
 
                     fetch('index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=emundus_fileupload_new&method=ajax_delete', {
                         body: formData,
@@ -284,7 +276,11 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                             var inputHidden = document.querySelector('input#' + this.element.id);
                             if(inputHidden.value !== '') {
                                 var new_value = inputHidden.value.split(',');
-                                new_value.splice(new_value.indexOf(res.upload_id), 1);
+                                if(res.upload_id) {
+                                    new_value.splice(new_value.indexOf(res.upload_id), 1);
+                                } else {
+                                    new_value.splice(new_value.indexOf(fileName), 1);
+                                }
                                 inputHidden.setAttribute("value", new_value.join(','));
                             }
 
@@ -316,38 +312,81 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             });
         },
 
-
-        /**
-         * Called when element cloned in repeatable group
-         *
-         * @param   c       int         index of the new element
-         */
         cloned: function (c) {
-            console.log(c)
+            var dropzone = document.getElementById(this.element.id).previousElementSibling;
+            if(dropzone) {
+                dropzone.id = 'file_'+this.element.id;
+            }
+
+            var parent = document.getElementById(this.element.id).parentElement;
+            if(parent) {
+                parent.id = 'div_'+this.element.id;
+            }
+
+            var attachments = document.getElementById(this.element.id).nextElementSibling;
+            if(attachments) {
+                attachments.id = this.element.id + '_attachment';
+                attachments.innerHTML = '';
+            }
+
             document.getElementById('file_'+this.element.id).addEventListener('change', () => {
-                this.upload();
+                this.upload(c);
             });
 
             this.parent(c);
         },
 
-        decreaseName: function (delIndex) {
-            var f = this.getOrigField();
-            if (typeOf(f) !== 'null') {
-                f.name = this._decreaseName(f.name, delIndex);
-                f.id = this._decreaseId(f.id, delIndex);
-            }
-            return this.parent(delIndex);
-        },
+        loadFilesBlock: function(files) {
+            var input = document.querySelector('input#file_' + this.element.id);
+            let div = input.parentElement;
+            let divAttachment = document.getElementById(this.element.id + '_attachment');
 
-        getOrigField: function () {
-            var p = this.element.getParent('.fabrikElement');
-            var f = p.getElement('input[name^=' + this.origId + '_orig]');
-            if (typeOf(f) === 'null') {
-                f = p.getElement('input[id^=' + this.origId + '_orig]');
+            if(files.length > 0) {
+                if (!div.querySelector('.em-fileAttachmentTitle')) {
+                    var attachmentTitle = document.createElement('span');
+                    attachmentTitle.setAttribute("class", 'em-fileAttachmentTitle em-mt-8');
+                    attachmentTitle.innerText = Joomla.JText._('PLG_ELEMENT_FILEUPLOAD_UPLOADED_FILES');
+                    divAttachment.appendChild(attachmentTitle);
+                }
+
+                for (var i = 0; i < files.length; i++) {
+                    var divLink = document.createElement('div');
+                    divLink.setAttribute("id", this.element.id + '_attachment_link' + i);
+                    divLink.setAttribute("class", 'em-fileAttachment-link');
+
+                    divAttachment.appendChild(divLink);
+
+                    if (files[i].can_be_viewed == 1) {
+                        var link = document.createElement('a');
+                        link.setAttribute("href", files[i].target);
+                        link.setAttribute("target", "_blank");
+                    } else {
+                        var link = document.createElement('p');
+                    }
+                    var linkText = document.createTextNode(files[i].local_filename);
+
+                    divLink.appendChild(link);
+                    link.appendChild(linkText);
+
+                    if (files[i].can_be_deleted == 1) {
+                        var deleteButton = document.createElement('a');
+                        deleteButton.setAttribute("class", 'em-pointer em-deleteFile em-ml-8');
+                        deleteButton.setAttribute('value', files[i].filename);
+
+                        var deleteIcon = document.createElement('span');
+                        deleteIcon.setAttribute("class", 'material-icons-outlined');
+                        deleteIcon.setAttribute("style", 'font-size: 16px');
+                        deleteIcon.appendChild(document.createTextNode('clear'));
+                        deleteButton.appendChild(deleteIcon);
+
+                        divLink.appendChild(deleteButton);
+
+                        var button = document.querySelector('#' + this.element.id + '_attachment_link' + i + ' > a.em-deleteFile');
+                        button.addEventListener('click', () => this.delete());
+                    }
+                }
             }
-            return f;
-        },
+        }
     });
 
     return window.FbEmundusFileUploadNew;
