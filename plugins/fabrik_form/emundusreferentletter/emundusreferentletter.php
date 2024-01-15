@@ -138,7 +138,7 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 			}
 
 			$recipients[] = array(
-				'attachment_id' => $jinput->get('jos_emundus_references___attachment_id_'.$key, $default_attachments[$key]),
+				'attachment_id' => $jinput->get($db_table_name.'___attachment_id_'.$key+1, $default_attachments[$key]),
 				'email' => $email,
 				'name'=> ucwords($name),
 				'firstname'=> ucwords($firstname)
