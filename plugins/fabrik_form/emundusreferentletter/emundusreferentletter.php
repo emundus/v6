@@ -100,9 +100,9 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 
 		$offset = $app->get('offset', 'UTC');
 		try {
-			$dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
-			$dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
-			$now = $dateTime->format('Y-m-d H:i:s');
+            require_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
+            $h_date = new EmundusHelperDate();
+            $now = $h_date->getNow();
 		} catch (Exception $e) {
 			echo $e->getMessage() . '<br />';
 		}
