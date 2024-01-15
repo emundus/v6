@@ -65,9 +65,14 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                         if(file.repeatCounter !== null) {
                             var inputHidden = document.querySelector('input#' + this.element.id);
                             if (inputHidden.value !== '') {
-                                inputHidden.value += ',';
+                                var existing_values = inputHidden.value.split(',');
+                                if(existing_values.indexOf(file.filename) === -1) {
+                                    inputHidden.value += ',';
+                                    inputHidden.setAttribute("value", inputHidden.value + file.filename);
+                                }
+                            } else {
+                                inputHidden.setAttribute("value", file.filename);
                             }
-                            inputHidden.setAttribute("value", inputHidden.value + file.filename);
                         }
                     });
 
