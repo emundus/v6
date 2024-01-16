@@ -58,7 +58,10 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
 
     if($layout != '_:tchooz') {
-        $document->addStyleSheet("modules/mod_emundusflow/style/emundus.css" );
+	    require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+	    $hash = EmundusHelperCache::getCurrentGitHash();
+
+        $document->addStyleSheet("modules/mod_emundusflow/style/emundus.css?".$hash );
     }
 
     $header_class = $params->get('header_class', '');

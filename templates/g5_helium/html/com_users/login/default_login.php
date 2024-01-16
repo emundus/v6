@@ -6,11 +6,16 @@
  * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
+
+
+require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+
 defined('_JEXEC') or die;
 JHtml::_('behavior.keepalive');
 JHtml::_('behavior.formvalidator');
 $document = JFactory::getDocument();
-$document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_users_login.css");
+$document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_users_login.css?".$hash);
 $eMConfig = JComponentHelper::getParams('com_emundus');
 
 if(!empty($this->campaign)){
