@@ -2,6 +2,12 @@
 <form>
 	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
 		<fieldset name="plg-cron-emundusrecallmissingdoc" label="COM_FABRIK_OPTIONS">
+
+			<field name="emundus_recall_help"
+				   type="note"
+				   class="alert alert-info"
+				   close="false"
+				   description="PLG_CRON_EMUNDUSRECALLMISSINGDOC_HELP_LABEL" />
 			
 			<field name="reminder_mail_id"
 				type="text"
@@ -16,6 +22,37 @@
 				label="PLG_CRON_EMUNDUSRECALLMISSINGDOC_EMAIL_PROGRAMME"
 				size="30" 
 				default="" />
+
+			<field name="notify_coordinator"
+				   type="list"
+				   default="0"
+				   description="PLG_CRON_EMUNDUSRECALLMISSINGDOC_NOTIFY_COORDINATOR_DESC"
+				   label="PLG_CRON_EMUNDUSRECALLMISSINGDOC_NOTIFY_COORDINATOR">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+			<field showon="notify_coordinator:1"
+				   name="coordinator_profile"
+				   type="sql"
+				   default="2"
+				   description="PLG_CRON_EMUNDUSRECALLMISSINGDOC_NOTIFY_COORDINATOR_PROFILE_DESC"
+				   label="PLG_CRON_EMUNDUSRECALLMISSINGDOC_NOTIFY_COORDINATOR_PROFILE"
+				   query="SELECT id,label FROM #__emundus_setup_profiles WHERE published = 0 AND status = 1"
+				   key_field="id"
+				   value_field="label"
+			>
+			</field>
+
+			<field showon="notify_coordinator:1"
+				   name="coordinator_reminder_mail_id"
+				   type="sql"
+				   description="PLG_CRON_EMUNDUSRECALLMISSINGDOC_COORDINATOR_EMAIL_TEMPLATE_DESC"
+				   label="PLG_CRON_EMUNDUSRECALLMISSINGDOC_COORDINATOR_EMAIL_TEMPLATE"
+				   query="SELECT id,subject as label FROM #__emundus_setup_emails"
+				   key_field="id"
+				   value_field="label"
+				   default="83" />
 
 		</fieldset>
 
