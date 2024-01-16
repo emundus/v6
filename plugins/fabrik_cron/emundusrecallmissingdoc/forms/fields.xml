@@ -54,6 +54,14 @@
 				   value_field="label"
 				   default="83" />
 
+			<field showon="notify_coordinator:1"
+				   name="coordinator_reminder_delay"
+				   type="text"
+				   description="PLG_CRON_EMUNDUSRECALLMISSINGDOC_COORDINATOR_REMINDER_DELAY_DESC"
+				   label="PLG_CRON_EMUNDUSRECALLMISSINGDOC_COORDINATOR_REMINDER_DELAY"
+				   size="30"
+				   default="30" />
+
 		</fieldset>
 
 	</fields>

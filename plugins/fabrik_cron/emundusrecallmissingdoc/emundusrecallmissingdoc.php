@@ -56,6 +56,7 @@ class PlgFabrik_Cronemundusrecallmissingdoc extends PlgFabrik_Cron
 		$notify_coordinator           = $params->get('notify_coordinator', 0);
 		$coordinator_profile          = $params->get('coordinator_profile', 2);
 		$coordinator_reminder_mail_id = $params->get('coordinator_reminder_mail_id', 83);
+		$coordinator_reminder_delay = $params->get('coordinator_reminder_delay', 30);
 
 		$this->log = '';
 
@@ -137,7 +138,7 @@ class PlgFabrik_Cronemundusrecallmissingdoc extends PlgFabrik_Cron
 				->leftJoin($db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('u.id') . ' = ' . $db->quoteName('jecc.applicant_id'))
 				->where($db->quoteName('jesetc.id') . ' IS NOT NULL')
 				->where($db->quoteName('jeu.attachment_id') . ' IS NULL')
-				->where($db->quoteName('jesetc.date') . ' = DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 1 MONTH), "%Y-%m-%d")');
+				->where($db->quoteName('jesetc.date') . ' = DATE_FORMAT(DATE_SUB(NOW(), INTERVAL '.$coordinator_reminder_delay.' DAY), "%Y-%m-%d")');
 
 			if (!empty($reminder_programme_code)) {
 				$query->where($db->quoteName('jesc.training') . ' IN (' . $reminder_programme_code . ')');
