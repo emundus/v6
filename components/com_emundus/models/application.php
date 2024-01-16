@@ -2547,7 +2547,7 @@ class EmundusModelApplication extends JModelList
                                                         $this->_db->setQuery($query);
                                                         $elt = JText::_($this->_db->loadResult());
                                                     }
-                                                } elseif (@$elements[$j]->plugin == 'cascadingdropdown') {
+                                                } elseif ($elements[$j]->plugin == 'cascadingdropdown') {
                                                     $params = json_decode($elements[$j]->params);
                                                     $cascadingdropdown_id = $params->cascadingdropdown_id;
                                                     $r1 = explode('___', $cascadingdropdown_id);
@@ -2588,7 +2588,7 @@ class EmundusModelApplication extends JModelList
                                                         $elt .= '<li>'.JText::_($val).'</li>';
                                                     }
                                                     $elt .= "</ul>";
-                                                } elseif ($elements[$j]->plugin == 'dropdown' || @$elements[$j] == 'radiobutton') {
+                                                } elseif ($elements[$j]->plugin == 'dropdown' || $elements[$j]->plugin == 'radiobutton') {
                                                     $params = json_decode($elements[$j]->params);
                                                     $index = array_search($r_elt, $params->sub_options->sub_values);
                                                     if (strlen($index) > 0) {
