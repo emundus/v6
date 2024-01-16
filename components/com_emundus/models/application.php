@@ -2121,32 +2121,37 @@ class EmundusModelApplication extends JModelList
 												$attachment_upload = null;
 
                                                 try {
+	                                                $query->select('esa.id,esa.value as attachment_name,eu.filename')
+		                                                ->from($this->_db->quoteName('#__emundus_uploads', 'eu'))
+		                                                ->leftJoin($this->_db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('eu.attachment_id'))
+		                                                ->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum));
+
 													if(!empty($element->content)) {
-														$query->select('esa.id,esa.value as attachment_name,eu.filename')
-															->from($this->_db->quoteName('#__emundus_uploads', 'eu'))
-															->leftJoin($this->_db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('eu.attachment_id'))
-															->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum))
-															->andWhere($this->_db->quoteName('eu.id') . ' = ' . $this->_db->quote($element->content));
-														$this->_db->setQuery($query);
-														$attachment_upload = $this->_db->loadObject();
+														$query->where($this->_db->quoteName('eu.id') . ' IN (' . $element->content . ')');
+													}
+													else {
+														$query->where($this->_db->quoteName('eu.attachment_id') . ' = ' . $this->_db->quote($params->attachmentId));
 													}
 
-													if(empty($attachment_upload)) {
-														$query->select('esa.id,esa.value as attachment_name,eu.filename')
-															->from($this->_db->quoteName('#__emundus_uploads', 'eu'))
-															->leftJoin($this->_db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('eu.attachment_id'))
-															->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum))
-															->andWhere($this->_db->quoteName('eu.attachment_id') . ' = ' . $this->_db->quote($params->attachmentId));
-														$this->_db->setQuery($query);
-														$attachment_upload = $this->_db->loadObject();
+	                                                $this->_db->setQuery($query);
+	                                                $attachments_upload = $this->_db->loadObjectList();
+
+													$elt = [];
+	                                                $index = 0;
+													foreach ($attachments_upload as $attachment_upload) {
+														if(count($attachments_upload) > 1) {
+															$index++;
+														}
+														if (!empty($attachment_upload->filename) && (($allowed_attachments !== true && in_array($params->attachmentId, $allowed_attachments)) || $allowed_attachments === true)) {
+															$path = DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $aid . DS . $attachment_upload->filename;
+															$elt[]  = '<a href="' . $path . '" target="_blank" style="text-decoration: underline;">' . $attachment_upload->attachment_name . (!empty($index) ? $index : '') . '</a>';
+														}
+														else {
+															$elt[] = '';
+														}
 													}
 
-                                                    if(!empty($attachment_upload->filename) && (($allowed_attachments !== true && in_array($params->attachmentId,$allowed_attachments)) || $allowed_attachments === true)) {
-                                                        $path = DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $aid . DS . $attachment_upload->filename;
-                                                        $elt = '<a href="'.$path.'" target="_blank" style="text-decoration: underline;">' . $attachment_upload->attachment_name . '</a>';
-                                                    } else {
-                                                        $elt = '';
-                                                    }
+													$elt = implode('<br>', $elt);
                                                 } catch (Exception $e) {
                                                     JLog::add('component/com_emundus/models/application | Error at getting emundus_fileupload for applicant ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
                                                     $elt = '';
