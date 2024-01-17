@@ -10,6 +10,8 @@
 
 // No direct access
 
+use PhpOffice\PhpWord\TemplateProcessor;
+
 defined('_JEXEC') or die('Restricted access');
 define('R_MD5_MATCH', '/^[a-f0-9]{32}$/i');
 
@@ -2095,7 +2097,7 @@ class EmundusModelEvaluation extends JModelList {
 								{
 									\PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(true);
 								}
-			                    $preprocess = $phpWord->loadTemplate($letter_file);
+			                    $preprocess = new TemplateProcessor($letter_file);
 			                    $tags       = $preprocess->getVariables();
 
 			                    $idFabrik  = [];
