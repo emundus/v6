@@ -14,8 +14,11 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
+require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+
 $document = JFactory::getDocument();
-$document->addStyleSheet('modules/mod_emundus_checklist/style/emundus_checklist.css');
+$document->addStyleSheet('modules/mod_emundus_checklist/style/emundus_checklist.css?'.$hash);
 
 $user = JFactory::getSession()->get('emundusUser');
 
