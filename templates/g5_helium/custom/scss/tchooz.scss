@@ -2082,16 +2082,16 @@ div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
   #background-shapes {
     position: absolute;
     z-index: 2;
-    width: 24%;
+    width: 33%;
     height: 170%;
-    top: 0;
+    top: -142px;
     right: 0;
     pointer-events: none;
     mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
     background: var(--em-profile-color);
     mask-repeat: no-repeat;
     mask-position: center;
-    mask-size: 300px;
+    mask-size: 413px;
     mask-origin: border-box;
   }
 }
