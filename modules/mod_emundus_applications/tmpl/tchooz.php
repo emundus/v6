@@ -664,7 +664,7 @@ $current_tab = 0;
                                     <h2 style="margin-top: 0"><?php echo $f_key ?></h2>
                                 </div>
 							<?php endif; ?>
-                            <table class="em-ml-12" style="border-collapse: separate;border-spacing: 0 6px;">
+                            <table class="em-ml-12" style="border-collapse: separate;border-spacing: 0 10px;">
                                 <tbody>
 								<?php foreach ($files as $application) : ?>
 
@@ -706,9 +706,6 @@ $current_tab = 0;
                                                 id="application_content<?php echo $application->fnum ?>"
                                                 onclick="openFile(event,'<?php echo $first_page_url ?>')">
                                                 <td style="width: 23.75%;">
-                                                    <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                                                        <div id="background-shapes" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
-                                                    <?php endif; ?>
 													<?php if (empty($application->name)) : ?>
                                                         <a href="<?= JRoute::_($first_page_url); ?>"
                                                            class="mod_emundus_applications___title em-font-size-14"
@@ -767,6 +764,9 @@ $current_tab = 0;
                                                     </div>
                                                 </td>
                                                 <td style="width: 5%;">
+                                                    <?php if ($mod_em_campaign_display_svg == 1) : ?>
+                                                        <div id="background-shapes" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
+                                                    <?php endif; ?>
                                                     <div class="mod_emundus_applications__container">
                                                             <span class="material-icons em-text-neutral-600 em-font-weight-600"
                                                                   id="actions_button_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>"

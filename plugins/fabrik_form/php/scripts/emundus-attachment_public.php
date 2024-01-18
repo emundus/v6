@@ -185,8 +185,11 @@ try {
     	JLog::add("PLUGIN emundus-attachment_public [".$key_id."]: ".JText::_("ERROR_CANNOT_SEND_EMAIL").$send->__toString(), JLog::ERROR, 'com_emundus');
         echo 'Error sending email: ' . $send->__toString(); die();
     } else {
+        require_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
+        $h_date = new EmundusHelperDate();
+        $now = $h_date->getNow();
 		$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-				VALUES ('62', '".$student->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
+				VALUES ('62', '".$student->id."', ".$db->quote($subject).", ".$db->quote($body).", ".$db->quote($now).")";
         $db->setQuery($sql);
         $db->execute();
     }

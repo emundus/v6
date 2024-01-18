@@ -100,9 +100,9 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 
 		$offset = $app->get('offset', 'UTC');
 		try {
-			$dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
-			$dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
-			$now = $dateTime->format('Y-m-d H:i:s');
+            require_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
+            $h_date = new EmundusHelperDate();
+            $now = $h_date->getNow();
 		} catch (Exception $e) {
 			echo $e->getMessage() . '<br />';
 		}
@@ -138,7 +138,7 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 			}
 
 			$recipients[] = array(
-				'attachment_id' => $jinput->get('jos_emundus_references___attachment_id_'.$key, $default_attachments[$key]),
+				'attachment_id' => $jinput->get($db_table_name.'___attachment_id_'.$key+1, $default_attachments[$key]),
 				'email' => $email,
 				'name'=> ucwords($name),
 				'firstname'=> ucwords($firstname)
@@ -309,7 +309,7 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 		$string = '';
 		for ($i = 0; $i < $len; $i++) {
 			$pos = rand(0, strlen($chars)-1);
-			$string .= $chars{$pos};
+			$string .= $chars[$pos];
 		}
 		return $string;
 	}
