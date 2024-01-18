@@ -218,7 +218,9 @@ class EmundusModelChecklist extends JModelList
 
 
 	function setDelete($status = 0, $student = null) {
+        $eMConfig = JComponentHelper::getParams('com_emundus');
 
+        $attachment_id = $eMConfig->get('attachment_to_keep_non_deletable');
 		$db = JFactory::getDBO();
 
 		if (empty($student)) {
@@ -229,7 +231,7 @@ class EmundusModelChecklist extends JModelList
             $status = 1;
         }
 
-		$query = 'UPDATE #__emundus_uploads SET can_be_deleted = '.$status.' WHERE user_id = '.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
+		$query = 'UPDATE #__emundus_uploads SET can_be_deleted = '.$status.' WHERE user_id = '.$student->id. ' AND fnum like '.$db->Quote($student->fnum) .' AND attachment_id NOT IN('.$attachment_id.').';
 		$db->setQuery($query);
 
 		try {

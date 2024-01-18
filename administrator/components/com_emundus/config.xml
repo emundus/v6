@@ -191,6 +191,7 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+		<field name="attachment_to_keep_non_deletable" type="text" default="4,6,21" label="COM_EMUNDUS_ATTACHCHMENT_NON_DELETABLE" description="COM_EMUNDUS_ATTACHCHMENT_NON_DELETABLE_DESC" />
 		<field name="referent_can_edit_after_deadline" menu="hide" type="list" default="1" label="COM_EMUNDUS_REFERENT_CAN_EDIT_AFTER_DEADLINE" description="COM_EMUNDUS_REFERENT_CAN_EDIT_AFTER_DEADLINE_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
