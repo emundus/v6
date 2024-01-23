@@ -1593,6 +1593,10 @@ class EmundusHelperUpdate
             return $result;
         }
 
+		if(empty($params['params'])) {
+			$params['params'] = [];
+		}
+
         try {
             // Initialize again Joomla database to fix problem with Falang (or other plugins) that override default mysql driver
             JFactory::$database = null;
