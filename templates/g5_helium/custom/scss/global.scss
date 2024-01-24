@@ -6824,3 +6824,13 @@ tbody .el-table__row:nth-child(odd){
 .emundus-form .p-6 {
   background: magenta !important;
 }
+
+/* MCE WYSIWYG COLOR PICKER */
+
+.mce-container-body.mce-abs-layout {
+  overflow: visible !important;
+}
+.mce-container .mce-textbox.mce-abs-layout-item.mce-last {
+  width: 60px !important;
+  height: 20px !important;
+}
