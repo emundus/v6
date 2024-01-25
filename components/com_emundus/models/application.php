@@ -1908,7 +1908,7 @@ class EmundusModelApplication extends JModelList
                                             }
 
                                             // Do not display elements with no value inside them.
-                                            if ($show_empty_fields == 0 && (trim($element->content) == '' || trim($element->content_id) == -1)) {
+                                            if ($show_empty_fields == 0 && (trim($element->content) == '' || trim($element->content_id) == -1) && $element->plugin != 'emundus_fileupload') {
                                                 continue;
                                             }
 
