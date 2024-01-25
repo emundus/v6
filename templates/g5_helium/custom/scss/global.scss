@@ -1472,6 +1472,26 @@ footer#g-footer > .g-container {
   cursor: pointer;
 }
 
+/* NEW STYLE */
+.view-list .fabrikFilterContainer .table.filtertable .fabrik_filter_container .input-append {
+  button.btn.calendarbutton {
+    height: 40px;
+    border-radius: 0 4px 4px 0 !important;
+    background: var(--neutral-0);
+    color: var(--neutral-900);
+    border: 1px solid #e0e0e5;
+
+    &:hover {
+      background: var(--neutral-100);
+    }
+  }
+  input[id*="range"].fabrik_filter {
+    border-radius: 4px 0 0 4px !important;
+  }
+
+}
+
+/* OLD STYLE */
 .view-list .table .fabrikFilterContainer .fabrikDateListFilterRange button.btn.calendarbutton {
   height: 40px;
   border-radius: 0 4px 4px 0 !important;
