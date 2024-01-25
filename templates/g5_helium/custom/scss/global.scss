@@ -1366,6 +1366,14 @@ footer#g-footer > .g-container {
 
     tbody tr > td {
       color: var(--night-blue);
+
+      &:first-child {
+        width: auto !important;
+      }
+
+      select[multiple] {
+        width: auto;
+      }
     }
   }
 
