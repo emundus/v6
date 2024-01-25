@@ -18,11 +18,15 @@ jimport('joomla.application.component.model');
 JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models'); // call com_emundus model
 
 use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Helper\ModuleHelper;
+use Joomla\CMS\Log\Log;
 
 class EmundusModelApplication extends JModelList
 {
     var $_user = null;
     var $_db = null;
+
+	private $h_cache;
 
     /**
      * Constructor
@@ -37,8 +41,10 @@ class EmundusModelApplication extends JModelList
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
         require_once (JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'date.php');
+        require_once (JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 
         $this->_mainframe = JFactory::getApplication();
+		$this->h_cache = new EmundusHelperCache();
 
         $this->_db = JFactory::getDBO();
         $this->_user = JFactory::getSession()->get('emundusUser');
@@ -5818,5 +5824,442 @@ class EmundusModelApplication extends JModelList
 		}
 
 		return $done;
+	}
+
+	public function getSharedFileUsers($ccid = null, $fnum = null)
+	{
+		if(!empty($ccid)) {
+			$cache_key = 'shared_file_users_' . $ccid;
+		} else {
+			$cache_key = 'shared_file_users_' . $fnum;
+		}
+		$shared_file_users = $this->h_cache->get($cache_key);
+
+		if (empty($shared_file_users) && (!empty($ccid) || !empty($fnum))) {
+			$query = $this->_db->getQuery(true);
+
+			$query->select('efr.*,eu.firstname as user_firstname,eu.lastname as user_lastname, eu.profile_picture')
+				->from($this->_db->quoteName('#__emundus_files_request','efr'))
+				->leftJoin($this->_db->quoteName('#__emundus_users','eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('efr.user_id'));
+			if(!empty($ccid)) {
+				$query->where($this->_db->quoteName('ccid') . ' = ' . $ccid);
+			} else {
+				$query->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+			}
+			$this->_db->setQuery($query);
+			$shared_file_users = $this->_db->loadObjectList();
+
+			if(!empty($shared_file_users)) {
+				$this->h_cache->set($cache_key,$shared_file_users);
+			}
+		}
+
+		return $shared_file_users;
+	}
+
+	public function shareFileWith($emails, $ccid, $user_id = null)
+	{
+		$default_rights = [
+			'r',
+			'u'
+		];
+		$application_module = ModuleHelper::getModule('mod_emundus_applications');
+		if(!empty($application_module->id)) {
+			$params = json_decode($application_module->params);
+
+			if(!empty($params->mod_emundus_applications_collaborate_default_rights)) {
+				$default_rights = $params->mod_emundus_applications_collaborate_default_rights;
+			}
+		}
+
+		$results = ['status' => true, 'emails' => [], 'failed_emails' => []];
+		if(empty($user_id)) {
+			$user_id = $this->_user->id;
+		}
+
+		$shared_users = $this->getSharedFileUsers($ccid);
+		foreach($shared_users as $shared_user) {
+			$index_to_remove = array_search($shared_user->email,$emails);
+			if($index_to_remove !== false) {
+				unset($emails[$index_to_remove]);
+			}
+		}
+
+		if(!empty($emails)) {
+			$query = $this->_db->getQuery(true);
+
+			$query->select('fnum,applicant_id,campaign_id')
+				->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+				->where($this->_db->quoteName('id') . ' = ' . $ccid);
+			$this->_db->setQuery($query);
+			$file_info = $this->_db->loadObject();
+
+			foreach($emails as $email) {
+				$query->clear()
+					->select('id')
+					->from($this->_db->quoteName('#__users'))
+					->where($this->_db->quoteName('email') . ' = ' . $this->_db->quote($email));
+				$this->_db->setQuery($query);
+				$shared_user_id = $this->_db->loadResult();
+
+				if(!empty($shared_user_id)) {
+					$query->clear()
+						->select('firstname,lastname')
+						->from($this->_db->quoteName('#__emundus_users'))
+						->where($this->_db->quoteName('user_id') . ' = ' . $shared_user_id);
+					$this->_db->setQuery($query);
+					$shared_user_infos = $this->_db->loadObject();
+				}
+
+				$columns = [
+					'time_date',
+					'student_id',
+					'fnum',
+					'keyid',
+					'campaign_id',
+					'email',
+					'ccid',
+					'user_id',
+					'r',
+					'u',
+					'show_history',
+					'show_shared_users',
+				];
+
+				$key = md5(date('Y-m-d h:m:i') . '::' . $file_info->fnum . '::' . $file_info->applicant_id . '::' . $email . '::' . rand());
+				$values = [
+					$this->_db->quote(EmundusHelperDate::getNow()),
+					$file_info->applicant_id,
+					$this->_db->quote($file_info->fnum),
+					$this->_db->quote($key),
+					$file_info->campaign_id,
+					$this->_db->quote($email),
+					$ccid,
+					(int)$shared_user_id,
+					in_array('r',$default_rights) ? 1 : 0,
+					in_array('u',$default_rights) ? 1 : 0,
+					in_array('show_history',$default_rights) ? 1 : 0,
+					in_array('show_shared_users',$default_rights) ? 1 : 0
+				];
+
+				$query->clear()
+					->insert($this->_db->quoteName('#__emundus_files_request'))
+					->columns($columns)
+					->values(implode(',',$values));
+
+				try {
+					$this->_db->setQuery($query);
+					$shared = $this->_db->execute();
+
+					if($shared) {
+						$results['emails'][$email] = $key;
+					} else {
+						$results['failed_emails'][] = $email;
+					}
+
+					//TODO: Log this action
+				}
+				catch (Exception $e) {
+					$results['status'] = false;
+					Log::add('Failed to share file with ccid ' . $ccid . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+				}
+			}
+
+			$cache_key      = 'shared_file_users_' . $ccid;
+			$this->h_cache->set($cache_key,[]);
+		}
+
+		return $results;
+	}
+
+	public function removeSharedUser($request_id,$ccid,$user_id)
+	{
+		$removed = false;
+		if(empty($user_id)) {
+			$user_id = $this->_user->id;
+		}
+
+		try {
+			$query = $this->_db->getQuery(true);
+
+			$query->delete($this->_db->quoteName('#__emundus_files_request'))
+				->where($this->_db->quoteName('id') . ' = ' . $request_id)
+				->where($this->_db->quoteName('ccid') . ' = ' . $ccid);
+			$this->_db->setQuery($query);
+			$removed = $this->_db->execute();
+
+			//TODO: Log this action
+		}
+		catch (Exception $e) {
+			Log::add('Failed to remove shared user via request_id ' . $request_id . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $removed;
+	}
+
+	public function regenerateKey($request_id,$ccid,$user_id)
+	{
+		$results = ['status' => true, 'email' => '', 'key' => ''];
+		if(empty($user_id)) {
+			$user_id = $this->_user->id;
+		}
+
+		try {
+			$query = $this->_db->getQuery(true);
+
+			$query->select('fnum,applicant_id,campaign_id')
+				->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+				->where($this->_db->quoteName('id') . ' = ' . $ccid);
+			$this->_db->setQuery($query);
+			$file_info = $this->_db->loadObject();
+
+			if(!empty($file_info)) {
+				$results['key'] = md5(date('Y-m-d h:m:i') . '::' . $file_info->fnum . '::' . $file_info->applicant_id . '::' . rand());
+
+				$query->clear()
+					->update($this->_db->quoteName('#__emundus_files_request'))
+					->set($this->_db->quoteName('keyid') . ' = ' . $this->_db->quote($results['key']))
+					->where($this->_db->quoteName('id') . ' = ' . $request_id)
+					->where($this->_db->quoteName('ccid') . ' = ' . $ccid);
+				$this->_db->setQuery($query);
+				$results['status'] = $this->_db->execute();
+
+				if($results['status']) {
+					$query->clear()
+						->select('email')
+						->from($this->_db->quoteName('#__emundus_files_request'))
+						->where($this->_db->quoteName('id') . ' = ' . $request_id);
+					$this->_db->setQuery($query);
+					$results['email'] = $this->_db->loadResult();
+				}
+			}
+
+			//TODO: Log this action
+		}
+		catch (Exception $e) {
+			Log::add('Failed to remove shared user via request_id ' . $request_id . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $results;
+	}
+
+	public function updateRight($request_id,$ccid,$right,$value,$user_id)
+	{
+		$updating = false;
+
+		if(empty($user_id)) {
+			$user_id = $this->_user->id;
+		}
+
+		try {
+			$query = $this->_db->getQuery(true);
+
+			$query->update($this->_db->quoteName('#__emundus_files_request'))
+				->set($this->_db->quoteName($right) . ' = ' . (int)$value)
+				->where($this->_db->quoteName('id') . ' = ' . $request_id)
+				->where($this->_db->quoteName('ccid') . ' = ' . $ccid);
+			$this->_db->setQuery($query);
+			$updating = $this->_db->execute();
+		}
+		catch (Exception $e) {
+			Log::add('Failed to update right via request_id ' . $request_id . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $updating;
+	}
+
+	public function getMyFilesRequests($user_id = null)
+	{
+		if(empty($user_id)) {
+			$user_id = $this->_user->id;
+		}
+
+		$cache_key      = 'my_shared_files_' . $user_id;
+		$files = $this->h_cache->get($cache_key);
+
+		if (empty($files)) {
+			try {
+				$query = $this->_db->getQuery(true);
+
+				$query->select('efr.r,efr.u,efr.show_history,efr.show_shared_users,ecc.id,ecc.fnum,ecc.applicant_id,ecc.campaign_id,ecc.status,ecc.published,ecc.form_progress,ecc.attachment_progress, esc.label, esc.start_date, esc.end_date, esc.admission_start_date, esc.admission_end_date, esc.training, esc.year, esc.profile_id')
+					->from($this->_db->quoteName('#__emundus_files_request', 'efr'))
+					->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.id') . ' = ' . $this->_db->quoteName('efr.ccid'))
+					->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quoteName('ecc.campaign_id'))
+					->where($this->_db->quoteName('efr.user_id') . ' = ' . $user_id)
+					->where($this->_db->quoteName('ecc.published') . ' = 1')
+					->where($this->_db->quoteName('efr.uploaded') . ' = 1');
+				$this->_db->setQuery($query);
+				$files = $this->_db->loadObjectList('fnum');
+
+				if(!empty($files)) {
+					$this->h_cache->set($cache_key,$files);
+				}
+			}
+			catch (Exception $e) {
+				Log::add('Failed to get my files requests with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $files;
+	}
+
+	public function getLockedElements($fid,$fnum,$user_id = null)
+	{
+		$locked_elements = [];
+
+		if(empty($user_id)) {
+			$user_id = $this->_user->id;
+		}
+
+		if(!empty($fid) && !empty($fnum)) {
+			try {
+				$query = $this->_db->getQuery(true);
+
+				$query->select('locked_elements')
+					->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+					->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+				$this->_db->setQuery($query);
+				$locked_elements = $this->_db->loadResult();
+
+				if(!empty($locked_elements)) {
+					$locked_elements = json_decode($locked_elements, true);
+					if(!empty($locked_elements[$fid])) {
+						$locked_elements = $locked_elements[$fid];
+					} else {
+						$locked_elements = [];
+					}
+				} else {
+					$locked_elements = [];
+				}
+			}
+			catch (Exception $e) {
+				Log::add('Failed to get locked elements of form ' . $fid . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $locked_elements;
+	}
+
+	public function lockElement($element,$fid,$ccid,$state = 1,$user_id = null) {
+		$locked = false;
+
+		if(empty($user_id)) {
+			$user_id = $this->_user->id;
+		}
+
+		if(!empty($element) && !empty($fid) && !empty($ccid)) {
+			try {
+				$query = $this->_db->getQuery(true);
+
+				$query->select('locked_elements')
+					->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+					->where($this->_db->quoteName('id') . ' = ' . $ccid);
+				$this->_db->setQuery($query);
+				$locked_elements = $this->_db->loadResult();
+
+				if (!empty($locked_elements)) {
+					$locked_elements = json_decode($locked_elements, true);
+				}
+				else {
+					$locked_elements = [];
+				}
+
+				if($state == 1) {
+					$locked_elements[$fid][] = $element;
+				} else {
+					$index = array_search($element,$locked_elements[$fid]);
+					if($index !== false) {
+						unset($locked_elements[$fid][$index]);
+					}
+				}
+
+				$query->clear()
+					->update($this->_db->quoteName('#__emundus_campaign_candidature'))
+					->set($this->_db->quoteName('locked_elements') . ' = ' . $this->_db->quote(json_encode($locked_elements)))
+					->where($this->_db->quoteName('id') . ' = ' . $ccid);
+				$this->_db->setQuery($query);
+				$locked = $this->_db->execute();
+			}
+			catch (Exception $e) {
+				Log::add('Failed to lock element ' . $element . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $locked;
+	}
+
+	public function saveFormSession($element,$fid,$value,$fnum,$user_id = null)
+	{
+		$saved = false;
+
+		if(empty($user_id)) {
+			$user_id = $this->_user->id;
+		}
+
+		if(!empty($element) && !empty($fid) && !empty($fnum)) {
+			try {
+				$query = $this->_db->getQuery(true);
+
+				$query->select('data')
+					->from($this->_db->quoteName('#__fabrik_form_sessions'))
+					->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum))
+					->where($this->_db->quoteName('form_id') . ' = ' . $this->_db->quote($fid))
+					->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($user_id));
+				$this->_db->setQuery($query);
+				$datas = $this->_db->loadResult();
+
+				if (!empty($datas)) {
+					$datas = json_decode($datas, true);
+				}
+				else {
+					$datas = [];
+				}
+
+				$datas[$element] = $value;
+
+				$query->clear()
+					->update($this->_db->quoteName('#__fabrik_form_sessions'))
+					->set($this->_db->quoteName('data') . ' = ' . $this->_db->quote(json_encode($datas)))
+					->set($this->_db->quoteName('last_update') . ' = ' . $this->_db->quote(time()))
+					->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum))
+					->where($this->_db->quoteName('form_id') . ' = ' . $this->_db->quote($fid))
+					->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($user_id));
+				$this->_db->setQuery($query);
+				$saved = $this->_db->execute();
+			}
+			catch (Exception $e) {
+				Log::add('Failed to save form session for element ' . $element . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $saved;
+	}
+
+	public function clearFormSession($fid,$fnum,$user_id = null)
+	{
+		$cleared = false;
+
+		if(empty($user_id)) {
+			$user_id = $this->_user->id;
+		}
+
+		if(!empty($fid) && !empty($fnum)) {
+			try {
+				$query = $this->_db->getQuery(true);
+
+				$query->clear()
+					->delete($this->_db->quoteName('#__fabrik_form_sessions'))
+					->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum))
+					->where($this->_db->quoteName('form_id') . ' = ' . $this->_db->quote($fid))
+					->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($user_id));
+				$this->_db->setQuery($query);
+				$cleared = $this->_db->execute();
+			}
+			catch (Exception $e) {
+				Log::add('Failed to clear form session for form ' . $fid . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $cleared;
 	}
 }

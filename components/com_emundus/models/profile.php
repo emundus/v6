@@ -1041,7 +1041,9 @@ class EmundusModelProfile extends JModelList {
         include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
         include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
         include_once(JPATH_SITE.'/components/com_emundus/models/admission.php');
+	    include_once(JPATH_SITE . '/components/com_emundus/models/application.php');
 
+	    $m_application      = new EmundusModelApplication;
         $m_users = new EmundusModelUsers;
         $current_user = JFactory::getUser();
         $session = JFactory::getSession();
@@ -1094,7 +1096,7 @@ class EmundusModelProfile extends JModelList {
             // If the user is admitted then we fill the session with information about the admitted file
             // regardeless of the current campaign
             $emundusSession->fnum = $campaign["fnum"];
-            $emundusSession->fnums = $this->getApplicantFnums($current_user->id);
+	        $emundusSession->fnums = array_merge($this->getApplicantFnums($current_user->id), $m_application->getMyFilesRequests($current_user->id));
             $emundusSession->campaign_id = $campaign["id"];
             $emundusSession->status = @$campaign["status"];
             $emundusSession->candidature_incomplete = ($campaign['status']==0)?0:1;

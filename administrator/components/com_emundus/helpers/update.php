@@ -16,6 +16,23 @@ use Joomla\CMS\Table\Table;
  */
 class EmundusHelperUpdate
 {
+	public static function displayMessage($message, $type = 'info'): void
+	{
+		switch ($type) {
+			case 'info':
+				echo "\033[36m" . $message . "\033[0m\n";
+				break;
+			case 'success':
+				echo "\033[32m" . $message . "\033[0m\n";
+				break;
+			case 'warning':
+				echo "\033[33m" . $message . "\033[0m\n";
+				break;
+			case 'error':
+				echo "\033[31m" . $message . "\033[0m\n";
+				break;
+		}
+	}
 
 	public static function clearJoomlaCache($group = null){
 		require_once (JPATH_ROOT . '/administrator/components/com_cache/models/cache.php');
@@ -596,7 +613,8 @@ class EmundusHelperUpdate
             $tag_existing = $db->loadResult();
 
             if(empty($tag_existing)) {
-                $query->insert($db->quoteName('#__emundus_setup_languages'))
+                $query->clear()
+	                ->insert($db->quoteName('#__emundus_setup_languages'))
                     ->set($db->quoteName('tag') . ' = ' . $db->quote($tag))
                     ->set($db->quoteName('lang_code') . ' = ' . $db->quote($lang))
                     ->set($db->quoteName('override') . ' = ' . $db->quote($value))
@@ -1581,7 +1599,7 @@ class EmundusHelperUpdate
      * @since version 1.33.0
      */
     public static function addJoomlaMenu($params, $parent_id = 1, $published = 1, $position='last-child', $modules = []) {
-        $result = ['status' => false, 'message' => '', 'id' => 0];
+        $result = ['status' => false, 'message' => '', 'id' => 0, 'alias' => '', 'link' => ''];
         $menu_table = JTableNested::getInstance('Menu');
 
         if (empty($params['menutype'])) {
@@ -1592,6 +1610,10 @@ class EmundusHelperUpdate
             $result['message'] = 'INSERTING JOOMLA MENU : Please indicate a title.';
             return $result;
         }
+
+		if(empty($params['params'])) {
+			$params['params'] = [];
+		}
 
         try {
             // Initialize again Joomla database to fix problem with Falang (or other plugins) that override default mysql driver
@@ -1609,7 +1631,7 @@ class EmundusHelperUpdate
 			}
 
             $query->clear()
-                ->select('id')
+                ->select('id,alias,link')
                 ->from($db->quoteName('#__menu'))
                 ->where($db->quoteName('menutype') . ' = ' . $db->quote($params['menutype']));
             if(!empty($params['link'])) {
@@ -1619,10 +1641,10 @@ class EmundusHelperUpdate
                 $query->andWhere($db->quoteName('alias') . ' = ' . $db->quote($alias));
             }
             $db->setQuery($query);
-            $is_existing = $db->loadResult();
+            $is_existing = $db->loadObject();
 
             if (empty($is_existing)) {
-                if ($params['client_id'] != 1) {
+                if (!isset($params['client_id']) || $params['client_id'] != 1) {
                     $default_params = [
                         'menu-anchor_title' => '',
                         'menu-anchor_css' => '',
@@ -1662,6 +1684,8 @@ class EmundusHelperUpdate
                     return $result;
                 }
                 $result['id'] = $menu_table->id;
+                $result['alias'] = $menu_data['alias'];
+                $result['link'] = $menu_data['link'];
 
                 if (!empty($modules)) {
                     foreach ($modules as $module) {
@@ -1685,7 +1709,9 @@ class EmundusHelperUpdate
                     }
                 }
             } else {
-                $result['id'] = $is_existing;
+                $result['id'] = $is_existing->id;
+	            $result['alias'] = $is_existing->alias;
+	            $result['link'] = $is_existing->link;
             }
 
             $result['status'] = true;
@@ -1816,8 +1842,8 @@ class EmundusHelperUpdate
                     'publish_down' => '2099-01-01 00:00:00',
                     'reset_button_label' => $datas['reset_button_label'] ?: 'RESET',
                     'submit_button_label' => $datas['submit_button_label'] ?: 'SAVE_CONTINUE',
-                    'form_template' => $datas['form_template'] ?: 'bootstrap',
-                    'view_only_template' => $datas['view_only_template'] ?: 'bootstrap',
+                    'form_template' => $datas['form_template'] ?: 'emundus',
+                    'view_only_template' => $datas['view_only_template'] ?: 'emundus',
                     'params' => json_encode($params),
                 ];
 
@@ -2102,6 +2128,9 @@ class EmundusHelperUpdate
             } catch (Exception $e) {
                 $result['message'] = 'ADDING COLUMN : Error : ' . $e->getMessage();
             }
+        } else {
+			$result['status'] = true;
+			$result['message'] = 'Column already exists';
         }
 
         return $result;

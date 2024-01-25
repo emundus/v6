@@ -7,7 +7,7 @@
 	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
 	<authorEmail>dev@emundus.fr</authorEmail>
 	<authorUrl>www.emundus.fr</authorUrl>
-	<version>1.38.4</version>
+	<version>1.39.0</version>
 	<description>Online application component for Joomla!</description>
 	<scriptfile>script.com_emundus.php</scriptfile>
 

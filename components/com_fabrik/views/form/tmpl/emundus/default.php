@@ -10,6 +10,8 @@
  */
 
 // No direct access
+use Joomla\CMS\Factory;
+
 defined('_JEXEC') or die('Restricted access');
 
 $form      = $this->form;
@@ -21,6 +23,20 @@ $eMConfig = JComponentHelper::getParams('com_emundus');
 $display_required_icon = $eMConfig->get('display_required_icon', 1);
 
 $pageClass = $this->params->get('pageclass_sfx', '');
+
+$fnum = Factory::getApplication()->input->getString('fnum','');
+
+require_once JPATH_SITE . '/components/com_emundus/models/application.php';
+$m_application = new EmundusModelApplication();
+$this->locked_elements = $m_application->getLockedElements($this->form->id, $fnum);
+$this->collaborators = $m_application->getSharedFileUsers(null, $fnum);
+
+$this->collaborator = false;
+$e_user = Factory::getSession()->get('emundusUser', null);
+if(!empty($e_user->fnums)) {
+	$fnumInfos = $e_user->fnums[$fnum];
+	$this->collaborator = $fnumInfos->applicant_id != $e_user->id;
+}
 
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 $m_users = new EmundusModelUsers();
@@ -229,4 +245,82 @@ endif;
     if (displayTchoozy !== 'block') {
         document.querySelector('#background-shapes').style.display = 'none';
     }
+
+    <?php if(!$this->collaborator) : ?>
+    let elementsContainers = document.querySelectorAll(".fabrikElementContainer");
+
+    elementsContainers.forEach(function(elem) {
+        elem.addEventListener("mouseenter", function(event) {
+            let elementName = getElementName(event.srcElement);
+
+            if(elementName) {
+                let lock = event.srcElement.querySelector('#open_lock_'+elementName);
+                if(lock) {
+                    lock.style.display = 'block';
+                }
+            }
+        });
+
+        elem.addEventListener("mouseleave", function(event) {
+            let elementName = getElementName(event.srcElement);
+
+            if(elementName) {
+                let lock = event.srcElement.querySelector('#open_lock_'+elementName);
+                if(lock) {
+                    lock.style.display = 'none';
+                }
+            }
+        });
+    });
+
+    function getElementName(htmlElt) {
+        while(!htmlElt.classList.contains('fabrikElementContainer')) {
+            htmlElt = htmlElt.parentElement;
+        }
+
+        let elementName = '';
+        htmlElt.classList.forEach((classe) => {
+            if(classe.startsWith('fb_el_')) {
+                elementName = classe.replace('fb_el_', '');
+            }
+        });
+
+        return elementName;
+    }
+
+    function lockElement(element,state = 1) {
+        let formData = new FormData();
+        formData.append('state', state);
+        formData.append('element', element);
+        formData.append('form_id', <?php echo $this->form->id; ?>);
+        formData.append('fnum', '<?php echo Factory::getApplication()->input->getString('fnum',''); ?>');
+
+
+        fetch('/index.php?option=com_emundus&controller=application&task=lockelement', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status) {
+                    let lock = document.querySelector('#lock_'+element);
+                    let open_lock = document.querySelector('#open_lock_'+element);
+                    if(lock) {
+                        if(state == 1) {
+                            lock.style.display = 'block';
+                        } else {
+                            lock.style.display = 'none';
+                        }
+                    }
+                    if(open_lock) {
+                        if(state == 1) {
+                            open_lock.classList.add('!tw-hidden');
+                        } else {
+                            open_lock.classList.remove('!tw-hidden');
+                        }
+                    }
+                }
+            });
+    }
+    <?php endif; ?>
 </script>

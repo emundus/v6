@@ -133,6 +133,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $custom_actions  = $params->get('mod_em_application_custom_actions');
 	$show_tabs = $params->get('mod_em_applications_show_tabs',1);
 	$actions = $params->get('mod_emundus_applications_actions',[]);
+	$history_link = $app->getMenu()->getItems('link', 'index.php?option=com_emundus&view=application&layout=history', true);
 
     // Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.
     if ($layout == '_:ccirs-drh') {
@@ -142,8 +143,9 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
         $cc_list_url = $params->get('cc_list_url', 'index.php');
         $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by);
     } else {
+	    $collaborate = in_array('collaborate',$actions);
         // We send the layout as a param because Hesam needs different information.
-        $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by, $params);
+        $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by, $params,$collaborate);
 		$tabs = $m_application->getTabs(JFactory::getUser()->id);
     }
 

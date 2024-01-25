@@ -3,15 +3,27 @@ requirejs(['fab/fabrik'], function () {
     var formDataChanged = false;
 
     Fabrik.addEvent('fabrik.form.loaded', function (form) {
+        setCookie('fabrik_form_session', 'true', 15);
+
+        setInterval(() => {
+            let active_form_session = getCookie('fabrik_form_session');
+            if(!active_form_session) {
+                alert(Joomla.JText._('COM_EMUNDUS_FABRIK_SESSION_EXPIRED'));
+                setTimeout(() => {
+                    window.location.href = window.location.origin + '/';
+                }, 2000);
+            }
+        }, 10000);
+
         if (!removedFabrikFormSkeleton) {
             removeFabrikFormSkeleton();
         }
 
         manageRepeatGroup(form);
 
-        var form = document.getElementsByClassName('fabrikForm')[0];
+        var formElt = document.getElementsByClassName('fabrikForm')[0];
 
-        form.addEventListener('input', function () {
+        formElt.addEventListener('input', function () {
             if(!formDataChanged) {
                 formDataChanged = true;
             }
@@ -49,6 +61,7 @@ requirejs(['fab/fabrik'], function () {
                     }).then((result) => {
                         if(result.value)
                         {
+                            clearFormSession(form.id);
                             if(e.srcElement.classList.contains('goback-btn')) {
                                 window.history.back();
                             }
@@ -77,6 +90,7 @@ requirejs(['fab/fabrik'], function () {
                         }
                     });
                 } else {
+                    clearFormSession(form.id);
                     if(e.srcElement.classList.contains('goback-btn')) {
                         if(window.history.length > 1) {
                             window.history.back();
@@ -95,6 +109,16 @@ requirejs(['fab/fabrik'], function () {
 
     Fabrik.addEvent('fabrik.form.group.delete.end', function(form, event) {
         manageRepeatGroup(form);
+    });
+
+    Fabrik.addEvent('fabrik.form.elements.added', function (form) {
+        Object.entries(form.elements).forEach(([key, element]) => {
+            let event = 'blur';
+            if (['fabrikradiobutton', 'databasejoin'].includes(element.plugin)) {
+                event = 'change';
+            }
+            element.element.addEventListener(event, (e) => saveDatas(element, e))
+        });
     });
 
     window.setInterval(function() {
@@ -195,5 +219,71 @@ requirejs(['fab/fabrik'], function () {
                 }
             });
         },100)
+    }
+
+    function saveDatas(element, event) {
+        let name = element.baseElementId;
+        let value = element.get('value');
+
+        let formData = new FormData();
+        formData.append('element', name);
+        formData.append('value', value);
+        formData.append('form_id', element.form.id);
+
+        fetch('/index.php?option=com_emundus&controller=application&task=saveformsession', {
+            method: 'POST',
+            credentials: 'same-origin',
+            body: formData,
+        }).then((response) => {
+            return response.json();
+        }).then((data) => {
+            if (data.success) {
+                setCookie('fabrik_form_session', 'true', 15);
+            }
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+    function clearFormSession(form_id) {
+        let formData = new FormData();
+        formData.append('form_id', form_id);
+
+        fetch('/index.php?option=com_emundus&controller=application&task=clearformsession', {
+            method: 'POST',
+            credentials: 'same-origin',
+            body: formData,
+        }).then((response) => {
+            return response.json();
+        }).then((data) => {
+            if (data.success) {
+                document.cookie = "fabrik_form_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            }
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+    function setCookie(cname, cvalue, minutes) {
+        const d = new Date();
+        d.setTime(d.getTime() + (minutes*60*1000));
+        let expires = "expires="+ d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+    function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
     }
 });

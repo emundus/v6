@@ -4079,6 +4079,20 @@ if(in_array($applicant,$exceptions)){
 
 				EmundusHelperUpdate::updateExtensionParam('photo_attachment',10,'');
 			}
+
+			if (version_compare($cache_version, '1.39.0', '<=') || $firstrun) {
+				// Sharing files feature
+				require_once JPATH_ADMINISTRATOR . '/components/com_emundus/scripts/SharingFilesInstall.php';
+				$sharing_files_install   = new scripts\SharingFilesInstall();
+				$sharing_files_installed = $sharing_files_install->install();
+				if ($sharing_files_installed['status']) {
+					EmundusHelperUpdate::displayMessage('La fonctionnalité de partage de dossier a été installée avec succès', 'success');
+				}
+				else {
+					EmundusHelperUpdate::displayMessage($sharing_files_installed['message'], 'error');
+					$succeed = false;
+				}
+			}
 		}
 
 		return $succeed;

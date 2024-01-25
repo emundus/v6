@@ -51,7 +51,8 @@ export default {
 			if (!this.$store.state.attachment.previews[this.attachment.aid]) {
 				data = await attachmentService.getPreview(
 					this.user,
-					this.attachment.filename
+					this.attachment.filename,
+            this.attachment.id
 				);
 
 				// store preview data

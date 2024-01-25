@@ -16,7 +16,7 @@
 			      <span class="material-icons-outlined search">search</span>
 			      <span class="material-icons-outlined clear em-pointer" @click="search = ''">clear</span>
 		      </div>
-		      <select v-if="Object.entries(displayedAttachmentCategories).length > 0"
+          <select v-if="columns.includes('category') && Object.entries(displayedAttachmentCategories).length > 0"
 		          name="category"
 				      class="category-select em-ml-16"
 				      v-model="category"
@@ -72,7 +72,8 @@
         <table :class="{ loading: loading }" aria-describedby="Table of attachments information">
           <thead>
 	          <tr>
-	            <th id="check-th"><input class="attachment-check" type="checkbox" @change="updateAllCheckedAttachments"/></th>
+            <th v-if="columns.includes('check')" id="check-th"><input class="attachment-check" type="checkbox" @change="updateAllCheckedAttachments"/>
+            </th>
 	            <th v-if="columns.includes('name')" id="name" @click="orderBy('value')">
 		            <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_NAME") }}</span>
 	              <span v-if="sort.orderBy === 'value' && sort.order === 'asc'" class="material-icons-outlined em-font-size-16">arrow_upward</span>
@@ -225,7 +226,7 @@ export default {
     columns: {
       type: Array,
       default() {
-				return ['name','date','desc','category','status','user','modified_by','modified','permissions','sync'];
+        return ['check','name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync'];
 			}
     },
     displayEdit: {

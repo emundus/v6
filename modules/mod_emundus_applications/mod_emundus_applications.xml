@@ -359,6 +359,19 @@
 					<option value="rename">MOD_EMUNDUS_APPLICATIONS_ACTIONS_RENAME</option>
 					<option value="copy">MOD_EMUNDUS_APPLICATIONS_ACTIONS_COPY</option>
 					<option value="history">MOD_EMUNDUS_APPLICATIONS_ACTIONS_HISTORY</option>
+					<option value="collaborate">MOD_EMUNDUS_APPLICATIONS_ACTIONS_COLLABORATE</option>
+				</field>
+
+				<field showon="layout:_:tchooz"
+					   name="mod_emundus_applications_collaborate_default_rights"
+					   type="checkboxes"
+					   default="r,u"
+					   label="MOD_EMUNDUS_APPLICATIONS_COLLABORATE_DEFAULT_RIGHTS"
+					   description="MOD_EMUNDUS_APPLICATIONS_COLLABORATE_DEFAULT_RIGHTS_DESC">
+					<option value="r">MOD_EMUNDUS_APPLICATIONS_COLLABORATE_RIGHT_R</option>
+					<option value="u">MOD_EMUNDUS_APPLICATIONS_COLLABORATE_RIGHT_U</option>
+					<option value="show_history">MOD_EMUNDUS_APPLICATIONS_COLLABORATE_RIGHT_SHOW_HISTORY</option>
+					<option value="show_shared_users">MOD_EMUNDUS_APPLICATIONS_COLLABORATE_RIGHT_SHOW_SHARED_USERS</option>
 				</field>
 
 				<field showon="layout:_:tchooz"

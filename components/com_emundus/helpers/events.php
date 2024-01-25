@@ -13,6 +13,10 @@
  */
 
 // no direct access
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
+
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
@@ -25,6 +29,8 @@ jimport('joomla.application.component.helper');
  * @since 1.5
  */
 class EmundusHelperEvents {
+
+	private $locked_elements = [];
 
     /**
      * @param $params
@@ -39,10 +45,21 @@ class EmundusHelperEvents {
         jimport('joomla.log.log');
         JLog::addLogger(array('text_file' => 'com_emundus.helper_events.php'), JLog::ALL, array('com_emundus.helper_events'));
 
+
+	    $user = Factory::getApplication()->getSession()->get('emundusUser');
+
+	    $fnum = Factory::getApplication()->input->getString('fnum','');
+	    if(empty($fnum)) {
+		    $fnum = $user->fnum;
+	    }
+
         try {
+	        $this->initFormSession($fnum, $params['formModel']->id);
             $this->isApplicationSent($params);
 
-            $user = JFactory::getSession()->get('emundusUser');
+	        require_once JPATH_SITE . '/components/com_emundus/models/application.php';
+	        $m_application   = new EmundusModelApplication();
+	        $this->locked_elements = $m_application->getLockedElements($params['formModel']->id, $fnum);
 
             if(isset($user->fnum)) {
                 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'form.php');
@@ -80,12 +97,33 @@ class EmundusHelperEvents {
         JLog::addLogger(array('text_file' => 'com_emundus.helper_events.php'), JLog::ALL, array('com_emundus.helper_events'));
 
         try {
-	        $eMConfig = JComponentHelper::getParams('com_emundus');
-	        $enable_forms_logs = $eMConfig->get('log_forms_update', 0);
-			if ($enable_forms_logs) {
-                $forms_to_log = $eMConfig->get('log_forms_update_forms', []);
-                $this->logUpdateForms($params, $forms_to_log);
-			}
+
+	        $save = false;
+	        $emundusUser = JFactory::getSession()->get('emundusUser');
+	        $fnum        = $emundusUser->fnum;
+
+	        $form_session = $this->getFormSession($fnum, $params['formModel']->id);
+	        if(!empty($form_session->id) && $form_session->user_id == $emundusUser->id) {
+		        $this->clearFormSession($fnum, $params['formModel']->id);
+		        $save = true;
+	        } elseif (!empty($form_session->id) && $form_session->user_id != $emundusUser->id) {
+		        $save = false;
+	        } else {
+		        $save = true;
+	        }
+
+	        if($save) {
+		        $eMConfig          = JComponentHelper::getParams('com_emundus');
+		        $enable_forms_logs = $eMConfig->get('log_forms_update', 0);
+		        if ($enable_forms_logs) {
+			        $forms_to_log = $eMConfig->get('log_forms_update_forms', []);
+			        $this->logUpdateForms($params, $forms_to_log);
+		        }
+	        } else {
+		        $app = Factory::getApplication();
+		        $app->enqueueMessage(Text::_('COM_EMUNDUS_FABRIK_SESSION_EXPIRED'), 'warning');
+		        $app->redirect(Route::_("index.php?option=com_fabrik&view=form&formid=" . $app->input->get('formid') . "&Itemid=" . $app->input->get('Itemid') . "&rowid=" . $app->input->get('rowid')) . "&fnum=" . $fnum);
+	        }
 
             return true;
         } catch (Exception $e) {
@@ -153,7 +191,30 @@ class EmundusHelperEvents {
         }
     }
 
+	function onElementCanUse($params): bool
+	{
+		$user = Factory::getApplication()->getSession()->get('emundusUser');
+
+		$fnum = Factory::getApplication()->input->getString('fnum','');
+		if(!empty($fnum)) {
+			$fnum = $user->fnum;
+		}
+
+		$collaborator = false;
+		if(!empty($user->fnums)) {
+			$fnumInfos = $user->fnums[$fnum];
+			$collaborator = $fnumInfos->applicant_id != $user->id;
+		}
+
+		if($collaborator) {
+			return $this->checkLockedElements($params);
+		} else {
+			return true;
+		}
+	}
+
     function isApplicationSent($params) : bool{
+	    $result = true;
         $mainframe = JFactory::getApplication();
 
         if (!$mainframe->isAdmin()) {
@@ -250,8 +311,38 @@ class EmundusHelperEvents {
             $can_edit = EmundusHelperAccess::asAccessAction(1, 'u', $user->id, $fnum);
             $can_read = EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum);
 
+	        $fnumInfos = $user->fnums[$fnum];
+
+	        if($fnumInfos->applicant_id == $user->id) {
+		        $can_edit = true;
+		        $can_read = true;
+	        }
+
+	        if(!$can_read) {
+		        if(!empty($fnumInfos->r) && $fnumInfos->r == 1) {
+			        $can_read = true;
+		        }
+	        }
+	        if(!$can_edit) {
+		        if(!empty($fnumInfos->u) && $fnumInfos->u == 1) {
+			        $can_edit = true;
+		        }
+	        }
+
             // once access condition is not correct, redirect page
             $reload_url = true;
+	        $form_url = "index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum."&r=".$reload;
+	        $details_url = "index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload;
+
+	        $session = $this->getFormSession($fnum, $params['formModel']->id);
+	        if(!empty($session->id) && $session->user_id != $user->id && $can_read) {
+		        if($reload < 3) {
+			        Factory::getApplication()->enqueueMessage(Text::_('COM_EMUNDUS_EVENTS_APPLICATION_CURRENT_EDITING'), 'warning');
+			        Factory::getApplication()->redirect($details_url);
+		        }
+
+		        return true;
+	        }
 
             // FNUM sent by URL is like user fnum (means an applicant trying to open a file)
             if (!empty($fnum)) {
@@ -262,7 +353,7 @@ class EmundusHelperEvents {
 
                 $isLimitObtained = $m_campaign->isLimitObtained($user->fnums[$fnum]->campaign_id);
 
-                if ($fnum == @$user->fnum) {
+	            if ($fnumInfos->applicant_id == $user->id) {
                     //try to access edit view
                     if ($view == 'form') {
                         if ((!$is_dead_line_passed && $isLimitObtained !== true) || in_array($user->id, $applicants) || ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline && $isLimitObtained !== true) || ($is_dead_line_passed && $can_edit_after_deadline && $isLimitObtained !== true) || $can_edit) {
@@ -277,8 +368,13 @@ class EmundusHelperEvents {
                             $mainframe->enqueueMessage(JText::_('COM_EMUNDUS_EVENTS_APPLICATION_DELETED_FILE'), 'warning');
                         } else if ($is_dead_line_passed) {
                             $mainframe->enqueueMessage(JText::_('COM_EMUNDUS_EVENTS_APPLICATION_PERIOD_PASSED'), 'warning');
+                        } else if($can_edit) {
+	                        $reload_url = false;
+	                        if ($reload < 4) {
+		                        $reload++;
+		                        $mainframe->redirect($form_url);
+	                        }
                         }
-                        $reload_url = false;
                     }
                 }
                 // FNUM sent not like user fnum (partner or bad FNUM)
@@ -291,24 +387,31 @@ class EmundusHelperEvents {
                             $reload_url = false;
                             if ($reload < 3) {
                                 $reload++;
-                                $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum."&r=".$reload);
+                                $mainframe->redirect($form_url);
                             }
                         }
                     } else {
                         //try to access detail view or other
-                        if ($can_read) {
+	                    if($can_edit) {
+		                    $reload_url = false;
+		                    if ($reload < 4) {
+			                    $reload++;
+			                    $mainframe->redirect($form_url);
+		                    }
+	                    }
+	                    else if ($can_read) {
                             $reload_url = false;
                         }
                     }
                 }
             }
 
-            if (isset($user->fnum) && !empty($user->fnum)) {
+	        if ($fnumInfos->applicant_id == $user->id) {
 
                 if (in_array($user->id, $applicants)) {
 
                     if ($reload_url) {
-                        $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
+                        $mainframe->redirect($form_url);
                     }
 
                 } else {
@@ -320,7 +423,7 @@ class EmundusHelperEvents {
                             } else {
                                 $mainframe->enqueueMessage(JText::_('COM_EMUNDUS_EVENTS_APPLICATION_PERIOD_PASSED'), 'warning');
                             }
-                            $mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
+                            $mainframe->redirect($details_url);
                         }
 
                     } else {
@@ -328,16 +431,16 @@ class EmundusHelperEvents {
                         if ($is_app_sent) {
                             if ($can_edit_until_deadline != 0 || $can_edit_after_deadline != 0) {
                                 if ($reload_url) {
-                                    $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
+                                    $mainframe->redirect($form_url);
                                 }
                             } else {
                                 if ($reload_url) {
-                                    $mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
+                                    $mainframe->redirect($details_url);
                                 }
                             }
                         } else {
                             if ($reload_url) {
-                                $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
+                                $mainframe->redirect($form_url);
                             }
                         }
 
@@ -347,12 +450,12 @@ class EmundusHelperEvents {
             } else {
 
                 if ($can_edit == 1) {
-                    return true;
+	                $result = true;
                 } else {
                     if ($can_read == 1) {
                         if ($reload < 3) {
                             $reload++;
-                            $mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum."&r=".$reload);
+                            $mainframe->redirect($details_url);
                         }
                     } else {
                         $mainframe->enqueueMessage(JText::_('ACCESS_DENIED'), 'error');
@@ -379,16 +482,38 @@ class EmundusHelperEvents {
 	        }
 
 
-	        if ($copy_application_form == 1 && isset($user->fnum) && ($check_forms || !empty($fnum_linked))) {
+	        if (
+		        ($copy_application_form == 1 && isset($user->fnum) && ($check_forms || !empty($fnum_linked)))
+		        ||
+		        !empty($session->data)
+	        ) {
 
-                if (empty($formModel->getRowId())) {
-                    $table = $listModel->getTable();
-                    $table_elements = $formModel->getElementOptions(false, 'name', false, false, array(), '', true);
+		        $table = $listModel->getTable();
+		        $table_elements = $formModel->getElementOptions(false, 'name', false, false, array(), '', true);
 
-                    $elements = array();
-                    foreach ($table_elements as $element) {
-                        $elements[] = $element->value;
-                    }
+		        $elements = array();
+		        foreach ($table_elements as $element) {
+			        $elements[] = $element->value;
+		        }
+
+		        // Check if data stored in session
+		        $session_datas = json_decode($session->data,true);
+
+		        // Check if we can fill a value with our profile
+		        $session_elements = array_keys($session_datas);
+		        foreach ($elements as $element) {
+			        $elt_name = explode('.', $element)[1];
+			        $fullName = str_replace('.','___',$element);
+
+			        if (in_array($fullName, $session_elements)) {
+				        if (!empty($session_datas[$fullName])) {
+					        $formModel->data[$table->db_table_name . '___' . $elt_name]          = $session_datas[$fullName];
+					        $formModel->data[$table->db_table_name . '___' . $elt_name . '_raw'] = $session_datas[$fullName];
+				        }
+			        }
+		        }
+
+		        if (empty($formModel->getRowId())) {
 
                     // check if data stored for current user
                     try {
@@ -590,7 +715,7 @@ class EmundusHelperEvents {
                 }
             }
         }
-        return true;
+        return $result;
     }
 
     function isApplicationCompleted($params) : bool{
@@ -1181,12 +1306,22 @@ class EmundusHelperEvents {
 
 	}
 
+	private function checkLockedElements($params): bool {
+		if(!empty($this->locked_elements)) {
+			if(in_array($params['elementModel']->getFullName(),$this->locked_elements)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
     private function logUpdateForms($params, $forms_to_log = []) : bool
     {
         $logged = false;
 
         $form_data = $params['formModel']->formData;
-        if (!empty($forms_to_log) && in_array($form_data['formid'], $forms_to_log)) {
+        if (!empty($forms_to_log) && in_array($form_data['formid'], $forms_to_log) || empty($forms_to_log)) {
             $emundusUser = JFactory::getSession()->get('emundusUser');
             $fnum = $emundusUser->fnum;
 
@@ -1301,7 +1436,7 @@ class EmundusHelperEvents {
             $query->select('fe.id, fe.name, fe.plugin, fe.label, fe.params, fe.group_id, fe.default, fl.db_table_name, fg.params as group_params')
                 ->from($db->quoteName('#__fabrik_elements', 'fe'))
 	            ->innerJoin($db->quoteName('#__fabrik_groups','fg').' ON '.$db->quoteName('fg.id').' = '.$db->quoteName('fe.group_id'))
-	            ->innerJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffj.group_id').' = '.$db->quoteName('fe.group_id'))
+	            ->innerJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
 	            ->innerJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ffg.form_id'))
                 ->where($db->quoteName('ffg.form_id') . ' = ' . $form_id)
                 ->where($db->quoteName('fe.published') . ' = 1')
@@ -1370,5 +1505,103 @@ class EmundusHelperEvents {
 		}
 
 		return $result;
+	}
+
+	private function getFormSession($fnum, $form_id)
+	{
+		$session = false;
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try {
+			$query->select('*')
+				->from($db->quoteName('#__fabrik_form_sessions'))
+				->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
+				->where($db->quoteName('form_id') . ' = ' . $form_id);
+			$db->setQuery($query);
+			$session = $db->loadObject();
+		}
+		catch (Exception $e) {
+			JLog::add('Error when try to get form session: ' . __LINE__ . ' in file: ' . __FILE__ . ' with message: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+		}
+
+		return $session;
+	}
+
+	private function initFormSession($fnum, $form_id, $user = null)
+	{
+		$session_insert = false;
+
+		$existing_session = $this->getFormSession($fnum, $form_id);
+
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		if (empty($user)) {
+			$user = Factory::getApplication()->getIdentity();
+		}
+
+		if(empty($existing_session->id)) {
+			try {
+				$insert = [
+					'hash'      => $db->quote(md5($fnum . $form_id . $user->id . date('Y-m-d H:i:s'))),
+					'user_id'   => $user->id,
+					'form_id'   => $form_id,
+					'row_id'    => 0,
+					'time_date' => $db->quote(date('Y-m-d H:i:s')),
+					'fnum'      => $db->quote($fnum),
+					'last_update' => $db->quote(time())
+				];
+
+				$query->insert($db->quoteName('#__fabrik_form_sessions'))
+					->columns($db->quoteName(array_keys($insert)))
+					->values(implode(',', $insert));
+				$db->setQuery($query);
+				$session_insert = $db->execute();
+			}
+			catch (Exception $e) {
+				JLog::add('Error when try to init form session: ' . __LINE__ . ' in file: ' . __FILE__ . ' with message: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+		} else {
+			try {
+				$query->update($db->quoteName('#__fabrik_form_sessions'))
+					->set($db->quoteName('last_update') . ' = ' . $db->quote(time()))
+					->where($db->quoteName('id') . ' = ' . $existing_session->id);
+
+				if($existing_session->last_update < (time() - 900)) {
+					$query->set($db->quoteName('user_id') . ' = ' . $db->quote($user->id));
+				}
+
+				$db->setQuery($query);
+				$session_insert = $db->execute();
+			}
+			catch (Exception $e) {
+				JLog::add('Error when try to update form session: ' . __LINE__ . ' in file: ' . __FILE__ . ' with message: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $session_insert;
+	}
+
+	private function clearFormSession($fnum, $form_id)
+	{
+		$session_delete = false;
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try {
+			$query->delete($db->quoteName('#__fabrik_form_sessions'))
+				->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
+				->where($db->quoteName('form_id') . ' = ' . $form_id);
+			$db->setQuery($query);
+			$session_delete = $db->execute();
+		}
+		catch (Exception $e) {
+			JLog::add('Error when try to clear form session: ' . __LINE__ . ' in file: ' . __FILE__ . ' with message: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+		}
+
+		return $session_delete;
 	}
 }
