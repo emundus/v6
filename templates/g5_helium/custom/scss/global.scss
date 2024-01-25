@@ -617,6 +617,10 @@ footer#g-footer > .g-container {
 
 /*  FORMULAIRE INSCRIPTION */
 
+.view-registration.em-formRegistrationCenter a:not([class*="btn"]):not([class*="button"]):not([class*="chzn"]) {
+    text-decoration: underline;
+}
+
 .view-registration, .view-login, .view-reset, .view-form.em-formRegistrationCenter {
   #g-navigation .g-container {
     padding: 24px !important;
