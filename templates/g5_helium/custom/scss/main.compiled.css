@@ -4633,7 +4633,7 @@ button.swal2-cancel.goback-btn:hover,
 .alert a:hover {
         font-weight: normal;
         text-decoration: underline;
-        color: var(--blue-500);
+        color: inherit;
     }
 .has-error .help-block,
     .has-error .control-label,
