@@ -158,11 +158,15 @@ class EmundusModelApplication extends JModelList
         return $this->_db->loadObjectList();
     }
 
-    function getUserAttachmentsByFnum($fnum, $search = '', $profile = null)
+    function getUserAttachmentsByFnum($fnum, $search = '', $profile = null, $applicant = false, $user_id = null)
     {
 		$attachments = [];
 
 		if (!empty($fnum)) {
+			if (!class_exists('EmundusHelperAccess')) {
+				require_once JPATH_ROOT . '/components/com_emundus/helpers/access.php';
+			}
+
 			$eMConfig = JComponentHelper::getParams('com_emundus');
 			$expert_document_id = $eMConfig->get('expert_document_id', '36');
 
@@ -178,7 +182,7 @@ class EmundusModelApplication extends JModelList
 				->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum))
 				->andWhere('esa.lbl NOT LIKE ' . $this->_db->quote('_application_form'));
 
-			if (!empty($this->_user) && EmundusHelperAccess::isExpert($this->_user->id)) {
+			if ((!empty($user_id) && EmundusHelperAccess::isExpert($user_id)) || (!empty($this->_user) && EmundusHelperAccess::isExpert($this->_user->id))) {
 				$query->andWhere($this->_db->quoteName('esa.id') . ' != ' . $expert_document_id);
 			}
 
@@ -195,6 +199,10 @@ class EmundusModelApplication extends JModelList
 				$query->order($this->_db->quoteName('eu.modified') . ' DESC');
 			}
 
+			if($applicant) {
+				$query->andWhere($this->_db->quoteName('eu.can_be_viewed') . ' = 1');
+			}
+
 			try {
 				$this->_db->setQuery($query);
 				$attachments = $this->_db->loadObjectList();
@@ -203,7 +211,7 @@ class EmundusModelApplication extends JModelList
 			}
 
 			if (!empty($attachments)) {
-				$allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+				$allowed_attachments = isset($user_id) ? EmundusHelperAccess::getUserAllowedAttachmentIDs($user_id) : EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_user->id);
 				if ($allowed_attachments !== true) {
 					foreach ($attachments as $key => $attachment) {
 						if (!in_array($attachment->id, $allowed_attachments)) {

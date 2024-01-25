@@ -52,7 +52,7 @@ export default {
 				data = await attachmentService.getPreview(
 					this.user,
 					this.attachment.filename,
-            this.attachment.id
+            this.attachment.aid
 				);
 
 				// store preview data
