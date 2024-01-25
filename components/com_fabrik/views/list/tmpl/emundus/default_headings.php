@@ -24,7 +24,7 @@ $multipleActions = $this->params->get('hidecheckbox', 0) == 0 ? true : false;
             if(($key == 'fabrik_actions' || $key == 'fabrik_select') && !$multipleActions) {
                 continue;
             }
-            $this->headingClass[$key];
+            $h = $this->headingClass[$key];
 			$style = empty($h['style']) ? '' : 'style="' . $h['style'] . '"'; ?>
 			<th class="heading <?php echo $h['class'] ?>" <?php echo $style ?>>
 				<span><?php echo $heading; ?></span>
