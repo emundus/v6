@@ -84,5 +84,35 @@
         "value": 1
       }
     ]
+  },
+  "external_storage_ged_alfresco_integration": {
+    "displayed": false,
+    "component": "emundus",
+    "label": "COM_EMUNDUS_MODULES_EXTERNAL_STORAGE_GED_ALFRESCO_INTEGRATION",
+    "param": "external_storage_ged_alfresco_integration",
+    "options": [
+      {
+        "label": "JNO",
+        "value": 0
+      },
+      {
+        "label": "JYES",
+        "value": 1
+      }
+    ]
+  },
+  "external_storage_ged_alfresco_site": {
+    "displayed": false,
+    "component": "emundus",
+    "label": "COM_EMUNDUS_MODULES_EXTERNAL_STORAGE_GED_ALFRESCO_SITE",
+    "param": "external_storage_ged_alfresco_site",
+    "maxlength": 255
+  },
+  "external_storage_ged_alfresco_max_level": {
+    "displayed": false,
+    "component": "emundus",
+    "label": "COM_EMUNDUS_MODULES_EXTERNAL_STORAGE_GED_ALFRESCO_MAX_LEVEL",
+    "param": "external_storage_ged_alfresco_max_level",
+    "maxlength": 50
   }
 }
