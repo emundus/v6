@@ -386,14 +386,20 @@ $current_tab = 0;
                                                                 }
                                                                 ?>
                                                                 <?php if (empty($visible_status)) : ?>
-                                                                    <div class="mod_emundus_applications___status_<?= $application->class; ?> flex"
+                                                                    <div class="flex items-center mod_emundus_applications___status_<?= $application->class; ?> flex"
                                                                          id="application_status_<?php echo $application->fnum ?>">
                                                                         <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+                                                                        <?php if($application->applicant_id !== $user->id) : ?>
+                                                                            <span class="material-icons-outlined ml-3">people</span>
+                                                                        <?php endif; ?>
                                                                     </div>
                                                                 <?php elseif (in_array($application->status, $visible_status)) : ?>
-                                                                    <div class="mod_emundus_applications___status_<?= $application->class; ?> flex"
+                                                                    <div class="flex items-center mod_emundus_applications___status_<?= $application->class; ?> flex"
                                                                          id="application_status_<?php echo $application->fnum ?>">
                                                                         <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+	                                                                    <?php if($application->applicant_id !== $user->id) : ?>
+                                                                            <span class="material-icons-outlined ml-3">people</span>
+	                                                                    <?php endif; ?>
                                                                     </div>
                                                                 <?php endif; ?>
                                                                 <?php if (!empty($application->order_status)): ?>
@@ -403,9 +409,8 @@ $current_tab = 0;
                                                             </div>
                                                             <div class="mod_emundus_applications__container">
                                                                 <span class="material-icons em-text-neutral-600 em-font-weight-600"
-                                                                      id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                                    more_vert
-                                                                </span>
+                                                                      id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
+                                                                >more_vert</span>
                                                             </div>
                                                         </div>
                                                         <?php if (empty($application->name)) : ?>
@@ -761,14 +766,20 @@ $current_tab = 0;
 														}
 														?>
 														<?php if (empty($visible_status)) : ?>
-                                                            <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row"
+                                                            <div class="mod_emundus_applications___status_<?= $application->class; ?> flex items-center"
                                                                  id="application_status_<?php echo $application->fnum ?>">
                                                                 <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+	                                                            <?php if($application->applicant_id !== $user->id) : ?>
+                                                                    <span class="material-icons-outlined ml-3">people</span>
+	                                                            <?php endif; ?>
                                                             </div>
 														<?php elseif (in_array($application->status, $visible_status)) : ?>
-                                                            <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row"
+                                                            <div class="mod_emundus_applications___status_<?= $application->class; ?> flex items-center"
                                                                  id="application_status_<?php echo $application->fnum ?>">
                                                                 <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+	                                                            <?php if($application->applicant_id !== $user->id) : ?>
+                                                                    <span class="material-icons-outlined ml-3">people</span>
+	                                                            <?php endif; ?>
                                                             </div>
 														<?php endif; ?>
 														<?php if (!empty($application->order_status)): ?>
@@ -841,7 +852,7 @@ $current_tab = 0;
                                                                 </a>
 															<?php endif; ?>
 
-															<?php if (in_array($application->status, $status_for_delete)) : ?>
+															<?php if (in_array($application->status, $status_for_delete) && ($application->applicant_id === $user->id)) : ?>
                                                                 <a class="em-red-500-color em-flex-row em-pointer"
                                                                    onclick="deletefile('<?php echo $application->fnum; ?>');"
                                                                    id="actions_block_delete_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
@@ -1542,9 +1553,9 @@ $current_tab = 0;
                     title: 'em-swal-title',
                     cancelButton: 'em-swal-cancel-button',
                     confirmButton: 'em-swal-confirm-button',
-                    popup: 'tw-w-3/6'
+                    popup: 'w-3/6'
                 },
-                didOpen: (toast) => {
+                onOpen: (toast) => {
                     var tag = document.createElement("script");
                     tag.src = "media/com_emundus/js/collaborate.js";
                     document.getElementsByTagName("head")[0].appendChild(tag);
@@ -1580,7 +1591,7 @@ $current_tab = 0;
                             if (!regex.test(email) || '<?php echo $user->email?>' === email) {
                                 this.removeItem(value);
                                 let p = document.createElement('p');
-                                p.classList.add('tw-text-red-500');
+                                p.classList.add('text-red-500');
                                 p.id = 'collab_error';
                                 p.innerText = '<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_NOT_YOUR_OWN'); ?>';
                                 document.querySelector('#collab_emails_block').append(p);
@@ -1594,7 +1605,7 @@ $current_tab = 0;
                     }
                 }
             }).then((result) => {
-                if(result.isConfirmed) {
+                if(result.value) {
                     let formData = new FormData();
 
                     formData.append('fnum', fnum);
@@ -1624,14 +1635,14 @@ $current_tab = 0;
                     Swal.fire({
                         title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_SUCCESS'); ?>",
                         text: res.msg,
-                        iconHtml: "<img src='media/com_emundus/images/tchoozy/complex-illustrations/sending-message.svg' width='200px' class='tw-mb-4' />",
+                        iconHtml: "<img src='media/com_emundus/images/tchoozy/complex-illustrations/sending-message.svg' width='200px' class='mb-4' />",
                         showCancelButton: false,
                         showConfirmButton: false,
                         customClass: {
-                            title: 'em-swal-title !tw-text-center',
+                            title: 'em-swal-title !text-center',
                             cancelButton: 'em-swal-cancel-button',
                             confirmButton: 'em-swal-confirm-button',
-                            icon: 'tw-border-0 tw-w-full tw-h-full tw-mt-0',
+                            icon: 'border-0 w-full h-full mt-0',
                         },
                         timer: 3000
                     });

@@ -149,7 +149,7 @@ class EmundusViewApplication extends JViewLegacy{
 
 		    switch ($layout) {
 			    case 'history':
-				    if ($fnumInfos->application_id === $this->ccid && ($fnumInfos->applicant_id == $this->_user->id || (!empty($fnumInfos->show_history) && $fnumInfos->show_history == 1))) {
+				    if ((int)$fnumInfos->application_id === $this->ccid && ($fnumInfos->applicant_id == $this->_user->id || (!empty($fnumInfos->show_history) && $fnumInfos->show_history == 1))) {
 					    $menu         = $this->app->getMenu();
 					    $current_menu = $menu->getActive();
 

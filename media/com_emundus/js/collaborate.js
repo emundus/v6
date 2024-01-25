@@ -44,11 +44,11 @@ function sendNewEmail(request_id, ccid, fnum) {
 function toggleRequests() {
     let requests = document.querySelector('#collaborators_requests');
     let requestsIcon = document.querySelector('#requests_icon');
-    if(requests.classList.contains('tw-hidden')) {
-        requests.classList.remove('tw-hidden');
+    if(requests.classList.contains('hidden')) {
+        requests.classList.remove('hidden');
         requestsIcon.innerHTML = 'expand_more';
     } else {
-        requests.classList.add('tw-hidden');
+        requests.classList.add('hidden');
         requestsIcon.innerHTML = 'expand_less';
     }
 }

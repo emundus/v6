@@ -281,6 +281,10 @@ class EmundusHelperEvents {
                 }
             }
 
+			if(empty($fnum)) {
+				$fnum = $user->fnum;
+			}
+
             $current_fnum = !empty($fnum) ? $fnum : $user->fnum;
             $current_phase = $m_campaign->getCurrentCampaignWorkflow($current_fnum);
             if (!empty($current_phase) && !empty($current_phase->end_date)) {
@@ -358,6 +362,10 @@ class EmundusHelperEvents {
                     if ($view == 'form') {
                         if ((!$is_dead_line_passed && $isLimitObtained !== true) || in_array($user->id, $applicants) || ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline && $isLimitObtained !== true) || ($is_dead_line_passed && $can_edit_after_deadline && $isLimitObtained !== true) || $can_edit) {
                             $reload_url = false;
+	                        if ($reload < 2) {
+		                        $reload++;
+		                        $mainframe->redirect($form_url);
+	                        }
                         }
                     }
                     //try to access detail view or other

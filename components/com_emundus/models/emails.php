@@ -2909,8 +2909,19 @@ class EmundusModelEmails extends JModelList {
                 }
 
                 // In case no post value is supplied
-                $post['SITE_URL'] = isset($post['SITE_URL']) ? $post['SITE_URL'] : JURI::base();
-                $post['USER_EMAIL'] = isset($post['USER_EMAIL']) ? $post['USER_EMAIL'] : $email_address;
+				$default_post = [
+					'SITE_URL'   => JURI::base(),
+					'SITE_NAME' => $config->get('sitename'),
+					'USER_EMAIL' => $email_address,
+					'LOGO' => EmundusHelperEmails::getLogo(),
+				];
+
+				if (!empty($post)) {
+					$post = array_merge($default_post, $post);
+					$post = array_unique($post, SORT_REGULAR);
+				} else {
+					$post = $default_post;
+				}
 
                 $cc = [];
                 $keys = [];

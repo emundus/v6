@@ -4,7 +4,7 @@
 		:class="{ checked: checkedAttachments.includes(attachment.aid) }"
 		:key="attachment.aid"
 	>
-		<td>
+		<td v-if="columns.includes('check')">
 			<input
 				class="attachment-check"
 				type="checkbox"

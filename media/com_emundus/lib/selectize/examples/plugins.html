@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7"><![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8"><![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9"><![endif]-->
+<!--[if gt IE 8]><!--><html class="no-js"><!--<![endif]-->
+	<head>
+		s
+		<link rel="stylesheet" href="css/normalize.css">
+		<link rel="stylesheet" href="css/stylesheet.css">
+		<!--[if IE 8]><script src="js/es5.js"></script><![endif]-->
+		<script src="/Users/emundus/v6/libraries/emundus/selectize/dist/js/standalone/selectize.js"></script>
+		<script src="js/index.js"></script>
+		
+	</head>
+    <body>
+		<div id="wrapper">
+			
+			<div class="control-group">
+				<label for="input-tags">Tags:</label>
+				<input type="text" id="input-tags" class="input-tags demo-default" value="">
+			</div>
+			
+			<script>
+			$('.input-tags').selectize({
+				plugins: ['remove_button'],
+				persist: false,
+				create: true,
+				render: {
+					item: function(data, escape) {
+						return '<div>' + escape(data.text) + '</div>';
+					}
+				},
+				onDelete: function(values) {
+					return true;
+				}
+			});
+			</script>
+			
+		</div>
+	</body>
+</html>
