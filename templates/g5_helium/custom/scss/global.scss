@@ -599,10 +599,9 @@ footer#g-footer > .g-container {
   margin: auto auto 0 auto;
 
   a {
-    color: var(--em-profile-color);
-
+    color: $link-regular;
     &:hover {
-      color: var(--em-profile-color);
+      color: $link-hover;
     }
   }
 }

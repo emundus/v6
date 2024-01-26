@@ -106,7 +106,7 @@ hr.footer-separation {
 }
 
 .em-container-footer-gest .em-block-footer a {
-    color: #000;
+    color: var(--em-profile-color) !important;
     font-weight: 500 ;
 }
 
