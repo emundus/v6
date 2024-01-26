@@ -186,7 +186,7 @@ if ($allowed_attachments !== true) {
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </select>
-                <a class="em-font-size-14 em-pointer" href="emails"
+                <a class="em-font-size-14 em-pointer em-text-underline" href="emails"
                    target="_blank"><?= JText::_('COM_EMUNDUS_EMAILS_ADD_TEMPLATE'); ?>
                 </a>
             </div>
