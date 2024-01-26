@@ -763,6 +763,7 @@
         flex-direction: column-reverse;
         padding: var(--em-form-fileupload-padding);
         background-color: var(--em-form-fileupload-bgc);
+        border-radius: var(--em-form-br);
         input[type='file'] {
           height: auto;
           @apply w-full;

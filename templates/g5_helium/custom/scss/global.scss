@@ -246,6 +246,11 @@ div#frame.outline {
   }
 }
 
+
+.view-article div[itemprop="articleBody"] a:hover:not(.btn) {
+  text-decoration: none;
+}
+
 /* HOMEPAGE */
 
 .view-featured.homepage #g-page-surround {
@@ -599,9 +604,7 @@ footer#g-footer > .g-container {
   margin: auto auto 0 auto;
 
   a {
-    color: darken($link-regular, 10%);
-    text-decoration: underline;
-
+    color: $link-regular;
     &:hover {
       color: $link-hover;
     }
@@ -616,6 +619,13 @@ footer#g-footer > .g-container {
 }
 
 /*  FORMULAIRE INSCRIPTION */
+
+.view-registration.em-formRegistrationCenter a:not([class*="btn"]):not([class*="button"]):not([class*="chzn"]) {
+    text-decoration: underline;
+  &:hover {
+    text-decoration: none;
+  }
+}
 
 .view-registration, .view-login, .view-reset, .view-form.em-formRegistrationCenter {
   #g-navigation .g-container {
@@ -1362,6 +1372,14 @@ footer#g-footer > .g-container {
 
     tbody tr > td {
       color: var(--night-blue);
+
+      &:first-child {
+        width: auto !important;
+      }
+
+      select[multiple] {
+        width: auto;
+      }
     }
   }
 
@@ -1468,6 +1486,26 @@ footer#g-footer > .g-container {
   cursor: pointer;
 }
 
+/* NEW STYLE */
+.view-list .fabrikFilterContainer .table.filtertable .fabrik_filter_container .input-append {
+  button.btn.calendarbutton {
+    height: 40px;
+    border-radius: 0 4px 4px 0 !important;
+    background: var(--neutral-0);
+    color: var(--neutral-900);
+    border: 1px solid #e0e0e5;
+
+    &:hover {
+      background: var(--neutral-100);
+    }
+  }
+  input[id*="range"].fabrik_filter {
+    border-radius: 4px 0 0 4px !important;
+  }
+
+}
+
+/* OLD STYLE */
 .view-list .table .fabrikFilterContainer .fabrikDateListFilterRange button.btn.calendarbutton {
   height: 40px;
   border-radius: 0 4px 4px 0 !important;
@@ -6823,4 +6861,14 @@ tbody .el-table__row:nth-child(odd){
 
 .emundus-form .p-6 {
   background: magenta !important;
+}
+
+/* MCE WYSIWYG COLOR PICKER */
+
+.mce-container-body.mce-abs-layout {
+  overflow: visible !important;
+}
+.mce-container .mce-textbox.mce-abs-layout-item.mce-last {
+  width: 60px !important;
+  height: 20px !important;
 }

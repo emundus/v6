@@ -2315,11 +2315,6 @@ label[for="em-file_to_upload"]:hover {
     color: var(--em-profile-color);
 }
 
-.countCheckedCheckbox a.em-pointer:hover {
-    color: var(--em-coordinator-tertiary-color);
-}
-
-
 .tooltipSelectAttachments{
     display:none;
     transition:opacity 1s ease-out;

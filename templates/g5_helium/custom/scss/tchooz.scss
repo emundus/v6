@@ -857,6 +857,11 @@ input:focus + .em-slider {
 .em-text-underline{
   text-decoration: underline;
 }
+
+.em-text-underline:hover{
+  text-decoration: none;
+}
+
 .em-color-white{
   color: white;
 }
