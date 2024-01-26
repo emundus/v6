@@ -246,6 +246,11 @@ div#frame.outline {
   }
 }
 
+
+.view-article div[itemprop="articleBody"] a:hover:not(.btn) {
+  text-decoration: none;
+}
+
 /* HOMEPAGE */
 
 .view-featured.homepage #g-page-surround {
