@@ -617,6 +617,9 @@ footer#g-footer > .g-container {
 
 .view-registration.em-formRegistrationCenter a:not([class*="btn"]):not([class*="button"]):not([class*="chzn"]) {
     text-decoration: underline;
+  &:hover {
+    text-decoration: none;
+  }
 }
 
 .view-registration, .view-login, .view-reset, .view-form.em-formRegistrationCenter {
