@@ -110,15 +110,8 @@ hr.footer-separation {
     font-weight: 500 ;
 }
 
-
-
-.em-container-footer-cand .em-col-3-footer a:hover {
-    text-decoration: underline !important;
-}
-
 .em-container-footer-gest .em-block-footer a:hover {
     color: var(--night-blue) !important;
-    text-decoration: underline !important;
     font-weight: 500;
 }
 
@@ -169,7 +162,6 @@ hr.footer-separation {
 
 .em-container-footer-gest .em-block-footer .emundus-link, .em-container-footer-cand .emundus-link {
     color: var(--em-profile-color);
-    text-decoration: underline;
 }
 
 /**************************
