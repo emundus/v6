@@ -1167,9 +1167,38 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		            .label-lightpink { background-color: #e08283; }
 		            .label-pink { background-color: #d2527f; }
 		            .label-darkpink { background-color: #db0a5b; }
-			</style>";
+		
+		section.pdf-forms {
+			display: flex;
+			flex-direction: column;
+			flex-wrap: wrap;
+			justify-content: flex-start;
+			align-items: stretch;
+			align-content: stretch;
+		}
 
-//
+		section.pdf-forms .row {			
+			border: 1px solid #000;
+			border-bottom: 0;
+			display: flex;
+			flex-direction: row;
+			margin: 0;
+			padding: 20px;
+		}
+
+		section.pdf-forms .row:last-child {
+			border-bottom: 1px solid #000;
+		}
+
+		section.pdf-forms .row .label-column {
+		    font-weight: bold;
+		    min-width: 200px;
+	    }
+
+	    section.pdf-forms .row .content-column {
+	    }
+		</style>";
+
         /**  END APPLICANT   ****/
 
         $htmldata .= $forms;

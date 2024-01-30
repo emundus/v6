@@ -2704,23 +2704,23 @@ class EmundusModelApplication extends JModelList
 			$prepared_element = $this->prepareFormElementRendering($element, $show_empty_fields, $table, $group, $aid, $form_params, $fnum);
 			if (!is_null($prepared_element)) {
 				if ($element->plugin == 'display') {
-					$label = '<div class="label-column"><span style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></div>';
-					$content = '<div class="content-column"><span style="color: #000000;">' . $prepared_element . '</span></div>';
-					$html .= '<div class="row">' . $label . $content . '</div>';
+					$label = '<span class="label-column"  style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span>';
+					$content = '<span class="content-column" style="color: #000000;">' . $prepared_element . '</span>';
+					$html .= '<p class="row">' . $label . $content . '</p>';
 				} elseif ($element->plugin == 'textarea') {
-					$label = '<div class="label-column"><span style="color: #000000;">' . (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></div>';
-					$content = '<div class="content-column"><span style="color: #000000;">' . JText::_($prepared_element) . '</span></div>';
-					$html .= '<div class="row">' . $label . $content . '</div>';
+					$label = '<span class="label-column" style="color: #000000;">' . (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span>';
+					$content = '<span class="content-column" style="color: #000000;">' . JText::_($prepared_element) . '</span>';
+					$html .= '<p class="row">' . $label . $content . '</p>';
 				} else {
-					$label = '<div class="label-column"><span style="color: #000000;">' . (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></div>';
-					$content = '<div class="content-column">' . (($element->plugin != 'field') ? JText::_($prepared_element) : $prepared_element) . '</div>';
-					$html .= '<div class="row">' . $label . $content . '</div>';
+					$label = '<span class="label-column" style="color: #000000;">' . (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span>';
+					$content = '<span class="content-column">' . (($element->plugin != 'field') ? JText::_($prepared_element) : $prepared_element) . '</span>';
+					$html .= '<p class="row">' . $label . $content . '</p>';
 				}
 			} elseif (empty($element->content) && $show_empty_fields == 1) {
 				if (!empty($element->label) && $element->label != ' ') {
-					$label = '<div class="label-column"><span style="color: #000000;">' . JText::_($element->label) . ' ' . '</span></div>';
-					$content = '<div class="content-column">' . $element->content . '</div>';
-					$html .= '<div class="row">' . $label . $content . '</div>';
+					$label = '<span class="label-column" style="color: #000000;">' . JText::_($element->label) . ' ' . '</span>';
+					$content = '<span class="content-column">' . $element->content . '</span>';
+					$html .= '<p class="row">' . $label . $content . '</p>';
 				}
 			}
 		}
