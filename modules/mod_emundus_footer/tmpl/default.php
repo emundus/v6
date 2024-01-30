@@ -50,7 +50,7 @@ if($applicant = !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
                 <?php endif; ?>
 
                <?php if ($mod_emundus_footer_display_powered_by == 1) : ?>
-                   <p><?= JText::_('MOD_EM_FOOTER_COPYRIGHT') ?><a href="<?= JText::_('MOD_EM_FOOTER_LINK') ?>" target="_blank" class="em-text-underline em-profile-color">eMundus</a></p>
+                   <p><?= JText::_('MOD_EM_FOOTER_COPYRIGHT') ?><a href="<?= JText::_('MOD_EM_FOOTER_LINK') ?>" target="_blank" class="em-text-underline">eMundus</a></p>
                <?php endif; ?>
 
 
