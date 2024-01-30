@@ -5869,7 +5869,9 @@ class EmundusModelApplication extends JModelList
 	{
 		$default_rights = [
 			'r',
-			'u'
+			'u',
+			'show_history',
+			'show_shared_users',
 		];
 		$application_module = ModuleHelper::getModule('mod_emundus_applications');
 		if(!empty($application_module->id)) {

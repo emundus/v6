@@ -1124,7 +1124,7 @@ class EmundusControllerApplication extends JControllerLegacy
 							'COLLABORATE_BUTTON' => Text::_('COM_EMUNDUS_APPLICATIONS_COLLABORATE_BUTTON'),
 						];
 
-						$c_messages->sendEmailNoFnum($email,'collaborate_invitation', $post);
+						$c_messages->sendEmailNoFnum($email,'collaborate_invitation', $post, $e_user->id, [], $fnum);
 					}
 				}
 			}
@@ -1185,7 +1185,7 @@ class EmundusControllerApplication extends JControllerLegacy
 						'COLLABORATE_BUTTON' => Text::_('COM_EMUNDUS_APPLICATIONS_COLLABORATE_BUTTON'),
 					];
 
-					$c_messages->sendEmailNoFnum($response['data']['email'],'collaborate_invitation', $post);
+					$c_messages->sendEmailNoFnum($response['data']['email'],'collaborate_invitation', $post, $e_user->id, [], $fnum);
 				}
 			}
 		}

@@ -555,6 +555,9 @@ class EmundusModelEmails extends JModelList {
         );
 
         if(!empty($fnum)){
+            $patterns[] = '/\[FNUM\]/';
+            $replacements[] = $fnum;
+
             require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
             $m_files = new EmundusModelFiles();
             $status = $m_files->getStatusByFnums([$fnum]);
@@ -569,6 +572,11 @@ class EmundusModelEmails extends JModelList {
             }
             $patterns[] = '/\[APPLICATION_TAGS\]/';
             $replacements[] = implode(',', $tags_label);
+
+            $fnumInfos = $m_files->getFnumInfos($fnum);
+            $patterns[] = '/\[CAMPAIGN_LABEL\]/';
+            $replacements[] = $fnumInfos['label'];
+
         }
 
         if(isset($post)) {
@@ -2937,7 +2945,7 @@ class EmundusModelEmails extends JModelList {
                     }
 
                     $password = !empty($post['PASSWORD']) ? $post['PASSWORD'] : "";
-                    $post = $this->setTags($user_id, $post, null, $password, $mail_from_name.$mail_from.$template->subject.$template->message);
+                    $post = $this->setTags($user_id, $post, $fnum, $password, $mail_from_name.$mail_from.$template->subject.$template->message);
 
                     $mail_from_name = preg_replace($post['patterns'], $post['replacements'], $mail_from_name);
                     $mail_from = preg_replace($post['patterns'], $post['replacements'], $mail_from);
