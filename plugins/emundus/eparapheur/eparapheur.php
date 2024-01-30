@@ -53,90 +53,111 @@ class plgEmundusEparapheur extends CMSPlugin {
 			return;
 		}
 
-		$api = new IxParapheur();
+		try {
+			$api = new IxParapheur();
 
-		$nature = $args['nature'] ?? $api->getNatures()[0]->identifiant;
-		$name = $args['name'] ?? 'Signature pour le dossier ';
+			$nature = $args['nature'] ?? $api->getNatures()[0]->identifiant;
+			$name   = $args['name'] ?? 'Signature pour le dossier ';
 
-		if(!empty($nature)) {
-			$uid = $api->getUtilisateurs($args['signer_email'])[0]->identifiant;
+			if (!empty($nature)) {
+				$uid = $api->getUtilisateurs($args['signer_email'])[0]->identifiant;
 
-			if(!empty($uid)) {
-				$datas = [
-					'nom'    => $name . $args['fnum'],
-					'nature' => $nature,
-					'etapes' => [
-						[
-							'typeCible'        => 'Utilisateur',
-							'type'             => 'Signature',
-							'identifiantCible' => $uid
-						]
-					]
-				];
-
-				$result = $api->createDossier($datas);
-
-				if($result['data']->message == 'ok') {
-					$idDossier      = $result['data']->payload->identifiant;
-
-					require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
-					$m_files = new EmundusModelFiles();
-
-					$fnumInfos = $m_files->getFnumInfos($args['fnum']);
-
-					$query = $this->db->getQuery(true);
-
-					$query->select('id')
-						->from($this->db->quoteName('#__emundus_files_request'))
-						->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($args['fnum']))
-						->where($this->db->quoteName('attachment_id') . ' = ' . $args['attachment_id']);
-					$this->db->setQuery($query);
-					$files_request_id = $this->db->loadResult();
-
-					if(empty($files_request_id)) {
-						$insert = [
-							'time_date' => date('Y-m-d H:i:s'),
-							'student_id' => $fnumInfos['applicant_id'],
-							'fnum' => $args['fnum'],
-							'keyid' => '',
-							'attachment_id' => $args['attachment_id'],
-							'uploaded' => 0,
-							'email' => $args['signer_email'],
-							'signer_id' => $idDossier
-						];
-						$insert = (object) $insert;
-
-						$this->db->insertObject('#__emundus_files_request', $insert);
-					} else {
-						$update = [
-							'id' => $files_request_id,
-							'signer_id' => $idDossier
-						];
-						$update = (object) $update;
-
-						$this->db->updateObject('#__emundus_files_request', $update, 'id');
-					}
-
+				if (!empty($uid)) {
 					$datas = [
-						'type' => 'principal',
-						'estASigner' => true,
-						'estPublique' => true
+						'nom'    => $name . $args['fnum'],
+						'nature' => $nature,
+						'etapes' => [
+							[
+								'typeCible'        => 'Utilisateur',
+								'type'             => 'Signature',
+								'identifiantCible' => $uid
+							]
+						]
 					];
 
-					$document_added = $api->addDocument($idDossier, $datas, $args['file'], JPATH_SITE . '/images/emundus/files/' . $fnumInfos['applicant_id'] . '/' . $args['file']);
+					$result = $api->createDossier($datas);
 
-					if($document_added['data']->message == 'ok') {
-						$transmis = $api->actionDossier($idDossier);
+					if ($result['data']->message == 'ok') {
+						$idDossier = $result['data']->payload->identifiant;
 
-						if ($transmis['status'] == 200) {
-							$logs_params = ['created' => ['signer_id' => 'N°'.$idDossier, 'signer' => $args['signer_email']]];
-							EmundusModelLogs::log($this->user->id, (int)substr($args['fnum'], -7), $args['fnum'], 33, 'c', 'COM_EMUNDUS_ACCESS_SYNC_EPARAPHEUR', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+						require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+						$m_files = new EmundusModelFiles();
+
+						$fnumInfos = $m_files->getFnumInfos($args['fnum']);
+
+						$query = $this->db->getQuery(true);
+
+						$query->select('id')
+							->from($this->db->quoteName('#__emundus_files_request'))
+							->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($args['fnum']))
+							->where($this->db->quoteName('attachment_id') . ' = ' . $args['attachment_id']);
+						$this->db->setQuery($query);
+						$files_request_id = $this->db->loadResult();
+
+						if (empty($files_request_id)) {
+							$insert = [
+								'time_date'     => date('Y-m-d H:i:s'),
+								'student_id'    => $fnumInfos['applicant_id'],
+								'fnum'          => $args['fnum'],
+								'keyid'         => '',
+								'attachment_id' => $args['attachment_id'],
+								'uploaded'      => 0,
+								'email'         => $args['signer_email'],
+								'signer_id'     => $idDossier
+							];
+							$insert = (object) $insert;
+
+							$this->db->insertObject('#__emundus_files_request', $insert);
+						}
+						else {
+							$update = [
+								'id'        => $files_request_id,
+								'signer_id' => $idDossier
+							];
+							$update = (object) $update;
+
+							$this->db->updateObject('#__emundus_files_request', $update, 'id');
+						}
+
+						$datas = [
+							'type'        => 'principal',
+							'estASigner'  => true,
+							'estPublique' => true
+						];
+
+						$document_added = $api->addDocument($idDossier, $datas, $args['file'], JPATH_SITE . '/images/emundus/files/' . $fnumInfos['applicant_id'] . '/' . $args['file']);
+
+						if ($document_added['data']->message == 'ok') {
+							$transmis = $api->actionDossier($idDossier);
+
+							if ($transmis['status'] == 200) {
+								$logs_params = ['created' => ['signer_id' => 'N°' . $idDossier, 'signer' => $args['signer_email']]];
+								EmundusModelLogs::log($this->user->id, (int) substr($args['fnum'], -7), $args['fnum'], 33, 'c', 'COM_EMUNDUS_ACCESS_SYNC_EPARAPHEUR', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+							}
+							else {
+								throw new Exception('COM_EMUNDUS_ACCESS_SYNC_EPARAPHEUR_FAILED_TRANSMIS',500);
+							}
+						}
+						else {
+							throw new Exception('COM_EMUNDUS_ACCESS_SYNC_EPARAPHEUR_FAILED_DOCUMENT',500);
 						}
 					}
+					else {
+						throw new Exception('COM_EMUNDUS_ACCESS_SYNC_EPARAPHEUR_FAILED_DOSSIER',500);
+					}
+				}
+				else {
+					throw new Exception('COM_EMUNDUS_ACCESS_SYNC_EPARAPHEUR_FAILED_SIGNER',500);
 				}
 			}
+			else {
+				throw new Exception('COM_EMUNDUS_ACCESS_SYNC_EPARAPHEUR_FAILED_NATURE',500);
+			}
 		}
-
-		//TODO: Add logs to file
+		catch (Exception $e) {
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus_eparapheur');
+			$logs_params = ['created' => ['signer_id' => !empty($idDossier) ? $idDossier : '','signer' => $args['signer_email']]];
+			EmundusModelLogs::log($this->user->id, (int) substr($args['fnum'], -7), $args['fnum'], 33, 'c', $e->getMessage(), json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+		}
 	}
 }

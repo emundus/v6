@@ -86,9 +86,12 @@ class PlgFabrik_Cronemunduseparapheur extends PlgFabrik_Cron {
 			if(!empty($files_requests)) {
 				require_once JPATH_SITE.'/components/com_emundus/classes/api/IxParapheur.php';
 				require_once JPATH_SITE.'/components/com_emundus/helpers/checklist.php';
+				require_once JPATH_SITE.'/components/com_emundus/models/logs.php';
 				require_once JPATH_SITE.'/components/com_emundus/models/files.php';
+				require_once JPATH_SITE.'/components/com_emundus/models/application.php';
 				$h_checklist = new EmundusHelperChecklist();
 				$m_files = new EmundusModelFiles();
+				$m_application = new EmundusModelApplication();
 
 				$query->clear()
 					->select('esa.id,esa.lbl')
@@ -98,6 +101,7 @@ class PlgFabrik_Cronemunduseparapheur extends PlgFabrik_Cron {
 
 				$api = new IxParapheur();
 				foreach ($files_requests as $file_request) {
+					$attachmentType = $m_application->getAttachmentByID($file_request->attachment_id)['value'];
 					$edossier = $api->getDossier($file_request->signer_id);
 
 					if($edossier['data']->message == 'ok') {
@@ -131,12 +135,22 @@ class PlgFabrik_Cronemunduseparapheur extends PlgFabrik_Cron {
 									PluginHelper::importPlugin('emundus', 'sync_file');
 									$app->triggerEvent('onAfterUploadFile', [['upload_id' => $upload_id]]);
 
+									PluginHelper::importPlugin('emundus', 'custom_event_handler');
+									$app->triggerEvent('callEventHandler', ['onAfterFileSignedEparapheur', ['fnum' => $file_request->fnum, 'attachment_id' => $file_request->attachment_id, 'upload_id' => $upload_id, 'email' => $file_request->email, 'signer_id' => $file_request->signer_id]]);
+
 									$query->clear()
 										->update($db->quoteName('#__emundus_files_request'))
 										->set($db->quoteName('uploaded') . ' = 1')
 										->where($db->quoteName('id') . ' = ' . $db->quote($file_request->id));
 									$db->setQuery($query);
 									$db->execute();
+
+									$logsStd = new stdClass();
+									$logsStd->element = '[' . $attachmentType . ']';
+									$logsStd->details = $nom;
+									$logsParams = array('created' => [$logsStd]);
+
+									EmundusModelLogs::log($automated_task_user, $file_request->student_id, $file_request->fnum, 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE',json_encode($logsParams,JSON_UNESCAPED_UNICODE));
 								}
 							}
 						}
