@@ -307,9 +307,34 @@ class IxParapheur extends Api
 		return $this->delete('document/'.$idDossier);
 	}
 
-	public function getDocumentContent($idDocument): array
+	public function getDocumentContent($idDocument, $path): array
 	{
-		return $this->get('document/contenu/'.$idDocument);
+		$response = ['status' => 200, 'message' => '', 'data' => ''];
+
+		$url = 'document/contenu/'.$idDocument;
+		$params = array();
+
+		try
+		{
+			$url_params = http_build_query($params);
+			$url = !empty($url_params) ? $url . '?' . $url_params : $url;
+			$request = $this->client->get($this->baseUrl.'/'.$url, ['headers' => $this->getHeaders(),'sink' => $path]);
+			$response['status'] = $request->getStatusCode();
+			$response['data'] = json_decode($request->getBody());
+		}
+		catch (\Exception $e)
+		{
+			if ($this->getRetry()) {
+				$this->setRetry(false);
+				$this->get($url, $params);
+			}
+
+			JLog::add('[GET] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.api');
+			$response['status'] = $e->getCode();
+			$response['message'] = $e->getMessage();
+		}
+
+		return $response;
 	}
 
 	public function updateDocumentContent($idDocument,$file): array
