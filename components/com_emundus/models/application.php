@@ -2150,12 +2150,13 @@ class EmundusModelApplication extends JModelList
     // @param   int applicant user id
     // @param   int fnum application file number
     // @return  string HTML to send to PDF librairie
-    public function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null, $eids = null, $attachments = true, $as_table = true)
+    public function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null, $eids = null, $attachments = true)
     {
         /* COULEURS*/
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
         $em_breaker = $eMConfig->get('export_application_pdf_breaker', '0');
+        $as_table = $eMConfig->get('export_application_pdf_as_table', '1');
 
         require_once(JPATH_SITE . '/components/com_emundus/helpers/list.php');
         $h_list = new EmundusHelperList();
@@ -2645,7 +2646,7 @@ class EmundusModelApplication extends JModelList
                             if ($check_not_empty_group) {
 								$forms .= '<h3 class="group">' . $group_label . '</h3>';
 
-	                            if (!$as_table) {
+	                            if ($as_table) {
 		                            $forms .= $this->buildFormElementsAsTable($elements, $show_empty_fields, $itemt, $itemg, $aid, $form_params, $fnum);
 	                            } else {
 									$forms .= $this->buildFormElementsAsSections($elements, $show_empty_fields, $itemt, $itemg, $aid, $form_params, $fnum);
