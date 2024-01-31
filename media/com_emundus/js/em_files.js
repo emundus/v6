@@ -4464,7 +4464,7 @@ $(document).ready(function() {
                                 }
                                 tags += '</select></div>';
                                 $('#data').append(tags);
-                                $('.modal-chzn-select').chosen({width:'100%'});
+                                $('.modal-chzn-select').chosen({width:'100%',search_contains: true});
                                 $("#em-action-export-tag").hide();
 
                                 $('#change-status input[name=export-status]').on('change', function(){
@@ -4633,7 +4633,7 @@ $(document).ready(function() {
                         /***
                          * On Category change
                          */
-                        $('#em-action-tag-category').chosen().change(function() {
+                        $('#em-action-tag-category').chosen({search_contains: true}).change(function() {
 
                             var cat = $(this).val();
                             if (cat) {
@@ -4859,7 +4859,7 @@ $(document).ready(function() {
             runAction(id);
         }
 
-        $('.modal-chzn-select').chosen({width:'100%'});
+        $('.modal-chzn-select').chosen({width:'100%', search_contains: true});
 
         /***
          * On Category change
