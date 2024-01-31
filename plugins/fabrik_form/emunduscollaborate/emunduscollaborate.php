@@ -15,6 +15,7 @@
 // No direct access
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 
 defined('_JEXEC') or die('Restricted access');
@@ -118,8 +119,9 @@ class PlgFabrik_FormEmundusCollaborate extends plgFabrik_Form
 				$accepted = $this->acceptCollaboration($shared_user_id,$key);
 
 				if($accepted) {
+					PluginHelper::importPlugin('emundus','custom_event_handler');
 					\Joomla\CMS\Factory::getApplication()->triggerEvent('onAfterAcceptCollaboration', [$shared_user_id, $key]);
-					\Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterAcceptCollaboration', ['user' => $shared_user_id, 'key' => $key]]);
+					\Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterAcceptCollaboration', ['user' => $shared_user_id, 'key' => $key]]);
 
 					$app->enqueueMessage(Text::_('PLG_FABRIK_FORM_EMUNDUSCOLLABORATE_ACCOUNT_ALREADY_EXIST'), 'success');
 					$app->redirect(Route::_($redirect_url));
@@ -165,8 +167,9 @@ class PlgFabrik_FormEmundusCollaborate extends plgFabrik_Form
 		$accepted = $this->acceptCollaboration($shared_user_id,$key);
 
 		if($accepted) {
+			PluginHelper::importPlugin('emundus','custom_event_handler');
 			\Joomla\CMS\Factory::getApplication()->triggerEvent('onAfterAcceptCollaboration', [$shared_user_id, $key]);
-			\Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterAcceptCollaboration', ['user' => $shared_user_id, 'key' => $key]]);
+			\Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterAcceptCollaboration', ['user' => $shared_user_id, 'key' => $key]]);
 
 			$app->enqueueMessage(Text::_('PLG_FABRIK_FORM_EMUNDUSCOLLABORATE_SUCCESS'),'success');
 			$app->login(array('username' => $datas['jos_emundus_users___email'], 'password' => $datas['jos_emundus_users___password']));
