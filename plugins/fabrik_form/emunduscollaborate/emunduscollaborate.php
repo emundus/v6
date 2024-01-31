@@ -81,6 +81,7 @@ class PlgFabrik_FormEmundusCollaborate extends plgFabrik_Form
 
 	public function onBeforeLoad()
 	{
+		$user = Factory::getUser();
 		$formModel = $this->getModel();
 		$app = Factory::getApplication();
 		$key = $app->input->getString('key','');
@@ -123,8 +124,13 @@ class PlgFabrik_FormEmundusCollaborate extends plgFabrik_Form
 					\Joomla\CMS\Factory::getApplication()->triggerEvent('onAfterAcceptCollaboration', [$shared_user_id, $key]);
 					\Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterAcceptCollaboration', ['user' => $shared_user_id, 'key' => $key]]);
 
-					$app->enqueueMessage(Text::_('PLG_FABRIK_FORM_EMUNDUSCOLLABORATE_ACCOUNT_ALREADY_EXIST'), 'success');
-					$app->redirect(Route::_($redirect_url));
+					if($user->guest) {
+						$app->enqueueMessage(Text::_('PLG_FABRIK_FORM_EMUNDUSCOLLABORATE_ACCOUNT_ALREADY_EXIST'), 'success');
+						$app->redirect(Route::_($redirect_url));
+					} else {
+						$app->enqueueMessage(Text::_('PLG_FABRIK_FORM_EMUNDUSCOLLABORATE_SUCCESS'),'success');
+						$app->redirect('index.php');
+					}
 				} else {
 					$app->enqueueMessage(Text::_('PLG_FABRIK_FORM_EMUNDUSCOLLABORATE_ERROR_OCCURED'), 'error');
 					$app->redirect('index.php');

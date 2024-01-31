@@ -103,7 +103,7 @@ class modemundusApplicationsHelper {
 		// Files request
 		if ($collaborate) {
 			$query->leftJoin($db->quoteName('#__emundus_files_request', 'efr') . ' ON efr.ccid = ecc.id');
-			$query->orWhere($db->quoteName('efr.user_id') . ' = ' . $user->id);
+			$query->orWhere($db->quoteName('efr.user_id') . ' = ' . $user->id . ' AND ' . $db->quoteName('efr.uploaded') . ' = 1');
 		}
 
 		if (!empty($params)) {
