@@ -381,6 +381,7 @@ class EmundusModelDecision extends JModelList
     public function getAllDecisionElements($show_in_list_summary=1, $programme_code) {
         $session = JFactory::getSession();
 
+		$get_all = false;
         if ($session->has('filt_params')) {
             $elements_id = array();
 			$filt_params = $session->get('filt_params');
@@ -399,18 +400,24 @@ class EmundusModelDecision extends JModelList
                         }
                     }
                 }
+            } else {
+				$get_all = true;
             }
 		} else {
-	        $groups = $this->getGroupsDecisionByProgramme($programme_code);
-	        if (!empty($groups)) {
-		        $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
-		        if (count($eval_elt_list)>0) {
-			        foreach ($eval_elt_list as $eel) {
-				        $elements_id[] = $eel->element_id;
-			        }
-		        }
-	        }
+	        $get_all = true;
         }
+
+		if ($get_all) {
+			$groups = $this->getGroupsDecisionByProgramme($programme_code);
+			if (!empty($groups)) {
+				$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
+				if (count($eval_elt_list)>0) {
+					foreach ($eval_elt_list as $eel) {
+						$elements_id[] = $eel->element_id;
+					}
+				}
+			}
+		}
 
         return @$elements_id;
     }

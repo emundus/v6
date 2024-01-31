@@ -424,6 +424,7 @@ class EmundusModelAdmission extends JModelList
     public function getAllAdmissionElements($show_in_list_summary, $programme_code) {
         $session = JFactory::getSession();
 
+		$get_all = false;
         if ($session->has('filt_params')) {
             $elements_id = array();
             $filt_params = $session->get('filt_params');
@@ -442,18 +443,24 @@ class EmundusModelAdmission extends JModelList
                         }
                     }
                 }
+            } else {
+	            $get_all = true;
             }
         } else {
-	        $groups = $this->getGroupsAdmissionByProgramme($programme_code);
-	        if (!empty($groups)) {
-		        $admission_elt_list = $this->getAllElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
-		        if (count($admission_elt_list)>0) {
-			        foreach ($admission_elt_list as $eel) {
-				        $elements_id[] = $eel->element_id;
-			        }
-		        }
-	        }
+			$get_all = true;
         }
+
+		if ($get_all) {
+			$groups = $this->getGroupsAdmissionByProgramme($programme_code);
+			if (!empty($groups)) {
+				$admission_elt_list = $this->getAllElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
+				if (count($admission_elt_list)>0) {
+					foreach ($admission_elt_list as $eel) {
+						$elements_id[] = $eel->element_id;
+					}
+				}
+			}
+		}
 
         return @$elements_id;
     }
