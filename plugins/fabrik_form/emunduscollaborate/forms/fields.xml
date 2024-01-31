@@ -7,7 +7,7 @@
                     type="field"
                     label="PLG_FABRIK_FORM_EMUNDUSCOLLABORATE_FIELD_REDIRECT_LABEL"
                     description="PLG_FABRIK_FORM_EMUNDUSCOLLABORATE_FIELD_REDIRECT_DESC"
-					default="index.php?option=com_users&view=login"
+					default=""
 			/>
         </fieldset>
     </fields>

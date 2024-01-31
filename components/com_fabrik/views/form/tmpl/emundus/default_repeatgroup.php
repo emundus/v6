@@ -17,7 +17,16 @@ $group = $this->group;
 $i = 1;
 $w = new FabrikWorker;
 
+$current_user_id = JFactory::getUser()->id;
+
 foreach ($group->subgroups as $subgroup) :
+    $can_edit = true;
+    if(!empty($subgroup['user']) && !EmundusHelperAccess::asPartnerAccessLevel($current_user_id)) {
+        if(!empty($subgroup['user']->element_raw[$i-1]) && $subgroup['user']->element_raw[$i-1] != $current_user_id) {
+            $can_edit = false;
+        }
+    }
+
 	$introData = array_merge($input->getArray(), array('i' => $i));
 	?>
 	<div class="fabrikSubGroup">
@@ -35,7 +44,11 @@ foreach ($group->subgroups as $subgroup) :
 
 			// Load each group in a <ul>
 			$this->elements = $subgroup;
-			echo $this->loadTemplate('group');
+            if($can_edit) {
+				echo $this->loadTemplate('group');
+            } else {
+                echo $this->loadTemplate('group_details');
+            }
 			?>
 		</div><!-- end fabrikSubGroupElements -->
         <?php

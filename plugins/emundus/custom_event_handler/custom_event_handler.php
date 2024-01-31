@@ -39,9 +39,9 @@ class plgEmundusCustom_event_handler extends JPlugin {
 
         $returned_values = [];
 
-        if (method_exists($this->hEvents, $event)) {
-            $this->hEvents->{$event}($args);
-        }
+	    if (method_exists($this->hEvents, $event)) {
+		    $returned_values[$event] = $this->hEvents->{$event}($args);
+	    }
 
         foreach ($events as $index => $caller_index) {
             try {
