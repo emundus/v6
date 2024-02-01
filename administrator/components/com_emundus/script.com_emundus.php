@@ -4081,6 +4081,20 @@ if(in_array($applicant,$exceptions)){
 			}
 
 			if (version_compare($cache_version, '1.39.0', '<=') || $firstrun) {
+				EmundusHelperUpdate::addColumn('jos_fabrik_form_sessions', 'fnum', 'VARCHAR', 28);
+
+				$query = 'ALTER TABLE `jos_fabrik_form_sessions` MODIFY `referring_url` VARCHAR(255) NULL';
+				$db->setQuery($query);
+				$db->execute();
+
+				$query = 'ALTER TABLE `jos_fabrik_form_sessions` MODIFY `last_page` INT(11) NULL';
+				$db->setQuery($query);
+				$db->execute();
+
+				$query = 'ALTER TABLE `jos_fabrik_form_sessions` MODIFY `hash` VARCHAR(255) NULL';
+				$db->setQuery($query);
+				$db->execute();
+
 				// Sharing files feature
 				require_once JPATH_ADMINISTRATOR . '/components/com_emundus/scripts/SharingFilesInstall.php';
 				$sharing_files_install   = new scripts\SharingFilesInstall();

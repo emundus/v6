@@ -158,6 +158,7 @@ class EmundusHelperEvents {
                 $submittion_page_id = (int)explode('=', $submittion_page->link)[3];
 
 				$this->applicationUpdating($user->fnum);
+	            $this->clearFormSession($user->fnum, $params['formModel']->id);
 
                 if ($submittion_page_id != $params['formModel']->id) {
                     $this->redirect($params);
