@@ -217,30 +217,47 @@ class EmundusModelChecklist extends JModelList
 	}
 
 
-	function setDelete($status = 0, $student = null) {
-        $eMConfig = JComponentHelper::getParams('com_emundus');
-
-        $attachment_id = $eMConfig->get('attachment_to_keep_non_deletable');
-		$db = JFactory::getDBO();
+	/**
+	 * Toogle can_be_deleted student attachments state
+	 *
+	 * @param $can_be_deleted
+	 * @param $student
+	 * @return void
+	 */
+	function setDelete($can_be_deleted = 0, $student = null) {
+		$toggled = false;
 
 		if (empty($student)) {
-            $student = JFactory::getSession()->get('emundusUser');
-        }
+			$student = JFactory::getSession()->get('emundusUser');
+		}
+		$can_be_deleted = $can_be_deleted >= 1 ? 1 : 0;
 
-		if ($status > 1) {
-            $status = 1;
-        }
+		$db = JFactory::getDBO();
+		$query = $db->getQuery(true);
 
-		$query = 'UPDATE #__emundus_uploads SET can_be_deleted = '.$status.' WHERE user_id = '.$student->id. ' AND fnum like '.$db->Quote($student->fnum) .' AND attachment_id NOT IN('.$attachment_id.').';
-		$db->setQuery($query);
+		$query->update($db->quoteName('#__emundus_uploads'))
+			->set($db->quoteName('can_be_deleted') . ' = ' . $can_be_deleted)
+			->where($db->quoteName('user_id') . ' = ' . $student->id)
+			->andWhere($db->quoteName('fnum') . ' like ' . $db->quote($student->fnum));
+
+		if ($can_be_deleted === 1) {
+			$emundus_config = JComponentHelper::getParams('com_emundus');
+			$attachment_ids = $emundus_config->get('attachment_to_keep_non_deletable', []);
+
+			if (!empty($attachment_ids)) {
+				$query->andWhere($db->quoteName('attachment_id') . ' NOT IN (' . implode(',', $attachment_ids) . ')');
+			}
+		}
 
 		try {
-			$db->execute();
+			$db->setQuery($query);
+			$toggled = $db->execute();
 		} catch (Exception $e) {
 			JLog::add('Error in model/checklist at query : '.$query, JLog::ERROR, 'com_emundus');
 		}
-	}
 
+		return $toggled;
+	}
 
     public function formatFileName(String $file, String $fnum, Array $post= []): string {
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
