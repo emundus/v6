@@ -4792,34 +4792,22 @@ $(document).ready(function() {
                 title = 'COM_EMUNDUS_ACCESS_MAIL_EXPERT';
                 html = '<div id="data" class="em-mt-32 em-w-100"><div id="email-loader" class="em-loader" style="margin: auto;"></div></div>';
 
-                fetch(url, {
-                    method: 'POST',
-                    body: JSON.stringify({
+                $.ajax({
+                    type:'POST',
+                    url:url,
+                    data: {
                         fnums: fnums
-                    })
-                }).then(function (response) {
-                    // The API call was successful!
-                    return response.text();
-                }).then(function (html) {
-                    // This is the HTML from our response as a text string
-                    const dataWrapper = document.getElementById('data');
-
-                    if (dataWrapper) {
-                        dataWrapper.innerHTML = html;
+                    },
+                    success: function(result) {
+                        $('#data').append(result);
                         document.querySelector('.em-swal-confirm-button').style.opacity = '0';
                         $('#email-loader').remove();
-                        dataWrapper.classList.remove('em-loader');
-                    }
-                }).catch(function (err) {
-                    // There was an error
-                    const dataWrapper = document.getElementById('data');
-                    if (dataWrapper) {
-                        dataWrapper.classList.remove('em-loader');
-                        dataWrapper.innerHTML = '<p class="alert alert-error">' + Joomla.JText._('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE') +'</p>';
-                        console.warn(err);
+                        $('#data').removeClass('em-loader');
+                    },
+                    error: function (jqXHR) {
+                        console.log(jqXHR.responseText);
                     }
                 });
-
                 break;
 
             default:
