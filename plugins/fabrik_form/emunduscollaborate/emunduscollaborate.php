@@ -155,7 +155,6 @@ class PlgFabrik_FormEmundusCollaborate extends plgFabrik_Form
 
 		$query->clear()
 			->update($this->_db->quoteName('#__users'))
-			->set($this->_db->quoteName('activation') . ' = 1')
 			->set($this->_db->quoteName('name') . ' = ' . $this->_db->quote($datas['jos_emundus_users___lastname'] . ' ' . $datas['jos_emundus_users___firstname']))
 			->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($datas['jos_emundus_users___user_id']));
 		$this->_db->setQuery($query);
@@ -168,7 +167,7 @@ class PlgFabrik_FormEmundusCollaborate extends plgFabrik_Form
 		$this->_db->setQuery($query);
 		$this->_db->execute();
 
-		$shared_user_id = $this->data['jos_emundus_users___user_id'];
+		$shared_user_id = $datas['jos_emundus_users___user_id'];
 
 		$accepted = $this->acceptCollaboration($shared_user_id,$key);
 

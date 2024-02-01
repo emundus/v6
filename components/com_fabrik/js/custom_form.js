@@ -8,7 +8,6 @@ requirejs(['fab/fabrik'], function () {
         setInterval(() => {
             let active_form_session = getCookie('fabrik_form_session');
             if(!active_form_session) {
-                alert(Joomla.JText._('COM_EMUNDUS_FABRIK_SESSION_EXPIRED'));
                 setTimeout(() => {
                     window.location.href = window.location.origin + '/';
                 }, 2000);
@@ -111,15 +110,18 @@ requirejs(['fab/fabrik'], function () {
         manageRepeatGroup(form);
     });
 
-    Fabrik.addEvent('fabrik.form.elements.added', function (form) {
+    /*Fabrik.addEvent('fabrik.form.elements.added', function (form) {
+        console.log(form);
         Object.entries(form.elements).forEach(([key, element]) => {
-            let event = 'blur';
-            if (['fabrikradiobutton', 'databasejoin'].includes(element.plugin)) {
-                event = 'change';
+            if(element.element.type !== 'password' && element.element.type !== 'hidden') {
+                let event = 'blur';
+                if (['fabrikradiobutton', 'databasejoin'].includes(element.plugin)) {
+                    event = 'change';
+                }
+                element.element.addEventListener(event, (e) => saveDatas(element, e))
             }
-            element.element.addEventListener(event, (e) => saveDatas(element, e))
         });
-    });
+    });*/
 
     window.setInterval(function() {
         if (!removedFabrikFormSkeleton && Object.entries(Fabrik.blocks).length > 0) {
