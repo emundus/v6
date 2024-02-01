@@ -179,6 +179,9 @@ class PlgSystemEmundusProxyRedirect extends CMSPlugin
 
 					if ($user->save()) {
 						$m_users->login($user->id);
+						JPluginHelper::importPlugin('emundus', 'custom_event_handler');
+						$dispatcher = JEventDispatcher::getInstance();
+						$dispatcher->trigger('callEventHandler', ['onUserLogin', ['user_id' => $user->id]]);
 
 						$this->app->redirect('index.php');
 					}
