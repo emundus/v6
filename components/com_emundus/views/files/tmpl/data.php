@@ -152,7 +152,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 											<?php else: ?>
 												<?php
 													$formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
-													echo JFactory::getDate($value->val)->format(JText::_('DATE_FORMAT_LC2'));
+													echo JFactory::getDate($value->val)->format(JText::_('DATE_FORMAT_LC5'));
 												?>
 											<?php endif; ?>
 										</strong>

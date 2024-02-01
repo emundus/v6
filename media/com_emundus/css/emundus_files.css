@@ -475,7 +475,6 @@ button#em-close-file {
 
 .panel-default>div {
     padding-left: 13px;
-    padding-bottom: 24px;
 }
 
 .panel-default.em-container-comment .form {
@@ -487,6 +486,11 @@ button#em-close-file {
 .files-board .main-panel table#em-data tbody td div.em-cell strong,
 .files-board .main-panel .panel-default .container-result {
     color: #353544;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    white-space: nowrap;
+    font-size: .875rem;
 }
 
 .files-board #em-data thead th div.em-cell {
