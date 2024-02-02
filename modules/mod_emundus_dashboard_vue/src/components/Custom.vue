@@ -154,7 +154,7 @@ export default {
 					this.chart_type = this.selectedWidget.chart_type;
 					this.dataSource = response.data.dataset;
 
-					if (typeof this.dataSource.filters !== 'undefined') {
+					if (typeof this.dataSource.filters !== 'undefined' && this.dataSource.filters.length > 0) {
 						this.dataSource.filters.forEach((filter) => {
 							if (typeof this.selectedFilters[filter.key] == 'undefined' || this.selectedFilters[filter.key] == null) {
 								this.selectedFilters[filter.key] = [];
@@ -162,6 +162,8 @@ export default {
 						});
 
 						this.filters = this.dataSource.filters;
+					} else {
+						this.filters = [];
 					}
 
 					this.chart_render++;
@@ -272,8 +274,10 @@ export default {
           },
 				})
 					.then((response) => {
-						if (response.data.filters != null) {
+						if (response.data.filters !== null) {
 							this.selectedFilters = response.data.filters;
+						} else {
+							this.selectedFilters = {};
 						}
 						resolve(true);
 					})
