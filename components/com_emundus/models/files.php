@@ -2815,18 +2815,18 @@ class EmundusModelFiles extends JModelLegacy
                         break;
                     case 'birthday':
                         if ($is_repeat) {
-                            $query .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y\') AS ' . $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
+                            $query .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%Y-%m-%d\') AS ' . $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
 	                        $saved_element_as = $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
                         } else {
-                            $query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y\') AS ' . $element->tab_name . '___' . $element->element_name;
+                            $query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%Y-%m-%d\') AS ' . $element->tab_name . '___' . $element->element_name;
                         }
                         break;
                     case 'date':
                         if ($is_repeat) {
-                            $query .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y %H:%i:%s\') AS ' . $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
+                            $query .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%Y-%m-%d %H:%i:%s\') AS ' . $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
 							$saved_element_as = $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
                         } else {
-                            $query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y %H:%i:%s\') AS ' . $element->tab_name . '___' . $element->element_name;
+                            $query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%Y-%m-%d %H:%i:%s\') AS ' . $element->tab_name . '___' . $element->element_name;
                         }
                         break;
                     case 'yesno':
