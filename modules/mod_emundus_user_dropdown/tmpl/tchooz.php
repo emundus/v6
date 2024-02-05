@@ -9,9 +9,13 @@
 // No direct access.
 defined('_JEXEC') or die;
 // Note. It is important to remove spaces between elements.
+
+require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+
 ?>
 
-<link rel="stylesheet" href="modules/mod_emundus_user_dropdown/style/mod_emundus_user_dropdown.css" type="text/css" />
+<link rel="stylesheet" href="modules/mod_emundus_user_dropdown/style/mod_emundus_user_dropdown.css?<?php echo $hash; ?>" type="text/css" />
 
 <?php
 $guest = JFactory::getUser()->guest;

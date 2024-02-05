@@ -29,14 +29,18 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     $document = JFactory::getDocument();
     JHtml::script('media/com_emundus/js/jquery.cookie.js');
     JHtml::script('media/jui/js/bootstrap.min.js');
+
+    require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+    $hash = EmundusHelperCache::getCurrentGitHash();
+
     if (!in_array($params->get('mod_em_campaign_layout'), ['default_tchooz', 'tchooz_single_campaign']))
     {
         JHtml::stylesheet('media/com_emundus/css/mod_emundus_campaign.css');
-        $document->addStyleSheet("modules/mod_emundus_campaign/css/mod_emundus_campaign.css");
+        $document->addStyleSheet("modules/mod_emundus_campaign/css/mod_emundus_campaign.css?".$hash);
     }
     else
     {
-        $document->addStyleSheet("modules/mod_emundus_campaign/css/mod_emundus_campaign_tchooz.css");
+        $document->addStyleSheet("modules/mod_emundus_campaign/css/mod_emundus_campaign_tchooz.css?".$hash);
     }
 
     // PARAMS

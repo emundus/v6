@@ -1567,16 +1567,6 @@ class EmundusModelApplication extends JModelList
                     foreach ($groupes as $itemg) {
                         $g_params = json_decode($itemg->params);
 
-                        if (($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) || !EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int)$g_params->access)) {
-                            $forms .= '<fieldset class="em-personalDetail">
-											<h6 class="em-font-weight-400">' . JText::_($itemg->label) . '</h6>
-											<table class="em-restricted-group">
-												<thead><tr><td>' . JText::_('COM_EMUNDUS_CANNOT_SEE_GROUP') . '</td></tr></thead>
-											</table>
-										</fieldset>';
-                            continue;
-                        }
-
 	                    $query = $this->_db->getQuery(true);
 	                    $query->select('fe.id,fe.name,fe.label,fe.plugin,fe.params,fe.default,fe.eval')
 		                    ->from($this->_db->quoteName('#__fabrik_elements','fe'))
@@ -1585,15 +1575,24 @@ class EmundusModelApplication extends JModelList
 		                    ->where($this->_db->quoteName('fe.group_id') . ' = ' . $this->_db->quote($itemg->group_id))
 		                    ->order($this->_db->quoteName('fe.ordering'));
 
-                        try {
-                            $this->_db->setQuery($query);
-                            $elements = $this->_db->loadObjectList();
-                        } catch (Exception $e) {
-                            JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
-                            throw $e;
-                        }
+	                    try {
+		                    $this->_db->setQuery($query);
+		                    $elements = $this->_db->loadObjectList();
+	                    } catch (Exception $e) {
+		                    JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+		                    throw $e;
+	                    }
 
-                        if (count($elements) > 0) {
+	                    if (count($elements) > 0) {
+	                        if (($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) || !EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int)$g_params->access)) {
+	                            $forms .= '<fieldset class="em-personalDetail">
+												<h6 class="em-font-weight-400">' . JText::_($itemg->label) . '</h6>
+												<table class="em-restricted-group mt-4 mb-4">
+													<thead><tr><td>' . JText::_('COM_EMUNDUS_CANNOT_SEE_GROUP') . '</td></tr></thead>
+												</table>
+											</fieldset>';
+	                            continue;
+	                        }
 
                             if ((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1 || (int)$itemg->is_join === 1) {
 
@@ -1841,6 +1840,13 @@ class EmundusModelApplication extends JModelList
 													{
                                                         $elements[$j]->content = empty($elements[$j]->eval) ? $elements[$j]->default : $r_elt;
                                                         $elt = JText::_($elements[$j]->content);
+                                                    } elseif ($elements[$j]->plugin == 'calc') {
+	                                                    $elt = JText::_($r_elt);
+
+	                                                    $stripped = strip_tags($elt);
+	                                                    if ($stripped != $elt) {
+		                                                    $elt = strip_tags($elt, ['p', 'a', 'div', 'ul', 'li', 'br']);
+	                                                    }
                                                     } elseif ($elements[$j]->plugin == 'emundus_phonenumber') {
                                                         $elt = substr($r_elt, 2, strlen($r_elt));
                                                     } else {
@@ -1909,7 +1915,7 @@ class EmundusModelApplication extends JModelList
                                             }
 
                                             // Do not display elements with no value inside them.
-                                            if ($show_empty_fields == 0 && (trim($element->content) == '' || trim($element->content_id) == -1)) {
+                                            if ($show_empty_fields == 0 && (trim($element->content) == '' || trim($element->content_id) == -1) && $element->plugin != 'emundus_fileupload') {
                                                 continue;
                                             }
 
@@ -2547,7 +2553,7 @@ class EmundusModelApplication extends JModelList
                                                         $this->_db->setQuery($query);
                                                         $elt = JText::_($this->_db->loadResult());
                                                     }
-                                                } elseif (@$elements[$j]->plugin == 'cascadingdropdown') {
+                                                } elseif ($elements[$j]->plugin == 'cascadingdropdown') {
                                                     $params = json_decode($elements[$j]->params);
                                                     $cascadingdropdown_id = $params->cascadingdropdown_id;
                                                     $r1 = explode('___', $cascadingdropdown_id);
@@ -2588,7 +2594,7 @@ class EmundusModelApplication extends JModelList
                                                         $elt .= '<li>'.JText::_($val).'</li>';
                                                     }
                                                     $elt .= "</ul>";
-                                                } elseif ($elements[$j]->plugin == 'dropdown' || @$elements[$j] == 'radiobutton') {
+                                                } elseif ($elements[$j]->plugin == 'dropdown' || $elements[$j]->plugin == 'radiobutton') {
                                                     $params = json_decode($elements[$j]->params);
                                                     $index = array_search($r_elt, $params->sub_options->sub_values);
                                                     if (strlen($index) > 0) {
@@ -2614,8 +2620,15 @@ class EmundusModelApplication extends JModelList
                                                     $elt = ($r_elt == 1) ? JText::_("JYES") : JText::_("JNO");
                                                 } elseif ($elements[$j]->plugin == 'display') {
                                                     $elt = empty($elements[$j]->eval) ? $elements[$j]->default : $r_elt;
-                                                } elseif ($elements[$j]->plugin == 'emundus_phonenumber'){
-                                                    $elt = substr($r_elt, 2, strlen($r_elt));
+                                                } elseif ($elements[$j]->plugin == 'emundus_phonenumber') {
+	                                                $elt = substr($r_elt, 2, strlen($r_elt));
+                                                } else if ($elements[$j]->plugin == 'calc') {
+	                                                $elt = JText::_($r_elt);
+
+	                                                $stripped = strip_tags($elt);
+	                                                if ($stripped != $elt) {
+		                                                $elt = strip_tags($elt, ['p', 'a', 'div', 'ul', 'li', 'br']);
+	                                                }
                                                 } else {
                                                     $elt = JText::_($r_elt);
                                                 }
@@ -2819,6 +2832,13 @@ class EmundusModelApplication extends JModelList
                                                 }
                                             } elseif ($element->plugin == 'emundus_phonenumber'){
                                                 $elt = substr($element->content, 2, strlen($element->content));
+                                            } else if ($element->plugin == 'calc') {
+	                                            $elt = JText::_($element->content);
+
+	                                            $stripped = strip_tags($elt);
+	                                            if ($stripped != $elt) {
+		                                            $elt = strip_tags($elt, ['p', 'a', 'div', 'ul', 'li', 'br']);
+	                                            }
                                             } else {
                                                 $elt = JText::_($element->content);
                                             }
@@ -4776,20 +4796,27 @@ class EmundusModelApplication extends JModelList
 			{
 				$res = $db->loadAssoc();
 
-				$elements = array_map(function($arr) {
-					if (is_numeric($arr)) {
-						return (empty(floatval($arr)));
-					} else {
-						if ($arr == "0000-00-00 00:00:00") {
-							return true;
+				$at_least_one_visible = false;
+				foreach($res as $element_name => $element_value) {
+					$current_fb_element = array_filter($elements, function($el) use ($element_name) {return $el->name === $element_name;});
+					$current_fb_element = current($current_fb_element);
+
+					if (!empty($current_fb_element)) {
+						if ($current_fb_element->plugin === 'yesno' && !is_null($element_value) && $element_value !== '') {
+							$at_least_one_visible = true;
 						}
 
-						return empty($arr);
+						if (is_numeric($element_value)) {
+							if (!empty(floatval($element_value))) {
+								$at_least_one_visible = true;
+							}
+						} else if ($element_value !== "0000-00-00 00:00:00" && !empty($element_value)) {
+							$at_least_one_visible = true;
+						}
 					}
-				}, $res);
+				}
 
-				$elements = array_filter($elements, function($el) {return $el === false;});
-				return !empty($elements);
+				return $at_least_one_visible;
 			}
 			elseif ($db->getNumRows() > 1)
 			{

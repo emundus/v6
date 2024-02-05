@@ -20,6 +20,7 @@ defined('_JEXEC') or die;
 ?>>
 <?php
 foreach ($list as $i => &$item) :
+    if($item->getParams()->get('menu_show') != 0) :
 	$item->anchor_css="item";
 	$class = 'item-'.$item->id;
 	if ($item->id == $active_id) {
@@ -83,5 +84,6 @@ foreach ($list as $i => &$item) :
 	else {
 		echo '</li>';
 	}
+    endif;
 endforeach;
 ?></ul>

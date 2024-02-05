@@ -28,7 +28,7 @@ else
 </table>
 <div id="attachment_list" class="em-table-checklist-attachment">
   <h2><?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_ATTACHMENTS'); ?></h2>
-  <h4><?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' ' . ini_get("upload_max_filesize") . ' '. JText::_('octets'); ?></h4>
+  <h4><?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' ' . ini_get("upload_max_filesize") . ''. JText::_('octets'); ?></h4>
   <br />
   <form id="checklistForm" name="checklistForm" action="index.php?option=com_emundus&task=upload&layout=attachments&sid=<?php echo $user->id; ?>"  method="post" enctype="multipart/form-data">
     <input name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="<?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_SEND_ATTACHMENT'); ?>"/>
