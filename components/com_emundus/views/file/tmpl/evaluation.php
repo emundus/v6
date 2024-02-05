@@ -74,7 +74,8 @@ $user = JFactory::getUser();
      user=<?= $user->id ?>
      ratio=<?= $ratio ?>
      type="evaluation"
-     fnum=<?= $fnum ?>
+     base=<?= JURI::base(); ?>
+     fnum=<?= $fnum; ?>
 ></div>
 
 <script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

@@ -1571,6 +1571,7 @@ form.fabrikForm .plg-fileupload .fabrikSubElementContainer {
         flex-direction: column-reverse;
         padding: var(--em-form-fileupload-padding);
         background-color: var(--em-form-fileupload-bgc);
+        border-radius: var(--em-form-br);
       }
 form.fabrikForm .plg-fileupload .fabrikSubElementContainer input[type='file'] {
           height: auto;
@@ -7020,7 +7021,7 @@ button.swal2-cancel.goback-btn:hover,
 .alert a:hover {
         font-weight: normal;
         text-decoration: underline;
-        color: var(--blue-500);
+        color: inherit;
     }
 .has-error .help-block,
     .has-error .control-label,

@@ -623,6 +623,9 @@ class EmundusHelperFiles
                             continue;
                         }
                         $value->id = $key;
+	                    $value->table_label = JText::_($value->table_label);
+	                    $value->group_label = JText::_($value->group_label);
+	                    $value->element_label = JText::_($value->element_label);
                         $elts[] = $value;
                     }
                 }
@@ -702,6 +705,9 @@ class EmundusHelperFiles
                             continue;
                         }
                         $value->id = $key;
+	                    $value->table_label = JText::_($value->table_label);
+	                    $value->group_label = JText::_($value->group_label);
+	                    $value->element_label = JText::_($value->element_label);
                         $elts[] = $value;
                     }
                 }
@@ -3579,14 +3585,14 @@ class EmundusHelperFiles
 		}
 
 		// force menu filter
-		if (isset($filt_menu['status']) && is_array($filt_menu['status']) && !empty($filt_menu['status'][0]) && $filt_menu['status'][0] != "%") {
+		if (!empty($filt_menu['status']) && is_array($filt_menu['status']) && !empty($filt_menu['status'][0]) && $filt_menu['status'][0] != "%") {
 			$query['q'] .= ' AND jecc.status IN ("' . implode('","', $filt_menu['status']) . '") ';
 		}
 
 		$and = ' AND ';
         $sql_code = '1=1';
-		if (isset($filt_menu['programme'])) {
-			if (isset($filt_menu['programme'][0]) && $filt_menu['programme'][0] == "%") {
+		if (!empty($filt_menu['programme'])) {
+			if (!empty($filt_menu['programme'][0]) && $filt_menu['programme'][0] == "%") {
 				$sql_code = '1=1';
 			} elseif (!empty($filt_menu['programme'][0])) {
 				// ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT
@@ -3597,7 +3603,11 @@ class EmundusHelperFiles
 					$sql_code = ' sp.code in ("'.implode('","', $filt_menu['programme']).'") ';
 				}
 			}
-		}
+		} elseif (!empty($caller_params['code'])) {
+            // ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT
+            $sql_code = ' sp.code IN ("'.implode('","', $caller_params['code']).'") ';
+            $and = ' OR ';
+        }
 
 		$sql_fnum = '';
 		if (!empty($caller_params['fnum_assoc'])) {
