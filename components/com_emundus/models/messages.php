@@ -461,8 +461,7 @@ class EmundusModelMessages extends JModelList {
 
         try {
 
-            $phpWord = new \PhpOffice\PhpWord\PhpWord();
-            $preprocess = $phpWord->loadTemplate(JPATH_SITE.$letter->file);
+			$preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_SITE.$letter->file);
             $tags = $preprocess->getVariables();
 
             $idFabrik   = array();
@@ -594,7 +593,7 @@ class EmundusModelMessages extends JModelList {
             unset($preprocess);
 
         } catch (Exception $e) {
-            JLog::add('Error generating DOC file in model/messages', JLog::ERROR, 'com_emundus');
+            JLog::add('Error generating DOC file in model/messages ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
         }
 

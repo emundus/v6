@@ -191,6 +191,15 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+		<field name="attachment_to_keep_non_deletable"
+			   type="sql"
+			   query="SELECT id, value FROM jos_emundus_setup_attachments WHERE published = 1"
+			   key_field="id"
+			   value_field="value"
+			   multiple="true"
+			   default='["4", "6", "21"]'
+			   label="COM_EMUNDUS_ATTACHCHMENT_NON_DELETABLE"
+		/>
 		<field name="referent_can_edit_after_deadline" menu="hide" type="list" default="1" label="COM_EMUNDUS_REFERENT_CAN_EDIT_AFTER_DEADLINE" description="COM_EMUNDUS_REFERENT_CAN_EDIT_AFTER_DEADLINE_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>

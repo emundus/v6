@@ -4464,7 +4464,7 @@ $(document).ready(function() {
                                 }
                                 tags += '</select></div>';
                                 $('#data').append(tags);
-                                $('.modal-chzn-select').chosen({width:'100%'});
+                                $('.modal-chzn-select').chosen({width:'100%',search_contains: true});
                                 $("#em-action-export-tag").hide();
 
                                 $('#change-status input[name=export-status]').on('change', function(){
@@ -4633,7 +4633,7 @@ $(document).ready(function() {
                         /***
                          * On Category change
                          */
-                        $('#em-action-tag-category').chosen().change(function() {
+                        $('#em-action-tag-category').chosen({search_contains: true}).change(function() {
 
                             var cat = $(this).val();
                             if (cat) {
@@ -4792,34 +4792,31 @@ $(document).ready(function() {
                 title = 'COM_EMUNDUS_ACCESS_MAIL_EXPERT';
                 html = '<div id="data" class="em-mt-32 em-w-100"><div id="email-loader" class="em-loader" style="margin: auto;"></div></div>';
 
-                fetch(url, {
-                    method: 'POST',
-                    body: JSON.stringify({
+                $.ajax({
+                    type:'POST',
+                    url:url,
+                    data: {
                         fnums: fnums
-                    })
-                }).then(function (response) {
-                    // The API call was successful!
-                    return response.text();
-                }).then(function (html) {
-                    // This is the HTML from our response as a text string
-                    const dataWrapper = document.getElementById('data');
+                    },
+                    success: function(result) {
+                        const dataWrapper = document.getElementById('data');
 
-                    if (dataWrapper) {
-                        dataWrapper.innerHTML = html;
-                        document.querySelector('.em-swal-confirm-button').style.opacity = '0';
-                        $('#email-loader').remove();
-                        dataWrapper.classList.remove('em-loader');
-                    }
-                }).catch(function (err) {
-                    // There was an error
-                    const dataWrapper = document.getElementById('data');
-                    if (dataWrapper) {
-                        dataWrapper.classList.remove('em-loader');
-                        dataWrapper.innerHTML = '<p class="alert alert-error">' + Joomla.JText._('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE') +'</p>';
-                        console.warn(err);
+                        if (dataWrapper) {
+                            dataWrapper.innerHTML = result;
+                            document.querySelector('.em-swal-confirm-button').style.opacity = '0';
+                            $('#email-loader').remove();
+                            dataWrapper.classList.remove('em-loader');
+                        }
+                    },
+                    error: function (jqXHR) {
+                        const dataWrapper = document.getElementById('data');
+                        if (dataWrapper) {
+                            dataWrapper.classList.remove('em-loader');
+                            dataWrapper.innerHTML = '<p class="alert alert-error">' + Joomla.JText._('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE') +'</p>';
+                        }
+                        console.warn(jqXHR.responseText);
                     }
                 });
-
                 break;
 
             default:
@@ -4859,7 +4856,7 @@ $(document).ready(function() {
             runAction(id);
         }
 
-        $('.modal-chzn-select').chosen({width:'100%'});
+        $('.modal-chzn-select').chosen({width:'100%', search_contains: true});
 
         /***
          * On Category change
