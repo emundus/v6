@@ -14,6 +14,7 @@
 
 // No direct access
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Plugin\PluginHelper;
 
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
@@ -1125,12 +1126,15 @@ class EmundusModelUsers extends JModelList {
         $instance->setLastVisit();
 
         // Trigger OnUserLogin
-        JPluginHelper::importPlugin('user', 'emundus');
-        $dispatcher = JEventDispatcher::getInstance();
-        $options = array('action' => 'core.login.site', 'remember' => false);
+	    PluginHelper::importPlugin('user');
+	    PluginHelper::importPlugin('emundus');
 
-        $dispatcher->trigger( 'onUserLogin', $instance );
-        $dispatcher->trigger('callEventHandler', ['onUserLogin', ['instance' => $instance]]);
+	    $options = array();
+	    $options['action'] = 'core.login.site';
+
+	    $response['username'] = $instance->get('username');
+	    $app->triggerEvent('onUserLogin', array($response, $options));
+	    $app->triggerEvent('callEventHandler', ['onUserLogin', ['user_id' => $uid]]);
 
         return $instance;
 

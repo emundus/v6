@@ -2926,7 +2926,6 @@ class EmundusModelEmails extends JModelList {
 
 				if (!empty($post)) {
 					$post = array_merge($default_post, $post);
-					$post = array_unique($post, SORT_REGULAR);
 				} else {
 					$post = $default_post;
 				}
