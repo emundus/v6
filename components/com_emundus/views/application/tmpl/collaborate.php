@@ -49,19 +49,21 @@ Text::script('COM_EMUNDUS_APPLICATION_SHARE_VIEW_REQUESTS');
 								</div>
 							</div>
 
-							<div>
-								<?php if($collaborator->uploaded == 1) : ?>
-									<span class="label label-green-2 text-white">Acceptée</span>
-								<?php else: ?>
-									<span class="label label-beige">Envoyée</span>
-								<?php endif; ?>
-							</div>
-							<div class="flex items-center gap-3">
-								<?php if ($collaborator->uploaded == 0) : ?>
-									<span class="material-icons-outlined cursor-pointer" onclick="sendNewEmail('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>')">send</span>
-								<?php endif; ?>
-								<span class="material-icons-outlined cursor-pointer text-red-500" onclick="removeShared('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>')">person_remove</span>
-							</div>
+                            <div class="flex items-center gap-3">
+                                <div>
+                                    <?php if($collaborator->uploaded == 1) : ?>
+                                        <span class="label label-green-2 text-white"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_ACCEPTED_STATUS') ?></span>
+                                    <?php else: ?>
+                                        <span class="label label-beige"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_SENT_STATUS') ?></span>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="flex items-center justify-end gap-3" style="min-width: 50px">
+                                    <?php if ($collaborator->uploaded == 0) : ?>
+                                        <span class="material-icons-outlined cursor-pointer" id="email_icon_<?php echo $collaborator->id ?>" onclick="sendNewEmail('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>')">send</span>
+                                    <?php endif; ?>
+                                    <span class="material-icons-outlined cursor-pointer text-red-500" onclick="removeShared('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>')">person_remove</span>
+                                </div>
+                            </div>
 						</div>
 
 						<hr/>

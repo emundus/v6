@@ -1553,7 +1553,8 @@ $current_tab = 0;
                     title: 'em-swal-title',
                     cancelButton: 'em-swal-cancel-button',
                     confirmButton: 'em-swal-confirm-button',
-                    popup: 'w-3/6'
+                    popup: '!w-3/6',
+                    validationMessage: 'em-swal-validation-message',
                 },
                 onOpen: (toast) => {
                     var tag = document.createElement("script");

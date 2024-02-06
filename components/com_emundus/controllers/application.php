@@ -1165,8 +1165,13 @@ class EmundusControllerApplication extends JControllerLegacy
 		if(!empty($fnum) && (EmundusHelperAccess::asPartnerAccessLevel(Factory::getUser()->id) || in_array($fnum, array_keys($e_user->fnums)))) {
 			$ccid = $this->input->getInt('ccid',0);
 			$request_id = $this->input->getInt('request_id',0);
-
-			if(!empty($request_id) && !empty($ccid)) {
+			
+			$ttl = Factory::getSession()->get('ttl_send_email_'.$request_id);
+			
+			if($ttl && (time() - $ttl) < 900) {
+				$response['msg'] = Text::_('COM_EMUNDUS_APPLICATIONS_COLLABORATE_EMAIL_TTL');
+			}
+			elseif(!empty($request_id) && !empty($ccid)) {
 				$m_application      = $this->getModel('Application');
 				$response['data'] = $m_application->regenerateKey($request_id, $ccid, Factory::getUser()->id);
 
@@ -1186,6 +1191,10 @@ class EmundusControllerApplication extends JControllerLegacy
 					];
 
 					$c_messages->sendEmailNoFnum($response['data']['email'],'collaborate_invitation', $post, $e_user->id, [], $fnum);
+					
+					Factory::getSession()->set('ttl_send_email_'.$request_id, time());
+
+					$response['msg'] = Text::_('COM_EMUNDUS_APPLICATIONS_COLLABORATE_EMAIL_SENT_SUCCESFULLY');
 				}
 			}
 		}
@@ -1211,6 +1220,9 @@ class EmundusControllerApplication extends JControllerLegacy
 			if(!empty($request_id) && !empty($ccid) && !empty($right)) {
 				$m_application      = $this->getModel('Application');
 				$response['status'] = $m_application->updateRight($request_id, $ccid, $right, $value, Factory::getUser()->id);
+				if($response['status']) {
+					$response['msg'] = Text::_('COM_EMUNDUS_APPLICATIONS_COLLABORATE_RIGHT_UPDATED_SUCCESFULLY');
+				}
 			}
 		}
 

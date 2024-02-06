@@ -27,6 +27,9 @@ function sendNewEmail(request_id, ccid, fnum) {
     formData.append('fnum', fnum);
     formData.append('ccid', ccid);
 
+    document.getElementById('email_icon_'+request_id).innerHTML = 'sync';
+    document.getElementById('email_icon_'+request_id).classList.add('animate-spin');
+
     fetch('index.php?option=com_emundus&controller=application&task=sendnewcollaborationemail', {
         body: formData,
         method: 'post',
@@ -36,7 +39,23 @@ function sendNewEmail(request_id, ccid, fnum) {
         }
     }).then((res) => {
         if(res.status) {
+            Swal.showValidationMessage('<span class="material-icons-outlined">mark_email_read </span>'+res.msg);
 
+            document.getElementById('email_icon_'+request_id).classList.remove('animate-spin');
+            document.getElementById('email_icon_'+request_id).innerHTML = 'done';
+
+            setTimeout(() => {
+                Swal.resetValidationMessage();
+                document.getElementById('email_icon_'+request_id).innerHTML = 'send';
+            }, 4000);
+        } else {
+            Swal.showValidationMessage('<span class="material-icons-outlined text-red-500">error</span>'+res.msg);
+            document.getElementById('email_icon_'+request_id).classList.remove('animate-spin');
+            document.getElementById('email_icon_'+request_id).innerHTML = 'send';
+
+            setTimeout(() => {
+                Swal.resetValidationMessage();
+            }, 4000);
         }
     });
 }
@@ -71,7 +90,11 @@ function updateRight(request_id, ccid, fnum, right, value) {
         }
     }).then((res) => {
         if(res.status) {
+            Swal.showValidationMessage(res.msg);
 
+            setTimeout(() => {
+                Swal.resetValidationMessage();
+            }, 2000);
         }
     });
 }
