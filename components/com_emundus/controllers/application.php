@@ -9,6 +9,7 @@
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use \setasign\Fpdi\Fpdi;
 // ensure this file is being included by a parent file
@@ -1146,6 +1147,9 @@ class EmundusControllerApplication extends JControllerLegacy
 			$request_id = $this->input->getInt('request_id',0);
 
 			if(!empty($request_id) && !empty($ccid)) {
+				PluginHelper::importPlugin('emundus', 'custom_event_handler');
+				Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeRemoveSharedUser', ['request_id' => $request_id, 'ccid' => $ccid, 'fnum' => $fnum]]);
+
 				$m_application      = $this->getModel('Application');
 				$response['status'] = $m_application->removeSharedUser($request_id, $ccid, Factory::getUser()->id);
 			}

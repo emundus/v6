@@ -10,6 +10,8 @@
 use Joomla\CMS\Language\Text;
 defined('_JEXEC') or die;
 
+Text::script('COM_EMUNDUS_APPLICATION_SHARE_CONFIRM_DELETE');
+
 $config      = JFactory::getConfig();
 $site_offset = $config->get('offset');
 
