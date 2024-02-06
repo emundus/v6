@@ -1563,10 +1563,20 @@ $current_tab = 0;
 
                     jQuery("#collab_emails").selectize({
                         plugins: ["remove_button"],
+                        delimiter: ",",
+                        persist: false,
+                        createOnBlur: true,
                         create: true,
                         preload: true,
-                        placeholder: '',
+                        maxItems: null,
+                        placeholder: '<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ADD_EMAILPLACEHOLDER'); ?>',
                         render: {
+                            create: function (input) {
+                                return {
+                                    value: input,
+                                    text: input,
+                                };
+                            },
                             item: function (data, escape) {
                                 const val = data.value;
                                 return '<div>' +
@@ -1594,7 +1604,12 @@ $current_tab = 0;
                                 let p = document.createElement('p');
                                 p.classList.add('text-red-500');
                                 p.id = 'collab_error';
-                                p.innerText = '<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_NOT_YOUR_OWN'); ?>';
+                                if('<?php echo $user->email?>' === email) {
+                                    p.innerText = '<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_NOT_YOUR_OWN'); ?>';
+                                }
+                                if(!regex.test(email)) {
+                                    p.innerText = '<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_INVALID_EMAIL'); ?>';
+                                }
                                 document.querySelector('#collab_emails_block').append(p);
                             }
                         }
