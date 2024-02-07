@@ -3,7 +3,11 @@ defined('_JEXEC') or die('Access Denied');
 
 class modEmundusInternetExplorerHelper
 {
-	public static function getBrowser()
+	/**
+	 * Get current browser information
+	 * @return array
+	 */
+	private static function getBrowser(): array
 	{
 		$u_agent  = $_SERVER['HTTP_USER_AGENT'];
 		$bname    = 'Unknown';
@@ -80,7 +84,7 @@ class modEmundusInternetExplorerHelper
 
 		// check if we have a number
 		if ($version == null || $version == "") {
-			$version = "?";
+			$version = '?';
 		}
 
 		return array(
@@ -90,5 +94,29 @@ class modEmundusInternetExplorerHelper
 			'platform'  => $platform,
 			'pattern'   => $pattern
 		);
+	}
+
+	/**
+	 * Check if the browser is compatible with eMundus
+	 * @return bool
+	 */
+	public static function isCompatible(): bool
+	{
+		$is_compatible = true;
+
+		$browser = self::getBrowser();
+		$min_versions = [
+			'Chrome' => 88,
+			'Firefox' => 85,
+			'Edge' => 88,
+			'Opera' => 74,
+			'Safari' => 15
+		];
+
+		if((!empty($min_versions[$browser['name']]) && $browser['version'] < $min_versions[$browser['name']]) || $browser['name'] == 'Internet Explorer') {
+			$is_compatible = false;
+		}
+
+		return $is_compatible;
 	}
 }
