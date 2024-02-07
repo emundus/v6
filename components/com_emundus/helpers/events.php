@@ -590,6 +590,7 @@ class EmundusHelperEvents {
                 }
             }
         }
+		
         return true;
     }
 
@@ -639,77 +640,18 @@ class EmundusHelperEvents {
 	        $profile_id = (!empty($user->fnums[$user->fnum]) && $user->profile != $profile && $user->applicant === 1) ? $user->profile : $profile;
 
 	        $forms    = EmundusHelperMenu::getUserApplicationMenu($profile_id);
-			$forms_ids = array_column($forms, 'form_id');
 
 			// Check if we have qcm forms
-	        $query->clear()
-		        ->select('distinct sq.id,sq.form_id,sq.group_id')
-		        ->from($db->quoteName('#__emundus_setup_qcm','sq'))
-		        ->where($db->quoteName('sq.form_id') . ' IN (' . implode(',',$db->quote($forms_ids)) . ')');
-	        $db->setQuery($query);
-	        $qcms = $db->loadObjectList();
-	        $qcms_ids = array_column($qcms, 'id');
-
-			if(!empty($qcms)) {
-				$items_ids = [];
-				foreach($forms as $form) {
-					$items_ids[$form->form_id] = $form->id;
-				}
-
-				$query->clear()
-					->select('count(id)')
-					->from($db->quoteName('#__emundus_qcm_applicants','qa'))
-					->where($db->quoteName('qa.fnum') . ' LIKE ' . $db->quote($user->fnum))
-					->where($db->quoteName('qa.qcmid') . ' IN (' . implode(',',$db->quote($qcms_ids)) . ')');
-				$db->setQuery($query);
-				$applicants_qcms = $db->loadResult();
-
-				if(sizeof($qcms) == $applicants_qcms)
-				{
-					foreach ($qcms as $key => $qcm)
-					{
-						$query->clear()
-							->select('questions')
-							->from($db->quoteName('#__emundus_qcm_applicants'))
-							->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($user->fnum))
-							->andWhere($db->quoteName('qcmid') . ' = ' . $db->quote($qcm->id));
-						$db->setQuery($query);
-						$q_numbers = sizeof(explode(',', $db->loadResult()));
-
-						$query->clear()
-							->select('db_table_name')
-							->from($db->quoteName('#__fabrik_lists'))
-							->where($db->quoteName('form_id') . ' = ' . $db->quote($qcm->form_id));
-						$db->setQuery($query);
-						$table = $db->loadResult();
-
-						$query->clear()
-							->select('table_join')
-							->from($db->quoteName('#__fabrik_joins'))
-							->where($db->quoteName('group_id') . ' = ' . $db->quote($qcm->group_id))
-							->where($db->quoteName('join_from_table') . ' = ' . $db->quote($table))
-							->where($db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'));
-						$db->setQuery($query);
-						$repeat_table = $db->loadResult();
-
-						$query->clear()
-							->select('count(rt.id) as answers')
-							->from($db->quoteName($repeat_table, 'rt'))
-							->leftJoin($db->quoteName($table, 't') . ' ON ' . $db->quoteName('t.id') . ' = ' . $db->quoteName('rt.parent_id'))
-							->where($db->quoteName('t.fnum') . ' LIKE ' . $db->quote($user->fnum));
-						$db->setQuery($query);
-						$answers_given = $db->loadResult();
-
-						if ((int) $answers_given != $q_numbers)
-						{
-							$mainframe->enqueueMessage(JText::sprintf('PLEASE_COMPLETE_QCM_BEFORE_SEND'));
-							$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=" . $qcm->form_id . "&Itemid=" . $items_ids[$qcm->form_id] . "&usekey=fnum&rowid=" . $user->fnum . "&r=1");
-						}
-					}
-				} else {
-					$mainframe->enqueueMessage(JText::sprintf('PLEASE_COMPLETE_QCM_BEFORE_SEND'));
-					$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=" . $qcms[0]->form_id . "&Itemid=" . $items_ids[$qcm[0]->form_id] . "&usekey=fnum&rowid=" . $user->fnum . "&r=1");
-				}
+	        $forms_ids = array_column($forms, 'form_id');
+	        $items_ids = [];
+	        foreach($forms as $form) {
+		        $items_ids[$form->form_id] = $form->id;
+	        }
+	        $qcm_complete = $this->checkQcmCompleted($user->fnum, $forms_ids, $items_ids);
+			if($qcm_complete['status'] === false)
+			{
+				$mainframe->enqueueMessage(JText::sprintf($qcm_complete['msg']));
+				$mainframe->redirect($qcm_complete['link']);
 			}
 
 	        if ($attachments_progress < 100 || $forms_progress < 100) {
@@ -1448,6 +1390,96 @@ class EmundusHelperEvents {
 		}
 		catch (Exception $e) {
 			JLog::add('Error when try to log update of application: ' . __LINE__ . ' in file: ' . __FILE__ . ' with message: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+		}
+
+		return $result;
+	}
+
+	private function checkQcmCompleted($fnum,$forms_ids,$items_ids)
+	{
+		$result = ['status' => true, 'msg' => '', 'link' => ''];
+
+		try
+		{
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->clear()
+				->select('distinct sq.id,sq.form_id,sq.group_id')
+				->from($db->quoteName('#__emundus_setup_qcm','sq'))
+				->where($db->quoteName('sq.form_id') . ' IN (' . implode(',',$db->quote($forms_ids)) . ')');
+			$db->setQuery($query);
+			$qcms = $db->loadObjectList();
+			$qcms_ids = array_column($qcms, 'id');
+
+			if(!empty($qcms)) {
+				$query->clear()
+					->select('count(id)')
+					->from($db->quoteName('#__emundus_qcm_applicants','qa'))
+					->where($db->quoteName('qa.fnum') . ' LIKE ' . $db->quote($fnum))
+					->where($db->quoteName('qa.qcmid') . ' IN (' . implode(',',$db->quote($qcms_ids)) . ')');
+				$db->setQuery($query);
+				$applicants_qcms = $db->loadResult();
+
+				if(sizeof($qcms) == $applicants_qcms)
+				{
+					foreach ($qcms as $qcm)
+					{
+						$query->clear()
+							->select('questions')
+							->from($db->quoteName('#__emundus_qcm_applicants'))
+							->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
+							->andWhere($db->quoteName('qcmid') . ' = ' . $db->quote($qcm->id));
+						$db->setQuery($query);
+						$q_numbers = sizeof(explode(',', $db->loadResult()));
+
+						$query->clear()
+							->select('db_table_name')
+							->from($db->quoteName('#__fabrik_lists'))
+							->where($db->quoteName('form_id') . ' = ' . $db->quote($qcm->form_id));
+						$db->setQuery($query);
+						$table = $db->loadResult();
+
+						$query->clear()
+							->select('table_join')
+							->from($db->quoteName('#__fabrik_joins'))
+							->where($db->quoteName('group_id') . ' = ' . $db->quote($qcm->group_id))
+							->where($db->quoteName('join_from_table') . ' = ' . $db->quote($table))
+							->where($db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'));
+						$db->setQuery($query);
+						$repeat_table = $db->loadResult();
+
+						$query->clear()
+							->select('count(rt.id) as answers')
+							->from($db->quoteName($repeat_table, 'rt'))
+							->leftJoin($db->quoteName($table, 't') . ' ON ' . $db->quoteName('t.id') . ' = ' . $db->quoteName('rt.parent_id'))
+							->where($db->quoteName('t.fnum') . ' LIKE ' . $db->quote($fnum));
+						$db->setQuery($query);
+						$answers_given = $db->loadResult();
+
+						if ((int) $answers_given != $q_numbers)
+						{
+							$result['status'] = false;
+							$result['msg'] = 'PLEASE_COMPLETE_QCM_BEFORE_SEND';
+							$result['link'] = "index.php?option=com_fabrik&view=form&formid=" . $qcm->form_id . "&Itemid=" . $items_ids[$qcm->form_id] . "&usekey=fnum&rowid=" . $fnum . "&r=1";
+
+							// We break the loop because we have found a qcm that is not completed
+							return $result;
+						}
+					}
+				} else {
+					$result['status'] = false;
+					$result['msg'] = 'PLEASE_COMPLETE_QCM_BEFORE_SEND';
+					$result['link'] = "index.php?option=com_fabrik&view=form&formid=" . $qcms[0]->form_id . "&Itemid=" . $items_ids[$qcms[0]->form_id] . "&usekey=fnum&rowid=" . $fnum . "&r=1";
+
+					// We break the loop because we have found a qcm that is not completed
+					return $result;
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			JLog::add('Error when try to check if qcm is completed: ' . __LINE__ . ' in file: ' . __FILE__ . ' with message: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
 
 		return $result;
