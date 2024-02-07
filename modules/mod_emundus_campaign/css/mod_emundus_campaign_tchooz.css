@@ -440,7 +440,7 @@ a.em-blue-400-color:hover {
     align-items: flex-start;
     padding: 0;
     gap: var(--p-48);
-    grid-template-columns: repeat(3,1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .mod_emundus_campaign__pinned_campaign{
