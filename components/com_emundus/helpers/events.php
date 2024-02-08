@@ -912,7 +912,7 @@ class EmundusHelperEvents {
         $export_pdf                 = $eMConfig->get('export_application_pdf', 0);
         $export_path                = $eMConfig->get('export_path', null);
         $id_applicants              = explode(',',$eMConfig->get('id_applicants', '0'));
-        $new_status                 = 1;
+        $new_status                 = $eMConfig->get('default_send_status', 1);
 
 
         $offset = $app->get('offset', 'UTC');

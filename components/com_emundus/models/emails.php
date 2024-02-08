@@ -110,7 +110,7 @@ class EmundusModelEmails extends JModelList {
         }
 
         $query = $this->_db->getQuery(true);
-        $query->select('eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id, et.Template, GROUP_CONCAT(ert.tags) as tags, GROUP_CONCAT(erca.candidate_attachment) as attachments, GROUP_CONCAT(erla.letter_attachment) as letter_attachments, GROUP_CONCAT(err1.receivers) as cc, GROUP_CONCAT(err2.receivers) as bcc')
+        $query->select('eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, GROUP_CONCAT(eser.profile_id) as profile_id, GROUP_CONCAT(eserg.group_id) as group_id, GROUP_CONCAT(eseru.user_id) as user_id, et.Template, GROUP_CONCAT(ert.tags) as tags, GROUP_CONCAT(erca.candidate_attachment) as attachments, GROUP_CONCAT(erla.letter_attachment) as letter_attachments, GROUP_CONCAT(err1.receivers) as cc, GROUP_CONCAT(err2.receivers) as bcc')
             ->from($this->_db->quoteName('#__emundus_setup_emails_trigger', 'eset'))
             ->leftJoin($this->_db->quoteName('#__emundus_setup_emails','ese').' ON '.$this->_db->quoteName('ese.id').' = '.$this->_db->quoteName('eset.email_id'))
             ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_programme_id','eserp').' ON '.$this->_db->quoteName('eserp.parent_id').' = '.$this->_db->quoteName('eset.id'))
@@ -258,7 +258,7 @@ class EmundusModelEmails extends JModelList {
      * @since version v6
      * @throws Exception
      */
-    public function sendEmailTrigger($step, $code, $to_applicant = 0, $student = null, $to_current_user = null) {
+    public function sendEmailTrigger($step, $code, $to_applicant = 0, $student = null, $to_current_user = null, $trigger_emails = null, $fnum = null) {
         $app = JFactory::getApplication();
         $config = JFactory::getConfig();
         $email_from_sys = $config->get('mailfrom');
@@ -266,7 +266,9 @@ class EmundusModelEmails extends JModelList {
         jimport('joomla.log.log');
         JLog::addLogger(array('text_file' => 'com_emundus.email.php'), JLog::ALL, array('com_emundus'));
 
-        $trigger_emails = $this->getEmailTrigger($step, $code, $to_applicant, $to_current_user, $student);
+        if (empty($trigger_emails)) {
+            $trigger_emails = $this->getEmailTrigger($step, $code, $to_applicant, $to_current_user, $student);
+        }
 
         if (count($trigger_emails) > 0) {
             // get current applicant course
@@ -290,12 +292,29 @@ class EmundusModelEmails extends JModelList {
 
             require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
             require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
+            require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
             $h_access = new EmundusHelperAccess();
             $h_emails = new EmundusHelperEmails();
+            $m_files = new EmundusModelFiles();
+
+            $fnumInfos = '';
+
+            if (!empty($fnum)) {
+                $fnumInfos = $m_files->getFnumInfos($fnum);
+            }
 
             foreach ($trigger_emails as $trigger_email_id => $trigger_email) {
 
-                foreach ($trigger_email[$student->code]['to']['recipients'] as $recipient) {
+                if (!empty($fnumInfos)) {
+                    $recipients = $trigger_email[$fnumInfos['training']]['to']['recipients'];
+                    $student->id = $fnumInfos['applicant_id'];
+                    $student->fnum = $fnumInfos['fnum'];
+                    $student->code = $fnumInfos['training'];
+                } else {
+                    $recipients = $trigger_email[$student->code]['to']['recipients'];
+                }
+
+                foreach ($recipients as $recipient) {
                     // Check if the user has access to the file
                     if ($h_access->asPartnerAccessLevel($recipient['id']) && !$h_access->isUserAllowedToAccessFnum($recipient['id'],$student->fnum)) {
                         continue;
@@ -364,12 +383,6 @@ class EmundusModelEmails extends JModelList {
                     $mailer->isHTML(true);
                     $mailer->Encoding = 'base64';
                     $mailer->setBody($body);
-
-                    $custom_email_tag = EmundusHelperEmails::getCustomHeader();
-                    if(!empty($custom_email_tag))
-                    {
-                        $mailer->addCustomHeader($custom_email_tag);
-                    }
 
                     try {
                         $send = $mailer->Send();
