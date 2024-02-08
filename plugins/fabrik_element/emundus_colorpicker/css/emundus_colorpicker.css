@@ -1,0 +1,46 @@
+.fabrikEmundusColorpicker .color-circle {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.fabrikEmundusColorpicker .selected-color-circle {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-left: 5px;
+    border: 3px solid #000;
+    vertical-align: middle;
+}
+
+.color-red { background-color: #ff0000; }
+.color-blue { background-color: #0000ff; }
+.color-green { background-color: #00ff00; }
+.color-yellow { background-color: #FFFF00; }
+.color-brown { background-color: #582900; }
+.color-black { background-color: #000000; }
+.color-purple { background-color: #7f00ff; }
+.color-grey { background-color: #808080; }
+.color-orange { background-color: #ff8000; }
+.color-pink { background-color: #fd6c9e; }
+
+
+.small-input {
+    max-width: 100px;
+}
+
+.selected-color-code {
+    display: inline-block;
+    border: 1px solid #ccc;
+    padding: 3px;
+    min-width: 55px;
+    min-height: 10px;
+}
+
+.selected-color-text {
+    font-style: italic;
+}
