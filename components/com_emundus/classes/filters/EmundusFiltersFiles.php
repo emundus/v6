@@ -290,6 +290,8 @@ class EmundusFiltersFiles extends EmundusFilters
 					}
 				}
 
+				$query->order('ordering ASC');
+
 				$db->setQuery($query);
 				$statuses = $db->loadObjectList();
 
