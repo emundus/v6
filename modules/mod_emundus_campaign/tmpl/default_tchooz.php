@@ -973,7 +973,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         let group = document.getElementById('current_' + key);
         let icon = document.getElementById('group_icon_'+key);
 
-        if (group.style.display === 'none') {
+        if (group.style.display === 'none' || getComputedStyle(group).display === 'none') {
             group.style.display = 'grid';
             icon.innerHTML = 'expand_more';
         } else {
