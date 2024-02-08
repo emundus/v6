@@ -330,6 +330,8 @@ class EmundusFiltersFiles extends EmundusFilters
 					}
 				}
 
+				$query->order('id DESC');
+
 				$db->setQuery($query);
 				$campaigns = $db->loadAssocList();
 
@@ -351,7 +353,8 @@ class EmundusFiltersFiles extends EmundusFilters
 					->select('id as value, label, 0 as count')
 					->from('#__emundus_setup_programmes')
 					->where('published = 1')
-					->andWhere('id IN (' . implode(',', $this->user_programs) . ')');
+					->andWhere('id IN (' . implode(',', $this->user_programs) . ')')
+					->order('ordering ASC');
 
 				$db->setQuery($query);
 				$programs = $db->loadAssocList();
