@@ -80,20 +80,24 @@ class plgEmundusSend_file_archive extends JPlugin {
 			return false;
 		}
 
-		require_once(JPATH_BASE.'/components/com_emundus/controllers/files.php');
-		require_once(JPATH_BASE.'/components/com_emundus/controllers/messages.php');
-		$c_files = new EmundusControllerFiles();
-		$c_messages = new EmundusControllerMessages();
+        require_once(JPATH_SITE.'/components/com_emundus/models/files.php');
+        require_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
+        $m_files = new EmundusModelFiles();
+        $m_emails = new EmundusModelEmails();
 
         $zip_attachments = $this->params->get('zip_attachments',1);
         $zip_evaluation = $this->params->get('zip_evaluation',0);
         $zip_decision = $this->params->get('zip_decision',0);
 
-		$zip_name = $c_files->export_zip([$fnum], 1, $zip_attachments, $zip_evaluation, $zip_decision, 0, null, null, null, true);
-		$file = JPATH_BASE.'/tmp/'.$zip_name;
+        if (!defined(EMUNDUS_PATH_ABS)) {
+            define('EMUNDUS_PATH_ABS',     JPATH_ROOT.DIRECTORY_SEPARATOR.'images/emundus/files/');
+        }
 
-		$c_messages->sendEmail($fnum, $email, null, $file);
-		return true;
-	}
+        $zip_name = $m_files->exportZip([$fnum], 1, $zip_attachments, $zip_evaluation, $zip_decision, 0, null, null, null, true);
+        $file = JPATH_SITE.'/tmp/'.$zip_name;
+
+        $m_emails->sendEmail($fnum, $email, null, $file, false, 2);
+        return true;
+    }
 
 }
