@@ -1533,19 +1533,6 @@ class EmundusModelFiles extends JModelLegacy
             $query = $db->getQuery(true);
             $fnums = is_array($fnums) ? $fnums : [$fnums];
 
-            $codes = [];
-            foreach ($fnums as $fnum) {
-                $fnumTraining = $this->getFnumInfos($fnum)['training'];
-                $codes[] = $fnumTraining;
-            }
-            $codes = array_unique($codes);
-
-            // Get email triggers
-            include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
-            $m_emails = new EmundusModelEmails;
-
-            $triggers = $m_emails->getEmailTrigger($state, $codes, '0,1');
-
             try {
                 $query->select($db->quoteName('profile'))
                     ->from($db->quoteName('#__emundus_setup_status'))
@@ -1618,22 +1605,35 @@ class EmundusModelFiles extends JModelLegacy
                         $db->setQuery($query);
                         $db->execute();
                     }
-
-                    if ($res) {
-                        // Send email triggers
-                        $sent = $m_emails->sendEmailTrigger($state, [$fnumInfos['training']], '0,1', null, null, $triggers, $fnum);
-
-                        if ($sent) {
-                            $res = [
-                                'status' => true,
-                                'msg' => JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT')
-                            ];
-                        }
-                    }
                 }
-            } catch (Exception $e) {
+            }
+            catch (Exception $e) {
                 echo $e->getMessage();
-                JLog::add(JUri::getInstance().' :: USER ID : '.$user_id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                JLog::add(JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+
+            if ($res) {
+                $codes = [];
+                foreach ($fnums as $fnum) {
+                    $fnumTraining = $this->getFnumInfos($fnum)['training'];
+                    $codes[] = $fnumTraining;
+                }
+                $codes = array_unique($codes);
+
+                // Get email triggers
+                include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
+                $m_emails = new EmundusModelEmails;
+
+                $triggers = $m_emails->getEmailTrigger($state, $codes, '0,1');
+                // Send email triggers
+                $sent = $m_emails->sendEmailTrigger($state, [$fnumInfos['training']], '0,1', null, null, $triggers, $fnum);
+
+                if ($sent) {
+                    $res = [
+                        'status' => true,
+                        'msg' => JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT')
+                    ];
+                }
             }
         }
 
