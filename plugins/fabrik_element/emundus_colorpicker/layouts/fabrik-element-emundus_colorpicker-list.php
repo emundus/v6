@@ -5,5 +5,5 @@ $d = $displayData;
 
 foreach ($d->data as $d)
 {
-    echo '<span style="display:inline-block; width:20px; height:20px; background-color:' . $d . '; border-radius:50%; margin: 5px;"></span>';
+    echo '<span class="'.$d.'" style="display:inline-block; width:20px; height:20px; border-radius:50%; margin: 5px;"></span>';
 }

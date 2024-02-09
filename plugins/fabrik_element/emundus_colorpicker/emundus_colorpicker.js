@@ -12,8 +12,6 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     new ColorSwatches(swatches[i]);
                 }
             }
-
-
         },
     });
 

@@ -50,7 +50,7 @@ Usage: codyhouse.co/license
 }
 
 li.color-swatches__item.js-color-swatches__item.color-swatches__item--selected {
-    outline: solid 1px black;
+    outline: solid 2px var(--neutral-800);
     outline-offset: 2px;
     border-radius: 50%;
 }

@@ -7,26 +7,35 @@
 			<field type="helplink"
 				   url="PLG_ELEMENT_COLOURPICKER_HELP_SERVER" />
 
+			<field name="hidden"
+				   type="radio"
+				   default="0"
+				   class="btn-group"
+				   description="PLG_ELEMENT_COLOURPICKER_HIDDEN_DESC"
+				   label="PLG_ELEMENT_COLOURPICKER_HIDDEN">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+			<field name="default"
+				   type="fabrikeditor"
+				   mode="php"
+				   label="PLG_ELEMENT_COLOURPICKER_DEFAULT" />
+
 		</fieldset>
 	</fields>
 
 	<fields name="params">
 		<fieldset label="PLG_ELEMENT_COLOURPICKER_ADVANCED_LABEL" addfieldpath="/administrator/components/com_fabrik/models/fields" name="plg-element-emundus_colorpicker-advanced">
 
-			<field type="helplink"
-				   url="PLG_ELEMENT_COLOURPICKER_HELP_SERVER" />
-
-			<field name="selected_colors" type="checkboxes" label="Couleurs choisies :" description="Veuillez choisir les couleurs à afficher" required="true">
-				<option value="red">Rouge</option>
-				<option value="green">Vert</option>
-				<option value="blue">Bleu</option>
-				<option value="yellow">Jaune</option>
-				<option value="brown">Marron</option>
-				<option value="black">Noir</option>
-				<option value="purple">Violet</option>
-				<option value="grey">Gris</option>
-				<option value="orange">Orange</option>
-				<option value="pink">Rose</option>
+			<field name="rgaa"
+				   type="radio"
+				   default="1"
+				   class="btn-group"
+				   description="PLG_ELEMENT_COLOURPICKER_DISPLAY_RGAA_DESC"
+				   label="PLG_ELEMENT_COLOURPICKER_DISPLAY_RGAA">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
 			</field>
 
 		</fieldset>

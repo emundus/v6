@@ -10,6 +10,7 @@
 
 // No direct access
 use Joomla\CMS\Profiler\Profiler;
+use Symfony\Component\Yaml\Yaml;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -38,22 +39,33 @@ class PlgFabrik_ElementEmundus_colorpicker extends PlgFabrik_Element
         $layout = $this->getLayout('form');
         $layoutData = new stdClass;
         $layoutData->attributes = $properties;
-        $layoutData->attributes['value'] = $value;
+        $layoutData->attributes['value'] = str_replace('label-','',$value);
 
-        $selectedColors = $this->getParams()->get('selected_colors', []);
-        $layoutData->colors = $selectedColors;
-        $layoutData->colorCodes = [
-            'red' => '#ff0000',
-            'green' => '#00ff00',
-            'blue' => '#0000ff',
-            'yellow' => '#ffff00',
-            'brown' => '#582900',
-            'black' => '#000000',
-            'purple' => '#7f00ff',
-            'grey' => '#808080',
-            'orange' => '#ff8000',
-            'pink' => '#fd6c9e',
-        ];
+	    $colors = [];
+	    $yaml = Yaml::parse(file_get_contents('templates/g5_helium/custom/config/default/styles.yaml'));
+	    if(!empty($yaml)) {
+		    $colors = $yaml['accent'];
+	    }
+
+		$rgaa = $this->getParams()->get('rgaa', 1);
+
+		if($rgaa == 1)
+		{
+			$blueprints = Yaml::parse(file_get_contents('templates/g5_helium/custom/blueprints/styles/accent.yaml'));
+			if (!empty($blueprints))
+			{
+				$accent_colors = $blueprints['form']['fields'];
+			}
+
+			$layoutData->colors = array_filter($colors, function ($color) use ($accent_colors) {
+				if (!empty($accent_colors[$color]) && $accent_colors[$color]['rgaa'] === true)
+				{
+					return true;
+				}
+			}, ARRAY_FILTER_USE_KEY);
+		} else {
+			$layoutData->colors = $colors;
+		}
 
         return $layout->render($layoutData);
     }
@@ -77,10 +89,22 @@ class PlgFabrik_ElementEmundus_colorpicker extends PlgFabrik_Element
         $id = $this->getHTMLId($repeatCounter);
         $opts = $this->getElementJSOptions($repeatCounter);
 
-        $selectedColors = $params->get('selected_colors', []);
-        $opts->selected_colors = json_encode($selectedColors);
-
         return array('FbEmundusColorpicker', $id, $opts);
     }
+
+	/**
+	 * Manipulates posted form data for insertion into database
+	 *
+	 * @param   mixed  $val   This elements posted form data
+	 * @param   array  $data  Posted form data
+	 *
+	 * @return  mixed
+	 */
+	public function storeDatabaseFormat($val, $data)
+	{
+		if(!empty($val)) {
+			return 'label-'.$val;
+		}
+	}
 
 }
