@@ -1,12 +1,19 @@
 <?php
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Uri\Uri;
 
 defined('JPATH_BASE') or die;
 
-$doc = JFactory::getDocument();
-$doc->addScript(JURI::root() . "plugins/fabrik_element/emundus_colorpicker/assets/swatches.js");
-$doc->addStylesheet(JURI::root() . "plugins/fabrik_element/emundus_colorpicker/assets/swatches.css");
+if(version_compare(JVERSION, '4', '>=')) {
+	$wa = Factory::getApplication()->getDocument()->getWebAssetManager();
+    $wa->registerAndUseScript('fabrik-emundus-colorpicker-swatches', Uri::root() . 'plugins/fabrik_element/emundus_colorpicker/assets/swatches.js', ['defer' => true]);
+    $wa->registerAndUseStyle('fabrik-emundus-colorpicker-swatches', Uri::root() . 'plugins/fabrik_element/emundus_colorpicker/assets/swatches.css');
+} else {
+	$doc = Factory::getDocument();
+	$doc->addScript(Uri::root() . "plugins/fabrik_element/emundus_colorpicker/assets/swatches.js");
+	$doc->addStylesheet(Uri::root() . "plugins/fabrik_element/emundus_colorpicker/assets/swatches.css");
+}
 
 $d = $displayData;
 ?>

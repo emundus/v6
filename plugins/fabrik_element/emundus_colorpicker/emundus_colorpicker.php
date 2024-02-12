@@ -83,7 +83,6 @@ class PlgFabrik_ElementEmundus_colorpicker extends PlgFabrik_Element
 
     public function elementJavascript($repeatCounter)
     {
-        $params = $this->getParams();
         $id = $this->getHTMLId($repeatCounter);
         $opts = $this->getElementJSOptions($repeatCounter);
 
