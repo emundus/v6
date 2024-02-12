@@ -26,8 +26,6 @@ class PlgFabrik_ElementEmundus_colorpicker extends PlgFabrik_Element
 
     public function render($data, $repeatCounter = 0)
     {
-        JHTML::stylesheet('plugins/fabrik_element/emundus_colorpicker/css/emundus_colorpicker.css');
-
         $properties = $this->inputProperties($repeatCounter);
 
         if (is_array($this->getFormModel()->data))
