@@ -647,11 +647,14 @@ class EmundusHelperEvents {
 	        foreach($forms as $form) {
 		        $items_ids[$form->form_id] = $form->id;
 	        }
-	        $qcm_complete = $this->checkQcmCompleted($user->fnum, $forms_ids, $items_ids);
-			if($qcm_complete['status'] === false)
+			if(!empty($forms_ids) && !empty($items_ids))
 			{
-				$mainframe->enqueueMessage(JText::sprintf($qcm_complete['msg']));
-				$mainframe->redirect($qcm_complete['link']);
+				$qcm_complete = $this->checkQcmCompleted($user->fnum, $forms_ids, $items_ids);
+				if ($qcm_complete['status'] === false)
+				{
+					$mainframe->enqueueMessage(JText::sprintf($qcm_complete['msg']));
+					$mainframe->redirect($qcm_complete['link']);
+				}
 			}
 
 	        if ($attachments_progress < 100 || $forms_progress < 100) {
@@ -740,7 +743,7 @@ class EmundusHelperEvents {
                             $checkout_url = $mEmails->setTagsFabrik($checkout_url, [$user->fnum], true);
                         }
                         // If $accept_other_payments is 2 : that means we do not redirect to the payment page.
-                        if ($accept_other_payments != 2 && empty($mApplication->getHikashopOrder($fnumInfos)) && $attachments >= 100 && $forms >= 100) {
+                        if ($accept_other_payments != 2 && empty($mApplication->getHikashopOrder($fnumInfos)) && $attachments_progress >= 100 && $forms_progress >= 100) {
                             // Profile number and document ID are concatenated, this is equal to the menu corresponding to the free option (or the paid option in the case of document_id = NULL)
 	                        $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($checkout_url));
                             $mainframe->redirect($checkout_url);
