@@ -102,6 +102,16 @@ class PlgFabrik_ElementEmundus_colorpicker extends PlgFabrik_Element
 	 */
 	public function storeDatabaseFormat($val, $data)
 	{
+		$colors = [];
+		$yaml = Yaml::parse(file_get_contents('templates/g5_helium/custom/config/default/styles.yaml'));
+		if(!empty($yaml)) {
+			$colors = $yaml['accent'];
+		}
+
+		if(!in_array($val, array_keys($colors))) {
+			return 'label-default';
+		}
+
 		$save_label = $this->getParams()->get('save_label', 1);
 
 		if(!empty($val) && $save_label == 1) {
