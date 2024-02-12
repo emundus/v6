@@ -88,6 +88,7 @@
     "value": "databasejoin",
     "icon": "table_rows",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_DATABASEJOIN",
+    "description": "COM_EMUNDUS_ONBOARD_TYPE_DATABASEJOIN_DESC",
     "published": true
   },
   {
@@ -95,6 +96,7 @@
     "value": "emundus_phonenumber",
     "icon": "phone",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_PHONE_NUMBER",
+    "description": "COM_EMUNDUS_ONBOARD_TYPE_PHONE_NUMBER_DESC",
     "published": true
   },
   {
@@ -102,6 +104,7 @@
     "value": "currency",
     "icon": "money",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_CURRENCY",
+    "description": "COM_EMUNDUS_ONBOARD_TYPE_CURRENCY_DESC",
     "published": true
   },
   {
@@ -109,7 +112,7 @@
     "value": "panel",
     "icon": "view_agenda",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_PANEL",
-    "description": "Mettez en valeur des informations dans un cadre coloré",
+    "description": "COM_EMUNDUS_ONBOARD_TYPE_PANEL_DESC",
     "published": true
   },
   {
