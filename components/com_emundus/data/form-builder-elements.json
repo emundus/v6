@@ -112,6 +112,13 @@
     "published": true
   },
   {
+    "id": 18,
+    "value": "emundus_colorpicker",
+    "icon": "palette",
+    "name": "COM_EMUNDUS_ONBOARD_TYPE_COLOR",
+    "published": false
+  },
+  {
     "id": 7,
     "value": "emundus_fileupload",
     "icon": "file_upload",

@@ -3802,6 +3802,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   font-size: 0.875rem;
   line-height: 1.25rem;
 }
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
 .font-normal {
   font-weight: 400;
 }

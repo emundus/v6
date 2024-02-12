@@ -19,10 +19,13 @@
           <div
               v-for="element in publishedElements"
               :key="element.id"
-              class="form-builder-element em-flex-row em-flex-space-between"
+              class="form-builder-element flex justify-between items-start gap-3 p-3"
           >
             <span class="material-icons-outlined">{{ element.icon }}</span>
-            <span class="em-w-100 em-p-16">{{ translate(element.name) }}</span>
+            <p class="w-full flex flex-col">
+              {{ translate(element.name) }}
+              <span class="text-neutral-600 text-xs">Une super description de mon élément</span>
+            </p>
             <span class="material-icons-outlined">drag_indicator</span>
           </div>
         </transition-group>
@@ -179,12 +182,15 @@ export default {
 <style lang="scss">
 .form-builder-element {
   width: 258px;
-  height: 48px;
+  height: auto;
   font-size: 14px;
-  padding: 15px;
   margin: 8px 0px;
   background-color: #FAFAFA;
   border: 1px solid #F2F2F3;
   cursor: grab;
+  border-radius: calc(var(--em-default-br)/2);
+  &:hover {
+    background-color: var(--neutral-200);
+  }
 }
 </style>
