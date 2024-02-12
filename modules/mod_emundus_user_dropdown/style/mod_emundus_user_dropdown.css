@@ -47,8 +47,11 @@
     font-family: var(--em-default-font-title);
 }
 
+#g-navigation .header-c .open > #userDropdownMenu a{
+ text-decoration: none;
+}
 
-#userDropdownMenu li {
+#userDropdownMenu div {
     width: 100%;
     height: auto !important;
     margin: 0 !important;
@@ -68,12 +71,12 @@
     color: var(--blue-700);
 }
 
-#g-navigation .header-c .open > #userDropdownMenu li.dropdown-header {
+#g-navigation .header-c .open > #userDropdownMenu div.dropdown-header {
     font-family: var(--em-default-font);
 }
 
 
-#userDropdownMenu li.dropdown-header {
+#userDropdownMenu div.dropdown-header {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
@@ -82,7 +85,7 @@
     white-space: break-spaces;
 }
 
-#userDropdownMenu li>a:hover,
+#userDropdownMenu div>a:hover,
 #userDropdownMenu .active>a {
     background: #29d4ff;
     color: var(--neutral-0);
@@ -232,7 +235,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     border: unset !important;
 }
 
-#userDropdownMenu li > a:hover,
+#userDropdownMenu div > a:hover,
 #userDropdownMenu.active > a {
     background: var(--em-primary-color);
     color: var(--neutral-0);

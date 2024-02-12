@@ -272,7 +272,7 @@ class com_emundusInstallerScript
 					$datas    = [
 						'title'    => 'eMundus - Back button',
 						'note'     => 'Back button available on login and register views',
-						'content'  => '<p><a class="em-back-button em-pointer" href="/"><span class="material-icons em-mr-4">navigate_before</span>Retour à la page d\'accueil</a></p>',
+						'content'  => '<p><a class="em-back-button em-pointer" href="/"><span class="material-icons em-mr-4" aria-hidden="true">navigate_before</span>Retour à la page d\'accueil</a></p>',
 						'position' => 'header-a',
 						'module'   => 'mod_custom',
 						'access'   => 9,
