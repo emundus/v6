@@ -104,7 +104,6 @@ class EmundusHelperEvents {
 
 	        $form_session = $this->getFormSession($fnum, $params['formModel']->id);
 	        if(!empty($form_session->id) && $form_session->user_id == $emundusUser->id) {
-		        $this->clearFormSession($fnum, $params['formModel']->id);
 		        $save = true;
 	        } elseif (!empty($form_session->id) && $form_session->user_id != $emundusUser->id) {
 		        $save = false;
