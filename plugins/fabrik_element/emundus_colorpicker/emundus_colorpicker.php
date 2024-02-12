@@ -102,9 +102,12 @@ class PlgFabrik_ElementEmundus_colorpicker extends PlgFabrik_Element
 	 */
 	public function storeDatabaseFormat($val, $data)
 	{
-		if(!empty($val)) {
+		$save_label = $this->getParams()->get('save_label', 1);
+
+		if(!empty($val) && $save_label == 1) {
 			return 'label-'.$val;
 		}
-	}
 
+		return $val;
+	}
 }
