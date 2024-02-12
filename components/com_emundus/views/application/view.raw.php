@@ -691,7 +691,7 @@ class EmundusViewApplication extends JViewLegacy {
                     break;
 
 	            case 'collaborate':
-		            $this->collaborators = $m_application->getSharedFileUsers($ccid);
+		            $this->collaborators = $m_application->getSharedFileUsers($ccid, $fnum);
 
             }
 
