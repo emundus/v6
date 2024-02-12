@@ -24,9 +24,9 @@
             <span class="material-icons-outlined">{{ element.icon }}</span>
             <p class="w-full flex flex-col">
               {{ translate(element.name) }}
-              <span class="text-neutral-600 text-xs">Une super description de mon élément</span>
+              <span class="text-neutral-600 text-xs">{{ translate(element.description) }}</span>
             </p>
-            <span class="material-icons-outlined">drag_indicator</span>
+            <span class="material-icons-outlined self-center">drag_indicator</span>
           </div>
         </transition-group>
       </draggable>
