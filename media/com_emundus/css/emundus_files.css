@@ -688,13 +688,11 @@ div#em-appli-block .active.content fieldset {
 
 .panel-body.Marginpanel-body.em-container-form-body .em-personalDetail{
     overflow:scroll;
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
 }
 
-.panel-body.Marginpanel-body.em-container-form-body .em-personalDetail::-webkit-scrollbar {
+/*.panel-body.Marginpanel-body.em-container-form-body .em-personalDetail::-webkit-scrollbar {
     display: none;
-}
+}*/
 
 div#em-appli-block .legend {
     font-weight: 500;
