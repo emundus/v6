@@ -2044,10 +2044,10 @@ class EmundusModelFormbuilder extends JModelList {
             return false;
         }
 
-        if($group_params['repeat_group_button'] == 1 && $params['repeat_group_button'] == 0){
+        if($group_params['repeat_group_button'] == 1 && (isset($params['repeat_group_button']) && $params['repeat_group_button'] == 0)){
             $this->disableRepeatGroup($group_id);
         }
-        if($group_params['repeat_group_button'] == 0 && $params['repeat_group_button'] == 1){
+        if($group_params['repeat_group_button'] == 0 && (isset($params['repeat_group_button']) && $params['repeat_group_button'] == 1)){
             $this->enableRepeatGroup($group_id);
         }
 
