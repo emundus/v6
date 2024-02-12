@@ -108,11 +108,17 @@ class PlgFabrik_ElementEmundus_colorpicker extends PlgFabrik_Element
 			$colors = $yaml['accent'];
 		}
 
+		$save_label = $this->getParams()->get('save_label', 1);
+
 		if(!in_array($val, array_keys($colors))) {
-			return 'label-default';
+			if($save_label == 1) {
+				return 'label-'.$val;
+			}
+			else {
+				return 'default';
+			}
 		}
 
-		$save_label = $this->getParams()->get('save_label', 1);
 
 		if(!empty($val) && $save_label == 1) {
 			return 'label-'.$val;
