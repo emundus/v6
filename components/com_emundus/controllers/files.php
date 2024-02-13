@@ -2873,6 +2873,26 @@ class EmundusControllerFiles extends JControllerLegacy
     }
 
     /**
+     *  Create a zip file containing all documents attached to application fil number
+     * @param array $fnums
+     * @return string
+     */
+    function export_zip($fnums, $form_post = 1, $attachment = 1, $assessment = 1, $decision = 1, $admission = 1, $form_ids = null, $attachids = null, $options = null, $acl_override = false) {
+        $nom = false;
+        $user = JFactory::getUser();
+
+        if (!empty($fnums)) {
+            if (!class_exists('EmundusModelFiles')) {
+                require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+            }
+            $m_files = new EmundusModelFiles();
+            $nom = $m_files->exportZip($fnums, $form_post, $attachment, $assessment, $decision, $admission, $form_ids, $attachids, $options, $acl_override, $user);
+        }
+
+        return $nom;
+    }
+
+    /**
      * @param $fnums
      * @return string
      */
