@@ -1613,27 +1613,10 @@ class EmundusModelFiles extends JModelLegacy
             }
 
             if ($res) {
-                $codes = [];
-                foreach ($fnums as $fnum) {
-                    $fnumTraining = $this->getFnumInfos($fnum)['training'];
-                    $codes[] = $fnumTraining;
-                }
-                $codes = array_unique($codes);
-
-                // Get email triggers
-                include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
-                $m_emails = new EmundusModelEmails;
-
-                $triggers = $m_emails->getEmailTrigger($state, $codes, '0,1');
-                // Send email triggers
-                $sent = $m_emails->sendEmailTrigger($state, [$fnumInfos['training']], '0,1', null, null, $triggers, $fnum);
-
-                if ($sent) {
-                    $res = [
-                        'status' => true,
-                        'msg' => JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT')
-                    ];
-                }
+                $res = [
+                    'status' => true,
+                    'msg' => $this->sendEmailAfterUpdateState($fnums, $state)
+                ];
             }
         }
 
