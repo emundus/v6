@@ -154,9 +154,9 @@ endif;
                 $elt = explode('___', $gallery->resume)[1];
                 ?>
                 <?php if (isset($this->elements[$elt])) : ?>
-                    <h2 class="mb-6">
+                    <p class="mb-6">
                         <?php echo $this->elements[$elt]->element_ro; ?>
-                    </h2>
+                    </p>
                 <?php endif; ?>
             <?php endif; ?>
 
