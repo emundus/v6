@@ -1417,8 +1417,10 @@ class EmundusModelFormbuilder extends JModelList {
 				$dbtype = $this->h_fabrik->getDBType($plugin);
 				$dbnull = 'NULL';
 				$default = '';
+				$eval = 1;
 
 				if ($plugin === 'display' || $plugin === 'panel') {
+					$eval = 0;
 					$default = 'Ajoutez du texte personnalisé pour vos candidats';
 				}
 
@@ -1460,7 +1462,7 @@ class EmundusModelFormbuilder extends JModelList {
 					->set($db->quoteName('width') . ' = 0')
 					->set($db->quoteName('default') . ' = ' . $db->quote($default))
 					->set($db->quoteName('hidden') . ' = 0')
-					->set($db->quoteName('eval') . ' = 1')
+					->set($db->quoteName('eval') . ' = ' . $eval)
 					->set($db->quoteName('ordering') . ' = ' . $db->quote(array_values($orderings)[strval(sizeof($orderings) - 1)] + 1))
 					->set($db->quoteName('parent_id') . ' = 0')
 					->set($db->quoteName('published') . ' = 1')
@@ -2003,6 +2005,7 @@ class EmundusModelFormbuilder extends JModelList {
             $fields = array(
                 $db->quoteName('plugin') . ' = ' . $db->quote($element['plugin']),
                 $db->quoteName('default') . ' = ' . $db->quote($element['default']),
+                $db->quoteName('eval') . ' = ' . $db->quote($element['eval']),
                 $db->quoteName('params') . ' = ' . $db->quote(json_encode($element['params'])),
                 $db->quoteName('modified_by') . ' = ' . $db->quote($user),
                 $db->quoteName('modified') . ' = ' . $db->quote($date),
