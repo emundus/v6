@@ -135,7 +135,7 @@ endif;
                 <div class="fabrikImageBackground" style="background-image: url('<?php echo $filename; ?>')"></div>
 			<?php } ?>
 		<?php endif; ?>
-        <a class="em-back-button em-pointer" onclick="history.go(-1)"><span class="material-icons em-mr-4" aria-hidden="true">navigate_before</span><?php Text::_('COM_FABRIK_VOTE_GO_BACK'); ?></a>
+        <a class="em-back-button em-pointer" onclick="history.go(-1)"><span class="material-icons em-mr-4" aria-hidden="true">navigate_before</span><?php echo Text::_('COM_FABRIK_VOTE_GO_BACK'); ?></a>
 
         <div class="p-8">
             <?php if (!empty($gallery->title)) : ?>
