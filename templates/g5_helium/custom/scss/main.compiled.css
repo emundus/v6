@@ -2496,6 +2496,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .w-11\/12 {
   width: 91.666667%;
 }
+.w-auto {
+  width: auto;
+}
 .w-fit {
   width: -moz-fit-content;
   width: fit-content;
@@ -3356,6 +3359,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .gap-y-px {
   row-gap: 1px;
 }
+.self-center {
+  align-self: center;
+}
 .overflow-hidden {
   overflow: hidden;
 }
@@ -3794,6 +3800,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .text-center {
   text-align: center;
 }
+.text-end {
+  text-align: end;
+}
 .\!text-6xl {
   font-size: 3.75rem !important;
   line-height: 1 !important;
@@ -3802,11 +3811,18 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   font-size: 0.875rem;
   line-height: 1.25rem;
 }
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
 .font-normal {
   font-weight: 400;
 }
 .font-semibold {
   font-weight: 600;
+}
+.font-bold {
+  font-weight: 700;
 }
 .uppercase {
   text-transform: uppercase;
