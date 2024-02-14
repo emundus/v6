@@ -228,7 +228,10 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 		    $fnums = array_intersect($fnums, $accepted_fnums);
 	    }
 
-        try {
+	    $fnums = array_filter($fnums);
+
+
+	    try {
             $query->clear()
                 ->update($db->quoteName('#__emundus_files_request'))
                 ->set([$db->quoteName('uploaded').'=1', $db->quoteName('firstname').'='.$db->quote($firstname), $db->quoteName('lastname').'='.$db->quote($lastname), $db->quoteName('modified_date').'=NOW()'])
