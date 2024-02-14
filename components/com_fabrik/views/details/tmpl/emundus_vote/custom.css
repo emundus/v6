@@ -58,7 +58,7 @@
     font-size: var(--em-applicant-font-size) !important;
 }
 
-.view-details .voting-details-group .p-8 p {
+.view-details .voting-details-group p.mb-6 {
     color: var(--em-default-title-color-1);
     font-family: var(--em-applicant-font-title);
     font-size: var(--em-applicant-h2);
