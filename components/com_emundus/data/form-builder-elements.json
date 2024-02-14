@@ -1,90 +1,85 @@
 [
   {
-    "id": 0,
     "value": "field",
     "icon": "text_fields",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_FIELD",
     "published": true
   },
   {
-    "id": 5,
     "value": "textarea",
     "icon": "notes",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA",
     "published": true
   },
   {
-    "id": 8,
+
     "value": "nom",
     "icon": "text_fields",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_LASTNAME",
     "published": true
   },
   {
-    "id": 9,
     "value": "prenom",
     "icon": "text_fields",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_FIRSTNAME",
     "published": true
   },
   {
-    "id":10,
     "value": "email",
     "icon": "mail",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_EMAIL",
     "published": true
   },
   {
-    "id": 2,
+    "value": "emundus_phonenumber",
+    "icon": "phone",
+    "name": "COM_EMUNDUS_ONBOARD_TYPE_PHONE_NUMBER",
+    "published": true
+  },
+  {
     "value": "checkbox",
     "icon": "check_box",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_CHECKBOX",
     "published": true
   },
   {
-    "id": 4,
     "value": "radiobutton",
     "icon": "radio_button_checked",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_RADIOBUTTON",
     "published": true
   },
   {
-    "id": 3,
     "value": "dropdown",
     "icon": "arrow_drop_down_circle",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_DROPDOWN",
     "published": true
   },
   {
-    "id": 1,
-    "value": "birthday",
-    "icon": "event",
-    "name": "COM_EMUNDUS_ONBOARD_TYPE_BIRTHDAY",
-    "published": true
-  },
-  {
-    "id": 14,
     "value": "date",
     "icon": "calendar_month",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_CALENDAR",
     "published": true
   },
   {
-    "id": 6,
-    "value": "display",
-    "icon": "wysiwyg",
-    "name": "COM_EMUNDUS_ONBOARD_TYPE_DISPLAY",
+    "value": "birthday",
+    "icon": "event",
+    "name": "COM_EMUNDUS_ONBOARD_TYPE_BIRTHDAY",
     "published": true
   },
   {
-    "id":12,
     "value": "yesno",
     "icon": "toggle_on",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_YESNO",
     "published": true
   },
   {
-    "id": 13,
+    "value": "display",
+    "icon": "wysiwyg",
+    "name": "COM_EMUNDUS_ONBOARD_TYPE_DISPLAY",
+    "description": "COM_EMUNDUS_ONBOARD_TYPE_DISPLAY_DESC",
+    "published": false
+  },
+  {
     "value": "databasejoin",
     "icon": "table_rows",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_DATABASEJOIN",
@@ -92,15 +87,6 @@
     "published": true
   },
   {
-    "id": 16,
-    "value": "emundus_phonenumber",
-    "icon": "phone",
-    "name": "COM_EMUNDUS_ONBOARD_TYPE_PHONE_NUMBER",
-    "description": "COM_EMUNDUS_ONBOARD_TYPE_PHONE_NUMBER_DESC",
-    "published": true
-  },
-  {
-    "id": 15,
     "value": "currency",
     "icon": "money",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_CURRENCY",
@@ -108,7 +94,6 @@
     "published": true
   },
   {
-    "id": 17,
     "value": "panel",
     "icon": "view_agenda",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_PANEL",
@@ -116,14 +101,12 @@
     "published": true
   },
   {
-    "id": 18,
     "value": "emundus_colorpicker",
     "icon": "palette",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_COLOR",
     "published": false
   },
   {
-    "id": 7,
     "value": "emundus_fileupload",
     "icon": "file_upload",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_FILE",

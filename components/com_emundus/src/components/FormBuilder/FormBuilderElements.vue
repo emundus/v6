@@ -8,7 +8,7 @@
 
     <div v-if="selected === 1">
       <draggable
-          v-model="elements"
+          v-model="publishedElements"
           class="draggables-list"
           :group="{ name: 'form-builder-section-elements', pull: 'clone', put: false }"
           :sort="false"
@@ -18,7 +18,7 @@
         <transition-group>
           <div
               v-for="element in publishedElements"
-              :key="element.id"
+              :key="element.value"
               class="form-builder-element flex justify-between items-start gap-3 p-3"
           >
             <span class="material-icons-outlined">{{ element.icon }}</span>
