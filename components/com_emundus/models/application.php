@@ -815,7 +815,8 @@ class EmundusModelApplication extends JModelList
 
 								$query->select('count(*)')
 									->from($this->_db->quoteName('#__emundus_uploads'))
-									->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($f));
+									->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($f))
+									->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $attachment->id);
 								$this->_db->setQuery($query);
 								$nb = $this->_db->loadResult();
 
