@@ -605,6 +605,10 @@
         {
           "value": 3,
           "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_ERROR"
+        },
+        {
+          "value": 4,
+          "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_NONE"
         }
       ],
       "helptext": "",
@@ -639,6 +643,88 @@
       "placeholder": "",
       "published": true,
       "sysadmin_only": false
+    }
+  ],
+  "currency": [
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES",
+      "name": "all_currencies_options",
+      "type": "repeatable",
+      "published": true,
+      "fields": [
+        {
+          "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_ISO",
+          "name": "iso3",
+          "type": "dropdown",
+          "options": [
+            {
+              "value": "EUR",
+              "label": "Euro (€ EUR)"
+            },
+            {
+              "value": "USD",
+              "label": "United States dollar ($ USD)"
+            },
+            {
+              "value": "JPY",
+              "label": "Japanese yen (¥ JPY)"
+            },
+            {
+              "value": "GBP",
+              "label": "British pound (£ GBP)"
+            }
+          ],
+          "helptext": "",
+          "placeholder": "",
+          "published": true,
+          "sysadmin_only": false
+        },
+        {
+          "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_MIN",
+          "name": "minimal_value",
+          "type": "number",
+          "helptext": "",
+          "placeholder": "",
+          "published": true,
+          "sysadmin_only": false
+        },
+        {
+          "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_MAX",
+          "name": "maximal_value",
+          "type": "number",
+          "helptext": "",
+          "placeholder": "",
+          "published": true,
+          "sysadmin_only": false
+        },
+        {
+          "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR",
+          "name": "thousand_separator",
+          "type": "text",
+          "helptext": "",
+          "placeholder": "",
+          "published": true,
+          "sysadmin_only": false
+        },
+        {
+          "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_DECIMAL_SEPARATOR",
+          "name": "decimal_separator",
+          "type": "text",
+          "helptext": "",
+          "placeholder": "",
+          "published": true,
+          "sysadmin_only": false
+        },
+        {
+          "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_DECIMAL_NUMBERS",
+          "name": "decimal_numbers",
+          "type": "number",
+          "helptext": "",
+          "placeholder": "",
+          "published": true,
+          "sysadmin_only": false
+        }
+      ]
     }
   ]
 }
