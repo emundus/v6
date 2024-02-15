@@ -586,7 +586,13 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                         <h3 class="mod_emundus_campaign__programme_cat_title"><?php echo $campaign['label'] ?: JText::_('MOD_EM_CAMPAIGN_LIST_CAMPAIGNS') ?></h3>
 						<?php if (sizeof($campaigns) > 1) : ?>
                             <span class="material-icons-outlined"
-                                  id="group_icon_<?php echo $key ?>">expand_more</span>
+                                  id="group_icon_<?php echo $key ?>">
+					            <?php if($mod_em_campaign_groupby_closed == 1) : ?>
+                                    expand_less
+                                <?php else : ?>
+                                    expand_more
+                                <?php endif; ?>
+                            </span>
 						<?php endif; ?>
                     </div>
                     <hr style="margin-top: 8px">
@@ -594,7 +600,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 			<?php endif; ?>
 
 			<?php if (!empty($campaign)) : ?>
-                <div id="current_<?php echo $key ?>" class="mod_emundus_campaign__list_items">
+                <div id="current_<?php echo $key ?>" class="mod_emundus_campaign__list_items<?php if($mod_em_campaign_groupby_closed == 1) : ?> em-display-none<?php endif; ?>">
 					<?php
 					foreach ($campaign
 
