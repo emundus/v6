@@ -442,7 +442,7 @@ function vote(guest,listid,id,email) {
                                 Swal.fire({
                                     icon: 'success',
                                     title: Joomla.JText._('COM_FABRIK_VOTE_MODAL_SUCCESS_TITLE'),
-                                    text: Joomla.JText._('COM_FABRIK_VOTE_MODAL_SUCCESS_TEXT'),
+                                    html: Joomla.JText._('COM_FABRIK_VOTE_MODAL_SUCCESS_TEXT'),
                                     showConfirmButton: true,
                                     confirmButtonText: Joomla.JText._('COM_FABRIK_VOTE_MODAL_GO_BACK'),
                                     customClass: {
