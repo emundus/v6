@@ -414,6 +414,7 @@ function vote(guest,listid,id,email) {
                         document.getElementById('vote_email').value
                     ]
                 },
+                title: Joomla.JText._('COM_FABRIK_VOTE_MODAL_YES'),
                 showCancelButton: true,
                 confirmButtonText: Joomla.JText._('COM_FABRIK_VOTE_MODAL_YES'),
                 cancelButtonText: Joomla.JText._('COM_FABRIK_VOTE_MODAL_NO'),
