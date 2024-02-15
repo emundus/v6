@@ -700,7 +700,21 @@
         {
           "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR",
           "name": "thousand_separator",
-          "type": "text",
+          "type": "dropdown",
+          "options": [
+            {
+              "value": " ",
+              "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_BLANK_SPACE"
+            },
+            {
+              "value": ",",
+              "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_COMMA"
+            },
+            {
+              "value": ".",
+              "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_DOT"
+            }
+          ],
           "helptext": "",
           "placeholder": "",
           "published": true,
@@ -709,7 +723,21 @@
         {
           "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_DECIMAL_SEPARATOR",
           "name": "decimal_separator",
-          "type": "text",
+          "type": "dropdown",
+          "options": [
+            {
+              "value": " ",
+              "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_BLANK_SPACE"
+            },
+            {
+              "value": ",",
+              "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_COMMA"
+            },
+            {
+              "value": ".",
+              "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_DOT"
+            }
+          ],
           "helptext": "",
           "placeholder": "",
           "published": true,
