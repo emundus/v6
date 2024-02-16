@@ -2,10 +2,10 @@
 $d = $displayData;
 ?>
 
-<div id="<?php echo $d->id; ?>" class="fabrikinput fabrikElementReadOnly" style="background-color: <?php echo $d->backgroundColor ?>">
+<div id="<?php echo $d->id; ?>" class="fabrikinput fabrikElementReadOnly" style="background-color: <?php echo $d->backgroundColor ?>;<?php if ($d->type == 4): ?>padding: 0;<?php endif; ?>">
     <span class="material-icons<?php echo $d->iconType ?>" style="color: <?php echo $d->iconColor ?>"><?php echo $d->icon ?></span>
 
-    <div class="fabrikElementContent w-full">
+    <div class="fabrikElementContent w-full" <?php if ($d->type == 4): ?>style="margin-left: 0;"<?php endif; ?>>
 	    <?php if ($d->accordion == 1) : ?>
             <div class="flex items-center justify-between cursor-pointer"
                  href="#<?php echo $d->id; ?>-content" data-te-collapse-init data-toggle="collapse" aria-expanded="false" aria-controls="<?php echo $d->id; ?>-content" id="<?php echo $d->id; ?>-heading">

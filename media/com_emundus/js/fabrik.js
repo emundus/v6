@@ -19,7 +19,9 @@ function hideFabrikElt(elements, clearElements = false) {
 
     elements.forEach((element,index) => {
         if (element) {
-            if (clearElements) element.clear();
+            if (clearElements && element.plugin !== '') {
+                element.clear();
+            }
             element.hide();
         } else {
             console.log(`hideFabrikElt: Element at index ${index} is undefined`);
@@ -78,7 +80,9 @@ function hideFabrikGroupByElt(elements, clearElements = false) {
 
                 if(form) {
                     Object.values(form.elements).map((all_element) => {
-                        if (all_element.groupid === element.groupid) all_element.clear();
+                        if (all_element.groupid === element.groupid && all_element.plugin !== '') {
+                            all_element.clear();
+                        }
                     });
                 }
             }
