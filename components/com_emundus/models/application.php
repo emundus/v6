@@ -3281,9 +3281,7 @@ class EmundusModelApplication extends JModelList
             $query = "SELECT DISTINCT eu.*, sa.value 
                         FROM #__emundus_uploads as eu
                         LEFT JOIN #__emundus_setup_attachments as sa ON sa.id = eu.attachment_id
-                        LEFT JOIN #__emundus_setup_attachment_profiles as sap ON sap.id  = (
-                        SELECT id FROM #__emundus_setup_attachment_profiles sap2 WHERE sap2.attachment_id = sa.id and sap2.profile_id IN (".implode(',',$profiles_by_campaign).")
-                        )
+                        LEFT JOIN #__emundus_setup_attachment_profiles as sap ON sap.attachment_id = sa.id AND sap.profile_id IN (".implode(',',$profiles_by_campaign).")
                         WHERE fnum like ".$this->_db->quote($fnum);
 
             if (isset($attachment_id) && !empty($attachment_id)){
