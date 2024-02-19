@@ -256,6 +256,7 @@ export  default {
       border-top: 4px solid var(--em-profile-color);
       background-color: white;
       transition: all 0.3s ease-in-out;
+      border-radius: calc(var(--em-default-br)/2) 0 calc(var(--em-default-br)/2) calc(var(--em-default-br)/2);
 
       &:hover {
         .hover-opacity {

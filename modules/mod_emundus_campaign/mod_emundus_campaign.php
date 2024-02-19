@@ -83,6 +83,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     $mod_em_campaign_show_filters_list       = $params->get('mod_em_campaign_show_filters_list', []);
     $mod_em_campaign_sort_list               = $params->get('mod_em_campaign_sort_list');
     $mod_em_campaign_groupby                 = $params->get('mod_em_campaign_groupby');
+    $mod_em_campaign_groupby_closed          = $params->get('mod_em_campaign_groupby_closed');
 
     // OLD PARAMS
     $mod_em_campaign_url                       = $params->get('mod_em_campaign_url');

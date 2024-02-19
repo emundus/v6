@@ -193,7 +193,7 @@
 		</field>
 		<field name="attachment_to_keep_non_deletable"
 			   type="sql"
-			   query="SELECT id, value FROM jos_emundus_setup_attachments WHERE published = 1"
+			   query="SELECT id, CONCAT(id,' - ',value) as value FROM jos_emundus_setup_attachments"
 			   key_field="id"
 			   value_field="value"
 			   multiple="true"
