@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+    <fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+        <fieldset name="plg-form-emundusrsaauhtentication" label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_FIELDS">
+
+            <field name="emundusrsaauhtentication_public_key" type="text" default=""
+                   description="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_PUBLIC_KEY_DESC"
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_PUBLIC_KEY_LABEL"/>
+
+            <field name="emundusrsaauhtentication_public_key_content" type="textarea" default=""
+                   description="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_PUBLIC_KEY_CONTENT_DESC"
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_PUBLIC_KEY_CONTENT_LABEL"/>
+
+            <field name="emundusrsaauhtentication_jgroup" type="text" default="2"
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_JOOMLA_GROUP"/>
+
+            <field name="emundusrsaauhtentication_eprofile" type="text" default="1000"
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_EMUNDUS_PROFILE"/>
+
+            <field name="emundusrsaauhtentication_attributes_note" type="note" default=""
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_NOTE"/>
+
+            <field name="emundusrsaauhtentication_attributes_id" type="text" default="id"
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_ID"/>
+
+            <field name="emundusrsaauhtentication_attributes_firstname" type="text" default="firstname"
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_FIRSTNAME"/>
+
+            <field name="emundusrsaauhtentication_attributes_lastname" type="text" default="lastname"
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_LASTNAME"/>
+
+            <field name="emundusrsaauhtentication_attributes_email" type="text" default="email"
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_EMAIL"/>
+        </fieldset>
+    </fields>
+</form>
