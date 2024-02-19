@@ -2017,7 +2017,8 @@ class EmundusModelCampaign extends JModelList {
 			try {
 				$query->select('id')
 					->from($this->_db->quoteName('#__categories'))
-					->where('json_extract(`params`, "$.idCampaign") LIKE ' . $this->_db->quote('"'.$cid.'"'))
+                    ->where('json_valid(`params`)')
+                    ->andWhere('json_extract(`params`, "$.idCampaign") LIKE ' . $this->_db->quote('"'.$cid.'"'))
 					->andWhere($this->_db->quoteName('extension') . ' = ' . $this->_db->quote('com_dropfiles'));
 				$this->_db->setQuery($query);
 				$campaign_dropfile_cat = $this->_db->loadResult();

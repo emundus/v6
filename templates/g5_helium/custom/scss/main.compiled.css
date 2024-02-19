@@ -985,6 +985,9 @@ form.fabrikForm .fabrikElement {
       margin-top: var(--em-form-label-margin-bottom);
       position: relative;
     }
+form.fabrikForm .fabrikElement div li {
+        list-style-position: inside;
+      }
 form.fabrikForm .fabrikElementContainer:not(.fabrikHide) {
       margin-bottom: var(--em-form-field-margin-bottom);
     }
@@ -1995,6 +1998,17 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
       margin-left: -10px;
       font-size: 16px;
     }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
 .visible {
   visibility: visible;
 }
@@ -3517,6 +3531,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .w-11\/12 {
   width: 91.666667%;
+}
+.w-auto {
+  width: auto;
 }
 .w-fit {
   width: -moz-fit-content;
@@ -5728,6 +5745,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .gap-y-0 {
   row-gap: 0px;
 }
+.self-center {
+  align-self: center;
+}
 .overflow-hidden {
   overflow: hidden;
 }
@@ -5774,6 +5794,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .bg-neutral-100 {
   background-color: var(--neutral-100);
+}
+.bg-red-500 {
+  background-color: var(--red-500);
 }
 .bg-transparent {
   background-color: transparent;
@@ -6514,6 +6537,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   font-size: 0.875rem;
   line-height: 1.25rem;
 }
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
 .font-bold {
   font-weight: 700;
 }
@@ -6538,6 +6565,14 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .text-black {
   --tw-text-opacity: 1;
   color: rgb(0 0 0 / var(--tw-text-opacity));
+}
+.text-gray-500 {
+  --tw-text-opacity: 1;
+  color: rgb(107 114 128 / var(--tw-text-opacity));
+}
+.text-gray-700 {
+  --tw-text-opacity: 1;
+  color: rgb(55 65 81 / var(--tw-text-opacity));
 }
 .text-green-500 {
   color: var(--main-500);
@@ -7579,4 +7614,13 @@ small {
 .after\:bg-red-800::after {
   content: var(--tw-content);
   background-color: var(--red-800);
+}
+@media (min-width: 1024px) {
+  .lg\:mb-3 {
+    margin-bottom: var(--em-spacing-3);
+  }
+  .lg\:text-base {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
 }

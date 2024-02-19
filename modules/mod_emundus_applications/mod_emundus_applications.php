@@ -180,7 +180,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $attachments = $progress['attachments'];
     $forms = $progress['forms'];
 
-    if ($show_add_application) {
+    if ($show_add_application || in_array('copy', $actions)) {
         if (EmundusHelperAccess::asAccessAction(1, 'c')) {
             $applicant_can_renew = 1;
         } else {

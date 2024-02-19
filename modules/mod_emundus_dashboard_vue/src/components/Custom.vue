@@ -31,7 +31,7 @@
 							</multiselect>
 						</div>
 					</div>
-          <select v-model="selectedWidgetId" @change="updateWidgetRender">
+          <select id="selection-filter" v-model="selectedWidgetId" @change="updateWidgetRender">
             <option v-for="widget in widgets" :value="widget.id">{{ widget.label }}</option>
           </select>
 				</div>
@@ -154,7 +154,7 @@ export default {
 					this.chart_type = this.selectedWidget.chart_type;
 					this.dataSource = response.data.dataset;
 
-					if (typeof this.dataSource.filters !== 'undefined') {
+					if (typeof this.dataSource.filters !== 'undefined' && this.dataSource.filters.length > 0) {
 						this.dataSource.filters.forEach((filter) => {
 							if (typeof this.selectedFilters[filter.key] == 'undefined' || this.selectedFilters[filter.key] == null) {
 								this.selectedFilters[filter.key] = [];
@@ -162,6 +162,8 @@ export default {
 						});
 
 						this.filters = this.dataSource.filters;
+					} else {
+						this.filters = [];
 					}
 
 					this.chart_render++;
@@ -272,8 +274,10 @@ export default {
           },
 				})
 					.then((response) => {
-						if (response.data.filters != null) {
+						if (response.data.filters !== null) {
 							this.selectedFilters = response.data.filters;
+						} else {
+							this.selectedFilters = {};
 						}
 						resolve(true);
 					})
@@ -327,5 +331,11 @@ export default {
 	color: #1f1f1f;
 	box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
 	padding: 30px;
+}
+
+#selection-filter {
+	height: 48px;
+	padding: 0 24px 0 12px;
+	border-radius: 8px;
 }
 </style>

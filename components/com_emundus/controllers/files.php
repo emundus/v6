@@ -1726,6 +1726,8 @@ class EmundusControllerFiles extends JControllerLegacy
 										}
 									} else {
 										if (!empty($date_elements[$k])) {
+											$v = str_replace("\\", '', $v); // if date contains \, remove it
+
 											if ($v === '0000-00-00 00:00:00') {
 												$v = '';
 											} else {
