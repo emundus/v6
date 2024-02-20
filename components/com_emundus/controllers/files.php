@@ -1934,6 +1934,9 @@ class EmundusControllerFiles extends JControllerLegacy
             }
         }
 
+        // Reindex array otherwise next for loop will not work properly if we did unset docs before
+        $docs = array_values($docs);
+
         if ($camp[0] != 0) {
             $campaign = $m_campaign->getCampaignsByCourseCampaign($code[0], $camp[0]);
         } else {
