@@ -333,10 +333,12 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 											{
 												$redirect_url = 'index.php?option=com_users&view=registration';
 											}
-											$register_url = $redirect_url . '&course=' . $campaign_pinned->code . '&cid=' . $campaign_pinned->id . '&Itemid=' . $mod_em_campaign_itemid;
 										}
-										else
-										{
+
+
+										if (strpos($redirect_url, '?') !== false) {
+											$register_url = $redirect_url . '&course=' . $campaign_pinned->code . '&cid=' . $campaign_pinned->id . '&Itemid=' . $mod_em_campaign_itemid;
+										} else {
 											$register_url = $redirect_url . '?course=' . $campaign_pinned->code . '&cid=' . $campaign_pinned->id . '&Itemid=' . $mod_em_campaign_itemid;
 										}
 
@@ -815,10 +817,11 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 												{
 													$redirect_url = 'index.php?option=com_users&view=registration';
 												}
-												$register_url = $redirect_url . '&course=' . $result->code . '&cid=' . $result->id . '&Itemid=' . $mod_em_campaign_itemid;
 											}
-											else
-											{
+
+											if (strpos($redirect_url, '?') !== false) {
+												$register_url = $redirect_url . '&course=' . $result->code . '&cid=' . $result->id . '&Itemid=' . $mod_em_campaign_itemid;
+											} else {
 												$register_url = $redirect_url . '?course=' . $result->code . '&cid=' . $result->id . '&Itemid=' . $mod_em_campaign_itemid;
 											}
 
