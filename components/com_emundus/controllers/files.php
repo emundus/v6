@@ -1268,27 +1268,36 @@ class EmundusControllerFiles extends JControllerLegacy
      * @return String json
      */
     public function create_file_csv() {
-        $today  = date("MdYHis");
-        $name   = md5($today.rand(0,10));
-        $name   = $name.'.csv';
-        $chemin = JPATH_SITE.DS.'tmp'.DS.$name;
+	    $response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED'), 'code' => 403];
 
-        if (!$fichier_csv = fopen($chemin, 'w+')) {
-            $result = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_OPEN_FILE').' : '.$chemin);
-            echo json_encode((object) $result);
-            exit();
-        }
+	    if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$response['code'] = 500;
+		    $today  = date("MdYHis");
+		    $name   = md5($today.rand(0,10));
+		    $name   = $name.'.csv';
+		    $chemin = JPATH_SITE.DS.'tmp'.DS.$name;
 
-        fprintf($fichier_csv, chr(0xEF).chr(0xBB).chr(0xBF));
-        if (!fclose($fichier_csv)) {
-            $result = array('status' => false, 'msg'=>JText::_('COM_EMUNDUS_EXPORTS_ERROR_CANNOT_CLOSE_CSV_FILE'));
-            echo json_encode((object) $result);
-            exit();
-        }
+		    if (!$fichier_csv = fopen($chemin, 'w+')) {
+			    $response['msg'] = JText::_('ERROR_CANNOT_OPEN_FILE').' : '.$chemin;
+		    } else {
+			    fprintf($fichier_csv, chr(0xEF).chr(0xBB).chr(0xBF));
+			    if (!fclose($fichier_csv)) {
+				    $response['msg'] = JText::_('COM_EMUNDUS_EXPORTS_ERROR_CANNOT_CLOSE_CSV_FILE');
+				} else {
+				    $response['code'] = 200;
+				    $response = array('status' => true, 'file' => $name);
+			    }
+		    }
+	    }
 
-        $result = array('status' => true, 'file' => $name);
-        echo json_encode((object) $result);
-        exit();
+		if ($response['code'] == 403) {
+			header('HTTP/1.1 403 Forbidden');
+			echo JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS');
+			exit;
+		}
+
+	    echo json_encode((object) $response);
+	    exit();
     }
 
     /**
