@@ -64,7 +64,6 @@ class EmundusModelUpdate extends JModelLegacy {
 
 
        // $calendarListEntry = $service->calendarList->get('calendarId');
-        //var_dump($calendarListEntry->getSummary());
         // Build event object for Google.
         $google_event = new Google_Service_Calendar_Event([
             'summary'       =>"Update",

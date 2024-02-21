@@ -15,6 +15,8 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
+
+use Joomla\CMS\Component\ComponentHelper;
 /**
  * Content Component Query Helper
  *
@@ -272,7 +274,7 @@ class EmundusHelperEmails {
 						<input name="mail_type" type="hidden" class="inputbox" id="mail_type" value="expert" />
 						<p>
 							<div>
-								<input class="btn btn-large btn-success" style="margin-top: 16px" type="submit" name="expert" value="'.JText::_( 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL' ).'" >
+								<button class="btn btn-primary absolute" style="bottom: 32px;right: 32px" type="submit" name="expert">'.JText::_( 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL' ).'</button>
 							</div>
 						</p>
 						
@@ -854,7 +856,7 @@ class EmundusHelperEmails {
         return $is_correct;
     }
 
-    function getLogo(): string {
+    static function getLogo(): string {
         $logo = '';
         $app = JFactory::getApplication();
         $template = $app->getTemplate(true);
@@ -882,6 +884,22 @@ class EmundusHelperEmails {
         }
 
         return $logo;
+    }
+
+    public static function getCustomHeader(): string {
+        $result = '';
+
+        $eMConfig = ComponentHelper::getParams('com_emundus');
+        $custom_email_tag = $eMConfig->get('email_custom_tag', null);
+
+        if(!empty($custom_email_tag))
+        {
+            $custom_email_tag = explode(',', $custom_email_tag);
+
+            $result = $custom_email_tag[0].':'.$custom_email_tag[1];
+        }
+
+        return $result;
     }
 }
 ?>

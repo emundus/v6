@@ -22,7 +22,7 @@
 
       <div class="em-flex-row em-mb-32">
         <p>
-          <b style="color: var(--em-coordinator-primary-color); font-weight: 700 !important;"> {{form.label}}</b>
+          <b style="color: var(--em-profile-color); font-weight: 700 !important;"> {{form.label}}</b>
           {{translations.From}}
           <strong>{{ form.start_date }}</strong>
           {{translations.To}}
@@ -103,7 +103,7 @@
       <div class="em-flex-row em-flex-space-between em-float-right" v-if="menuHighlight !== 0 && menuHighlightProg !== 0">
         <button
             type="button"
-            class="em-primary-button em-w-auto"
+            class="em-primary-button em-w-auto mb-4"
             @click="next">
           {{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}
         </button>
@@ -414,11 +414,11 @@ export default {
 }
 
 .w--current:hover{
-  color: var(--em-coordinator-primary-color);
+  color: var(--em-profile-color);
 }
 
 .em-pointer:hover{
-  color: var(--em-coordinator-primary-color);
+  color: var(--em-profile-color);
 }
 
 .em-w-custom {

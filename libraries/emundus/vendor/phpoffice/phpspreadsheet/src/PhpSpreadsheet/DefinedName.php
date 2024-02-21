@@ -18,7 +18,7 @@ abstract class DefinedName
     /**
      * Worksheet on which the defined name can be resolved.
      *
-     * @var ?Worksheet
+     * @var Worksheet
      */
     protected $worksheet;
 
@@ -39,7 +39,7 @@ abstract class DefinedName
     /**
      * Scope.
      *
-     * @var ?Worksheet
+     * @var Worksheet
      */
     protected $scope;
 
@@ -141,19 +141,17 @@ abstract class DefinedName
 
             // Re-attach
             if ($this->worksheet !== null) {
-                $this->worksheet->getParentOrThrow()->removeNamedRange($this->name, $this->worksheet);
+                $this->worksheet->getParent()->removeNamedRange($this->name, $this->worksheet);
             }
             $this->name = $name;
 
             if ($this->worksheet !== null) {
-                $this->worksheet->getParentOrThrow()->addDefinedName($this);
+                $this->worksheet->getParent()->addNamedRange($this);
             }
 
-            if ($this->worksheet !== null) {
-                // New title
-                $newTitle = $this->name;
-                ReferenceHelper::getInstance()->updateNamedFormulae($this->worksheet->getParentOrThrow(), $oldTitle, $newTitle);
-            }
+            // New title
+            $newTitle = $this->name;
+            ReferenceHelper::getInstance()->updateNamedFormulae($this->worksheet->getParent(), $oldTitle, $newTitle);
         }
 
         return $this;
@@ -249,13 +247,13 @@ abstract class DefinedName
         if ($sheetName === '') {
             $worksheet2 = $worksheet;
         } else {
-            $worksheet2 = $worksheet->getParentOrThrow()->getSheetByName($sheetName);
+            $worksheet2 = $worksheet->getParent()->getSheetByName($sheetName);
             if ($worksheet2 === null) {
                 return null;
             }
         }
 
-        return $worksheet->getParentOrThrow()->getDefinedName($definedName, $worksheet2);
+        return $worksheet->getParent()->getDefinedName($definedName, $worksheet2);
     }
 
     /**

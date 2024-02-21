@@ -2,8 +2,6 @@
 
 namespace PhpOffice\PhpSpreadsheet\Chart;
 
-use PhpOffice\PhpSpreadsheet\Style\Font;
-
 class Layout
 {
     /**
@@ -129,11 +127,8 @@ class Layout
     /** @var ?ChartColor */
     private $labelBorderColor;
 
-    /** @var ?Font */
-    private $labelFont;
-
-    /** @var Properties */
-    private $labelEffects;
+    /** @var ?ChartColor */
+    private $labelFontColor;
 
     /**
      * Create a new Layout.
@@ -177,18 +172,7 @@ class Layout
         $this->initBoolean($layout, 'numFmtLinked');
         $this->initColor($layout, 'labelFillColor');
         $this->initColor($layout, 'labelBorderColor');
-        $labelFont = $layout['labelFont'] ?? null;
-        if ($labelFont instanceof Font) {
-            $this->labelFont = $labelFont;
-        }
-        $labelFontColor = $layout['labelFontColor'] ?? null;
-        if ($labelFontColor instanceof ChartColor) {
-            $this->setLabelFontColor($labelFontColor);
-        }
-        $labelEffects = $layout['labelEffects'] ?? null;
-        if ($labelEffects instanceof Properties) {
-            $this->labelEffects = $labelEffects;
-        }
+        $this->initColor($layout, 'labelFontColor');
     }
 
     private function initBoolean(array $layout, string $name): void
@@ -509,32 +493,14 @@ class Layout
         return $this;
     }
 
-    public function getLabelFont(): ?Font
-    {
-        return $this->labelFont;
-    }
-
-    public function getLabelEffects(): ?Properties
-    {
-        return $this->labelEffects;
-    }
-
     public function getLabelFontColor(): ?ChartColor
     {
-        if ($this->labelFont === null) {
-            return null;
-        }
-
-        return $this->labelFont->getChartColor();
+        return $this->labelFontColor;
     }
 
     public function setLabelFontColor(?ChartColor $chartColor): self
     {
-        if ($this->labelFont === null) {
-            $this->labelFont = new Font();
-            $this->labelFont->setSize(null, true);
-        }
-        $this->labelFont->setChartColorFromObject($chartColor);
+        $this->labelFontColor = $chartColor;
 
         return $this;
     }

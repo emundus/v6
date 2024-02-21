@@ -153,7 +153,7 @@ class EmundusModelCampaign extends JModelList {
                     $query .= ' AND id NOT IN (
 								select campaign_id
 								from #__emundus_campaign_candidature
-								where applicant_id=' . $uid . '
+								where applicant_id=' . $uid . ' and published <> -1
 							)';
                     break;
                 // Applicant can only have one file per year.
@@ -162,7 +162,7 @@ class EmundusModelCampaign extends JModelList {
 								select sc.year
 								from #__emundus_campaign_candidature as cc
 								LEFT JOIN #__emundus_setup_campaigns as sc ON sc.id = cc.campaign_id
-								where applicant_id=' . $uid . '
+								where cc.applicant_id=' . $uid . ' and cc.published <> -1
 							)';
                     break;
             }
@@ -2017,7 +2017,8 @@ class EmundusModelCampaign extends JModelList {
 			try {
 				$query->select('id')
 					->from($this->_db->quoteName('#__categories'))
-					->where('json_extract(`params`, "$.idCampaign") LIKE ' . $this->_db->quote('"'.$cid.'"'))
+                    ->where('json_valid(`params`)')
+                    ->andWhere('json_extract(`params`, "$.idCampaign") LIKE ' . $this->_db->quote('"'.$cid.'"'))
 					->andWhere($this->_db->quoteName('extension') . ' = ' . $this->_db->quote('com_dropfiles'));
 				$this->_db->setQuery($query);
 				$campaign_dropfile_cat = $this->_db->loadResult();
@@ -2346,89 +2347,63 @@ class EmundusModelCampaign extends JModelList {
             $m_files = new EmundusModelFiles();
             $fnumInfos = $m_files->getFnumInfos($fnum);
 
-            $fields = array($this->_db->quoteName('ecw.id'), $this->_db->quoteName('ecw.start_date'), $this->_db->quoteName('ecw.end_date'), $this->_db->quoteName('ecw.profile'), $this->_db->quoteName('ecw.output_status'),  $this->_db->quoteName('ecw.display_preliminary_documents'), $this->_db->quoteName('ecw.specific_documents'), 'GROUP_CONCAT(ecw_status.entry_status separator ",") as entry_status');
+            $fields = array($this->_db->quoteName('ecw.id'), $this->_db->quoteName('ecw.start_date'), $this->_db->quoteName('ecw.end_date'), $this->_db->quoteName('ecw.profile'), $this->_db->quoteName('ecw.output_status'),  $this->_db->quoteName('ecw.display_preliminary_documents'), $this->_db->quoteName('ecw.specific_documents'), $this->_db->quoteName('ecw_status.entry_status'));
             $query = $this->_db->getQuery(true);
-
-            // get workflow id from our current campaign context
-            $query->select('ecw_camp.parent_id')
-                ->from('#__emundus_campaign_workflow_repeat_campaign AS ecw_camp')
-                ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_camp.parent_id = ecw_status.parent_id')
-                ->where('ecw_camp.campaign = '.$this->_db->quote($fnumInfos['campaign_id']))
-                ->andWhere('ecw_status.entry_status = '.$this->_db->quote($fnumInfos['status']));
+            $query->select(implode(',', $fields))
+                ->from('#__emundus_campaign_workflow as ecw')
+                ->leftJoin('#__emundus_campaign_workflow_repeat_campaign AS ecw_camp ON ecw_camp.parent_id = ecw.id')
+                ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_status.parent_id = ecw.id')
+                ->where('ecw_camp.campaign = ' . $this->_db->quote($fnumInfos['campaign_id']))
+                ->andWhere('ecw_status.entry_status = ' . $this->_db->quote($fnumInfos['status']));
             $this->_db->setQuery($query);
 
             try {
-                $campaign_workflow_id = $this->_db->loadResult();
+                $current_phase = $this->_db->loadObject();
             } catch (Exception $e) {
-                JLog::add('[getCurrentCampaignWorkflow] Error getting current campaign workflow line from campaign: '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                JLog::add('[getCurrentCampaignWorkflow] Error getting current campaign workflow in component/com_emundus/models/campaign: '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
             }
 
-            if (!empty($campaign_workflow_id)) {
+            if (empty($current_phase->id)) {
+                // if not found from campaigns, check programs
+
                 $query->clear()
-                    ->select('DISTINCT '.implode(',', $fields))
+                    ->select(implode(',', $fields))
                     ->from('#__emundus_campaign_workflow as ecw')
                     ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_status.parent_id = ecw.id')
-                    ->where('ecw.id = '.$this->_db->quote($campaign_workflow_id))
-                    ->group($this->_db->quoteName('ecw.id'));
-                $this->_db->setQuery($query);
+                    ->leftJoin('#__emundus_setup_campaigns AS esc ON esc.id = ' . $this->_db->quote($fnumInfos['campaign_id']))
+                    ->leftJoin('#__emundus_campaign_workflow_repeat_programs AS ecwrp ON ecwrp.parent_id = ecw.id')
+                    ->where('ecw_status.entry_status = ' . $this->_db->quote($fnumInfos['status']))
+                    ->andWhere('ecwrp.programs = esc.training');
 
                 try {
                     $current_phase = $this->_db->loadObject();
                 } catch (Exception $e) {
-                    JLog::add('[getCurrentCampaignWorkflow] Error getting current campaign workflow details from campaign: '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
-                }
-            } else {
-                // if not found from campaigns, check programs
-                $query->clear()
-                    ->select('ecw_prog.parent_id')
-                    ->from('#__emundus_campaign_workflow_repeat_programs AS ecw_prog')
-                    ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_prog.parent_id = ecw_status.parent_id')
-                    ->where('ecw_prog.programs = '.$this->_db->quote($fnumInfos['training']))
-                    ->andWhere('ecw_status.entry_status = '.$this->_db->quote($fnumInfos['status']));
-                $this->_db->setQuery($query);
-
-                try {
-                    $program_workflow_id = $this->_db->loadResult();
-                } catch (Exception $e) {
-                    JLog::add('[getCurrentCampaignWorkflow] Error getting current campaign workflow line from program: '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                    JLog::add('[getCurrentCampaignWorkflow] Error getting current campaign workflow from program: '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
                 }
 
-                if (!empty($program_workflow_id)) {
-                    $query->clear()
-                        ->select('DISTINCT '.implode(',', $fields))
-                        ->from('#__emundus_campaign_workflow as ecw')
-                        ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_status.parent_id = ecw.id')
-                        ->where('ecw.id = '.$this->_db->quote($program_workflow_id))
-                        ->group($this->_db->quoteName('ecw.id'));
-
-                    try {
-                        $current_phase = $this->_db->loadObject();
-                    } catch (Exception $e) {
-                        JLog::add('[getCurrentCampaignWorkflow] Error getting current campaign workflow details from program: '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
-                    }
-                } else {
+                if (empty($current_phase->id)) {
                     // If not found from programs nor campaigns, check workflow that are applied only from entry status (0 campaign, 0 program)
 
                     $query->clear()
-                        ->select('DISTINCT '.implode(',', $fields))
+                        ->select(implode(',', $fields))
                         ->from('#__emundus_campaign_workflow as ecw')
                         ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_status.parent_id = ecw.id')
-                        ->where('ecw_status.entry_status = '.$this->_db->quote($fnumInfos['status']))
+                        ->where('ecw_status.entry_status = ' . $this->_db->quote($fnumInfos['status']))
                         ->andWhere('ecw.id NOT IN (SELECT parent_id
                             FROM jos_emundus_campaign_workflow_repeat_programs
                             UNION
                             SELECT parent_id
-                            FROM jos_emundus_campaign_workflow_repeat_campaign)')
-                        ->group($this->_db->quoteName('ecw.id'));
+                            FROM jos_emundus_campaign_workflow_repeat_campaign)');
                     $this->_db->setQuery($query);
 
                     try {
                         $current_phase = $this->_db->loadObject();
                     } catch (Exception $e) {
-                        JLog::add('[getCurrentCampaignWorkflow] Error getting current campaign workflow details from entry status: '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                        JLog::add('[getCurrentCampaignWorkflow] Error getting current campaign workflow from program: '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
                     }
                 }
             }
+
 
             if (!empty($current_phase->id)) {
                 $current_phase->entry_status = !empty($current_phase->entry_status) ? explode(',', $current_phase->entry_status) : [];

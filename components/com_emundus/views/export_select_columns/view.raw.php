@@ -75,8 +75,11 @@ class EmundusViewExport_select_columns extends JViewLegacy {
 
         if ($form == "decision") {
 	        $elements = $m_decision->getDecisionElementsName(0, 0, $code, $all);
-        } elseif ($form == "admission") {
-	        $elements = $m_admission->getApplicantAdmissionElementsName(0, 0, $code, $all);
+        } elseif ($form == 'admission') {
+	        $applicant_elements = $m_admission->getApplicantAdmissionElementsName(0, 0, $code, $all);
+			$evaluator_elements = $m_admission->getAdmissionElementsName(0, 0, $code, $all);
+
+			$elements = array_merge($applicant_elements, $evaluator_elements);
         } elseif ($form == "evaluation") {
 	        $elements = $m_eval->getEvaluationElementsName(0, 0, $code, $all);
         } else {
@@ -94,7 +97,9 @@ class EmundusViewExport_select_columns extends JViewLegacy {
 
 	    $this->assignRef('elements', $elements);
         $this->assignRef('form', $form);
-        $this->assignRef('program', $program->label);
+		if(!empty($program)) {
+			$this->assignRef('program', $program->label);
+		}
 		parent::display($tpl);
     }
 }

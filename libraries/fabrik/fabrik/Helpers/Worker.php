@@ -1119,12 +1119,9 @@ class Worker
 			'{$jConfig_mailfrom}' => $config->get('mailfrom'),
 			'{where_i_came_from}' => $app->input->server->get('HTTP_REFERER', '', 'string'),
 			'{date}' => date('Ymd'),
-			'{date_lc1}' => JFactory::getDate()->format(\JText::_('DATE_FORMAT_LC1')),
-			'{date_lc2}' => JFactory::getDate()->format(\JText::_('DATE_FORMAT_LC2')),
 			'{year}' => date('Y'),
 			'{mysql_date}' => date('Y-m-d H:i:s'),
-			'{session.token}' => $token,
-			'{quarter}' => ceil(date('n') / 3)
+			'{session.token}' => $token
 		);
 
 		foreach ($_SERVER as $key => $val)

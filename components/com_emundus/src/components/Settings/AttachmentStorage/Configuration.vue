@@ -43,7 +43,7 @@ export default {
   created() {
     this.loading = true;
     settingsService.getEmundusParams().then((params) => {
-      this.em_params = params.data.config;
+      this.em_params = params.data.emundus;
 
       if(parseInt(this.em_params.external_storage_ged_alfresco_integration) === 1){
         this.integrations.push('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO');

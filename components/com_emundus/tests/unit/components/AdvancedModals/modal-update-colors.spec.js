@@ -9,7 +9,10 @@ localVue.use(VModal);
 
 describe('ModalUpdateColors.vue', () => {
     const wrapper = mount(ModalUpdateColors, {
-        propsData: {},
+        propsData: {
+            primary: '#1b1f3c',
+            secondary: '#de6339',
+        },
         localVue
     });
 

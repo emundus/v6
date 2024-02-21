@@ -12,8 +12,11 @@ defined('_JEXEC') or die;
 JHtml::_('behavior.keepalive');
 JHtml::_('behavior.formvalidator');
 
+require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+
 $document = JFactory::getDocument();
-$document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_users_reset.css");
+$document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_users_reset.css?".$hash);
 
 $params = JComponentHelper::getParams('com_users');
 $min_length = $params->get('minimum_length');
@@ -37,12 +40,17 @@ if ((int)$min_low > 0) {
 	$tip_text .= ','.JText::sprintf('USER_PASSWORD_MIN_LOWER', $min_low);
 }
 
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'settings.php');
+$m_settings = new EmundusModelsettings();
+
+$favicon = $m_settings->getFavicon();
+
 ?>
 <div class="reset-complete<?php echo $this->pageclass_sfx; ?>">
 	<?php if ($this->params->get('show_page_heading')) : ?>
 		<div class="page-header">
-            <?php if (file_exists('images/custom/favicon.png')) : ?>
-                <a href="index.php" alt="Logo" class="em-profile-picture em-mb-32" style="width: 50px;height: 50px;background-image: url('images/custom/favicon.png')">
+            <?php if (file_exists($favicon)) : ?>
+                <a href="index.php" alt="Logo" class="em-profile-picture mb-8" style="width: 50px;height: 50px;background-image: url(<?php echo $favicon ?>)">
                 </a>
             <?php endif; ?>
             <h3 class="em-mb-8">

@@ -80,7 +80,7 @@ class XmlBody
     private function defaultShape(Shape $shape, $name, $value, XMLWriter $xml)
     {
         $this->startElement($shape, $name, $xml);
-        $xml->text($value);
+        $xml->writeRaw($value);
         $xml->endElement();
     }
 
@@ -142,7 +142,7 @@ class XmlBody
             $elementName = $items['locationName'] ?: 'member';
         }
 
-        foreach ($value as $v) {
+        foreach ($value as &$v) {
             $this->format($items, $elementName, $v, $xml);
         }
 
@@ -187,10 +187,7 @@ class XmlBody
         XMLWriter $xml
     ) {
         $this->startElement($shape, $name, $xml);
-        $timestampFormat = !empty($shape['timestampFormat'])
-            ? $shape['timestampFormat']
-            : 'iso8601';
-        $xml->writeRaw(TimestampShape::format($value, $timestampFormat));
+        $xml->writeRaw(TimestampShape::format($value, 'iso8601'));
         $xml->endElement();
     }
 

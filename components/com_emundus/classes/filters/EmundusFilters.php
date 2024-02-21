@@ -255,6 +255,10 @@ class EmundusFilters
 				break;
 		}
 
+        foreach($values as $key => $value) {
+           $values[$key]['label'] = JText::_($value['label']);
+        }
+
 		return $values;
 	}
 
@@ -279,7 +283,9 @@ class EmundusFilters
 			if (!empty($element)) {
 				$values = $this->getFabrikElementValues($element);
 
-				$this->saveFiltersAllValues(['id' => $element_id, 'values' => $values]);
+				if (!empty($values)) {
+					$this->saveFiltersAllValues(['id' => $element_id, 'values' => $values]);
+				}
 			}
 		}
 
@@ -294,8 +300,11 @@ class EmundusFilters
 			$filters_all_values[$element_values['id']] = $element_values['values'];
 		} else {
 			$filters_all_values = [];
+
 			foreach($this->filters as $filter) {
-				$filters_all_values[$filter['id']] = $filter['values'];
+				if (!empty($filter['values'])) {
+					$filters_all_values[$filter['id']] = $filter['values'];
+				}
 			}
 
 			foreach($this->applied_filters as $filter) {

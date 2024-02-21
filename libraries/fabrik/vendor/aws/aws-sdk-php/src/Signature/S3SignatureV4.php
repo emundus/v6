@@ -9,39 +9,32 @@ use Psr\Http\Message\RequestInterface;
  */
 class S3SignatureV4 extends SignatureV4
 {
+    const UNSIGNED_PAYLOAD = 'UNSIGNED-PAYLOAD';
+    
     /**
-     * S3-specific signing logic
-     *
-     * {@inheritdoc}
+     * Always add a x-amz-content-sha-256 for data integrity.
      */
     public function signRequest(
         RequestInterface $request,
-        CredentialsInterface $credentials,
-        $signingService = null
+        CredentialsInterface $credentials
     ) {
-        // Always add a x-amz-content-sha-256 for data integrity
         if (!$request->hasHeader('x-amz-content-sha256')) {
             $request = $request->withHeader(
-                'x-amz-content-sha256',
+                'X-Amz-Content-Sha256',
                 $this->getPayload($request)
             );
         }
-        if (strpos($request->getUri()->getHost(), "s3-object-lambda")) {
-            return parent::signRequest($request, $credentials, "s3-object-lambda");
-        }
+
         return parent::signRequest($request, $credentials);
     }
 
     /**
      * Always add a x-amz-content-sha-256 for data integrity.
-     *
-     * {@inheritdoc}
      */
     public function presign(
         RequestInterface $request,
         CredentialsInterface $credentials,
-        $expires,
-        array $options = []
+        $expires
     ) {
         if (!$request->hasHeader('x-amz-content-sha256')) {
             $request = $request->withHeader(
@@ -50,7 +43,7 @@ class S3SignatureV4 extends SignatureV4
             );
         }
 
-        return parent::presign($request, $credentials, $expires, $options);
+        return parent::presign($request, $credentials, $expires);
     }
 
     /**
@@ -59,7 +52,7 @@ class S3SignatureV4 extends SignatureV4
      */
     protected function getPresignedPayload(RequestInterface $request)
     {
-        return SignatureV4::UNSIGNED_PAYLOAD;
+        return self::UNSIGNED_PAYLOAD;
     }
 
     /**
@@ -67,10 +60,6 @@ class S3SignatureV4 extends SignatureV4
      */
     protected function createCanonicalizedPath($path)
     {
-        // Only remove one slash in case of keys that have a preceding slash
-        if (substr($path, 0, 1) === '/') {
-            $path = substr($path, 1);
-        }
-        return '/' . $path;
+        return '/' . ltrim($path, '/');
     }
 }

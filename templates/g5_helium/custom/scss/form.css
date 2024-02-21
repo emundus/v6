@@ -6,7 +6,7 @@
       @apply em-default-title-1;
     }
     .em-form-intro {
-      * {
+      p {
         color: var(--neutral-600);
       }
     }
@@ -28,12 +28,14 @@
       @media all and (min-width: 768px) {
         flex: 0 0 30rem;
         max-width: 30rem;
-        margin: 16px auto;
+        margin: 0 auto;
+        padding-top: 0;
       }
       @media all and (min-width: 1440px) {
         flex: 0 0 30rem;
         max-width: 30rem;
-        margin: 16px auto;
+        margin: 0 auto;
+        padding-top: 0;
       }
 
       .em-form-intro {
@@ -173,6 +175,10 @@
     .fabrikElement {
       margin-top: var(--em-form-label-margin-bottom);
       position: relative;
+
+      div li {
+        list-style-position: inside;
+      }
     }
 
     .fabrikElementContainer:not(.fabrikHide) {
@@ -198,10 +204,7 @@
       font-weight: 400;
       font-family: var(--em-applicant-font);
       font-style: normal;
-
-      * {
-        color: var(--em-form-tip-color);
-      }
+      display: flex;
 
       i.icon-question-sign  {
         display: none;
@@ -439,20 +442,20 @@
     /* YES / NO */
     /* And radio buttons grouped together */
 
-    .row-fluid .plg-yesno.span12,
+    .row-fluid .plg-yesno.span12 .fabrikElement,
     .plg-radiobutton .fabrikSubElementContainer .btn-group {
       width: 48.93617021276595%;
     }
 
     @media only all and (min-width: 48rem) and (max-width: 59.99rem) {
-      .row-fluid .plg-yesno.span12,
+      .row-fluid .plg-yesno.span12 .fabrikElement,
       .plg-radiobutton .fabrikSubElementContainer .btn-group {
         width: 48.6187845304% !important;
       }
     }
 
     @media only all and (max-width: 48rem) {
-      .row-fluid .plg-yesno.span12,
+      .row-fluid .plg-yesno.span12 .fabrikElement,
       .plg-radiobutton .fabrikSubElementContainer .btn-group {
         width: 100% !important;
       }
@@ -659,7 +662,6 @@
             input {
               accent-color: var(--em-form-radio-color-checked);
               width: var(--em-form-radio-width);
-              min-width: var(--em-form-radio-width);
               height: var(--em-form-radio-height);
               margin-right: var(--em-form-radio-margin-right);
               margin-left: 0;
@@ -765,6 +767,7 @@
         flex-direction: column-reverse;
         padding: var(--em-form-fileupload-padding);
         background-color: var(--em-form-fileupload-bgc);
+        border-radius: var(--em-form-br);
         input[type='file'] {
           height: auto;
           @apply w-full;
@@ -1219,10 +1222,14 @@
   }
 
   /* ADD PIPE */
+  pre#log {
+    display: none;
+  }
+
   div[id^='recorder-'] {
     margin-bottom: 12px;
 
-    .pipeRecordRTC {
+    > div:nth-child(1) {
       width: 100% !important;
     }
 

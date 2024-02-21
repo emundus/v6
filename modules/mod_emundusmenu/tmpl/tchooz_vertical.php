@@ -8,9 +8,9 @@
 
 // No direct access.
 defined('_JEXEC') or die;
-
 // Note. It is important to remove spaces between elements.
 ?>
+
 <style type='text/css'>
     hr{
         z-index: 999;
@@ -41,7 +41,7 @@ defined('_JEXEC') or die;
     #header-b{
         width: auto;
         position: fixed;
-        background: white;
+        background: var(--neutral-0);
         left: 0;
         top: 0;
         padding: 10px;
@@ -55,14 +55,14 @@ defined('_JEXEC') or die;
         display: none;
     }
     #header-b #em_user_menu li.parent-active:hover a{
-        color: black;
+        color: var(--neutral-900);
     }
 
     #header-b #em_user_menu li:hover a, #header-b #em_user_menu li:active a, #header-b #em_user_menu li:focus a{
-        color: black;
+        color: var(--neutral-900);
     }
     .g-sublevel .g-menu-item-title span:hover,.g-sublevel .g-menu-item-title span:focus,.g-sublevel .g-menu-item-title span:active {
-        color: black;
+        color: var(--neutral-900);
     }
     .g-sublevel-list{
         margin-top: 10px;
@@ -77,15 +77,16 @@ defined('_JEXEC') or die;
 
     /*** Sublevel parent ***/
     ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item::before{
-        background: var(--em-coordinator-primary-color);
-        width: 5px;
+        background: var(--em-profile-color);
+        width: 3px;
         height: 100%;
         content: "";
         position: absolute;
         left: -20px;
+        display: flex;
     }
     .active .item .image-title{
-        color: var(--em-coordinator-primary-color);
+        color: var(--em-profile-color);
     }
     .g-menu-parent-indicator{
         margin-left: 20px;
@@ -99,15 +100,24 @@ defined('_JEXEC') or die;
 
     /*** List style ***/
     #g-navigation .g-main-nav .tchooz-vertical-toplevel > li{
-        margin: 5px 10px !important;
+        margin-inline: 10px;
         font-family: var(--em-default-font);
     }
 
-    .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo > a {
-        margin-bottom: 16px;
+    .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo {
+        order: -1;
+        height: 61px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-bottom: 10px;
+        max-width: 30px;
+        margin: 0 !important;
     }
+
     .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo img {
         width: 30px;
+        height: 30px;
     }
 
     #g-navigation .g-main-nav .g-sublevel > li:not(:last-child) > .g-menu-item-container{
@@ -127,6 +137,7 @@ defined('_JEXEC') or die;
         width: 30px;
         height: 30px;
         padding: 3px !important;
+        color: var(--em-profile-color) !important;
     }
 
     .image-title{
@@ -154,9 +165,10 @@ defined('_JEXEC') or die;
         margin-left: 10px;
     }
     .burger-button{
-        margin: 0 10px 10px 10px;
+        margin: 0 10px 10px 12px;
         background: transparent;
-        padding: 0;width: 30px
+        padding: 0;width: 30px;
+        order: 0;
     }
     /*** END ***/
     .message-tooltip{
@@ -164,7 +176,7 @@ defined('_JEXEC') or die;
         height: auto;
         position: fixed;
         margin-left: 0;
-        color: black;
+        color: var(--neutral-900);
         align-items: center;
         font-weight: 600;
         display: none;
@@ -183,7 +195,7 @@ defined('_JEXEC') or die;
         box-shadow: 0 5px 10px rgb(0 0 0 / 10%);
         padding: 15px;
         border-radius: 5px;
-        background: #fff;
+        background: var(--neutral-0);
     }
     .message-tooltip-block::after{
         content: "";
@@ -196,7 +208,7 @@ defined('_JEXEC') or die;
         border-right-color: transparent;
         border-right-style: solid;
         border-right-width: 10px;
-        border-right: 10px solid #fff;
+        border-right: 10px solid var(--neutral-0);
     }
 
     .g-main-nav .g-standard .g-sublevel .g-menu-item a.g-menu-item-container:hover   {
@@ -211,7 +223,7 @@ defined('_JEXEC') or die;
         height: 110%;
         position: absolute;
         display: block;
-       border: solid 2px #fff;
+       border: solid 2px var(--neutral-0);
         border-radius: 5px;
         content: "";
     }
@@ -230,19 +242,17 @@ defined('_JEXEC') or die;
     ?>>
     <div style="opacity: 0" class="grey-navbar-icons"></div>
     <ul class="g-toplevel tchooz-vertical-toplevel">
-        <button class="g-menu-item g-standard burger-button" onclick="enableTitles()"><img src="<?php echo JURI::base()?>images/emundus/menus/menu.png" style="width: 30px"></button>
+
+        <li class="g-menu-item g-standard tchooz-vertical-item">
+            <a class="item" onclick="enableTitles()">
+                <span class="material-icons-outlined" style="padding: 5px; font-size: 24px; color: black">menu</span>
+                <span class="image-title" style="display: block; opacity: 1;"><?php echo JText::_('MOD_EMUNDUSMENU_ITEM_MENU') ?></span>
+            </a>
+        </li>
+
         <?php
 
-        $target_dir = "images/custom/";
-        $filename = 'favicon';
-        $favicon = glob("{$target_dir}{$filename}.*");
-
-        if(file_exists(JPATH_SITE . '/' . $favicon[0])){
-            $favicon = JURI::base().'/' . $favicon[0];
-        } else {
-            $favicon = JURI::base().'/images/emundus/tchooz_favicon.png';
-        }
-        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo" style="height: auto"><a class="item" href="'.$favicon_link.'"><img src="'.$favicon.'" alt="Accueil"></a>
+        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo"><a class="item" title="'.JText::_('MOD_EMUNDUSMENU_HOME').'" href="'.$favicon_link.'"><img src="'.JURI::base().'/'.$favicon.'" alt="'.JText::_('MOD_EMUNDUSMENU_HOME').'"></a>
         </li>';
 
         if ($display_tchooz) :
@@ -453,7 +463,6 @@ defined('_JEXEC') or die;
     </ul>
 </nav>
 
-
 <script type="text/javascript">
     jQuery(document).ready(function() {
         jQuery(".g-sublevel > li").on('mouseenter', function (e) {
@@ -528,6 +537,14 @@ defined('_JEXEC') or die;
                 jQuery("#footer-rgpd").css("padding-left", "280px");
                 jQuery("#g-container-main").css("padding-left", "280px");
                 jQuery("#header-a").css("opacity", "1");
+                jQuery(".logo").css("position", "absolute");
+                jQuery(".tchooz-vertical-logo").css("opacity", "0");
+            }
+            let elmnt = document.getElementById("g-top");
+            if(elmnt !== null) {
+                jQuery(".logo").css("top", "-37px");
+            } else {
+                jQuery(".logo").css("top", "0");
             }
             setTimeout(() =>{
                 jQuery(".image-title").css("display","block");
@@ -547,6 +564,7 @@ defined('_JEXEC') or die;
                 jQuery("#footer-rgpd").css("padding-left", "280px");
                 jQuery("#g-container-main").css("padding-left", "280px");
                 jQuery("#header-a").css("opacity", "1");
+                jQuery(".tchooz-vertical-logo").css("opacity", "0");
             }
             setTimeout(() =>{
                 jQuery(".image-title").css("display","block");
@@ -568,6 +586,7 @@ defined('_JEXEC') or die;
                 jQuery("#g-footer").css("padding-left", "76px");
                 jQuery("#footer-rgpd").css("padding-left", "76px");
                 jQuery("#header-a").css("opacity", "0");
+                jQuery(".tchooz-vertical-logo").css("opacity", "1");
             }
             setTimeout(() =>{
                 jQuery(".image-title").css("display","none");
@@ -594,7 +613,5 @@ defined('_JEXEC') or die;
         }
     });
 
-    window.onload = function () {
-        this.enableTitles(localStorage.getItem('menu'));
-    }
+    this.enableTitles(localStorage.getItem('menu'));
 </script>

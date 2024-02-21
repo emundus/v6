@@ -6,8 +6,8 @@
         :notifications="notifications"
         @removeNotifications="removeNotifications"
     />
-    <div>
-      <img class="em-messages-modal" style="width: 30px; cursor: pointer;" @click="openModal" src="/images/emundus/messenger/messenger.svg" />
+    <div class="em-messages-container">
+      <span class="material-icons-outlined em-messages-modal" style="cursor: pointer;" @click="openModal">question_answer</span>
       <p v-if="counter > 0" class="notifications__counter">{{counter}}</p>
     </div>
   </div>

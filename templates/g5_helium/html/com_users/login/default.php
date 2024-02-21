@@ -7,6 +7,8 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
+use Symfony\Component\Yaml\Yaml;
+
 defined('_JEXEC') or die;
 
 $cookieLogin = $this->user->get('cookieLogin');
@@ -35,6 +37,11 @@ if (!empty($cookieLogin) || $this->user->get('guest')) {
 
     JFactory::getSession()->set('cid', $this->campaign);
     JFactory::getSession()->set('course', $this->course);
+
+	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'settings.php');
+	$m_settings = new EmundusModelsettings();
+
+	$this->favicon = $m_settings->getFavicon();
 
     // The user is not logged in or needs to provide a password.
     echo $this->loadTemplate('login');

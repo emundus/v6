@@ -170,7 +170,7 @@ export default {
       document: {
         id: null,
         type: {},
-        mandatory: '1',
+        mandatory: this.$props.mandatory,
         nbmax: 1,
         description: {
           fr: '',
@@ -305,11 +305,15 @@ export default {
           if(['mp4'].includes(type)) {
             this.document.selectedTypes['mp4'] = true;
           }
-        });
 
-	      this.hasImgFormat();
-	      this.hasPDFFormat();
-      }
+					if (['zip'].includes(type)) {
+						this.document.selectedTypes['zip'] = true;
+					}
+				});
+
+				this.hasImgFormat();
+				this.hasPDFFormat();
+			}
     },
 	  saveDocument()
     {

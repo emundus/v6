@@ -301,6 +301,8 @@ export default {
 				});
 			}
 		});
+
+	  this.addEvents();
   },
   methods: {
     // Getters and setters
@@ -652,6 +654,13 @@ export default {
     },
 	  toggleOnlyPreview(editDisplayed) {
 			this.onlyPreview = !editDisplayed;
+	  },
+	  addEvents() {
+		  window.addEventListener('message', function (e) {
+			  if (e.data === 'addFileToFnum') {
+				  this.refreshAttachments(true);
+			  }
+		  }.bind(this));
 	  }
   },
   computed: {

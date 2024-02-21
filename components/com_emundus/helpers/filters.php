@@ -320,10 +320,8 @@ class EmundusHelperFilters {
 					AND element.plugin != "display"
 				ORDER BY formgroup.ordering, element.ordering';
 		try {
-			//die(str_replace("#_", "jos", $query));
 			$db->setQuery($query);
 			return $db->loadObjectList();
-
 		} catch (Exception $e) {
 			throw $e;
 		}
@@ -336,7 +334,7 @@ class EmundusHelperFilters {
 	* @param 	int 	Does the element are an hidden element ?
 	* @return   array 	list of Fabrik element ID used in evaluation form
 	**/
-	function getAllElementsByGroups($groups, $show_in_list_summary=null, $hidden=null) {
+	static function getAllElementsByGroups($groups, $show_in_list_summary=null, $hidden=null) {
 		$elements = [];
 
 		if (!empty($groups)) {

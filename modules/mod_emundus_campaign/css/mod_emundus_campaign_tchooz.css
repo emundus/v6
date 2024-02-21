@@ -26,8 +26,16 @@
     width: 72%;
 }
 
+.mod_emundus_campaign__list_items .pagination {
+    margin: 0;
+}
+
 .mod_emundus_campaign__intro *{
   font-family: var(--em-applicant-font);
+}
+
+.mod_emundus_campaign__intro h1{
+    font-family: var(--em-applicant-font-title);
 }
 
 .mod_emundus_campaign__intro p{
@@ -162,6 +170,7 @@
 
 .mod_emundus_campaign__list_content_resume * {
     color: var(--neutral-600) !important;
+    display: inline;
 }
 
 .mod_emundus_campaign__header_filter {
@@ -176,6 +185,7 @@
     padding: var(--p-16);
     position: absolute;
     background: var(--neutral-0);
+    z-index: 10;
 }
 
 .mod_emundus_campaign__header_sort__values a:hover {
@@ -199,6 +209,7 @@
     position: absolute;
     background: var(--neutral-0);
     min-width: 44rem;
+    z-index: 10;
 }
 
 .mod_emundus_campaign__header_filter span:not(.material-icons-outlined){
@@ -294,7 +305,7 @@ a.em-blue-400-color:hover {
 
 .mod_emundus_campaign__list_content_container .mod_emundus_campaign__campaign_title {
     margin-bottom: 8px !important;
-    color: var(--em-default-title-color-1) !important;
+    color: var(--em-default-title-color-1);
     -webkit-line-clamp: 2;
     overflow: hidden;
     -webkit-box-orient: vertical;
@@ -428,8 +439,8 @@ a.em-blue-400-color:hover {
     display: grid;
     align-items: flex-start;
     padding: 0;
-    gap: var(--p-32);
-    grid-template-columns: repeat(3,1fr);
+    gap: var(--p-48);
+    grid-template-columns: repeat(3, minmax(354px, 1fr));
 }
 
 .mod_emundus_campaign__pinned_campaign{
@@ -437,7 +448,6 @@ a.em-blue-400-color:hover {
     align-items: flex-start;
     padding: 0;
     gap: var(--p-32);
-    width: 60%;
 }
 
 .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content {
