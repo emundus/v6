@@ -66,9 +66,9 @@ Text::script('COM_EMUNDUS_APPLICATION_SHARE_VIEW_REQUESTS');
                                     </div>
                                     <div class="flex items-center justify-end gap-3" style="min-width: 50px">
                                         <?php if ($collaborator->uploaded == 0) : ?>
-                                            <span class="material-icons-outlined cursor-pointer" id="email_icon_<?php echo $collaborator->id ?>" onclick="sendNewEmail('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>')">send</span>
+                                            <span class="send-new-email-icon material-icons-outlined cursor-pointer" id="email_icon_<?php echo $collaborator->id ?>" onclick="sendNewEmail('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>')">send</span>
                                         <?php endif; ?>
-                                        <span class="material-icons-outlined cursor-pointer text-red-500" onclick="removeShared('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>')">person_remove</span>
+                                        <span class="remove-shared-icon material-icons-outlined cursor-pointer text-red-500" onclick="removeShared('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>')">person_remove</span>
                                     </div>
                                 </div>
                             <?php endif; ?>
