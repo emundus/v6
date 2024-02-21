@@ -284,7 +284,7 @@ class EmundusFiltersFiles extends EmundusFilters
 				if (!$filter_menu_values_are_empty) {
 					$position = array_search('status', $filter_names);
 
-					if (!empty($position) && isset($filter_menu_values[$position])) {
+					if ($position !== false && isset($filter_menu_values[$position])) {
 						$statuses = explode('|', $filter_menu_values[$position]);
 						$query->where('step IN ('. implode(',', $statuses) .')');
 					}
@@ -324,7 +324,7 @@ class EmundusFiltersFiles extends EmundusFilters
 				if (!$filter_menu_values_are_empty) {
 					$position = array_search('campaign', $filter_names);
 
-					if (!empty($position) && isset($filter_menu_values[$position])) {
+					if ($position !== false && isset($filter_menu_values[$position])) {
 						$campaigns = explode('|', $filter_menu_values[$position]);
 						$query->where('id IN ('. implode(',', $campaigns) .')');
 					}
