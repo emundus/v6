@@ -70,11 +70,12 @@ if (sizeof($tmp_campaigns) > 0)
 
 		foreach ($tmp_campaigns as $campaign)
 		{
-			$campaigns[$campaign->month][]        = $campaign;
 			$month                                = explode('-', $campaign->month_name);
 			$month_name                           = JText::_(strtoupper($month[0]));
 			$month_year                           = $month[1];
-			$campaigns[$campaign->month]['label'] = $month_name . ' - ' . $month_year;
+
+			$campaigns[$campaign->month.'_'.$month_year][]        = $campaign;
+			$campaigns[$campaign->month.'_'.$month_year]['label'] = $month_name . ' - ' . $month_year;
 		}
 	}
 	else
