@@ -478,6 +478,10 @@ export default {
 #formBuilder {
   background: white;
 
+  ul {
+    list-style-position: inside;
+  }
+
   header {
     box-shadow: inset 0px -1px 0px #E3E5E8;
 

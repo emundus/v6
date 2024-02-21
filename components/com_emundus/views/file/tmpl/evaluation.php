@@ -79,5 +79,3 @@ $user = JFactory::getUser();
 ></div>
 
 <script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
-
-

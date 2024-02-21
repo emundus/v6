@@ -235,10 +235,10 @@ class Files
                                 ];
                             } else if ($type == 'field') {
                                 $operators = [
-                                    ['label' => \JText::_('COM_EMUNDUS_FILES_EQUALS'), 'value' => '='],
-                                    ['label' => \JText::_('COM_EMUNDUS_FILES_NOT_EQUALS'), 'value' => '!='],
                                     ['label' => \JText::_('COM_EMUNDUS_FILES_LIKE'), 'value' => 'LIKE'],
-                                    ['label' => \JText::_('COM_EMUNDUS_FILES_NOT_LIKE'), 'value' => 'NOT LIKE']
+                                    ['label' => \JText::_('COM_EMUNDUS_FILES_NOT_LIKE'), 'value' => 'NOT LIKE'],
+                                    ['label' => \JText::_('COM_EMUNDUS_FILES_EQUALS'), 'value' => '='],
+                                    ['label' => \JText::_('COM_EMUNDUS_FILES_NOT_EQUALS'), 'value' => '!=']
                                 ];
                             } else if ($type == 'select') {
                                 if ($column->plugin == 'checkbox') {
@@ -256,7 +256,8 @@ class Files
                                 'type' => $type,
                                 'label' => $column->label,
                                 'values' => $values,
-                                'operators' => $operators
+                                'operators' => $operators,
+                                'selectedOperator' => $operators[0]['value']
                             ];
                         }
                     }
