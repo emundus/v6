@@ -1060,21 +1060,30 @@ class EmundusControllerFiles extends JControllerLegacy
      *
      */
     public function getfnuminfos() {
-        $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->get->getString('fnum', null);
+		$response = ['status' => false, 'fnumInfos' => '', 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
+		$user_id = JFactory::getUser()->id;
 
-        $res = false;
-        $fnumInfos = null;
+		if (!empty($user_id)) {
+			$jinput = JFactory::getApplication()->input;
+			$fnum = $jinput->getString('fnum', '');
 
-        if ($fnum != null) {
-            $m_files = new EmundusModelFiles();
-            $fnumInfos = $m_files->getFnumInfos($fnum);
-            if ($fnum !== false)
-                $res = true;
-        }
+			if (!empty($fnum) && EmundusHelperAccess::isUserAllowedToAccessFnum($user_id, $fnum)) {
+				$m_files = new EmundusModelFiles();
+				$response['fnumInfos'] = $m_files->getFnumInfos($fnum);
+				$response['code'] = 200;
+				if (!empty($response['fnumInfos'])) {
+					$response['status'] = true;
+					JFactory::getSession()->set('application_fnum', $fnum);
+				}
+			}
+		}
 
-        JFactory::getSession()->set('application_fnum', $fnum);
-        echo json_encode((object)(array('status' => $res, 'fnumInfos' => $fnumInfos)));
+	    if ($response['code'] == 403) {
+			header('HTTP/1.1 403 Forbidden');
+			exit;
+		}
+
+        echo json_encode((object)($response));
         exit;
     }
 
