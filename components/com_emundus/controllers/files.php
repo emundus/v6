@@ -1080,7 +1080,8 @@ class EmundusControllerFiles extends JControllerLegacy
 
 	    if ($response['code'] == 403) {
 			header('HTTP/1.1 403 Forbidden');
-			exit;
+		    echo JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS');
+		    exit;
 		}
 
         echo json_encode((object)($response));
