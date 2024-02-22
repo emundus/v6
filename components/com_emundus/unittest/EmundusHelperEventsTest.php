@@ -49,7 +49,7 @@ class EmundusHelperEventsTest extends TestCase
 	protected static function callMethod($obj, $name, array $args) {
 		$class = new \ReflectionClass($obj);
 		$method = $class->getMethod($name);
-		if (version_compare(PHP_VERSION, '7.4.0', '<'))
+		if (version_compare(PHP_VERSION, '8.1.0', '<'))
 		{
 			$method->setAccessible(true);
 		}
