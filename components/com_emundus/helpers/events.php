@@ -1452,22 +1452,29 @@ class EmundusHelperEvents {
 						$db->setQuery($query);
 						$repeat_table = $db->loadResult();
 
-						$query->clear()
-							->select('count(rt.id) as answers')
-							->from($db->quoteName($repeat_table, 'rt'))
-							->leftJoin($db->quoteName($table, 't') . ' ON ' . $db->quoteName('t.id') . ' = ' . $db->quoteName('rt.parent_id'))
-							->where($db->quoteName('t.fnum') . ' LIKE ' . $db->quote($fnum));
-						$db->setQuery($query);
-						$answers_given = $db->loadResult();
-
-						if ((int) $answers_given != $q_numbers)
+						if(!empty($repeat_table))
 						{
+							$query->clear()
+								->select('count(rt.id) as answers')
+								->from($db->quoteName($repeat_table, 'rt'))
+								->leftJoin($db->quoteName($table, 't') . ' ON ' . $db->quoteName('t.id') . ' = ' . $db->quoteName('rt.parent_id'))
+								->where($db->quoteName('t.fnum') . ' LIKE ' . $db->quote($fnum));
+							$db->setQuery($query);
+							$answers_given = $db->loadResult();
+
+							if ((int) $answers_given != $q_numbers)
+							{
+								$result['status'] = false;
+								$result['msg']    = 'PLEASE_COMPLETE_QCM_BEFORE_SEND';
+								$result['link']   = "index.php?option=com_fabrik&view=form&formid=" . $qcm->form_id . "&Itemid=" . $items_ids[$qcm->form_id] . "&usekey=fnum&rowid=" . $fnum . "&r=1";
+
+								// We break the loop because we have found a qcm that is not completed
+								return $result;
+							}
+						} else {
 							$result['status'] = false;
 							$result['msg'] = 'PLEASE_COMPLETE_QCM_BEFORE_SEND';
 							$result['link'] = "index.php?option=com_fabrik&view=form&formid=" . $qcm->form_id . "&Itemid=" . $items_ids[$qcm->form_id] . "&usekey=fnum&rowid=" . $fnum . "&r=1";
-
-							// We break the loop because we have found a qcm that is not completed
-							return $result;
 						}
 					}
 				} else {
