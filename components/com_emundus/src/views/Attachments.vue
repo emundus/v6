@@ -134,6 +134,7 @@
               @update-status="updateStatus"
               @change-permission="changePermission"
               :columns="$props.columns"
+              :is_applicant="$props.is_applicant"
           >
           </AttachmentRow>
           </tbody>
@@ -180,7 +181,7 @@
       <transition :name="slideTransition" @before-leave="beforeLeaveSlide">
         <div v-if="!modalLoading && displayedUser.user_id && displayedFnum" class="modal-body em-flex-row" :class="{'only-preview': onlyPreview}">
           <AttachmentPreview @fileNotFound="canDownload = false" @canDownload="canDownload = true" :user="displayedUser.user_id"></AttachmentPreview>
-          <AttachmentEdit v-if="displayEdit" :fnum="displayedFnum" :is-displayed="!onlyPreview" @closeModal="closeModal" @saveChanges="updateAttachment" @update-displayed="toggleOnlyPreview"></AttachmentEdit>
+          <AttachmentEdit v-if="displayEdit" :fnum="displayedFnum" :columns="$props.columns" :is_applicant="$props.is_applicant" :is-displayed="!onlyPreview" @closeModal="closeModal" @saveChanges="updateAttachment" @update-displayed="toggleOnlyPreview"></AttachmentEdit>
         </div>
       </transition>
     </modal>
@@ -228,6 +229,10 @@ export default {
       default() {
         return ['check','name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync'];
 			}
+    },
+    is_applicant: {
+      type: String,
+      default: null
     },
     displayEdit: {
       type: Boolean,

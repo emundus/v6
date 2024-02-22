@@ -6,6 +6,7 @@
 			:user="data.user"
 			:defaultAttachments="data.attachments ? data.attachments : null"
       :columns="data.columns"
+      :is_applicant="data.is_applicant"
 		></Attachments>
 
     <Files

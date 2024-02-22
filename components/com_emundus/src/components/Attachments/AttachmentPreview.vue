@@ -24,7 +24,7 @@ export default {
 		user: {
 			type: Number,
 			required: true,
-		},
+		}
 	},
 	data() {
 		return {

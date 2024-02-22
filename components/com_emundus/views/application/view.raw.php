@@ -168,6 +168,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->assignRef('expert_document_id', $expert_document_id);
                         $this->assignRef('nameCategory', $nameCategory);
                         $this->assignRef('columns', $columns);
+                        $this->assignRef('is_applicant', $this->_user->applicant);
 
                     } else {
                         echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
@@ -361,7 +362,7 @@ class EmundusViewApplication extends JViewLegacy {
 
 		                $actions = [];
 						$crud = ["c","r","u","d"];
-		                if(!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+		                if(in_array($fnum, array_keys($this->_user->fnums))) {
 			                //TODO: Add parameter to menu
 			                $actions = [1,4,13,28];
 							$crud = ["c","u","d"];
