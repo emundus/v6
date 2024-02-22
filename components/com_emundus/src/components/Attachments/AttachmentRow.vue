@@ -109,7 +109,7 @@ export default {
     columns: {
       type: Array,
 	    default() {
-		    return ['name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync'];
+		    return ['check','name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync'];
 	    }
     },
     is_applicant: {
