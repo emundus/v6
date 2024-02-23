@@ -38,7 +38,7 @@ class EmundusModelEmailsTest extends TestCase
         parent::__construct($name, $data, $dataName);
 	    $app = JFactory::getApplication();
 	    $this->h_sample = new EmundusUnittestHelperSamples;
-	    $username = 'test-expert-email-' . rand(0, 1000) . '@emundus.fr';
+	    $username = 'test-expert-email-' . rand(0, 10000) . '@emundus.fr';
 	    $this->h_sample->createSampleUser(9, $username);
 	    $logged_in = $app->login([
 		    'username' => $username,
@@ -98,7 +98,7 @@ class EmundusModelEmailsTest extends TestCase
 
 	public function testDeleteEmails()
 	{
-		$lbl = 'Test de la suppression ' . rand(0, 1000);
+		$lbl = 'Test de la suppression ' . rand(0, 10000);
 		$data = [
 			'lbl' => $lbl,
 			'subject' => 'Test de la création',
@@ -137,7 +137,7 @@ class EmundusModelEmailsTest extends TestCase
 		$app = JFactory::getApplication();
 		$jinput = $app->input;
 
-		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
 		$program = $this->h_sample->createSampleProgram();
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
 		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
@@ -145,7 +145,7 @@ class EmundusModelEmailsTest extends TestCase
 		$response = $this->m_emails->sendExpertMail([$fnum]);
 		$this->assertEmpty($response['sent'], 'L\'envoi de l\'email a échoué, car il manque des paramètres');
 
-		$params['mail_to'] = ['userunittest' . rand(0, 1000) . '@emundus.test.fr'];
+		$params['mail_to'] = ['userunittest' . rand(0, 10000) . '@emundus.test.fr'];
 		$jinput->post->set('mail_to', $params['mail_to']);
 
 		$response = $this->m_emails->sendExpertMail([$fnum]);
@@ -209,7 +209,7 @@ class EmundusModelEmailsTest extends TestCase
 
 	public function testgetMessagesToFromUser()
 	{
-		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
 		$program = $this->h_sample->createSampleProgram();
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
 		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);

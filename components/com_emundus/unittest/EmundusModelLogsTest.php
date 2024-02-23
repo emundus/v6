@@ -45,7 +45,7 @@ class EmundusModelLogsTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_logs = new EmundusModelLogs();
         $this->h_sample = new EmundusUnittestHelperSamples();
-        $this->user_sample_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+        $this->user_sample_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
     }
 
 	public function testFoo()

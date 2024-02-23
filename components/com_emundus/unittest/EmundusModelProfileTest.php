@@ -62,7 +62,7 @@ class EmundusModelProfileTest extends TestCase
 		$this->assertIsArray($fnums);
 		$this->assertEmpty($fnums, 'Empty user return empty array');
 
-		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
 		$program = $this->h_sample->createSampleProgram();
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
 		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);

@@ -63,7 +63,7 @@ class EmundusModelApplicationTest extends TestCase
 		$attachments = $this->m_application->getUserAttachmentsByFnum('');
 		$this->assertSame([], $attachments);
 
-		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
 		$program = $this->h_sample->createSampleProgram();
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
 		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
@@ -104,7 +104,7 @@ class EmundusModelApplicationTest extends TestCase
 		$upload = $this->m_application->uploadAttachment([]);
 		$this->assertSame($upload, false);
 
-		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
 		$program = $this->h_sample->createSampleProgram();
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
 		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
@@ -197,7 +197,7 @@ class EmundusModelApplicationTest extends TestCase
 		$done = $this->m_application->applicantCustomAction(0, '');
 		$this->assertSame($done, false, 'applicantCustomAction should return false if action and fnum are empty');
 
-		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
 		$program = $this->h_sample->createSampleProgram();
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
 		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
@@ -244,9 +244,9 @@ class EmundusModelApplicationTest extends TestCase
 	}
 
 	public function testgetApplicationMenu() {
-		$username = 'test-application-coordinator-' . rand(0, 1000) . '@emundus.fr';
+		$username = 'test-application-coordinator-' . rand(0, 10000) . '@emundus.fr';
 		$coordinator = $this->h_sample->createSampleUser(9, $username, 'test1234',  [2,7]);
-		$username = 'test-application-applicant-' . rand(0, 1000) . '@emundus.fr';
+		$username = 'test-application-applicant-' . rand(0, 10000) . '@emundus.fr';
 		$applicant = $this->h_sample->createSampleUser(9, $username);
 
 		$menus = $this->m_application->getApplicationMenu($coordinator);
@@ -324,7 +324,7 @@ class EmundusModelApplicationTest extends TestCase
 	}
 
 	public function testGetSharedFileUsers() {
-		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
 		$program = $this->h_sample->createSampleProgram();
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
 		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
@@ -348,7 +348,7 @@ class EmundusModelApplicationTest extends TestCase
 	}
 
 	public function testShareFileWith() {
-		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
 		$program = $this->h_sample->createSampleProgram();
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
 		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
@@ -371,7 +371,7 @@ class EmundusModelApplicationTest extends TestCase
 	}
 
 	public function testRemoveSharedUser() {
-		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
 		$program = $this->h_sample->createSampleProgram();
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
 		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
@@ -388,7 +388,7 @@ class EmundusModelApplicationTest extends TestCase
 	}
 
 	public function testRegenerateKey() {
-		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
 		$program = $this->h_sample->createSampleProgram();
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
 		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
@@ -408,7 +408,7 @@ class EmundusModelApplicationTest extends TestCase
 	}
 
 	public function testUpdateRight() {
-		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
 		$program = $this->h_sample->createSampleProgram();
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
 		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
@@ -429,8 +429,8 @@ class EmundusModelApplicationTest extends TestCase
 	}
 
 	public function testGetMyFilesRequests() {
-		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-		$collab_email = 'collaborator' . rand(0, 1000) . '@emundus.test.fr';
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
+		$collab_email = 'collaborator' . rand(0, 10000) . '@emundus.test.fr';
 		$user_id_2 = $this->h_sample->createSampleUser(9, $collab_email);
 		$program = $this->h_sample->createSampleProgram();
 		$campaign_id = $this->h_sample->createSampleCampaign($program);

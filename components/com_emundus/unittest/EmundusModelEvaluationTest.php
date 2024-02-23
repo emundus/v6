@@ -61,7 +61,7 @@ class EmundusModelEvaluationTest extends TestCase
 		$campaign = $this->h_samples->createSampleCampaign($program);
 		$letter_id = $this->h_samples->createSampleLetter($letter_attachement_id, 2, [$program['programme_code']], [0], [$campaign]);
 
-		$user = $this->h_samples->createSampleUser(9, 'user.test' . rand(0, 1000) . '@emundus.fr');
+		$user = $this->h_samples->createSampleUser(9, 'user.test' . rand(0, 10000) . '@emundus.fr');
 		$fnum = $this->h_samples->createSampleFile($campaign, $user);
 
 		$letters = $this->m_evaluation->getLettersByProgrammesStatusCampaigns([$program['programme_code']], [0], [$campaign]);
@@ -85,7 +85,7 @@ class EmundusModelEvaluationTest extends TestCase
 		$campaign = $this->h_samples->createSampleCampaign($program);
 		$letter_id = $this->h_samples->createSampleLetter($letter_attachement_id, 2, [$program['programme_code']], [0], [$campaign]);
 
-		$user = $this->h_samples->createSampleUser(9, 'user.test' . rand(0, 1000) . '@emundus.fr');
+		$user = $this->h_samples->createSampleUser(9, 'user.test' . rand(0, 10000) . '@emundus.fr');
 		$fnum = $this->h_samples->createSampleFile($campaign, $user);
 
 		$letters = $this->m_evaluation->getLetterTemplateForFnum($fnum, [$letter_attachement_id]);

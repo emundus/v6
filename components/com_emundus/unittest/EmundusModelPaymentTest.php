@@ -50,7 +50,7 @@ class EmundusModelPaymentTest extends TestCase
 
 	public function testcreatePaymentOrder()
 	{
-		$user_id = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 1000) . '@emundus.test.fr');
+		$user_id = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 10000) . '@emundus.test.fr');
 		$program = $this->h_sample->createSampleProgram();
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
 		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
@@ -59,7 +59,7 @@ class EmundusModelPaymentTest extends TestCase
 	}
 
 	public function testdidUserPay() {
-		$user_id = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 1000) . '@emundus.test.fr');
+		$user_id = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 10000) . '@emundus.test.fr');
 		$program = $this->h_sample->createSampleProgram();
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
 		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
