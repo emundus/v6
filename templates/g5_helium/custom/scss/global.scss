@@ -5719,7 +5719,11 @@ fieldset[disabled] .multiselect {
 }
 
 .multiselect__tags-wrap {
-  display: inline;
+  gap: 4px;
+  overflow: auto;
+  display: flex;
+  flex-wrap: wrap;
+  height: 25px;
 }
 
 .multiselect__tags {
