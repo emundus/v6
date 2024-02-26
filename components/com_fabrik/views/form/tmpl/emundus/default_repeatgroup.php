@@ -17,19 +17,28 @@ $group = $this->group;
 $i = 1;
 $w = new FabrikWorker;
 
+$current_user_id = JFactory::getUser()->id;
+
 foreach ($group->subgroups as $subgroup) :
+	$can_edit = true;
+	if(!empty($subgroup['user']) && !EmundusHelperAccess::asPartnerAccessLevel($current_user_id) && $this->collaborator) {
+		if(!empty($subgroup['user']->element_raw[$i-1]) && $subgroup['user']->element_raw[$i-1] != $current_user_id) {
+			$can_edit = false;
+		}
+	}
+
 	$introData = array_merge($input->getArray(), array('i' => $i));
 	?>
-	<div class="fabrikSubGroup">
-		<div data-role="group-repeat-intro">
+    <div class="fabrikSubGroup <?php if(!$can_edit) : ?> hidden<?php endif; ?>">
+        <div data-role="group-repeat-intro">
 			<?php echo $w->parseMessageForPlaceHolder($group->repeatIntro, $introData);?>
-		</div>
-		<div class="fabrikSubGroupElements em-repeat-card mb-4 mt-7">
-            <?php if ($group->canDeleteRepeat) : ?>
+        </div>
+        <div class="fabrikSubGroupElements em-repeat-card mb-4 mt-7">
+			<?php if ($group->canDeleteRepeat) : ?>
                 <div class="fabrikGroupRepeater pull-right">
-                    <?php echo $this->removeRepeatGroupButton; ?>
+					<?php echo $this->removeRepeatGroupButton; ?>
                 </div>
-            <?php endif; ?>
+			<?php endif; ?>
 
 			<?php
 
@@ -37,19 +46,19 @@ foreach ($group->subgroups as $subgroup) :
 			$this->elements = $subgroup;
 			echo $this->loadTemplate('group');
 			?>
-		</div><!-- end fabrikSubGroupElements -->
-        <?php
-        // Add the add/remove repeat group buttons
-        if ($group->editable && ($group->canAddRepeat || $group->canDeleteRepeat)) : ?>
+        </div><!-- end fabrikSubGroupElements -->
+		<?php
+		// Add the add/remove repeat group buttons
+		if ($group->editable && ($group->canAddRepeat || $group->canDeleteRepeat)) : ?>
             <div class="fabrikGroupRepeater">
-                <?php if ($group->canAddRepeat) :
-                    echo $this->addRepeatGroupButton;
-                endif; ?>
+				<?php if ($group->canAddRepeat) :
+					echo $this->addRepeatGroupButton;
+				endif; ?>
             </div>
-        <?php
-        endif;
-        ?>
-	</div><!-- end fabrikSubGroup -->
+		<?php
+		endif;
+		?>
+    </div><!-- end fabrikSubGroup -->
 	<?php
 	$i ++;
 endforeach;

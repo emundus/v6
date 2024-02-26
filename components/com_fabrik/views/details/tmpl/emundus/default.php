@@ -25,7 +25,7 @@ endif;
 
 ?>
 
-<div id="fabrikDetailsContainer_<?php echo $form->id ?>">
+<div id="fabrikDetailsContainer_<?php echo $form->id ?>" <?php if ($form->db_table_name == 'jos_emundus_users') : ?>class="p-4"<?php endif; ?>>
 
     <?php if ($form->db_table_name == 'jos_emundus_users' && !empty($model->data['jos_emundus_users___user_id_raw']) && !EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)) : ?>
         <?php

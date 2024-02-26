@@ -1974,7 +1974,15 @@ class EmundusModelCampaign extends JModelList {
 				} else {
 					JLog::add(JFactory::getUser()->id . ' Cannot upload a document model for ' . $did . ' and profile ' .$pid,  JLog::INFO, 'com_emundus');
 				}
-			}
+			} else {
+				$query->clear()
+					->update($this->_db->quoteName('#__emundus_setup_attachment_profiles'))
+					->set('has_sample = 0')
+					->where($this->_db->quoteName('profile_id') . ' = ' . $this->_db->quote($pid))
+					->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($did));
+		        $this->_db->setQuery($query);
+		        $this->_db->execute();
+	        }
 
             return true;
         } catch (Exception $e) {
@@ -2455,7 +2463,8 @@ class EmundusModelCampaign extends JModelList {
                 ->leftJoin('#__emundus_campaign_workflow_repeat_campaign AS ecw_camp ON ecw_camp.parent_id = ecw.id')
                 ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_status.parent_id = ecw.id')
                 ->where('ecw_camp.campaign = ' . $this->_db->quote($campaign_id))
-                ->group('ecw.profile');
+                ->group('ecw.profile')
+                ->order('ecw.step');
             $this->_db->setQuery($query);
 
             try {
@@ -2484,7 +2493,8 @@ class EmundusModelCampaign extends JModelList {
                 $query->andWhere('ecw_status.entry_status NOT IN (' . implode(',', $excluded_entry_statuses)  . ')');
             }
 
-            $query->group(['ecwrp.programs', 'ecw.profile']);
+            $query->group(['ecwrp.programs', 'ecw.profile'])
+	            ->order('ecw.step');
             $this->_db->setQuery($query);
 
             try {
@@ -2515,7 +2525,8 @@ class EmundusModelCampaign extends JModelList {
                 $query->andWhere('ecw_status.entry_status NOT IN (' . implode(',', $excluded_entry_statuses)  . ')');
             }
 
-            $query->group('ecw.profile');
+            $query->group('ecw.profile')
+	            ->order('ecw.step');
             $this->_db->setQuery($query);
 
             try {

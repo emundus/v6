@@ -858,17 +858,22 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 		$current_user = JFactory::getUser()->id;
 
-		$id = JFactory::getApplication()->input->getInt('id', $current_user);
-		if (!empty($id)) {
-			if ($id == $current_user || EmundusHelperAccess::asPartnerAccessLevel($current_user)) {
-				$m_users = new EmundusModelUsers();
-				$username = $m_users->getUserNameById($id);
+		$id = $this->input->getInt('id', $current_user);
 
-				if (!empty($username)) {
-					$response['user'] = $username;
-					$response['status'] = true;
-					$response['msg'] = JText::_('SUCCESS');
+		if (!empty($id)) {
+			if($id !== $current_user) {
+				if(!EmundusHelperAccess::asPartnerAccessLevel($current_user)) {
+					$id = $current_user;
 				}
+			}
+
+			$m_users  = $this->getModel('Users');
+			$username = $m_users->getUserNameById($id);
+
+			if (!empty($username)) {
+				$response['user'] = $username;
+				$response['status'] = true;
+				$response['msg'] = JText::_('SUCCESS');
 			}
 		}
 

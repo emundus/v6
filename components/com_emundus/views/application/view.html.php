@@ -9,6 +9,8 @@
 
 // no direct access
 
+use Joomla\CMS\Factory;
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport( 'joomla.application.component.view');
@@ -23,6 +25,12 @@ class EmundusViewApplication extends JViewLegacy{
 	var $_user = null;
 	var $_db = null;
 
+	protected $app;
+
+	protected $tabs;
+	public $fnum;
+	protected $ccid;
+
 	function __construct($config = array()){
 		// require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
@@ -34,110 +42,134 @@ class EmundusViewApplication extends JViewLegacy{
 
 		$this->_user = JFactory::getSession()->get('emundusUser');
 		$this->_db = JFactory::getDBO();
+		$this->app = Factory::getApplication();
 
 		parent::__construct($config);
 	}
+
     function display($tpl = null){
 
-    	if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
-			die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
+
+	    $jinput = $this->app->input;
+	    $this->fnum   = $jinput->getString('fnum', '');
+	    $this->ccid   = $jinput->getInt('ccid', 0);
+	    $layout = $jinput->getString('layout', 0);
 
         $document = JFactory::getDocument();
         $document->addStyleSheet("media/com_emundus/css/emundus.css" );
         $document->addStyleSheet("media/com_emundus/css/emundus_application.css" );
         $document->addScript("media/jui/js/jquery.min.js" );
 
+	    if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id) && $layout !== 'history') {
+		    $campaign_id = JRequest::getVar('campaign_id', null, 'GET', 'none', 0);
+		    $rowid       = JRequest::getVar('rowid', null, 'GET', 'none', 0);
+		    $aid         = JRequest::getVar('sid', null, 'GET', 'none', 0);
+		    $student     = JFactory::getUser($aid);
 
-		// $menu=JFactory::getApplication()->getMenu()->getActive();
-        $menu = JFactory::getApplication()->getMenu();
-		$current_menu  = $menu->getActive();
-		$access=!empty($current_menu)?$current_menu->access : 0;
+		    $this->assignRef('student', $student);
+		    $this->assignRef('current_user', $this->_user);
 
-		if (!EmundusHelperAccess::asEvaluatorAccessLevel($this->_user->id))
-			die("ACCESS_DENIED");
+		    $profile = JUserHelper::getProfile($aid);
+		    $this->assignRef('profile', $profile->emundus_profile);
 
-		$menu_params = $menu->getParams($current_menu->id);
+		    $application = $this->getModel('application');
+		    $details_id  = "82, 87, 89"; // list of Fabrik elements ID
+		    $userDetails = $application->getApplicantDetails($aid, $details_id);
+		    $this->assignRef('userDetails', $userDetails);
 
-		$campaign_id 	= JRequest::getVar('campaign_id', null, 'GET', 'none', 0);
-		$rowid 			= JRequest::getVar('rowid', null, 'GET', 'none', 0);
-		$aid 			= JRequest::getVar('sid', null, 'GET', 'none', 0);
-		$student 		= JFactory::getUser($aid);
+		    $infos            = array('#__emundus_uploads.filename', '#__users.email', '#__emundus_setup_profiles.label as profile', '#__emundus_personal_detail.gender', '#__emundus_personal_detail.birth_date as birthdate', '#__emundus_users.profile as pid');
+		    $userInformations = $application->getApplicantInfos($aid, $infos);
 
-		$this->assignRef('student', $student);
-		$this->assignRef('current_user', $this->_user);
+		    $this->assignRef('userInformations', $userInformations);
 
-		$profile = JUserHelper::getProfile($aid);
-		$this->assignRef('profile', $profile->emundus_profile);
+		    $userCampaigns = $application->getUserCampaigns($aid);
+		    $this->assignRef('userCampaigns', $userCampaigns);
 
-		$application = $this->getModel('application');
-		$details_id = "82, 87, 89"; // list of Fabrik elements ID
-		$userDetails = $application->getApplicantDetails($aid, $details_id);
-		$this->assignRef('userDetails', $userDetails);
+		    $userAttachments = $application->getUserAttachments($aid);
+		    $this->assignRef('userAttachments', $userAttachments);
 
-		$infos = array('#__emundus_uploads.filename', '#__users.email', '#__emundus_setup_profiles.label as profile', '#__emundus_personal_detail.gender', '#__emundus_personal_detail.birth_date as birthdate', '#__emundus_users.profile as pid');
-		$userInformations = $application->getApplicantInfos($aid, $infos);
+		    $userComments = $application->getUsersComments($aid);
+		    $this->assignRef('userComments', $userComments);
 
-		$this->assignRef('userInformations', $userInformations);
+		    $formsProgress = $application->getFormsProgress();
+		    $this->assignRef('formsProgress', $formsProgress);
 
-		$userCampaigns = $application->getUserCampaigns($aid);
-		$this->assignRef('userCampaigns', $userCampaigns);
+		    $attachmentsProgress = $application->getAttachmentsProgress();
+		    $this->assignRef('attachmentsProgress', $attachmentsProgress);
 
-		$userAttachments = $application->getUserAttachments($aid);
-		$this->assignRef('userAttachments', $userAttachments);
+		    $logged = $application->getlogged($aid);
+		    $this->assignRef('logged', $logged);
 
-		$userComments = $application->getUsersComments($aid);
-		$this->assignRef('userComments', $userComments);
+		    $forms = $application->getForms($aid);
+		    $this->assignRef('forms', $forms);
 
-		$formsProgress = $application->getFormsProgress();
-		$this->assignRef('formsProgress', $formsProgress);
+		    $email = $application->getEmail($aid);
+		    $this->assignRef('email', $email);
 
-		$attachmentsProgress = $application->getAttachmentsProgress();
-		$this->assignRef('attachmentsProgress', $attachmentsProgress);
+		    //Evaluation
+		    if ($this->_user->profile == 16) {
+			    $options = array('view');
+		    }
+		    else {
+			    $options = array('add', 'edit', 'delete');
+		    }
 
-		$logged = $application->getlogged($aid);
-		$this->assignRef('logged', $logged);
+		    $user[0] = array(
+			    'user_id'          => $student->id,
+			    'name'             => $student->name,
+			    'email_applicant'  => $student->email,
+			    'campaign'         => "",
+			    'campaign_id'      => $campaign_id,
+			    'evaluation_id'    => $rowid,
+			    'final_grade'      => "",
+			    'date_result_sent' => "",
+			    'result'           => "",
+			    'comment'          => "",
+			    'user'             => $this->_user->id,
+			    'user_name'        => "",
+			    'ranking'          => ""
+		    );
 
-		$forms = $application->getForms($aid);
-		$this->assignRef('forms', $forms);
+		    $this->assignRef('campaign_id', $campaign_id);
 
-		$email = $application->getEmail($aid);
-		$this->assignRef('email', $email);
+		    $evaluation = EmundusHelperList::createEvaluationBlock($user, $options);
+		    $this->assignRef('evaluation', $evaluation);
+		    unset($options);
 
-		//Evaluation
-		if ($this->_user->profile==16) {
-		    $options = array('view');
-		}
-		else {
-		    $options = array('add', 'edit', 'delete');
-		}
+		    $options = array('evaluation');
+		    $actions = EmundusHelperList::createActionsBlock($user, $options);
+		    $this->assignRef('actions', $actions);
+		    unset($options);
 
-		$user[0] = array (
-	      'user_id' => $student->id,
-	      'name' => $student->name,
-	      'email_applicant' => $student->email,
-	      'campaign' => "",
-	      'campaign_id' => $campaign_id,
-	      'evaluation_id' => $rowid,
-	      'final_grade' => "",
-	      'date_result_sent' => "",
-	      'result' => "",
-	      'comment' => "",
-	      'user' => $this->_user->id,
-	      'user_name' => "",
-	      'ranking' => ""
-	      );
+		    parent::display($tpl);
+	    }
+	    elseif (!empty($this->ccid) && !empty($this->fnum) && in_array($this->fnum, array_keys($this->_user->fnums))) {
 
-		$this->assignRef('campaign_id', $campaign_id);
+		    $fnumInfos = $this->_user->fnums[$this->fnum];
 
-		$evaluation = EmundusHelperList::createEvaluationBlock($user, $options);
-		$this->assignRef('evaluation', $evaluation);
-		unset($options);
+		    switch ($layout) {
+			    case 'history':
+				    if ((int)$fnumInfos->application_id === $this->ccid && ($fnumInfos->applicant_id == $this->_user->id || (!empty($fnumInfos->show_history) && $fnumInfos->show_history == 1))) {
+					    $menu         = $this->app->getMenu();
+					    $current_menu = $menu->getActive();
 
-		$options = array('evaluation');
-		$actions = EmundusHelperList::createActionsBlock($user, $options);
-		$this->assignRef('actions', $actions);
-		unset($options);
+					    $Itemid = $this->app->input->getInt('Itemid', $current_menu->id);
+					    $params = $menu->getParams($Itemid);
 
-        parent::display($tpl);
+					    $this->tabs = $params->get('tabs', array());
+				    }
+				    else {
+					    $this->app->enqueueMessage(JText::_('COM_EMUNDUS_APPLICATION_SHARE_VIEW_HISTORY_ERROR'), 'error');
+					    $this->app->redirect('index.php');
+				    }
+				    break;
+		    }
+
+		    parent::display();
+	    }
+	    else {
+		    $this->app->enqueueMessage(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'), 'error');
+		    $this->app->redirect('index.php');
+	    }
     }
 }

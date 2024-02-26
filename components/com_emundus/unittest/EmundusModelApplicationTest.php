@@ -7,6 +7,7 @@
  * @license     A "Slug" license name e.g. GPL2
  */
 
+use Joomla\CMS\Factory;
 use PHPUnit\Framework\TestCase;
 ini_set( 'display_errors', false );
 error_reporting(E_ALL);
@@ -62,7 +63,7 @@ class EmundusModelApplicationTest extends TestCase
 		$attachments = $this->m_application->getUserAttachmentsByFnum('');
 		$this->assertSame([], $attachments);
 
-		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
 		$program = $this->h_sample->createSampleProgram();
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
 		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
@@ -73,7 +74,7 @@ class EmundusModelApplicationTest extends TestCase
 		$second_attachment_id = $this->h_sample->createSampleAttachment();
 		$this->h_sample->createSampleUpload($fnum, $campaign_id, $user_id, $first_attachment_id);
 		$this->h_sample->createSampleUpload($fnum, $campaign_id, $user_id, $second_attachment_id);
-		$attachments = $this->m_application->getUserAttachmentsByFnum($fnum);
+		$attachments = $this->m_application->getUserAttachmentsByFnum($fnum, '', null, false, $user_id);
 		$this->assertNotEmpty($attachments);
 		$this->assertSame(count($attachments), 2);
 
@@ -87,17 +88,23 @@ class EmundusModelApplicationTest extends TestCase
 
 		// if i use search parameter, only pertinent attachments should be returned
 		$search = $attachments[0]->value;
-		$attachments = $this->m_application->getUserAttachmentsByFnum($fnum, $search);
+		$attachments = $this->m_application->getUserAttachmentsByFnum($fnum, $search, null, false, $user_id);
 		$this->assertNotEmpty($attachments);
 		$this->assertSame($attachments[0]->value, $search);
 		$this->assertSame(count($attachments), 1);
+		
+		// If i'am an applicant i should not be able to see attachments with can_be_viewed = 0
+		$attachments = $this->m_application->getUserAttachmentsByFnum($fnum, '', null, true, $user_id);
+		foreach ($attachments as $attachment) {
+			$this->assertSame($attachment->can_be_viewed, '1');
+		}
 	}
 
 	public function testuploadAttachment() {
 		$upload = $this->m_application->uploadAttachment([]);
 		$this->assertSame($upload, false);
 
-		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
 		$program = $this->h_sample->createSampleProgram();
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
 		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
@@ -190,7 +197,7 @@ class EmundusModelApplicationTest extends TestCase
 		$done = $this->m_application->applicantCustomAction(0, '');
 		$this->assertSame($done, false, 'applicantCustomAction should return false if action and fnum are empty');
 
-		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
 		$program = $this->h_sample->createSampleProgram();
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
 		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
@@ -237,9 +244,9 @@ class EmundusModelApplicationTest extends TestCase
 	}
 
 	public function testgetApplicationMenu() {
-		$username = 'test-application-coordinator-' . rand(0, 1000) . '@emundus.fr';
+		$username = 'test-application-coordinator-' . rand(0, 10000) . '@emundus.fr';
 		$coordinator = $this->h_sample->createSampleUser(9, $username, 'test1234',  [2,7]);
-		$username = 'test-application-applicant-' . rand(0, 1000) . '@emundus.fr';
+		$username = 'test-application-applicant-' . rand(0, 10000) . '@emundus.fr';
 		$applicant = $this->h_sample->createSampleUser(9, $username);
 
 		$menus = $this->m_application->getApplicationMenu($coordinator);
@@ -314,6 +321,151 @@ class EmundusModelApplicationTest extends TestCase
 		foreach ($user_campaigns as $campaign) {
 			$this->assertContains($campaign->id, $all_user_campaigns, 'getUserCampaigns should return all campaigns attached to the applicant');
 		}
+	}
+
+	public function testGetSharedFileUsers() {
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
+		$program = $this->h_sample->createSampleProgram();
+		$campaign_id = $this->h_sample->createSampleCampaign($program);
+		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+
+		require_once JPATH_SITE . '/components/com_emundus/models/files.php';
+		$m_files = new EmundusModelFiles;
+		$fnumInfos = $m_files->getFnumInfos($fnum);
+
+		$shared_users = $this->m_application->getSharedFileUsers($fnumInfos['ccid']);
+		$this->assertEmpty($shared_users, 'getSharedFileUsers should return an empty array after create a new file');
+
+		$this->m_application->shareFileWith(['collaborator@emundus.fr'], $fnumInfos['ccid'], $user_id);
+
+		$shared_users = $this->m_application->getSharedFileUsers($fnumInfos['ccid']);
+		$this->assertNotEmpty($shared_users, 'getSharedFileUsers should return an array with at least one user');
+
+		$this->m_application->shareFileWith(['collaborator2@emundus.fr'], $fnumInfos['ccid'], $user_id);
+
+		$shared_users = $this->m_application->getSharedFileUsers($fnumInfos['ccid']);
+		$this->assertCount(2,$shared_users, 'getSharedFileUsers should return an array with exactly 2 users');
+	}
+
+	public function testShareFileWith() {
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
+		$program = $this->h_sample->createSampleProgram();
+		$campaign_id = $this->h_sample->createSampleCampaign($program);
+		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+
+		require_once JPATH_SITE . '/components/com_emundus/models/files.php';
+		$m_files = new EmundusModelFiles;
+		$fnumInfos = $m_files->getFnumInfos($fnum);
+
+		$shared = $this->m_application->shareFileWith([], $fnumInfos['ccid'], $user_id);
+		$this->assertEmpty($shared['emails'], 'shareFileWith should return empty emails shared if no emails is provided');
+
+		$shared = $this->m_application->shareFileWith(['collaborator@emundus.fr'], $fnumInfos['ccid'], $user_id);
+		$this->assertNotEmpty($shared['emails'], 'shareFileWith should return an array with at least one email shared');
+
+		$shared = $this->m_application->shareFileWith(['collaborator@emundus.fr'], $fnumInfos['ccid'], $user_id);
+		$this->assertEmpty($shared['emails'], 'shareFileWith should return empty emails shared if the file is already shared with the same user');
+
+		$shared = $this->m_application->shareFileWith(['collaborator2@emundus.fr'], $fnumInfos['ccid'], $user_id);
+		$this->assertNotEmpty($shared['emails'], 'shareFileWith should return an array with at least one email shared different');
+	}
+
+	public function testRemoveSharedUser() {
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
+		$program = $this->h_sample->createSampleProgram();
+		$campaign_id = $this->h_sample->createSampleCampaign($program);
+		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+
+		require_once JPATH_SITE . '/components/com_emundus/models/files.php';
+		$m_files = new EmundusModelFiles;
+		$fnumInfos = $m_files->getFnumInfos($fnum);
+
+		$this->m_application->shareFileWith(['collaborator@emundus.fr'], $fnumInfos['ccid'], $user_id);
+		$shared_users = $this->m_application->getSharedFileUsers($fnumInfos['ccid']);
+
+		$removed = $this->m_application->removeSharedUser($shared_users[0]->id,$fnumInfos['ccid'], $user_id);
+		$this->assertTrue($removed, 'removeSharedUser should return true if the user is removed');
+	}
+
+	public function testRegenerateKey() {
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
+		$program = $this->h_sample->createSampleProgram();
+		$campaign_id = $this->h_sample->createSampleCampaign($program);
+		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+
+		require_once JPATH_SITE . '/components/com_emundus/models/files.php';
+		$m_files = new EmundusModelFiles;
+		$fnumInfos = $m_files->getFnumInfos($fnum);
+
+		$this->m_application->shareFileWith(['collaborator@emundus.fr'], $fnumInfos['ccid'], $user_id);
+		$shared_users = $this->m_application->getSharedFileUsers($fnumInfos['ccid']);
+
+		$regenerated = $this->m_application->regenerateKey($shared_users[0]->id, $fnumInfos['ccid'], $user_id);
+		$this->assertSame('collaborator@emundus.fr',$regenerated['email'], 'regenerateKey should return true if the key is regenerated');
+
+		$regenerated = $this->m_application->regenerateKey(9999, $fnumInfos['ccid'], $user_id);
+		$this->assertEmpty($regenerated['email'], 'regenerateKey should return empty if the user is not found');
+	}
+
+	public function testUpdateRight() {
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
+		$program = $this->h_sample->createSampleProgram();
+		$campaign_id = $this->h_sample->createSampleCampaign($program);
+		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+
+		require_once JPATH_SITE . '/components/com_emundus/models/files.php';
+		$m_files = new EmundusModelFiles;
+		$fnumInfos = $m_files->getFnumInfos($fnum);
+
+		$this->m_application->shareFileWith(['collaborator@emundus.fr'], $fnumInfos['ccid'], $user_id);
+		$shared_users = $this->m_application->getSharedFileUsers($fnumInfos['ccid']);
+
+		$this->assertSame('1', $shared_users[0]->u, 'The user should be able to update file');
+		$updated = $this->m_application->updateRight($shared_users[0]->id, $fnumInfos['ccid'], 'u',0,$user_id);
+		$this->assertTrue($updated, 'updateRight should return true if the right is updated');
+
+		$shared_users = $this->m_application->getSharedFileUsers($fnumInfos['ccid']);
+		$this->assertSame('0', $shared_users[0]->u, 'The user should not be able to update file after rights updated');
+	}
+
+	public function testGetMyFilesRequests() {
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
+		$collab_email = 'collaborator' . rand(0, 10000) . '@emundus.test.fr';
+		$user_id_2 = $this->h_sample->createSampleUser(9, $collab_email);
+		$program = $this->h_sample->createSampleProgram();
+		$campaign_id = $this->h_sample->createSampleCampaign($program);
+		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+
+		require_once JPATH_SITE . '/components/com_emundus/models/files.php';
+		$m_files = new EmundusModelFiles;
+		$fnumInfos = $m_files->getFnumInfos($fnum);
+
+		$db = Factory::getDbo();
+		$query = $db->getQuery(true);
+
+		$this->m_application->shareFileWith([$collab_email], $fnumInfos['ccid'], $user_id);
+		$shared_users = $this->m_application->getSharedFileUsers($fnumInfos['ccid']);
+
+		$my_files_requests = $this->m_application->getMyFilesRequests($user_id_2);
+		$this->assertEmpty($my_files_requests, 'getMyFilesRequests should return an empty array if the user has no requests accepted');
+
+		// We accept the request
+		$query->update('#__emundus_files_request')
+			->set('uploaded = 1')
+			->where('email = ' . $db->quote($shared_users[0]->email))
+			->where('fnum = ' . $db->quote($fnum));
+		$db->setQuery($query);
+		$db->execute();
+
+
+		$my_files_requests = $this->m_application->getMyFilesRequests($user_id_2);
+		$this->assertNotEmpty($my_files_requests, 'getMyFilesRequests should return an array if the user has requests');
+
+		$query->clear()
+			->delete('#__users')
+			->where('id = ' . $db->quote($user_id_2));
+		$db->setQuery($query);
+		$db->execute();
 	}
 }
 

@@ -4,7 +4,7 @@
 		:class="{ checked: checkedAttachments.includes(attachment.aid) }"
 		:key="attachment.aid"
 	>
-		<td>
+		<td v-if="columns.includes('check')">
 			<input
 				class="attachment-check"
 				type="checkbox"
@@ -25,7 +25,7 @@
 			class="status valid-state"
 			:class="{success: attachment.is_validated == 1,warning: attachment.is_validated == 2,error: attachment.is_validated == 0}"
 		>
-			<select @change="(e) => updateStatus(e)" :disabled="canUpdate === false ? true : false">
+			<select @change="(e) => updateStatus(e)" :disabled="(canUpdate === false || is_applicant == 1) ? true : false">
 				<option value="1" :selected="attachment.is_validated == 1">{{ translate("VALID") }}</option>
 				<option value="0" :selected="attachment.is_validated == 0">{{ translate("INVALID") }}</option>
 				<option value="2" :selected="attachment.is_validated == 2">{{ translate("COM_EMUNDUS_ATTACHMENTS_WARNING") }}</option>
@@ -109,9 +109,13 @@ export default {
     columns: {
       type: Array,
 	    default() {
-		    return ['name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync'];
+		    return ['check','name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync'];
 	    }
-    }
+    },
+    is_applicant: {
+      type: String,
+      default: null
+    },
 	},
 	mixins: [mixin],
 	data() {

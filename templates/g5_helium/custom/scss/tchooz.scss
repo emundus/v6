@@ -1789,6 +1789,18 @@ button.em-swal-delete-button:hover{
   justify-content: right !important;
 }
 
+.swal2-content .swal2-validation-message {
+  margin-top: 24px;
+  color: var(--neutral-800);
+  gap: 6px;
+  align-items: flex-start;
+  padding: 8px 18px;
+}
+
+.swal2-validation-message::before {
+  display: none !important;
+}
+
 /** Vue Modal - Translation tool **/
 #translationTool,#contentTool,#filesTool, #formBuilder, .full-width-modal {
   .v--modal-overlay {

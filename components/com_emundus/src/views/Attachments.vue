@@ -16,7 +16,7 @@
 			      <span class="material-icons-outlined search">search</span>
 			      <span class="material-icons-outlined clear em-pointer" @click="search = ''">clear</span>
 		      </div>
-		      <select v-if="Object.entries(displayedAttachmentCategories).length > 0"
+          <select v-if="columns.includes('category') && Object.entries(displayedAttachmentCategories).length > 0"
 		          name="category"
 				      class="category-select em-ml-16"
 				      v-model="category"
@@ -72,7 +72,8 @@
         <table :class="{ loading: loading }" aria-describedby="Table of attachments information">
           <thead>
 	          <tr>
-	            <th id="check-th"><input class="attachment-check" type="checkbox" @change="updateAllCheckedAttachments"/></th>
+            <th v-if="columns.includes('check')" id="check-th"><input class="attachment-check" type="checkbox" @change="updateAllCheckedAttachments"/>
+            </th>
 	            <th v-if="columns.includes('name')" id="name" @click="orderBy('value')">
 		            <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_NAME") }}</span>
 	              <span v-if="sort.orderBy === 'value' && sort.order === 'asc'" class="material-icons-outlined em-font-size-16">arrow_upward</span>
@@ -133,6 +134,7 @@
               @update-status="updateStatus"
               @change-permission="changePermission"
               :columns="$props.columns"
+              :is_applicant="$props.is_applicant"
           >
           </AttachmentRow>
           </tbody>
@@ -179,7 +181,7 @@
       <transition :name="slideTransition" @before-leave="beforeLeaveSlide">
         <div v-if="!modalLoading && displayedUser.user_id && displayedFnum" class="modal-body em-flex-row" :class="{'only-preview': onlyPreview}">
           <AttachmentPreview @fileNotFound="canDownload = false" @canDownload="canDownload = true" :user="displayedUser.user_id"></AttachmentPreview>
-          <AttachmentEdit v-if="displayEdit" :fnum="displayedFnum" :is-displayed="!onlyPreview" @closeModal="closeModal" @saveChanges="updateAttachment" @update-displayed="toggleOnlyPreview"></AttachmentEdit>
+          <AttachmentEdit v-if="displayEdit" :fnum="displayedFnum" :columns="$props.columns" :is_applicant="$props.is_applicant" :is-displayed="!onlyPreview" @closeModal="closeModal" @saveChanges="updateAttachment" @update-displayed="toggleOnlyPreview"></AttachmentEdit>
         </div>
       </transition>
     </modal>
@@ -225,8 +227,12 @@ export default {
     columns: {
       type: Array,
       default() {
-				return ['name','date','desc','category','status','user','modified_by','modified','permissions','sync'];
+        return ['check','name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync'];
 			}
+    },
+    is_applicant: {
+      type: String,
+      default: null
     },
     displayEdit: {
       type: Boolean,

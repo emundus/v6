@@ -84,6 +84,14 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 				</div>
 			</div>
 
+            <div class="panel panel-info em-hide" id="em-collaborators">
+                <div class="panel-heading em-hide-heading">
+                    <h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_APPLICATION_COLLABORATORS'); ?></h3>
+                </div>
+                <div class="panel-body em-hide-body" style="padding: 2px 4px;">
+                </div>
+            </div>
+
 
 
 			<div class="clearfix"></div>

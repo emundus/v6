@@ -669,16 +669,21 @@ class EmundusController extends JControllerLegacy {
         $aid = $session->get('emundusUser');
 
         $m_profile = new EmundusModelProfile;
+	    $m_application = $this->getModel('Application');
         $infos = $m_profile->getFnumDetails($fnum);
 
-        if ($aid->id != $infos['applicant_id']) {
+	    $my_shared_files = $m_application->getMyFilesRequests($aid->id);
+	    $fnums_shared = array_map(function($item) {
+		    return $item->fnum;
+	    }, $my_shared_files);
+
+        if ($aid->id != $infos['applicant_id'] && !in_array($fnum, $fnums_shared)) {
             return;
         }
 
 	    $m_profile->initEmundusSession($fnum);
 
         if (empty($redirect)) {
-            $m_application 	= new EmundusModelApplication;
             if (empty($confirm)) {
                 $redirect = $m_application->getFirstPage();
             } else {

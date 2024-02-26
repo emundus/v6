@@ -555,6 +555,9 @@ class EmundusModelEmails extends JModelList {
         );
 
         if(!empty($fnum)){
+            $patterns[] = '/\[FNUM\]/';
+            $replacements[] = $fnum;
+
             require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
             $m_files = new EmundusModelFiles();
             $status = $m_files->getStatusByFnums([$fnum]);
@@ -569,6 +572,11 @@ class EmundusModelEmails extends JModelList {
             }
             $patterns[] = '/\[APPLICATION_TAGS\]/';
             $replacements[] = implode(',', $tags_label);
+
+            $fnumInfos = $m_files->getFnumInfos($fnum);
+            $patterns[] = '/\[CAMPAIGN_LABEL\]/';
+            $replacements[] = $fnumInfos['label'];
+
         }
 
         if(isset($post)) {
@@ -2894,8 +2902,18 @@ class EmundusModelEmails extends JModelList {
                 }
 
                 // In case no post value is supplied
-                $post['SITE_URL'] = isset($post['SITE_URL']) ? $post['SITE_URL'] : JURI::base();
-                $post['USER_EMAIL'] = isset($post['USER_EMAIL']) ? $post['USER_EMAIL'] : $email_address;
+				$default_post = [
+					'SITE_URL'   => JURI::base(),
+					'SITE_NAME' => $config->get('sitename'),
+					'USER_EMAIL' => $email_address,
+					'LOGO' => EmundusHelperEmails::getLogo(),
+				];
+
+				if (!empty($post)) {
+					$post = array_merge($default_post, $post);
+				} else {
+					$post = $default_post;
+				}
 
                 $cc = [];
                 $keys = [];
@@ -2911,7 +2929,7 @@ class EmundusModelEmails extends JModelList {
                     }
 
                     $password = !empty($post['PASSWORD']) ? $post['PASSWORD'] : "";
-                    $post = $this->setTags($user_id, $post, null, $password, $mail_from_name.$mail_from.$template->subject.$template->message);
+                    $post = $this->setTags($user_id, $post, $fnum, $password, $mail_from_name.$mail_from.$template->subject.$template->message);
 
                     $mail_from_name = preg_replace($post['patterns'], $post['replacements'], $mail_from_name);
                     $mail_from = preg_replace($post['patterns'], $post['replacements'], $mail_from);

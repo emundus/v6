@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<metadata>
+    <layout title="COM_EMUNDUS_APPLICATION_VIEW_HISTORY_TITLE">
+        <message>
+            <![CDATA[COM_EMUNDUS_APPLICATION_VIEW_HISTORY_TITLE_DESC]]>
+        </message>
+    </layout>
+
+    <fields name="params">
+        <fieldset addfieldpath="/administrator/components/com_emundus/models/fields" name="basic">
+            <field name="tabs" label="COM_EMUNDUS_APPLICATION_VIEW_HISTORY_TABS" type="checkboxes">
+                <option value="history">COM_EMUNDUS_APPLICATION_VIEW_HISTORY_TAB_HISTORY</option>
+                <option value="forms">COM_EMUNDUS_APPLICATION_VIEW_HISTORY_TAB_FORMS</option>
+                <option value="attachments">COM_EMUNDUS_APPLICATION_VIEW_HISTORY_TAB_ATTACHMENTS</option>
+            </field>
+        </fieldset>
+    </fields>
+</metadata>

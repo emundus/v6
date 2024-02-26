@@ -21,9 +21,13 @@ foreach ($this->elements as $element) :
 		?>
 
 		<div class="<?php echo $element->span;?>">
-			<div class="row-fluid">
-				<div class="<?php echo FabrikHelperHTML::getGridSpan(4); ?>"><em><?php echo $element->label_raw ?></em></div>
-				<div class="<?php echo FabrikHelperHTML::getGridSpan(8); ?>"><?php echo $element->element;?></div>
+			<div class="row-fluid mb-3">
+				<div>
+					<?php echo $element->label; ?>
+				</div>
+				<div class="fabrikElement">
+					<?php echo $element->element_ro; ?>
+				</div>
 			</div>
 		</div>
 

@@ -44,6 +44,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $document->addStyleSheet("media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
     $document->addStyleSheet("media/com_emundus/lib/jquery-plugin-circliful-master/css/material-design-iconic-font.min.css" );
     $document->addStyleSheet("modules/mod_emundus_applications/style/mod_emundus_applications.css?".$hash);
+	$document->addStyleSheet("media/com_emundus/lib/selectize/dist/css/selectize.default.css" );
 
     $document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script><![endif]-->');
     $document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->');
@@ -51,6 +52,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $document->addScript("media/jui/js/jquery.min.js" );
     $document->addScript("media/com_emundus/lib/bootstrap-336/js/bootstrap.min.js");
     $document->addScript("media/com_emundus/lib/jquery-plugin-circliful-master/js/jquery.circliful.js" );
+    $document->addScript("media/com_emundus/lib/selectize/dist/js/standalone/selectize.js" );
 
     $app = JFactory::getApplication();
     $Itemid = $app->input->getInt('Itemid', null, 'int');
@@ -136,6 +138,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $custom_actions  = $params->get('mod_em_application_custom_actions');
 	$show_tabs = $params->get('mod_em_applications_show_tabs',1);
 	$actions = $params->get('mod_emundus_applications_actions',[]);
+	$history_link = $app->getMenu()->getItems('link', 'index.php?option=com_emundus&view=application&layout=history', true);
 
     // Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.
     if ($layout == '_:ccirs-drh') {
@@ -145,8 +148,9 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
         $cc_list_url = $params->get('cc_list_url', 'index.php');
         $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by);
     } else {
+	    $collaborate = in_array('collaborate',$actions);
         // We send the layout as a param because Hesam needs different information.
-        $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by, $params);
+        $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by, $params,$collaborate);
 		$tabs = $m_application->getTabs(JFactory::getUser()->id);
     }
 

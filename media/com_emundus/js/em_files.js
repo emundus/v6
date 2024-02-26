@@ -439,6 +439,28 @@ function openFiles(fnum, page = 0, vue = false) {
 
     $.ajax({
         type: 'get',
+        url: 'index.php?option=com_emundus&view=application&fnum=' + fnum.fnum + '&Itemid=' + itemId + '&format=raw&layout=collaborate',
+        dataType: 'html',
+        success: function (result) {
+            if (result) {
+                var tag = document.createElement("script");
+                tag.src = "media/com_emundus/js/collaborate.js";
+                document.getElementsByTagName("head")[0].appendChild(tag);
+
+                $('#em-collaborators .panel-body').append(result);
+                document.getElementById('em-collaborators').show();
+            } else {
+                document.getElementById('em-collaborators').hide();
+            }
+
+        },
+        error: function (jqXHR) {
+            console.log(jqXHR.responseText);
+        }
+    });
+
+    $.ajax({
+        type: 'get',
         url: 'index.php?option=com_emundus&view=application&fnum=' + fnum.fnum + '&Itemid=' + itemId + '&format=raw&layout=synthesis&action=0',
         dataType: 'html',
         success: function(result) {

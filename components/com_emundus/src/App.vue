@@ -5,6 +5,8 @@
 			:fnum="data.fnum"
 			:user="data.user"
 			:defaultAttachments="data.attachments ? data.attachments : null"
+      :columns="data.columns"
+      :is_applicant="data.is_applicant"
 		></Attachments>
 
     <Files
@@ -96,6 +98,10 @@ export default {
     if (this.data.attachments) {
 		  this.data.attachments = JSON.parse(atob(this.data.attachments));
 	  }
+
+    if (this.data.columns) {
+      this.data.columns = JSON.parse(atob(this.data.columns));
+    }
 
     if (typeof this.$props.datas != 'undefined') {
       this.$store.commit("global/initDatas", this.$props.datas);

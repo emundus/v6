@@ -1019,27 +1019,25 @@ class EmundusControllersettings extends JControllerLegacy {
         $user = JFactory::getUser();
         $results = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
 
-        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            $jinput = JFactory::getApplication()->input;
-            // get input format, second, minutes or hours
-            $format = $jinput->getString('format', 'hours');
+		$jinput = JFactory::getApplication()->input;
+		// get input format, second, minutes or hours
+	    $format = $jinput->getString('format', 'hours');
 
-            $config = JFactory::getConfig();
-            $offset = $config->get('offset');
+		$config = JFactory::getConfig();
+		$offset = $config->get('offset');
 
-            $dateTZ = new DateTimeZone($offset);
-            $date = new DateTime('now', $dateTZ);
-            $offset = $dateTZ->getOffset($date);
-            if (!empty($offset)) {
-                if ($format == 'hours') {
-                    $offset = $offset / 3600;
-                } elseif ($format == 'minutes') {
-                    $offset = $offset / 60;
-                }
-            }
+		$dateTZ = new DateTimeZone($offset);
+		$date = new DateTime('now', $dateTZ);
+		$offset = $dateTZ->getOffset($date);
+		if (!empty($offset)) {
+			if ($format == 'hours') {
+				$offset = $offset / 3600;
+			} elseif ($format == 'minutes') {
+				$offset = $offset / 60;
+			}
+		}
 
-            $results = ['status' => true, 'msg' => '' , 'data' => $offset];
-        }
+		$results = ['status' => true, 'msg' => '' , 'data' => $offset];
 
         echo json_encode((object)$results);
         exit;

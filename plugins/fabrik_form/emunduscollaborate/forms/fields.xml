@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+    <fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+        <fieldset name="plg-form-emunduscollaborate" label="PLG_FABRIK_FORM_EMUNDUSCOLLABORATE_FIELDS">
+            <field
+                    name="redirect_url"
+                    type="field"
+                    label="PLG_FABRIK_FORM_EMUNDUSCOLLABORATE_FIELD_REDIRECT_LABEL"
+                    description="PLG_FABRIK_FORM_EMUNDUSCOLLABORATE_FIELD_REDIRECT_DESC"
+					default=""
+			/>
+        </fieldset>
+    </fields>
+</form>

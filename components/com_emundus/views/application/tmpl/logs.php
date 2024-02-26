@@ -20,7 +20,9 @@ JFactory::getSession()->set('application_layout', 'logs');
     <input type="hidden" id="fnum_hidden" value="<?php echo $this->fnum ?>">
 
     <div class="row">
-        <div class="panel panel-default widget em-container-comment">
+        <div class="panel panel-default widget em-container-comment <?php if ($this->_user->applicant == 1) : ?>bg-transparent<?php else : ?>bg-neutral-100<?php endif; ?>">
+
+			<?php if ($this->_user->applicant == 0) : ?>
             <div class="panel-heading em-container-comment-heading">
 
                 <h3 class="panel-title">
@@ -34,9 +36,25 @@ JFactory::getSession()->set('application_layout', 'logs');
                 </div>
 
             </div>
+			<?php endif; ?>
 
             <br class="panel-body em-container-comment-body">
+
+	        <?php if ($this->_user->applicant == 0) : ?>
+                <div class="view-type flex items-center justify-end mr-4">
+                    <span style="padding: 4px;border-radius: calc(var(--em-default-br)/2);display: flex;height: 38px;width: 38px;align-items: center;justify-content: center;"
+                          id="table_view_button"
+                          class="material-icons-outlined ml-2 cursor-pointer active em-main-500-color em-border-main-500"
+                    >dehaze</span>
+                    <span style="padding: 4px;border-radius: calc(var(--em-default-br)/2);display: flex;height: 38px;width: 38px;align-items: center;justify-content: center;"
+                          id="grid_view_button"
+                          class="material-icons-outlined ml-2 cursor-pointer em-neutral-600-color em-border-neutral-600"
+                    >grid_view</span>
+                </div>
+            <?php endif; ?>
+
             <?php if (!empty($this->fileLogs)) { ?>
+				<?php if ($this->_user->applicant == 0) : ?>
                 <div id="filters-logs" class="em-flex-row">
                     <!-- add CRUD filters (multi-chosen) -->
                     <div id="actions" class="em-w-33 em-mr-16">
@@ -73,8 +91,32 @@ JFactory::getSession()->set('application_layout', 'logs');
                         <?= JText::_('COM_EMUNDUS_LOGS_EXPORT') ?>
                     </button>
                 </div>
+				<?php endif; ?>
 
-                <table class="table table-hover logs_table">
+                <div class="<?php if ($this->_user->applicant == 1) : ?>!pl-0<?php endif; ?> logs_grids flex flex-col gap-3 <?php if ($this->_user->applicant == 0) : ?>pr-1 hidden<?php endif; ?>">
+	                <?php foreach ($this->fileLogs as $log) : ?>
+                        <div class="border-1 border-neutral-300 shadow-sm py-4 px-6 bg-white rounded-lg">
+                            <div class="flex items-center">
+                                <span class="material-icons-outlined"
+                                      style="font-size: 48px"
+                                      alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>">
+                                    account_circle
+                                </span>
+                                <div class="ml-3">
+                                    <span class="text-sm text-neutral-600"><?= $log->date; ?></span>
+                                    <p><?= $log->firstname . ' ' . $log->lastname; ?></p>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <p class="font-bold"><?= $log->details['action_category']; ?></p>
+                                <p><?= $log->details['action_name']; ?></p>
+                                <p><?= $log->details['action_details']; ?></p>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+
+                <table class="table table-hover logs_table <?php if ($this->_user->applicant == 1) : ?>hidden<?php endif; ?>">
                     <caption class="hidden"><?= JText::_('COM_EMUNDUS_LOGS_CAPTION'); ?></caption>
                     <thead>
                         <tr>
@@ -344,10 +386,46 @@ JFactory::getSession()->set('application_layout', 'logs');
         resetFilters();
     });
 
+    document.querySelector('#grid_view_button').addEventListener('click', function () {
+        changeViewType('logs_grids');
+    });
+
+    document.querySelector('#table_view_button').addEventListener('click', function () {
+        changeViewType('logs_table');
+    });
+
     function resetFilters() {
         const log_link = document.querySelector('#em-appli-menu a[href*="layout=logs"]');
         if (log_link) {
             log_link.click();
+        }
+    }
+
+    function changeViewType(view) {
+        let grid_view = document.querySelector('.logs_grids');
+        let table_view = document.querySelector('.logs_table');
+
+        let grid_button = document.querySelector('#grid_view_button');
+        let table_button = document.querySelector('#table_view_button');
+
+        if(view === 'logs_grids') {
+            grid_view.classList.remove('hidden');
+            table_view.classList.add('hidden');
+
+            grid_button.classList.add('em-main-500-color','active','em-border-main-500');
+            grid_button.classList.remove('em-neutral-600-color','em-border-neutral-600');
+
+            table_button.classList.add('em-neutral-600-color','em-border-neutral-600');
+            table_button.classList.remove('em-main-500-color','active','em-border-main-500');
+        } else {
+            grid_view.classList.add('hidden');
+            table_view.classList.remove('hidden');
+
+            table_button.classList.add('em-main-500-color','active','em-border-main-500');
+            table_button.classList.remove('em-neutral-600-color','em-border-neutral-600');
+
+            grid_button.classList.add('em-neutral-600-color','em-border-neutral-600');
+            grid_button.classList.remove('em-main-500-color','active','em-border-main-500');
         }
     }
 </script>

@@ -28,9 +28,6 @@ catch (Exception $e) {
 $allowed_types = str_replace(';', ',', $allowed_types);
 ?>
 
-<input type="hidden" id="<?= $d->attributes['id']; ?>" name="<?= $d->attributes['name']; ?>"
-       value="<?= $d->attributes['value']; ?>" />
-
 <div id="div_<?= $d->attributes['id']; ?>" class="fabrik_element___emundus_file_upload_parent">
     <span class="fabrik_element___file_upload_formats">
         <?= JText::_('PLG_ELEMENT_FILEUPLOAD_ALLOWED_TYPES') . ' : ' . $allowed_types ?>. <?= JText::_('PLG_ELEMENT_FIELD_MAXSIZE_TIP') . $d->attributes['max_size_txt']; ?>
@@ -40,8 +37,10 @@ $allowed_types = str_replace(';', ',', $allowed_types);
                     class="em-ml-4"><?php echo JText::_('PLG_ELEMENT_FILEUPLOAD_DROP_CLICK') ?></u><span
                     class="material-icons-outlined em-ml-12">cloud_upload</span></p>
     </div>
-    <input type="file" id="file_<?= $d->attributes['id']; ?>" name="file_<?= $d->attributes['name']; ?>"
+    <input class="fabrikinput" type="file" id="file_<?= $d->attributes['id']; ?>" name="file_<?= $d->attributes['name']; ?>"
            multiple <?php foreach ($d->attributes as $key => $value) {
 		echo $key . '="' . $value . '" ';
 	} ?>/>
+    <input class="fabrikinput" type="hidden" id="<?= $d->attributes['id']; ?>" name="<?= $d->attributes['name']; ?>"
+           value="<?= $d->attributes['value']; ?>" />
 </div>

@@ -54,7 +54,7 @@ class EmundusModelFilesTest extends TestCase{
 		$this->h_files = new EmundusHelperFiles;
 
         $app = JFactory::getApplication();
-        $username = 'test-gestionnaire-' . rand(0, 1000) . '@emundus.fr';
+        $username = 'test-gestionnaire-' . rand(0, 10000) . '@emundus.fr';
 		$password = $this->h_users->generateStrongPassword();
         $this->unit_test_coord_id = $this->h_sample->createSampleUser(2, $username, $password);
 
@@ -83,7 +83,7 @@ class EmundusModelFilesTest extends TestCase{
     }
 
 	public function testshareUsers() {
-		$user_id = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 1000) . '@emundus.test.fr');
+		$user_id = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 10000) . '@emundus.test.fr');
 		$program = $this->h_sample->createSampleProgram('Test partage d\'utilisateurs');
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
 		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
@@ -97,7 +97,7 @@ class EmundusModelFilesTest extends TestCase{
 	    $fnums = $this->m_files->getAllFnums();
         $this->assertIsArray($fnums, 'getusers returns an array');
 
-        $user_id = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 1000) . '@emundus.test.fr');
+        $user_id = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 10000) . '@emundus.test.fr');
         $program = $this->h_sample->createSampleProgram();
 	    $campaign_id = $this->h_sample->createSampleCampaign($program);
         $fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
@@ -121,7 +121,7 @@ class EmundusModelFilesTest extends TestCase{
         $tagged = $this->m_files->tagFile([], []);
         $this->assertFalse($tagged, 'tagFile returns false if no file is given');
 
-        $user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+        $user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
         $program = $this->h_sample->createSampleProgram();
         $campaign_id = $this->h_sample->createSampleCampaign($program);
         $fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
@@ -168,7 +168,7 @@ class EmundusModelFilesTest extends TestCase{
 		$elements = $this->h_files->getElementsName($element_ids);
 		$this->assertNotEmpty($elements, 'getElementsName returns an array of elements');
 
-		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 10000) . '@emundus.test.fr');
         $program = $this->h_sample->createSampleProgram();
         $campaign_id = $this->h_sample->createSampleCampaign($program);
         $fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);

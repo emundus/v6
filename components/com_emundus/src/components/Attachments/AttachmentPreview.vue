@@ -24,7 +24,7 @@ export default {
 		user: {
 			type: Number,
 			required: true,
-		},
+		}
 	},
 	data() {
 		return {
@@ -51,7 +51,8 @@ export default {
 			if (!this.$store.state.attachment.previews[this.attachment.aid]) {
 				data = await attachmentService.getPreview(
 					this.user,
-					this.attachment.filename
+					this.attachment.filename,
+            this.attachment.aid
 				);
 
 				// store preview data

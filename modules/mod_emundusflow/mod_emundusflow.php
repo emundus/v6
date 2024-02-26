@@ -95,12 +95,13 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
     $campaign_name = $current_application->label;
 
-    if($layout != '_:tchooz') {
+	$fnumInfos = $m_files->getFnumInfos($user->fnum);
+
+	if($layout != '_:tchooz') {
         $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
         $paid = null;
 
         if ($application_fee) {
-            $fnumInfos = $m_files->getFnumInfos($user->fnum);
             $order = $m_application->getHikashopOrder($fnumInfos);
             $paid = !empty($order);
             $cart = $m_application->getHikashopCartUrl($user->profile);
@@ -183,7 +184,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
         }
     }
 
-    $current_phase = $m_campaign->getCurrentCampaignWorkflow($user->fnum);
+	$current_phase = $m_campaign->getCurrentCampaignWorkflow($user->fnum);
     if (!empty($current_phase) && !empty($current_phase->end_date)) {
         $deadline = new JDate($current_phase->end_date);
     } else {

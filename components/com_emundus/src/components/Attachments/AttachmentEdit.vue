@@ -31,7 +31,7 @@
               name="status"
               v-model="attachmentIsValidated"
               @change="updateAttachmentStatus"
-              :disabled="!canUpdate"
+              :disabled="!canUpdate || is_applicant == 1"
           >
             <option value=1>{{ translate("VALID") }}</option>
             <option value=0>{{ translate("INVALID") }}</option>
@@ -39,7 +39,7 @@
             <option value=-2>{{ translate("COM_EMUNDUS_ATTACHMENTS_WAITING") }}</option>
           </select>
         </div>
-        <div class="input-group" v-if="canUpdate">
+        <div class="input-group" v-if="canUpdate || (is_applicant == 1 && attachmentIsValidated == 0)">
           <label for="replace">{{ translate("COM_EMUNDUS_ATTACHMENTS_REPLACE") }}</label>
           <input
               type="file"
@@ -48,7 +48,7 @@
               :accept="allowedType"
           />
         </div>
-        <div class="input-group" v-if="attachment.profiles && attachment.profiles.length > 0">
+        <div class="input-group" v-if="is_applicant != 1 && attachment.profiles && attachment.profiles.length > 0">
           <label for="can_be_viewed">{{translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED") }}</label>
           <input
               type="checkbox"
@@ -58,7 +58,7 @@
               @click="saveChanges"
           />
         </div>
-        <div class="input-group" v-if="attachment.profiles && attachment.profiles.length > 0">
+        <div class="input-group" v-if="is_applicant != 1 && attachment.profiles && attachment.profiles.length > 0">
           <label for="can_be_deleted">{{translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED") }}</label>
           <input
               type="checkbox"
@@ -70,7 +70,7 @@
         </div>
       </div>
       <div class="non-editable-data">
-        <div>
+        <div v-if="columns.includes('date')">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_SEND_DATE") }}</span>
           <span class="em-text-align-right">{{ formattedDate(attachment.timedate) }}</span>
         </div>
@@ -78,15 +78,15 @@
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY") }}</span>
           <span class="em-text-align-right">{{ getUserNameById(attachment.user_id) }}</span>
         </div>
-        <div v-if="attachment.category">
+        <div v-if="attachment.category && columns.includes('category')">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_CATEGORY") }}</span>
           <span class="em-text-align-right">{{ this.categories[attachment.category] }}</span>
         </div>
-        <div v-if="attachment.modified_by && canSee">
+        <div v-if="attachment.modified_by && canSee && columns.includes('modified_by')">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY") }}</span>
           <span class="em-text-align-right">{{ getUserNameById(attachment.modified_by) }}</span>
         </div>
-        <div v-if="attachment.modified">
+        <div v-if="attachment.modified && columns.includes('modified')">
 					<span>{{translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE") }}</span>
           <span class="em-text-align-right">{{ formattedDate(attachment.modified) }}</span>
         </div>
@@ -122,7 +122,17 @@ export default {
 	  isDisplayed: {
 			type: Boolean,
 		  default: true
-	  }
+	  },
+    is_applicant: {
+      type: String,
+      default: null,
+    },
+    columns: {
+      type: Array,
+      default() {
+        return ['check','name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync'];
+      }
+    },
   },
   mixins: [mixin],
   data() {
@@ -151,7 +161,11 @@ export default {
     this.attachmentCanBeViewed = this.attachment.can_be_viewed == "1";
     this.attachmentCanBeDeleted = this.attachment.can_be_deleted == "1";
     this.attachmentDescription = this.attachment.upload_description != null ? this.attachment.upload_description : '';
-    this.attachmentIsValidated = this.attachment.is_validated;
+    if(this.attachment.is_validated != null) {
+      this.attachmentIsValidated = this.attachment.is_validated;
+    } else {
+      this.attachmentIsValidated = "-2";
+    }
   },
   methods: {
     async saveChanges() {

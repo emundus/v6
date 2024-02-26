@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 class modemundusApplicationsHelper {
 
 	// get users sorted by activation date
-	static function getApplications($layout, $order_by, $params = null) {
+	static function getApplications($layout, $order_by, $params = null, $collaborate = false) {
 		$applications = [];
 		$user = JFactory::getUser();
 		$db	= JFactory::getDbo();
@@ -34,20 +34,56 @@ class modemundusApplicationsHelper {
 			}
 		}
 
-		$select = 'ecc.date_time AS campDateTime, ecc.*, esc.*, ess.step, ess.value, ess.class, ecc.published as published,p.label as programme,p.color as tag_color,ecc.tab as tab_id,ecct.name as tab_name,ecct.ordering as tab_ordering';
+		$select = [
+			'ecc.date_time AS campDateTime',
+			'ecc.id as application_id',
+			'ecc.*',
+			'esc.*',
+			'ess.step',
+			'ess.value',
+			'ess.class',
+			'ecc.published as published',
+			'p.label as programme',
+			'p.color as tag_color',
+			'ecc.tab as tab_id',
+			'ecct.name as tab_name',
+			'ecct.ordering as tab_ordering'
+		];
 
 		// CCI-RS layout needs to get the start and end date of each application
 		if ($layout == '_:ccirs') {
-			$select .= ', t.date_start as date_start, t.date_end as date_end, p.id as pid, p.url as url ';
+			$select_ccirs = [
+				't.date_start as date_start',
+				't.date_end as date_end',
+				'p.id as pid',
+				'p.url as url'
+			];
+			$select = array_merge($select,$select_ccirs);
 		}
 
 		// Hesam layout needs to get the title from the information about the project.
 		if ($has_table) {
-			$select .= ', pro.titre, pro.id AS search_engine_page, pro.question ';
+			$select_hesam = [
+				'pro.titre',
+				'pro.id AS search_engine_page',
+				'pro.question'
+			];
+			$select = array_merge($select,$select_hesam);
+		}
+
+
+		if($collaborate) {
+			$select_collaborate = [
+				'efr.r',
+				'efr.u',
+				'efr.show_history',
+				'efr.show_shared_users',
+			];
+			$select = array_merge($select,$select_collaborate);
 		}
 
 		$query->clear()
-			->select($select)
+			->select(implode(',',$select))
 			->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 			->leftJoin($db->quoteName('#__emundus_campaign_candidature_tabs', 'ecct') . ' ON ecct.id=ecc.tab')
 			->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.id=ecc.campaign_id')
@@ -63,6 +99,12 @@ class modemundusApplicationsHelper {
 		}
 
 		$query->where('ecc.applicant_id ='.$user->id);
+
+		// Files request
+		if ($collaborate) {
+			$query->leftJoin($db->quoteName('#__emundus_files_request', 'efr') . ' ON efr.ccid = ecc.id');
+			$query->orWhere($db->quoteName('efr.user_id') . ' = ' . $user->id . ' AND ' . $db->quoteName('efr.uploaded') . ' = 1');
+		}
 
 		if (!empty($params)) {
             $selected_campaigns = $params->get('selected_campaigns', []);

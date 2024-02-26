@@ -4,7 +4,6 @@ form .fabrikGroupColumns.fabrikGroup .row-fluid {
     display: flex;
     flex-direction: row;
     align-items: flex-end;
-    column-gap: 8px;
 }
 
 @media all and (max-width: 479px) {
