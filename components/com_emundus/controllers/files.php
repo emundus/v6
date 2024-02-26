@@ -1664,7 +1664,21 @@ class EmundusControllerFiles extends JControllerLegacy
 				// On met les en-têtes dans le CSV
 				$element_csv[] = $line;
 				$line = "";
-			}
+			} else {
+                // On définit les bons formats
+                $date_elements = [];
+                foreach ($ordered_elements as $fLine) {
+                    if ($fLine->element_plugin == 'date') {
+                        $params = json_decode($fLine->element_attribs);
+                        $date_elements[$fLine->tab_name.'___'.$fLine->element_name] = $params->date_form_format;
+                    }
+
+                    if ($fLine->element_plugin == 'textarea') {
+                        $params = json_decode($fLine->element_attribs);
+                        $textarea_elements[$fLine->tab_name.'___'.$fLine->element_name] = $params->use_wysiwyg;
+                    }
+                }
+            }
 
 
 			//check if evaluator can see others evaluators evaluations
