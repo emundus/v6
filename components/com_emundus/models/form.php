@@ -137,6 +137,13 @@ class EmundusModelForm extends JModelList {
 							$label[$language->sef] = $formbuilder->getTranslation($form->label,$language->lang_code) ?: $form->label;
 						}
 						$data['datas'][$key]->label = $label;
+
+						$query->clear()
+							->select('COUNT(id)')
+							->from($db->quoteName('#__emundus_setup_campaigns'))
+							->where($db->quoteName('profile_id') . ' = ' . $db->quote($form->id));
+						$db->setQuery($query);
+						$data['datas'][$key]->campaigns_count = $db->loadResult();
 					}
 				}
 			}
@@ -192,6 +199,8 @@ class EmundusModelForm extends JModelList {
 				        $label[$language->sef] = $m_form_builder->getTranslation($evaluation_form->label,$language->lang_code) ?: $evaluation_form->label;
 			        }
 			        $evaluation_form->label=$label;
+
+					$evaluation_form->programs_count = count($this->getProgramsByForm($evaluation_form->id));
 		        }
 	        }
 

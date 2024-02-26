@@ -11,6 +11,8 @@
 
 // No direct access
 
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
@@ -45,10 +47,24 @@ class EmundusControllerForm extends JControllerLegacy {
 	        $sort = $jinput->getString('sort', '');
 	        $recherche = $jinput->getString('recherche', '');
 
-	        $data = $this->m_form->getAllForms($filter, $sort, $recherche, $lim, $page);
+	        $forms = $this->m_form->getAllForms($filter, $sort, $recherche, $lim, $page);
 
-            if (!empty($data)) {
-                $tab = array('status' => true, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $data);
+	        if (count($forms) > 0)
+	        {
+		        // this data formatted is used in onboarding lists
+		        foreach ($forms['datas'] as $key => $form)
+		        {
+			        $form->additional_columns = [
+				        [
+					        'key' => JText::_('COM_EMUNDUS_FORM_ASSOCIATED_CAMPAIGNS'),
+					        'value' => $form->campaigns_count . ' ' . Text::_('COM_EMUNDUS_FORM_ASSOCIATED_CAMPAIGNS'),
+					        'classes' => 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
+					        'display' => 'blocs'
+				        ],
+			        ];
+		        }
+
+                $tab = array('status' => true, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $forms);
             } else {
                 $tab['msg'] = JText::_('ERROR_CANNOT_RETRIEVE_FORM');
             }
@@ -72,7 +88,21 @@ class EmundusControllerForm extends JControllerLegacy {
 
             $forms = $this->m_form->getAllGrilleEval($filter, $sort, $recherche, $lim, $page);
 
-            if (count($forms) > 0) {
+	        if (count($forms) > 0)
+	        {
+		        // this data formatted is used in onboarding lists
+		        foreach ($forms['datas'] as $key => $form)
+		        {
+			        $form->additional_columns = [
+				        [
+					        'key' => JText::_('COM_EMUNDUS_FORM_ASSOCIATED_PROGRAMS'),
+					        'value' => $form->programs_count . ' ' . Text::_('COM_EMUNDUS_FORM_ASSOCIATED_PROGRAMS'),
+					        'classes' => 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
+					        'display' => 'blocs'
+				        ],
+			        ];
+		        }
+
                 $tab = array('status' => true, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $forms);
             } else {
                 $tab['msg'] = JText::_('ERROR_CANNOT_RETRIEVE_FORM');
