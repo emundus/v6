@@ -23,6 +23,11 @@ $order_by_session = JFactory::getSession()->get('applications_order_by');
 
 $tmp_applications = $applications;
 foreach ($applications as $key => $application) {
+    if (!$show_collaboration_files && $application->applicant_id !== $user->id) {
+        unset($tmp_applications[$key]);
+        continue;
+    }
+    
 	if ($application->published == '1' || ($show_remove_files == 1 && $application->published == '-1') || ($show_archive_files == 1 && $application->published == '0')) {
 		continue;
 	}

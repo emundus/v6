@@ -325,7 +325,7 @@
   background : gray;
   border: 3px solid yellow;
 }*/
-/* ! tailwindcss v3.3.3 | MIT License | https://tailwindcss.com */
+/* ! tailwindcss v3.3.2 | MIT License | https://tailwindcss.com */
 /*
 1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
 2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
@@ -465,8 +465,6 @@ optgroup,
 select,
 textarea {
   font-family: inherit; /* 1 */
-  font-feature-settings: inherit; /* 1 */
-  font-variation-settings: inherit; /* 1 */
   font-size: 100%; /* 1 */
   font-weight: inherit; /* 1 */
   line-height: inherit; /* 1 */
@@ -576,12 +574,6 @@ ul,
 menu {
   list-style: none;
   margin: 0;
-  padding: 0;
-}
-/*
-Reset default styling for dialogs.
-*/
-dialog {
   padding: 0;
 }
 /*
@@ -3145,7 +3137,8 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   margin-bottom: 1px;
 }
 .me-1 {
-  margin-inline-end: var(--em-spacing-1);
+  -webkit-margin-end: var(--em-spacing-1);
+          margin-inline-end: var(--em-spacing-1);
 }
 .ml-0 {
   margin-left: 0px;
