@@ -109,6 +109,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 
     $show_remove_files = $params->get('show_remove_files', 1);
     $show_archive_files = $params->get('show_archived_files', 1);
+    $show_collaboration_files = $params->get('show_collaboration_files', 1);
     $show_state_files = $params->get('show_state_files', 0);
     $show_payment_status = $params->get('show_payment_status', 0);
     $visible_status = $params->get('visible_status', '');

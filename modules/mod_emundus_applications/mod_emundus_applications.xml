@@ -120,6 +120,15 @@
 					<option value="1">JYES</option>
 				</field>
 
+				<field name="show_collaboration_files"
+					   type="radio"
+					   default="1"
+					   label="MOD_EMUNDUS_SHOW_COLLABORATION_FILES"
+					   description="MOD_EMUNDUS_SHOW_COLLABORATION_FILES_DESC">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+
 				<field name="absolute_urls" type="radio" default="1" label="MOD_EMUNDUS_ABSOLUTE_URLS" description="MOD_EMUNDUS_ABSOLUTE_URLS_DESC">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
