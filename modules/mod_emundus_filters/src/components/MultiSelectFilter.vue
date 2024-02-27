@@ -1,7 +1,7 @@
 <template>
 	<div class="multi-select-filter em-w-100 em-mb-16" :id="'filter-id-' +  filter.uid" :ref="'filter-id-' +  filter.uid" @click="toggleOpened">
 		<div class="em-flex-row em-flex-space-between">
-			<p class="recap-label">{{ filter.label }}</p>
+			<p class="recap-label" :title="translate(filter.label)">{{ translate(filter.label) }}</p>
 			<div class="em-flex-row">
 				<span @mouseenter="resetHover = true" @mouseleave="resetHover = false" class="material-icons-outlined em-pointer reset-filter-btn" :class="{'em-blue-400-color': resetHover}" @click="resetFilter" :alt="translate('MOD_EMUNDUS_FILTERS_RESET')">refresh</span>
 				<span v-if="!filter.default" class="material-icons-outlined em-red-500-color em-pointer remove-filter-btn" @click="$.emit('remove-filter')">close</span>
@@ -67,7 +67,7 @@
           >
 						<input :name="filter.uid + '-filter-value'" :id="filter.uid + '-filter-value-'+ value.value" type="checkbox" :value="value.value" v-model="filter.value">
 						<label :for="filter.uid + '-filter-value-'+ value.value" style="margin: 0">
-              <span>{{ value.label }} </span> <span v-if="countFilterValues && value.hasOwnProperty('count')" class="em-gray-color"> ({{ value.count }})</span>
+              <span>{{ translate(value.label) }} </span> <span v-if="countFilterValues && value.hasOwnProperty('count')" class="em-gray-color"> ({{ value.count }})</span>
             </label>
 					</div>
 				</div>
@@ -110,11 +110,12 @@ export default {
 			originalFilterOperator: null,
 		}
 	},
-	mounted () {
-		if (this.filter.value === null || this.filter.value === undefined) {
-			this.filter.value = [];
-		}
-
+  beforeMount() {
+    if (this.filter.value === null || this.filter.value === undefined) {
+      this.filter.value = [];
+    }
+  },
+  mounted () {
 		this.filter.operator = this.filter.operator === '=' ? 'IN' : this.filter.operator;
 		this.originalFilterValue = this.filter.value;
 		this.originalFilterOperator = this.filter.operator;
@@ -231,13 +232,13 @@ export default {
 			return labels;
 		},
 		searchedValues() {
-			return this.filter.values.filter((value) => {
+			return this.filter.values && this.filter.values.length > 0 ? this.filter.values.filter((value) => {
 				if (value.label) {
 					return value.label.toLowerCase().includes(this.search.toLowerCase());
 				} else {
 					return false;
 				}
-			});
+			}) : [];
 		}
 	}
 }

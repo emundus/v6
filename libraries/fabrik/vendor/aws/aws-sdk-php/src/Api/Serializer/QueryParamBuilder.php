@@ -144,10 +144,7 @@ class QueryParamBuilder
         $prefix,
         array &$query
     ) {
-        $timestampFormat = !empty($shape['timestampFormat'])
-            ? $shape['timestampFormat']
-            : 'iso8601';
-        $query[$prefix] = TimestampShape::format($value, $timestampFormat);
+        $query[$prefix] = TimestampShape::format($value, 'iso8601');
     }
 
     protected function format_boolean(Shape $shape, $value, $prefix, array &$query)

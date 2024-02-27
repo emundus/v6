@@ -52,7 +52,6 @@ $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.
 <script>
     <?php if($update_profile_picture == 1) : ?>
     function displayEdit(state) {
-        console.log('here')
         document.querySelector('#pp_edit_icon').style.display = state;
     }
 
@@ -79,10 +78,10 @@ $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.
 
             if (error) {
                 Swal.fire({
-                    title: this.translate(title),
-                    text: this.translate(text),
+                    title: Joomla.JText._(title),
+                    text: Joomla.JText._(text),
                     type: "error",
-                    confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+                    confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
                     timer: 4000,
                     customClass: {
                         title: 'em-swal-title',
@@ -131,7 +130,7 @@ $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.
                 const date = new Date();
                 const newProfileUrl = window.location.origin + '/' + res.profile_picture + '?' + date.getTime();
                 document.querySelector('#pp_profile_background').style.backgroundImage = 'url(' + newProfileUrl + ')';
-                document.querySelector('#userDropdownLabel').style.backgroundImage = 'url(' + newProfileUrl + ')';
+                document.querySelector('#userDropdownLabel .em-profile-picture').style.backgroundImage = 'url(' + newProfileUrl + ')';
             }
         });
 

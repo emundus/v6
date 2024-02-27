@@ -9,6 +9,8 @@
  */
 
 // No direct access
+use Joomla\CMS\Component\ComponentHelper;
+
 defined('_JEXEC') or die('Restricted access');
 /*
 if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
@@ -112,7 +114,7 @@ class EmundusModelFiles extends JModelLegacy
         }
 
         if (!$session->has('limit')) {
-            $limit = $mainframe->getCfg('list_limit');
+            $limit = $mainframe->get('list_limit');
             $limitstart = 0;
             $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
@@ -200,14 +202,14 @@ class EmundusModelFiles extends JModelLegacy
                                   ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
                     } else {
                         if ($attribs->database_join_display_type == "checkbox") {
-
-                            $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
-                            $query = '(
-                                SELECT GROUP_CONCAT('.$t.'.'.$def_elmt->element_name.' SEPARATOR ", ")
-                                FROM '.$t.'
-                                WHERE '.$t.'.parent_id='.$def_elmt->tab_name.'.id
-                                '.$publish_query.'
-                              ) AS `'.$t.'`';
+	                        $t = $def_elmt->table_join;
+	                        $query = '(SELECT GROUP_CONCAT('.$column .')
+                                FROM '.$attribs->join_db_name.'
+                                WHERE `'.$attribs->join_db_name.'`.`'.$attribs->join_key_column.'` IN (
+                                    select `' . $t . '`.`' . $def_elmt->element_name . '`
+                                    from `' . $t . '`
+                                    where `' . $t . '`.parent_id = `'.$def_elmt->join_from_table.'`.id
+                                )) AS `'.$t.'___'. $def_elmt->element_name . '`';
                         } else if( $attribs->database_join_display_type == 'multilist' ) {
 	                        $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
 	                        $query = '(
@@ -1145,38 +1147,57 @@ class EmundusModelFiles extends JModelLegacy
      * @return bool|mixed
      */
     public function shareGroups($groups, $actions, $fnums) {
-        try {
-            $db = $this->getDbo();
-            $insert = [];
+		$shared = false;
 
-            foreach ($fnums as $fnum) {
-                foreach($groups as $group) {
-                    foreach ($actions as $action) {
-                        $ac = (array) $action;
-                        $insert[] = $group.','.$ac['id'].','.$ac['c'].','.$ac['r'].','.$ac['u'].','.$ac['d'].','.$db->quote($fnum);
-                    }
-                }
-            }
+		if (!empty($groups) && !empty($fnums)) {
+			try {
+				$db = $this->getDbo();
+				$insert = [];
 
-            $query = $db->getQuery(true);
-            $query->delete($db->quoteName('#__emundus_group_assoc'))
-                ->where($db->quoteName('group_id').' IN ('.implode(',',$groups).') AND '.$db->quoteName('fnum').' IN ("'.implode('","',$fnums).'")');
-            $db->setQuery($query);
-            $db->execute();
+				foreach ($fnums as $fnum) {
+					foreach($groups as $group) {
+						foreach ($actions as $action) {
+							$ac = (array) $action;
+							$insert[] = $group.','.$ac['id'].','.$ac['c'].','.$ac['r'].','.$ac['u'].','.$ac['d'].','.$db->quote($fnum);
+						}
+					}
+				}
 
-            $query->clear()
-                ->insert($db->quoteName('#__emundus_group_assoc'))
-                ->columns($db->quoteName(['group_id', 'action_id', 'c', 'r', 'u', 'd', 'fnum']))
-                ->values($insert);
-            $db->setQuery($query);
-            $db->execute();
-        } catch (Exception $e) {
-            $error = JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.'\n -> '.$e->getMessage();
-            JLog::add($error, JLog::ERROR, 'com_emundus');
+				$query = $db->getQuery(true);
+				$query->delete($db->quoteName('#__emundus_group_assoc'))
+					->where($db->quoteName('group_id').' IN ('.implode(',',$groups).') AND '.$db->quoteName('fnum').' IN ("'.implode('","',$fnums).'")');
+				$db->setQuery($query);
+				$db->execute();
 
-            return false;
-        }
-        return true;
+				$query->clear()
+					->insert($db->quoteName('#__emundus_group_assoc'))
+					->columns($db->quoteName(['group_id', 'action_id', 'c', 'r', 'u', 'd', 'fnum']))
+					->values($insert);
+				$db->setQuery($query);
+				$shared = $db->execute();
+
+				if ($shared) {
+					// log
+					$query->clear()
+						->select('CONCAT("Groupe ", label)')
+						->from($db->quoteName('#__emundus_setup_groups'))
+						->where($db->quoteName('id') . ' IN (' . implode(',', $groups) . ')');
+					$db->setQuery($query);
+					$group_labels = $db->loadColumn();
+
+					foreach ($fnums as $fnum) {
+						$logsParams = array('created' => array_unique($group_labels, SORT_REGULAR));
+						EmundusModelLogs::log(JFactory::getUser()->id, '' , $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+					}
+				}
+			} catch (Exception $e) {
+				$error = JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.'\n -> '.$e->getMessage();
+				JLog::add($error, JLog::ERROR, 'com_emundus');
+				$shared = false;
+			}
+		}
+
+        return $shared;
     }
 
     /**
@@ -1187,61 +1208,56 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function shareUsers($users, $actions, $fnums) {
         $error = null;
-        try {
 
-            $db = $this->getDbo();
-            $insert = [];
+		if (!empty($users) && !empty($fnums)) {
+			try {
+				$db = $this->getDbo();
+				$insert = [];
 
-            foreach ($fnums as $fnum) {
-                foreach($users as $user) {
-                    foreach ($actions as $action) {
-                        $ac = (array) $action;
-                        $insert[] = $user.','.$ac['id'].','.$ac['c'].','.$ac['r'].','.$ac['u'].','.$ac['d'].','.$db->quote($fnum);
-                    }
-                }
-            }
+				foreach ($fnums as $fnum) {
+					foreach($users as $user) {
+						foreach ($actions as $action) {
+							$ac = (array) $action;
+							$insert[] = $user.','.$ac['id'].','.$ac['c'].','.$ac['r'].','.$ac['u'].','.$ac['d'].','.$db->quote($fnum);
+						}
+					}
+				}
 
-            $query = $db->getQuery(true);
-            $query->delete($db->quoteName('#__emundus_users_assoc'))
-                ->where($db->quoteName('user_id').' IN ('.implode(',',$users).') AND '.$db->quoteName('fnum').' IN ("'.implode('","',$fnums).'")');
-            $db->setQuery($query);
-            $db->execute();
+				$query = $db->getQuery(true);
+				$query->delete($db->quoteName('#__emundus_users_assoc'))
+					->where($db->quoteName('user_id').' IN ('.implode(',',$users).') AND '.$db->quoteName('fnum').' IN ("'.implode('","',$fnums).'")');
+				$db->setQuery($query);
+				$db->execute();
 
-            $query->clear()
-                ->insert($db->quoteName('#__emundus_users_assoc'))
-                ->columns($db->quoteName(['user_id', 'action_id', 'c', 'r', 'u', 'd', 'fnum']))
-                ->values($insert);
-            $db->setQuery($query);
-            $db->execute();
+				$query->clear()
+					->insert($db->quoteName('#__emundus_users_assoc'))
+					->columns($db->quoteName(['user_id', 'action_id', 'c', 'r', 'u', 'd', 'fnum']))
+					->values($insert);
+				$db->setQuery($query);
+				$shared = $db->execute();
 
-	        foreach ($fnums as $fnum) {
-		        foreach ($users as $user) {
+				if ($shared) {
+					$query->clear()
+						->select('name')
+						->from($db->quoteName('#__users'))
+						->where($db->quoteName('id') . ' IN (' . implode(',', $users) . ')');
 
-			        $query->clear()
-				        ->select('name')
-				        ->from($db->quoteName('#__users'))
-				        ->where($db->quoteName('id') . ' = ' . $user);
-			        $db->setQuery($query);
-			        $user_name = $db->loadResult();
+					$db->setQuery($query);
+					$user_names = $db->loadColumn();
 
-			        $logsStd = new stdClass();
-			        $logsStd->details = $user_name;
-			        $logger[] = $logsStd;
+					foreach ($fnums as $fnum) {
+						$logsParams = array('created' => array_unique($user_names, SORT_REGULAR));
+						EmundusModelLogs::log(JFactory::getUser()->id, '', $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+					}
+				}
+			} catch (Exception $e) {
+				$error = JUri::getInstance().' :: USER ID : '. JFactory::getUser()->id . ' -> ' . $e->getMessage();
+				JLog::add($error, JLog::ERROR, 'com_emundus');
+				$shared = false;
+			}
+		}
 
-			        if (!empty($logger)) {
-				        $logsParams = array('created' => array_unique($logger, SORT_REGULAR));
-				        EmundusModelLogs::log(JFactory::getUser()->id, (int) $user, $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
-			        }
-		        }
-	        }
-
-        } catch (Exception $e) {
-            $error = JUri::getInstance().' :: USER ID : '. JFactory::getUser()->id . ' -> ' . $e->getMessage();
-            JLog::add($error, JLog::ERROR, 'com_emundus');
-            return false;
-        }
-
-        return true;
+        return $shared;
     }
 
     /**
@@ -1413,6 +1429,7 @@ class EmundusModelFiles extends JModelLegacy
                 $query ="insert into #__emundus_tag_assoc (fnum, id_tag, date_time, user_id) VALUES ";
 
                 $logger = array();
+				$insert_tags = false;
                 foreach ($fnums as $fnum) {
                     // Get tags already associated to this fnum by the current user
                     $query_associated_tags->clear()
@@ -1426,6 +1443,8 @@ class EmundusModelFiles extends JModelLegacy
                     // Insert valid tags
                     foreach ($tags as $tag) {
                         if (!in_array($tag, $tags_already_associated)) {
+	                        $insert_tags = true;
+
                             $query .= '("' . $fnum . '", ' . $tag . ',"' . $now . '",' . $user . '),';
                             $query_log = 'SELECT label
                                 FROM #__emundus_setup_action_tag
@@ -1445,9 +1464,13 @@ class EmundusModelFiles extends JModelLegacy
                     }
                 }
 
-                $query = substr_replace($query, ';', -1);
-                $db->setQuery($query);
-                $tagged = $db->execute();
+				if($insert_tags) {
+					$query = substr_replace($query, ';', -1);
+					$db->setQuery($query);
+					$tagged = $db->execute();
+				} else {
+					$tagged = true;
+				}
             } catch (Exception $e) {
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
             }
@@ -1502,7 +1525,7 @@ class EmundusModelFiles extends JModelLegacy
      * @param $state
      * @return bool|mixed
      */
-    public function updateState($fnums, $state) {
+    public function updateState($fnums, $state, $user_id = null) {
         $res = false;
 
         if (!empty($fnums) && isset($state)) {
@@ -1529,8 +1552,11 @@ class EmundusModelFiles extends JModelLegacy
                 }
 
                 $all_status = $this->getStatus();
-                $user = JFactory::getUser();
-                $user_id = !empty($user->id) ? $user->id : 62;
+
+                if (empty($user_id)) {
+                    $user = JFactory::getUser();
+                    $user_id = !empty($user->id) ? $user->id : 62;
+                }
 
                 foreach ($fnums as $fnum) {
                     $query->clear()
@@ -1560,12 +1586,21 @@ class EmundusModelFiles extends JModelLegacy
                     $res = $db->execute();
 
                     $old_status_lbl = $all_status[$old_status_step]['value'];
+
+                    // get the applicant id
+                    $query->clear()
+                        ->select($db->quoteName('applicant_id'))
+                        ->from($db->quoteName('#__emundus_campaign_candidature'))
+                        ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
+                    $db->setQuery($query);
+                    $applicant_id = $db->loadResult();
+
                     if ($res) {
                         $logs_params = ['updated' => [['old' => $old_status_lbl, 'new' => $all_status[$state]['value'], 'old_id' => $old_status_step, 'new_id' => $state]]];
-                        EmundusModelLogs::log($user_id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+                        EmundusModelLogs::log($user_id, $applicant_id, $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
                     } else {
                         $logs_params = ['updated' => [['old' => $old_status_lbl, 'new' => $all_status[$state]['value'], 'old_id' => $old_status_step, 'new_id' => $state]]];
-                        EmundusModelLogs::log($user_id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE_FAILED', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+                        EmundusModelLogs::log($user_id, $applicant_id, $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE_FAILED', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
                     }
 
                     $dispatcher->trigger('onAfterStatusChange', [$fnum, $state]);
@@ -1602,65 +1637,84 @@ class EmundusModelFiles extends JModelLegacy
      * @param $publish
      * @return bool|mixed
      */
-    public function updatePublish($fnums, $publish) {
+    public function updatePublish($fnums, $publish, $user_id = null) {
 
         $dispatcher = JEventDispatcher::getInstance();
 
         $db = $this->getDbo();
         foreach ($fnums as $fnum) {
-
             // Log the update in the eMundus logging system.
             // Get the old publish status
             $query = $db->getQuery(true);
             $query->select($db->quoteName('published'))
                 ->from($db->quoteName('#__emundus_campaign_candidature'))
-                ->where($db->quoteName('fnum').' = '.$fnum);
-                $db->setQuery($query);
-            $old_publish = $db->loadResult();
-            // Before logging, translate the publish id to corresponding label
-            // Old publish status
-            switch ($old_publish) {
-                case(1):
-                    $old_publish = JText::_('PUBLISHED');
-                break;
-                case(0):
-                    $old_publish = JText::_('ARCHIVED');
-                break;
-                case(-1):
-                    $old_publish = JText::_('TRASHED');
-                break;
-            }
-            // New publish status
-            switch ($publish) {
-                case(1):
-                    $new_publish = JText::_('PUBLISHED');
-                break;
-                case(0):
-                    $new_publish = JText::_('ARCHIVED');
-                break;
-                case(-1):
-                    $new_publish = JText::_('TRASHED');
-                break;
-            }
-            // Log the update
-            $logsParams = array('updated' => []);
-            array_push($logsParams['updated'], ['old' => $old_publish, 'new' => $new_publish]);
-            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 28, 'u', 'COM_EMUNDUS_PUBLISH_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
-
-            // Update publish
-            $dispatcher->trigger('onBeforePublishChange', [$fnum, $publish]);
-            $dispatcher->trigger('callEventHandler', ['onBeforePublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
-            $query = 'update #__emundus_campaign_candidature set published = '.$publish.' WHERE fnum like '.$db->Quote($fnum) ;
+                ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
             $db->setQuery($query);
-            try {
-                $res = $db->execute();
-            } catch (Exception $e) {
-                echo $e->getMessage();
-                JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-                return false;
+            $old_publish = $db->loadResult();
+
+            if (isset($old_publish)) {
+                // Before logging, translate the publish id to corresponding label
+                // Old publish status
+                switch ($old_publish) {
+                    case(1):
+                        $old_publish_lbl = JText::_('PUBLISHED');
+                        break;
+                    case(0):
+                        $old_publish_lbl = JText::_('ARCHIVED');
+                        break;
+                    case(-1):
+                        $old_publish_lbl = JText::_('TRASHED');
+                        break;
+                }
+                // New publish status
+                switch ($publish) {
+                    case(1):
+                        $new_publish_lbl = JText::_('PUBLISHED');
+                        break;
+                    case(0):
+                        $new_publish_lbl = JText::_('ARCHIVED');
+                        break;
+                    case(-1):
+                        $new_publish_lbl = JText::_('TRASHED');
+                        break;
+                }
+
+                // Log the update
+                $logsParams = ['updated' => [['old' => $old_publish_lbl, 'new' => $new_publish_lbl, 'old_id' => $old_publish, 'new_id' => $publish]]];
+
+                if (empty($user_id)) {
+                    $user = JFactory::getUser();
+                    $user_id = !empty($user->id) ? $user->id : 62;
+                }
+
+                // get the applicant id
+                $query->clear()
+                    ->select($db->quoteName('applicant_id'))
+                    ->from($db->quoteName('#__emundus_campaign_candidature'))
+                    ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
+                $db->setQuery($query);
+                $applicant_id = $db->loadResult();
+
+                EmundusModelLogs::log($user_id, $applicant_id, $fnum, 28, 'u', 'COM_EMUNDUS_PUBLISH_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+
+                // Update publish
+                $dispatcher->trigger('onBeforePublishChange', [$fnum, $publish]);
+                $dispatcher->trigger('callEventHandler', ['onBeforePublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
+                $query->clear()
+                    ->update($db->quoteName('#__emundus_campaign_candidature'))
+                    ->set($db->quoteName('published').' = '.$db->quote($publish))
+                    ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
+                $db->setQuery($query);
+                try {
+                    $res = $db->execute();
+                } catch (Exception $e) {
+                    echo $e->getMessage();
+                    JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                    return false;
+                }
+                $dispatcher->trigger('onAfterPublishChange', [$fnum, $publish]);
+                $dispatcher->trigger('callEventHandler', ['onAfterPublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
             }
-            $dispatcher->trigger('onAfterPublishChange', [$fnum, $publish]);
-            $dispatcher->trigger('callEventHandler', ['onAfterPublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
         }
         return $res;
     }
@@ -1671,24 +1725,32 @@ class EmundusModelFiles extends JModelLegacy
      * @return mixed|null
      */
     public function getPhotos($fnums = array()) {
-        try {
-            $db = $this->getDbo();
-            $query = 'select emu.id, emu.user_id, c.fnum, emu.filename
+		$attachment_id = ComponentHelper::getParams('com_emundus')->get('photo_attachment', '');
+
+		if(!empty($attachment_id)) {
+			try {
+				$db    = $this->getDbo();
+				$query = 'select emu.id, emu.user_id, c.fnum, emu.filename
                         from #__emundus_uploads as emu
                         left join #__emundus_campaign_candidature as c on c.applicant_id = emu.user_id
-                        where attachment_id = 10';
-            if (count($fnums) > 0) {
-                $query .= ' AND emu.fnum IN ('.implode(',', $db->quote($fnums)).') GROUP BY emu.fnum';
-            }
-            $db->setQuery($query);
-            return $db->loadAssocList('fnum');
+                        where attachment_id = ' . $attachment_id;
+				if (count($fnums) > 0) {
+					$query .= ' AND emu.fnum IN (' . implode(',', $db->quote($fnums)) . ') GROUP BY emu.fnum';
+				}
+				$db->setQuery($query);
 
-        } catch(Exception $e) {
-            echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-            return null;
-        }
+				return $db->loadAssocList('fnum');
 
+			}
+			catch (Exception $e) {
+				echo $e->getMessage();
+				JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+
+				return null;
+			}
+		} else {
+			return [];
+		}
     }
 
     /**
@@ -1772,31 +1834,37 @@ class EmundusModelFiles extends JModelLegacy
      * @return bool|mixed
      */
     public static function getFnumInfos($fnum) {
-        try {
-            $db = JFactory::getDBO();
-            $query = $db->getQuery(true);
-            $query->select('u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, cc.form_progress, cc.attachment_progress, ss.value, ss.class, c.*, cc.campaign_id')
-                ->from($db->quoteName('#__emundus_campaign_candidature','cc'))
-                ->leftJoin($db->quoteName('#__emundus_setup_campaigns','c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('cc.campaign_id'))
-                ->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('u.id').' = '.$db->quoteName('cc.applicant_id'))
-                ->leftJoin($db->quoteName('#__emundus_setup_status','ss').' ON '.$db->quoteName('ss.step').' = '.$db->quoteName('cc.status'))
-                ->where($db->quoteName('cc.fnum').' LIKE '.$db->quote($fnum));
-            $db->setQuery($query);
-            $fnumInfos = $db->loadAssoc();
+		$fnumInfos = false;
 
-            $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-            if ($anonymize_data) {
-                $fnumInfos['name'] = $fnum;
-                $fnumInfos['email'] = $fnum;
-            }
+		if (!empty($fnum)) {
+			try {
+				$db = JFactory::getDBO();
+				$query = $db->getQuery(true);
+				$query->select('u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, cc.form_progress, cc.attachment_progress, ss.value, ss.class, c.*, cc.campaign_id')
+					->from($db->quoteName('#__emundus_campaign_candidature','cc'))
+					->leftJoin($db->quoteName('#__emundus_setup_campaigns','c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('cc.campaign_id'))
+					->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('u.id').' = '.$db->quoteName('cc.applicant_id'))
+					->leftJoin($db->quoteName('#__emundus_setup_status','ss').' ON '.$db->quoteName('ss.step').' = '.$db->quoteName('cc.status'))
+					->where($db->quoteName('cc.fnum').' LIKE '.$db->quote($fnum));
+				$db->setQuery($query);
+				$fnumInfos = $db->loadAssoc();
 
-            return $fnumInfos;
+				if (!class_exists('EmundusHelperAccess')) {
+					require_once(JPATH_ROOT.'/components/com_emundus/helpers/access.php');
+				}
 
-        } catch (Exception $e) {
-            echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-            return false;
-        }
+				$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+				if ($anonymize_data) {
+					$fnumInfos['name'] = $fnum;
+					$fnumInfos['email'] = $fnum;
+				}
+			} catch (Exception $e) {
+				echo $e->getMessage();
+				JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $fnumInfos;
     }
 
     /**
@@ -2426,336 +2494,452 @@ class EmundusModelFiles extends JModelLegacy
 	}
 
 
-	public function getFnumArray2($fnums, $elements, $start = 0, $limit = 0)
-	{
-		$data = [];
+	/**
+	 * @param $fnums
+	 * @param $elements
+	 * @param $start
+	 * @param $limit
+	 * @param $method (0 : regroup all repeat elements in one row, and make values unique ; 1 : Don't regroup repeat elements, make a line for each repeat element ; 2 : regroup all repeat elements in one row, but write all values even if there are duplicates)
+	 *
+	 * @return array|false
+	 */
+    public function getFnumArray2($fnums, $elements, $start = 0, $limit = 0, $method = 0)
+    {
+        $data = [];
 
-		if (!empty($fnums) && !empty($elements)) {
-			$h_files = new EmundusHelperFiles;
-			$current_lang = substr(JFactory::getLanguage()->getTag(), 0,  2);
-			if (empty($current_lang)) {
-				$current_lang = 'fr';
-			}
-			$current_user =  JFactory::getUser()->id;
+        if (!empty($fnums) && !empty($elements)) {
+			$fnums = !is_array($fnums) ? [$fnums] : $fnums;
+			$fnums = array_unique($fnums);
+	        $method = (int) $method;
 
-			$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-			if ($anonymize_data) {
-				$query = 'SELECT jecc.fnum, esc.label, sp.code, esc.id as campaign_id';
-			} else {
-				$query = 'SELECT jecc.fnum, u.email, esc.label, sp.code, esc.id as campaign_id';
-			}
+            $h_files = new EmundusHelperFiles;
+            $current_lang = substr(JFactory::getLanguage()->getTag(), 0,  2);
+            if (empty($current_lang)) {
+                $current_lang = 'fr';
+            }
+            $current_user =  JFactory::getUser()->id;
 
-			$already_joined = [
-				'jecc' => 'jos_emundus_campaign_candidature',
-				'esc' => 'jos_emundus_setup_campaigns',
-				'sp' => 'jos_emundus_setup_programmes',
-				'u' => 'jos_users',
-			];
+            $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+            if ($anonymize_data) {
+                $query = 'SELECT jecc.fnum, esc.label, sp.code, esc.id as campaign_id';
+            } else {
+                $query = 'SELECT jecc.fnum, u.email, esc.label, sp.code, esc.id as campaign_id';
+            }
 
-			$from = ' FROM #__emundus_campaign_candidature as jecc ';
-			$leftJoin = ' LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id = jecc.campaign_id ';
-			$leftJoin .= ' LEFT JOIN #__emundus_setup_programmes as sp ON sp.code = esc.training ';
-			$leftJoin .= ' LEFT JOIN #__users as u ON u.id = jecc.applicant_id ';
+            $already_joined = [
+                'jecc' => 'jos_emundus_campaign_candidature',
+                'esc' => 'jos_emundus_setup_campaigns',
+                'sp' => 'jos_emundus_setup_programmes',
+                'u' => 'jos_users',
+            ];
 
-			foreach($elements as $element) {
-				$is_repeat = false;
+            $from = ' FROM #__emundus_campaign_candidature as jecc ';
+            $leftJoin = ' LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id = jecc.campaign_id ';
+            $leftJoin .= ' LEFT JOIN #__emundus_setup_programmes as sp ON sp.code = esc.training ';
+            $leftJoin .= ' LEFT JOIN #__users as u ON u.id = jecc.applicant_id ';
 
-				if (in_array($element->tab_name, $already_joined)) {
-					$element_table_alias = array_search($element->tab_name, $already_joined);
-				} else {
-					if ($h_files->isTableLinkedToCampaignCandidature($element->tab_name)) {
-						$element_table_alias = 'table_join_' . sizeof($already_joined);
-						$already_joined[$element_table_alias] = $element->tab_name;
+			$elements_as = [];
+            foreach($elements as $element) {
+				$saved_element_as = $element->tab_name . '___' . $element->element_name;
+                $is_repeat = false;
 
-						$leftJoin .= ' LEFT JOIN ' . $element->tab_name . ' as ' . $element_table_alias . ' ON ' . $element_table_alias . '.fnum = jecc.fnum ';
-					} else {
-						$joins = $h_files->findJoinsBetweenTablesRecursively($element->tab_name, 'jos_emundus_campaign_candidature');
+                if (in_array($element->tab_name, $already_joined)) {
+                    $element_table_alias = array_search($element->tab_name, $already_joined);
+                } else {
+                    if ($h_files->isTableLinkedToCampaignCandidature($element->tab_name)) {
+                        $element_table_alias = 'table_join_' . sizeof($already_joined);
+                        $already_joined[$element_table_alias] = $element->tab_name;
 
-						if (!empty($joins)) {
-							$leftJoin .= $h_files->writeJoins($joins, $already_joined, true);
-							$element_table_alias = array_search($element->tab_name, $already_joined);
-						} else {
-							continue; // If the element is not linked to the campaign candidature, we won't be able to get the data
+                        $leftJoin .= ' LEFT JOIN ' . $element->tab_name . ' as ' . $element_table_alias . ' ON ' . $element_table_alias . '.fnum = jecc.fnum ';
+                    } else {
+                        $joins = $h_files->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', $element->tab_name);
+
+                        if (!empty($joins)) {
+                            $leftJoin .= $h_files->writeJoins($joins, $already_joined, true);
+                            $element_table_alias = array_search($element->tab_name, $already_joined);
+                        } else {
+                            continue; // If the element is not linked to the campaign candidature, we won't be able to get the data
+                        }
+                    }
+                }
+
+                $groups_params = json_decode($element->group_attribs, true);
+                if ($groups_params['repeat_group_button'] == 1) {
+                    $is_repeat = true;
+                    $group_join_informations = $h_files->getJoinInformations(0, $element->group_id);
+
+                    if (!in_array($group_join_informations['table_join'], $already_joined)) {
+                        $child_element_table_alias = 'table_join_' . sizeof($already_joined);
+                        $already_joined[$child_element_table_alias] = $group_join_informations['table_join'];
+
+                        $leftJoin .= ' LEFT JOIN ' . $group_join_informations['table_join'] . ' as ' . $child_element_table_alias . ' ON ' . $child_element_table_alias . '.' . $group_join_informations['table_join_key'] . ' = ' . $element_table_alias . '.' . $group_join_informations['table_key'];
+                    } else {
+	                    $child_element_table_alias = array_search($group_join_informations['table_join'], $already_joined);
+                    }
+                }
+
+                switch($element->element_plugin) {
+                    case 'cascadingdropdown': // cascading dropdown is really similar to databasejoin. We just need to rewrite parameters entries to match those of databasejoin
+                        $element_params = json_decode($element->element_attribs, true);
+
+                        list($table, $column) = explode('___', $element_params['cascadingdropdown_id']);
+                        $element_params['join_db_name'] = $table;
+                        $element_params['join_key_column'] = $column;
+                        list($table, $column) = explode('___', $element_params['cascadingdropdown_label']);
+                        $element_params['join_val_column'] = $column;
+                        $element_params['join_val_column_concat'] = $element_params['cascadingdropdown_label_concat'];
+                        $element_params['database_join_display_type'] = $element_params['cdd_display_type'];
+                        $element->element_attribs = json_encode($element_params);
+
+                    // we don't break here, we want to execute the code of databasejoin
+                    // ! DON'T ADD A BREAK HERE AND DON'T PUT ANYTHING BETWEEN THIS CASE AND DATABASEJOIN CASE ! //
+                    case 'databasejoin':
+                        $element_params = json_decode($element->element_attribs, true);
+                        $is_multi = $element_params['database_join_display_type'] === 'checkbox' || $element_params['database_join_display_type'] === 'multilist';
+                        $join_column = !empty($element_params['join_val_column_concat']) ? 'CONCAT(' . $element_params['join_val_column_concat'] . ')' : $element_params['join_val_column'];
+                        $join_column = str_replace('{thistable}', $element_params['join_db_name'], $join_column);
+                        $join_column = str_replace('{shortlang}', $current_lang, $join_column);
+                        $join_column = str_replace('{my->id}', $current_user, $join_column);
+                        $where_condition = '';
+
+                        if (!empty($element_params['database_join_where_sql']) && strpos($element_params['database_join_where_sql'], '{jos_') === false && strpos($element_params['database_join_where_sql'], '{rowid}') === false) {
+	                        $where_condition = preg_replace('/WHERE/', '', $where_condition, 1);
+							$where_condition = str_replace('{thistable}', $element_params['join_db_name'], $where_condition);
+                            $where_condition = str_replace('{my->id}', $current_user, $where_condition);
+                            foreach ($already_joined as $alias => $table) {
+                                str_replace($table . '.', $alias . '.', $where_condition);
+                            }
+                            if (stripos($where_condition, 'ORDER BY') !== false) {
+                                $where_condition = substr($where_condition, 0, strpos($where_condition, 'ORDER BY'));
+                            }
+
+							if (!empty(trim($where_condition))) {
+								$where_condition = ' AND (' . $where_condition . ')';
+							}
 						}
-					}
-				}
 
-				$groups_params = json_decode($element->group_attribs, true);
-				if ($groups_params['repeat_group_button'] == 1) {
-					$is_repeat = true;
-					$group_join_informations = $h_files->getJoinInformations(0, $element->group_id);
+                        $databasejoin_sub_query = '';
 
-					if (!in_array($group_join_informations['table_join'], $already_joined)) {
-						$child_element_table_alias = 'table_join_' . sizeof($already_joined);
-						$already_joined[$child_element_table_alias] = $group_join_informations['table_join'];
+                        if ($is_repeat && $is_multi) { // it is a special case, we are in a repeatable group, and the element itself has repeatable values
+                            $join_informations = $h_files->getJoinInformations($element->id);
 
-						$leftJoin .= ' LEFT JOIN ' . $group_join_informations['table_join'] . ' as ' . $child_element_table_alias . ' ON ' . $child_element_table_alias . '.' . $group_join_informations['table_join_key'] . ' = ' . $element_table_alias . '.' . $group_join_informations['table_key'];
-					}
-				}
+                            if (!empty($join_informations)) {
 
-				switch($element->element_plugin) {
-					case 'cascadingdropdown': // cascading dropdown is really similar to databasejoin. We just need to rewrite parameters entries to match those of databasejoin
-						$element_params = json_decode($element->element_attribs, true);
+                                if (empty($child_element_table_alias)) {
+                                    $group_repeat_table = array_search($join_informations['join_from_table'], $already_joined);
+                                } else {
+                                    $group_repeat_table = $child_element_table_alias;
+                                }
 
-						list($table, $column) = explode('___', $element_params['cascadingdropdown_id']);
-						$element_params['join_db_name'] = $table;
-						$element_params['join_key_column'] = $column;
-						list($table, $column) = explode('___', $element_params['cascadingdropdown_label']);
-						$element_params['join_val_column'] = $column;
-						$element_params['join_val_column_concat'] = $element_params['cascadingdropdown_label_concat'];
-						$element_params['database_join_display_type'] = $element_params['cdd_display_type'];
-						$element->element_attribs = json_encode($element_params);
+                                $multi_element_repeat_table = $join_informations['table_join'] . '_rand_' . rand(0, 1000);
+                                $multi_element_repeat_table_alias_2 =  $join_informations['table_join'] . '_rand_' . rand(0, 1000);
 
-						// we don't break here, we want to execute the code of databasejoin
-						// ! DON'T ADD A BREAK HERE AND DON'T PUT ANYTHING BETWEEN THIS CASE AND DATABASEJOIN CASE ! //
-					case 'databasejoin':
-						$element_params = json_decode($element->element_attribs, true);
-						$is_multi = $element_params['database_join_display_type'] === 'checkbox' || $element_params['database_join_display_type'] === 'multilist';
-						$join_column = !empty($element_params['join_val_column_concat']) ? 'CONCAT(' . $element_params['join_val_column_concat'] . ')' : $element_params['join_val_column'];
-						$join_column = str_replace('{thistable}', $element_params['join_db_name'], $join_column);
-						$join_column = str_replace('{shortlang}', $current_lang, $join_column);
-						$join_column = str_replace('{my->id}', $current_user, $join_column);
-
-						$databasejoin_sub_query = '';
-
-						if ($is_repeat && $is_multi) { // it is a special case, we are in a repeatable group, and the element itself has repeatable values
-							$join_informations = $h_files->getJoinInformations($element->id);
-
-							if (!empty($join_informations)) {
-								$group_repeat_table = $child_element_table_alias;
-								$multi_element_repeat_table = $join_informations['table_join'] . '_rand_' . rand(0, 1000);
-								$multi_element_repeat_table_alias_2 =  $join_informations['table_join'] . '_rand_' . rand(0, 1000);
-
-								$leftJoin .= ' LEFT JOIN (
+                                $leftJoin .= ' LEFT JOIN (
 									SELECT GROUP_CONCAT('. $join_column . ') AS value, ' . $multi_element_repeat_table . '.parent_id
 									FROM ' . $element_params['join_db_name'] . '
 									LEFT JOIN ' . $join_informations['table_join'] . ' AS ' . $multi_element_repeat_table.  ' ON ' . $multi_element_repeat_table . '.' . $element->element_name . ' = ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . '
 									WHERE ' . $multi_element_repeat_table . '.parent_id IS NOT NULL
 									GROUP BY ' . $multi_element_repeat_table . '.parent_id
 								) AS ' . $multi_element_repeat_table_alias_2 . ' ON ' . $multi_element_repeat_table_alias_2 . '.parent_id = ' . $group_repeat_table . '.id';
-								$databasejoin_sub_query = '(' . $multi_element_repeat_table_alias_2 . '.value) AS ' . $element->tab_name . '___' . $element->element_name;
-							}
-						}
-						else
-						{
-							$databasejoin_sub_query .= '(SELECT ' . $join_column;
-							$databasejoin_sub_query .= ' FROM ' . $element_params['join_db_name'];
+                                $databasejoin_sub_query = '(' . $multi_element_repeat_table_alias_2 . '.value) AS ' . $already_joined[$group_repeat_table] . '___' . $element->element_name;
 
-							// In case of checkbox or multilist, the values are stored in child table
-							if ($is_multi) {
-								$join_informations = $h_files->getJoinInformations($element->id);
-								if (!empty($join_informations)) {
-									if (!in_array($join_informations['table_join'], $already_joined)) {
-										$child_table_alias = 'table_join_' . sizeof($already_joined);
-										$already_joined[$child_table_alias] = $join_informations['table_join'];
+	                            $saved_element_as = $already_joined[$group_repeat_table] . '___' . $element->element_name;
+                            }
+                        }
+                        else
+                        {
+                            $databasejoin_sub_query .= '(SELECT ' . $join_column;
+                            $databasejoin_sub_query .= ' FROM ' . $element_params['join_db_name'];
 
-										$leftJoin .= ' LEFT JOIN ' . $join_informations['table_join'] . ' as ' . $child_table_alias . ' ON ' . $child_table_alias . '.' . $join_informations['table_join_key'] . ' = ' . $element_table_alias . '.id';
-									} else {
-										$child_table_alias = array_search($join_informations['table_join'], $already_joined);
-									}
+                            // In case of checkbox or multilist, the values are stored in child table
+                            if ($is_multi) {
+                                $join_informations = $h_files->getJoinInformations($element->id);
+                                if (!empty($join_informations)) {
+                                    if (!in_array($join_informations['table_join'], $already_joined)) {
+                                        $child_table_alias = 'table_join_' . sizeof($already_joined);
+                                        $already_joined[$child_table_alias] = $join_informations['table_join'];
 
-									$databasejoin_sub_query = ' (' . $databasejoin_sub_query;
-									$databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_table_alias . '.' . $element->element_name . '))';
-								}
-							} else {
-								if ($is_repeat) {
-									$databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_element_table_alias . '.' . $element->element_name . ')';
-								} else {
-									$databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $element_table_alias . '.' . $element->element_name . ')';
-								}
-							}
+                                        $leftJoin .= ' LEFT JOIN ' . $join_informations['table_join'] . ' as ' . $child_table_alias . ' ON ' . $child_table_alias . '.' . $join_informations['table_join_key'] . ' = ' . $element_table_alias . '.id';
+                                    } else {
+                                        $child_table_alias = array_search($join_informations['table_join'], $already_joined);
+                                    }
 
-							$databasejoin_sub_query .= ' AS ' . $element->tab_name . '___' . $element->element_name;
-						}
+                                    $databasejoin_sub_query = ' (' . $databasejoin_sub_query;
+                                    $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_table_alias . '.' . $element->element_name . $where_condition . '))';
+                                    $databasejoin_sub_query .= ' AS ' . $already_joined[$child_table_alias] . '___' . $element->element_name;
+	                                $saved_element_as = $already_joined[$child_table_alias] . '___' . $element->element_name;
+                                }
+                            } else {
+                                if ($is_repeat) {
+                                    $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_element_table_alias . '.' . $element->element_name . $where_condition . ')';
+                                    $databasejoin_sub_query .= ' AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
+	                                $saved_element_as = $already_joined[$child_element_table_alias] . '___' . $element->element_name;
+                                } else {
+                                    $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $element_table_alias . '.' . $element->element_name . $where_condition . ' LIMIT 1)';
+                                    $databasejoin_sub_query .= ' AS ' . $element->tab_name . '___' . $element->element_name;
+                                }
+                            }
+                        }
 
-						$query .= ', ' . $databasejoin_sub_query;
+                        $query .= ', ' . $databasejoin_sub_query;
 
-						break;
-					case 'radiobutton':
-						$element_params = json_decode($element->element_attribs, true);
-						if (!empty($element_params['sub_options'])) {
-							if ($is_repeat) {
-								$query .= ', (CASE ' . $child_element_table_alias . '.' . $element->element_name . ' ';
-							} else {
-								$query .= ', (CASE ' . $element_table_alias . '.' . $element->element_name . ' ';
-							}
+                        break;
+                    case 'radiobutton':
+                        $element_params = json_decode($element->element_attribs, true);
+                        if (!empty($element_params['sub_options'])) {
+                            if ($is_repeat) {
+                                $query .= ', (CASE ' . $child_element_table_alias . '.' . $element->element_name . ' ';
+                            } else {
+                                $query .= ', (CASE ' . $element_table_alias . '.' . $element->element_name . ' ';
+                            }
 
-							foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
-								$sub_label = JText::_($element_params['sub_options']['sub_labels'][$sub_key]);
-								$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
-								$sub_label = str_replace("'", "''", $sub_label); // escape sub label single quotes for SQL query
+                            foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
+                                $sub_label = JText::_($element_params['sub_options']['sub_labels'][$sub_key]);
+                                $sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
+                                $sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
+                                $sub_value = str_replace("'", "\'", $sub_value);
 
-								$query .= ' WHEN \'' . $sub_value . '\' THEN \'' . $sub_label . '\'';
-							}
+                                $query .= ' WHEN \'' . $sub_value . '\' THEN \'' . $sub_label . '\'';
+                            }
 
-							$query .= ' END) AS ' . $element->tab_name . '___' . $element->element_name;
-						} else {
-							if ($is_repeat) {
-								$query .= ', ' . $child_element_table_alias . '.' . $element->element_name . ' AS ' . $element->tab_name . '___' . $element->element_name;
-							} else {
-								$query .= ', ' . $element_table_alias . '.' . $element->element_name . ' AS ' . $element->tab_name . '___' . $element->element_name;
-							}
-						}
+                            if ($is_repeat) {
+                                $query .= ' END) AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
+	                            $saved_element_as = $already_joined[$child_element_table_alias] . '___' . $element->element_name;
+                            } else {
+                                $query .= ' END) AS ' . $element->tab_name . '___' . $element->element_name;
+                            }
+                        } else {
+                            if ($is_repeat) {
+                                $query .= ', ' . $child_element_table_alias . '.' . $element->element_name . ' AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
+								$saved_element_as = $already_joined[$child_element_table_alias] . '___' . $element->element_name;
+                            } else {
+                                $query .= ', ' . $element_table_alias . '.' . $element->element_name . ' AS ' . $element->tab_name . '___' . $element->element_name;
+                            }
+                        }
 
-						break;
-					case 'checkbox':
-						// value is saved as string '["value1", "value2"]' in the database
-						$query .= ', (';
-						$regexp_sub_query = $element_table_alias . '.' . $element->element_name . ' '; // default value if no sub_options
+                        break;
+                    case 'checkbox':
+                        // value is saved as string '["value1", "value2"]' in the database
+                        $query .= ', (';
+                        $regexp_sub_query = $element_table_alias . '.' . $element->element_name . ' '; // default value if no sub_options
 
-						$element_params = json_decode($element->element_attribs, true);
-						if (!empty($element_params['sub_options']['sub_values'])) {
-							foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
-								$sub_label = JText::_($element_params['sub_options']['sub_labels'][$sub_key]);
-								$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
-								$sub_label = str_replace("'", "''", $sub_label); // escape sub label single quotes for SQL query
+                        $element_params = json_decode($element->element_attribs, true);
+                        if (!empty($element_params['sub_options']['sub_values'])) {
+                            foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
+                                $sub_label = JText::_($element_params['sub_options']['sub_labels'][$sub_key]);
+                                $sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
+                                $sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
+                                $sub_value = str_replace("'", "\'", $sub_value);
+	                            $sub_value = str_replace("*", "\\\*", $sub_value); // escape asterisk for SQL query, rare case but possible
 
-								if ($sub_key === 0) {
-									$regexp_sub_query = 'regexp_replace(' . $element_table_alias . '.' . $element->element_name . ', \'"' . $sub_value . '"\', \'' . $sub_label . '\')';
-								} else {
-									$regexp_sub_query = 'regexp_replace(' . $regexp_sub_query . ', \'"' . $sub_value . '"\', \'' . $sub_label . '\')';
-								}
-							}
+                                if ($sub_key === 0) {
+                                    $regexp_sub_query = 'regexp_replace(' . $element_table_alias . '.' . $element->element_name . ', \'"' . $sub_value . '"\', \'' . $sub_label . '\')';
+                                } else {
+                                    $regexp_sub_query = 'regexp_replace(' . $regexp_sub_query . ', \'"' . $sub_value . '"\', \'' . $sub_label . '\')';
+                                }
+                            }
 
-							// we also want to remove the brackets
-							$regexp_sub_query = 'replace(' . $regexp_sub_query . ', \'[\', \' \')';
-							$regexp_sub_query = 'replace(' . $regexp_sub_query . ', \']\', \' \')';
-						}
+                            // we also want to remove the brackets
+                            $regexp_sub_query = 'replace(' . $regexp_sub_query . ', \'[\', \' \')';
+                            $regexp_sub_query = 'replace(' . $regexp_sub_query . ', \']\', \' \')';
+                        }
 
-						$query .= $regexp_sub_query . ') AS ' . $element->tab_name . '___' . $element->element_name;
-						break;
-					case 'dropdown':
-						$element_params = json_decode($element->element_attribs, true);
+                        $query .= $regexp_sub_query . ') AS ' . $element->tab_name . '___' . $element->element_name;
+                        break;
+                    case 'dropdown':
+                        $element_params = json_decode($element->element_attribs, true);
 
-						if ($element_params['multiple'] === '0') {
-							if ($is_repeat) {
-								$query .= ', (CASE ' . $child_element_table_alias . '.' . $element->element_name . ' ';
-							} else {
-								$query .= ', (CASE ' . $element_table_alias . '.' . $element->element_name . ' ';
-							}
+                        if ($element_params['multiple'] === '0') {
+                            if ($is_repeat) {
+                                $query .= ', (CASE ' . $child_element_table_alias . '.' . $element->element_name . ' ';
+                            } else {
+                                $query .= ', (CASE ' . $element_table_alias . '.' . $element->element_name . ' ';
+                            }
 
-							foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
-								$sub_label = JText::_($element_params['sub_options']['sub_labels'][$sub_key]);
-								$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
-								$sub_label = str_replace("'", "''", $sub_label); // escape sub label single quotes for SQL query
+                            foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
+                                $sub_label = JText::_($element_params['sub_options']['sub_labels'][$sub_key]);
+                                $sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
+                                $sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
+                                $sub_value = str_replace("'", "\'", $sub_value);
 
-								$query .= ' WHEN \'' . $sub_value . '\' THEN \'' . $sub_label . '\'';
-							}
-							$query .= ' END) AS ' . $element->tab_name . '___' . $element->element_name;
-						} else {
-							// value is saved as string '["value1", "value2"]' in the database
-							$query .= ', (';
+                                $query .= ' WHEN \'' . $sub_value . '\' THEN \'' . $sub_label . '\'';
+                            }
 
-							if ($is_repeat) {
-								$regexp_sub_query = $child_element_table_alias . '.' . $element->element_name . ' '; // default value if no sub_options
-							} else {
-								$regexp_sub_query = $element_table_alias . '.' . $element->element_name . ' '; // default value if no sub_options
-							}
+                            if ($is_repeat) {
+                                $query .= ' END) AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
+	                            $saved_element_as = $already_joined[$child_element_table_alias] . '___' . $element->element_name;
+                            } else {
+                                $query .= ' END) AS ' . $element->tab_name . '___' . $element->element_name;
+                            }
+                        } else {
+                            // value is saved as string '["value1", "value2"]' in the database
+                            $query .= ', (';
 
-							if (!empty($element_params['sub_options']['sub_values'])) {
-								foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
-									$sub_label = JText::_($element_params['sub_options']['sub_labels'][$sub_key]);
-									$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
-									$sub_label = str_replace("'", "''", $sub_label); // escape sub label single quotes for SQL query
+                            if ($is_repeat) {
+                                $regexp_sub_query = $child_element_table_alias . '.' . $element->element_name . ' '; // default value if no sub_options
+                            } else {
+                                $regexp_sub_query = $element_table_alias . '.' . $element->element_name . ' '; // default value if no sub_options
+                            }
 
-									if ($sub_key === 0) {
-										if ($is_repeat) {
-											$regexp_sub_query = 'regexp_replace(' . $child_element_table_alias . '.' . $element->element_name . ', \'([^0-9]|^)' . $sub_value . '([^0-9]|$)\', \'' . $sub_label . '\')';
-										} else {
-											$regexp_sub_query = 'regexp_replace(' . $element_table_alias . '.' . $element->element_name . ', \'([^0-9]|^)' . $sub_value . '([^0-9]|$)\', \'' . $sub_label . '\')';
-										}
-									} else {
-										$regexp_sub_query = 'regexp_replace(' . $regexp_sub_query . ', \'([^0-9]|^)' . $sub_value . '([^0-9]|$)\', \'' . $sub_label . '\')';
-									}
-								}
+                            if (!empty($element_params['sub_options']['sub_values'])) {
+                                foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
+                                    $sub_label = JText::_($element_params['sub_options']['sub_labels'][$sub_key]);
+                                    $sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
+                                    $sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
+                                    $sub_value = str_replace("'", "\'", $sub_value);
+	                                $sub_value = str_replace("*", "\\\*", $sub_value); // escape asterisk for SQL query, rare case but possible
 
-								// we also want to remove the brackets
-								$regexp_sub_query = 'replace(' . $regexp_sub_query . ', \'[\', \' \')';
-								$regexp_sub_query = 'replace(' . $regexp_sub_query . ', \']\', \' \')';
-							}
+                                    if ($sub_key === 0) {
+                                        if ($is_repeat) {
+                                            $regexp_sub_query = 'regexp_replace(' . $child_element_table_alias . '.' . $element->element_name . ', \'([^0-9]|^)' . $sub_value . '([^0-9]|$)\', \'' . $sub_label . '\')';
+                                        } else {
+                                            $regexp_sub_query = 'regexp_replace(' . $element_table_alias . '.' . $element->element_name . ', \'([^0-9]|^)' . $sub_value . '([^0-9]|$)\', \'' . $sub_label . '\')';
+                                        }
+                                    } else {
+                                        $regexp_sub_query = 'regexp_replace(' . $regexp_sub_query . ', \'([^0-9]|^)' . $sub_value . '([^0-9]|$)\', \'' . $sub_label . '\')';
+                                    }
+                                }
 
-							$query .= $regexp_sub_query . ') AS ' . $element->tab_name . '___' . $element->element_name;
-						}
-						break;
-					case 'birthday':
-						if ($is_repeat) {
-							$query .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y\') AS ' . $element->tab_name . '___' . $element->element_name;
-						} else {
-							$query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y\') AS ' . $element->tab_name . '___' . $element->element_name;
-						}
-						break;
-					case 'date':
-						if ($is_repeat) {
-							$query .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y %H:%i:%s\') AS ' . $element->tab_name . '___' . $element->element_name;
-						} else {
-							$query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y %H:%i:%s\') AS ' . $element->tab_name . '___' . $element->element_name;
-						}
-						break;
-					case 'yesno':
-						if ($is_repeat) {
-							$query .= ', CASE ' . $child_element_table_alias . '.' . $element->element_name . ' WHEN 0 THEN \'' . JText::_('JNO') . '\' WHEN 1 THEN \'' . JText::_('JYES') . '\' ELSE ' . $child_element_table_alias . '.' . $element->element_name . ' END AS ' . $element->tab_name . '___' . $element->element_name;
-						} else {
-							$query .= ', CASE ' . $element_table_alias . '.' . $element->element_name . ' WHEN 0 THEN \'' . JText::_('JNO') . '\' WHEN 1 THEN \'' . JText::_('JYES') . '\' ELSE ' . $element_table_alias . '.' . $element->element_name . ' END AS ' . $element->tab_name . '___' . $element->element_name;
-						}
-						break;
-					default:
-						if ($is_repeat) {
-							$query .= ', ' . $child_element_table_alias . '.' . $element->element_name . ' AS ' . $element->tab_name . '___' . $element->element_name;
-						} else {
-							$query .= ', ' . $element_table_alias . '.' . $element->element_name . ' AS ' . $element->tab_name . '___' . $element->element_name;
-						}
-						break;
-				}
-			}
+                                // we also want to remove the brackets
+                                $regexp_sub_query = 'replace(' . $regexp_sub_query . ', \'[\', \' \')';
+                                $regexp_sub_query = 'replace(' . $regexp_sub_query . ', \']\', \' \')';
+                            }
 
-			$where = ' WHERE jecc.fnum IN ("' . implode('","', $fnums) . '") ';
+                            if ($is_repeat) {
+                                $query .= $regexp_sub_query . ') AS ' .  $already_joined[$child_element_table_alias] . '___' . $element->element_name;
+	                            $saved_element_as = $already_joined[$child_element_table_alias] . '___' . $element->element_name;
+                            } else {
+                                $query .= $regexp_sub_query . ') AS ' . $element->tab_name . '___' . $element->element_name;
+                            }
+                        }
+                        break;
+                    case 'birthday':
+                        if ($is_repeat) {
+                            $query .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%Y-%m-%d\') AS ' . $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
+	                        $saved_element_as = $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
+                        } else {
+                            $query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%Y-%m-%d\') AS ' . $element->tab_name . '___' . $element->element_name;
+                        }
+                        break;
+                    case 'date':
+                        if ($is_repeat) {
+                            $query .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%Y-%m-%d %H:%i:%s\') AS ' . $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
+							$saved_element_as = $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
+                        } else {
+                            $query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%Y-%m-%d %H:%i:%s\') AS ' . $element->tab_name . '___' . $element->element_name;
+                        }
+                        break;
+                    case 'yesno':
+                        if ($is_repeat) {
+                            $query .= ', CASE ' . $child_element_table_alias . '.' . $element->element_name . ' WHEN 0 THEN \'' . JText::_('JNO') . '\' WHEN 1 THEN \'' . JText::_('JYES') . '\' ELSE ' . $child_element_table_alias . '.' . $element->element_name . ' END AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
+	                        $saved_element_as = $already_joined[$child_element_table_alias] . '___' . $element->element_name;
+                        } else {
+                            $query .= ', CASE ' . $element_table_alias . '.' . $element->element_name . ' WHEN 0 THEN \'' . JText::_('JNO') . '\' WHEN 1 THEN \'' . JText::_('JYES') . '\' ELSE ' . $element_table_alias . '.' . $element->element_name . ' END AS ' . $element->tab_name . '___' . $element->element_name;
+                        }
+                        break;
+                    default:
+                        if ($is_repeat) {
+                            $query .= ', ' . $child_element_table_alias . '.' . $element->element_name . ' AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
+	                        $saved_element_as = $already_joined[$child_element_table_alias] . '___' . $element->element_name;
+                        } else {
+                            $query .= ', ' . $element_table_alias . '.' . $element->element_name . ' AS ' . $element->tab_name . '___' . $element->element_name;
+                        }
+                        break;
+                }
+
+	            $elements_as[$saved_element_as] = ['id' => $element->id, 'is_repeat' => $is_repeat];
+            }
+
+            $where = ' WHERE jecc.fnum IN ("' . implode('","', $fnums) . '") ORDER BY jecc.id';
 
             if (!empty($limit)) {
                 $where .= ' LIMIT ' . $limit . ' OFFSET ' . $start;
             }
 
-			try {
-				$db = JFactory::getDbo();
-				$db->setQuery($query . $from . $leftJoin . $where);
+            try {
+                $db = JFactory::getDbo();
+                $db->setQuery($query . $from . $leftJoin . $where);
 
-				$data = $db->loadAssocList();
-			} catch(Exception $e) {
-				JLog::add('Error trying to generate data for xlsx export ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-			}
+				$rows = $db->loadAssocList();
+            } catch(Exception $e) {
+                JLog::add('Error trying to generate data for xlsx export ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+	            return false;
+            }
 
-			if (!empty($data)) {
-				$data_by_fnums = [];
+	        if (!empty($rows)) {
+                $data_by_fnums = [];
 
-				foreach($data as $row) {
-					if (!isset($data_by_fnums[$row['fnum']])) {
-						$data_by_fnums[$row['fnum']] = $row;
-					} else {
-						foreach($row as $key => $value) {
-							if ((!is_array($data_by_fnums[$row['fnum']][$key]) && $row[$key] !== $data_by_fnums[$row['fnum']][$key]) || (is_array($data_by_fnums[$row['fnum']][$key]) && !in_array($row[$key], $data_by_fnums[$row['fnum']][$key]))) {
-								if (is_array($data_by_fnums[$row['fnum']][$key])) {
-									$data_by_fnums[$row['fnum']][$key][] = $row[$key];
-								} else {
-									$data_by_fnums[$row['fnum']][$key] = [$data_by_fnums[$row['fnum']][$key], $row[$key]];
+				if ($method === 1) { // one line per repeat
+					$data_by_fnums = $rows;
+				} else {
+					foreach($rows as $row) {
+						if (!empty($row)) {
+							if (!isset($data_by_fnums[$row['fnum']])) {
+								$data_by_fnums[$row['fnum']] = $row;
+							} else {
+								foreach($row as $key => $value) {
+									if (!isset($data_by_fnums[$row['fnum']][$key])) {
+										$data_by_fnums[$row['fnum']][$key] = $value;
+									} else if (!is_array($data_by_fnums[$row['fnum']][$key])) {
+										if (($method === 2 && $elements_as[$key]['is_repeat'] === true) || $value !== $data_by_fnums[$row['fnum']][$key]) {
+											$data_by_fnums[$row['fnum']][$key] = [$data_by_fnums[$row['fnum']][$key], $value];
+										}
+									} else if (is_array($data_by_fnums[$row['fnum']][$key])) {
+										if (($method === 2 && $elements_as[$key]['is_repeat'] === true) || !in_array($value, $data_by_fnums[$row['fnum']][$key])) {
+											$data_by_fnums[$row['fnum']][$key][] = $value;
+										}
+									}
 								}
 							}
 						}
 					}
 				}
 
-				$data = $data_by_fnums;
+	            $data = $data_by_fnums;
+                foreach ($data as $d_key => $row) {
+                    foreach ($row as $r_key => $value) {
+                        if (is_null($value)) {
+                            $data[$d_key][$r_key] = '';
+                        }
 
-				foreach ($data as $d_key => $row) {
-					foreach ($row as $r_key => $value) {
-						if (is_array($value)) {
-							$data[$d_key][$r_key] = implode(', ', $value);
+                        if (is_array($value)) {
+                            $data[$d_key][$r_key] = '"' . implode(', ', $value) . '"';
+                        } else if (!empty($value) && is_string($value)) {
+							$data[$d_key][$r_key] = str_replace('-', '\-', $value);
+                        }
+                    }
+                }
+
+		        /**
+		         * I made that in order to handle repeat lines that are not complete, because of the limit
+		         * If we have a limit of 10, and we have 10 rows, but the last row is not complete, we need to retrieve the last row
+		         * in order to have all the data
+		         */
+				if (!empty($limit) && count($rows) == $limit && (count($data) < $limit || $method === 1)) {
+					// it means that we have repeated rows, so we need to retrieve last row all entries, because it may be incomplete (chunked by the limit)
+					$last_row = array_pop($rows);
+					$last_row_data = $this->getFnumArray2([$last_row['fnum']], $elements, $start, 0, $method);
+
+					if ($method !== 1) {
+						$data[$last_row['fnum']] = $last_row_data[$last_row['fnum']];
+					} else {
+						// in methode 1, data is not an associative array, so we need to do some stuff
+						// remove from $data all rows with the same fnum
+						foreach($data as $d_key => $row) {
+							if ($row['fnum'] === $last_row['fnum']) {
+								unset($data[$d_key]);
+							}
 						}
+
+						// add the last row array to the data
+						$data = array_merge($data, $last_row_data);
 					}
 				}
-			}
-		}
+	        }
+        }
 
-		return $data;
-	}
+        return $data;
+    }
 
     /**
      * @param $fnums
@@ -2840,23 +3024,26 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function getFilesByFnums($fnums, $attachment_ids = null)
     {
-        $db = $this->getDbo();
-        if(!empty($attachment_ids))
-            $query = 'select fu.* from #__emundus_uploads as fu where fu.fnum in ("'.implode('","', $fnums).'") and fu.attachment_id in ("'.implode('","', $attachment_ids).'") order by fu.fnum';
-        else
-            $query = 'select fu.* from #__emundus_uploads as fu where fu.fnum in ("'.implode('","', $fnums).'") order by fu.fnum';
+		$files = false;
 
-        $db->setQuery($query);
-        try
-        {
-            $res = $db->loadAssocList();
-            return $res;
-        }
-        catch(Exception $e)
-        {
-            echo $e;
-            return false;
-        }
+		if (!empty($fnums)) {
+			$db = $this->getDbo();
+			if(!empty($attachment_ids)) {
+				$query = 'select fu.* from #__emundus_uploads as fu where fu.fnum in ("'.implode('","', $fnums).'") and fu.attachment_id in ("'.implode('","', $attachment_ids).'") order by fu.fnum';
+			} else {
+				$query = 'select fu.* from #__emundus_uploads as fu where fu.fnum in ("'.implode('","', $fnums).'") order by fu.fnum';
+			}
+
+			try {
+				$db->setQuery($query);
+				$files = $db->loadAssocList();
+			} catch(Exception $e) {
+				echo $e;
+				JLog::add('Failed to get files by fnum ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $files;
     }
 
     /**
@@ -3081,39 +3268,47 @@ class EmundusModelFiles extends JModelLegacy
      * @return array|bool
      */
     public function getAccessorByFnums($fnums) {
-        $query = "SELECT jecc.fnum, jesg.id, GROUP_CONCAT(jesg.label) as label, GROUP_CONCAT(jesg.class) as class FROM #__emundus_campaign_candidature as jecc
-                  LEFT JOIN #__emundus_setup_campaigns as jesc on jesc.id = jecc.campaign_id
-                  LEFT JOIN #__emundus_setup_programmes as jesp on jesp.code = jesc.training
-                  LEFT JOIN #__emundus_setup_groups_repeat_course as jesgrc on jesgrc.course = jesp.code
-                  LEFT JOIN #__emundus_setup_groups as jesg on jesg.id = jesgrc.parent_id
-                  LEFT JOIN #__emundus_acl as jea on jea.group_id = jesg.id
-                  WHERE jea.action_id = 1 and jea.r = 1 and jecc.fnum in ('".implode("','", $fnums)."')
-                  GROUP BY jecc.fnum";
+        $access = array();
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        // Select all users associated directly to the file
+        $query->select([$db->quoteName('jeua.fnum'), $db->quoteName('ju.name', 'uname'), $db->quoteName('jesp.class')])
+            ->from($db->quoteName('#__emundus_users_assoc', 'jeua'))
+            ->leftJoin($db->quoteName('#__users', 'ju').' ON '.$db->quoteName('ju.id').' = '.$db->quoteName('jeua.user_id'))
+            ->leftJoin($db->quoteName('#__emundus_users', 'jeu').' ON '.$db->quoteName('ju.id').' = '.$db->quoteName('jeu.user_id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'jesp').' ON '.$db->quoteName('jeu.profile').' = '.$db->quoteName('jesp.id'))
+            ->where($db->quoteName('jeua.action_id').' = 1 AND '.$db->quoteName('jeua.r').' = 1 AND '.$db->quoteName('jeua.fnum').' IN ("'.implode('","', $fnums).'")');
+
         try {
-            $db = $this->getDbo();
             $db->setQuery($query);
             $res = $db->loadAssocList();
-            $access = array();
+
+            // Write the code to show the results to the user
             foreach ($res as $r) {
-                $group_labels = explode(',',$r['label']);
-                $class_labels = explode(',',$r['class']);
-                foreach ($group_labels as $key => $g_label) {
-                    $assocTagcampaign = '<div class="flex"><span class="circle '.$class_labels[$key].'" id="'.$r['id'].'"></span>';
-                    $assocTagcampaign .= '<span id="'.$r['id'].'">'.$g_label.'</span></div>';
-                    $access[$r['fnum']] .= $assocTagcampaign;
+                if (isset($access[$r['fnum']])) {
+                    $access[$r['fnum']] .= '<div class="flex"><span class="circle '.$r['class'].'"></span><span>'.$r['uname'].'</span></div>';
+                } else {
+                    $access[$r['fnum']] = '<div class="flex"><span class="circle '.$r['class'].'"></span><span>'.$r['uname'].'</span></div>';
                 }
             }
 
-            $query = "SELECT jega.fnum, jesg.label, jesg.class FROM #__emundus_group_assoc as jega
-                      LEFT JOIN #__emundus_setup_groups as jesg on jesg.id = jega.group_id
-                      where jega.action_id = 1 and jega.r = 1  and jega.fnum in ('".implode("','", $fnums)."')";
-            $db = $this->getDbo();
+            // Then, select all groups associated directly to the file
+            $query->clear()
+                ->select($db->quoteName(array('jega.fnum','jesg.label','jesg.class')))
+                ->from($db->quoteName('#__emundus_group_assoc','jega'))
+                ->leftJoin($db->quoteName('#__emundus_setup_groups','jesg').' ON '.$db->quoteName('jesg.id').' = '.$db->quoteName('jega.group_id'))
+                ->where($db->quoteName('jega.action_id').' = 1')
+                ->andWhere($db->quoteName('jega.r').' = 1')
+                ->andWhere($db->quoteName('jega.fnum').' IN (\''.implode('\',\'',$fnums).'\')')
+                ->order($db->quoteName('jesg.id').' DESC');
+
             $db->setQuery($query);
             $res = $db->loadAssocList();
 
+            // Write the code to show the results to the user
             foreach ($res as $r) {
-                $assocTaggroup = '<div class="flex"><span class="circle '.$r['class'].'"></span>';
-                $assocTaggroup .= '<span id="'.$r['id'].'">'.$r['label'].'</span></div>';
+                $assocTaggroup = '<div class="flex"><span class="circle '.$r['class'].'"></span><span id="'.$r['id'].'">'.$r['label'].'</span></div>';
                 if (isset($access[$r['fnum']])) {
                     $access[$r['fnum']] .= ''.$assocTaggroup;
                 } else {
@@ -3121,26 +3316,36 @@ class EmundusModelFiles extends JModelLegacy
                 }
             }
 
-            $query = $db->getQuery(true);
-            $query->select([$db->quoteName('jeua.fnum'), $db->quoteName('ju.name', 'uname'), $db->quoteName('jesp.class')])
-                ->from($db->quoteName('#__emundus_users_assoc', 'jeua'))
-                ->leftJoin($db->quoteName('#__users', 'ju').' ON '.$db->quoteName('ju.id').' = '.$db->quoteName('jeua.user_id'))
-                ->leftJoin($db->quoteName('#__emundus_users', 'jeu').' ON '.$db->quoteName('ju.id').' = '.$db->quoteName('jeu.user_id'))
-                ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'jesp').' ON '.$db->quoteName('jeu.profile').' = '.$db->quoteName('jesp.id'))
-                ->where($db->quoteName('jeua.action_id').' = 1 AND '.$db->quoteName('jeua.r').' = 1 AND '.$db->quoteName('jeua.fnum').' IN ("'.implode('","', $fnums).'")');
-            $db = $this->getDbo();
+            // Finally, select all groups associated to the file by its program
+            $query->clear()
+                ->select(array($db->quoteName('jecc.fnum'), $db->quoteName('jesg.id'), 'GROUP_CONCAT('.$db->quoteName('jesg.label').' ORDER BY '.$db->quoteName('jesg.id').' DESC) as label', 'GROUP_CONCAT('.$db->quoteName('jesg.class').' ORDER BY '.$db->quoteName('jesg.id').' DESC) as class'))
+                ->from($db->quoteName('#__emundus_campaign_candidature','jecc'))
+                ->leftJoin($db->quoteName('#__emundus_setup_campaigns','jesc').' ON '.$db->quoteName('jesc.id').' = '.$db->quoteName('jecc.campaign_id'))
+                ->leftJoin($db->quoteName('#__emundus_setup_programmes','jesp').' ON '.$db->quoteName('jesp.code').' = '.$db->quoteName('jesc.training'))
+                ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course','jesgrc').' ON '.$db->quoteName('jesgrc.course').' = '.$db->quoteName('jesp.code'))
+                ->leftJoin($db->quoteName('#__emundus_setup_groups','jesg').' ON '.$db->quoteName('jesg.id').' = '.$db->quoteName('jesgrc.parent_id'))
+                ->leftJoin($db->quoteName('#__emundus_acl','jea').' ON '.$db->quoteName('jea.group_id').' = '.$db->quoteName('jesg.id'))
+                ->where($db->quoteName('jea.action_id').' = 1')
+                ->andWhere($db->quoteName('jea.r').' = 1')
+                ->andWhere($db->quoteName('jecc.fnum').' IN (\''.implode('\',\'',$fnums).'\')')
+                ->group($db->quoteName('jecc.fnum'));
+
             $db->setQuery($query);
             $res = $db->loadAssocList();
+
+            // Write the code to show the results to the user
             foreach ($res as $r) {
-                if (isset($access[$r['fnum']])) {
-                    $access[$r['fnum']] .= '<div class="flex"><span class="circle '.$r['class'].'">'.$r['uname'].'</span></div>';
-                } else {
-                    $access[$r['fnum']] = '<div class="flex"><span class="circle '.$r['class'].'">'.$r['uname'].'</span></div>';
+                $group_labels = explode(',',$r['label']);
+                $class_labels = explode(',',$r['class']);
+                foreach ($group_labels as $key => $g_label) {
+                    $assocTagcampaign = '<div class="flex"><span class="circle '.$class_labels[$key].'" id="'.$r['id'].'"></span><span id="'.$r['id'].'">'.$g_label.'</span></div>';
+                    $access[$r['fnum']] .= $assocTagcampaign;
                 }
             }
+
             return $access;
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus.email');
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -3339,11 +3544,15 @@ class EmundusModelFiles extends JModelLegacy
      * @return int
      */
     public function addAttachment($fnum, $name, $uid, $cid, $attachment_id, $desc, $canSee = 0) {
-        $dbo = $this->getDbo();
-        $query = "insert into jos_emundus_uploads (user_id, fnum, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id) values ({$uid}, {$dbo->quote($fnum)}, {$attachment_id}, {$dbo->quote($name)}, {$dbo->quote($desc)}, 0, {$canSee}, {$cid})";
-        $dbo->setQuery($query);
-        $dbo->execute();
-        return $dbo->insertid();
+        $now = EmundusHelperDate::getNow();
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+        $query->insert($db->quoteName('#__emundus_uploads'))
+            ->columns($db->quoteName(array('timedate', 'user_id', 'fnum', 'attachment_id', 'filename', 'description', 'can_be_deleted', 'can_be_viewed', 'campaign_id')))
+            ->values($db->quote($now).', '.$db->quote($uid).', '.$db->quote($fnum).', '.$db->quote($attachment_id).', '.$db->quote($name).', '.$db->quote($desc).', 0, '.$db->quote($canSee).', '.$db->quote($cid));
+        $db->setQuery($query);
+        $db->execute();
+        return $db->insertid();
     }
 
     /**
@@ -3389,14 +3598,24 @@ class EmundusModelFiles extends JModelLegacy
     }
 
     public function getSetupAttachmentsById($ids) {
-        $dbo = $this->getDbo();
-        $query = 'select * from jos_emundus_setup_attachments where id in ("'.implode('","', $ids).'")';
-        try {
-            $dbo->setQuery($query);
-            return $dbo->loadAssocList();
-        } catch(Exception $e) {
-            throw $e;
-        }
+	    $setup_attachments = [];
+
+	    if (!empty($ids)) {
+		    $dbo = $this->getDbo();
+		    $query = $dbo->getQuery(true);
+		    $query->select('*')
+			    ->from($dbo->quoteName('#__emundus_setup_attachments'))
+			    ->where($dbo->quoteName('id').' IN (' . implode(',', $ids) . ')');
+
+		    try {
+			    $dbo->setQuery($query);
+			    $setup_attachments = $dbo->loadAssocList();
+		    } catch(Exception $e) {
+			    JLog::add('Failed to get setup attachment by ids ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		    }
+	    }
+
+	    return $setup_attachments;
     }
 
     /**
@@ -3411,16 +3630,17 @@ class EmundusModelFiles extends JModelLegacy
         }
 
         $dbo = $this->getDbo();
-        $select = "select jfe.id, jfe.name, jfe.plugin, jfe.params, jfg.params as group_params, jfg.id as group_id, jfl.db_table_name, jfj.table_join
-                    from jos_fabrik_elements as jfe
-                    left join #__fabrik_formgroup as jff on jff.group_id = jfe.group_id
-                    left join #__fabrik_groups as jfg on jfg.id = jff.group_id
-                    left join #__fabrik_forms as jff2 on jff2.id = jff.form_id
-                    left join #__fabrik_lists as jfl on jfl.form_id = jff2.id
-                    LEFT JOIN #__fabrik_joins AS jfj ON jfl.id = jfj.list_id AND jfg.id=jfj.group_id
-                    where jfe.id in (".implode(',', $idFabrik).")";
+        $query = $dbo->getQuery(true);
+        $query->select('jfe.id, jfe.name, jfe.plugin, jfe.params, jfg.params as group_params, jfg.id as group_id, jfl.db_table_name, jfj.table_join')
+            ->from($dbo->quoteName('#__fabrik_elements','jfe'))
+            ->leftJoin($dbo->quoteName('#__fabrik_formgroup','jff').' ON '.$dbo->quoteName('jff.group_id').' = '.$dbo->quoteName('jfe.group_id'))
+            ->leftJoin($dbo->quoteName('#__fabrik_groups','jfg').' ON '.$dbo->quoteName('jfg.id').' = '.$dbo->quoteName('jff.group_id'))
+            ->leftJoin($dbo->quoteName('#__fabrik_forms','jff2').' ON '.$dbo->quoteName('jff2.id').' = '.$dbo->quoteName('jff.form_id'))
+            ->leftJoin($dbo->quoteName('#__fabrik_lists','jfl').' ON '.$dbo->quoteName('jfl.form_id').' = '.$dbo->quoteName('jff2.id'))
+            ->leftJoin($dbo->quoteName('#__fabrik_joins','jfj').' ON '.$dbo->quoteName('jfl.id').' = '.$dbo->quoteName('jfj.list_id').' AND '.$dbo->quoteName('jfg.id').' = '.$dbo->quoteName('jfj.group_id'))
+            ->where($dbo->quoteName('jfe.id').' IN (' . implode(',', $idFabrik) . ')');
         try {
-            $dbo->setQuery($select);
+            $dbo->setQuery($query);
             return $dbo->loadAssocList();
         } catch(Exception $e) {
             throw $e;
@@ -3849,44 +4069,59 @@ class EmundusModelFiles extends JModelLegacy
      *
      * @since version
      */
-    public function getAttachmentsAssignedToEmundusGroups($group_ids) {
+	public function getAttachmentsAssignedToEmundusGroups($group_ids)
+	{
 
-        if (!is_array($group_ids)) {
-            $group_ids = [$group_ids];
-        }
+		if (!is_array($group_ids)) {
+			$group_ids = [$group_ids];
+		}
 
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
 
-        $result = [];
-        foreach ($group_ids as $group_id) {
-            $query
-                ->clear()
-                ->select($db->quoteName('attachment_id_link'))
-                ->from($db->quoteName('#__emundus_setup_groups_repeat_attachment_id_link'))
-                ->where($db->quoteName('parent_id').' = '.$group_id);
-            $db->setQuery($query);
+		$result = [];
+		foreach ($group_ids as $group_id) {
+			$query->clear()
+				->select($db->quoteName('anonymize'))
+				->from($db->quoteName('#__emundus_setup_groups'))
+				->where($db->quoteName('id') . ' = ' . $group_id);
+			$db->setQuery($query);
+			$anonymize = $db->loadResult();
 
-            try {
-                $attachments = $db->loadColumn();
+			// If the group has no anonymization, then the user can see all the attachments
+			if ($anonymize == 0) {
+				return true;
+			}
+			else {
+				$query->clear()
+					->select($db->quoteName('attachment_id_link'))
+					->from($db->quoteName('#__emundus_setup_groups_repeat_attachment_id_link'))
+					->where($db->quoteName('parent_id') . ' = ' . $group_id);
+				$db->setQuery($query);
 
-                // In the case of a group having no assigned Fabrik groups, it can get them all.
-                if (empty($attachments)) {
-                    return true;
-                }
+				try {
+					$attachments = $db->loadColumn();
 
-                $result = array_merge($result, $attachments);
-            } catch (Exception $e) {
-                return false;
-            }
-        }
+					// In the case of a group having no assigned Fabrik groups, it can get them all.
+					if (empty($attachments)) {
+						return true;
+					}
 
-        if (empty($result)) {
-            return true;
-        } else {
-            return array_keys(array_flip($result));
-        }
-    }
+					$result = array_merge($result, $attachments);
+				}
+				catch (Exception $e) {
+					return false;
+				}
+			}
+		}
+
+		if (empty($result)) {
+			return true;
+		}
+		else {
+			return array_keys(array_flip($result));
+		}
+	}
 
     public function getFormProgress($fnums) {
         $db = JFactory::getDBO();
@@ -4149,7 +4384,7 @@ class EmundusModelFiles extends JModelLegacy
 
             require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
             $h_files = new EmundusHelperFiles();
-            $fnum = $h_files->createFnum($campaign_id, $user_id);
+            $fnum = EmundusHelperFiles::createFnum($campaign_id, $user_id);
 
             if (!empty($fnum)) {
                 $config = JFactory::getConfig();
@@ -4191,7 +4426,7 @@ class EmundusModelFiles extends JModelLegacy
         $msg = '';
 
         $app = JFactory::getApplication();
-        $email_from_sys = $app->getCfg('mailfrom');
+        $email_from_sys = $app->get('mailfrom');
         $fnumsInfos = $this->getFnumsInfos($fnums);
         $status = $this->getStatus();
 
@@ -4220,9 +4455,11 @@ class EmundusModelFiles extends JModelLegacy
 
         if (!empty($trigger_emails)) {
             include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
-            require_once (JPATH_SITE . '/components/com_emundus/models/application.php');
-            require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
+            require_once (JPATH_SITE.'/components/com_emundus/models/campaign.php');
+            require_once (JPATH_SITE.'/components/com_emundus/models/application.php');
+            require_once(JPATH_ROOT.'/components/com_emundus/helpers/emails.php');
             $m_users = new EmundusModelUsers;
+            $m_campaign = new EmundusModelCampaign();
             $m_application = new EmundusModelApplication();
             $h_emails = new EmundusHelperEmails();
 
@@ -4300,7 +4537,20 @@ class EmundusModelFiles extends JModelLegacy
 
                             $mailer = JFactory::getMailer();
 
-                            $post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['label'], 'CAMPAIGN_END' => JHTML::_('date', $file['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null));
+                            $programme = $m_campaign->getProgrammeByTraining($file['training']);
+
+                            $post = [
+                                'FNUM' => $file['fnum'],
+                                'USER_NAME' => $file['name'],
+                                'COURSE_LABEL' => $programme->label,
+                                'CAMPAIGN_LABEL' => $file['label'],
+                                'CAMPAIGN_YEAR' => $file['year'],
+                                'CAMPAIGN_START' => JHTML::_('date', $file['start_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
+                                'CAMPAIGN_END' => JHTML::_('date', $file['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
+                                'DEADLINE' => JHTML::_('date', $file['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
+                                'SITE_URL' => JURI::base(),
+                                'USER_EMAIL' => $file['email']
+                            ];
                             $tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum'], '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
 
                             $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);

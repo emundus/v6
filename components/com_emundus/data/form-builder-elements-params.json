@@ -10,16 +10,8 @@
           "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_TEXT"
         },
         {
-          "value": 3,
-          "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_EMAIL"
-        },
-        {
           "value": 5,
           "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_LINK"
-        },
-        {
-          "value": 6,
-          "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_NUMBER"
         }
       ],
       "helptext": "",
@@ -158,6 +150,26 @@
       "placeholder": "",
       "published": true,
       "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
+      "name": "rollover",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    }
+  ],
+  "dropdown": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
+      "name": "rollover",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
     }
   ],
   "checkbox": [
@@ -169,6 +181,15 @@
       "placeholder": "",
       "published": true,
       "sysadmin_only": true
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
+      "name": "rollover",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
     }
   ],
   "radiobutton": [
@@ -180,6 +201,15 @@
       "placeholder": "",
       "published": true,
       "sysadmin_only": true
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
+      "name": "rollover",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
     }
   ],
   "birthday": [
@@ -265,6 +295,15 @@
       "placeholder": "",
       "published": true,
       "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
+      "name": "rollover",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
     }
   ],
   "yesno": [
@@ -282,6 +321,15 @@
           "label": "JYES"
         }
       ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
+      "name": "rollover",
+      "type": "text",
       "helptext": "",
       "placeholder": "",
       "published": true,
@@ -405,6 +453,15 @@
       "placeholder": "",
       "published": true,
       "sysadmin_only": true
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
+      "name": "rollover",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
     }
   ],
   "date": [
@@ -445,103 +502,253 @@
       "placeholder": "",
       "published": true,
       "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
+      "name": "rollover",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
     }
   ],
-  "currency": [
+  "emundus_geolocalisation": [
     {
-      "label": "COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_ALL_OPTIONS",
-      "name": "all_currencies_options",
-      "type": "subform",
-      "min": 1,
-
+      "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_DEFAULT_LNG",
+      "name": "default_lng",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_DEFAULT_LAT",
+      "name": "default_lat",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_DEFAULT_ZOOM",
+      "name": "default_zoom",
+      "type": "number",
+      "minlength": 1,
+      "maxlength": 20,
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_GET_LOCATION",
+      "name": "get_location",
+      "type": "dropdown",
+      "options": [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    }
+  ],
+  "emundus_phonenumber": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
+      "name": "rollover",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_PHONENUMBER_DEFAULT_COUNTRY",
+      "name": "default_country",
+      "type": "sqldropdown",
+      "table": "data_country",
+      "key": "iso2",
+      "value": "label",
+      "translate": true,
       "helptext": "",
       "placeholder": "",
       "published": true,
       "sysadmin_only": false,
-
-      "subparams": [
+      "options": []
+    }
+  ],
+  "panel": [
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE",
+      "name": "type",
+      "type": "dropdown",
+      "options": [
         {
+          "value": 1,
+          "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_INFORMATION"
+        },
+        {
+          "value": 2,
+          "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_WARNING"
+        },
+        {
+          "value": 3,
+          "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_ERROR"
+        },
+        {
+          "value": 4,
+          "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_NONE"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_ACCORDION",
+      "name": "accordion",
+      "type": "dropdown",
+      "options": [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_ACCORDION_TITLE",
+      "name": "title",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    }
+  ],
+  "currency": [
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES",
+      "name": "all_currencies_options",
+      "type": "repeatable",
+      "published": true,
+      "fields": [
+        {
+          "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_ISO",
           "name": "iso3",
-          "type": "sql",
-          "label":"COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_CURRENCY",
-          "value_field": "label",
-          "key_field": "iso3",
-
-          "plugin_name": "currency",
-          "placeholder": "",
+          "type": "dropdown",
+          "options": [
+            {
+              "value": "EUR",
+              "label": "Euro (€ EUR)"
+            },
+            {
+              "value": "USD",
+              "label": "United States dollar ($ USD)"
+            },
+            {
+              "value": "JPY",
+              "label": "Japanese yen (¥ JPY)"
+            },
+            {
+              "value": "GBP",
+              "label": "British pound (£ GBP)"
+            }
+          ],
           "helptext": "",
+          "placeholder": "",
           "published": true,
           "sysadmin_only": false
         },
         {
+          "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_MIN",
           "name": "minimal_value",
           "type": "number",
-          "label": "COM_EMUNDUS_ONBOARD_MIN_RESOLUTION_PLACEHOLDER",
-          "required": true,
-          "min": 0.00,
-          "max": 99999999.98,
-          "default": 0.00,
-          "step": 1,
-
-          "placeholder": "",
           "helptext": "",
+          "placeholder": "",
           "published": true,
           "sysadmin_only": false
         },
         {
+          "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_MAX",
           "name": "maximal_value",
           "type": "number",
-          "label": "COM_EMUNDUS_ONBOARD_MAX_RESOLUTION_PLACEHOLDER",
-          "required": true,
-          "min": 0.00,
-          "max": 99999999.99,
-          "default": 10000.00,
-          "step": 1,
-
-          "placeholder": "",
           "helptext": "",
+          "placeholder": "",
           "published": true,
           "sysadmin_only": false
         },
         {
-          "label": "COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_THOUSAND_SEPARATOR",
+          "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR",
           "name": "thousand_separator",
-          "type": "text",
-          "maxlength": 1,
-          "size": 3,
-          "default": " ",
-
-          "placeholder": "",
+          "type": "dropdown",
+          "options": [
+            {
+              "value": " ",
+              "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_BLANK_SPACE"
+            },
+            {
+              "value": ",",
+              "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_COMMA"
+            },
+            {
+              "value": ".",
+              "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_DOT"
+            }
+          ],
           "helptext": "",
+          "placeholder": "",
           "published": true,
           "sysadmin_only": false
         },
         {
-          "label": "COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_DECIMAL_SEPARATOR",
+          "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_DECIMAL_SEPARATOR",
           "name": "decimal_separator",
-          "type": "text",
-          "required": true,
-          "maxlength": 1,
-          "size": 1,
-          "default": ",",
-
-          "placeholder": "",
+          "type": "dropdown",
+          "options": [
+            {
+              "value": " ",
+              "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_BLANK_SPACE"
+            },
+            {
+              "value": ",",
+              "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_COMMA"
+            },
+            {
+              "value": ".",
+              "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_DOT"
+            }
+          ],
           "helptext": "",
+          "placeholder": "",
           "published": true,
           "sysadmin_only": false
         },
         {
+          "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_DECIMAL_NUMBERS",
           "name": "decimal_numbers",
           "type": "number",
-          "label": "COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_DECIMAL_NUMBERS",
-          "filter": "number",
-          "required": 1,
-          "max": 10,
-          "min": 0,
-          "default": 2,
-
-          "placeholder": "",
           "helptext": "",
+          "placeholder": "",
           "published": true,
           "sysadmin_only": false
         }

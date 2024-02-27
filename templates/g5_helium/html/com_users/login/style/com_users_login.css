@@ -70,6 +70,8 @@ button.btn-primary:hover{
     width: 50%;
     margin-left: auto;
     margin-right: auto;
+    z-index: 10;
+    position: relative;
 }
 
 #g-container-main div.login .control-group .controls button.btn.btn-primary {
@@ -140,6 +142,10 @@ ul.nav.nav-tabs.nav-stacked {
     margin-bottom: 32px;
 }
 
+.view-login .form-horizontal .control-group:nth-child(2) {
+    margin-bottom: 8px;
+}
+
 .login form.form-horizontal .control-group {
     flex-direction: column;
 }
@@ -150,6 +156,29 @@ ul.nav.nav-tabs.nav-stacked {
 .login form.form-horizontal .controls {
     width: 100%;
     margin-left: 0;
+}
+
+.background-shaped-top {
+    position: absolute;
+    top: 163px;
+    right: 4.1vw;
+    z-index: 0;
+    transform: scale(2.5);
+    max-width: 250px;
+}
+
+.background-shaped-bottom {
+    position: absolute;
+    bottom: 92px;
+    left: 107px;
+    z-index: 0;
+    transform: scale(2.5);
+    rotate: 180deg;
+    max-width: 250px;
+}
+
+.view-login #g-container-main {
+    overflow: hidden;
 }
 
 footer div{
@@ -322,6 +351,9 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
         padding: 0 24px 0 24px;
         margin-bottom: 50px;
     }
+    .background-shaped-top, .background-shaped-bottom {
+        display: none;
+    }
 }
 
 @media all and (max-width: 767px) {
@@ -360,7 +392,24 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 
 }
 
+@media screen and (min-width: 480px) and (max-width: 767px) {
+    .background-shaped-top, .background-shaped-bottom {
+        display: none;
+    }
+}
+
 @media screen and (min-width: 768px) and (max-width: 959px) {
+
+    .background-shaped-top {
+        top: 174px;
+        right: 106px;
+    }
+
+    .background-shaped-bottom {
+        bottom: 90px;
+        left: 106px;
+    }
+
     .login form {
         padding-right: 8rem;
         padding-left: 4rem;
@@ -402,6 +451,16 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
         padding-right: 10rem;
         padding-left: 5rem;
     }
+
+    .background-shaped-top {
+        top: 163px;
+        right: 106px;
+    }
+
+    .background-shaped-bottom {
+        bottom: 90px;
+        left: 107px;
+    }
 }
 
 @media all and (max-width: 1239px) {
@@ -410,6 +469,14 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     }
     .view-login #g-page-surround {
         width: 100%;
+    }
+}
+
+@media all and (min-width: 1200px) and (max-width: 1650px) {
+
+    .background-shaped-top {
+        top: 164px;
+        left: 75.5vw;
     }
 }
 
@@ -423,4 +490,5 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     width: 100%;
     margin-bottom: 32px;
 }
+
 

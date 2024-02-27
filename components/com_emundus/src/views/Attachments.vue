@@ -301,6 +301,8 @@ export default {
 				});
 			}
 		});
+
+	  this.addEvents();
   },
   methods: {
     // Getters and setters
@@ -652,6 +654,13 @@ export default {
     },
 	  toggleOnlyPreview(editDisplayed) {
 			this.onlyPreview = !editDisplayed;
+	  },
+	  addEvents() {
+		  window.addEventListener('message', function (e) {
+			  if (e.data === 'addFileToFnum') {
+				  this.refreshAttachments(true);
+			  }
+		  }.bind(this));
 	  }
   },
   computed: {
@@ -662,7 +671,7 @@ export default {
       return this.displayedAttachments.indexOf(this.selectedAttachment);
     },
     attachmentPath() {
-      return this.$store.state.attachment.attachmentPath + this.displayedUser.user_id + '/' + this.selectedAttachment.filename;
+      return '/index.php?option=com_emundus&task=getfile&u=' + this.$store.state.attachment.attachmentPath + this.displayedUser.user_id + '/' + this.selectedAttachment.filename;
     },
     displayedAttachmentCategories() {
       let displayedCategories = {};

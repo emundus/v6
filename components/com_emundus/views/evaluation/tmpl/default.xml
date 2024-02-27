@@ -20,6 +20,10 @@
 				<option value="actions-users">actions-users</option>
 				<option value="actions-shared-files">actions-shared-files</option>
 			</field>
+			<field name="em_show_evaluator" value="1" type="list" label="COM_EMUNDUS_SHOW_EVALUATOR" description="COM_EMUNDUS_SHOW_EVALUATOR_DESC">
+				<option value="1">JYES</option>
+				<option value="0">JNO</option>
+			</field>
 		</fieldset>
 	</fields>
 </metadata>

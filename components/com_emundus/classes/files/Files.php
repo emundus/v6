@@ -235,10 +235,10 @@ class Files
                                 ];
                             } else if ($type == 'field') {
                                 $operators = [
-                                    ['label' => \JText::_('COM_EMUNDUS_FILES_EQUALS'), 'value' => '='],
-                                    ['label' => \JText::_('COM_EMUNDUS_FILES_NOT_EQUALS'), 'value' => '!='],
                                     ['label' => \JText::_('COM_EMUNDUS_FILES_LIKE'), 'value' => 'LIKE'],
-                                    ['label' => \JText::_('COM_EMUNDUS_FILES_NOT_LIKE'), 'value' => 'NOT LIKE']
+                                    ['label' => \JText::_('COM_EMUNDUS_FILES_NOT_LIKE'), 'value' => 'NOT LIKE'],
+                                    ['label' => \JText::_('COM_EMUNDUS_FILES_EQUALS'), 'value' => '='],
+                                    ['label' => \JText::_('COM_EMUNDUS_FILES_NOT_EQUALS'), 'value' => '!=']
                                 ];
                             } else if ($type == 'select') {
                                 if ($column->plugin == 'checkbox') {
@@ -256,7 +256,8 @@ class Files
                                 'type' => $type,
                                 'label' => $column->label,
                                 'values' => $values,
-                                'operators' => $operators
+                                'operators' => $operators,
+                                'selectedOperator' => $operators[0]['value']
                             ];
                         }
                     }
@@ -322,6 +323,13 @@ class Files
 	public function checkAccess($fnum): bool
 	{
 		$can_access = false;
+
+		if(empty($this->files['fnums'])){
+			require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+
+			$can_access = \EmundusHelperAccess::asAccessAction(1,'r',$this->current_user->id,$fnum);
+		}
+
 		if(in_array($fnum,$this->files['fnums'])){
 			$can_access = true;
 		}
@@ -372,7 +380,11 @@ class Files
 			$select[] = 'group_concat(distinct eua.user_id) as users_assoc';
 		}
 
-		return $select;
+        if(isset($params->display_tag_assoc) && $params->display_tag_assoc == 1){
+            $select[] = 'group_concat(distinct eta.id_tag) as tags_assoc';
+        }
+
+            return $select;
 	}
 
 	public function buildLeftJoin($params,$status_access): array{
@@ -385,7 +397,7 @@ class Files
 		if($status_access) {
 			$left_joins[] = $db->quoteName('#__emundus_setup_status', 'ess') . ' ON ' . $db->quoteName('ess.step') . ' = ' . $db->quoteName('ecc.status');
 		}
-		if (isset($params->tags) && $params->tags !== '') {
+		if ((isset($params->tags) && $params->tags !== '') || (isset($params->display_tag_assoc) && $params->display_tag_assoc == 1)) {
 			$left_joins[] = $db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum');
 		}
 		if(isset($params->display_group_assoc) && $params->display_group_assoc == 1){
@@ -631,7 +643,33 @@ class Files
 		}
 	}
 
-    /**
+    public function buildAssocTags($files){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            foreach ($files as $file) {
+                $tags = [];
+
+                if (!empty($file->tags_assoc) && count($file->tags_assoc) > 0) {
+                    $query->clear()
+                        ->select('label,class')
+                        ->from($db->quoteName('#__emundus_setup_action_tag'))
+                        ->where($db->quoteName('id') . ' IN (' . $file->tags_assoc . ')');
+                    $db->setQuery($query);
+                    $tags = $db->loadObjectList();
+                }
+
+                $file->tags = $tags;
+            }
+
+        } catch (Exception $e) {
+            JLog::add('Problem when build query with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
+        }
+        return $files;
+    }
+
+        /**
      * @param string $element_plugin
      * @return string
      */
@@ -830,7 +868,14 @@ class Files
                                         }
                                     }
                                 } else {
-                                    if ($element_data['db_table_name'] != 'jos_emundus_campaign_candidature') {
+                                    if ($element_data['db_table_name'] == 'jos_emundus_evaluations') {
+                                        $join_key = 'lj_' . $element_data['db_table_name'];
+
+                                        if (!in_array($element_data['db_table_name'], $left_joins_already_used)) {
+                                            $left_joins[] = $db->quoteName($element_data['db_table_name']) . 'AS ' . $join_key .  ' ON  ' . $join_key . '.fnum = ecc.fnum AND ' . $join_key . '.user = ' . JFactory::getUser()->id;
+                                            $left_joins_already_used[] = $element_data['db_table_name'];
+                                        }
+                                    } else if ($element_data['db_table_name'] != 'jos_emundus_campaign_candidature') {
                                         $join_key = 'lj_' . $element_data['db_table_name'];
 
                                         if (!in_array($element_data['db_table_name'], $left_joins_already_used)) {

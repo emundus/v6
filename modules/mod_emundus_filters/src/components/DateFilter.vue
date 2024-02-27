@@ -1,7 +1,7 @@
 <template>
 	<div class="date-filter em-w-100 em-mb-16" :id="'filter-id-' +  filter.uid" :ref="'filter-id-' +  filter.uid" @click="toggleOpened">
 		<div class="em-flex-row em-flex-space-between">
-			<p class="recap-label">{{ filter.label }}</p>
+			<p class="recap-label" :title="filter.label">{{ filter.label }}</p>
 			<div>
 				<span @mouseenter="resetHover = true" @mouseleave="resetHover = false" class="material-icons-outlined em-pointer reset-filter-btn" :class="{'em-blue-400-color': resetHover}" @click="resetFilter" :alt="translate('MOD_EMUNDUS_FILTERS_RESET')">refresh</span>
 				<span v-if="!filter.default" class="material-icons-outlined em-red-500-color em-pointer remove-filter-btn" @click="$.emit('remove-filter')">close</span>
@@ -12,21 +12,21 @@
 				<div v-if="filter.value[0]" class="em-flex-row em-flex-wrap em-flex-gap-8">
 					<span class="recap-operator label label-darkblue"> {{ selectedOperatorLabel }}</span>
 					<p class="recap-value em-flex-row em-flex-wrap em-flex-gap-8">
-						<span v-if="filter.value[0]" class="label label-default">{{ filter.value[0] }}</span>
-						<span v-if="['between', '!between'].includes(filter.operator) && filter.value[1]" class="label label-default"> {{ translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_AND') }} {{ filter.value[1] }}</span>
+						<span v-if="filter.value[0]" class="label label-default">{{ formattedDate(filter.value[0]) }}</span>
+						<span v-if="['between', '!between'].includes(filter.operator) && filter.value[1]" class="label label-default"> {{ translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_AND') }} {{ formattedDate(filter.value[1]) }}</span>
 					</p>
 				</div>
 				<p v-else class="em-text-neutral-500"> {{ translate('MOD_EMUNDUS_FILTERS_PLEASE_SELECT') }}</p>
 			</section>
 			<section class="default-filter-options em-mt-8" :class="{'hidden': !opened}">
 				<div class="operators-selection em-flex-row em-flex-wrap em-flex-gap-8">
-					<div v-for="operator in operators" :key="filter.uid + '-' + operator.value" class="em-p-8 em-border-radius-8" :class="{'label-default': operator.value !== filter.operator, 'label-darkblue': operator.value === filter.operator}">
+					<div v-for="operator in operators" :key="filter.uid + '-' + operator.value" class="em-p-6-10 em-border-radius-8" :class="{'label-default': operator.value !== filter.operator, 'label-darkblue': operator.value === filter.operator}">
 						<input class="hidden label"
 						       type="radio"
 						       :id="filter.uid + '-operator-' + operator.value" :value="operator.value"
 						       v-model="filter.operator"
 						>
-						<label :for="filter.uid + '-operator-' + operator.value" style="margin: 0">{{ operator.label }}</label>
+						<label :for="filter.uid + '-operator-' + operator.value" style="margin: 0" class="em-font-size-14">{{ operator.label }}</label>
 					</div>
 				</div>
 				<hr/>
@@ -42,8 +42,11 @@
 </template>
 
 <script>
+import date from '@/mixins/date.js';
+
 export default {
 	name: "DateFilter.vue",
+  mixins: [date],
 	props: {
 		moduleId: {
 			type: Number,
@@ -73,7 +76,11 @@ export default {
 		}
 	},
 	mounted () {
-		this.originalFilterValue = this.filter.value;
+		if (this.filter.value === '' || this.filter.value === null || this.filter.value == 0) {
+			this.filter.value = ['', ''];
+		}
+
+		this.originalFilterValue = JSON.parse(JSON.stringify(this.filter.value));
 		this.originalFilterOperator = this.filter.operator;
 		document.addEventListener('click', this.handleClickOutside);
 	},
@@ -109,7 +116,7 @@ export default {
 			}
 		},
 		onCloseCard() {
-			const valueDifferences = this.filter.value[0] !== this.originalFilterValue[0] || this.filter.value[1] !== this.originalFilterValue[1];
+			const valueDifferences = (this.filter.value[0] !== this.originalFilterValue[0]) || (this.filter.value[1] !== this.originalFilterValue[1]);
 			const operatorDifferences = this.filter.operator !== this.originalFilterOperator;
 
 			if (valueDifferences || operatorDifferences) {

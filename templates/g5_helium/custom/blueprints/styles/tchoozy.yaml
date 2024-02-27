@@ -1,0 +1,120 @@
+name: Tchoozy
+description: Display of Tchoozy
+type: core
+
+form:
+  fields:
+    #Accueil
+    wide-background:
+      type: select.select
+      label: Homepage background
+      default: url("/media/com_emundus/images/tchoozy/backgrounds/wide-background.svg")
+      description: Fond formes large
+      options:
+        url("/media/com_emundus/images/tchoozy/backgrounds/wide-background.svg"): Enabled
+        none: Disabled
+
+    demonstration:
+      type: select.select
+      label: Homepage
+      default: url("/media/com_emundus/images/tchoozy/complex-illustrations/demonstration.svg")
+      description: Tchoozy demonstration illustration
+      options:
+        url("/media/com_emundus/images/tchoozy/complex-illustrations/demonstration.svg"): Enabled
+        none: Disabled
+
+    #Connexion
+    corner-bottom-left-background:
+      type: select.select
+      label: Login page background (bottom left)
+      default: block
+      description: Fond formes coin bas gauche
+      options:
+        block: Enabled
+        none: Disabled
+
+    corner-top-right-background:
+      type: select.select
+      label: Login page background (top right)
+      default: block
+      description: Fond formes coin haut droite
+      options:
+        block: Enabled
+        none: Disabled
+
+    candidate-button:
+      type: select.select
+      label: Login page illustration 1
+      default: url("/media/com_emundus/images/tchoozy/complex-illustrations/candidate-button.svg")
+      description: Tchoozy candidature
+      options:
+        url("/media/com_emundus/images/tchoozy/complex-illustrations/candidate-button.svg"): Enabled
+        none: Disabled
+
+    digital-testing:
+      type: select.select
+      label: Login page illustration 2
+      default: url("/media/com_emundus/images/tchoozy/complex-illustrations/digital-testing.svg")
+      description: Tchoozy écran tactile
+      options:
+        url("/media/com_emundus/images/tchoozy/complex-illustrations/digital-testing.svg"): Enabled
+        none: Disabled
+
+    #Page settings
+    corner-bottom-right-background:
+      type: select.select
+      label: Settings page background (bottom right)
+      default: url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-right-background.svg")
+      description: Fond formes coin bas droite
+      options:
+        url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-right-background.svg"): Enabled
+        none: Disabled
+
+    setting-tools:
+      type: select.select
+      label: Settings page illustration
+      default: url("/media/com_emundus/images/tchoozy/complex-illustrations/setting-tools.svg")
+      description: Tchoozy paramètres globaux
+      options:
+        url("/media/com_emundus/images/tchoozy/complex-illustrations/setting-tools.svg"): Enabled
+        none: Disabled
+
+    #Historique des emails
+    email-history:
+      type: select.select
+      label: Emails history illustration
+      default: url("/media/com_emundus/images/tchoozy/objects-illustrations/email-history.svg")
+      description: Illustration historique des emails
+      options:
+        url("/media/com_emundus/images/tchoozy/objects-illustrations/email-history.svg"): Enabled
+        none: Disabled
+
+    #Groupes
+    groups:
+      type: select.select
+      label: Groups illustration
+      default: url("/media/com_emundus/images/tchoozy/objects-illustrations/groups.svg")
+      description: Illustration groupes
+      options:
+        url("/media/com_emundus/images/tchoozy/objects-illustrations/groups.svg"): Enabled
+        none: Disabled
+
+    #Profiles
+    profiles:
+      type: select.select
+      label: Profiles illustration
+      default: block
+      description: Illustration profils
+      options:
+        block: Enabled
+        none: Disabled
+
+    #Easter egg
+    hiding:
+      type: select.select
+      label: Hiding Tchoozy easter egg
+      default: url("/media/com_emundus/images/tchoozy/complex-illustrations/hiding.svg")
+      description: Tchoozy caché derrière la page
+      options:
+        url("/media/com_emundus/images/tchoozy/complex-illustrations/hiding.svg"): Enabled
+        none: Disabled

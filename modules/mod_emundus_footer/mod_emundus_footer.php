@@ -12,8 +12,11 @@ defined('_JEXEC') or die;
 // Include the login functions only once
 JLoader::register('ModLoginHelper', __DIR__ . '/helper.php');
 
+require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+
 $document 	= JFactory::getDocument();
-$document->addStyleSheet("modules/mod_emundus_footer/css/mod_emundus_footer.css" );
+$document->addStyleSheet("modules/mod_emundus_footer/css/mod_emundus_footer.css?".$hash );
 
 include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
@@ -40,7 +43,7 @@ $mod_emundus_footer_rights_alias=$params->get('mod_emundus_footer_rights_alias',
 $mod_emundus_footer_cookies=$params->get('mod_emundus_footer_cookies', '1');
 $mod_emundus_footer_cookies_alias=$params->get('mod_emundus_footer_cookies_alias', 'gestion-des-cookies');
 
-$mod_emundus_footer_accessibility=$params->get('mod_emundus_footer_accessibility', '1');
+$mod_emundus_footer_accessibility=$params->get('mod_emundus_footer_accessibility', '0');
 $mod_emundus_footer_accessibility_alias=$params->get('mod_emundus_footer_accessibility_alias', 'accessibilite');
 
 $type             = ModLoginHelper::getType();

@@ -16,7 +16,7 @@ div.mod-languages.advanced-dropdown ul{
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
     margin-top: -3px;
-    background: #eeebeb;
+    background: var(--neutral-25);
     height: 100%;
 }
 
@@ -27,9 +27,11 @@ div.mod-languages ul.lang-inline li{
 
 div.mod-languages a{
     width: 100%;
-    padding: 0;
     align-items: baseline;
-    color: black;
+    color: var(--neutral-900);
+    padding: 0.625rem 0.75rem;
+    text-decoration: none;
+    display: inline-flex;
 }
 
 div.mod-languages form[name="lang"]{
@@ -37,7 +39,7 @@ div.mod-languages form[name="lang"]{
 }
 
 .view-programme .caret {
-    margin-top: 0px !important;
+    margin-top: 0 !important;
 }
 
 div.mod-languages img{
@@ -52,8 +54,8 @@ div.advanced-dropdown a.langChoose:link, div.advanced-dropdown a.langChoose:visi
     align-items: center;
     margin-left: 15px;
     border-radius: 4px;
-    background: #eeebeb;
-    color: black;
+    background: var(--neutral-25);
+    color: var(--neutral-900);
     display: flex;
     max-height: 38px;
 }
@@ -69,7 +71,7 @@ div.advanced-dropdown a.langChoose img{
 
 div.advanced-dropdown span.caret{
     margin-left: 5px;
-    border-top: 4px solid #000;
+    border-top: 4px solid var(--neutral-900);
 }
 
 .mod_emundus_falang___select{
@@ -82,33 +84,37 @@ div.advanced-dropdown span.caret{
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: transparent;
+    background-color: var(--transparent);
     font-family: var(--em-default-font);
+    color: var(--em-profile-color);
+}
+
+.mod_falang_emundus___button span.material-icons{
+    color: var(--em-profile-color);
 }
 
 .mod_falang_emundus___other_languages{
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    background-color: #fff;
-    position: absolute;
+    background-color: var(--neutral-0);
+    position: fixed;
 }
 
 .mod_falang_emundus___other_languages span{
-    padding: 0.625rem 0.75rem;
     width: 100%;
-    color: #727272;
+    color: var(--neutral-600);
     cursor: pointer;
     transition: background-color 0.2s linear;
 }
 
 .mod_falang_emundus___other_languages span:hover:not(.mod_falang_emundus___other_languages_selected){
-    background-color: #F0F6FD;
+    background-color: var(--neutral-300);
 }
 
 .mod_falang_emundus___other_languages_selected{
-    border-left: 3px solid #1C6EF2;
-    color: black !important;
+    border-left: 3px solid var(--em-profile-color);
+    color: var(--neutral-900) !important;
 }
 
 @media screen and (max-width: 767px) {

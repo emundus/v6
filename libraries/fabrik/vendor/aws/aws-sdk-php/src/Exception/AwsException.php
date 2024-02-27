@@ -1,28 +1,16 @@
 <?php
 namespace Aws\Exception;
 
-use Aws\Api\Shape;
-use Aws\CommandInterface;
-use Aws\HasDataTrait;
-use Aws\HasMonitoringEventsTrait;
-use Aws\MonitoringEventsInterface;
-use Aws\ResponseContainerInterface;
-use Aws\ResultInterface;
-use JmesPath\Env as JmesPath;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\RequestInterface;
+use Aws\CommandInterface;
+use Aws\ResultInterface;
 
 /**
  * Represents an AWS exception that is thrown when a command fails.
  */
-class AwsException extends \RuntimeException implements
-    MonitoringEventsInterface,
-    ResponseContainerInterface,
-    \ArrayAccess
+class AwsException extends \RuntimeException
 {
-    use HasDataTrait;
-    use HasMonitoringEventsTrait;
-
     /** @var ResponseInterface */
     private $response;
     private $request;
@@ -31,12 +19,8 @@ class AwsException extends \RuntimeException implements
     private $requestId;
     private $errorType;
     private $errorCode;
-    private $errorShape;
     private $connectionError;
     private $transferInfo;
-    private $errorMessage;
-    private $maxRetriesExceeded;
-
 
     /**
      * @param string           $message Exception message
@@ -50,7 +34,6 @@ class AwsException extends \RuntimeException implements
         array $context = [],
         \Exception $previous = null
     ) {
-        $this->data = isset($context['body']) ? $context['body'] : [];
         $this->command = $command;
         $this->response = isset($context['response']) ? $context['response'] : null;
         $this->request = isset($context['request']) ? $context['request'] : null;
@@ -59,17 +42,11 @@ class AwsException extends \RuntimeException implements
             : null;
         $this->errorType = isset($context['type']) ? $context['type'] : null;
         $this->errorCode = isset($context['code']) ? $context['code'] : null;
-        $this->errorShape = isset($context['error_shape']) ? $context['error_shape'] : null;
         $this->connectionError = !empty($context['connection_error']);
         $this->result = isset($context['result']) ? $context['result'] : null;
         $this->transferInfo = isset($context['transfer_stats'])
             ? $context['transfer_stats']
             : [];
-        $this->errorMessage = isset($context['message'])
-            ? $context['message']
-            : null;
-        $this->monitoringEvents = [];
-        $this->maxRetriesExceeded = false;
         parent::__construct($message, 0, $previous);
     }
 
@@ -101,16 +78,6 @@ class AwsException extends \RuntimeException implements
     public function getCommand()
     {
         return $this->command;
-    }
-
-    /**
-     * Get the concise error message if any.
-     *
-     * @return string|null
-     */
-    public function getAwsErrorMessage()
-    {
-        return $this->errorMessage;
     }
 
     /**
@@ -196,16 +163,6 @@ class AwsException extends \RuntimeException implements
     }
 
     /**
-     * Get the AWS error shape.
-     *
-     * @return Shape|null Returns null if no response was received
-     */
-    public function getAwsErrorShape()
-    {
-        return $this->errorShape;
-    }
-
-    /**
      * Get all transfer information as an associative array if no $name
      * argument is supplied, or gets a specific transfer statistic if
      * a $name attribute is supplied (e.g., 'retries_attempted').
@@ -233,38 +190,5 @@ class AwsException extends \RuntimeException implements
     public function setTransferInfo(array $info)
     {
         $this->transferInfo = $info;
-    }
-
-    /**
-     * Returns whether the max number of retries is exceeded.
-     *
-     * @return bool
-     */
-    public function isMaxRetriesExceeded()
-    {
-        return $this->maxRetriesExceeded;
-    }
-
-    /**
-     * Sets the flag for max number of retries exceeded.
-     */
-    public function setMaxRetriesExceeded()
-    {
-        $this->maxRetriesExceeded = true;
-    }
-
-    public function hasKey($name)
-    {
-        return isset($this->data[$name]);
-    }
-
-    public function get($key)
-    {
-        return $this[$key];
-    }
-
-    public function search($expression)
-    {
-        return JmesPath::search($expression, $this->toArray());
     }
 }

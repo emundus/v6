@@ -15,6 +15,8 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
+
+use Joomla\CMS\Component\ComponentHelper;
 /**
  * Content Component Query Helper
  *
@@ -272,7 +274,7 @@ class EmundusHelperEmails {
 						<input name="mail_type" type="hidden" class="inputbox" id="mail_type" value="expert" />
 						<p>
 							<div>
-								<input class="btn btn-large btn-success" style="margin-top: 16px" type="submit" name="expert" value="'.JText::_( 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL' ).'" >
+								<button class="btn btn-primary absolute" style="bottom: 32px;right: 32px" type="submit" name="expert">'.JText::_( 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL' ).'</button>
 							</div>
 						</p>
 						
@@ -692,7 +694,7 @@ class EmundusHelperEmails {
 
             $user = $users[$i];
 
-            $can_send_mail = $this->assertCanSendMailToUser($user->id);
+            $can_send_mail = EmundusHelperEmails::assertCanSendMailToUser($user->id);
             if (!$can_send_mail) {
                 continue;
             }
@@ -852,6 +854,52 @@ class EmundusHelperEmails {
         }
 
         return $is_correct;
+    }
+
+    static function getLogo(): string {
+        $logo = '';
+        $app = JFactory::getApplication();
+        $template = $app->getTemplate(true);
+        $config = JFactory::getConfig();
+
+        $params = $template->params;
+
+
+        if (!empty($params->get('logo')->custom->image)) {
+            $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+            $logo = !empty($logo['path']) ? JURI::base().$logo['path'] : "";
+        } else {
+            $logo_module = JModuleHelper::getModuleById('90');
+            preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
+            $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
+        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
+        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
+
+            if (preg_match($pattern, $tab[1])) {
+                $tab[1] = parse_url($tab[1], PHP_URL_PATH);
+            }
+
+            $logo = JURI::base().$tab[1];
+        }
+
+        return $logo;
+    }
+
+    public static function getCustomHeader(): string {
+        $result = '';
+
+        $eMConfig = ComponentHelper::getParams('com_emundus');
+        $custom_email_tag = $eMConfig->get('email_custom_tag', null);
+
+        if(!empty($custom_email_tag))
+        {
+            $custom_email_tag = explode(',', $custom_email_tag);
+
+            $result = $custom_email_tag[0].':'.$custom_email_tag[1];
+        }
+
+        return $result;
     }
 }
 ?>

@@ -88,13 +88,73 @@ class EmundusHelperCache
 		return $stored;
 	}
 
-	public function clean() {
+	public function clean($admin = false, $group = '') {
 		$cleaned = false;
 
 		if ($this->isEnabled()) {
 			$cleaned = $this->cache->__call('clean', array($this->group));
+
+			if ($admin && !empty($group)) {
+				if (is_dir(JPATH_ADMINISTRATOR.'/cache/'.$group)) {
+					try {
+						$cleaned = $this->deleteDir($group);
+					} catch (Exception $e) {
+						$cleaned = false;
+						JLog::add('Error cleaning cache of group ' . $group . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cache.error');
+					}
+				} else {
+					$cleaned = false;
+					JLog::add('Cache directory of group ' . $group . ' does not exists!', JLog::WARNING, 'com_emundus.cache.error');
+				}
+			}
 		}
 
 		return $cleaned;
+	}
+
+	public static function getCurrentGitHash() {
+		$hash = '';
+		$git_base_path = JPATH_SITE.'/.git';
+
+		if(file_exists($git_base_path.'/HEAD')) {
+			$git_str = file_get_contents($git_base_path . '/HEAD');
+			$git_branch = rtrim(preg_replace("/(.*?\/){2}/", '', $git_str));
+
+			if(!empty($git_branch))
+			{
+				$hash = trim(file_get_contents($git_base_path . '/refs/heads/' . $git_branch));
+			}
+		}
+
+		if(empty($hash))
+		{
+			$xmlDoc = new DOMDocument();
+			if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
+				$hash = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
+			}
+		}
+
+		return $hash;
+	}
+
+	private function deleteDir($group) {
+		$dirPath = JPATH_ADMINISTRATOR . '/cache/' . $group;
+
+		if (!is_dir($dirPath)) {
+			throw new InvalidArgumentException("$dirPath must be a directory");
+		}
+		if (substr($dirPath, strlen($dirPath) - 1, 1) != '/') {
+			$dirPath .= '/';
+		}
+		$files = glob($dirPath . '*', GLOB_MARK);
+		foreach ($files as $file) {
+			if (is_dir($file)) {
+				$this->deleteDir($file);
+			} else {
+				unlink($file);
+			}
+		}
+
+		return rmdir($dirPath);
 	}
 }

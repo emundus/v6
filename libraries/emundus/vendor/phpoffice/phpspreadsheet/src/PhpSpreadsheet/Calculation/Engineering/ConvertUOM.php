@@ -572,7 +572,7 @@ class ConvertUOM
         return ($baseValue * self::$unitConversions[$fromCategory][$toUOM]) / $toMultiplier;
     }
 
-    private static function getUOMDetails(string $uom): array
+    private static function getUOMDetails(string $uom)
     {
         if (isset(self::$conversionUnits[$uom])) {
             $unitCategory = self::$conversionUnits[$uom]['Group'];
@@ -678,7 +678,7 @@ class ConvertUOM
         return $value;
     }
 
-    private static function resolveTemperatureSynonyms(string $uom): string
+    private static function resolveTemperatureSynonyms(string $uom)
     {
         switch ($uom) {
             case 'fah':

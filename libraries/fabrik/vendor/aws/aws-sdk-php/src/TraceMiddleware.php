@@ -1,14 +1,11 @@
 <?php
 namespace Aws;
 
-use Aws\Api\Service;
 use Aws\Exception\AwsException;
 use GuzzleHttp\Promise\RejectedPromise;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
-use RecursiveArrayIterator;
-use RecursiveIteratorIterator;
 
 /**
  * Traces state changes between middlewares.
@@ -18,9 +15,6 @@ class TraceMiddleware
     private $prevOutput;
     private $prevInput;
     private $config;
-
-    /** @var Service */
-    private $service;
 
     private static $authHeaders = [
         'X-Amz-Security-Token' => '[TOKEN]',
@@ -37,8 +31,6 @@ class TraceMiddleware
         '/AWS [A-Z0-9]{20}:.+/' => 'AWS AKI[KEY]:[SIGNATURE]',
         // STS Presigned URLs
         '/X-Amz-Security-Token=[^&]+/i' => 'X-Amz-Security-Token=[TOKEN]',
-        // Crypto *Stream Keys
-        '/\["key.{27,36}Stream.{9}\]=>\s+.{7}\d{2}\) "\X{16,64}"/U' => '["key":[CONTENT KEY]]',
     ];
 
     /**
@@ -62,7 +54,7 @@ class TraceMiddleware
      *   headers contained in this array will be replaced with the if
      *   "scrub_auth" is set to true.
      */
-    public function __construct(array $config = [], Service $service = null)
+    public function __construct(array $config = [])
     {
         $this->config = $config + [
             'logfn'        => function ($value) { echo $value; },
@@ -75,7 +67,6 @@ class TraceMiddleware
 
         $this->config['auth_strings'] += self::$authStrings;
         $this->config['auth_headers'] += self::$authHeaders;
-        $this->service = $service;
     }
 
     public function __invoke($step, $name)
@@ -160,7 +151,7 @@ class TraceMiddleware
         return [
             'instance' => spl_object_hash($cmd),
             'name'     => $cmd->getName(),
-            'params'   => $this->getRedactedArray($cmd)
+            'params'   => $cmd->toArray()
         ];
     }
 
@@ -231,9 +222,7 @@ class TraceMiddleware
     {
         if ($a === $b) {
             return;
-        }
-
-        if (is_array($a)) {
+        } elseif (is_array($a)) {
             $b = (array) $b;
             $keys = array_unique(array_merge(array_keys($a), array_keys($b)));
             foreach ($keys as $k) {
@@ -258,9 +247,7 @@ class TraceMiddleware
     {
         if (is_scalar($value)) {
             return (string) $value;
-        }
-
-        if ($value instanceof \Exception) {
+        } elseif ($value instanceof \Exception) {
             $value = $this->exceptionArray($value);
         }
 
@@ -297,13 +284,7 @@ class TraceMiddleware
     {
         if ($this->config['scrub_auth']) {
             foreach ($this->config['auth_strings'] as $pattern => $replacement) {
-                $value = preg_replace_callback(
-                    $pattern,
-                    function ($matches) use ($replacement) {
-                        return $replacement;
-                    },
-                    $value
-                );
+                $value = preg_replace($pattern, $replacement, $value);
             }
         }
 
@@ -317,41 +298,5 @@ class TraceMiddleware
         }
 
         return $headers;
-    }
-
-    /**
-     * @param CommandInterface $cmd
-     * @return array
-     */
-    private function getRedactedArray(CommandInterface $cmd)
-    {
-        if (!isset($this->service["shapes"])) {
-            return $cmd->toArray();
-        }
-        $shapes = $this->service["shapes"];
-        $cmdArray = $cmd->toArray();
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveArrayIterator($cmdArray),
-            RecursiveIteratorIterator::SELF_FIRST
-        );
-        foreach ($iterator as $parameter => $value) {
-           if (isset($shapes[$parameter]['sensitive']) &&
-               $shapes[$parameter]['sensitive'] === true
-           ) {
-               $redactedValue = is_string($value) ? "[{$parameter}]" : ["[{$parameter}]"];
-               $currentDepth = $iterator->getDepth();
-               for ($subDepth = $currentDepth; $subDepth >= 0; $subDepth--) {
-                   $subIterator = $iterator->getSubIterator($subDepth);
-                   $subIterator->offsetSet(
-                       $subIterator->key(),
-                       ($subDepth === $currentDepth
-                           ? $redactedValue
-                           : $iterator->getSubIterator(($subDepth+1))->getArrayCopy()
-                       )
-                   );
-               }
-           }
-        }
-        return $iterator->getArrayCopy();
     }
 }

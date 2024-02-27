@@ -43,10 +43,20 @@ switch ($applicant_can_renew) {
 
     // Cannot create new campaigns at all.
     case 0:
-        JLog::add('User: '.$user->id.' already has a file.', JLog::ERROR, 'com_emundus');
-        $formModel->setFormErrorMsg('User already has a file open and cannot have multiple.');
-        $formModel->getForm()->error = JText::_('ERROR');
-        return false;
+        $query = 'SELECT COUNT(id)
+                    FROM #__emundus_campaign_candidature
+                    WHERE applicant_id = '.$user->id.' AND published <> -1';
+        $db->setQuery($query);
+        $files = $db->loadResult();
+
+        if ($files > 0) {
+            JLog::add('User: '.$user->id.' already has a file.', JLog::ERROR, 'com_emundus');
+            $formModel->setFormErrorMsg('User already has a file open and cannot have multiple.');
+            $formModel->getForm()->error = JText::_('ERROR');
+            return false;
+        }
+
+        break;
 
     // If the applicant can only have one file per campaign.
     case 2:
@@ -54,12 +64,12 @@ switch ($applicant_can_renew) {
 					FROM #__emundus_setup_campaigns
 					WHERE published = 1
 					AND end_date >= ' . $db->quote($now) .
-					'AND start_date <= ' . $db->quote($now) .
-					'AND id NOT IN (
+					' AND start_date <= ' . $db->quote($now) .
+					' AND id NOT IN (
 						SELECT campaign_id
 						FROM #__emundus_campaign_candidature
 						WHERE applicant_id=' . $user->id .
-                        'AND published <> -1
+                        ' AND published <> -1
 					)';
 
         try {
@@ -84,8 +94,8 @@ switch ($applicant_can_renew) {
 					FROM #__emundus_setup_campaigns
 					WHERE published = 1
 					AND end_date >= ' . $db->quote($now) .
-					'AND start_date <= ' . $db->quote($now) .
-					'AND year NOT IN (
+					' AND start_date <= ' . $db->quote($now) .
+					' AND year NOT IN (
 						select sc.year
 						from #__emundus_campaign_candidature as cc
 						LEFT JOIN #__emundus_setup_campaigns as sc ON sc.id = cc.campaign_id

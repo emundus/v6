@@ -138,10 +138,56 @@ class EmundusModelSettingsTest extends TestCase
 
 		$this->assertNotEmpty($articles, 'La récupération des articles RGPD fonctionne');
 
-		$this->assertSame(5, count($articles), 'Je récupère 5 articles RGPD');
+		$this->assertSame(4, count($articles), 'Je récupère 4 articles RGPD. (Cookies, mentions légales, politique de confidentialité et conditions générales d\'utilisation et Gestion des droits)');
 
 		if(empty($articles[0]->id)){
 			$this->assertNotEmpty($articles[0]->alias, 'Si le paramètre du module n\'est pas défini on récupère un alias par défaut');
 		}
+	}
+
+	public function testpublishArticle() {
+		$articles = $this->m_settings->getRgpdArticles();
+
+		foreach ($articles as $article) {
+			if(empty($article->id))
+			{
+				$publish = $this->m_settings->publishArticle(0, $article->alias);
+				$this->assertTrue($publish, 'La dépublication d\'un article RGPD fonctionne');
+			} else {
+				$publish = $this->m_settings->publishArticle(0, $article->id);
+				$this->assertTrue($publish, 'La dépublication d\'un article RGPD fonctionne');
+			}
+		}
+	}
+
+
+	/**
+	 * @group Emundus parameters
+	 */
+
+	public function testgetEmundusParams() {
+		$params = $this->m_settings->getEmundusParams();
+		$this->assertNotEmpty($params, 'La récupération des paramètres Emundus renvoie une valeur non vide');
+		$this->assertIsArray($params, 'La récupération des paramètres Emundus renvoie un tableau');
+
+		$this->assertArrayHasKey('joomla', $params, 'La récupération des paramètres Emundus renvoie un tableau avec la clé joomla');
+		$this->assertArrayHasKey('emundus', $params, 'La récupération des paramètres Emundus renvoie un tableau avec la clé emundus');
+
+		$this->assertArrayHasKey('list_limit', $params['joomla'], 'La récupération des paramètres Emundus renvoie un tableau avec la clé list_limit');
+		$this->assertArrayNotHasKey('addpipe_api_key', $params['emundus'], 'La récupération des paramètres Emundus ne renvoie pas l\'ensemble de la configuration Emundus. Cela permet de ne pas exposer les clé API');
+	}
+
+	public function testupdateEmundusParam() {
+		$new_limit_value = 10;
+		$this->assertTrue($this->m_settings->updateEmundusParam('joomla', 'list_limit', $new_limit_value), 'La modification de la limite des listes fonctionne');
+		$this->assertSame($new_limit_value, JFactory::getConfig()->get('list_limit'), 'La modification de la limite des listes fonctionne');
+
+		$this->assertFalse($this->m_settings->updateEmundusParam('joomla', 'unallowed_parameter_name', 'test'), 'La modification ne peut pas se faire si le paramètre n\'est pas autorisé, ou n\'existe pas');
+		$this->assertFalse($this->m_settings->updateEmundusParam('emundus', 'addpipe_api_key', 'test'), 'La modification de la clé API Addpipe n\'est pas autorisée et devrait donc renvoyer false');
+	}
+
+	public function testGetFavicon() {
+		$favicon = $this->m_settings->getFavicon();
+		$this->assertNotEmpty($favicon, 'La récupération du favicon fonctionne');
 	}
 }

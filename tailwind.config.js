@@ -4,15 +4,21 @@ const plugin = require('tailwindcss/plugin')
 module.exports = {
     content: [
         "./templates/g5_helium/html/**/*.{html,js,php}",
-        "./modules/**/*.{html,js,php}",
+        "./modules/**/src/*.{html,js,php}",
+        "./modules/**/tmpl/*.{html,js,php}",
         "./plugins/fabrik_element/**/*.{html,js,php}",
-        "./components/com_emundus/**/*.{html,js,php,vue}",
-        "./components/com_fabrik/**/*.{html,js,php}",
+        "./components/com_emundus/src/**/*.{html,js,php,vue}",
+        "./components/com_emundus/views/**/*.{html,js,php,vue}",
+        "./components/com_fabrik/layouts/**/*.{html,js,php}",
+        "./components/com_fabrik/views/**/*.{html,js,php}",
     ],
     safelist: [
         {
             pattern: /label-/
         },
+        {
+            pattern: /(py|px|p)-/
+        }
     ],
     theme: {
         extend: {
@@ -22,6 +28,10 @@ module.exports = {
                 },
                 neutral: {
                     500: 'var(--neutral-500)',
+                    600: 'var(--neutral-600)',
+                },
+                green: {
+                    500: 'var(--main-500)',
                 }
             },
             spacing: {
@@ -46,26 +56,26 @@ module.exports = {
                 '.em-default-title-1': {
                     color: 'var(--em-default-title-color-1)',
                     fontFamily: 'var(--em-applicant-font-title)',
-                    fontSize: 'var(--em-coordinator-h1)',
+                    fontSize: 'var(--em-applicant-h1)',
                     fontStyle: 'normal',
                     lineHeight: '28.8px',
-                    fontWeight: 500,
+                    fontWeight: 'var(--em-font-weight-500)',
                 },
                 '.em-default-title-2': {
                     color: 'var(--em-default-title-color-1)',
                     fontFamily: 'var(--em-applicant-font-title)',
-                    fontSize: 'var(--em-coordinator-h2)',
+                    fontSize: 'var(--em-applicant-h2)',
                     fontStyle: 'normal',
                     lineHeight: '26.4px',
-                    fontWeight: 500,
+                    fontWeight: 'var(--em-font-weight-500)',
                 },
                 '.em-default-title-3': {
                     color: 'var(--em-default-title-color-1)',
                     fontFamily: 'var(--em-applicant-font-title)',
-                    fontSize: 'var(--em-coordinator-h3)',
+                    fontSize: 'var(--em-applicant-h3)',
                     fontStyle: 'normal',
                     lineHeight: '24.2px',
-                    fontWeight: 500,
+                    fontWeight: 'var(--em-font-weight-500)',
                 }
             })
         })

@@ -40,7 +40,6 @@
 }
 
 .em-container-footer-cand .em-col-3-footer a {
-    font-weight: 500 ;
     text-align: end;
 }
 
@@ -107,20 +106,11 @@ hr.footer-separation {
 }
 
 .em-container-footer-gest .em-block-footer a {
-    color: #000 !important;
+    color: var(--em-profile-color) !important;
     font-weight: 500 ;
 }
 
-
-
-.em-container-footer-cand .em-col-3-footer a:hover {
-    font-weight: 500;
-    text-decoration: underline !important;
-}
-
 .em-container-footer-gest .em-block-footer a:hover {
-    color: var(--night-blue) !important;
-    text-decoration: underline !important;
     font-weight: 500;
 }
 
@@ -160,6 +150,18 @@ hr.footer-separation {
     padding: 0 10px;
 }
 
+/**********************
+ * Modifications peps *
+ **********************/
+
+.em-container-footer-gest .em-block-footer .platform-version, .em-container-footer-cand .platform-version {
+    color: #000;
+    text-decoration: none;
+}
+
+/**************************
+ * Fin modifications peps *
+ **************************/
 
 /* MOBILE */
 @media all and (max-width: 479px) {

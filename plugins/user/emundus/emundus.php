@@ -9,6 +9,9 @@
  */
 
 // No direct access
+use Joomla\CMS\User\User;
+use Joomla\CMS\User\UserHelper;
+
 defined('_JEXEC') or die( 'Restricted access' );
 
 jimport('joomla.plugin.plugin');
@@ -27,15 +30,15 @@ class plgUserEmundus extends JPlugin
      * Method is called after user data is deleted from the database
      *
      * @param   array    $user    Holds the user data
-     * @param   boolean  $succes  True if user was succesfully stored in the database
+     * @param   boolean  $success  True if user was succesfully stored in the database
      * @param   string   $msg     Message
      *
      * @return  boolean
      * @throws Exception
      * @since   1.6
      */
-    public function onUserAfterDelete($user, $succes, $msg) {
-        if (!$succes) {
+    public function onUserAfterDelete($user, $success, $msg) {
+        if (!$success) {
             return false;
         }
 
@@ -48,6 +51,7 @@ class plgUserEmundus extends JPlugin
 
         $db->setQuery('SHOW TABLES');
         $tables = $db->loadColumn();
+
         foreach($tables as $table) {
             if (strpos($table, '_messages')>0 && !strpos($table, '_eb_'))
                 $query = 'DELETE FROM '.$table.' WHERE user_id_from = '.(int) $user['id'].' OR user_id_to = '.(int) $user['id'];
@@ -72,27 +76,38 @@ class plgUserEmundus extends JPlugin
                 continue;
             }
         }
+
         $dir = EMUNDUS_PATH_ABS.$user['id'].DS;
-        if (!$dh = @opendir($dir))
-            return false;
-        while (false !== ($obj = readdir($dh))) {
-            if ($obj == '.' || $obj == '..') continue;
-            if (!@unlink($dir.$obj))
-                JFactory::getApplication()->enqueueMessage(JText::_("FILE_NOT_FOUND")." : ".$obj."\n", 'error');
-        }
-        closedir($dh);
-        @rmdir($dir);
+		if(is_dir($dir)) {
+			if (!$dh = opendir($dir)) {
+				JFactory::getApplication()->enqueueMessage(JText::_("JERROR_AN_ERROR_HAS_OCCURRED"), 'error');
+				return false;
+			}
+
+			while (false !== ($obj = readdir($dh))) {
+				if ($obj == '.' || $obj == '..') continue;
+				if (!unlink($dir . $obj)) {
+					JFactory::getApplication()->enqueueMessage(JText::_("FILE_NOT_FOUND") . " : " . $obj . "\n", 'error');
+				}
+			}
+
+			closedir($dh);
+			rmdir($dir);
+		}
 
 	    // Send email to inform applicant
 	    if($this->params->get('send_email_delete', 0) == 1) {
-		    require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
-		    $c_messages = new EmundusControllerMessages();
+		    require_once(JPATH_SITE . '/components/com_emundus/controllers/messages.php');
+            require_once (JPATH_SITE.'/components/com_emundus/helpers/emails.php');
+
+            $c_messages = new EmundusControllerMessages();
 		    $post       = [
-			    'NAME' => $user['name']
+			    'NAME' => $user['name'],
+                'LOGO' => EmundusHelperEmails::getLogo(),
+                'SITE_NAME' => JFactory::getConfig()->get('sitename'),
 		    ];
 		    $c_messages->sendEmailNoFnum($user['email'], 'delete_user', $post);
-	    }
-	    //
+        }
 
         return true;
     }
@@ -172,6 +187,7 @@ class plgUserEmundus extends JPlugin
         $option = $jinput->get->get('option', null);
         $controller = $jinput->get->get('controller', null);
         $task = $jinput->get->get('task', null);
+
 
         $profile = 0;
 
@@ -260,7 +276,7 @@ class plgUserEmundus extends JPlugin
             }
         }
 
-        if (is_array($details) && count($details) > 0) {
+        if (is_array($details) && count($details) > 0 && $task != 'reset.complete') {
             $campaign_id = @isset($details['emundus_profile']['campaign'])?$details['emundus_profile']['campaign']:@$details['campaign'];
             $lastname = @isset($details['emundus_profile']['lastname'])?$details['emundus_profile']['lastname']:@$details['name'];
             $firstname = @isset($details['emundus_profile']['firstname'])?$details['emundus_profile']['firstname']:@$details['firstname'];
@@ -269,15 +285,17 @@ class plgUserEmundus extends JPlugin
             if ($isnew) {
 
                 // Update name and firstname from #__users
-                $db->setQuery(' UPDATE #__users SET name='.$db->quote(ucfirst($firstname)).' '.$db->quote(strtoupper($lastname)).',
+                $query = 'UPDATE #__users SET name='.$db->quote(ucfirst($firstname)).' '.$db->quote(strtoupper($lastname)).',
                                 usertype = (SELECT u.title FROM #__usergroups AS u
                                                 LEFT JOIN #__user_usergroup_map AS uum ON u.id=uum.group_id
                                                 WHERE uum.user_id='.$user['id'].' ORDER BY uum.group_id DESC LIMIT 1) 
-                                WHERE id='.$user['id']);
+                                WHERE id='.$user['id'];
+                $db->setQuery($query);
                 try {
                     $db->execute();
                 } catch (Exception $e) {
                     // catch any database errors.
+                    JLog::add('Error at query: ' . $query . ' -> ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
                 }
 
                 if (isset($campaign_id) && !empty($campaign_id)) {
@@ -303,6 +321,7 @@ class plgUserEmundus extends JPlugin
                     $db->execute();
                 } catch (Exception $e) {
                     // catch any database errors.
+                    JLog::add('Error at query: ' . $query . ' -> ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
                 }
 
                 // Insert data in #__emundus_users_profiles
@@ -320,6 +339,7 @@ class plgUserEmundus extends JPlugin
                     $db->execute();
                 } catch (Exception $e) {
                     // catch any database errors.
+                    JLog::add('Error at query: ' . $query . ' -> ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
                 }
 
                 if (isset($campaign_id) && !empty($campaign_id)) {
@@ -330,6 +350,7 @@ class plgUserEmundus extends JPlugin
                         $db->execute();
                     } catch (Exception $e) {
                         // catch any database errors.
+                        JLog::add('Error at query: ' . $query . ' -> ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
                     }
                 }
 
@@ -347,17 +368,18 @@ class plgUserEmundus extends JPlugin
                         $db->execute();
                     }
 
-                    if(!empty($email)) {
-                        $db->setQuery('UPDATE #__emundus_users SET email=' . $db->quote($email) . ' WHERE user_id=' . $user['id']);
+                    if(!empty($details['email1'])) {
+                        $db->setQuery('UPDATE #__emundus_users SET email=' . $db->quote($details['email1']) . ' WHERE user_id=' . $user['id']);
                         $db->execute();
+
+	                    $e_session = JFactory::getSession()->get('emundusUser');
+	                    $e_session->email = $details['email1'];
+						JFactory::getSession()->set('emundusUser', $e_session);
                     }
+
                 } catch (Exception $e) {
                     JLog::add('Error at line ' . __LINE__ . ' of file ' . __FILE__ . ' : ' . '. Error is : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
                 }
-
-                /*if (!in_array($task, ["passrequest", "reset.complete"])) {
-                    JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_USERS_EDIT_PROFILE_SAVE_SUCCESS_TEXT'));
-                }*/
 
                 $this->onUserLogin($user);
             }
@@ -384,6 +406,19 @@ class plgUserEmundus extends JPlugin
         $app = JFactory::getApplication();
         $jinput = JFactory::getApplication()->input;
         $redirect = $jinput->get->getBase64('redirect');
+
+	    $instance = User::getInstance();
+	    $id = (int) UserHelper::getUserId($user['username']);
+
+	    if ($id)
+	    {
+		    $instance->load($id);
+	    }
+
+	    if ($instance->block == 1)
+	    {
+		    return false;
+	    }
 
         if (empty($redirect)) {
             parse_str($jinput->server->getVar('HTTP_REFERER'), $return_url);

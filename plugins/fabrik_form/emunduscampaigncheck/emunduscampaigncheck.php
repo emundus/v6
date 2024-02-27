@@ -74,7 +74,8 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
      */
     public function onBeforeStore() {
 
-	    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+	    require_once (JPATH_SITE . '/components/com_emundus/helpers/menu.php');
+	    require_once (JPATH_SITE . '/components/com_emundus/helpers/access.php');
 
         jimport('joomla.log.log');
         JLog::addLogger(array('text_file' => 'com_emundus.campaign-check.php'), JLog::ALL, array('com_emundus.campaign-check'));
@@ -82,6 +83,8 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
         $user = JFactory::getSession()->get('emundusUser');
         $app = JFactory::getApplication();
         $jinput = $app->input;
+
+		$homepage_link = EmundusHelperMenu::getHomepageLink();
 
 	    $eMConfig = JComponentHelper::getParams('com_emundus');
 	    $id_profiles = $eMConfig->get('id_profiles', '0');
@@ -96,12 +99,12 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
         }
 
         // Check if the campaign limit has been obtained
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+        require_once (JPATH_SITE . '/components/com_emundus/models/campaign.php');
         $m_campaign = new EmundusModelCampaign;
         $isLimitObtained = $m_campaign->isLimitObtained($campaign_id);
 
         if ($isLimitObtained === true) {
-            JLog::add('User: '.$user->id.' Campaign limit is obtained', JLog::ERROR, 'com_emundus.campaign-check');
+            JLog::add('User: '.$user->id.' Campaign limit is obtained', JLog::INFO, 'com_emundus.campaign-check');
             $this->getModel()->formErrorMsg = '';
             $this->getModel()->getForm()->error = JText::_('LIMIT_OBTAINED');
             return false;
@@ -118,6 +121,8 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
             }
         }
 
+		$count_archived_files = $this->getParam('count_archived_files', 1);
+
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
@@ -125,10 +130,26 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
 
             // Cannot create new campaigns at all.
             case 0:
-                JLog::add('User: '.$user->id.' already has a file.', JLog::ERROR, 'com_emundus.campaign-check');
-                $this->getModel()->formErrorMsg = '';
-                $this->getModel()->getForm()->error = JText::_('CANNOT_HAVE_MULTI_FILE');
-	            $app->redirect('index.php', JText::_('CANNOT_HAVE_MULTI_FILE'));
+                $query->select('COUNT('.$db->quoteName('id').')')
+                    ->from($db->quoteName('#__emundus_campaign_candidature'))
+                    ->where($db->quoteName('applicant_id') . ' = ' . $user->id);
+
+                if (!$count_archived_files) {
+                    $query->andWhere($db->quoteName('published') . ' NOT IN (' . $db->quote('0') . ',' . $db->quote('-1') . ')');
+                } else {
+					$query->andWhere($db->quoteName('published').' <> '.$db->quote('-1'));
+                }
+
+                $db->setQuery($query);
+                $files = $db->loadResult();
+
+                if ($files > 0) {
+                    JLog::add('User: '.$user->id.' already has a file.', JLog::INFO, 'com_emundus.campaign-check');
+                    $this->getModel()->formErrorMsg = '';
+                    $this->getModel()->getForm()->error = JText::_('CANNOT_HAVE_MULTI_FILE');
+                    $app->redirect($homepage_link, JText::_('CANNOT_HAVE_MULTI_FILE'));
+                }
+
                 break;
 
             // If the applicant can only have one file per campaign.
@@ -138,33 +159,26 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
                 $timezone = new DateTimeZone( $config->get('offset') );
                 $now = JFactory::getDate()->setTimezone($timezone);
 
-                $query
-                    ->select($db->quoteName('campaign_id'))
+                $query->clear()
+	                ->select($db->quoteName('campaign_id'))
                     ->from($db->quoteName('#__emundus_campaign_candidature'))
                     ->where($db->quoteName('applicant_id') . ' = ' . $user->id)
-                    ->andWhere($db->quoteName('published').' <> '.$db->quote('-1'));
+                    ->andWhere($db->quoteName('campaign_id') . ' = ' . $campaign_id);
+
+				if (!$count_archived_files) {
+					$query->andWhere($db->quoteName('published') . ' NOT IN (' . $db->quote('0') . ',' . $db->quote('-1') . ')');
+				} else {
+					$query->andWhere($db->quoteName('published').' <> '.$db->quote('-1'));
+				}
 
                 try {
-
                     $db->setQuery($query);
-
                     $user_campaigns = $db->loadColumn();
-
-                    $query
-                        ->clear()
-                        ->select($db->quoteName('id'))
-                        ->from($db->quoteName('#__emundus_setup_campaigns'))
-                        ->where($db->quoteName('published') . ' = 1')
-                        ->andWhere($db->quoteName('end_date') . ' >= ' . $db->quote($now))
-                        ->andWhere($db->quoteName('start_date') . ' <= ' . $db->quote($now))
-                        ->andWhere($db->quoteName('id') . ' NOT IN (' . implode(',', $user_campaigns). ')');
-
-                    $db->setQuery($query);
-                    if (!in_array($campaign_id, $db->loadColumn())) {
-                        JLog::add('User: '.$user->id.' already has a file for campaign id: '.$campaign_id, JLog::ERROR, 'com_emundus.campaign-check');
+                    if (!empty($user_campaigns)) {
+                        JLog::add('User: '.$user->id.' already has a file for campaign id: '.$campaign_id, JLog::INFO, 'com_emundus.campaign-check');
                         $this->getModel()->formErrorMsg = '';
                         $this->getModel()->getForm()->error = JText::_('USER_HAS_FILE_FOR_CAMPAIGN');
-                        $app->redirect('index.php', JText::_('USER_HAS_FILE_FOR_CAMPAIGN'));
+                        $app->redirect($homepage_link, JText::_('USER_HAS_FILE_FOR_CAMPAIGN'));
                     }
 
                 } catch (Exception $e) {
@@ -177,22 +191,17 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
 
             // If the applicant can only have one file per school year.
             case 3:
-
                 $config = JFactory::getConfig();
-
                 $timezone = new DateTimeZone( $config->get('offset') );
                 $now = JFactory::getDate()->setTimezone($timezone);
 
-                $query
-                    ->select($db->quoteName('sc.year'))
+                $query->select($db->quoteName('sc.year'))
                     ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
                     ->leftJoin($db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$db->quoteName('sc.id').' = '.$db->quoteName('cc.campaign_id'))
                     ->where($db->quoteName('applicant_id') . ' = ' . $user->id);
 
                 try {
-
                     $db->setQuery($query);
-
                     $user_years = $db->loadColumn();
 
                     $query
@@ -209,7 +218,7 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
                         JLog::add('User: '.$user->id.' already has a file for year belong to campaign: '.$campaign_id, JLog::ERROR, 'com_emundus.campaign-check');
                         $this->getModel()->formErrorMsg = '';
                         $this->getModel()->getForm()->error = JText::_('USER_HAS_FILE_FOR_YEAR');
-	                    $app->redirect('index.php', JText::_('USER_HAS_FILE_FOR_YEAR'));
+	                    $app->redirect($homepage_link, JText::_('USER_HAS_FILE_FOR_YEAR'));
                     }
 
                 } catch (Exception $e) {

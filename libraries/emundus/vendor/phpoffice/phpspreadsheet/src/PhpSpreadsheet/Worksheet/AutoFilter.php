@@ -321,7 +321,7 @@ class AutoFilter
      *
      * @return bool
      */
-    protected static function filterTestInSimpleDataSet($cellValue, $dataSet)
+    private static function filterTestInSimpleDataSet($cellValue, $dataSet)
     {
         $dataSetValues = $dataSet['filterValues'];
         $blanks = $dataSet['blanks'];
@@ -340,7 +340,7 @@ class AutoFilter
      *
      * @return bool
      */
-    protected static function filterTestInDateGroupSet($cellValue, $dataSet)
+    private static function filterTestInDateGroupSet($cellValue, $dataSet)
     {
         $dateSet = $dataSet['filterValues'];
         $blanks = $dataSet['blanks'];
@@ -384,7 +384,7 @@ class AutoFilter
      *
      * @return bool
      */
-    protected static function filterTestInCustomDataSet($cellValue, $ruleSet)
+    private static function filterTestInCustomDataSet($cellValue, $ruleSet)
     {
         /** @var array[] */
         $dataSet = $ruleSet['filterRules'];
@@ -509,7 +509,7 @@ class AutoFilter
      *
      * @return bool
      */
-    protected static function filterTestInPeriodDateSet($cellValue, $monthSet)
+    private static function filterTestInPeriodDateSet($cellValue, $monthSet)
     {
         //    Blank cells are always ignored, so return a FALSE
         if (($cellValue == '') || ($cellValue === null)) {

@@ -3283,6 +3283,10 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 
 		if (!empty($eval))
 		{
+			if (class_exists('FabrikWorker')) {
+				$w    = new FabrikWorker();
+				$eval = $w->parseMessageForPlaceHolder($eval, $options);
+			}
 			$default = eval($eval);
 
 			if (!empty($default))

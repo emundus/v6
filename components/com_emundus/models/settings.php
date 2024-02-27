@@ -14,6 +14,8 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 use Joomla\CMS\Date\Date;
+use Joomla\CMS\Component\ComponentHelper;
+use Symfony\Component\Yaml\Yaml;
 
 class EmundusModelsettings extends JModelList {
 
@@ -505,39 +507,41 @@ class EmundusModelsettings extends JModelList {
             $db->setQuery($query);
             $article = $db->loadObject();
 
-            $query->clear()
-                ->select('value')
-                ->from($db->quoteName('#__falang_content'))
-                ->where(array(
-                    $db->quoteName('reference_id') . ' = ' . $article->id,
-                    $db->quoteName('reference_table') . ' = ' . $db->quote('content'),
-                    $db->quoteName('reference_field') . ' = ' . $db->quote($reference_field),
-                    $db->quoteName('language_id') . ' = ' . $db->quote($lang_id),
-                    $db->quoteName('published') . ' = ' . $db->quote(1)
-                ));
-            $db->setQuery($query);
-            $result = $db->loadResult();
+            if (!empty($article)) {
+                $query->clear()
+                    ->select('value')
+                    ->from($db->quoteName('#__falang_content'))
+                    ->where(array(
+                        $db->quoteName('reference_id') . ' = ' . $article->id,
+                        $db->quoteName('reference_table') . ' = ' . $db->quote('content'),
+                        $db->quoteName('reference_field') . ' = ' . $db->quote($reference_field),
+                        $db->quoteName('language_id') . ' = ' . $db->quote($lang_id),
+                        $db->quoteName('published') . ' = ' . $db->quote(1)
+                    ));
+                $db->setQuery($query);
+                $result = $db->loadResult();
 
-            if (!empty($result)){
-                $article->{$reference_field} = $result;
-            } else {
-	            $currentLang = JFactory::getLanguage();
-				if ($currentLang->lang_code != $lang_code) {
-					$query->clear()
-						->select('title, introtext, alias')
-						->from($db->quoteName('#__content'))
-						->where('id = ' . $article->id);
+                if (!empty($result)){
+                    $article->{$reference_field} = $result;
+                } else {
+                    $currentLang = JFactory::getLanguage();
+                    if ($currentLang->lang_code != $lang_code) {
+                        $query->clear()
+                            ->select('title, introtext, alias')
+                            ->from($db->quoteName('#__content'))
+                            ->where('id = ' . $article->id);
 
-					$db->setQuery($query);
-					$article_content = $db->loadAssoc();
+                        $db->setQuery($query);
+                        $article_content = $db->loadAssoc();
 
-					foreach ($article_content as $key => $content) {
-						$article->{$key} = $content;
-					}
-				}
+                        foreach ($article_content as $key => $content) {
+                            $article->{$key} = $content;
+                        }
+                    }
+                }
+
+                return $article;
             }
-
-            return $article;
         } catch(Exception $e) {
             JLog::add('component/com_emundus/models/settings | Cannot get article ' . $article_id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
@@ -1234,7 +1238,8 @@ class EmundusModelsettings extends JModelList {
 		{
 			$query->select('id')
 				->from($db->quoteName('#__content'))
-				->where($db->quoteName('featured') . ' = 1');
+				->where($db->quoteName('featured') . ' = 1')
+                ->andWhere($db->quoteName('published').' = 1');
 			$db->setQuery($query);
 			$article_id = $db->loadResult();
 		}
@@ -1275,6 +1280,7 @@ class EmundusModelsettings extends JModelList {
 					$legal_info->alias = 'mentions-legales';
 				}
 				$legal_info->title = JText::_('COM_EMUNDUS_ONBOARD_CONTENT_TOOL_LEGAL_MENTION');
+				$legal_info->published = $params->mod_emundus_footer_legal_info;
 				$rgpd_articles[] = $legal_info;
 
 				$data_privacy = new stdClass();
@@ -1289,6 +1295,7 @@ class EmundusModelsettings extends JModelList {
 					$data_privacy->alias = 'politique-de-confidentialite-des-donnees';
 				}
 				$data_privacy->title = JText::_('COM_EMUNDUS_ONBOARD_CONTENT_TOOL_DATAS');
+				$data_privacy->published = $params->mod_emundus_footer_data_privacy;
 				$rgpd_articles[] = $data_privacy;
 
 				$rights = new stdClass();
@@ -1303,6 +1310,7 @@ class EmundusModelsettings extends JModelList {
 					$rights->alias = 'gestion-des-droits';
 				}
 				$rights->title = JText::_('COM_EMUNDUS_ONBOARD_CONTENT_TOOL_RIGHTS');
+				$rights->published = $params->mod_emundus_footer_rights;
 				$rgpd_articles[] = $rights;
 
 				$cookies = new stdClass();
@@ -1317,6 +1325,7 @@ class EmundusModelsettings extends JModelList {
 					$cookies->alias = 'gestion-des-cookies';
 				}
 				$cookies->title = JText::_('COM_EMUNDUS_ONBOARD_CONTENT_TOOL_COOKIES');
+				$cookies->published = $params->mod_emundus_footer_cookies;
 				$rgpd_articles[] = $cookies;
 
 				$accessibility = new stdClass();
@@ -1331,6 +1340,7 @@ class EmundusModelsettings extends JModelList {
 					$accessibility->alias = 'accessibilite';
 				}
 				$accessibility->title = JText::_('COM_EMUNDUS_ONBOARD_CONTENT_TOOL_ACCESSIBILITY');
+				$accessibility->published = $params->mod_emundus_footer_accessibility;
 				$rgpd_articles[] = $accessibility;
 			}
 		}
@@ -1340,5 +1350,223 @@ class EmundusModelsettings extends JModelList {
 		}
 
 		return $rgpd_articles;
+	}
+
+	function publishArticle($publish, $article_id = 0,$article_alias = '') {
+        $result = false;
+
+        $db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try {
+			$query->select('id,params')
+				->from($db->quoteName('#__modules'))
+				->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_footer'));
+			$db->setQuery($query);
+			$footer = $db->loadObject();
+
+			if (!empty($footer->params))
+			{
+				$params = json_decode($footer->params, true);
+
+				if(empty($article_id))
+				{
+					switch ($article_alias)
+					{
+						case 'mentions-legales':
+							$params['mod_emundus_footer_legal_info'] = $publish;
+							break;
+						case 'politique-de-confidentialite-des-donnees':
+							$params['mod_emundus_footer_data_privacy'] = $publish;
+							break;
+						case 'gestion-des-droits':
+							$params['mod_emundus_footer_rights'] = $publish;
+							break;
+						case 'gestion-des-cookies':
+							$params['mod_emundus_footer_cookies'] = $publish;
+							break;
+						case 'accessibilite':
+							$params['mod_emundus_footer_accessibility'] = $publish;
+							break;
+					}
+				} else {
+					$query->clear()
+						->select('alias')
+						->from($db->quoteName('#__menu'))
+						->where('SUBSTRING_INDEX(SUBSTRING(link, LOCATE("id=",link)+3, 6), "&", 1) = ' . $db->quote($article_id));
+					$db->setQuery($query);
+					$article_alias = $db->loadResult();
+
+					if(!empty($article_alias))
+					{
+						$section         = array_search($article_alias, $params, true);
+						$section_to_edit = str_replace('_alias', '', $section);
+
+						$params[$section_to_edit] = $publish;
+					}
+				}
+
+				$query->clear()
+					->update($db->quoteName('#__modules'))
+					->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+					->where($db->quoteName('id') . ' = ' . $db->quote($footer->id));
+				$db->setQuery($query);
+				$result = $db->execute();
+
+                if ($result) {
+                    $query->clear()
+                        ->select('id, value')
+                        ->from('#__falang_content')
+                        ->where('reference_id = ' . $db->quote($footer->id))
+                        ->andWhere('reference_table = ' . $db->quote('modules'))
+                        ->andWhere('reference_field = ' . $db->quote('params'));
+
+                    $db->setQuery($query);
+                    $falang_contents = $db->loadObjectList();
+
+                    if (!empty($falang_contents)) {
+                        foreach ($falang_contents as $falang_content) {
+                            $falang_content->value = json_decode($falang_content->value, true);
+
+                            $falang_content->value['mod_emundus_footer_legal_info'] = $params['mod_emundus_footer_legal_info'];
+                            $falang_content->value['mod_emundus_footer_data_privacy'] = $params['mod_emundus_footer_data_privacy'];
+                            $falang_content->value['mod_emundus_footer_rights'] = $params['mod_emundus_footer_rights'];
+                            $falang_content->value['mod_emundus_footer_cookies'] = $params['mod_emundus_footer_cookies'];
+                            $falang_content->value['mod_emundus_footer_accessibility'] = $params['mod_emundus_footer_accessibility'];
+
+                            $query->clear()
+                                ->update('#__falang_content')
+                                ->set('value = ' . $db->quote(json_encode($falang_content->value)))
+                                ->where('id = ' . $db->quote($falang_content->id));
+
+                            $db->setQuery($query);
+                            $db->execute();
+                        }
+                    }
+
+                    require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+                    $h_update = new EmundusHelperUpdate();
+                    $h_update->clearJoomlaCache();
+                }
+			}
+		} catch (Exception $e) {
+			JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Get only accessibles parameters based on settings-applicants.json and settings-general.json files
+	 * This function is used to avoid exposing all parameters to the front-end
+	 * @return array
+	 */
+	public function getEmundusParams()
+	{
+		$params = ['emundus' => [], 'joomla' => []];
+
+		$settings_applicants = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-applicants.json');
+		$settings_general = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-general.json');
+
+		$settings_applicants = json_decode($settings_applicants, true);
+		$settings_general = json_decode($settings_general, true);
+
+		$emundus_parameters = ComponentHelper::getParams('com_emundus');
+
+		foreach($settings_applicants as $settings_applicant) {
+			if ($settings_applicant['component'] === 'emundus') {
+				$params['emundus'][$settings_applicant['param']] = $emundus_parameters->get($settings_applicant['param']);
+			} else {
+				$params['joomla']->$settings_applicant['param'] = JFactory::getConfig()->get($settings_applicant['param']);
+			}
+		}
+
+		foreach($settings_general as $setting_general) {
+			if ($setting_general['component'] === 'emundus') {
+				$params['emundus'][$setting_general['param']] = $emundus_parameters->get($setting_general['param']);
+			} else {
+				$params['joomla'][$setting_general['param']] = JFactory::getConfig()->get($setting_general['param']);
+			}
+		}
+
+		return $params;
+	}
+
+	/**
+	 * @param $component
+	 * @param $param
+	 * @param $value
+	 * @return bool
+	 */
+	public function updateEmundusParam($component, $param, $value) {
+		$updated = false;
+
+		if (!empty($param)) {
+			$params = $this->getEmundusParams();
+			switch($component) {
+				case 'emundus':
+					if (array_key_exists($param, $params['emundus'])) {
+						$eMConfig = ComponentHelper::getParams('com_emundus');
+						$eMConfig->set($param, $value);
+
+						$componentid = ComponentHelper::getComponent('com_emundus')->id;
+						$db = JFactory::getDBO();
+						$query = $db->getQuery(true);
+
+						$query->update($db->quoteName('#__extensions'))
+							->set($db->quoteName('params') . ' = ' . $db->quote($eMConfig->toString()))
+							->where($db->quoteName('extension_id') . ' = ' . $db->quote($componentid));
+
+						try {
+							$db->setQuery($query);
+							$updated = $db->execute();
+						} catch (Exception $e) {
+							JLog::add('Error set param '.$param . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+						}
+					} else {
+						JLog::add('Error : unable to detect if param is writable or not : ' . $param , JLog::WARNING, 'com_emundus.error');
+					}
+
+					break;
+				case 'joomla':
+				default:
+					if (array_key_exists($param, $params['joomla'])) {
+						if(!class_exists('EmundusHelperUpdate')) {
+							require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+						}
+						$updated = EmundusHelperUpdate::updateConfigurationFile($param, $value);
+
+						if ($updated) {
+							$configuration = JFactory::getConfig();
+							$configuration->set($param, $value);
+						}
+					} else {
+						JLog::add('Error : unable to detect if param is writable or not : ' . $param , JLog::WARNING, 'com_emundus.error');
+					}
+				break;
+			}
+		}
+
+		return $updated;
+	}
+
+	public function getFavicon() {
+		$favicon = 'images/custom/default_favicon.ico';
+
+		$yaml = Yaml::parse(file_get_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml'));
+
+		if(!empty($yaml)) {
+			$favicon_gantry = $yaml['favicon'];
+
+			if (!empty($favicon_gantry)) {
+				$favicon = str_replace('gantry-media:/', 'images', $favicon_gantry);
+
+				if (!file_exists(JPATH_ROOT . '/' . $favicon)) {
+					$favicon = 'images/custom/default_favicon.ico';
+				}
+			}
+		}
+
+		return $favicon;
 	}
 }

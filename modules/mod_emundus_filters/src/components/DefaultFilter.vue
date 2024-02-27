@@ -1,7 +1,7 @@
 <template>
 	<div class="default-filter em-w-100 em-mb-16" :id="'filter-id-' +  filter.uid" :ref="'filter-id-' +  filter.uid" @click="toggleOpened">
 		<div class="em-flex-row em-flex-space-between">
-			<p class="recap-label">{{ filter.label }}</p>
+			<p class="recap-label" :title="filter.label">{{ filter.label }}</p>
 			<div class="em-flex-row">
 				<span @mouseenter="resetHover = true" @mouseleave="resetHover = false" class="material-icons-outlined em-pointer reset-filter-btn" :class="{'em-blue-400-color': resetHover}" @click="resetFilter" :alt="translate('MOD_EMUNDUS_FILTERS_RESET')">refresh</span>
 				<span v-if="!filter.default" class="material-icons-outlined em-red-500-color em-pointer remove-filter-btn" @click="$.emit('remove-filter')">close</span>
@@ -100,7 +100,15 @@ export default {
 				document.addEventListener('click', this.handleClickOutside);
 			}
 		},
-		onCloseCard() {
+		onCloseCard(event = null) {
+			if (event !== null) {
+				event.stopPropagation();
+			}
+
+			if (this.opened) {
+				this.opened = false;
+			}
+
 			const valueDifferences = this.filter.value != this.originalFilterValue;
 			const operatorDifferences = this.filter.operator !== this.originalFilterOperator;
 

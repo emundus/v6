@@ -12,31 +12,46 @@ use Dompdf\Css;
 use Gotenberg\Gotenberg;
 use Gotenberg\Stream;
 
-function get_mime_type($filename, $mimePath = '../etc') {
-    $fileext = substr(strrchr($filename, '.'), 1);
+if(!function_exists('get_mime_type'))
+{
+	function get_mime_type($filename, $mimePath = '../etc')
+	{
+		$fileext = substr(strrchr($filename, '.'), 1);
 
-    if (empty($fileext)) {
-	    return false;
-    }
+		if (empty($fileext))
+		{
+			return false;
+		}
 
-    $regex = "/^([\w\+\-\.\/]+)\s+(\w+\s)*($fileext\s)/i";
-    $lines = file("$mimePath/mime.types");
-    foreach ($lines as $line) {
-        if (substr($line, 0, 1) == '#') {
-	        continue;
-        } // skip comments
-        $line = rtrim($line) . " ";
-        if (!preg_match($regex, $line, $matches)) {
-        	continue;
-        } // no match to the extension
-        return $matches[1];
-    }
-    return false; // no match at all
+		$regex = "/^([\w\+\-\.\/]+)\s+(\w+\s)*($fileext\s)/i";
+		$lines = file("$mimePath/mime.types");
+		foreach ($lines as $line)
+		{
+			if (substr($line, 0, 1) == '#')
+			{
+				continue;
+			} // skip comments
+			$line = rtrim($line) . " ";
+			if (!preg_match($regex, $line, $matches))
+			{
+				continue;
+			} // no match to the extension
+
+			return $matches[1];
+		}
+
+		return false; // no match at all
+	}
 }
 
-function is_image_ext($filename) {
-    $array = explode('.', $filename);
-    return in_array(strtolower(end($array)), ['png', 'jpe', 'jpeg', 'jpg', 'gif', 'bmp', 'ico', 'tiff', 'tif', 'svg', 'svgz']);
+if(!function_exists('is_image_ext'))
+{
+	function is_image_ext($filename)
+	{
+		$array = explode('.', $filename);
+
+		return in_array(strtolower(end($array)), ['png', 'jpe', 'jpeg', 'jpg', 'gif', 'bmp', 'ico', 'tiff', 'tif', 'svg', 'svgz']);
+	}
 }
 
 
@@ -451,7 +466,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
             if (file_exists(JPATH_BASE.$letter['file'])) {
 
                 $PHPWord = new \PhpOffice\PhpWord\PhpWord();
-                $document = $PHPWord->loadTemplate(JPATH_BASE.$letter['file']);
+	            $document = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$letter['file']);
 
                 for ($i = 0; $i < count($tags['patterns']); $i++) {
                     $document->setValue($tags['patterns'][$i], $tags['replacements'][$i]);
@@ -699,7 +714,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 
             $PHPWord = new PHPWord();
 
-            $document = $PHPWord->loadTemplate(JPATH_BASE.$letter['file']);
+            $document = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$letter['file']);
 
             for ($i = 0; $i < count($tags['patterns']); $i++) {
                 $document->setValue($tags['patterns'][$i], $tags['replacements'][$i]);
@@ -800,12 +815,10 @@ function data_to_img($match) {
  * @return false|string|void
  * @throws Exception
  */
-function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null, $attachments = true) {
+function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = [], $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null, $attachments = true) {
 	jimport('joomla.html.parameter');
     set_time_limit(0);
     require_once (JPATH_SITE.'/components/com_emundus/helpers/date.php');
-    require_once (JPATH_SITE.'/components/com_emundus/helpers/menu.php');
-
     require_once(JPATH_SITE.'/components/com_emundus/models/application.php');
     require_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
     require_once(JPATH_SITE.'/components/com_emundus/models/files.php');
@@ -813,7 +826,10 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 	$db = JFactory::getDBO();
 	$app = JFactory::getApplication();
-	$current_user = JFactory::getUser();
+
+	if (is_null($options)) {
+		$options = [];
+	}
 
     if (empty($file_lbl)) {
         $file_lbl = "_application";
@@ -821,12 +837,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
     $cTitle = $eMConfig->get('export_application_pdf_title_color', '#000000'); //déclaration couleur principale
-    $profile_color = '#20835F';
 
     $config = JFactory::getConfig();
-    $offset = $config->get('offset');
 
-    $h_menu = new EmundusHelperMenu;
 
     $m_profile = new EmundusModelProfile;
     $m_application = new EmundusModelApplication;
@@ -1222,7 +1235,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	    }
 	    /** END */
 
-        @chdir('tmp');
+        chdir('tmp');
     }
 }
 
@@ -1239,8 +1252,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 function application_header_pdf($user_id, $fnum = null, $output = true, $options = null) {
     jimport('joomla.html.parameter');
     set_time_limit(0);
-
-    require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'tcpdf' . DS . 'tcpdf.php');
 
     require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
     require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
@@ -1266,7 +1277,6 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     $htmldata = '';
 
     // Create PDF object
-    //$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
     $pdf = new Fpdi();
 
     $pdf->SetCreator(PDF_CREATOR);
@@ -1459,9 +1469,9 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     }
 
 
-    @chdir('tmp');
+    chdir('tmp');
     if ($output) {
-        if (!isset($current_user->applicant) && @$current_user->applicant != 1) {
+        if (!isset($current_user->applicant) || $current_user->applicant != 1) {
             //$output?'FI':'F'
             $name = 'application_header_' . date('Y-m-d_H-i-s') . '.pdf';
             $pdf->Output(EMUNDUS_PATH_ABS . $item->user_id . DS . $name, 'FI');

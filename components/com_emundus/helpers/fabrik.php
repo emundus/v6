@@ -338,13 +338,16 @@ die("<script>
 
     static function prepareElementParameters($plugin, $notempty = true, $attachementId = 0) {
 
+	    $plugin_no_required = ['display','panel'];
+		$plugin_to_setup = '';
         if ($plugin == 'nom' || $plugin == 'prenom' || $plugin == 'email') {
+	        $plugin_to_setup = $plugin;
             $plugin = 'field';
         }
 
         $params = array(
             'show_in_rss_feed' => '0',
-            'bootstrap_class' => 'input-medium',
+            'bootstrap_class' => 'input-large',
             'show_label_in_rss_feed' => '0',
             'use_as_rss_enclosure' => '0',
             'rollover' => '',
@@ -413,7 +416,7 @@ die("<script>
             'validations' => array(),
         );
 
-        if($notempty && $plugin != 'display'){
+        if($notempty && !in_array($plugin, $plugin_no_required)){
             $params['validations'] = array(
                 'plugin' => array(
                     "notempty",
@@ -465,6 +468,7 @@ die("<script>
         }
 
         if ($plugin == 'databasejoin') {
+	        $params['bootstrap_class'] = 'span12';
             $params['database_join_display_type'] = 'dropdown';
             $params['join_db_name'] = '';
             $params['join_key_column'] = '';
@@ -552,6 +556,23 @@ die("<script>
             $params['rel'] = '';
             $params['link_title'] = '';
             $params['link_attributes'] = '';
+
+	        if($plugin_to_setup == 'email') {
+		        $params['password'] = 3;
+
+		        $params['validations']['plugin'][] = 'isemail';
+		        $params['validations']['plugin_published'][] = '1';
+		        $params['validations']['validate_in'][] = 'both';
+		        $params['validations']['validation_on'][] = 'both';
+		        $params['validations']['validate_hidden'][] = '0';
+		        $params['validations']['must_validate'][] = '0';
+		        $params['validations']['show_icon'][] = '1';
+
+		        $params['isemail-message'] = array('','');
+		        $params['isemail-validation_condition'] = array('','');
+		        $params['isemail-allow_empty'] = array('','1');
+		        $params['isemail-check_mx'] = array('','0');
+	        }
         }
 
         if($plugin == 'textarea'){
@@ -652,13 +673,25 @@ die("<script>
             $object = (object) [
                 'iso3' => 'EUR',
                 'minimal_value' => '0.00',
-                'maximal_value' => '10000.00',
+                'maximal_value' => '1000000.00',
                 'thousand_separator' => ' ',
                 'decimal_separator' => ',',
                 'decimal_numbers' => '2'
             ];
             $params['all_currencies_options']['all_currencies_options0'] = $object;
         }
+
+		if($plugin == 'emundus_phonenumber') {
+			$params['default_country'] = 'FR';
+		}
+
+	    if($plugin == 'panel'){
+		    $params['type'] = '1';
+		    $params['accordion'] = '0';
+		    $params['title'] = '';
+		    $params['store_in_db'] = 0;
+	    }
+
         return $params;
     }
 
@@ -693,8 +726,8 @@ die("<script>
 
         if ($plugin == 'email') {
             $label = array(
-                'fr' => 'Email',
-                'en' => 'Email',
+                'fr' => 'Adresse email',
+                'en' => 'Email address',
             );
         }
 
@@ -789,7 +822,8 @@ die("<script>
             $params['validations']['must_validate'][] = '0';
             $params['validations']['show_icon'][] = '1';
 
-            $query->update($db->quoteName('#__fabrik_elements'))
+            $query->clear()
+	            ->update($db->quoteName('#__fabrik_elements'))
                 ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($eid));
             $db->setQuery($query);

@@ -1006,6 +1006,8 @@ class EmundusControllerEvaluation extends JControllerLegacy
         if( !EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum) )
             die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
         $m_profile = new EmundusModelProfile();
         $m_campaign = new EmundusModelCampaign();
 
@@ -1333,7 +1335,6 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $dataresult = array('start' => $start, 'limit'=>$limit, 'totalfile'=> $totalfile,'methode'=>0,'elts'=>$elts, 'objs'=> $objs, 'nbcol' => $nbcol,'file'=>$file );
         $result = array('status' => true, 'json' => $dataresult);
         echo json_encode((object) $result);
-        //var_dump($result);
         exit();
     }
 

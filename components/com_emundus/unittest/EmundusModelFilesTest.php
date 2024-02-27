@@ -132,6 +132,12 @@ class EmundusModelFilesTest extends TestCase{
         $tags = $this->m_files->getAllTags();
         $tagged = $this->m_files->tagFile([$fnum], [$tags[0]['id']], 62);
         $this->assertTrue($tagged, 'tagFile returns true if a file and a tag are given');
+
+	    $tagged = $this->m_files->tagFile([$fnum], [$tags[0]['id']], 62);
+	    $this->assertTrue($tagged, 'tagFile should returns true if tag is already associated to the file by the same user');
+
+	    $tagged = $this->m_files->tagFile([$fnum], [$tags[0]['id']], 95);
+	    $this->assertTrue($tagged, 'tagFile should returns true if tag is already associated to the file but not by the same user');
     }
 
     public function testUpdateState() {
@@ -261,7 +267,10 @@ class EmundusModelFilesTest extends TestCase{
 			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with date element');
 			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
 			$this->assertArrayHasKey($date_element->tab_name . '___' . $date_element->element_name, $data[$fnum], 'the data contains the date element');
-			$this->assertStringMatchesFormat('%d/%d/%d %d:%d:%d', $data[$fnum][$date_element->tab_name . '___' . $date_element->element_name], 'the date element contains a date in the correct format');
+
+			// remove escape characters from the date format
+			$data[$fnum][$date_element->tab_name . '___' . $date_element->element_name] = str_replace('\\', '', $data[$fnum][$date_element->tab_name . '___' . $date_element->element_name]);
+			$this->assertStringMatchesFormat('%d-%d-%d %d:%d:%d', $data[$fnum][$date_element->tab_name . '___' . $date_element->element_name], 'the date element contains a date in the correct format');
 		}
 
 		$birthday_element = null;
@@ -276,7 +285,8 @@ class EmundusModelFilesTest extends TestCase{
 			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with birthday element');
 			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
 			$this->assertArrayHasKey($birthday_element->tab_name . '___' . $birthday_element->element_name, $data[$fnum], 'the data contains the birthday element');
-			$this->assertStringMatchesFormat('%d/%d/%d', $data[$fnum][$birthday_element->tab_name . '___' . $birthday_element->element_name], 'the date element contains a birthday in the correct format');
+			$data[$fnum][$birthday_element->tab_name . '___' . $birthday_element->element_name] = str_replace('\\', '', $data[$fnum][$birthday_element->tab_name . '___' . $birthday_element->element_name]);
+			$this->assertStringMatchesFormat('%d-%d-%d', $data[$fnum][$birthday_element->tab_name . '___' . $birthday_element->element_name], 'the date element contains a birthday in the correct format');
 		}
 
 		$databasejoin_element = null;
@@ -291,6 +301,7 @@ class EmundusModelFilesTest extends TestCase{
 		}
 		if ($databasejoin_element) {
 			$data = $this->m_files->getFnumArray2([$fnum], [$databasejoin_element]);
+			$this->assertNotFalse($data, 'getFnumArray does not encounter an error');
 			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with databasejoin element');
 			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
 			$this->assertArrayHasKey($databasejoin_element->tab_name . '___' . $databasejoin_element->element_name, $data[$fnum], 'the data contains the databasejoin element');
@@ -310,8 +321,8 @@ class EmundusModelFilesTest extends TestCase{
 			$data = $this->m_files->getFnumArray2([$fnum], [$databasejoin_multi_element]);
 			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with databasejoin multi element');
 			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
-			$this->assertArrayHasKey($databasejoin_multi_element->tab_name . '___' . $databasejoin_multi_element->element_name, $data[$fnum], 'the data contains the databasejoin multi element');
-            $this->assertStringContainsString('Charente-Maritime', $data[$fnum][$databasejoin_multi_element->tab_name . '___' . $databasejoin_multi_element->element_name], 'the databasejoin multi element contains the correct value');
+			$this->assertArrayHasKey($databasejoin_multi_element->table_join . '___' . $databasejoin_multi_element->element_name, $data[$fnum], 'the data contains the databasejoin multi element');
+            $this->assertStringContainsString('Charente\-Maritime', $data[$fnum][$databasejoin_multi_element->table_join . '___' . $databasejoin_multi_element->element_name], 'the databasejoin multi element contains the correct value, and escaped data');
 		}
 
 		$radio_element = null;

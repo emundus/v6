@@ -170,7 +170,7 @@ export default {
       document: {
         id: null,
         type: {},
-        mandatory: '1',
+        mandatory: this.$props.mandatory,
         nbmax: 1,
         description: {
           fr: '',
@@ -305,11 +305,15 @@ export default {
           if(['mp4'].includes(type)) {
             this.document.selectedTypes['mp4'] = true;
           }
-        });
 
-	      this.hasImgFormat();
-	      this.hasPDFFormat();
-      }
+					if (['zip'].includes(type)) {
+						this.document.selectedTypes['zip'] = true;
+					}
+				});
+
+				this.hasImgFormat();
+				this.hasPDFFormat();
+			}
     },
 	  saveDocument()
     {
@@ -456,7 +460,7 @@ export default {
 	  onSampleFileInputChange(event) {
 		  const files = event.target.files || [];
 		  if (files.length > 0) {
-			  const allowedExtensions = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'];
+			  const allowedExtensions = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'xls', 'xlsx'];
 				const fileExtension = files[0].name.split('.').pop().toLowerCase();
 				if (!allowedExtensions.includes(fileExtension)) {
 					Swal.fire({

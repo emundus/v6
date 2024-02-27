@@ -44,6 +44,9 @@ JText::script('COM_EMUNDUS_ONBOARD_CANCEL');
 JText::script('COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH');
 JText::script('COM_EMUNDUS_ONBOARD_TRANSLATETIP');
 JText::script('COM_EMUNDUS_ONBOARD_TIP');
+JText::script('COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP');
+JText::script('COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP_TEXT');
+JText::script('COM_EMUNDUS_SWAL_OK_BUTTON');
 JText::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT');
 JText::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_NUMBER');
 JText::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS');
@@ -63,6 +66,7 @@ JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORMBUILDER');
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM');
 JText::script('BACK');
+JText::script('COM_EMUNDUS_CAMPAIGNS_PIN');
 ## END ##
 
 $lang = JFactory::getLanguage();
@@ -83,10 +87,8 @@ $user = JFactory::getUser();
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
 $sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
 
-$xmlDoc = new DOMDocument();
-if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
-    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
-}
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 
 
@@ -100,4 +102,4 @@ if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml'
      sysadminAccess="<?= $sysadmin_access ?>"
 ></div>
 
-<script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>
+<script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

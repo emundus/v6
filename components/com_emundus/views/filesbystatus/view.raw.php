@@ -334,7 +334,6 @@ class EmundusViewFilesbystatus extends JViewLegacy
 				    {
 					    $objAccess = $model->getAccessorByFnums($fnumArray);
 				    }
-                  //var_dump($fnumArray);echo '<hr>';
 			    }
 			    else
 			    {

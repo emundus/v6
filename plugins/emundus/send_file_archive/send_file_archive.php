@@ -34,10 +34,6 @@ class plgEmundusSend_file_archive extends JPlugin {
 			return false;
 		}
 
-		if (JFactory::getUser()->id != (int) substr($fnum, -7)) {
-			return false;
-		}
-
 		return $this->sendEmailArchive($fnum, $email);
 	}
 

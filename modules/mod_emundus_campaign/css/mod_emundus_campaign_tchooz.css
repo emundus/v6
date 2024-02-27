@@ -23,12 +23,19 @@
 }
 
 .mod_emundus_campaign__intro{
-    width: 66%;
-    max-width: 750px;
+    width: 72%;
+}
+
+.mod_emundus_campaign__list_items .pagination {
+    margin: 0;
 }
 
 .mod_emundus_campaign__intro *{
   font-family: var(--em-applicant-font);
+}
+
+.mod_emundus_campaign__intro h1{
+    font-family: var(--em-applicant-font-title);
 }
 
 .mod_emundus_campaign__intro p{
@@ -127,7 +134,7 @@
 
 .mod_emundus_campaign__list_content{
     box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
-    border-radius: var(--em-coordinator-br-cards) !important;
+    border-radius: var(--em-applicant-br-cards) !important;
     padding: var(--p-24);
     height: 345px;
     background: var(--neutral-0);
@@ -155,7 +162,7 @@
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     max-height: 100px;
-    min-height: 60px;
+    min-height: 53px;
     line-height: 160%;
     font-family: var(--em-applicant-font);
     color: var(--em-default-text-color-1);
@@ -163,6 +170,7 @@
 
 .mod_emundus_campaign__list_content_resume * {
     color: var(--neutral-600) !important;
+    display: inline;
 }
 
 .mod_emundus_campaign__header_filter {
@@ -173,10 +181,11 @@
     margin-top: var(--m-8);
     flex-direction: column;
     box-shadow: 0 12px 17px rgba(5, 47, 55, 0.07), 0 5px 22px rgba(5, 47, 55, 0.06), 0 7px 8px rgba(5, 47, 55, 0.1);
-    border-radius: calc(var(--em-coordinator-br-cards)/2);
+    border-radius: var(--em-default-br);
     padding: var(--p-16);
     position: absolute;
     background: var(--neutral-0);
+    z-index: 10;
 }
 
 .mod_emundus_campaign__header_sort__values a:hover {
@@ -195,11 +204,12 @@
     margin-top: var(--m-8);
     flex-direction: column;
     box-shadow: 0 12px 17px rgba(5, 47, 55, 0.07), 0 5px 22px rgba(5, 47, 55, 0.06), 0 7px 8px rgba(5, 47, 55, 0.1);
-    border-radius: calc(var(--em-coordinator-br-cards)/2);
+    border-radius: var(--em-default-br);
     padding: var(--p-16);
     position: absolute;
     background: var(--neutral-0);
     min-width: 44rem;
+    z-index: 10;
 }
 
 .mod_emundus_campaign__header_filter span:not(.material-icons-outlined){
@@ -295,7 +305,7 @@ a.em-blue-400-color:hover {
 
 .mod_emundus_campaign__list_content_container .mod_emundus_campaign__campaign_title {
     margin-bottom: 8px !important;
-    color: var(--em-default-title-color-1) !important;
+    color: var(--em-default-title-color-1);
     -webkit-line-clamp: 2;
     overflow: hidden;
     -webkit-box-orient: vertical;
@@ -376,7 +386,7 @@ a.em-blue-400-color:hover {
 
 .mod_emundus_campaign__details_content{
     box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
-    border-radius: var(--em-coordinator-br-cards) !important;
+    border-radius: var(--em-applicant-br-cards) !important;
     padding: var(--p-32);
     background: var(--neutral-0);
     color: var(--em-default-title-color-1);
@@ -405,7 +415,7 @@ a.em-blue-400-color:hover {
     color: var(--neutral-900);
     height: 24px;
     width: 24px;
-    display: flex;
+    display: flex !important;
     justify-content: center;
     align-items: center;
     font-size: 16px;
@@ -429,8 +439,8 @@ a.em-blue-400-color:hover {
     display: grid;
     align-items: flex-start;
     padding: 0;
-    gap: var(--p-32);
-    grid-template-columns: repeat(3,1fr);
+    gap: var(--p-48);
+    grid-template-columns: repeat(3, minmax(354px, 1fr));
 }
 
 .mod_emundus_campaign__pinned_campaign{
@@ -438,7 +448,6 @@ a.em-blue-400-color:hover {
     align-items: flex-start;
     padding: 0;
     gap: var(--p-32);
-    width: 60%;
 }
 
 .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content {
@@ -564,7 +573,7 @@ a.em-blue-400-color:hover {
         margin-top: var(--m-16);
     }
     .mod_emundus_campaign__intro{
-        width: 100%;
+        width: 89%;
     }
     .mod_emundus_campaign__pinned_campaign{
         grid-template-columns: repeat(1, 1fr);
@@ -609,6 +618,20 @@ a.em-blue-400-color:hover {
     .mod_emundus_campaign__content .mod_emundus_campaign__list_content,
     .mod_emundus_campaign__header {
         width: 100%;
+    }
+
+    #g-container-main .g-container{
+        width: 44rem;
+    }
+}
+
+@media screen and (min-width: 960px) and (max-width: 1080px) {
+    .mod_emundus_campaign__content .mod_emundus_campaign__list_items {
+        grid-template-columns: repeat(2,1fr);
+    }
+
+    #g-container-main .g-container{
+        width: 56rem;
     }
 }
 

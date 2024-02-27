@@ -88,7 +88,9 @@ button#back:hover, button#back:active, button#back:focus,
 }
 
 .list-group.candidacy-files-list .row .ui.yellow.segment:not(.inverted) {
-    border-top: 2px solid var(--em-primary-color) !important;
+    border-left: 2px solid var(--neutral-600) !important;
+    background: var(--neutral-300);
+    padding: 10px;
 }
 
 .candidacy-files-list .em-light-selected-tab {
@@ -98,6 +100,7 @@ button#back:hover, button#back:active, button#back:focus,
     border: 1px solid var(--red-500) !important;
     color: var(--neutral-0) !important;
     padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
+    border-radius: var(--em-coordinator-br);
 }
 
 .swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:hover,
@@ -197,6 +200,7 @@ button#back:hover, button#back:active, button#back:focus,
     justify-content: center;
     align-items: center;
     margin-top: -30px;
+    margin-bottom: var(--m-16);
 }
 
 .forget-mdp {
@@ -255,8 +259,14 @@ a.btn.btn-success:not(.btn-xs) {
 .view-featured .candidacy-files-list .row {
    position: relative;
     height: 100%;
+    overflow: hidden;
 }
 @media all and (max-width: 479px) {
+
+    .mod_emundus_applications__actions{
+        right: 10px;
+    }
+
 
     #applications_list_view div[id*="group_application_tab"] {
         overflow-x: scroll;
@@ -386,8 +396,8 @@ a.btn.btn-success:not(.btn-xs) {
 }
 
 .mod_emundus_applications___header h1 {
- font-family: var(--em-applicant-font-title);
- color: var(--em-default-title-color-1);
+ font-family: var(--em-applicant-h1);
+ color: var(--neutral-900);
 }
 
 .mod_emundus_applications___header_desc h2 {
@@ -408,12 +418,12 @@ a.btn.btn-success:not(.btn-xs) {
     display: grid;
     align-items: flex-start;
     padding: 0;
-    gap: var(--p-32);
+    gap: var(--p-48);
     grid-template-columns: repeat(2,1fr);
 }
 .mod_emundus_applications___content_app{
     box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
-    border-radius: var(--em-default-br-cards) !important;
+    border-radius: var(--em-applicant-br-cards) !important;
     padding: var(--p-32);
     background: var(--neutral-0);
 }
@@ -433,6 +443,10 @@ a.btn.btn-success:not(.btn-xs) {
     margin: var(--m-16) 0;
 }
 
+.mod_emundus_applications___content_app span.em-applicant-default-font   {
+    word-break: break-word;
+}
+
 .mod_emundus_applications___circle{
     height: 8px;
     width: 8px;
@@ -446,7 +460,6 @@ a.btn.btn-success:not(.btn-xs) {
     font-weight: 600;
 }
 .mod_emundus_applications___title{
-    margin-bottom: var(--m-8) !important;
     color: var(--em-default-title-color-1) !important;
     -webkit-line-clamp: 2;
     overflow: hidden;
@@ -454,7 +467,7 @@ a.btn.btn-success:not(.btn-xs) {
     max-height: 48px;
     display: -webkit-box;
     line-height: 140%;
-    min-height: 50px;
+    min-height: 42px;
     font-family: var(--em-applicant-font-title) !important;
 }
 
@@ -473,20 +486,30 @@ a.btn.btn-success:not(.btn-xs) {
 }
 
 .mod_emundus_applications___content_app:hover .mod_emundus_applications__container {
-    background: #F3F3F3;
+    background: var(--em-profile-color);
     border-radius: var(--em-default-br);
+    transition: transform .3s;
+}
+
+.mod_emundus_applications___content_app:hover .material-icons {
+    color: var(--neutral-0);
+}
+
+.mod_emundus_applications__container .material-icons {
+    color: var(--em-profile-color);
 }
 
 .mod_emundus_applications__actions{
-    margin-top: var(--m-8);
     flex-direction: column;
     box-shadow: 0 12px 17px rgba(5, 47, 55, 0.07), 0 5px 22px rgba(5, 47, 55, 0.06), 0 7px 8px rgba(5, 47, 55, 0.1);
-    border-radius: calc(var(--em-default-br-cards)/2);
+    border-radius: calc(var(--em-applicant-br-cards)/2);
     padding: var(--p-16);
     position: absolute;
     background: var(--neutral-0);
     z-index: 9999;
-    margin-top: 34px;
+    width: max-content;
+    right: 20px;
+    top: 60px;
 }
 
 .mod_emundus_applications__actions a:hover,
@@ -503,7 +526,7 @@ a.btn.btn-success:not(.btn-xs) {
 
 .mod_emundus_applications__actions a.em-red-500-color:hover {
     background: #EBECF0 !important;
-    border-radius: calc(var(--em-default-br-cards)/2) !important;
+    border-radius: calc(var(--em-applicant-br-cards)/2) !important;
     color: var(--red-500) !important;
     text-decoration: none;
 }
@@ -609,11 +632,27 @@ a.btn.btn-success:not(.btn-xs) {
 #applications_list_view table thead tr th,#applications_list_view table tbody tr td{
     background: var(--transparent);
     padding: var(--p-16) var(--p-8) var(--p-16) var(--p-8);
+    height: 74px;
 }
 #applications_list_view table tr {
     border-bottom: 1px solid var(--neutral-300);
 }
 
+#applications_list_view table tbody tr:hover .mod_emundus_applications__container .material-icons {
+    background: var(--em-profile-color);
+    border-radius: var(--em-default-br);
+    color: var(--neutral-0);
+    transition: transform .3s;
+}
+
+#applications_list_view table tbody tr #background-shapes {
+ opacity: 0.5;
+ transition: ease-out .3s;
+}
+
+#applications_list_view table tbody tr:hover #background-shapes {
+  opacity: 1;
+}
 
 #applications_list_view .mod_emundus_applications__container span{
     padding: 4px;
@@ -624,17 +663,18 @@ a.btn.btn-success:not(.btn-xs) {
 }
 #applications_list_view .mod_emundus_applications___title{
     min-height: unset;
-    margin-bottom: 0 !important;
+    //margin-bottom: 0 !important;
 }
 
 .mod_emundus_application___buttons_switch_view{
     border: solid 1px var(--neutral-600);
-    border-radius: var(--em-default-br);
+    border-radius: calc(var(--em-default-br)/2);
     display: flex;
     height: 38px;
     width: 38px;
     align-items: center;
     justify-content: center;
+    background: var(--neutral-0);
 }
 .mod_emundus_application___buttons_switch_view_disabled{
     color: var(--neutral-600);
@@ -685,7 +725,7 @@ a.btn.btn-success:not(.btn-xs) {
 .platform-content a.btn[title="Envoyer le dossier"] {
     background: var(--em-secondary-color);
     border: 1px solid var(--em-secondary-color);
-    color: var(--neutral-50);
+    color: var(--neutral-0);
 }
 
 .platform-content a.btn[title="Envoyer le dossier"]:hover,
@@ -700,6 +740,164 @@ circle.circle {
     stroke: var(--em-secondary-color);
 }
 
+/*******************
+ * Peps tuiles
+ *******************/
+
+/* Hover decalage tuile */
+.hover-and-tile-container #tile-hover-offset-request {
+    background: var(--em-profile-color);
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    border-radius: 16px;
+    transform: rotate(2deg);
+    opacity: 0.3;
+    transition: transform .3s;
+}
+
+/* Tuile */
+.mod_emundus_applications___content_app {
+    position: relative;
+    transition: background-image .3s;
+    height: 286px;
+    z-index: 3;
+    overflow: hidden;
+}
+
+/* Fond formes */
+.mod_emundus_applications___content_app #background-shapes {
+    position: absolute;
+    z-index: 2;
+    width: 70%;
+    height: 255px;
+    top: -14px;
+    right: -25px;
+    pointer-events: none;
+    transition: transform .3s;
+    mask-image: url('/modules/mod_emundus_campaign/assets/fond-fonce.svg');
+    -webkit-mask-image: url('/modules/mod_emundus_campaign/assets/fond-fonce.svg');
+    background: var(--em-profile-color);
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-position: center;
+    mask-size: contain;
+    -webkit-mask-size: contain;
+}
+
+.mod_emundus_applications___content_app #background-shapes {
+    opacity: 0.5;
+    transition: ease-out .5s;
+}
+
+.mod_emundus_applications___content_app:hover #background-shapes {
+    opacity: 1;
+}
+
+.hover-and-tile-container:hover > #tile-hover-offset-request {
+    transform: rotate(3deg);
+}
+
+.view-featured .mod_emundus_applications__list_content--default {
+    position: relative;
+    overflow: hidden;
+}
+
+.view-featured .mod_emundus_applications__list_content--default #background-shapes {
+    position: absolute;
+    z-index: 2;
+    width: 70%;
+    height: 300%;
+    top: -29px;
+    right: -70px;
+    pointer-events: none;
+    mask-image: url(/modules/mod_emundus_campaign/assets/fond-fonce.svg);
+    background: var(--em-profile-color);
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+}
+
+/* Titres */
+.mod_emundus_applications___content_app .em-w-100 .mod_emundus_applications___title h5 {
+    color: var(--em-profile-color);
+    font-size: var(--em-applicant-h4);
+    line-height: 24px;
+}
+
+.view-featured .mod_emundus_applications__list_content--default .em-applicant-text-color {
+    color: var(--neutral-600);
+}
+
+/* Num dossier */
+.mod_emundus_applications___content_app .em-w-100 .em-mb-8 {
+    margin-bottom: 12px;
+}
+
+/* Clôture */
+.mod_emundus_applications___content_app .em-flex-row .mod_emundus_applications___date {
+    display: none;
+}
+
+/* Déposant */
+.mod_emundus_applications___informations div:first-child label {
+    margin-bottom: 12px;
+}
+
+/* Statut de la demande */
+.mod_emundus_applications___informations div:nth-child(2) label {
+    margin-bottom: 12px;
+}
+
+/*******************
+ * Fin peps tuiles
+ *******************/
+
+/* Tablette*/
+@media screen and (min-width: 960px) and (max-width: 1199px) {
+
+    /* Peps */
+    .hover-and-tile-container #tile-hover-offset-request {
+        width: 444px;
+    }
+
+    .mod_emundus_applications___content_app #background-shapes {
+        right: -28px;
+    }
+
+    .view-featured .mod_emundus_applications__list_content--default {
+        #background-shapes {
+            right: -119px;
+        }
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 959px) {
+
+    .view-featured .candidacy-files-list .row {
+        align-items: flex-start;
+    }
+
+    /* Peps */
+    .hover-and-tile-container #tile-hover-offset-request {
+        width: 348px;
+    }
+
+    .mod_emundus_applications___content_app #background-shapes {
+        top: -38px;
+        right: -13px;
+    }
+
+    .view-featured .mod_emundus_applications__list_content--default {
+        #background-shapes {
+            top: -61px;
+            right: -27px;
+        }
+    }
+}
+
+/* Téléphone */
 @media screen and (max-width: 767px) {
 
     .moduletable.list-group.candidacy-files-list > div.em-flex-row.em-flex-space-between.em-mt-16 {
@@ -708,7 +906,7 @@ circle.circle {
     }
 
     .mod_emundus_applications___header .em-flex-row.em-flex-space-between {
-       flex-direction: column;
+        flex-direction: column;
         align-items: flex-start;
     }
 
@@ -728,7 +926,7 @@ circle.circle {
 
 
     span.material-icons-outlined {
-       flex-basis: auto !important;
+        flex-basis: auto !important;
     }
 
     .em-font-size-16 {
@@ -750,12 +948,25 @@ circle.circle {
     .mod_emundus_application_swal_manage_tabs_popup{
         min-width: fit-content;
     }
-}
 
-@media screen and (min-width: 768px) and (max-width: 959px) {
-
-    .view-featured .candidacy-files-list .row {
-        align-items: flex-start;
+    /* Peps */
+    .hover-and-tile-container{
+        position: relative;
     }
 
+    .hover-and-tile-container #tile-hover-offset-request {
+        width: 100%;
+    }
+
+    .mod_emundus_applications___content_app #background-shapes {
+        top: -17px;
+        right: -149px;
+    }
+
+    .view-featured .mod_emundus_applications__list_content--default {
+        #background-shapes {
+            top: -77px;
+            right: -25px;
+        }
+    }
 }

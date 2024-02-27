@@ -6,26 +6,32 @@
  * Time: 17:14
  */
 ?>
+<style>
+    form {
+        margin: 0;
+    }
+</style>
 <form action = "index.php?option=com_emundus&controller=users&task=addgroup" id="em-add-group" class="em-add-group" role="form" method="post">
 	<?php
-	if(count($this->groups) == 0)
+	if(empty($this->groups)) {
 		echo JText::_('COM_EMUNDUS_GROUPS_NO_GROUP');
-	else {
+	} else {
 	?>
-	<h3>
-		<?php echo JText::_('COM_EMUNDUS_GROUPS_SHOW_RIGHTS'); ?>
-	</h3>
 		<?php foreach($this->groups as $k => $g):?>
 			<fieldset id="<?php echo $k?>" class="em-add-group-right">
-				<h5>
+				<h3>
 					<?php echo $g['label']?>
-				</h5>
-				<ul class="em-add-group-program">
-					<strong><?php echo JText::_('COM_EMUNDUS_GROUPS_PROGRAM')?></strong>
-					<?php foreach($g['progs'] as $p):?>
-						<li><?php echo $p['label']?></li>
-					<?php endforeach;?>
-				</ul>
+				</h3>
+
+                <?php if (!empty($g['progs'])) : ?>
+                    <div class="em-add-group-program mt-3">
+                        <h4 class="mb-2"><?php echo JText::_('COM_EMUNDUS_GROUPS_PROGRAM')?></h4>
+                        <?php foreach($g['progs'] as $p):?>
+                            <p><?php echo $p['label']?></p>
+                        <?php endforeach;?>
+                    </div>
+                <?php endif; ?>
+
 				<?php if(!empty($g['acl'])):?>
 					<table id="em-modal-action-table" class="table table-hover em-add-group-right-table" style="color:black !important;">
 						<thead>
@@ -45,7 +51,7 @@
 							</th>
 						</tr>
 						</thead>
-						<tbody size="<?php echo count($this->actions)?>">
+						<tbody size="<?php echo count($g['acl'])?>">
 						<?php foreach($g['acl'] as $l => $action):?>
 
 							<tr class="em-actions-table-line">

@@ -159,6 +159,12 @@ $timezone = new DateTimeZone($offset);
                                             </div>
                                         <?php endif; ?>
                                     </td>
+                                <?php elseif ($k == 'o_profiles') : ?>
+                                    <td class="em-cell-scroll">
+                                        <div class="em-cell" >
+	                                        <?php echo $value;?>
+                                        </div>
+                                    </td>
 								<?php elseif ($k == 'newsletter') :?>
 									<?php if ($value == 1) :?>
                                         <td>
