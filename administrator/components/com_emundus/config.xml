@@ -257,8 +257,8 @@
 			   default=""
 			   label="COM_EMUNDUS_COLLABORATION_LINK"
 			   description=""
-			   query="SELECT link, title as label FROM jos_menu WHERE published = 1"
-			   key_field="link"
+			   query="SELECT id, title as label FROM jos_menu WHERE published = 1"
+			   key_field="id"
 			   value_field="label"
 		/>
 	</fieldset>
