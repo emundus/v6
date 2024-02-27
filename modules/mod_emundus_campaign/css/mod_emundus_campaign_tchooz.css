@@ -337,6 +337,30 @@ a.em-blue-400-color:hover {
     color: var(--em-default-title-color-1);
 }
 
+
+.mod_emundus_campaign__tchoozy_tabs{
+    background: var(--neutral-0);
+    padding: 24px;
+    border-radius: var(--em-applicant-br);
+}
+
+.mod_emundus_campaign__tchoozy_tabs .flex {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mod_emundus_campaign__tchoozy_tabs h3{
+    color: var(--em-profile-color);
+    margin-bottom: 12px;
+}
+
+.mod_emundus_campaign__tchoozy_tabs .material-icons-outlined {
+    font-size: 24px;
+    color: var(--em-profile-color);
+}
+
 .mod_emundus_campaign__tabs{
     margin-top: var(--m-24);
     border-bottom: solid 1px var(--neutral-300);

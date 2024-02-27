@@ -581,21 +581,23 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                     <hr style="margin-top: 8px">
                 </div>
 			<?php else : ?>
-                <div class="em-mb-44 em-mt-44">
+                <div class="em-mb-24 em-mt-24 mod_emundus_campaign__tchoozy_tabs">
                     <div class="flex items-center justify-between <?php if (sizeof($campaigns) > 1) : ?>cursor-pointer<?php endif; ?>" <?php if (sizeof($campaigns) > 1) : ?> onclick="hideGroup('<?php echo $key ?>')" <?php endif; ?>>
-                        <h3 class="mod_emundus_campaign__programme_cat_title"><?php echo $campaign['label'] ?: JText::_('MOD_EM_CAMPAIGN_LIST_CAMPAIGNS') ?></h3>
+                       <div>
+                            <h3 class="mod_emundus_campaign__programme_cat_title"><?php echo $campaign['label'] ?: JText::_('MOD_EM_CAMPAIGN_LIST_CAMPAIGNS') ?> (<?php echo sizeof($campaigns); ?>)</h3>
+                            <p><?= JText::_('MOD_EM_CAMPAIGN_TCHOOZY_TAB_DESC_CLOSE') ?></p>
+                       </div>
 						<?php if (sizeof($campaigns) > 1) : ?>
                             <span class="material-icons-outlined"
                                   id="group_icon_<?php echo $key ?>">
 					            <?php if($mod_em_campaign_groupby_closed == 1) : ?>
-                                    expand_less
-                                <?php else : ?>
                                     expand_more
+                                <?php else : ?>
+                                    expand_less
                                 <?php endif; ?>
                             </span>
 						<?php endif; ?>
                     </div>
-                    <hr style="margin-top: 8px">
                 </div>
 			<?php endif; ?>
 
