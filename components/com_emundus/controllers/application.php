@@ -52,7 +52,7 @@ class EmundusControllerApplication extends JControllerLegacy
             JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_NO_ITEMS_SELECTED' ) );
             exit;
         }
-		
+
         $m_application = new EmundusModelApplication();
 
         foreach ($attachments as $id) {
@@ -400,11 +400,11 @@ class EmundusControllerApplication extends JControllerLegacy
                 foreach($menus as $k => $menu) {
 					$access = false;
 					$actions_for_access = explode(',', $menu['note']);
-					
+
 					foreach ($actions_for_access as $action_for_access) {
 						$action = explode('|', $action_for_access);
 						$action_id = $action[0];
-						
+
 						if (EmundusHelperAccess::asAccessAction($action[0], $action[1], $user->id, $fnum)) {
 							$access = true;
 							break;
@@ -498,7 +498,7 @@ class EmundusControllerApplication extends JControllerLegacy
 	        $sid = $jinput->post->getInt('student_id', null);
 	        $form_post = $jinput->post->getVar('forms', null);
 	        $attachments_only = $jinput->post->getBool('attachments_only', false);
-			
+
 	        require_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
 	        require_once(JPATH_SITE.'/components/com_emundus/models/files.php');
 	        require_once(JPATH_SITE.'/components/com_emundus/models/form.php');
@@ -1101,30 +1101,54 @@ class EmundusControllerApplication extends JControllerLegacy
 		$e_user = Factory::getApplication()->getSession()->get('emundusUser');
 
 		if(!empty($fnum) && (EmundusHelperAccess::asPartnerAccessLevel(Factory::getUser()->id) || in_array($fnum, array_keys($e_user->fnums)))) {
-			$ccid = $this->input->getInt('ccid',0);
+            $response['code'] = 500;
+            $response['msg'] = Text::_('MISSING_PARAMETERS');
+            $ccid = $this->input->getInt('ccid',0);
 			$emails = $this->input->getString('emails','');
 
 			if(!empty($emails) && !empty($ccid)) {
-				$emails = explode(',',$emails);
+                $response['msg'] = Text::_('FAILED');
+                $emails = explode(',',$emails);
 
 				$m_application      = $this->getModel('Application');
 				$response['data'] = $m_application->shareFileWith($emails, $ccid, Factory::getUser()->id);
-				if($response['data']['status']) {
+
+                if ($response['data']['status']) {
+                    $response['code'] = 200;
+                    $response['msg'] = '';
 					$response['status'] = true;
 
-					$emundus_config = ComponentHelper::getParams('com_emundus');
-					$collaboration_link = $emundus_config->get('collaborate_link','index.php?option=com_fabrik&view=form&formid=378');
-					$menu_item = Factory::getApplication()->getMenu()->getItems('link', $collaboration_link, true);
+                    $emundus_config = ComponentHelper::getParams('com_emundus');
+                    $collaboration_id = $emundus_config->get('collaborate_link', 0);
+                    if (empty($collaboration_id)) {
+                        $collaboration_link = 'index.php?option=com_fabrik&view=form&formid=378';
+                        $menu_item = Factory::getApplication()->getMenu()->getItems('link', $collaboration_link, true);
+                    } else {
+                        $menu_item = Factory::getApplication()->getMenu()->getItems('id', $collaboration_id, true);
+                    }
 
 					require_once JPATH_ROOT . '/components/com_emundus/controllers/messages.php';
 					$c_messages = new EmundusControllerMessages();
 
+                    if ($menu_item->type === 'url' && strpos($menu_item->link, 'http') !== false) {
+                        $collaboration_url = $menu_item->link;
+                    } else {
+                        $collaboration_url = Uri::base() . $menu_item->alias . '/';
+                    }
+
+                    if (strpos($collaboration_url, '?') !== false) {
+                        $collaboration_url .= '&key=';
+                    } else {
+                        $collaboration_url .= '?key=';
+                    }
+
 					foreach ($response['data']['emails'] as $email => $key) {
 						$post = [
-							'COLLABORATE_URL' => Uri::base() . $menu_item->alias . '/?key=' . $key,
+							'COLLABORATE_URL' => $collaboration_url . $key,
 							'COLLABORATE_BUTTON' => Text::_('COM_EMUNDUS_APPLICATIONS_COLLABORATE_BUTTON'),
 						];
 
+                        // TODO: if email is not sent, we should inform the user
 						$c_messages->sendEmailNoFnum($email,'collaborate_invitation', $post, $e_user->id, [], $fnum);
 					}
 				}
@@ -1169,9 +1193,9 @@ class EmundusControllerApplication extends JControllerLegacy
 		if(!empty($fnum) && (EmundusHelperAccess::asPartnerAccessLevel(Factory::getUser()->id) || in_array($fnum, array_keys($e_user->fnums)))) {
 			$ccid = $this->input->getInt('ccid',0);
 			$request_id = $this->input->getInt('request_id',0);
-			
+
 			$ttl = Factory::getSession()->get('ttl_send_email_'.$request_id);
-			
+
 			if($ttl && (time() - $ttl) < 900) {
 				$response['msg'] = Text::_('COM_EMUNDUS_APPLICATIONS_COLLABORATE_EMAIL_TTL');
 			}
@@ -1195,7 +1219,7 @@ class EmundusControllerApplication extends JControllerLegacy
 					];
 
 					$c_messages->sendEmailNoFnum($response['data']['email'],'collaborate_invitation', $post, $e_user->id, [], $fnum);
-					
+
 					Factory::getSession()->set('ttl_send_email_'.$request_id, time());
 
 					$response['msg'] = Text::_('COM_EMUNDUS_APPLICATIONS_COLLABORATE_EMAIL_SENT_SUCCESFULLY');
