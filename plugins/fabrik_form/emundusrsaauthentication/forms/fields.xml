@@ -31,6 +31,47 @@
 
             <field name="emundusrsaauhtentication_attributes_email" type="text" default="email"
                    label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_EMAIL"/>
+
+            <field name="emundusrsaauhtentication_attributes_other"
+                   type="fabrikmodalrepeat"
+                   repeat="true"
+                   description=""
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_OTHER">
+
+                <fields name="params">
+                    <fieldset modal="true" name="emundusrsaauhtentication_attributes_other_modal" repeat="true">
+
+                        <field name="emundusrsaauhtentication_attributes_other_table"
+                               type="text"
+                               repeat="true"
+                               label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_OTHER_TABLE_NAME"/>
+
+                        <field name="emundusrsaauhtentication_attributes_other_column"
+                               type="text"
+                               repeat="true"
+                               label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_OTHER_COLUMN"/>
+
+                        <field name="emundusrsaauhtentication_attributes_other_attribute"
+                               type="text"
+                               repeat="true"
+                               label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_OTHER_ATTRIBUTE"/>
+
+                        <field name="emundusrsaauhtentication_attributes_other_user_key"
+                               type="text"
+                               repeat="true"
+                               label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_OTHER_USERKEY"/>
+
+                        <field name="emundusrsaauhtentication_attributes_other_user_key_type"
+                               type="list"
+                               repeat="true"
+                               default="0"
+                               label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_OTHER_USERKEY_TYPE">
+                            <option value="0">jos_users</option>
+                            <option value="1">jos_emundus_users</option>
+                        </field>
+                    </fieldset>
+                </fields>
+            </field>
         </fieldset>
     </fields>
 </form>

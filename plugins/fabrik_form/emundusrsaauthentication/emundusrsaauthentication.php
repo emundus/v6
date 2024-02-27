@@ -117,10 +117,26 @@ class PlgFabrik_FormEmundusRsaauthentication extends plgFabrik_Form
 						throw new Exception('PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_DECRYPT_DATAS_ERROR', 500);
 					}
 
-					$username = (string)$decrypted[$this->getParam('emundusrsaauhtentication_attributes_id', 'id')];
-					$firstname = $decrypted[$this->getParam('emundusrsaauhtentication_attributes_firstname', 'firstname')];
-					$lastname = $decrypted[$this->getParam('emundusrsaauhtentication_attributes_lastname', 'lastname')];
-					$email    = $decrypted[$this->getParam('emundusrsaauhtentication_attributes_email', 'email')];
+					$username         = (string) $decrypted[$this->getParam('emundusrsaauhtentication_attributes_id', 'id')];
+					$firstname        = $decrypted[$this->getParam('emundusrsaauhtentication_attributes_firstname', 'firstname')];
+					$lastname         = $decrypted[$this->getParam('emundusrsaauhtentication_attributes_lastname', 'lastname')];
+					$email            = $decrypted[$this->getParam('emundusrsaauhtentication_attributes_email', 'email')];
+					$other_attributes = $this->getParam('emundusrsaauhtentication_attributes_other', []);
+					if (!empty($other_attributes))
+					{
+						$other_attributes = json_decode($other_attributes, true);
+					}
+					else
+					{
+						$other_attributes = [];
+					}
+					$attributes = [
+						'id'        => $username,
+						'firstname' => $firstname,
+						'lastname'  => $lastname,
+						'email'     => $email,
+						'other'     => $other_attributes
+					];
 
 					if (empty($username) || empty($email))
 					{
@@ -133,7 +149,20 @@ class PlgFabrik_FormEmundusRsaauthentication extends plgFabrik_Form
 					require_once JPATH_ROOT . '/components/com_emundus/models/users.php';
 					$m_users = new EmundusModelUsers();
 
-					// First we check if username corresponding to existing email
+					// First we check if username corresponding to existing id else we run an event for custom clients
+					if (empty(UserHelper::getUserId($username)))
+					{
+						PluginHelper::importPlugin('emundus');
+						$dispatcher = JEventDispatcher::getInstance();
+						$results    = $dispatcher->trigger('callEventHandler', ['onGetUsername', ['datas' => $decrypted, 'attributes' => $attributes]]);
+
+						if (is_array($results) && !empty($results[0]['onGetUsername']))
+						{
+							$username = $results[0]['onGetUsername'];
+						}
+					}
+
+					// Then we check if username corresponding to existing email if we have no username
 					if (empty(UserHelper::getUserId($username)))
 					{
 						$query->select('username')
@@ -152,7 +181,7 @@ class PlgFabrik_FormEmundusRsaauthentication extends plgFabrik_Form
 					{
 						$user                 = new User();
 						$user->name           = $lastname . ' ' . $firstname;
-						$user->username       = (string)$username;
+						$user->username       = (string) $username;
 						$user->email          = $email;
 						$user->password_clear = '';
 						$user->password       = '';
@@ -179,10 +208,6 @@ class PlgFabrik_FormEmundusRsaauthentication extends plgFabrik_Form
 							$other_param['em_campaigns'] = [];
 							$other_param['news']         = '';
 							$m_users->addEmundusUser($user->id, $other_param);
-
-							$m_users->login($user->id);
-
-							$this->app->redirect('index.php');
 						}
 						else
 						{
@@ -191,25 +216,70 @@ class PlgFabrik_FormEmundusRsaauthentication extends plgFabrik_Form
 					}
 					else
 					{
-						$uid = UserHelper::getUserId($username);
+						$uid  = UserHelper::getUserId($username);
 						$user = User::getInstance($uid);
 
-						$user->name          = $lastname . ' ' . $firstname;
-						$user->email         = $email;
-						$user->username      = $username;
+						$user->username      = (string) $decrypted[$this->getParam('emundusrsaauhtentication_attributes_id', 'id')];
 						$user->lastvisitDate = date('Y-m-d H:i:s');
 
-						if ($user->save())
-						{
-							$m_users->login($user->id);
-
-							$this->app->redirect('index.php');
-						}
-						else
+						if (!$user->save())
 						{
 							throw new Exception('PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_UPDATE_USER_ERROR', 500);
 						}
 					}
+
+					$query->clear()
+						->select('id')
+						->from($db->quoteName('#__emundus_users'))
+						->where($db->quoteName('user_id') . ' = ' . $db->quote($user->id));
+					$db->setQuery($query);
+					$emundus_user_id = $db->loadResult();
+
+					if (!empty($other_attributes) && !empty($other_attributes['emundusrsaauhtentication_attributes_other_table']))
+					{
+						foreach ($other_attributes['emundusrsaauhtentication_attributes_other_table'] as $key => $table)
+						{
+							$column        = $other_attributes['emundusrsaauhtentication_attributes_other_column'][$key];
+							$attribute     = $other_attributes['emundusrsaauhtentication_attributes_other_attribute'][$key];
+							$user_key      = $other_attributes['emundusrsaauhtentication_attributes_other_user_key'][$key];
+							$user_key_type = $other_attributes['emundusrsaauhtentication_attributes_other_user_key_type'][$key];
+
+							$values = $decrypted[$attribute];
+
+							$values = is_array($values) ? $values : [$values];
+
+							foreach ($values as $value)
+							{
+								$query->clear()
+									->select('id')
+									->from($db->quoteName($table))
+									->where($db->quoteName($column) . ' = ' . $db->quote($value));
+								$db->setQuery($query);
+								$existing = $db->loadResult();
+
+								if (empty($existing))
+								{
+									$insert = [
+										$user_key => $user_key_type == '1' ? $emundus_user_id : $user->id,
+										$column   => $value
+									];
+									$insert = (object) $insert;
+									$db->insertObject($table, $insert);
+								}
+							}
+						}
+					}
+
+					$update = [
+						'email' => $email,
+						'id' => $emundus_user_id
+					];
+					$update = (object) $update;
+					$db->updateObject('#__emundus_users', $update, 'id');
+
+					$m_users->login($user->id);
+
+					$this->app->redirect('index.php');
 				}
 				catch (Exception $e)
 				{
