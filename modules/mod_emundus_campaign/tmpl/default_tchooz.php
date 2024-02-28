@@ -21,6 +21,7 @@ $site_offset = $config->get('offset');
 $tmp_campaigns    = [];
 $campaigns        = [];
 $campaigns_pinned = [];
+$campaigns_labels = [];
 
 if (in_array('current', $mod_em_campaign_list_tab) && !empty($currentCampaign))
 {
@@ -60,6 +61,7 @@ if (sizeof($tmp_campaigns) > 0)
 		{
 			$campaigns[$campaign->prog_type][]        = $campaign;
 			$campaigns[$campaign->prog_type]['label'] = JText::_($campaign->prog_type);
+			$campaigns_labels[$campaign->prog_type][] = $campaign;
 		}
 	}
     elseif ($group_by == 'month')
@@ -580,26 +582,78 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                     <h3 class="mod_emundus_campaign__programme_cat_title"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_CAMPAIGNS') ?></h3>
                     <hr style="margin-top: 8px">
                 </div>
+
+            <?php elseif($group_by == 'category') : ?>
+
+	            <?php if($mod_em_campaign_display_tmpl==1) : ?>
+
+                    <div class="em-mb-24 em-mt-24" id="mod_emundus_campaign__tchoozy_tabs_<?php echo $key ?>" onclick="changeTabsDescription('<?php echo $key  ?>')">
+                        <div class="flex items-center justify-between <?php if (sizeof($campaigns) > 1) : ?>cursor-pointer<?php endif; ?>" <?php if (sizeof($campaigns) > 1) : ?> onclick="hideGroup('<?php echo $key ?>')" <?php endif; ?>>
+				            <?php if ($mod_em_campaign_display_svg == 1) : ?>
+                                <div id="background-shapes-tabs" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
+				            <?php endif; ?>
+                            <div>
+                                <h3 class="mod_emundus_campaign__programme_cat_title"><?php echo $campaign['label'] ?: JText::_('MOD_EM_CAMPAIGN_LIST_CAMPAIGNS') ?> (<?= count($campaigns_labels[$key]);  ?>)</h3>
+                                <p id="mod_emundus_campaign__tchoozy_tab_desc_<?php echo $key ?>"><?= JText::_('MOD_EM_CAMPAIGN_TCHOOZY_TAB_DESC_CLOSE') ?></p>
+                            </div>
+				            <?php if (sizeof($campaigns) > 1) : ?>
+                                <span class="material-icons-outlined"
+                                      id="group_icon_<?php echo $key ?>">
+                                    <?php if($mod_em_campaign_groupby_closed == 1) : ?>
+                                        expand_more
+                                    <?php else : ?>
+                                        expand_less
+                                    <?php endif; ?>
+                                </span>
+
+				            <?php endif; ?>
+                        </div>
+
+                    </div>
+	            <?php else : ?>
+                    <div class="em-mb-24 em-mt-24">
+                        <div class="flex items-center justify-between <?php if (sizeof($campaigns) > 1) : ?>cursor-pointer<?php endif; ?>" <?php if (sizeof($campaigns) > 1) : ?> onclick="hideGroup('<?php echo $key ?>')" <?php endif; ?>>
+                            <h3 class="mod_emundus_campaign__programme_cat_title"><?php echo $campaign['label'] ?: JText::_('MOD_EM_CAMPAIGN_LIST_CAMPAIGNS') ?></h3>
+
+				            <?php if (sizeof($campaigns) > 1) : ?>
+                                <span class="material-icons-outlined"
+                                      id="group_icon_<?php echo $key ?>">
+                                        <?php if($mod_em_campaign_groupby_closed == 1) : ?>
+                                            expand_more
+                                        <?php else : ?>
+                                            expand_less
+                                        <?php endif; ?>
+                                    </span>
+
+				            <?php endif; ?>
+                        </div>
+                        <hr style="margin-top: 8px">
+                    </div>
+	            <?php endif; ?>
+
 			<?php else : ?>
-                <div class="em-mb-24 em-mt-24 mod_emundus_campaign__tchoozy_tabs">
+
+                <div class="em-mb-24 em-mt-24">
                     <div class="flex items-center justify-between <?php if (sizeof($campaigns) > 1) : ?>cursor-pointer<?php endif; ?>" <?php if (sizeof($campaigns) > 1) : ?> onclick="hideGroup('<?php echo $key ?>')" <?php endif; ?>>
-                       <div>
-                            <h3 class="mod_emundus_campaign__programme_cat_title"><?php echo $campaign['label'] ?: JText::_('MOD_EM_CAMPAIGN_LIST_CAMPAIGNS') ?> (<?php echo sizeof($campaigns); ?>)</h3>
-                            <p><?= JText::_('MOD_EM_CAMPAIGN_TCHOOZY_TAB_DESC_CLOSE') ?></p>
-                       </div>
-						<?php if (sizeof($campaigns) > 1) : ?>
+                        <h3 class="mod_emundus_campaign__programme_cat_title"><?php echo $campaign['label'] ?: JText::_('MOD_EM_CAMPAIGN_LIST_CAMPAIGNS') ?></h3>
+
+			            <?php if (sizeof($campaigns) > 1) : ?>
                             <span class="material-icons-outlined"
                                   id="group_icon_<?php echo $key ?>">
-					            <?php if($mod_em_campaign_groupby_closed == 1) : ?>
-                                    expand_more
-                                <?php else : ?>
-                                    expand_less
-                                <?php endif; ?>
-                            </span>
-						<?php endif; ?>
+                                        <?php if($mod_em_campaign_groupby_closed == 1) : ?>
+                                            expand_more
+                                        <?php else : ?>
+                                            expand_less
+                                        <?php endif; ?>
+                                    </span>
+
+			            <?php endif; ?>
                     </div>
+                    <hr style="margin-top: 8px">
                 </div>
-			<?php endif; ?>
+
+
+              <?php endif; ?>
 
 			<?php if (!empty($campaign)) : ?>
                 <div id="current_<?php echo $key ?>" class="mod_emundus_campaign__list_items<?php if($mod_em_campaign_groupby_closed == 1) : ?> em-display-none<?php endif; ?>">
@@ -1097,10 +1151,10 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
         if (group.style.display === 'none' || getComputedStyle(group).display === 'none') {
             group.style.display = 'grid';
-            icon.innerHTML = 'expand_more';
+            icon.innerHTML = 'expand_less';
         } else {
             group.style.display = 'none';
-            icon.innerHTML = 'expand_less';
+            icon.innerHTML = 'expand_more';
         }
     }
 
@@ -1155,5 +1209,21 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             });
         }
     })
+
+    /* Description des onglets */
+    function changeTabsDescription(key) {
+        let campaigns = document.getElementById("current_" + key);
+        let tabs_desc = document.getElementById("mod_emundus_campaign__tchoozy_tab_desc_" + key);
+        let tabs = document.getElementById("mod_emundus_campaign__tchoozy_tabs_" + key);
+
+
+        if (campaigns.style.display === 'none') {
+            tabs_desc.innerHTML = "<?= JText::_('MOD_EM_CAMPAIGN_TCHOOZY_TAB_DESC_CLOSE')?>";
+            tabs.classList.remove("open");
+        } else {
+            tabs_desc.innerHTML = "<?= JText::_('MOD_EM_CAMPAIGN_TCHOOZY_TAB_DESC_OPEN')?>";
+            tabs.classList.add("open");
+        }
+    }
 
 </script>
