@@ -608,7 +608,6 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
 				            <?php endif; ?>
                         </div>
-
                     </div>
 	            <?php else : ?>
                     <div class="em-mb-24 em-mt-24">
