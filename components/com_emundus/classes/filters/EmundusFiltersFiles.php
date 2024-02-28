@@ -531,7 +531,7 @@ class EmundusFiltersFiles extends EmundusFilters
 
             if ($config['filter_groups']) {
                 $query->clear()
-                    ->select('DISTINCT id as value, label, 0 as count')
+                    ->select('DISTINCT id as value, label')
                     ->from('#__emundus_setup_groups')
                     ->where('published = 1');
 
