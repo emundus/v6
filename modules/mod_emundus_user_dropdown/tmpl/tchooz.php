@@ -198,7 +198,7 @@ if ($user != null) {
                     <p class="em-profile-color em-text-italic" title="<?= $profile_label; ?>"><?= $profile_label; ?></p>
 		        <?php endif; ?>
             </div>
-            <div class="em-profile-picture em-pointer em-user-dropdown-button"
+            <div class="em-profile-picture em-pointer em-user-dropdown-button" aria-hidden="true"
                  style="background-image:url('<?php echo $profile_picture ?>');">
             </div>
         </div>
@@ -233,7 +233,7 @@ if ($user != null) {
 	    <?php else: ?>
         <div class="em-flex-column-default em-w-100">
 	        <?php if(!empty($profile_picture)): ?>
-            <div class="em-profile-picture-modal" style="background-image:url('<?php echo $profile_picture ?>');">
+            <div class="em-profile-picture-modal" aria-hidden="true" style="background-image:url('<?php echo $profile_picture ?>');">
             </div>
 	        <?php else : ?>
             <span aria-hidden="true" class="material-icons-outlined em-profile-picture-modal-icon" alt="<?php echo JText::_('PROFILE_ICON_TITLE')?>">account_circle</span>
