@@ -499,6 +499,42 @@ class plgUserEmundus extends JPlugin
                 }
 
             }
+            if($user['type'] === "LDAP"){
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $user_id = JFactory::getUser()->id;
+
+
+                if (isset($user['fullname'])) {
+                    $firstname = $user['firstname'];
+                    $lastname = $user['lastname'];
+                    $query->clear()
+                        ->update('#__emundus_users');
+
+                    if (!empty($firstname)) {
+                        $query->set($db->quoteName('firstname') . ' = ' . $db->quote($firstname));
+                    }
+                    if (!empty($lastname)) {
+                        $query->set($db->quoteName('lastname') . ' = ' . $db->quote($lastname));
+                    }
+                    $query->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
+
+                    $db->setQuery($query);
+                    $db->execute();
+
+                    $query->clear()
+                        ->update('jos_users');
+                    if (!empty($user['fullname'])) {
+                        $query->set($db->quoteName('name') . ' = ' . $db->quote($user['fullname']));
+                        $query->where($db->quoteName('id') . ' = ' . $db->quote($user_id));
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+
+
+                }
+            }
             if ($user['type'] == 'externallogin') {
                 try {
                     $db = JFactory::getDbo();
@@ -575,6 +611,7 @@ class plgUserEmundus extends JPlugin
                 }
 
             }
+
 
             // Init first_login parameter
             $user = JFactory::getUser();
