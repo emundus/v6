@@ -221,7 +221,7 @@ if ($user != null) {
     </button>
     <?php endif; ?>
     <input type="hidden" value="<?= $switch_profile_redirect; ?>" id="switch_profile_redirect">
-    <div class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel" aria-expanded="false">
+    <div class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-expanded="false">
 	    <?php if ($is_anonym_user): ?>
             <p><?= JText::_('ANONYM_SESSION') ?></p>
             <div class=" em-w-100">
@@ -236,8 +236,8 @@ if ($user != null) {
 	        <?php else : ?>
             <span aria-hidden="true" class="material-icons-outlined em-profile-picture-modal-icon" alt="<?php echo JText::_('PROFILE_ICON_TITLE')?>">account_circle</span>
 	        <?php endif; ?>
-            <div class="dropdown-header em-text-align-center em-font-weight-500 em-text-neutral-900"><?= $user->firstname . ' ' . $user->lastname; ?></div>
-            <div class="dropdown-header em-text-align-center em-text-neutral-600" title="<?= $user->email; ?>"><?= $user->email; ?></div>
+            <p class="dropdown-header em-text-align-center em-font-weight-500 em-text-neutral-900"><?= $user->firstname . ' ' . $user->lastname; ?></p>
+            <p class="dropdown-header em-text-align-center em-text-neutral-600" title="<?= $user->email; ?>"><?= $user->email; ?></p>
         </div>
 	    <?php endif; ?>
 
