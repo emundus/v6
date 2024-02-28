@@ -163,7 +163,7 @@ if ($user != null) {
             border: solid 3px var(--transparent);
         }
 
-        .em-profile-container p:nth-child(2) {
+        .em-profile-container p:last-child {
             overflow: hidden;
             max-width: 140px;
             max-height: 30px;
@@ -173,7 +173,7 @@ if ($user != null) {
             font-weight: 400;
             line-height: 15px;
             letter-spacing: 0.004em;
-            overflow: hidden;
+            text-align: left;
             white-space: nowrap;
             text-overflow: ellipsis;
         }
@@ -187,11 +187,12 @@ if ($user != null) {
     <div id="background-shapes"></div>
 	<?php endif; ?>
     <?php if(!empty($profile_picture)): ?>
-    <button id="userDropdownLabel" tabindex="0" title="<?php echo JText::_('PROFILE_ICON_TITLE')?>">
-        <div class="em-flex-row em-flex-end em-profile-container" onclick="manageHeight()">
+    <button id="userDropdownLabel" tabindex="0" aria-expanded="false" aria-haspopup="true" onclick="manageHeight()">
+        <div class="em-flex-row em-flex-end em-profile-container">
             <div class="mr-4">
 		        <?php if(!empty($user)) : ?>
                     <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0]. '.'; ?></p>
+                    <p class="sr-only"><?php echo JText::_('PROFILE_ICON_TITLE')?></p>
 		        <?php endif; ?>
 		        <?php if(!empty($profile_label)) : ?>
                     <p class="em-profile-color em-text-italic" title="<?= $profile_label; ?>"><?= $profile_label; ?></p>
@@ -203,25 +204,26 @@ if ($user != null) {
         </div>
     </button>
     <?php else : ?>
-    <button  id="userDropdownLabel" onclick="manageHeight()" tabindex="0" title="<?php echo JText::_('PROFILE_ICON_TITLE')?>">
+    <button  id="userDropdownLabel" onclick="manageHeight()" tabindex="0" aria-expanded="false" aria-haspopup="true">
         <div class="em-flex-row em-flex-end em-profile-container">
             <div class="mr-4">
                 <?php if(!empty($user)) : ?>
                 <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0]. '.'; ?></p>
+                <p class="sr-only"><?php echo JText::_('PROFILE_ICON_TITLE')?></p>
                 <?php endif; ?>
                 <?php if(!empty($profile_label)) : ?>
                 <p class="em-profile-color em-text-italic"><?= $profile_label; ?></p>
                 <?php endif; ?>
             </div>
-            <div class="em-user-dropdown-button" aria-haspopup="true">
-                <span class="material-icons-outlined em-user-dropdown-icon">account_circle</span>
+            <div class="em-user-dropdown-button">
+                <span class="material-icons-outlined em-user-dropdown-icon" aria-hidden="true ">account_circle</span>
             </div>
 
         </div>
     </button>
     <?php endif; ?>
     <input type="hidden" value="<?= $switch_profile_redirect; ?>" id="switch_profile_redirect">
-    <div class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-expanded="false">
+    <div class="dropdown-menu dropdown-menu-right" id="userDropdownMenu">
 	    <?php if ($is_anonym_user): ?>
             <p><?= JText::_('ANONYM_SESSION') ?></p>
             <div class=" em-w-100">
@@ -411,7 +413,7 @@ if ($user != null) {
                 jQuery("#userDropdownMenu").css("transform","translate(300px)")
                 setTimeout(() => {
                     dropdown.classList.remove('open');
-                    document.getElementById("userDropdownMenu").setAttribute("aria-expanded", false);
+                    document.getElementById("userDropdownLabel").setAttribute("aria-expanded", false);
                     jQuery("#userDropdownMenu").css("transform","unset")
                     if(icon !== null) {
                         icon.classList.remove('active');
@@ -425,7 +427,7 @@ if ($user != null) {
                     messageIcon.classList.remove('open');
                 }
                 dropdown.classList.add('open');
-                document.getElementById("userDropdownMenu").setAttribute("aria-expanded", true);
+                document.getElementById("userDropdownLabel").setAttribute("aria-expanded", true);
                 if(icon !== null) {
                     icon.classList.add('open');
                 }
