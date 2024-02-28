@@ -529,7 +529,29 @@ class EmundusFiltersFiles extends EmundusFilters
 				];
 			}
 
-			if (!empty($config['more_filter_elements']))
+            if ($config['filter_groups']) {
+                $query->clear()
+                    ->select('DISTINCT id as value, label, 0 as count')
+                    ->from('#__emundus_setup_groups')
+                    ->where('published = 1');
+
+                $db->setQuery($query);
+                $groups = $db->loadAssocList();
+
+                $this->applied_filters[] = [
+                    'uid' => 'group_assoc',
+                    'id' => 'group_assoc',
+                    'label' => Text::_('MOD_EMUNDUS_FILTERS_GROUP_ASSOC'),
+                    'type' => 'select',
+                    'values' => $groups,
+                    'value' => ['all'],
+                    'default' => true,
+                    'available' => true,
+                    'order' => $config['filter_groups_order']
+                ];
+            }
+
+            if (!empty($config['more_filter_elements']))
 			{
 				$config['more_filter_elements'] = json_decode($config['more_filter_elements'], true);
 
