@@ -192,7 +192,7 @@ if ($user != null) {
             <div class="mr-4">
 		        <?php if(!empty($user)) : ?>
                     <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0]. '.'; ?></p>
-                    <p class="sr-only"><?php echo JText::_('PROFILE_ICON_TITLE')?></p>
+                    <p class="sr-only"><?php echo JText::_('PROFILE_TITLE')?></p>
 		        <?php endif; ?>
 		        <?php if(!empty($profile_label)) : ?>
                     <p class="em-profile-color em-text-italic" title="<?= $profile_label; ?>"><?= $profile_label; ?></p>
@@ -209,7 +209,7 @@ if ($user != null) {
             <div class="mr-4">
                 <?php if(!empty($user)) : ?>
                 <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0]. '.'; ?></p>
-                <p class="sr-only"><?php echo JText::_('PROFILE_ICON_TITLE')?></p>
+                <p class="sr-only"><?php echo JText::_('PROFILE_TITLE')?></p>
                 <?php endif; ?>
                 <?php if(!empty($profile_label)) : ?>
                 <p class="em-profile-color em-text-italic"><?= $profile_label; ?></p>

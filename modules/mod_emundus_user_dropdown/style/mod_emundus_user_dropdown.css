@@ -51,11 +51,12 @@
  text-decoration: none;
 }
 
-#userDropdownMenu div {
+#userDropdownMenu div:not(.em-profile-picture-modal) {
     width: 100%;
     height: auto !important;
     margin: 0 !important;
 }
+
 #userDropdownIcon {
     background-color: var(--blue-500);
     border: 2px solid var(--blue-500);
