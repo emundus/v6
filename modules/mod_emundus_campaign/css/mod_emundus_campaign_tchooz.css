@@ -370,6 +370,10 @@ a.em-blue-400-color:hover {
     margin-bottom: 12px;
 }
 
+p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
+    color: var(--neutral-600);
+}
+
 [id*="mod_emundus_campaign__tchoozy_tabs_"] .material-icons-outlined {
     font-size: 24px;
     color: var(--em-profile-color);
