@@ -168,24 +168,6 @@
     color: var(--em-default-text-color-1);
 }
 
-@media all and (max-width: 479px) {
-    .mod_emundus_campaign__list_content_resume{
-        max-width: 292px;
-    }
-}
-
-@media all and (min-width: 480px) and (max-width: 767px) {
-    .mod_emundus_campaign__list_content_resume{
-        max-width: 153px;
-    }
-}
-
-@media all and (min-width: 768px) and (max-width: 959px) {
-    .mod_emundus_campaign__list_content_resume{
-        max-width: 266px;
-    }
-}
-
 .mod_emundus_campaign__list_content_resume * {
     color: var(--neutral-600) !important;
     display: inline;
