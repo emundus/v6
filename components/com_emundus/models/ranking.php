@@ -9,6 +9,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 require_once (JPATH_ROOT . '/components/com_emundus/helpers/access.php');
 
@@ -45,6 +46,16 @@ class EmundusModelRanking extends JModelList
                     $files = $db->loadAssocList();
                 } catch (Exception $e) {
                     $files = [];
+                }
+
+                foreach($files as $key => $file) {
+                    if (empty($file['locked']) && $file['locked'] != '0') {
+                        $files[$key]['locked'] = 0;
+                    }
+
+                    if (empty($file['rank'])) {
+                        $files[$key]['rank'] = -1; // -1 means not ranked
+                    }
                 }
             }
         }

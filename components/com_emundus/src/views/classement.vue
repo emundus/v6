@@ -21,16 +21,26 @@
         <table>
           <thead>
             <th>
-              <td>
-                <span class="material-icons-outlined" v-if="locked">lock_open</span>
-                <span class="material-icons-outlined" v-else>lock</span>
-              </td>
-              <td>{{ translate('COM_EMUNDUS_CLASSEMENT_FILE') }}</td>
-              <td>{{ translate('COM_EMUNDUS_CLASSEMENT_YOUR_RANKING') }}</td>
+              <span class="material-icons-outlined" v-if="locked">lock_open</span>
+              <span class="material-icons-outlined" v-else>lock</span>
             </th>
+            <th>{{ translate('COM_EMUNDUS_CLASSEMENT_FILE') }}</th>
+            <th>{{ translate('COM_EMUNDUS_CLASSEMENT_YOUR_RANKING') }}</th>
           </thead>
           <tbody>
-
+            <tr v-for="file in rankings.myRanking" :key="file.id">
+              <td>
+                <span class="material-icons-outlined" v-if="file.locked">lock</span>
+                <span class="material-icons-outlined" v-else>lock_open</span>
+              </td>
+              <td>{{ file.applicant }}</td>
+              <td>
+                <select v-model="file.rank">
+                  <option value="-1">{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</option>
+                  <option v-for="i in rankings.nbFiles" :key="i">{{ i }}</option>
+                </select>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -43,6 +53,7 @@
 
 <script>
 import translate from "../mixins/translate";
+import rankingService from "../services/ranking.js";
 
 export default {
   name: 'Classement',
@@ -72,7 +83,14 @@ export default {
   },
   methods: {
     getRankings() {
+      rankingService.getMyRanking().then(response => {
+        if (response.status) {
+          this.rankings.nbFiles = response.data.length;
+          this.rankings.myRanking = response.data;
+        } else {
 
+        }
+      });
     }
   }
 }
