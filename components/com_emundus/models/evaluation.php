@@ -2212,9 +2212,14 @@ class EmundusModelEvaluation extends JModelList {
 					                    if (@$groupParams->repeat_group_button == 1 || $elt['plugin'] === 'databasejoin') {
 						                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
 					                    }
-					                    else {
-						                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
-					                    }
+                                        else {
+                                            if ($elt['plugin'] == 'date') {
+                                                $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->date_form_format);
+                                            }
+                                            else {
+                                                $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
+                                            }
+                                        }
 				                    }
 
 				                    if(!isset($fabrikValues[$elt['id']][$fnum]['complex_data'])){
