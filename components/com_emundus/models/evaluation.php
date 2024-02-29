@@ -1145,7 +1145,7 @@ class EmundusModelEvaluation extends JModelList {
     // get string of fabrik group ID use for evaluation form
     public function getGroupsEvalByProgramme($code) {
         $db = $this->getDbo();
-        $query = 'select fabrik_group_id from #__emundus_setup_programmes where code like '.$db->Quote($code);
+        $query = 'select fabrik_group_id from #__emundus_setup_programmes where code like '.$db->Quote($code).' order by id desc';
         try {
             if (!empty($code)) {
                 $db->setQuery($query);
