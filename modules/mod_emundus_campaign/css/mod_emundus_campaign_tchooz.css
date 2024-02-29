@@ -344,13 +344,14 @@ a.em-blue-400-color:hover {
     border-radius: var(--em-applicant-br);
     position: relative;
     border-bottom: 1px solid var(--em-profile-color);
-    transition: all 0.3s ease-out;
+    transition: all 0.5s ease-out;
 }
 
 
 [id*="mod_emundus_campaign__tchoozy_tabs_"].open {
     background: var(--transparent);
     border-radius: 0;
+    transition: all 0.5s ease-out;
 }
 
 [id*="mod_emundus_campaign__tchoozy_tabs_"].open #background-shapes-tabs{
@@ -394,6 +395,31 @@ a.em-blue-400-color:hover {
     -webkit-mask-size: contain;
     opacity: 0.5;
 }
+
+@media  all and (max-width: 959px) {
+    [id*="mod_emundus_campaign__tchoozy_tabs_"] #background-shapes-tabs {
+        display: none;
+    }
+}
+
+@media  all and (min-width: 960px) and (max-width: 1023px) {
+    [id*="mod_emundus_campaign__tchoozy_tabs_"] #background-shapes-tabs {
+        right: -213px;
+    }
+}
+
+@media  all and (min-width: 1024px) and (max-width: 1079px) {
+    [id*="mod_emundus_campaign__tchoozy_tabs_"] #background-shapes-tabs {
+        right: -212px;
+    }
+}
+
+@media  all and (min-width: 1080px) and (max-width: 1200px) {
+    [id*="mod_emundus_campaign__tchoozy_tabs_"] #background-shapes-tabs {
+        right: -244px;
+    }
+}
+
 
 .mod_emundus_campaign__tabs{
     margin-top: var(--m-24);
