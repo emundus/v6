@@ -2203,6 +2203,11 @@ class EmundusModelEvaluation extends JModelList {
 				                    elseif($elt['plugin'] == 'emundus_phonenumber'){
 					                    $fabrikValues[$elt['id']][$fnum]['val'] = substr($fabrikValues[$elt['id']][$fnum]['val'], 2, strlen($fabrikValues[$elt['id']][$fnum]['val']));
 				                    }
+                                    elseif($elt['plugin'] == 'cascadingdropdown') {
+                                        foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+                                            $fabrikValues[$elt['id']][$fnum]['val'] = $_mEmail->getCddLabel($elt, $val['val']);
+                                        }
+                                    }
 				                    else {
 					                    if (@$groupParams->repeat_group_button == 1 || $elt['plugin'] === 'databasejoin') {
 						                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
