@@ -156,8 +156,8 @@
           "en": "IBAN"
         },
         "jsactions": {
-          "name": "bic",
-          "code": "prefillBic(this,'bic');"
+          "event": "change",
+          "code": "prefillBic(this,'$1');"
         }
       },
       {

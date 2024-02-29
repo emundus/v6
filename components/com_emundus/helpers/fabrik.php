@@ -894,17 +894,24 @@ die("<script>
 						'js_e_value' => '',
 						'js_published' => '1',
 					);
-					if($action == 'nom'){
-						$js = "this.set(this.get('value').toUpperCase());";
-						$event = 'keyup';
+
+					$event = 'change';
+					if(is_string($action))
+					{
+						if ($action == 'nom')
+						{
+							$js    = "this.set(this.get('value').toUpperCase());";
+							$event = 'keyup';
+						}
+						if ($action == 'prenom')
+						{
+							$js    = "const mySentence = this.get(&#039;value&#039;);const words = mySentence.split(&quot; &quot;);for (let i = 0; i &lt; words.length; i++) {words[i] = words[i][0].toUpperCase() + words[i].substr(1);};this.set(words.join(&quot; &quot;));";
+							$event = 'keyup';
+						}
 					}
-					if($action == 'prenom'){
-						$js = "const mySentence = this.get(&#039;value&#039;);const words = mySentence.split(&quot; &quot;);for (let i = 0; i &lt; words.length; i++) {words[i] = words[i][0].toUpperCase() + words[i].substr(1);};this.set(words.join(&quot; &quot;));";
-						$event = 'keyup';
-					}
-					if($action == 'bic') {
-						$js = "prefillBic(this,'bic');";
-						$event = 'change';
+					elseif (is_array($action)) {
+						$js = $action['code'];
+						$event = $action['event'];
 					}
 
 					if(!empty($js) && !empty($params)) {
