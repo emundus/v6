@@ -333,6 +333,7 @@ a.em-blue-400-color:hover {
 .mod_emundus_campaign__programme_cat_title {
     font-family: var(--em-applicant-font-title);
     font-style: normal;
+    font-size: 20px;
     line-height: 25px;
     color: var(--em-default-title-color-1);
 }
@@ -365,7 +366,7 @@ a.em-blue-400-color:hover {
     align-items: center;
 }
 
-[id*="mod_emundus_campaign__tchoozy_tabs_"] h3{
+[id*="mod_emundus_campaign__tchoozy_tabs_"] h2{
     color: var(--em-profile-color);
     margin-bottom: 12px;
 }
