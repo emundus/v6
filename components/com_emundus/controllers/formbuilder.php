@@ -29,6 +29,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         parent::__construct($config);
 
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'fabrik.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'formbuilder.php');
         $this->m_formbuilder = new EmundusModelFormbuilder;
     }
@@ -637,6 +638,11 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 											$this->m_formbuilder->updateTranslation($sub_options['sub_labels'][sizeof($sub_options['sub_labels'])-1], $option['labels'], 'fabrik_elements',$elementId);
 										}
 									}
+								}
+
+								//TODO: ADD parameters
+								if(!empty($element['jsactions'])) {
+									EmundusHelperFabrik::addJsAction($elementId, $element['jsactions']);
 								}
 							}
 						}

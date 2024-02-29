@@ -137,5 +137,36 @@
         }
       }
     ]
+  },
+  {
+    "id": 3,
+    "value": "bank_details",
+    "icon": "account_balance",
+    "name": "COM_EMUNDUS_ONBOARD_SECTIONS_BANK_DETAILS",
+    "labels": {
+      "fr": "RIB",
+      "en": "RIB"
+    },
+    "published": true,
+    "elements": [
+      {
+        "value": "iban",
+        "labels": {
+          "fr": "IBAN",
+          "en": "IBAN"
+        },
+        "jsactions": {
+          "name": "bic",
+          "code": "prefillBic(this,'bic');"
+        }
+      },
+      {
+        "value": "field",
+        "labels": {
+          "fr": "BIC",
+          "en": "BIC"
+        }
+      }
+    ]
   }
 ]

@@ -896,16 +896,22 @@ die("<script>
 					);
 					if($action == 'nom'){
 						$js = "this.set(this.get('value').toUpperCase());";
+						$event = 'keyup';
 					}
 					if($action == 'prenom'){
 						$js = "const mySentence = this.get(&#039;value&#039;);const words = mySentence.split(&quot; &quot;);for (let i = 0; i &lt; words.length; i++) {words[i] = words[i][0].toUpperCase() + words[i].substr(1);};this.set(words.join(&quot; &quot;));";
+						$event = 'keyup';
+					}
+					if($action == 'bic') {
+						$js = "prefillBic(this,'bic');";
+						$event = 'change';
 					}
 
 					if(!empty($js) && !empty($params)) {
 						$query->clear()
 							->insert($db->quoteName('#__fabrik_jsactions'))
 							->set($db->quoteName('element_id') . ' = ' . $db->quote($eid))
-							->set($db->quoteName('action') . ' = ' . $db->quote('keyup'))
+							->set($db->quoteName('action') . ' = ' . $db->quote($event))
 							->set($db->quoteName('code') . ' = ' . $db->quote($js))
 							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
 						$db->setQuery($query);
