@@ -364,7 +364,16 @@ a.em-blue-400-color:hover {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    border: none;
+    width: 100%;
 }
+
+[id*="mod_emundus_campaign__tchoozy_tabs_"] .flex > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
 
 [id*="mod_emundus_campaign__tchoozy_tabs_"] h2{
     color: var(--em-profile-color);

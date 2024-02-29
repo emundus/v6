@@ -588,7 +588,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 	            <?php if($mod_em_campaign_display_tmpl==1) : ?>
 
                     <div class="em-mb-32 em-mt-32" id="mod_emundus_campaign__tchoozy_tabs_<?php echo $key ?>" onclick="changeTabsDescription('<?php echo $key  ?>')">
-                        <div class="flex items-center justify-between <?php if (sizeof($campaigns) > 1) : ?>cursor-pointer<?php endif; ?>" <?php if (sizeof($campaigns) > 1) : ?> onclick="hideGroup('<?php echo $key ?>')" <?php endif; ?>>
+                        <button id="mod_emundus_campaign__button" type="button" tabindex="0" aria-expanded="false" class="flex items-center justify-between <?php if (sizeof($campaigns) > 1) : ?>cursor-pointer<?php endif; ?>" <?php if (sizeof($campaigns) > 1) : ?> onclick="hideGroup('<?php echo $key ?>')" <?php endif; ?>>
 				            <?php if ($mod_em_campaign_display_svg == 1) : ?>
                                 <div id="background-shapes-tabs" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
 				            <?php endif; ?>
@@ -607,7 +607,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                 </span>
 
 				            <?php endif; ?>
-                        </div>
+                        </button>
                     </div>
 	            <?php else : ?>
                     <div class="em-mb-24 em-mt-24">
@@ -1147,13 +1147,16 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     function hideGroup(key) {
         let group = document.getElementById('current_' + key);
         let icon = document.getElementById('group_icon_' + key);
+        let button = document.getElementById('mod_emundus_campaign__button');
 
         if (group.style.display === 'none' || getComputedStyle(group).display === 'none') {
             group.style.display = 'grid';
             icon.innerHTML = 'expand_less';
+            button.setAttribute("aria-expanded", 'true');
         } else {
             group.style.display = 'none';
             icon.innerHTML = 'expand_more';
+            button.setAttribute("aria-expanded", 'false');
         }
     }
 
