@@ -168,6 +168,12 @@
     color: var(--em-default-text-color-1);
 }
 
+@media all and (max-width: 767px) {
+    .mod_emundus_campaign__list_content_resume{
+        max-width: 292px;
+    }
+}
+
 .mod_emundus_campaign__list_content_resume * {
     color: var(--neutral-600) !important;
     display: inline;
