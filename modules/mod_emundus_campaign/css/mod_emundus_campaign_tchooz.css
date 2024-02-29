@@ -370,7 +370,7 @@ a.em-blue-400-color:hover {
     margin-bottom: 12px;
 }
 
-[id*="mod_emundus_campaign__tchoozy_tabs_"].material-icons-outlined {
+[id*="mod_emundus_campaign__tchoozy_tabs_"] .material-icons-outlined {
     font-size: 24px;
     color: var(--em-profile-color);
 }
@@ -393,7 +393,6 @@ a.em-blue-400-color:hover {
     -webkit-mask-position: center;
     mask-size: contain;
     -webkit-mask-size: contain;
-    opacity: 0.5;
 }
 
 @media  all and (max-width: 959px) {
