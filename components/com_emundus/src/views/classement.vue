@@ -20,14 +20,14 @@
       <div id="my-ranking-list">
         <table>
           <thead>
-          <th>
-            <td>
-              <span class="material-icons-outlined" v-if="locked">lock_open</span>
-              <span class="material-icons-outlined" v-else>lock</span>
-            </td>
-            <td>{{ translate('COM_EMUNDUS_CLASSEMENT_FILE') }}</td>
-            <td>{{ translate('COM_EMUNDUS_CLASSEMENT_YOUR_RANKING') }}</td>
-          </th>
+            <th>
+              <td>
+                <span class="material-icons-outlined" v-if="locked">lock_open</span>
+                <span class="material-icons-outlined" v-else>lock</span>
+              </td>
+              <td>{{ translate('COM_EMUNDUS_CLASSEMENT_FILE') }}</td>
+              <td>{{ translate('COM_EMUNDUS_CLASSEMENT_YOUR_RANKING') }}</td>
+            </th>
           </thead>
           <tbody>
 
