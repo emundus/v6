@@ -382,6 +382,8 @@ a.em-blue-400-color:hover {
 
 p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
     color: var(--neutral-600);
+    white-space: initial;
+    text-align: left;
 }
 
 [id*="mod_emundus_campaign__tchoozy_tabs_"] .material-icons-outlined {
