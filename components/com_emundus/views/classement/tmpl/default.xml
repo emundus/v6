@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<metadata>
+    <layout title="COM_EMUNDUS_CLASSEMENT_VIEW_DEFAULT_TITLE">
+        <message>
+            <![CDATA[COM_EMUNDUS_CLASSEMENT_VIEW_DEFAULT_TITLE_DESC]]>
+        </message>
+    </layout>
+    <fields name="params">
+        <fieldset>
+
+        </fieldset>
+    </fields>
+</metadata>

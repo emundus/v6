@@ -22,6 +22,12 @@
         :ratio="data.ratio"
     ></ApplicationSingle>
 
+    <classement
+        v-else-if="component === 'classement'"
+        :hierarchy_id="datas.hierarchy_id"
+        :user="datas.user"
+    ></classement>
+
     <transition v-else name="slide-right">
       <component v-bind:is="$props.component"/>
     </transition>
@@ -43,6 +49,7 @@ import formbuilder from "./views/formBuilder"
 import settings from "./views/globalSettings"
 import messagescoordinator from "./components/Messages/MessagesCoordinator";
 import messages from "./components/Messages/Messages";
+import Classement from "./views/classement.vue";
 
 import settingsService from "./services/settings.js";
 import ApplicationSingle from "@/components/Files/ApplicationSingle.vue";
@@ -81,7 +88,8 @@ export default {
     messages,
     Files,
 		list_v2,
-		TranslationTool
+		TranslationTool,
+    Classement
 	},
 
   created() {
