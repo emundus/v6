@@ -34,7 +34,10 @@
               <span class="material-icons-outlined" v-if="file.locked == 1">lock</span>
               <span class="material-icons-outlined" v-else>lock_open</span>
             </td>
-            <td>{{ file.applicant }}</td>
+            <td class="em-flex-column file-identifier">
+              <span>{{ file.applicant }}</span>
+              <span>{{ file.fnum }}</span>
+            </td>
             <td v-if="!ismyRankingLocked">
               <select v-model="file.rank" @change="onChangeRankValue(file)">
                 <option value="-1">{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</option>
@@ -51,7 +54,10 @@
               <span class="material-icons-outlined" v-if="file.locked">lock</span>
               <span class="material-icons-outlined" v-else>lock_open</span>
             </td>
-            <td>{{ file.applicant }}</td>
+            <td class="em-flex-column file-identifier">
+              <span>{{ file.applicant }}</span>
+              <span>{{ file.fnum }}</span>
+            </td>
             <td v-if="!ismyRankingLocked">
               <select v-model="file.rank" @change="onChangeRankValue(file)">
                 <option value="-1">{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</option>
@@ -75,8 +81,9 @@
           <tbody>
           <tr v-for="file in rankings.myRanking" :key="file.id">
             <td v-for="hierarchy in rankings.otherRankings" :key="hierarchy.hierarchy_id">
-
-              <span v-if="rankings.otherRankings.groupedByFiles[file.id] && rankings.otherRankings.groupedByFiles[file.id] && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].rank != -1">
+              <span class="material-icons-outlined" v-if="rankings.otherRankings.groupedByFiles[file.id] && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id] && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].locked == 1">lock</span>
+              <span v-else class="material-icons-outlined">lock_open</span>
+              <span v-if="rankings.otherRankings.groupedByFiles[file.id] && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id] && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].rank != -1">
                 {{ rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].rank }}
               </span>
               <span v-else>{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</span>
@@ -221,6 +228,10 @@ export default {
 
 #ranking-lists-container {
   align-items: flex-start;
+
+  .file-identifier {
+    align-items: flex-start;
+  }
 
   tr {
     height: 56px;
