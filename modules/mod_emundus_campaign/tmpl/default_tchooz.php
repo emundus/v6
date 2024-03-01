@@ -587,8 +587,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
 	            <?php if($mod_em_campaign_display_tmpl==1) : ?>
 
-                    <div class="em-mb-32 em-mt-32" id="mod_emundus_campaign__tchoozy_tabs_<?php echo $key ?>">
-                        <button id="mod_emundus_campaign__button" type="button" class="flex items-center justify-between <?php if (sizeof($campaigns) > 1) : ?> cursor-pointer<?php endif; ?>" <?php if (sizeof($campaigns) > 1) : ?> tabindex="0" aria-expanded="false" onclick="hideTchoozyGroup('<?php echo $key ?>')" <?php endif; ?>>
+                        <button id="mod_emundus_campaign__tchoozy_tabs_<?php echo $key ?>" type="button" class="em-mb-32 em-mt-32 flex items-center justify-between <?php if (sizeof($campaigns) > 1) : ?>cursor-pointer<?php endif; ?>" <?php if (sizeof($campaigns) > 1) : ?> tabindex="0" aria-expanded="false" onclick="hideTchoozyGroup('<?php echo $key ?>')" <?php endif; ?>>
 				            <?php if ($mod_em_campaign_display_svg == 1) : ?>
                                 <div id="background-shapes-tabs" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
 				            <?php endif; ?>
@@ -597,7 +596,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                 <p id="mod_emundus_campaign__tchoozy_tab_desc_<?php echo $key ?>"><?= JText::_('MOD_EM_CAMPAIGN_TCHOOZY_TAB_DESC_CLOSE') ?></p>
                             </div>
 				            <?php if (sizeof($campaigns) > 1) : ?>
-                                <span class="material-icons-outlined"
+                                <span class="material-icons-outlined" aria-hidden="true"
                                       id="group_icon_<?php echo $key ?>">
                                     <?php if($mod_em_campaign_groupby_closed == 1) : ?>
                                         expand_more
@@ -608,7 +607,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
 				            <?php endif; ?>
                         </button>
-                    </div>
+
 	            <?php else : ?>
                     <div class="em-mb-24 em-mt-24">
                         <div class="flex items-center justify-between <?php if (sizeof($campaigns) > 1) : ?>cursor-pointer<?php endif; ?>" <?php if (sizeof($campaigns) > 1) : ?> onclick="hideGroup('<?php echo $key ?>')" <?php endif; ?>>
@@ -1163,21 +1162,19 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     function hideTchoozyGroup(key) {
         let group = document.getElementById('current_' + key);
         let icon = document.getElementById('group_icon_' + key);
-        let button = document.getElementById('mod_emundus_campaign__button');
-        let campaigns = document.getElementById("current_" + key);
         let tabs_desc = document.getElementById("mod_emundus_campaign__tchoozy_tab_desc_" + key);
         let tabs = document.getElementById("mod_emundus_campaign__tchoozy_tabs_" + key);
 
         if (group.style.display === 'none' || getComputedStyle(group).display === 'none') {
             group.style.display = 'grid';
             icon.innerHTML = 'expand_less';
-            button.setAttribute("aria-expanded", 'true');
+            tabs.setAttribute("aria-expanded", 'true');
             tabs_desc.innerHTML = "<?= JText::_('MOD_EM_CAMPAIGN_TCHOOZY_TAB_DESC_OPEN')?>";
             tabs.classList.add("open");
         } else {
             group.style.display = 'none';
             icon.innerHTML = 'expand_more';
-            button.setAttribute("aria-expanded", 'false');
+            tabs.setAttribute("aria-expanded", 'false');
             tabs_desc.innerHTML = "<?= JText::_('MOD_EM_CAMPAIGN_TCHOOZY_TAB_DESC_CLOSE')?>";
             tabs.classList.remove("open");
 

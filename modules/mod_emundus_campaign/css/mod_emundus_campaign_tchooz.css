@@ -340,17 +340,17 @@ a.em-blue-400-color:hover {
 
 
 [id*="mod_emundus_campaign__tchoozy_tabs_"] {
-    background: var(--neutral-0);
+    background: var(--neutral-0) !important;
+    width: 100%;
     padding: 24px;
     border-radius: var(--em-applicant-br);
     position: relative;
     border-bottom: 1px solid var(--em-profile-color);
-    transition: all 0.5s ease-out;
+    transition: all 0.5s ease-out !important;
 }
 
-
 [id*="mod_emundus_campaign__tchoozy_tabs_"].open {
-    background: var(--transparent);
+    background: var(--transparent) !important;
     border-radius: 0;
     transition: all 0.5s ease-out;
 }
