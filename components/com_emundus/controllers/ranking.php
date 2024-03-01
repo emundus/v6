@@ -52,6 +52,28 @@ class EmundusControllerRanking extends JControllerLegacy
         exit;
     }
 
+    public function getOtherRankingsICanSee()
+    {
+        $response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => [], 'code' => 403];
+        $user = Factory::getUser();
+
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+            $response['data'] = $this->model->getOtherRankingsRankerCanSee($user->id);
+            $response['status'] = true;
+            $response['msg'] = Text::_('SUCCESS');
+            $response['code'] = 200;
+        }
+
+        if ($response['code'] === 403) {
+            header('HTTP/1.1 403 Forbidden');
+            echo $response['msg'];
+            exit;
+        }
+
+        echo json_encode($response);
+        exit;
+    }
+
     public function updateFileRanking()
     {
         $response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => [], 'code' => 403];

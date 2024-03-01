@@ -205,6 +205,76 @@ class EmundusModelRanking extends JModelList
         return $file_ids;
     }
 
+    /**
+     * @param $user_id
+     * @return array
+     */
+    public function getOtherRankingsRankerCanSee($user_id) {
+        $rankings = [];
+
+        if (!empty($user_id)) {
+            $hierarchies = $this->getHierarchiesUserCanSee($user_id);
+            $ids = $this->getAllFilesRankerCanAccessTo($user_id);
+
+            if (!empty($hierarchies) && !empty($ids)) {
+                $db = Factory::getDbo();
+                $query = $db->getQuery(true);
+
+                foreach ($hierarchies as $key => $hierarchy) {
+                    $data = [
+                        'hierarchy_id' => $hierarchy['id'],
+                        'label' => $hierarchy['label'],
+                        'files' => []
+                    ];
+
+                    $query->select('CONCAT(applicant.firstname, " ", applicant.lastname) AS applicant, cc.id, cc.fnum, cr.rank, cr.locked')
+                        ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
+                        ->leftJoin($db->quoteName('#__emundus_users', 'applicant') . ' ON ' . $db->quoteName('cc.applicant_id') . ' = ' . $db->quoteName('applicant.id'))
+                        ->leftJoin($db->quoteName('#__emundus_ranking', 'cr') . ' ON ' . $db->quoteName('cc.id') . ' = ' . $db->quoteName('cr.ccid'))
+                        ->where('cc.id IN (' . implode(',', $ids) . ')')
+                        ->andWhere($db->quoteName('cr.hierarchy_id') . ' = ' .$hierarchy['id']);
+
+                    try {
+                        $db->setQuery($query);
+                        $data['files'] = $db->loadAssocList();
+                        $rankings[] = $data;
+                    } catch (Exception $e) {
+                        JLog::add('getOtherRankingsRankerCanSee ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
+                    }
+                }
+            }
+        }
+
+        return $rankings;
+    }
+
+    /**
+     * @param $user_id
+     * @return array
+     */
+    public function getHierarchiesUserCanSee($user_id)
+    {
+        $hierarchies = [];
+        $user_hierarchy = $this->getUserHierarchy($user_id);
+
+        if (!empty($user_hierarchy)) {
+            $db = Factory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->clear()
+                ->select('erh.id, erh.label')
+                ->from($db->quoteName('#__emundus_ranking_hierarchy_view', 'erhv'))
+                ->leftJoin($db->quoteName('#__emundus_ranking_hierarchy', 'erh') . ' ON ' . $db->quoteName('erhv.visible_hierarchy_id') . ' = ' . $db->quoteName('erh.id'))
+                ->where('erhv.hierarchy_id = ' . $db->quote($user_hierarchy))
+                ->orderBy('erh.parent_id, erh.id ASC');
+
+            $db->setQuery($query);
+            $hierarchies = $db->loadAssocList();
+        }
+
+        return $hierarchies;
+    }
+
     public function updateFileRanking($id, $user_id, $new_rank, $hierarchy_id)
     {
         $updated = false;
