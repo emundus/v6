@@ -34,12 +34,12 @@ class EmundusModelRanking extends JModelList
                 $db = Factory::getDbo();
                 $query = $db->getQuery(true);
 
-                $query->select('CONCAT(applicant.firstname, " ", applicant.lastname) AS applicant, cc.id, cc.fnum, cl.rank, cl.locked')
+                $query->select('CONCAT(applicant.firstname, " ", applicant.lastname) AS applicant, cc.id, cc.fnum, cr.rank, cr.locked')
                     ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
                     ->leftJoin($db->quoteName('#__emundus_users', 'applicant') . ' ON ' . $db->quoteName('cc.applicant_id') . ' = ' . $db->quoteName('applicant.id'))
-                    ->leftJoin($db->quoteName('#__emundus_ranking', 'cl') . ' ON ' . $db->quoteName('cc.id') . ' = ' . $db->quoteName('cl.ccid'))
+                    ->leftJoin($db->quoteName('#__emundus_ranking', 'cr') . ' ON ' . $db->quoteName('cc.id') . ' = ' . $db->quoteName('cr.ccid'))
                     ->where($db->quoteName('cc.id') . ' IN (' . implode(',', $ids) . ')')
-                    ->andWhere('(cl.user_id = ' . $db->quote($user_id) . ' AND cl.hierarchy_id = ' . $db->quote($hierarchy) . ') OR cl.id IS NULL');
+                    ->andWhere('(cr.user_id = ' . $db->quote($user_id) . ' AND cr.hierarchy_id = ' . $db->quote($hierarchy) . ') OR cr.id IS NULL');
 
                 try {
                     $db->setQuery($query);
@@ -225,36 +225,98 @@ class EmundusModelRanking extends JModelList
             }
 
             $query->clear()
-                ->select('id')
-                ->from($db->quoteName('#__emundus_ranking', 'cl'))
+                ->select($db->quoteName('rank'))
+                ->from($db->quoteName('#__emundus_ranking'))
                 ->where($db->quoteName('ccid') . ' = ' . $db->quote($id))
                 ->andWhere($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
                 ->andWhere($db->quoteName('hierarchy_id') . ' = ' . $db->quote($hierarchy_id));
 
-            $db->setQuery($query);
-            $ranking_id = $db->loadResult();
-
-            if (!empty($ranking_id)) {
-                $query->clear()
-                    ->update($db->quoteName('#__emundus_ranking'))
-                    ->set($db->quoteName('rank') . ' = ' . $db->quote($new_rank))
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($ranking_id));
-
+            try {
                 $db->setQuery($query);
-                $updated = $db->execute();
-            } else {
-                $query->clear()
-                    ->insert($db->quoteName('#__emundus_ranking'))
-                    ->columns($db->quoteName('ccid') . ', ' . $db->quoteName('user_id') . ', ' . $db->quoteName('rank') . ', ' . $db->quoteName('hierarchy_id'))
-                    ->values($db->quote($id) . ', ' . $db->quote($user_id) . ', ' . $db->quote($new_rank) . ', ' . $db->quote($hierarchy_id));
+                $old_rank = $db->loadResult();
 
-                $db->setQuery($query);
-                $updated = $db->execute();
+                // if old rank is the same as new rank, do nothing
+                if ($old_rank == $new_rank) {
+                    return true;
+                } else {
+                    if ($new_rank == -1) {
+                        // all ranks superior or equal to old rank should be decreased by 1
+                        $query->clear()
+                            ->update($db->quoteName('#__emundus_ranking'))
+                            ->set($db->quoteName('rank') . ' = ' . $db->quoteName('rank') . ' - 1')
+                            ->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
+                            ->andWhere($db->quoteName('hierarchy_id') . ' = ' . $db->quote($hierarchy_id))
+                            ->andWhere($db->quoteName('rank') . ' > ' . $db->quote($old_rank));
+                    } else if ($old_rank == -1) {
+                        // all ranks superior or equal to new rank should be increased by 1
+                        $query->clear()
+                            ->update($db->quoteName('#__emundus_ranking'))
+                            ->set($db->quoteName('rank') . ' = ' . $db->quoteName('rank') . ' + 1')
+                            ->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
+                            ->andWhere($db->quoteName('hierarchy_id') . ' = ' . $db->quote($hierarchy_id))
+                            ->andWhere($db->quoteName('rank') . ' >= ' . $db->quote($new_rank));
+
+                        $db->setQuery($query);
+                        $db->execute();
+                    } else if ($old_rank > $new_rank) {
+                        // all ranks between new rank and old rank should be increased by 1
+                        $query->clear()
+                            ->update($db->quoteName('#__emundus_ranking'))
+                            ->set($db->quoteName('rank') . ' = ' . $db->quoteName('rank') . ' + 1')
+                            ->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
+                            ->andWhere($db->quoteName('hierarchy_id') . ' = ' . $db->quote($hierarchy_id))
+                            ->andWhere($db->quoteName('rank') . ' >= ' . $db->quote($new_rank))
+                            ->andWhere($db->quoteName('rank') . ' < ' . $db->quote($old_rank));
+
+                        $db->setQuery($query);
+                        $db->execute();
+                    } else if ($old_rank < $new_rank) {
+                        // all ranks between old rank and new rank should be decreased by 1
+                        $query->clear()
+                            ->update($db->quoteName('#__emundus_ranking'))
+                            ->set($db->quoteName('rank') . ' = ' . $db->quoteName('rank') . ' - 1')
+                            ->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
+                            ->andWhere($db->quoteName('hierarchy_id') . ' = ' . $db->quote($hierarchy_id))
+                            ->andWhere($db->quoteName('rank') . ' > ' . $db->quote($old_rank))
+                            ->andWhere($db->quoteName('rank') . ' <= ' . $db->quote($new_rank));
+
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+
+                    $query->clear()
+                        ->select('id')
+                        ->from($db->quoteName('#__emundus_ranking'))
+                        ->where($db->quoteName('ccid') . ' = ' . $db->quote($id))
+                        ->andWhere($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
+                        ->andWhere($db->quoteName('hierarchy_id') . ' = ' . $db->quote($hierarchy_id));
+
+                    $db->setQuery($query);
+                    $ranking_id = $db->loadResult();
+
+                    if (!empty($ranking_id)) {
+                        $query->clear()
+                            ->update($db->quoteName('#__emundus_ranking'))
+                            ->set($db->quoteName('rank') . ' = ' . $db->quote($new_rank))
+                            ->where($db->quoteName('id') . ' = ' . $db->quote($ranking_id));
+
+                        $db->setQuery($query);
+                        $updated = $db->execute();
+                    } else {
+                        $query->clear()
+                            ->insert($db->quoteName('#__emundus_ranking'))
+                            ->columns($db->quoteName('ccid') . ', ' . $db->quoteName('user_id') . ', ' . $db->quoteName('rank') . ', ' . $db->quoteName('hierarchy_id'))
+                            ->values($db->quote($id) . ', ' . $db->quote($user_id) . ', ' . $db->quote($new_rank) . ', ' . $db->quote($hierarchy_id));
+
+                        $db->setQuery($query);
+                        $updated = $db->execute();
+                    }
+                }
+            } catch (Exception $e) {
+                throw new Exception('An error occurred while updating the file ranking.');
             }
         }
 
         return $updated;
     }
 }
-
-?>
