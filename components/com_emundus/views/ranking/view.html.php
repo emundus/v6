@@ -22,7 +22,7 @@ jimport('joomla.application.component.view');
  * @subpackage eMundus
  * @since      1.39.0
  */
-class EmundusViewClassement extends JViewLegacy
+class EmundusViewRanking extends JViewLegacy
 {
     var $user = null;
     var $db = null;
