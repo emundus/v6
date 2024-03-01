@@ -18,6 +18,8 @@ class EmundusModelRanking extends JModelList
     public function __construct($config = array())
     {
         parent::__construct($config);
+
+        JLog::addLogger(['text_file' => 'com_emundus.ranking.php'], JLog::ALL);
     }
 
     public function getFilesUserCanRank($user_id)
@@ -224,6 +226,21 @@ class EmundusModelRanking extends JModelList
                 throw new Exception('You cannot rank your own file');
             }
 
+            // if even one row is locked, then the whole user_id/hierarchy_id is locked
+            $query->clear()
+                ->select('id')
+                ->from($db->quoteName('#__emundus_ranking'))
+                ->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
+                ->andWhere($db->quoteName('hierarchy_id') . ' = ' . $db->quote($hierarchy_id))
+                ->andWhere($db->quoteName('locked') . ' = 1');
+
+            $db->setQuery($query);
+            $locked_row = $db->loadResult();
+
+            if (!empty($locked_row)) {
+                throw new Exception('You cannot rank files because your ranking is locked');
+            }
+
             $query->clear()
                 ->select($db->quoteName('rank'))
                 ->from($db->quoteName('#__emundus_ranking'))
@@ -316,6 +333,7 @@ class EmundusModelRanking extends JModelList
                     }
                 }
             } catch (Exception $e) {
+                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
                 throw new Exception('An error occurred while updating the file ranking.');
             }
         }
