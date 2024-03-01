@@ -37,7 +37,7 @@ class EmundusModelRanking extends JModelList
                 $query->select('CONCAT(applicant.firstname, " ", applicant.lastname) AS applicant, cc.id, cc.fnum, cl.rank, cl.locked')
                     ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
                     ->leftJoin($db->quoteName('#__emundus_users', 'applicant') . ' ON ' . $db->quoteName('cc.applicant_id') . ' = ' . $db->quoteName('applicant.id'))
-                    ->leftJoin($db->quoteName('#__emundus_classement', 'cl') . ' ON ' . $db->quoteName('cc.id') . ' = ' . $db->quoteName('cl.ccid'))
+                    ->leftJoin($db->quoteName('#__emundus_ranking', 'cl') . ' ON ' . $db->quoteName('cc.id') . ' = ' . $db->quoteName('cl.ccid'))
                     ->where($db->quoteName('cc.id') . ' IN (' . implode(',', $ids) . ')')
                     ->andWhere('(cl.user_id = ' . $db->quote($user_id) . ' AND cl.hierarchy_id = ' . $db->quote($hierarchy) . ') OR cl.id IS NULL');
 
@@ -77,7 +77,7 @@ class EmundusModelRanking extends JModelList
 
             $query->clear()
                 ->select('status')
-                ->from($db->quoteName('#__emundus_classement_hierarchy', 'ech'))
+                ->from($db->quoteName('#__emundus_ranking_hierarchy', 'ech'))
                 ->where($db->quoteName('ech.id') . ' = ' . $db->quote($hierarchy));
 
             $db->setQuery($query);
@@ -97,7 +97,7 @@ class EmundusModelRanking extends JModelList
 
             $query->clear()
                 ->select('ech.id')
-                ->from($db->quoteName('#__emundus_classement_hierarchy', 'ech'))
+                ->from($db->quoteName('#__emundus_ranking_hierarchy', 'ech'))
                 ->leftJoin($db->quoteName('#__emundus_users', 'eu') . ' ON ' . $db->quoteName('eu.profile') . ' = ' . $db->quoteName('ech.profile_id'))
                 ->where($db->quoteName('eu.user_id') . ' = ' . $db->quote($user_id));
 
@@ -192,7 +192,7 @@ class EmundusModelRanking extends JModelList
         return $file_ids;
     }
 
-    public function updateFileRank($id, $user_id, $new_rank, $hierarchy_id)
+    public function updateFileRanking($id, $user_id, $new_rank, $hierarchy_id)
     {
         $updated = false;
 
@@ -215,25 +215,25 @@ class EmundusModelRanking extends JModelList
 
             $query->clear()
                 ->select('id')
-                ->from($db->quoteName('#__emundus_classement', 'cl'))
+                ->from($db->quoteName('#__emundus_ranking', 'cl'))
                 ->where($db->quoteName('ccid') . ' = ' . $db->quote($id))
                 ->andWhere($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
                 ->andWhere($db->quoteName('hierarchy_id') . ' = ' . $db->quote($hierarchy_id));
 
             $db->setQuery($query);
-            $classement_id = $db->loadResult();
+            $ranking_id = $db->loadResult();
 
-            if (!empty($classement_id)) {
+            if (!empty($ranking_id)) {
                 $query->clear()
-                    ->update($db->quoteName('#__emundus_classement'))
+                    ->update($db->quoteName('#__emundus_ranking'))
                     ->set($db->quoteName('rank') . ' = ' . $db->quote($new_rank))
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($classement_id));
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($ranking_id));
 
                 $db->setQuery($query);
                 $updated = $db->execute();
             } else {
                 $query->clear()
-                    ->insert($db->quoteName('#__emundus_classement'))
+                    ->insert($db->quoteName('#__emundus_ranking'))
                     ->columns($db->quoteName('ccid') . ', ' . $db->quoteName('user_id') . ', ' . $db->quoteName('rank') . ', ' . $db->quoteName('hierarchy_id'))
                     ->values($db->quote($id) . ', ' . $db->quote($user_id) . ', ' . $db->quote($new_rank) . ', ' . $db->quote($hierarchy_id));
 

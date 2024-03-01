@@ -10,5 +10,20 @@ export default {
                 msg: e.message
             };
         }
+    },
+    async updateRanking(id, rank, hierarchy_id) {
+        try {
+            const response = await client().post('index.php?option=com_emundus&controller=ranking&task=updateFileRanking', {
+                id,
+                rank,
+                hierarchy_id
+            });
+            return response.data;
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
     }
 };

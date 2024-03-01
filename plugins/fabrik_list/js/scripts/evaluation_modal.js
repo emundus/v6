@@ -20,7 +20,7 @@ if(rows) {
 
             fnum = row[1][fnum_key];
         }
-    })
+    });
 
     if(fnum !== '') {
         fetch(window.location.origin + '/index.php?option=com_emundus&view=file&layout=evaluation&format=raw&fnum='+fnum).then(function (response) {

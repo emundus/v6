@@ -35,7 +35,7 @@
               </td>
               <td>{{ file.applicant }}</td>
               <td>
-                <select v-model="file.rank">
+                <select v-model="file.rank" @change="onChangeRankValue(file)">
                   <option value="-1">{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</option>
                   <option v-for="i in rankings.nbFiles" :key="i">{{ i }}</option>
                 </select>
@@ -87,6 +87,15 @@ export default {
         if (response.status) {
           this.rankings.nbFiles = response.data.length;
           this.rankings.myRanking = response.data;
+        } else {
+
+        }
+      });
+    },
+    onChangeRankValue(file) {
+      rankingService.updateRanking(file.id, file.rank, this.hierarchy_id).then(response => {
+        if (response.status) {
+          this.getRankings();
         } else {
 
         }

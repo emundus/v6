@@ -52,7 +52,7 @@ class EmundusControllerRanking extends JControllerLegacy
         exit;
     }
 
-    public function updateFileRank()
+    public function updateFileRanking()
     {
         $response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => [], 'code' => 403];
         $user = Factory::getUser();
@@ -65,7 +65,7 @@ class EmundusControllerRanking extends JControllerLegacy
 
             if (!empty($files_user_can_rank) && in_array($id, $files_user_can_rank)) {
                 try {
-                    $response['status'] = $this->model->updateFileRank($id, $user->id, $rank, $hierarchy_id);
+                    $response['status'] = $this->model->updateFileRanking($id, $user->id, $rank, $hierarchy_id);
 
                     if ($response['status']) {
                         $response['msg'] = Text::_('SUCCESS');
@@ -83,6 +83,10 @@ class EmundusControllerRanking extends JControllerLegacy
 
         if ($response['code'] === 403) {
             header('HTTP/1.1 403 Forbidden');
+            echo $response['msg'];
+            exit;
+        } else if ($response['code'] === 500) {
+            header('HTTP/1.1 500 Internal Server Error');
             echo $response['msg'];
             exit;
         }

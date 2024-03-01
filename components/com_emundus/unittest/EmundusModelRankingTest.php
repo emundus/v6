@@ -49,7 +49,7 @@ class EmundusModelRankingTest extends TestCase
     {
         $ranker_user = 95;
 
-        $updated = $this->m_ranking->updateFileRank(0, 95, 1, 1);
+        $updated = $this->m_ranking->updateFileRanking(0, 95, 1, 1);
         $this->assertFalse($updated, "I should not be able to rank a file that does not exist.");
 
         $program = $this->h_sample->createSampleProgram();
@@ -65,7 +65,7 @@ class EmundusModelRankingTest extends TestCase
         $id = $db->loadResult();
 
         // Update should work
-        $updated = $this->m_ranking->updateFileRank($id, $ranker_user, 1, 1);
+        $updated = $this->m_ranking->updateFileRanking($id, $ranker_user, 1, 1);
         $this->assertTrue($updated, "I should be able to rank a file that I did not apply for.");
 
         // Create a file for ranker user, and try to rank it
@@ -76,6 +76,6 @@ class EmundusModelRankingTest extends TestCase
 
         // I should catch an exception if I try to rank a file that I apply for.
         $this->expectException(Exception::class);
-        $this->m_ranking->updateFileRank($id, $ranker_user, 1, 1);
+        $this->m_ranking->updateFileRanking($id, $ranker_user, 1, 1);
     }
 }
