@@ -388,7 +388,12 @@ function checkPasswordSymbols(element) {
 function prefillBic(element, bic_element) {
     let table_name = element.form.options.primaryKey.split('___')[0];
     var fab = element.form.elements;
-    var bic = fab.get(table_name + '___' + bic_element);
+    if(element.options.inRepeatGroup) {
+        var bic = fab.get(table_name+'_'+element.groupid+'_repeat___'+bic_element+'_'+element.getRepeatNum());
+    } else {
+        var bic = fab.get(table_name + '___' + bic_element);
+    }
+
     var value = element.get('value')
 
     if (bic && value != '') {

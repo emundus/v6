@@ -72,11 +72,6 @@ class PlgFabrik_ElementIban extends PlgFabrik_Element
 
 	public function validate($data, $repeatCounter = 0)
 	{
-		if (is_array($data))
-		{
-			$data = implode('', $data);
-		}
-
 		$data = preg_replace('/\s+/', '', $data);
 		if($data)
 		{
@@ -84,6 +79,11 @@ class PlgFabrik_ElementIban extends PlgFabrik_Element
 		}
 
 		return true;
+	}
+
+	public function dataConsideredEmptyForValidation($data, $repeatCounter = 0)
+	{
+		return empty(preg_replace('/\s+/', '', $data));
 	}
 
 	/**

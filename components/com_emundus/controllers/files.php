@@ -1579,6 +1579,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 				$nbcol = 6;
 				$date_elements = [];
+				$iban_elements = [];
 				foreach ($ordered_elements as $fLine) {
 					if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_label != 'Programme' && $fLine->element_name != 'campaign_id') {
 						if (count($opts) > 0 && $fLine->element_name != "date_time" && $fLine->element_name != "date_submitted") {
@@ -1604,6 +1605,15 @@ class EmundusControllerFiles extends JControllerLegacy
 							if ($fLine->element_plugin == 'textarea') {
 								$params = json_decode($fLine->element_attribs);
 								$textarea_elements[$fLine->tab_name.'___'.$fLine->element_name] = $params->use_wysiwyg;
+							}
+
+							if ($fLine->element_plugin == 'iban') {
+								$params = json_decode($fLine->element_attribs);
+								$elt_name = $fLine->tab_name.'___'.$fLine->element_name;
+								if(!empty($fLine->table_join) && $fLine->table_join_key == 'parent_id') {
+									$elt_name = $fLine->table_join.'___'.$fLine->element_name;
+								}
+								$iban_elements[$elt_name] = $params->encrypt_datas;
 							}
 
 							$line .= preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)). "\t";
@@ -1673,7 +1683,7 @@ class EmundusControllerFiles extends JControllerLegacy
 					$cipher = 'aes-128-cbc';
 					$encryption_key = JFactory::getConfig()->get('secret');
 				}
-
+				
 				$already_counted_fnums = array();
 				// On parcours les fnums
 				foreach ($fnumsArray as $fnum) {
@@ -1739,7 +1749,26 @@ class EmundusControllerFiles extends JControllerLegacy
 												$v = strip_tags($v);
 											}
 											$line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
-										} elseif (count($opts) > 0 && in_array("upper-case", $opts)) {
+										}
+										elseif(!empty($iban_elements[$k])){
+											if($iban_elements[$k] == 1){
+												if(strpos($k,'repeat')) {
+													$v = explode(',', $v);
+
+													$repeat_values_decrypted = [];
+													foreach ($v as $repeat_value) {
+														$repeat_values_decrypted[] = EmundusHelperFabrik::decryptDatas($repeat_value, 'iban');
+													}
+
+													$v = implode(',', $repeat_values_decrypted);
+												}
+												else {
+													$v = EmundusHelperFabrik::decryptDatas($v, 'iban');
+												}
+											}
+											$line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
+										}
+										elseif (count($opts) > 0 && in_array("upper-case", $opts)) {
 											$line .= JText::_(preg_replace("/\r|\n|\t/", "", mb_strtoupper($v)))."\t";
 										} else {
 											$line .= JText::_(preg_replace("/\r|\n|\t/", "", $v))."\t";

@@ -7,8 +7,20 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             this.parent(element, options);
 
             this.addMask();
+            this.initEvents();
+        },
 
-            this.element.addEvent('change', () => {
+        cloned: function (c)
+        {
+            this.mask = null;
+            this.addMask();
+            this.initEvents();
+
+            this.parent(c);
+        },
+
+        initEvents: function() {
+            jQuery(this.element).on('change', () => {
                 if(this.element.get('value') === '') {
                     this.setError('');
                     return;

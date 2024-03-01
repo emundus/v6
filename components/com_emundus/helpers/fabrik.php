@@ -17,6 +17,8 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+
+use Joomla\CMS\Factory;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\PhoneNumberFormat;
 
@@ -692,6 +694,10 @@ die("<script>
 		    $params['store_in_db'] = 0;
 	    }
 
+	    if($plugin == 'iban') {
+		    $params['encrypt_datas'] = '1';
+	    }
+
         return $params;
     }
 
@@ -1040,4 +1046,29 @@ die("<script>
 
         return $formattedValue;
     }
+
+	static function decryptDatas($value, $plugin) {
+		$result = $value;
+		$cipher = "aes-128-cbc";
+
+		$encryption_key = Factory::getConfig()->get('secret');
+
+		if($plugin == 'checkbox'){
+			$contents = json_decode($value);
+			foreach ($contents as $key => $content){
+				$decrypted_data = openssl_decrypt($content, $cipher, $encryption_key, 0);
+				if ($decrypted_data !== false) {
+					$contents[$key] = $decrypted_data;
+				}
+			}
+			$result = json_encode($contents);
+		} else {
+			$decrypted_data = openssl_decrypt($value, $cipher, $encryption_key, 0);
+			if ($decrypted_data !== false) {
+				$result = $decrypted_data;
+			}
+		}
+
+		return $result;
+	}
 }
