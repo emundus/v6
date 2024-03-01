@@ -17,6 +17,7 @@ if(version_compare(JVERSION, '4', '>=')) {
 }
 
 Text::script('PLG_ELEMENT_IBAN_INVALID');
+Text::script('PLG_ELEMENT_IBAN_LOCALIZATION');
 
 $d = $displayData;
 ?>
@@ -24,6 +25,12 @@ $d = $displayData;
 <fieldset class="fabrikSubElementContainer fabrikIban">
     <input type="text" class="fabrikinput inputbox" name="<?php echo $d->attributes['name'];?>"
            id="<?php echo $d->attributes['id']?>" value="<?php echo $d->value; ?>" />
+    <div class="flex items-center justify-start gap-1 mt-2 localization-block">
+        <span class="text-xs">
+            <?php echo Text::_('PLG_ELEMENT_IBAN_LOCALIZATION'); ?>
+        </span>
+        <span class="text-xs localization"></span>
+    </div>
 </fieldset>
 
 

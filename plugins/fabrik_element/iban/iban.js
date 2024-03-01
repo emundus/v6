@@ -10,8 +10,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             this.initEvents();
         },
 
-        cloned: function (c)
-        {
+        cloned: function (c) {
             this.mask = null;
             this.addMask();
             this.initEvents();
@@ -19,9 +18,9 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             this.parent(c);
         },
 
-        initEvents: function() {
+        initEvents: function () {
             jQuery(this.element).on('change', () => {
-                if(this.element.get('value') === '') {
+                if (this.element.get('value') === '') {
                     this.setError('');
                     return;
                 }
@@ -40,14 +39,88 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                 this.mask.destroy();
             }
 
-            const regex = /^[A-Z]{2}[0-9]{2}(?:[ ]?[0-9]{4}){4}(?!(?:[ ]?[0-9]){3})(?:[ ]?[0-9]{1,2})?$/;
-
             this.mask = IMask(
                 this.element,
                 {
-                    mask: 'FR00 **** **** **** **** **** ***',
+                    mask: this.initDynamicMask(),
+                    dispatch: (appended, dynamicMasked) => {
+                        const number = (dynamicMasked.value + appended);
+                        const mask = dynamicMasked.compiledMasks.find(m => number.indexOf(m.startsWith) === 0)
+
+                        if(mask) {
+                            this.element.parentNode.getElementsByClassName('localization-block')[0].getElementsByClassName('localization')[0].innerHTML = mask.country;
+                        } else {
+                            this.element.parentNode.getElementsByClassName('localization-block')[0].getElementsByClassName('localization')[0].innerHTML = '';
+                        }
+
+                        return mask;
+                    }
                 }
             );
+        },
+
+        initDynamicMask: function () {
+            return [
+                {
+                    mask: 'aa00 **** **** **** **** **** ***',
+                    startsWith: 'FR',
+                    lazy: false,
+                    country: 'France'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** ****',
+                    startsWith: 'AD',
+                    lazy: false,
+                    country: 'Andorre'
+                },
+                {
+                    mask: 'aa00 **** **** **** ****',
+                    startsWith: 'AT',
+                    lazy: false,
+                    country: 'Autriche'
+                },
+                {
+                    mask: 'aa00 **** **** **** ****',
+                    startsWith: 'BA',
+                    lazy: false,
+                    country: 'Bosnie Herzégovine'
+                },
+                {
+                    mask: 'aa00 **** **** ****',
+                    startsWith: 'BE',
+                    lazy: false,
+                    country: 'Belgique'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **',
+                    startsWith: 'BG',
+                    lazy: false,
+                    country: 'Bulgarie'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** *',
+                    startsWith: 'CH',
+                    lazy: false,
+                    country: 'Suisse'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **** ****',
+                    startsWith: 'CY',
+                    lazy: false,
+                    country: 'Chypre'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** ****',
+                    startsWith: 'CZ',
+                    lazy: false,
+                    country: 'République thèque'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **** ***',
+                    startsWith: '',
+                    country: ''
+                }
+            ]
         },
 
         isValidIBANNumber: function () {
@@ -94,7 +167,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 
             var children = parentofSelected.childNodes;
             for (var i = 0; i < children.length; i++) {
-                if(children[i].classList) {
+                if (children[i].classList) {
                     if (children[i].classList.contains('fabrikErrorMessage')) {
                         children[i].innerHTML = msg;
                         break;
