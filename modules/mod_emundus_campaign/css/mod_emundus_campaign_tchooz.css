@@ -314,6 +314,7 @@ a.em-blue-400-color:hover {
     line-height: 140%;
     min-height: 46px;
     font-family: var(--em-applicant-font-title) !important;
+    font-size: 18px;
 }
 /*
 .mod_emundus_campaign__date *{
