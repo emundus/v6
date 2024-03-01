@@ -33,5 +33,26 @@ export default {
                 msg: e.message
             };
         }
+    },
+    async lockRanking(id, lock) {
+        try {
+            const Form = new FormData();
+            Form.append('id', id);
+            Form.append('lock', lock);
+
+            const response = await client().post('index.php?option=com_emundus&controller=ranking&task=lockFilesOfHierarchyRanking',
+                Form,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+            return response.data;
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
     }
 };

@@ -247,6 +247,9 @@ class EmundusModelRanking extends JModelList
                             ->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
                             ->andWhere($db->quoteName('hierarchy_id') . ' = ' . $db->quote($hierarchy_id))
                             ->andWhere($db->quoteName('rank') . ' > ' . $db->quote($old_rank));
+
+                        $db->setQuery($query);
+                        $db->execute();
                     } else if ($old_rank == -1) {
                         // all ranks superior or equal to new rank should be increased by 1
                         $query->clear()
@@ -318,5 +321,26 @@ class EmundusModelRanking extends JModelList
         }
 
         return $updated;
+    }
+
+    public function toggleLockFilesOfHierarchyRanking($hierarchy_id, $user_id, $locked = 1)
+    {
+        $toggled = false;
+
+        if (!empty($hierarchy_id) && !empty($user_id)) {
+            $db = Factory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->clear()
+                ->update($db->quoteName('#__emundus_ranking'))
+                ->set($db->quoteName('locked') . ' = ' . $db->quote($locked))
+                ->where($db->quoteName('hierarchy_id') . ' = ' . $db->quote($hierarchy_id))
+                ->andWhere($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
+
+            $db->setQuery($query);
+            $toggled = $db->execute();
+        }
+
+        return $toggled;
     }
 }

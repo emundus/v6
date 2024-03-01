@@ -10,7 +10,7 @@
           <span class="material-icons-outlined">lock</span>
           {{ translate('COM_EMUNDUS_CLASSEMENT_ASK_LOCK_RANKING') }}
         </button>
-        <button id="lock-ranking" class="em-primary-button em-ml-4">
+        <button v-if="ismyRankingLocked" id="lock-ranking" class="em-primary-button em-ml-4" @click="lockRanking">
           <span class="material-icons-outlined">check_circle_outline</span>
           {{ translate('COM_EMUNDUS_CLASSEMENT_LOCK_RANKING') }}
         </button>
@@ -21,8 +21,8 @@
         <table>
           <thead>
             <th>
-              <span class="material-icons-outlined" v-if="locked">lock_open</span>
-              <span class="material-icons-outlined" v-else>lock</span>
+              <span class="material-icons-outlined" v-if="ismyRankingLocked">lock</span>
+              <span class="material-icons-outlined" v-else>lock_open</span>
             </th>
             <th>{{ translate('COM_EMUNDUS_CLASSEMENT_FILE') }}</th>
             <th>{{ translate('COM_EMUNDUS_CLASSEMENT_YOUR_RANKING') }}</th>
@@ -31,15 +31,18 @@
             <!-- only ranked files -->
             <tr v-for="file in rankedFiles" :key="file.id" class="ranked-file">
               <td>
-                <span class="material-icons-outlined" v-if="file.locked">lock</span>
+                <span class="material-icons-outlined" v-if="file.locked == 1">lock</span>
                 <span class="material-icons-outlined" v-else>lock_open</span>
               </td>
               <td>{{ file.applicant }}</td>
-              <td>
+              <td v-if="!ismyRankingLocked">
                 <select v-model="file.rank" @change="onChangeRankValue(file)">
                   <option value="-1">{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</option>
                   <option v-for="i in maxRankValueAvailable" :key="i">{{ i }}</option>
                 </select>
+              </td>
+              <td v-else>
+                <span>{{ file.rank }}</span>
               </td>
             </tr>
             <!-- non ranked files -->
@@ -49,11 +52,14 @@
                 <span class="material-icons-outlined" v-else>lock_open</span>
               </td>
               <td>{{ file.applicant }}</td>
-              <td>
+              <td v-if="!ismyRankingLocked">
                 <select v-model="file.rank" @change="onChangeRankValue(file)">
                   <option value="-1">{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</option>
                   <option v-for="i in (maxRankValueAvailable+1)" :key="i">{{ i }}</option>
                 </select>
+              </td>
+              <td v-else>
+                {{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}
               </td>
             </tr>
           </tbody>
@@ -80,6 +86,10 @@ export default {
     hierarchy_id: {
       type: Number,
       required: true
+    },
+    other_hierarchies: {
+      type: Array,
+      default: []
     }
   },
   mixins: [translate],
@@ -100,10 +110,8 @@ export default {
     getRankings() {
       rankingService.getMyRanking().then(response => {
         if (response.status) {
-          this.rankings.nbFiles = response.data.length;
           this.rankings.myRanking = response.data;
-        } else {
-
+          this.rankings.nbFiles = response.data.length;
         }
       });
     },
@@ -113,6 +121,16 @@ export default {
           this.getRankings();
         } else {
 
+        }
+      });
+    },
+    lockRanking() {
+      rankingService.lockRanking(this.hierarchy_id, 1).then(response => {
+        if (response.status) {
+          // lock every file in the list
+          this.rankings.myRanking.forEach(file => {
+            file.locked = 1;
+          });
         }
       });
     }
@@ -145,6 +163,9 @@ export default {
     rankedFiles() {
       return this.rankings.myRanking.filter(file => file.rank != -1);
     },
+    ismyRankingLocked() {
+      return this.rankings.myRanking.length > 0 ? this.rankings.myRanking.every(file => file.locked == 1) : false;
+    }
   }
 }
 </script>

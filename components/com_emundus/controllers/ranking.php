@@ -58,8 +58,7 @@ class EmundusControllerRanking extends JControllerLegacy
         $user = Factory::getUser();
 
         if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            $app = Factory::getApplication();
-            $jinput = $app->input;
+            $jinput = $this->app->input;
             $id = $jinput->getInt('id', 0);
 
             if (!empty($id)) {
@@ -92,6 +91,38 @@ class EmundusControllerRanking extends JControllerLegacy
             exit;
         } else if ($response['code'] === 500) {
             header('HTTP/1.1 500 Internal Server Error');
+            echo $response['msg'];
+            exit;
+        }
+
+        echo json_encode($response);
+        exit;
+    }
+
+    /**
+     * @return void
+     */
+    public function lockFilesOfHierarchyRanking()
+    {
+        $response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => [], 'code' => 403];
+        $user = Factory::getUser();
+
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+            $jinput = $this->app->input;
+            $hierarchy_id = $jinput->getInt('id', 0);
+            $user_hierarchy = $this->model->getUserHierarchy($user->id);
+
+            if ($user_hierarchy == $hierarchy_id) {
+                $lock = $jinput->getInt('lock', 1);
+
+                $response['status'] = $this->model->toggleLockFilesOfHierarchyRanking($hierarchy_id, $user->id, $lock);
+                $response['msg'] = $response['status'] ? Text::_('SUCCESS') : Text::_('ERROR');
+                $response['code'] = $response['status'] ? 200 : 500;
+            }
+        }
+
+        if ($response['code'] === 403) {
+            header('HTTP/1.1 403 Forbidden');
             echo $response['msg'];
             exit;
         }
