@@ -13,6 +13,8 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 
+require_once (JPATH_ROOT . '/components/com_emundus/models/ranking.php');
+
 jimport('joomla.application.component.view');
 
 /**
@@ -32,6 +34,8 @@ class EmundusViewRanking extends JViewLegacy
     {
         $this->user = Factory::getUser();
         $this->db = Factory::getDBO();
+        $this->model = new EmundusModelRanking();
+        $this->hierarchy_id = $this->model->getUserHierarchy($this->user->id);
 
         parent::__construct($config);
     }

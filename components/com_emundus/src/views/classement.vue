@@ -27,8 +27,9 @@
             <th>{{ translate('COM_EMUNDUS_CLASSEMENT_FILE') }}</th>
             <th>{{ translate('COM_EMUNDUS_CLASSEMENT_YOUR_RANKING') }}</th>
           </thead>
-          <tbody>
-            <tr v-for="file in rankings.myRanking" :key="file.id">
+          <tbody name="my_ranking" is="transition-group">
+            <!-- only ranked files -->
+            <tr v-for="file in rankedFiles" :key="file.id" class="ranked-file">
               <td>
                 <span class="material-icons-outlined" v-if="file.locked">lock</span>
                 <span class="material-icons-outlined" v-else>lock_open</span>
@@ -37,7 +38,21 @@
               <td>
                 <select v-model="file.rank" @change="onChangeRankValue(file)">
                   <option value="-1">{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</option>
-                  <option v-for="i in rankings.nbFiles" :key="i">{{ i }}</option>
+                  <option v-for="i in maxRankValueAvailable" :key="i">{{ i }}</option>
+                </select>
+              </td>
+            </tr>
+            <!-- non ranked files -->
+            <tr v-for="file in unrankedFiles" :key="file.id" class="unranked-file">
+              <td>
+                <span class="material-icons-outlined" v-if="file.locked">lock</span>
+                <span class="material-icons-outlined" v-else>lock_open</span>
+              </td>
+              <td>{{ file.applicant }}</td>
+              <td>
+                <select v-model="file.rank" @change="onChangeRankValue(file)">
+                  <option value="-1">{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</option>
+                  <option v-for="i in (maxRankValueAvailable+1)" :key="i">{{ i }}</option>
                 </select>
               </td>
             </tr>
@@ -101,10 +116,48 @@ export default {
         }
       });
     }
+  },
+  computed: {
+    maxRankValueAvailable() {
+      // max rank value available is the max rank in the list + 1, if all of them are at -1, then it's 1
+      let maxRank = 0;
+
+      this.rankings.myRanking.forEach(file => {
+        if (file.rank > maxRank) {
+          maxRank = Number(file.rank);
+        }
+      });
+
+      if (maxRank === 0) {
+        return 1;
+      }
+
+      // max rank can not be higher than the number of files
+      if (maxRank > this.rankings.nbFiles) {
+        return this.rankings.nbFiles;
+      }
+
+      return maxRank;
+    },
+    unrankedFiles() {
+      return this.rankings.myRanking.filter(file => file.rank == -1);
+    },
+    rankedFiles() {
+      return this.rankings.myRanking.filter(file => file.rank != -1);
+    },
   }
 }
 </script>
 
 <style scoped>
-
+.my_ranking-enter-active, .my_ranking-leave-active {
+  transition: all 1s;
+}
+.my_ranking-enter, .my_ranking-leave-to{
+  opacity: 0;
+  transform: translateX(30px);
+}
+.my_ranking-move {
+  transition: transform 1s;
+}
 </style>

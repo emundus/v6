@@ -24,8 +24,8 @@
 
     <classement
         v-else-if="component === 'classement'"
-        :hierarchy_id="datas.hierarchy_id"
-        :user="datas.user"
+        :hierarchy_id="datas.hierarchy_id.value"
+        :user="datas.user.value"
     ></classement>
 
     <transition v-else name="slide-right">

@@ -13,11 +13,19 @@ export default {
     },
     async updateRanking(id, rank, hierarchy_id) {
         try {
-            const response = await client().post('index.php?option=com_emundus&controller=ranking&task=updateFileRanking', {
-                id,
-                rank,
-                hierarchy_id
-            });
+            const Form = new FormData();
+            Form.append('id', id);
+            Form.append('rank', rank);
+            Form.append('hierarchy_id', hierarchy_id);
+
+
+            const response = await client().post('index.php?option=com_emundus&controller=ranking&task=updateFileRanking',
+                Form,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
             return response.data;
         } catch (e) {
             return {

@@ -57,6 +57,14 @@ class EmundusModelRanking extends JModelList
                         $files[$key]['rank'] = -1; // -1 means not ranked
                     }
                 }
+
+                // order by rank
+                usort($files, function ($a, $b) {
+                    if ($a['rank'] == $b['rank']) {
+                        return 0;
+                    }
+                    return ($a['rank'] < $b['rank']) ? -1 : 1;
+                });
             }
         }
 
@@ -87,7 +95,7 @@ class EmundusModelRanking extends JModelList
         return $status;
     }
 
-    private function getUserHierarchy($user_id)
+    public function getUserHierarchy($user_id)
     {
         $hierarchy = 0;
 
@@ -120,6 +128,7 @@ class EmundusModelRanking extends JModelList
                 ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
                 ->leftJoin($db->quoteName('#__emundus_users_assoc', 'eua') . ' ON ' . $db->quoteName('cc.fnum') . ' = ' . $db->quoteName('eua.fnum'))
                 ->where($db->quoteName('eua.user_id') . ' = ' . $db->quote($user_id))
+                ->andWhere($db->quoteName('cc.applicant_id') . ' != ' . $db->quote($user_id))
                 ->andWhere($db->quoteName('eua.action_id') . ' = 1')
                 ->andWhere($db->quoteName('eua.r') . ' = 1')
                 ->andWhere($db->quoteName('cc.published') . ' = 1');
@@ -149,6 +158,7 @@ class EmundusModelRanking extends JModelList
                     ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
                     ->leftJoin($db->quoteName('#__emundus_group_assoc', 'ega') . ' ON ' . $db->quoteName('cc.fnum') . ' = ' . $db->quoteName('ega.fnum'))
                     ->where($db->quoteName('ega.group_id') . ' IN (' . implode(',', $groups) . ')')
+                    ->andWhere($db->quoteName('cc.applicant_id') . ' != ' . $db->quote($user_id))
                     ->andWhere($db->quoteName('ega.action_id') . ' = 1')
                     ->andWhere($db->quoteName('ega.r') . ' = 1')
                     ->andWhere($db->quoteName('cc.published') . ' = 1');
@@ -171,7 +181,8 @@ class EmundusModelRanking extends JModelList
                     ->select('DISTINCT cc.id')
                     ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
                     ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('cc.campaign_id') . ' = ' . $db->quoteName('esc.id'))
-                    ->where($db->quoteName('esc.training') . ' IN (' . $db->quote(implode(',', $programs)) . ')')
+                    ->where($db->quoteName('esc.training') . ' IN (' . implode(',', $db->quote($programs)) . ')')
+                    ->andWhere($db->quoteName('cc.applicant_id') . ' != ' . $db->quote($user_id))
                     ->andWhere($db->quoteName('cc.published') . ' = 1');
 
                 if (!is_null($files_status)) {

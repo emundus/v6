@@ -58,25 +58,30 @@ class EmundusControllerRanking extends JControllerLegacy
         $user = Factory::getUser();
 
         if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            $id = $this->app->input->getInt('id', 0);
-            $rank = $this->app->input->getInt('rank', -1);
-            $hierarchy_id = $this->app->input->getInt('hierarchy_id', 0);
-            $files_user_can_rank = $this->model->getAllFilesRankerCanAccessTo($user->id);
+            $app = Factory::getApplication();
+            $jinput = $app->input;
+            $id = $jinput->getInt('id', 0);
 
-            if (!empty($files_user_can_rank) && in_array($id, $files_user_can_rank)) {
-                try {
-                    $response['status'] = $this->model->updateFileRanking($id, $user->id, $rank, $hierarchy_id);
+            if (!empty($id)) {
+                $rank = $jinput->getInt('rank', -1);
+                $hierarchy_id = $jinput->getInt('hierarchy_id', 0);
+                $files_user_can_rank = $this->model->getAllFilesRankerCanAccessTo($user->id);
 
-                    if ($response['status']) {
-                        $response['msg'] = Text::_('SUCCESS');
-                        $response['code'] = 200;
-                    } else {
-                        $response['msg'] = Text::_('ERROR');
-                        $response['code'] = 500;
+                if (!empty($files_user_can_rank) && in_array($id, $files_user_can_rank)) {
+                    try {
+                        $response['status'] = $this->model->updateFileRanking($id, $user->id, $rank, $hierarchy_id);
+
+                        if ($response['status']) {
+                            $response['msg'] = Text::_('SUCCESS');
+                            $response['code'] = 200;
+                        } else {
+                            $response['msg'] = Text::_('ERROR');
+                            $response['code'] = 500;
+                        }
+                    } catch(Exception $e) {
+                        $response['msg'] = $e->getMessage();
+                        $response['code'] = $response['msg'] == 'You cannot rank your own file' ? 403 : 500;
                     }
-                } catch(Exception $e) {
-                    $response['msg'] = $e->getMessage();
-                    $response['code'] = $response['msg'] == 'You cannot rank your own file' ? 403 : 500;
                 }
             }
         }
