@@ -96,9 +96,10 @@
     <transition name="fade">
       <compare-files
         v-if="defaultFile != null"
-          :default-file="defaultFile"
-          :files="rankings.myRanking"
-          title="COM_EMUNDUS_CLASSEMENT_MODAL_COMPARISON_HEADER_TITLE"
+        :user="user"
+        :default-file="defaultFile"
+        :files="rankings.myRanking"
+        title="COM_EMUNDUS_CLASSEMENT_MODAL_COMPARISON_HEADER_TITLE"
       >
 
       </compare-files>
