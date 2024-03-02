@@ -191,7 +191,7 @@ export default {
   height: 54px;
   padding: 16px 8px;
   position: relative;
-  background-color: var(--main-800);
+  background-color: var(--main-900);
   color: var(--neutral-0) !important;
 
   p, span, .material-icons-outlined {
@@ -206,7 +206,7 @@ export default {
 }
 
 .compare-files-container-header-2 {
-  background-color: var(--main-600);
+  background-color: var(--main-700);
   color: var(--neutral-0) !important;
   padding: 16px 8px;
   height: 54px;
