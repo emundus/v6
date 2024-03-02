@@ -34,7 +34,7 @@
               <span class="material-icons-outlined" v-if="file.locked == 1">lock</span>
               <span class="material-icons-outlined" v-else>lock_open</span>
             </td>
-            <td class="em-flex-column file-identifier em-pointer" @click="openComparisonModal(file)">
+            <td class="em-flex-column file-identifier em-pointer" @click="openClickOpenFile(file)">
               <span>{{ file.applicant }}</span>
               <span class="em-neutral-600-color em-font-size-14">{{ file.fnum }}</span>
             </td>
@@ -54,7 +54,7 @@
               <span class="material-icons-outlined" v-if="file.locked">lock</span>
               <span class="material-icons-outlined" v-else>lock_open</span>
             </td>
-            <td class="em-flex-column file-identifier">
+            <td class="em-flex-column file-identifier em-pointer" @click="openClickOpenFile(file)">
               <span>{{ file.applicant }}</span>
               <span class="em-neutral-600-color em-font-size-14">{{ file.fnum }}</span>
             </td>
@@ -95,13 +95,15 @@
     </div>
     <transition name="fade">
       <compare-files
-        v-if="defaultFile != null"
+        v-if="defaultFile != null && context !== 'modal'"
         :user="user"
         :default-file="defaultFile"
         :files="rankings.myRanking"
         title="COM_EMUNDUS_CLASSEMENT_MODAL_COMPARISON_HEADER_TITLE"
       >
-
+        <template v-slot:files-to-compare-with>
+          <classement :hierarchy_id="hierarchy_id" :user="user" context="modal"></classement>
+        </template>
       </compare-files>
     </transition>
   </div>
@@ -123,6 +125,10 @@ export default {
     hierarchy_id: {
       type: Number,
       required: true
+    },
+    context: {
+      type: String,
+      default: 'page'
     }
   },
   mixins: [translate],
@@ -190,9 +196,14 @@ export default {
         }
       });
     },
-    openComparisonModal(file) {
-      this.defaultFile = file;
-      this.$modal.show('compareFiles');
+    openClickOpenFile(file) {
+      if (this.context === 'modal') {
+        // dispatch event to open the file
+        window.dispatchEvent(new CustomEvent('openSecondaryFile', {detail: {file: file}}));
+      } else {
+        this.defaultFile = file;
+        this.$modal.show('compareFiles');
+      }
     }
   },
   computed: {

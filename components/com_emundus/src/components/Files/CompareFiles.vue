@@ -33,11 +33,11 @@
             </div>
           </div>
           <div v-if="selectedFileToCompareWith == null" id="files-to-compare-with-container" class="right-view em-w-50">
-            <header class="em-text-align-center">
+            <header class="em-text-align-center compare-files-container-header-2">
               <span>{{ translate('COM_EMUNDUS_MODAL_COMPARISON_SELECT_A_FILE_TO_COMPARE_TO') }}</span>
             </header>
-            <div>
-              <slot name="files-to-compare-with">
+            <div id="files-to-compare-with-selection" class="scrollable em-p-16">
+              <slot name="files-to-compare-with" @open-file="selectedFileToCompareWith = $event">
                 <div v-for="file in files" :key="file.id" class="em-flex-row em-flex-space-between">
                   <span>{{ file.applicant }} - {{ file.fnum }}</span>
                   <span class="material-icons-outlined em-pointer"
@@ -121,16 +121,25 @@ export default {
     }
   },
   created() {
-
-  }
-  ,
+    this.addEventListeners();
+  },
   methods: {
+    addEventListeners() {
+      window.addEventListener('openSecondaryFile', (e) => {
+        this.selectedFileToCompareWith = e.detail.file;
+      });
+    },
+    removeEventListeners() {
+      window.removeEventListener('openSecondaryFile', (e) => {
+        this.selectedFileToCompareWith = e.detail.file;
+      });
+    },
     closeModal() {
       this.$modal.hide('compareFiles');
-    }
-    ,
+    },
     beforeClose() {
       this.selectedFileToCompareWith = null;
+      this.removeEventListeners();
     }
   }
 }
@@ -139,6 +148,7 @@ export default {
 
 <style scoped>
 #compare-files-container-header-1 {
+  height: 54px;
   padding: 16px 8px;
   position: relative;
   background-color: var(--main-800);
@@ -168,5 +178,9 @@ export default {
 
 .left-view {
   border-right: 1px solid var(--neutral-200);
+}
+
+#files-to-compare-with-container {
+  height: calc(100% - 54px);
 }
 </style>
