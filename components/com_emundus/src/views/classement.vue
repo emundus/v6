@@ -34,7 +34,7 @@
               <span class="material-icons-outlined" v-if="file.locked == 1">lock</span>
               <span class="material-icons-outlined" v-else>lock_open</span>
             </td>
-            <td class="em-flex-column file-identifier">
+            <td class="em-flex-column file-identifier em-pointer" @click="openComparisonModal(file)">
               <span>{{ file.applicant }}</span>
               <span class="em-neutral-600-color em-font-size-14">{{ file.fnum }}</span>
             </td>
@@ -93,15 +93,27 @@
         </table>
       </div>
     </div>
+    <transition name="fade">
+      <compare-files
+        v-if="defaultFile != null"
+          :default-file="defaultFile"
+          :files="rankings.myRanking"
+          title="COM_EMUNDUS_CLASSEMENT_MODAL_COMPARISON_HEADER_TITLE"
+      >
+
+      </compare-files>
+    </transition>
   </div>
 </template>
 
 <script>
 import translate from "../mixins/translate";
 import rankingService from "../services/ranking.js";
+import CompareFiles from "../components/Files/CompareFiles.vue";
 
 export default {
   name: 'Classement',
+  components: {CompareFiles},
   props: {
     user: {
       type: Number,
@@ -120,6 +132,7 @@ export default {
         myRanking: [],
         otherRankings: []
       },
+      defaultFile: null,
       locked: false
     }
   },
@@ -175,6 +188,10 @@ export default {
           });
         }
       });
+    },
+    openComparisonModal(file) {
+      this.defaultFile = file;
+      this.$modal.show('compareFiles');
     }
   },
   computed: {
