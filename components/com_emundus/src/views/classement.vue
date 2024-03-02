@@ -1,23 +1,23 @@
 <template>
   <div id="ranking-list">
-    <header class="em-flex-space-between em-flex-row em-mb-8">
+    <header class="em-flex-space-between em-flex-row em-mb-32">
       <div id="header-left">
-        <div id="nb-files">{{ translate('COM_EMUNDUS_NB_FILES') + ' ' }} {{ nbFiles }}</div>
+        <div id="nb-files">{{ translate('COM_EMUNDUS_NB_FILES') + ' ' }} {{ rankings.nbFiles }}</div>
         <div id="pagination"></div>
       </div>
       <div id="header-left" class="em-flex-row">
         <button id="ask-to-lock-ranking" class="em-secondary-button">
-          <span class="material-icons-outlined">lock</span>
+          <span class="material-icons-outlined em-mr-4">lock</span>
           {{ translate('COM_EMUNDUS_CLASSEMENT_ASK_LOCK_RANKING') }}
         </button>
         <button v-if="!ismyRankingLocked" id="lock-ranking" class="em-primary-button em-ml-4" @click="lockRanking">
-          <span class="material-icons-outlined">check_circle_outline</span>
+          <span class="material-icons-outlined em-mr-4">check_circle_outline</span>
           {{ translate('COM_EMUNDUS_CLASSEMENT_LOCK_RANKING') }}
         </button>
       </div>
     </header>
     <div id="ranking-lists-container" class="em-flex-row em-flex-space-between">
-      <div id="my-ranking-list" class="em-w-100">
+      <div id="my-ranking-list" class="em-w-100 em-mr-4">
         <table class="em-w-100">
           <thead>
           <th>
@@ -36,7 +36,7 @@
             </td>
             <td class="em-flex-column file-identifier">
               <span>{{ file.applicant }}</span>
-              <span>{{ file.fnum }}</span>
+              <span class="em-neutral-600-color em-font-size-14">{{ file.fnum }}</span>
             </td>
             <td v-if="!ismyRankingLocked">
               <select v-model="file.rank" @change="onChangeRankValue(file)">
@@ -56,7 +56,7 @@
             </td>
             <td class="em-flex-column file-identifier">
               <span>{{ file.applicant }}</span>
-              <span>{{ file.fnum }}</span>
+              <span class="em-neutral-600-color em-font-size-14">{{ file.fnum }}</span>
             </td>
             <td v-if="!ismyRankingLocked">
               <select v-model="file.rank" @change="onChangeRankValue(file)">
@@ -71,7 +71,7 @@
           </tbody>
         </table>
       </div>
-      <div v-if="rankings.otherRankings.length > 0" id="other-ranking-lists" class="em-w-100">
+      <div v-if="rankings.otherRankings.length > 0" id="other-ranking-lists" class="em-w-100 em-border-neutral-300">
         <table class="em-w-100">
           <thead>
           <th v-for="hierarchy in rankings.otherRankings" :key="hierarchy.hierarchy_id">
@@ -80,9 +80,9 @@
           </thead>
           <tbody>
           <tr v-for="file in rankings.myRanking" :key="file.id">
-            <td v-for="hierarchy in rankings.otherRankings" :key="hierarchy.hierarchy_id">
-              <span class="material-icons-outlined" v-if="rankings.otherRankings.groupedByFiles[file.id] && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id] && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].locked == 1">lock</span>
-              <span v-else class="material-icons-outlined">lock_open</span>
+            <td v-for="hierarchy in rankings.otherRankings" :key="hierarchy.hierarchy_id" class="em-flex-row">
+              <span class="material-icons-outlined em-mr-4" v-if="rankings.otherRankings.groupedByFiles[file.id] && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id] && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].locked == 1">lock</span>
+              <span v-else class="material-icons-outlined em-mr-4">lock_open</span>
               <span v-if="rankings.otherRankings.groupedByFiles[file.id] && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id] && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].rank != -1">
                 {{ rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].rank }}
               </span>
@@ -233,12 +233,56 @@ export default {
     align-items: flex-start;
   }
 
-  tr {
-    height: 56px;
+  tr, td {
+    height: 64px;
   }
 
   th {
-    height: 39px;
+    height: 98px;
+  }
+
+  #my-ranking-list, #other-ranking-lists {
+    border-radius: 4px;
+    border-spacing: 0;
+    border-collapse: separate;
+  }
+
+  #my-ranking-list {
+    border: solid var(--main-200);
+
+    thead th {
+      background-color: var(--main-100) !important;
+    }
+
+    tbody td, tbody tr {
+      background-color: var(--main-50);
+      border: 0;
+    }
   }
 }
+
+button.em-primary-button {
+  span {
+    color: var(--neutral-0);
+  }
+
+  &:hover {
+    span {
+      color: var(--main-500);
+    }
+  }
+}
+
+button.em-secondary-button {
+  span {
+    color: var(--em-coordinator-secondary-color);
+  }
+
+  &:hover {
+    span {
+      color: var(--neutral-0);
+    }
+  }
+}
+
 </style>

@@ -36,7 +36,7 @@ Text::script('COM_EMUNDUS_CLASSEMENT_NOT_RANKED');
 
 <div class="em-p-0-12">
     <h2><?= Text::_('COM_EMUNDUS_CLASSEMENT_TITLE') ?></h2>
-    <h3><?= Text::_('COM_EMUNDUS_CLASSEMENT_HIERARCHY_LEVEL') . $this->hierarchy_id . ' - ' . Text::_('COM_EMUNDUS_CLASSEMENT_RANKER') . ' ' . $this->user->name ?></h3>
+    <p class="em-neutral-600-color em-mt-8 em-mb-8"><?= Text::_('COM_EMUNDUS_CLASSEMENT_HIERARCHY_LEVEL') . $this->hierarchy_id . ' - ' . Text::_('COM_EMUNDUS_CLASSEMENT_RANKER') . ' ' . $this->user->name ?></p>
     <div id="em-component-vue"
          component="classement"
          hash="<?= $hash ?>"
