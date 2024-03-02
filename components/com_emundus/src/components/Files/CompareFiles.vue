@@ -24,12 +24,12 @@
                 <span>{{ defaultFile.applicant }} - {{ defaultFile.fnum }}</span>
               </div>
               <div class="prev-next-files">
-                <span class="material-icons-outlined em-pointer">arrow_back</span>
-                <span class="material-icons-outlined em-pointer">arrow_forward</span>
+                <span class="material-icons-outlined em-pointer" @click="selectNewFile('default', 'previous')">arrow_back</span>
+                <span class="material-icons-outlined em-pointer" @click="selectNewFile('default', 'next')">arrow_forward</span>
               </div>
             </header>
             <div class="scrollable">
-              <application-tabs :user="user" :file="defaultFile" :access="access"></application-tabs>
+              <application-tabs :key="defaultFile.id" :user="user" :file="defaultFile" :access="access"></application-tabs>
             </div>
           </div>
           <div v-if="selectedFileToCompareWith == null" id="files-to-compare-with-container" class="right-view em-w-50">
@@ -52,15 +52,15 @@
                 <span>{{ selectedFileToCompareWith.applicant }} - {{ selectedFileToCompareWith.fnum }}</span>
               </div>
               <div class="actions">
-                <span class="material-icons-outlined em-pointer">arrow_back</span>
-                <span class="material-icons-outlined em-pointer">arrow_forward</span>
+                <span class="material-icons-outlined em-pointer" @click="selectNewFile('compare', 'previous')">arrow_back</span>
+                <span class="material-icons-outlined em-pointer" @click="selectNewFile('compare', 'next')">arrow_forward</span>
                 <span class="material-icons-outlined em-pointer" @click="selectedFileToCompareWith = null">
                   close
                 </span>
               </div>
             </header>
             <div class="scrollable">
-              <application-tabs :user="user" :file="selectedFileToCompareWith" :access="access"></application-tabs>
+              <application-tabs :key="selectedFileToCompareWith.id" :user="user" :file="selectedFileToCompareWith" :access="access"></application-tabs>
             </div>
         </div>
       </div>
@@ -134,6 +134,46 @@ export default {
         this.selectedFileToCompareWith = e.detail.file;
       });
     },
+    selectNewFile(fileType, direction = 'next') {
+      if (fileType === 'default') {
+        const index = this.files.findIndex(file => file.id === this.defaultFile.id);
+
+        if (direction === 'previous') {
+          // get previous file
+          if (index > 0) {
+            this.defaultFile = this.files[index - 1];
+          } else {
+            this.defaultFile = this.files[this.files.length - 1];
+          }
+        } else {
+          // get next file
+          if (index < this.files.length - 1) {
+            this.defaultFile = this.files[index + 1];
+          } else {
+            this.defaultFile = this.files[0];
+          }
+        }
+      } else {
+        const index = this.files.findIndex(file => file.id === this.selectedFileToCompareWith.id);
+
+        if (direction === 'previous') {
+          // get previous file
+          if (index > 0) {
+            this.selectedFileToCompareWith = this.files[index - 1];
+          } else {
+            this.selectedFileToCompareWith = this.files[this.files.length - 1];
+          }
+        } else {
+          // get next file
+          if (index < this.files.length - 1) {
+            this.selectedFileToCompareWith = this.files[index + 1];
+          } else {
+            this.selectedFileToCompareWith = this.files[0];
+          }
+        }
+      }
+    },
+
     closeModal() {
       this.$modal.hide('compareFiles');
     },

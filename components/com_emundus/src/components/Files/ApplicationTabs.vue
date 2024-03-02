@@ -71,7 +71,7 @@ export default {
       applicationform: ''
     }
   },
-  created() {
+  mounted() {
     if (this.tabs.some(tab => tab.name === 'application')) {
       this.getApplicationForm();
     }
