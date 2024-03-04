@@ -282,10 +282,10 @@ class EmundusHelperEmails {
 					<script data-cfasync="false" type="text/javascript" src="media/editors/tinymce/js/tinymce.min.js"></script>
 					<script data-cfasync="false" type="text/javascript">tinyMCE.init({
 								selector: "#mail_body",
-                                document_base_url: "'.JURI::Base().'",
-                                relative_urls: false,
+                                document_base_url: "",
+                                relative_urls: true,
                                 remove_script_host: false,
-                                convert_urls: false,
+                                convert_urls: true,
                                 height : "480"
                               });</script>
 					<script>
