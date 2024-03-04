@@ -29,6 +29,8 @@
               </div>
             </header>
             <div class="scrollable">
+              <slot name="before-default-file-tabs">
+              </slot>
               <application-tabs :key="defaultFile.id" :user="user" :file="defaultFile" :access="access"></application-tabs>
             </div>
           </div>
@@ -60,6 +62,8 @@
               </div>
             </header>
             <div class="scrollable">
+              <slot name="before-compare-file-tabs">
+              </slot>
               <application-tabs :key="selectedFileToCompareWith.id" :user="user" :file="selectedFileToCompareWith" :access="access"></application-tabs>
             </div>
         </div>

@@ -101,6 +101,10 @@
         :files="rankings.myRanking"
         title="COM_EMUNDUS_CLASSEMENT_MODAL_COMPARISON_HEADER_TITLE"
       >
+        <template v-slot:before-default-file-tabs>
+
+        </template>
+        <template v-slot:before-compare-file-tabs></template>
         <template v-slot:files-to-compare-with>
           <classement :hierarchy_id="hierarchy_id" :user="user" context="modal"></classement>
         </template>
