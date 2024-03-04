@@ -82,3 +82,43 @@ $favicon = $m_settings->getFavicon();
 		<?php echo JHtml::_('form.token'); ?>
 	</form>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var password = document.getElementById('jform_password1');
+        password.addEventListener('input', function() {
+            checkPasswordSymbols(password);
+        });
+    });
+
+    function checkPasswordSymbols(element) {
+        var wrong_password_title = ['Invalid password', 'Mot de passe invalide'];
+        var wrong_password_description = ['The #$\{\};<> characters are forbidden, as are spaces.', 'Les caractères #$\{\};<> sont interdits ainsi que les espaces'];
+
+        var site_url = window.location.toString();
+        var site_url_lang_regexp = /\w+.\/en/d;
+
+        var index = 0;
+
+        if(site_url.match(site_url_lang_regexp) === null) { index = 1; }
+
+        var regex = /[#$\{\};<> ]/;
+        var password_value = element.value;
+
+        if (password_value.match(regex) != null) {
+            Swal.fire({
+                icon: 'error',
+                title: wrong_password_title[index],
+                text: wrong_password_description[index],
+                reverseButtons: true,
+                customClass: {
+                    title: 'em-swal-title',
+                    confirmButton: 'em-swal-confirm-button',
+                    actions: 'em-swal-single-action',
+                }
+            });
+
+            element.value = '';
+        }
+    }
+</script>
