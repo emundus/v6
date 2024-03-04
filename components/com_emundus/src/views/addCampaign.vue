@@ -507,8 +507,10 @@ export default {
 
 	  createCampaign(form_data){
       campaignService.createCampaign(form_data).then((response) => {
-        this.campaignId = response.data.data;
-        this.quitFunnelOrContinue(this.quit);
+        if(response.data.status == 1) {
+          this.campaignId = response.data.data;
+          this.quitFunnelOrContinue(this.quit, response.data.redirect);
+        }
       });
     },
 
@@ -714,12 +716,17 @@ export default {
 		  });
 	  },
 
-    quitFunnelOrContinue(quit) {
+    quitFunnelOrContinue(quit, redirect = '') {
       if (quit === 0) {
         this.redirectJRoute('index.php?option=com_emundus&view=campaign');
       } else if (quit === 1) {
         document.cookie = 'campaign_'+this.campaignId+'_menu = 1; expires=Session; path=/';
-        this.redirectJRoute('index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' + this.campaignId + '&index=0')
+
+        if(redirect === '') {
+          redirect = 'index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' + this.campaignId + '&index=0'
+        }
+
+        this.redirectJRoute(redirect)
       }
     },
 

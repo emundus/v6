@@ -9,6 +9,8 @@
  */
 
 // No direct access
+use Joomla\CMS\Plugin\PluginHelper;
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
@@ -451,9 +453,18 @@ class EmundusControllerCampaign extends JControllerLegacy {
             $result = $this->m_campaign->createCampaign($data);
 
             if ($result) {
-                $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_ADDED'), 'data' => $result);
+                $redirect = 'index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid='.$result.'&index=0';
+
+                $dispatcher = JEventDispatcher::getInstance();
+                PluginHelper::importPlugin('emundus');
+                $redirect_dispatcher = $dispatcher->trigger('callEventHandler', ['onCampaignCreateRedirect', ['campaign' => $result]]);
+                if(!empty($redirect_dispatcher[0] && !empty($redirect_dispatcher[0]['onCampaignCreateRedirect']))) {
+                    $redirect = $redirect_dispatcher[0]['onCampaignCreateRedirect'];
+                }
+
+                $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_ADDED'), 'data' => $result, 'redirect' => $redirect);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_CAMPAIGN'), 'data' => $result);
+                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_CAMPAIGN'), 'data' => $result, 'redirect' => '');
             }
         }
         echo json_encode((object)$tab);

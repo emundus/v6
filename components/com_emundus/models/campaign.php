@@ -16,6 +16,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport( 'joomla.application.component.model' );
 use Joomla\CMS\Date\Date;
+use Joomla\CMS\Plugin\PluginHelper;
 
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
@@ -1335,6 +1336,7 @@ class EmundusModelCampaign extends JModelList {
                         // Create teaching unity
                         $this->createYear($data);
 
+						PluginHelper::importPlugin('emundus');
                         $dispatcher->trigger('onAfterCampaignCreate', $campaign_id);
                         $dispatcher->trigger('callEventHandler', ['onAfterCampaignCreate', ['campaign' => $campaign_id]]);
                     }
