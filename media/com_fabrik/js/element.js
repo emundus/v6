@@ -402,6 +402,8 @@ define(['jquery'], function (jQuery) {
 
         clear: function () {
             this.update('');
+
+            this.fireEvents(['change']);
         },
 
         /**
