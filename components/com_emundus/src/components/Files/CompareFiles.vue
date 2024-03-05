@@ -23,7 +23,7 @@
               <div>
                 <span>{{ defaultFile.applicant }} - {{ defaultFile.fnum }}</span>
               </div>
-              <div class="prev-next-files">
+              <div class="prev-next-files" v-if="this.files.length > 0">
                 <span class="material-icons-outlined em-pointer" @click="selectNewFile('default', 'previous')">arrow_back</span>
                 <span class="material-icons-outlined em-pointer" @click="selectNewFile('default', 'next')">arrow_forward</span>
               </div>
@@ -53,7 +53,7 @@
               <div>
                 <span>{{ selectedFileToCompareWith.applicant }} - {{ selectedFileToCompareWith.fnum }}</span>
               </div>
-              <div class="actions">
+              <div class="actions" v-if="this.files.length > 0">
                 <span class="material-icons-outlined em-pointer" @click="selectNewFile('compare', 'previous')">arrow_back</span>
                 <span class="material-icons-outlined em-pointer" @click="selectNewFile('compare', 'next')">arrow_forward</span>
                 <span class="material-icons-outlined em-pointer" @click="selectedFileToCompareWith = null">
