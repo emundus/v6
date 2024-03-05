@@ -61,7 +61,7 @@
             <td v-if="!ismyRankingLocked">
               <select v-model="file.rank" @change="onChangeRankValue(file)">
                 <option value="-1">{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</option>
-                <option v-for="i in (maxRankValueAvailable)" :key="i">{{ i }}</option>
+                <option v-for="i in (maxRankValueAvailableForNotRanked)" :key="i">{{ i }}</option>
               </select>
             </td>
             <td v-else>
@@ -204,7 +204,7 @@ export default {
       rankingService.updateRanking(file.id, file.rank, this.hierarchy_id).then(response => {
         if (response.status) {
           this.getRankings().then(() => {
-            if (this.defaultFile.id) {
+            if (this.defaultFile && this.defaultFile.id) {
               this.defaultFile = this.rankings.myRanking.find(f => f.id === this.defaultFile.id);
             }
 
@@ -244,8 +244,7 @@ export default {
     }
   },
   computed: {
-    maxRankValueAvailable() {
-      // max rank value available is the max rank in the list + 1, if all of them are at -1, then it's 1
+    maxRankValue() {
       let maxRank = 0;
 
       this.rankings.myRanking.forEach(file => {
@@ -254,16 +253,27 @@ export default {
         }
       });
 
-      if (maxRank === 0) {
+      return maxRank;
+    },
+    maxRankValueAvailable() {
+      // max rank value available is the max rank in the list + 1, if all of them are at -1, then it's 1
+      if (this.maxRankValue === 0) {
         return 1;
       }
 
       // max rank can not be higher than the number of files
-      if (maxRank > this.rankings.nbFiles) {
+      if (this.maxRankValue > this.rankings.nbFiles) {
         return this.rankings.nbFiles;
       }
 
-      return maxRank;
+      return this.maxRankValue;
+    },
+    maxRankValueAvailableForNotRanked() {
+      if (this.maxRankValueAvailable != this.rankings.nbFiles && this.maxRankValue > 0) {
+        return this.maxRankValueAvailable + 1;
+      } else {
+        return this.maxRankValueAvailable;
+      }
     },
     unrankedFiles() {
       return this.rankings.myRanking.filter(file => file.rank == -1);
