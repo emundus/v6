@@ -61,7 +61,7 @@
             <td v-if="!ismyRankingLocked">
               <select v-model="file.rank" @change="onChangeRankValue(file)">
                 <option value="-1">{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</option>
-                <option v-for="i in (maxRankValueAvailable+1)" :key="i">{{ i }}</option>
+                <option v-for="i in (maxRankValueAvailable)" :key="i">{{ i }}</option>
               </select>
             </td>
             <td v-else>
@@ -98,15 +98,31 @@
         v-if="defaultFile != null && context !== 'modal'"
         :user="user"
         :default-file="defaultFile"
+        :default-comparison-file="selectedOtherFile"
         :files="rankings.myRanking"
         title="COM_EMUNDUS_CLASSEMENT_MODAL_COMPARISON_HEADER_TITLE"
+        @comparison-file-changed="onComparisonFileChanged"
       >
         <template v-slot:before-default-file-tabs>
-
+          <div class="em-flex-row em-ml-8 em-mt-8">
+            <label class="em-mr-4"> {{ translate('COM_EMUNDUS_CLASSEMENT_RANKING_SELECT_LABEL') }} </label>
+            <select name="default-file-select" v-model="defaultFile.rank" @change="onChangeRankValue(defaultFile)">
+              <option value="-1">{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</option>
+              <option v-for="i in (maxRankValueAvailable)" :key="i">{{ i }}</option>
+            </select>
+          </div>
         </template>
-        <template v-slot:before-compare-file-tabs></template>
+        <template v-slot:before-compare-file-tabs>
+          <div class="em-flex-row em-ml-8 em-mt-8">
+            <label class="em-mr-4"> {{ translate('COM_EMUNDUS_CLASSEMENT_RANKING_SELECT_LABEL') }} </label>
+            <select v-if="selectedOtherFile" v-model="selectedOtherFile.rank" @change="onChangeRankValue(selectedOtherFile)">
+              <option value="-1">{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</option>
+              <option v-for="i in (maxRankValueAvailable)" :key="i">{{ i }}</option>
+            </select>
+          </div>
+        </template>
         <template v-slot:files-to-compare-with>
-          <classement :hierarchy_id="hierarchy_id" :user="user" context="modal"></classement>
+          <classement :key="subRankingKey" @other-selected-file="onSelectOtherFile" :hierarchy_id="hierarchy_id" :user="user" context="modal"></classement>
         </template>
       </compare-files>
     </transition>
@@ -144,7 +160,9 @@ export default {
         otherRankings: []
       },
       defaultFile: null,
-      locked: false
+      selectedOtherFile: null,
+      locked: false,
+      subRankingKey: 0
     }
   },
   created() {
@@ -152,8 +170,8 @@ export default {
     this.getOtherHierarchyRankings();
   },
   methods: {
-    getRankings() {
-      rankingService.getMyRanking().then(response => {
+    async getRankings() {
+      return await rankingService.getMyRanking().then(response => {
         if (response.status) {
           this.rankings.myRanking = response.data;
           this.rankings.nbFiles = response.data.length;
@@ -182,11 +200,18 @@ export default {
       });
     },
     onChangeRankValue(file) {
+      this.subRankingKey++;
       rankingService.updateRanking(file.id, file.rank, this.hierarchy_id).then(response => {
         if (response.status) {
-          this.getRankings();
-        } else {
+          this.getRankings().then(() => {
+            if (this.defaultFile.id) {
+              this.defaultFile = this.rankings.myRanking.find(f => f.id === this.defaultFile.id);
+            }
 
+            if (this.selectedOtherFile && this.selectedOtherFile.id) {
+              this.selectedOtherFile = this.rankings.myRanking.find(f => f.id === this.selectedOtherFile.id);
+            }
+          });
         }
       });
     },
@@ -204,10 +229,18 @@ export default {
       if (this.context === 'modal') {
         // dispatch event to open the file
         window.dispatchEvent(new CustomEvent('openSecondaryFile', {detail: {file: file}}));
+        this.$emit('other-selected-file', file);
       } else {
         this.defaultFile = file;
         this.$modal.show('compareFiles');
       }
+    },
+    onSelectOtherFile(file) {
+      this.selectedOtherFile = file;
+    },
+    onComparisonFileChanged(defaultFile, selectedFileToCompareWith) {
+      this.defaultFile = defaultFile;
+      this.selectedOtherFile = selectedFileToCompareWith;
     }
   },
   computed: {

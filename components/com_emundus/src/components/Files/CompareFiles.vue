@@ -88,6 +88,10 @@ export default {
       type: Object,
       required: true
     },
+    defaultComparisonFile: {
+      type: Object,
+      default: null
+    },
     files: {
       type: Array,
       default: []
@@ -126,6 +130,10 @@ export default {
   },
   created() {
     this.addEventListeners();
+
+    if (this.defaultComparisonFile) {
+      this.selectedFileToCompareWith = this.defaultComparisonFile;
+    }
   },
   methods: {
     addEventListeners() {
@@ -176,6 +184,8 @@ export default {
           }
         }
       }
+
+      this.$emit('comparison-file-changed', this.defaultFile, this.selectedFileToCompareWith);
     },
 
     closeModal() {
