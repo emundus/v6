@@ -4,11 +4,12 @@
 		<fieldset name="plg-form-emundusexpertagreement" label="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_FIELDS">
 			<field name="group" type="field" description="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_GROUP_DESC" label="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_GROUP_LABEL" />
 			<field name="profile_id" type="field" description="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_PROFILE_DESC" label="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_PROFILE_LABEL" />
+
 			<field name="pick_fnums" type="list" default="0" description="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_PICK_FNUMS_DESC" label="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_PICK_FNUMS_LABEL" >
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 			</field>
-			<field name="keep_accepted_fnums" type="list" default="0" description="Se base sur la valeur de la colonne rejection pour savoir si l'expert accepte ce dossier" label="Conserver les dossiers acceptés" >
+			<field name="keep_accepted_fnums" type="list" default="0" description="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_KEEP_ACCEPTED_FNUMS_DESC" label="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_KEEP_ACCEPTED_FNUMS_LABEL" >
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 			</field>
@@ -16,13 +17,21 @@
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 			</field>
+
+			<field name="status_input" label="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_STATUS_INPUT" type="field" default="status_expertise"/>
+			<field name="accepted_value" label="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_ACCEPTED_VALUE" type="field" default="1"/>
 			<field name="firstname_input" type="field" default="jos_emundus_files_request___firstname"/>
 			<field name="lastname_input" type="field" default="jos_emundus_files_request___lastname"/>
-			<field name="onBeforeLoadVerification" type="list" default="1" label="Vérification onBeforeLoad ?">
+			<field name="fnum_input" type="field" label="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_FNUM_INPUT" default="fnum_expertise"/>
+			<field name="attachments_input" type="field" label="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_ATTACHMENTS_INPUT" default=""/>
+			<field name="attachments_id" type="field" label="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_ATTACHMENTS_ID" default=""/>
+
+			<field name="onBeforeLoadVerification" type="list" default="1" label="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_ONBEFORELOAD">
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 			</field>
-			<field name="send_email_accept" label="Envoyer un email après acceptation d'un dossier ?" type="list" default="1">
+
+			<field name="send_email_accept" label="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_SEND_ACCEPT_EMAIL" type="list" default="1">
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 			</field>
