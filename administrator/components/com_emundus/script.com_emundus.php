@@ -4159,6 +4159,10 @@ if(in_array($applicant,$exceptions)){
 				$db->setQuery($query);
 				$db->execute();
 			}
+
+            if (version_compare($cache_version, '1.38.6', '<=') || $firstrun) {
+                // TODO: Add code to create new elements and table in emundus_hikashop_programs using prog_id instead of code
+            }
 		}
 
 		return $succeed;

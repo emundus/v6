@@ -3672,6 +3672,11 @@ class EmundusModelApplication extends JModelList
     public function getHikashopOrder($fnumInfos, $cancelled = false, $confirmed = true) {
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
+        require_once(JPATH_SITE.'/components/com_emundus/models/campaign.php');
+        $m_campaign = new EmundusModelCampaign;
+
+        $prog_id = $m_campaign->getProgrammeByTraining($fnumInfos['training'])->id;
+
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -3679,8 +3684,8 @@ class EmundusModelApplication extends JModelList
         $query
             ->select('hp.id')
             ->from($db->quoteName('#__emundus_hikashop_programs', 'hp'))
-            ->leftJoin($db->quoteName('jos_emundus_hikashop_programs_repeat_code_prog','hpr').' ON '.$db->quoteName('hpr.parent_id').' = '.$db->quoteName('hp.id'))
-            ->where($db->quoteName('hpr.code_prog') . ' = ' .$db->quote($fnumInfos['training']));
+            ->leftJoin($db->quoteName('jos_emundus_hikashop_programs_repeat_id_prog','hpr').' ON '.$db->quoteName('hpr.parent_id').' = '.$db->quoteName('hp.id'))
+            ->where($db->quoteName('hpr.id_prog') . ' = ' .$db->quote($prog_id));
         $db->setQuery($query);
         $rule = $db->loadResult();
 
@@ -3756,8 +3761,8 @@ class EmundusModelApplication extends JModelList
                 /* By using the parent_id from the emundus_hikashop_programs table, we can get the list of the other programs that use the same settings */
                 /* We check only those with a payment_type of 2, for the others it's one payment by file */
                 $hika_query = $db->getQuery(true);
-                $hika_query->select('hpr.code_prog')
-                    ->from($db->quoteName('#__emundus_hikashop_programs_repeat_code_prog', 'hpr'))
+                $hika_query->select('hpr.id_prog')
+                    ->from($db->quoteName('#__emundus_hikashop_programs_repeat_id_prog', 'hpr'))
                     ->leftJoin($db->quoteName('#__emundus_hikashop_programs','hp').' ON '.$db->quoteName('hpr.parent_id').' = '.$db->quoteName('hp.id'))
                     ->where($db->quoteName('hpr.parent_id').' = '.$db->quote($rule))
                     ->andWhere($db->quoteName('hp.payment_type').' = '.$db->quote(2));
@@ -3771,9 +3776,10 @@ class EmundusModelApplication extends JModelList
                     $fnum_query->select('cc.fnum')
                         ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
                         ->leftJoin($db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$db->quoteName('sc.id').' = '.$db->quoteName('cc.campaign_id'))
-                        ->where($db->quoteName('sc.training') . ' IN (' .implode(',',$db->quote($progs_to_check)) . ')')
-                        ->andWhere($db->quoteName('sc.year') . ' = ' .$db->quote($fnumInfos['year']))
-                        ->andWhere($db->quoteName('cc.applicant_id') . ' = ' .$db->quote($fnumInfos['applicant_id']));
+                        ->leftJoin($db->quoteName('#__emundus_setup_programmes','sp'.' ON '.$db->quoteName('sc.training').' = '.$db->quoteName('sp.code')))
+                        ->where($db->quoteName('sp.id').' IN ('.implode(',',$db->quote($progs_to_check)) . ')')
+                        ->andWhere($db->quoteName('sc.year').' = ' .$db->quote($fnumInfos['year']))
+                        ->andWhere($db->quoteName('cc.applicant_id').' = ' .$db->quote($fnumInfos['applicant_id']));
                     $db->setQuery($fnum_query);
                     $program_year_fnum = $db->loadColumn();
                 }
