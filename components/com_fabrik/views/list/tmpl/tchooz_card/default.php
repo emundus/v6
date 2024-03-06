@@ -72,7 +72,7 @@ endif;
 	?>
 
 
-    <div class="em-w-100 <?php if ($this->showFilters) : ?>catalogue_cards_container<?php endif; ?>">
+    <div class="mod_emundus_campaign__content em-w-100 <?php if ($this->showFilters) : ?>catalogue_cards_container<?php endif; ?>">
         <div id="current_1" class="mod_emundus_campaign__list">
             <div class="fabrikDataContainer">
 	            <?php if ($this->showFilters) : ?>

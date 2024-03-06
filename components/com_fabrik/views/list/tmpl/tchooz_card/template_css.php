@@ -120,9 +120,10 @@ list-style: none;
   flex: 0 0 20%;
 }
 
-.catalogue_cards_container {
+.catalogue_cards_container.mod_emundus_campaign__content {
     flex: 0 0 77%;
     width: min-content !important;
+    margin-top: 0;
 }
 
 .catalogue_cards_container .mod_emundus_campaign__list_items {
@@ -176,10 +177,6 @@ list-style: none;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	width: 235px;
-}
-
-.catalogue.gantry.view-list #g-container-main .g-container .page-header {
-    margin-top: 0;
 }
 
 .catalogue.gantry.view-list #g-container-main .g-container .page-header {
