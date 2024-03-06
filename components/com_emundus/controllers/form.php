@@ -11,6 +11,9 @@
 
 // No direct access
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
@@ -865,5 +868,28 @@ class EmundusControllerForm extends JControllerLegacy {
         echo json_encode((object)$response);
         exit;
     }
+
+	public function getjsconditions()
+	{
+		$user = Factory::getUser();
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => []);
+
+		$jinput = Factory::getApplication()->input;
+		$formId = $jinput->getInt('form_id');
+
+		if (!empty($formId)) {
+			$conditions = $this->m_form->getJSConditionsByForm($formId);
+
+			$response['msg'] = Text::_('SUCCESS');
+			$response['status'] = true;
+			$response['data'] = ['conditions' => $conditions];
+		} else {
+			$response['msg'] = Text::_('MISSING_PARAMS');
+		}
+
+		echo json_encode((object)$response);
+		exit;
+
+	}
 }
 

@@ -10,6 +10,9 @@
  */
 
 // No direct access
+use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
+
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
@@ -2277,4 +2280,46 @@ class EmundusModelForm extends JModelList {
 
         return $data;
     }
+
+	public function getJSConditionsByForm($form_id)
+	{
+		$js_conditions = [];
+
+		$db = Factory::getDbo();
+		$query = $db->getQuery(true);
+
+		try
+		{
+			$query->select($db->quoteName(['id','group']))
+				->from($db->quoteName('#__emundus_setup_form_rules'))
+				->where($db->quoteName('form_id') . ' = ' . $db->quote($form_id))
+				->where($db->quoteName('type') . ' = ' . $db->quote('js'));
+			$db->setQuery($query);
+			$js_conditions = $db->loadObjectList();
+
+			foreach ($js_conditions as $js_condition)
+			{
+				$query->clear()
+					->select($db->quoteName(['field','state','values']))
+					->from($db->quoteName('#__emundus_setup_form_rules_819_repeat'))
+					->where($db->quoteName('parent_id') . ' = ' . $db->quote($js_condition->id));
+				$db->setQuery($query);
+				$js_condition->conditions = $db->loadObjectList();
+
+				$query->clear()
+					->select('esfrr.action,group_concat(esfrr_fields.fields) as fields')
+					->from($db->quoteName('#__emundus_setup_form_rules_820_repeat','esfrr'))
+					->leftJoin($db->quoteName('#__emundus_setup_form_rules_820_repeat_repeat_fields','esfrr_fields').' ON '.$db->quoteName('esfrr_fields.parent_id').' = '.$db->quoteName('esfrr.id'))
+					->where($db->quoteName('esfrr.parent_id') . ' = ' . $db->quote($js_condition->id));
+				$db->setQuery($query);
+				$js_condition->actions = $db->loadObjectList();
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/form | Error at getConditionsByForm : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $js_conditions;
+	}
 }

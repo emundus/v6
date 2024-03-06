@@ -1,18 +1,28 @@
 requirejs(['fab/fabrik'], function () {
     var removedFabrikFormSkeleton = false;
     var formDataChanged = false;
+    var js_rules = [];
+    var table_name = '';
 
     Fabrik.addEvent('fabrik.form.loaded', function (form) {
+        fetch('/index.php?option=com_emundus&controller=form&task=getjsconditions&form_id=' + form.id).then(response => response.json()).then(data => {
+            if (data.status) {
+                js_rules = data.data.conditions;
+            }
+        });
+
+        table_name = form.options.primaryKey.split('___')[0];
+
         if (!removedFabrikFormSkeleton) {
             removeFabrikFormSkeleton();
         }
 
         manageRepeatGroup(form);
 
-        var form = document.getElementsByClassName('fabrikForm')[0];
+        var formBlock = document.getElementsByClassName('fabrikForm')[0];
 
-        form.addEventListener('input', function () {
-            if(!formDataChanged) {
+        formBlock.addEventListener('input', function () {
+            if (!formDataChanged) {
                 formDataChanged = true;
             }
         });
@@ -28,9 +38,9 @@ requirejs(['fab/fabrik'], function () {
 
         links = [...checklist_items, ...menu_items, ...user_items, ...flow_items, ...logo, ...footer_items, ...back_button_form];
 
-        for(var i = 0, len = links.length; i < len; i++) {
+        for (var i = 0, len = links.length; i < len; i++) {
             links[i].onclick = (e) => {
-                if(formDataChanged) {
+                if (formDataChanged) {
                     e.preventDefault();
 
                     Swal.fire({
@@ -47,28 +57,25 @@ requirejs(['fab/fabrik'], function () {
                             confirmButton: 'btn btn-primary save-btn sauvegarder button save_continue',
                         },
                     }).then((result) => {
-                        if(result.value)
-                        {
-                            if(e.srcElement.classList.contains('goback-btn')) {
+                        if (result.value) {
+                            if (e.srcElement.classList.contains('goback-btn')) {
                                 window.history.back();
                             }
 
-                            let href = window.location.origin+'/index.php';
+                            let href = window.location.origin + '/index.php';
                             // If click event target is a direct link
-                            if(typeof e.target.href !== 'undefined')
-                            {
+                            if (typeof e.target.href !== 'undefined') {
                                 href = e.target.href;
                             }
                             // If click event target is a child of a link
-                            else
-                            {
+                            else {
                                 e = e.target;
                                 let attempt = 0;
                                 do {
                                     e = e.parentNode;
-                                } while(typeof e.href === 'undefined' && attempt++ < 5);
+                                } while (typeof e.href === 'undefined' && attempt++ < 5);
 
-                                if(typeof e.href !== 'undefined') {
+                                if (typeof e.href !== 'undefined') {
                                     href = e.href;
                                 }
                             }
@@ -77,8 +84,8 @@ requirejs(['fab/fabrik'], function () {
                         }
                     });
                 } else {
-                    if(e.srcElement.classList.contains('goback-btn')) {
-                        if(window.history.length > 1) {
+                    if (e.srcElement.classList.contains('goback-btn')) {
+                        if (window.history.length > 1) {
                             window.history.back();
                         } else {
                             window.close();
@@ -89,15 +96,92 @@ requirejs(['fab/fabrik'], function () {
         }
     });
 
-    Fabrik.addEvent('fabrik.form.group.duplicate.end', function(form, event) {
+    Fabrik.addEvent('fabrik.form.group.duplicate.end', function (form, event) {
         manageRepeatGroup(form);
     });
 
-    Fabrik.addEvent('fabrik.form.group.delete.end', function(form, event) {
+    Fabrik.addEvent('fabrik.form.group.delete.end', function (form, event) {
         manageRepeatGroup(form);
     });
 
-    window.setInterval(function() {
+    Fabrik.addEvent('fabrik.form.elements.added', function (form, event) {
+        form.elements.forEach(function (element) {
+            var $el = jQuery(element.element);
+            $el.on(element.getChangeEvent(), function (e) {
+                let elt_rules = [];
+                js_rules.forEach((js_rule) => {
+                    js_rule.conditions.forEach((condition) => {
+                        if (condition.field == element.options.id) {
+                            elt_rules.push(js_rule);
+                        }
+                    });
+                });
+
+                if (elt_rules.length > 0) {
+                    elt_rules.forEach((rule) => {
+                        let condition_state = false;
+
+                        rule.conditions.forEach((condition) => {
+                            form.elements.forEach((elt) => {
+                                if (elt.options.id == condition.field) {
+                                    if (elt.get('value') == condition.values) {
+                                        condition_state = true;
+                                    } else {
+                                        condition_state = false;
+                                    }
+                                }
+                            });
+                        });
+
+                        if (condition_state) {
+                            rule.actions.forEach((action) => {
+                                form.elements.forEach((elt) => {
+                                    let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
+                                    if(name == action.fields) {
+                                        form.doElementFX('element_'+elt.strElement, action.action, elt);
+
+                                        if(action.action == 'hide') {
+                                            elt.clear();
+                                            let event = new Event(elt.getChangeEvent());
+                                            elt.element.dispatchEvent(event);
+                                        }
+                                    }
+                                });
+                            });
+                        } else {
+                            let opposite_action = 'hide';
+
+                            rule.actions.forEach((action) => {
+                                switch (action.action) {
+                                    case 'show':
+                                        opposite_action = 'hide';
+                                        break;
+                                    case 'hide':
+                                        opposite_action = 'show';
+                                        break;
+                                }
+
+                                form.elements.forEach((elt) => {
+                                    let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
+                                    if(name == action.fields) {
+                                        form.doElementFX('element_'+elt.strElement, opposite_action, elt);
+
+                                        if(opposite_action == 'hide') {
+                                            elt.clear();
+                                            let event = new Event(elt.getChangeEvent());
+                                            elt.element.dispatchEvent(event);
+                                        }
+                                    }
+                                });
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+    window.setInterval(function () {
         if (!removedFabrikFormSkeleton && Object.entries(Fabrik.blocks).length > 0) {
             removeFabrikFormSkeleton();
         }
@@ -105,16 +189,16 @@ requirejs(['fab/fabrik'], function () {
 
     function removeFabrikFormSkeleton() {
         let header = document.querySelector('.page-header');
-        if(header) {
-            if(header.querySelector('h2')) {
+        if (header) {
+            if (header.querySelector('h2')) {
                 document.querySelector('.page-header h2').style.opacity = 1;
             }
             header.classList.remove('skeleton');
         }
         let intro = document.querySelector('.em-form-intro');
-        if(intro) {
+        if (intro) {
             let content = document.querySelector('.em-form-intro').children;
-            if(content.length > 0) {
+            if (content.length > 0) {
                 for (const child of content) {
                     child.style.opacity = 1;
                 }
@@ -122,11 +206,11 @@ requirejs(['fab/fabrik'], function () {
             intro.classList.remove('skeleton');
         }
         let grouptitle = document.querySelectorAll('.fabrikGroup .legend');
-        for (title of grouptitle){
+        for (title of grouptitle) {
             title.style.opacity = 1;
         }
         grouptitle = document.querySelectorAll('.fabrikGroup h2, .fabrikGroup h3');
-        for (title of grouptitle){
+        for (title of grouptitle) {
             title.style.opacity = 1;
         }
         let groupintros = document.querySelectorAll('.groupintro');
@@ -138,10 +222,10 @@ requirejs(['fab/fabrik'], function () {
 
         let elements = document.querySelectorAll('.fabrikGroup .row-fluid');
         let elements_fields = document.querySelectorAll('.fabrikElementContainer');
-        for (field of elements_fields){
+        for (field of elements_fields) {
             field.style.opacity = 1;
         }
-        for (elt of elements){
+        for (elt of elements) {
             elt.style.marginTop = '0';
             elt.classList.remove('skeleton');
         }
@@ -149,13 +233,12 @@ requirejs(['fab/fabrik'], function () {
         removedFabrikFormSkeleton = true;
     }
 
-    function manageRepeatGroup(form)
-    {
+    function manageRepeatGroup(form) {
         setTimeout(() => {
             // ID of the group that was duplicated (ex. group686)
             let repeat_groups = form.repeatGroupMarkers;
             repeat_groups.forEach(function (repeatGroupsMarked, group) {
-                if(repeatGroupsMarked !== 0) {
+                if (repeatGroupsMarked !== 0) {
                     let minRepeat = form.options.minRepeat[group];
                     let maxRepeat = form.options.maxRepeat[group];
 
@@ -178,14 +261,14 @@ requirejs(['fab/fabrik'], function () {
                             button.hide();
                         })
                     } else {
-                        if(addButtons.length > 1) {
-                        addButtons.forEach(function (button, index) {
-                                if((index + 1) < addButtons.length) {
+                        if (addButtons.length > 1) {
+                            addButtons.forEach(function (button, index) {
+                                if ((index + 1) < addButtons.length) {
                                     button.hide();
                                 } else {
                                     button.style.display = 'flex';
                                 }
-                        })
+                            })
                         } else {
                             addButtons.forEach(function (button, index) {
                                 button.style.display = 'flex';
@@ -194,6 +277,6 @@ requirejs(['fab/fabrik'], function () {
                     }
                 }
             });
-        },100)
+        }, 100)
     }
 });
