@@ -220,14 +220,15 @@ class EmundusModelRanking extends JModelList
                 $db = Factory::getDbo();
                 $query = $db->getQuery(true);
 
-                foreach ($hierarchies as $key => $hierarchy) {
+                foreach ($hierarchies as $hierarchy) {
                     $data = [
                         'hierarchy_id' => $hierarchy['id'],
                         'label' => $hierarchy['label'],
                         'files' => []
                     ];
 
-                    $query->select('CONCAT(applicant.firstname, " ", applicant.lastname) AS applicant, cc.id, cc.fnum, cr.rank, cr.locked')
+                    $query->clear()
+                        ->select('CONCAT(applicant.firstname, " ", applicant.lastname) AS applicant, cc.id, cc.fnum, cr.rank, cr.locked')
                         ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
                         ->leftJoin($db->quoteName('#__emundus_users', 'applicant') . ' ON ' . $db->quoteName('cc.applicant_id') . ' = ' . $db->quoteName('applicant.id'))
                         ->leftJoin($db->quoteName('#__emundus_ranking', 'cr') . ' ON ' . $db->quoteName('cc.id') . ' = ' . $db->quoteName('cr.ccid'))
