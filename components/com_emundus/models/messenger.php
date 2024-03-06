@@ -507,6 +507,18 @@ class EmundusModelMessenger extends JModelList
             // Merge all users list and add the list of users to notify defined in the messenger configuration
             $users_to_send = array_filter(array_unique(array_merge($users_associated_programs,$groups_associated,$users_associated,$notify_users)));
 
+            // Check groups to notify
+            if (!empty($notify_groups)) {
+                $query->clear()
+                    ->select('DISTINCT user_id')
+                    ->from('#__emundus_groups')
+                    ->where('gr.group_id IN ('.$notify_groups.')');
+                $db->setQuery($query);
+                $users_notify_groups = $db->loadColumn();
+
+                $users_to_send = array_filter(array_unique(array_merge($users_notify_groups,$users_to_send)));
+            }
+
             // If no users found to notify send to coordinators
             if (empty($users_to_send)) {
                 $query->clear()
