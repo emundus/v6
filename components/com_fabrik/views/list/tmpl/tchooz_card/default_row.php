@@ -57,24 +57,34 @@ foreach ($this->headings as $heading => $label) {
         <div id="background-shapes" alt="Fond formes"
              style="mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');"></div>
         <div class="mod_emundus_campaign__list_content_container em-w-100">
+          <?php if(!$this->showFilters) : ?>
             <p class="em-programme-tag" style="color: #0A53CC;"> <?php echo implode(', ', $tags); ?></p>
-
+	        <?php endif; ?>
             <div class="em-flex-row em-flex-space-between em-mb-12">
                 <a href="<?= $this->_row->data->fabrik_view_url; ?>"><h4><?php echo $title; ?></h4></a>
+
+	            <?php if(!$this->showFilters) : ?>
                 <div class="all-actions-container">
                     <span onclick="toggleActions('<?= $this->_row->id; ?>')"
                           class="material-icons-outlined toggle-actions-btn">more_vert</span>
                 </div>
+	            <?php endif; ?>
             </div>
 
-            <?php if (!empty($tags) || !empty($title)) : ?>
-                <hr>
-            <?php endif; ?>
+	        <?php if($this->showFilters) : ?>
+                    <p class="catalogue_tag"><?php echo implode(', ', $tags); ?></p>
+	        <?php endif; ?>
+
+            <?php if(!$this->showFilters) : if (!empty($tags) || !empty($title)) : ?>
+                 <hr>
+            <?php endif; endif; ?>
+
 
             <div class="em-text-neutral-600">
                 <?php
                 foreach ($this->headings as $heading => $label) {
                     if (in_array($heading, $description_fields)) {
+                        $icon = '';
                         $style = empty($this->cellClass[$heading]['style']) ? '' : 'style="' . $this->cellClass[$heading]['style'] . '"';
                         if (preg_match('/list_material_icons-([a-z_]+)/', $this->cellClass[$heading]['class'], $matches)) {
                             $icon = $matches[1];

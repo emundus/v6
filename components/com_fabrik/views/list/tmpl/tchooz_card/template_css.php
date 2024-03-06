@@ -83,4 +83,15 @@ list-style: none;
     background: var(--neutral-0);
     width: max-content;
 }
+
+.catalogue_tag {
+	background: var(--neutral-400);
+	color: var(--neutral-700);
+	border-radius: 25px;
+	padding: 4px;
+	width: 150px;
+	text-align: center;
+	font-size: 14px;
+	margin: 12px 0
+}
 "; ?>
