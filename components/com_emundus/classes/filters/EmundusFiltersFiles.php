@@ -331,10 +331,13 @@ class EmundusFiltersFiles extends EmundusFilters
 				{
 					$position = array_search('status', $filter_names);
 
-					if ($position !== false && isset($filter_menu_values[$position]))
+					if ($position !== false && isset($filter_menu_values[$position]) && $filter_menu_values[$position] !== '')
 					{
 						$statuses = explode('|', $filter_menu_values[$position]);
-						$query->where('step IN (' . implode(',', $statuses) . ')');
+
+                        if (!empty($statuses)) {
+                            $query->where('step IN (' . implode(',', $statuses) . ')');
+                        }
 					}
 				}
 
