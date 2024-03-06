@@ -3886,6 +3886,51 @@ class EmundusHelperFiles
                                 case 'tags':
                                     $where['q'] .= ' AND ( ' . $this->writeQueryWithOperator('eta.id_tag', $filter['value'], $filter['operator']) . ' )';
                                     break;
+                                case 'group_assoc':
+                                    if (!in_array('jos_emundus_group_assoc', $already_joined)) {
+                                        $jecc_alias = array_search('jos_emundus_campaign_candidature', $already_joined);
+                                        $already_joined['ga'] = 'jos_emundus_group_assoc';
+                                        $group_assoc_alias = 'ga';
+                                        $where['join'] .= ' LEFT JOIN #__emundus_group_assoc as ga on ga.fnum = ' . $jecc_alias . '.fnum ';
+                                    } else {
+                                        $group_assoc_alias = array_search('jos_emundus_group_assoc', $already_joined);
+                                    }
+
+                                    if (!in_array('jos_emundus_setup_groups_repeat_course', $already_joined)) {
+                                        $esc_alias = array_search('jos_emundus_setup_campaigns', $already_joined);
+                                        $already_joined['grc'] = 'jos_emundus_setup_groups_repeat_course';
+                                        $where['join'] .= ' LEFT JOIN #__emundus_setup_groups_repeat_course as grc on grc.course = ' . $esc_alias . '.training ';
+                                    }
+
+                                    if (!in_array('jos_emundus_setup_groups', $already_joined)) {
+                                        $jesgrc_alias = array_search('jos_emundus_setup_groups_repeat_course', $already_joined);
+                                        $already_joined['sg'] = 'jos_emundus_setup_groups';
+                                        $setup_groups_alias = 'sg';
+                                        $where['join'] .= ' LEFT JOIN #__emundus_setup_groups as sg on ' . $jesgrc_alias . '.parent_id = sg.id ';
+                                    } else {
+                                        $setup_groups_alias = array_search('jos_emundus_setup_groups_repeat_course', $already_joined);
+                                    }
+
+                                    if ($filter['operator'] === 'NOT IN') {
+                                        // not in necessits a different approach, because ther is a one to many relationship
+                                        // one jecc.id can have many group_assoc.id
+                                        $where['q'] .= 'AND ( jecc.fnum NOT IN (
+												SELECT jos_emundus_group_assoc.fnum
+										        FROM jos_emundus_group_assoc
+										        WHERE ' . $this->writeQueryWithOperator('jos_emundus_group_assoc.group_id', $filter['value'], 'IN') . '
+									        )
+									        AND esc.training NOT IN (
+									            SELECT jos_emundus_setup_groups_repeat_course.course
+									            FROM jos_emundus_setup_groups_repeat_course
+									            WHERE ' . $this->writeQueryWithOperator('jos_emundus_setup_groups_repeat_course.parent_id', $filter['value'], 'IN') . '
+									        )
+									    )';
+
+                                    } else {
+                                        $where['q'] .= ' AND (' . $this->writeQueryWithOperator($group_assoc_alias . '.group_id', $filter['value'], $filter['operator']) . ' OR ' . $this->writeQueryWithOperator($setup_groups_alias . '.id', $filter['value'], $filter['operator']). ')';
+                                    }
+
+                                    break;
                                 default:
                                     break;
                             }

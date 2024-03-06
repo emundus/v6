@@ -293,7 +293,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
             $menu = $app->getMenu();
             $items = $menu->getItems('link', 'index.php?option=com_emundus&view=files', true);
             if (!empty($items)) {
-                $app->redirect('/' . $items->alias);
+                $app->redirect('/' . $items->route);
             } else {
                 $response['msg'] = JText::_('NO_FILES_VIEW_AVAILABLE');
             }

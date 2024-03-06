@@ -896,7 +896,7 @@ class EmundusModelEmails extends JModelList {
      * @return mixed|string
      * @since version v6
      */
-    private function getCddLabel($elt, $val) {
+    public function getCddLabel($elt, $val) {
         $attribs = json_decode($elt['params']);
         $id = $attribs->cascadingdropdown_id;
         $r1 = explode('___', $id);
