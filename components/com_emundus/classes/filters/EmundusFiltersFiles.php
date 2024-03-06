@@ -448,7 +448,7 @@ class EmundusFiltersFiles extends EmundusFilters
 				$this->applied_filters[] = [
 					'uid'       => 'campaigns',
 					'id'        => 'campaigns',
-					'label'     => Text::_('MOD_EMUNDUS_FILTERS_CAMPAIGNS'),
+					'label'     => JText::_('MOD_EMUNDUS_FILTERS_CAMPAIGNS'),
 					'type'      => 'select',
 					'values'    => $campaigns,
 					'value'     => ['all'],
@@ -541,7 +541,7 @@ class EmundusFiltersFiles extends EmundusFilters
                 $this->applied_filters[] = [
                     'uid' => 'group_assoc',
                     'id' => 'group_assoc',
-                    'label' => Text::_('MOD_EMUNDUS_FILTERS_GROUP_ASSOC'),
+                    'label' => JText::_('MOD_EMUNDUS_FILTERS_GROUP_ASSOC'),
                     'type' => 'select',
                     'values' => $groups,
                     'value' => ['all'],
