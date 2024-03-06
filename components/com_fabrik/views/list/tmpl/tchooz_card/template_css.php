@@ -92,7 +92,7 @@ list-style: none;
     width: min-content;
 	text-align: center;
 	font-size: 14px;
-	margin: 12px 0
+	margin: 16px 0;
 }
 
 .view-list.catalogue #g-container-main {
@@ -166,10 +166,11 @@ list-style: none;
 
 .view-list .catalogue_cards_container .container-actions .btn {
 	height: auto;
+	margin-top: 16px;
 }
 
 .catalogue_cards_container .mod_emundus_campaign__list_content {
-    height: 280px;
+    height: 300px;
 }
 
 .catalogue_cards_container .fabrik_element p {
@@ -191,6 +192,12 @@ list-style: none;
     display: -webkit-box;
     line-height: 140%;
     min-height: 46px;
+}
+
+.catalogue_cards_container .em-text-neutral-600 {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 "; ?>
