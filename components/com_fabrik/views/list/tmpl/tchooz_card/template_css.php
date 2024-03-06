@@ -88,10 +88,112 @@ list-style: none;
 	background: var(--neutral-400);
 	color: var(--neutral-700);
 	border-radius: 25px;
-	padding: 4px;
-	width: 150px;
+    padding: 4px 12px;
+    width: min-content;
 	text-align: center;
 	font-size: 14px;
 	margin: 12px 0
 }
+
+.view-list.catalogue #g-container-main {
+     padding-left: 0 !important; 
+}
+
+.view-list.catalogue #g-container-main .g-container {
+    padding: 0 !important;
+	width: 75rem !important;
+    margin: auto;
+}
+    
+
+.catalogue_content_container {
+    overflow: auto;
+    height: 100vh !important;
+    display: flex;
+    flex-direction: row !important;
+	flex-wrap: wrap;
+	align-items: flex-start !important;
+    gap: 24px;
+}
+
+.catalogue_filters_container  {
+  flex: 0 0 20%;
+}
+
+.catalogue_cards_container {
+    flex: 0 0 77%;
+    width: min-content !important;
+}
+
+.catalogue_cards_container .mod_emundus_campaign__list_items {
+    gap: var(--p-24);
+    grid-template-columns: repeat(3, minmax(200px, 1fr));
+}
+
+.catalogue_cards_container .mod_emundus_campaign__list_content {
+	padding: 32px 24px;
+}
+
+.fabrikFiltersBlock {
+    padding: 24px;
+    background: #FFFFFF;
+    border: 1px solid #EDEDED;
+    box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+    border-radius: 16px;
+    height: auto;
+}
+
+.catalogue_filters_container .fabrik_filter_submit.button {
+	background: var(--em-primary-color);
+    border: 1px solid var(--em-primary-color);
+    border-radius: var(--em-applicant-br) !important;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal) !important;
+    color: var(--neutral-0);
+    line-height: normal !important;
+    letter-spacing: normal;
+    font-size: var(--em-applicant-font-size);
+}
+
+.view-list .catalogue_filters_container .fabrik_filter_submit.button {
+    border-radius: var(--em-applicant-br) !important;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal) !important;
+    color: var(--neutral-0);
+    line-height: normal !important;
+    letter-spacing: normal;
+    font-size: var(--em-applicant-font-size) !important;
+}
+
+.view-list .catalogue_cards_container .container-actions .btn {
+	height: auto;
+}
+
+.catalogue_cards_container .mod_emundus_campaign__list_content {
+    height: 280px;
+}
+
+.catalogue_cards_container .fabrik_element p {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	width: 235px;
+}
+
+.catalogue.gantry.view-list #g-container-main .g-container .page-header {
+    margin-top: 0;
+}
+
+.catalogue.gantry.view-list #g-container-main .g-container .page-header {
+    margin-top: 0;
+}
+
+.catalogue_cards_container h4 {
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    max-height: 48px;
+    display: -webkit-box;
+    line-height: 140%;
+    min-height: 46px;
+}
+
 "; ?>

@@ -19,7 +19,7 @@ $underHeadings = $d->filterMode === 3 || $d->filterMode === 4;
 $clearFiltersClass = $d->gotOptionalFilters ? "clearFilters hasFilters" : "clearFilters";
 
 $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
-<div class="fabrikFilterContainer" <?php echo $style ?>>
+<div class="fabrikFilterContainer catalogue_filters_container" <?php echo $style ?>>
     <div class="fabrikFiltersBlock">
 	<?php
 	if (!$underHeadings) :

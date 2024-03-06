@@ -51,7 +51,7 @@ foreach ($this->headings as $heading => $label) {
 
 ?>
 <div class="hover-and-tile-container">
-    <div id="tile-hover-offset-procedure"></div>
+	<?php if (!$this->showFilters) : ?><div id="tile-hover-offset-procedure"></div><?php endif; ?>
     <div id="<?php echo $this->_row->id; ?>"
          class="mod_emundus_campaign__list_content em-border-neutral-300 em-pointer em-flex-space-between">
         <div id="background-shapes" alt="Fond formes"
@@ -91,12 +91,12 @@ foreach ($this->headings as $heading => $label) {
                         }
 
                         ?>
-                        <div class="<?php echo $this->cellClass[$heading]['class'] ?> flex" <?php echo $style ?>>
+                        <div class="<?php echo $this->cellClass[$heading]['class'] ?> flex em-flex-align-start" <?php echo $style ?>>
                             <?php if (!empty($icon)) : ?>
                                 <span class="material-icons-outlined mr-2"><?php echo $icon ?></span>
                             <?php endif; ?>
 
-                            <?php echo isset($this->_row->data) ? $this->_row->data->$heading : ''; ?>
+                            <p class="em-neutral-700-color"><?php if($this->showFilters && !empty($label)): ?><?php echo $label ?> : <?php endif; ?><?php echo isset($this->_row->data) ? $this->_row->data->$heading : ''; ?></p>
                         </div>
                         <?php
                     }

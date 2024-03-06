@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Language\Text;
 
 ?>
+<?php if(!$this->showFilters): ?>
 <div class="fabrikButtonsContainer row-fluid em-w-100 em-flex-row em-flex-end">
     <ul class="nav nav-pills  pull-left">
 		<?php if ($this->showAdd) : ?>
@@ -125,3 +126,4 @@ use Joomla\CMS\Language\Text;
     </ul>
 
 </div>
+<?php endif; ?>

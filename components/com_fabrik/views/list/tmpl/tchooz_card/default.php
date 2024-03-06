@@ -36,7 +36,9 @@ endif;
 
 if ($this->showTitle == 1) : ?>
     <div class="page-header em-flex-row em-flex-space-between emundus-list-page-header">
-        <h1><?php echo $this->table->label; ?></h1>
+       <?php if (!$this->showFilters) : ?>
+          <h1><?php echo $this->table->label; ?></h1>
+       <?php endif; ?>
 		<?php if ($this->showAdd) : ?>
 
             <div><a class="addbutton addRecord em-primary-button em-w-max-content"
@@ -56,7 +58,7 @@ endif;
 </div>
 
 
-<form class="fabrikForm form-search em-mt-32 em-flex-column" action="<?php echo $this->table->action; ?>" method="post"
+<form class="fabrikForm form-search em-mt-32 em-flex-column <?php if ($this->showFilters) : ?>catalogue_content_container<?php endif; ?>" action="<?php echo $this->table->action; ?>" method="post"
       id="<?php echo $this->formid; ?>" name="fabrikList">
 	<?php
 	if ($this->hasButtons):
@@ -70,9 +72,13 @@ endif;
 	?>
 
 
-    <div class="mod_emundus_campaign__content em-w-100">
+    <div class="em-w-100 <?php if ($this->showFilters) : ?>catalogue_cards_container<?php endif; ?>">
         <div id="current_1" class="mod_emundus_campaign__list">
-            <div class="fabrikDataContainer em-mt-24">
+            <div class="fabrikDataContainer">
+	            <?php if ($this->showFilters) : ?>
+                    <h1 class="em-mb-24"><?php echo $this->table->label; ?></h1>
+	            <?php endif; ?>
+
 				<?php foreach ($this->pluginBeforeList as $c) :
 					echo $c;
 				endforeach;
