@@ -42,8 +42,7 @@
 				<MultiSelect v-if="appliedFilter.type === 'select'" :filter="appliedFilter" :module-id="moduleId" :countFilterValues="countFilterValues" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)" @filter-changed="onFilterChanged"></MultiSelect>
 				<DateFilter v-else-if="appliedFilter.type === 'date'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)" @filter-changed="onFilterChanged"></DateFilter>
 				<TimeFilter v-else-if="appliedFilter.type === 'time'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)"></TimeFilter>
-				<DefaultFilter v-else :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)" @filter-changed="onFilterChanged"></DefaultFilter>
-			</div>
+        <DefaultFilter v-else :filter="appliedFilter" :module-id="moduleId" :type="appliedFilter.type" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)" @filter-changed="onFilterChanged"></DefaultFilter>			</div>
 	  </section>
 	  <div id="filters-selection-wrapper" class="em-w-100 em-mt-16 em-mb-16" :class="{'hidden': !openFilterOptions}">
 		  <label for="filters-selection"> {{ translate('MOD_EMUNDUS_FILTERS_SELECT_FILTER_LABEL') }} </label>

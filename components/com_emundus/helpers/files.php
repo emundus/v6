@@ -4286,7 +4286,19 @@ class EmundusHelperFiles
 							$query = '(' . $element . ' != ' . $db->quote($values) . ' OR ' . $element . ' IS NULL ) ';
 						}
 						break;
-					case 'LIKE':
+                    case 'superior':
+                        $query = $element . ' > ' . $db->quote($values);
+                        break;
+                    case 'superior_or_equal':
+                        $query = $element . ' >= ' . $db->quote($values);
+                        break;
+                    case 'inferior':
+                        $query = $element . ' < ' . $db->quote($values);
+                        break;
+                    case 'inferior_or_equal':
+                        $query = $element . ' <= ' . $db->quote($values);
+                        break;
+                    case 'LIKE':
 						if (is_array($values)) {
 							$_values = implode(',', $db->quote($values));
 							$query = $element . ' IN (' . $_values . ')';

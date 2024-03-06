@@ -6,11 +6,15 @@
  * @author     EMUNDUS SAS
  */
 
+if ('undefined' === typeof jQuery) throw new Error('eMundus\'s JavaScript requires jQuery');
+
 var loading;
 var moduleFilters = null;
 var refreshModuleFiltersEvent = new Event('refresh-emundus-module-filters');
 
-var $ = jQuery.noConflict();
+if (typeof $ === 'undefined') {
+    var $ = jQuery.noConflict();
+}
 
 // to abort all AJAX query at once
 $.ajaxQ = (function(){
@@ -489,7 +493,7 @@ function openFiles(fnum, page = 0, vue = false) {
                         var numMenu = 0;
 
                         while (numMenu <= menus.length) {
-                            if (menus[numMenu].link.indexOf('layout=' + page) != -1) {
+                            if (menus[numMenu] && menus[numMenu].link && menus[numMenu].link.indexOf('layout=' + page) != -1) {
                                 break;
                             }
                             numMenu++;
@@ -4861,8 +4865,12 @@ $(document).ready(function() {
                 var fnumUsed = urlUsed.searchParams.get('fnum');
 
                 checkIfSomeoneIsEditing(fnumUsed);
-                $('#em-appli-block').empty();
-                $('#em-appli-block').append(result);
+                const appBlock = $('#em-appli-block');
+
+                if (appBlock) {
+                    appBlock.empty();
+                    appBlock.append(result);
+                }
             },
             error: function (jqXHR) {
                 console.log(jqXHR.responseText);

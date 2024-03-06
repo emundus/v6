@@ -343,10 +343,15 @@ class EmundusFiltersFiles extends EmundusFilters
 
 				$query->order('ordering ASC');
 
-				$db->setQuery($query);
-				$statuses = $db->loadObjectList();
+                try {
+                    $db->setQuery($query);
+                    $statuses = $db->loadObjectList();
+                } catch (Exception $e) {
+                    Log::add('Failed to get statuses : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+                    throw new Exception('Failed to get statuses ', 500);
+                }
 
-				$values = [];
+                $values = [];
 				foreach ($statuses as $status)
 				{
 					$values[] = ['value' => $status->step, 'label' => $status->value];
@@ -394,9 +399,14 @@ class EmundusFiltersFiles extends EmundusFilters
 
 					$query->order('ordering ASC');
 
-					$db->setQuery($query);
-					$programs = $db->loadAssocList();
-				}
+                    try {
+                        $db->setQuery($query);
+                        $programs = $db->loadAssocList();
+                    } catch (Exception $e) {
+                        Log::add('Failed to get programs : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+                        throw new Exception('Failed to get programs ', 500);
+                    }
+                }
 
 				$this->applied_filters[] = [
 					'uid'       => 'programs',
@@ -444,14 +454,19 @@ class EmundusFiltersFiles extends EmundusFilters
 
 					$query->order('id DESC');
 
-					$db->setQuery($query);
-					$campaigns = $db->loadAssocList();
-				}
+                    try {
+                        $db->setQuery($query);
+                        $campaigns = $db->loadAssocList();
+                    } catch (Exception $e) {
+                        Log::add('Failed to get campaigns : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+                        throw new Exception('Failed to get campaigns', 500);
+                    }
+                }
 
 				$this->applied_filters[] = [
 					'uid'       => 'campaigns',
 					'id'        => 'campaigns',
-					'label'     => Text::_('MOD_EMUNDUS_FILTERS_CAMPAIGNS'),
+					'label'     => JText::_('MOD_EMUNDUS_FILTERS_CAMPAIGNS'),
 					'type'      => 'select',
 					'values'    => $campaigns,
 					'value'     => ['all'],
@@ -544,7 +559,7 @@ class EmundusFiltersFiles extends EmundusFilters
                 $this->applied_filters[] = [
                     'uid' => 'group_assoc',
                     'id' => 'group_assoc',
-                    'label' => Text::_('MOD_EMUNDUS_FILTERS_GROUP_ASSOC'),
+                    'label' => JText::_('MOD_EMUNDUS_FILTERS_GROUP_ASSOC'),
                     'type' => 'select',
                     'values' => $groups,
                     'value' => ['all'],
