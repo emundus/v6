@@ -14,10 +14,6 @@ requirejs(['fab/fabrik'], function () {
     Fabrik.addEvent('fabrik.form.loaded', function (form) {
         table_name = form.options.primaryKey.split('___')[0];
 
-        if (!removedFabrikFormSkeleton) {
-            removeFabrikFormSkeleton();
-        }
-
         manageRepeatGroup(form);
 
         var formBlock = document.getElementsByClassName('fabrikForm')[0];
@@ -118,6 +114,10 @@ requirejs(['fab/fabrik'], function () {
                         manageRules(form, element);
                     });
                 });
+            }
+
+            if (!removedFabrikFormSkeleton) {
+                removeFabrikFormSkeleton();
             }
         });
     });
