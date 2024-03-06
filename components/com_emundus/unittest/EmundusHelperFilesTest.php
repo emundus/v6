@@ -125,9 +125,12 @@ class EmundusHelperFilesTest extends TestCase {
 		$this->assertSame('ecc.fnum IN (\'24343432323\',\'24334234234234\')', $query_condition, 'Write query with = operator and array of values returns correct string with IN');
 
 		$query_condition = $this->h_files->writeQueryWithOperator('ecc.fnum', ['24343432323', '24334234234234'], 'superior');
-		$this->assertSame('1=1', $query_condition, 'Write query with > operator and array of values returns 1=1 string, because > operator is not supported with type select');
+		$this->assertSame('(ecc.fnum > \'24343432323\' AND ecc.fnum > \'24334234234234\')', $query_condition, 'Write query with superior operator and multiple values for default filter type works');
 
-		$query_condition = $this->h_files->writeQueryWithOperator('ecc.created', ['2023-02-01', ''], 'superior', 'date');
+        $query_condition = $this->h_files->writeQueryWithOperator('ecc.id', '1', 'superior');
+        $this->assertSame('ecc.id > \'1\'', $query_condition, 'Write query with superior operator and single for default filter type works');
+
+        $query_condition = $this->h_files->writeQueryWithOperator('ecc.created', ['2023-02-01', ''], 'superior', 'date');
 		$this->assertSame('ecc.created > \'2023-02-01\'', $query_condition, 'Write query with superior operator for date filter type works');
 
 		$query_condition = $this->h_files->writeQueryWithOperator('ecc.created', ['2023-02-01', '2023-02-09'], 'between', 'date');

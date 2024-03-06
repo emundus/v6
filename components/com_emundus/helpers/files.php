@@ -4287,16 +4287,64 @@ class EmundusHelperFiles
 						}
 						break;
                     case 'superior':
-                        $query = $element . ' > ' . $db->quote($values);
+                        if (is_array($values)) {
+                            $query = '(';
+                            foreach($values as $key => $value) {
+                                if ($key == 0) {
+                                    $query .= $element . ' > ' . $db->quote($value);
+                                } else {
+                                    $query .= ' AND ' . $element . ' > ' . $db->quote($value);
+                                }
+                            }
+                            $query .= ')';
+                        } else {
+                            $query = $element . ' > ' . $db->quote($values);
+                        }
                         break;
                     case 'superior_or_equal':
-                        $query = $element . ' >= ' . $db->quote($values);
+                        if (is_array($values)) {
+                            $query = '(';
+                            foreach($values as $key => $value) {
+                                if ($key == 0) {
+                                    $query .= $element . ' >= ' . $db->quote($value);
+                                } else {
+                                    $query .= ' AND ' . $element . ' >= ' . $db->quote($value);
+                                }
+                            }
+                            $query .= ')';
+                        } else {
+                            $query = $element . ' >= ' . $db->quote($values);
+                        }
                         break;
                     case 'inferior':
-                        $query = $element . ' < ' . $db->quote($values);
+                        if (is_array($values)) {
+                            $query = '(';
+                            foreach($values as $key => $value) {
+                                if ($key == 0) {
+                                    $query .= $element . ' < ' . $db->quote($value);
+                                } else {
+                                    $query .= ' AND ' . $element . ' < ' . $db->quote($value);
+                                }
+                            }
+                            $query .= ')';
+                        } else {
+                            $query = $element . ' < ' . $db->quote($values);
+                        }
                         break;
                     case 'inferior_or_equal':
-                        $query = $element . ' <= ' . $db->quote($values);
+                        if (is_array($values)) {
+                            $query = '(';
+                            foreach($values as $key => $value) {
+                                if ($key == 0) {
+                                    $query .= $element . ' <= ' . $db->quote($value);
+                                } else {
+                                    $query .= ' AND ' . $element . ' <= ' . $db->quote($value);
+                                }
+                            }
+                            $query .= ')';
+                        } else {
+                            $query = $element . ' <= ' . $db->quote($values);
+                        }
                         break;
                     case 'LIKE':
 						if (is_array($values)) {
