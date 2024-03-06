@@ -4,13 +4,14 @@ requirejs(['fab/fabrik'], function () {
     var js_rules = [];
     var table_name = '';
 
-    Fabrik.addEvent('fabrik.form.loaded', function (form) {
-        fetch('/index.php?option=com_emundus&controller=form&task=getjsconditions&form_id=' + form.id).then(response => response.json()).then(data => {
-            if (data.status) {
-                js_rules = data.data.conditions;
-            }
-        });
+    let check_condition = arr => arr.every(v => v === true);
+    var operators = {
+        '=': function(a, b) { return a == b; },
+        '!=': function(a, b) { return a != b; },
+        // ...
+    };
 
+    Fabrik.addEvent('fabrik.form.loaded', function (form) {
         table_name = form.options.primaryKey.split('___')[0];
 
         if (!removedFabrikFormSkeleton) {
@@ -105,79 +106,19 @@ requirejs(['fab/fabrik'], function () {
     });
 
     Fabrik.addEvent('fabrik.form.elements.added', function (form, event) {
-        form.elements.forEach(function (element) {
-            var $el = jQuery(element.element);
-            $el.on(element.getChangeEvent(), function (e) {
-                let elt_rules = [];
-                js_rules.forEach((js_rule) => {
-                    js_rule.conditions.forEach((condition) => {
-                        if (condition.field == element.options.id) {
-                            elt_rules.push(js_rule);
-                        }
+        fetch('/index.php?option=com_emundus&controller=form&task=getjsconditions&form_id=' + form.id).then(response => response.json()).then(data => {
+            if (data.status) {
+                js_rules = data.data.conditions;
+
+                form.elements.forEach(function (element) {
+                    manageRules(form, element, false);
+
+                    var $el = jQuery(element.element);
+                    $el.on(element.getChangeEvent(), function (e) {
+                        manageRules(form, element);
                     });
                 });
-
-                if (elt_rules.length > 0) {
-                    elt_rules.forEach((rule) => {
-                        let condition_state = false;
-
-                        rule.conditions.forEach((condition) => {
-                            form.elements.forEach((elt) => {
-                                if (elt.options.id == condition.field) {
-                                    if (elt.get('value') == condition.values) {
-                                        condition_state = true;
-                                    } else {
-                                        condition_state = false;
-                                    }
-                                }
-                            });
-                        });
-
-                        if (condition_state) {
-                            rule.actions.forEach((action) => {
-                                form.elements.forEach((elt) => {
-                                    let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
-                                    if(name == action.fields) {
-                                        form.doElementFX('element_'+elt.strElement, action.action, elt);
-
-                                        if(action.action == 'hide') {
-                                            elt.clear();
-                                            let event = new Event(elt.getChangeEvent());
-                                            elt.element.dispatchEvent(event);
-                                        }
-                                    }
-                                });
-                            });
-                        } else {
-                            let opposite_action = 'hide';
-
-                            rule.actions.forEach((action) => {
-                                switch (action.action) {
-                                    case 'show':
-                                        opposite_action = 'hide';
-                                        break;
-                                    case 'hide':
-                                        opposite_action = 'show';
-                                        break;
-                                }
-
-                                form.elements.forEach((elt) => {
-                                    let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
-                                    if(name == action.fields) {
-                                        form.doElementFX('element_'+elt.strElement, opposite_action, elt);
-
-                                        if(opposite_action == 'hide') {
-                                            elt.clear();
-                                            let event = new Event(elt.getChangeEvent());
-                                            elt.element.dispatchEvent(event);
-                                        }
-                                    }
-                                });
-                            });
-                        }
-                    });
-                }
-            });
+            }
         });
     });
 
@@ -278,5 +219,89 @@ requirejs(['fab/fabrik'], function () {
                 }
             });
         }, 100)
+    }
+
+    function manageRules(form, element, clear = true) {
+        let elt_name = element.origId ? element.origId.split('___')[1] : element.baseElementId.split('___')[1];
+
+        let elt_rules = [];
+        js_rules.forEach((js_rule) => {
+            js_rule.conditions.forEach((condition) => {
+                if (condition.field == elt_name) {
+                    elt_rules.push(js_rule);
+                }
+            });
+        });
+
+        if (elt_rules.length > 0) {
+            elt_rules.forEach((rule) => {
+                let condition_state = [];
+
+                rule.conditions.forEach((condition) => {
+                    form.elements.forEach((elt) => {
+                        let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
+                        if (name == condition.field) {
+                            if(operators[condition.state](elt.get('value'), condition.values)) {
+                                condition_state.push(true);
+                            } else if(rule.group == 'AND') {
+                                condition_state.push(false);
+                            }
+                        }
+                    });
+                });
+
+                if (condition_state.length > 0 && check_condition(condition_state)) {
+                    rule.actions.forEach((action) => {
+
+                        let fields = action.fields.split(',');
+
+                        form.elements.forEach((elt) => {
+                            let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
+                            if(fields.includes(name)) {
+                                form.doElementFX('element_'+elt.strElement, action.action, elt);
+
+                                if(action.action == 'hide') {
+                                    if(clear) {
+                                        elt.clear();
+                                    }
+                                    let event = new Event(elt.getChangeEvent());
+                                    elt.element.dispatchEvent(event);
+                                }
+                            }
+                        });
+                    });
+                } else {
+                    let opposite_action = 'hide';
+
+                    rule.actions.forEach((action) => {
+                        switch (action.action) {
+                            case 'show':
+                                opposite_action = 'hide';
+                                break;
+                            case 'hide':
+                                opposite_action = 'show';
+                                break;
+                        }
+
+                        let fields = action.fields.split(',');
+
+                        form.elements.forEach((elt) => {
+                            let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
+                            if(fields.includes(name)) {
+                                form.doElementFX('element_'+elt.strElement, opposite_action, elt);
+
+                                if(opposite_action == 'hide') {
+                                    if(clear) {
+                                        elt.clear();
+                                    }
+                                    let event = new Event(elt.getChangeEvent());
+                                    elt.element.dispatchEvent(event);
+                                }
+                            }
+                        });
+                    });
+                }
+            });
+        }
     }
 });
