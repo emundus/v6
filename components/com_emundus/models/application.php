@@ -3776,7 +3776,7 @@ class EmundusModelApplication extends JModelList
                     $fnum_query->select('cc.fnum')
                         ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
                         ->leftJoin($db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$db->quoteName('sc.id').' = '.$db->quoteName('cc.campaign_id'))
-                        ->leftJoin($db->quoteName('#__emundus_setup_programmes','sp'.' ON '.$db->quoteName('sc.training').' = '.$db->quoteName('sp.code')))
+                        ->leftJoin($db->quoteName('#__emundus_setup_programmes','sp').' ON '.$db->quoteName('sc.training').' = '.$db->quoteName('sp.code'))
                         ->where($db->quoteName('sp.id').' IN ('.implode(',',$db->quote($progs_to_check)) . ')')
                         ->andWhere($db->quoteName('sc.year').' = ' .$db->quote($fnumInfos['year']))
                         ->andWhere($db->quoteName('cc.applicant_id').' = ' .$db->quote($fnumInfos['applicant_id']));
