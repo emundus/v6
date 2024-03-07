@@ -1,12 +1,18 @@
 <template>
-  <div id="form-builder-elements">
+  <div id="form-builder-elements" style="min-width: 260px">
     <div class="flex items-center justify-around">
       <div v-for="menu in menus" :key="menu.id" id="form-builder-elements-title" class="em-light-tabs em-pointer" @click="selected = menu.id" :class="selected === menu.id ? 'em-light-selected-tab' : ''">
         {{ translate(menu.name) }}
       </div>
     </div>
 
-    <div v-if="selected === 1">
+    <div v-if="selected === 1" class="mt-2">
+      <input
+          v-model="keywords"
+          type="text"
+          class="formbuilder-searchbar"
+          :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_SEARCH_ELEMENT')"
+          />
       <draggable
           v-model="publishedElements"
           class="draggables-list"
@@ -89,6 +95,7 @@ export default {
       groups: [],
       cloneElement: {},
       loading: false,
+      keywords: ''
     }
   },
   created() {
@@ -170,7 +177,12 @@ export default {
   },
   computed: {
     publishedElements() {
-      return this.elements.filter(element => element.published);
+      // Filter this.elements with keywords
+      if (this.keywords) {
+        return this.elements.filter(element => element.published && this.translate(element.name).toLowerCase().includes(this.keywords.toLowerCase()));
+      } else {
+        return this.elements.filter(element => element.published);
+      }
     },
     publishedGroups() {
       return this.groups.filter(group => group.published);
@@ -191,6 +203,15 @@ export default {
   border-radius: calc(var(--em-default-br)/2);
   &:hover {
     background-color: var(--neutral-200);
+  }
+}
+#form-builder-elements input.formbuilder-searchbar {
+  border-width: 0 0 1px 0;
+  border-radius: 0;
+  border-color: var(--neutral-400);
+  &:focus {
+    outline: unset;
+    border-bottom-color: var(--em-form-outline-color-focus);
   }
 }
 </style>
