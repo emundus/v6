@@ -16,32 +16,44 @@
           :classes="'vue-notification-custom'"
       />
       <header class="em-flex-row em-flex-space-between">
-        <div class="right-actions">
+        <div class="right-actions flex items-center justify-start gap-2">
           <span id="go-back"
                 class="material-icons-outlined em-p-12-16 em-pointer"
                 @click="clickGoBack">
             navigate_before
           </span>
-        </div>
-          <span
-            class="em-font-size-14  em-font-weight-600 editable-data"
-            contenteditable="true"
-            ref="formTitle"
-            @focusout="updateFormTitle"
-            @keyup.enter="updateFormTitleKeyup"
-          >
-            {{ title }}
-          </span>
-        <div class="left-actions em-flex-row em-flex-space-between em-p-12-16">
           <p v-if="lastSave" id="saved-at" class="em-font-size-14 em-main-500-color">
             {{ translate("COM_EMUNDUS_FORM_BUILDER_SAVED_AT") }} {{ lastSave }}
           </p>
         </div>
+          <span
+              class="em-font-size-14  em-font-weight-600 editable-data"
+              contenteditable="true"
+              ref="formTitle"
+              @focusout="updateFormTitle"
+              @keyup.enter="updateFormTitleKeyup"
+          >
+            {{ title }}
+          </span>
+
+        <button class="em-primary-button px-6 py-3 gap-3 em-w-auto" v-if="!previewForm" @click="previewForm = true">
+          <span class="text-white material-icons-outlined">
+            remove_red_eye
+          </span>
+          <label class="mb-0" for="previewform">Prévisualiser le formulaire</label>
+        </button>
+        <button class="em-primary-button px-6 py-3 gap-3 em-w-auto" v-if="previewForm" @click="previewForm = false">
+          <span class="text-white material-icons-outlined">
+            handyman
+          </span>
+          <label class="mb-0" for="previewform">Revenir au form-builder</label>
+        </button>
       </header>
+
       <div v-if="principalContainer === 'default'" class="body em-flex-row em-flex-space-between">
         <aside class="left-panel em-flex-row em-flex-start em-h-100">
           <div class="tabs em-flex-column em-flex-start em-h-100">
-            <div class="tab" v-for="(tab,i) in displayedLeftPanels" :key="title + '_' + i" :class="{ active: tab.active }">
+            <div class="tab" v-for="(tab,i) in displayedLeftPanels" :key="title + '_' + i" :class="{ active: tab.active }" :title="tab.title">
               <span
                   class="material-icons-outlined em-p-16"
                   @click="tab.url ? goTo(tab.url, 'blank') : selectTab(tab.title)"
@@ -50,7 +62,8 @@
               </span>
             </div>
           </div>
-          <div class="tab-content em-flex-start">
+
+          <div class="tab-content em-flex-start" v-if="!previewForm">
             <form-builder-elements v-if="leftPanelActiveTab === 'Elements'" @element-created="onElementCreated" :form="currentPage">
             </form-builder-elements>
             <form-builder-document-formats
@@ -61,11 +74,12 @@
             </form-builder-document-formats>
           </div>
         </aside>
-        <section class="em-flex-column em-w-100 em-h-100">
+
+        <section class="em-flex-column em-w-100 em-h-100" v-if="!previewForm">
           <transition name="fade" mode="out-in">
             <form-builder-page
               ref="formBuilderPage"
-              v-if="currentPage && showInSection === 'page'"
+              v-if="currentPage && showInSection === 'page' && leftPanelActiveTab === 'Elements'"
               :key="currentPage.id"
               :profile_id="parseInt(profile_id)"
               :page="currentPage"
@@ -86,6 +100,12 @@
             ></form-builder-document-list>
           </transition>
         </section>
+
+        <div v-if="previewForm" class="w-full h-full" style="background: #fafafb">
+          <h2 style="padding: 1.5rem">Aperçu du formulaire</h2>
+          <iframe width="100%" height="100%" frameborder="0" style="min-height: 100vh;" id="preview_iframe" name="preview_iframe" :src="'index.php?option=com_fabrik&view=form&formid='+selectedPage+'&tmpl=component'"></iframe>
+        </div>
+
 	      <transition name="slide-fade" mode="out-in">
 		      <aside v-if="rightPanel.tabs.includes(showInRightPanel)" class="right-panel em-flex-column em-h-100">
 	          <transition name="fade" mode="out-in">
@@ -103,6 +123,7 @@
 	              ></form-builder-pages>
 	              <hr>
 	              <form-builder-documents
+                    v-if="!previewForm && leftPanelActiveTab !== 'Rules'"
 	                  ref="formBuilderDocuments"
 	                  :profile_id="parseInt(profile_id)"
 	                  :campaign_id="parseInt(campaign_id)"
@@ -146,6 +167,8 @@
 		    <form-builder-create-page :profile_id="parseInt(profile_id)" @close="onCloseCreatePage"></form-builder-create-page>
 	    </div>
     </modal>
+
+    <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
 
@@ -229,10 +252,18 @@ export default {
             displayed: true,
             url: '/parametres-globaux?layout=translation&default_menu=2&object=emundus_setup_profiles'
           },
+          {
+            title: 'Rules',
+            icon: 'alt_route',
+            active: true,
+            displayed: true
+          }
         ],
       },
 	    formBuilderCreateDocumentKey: 0,
-	    createDocumentMode: 'create'
+	    createDocumentMode: 'create',
+      previewForm: false,
+      loading: false
     }
   },
   created() {
@@ -413,6 +444,12 @@ export default {
       this.leftPanel.tabs.forEach((tab) => {
         tab.active = tab.title === title;
       });
+
+      if(title === 'Preview') {
+        this.previewForm = true;
+      } else {
+        this.previewForm = false;
+      }
     },
     selectPage(page_id) {
       this.selectedPage = page_id;
@@ -429,7 +466,9 @@ export default {
         this.leftPanel.tabs.forEach((tab, i) => {
           this.leftPanel.tabs[i].displayed = tab.title !== 'Documents';
         });
-        this.selectTab('Elements');
+        if(!this.previewForm) {
+          this.selectTab('Elements');
+        }
       }
       this.showInSection = section;
     },
@@ -470,6 +509,30 @@ export default {
       },
       deep: true
     },
+    previewForm(newValue) {
+      if (newValue) {
+        this.loading = true;
+        setTimeout(() => {
+          var myIframe = document.getElementById('preview_iframe');
+          myIframe.addEventListener("load", () => {
+            var cssLink = document.createElement("link");
+            cssLink.href = "media/com_fabrik/css/fabrik.css";
+            cssLink.rel = "stylesheet";
+            cssLink.type = "text/css";
+            frames['preview_iframe'].document.head.appendChild(cssLink);
+
+            var css = '<style type="text/css">' +
+                '.fabrikActions{display:none}; ' +
+                '</style>';
+            frames['preview_iframe'].document.head.insertAdjacentHTML('beforeend', css);
+
+            this.loading = false;
+          });
+        }, 500);
+      } else {
+        this.selectTab('Elements');
+      }
+    }
   }
 }
 </script>
@@ -488,6 +551,11 @@ export default {
     button {
       margin: 8px 16px;
       height: 32px;
+      &:hover {
+        span {
+          color: var(--em-profile-color) !important;
+        }
+      }
     }
 
     #saved-at {
@@ -537,7 +605,10 @@ export default {
           cursor: pointer;
 
           &.active {
-            background-color: #f8f8f8;
+            background-color: var(--em-profile-color);
+            span {
+              color: white !important;
+            }
           }
 
           .material-icons, .material-icons-outlined {
@@ -590,5 +661,8 @@ export default {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+.fabrikActions {
+  display: none;
 }
 </style>
