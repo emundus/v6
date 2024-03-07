@@ -79,16 +79,24 @@
           </th>
           </thead>
           <tbody>
-          <tr v-for="file in rankings.myRanking" :key="file.id">
-            <td v-for="hierarchy in rankings.otherRankings" :key="hierarchy.hierarchy_id" class="em-flex-row">
-              <span class="material-icons-outlined em-mr-4" v-if="rankings.otherRankings.groupedByFiles[file.id] && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id] && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].locked == 1">lock</span>
-              <span v-else class="material-icons-outlined em-mr-4">lock_open</span>
-              <span v-if="rankings.otherRankings.groupedByFiles[file.id] && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id] && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].rank != -1">
-                {{ rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].rank }}
-              </span>
-              <span v-else>{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</span>
-            </td>
-          </tr>
+            <!-- 1 ligne par fichier, 1 colonne par hiérarchie -->
+            <tr v-for="file in rankings.myRanking" :key="file.id">
+              <td v-for="hierarchy in rankings.otherRankings" :key="file.id + '-' + hierarchy.hierarchy_id">
+                <span class="material-icons-outlined em-mr-4"
+                      v-if="rankings.otherRankings.groupedByFiles[file.id]
+                      && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id]
+                      && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].locked == 1">
+                  lock
+                </span>
+                <span v-else class="material-icons-outlined em-mr-4">lock_open</span>
+                <span v-if="rankings.otherRankings.groupedByFiles[file.id]
+                  && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id]
+                  && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].rank != -1">
+                  {{ rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].rank }}
+                </span>
+                <span v-else>{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</span>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
