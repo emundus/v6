@@ -171,9 +171,9 @@ class EmundusModelEvaluation extends JModelList {
 
 						    $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
 						    $query = '(
-                                SELECT GROUP_CONCAT('.$t.'.'.$def_elmt->element_name.' SEPARATOR ", ")
-                                FROM '.$t.'
-                                WHERE '.$t.'.parent_id='.$def_elmt->tab_name.'.id
+                                SELECT GROUP_CONCAT('.$def_elmt->table_join.'.'.$def_elmt->element_name.' SEPARATOR ", ")
+                                FROM '.$def_elmt->table_join.'
+                                WHERE '.$def_elmt->table_join.'.parent_id='.$def_elmt->tab_name.'.id
                                 '.$publish_query.'
                               ) AS `'.$t.'`';
 					    } else if( $attribs->database_join_display_type == 'multilist' ) {
