@@ -277,6 +277,210 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     country: 'Luxembourg'
                 },
                 {
+                    mask: 'aa00 **** **** **** **** *',
+                    startsWith: 'LV',
+                    lazy: false,
+                    country: 'Lettonie'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **** ***',
+                    startsWith: 'MC',
+                    lazy: false,
+                    country: 'Monaco'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** ****',
+                    startsWith: 'MD',
+                    lazy: false,
+                    country: 'Moldavie'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **',
+                    startsWith: 'ME',
+                    lazy: false,
+                    country: 'Monténégro'
+                },
+                {
+                    mask: 'aa00 **** **** **** ***',
+                    startsWith: 'MK',
+                    lazy: false,
+                    country: 'Macédoine'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **** ***',
+                    startsWith: 'MR',
+                    lazy: false,
+                    country: 'Mauritanie'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **** **** ***',
+                    startsWith: 'MT',
+                    lazy: false,
+                    country: 'Malte'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **** **** **',
+                    startsWith: 'MU',
+                    lazy: false,
+                    country: 'Île Maurice'
+                },
+                {
+                    mask: 'aa00 **** **** **** **',
+                    startsWith: 'NL',
+                    lazy: false,
+                    country: 'Pays-Bas'
+                },
+                {
+                    mask: 'aa00 **** **** ***',
+                    startsWith: 'NO',
+                    lazy: false,
+                    country: 'Norvège'
+                },
+                {
+                    mask: 'aa00 **** **** ***',
+                    startsWith: 'NO',
+                    lazy: false,
+                    country: 'Norvège'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** ****',
+                    startsWith: 'PK',
+                    lazy: false,
+                    country: 'Pakistan'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **** ****',
+                    startsWith: 'PL',
+                    lazy: false,
+                    country: 'Pologne'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **** **** *',
+                    startsWith: 'PS',
+                    lazy: false,
+                    country: 'Palestine'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **** *',
+                    startsWith: 'PT',
+                    lazy: false,
+                    country: 'Portugal'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **** **** *',
+                    startsWith: 'QA',
+                    lazy: false,
+                    country: 'Qatar'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** ****',
+                    startsWith: 'RO',
+                    lazy: false,
+                    country: 'Roumanie'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **',
+                    startsWith: 'RS',
+                    lazy: false,
+                    country: 'Serbie'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** ****',
+                    startsWith: 'SA',
+                    lazy: false,
+                    country: 'Arabie Saoudite'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** ****',
+                    startsWith: 'SE',
+                    lazy: false,
+                    country: 'Suède'
+                },
+                {
+                    mask: 'aa00 **** **** **** ***',
+                    startsWith: 'SI',
+                    lazy: false,
+                    country: 'Slovénie'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** ****',
+                    startsWith: 'SK',
+                    lazy: false,
+                    country: 'Slovaquie'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **** ***',
+                    startsWith: 'SM',
+                    lazy: false,
+                    country: 'Saint-Marin'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** ****',
+                    startsWith: 'TN',
+                    lazy: false,
+                    country: 'Tunisie'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **** **',
+                    startsWith: 'TR',
+                    lazy: false,
+                    country: 'Turquie'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **** ****',
+                    startsWith: 'AL',
+                    lazy: false,
+                    country: 'Albanie'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **** ****',
+                    startsWith: 'BY',
+                    lazy: false,
+                    country: 'Biélorussie'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **',
+                    startsWith: 'CR',
+                    lazy: false,
+                    country: 'Costa Rica'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **** **** *',
+                    startsWith: 'EG',
+                    lazy: false,
+                    country: 'Égypte'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **',
+                    startsWith: 'GE',
+                    lazy: false,
+                    country: 'Géorgie'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **** **** ****',
+                    startsWith: 'LC',
+                    lazy: false,
+                    country: 'Sainte-Lucie'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **** **** ***',
+                    startsWith: 'SC',
+                    lazy: false,
+                    country: 'Seychelles'
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **** **** *',
+                    startsWith: 'UA',
+                    lazy: false,
+                    country: 'Ukraine'
+                },
+                {
+                    mask: 'aa00 **** **** **** ****',
+                    startsWith: 'XK',
+                    lazy: false,
+                    country: 'Kosovo'
+                },
+                {
                     mask: 'aa00 **** **** **** **** **** ***',
                     startsWith: '',
                     country: ''
