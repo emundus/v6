@@ -74,28 +74,37 @@
       <div v-if="rankings.otherRankings.length > 0" id="other-ranking-lists" class="em-w-100 em-border-neutral-300">
         <table class="em-w-100">
           <thead>
-          <th v-for="hierarchy in rankings.otherRankings" :key="hierarchy.hierarchy_id">
-            {{ hierarchy.label }}
-          </th>
+            <template v-for="hierarchy in rankings.otherRankings" :key="hierarchy.hierarchy_id">
+              <th> {{ hierarchy.label }} </th>
+              <th> {{ translate('COM_EMUNDUS_RANKING_RANKER') + ' ' + hierarchy.label}} </th>
+            </template>
           </thead>
           <tbody>
-            <!-- 1 ligne par fichier, 1 colonne par hiérarchie -->
-            <tr v-for="file in rankings.myRanking" :key="file.id">
-              <td v-for="hierarchy in rankings.otherRankings" :key="file.id + '-' + hierarchy.hierarchy_id">
-                <span class="material-icons-outlined em-mr-4"
-                      v-if="rankings.otherRankings.groupedByFiles[file.id]
-                      && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id]
-                      && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].locked == 1">
-                  lock
-                </span>
-                <span v-else class="material-icons-outlined em-mr-4">lock_open</span>
-                <span v-if="rankings.otherRankings.groupedByFiles[file.id]
-                  && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id]
-                  && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].rank != -1">
-                  {{ rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].rank }}
-                </span>
-                <span v-else>{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</span>
-              </td>
+            <!-- 1 ligne par fichier, 2 colonnes par hiérarchie (1 de classement, et une pour connaître le classeur) -->
+            <tr v-for="file in orderedRankings" :key="file.id">
+              <template v-for="hierarchy in rankings.otherRankings" :key="file.id + '-' + hierarchy.hierarchy_id">
+                <td>
+                  <span class="material-icons-outlined em-mr-4"
+                        v-if="rankings.otherRankings.groupedByFiles[file.id]
+                        && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id]
+                        && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].locked == 1">
+                    lock
+                  </span>
+                    <span v-else class="material-icons-outlined em-mr-4">lock_open</span>
+                    <span v-if="rankings.otherRankings.groupedByFiles[file.id]
+                    && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id]
+                    && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].rank != -1">
+                    {{ rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].rank }}
+                  </span>
+                  <span v-else>{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</span>
+                </td>
+                <td>
+                  <span v-if="rankings.otherRankings.groupedByFiles[file.id] && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id]">
+                    {{ hierarchy.rankers[rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].ranker_id].name }}
+                  </span>
+                  <span v-else>-</span>
+                </td>
+              </template>
             </tr>
           </tbody>
         </table>
@@ -325,6 +334,10 @@ export default {
     },
     rankedFiles() {
       return this.rankings.myRanking.filter(file => file.rank != -1);
+    },
+    orderedRankings() {
+      // rankedFiles first, then unrankedFiles
+      return this.rankedFiles.concat(this.unrankedFiles);
     },
     ismyRankingLocked() {
       return this.rankings.myRanking.length > 0 ? this.rankings.myRanking.every(file => file.locked == 1) : false;
