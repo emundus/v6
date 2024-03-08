@@ -42,6 +42,11 @@
                     </form>
                 </field>
 
+                <field type="list" name="allow_add_filter" label="MOD_EMUNDUS_FILTER_ALLOW_ADD_FILTER" default="1">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
                 <!-- fields shown on fnum context -->
                 <fieldset showon="filter_on_fnum=1">
                     <field type="checkbox" name="count_filter_values" label="MOD_EMUNDUS_FILTER_COUNT_FILTER_VALUES" description="MOD_EMUNDUS_FILTER_COUNT_FILTER_VALUES_DESC" default="0"/>

@@ -79,22 +79,27 @@ Text::script('COM_EMUNDUS_RANKING_LOCK_RANKING_CONFIRM_NO');
 Text::script('COM_EMUNDUS_RANKING_RANKER');
 
 ?>
+<div class="em-flex-row">
+    <div>
+        <?php echo JHtml::_('content.prepare', '{loadposition emundus_filters}'); ?>
+    </div>
 
-<div class="em-p-0-12">
-    <h2><?= Text::_('COM_EMUNDUS_CLASSEMENT_TITLE') ?></h2>
-    <p class="em-neutral-600-color em-mt-8 em-mb-8"><?= Text::_('COM_EMUNDUS_CLASSEMENT_HIERARCHY_LEVEL') . $this->hierarchy_id . ' - ' . Text::_('COM_EMUNDUS_CLASSEMENT_RANKER') . ' ' . $this->user->name ?></p>
-    <div id="em-component-vue"
-         component="classement"
-         hash="<?= $hash ?>"
-         user="<?= $this->user->id ?>"
-         hierarchy_id="<?= $this->hierarchy_id ?>"
-         shortLang="<?= $short_lang ?>"
-         currentLanguage="<?= $current_lang ?>"
-         defaultLang="<?= $default_lang ?>"
-         manyLanguages="<?= $many_languages ?>"
-         coordinatorAccess="<?= $coordinator_access ?>"
-         sysadminAccess="<?= $sysadmin_access ?>"
-    ></div>
+    <div class="em-p-0-12">
+        <h2><?= Text::_('COM_EMUNDUS_CLASSEMENT_TITLE') ?></h2>
+        <p class="em-neutral-600-color em-mt-8 em-mb-8"><?= Text::_('COM_EMUNDUS_CLASSEMENT_HIERARCHY_LEVEL') . $this->hierarchy_id . ' - ' . Text::_('COM_EMUNDUS_CLASSEMENT_RANKER') . ' ' . $this->user->name ?></p>
+        <div id="em-component-vue"
+             component="classement"
+             hash="<?= $hash ?>"
+             user="<?= $this->user->id ?>"
+             hierarchy_id="<?= $this->hierarchy_id ?>"
+             shortLang="<?= $short_lang ?>"
+             currentLanguage="<?= $current_lang ?>"
+             defaultLang="<?= $default_lang ?>"
+             manyLanguages="<?= $many_languages ?>"
+             coordinatorAccess="<?= $coordinator_access ?>"
+             sysadminAccess="<?= $sysadmin_access ?>"
+        ></div>
+    </div>
 </div>
 
 <script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

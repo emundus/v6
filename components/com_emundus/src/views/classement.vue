@@ -6,7 +6,8 @@
         <div id="pagination"></div>
       </div>
       <div id="header-left" class="em-flex-row">
-        <button v-if="rankingsToLock.length > 0" id="ask-to-lock-ranking" class="em-secondary-button" @click="askToLockRankings">
+        <button v-if="rankingsToLock.length > 0" id="ask-to-lock-ranking" class="em-secondary-button"
+                @click="askToLockRankings">
           <span class="material-icons-outlined em-mr-4">lock</span>
           {{ translate('COM_EMUNDUS_CLASSEMENT_ASK_LOCK_RANKING') }}
         </button>
@@ -74,38 +75,41 @@
       <div v-if="rankings.otherRankings.length > 0" id="other-ranking-lists" class="em-w-100 em-border-neutral-300">
         <table class="em-w-100">
           <thead>
-            <template v-for="hierarchy in rankings.otherRankings" :key="hierarchy.hierarchy_id">
-              <th> {{ hierarchy.label }} </th>
-              <th> {{ translate('COM_EMUNDUS_RANKING_RANKER') + ' ' + hierarchy.label}} </th>
-            </template>
+          <template v-for="hierarchy in rankings.otherRankings" :key="hierarchy.hierarchy_id">
+            <th> {{ hierarchy.label }}</th>
+            <th> {{ translate('COM_EMUNDUS_RANKING_RANKER') + ' ' + hierarchy.label }}</th>
+          </template>
           </thead>
           <tbody>
-            <!-- 1 ligne par fichier, 2 colonnes par hiérarchie (1 de classement, et une pour connaître le classeur) -->
-            <tr v-for="file in orderedRankings" :key="file.id">
-              <template v-for="hierarchy in rankings.otherRankings" :key="file.id + '-' + hierarchy.hierarchy_id">
-                <td>
+          <!-- 1 ligne par fichier, 2 colonnes par hiérarchie (1 de classement, et une pour connaître le classeur) -->
+          <tr v-for="file in orderedRankings" :key="file.id">
+            <template v-for="hierarchy in rankings.otherRankings" :key="file.id + '-' + hierarchy.hierarchy_id">
+              <td>
                   <span class="material-icons-outlined em-mr-4"
                         v-if="rankings.otherRankings.groupedByFiles[file.id]
                         && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id]
                         && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].locked == 1">
                     lock
                   </span>
-                    <span v-else class="material-icons-outlined em-mr-4">lock_open</span>
-                    <span v-if="rankings.otherRankings.groupedByFiles[file.id]
+                <span v-else class="material-icons-outlined em-mr-4">lock_open</span>
+                <span v-if="rankings.otherRankings.groupedByFiles[file.id]
                     && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id]
                     && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].rank != -1">
                     {{ rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].rank }}
                   </span>
-                  <span v-else>{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</span>
-                </td>
-                <td>
-                  <span v-if="rankings.otherRankings.groupedByFiles[file.id] && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id]">
-                    {{ hierarchy.rankers[rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].ranker_id].name }}
+                <span v-else>{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</span>
+              </td>
+              <td>
+                  <span
+                      v-if="rankings.otherRankings.groupedByFiles[file.id] && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id]">
+                    {{
+                      hierarchy.rankers[rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id].ranker_id].name
+                    }}
                   </span>
-                  <span v-else>-</span>
-                </td>
-              </template>
-            </tr>
+                <span v-else>-</span>
+              </td>
+            </template>
+          </tr>
           </tbody>
         </table>
       </div>
@@ -115,13 +119,13 @@
     </div>
     <transition name="fade">
       <compare-files
-        v-if="defaultFile != null && context !== 'modal'"
-        :user="user"
-        :default-file="defaultFile"
-        :default-comparison-file="selectedOtherFile"
-        :files="rankings.myRanking"
-        title="COM_EMUNDUS_CLASSEMENT_MODAL_COMPARISON_HEADER_TITLE"
-        @comparison-file-changed="onComparisonFileChanged"
+          v-if="defaultFile != null && context !== 'modal'"
+          :user="user"
+          :default-file="defaultFile"
+          :default-comparison-file="selectedOtherFile"
+          :files="rankings.myRanking"
+          title="COM_EMUNDUS_CLASSEMENT_MODAL_COMPARISON_HEADER_TITLE"
+          @comparison-file-changed="onComparisonFileChanged"
       >
         <template v-slot:before-default-file-tabs>
           <div class="em-flex-row em-ml-8 em-mt-8">
@@ -135,14 +139,16 @@
         <template v-slot:before-compare-file-tabs>
           <div class="em-flex-row em-ml-8 em-mt-8">
             <label class="em-mr-4"> {{ translate('COM_EMUNDUS_CLASSEMENT_RANKING_SELECT_LABEL') }} </label>
-            <select v-if="selectedOtherFile" v-model="selectedOtherFile.rank" @change="onChangeRankValue(selectedOtherFile)">
+            <select v-if="selectedOtherFile" v-model="selectedOtherFile.rank"
+                    @change="onChangeRankValue(selectedOtherFile)">
               <option value="-1">{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</option>
               <option v-for="i in (maxRankValueAvailable)" :key="i">{{ i }}</option>
             </select>
           </div>
         </template>
         <template v-slot:files-to-compare-with>
-          <classement :key="subRankingKey" @other-selected-file="onSelectOtherFile" :hierarchy_id="hierarchy_id" :user="user" context="modal"></classement>
+          <classement :key="subRankingKey" @other-selected-file="onSelectOtherFile" :hierarchy_id="hierarchy_id"
+                      :user="user" context="modal"></classement>
         </template>
       </compare-files>
     </transition>
@@ -151,7 +157,9 @@
         <h2>{{ translate('COM_EMUNDUS_CLASSEMENT_ASK_LOCK_RANKING') }}</h2>
         <p>{{ translate('COM_EMUNDUS_CLASSEMENT_ASK_LOCK_RANKING_TEXT') }}</p>
         <select>
-          <option v-for="hierarchy in rankings.otherRankings" :key="hierarchy.hierarchy_id">{{ hierarchy.label }}</option>
+          <option v-for="hierarchy in rankings.otherRankings" :key="hierarchy.hierarchy_id">
+            {{ hierarchy.label }}
+          </option>
         </select>
         <button id="confirmAskLockRanking">{{ translate('COM_EMUNDUS_CLASSEMENT_CONFIRM_ASK_LOCK_RANKING') }}</button>
       </div>
