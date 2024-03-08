@@ -332,6 +332,7 @@
 		<field name="export_path" type="text" size="6" label="COM_EMUNDUS_EXPORT_PATH" description="COM_EMUNDUS_EXPORT_PATH_DESC"/>
 		<field name="application_form_order" type="text" size="6" label="COM_EMUNDUS_APPLICATION_FORM_ORDER" description="COM_EMUNDUS_APPLICATION_FORM_ORDER_DESC"/>
 		<field name="attachment_order" type="text" size="6" label="COM_EMUNDUS_CANDIDACY_FORM_ORDER" description="COM_EMUNDUS_CANDIDACY_FORM_ORDER_DESC"/>
+		<field name="export_concat_separator" type="text" size="6" default=", " label="COM_EMUNDUS_EXPORT_APPLICATION_SEPARATOR" description="COM_EMUNDUS_EXPORT_APPLICATION_SEPARATOR_DESC"/>
 
 		<field
 				name="spacer1"
