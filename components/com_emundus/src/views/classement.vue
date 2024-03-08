@@ -16,7 +16,7 @@
         </button>
       </div>
     </header>
-    <div id="ranking-lists-container" class="em-flex-row em-flex-space-between">
+    <div v-if="rankings.myRanking.length > 0" id="ranking-lists-container" class="em-flex-row em-flex-space-between">
       <div id="my-ranking-list" class="em-w-100 em-mr-4">
         <table class="em-w-100">
           <thead>
@@ -100,6 +100,9 @@
           </tbody>
         </table>
       </div>
+    </div>
+    <div v-else id="empty-lists">
+      <p>{{ translate('COM_EMUNDUS_CLASSEMENT_NO_FILES') }}</p>
     </div>
     <transition name="fade">
       <compare-files
@@ -239,9 +242,28 @@ export default {
       });
     },
     lockRanking() {
+      Swal.fire({
+        title: this.translate('COM_EMUNDUS_RANKING_LOCK_RANKING_CONFIRM_TITLE'),
+        text: this.translate('COM_EMUNDUS_RANKING_LOCK_RANKING_CONFIRM_TEXT'),
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: this.translate('COM_EMUNDUS_RANKING_LOCK_RANKING_CONFIRM_YES'),
+        cancelButtonText: this.translate('COM_EMUNDUS_RANKING_LOCK_RANKING_CONFIRM_NO'),
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          cancelButton: 'em-swal-cancel-button',
+          confirmButton: 'em-swal-confirm-button',
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.lockRankingConfirmed();
+        }
+      });
+    },
+    lockRankingConfirmed() {
       rankingService.lockRanking(this.hierarchy_id, 1).then(response => {
         if (response.status) {
-          // lock every file in the list
           this.rankings.myRanking.forEach(file => {
             file.locked = 1;
           });
