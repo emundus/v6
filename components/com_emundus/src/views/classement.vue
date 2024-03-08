@@ -6,7 +6,7 @@
         <div id="pagination"></div>
       </div>
       <div id="header-left" class="em-flex-row">
-        <button id="ask-to-lock-ranking" class="em-secondary-button">
+        <button v-if="rankingsToLock.length > 0" id="ask-to-lock-ranking" class="em-secondary-button" @click="askToLockRankings">
           <span class="material-icons-outlined em-mr-4">lock</span>
           {{ translate('COM_EMUNDUS_CLASSEMENT_ASK_LOCK_RANKING') }}
         </button>
@@ -134,6 +134,16 @@
         </template>
       </compare-files>
     </transition>
+    <modal name="askToLockRankings">
+      <div class="em-flex-column">
+        <h2>{{ translate('COM_EMUNDUS_CLASSEMENT_ASK_LOCK_RANKING') }}</h2>
+        <p>{{ translate('COM_EMUNDUS_CLASSEMENT_ASK_LOCK_RANKING_TEXT') }}</p>
+        <select>
+          <option v-for="hierarchy in rankings.otherRankings" :key="hierarchy.hierarchy_id">{{ hierarchy.label }}</option>
+        </select>
+        <button id="confirmAskLockRanking">{{ translate('COM_EMUNDUS_CLASSEMENT_CONFIRM_ASK_LOCK_RANKING') }}</button>
+      </div>
+    </modal>
   </div>
 </template>
 
@@ -223,6 +233,11 @@ export default {
         }
       });
     },
+    askToLockRankings() {
+      this.$modal.show('askToLockRankings', {
+        rankingsToLock: this.rankingsToLock
+      });
+    },
     lockRanking() {
       rankingService.lockRanking(this.hierarchy_id, 1).then(response => {
         if (response.status) {
@@ -291,6 +306,19 @@ export default {
     },
     ismyRankingLocked() {
       return this.rankings.myRanking.length > 0 ? this.rankings.myRanking.every(file => file.locked == 1) : false;
+    },
+    rankingsToLock() {
+      let rankings = [];
+
+      this.rankings.otherRankings.forEach(hierarchy => {
+        hierarchy.files.forEach(file => {
+          if (file.locked == 0) {
+            rankings.push(file);
+          }
+        });
+      });
+
+      return rankings;
     }
   }
 }
