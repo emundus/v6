@@ -58,10 +58,15 @@ class EmundusControllerRanking extends JControllerLegacy
         $user = Factory::getUser();
 
         if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            $response['data'] = $this->model->getOtherRankingsRankerCanSee($user->id);
-            $response['status'] = true;
-            $response['msg'] = Text::_('SUCCESS');
-            $response['code'] = 200;
+            try {
+                $response['data'] = $this->model->getOtherRankingsRankerCanSee($user->id);
+                $response['status'] = true;
+                $response['msg'] = Text::_('SUCCESS');
+                $response['code'] = 200;
+            } catch(Exception $e) {
+                $response['msg'] = $e->getMessage();
+                $response['code'] = 500;
+            }
         }
 
         if ($response['code'] === 403) {

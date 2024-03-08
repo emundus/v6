@@ -224,11 +224,12 @@ class EmundusModelRanking extends JModelList
                     $data = [
                         'hierarchy_id' => $hierarchy['id'],
                         'label' => $hierarchy['label'],
-                        'files' => []
+                        'files' => [],
+                        'rankers' => []
                     ];
 
                     $query->clear()
-                        ->select('CONCAT(applicant.firstname, " ", applicant.lastname) AS applicant, cc.id, cc.fnum, cr.rank, cr.locked')
+                        ->select('CONCAT(applicant.firstname, " ", applicant.lastname) AS applicant, cc.id, cc.fnum, cr.rank, cr.locked, cr.user_id as ranker_id')
                         ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
                         ->leftJoin($db->quoteName('#__emundus_users', 'applicant') . ' ON ' . $db->quoteName('cc.applicant_id') . ' = ' . $db->quoteName('applicant.id'))
                         ->leftJoin($db->quoteName('#__emundus_ranking', 'cr') . ' ON ' . $db->quoteName('cc.id') . ' = ' . $db->quoteName('cr.ccid'))
@@ -238,10 +239,27 @@ class EmundusModelRanking extends JModelList
                     try {
                         $db->setQuery($query);
                         $data['files'] = $db->loadAssocList();
-                        $rankings[] = $data;
                     } catch (Exception $e) {
                         JLog::add('getOtherRankingsRankerCanSee ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
+                        throw new Exception('An error occurred while fetching the files.');
                     }
+
+                    $query->clear()
+                        ->select('CONCAT(u.firstname, " ", u.lastname) AS name, r.user_id')
+                        ->from($db->quoteName('#__emundus_ranking', 'r'))
+                        ->leftJoin($db->quoteName('#__emundus_users', 'u') . ' ON ' . $db->quoteName('r.user_id') . ' = ' . $db->quoteName('u.id'))
+                        ->where('r.ccid IN (' . implode(',', $ids) . ')')
+                        ->andWhere($db->quoteName('r.hierarchy_id') . ' = ' .$hierarchy['id']);
+
+                    try {
+                        $db->setQuery($query);
+                        $data['rankers'] = $db->loadAssocList('user_id');
+                    } catch (Exception $e) {
+                        JLog::add('getOtherRankingsRankerCanSee ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
+                        throw new Exception('An error occurred while fetching the files.');
+                    }
+
+                    $rankings[] = $data;
                 }
             }
         }
