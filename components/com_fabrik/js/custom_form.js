@@ -6,8 +6,8 @@ requirejs(['fab/fabrik'], function () {
 
     let check_condition = arr => arr.every(v => v === true);
     var operators = {
-        '=': function(a, b) { return a == b; },
-        '!=': function(a, b) { return a != b; },
+        '=': function(a, b, plugin) { if(!Array.isArray(a)) { return a == b; } else { return a.includes(b); } },
+        '!=': function(a, b, plugin) { if(!Array.isArray(a)) { return a != b; } else { return !a.includes(b); } },
         // ...
     };
 
@@ -241,7 +241,7 @@ requirejs(['fab/fabrik'], function () {
                     form.elements.forEach((elt) => {
                         let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
                         if (name == condition.field) {
-                            if(operators[condition.state](elt.get('value'), condition.values)) {
+                            if(operators[condition.state](elt.get('value'), condition.values, elt.plugin)) {
                                 condition_state.push(true);
                             } else if(rule.group == 'AND') {
                                 condition_state.push(false);
