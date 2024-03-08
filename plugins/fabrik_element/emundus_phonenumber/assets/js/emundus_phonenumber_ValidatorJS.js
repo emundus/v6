@@ -76,9 +76,8 @@ class ValidatorJS {
                 // too short, meh
             }
 
-            if (format && libphonenumber.isValidNumber(format))
+            if (format && libphonenumber.isValidPhoneNumber(format))
             {
-                this.input.value = format.substring(this.renderCountryCode.value.length, format.length);
                 this.frontMessage('valid');
             }
         }
@@ -101,15 +100,9 @@ class ValidatorJS {
 
         this.frontMessage('default'); // we consider its good everytime
 
-        if(this.input.value.length !== 0)
+        if (this.input.value.length !== 0) // if not empty, we validate, mandatory
         {
-            if(this.mustValidate) // mandatory so we validate everytime
-            {
-                this.inputValidation(props);
-            } else // not mandatory but valid only if numbers in it
-            {
-                this.inputValidation(props);
-            }
+            this.inputValidation(props);
         }
     }
 
@@ -150,10 +143,11 @@ class ValidatorJS {
         else if (this.countrySelected.country_code) {
 
             this.renderCountryCode.value = this.countrySelected.country_code;
-            this.setMaskToInput();
         }
+        this.setMaskToInput();
     }
 
+    // will remove all unnecessary 0 at the beginning of the phone number
     setMaskToInput()
     {
         if(this.mask) {

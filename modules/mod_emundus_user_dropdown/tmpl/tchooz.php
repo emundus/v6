@@ -163,7 +163,6 @@ if ($user != null) {
 
         .em-user-dropdown-icon {
             color: var(--em-profile-color);
-            font-size: 36px;
             border: solid 3px var(--transparent);
         }
 
@@ -180,6 +179,42 @@ if ($user != null) {
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
+        }
+
+        .em-user-dropdown-icon:before {
+            background-color: hsl(from var(--em-profile-color) h s 90%);
+            color: var(--em-profile-color);
+            opacity: 1;
+            content: attr(data-initials);
+            display: inline-block;
+            font-weight: bold;
+            border-radius: 50%;
+            vertical-align: middle;
+            margin-right: 0.5em;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            transition: all 0.3s ease-in-out;
+        }
+        .em-user-dropdown-icon-big {
+            font-size: 24px;
+        }
+        .em-user-dropdown-icon-big:before {
+            width: 68px;
+            height: 68px;
+            line-height: 68px;
+        }
+        .em-user-dropdown-icon-xxl {
+            font-size: 28px;
+        }
+        .em-user-dropdown-icon-xxl:before {
+            width: 100px;
+            height: 100px;
+            line-height: 100px;
+        }
+        .em-user-dropdown-icon-xxl:hover:before {
+            color: transparent;
         }
     </style>
 
@@ -218,7 +253,7 @@ if ($user != null) {
                 <?php endif; ?>
             </div>
             <div class="em-user-dropdown-button" aria-haspopup="true" aria-expanded="false">
-                <span class="material-icons-outlined em-user-dropdown-icon" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">account_circle</span>
+                <span class="em-user-dropdown-icon" data-initials="<?php echo substr($user->firstname,0, 1).substr($user->lastname,0,1);?>" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>"></span>
             </div>
 
         </div>
@@ -238,7 +273,7 @@ if ($user != null) {
             <div class="em-profile-picture-modal" style="background-image:url('<?php echo $profile_picture ?>');">
             </div>
 	        <?php else : ?>
-            <span class="material-icons-outlined em-profile-picture-modal-icon" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">account_circle</span>
+                <span class="em-user-dropdown-icon em-user-dropdown-icon-big" data-initials="<?php echo substr($user->firstname,0, 1).substr($user->lastname,0,1);?>" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>"></span>
 	        <?php endif; ?>
             <li class="dropdown-header em-text-align-center em-font-weight-500 em-text-neutral-900"><?= $user->firstname . ' ' . $user->lastname; ?></li>
             <li class="dropdown-header em-text-align-center em-text-neutral-600" title="<?= $user->email; ?>"><?= $user->email; ?></li>
