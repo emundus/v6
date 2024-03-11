@@ -146,12 +146,13 @@ class EmundusControllerFiles extends JControllerLegacy
 					}
 				}
 				$session->set('adv_cols', $filter_fabrik_element_ids);
+                $session->set('last-filters-use-adavanced', true);
 
 				$response = ['status' => true, 'msg' => JText::_('FILTERS_APPLIED')];
 			} else {
 				$response['msg'] = JText::_('MISSING_PARAMS');
 			}
-		}
+        }
 
 		echo json_encode((object)$response);
 		exit;
@@ -196,6 +197,7 @@ class EmundusControllerFiles extends JControllerLegacy
             }
         }
 
+        $session->set('last-filters-use-adavanced', false);
         $session->set('filt_params', $params);
 
         echo json_encode((object)(array('status' => true)));
