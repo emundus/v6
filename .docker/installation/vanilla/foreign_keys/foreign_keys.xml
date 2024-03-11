@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tables>
+  <table name="jos_emundus_1001_00">
+    <row constraint_name="jos_emundus_1001_00_ibfk_1" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_1001_00_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+  </table>
+  <table name="jos_emundus_1001_01">
+    <row constraint_name="jos_emundus_1001_01_ibfk_1" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_1001_01_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+  </table>
+  <table name="jos_emundus_1001_02">
+    <row constraint_name="jos_emundus_1001_02_ibfk_1" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_1001_02_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+  </table>
+  <table name="jos_emundus_1006_00">
+    <row constraint_name="jos_emundus_1006_00_ibfk_1" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_1006_00_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+  </table>
+  <table name="jos_emundus_9_00">
+    <row constraint_name="jos_emundus_9_00_ibfk_1" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_9_00_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+  </table>
+  <table name="jos_emundus_acl">
+    <row constraint_name="jos_emundus_acl_jos_emundus_setup_groups_id_fk" column_name="group_id" referenced_table_name="jos_emundus_setup_groups" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_admission">
+    <row constraint_name="jos_emundus_admission_user_id_fk" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_admission___fk" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+  </table>
+  <table name="jos_emundus_campaign_candidature">
+    <row constraint_name="jos_emundus_campaign_candidature_ibfk_1" column_name="status" referenced_table_name="jos_emundus_setup_status" referenced_column_name="step"/>
+    <row constraint_name="jos_emundus_campaign_candidature_ibfk_2" column_name="applicant_id" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_campaign_candidature_ibfk_3" column_name="campaign_id" referenced_table_name="jos_emundus_setup_campaigns" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_campaign_candidature_tabs">
+    <row constraint_name="jos_emundus_users_fk_applicant_id" column_name="applicant_id" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+  </table>
+  <table name="jos_emundus_campaign_workflow">
+    <row constraint_name="jos_emundus_campaign_workflow_ibfk_1" column_name="campaign" referenced_table_name="jos_emundus_setup_campaigns" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_campaign_workflow_ibfk_2" column_name="profile" referenced_table_name="jos_emundus_setup_profiles" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_campaign_workflow_ibfk_3" column_name="entry_status" referenced_table_name="jos_emundus_setup_status" referenced_column_name="step"/>
+  </table>
+  <table name="jos_emundus_candidat_meeting">
+    <row constraint_name="jos_emundus_candidat_meeting___fk1" column_name="session" referenced_table_name="jos_emundus_jury" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_candidat_meeting___fk2" column_name="lien_session" referenced_table_name="jos_emundus_jury" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_candidat_meeting___fk3" column_name="applicant" referenced_table_name="jos_users" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_chatroom_users">
+    <row constraint_name="jos_emundus_chatroom_users_jos_emundus_chatroom_id_fk" column_name="chatroom_id" referenced_table_name="jos_emundus_chatroom" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_chatroom_users_jos_emundus_users_user_id_fk" column_name="user_id" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+  </table>
+  <table name="jos_emundus_comments">
+    <row constraint_name="jos_emundus_comments_ibfk_1" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+    <row constraint_name="jos_emundus_comments_ibfk_2" column_name="applicant_id" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_comments_ibfk_3" column_name="user_id" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+  </table>
+  <table name="jos_emundus_cv">
+    <row constraint_name="jos_emundus_cv_jos_emundus_campaign_candidature_fnum_fk" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+  </table>
+  <table name="jos_emundus_cv_690_repeat">
+    <row constraint_name="jos_emundus_cv_690_repeat_jos_emundus_cv_id_fk" column_name="parent_id" referenced_table_name="jos_emundus_cv" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_declaration">
+    <row constraint_name="jos_emundus_declaration_ibfk_1" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_declaration_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+  </table>
+  <table name="jos_emundus_emailalert">
+    <row constraint_name="jos_emundus_emailalert_ibfk_1" column_name="user_id" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_emailalert_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+  </table>
+  <table name="jos_emundus_evaluations">
+    <row constraint_name="jos_emundus_evaluations_ibfk_1" column_name="student_id" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_evaluations_ibfk_3" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+    <row constraint_name="jos_emundus_evaluations_ibfk_4" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+  </table>
+  <table name="jos_emundus_files_request">
+    <row constraint_name="jos_emundus_files_request_ibfk_1" column_name="student_id" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_files_request_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+    <row constraint_name="jos_emundus_files_request_ibfk_3" column_name="attachment_id" referenced_table_name="jos_emundus_setup_attachments" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_files_request_ibfk_4" column_name="campaign_id" referenced_table_name="jos_emundus_setup_campaigns" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_filters">
+    <row constraint_name="jos_emundus_filters_ibfk_1" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+  </table>
+  <table name="jos_emundus_final_grade">
+    <row constraint_name="jos_emundus_final_grade_ibfk_3" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+    <row constraint_name="jos_emundus_final_grade_ibfk_4" column_name="student_id" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_final_grade_ibfk_5" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+  </table>
+  <table name="jos_emundus_gre">
+    <row constraint_name="jos_emundus_gre_fnum_fk" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+    <row constraint_name="jos_emundus_gre_user_fk" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+  </table>
+  <table name="jos_emundus_group_assoc">
+    <row constraint_name="jos_emundus_group_assoc_ibfk_1" column_name="group_id" referenced_table_name="jos_emundus_setup_groups" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_group_assoc_ibfk_2" column_name="action_id" referenced_table_name="jos_emundus_setup_actions" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_group_assoc_ibfk_3" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+  </table>
+  <table name="jos_emundus_groups">
+    <row constraint_name="jos_emundus_groups_ibfk_1" column_name="group_id" referenced_table_name="jos_emundus_setup_groups" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_groups_ibfk_2" column_name="user_id" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+  </table>
+  <table name="jos_emundus_hikashop">
+    <row constraint_name="jos_emundus_hikashop_ibfk_1" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_hikashop_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+    <row constraint_name="jos_emundus_hikashop_ibfk_3" column_name="status" referenced_table_name="jos_emundus_setup_status" referenced_column_name="step"/>
+  </table>
+  <table name="jos_emundus_hikashop_programs">
+    <row constraint_name="jos_emundus_hikashop_programs_jos_emundus_payment_types_id_fk" column_name="payment_type" referenced_table_name="jos_emundus_payment_types" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_hikashop_programs_jos_hikashop_product_product_id_fk" column_name="product_id" referenced_table_name="jos_hikashop_product" referenced_column_name="product_id"/>
+  </table>
+  <table name="jos_emundus_housing">
+    <row constraint_name="jos_emundus_housing_fnum_fk" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+    <row constraint_name="jos_emundus_housing_user_fk" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+  </table>
+  <table name="jos_emundus_jury">
+    <row constraint_name="jos_emundus_jury___fk1" column_name="president" referenced_table_name="jos_users" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_jury_repeat_jury">
+    <row constraint_name="jos_emundus_jury_repeat_jury___fk1" column_name="user" referenced_table_name="jos_users" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_jury_repeat_jury___fk2" column_name="parent_id" referenced_table_name="jos_emundus_jury" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_jury_repeat_jury___fk3" column_name="email" referenced_table_name="jos_users" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_languages">
+    <row constraint_name="jos_emundus_languages_ibfk_1" column_name="user" referenced_table_name="jos_users" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_languages_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+  </table>
+  <table name="jos_emundus_languages_692_repeat">
+    <row constraint_name="jos_emundus_languages_692_repeat_jos_emundus_languages_id_fk" column_name="parent_id" referenced_table_name="jos_emundus_languages" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_logs">
+    <row constraint_name="jos_emundus_logs_jos_emundus_users_user_id_fk" column_name="user_id_from" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+  </table>
+  <table name="jos_emundus_mobility">
+    <row constraint_name="jos_emundus_mobility_fnum_fk" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+    <row constraint_name="jos_emundus_mobility_user_fk" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+  </table>
+  <table name="jos_emundus_personal_detail">
+    <row constraint_name="jos_emundus_personal_detail_ibfk_1" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_personal_detail_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+  </table>
+  <table name="jos_emundus_qcm">
+    <row constraint_name="jos_emundus_qcm_fnum_fk" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+    <row constraint_name="jos_emundus_qcm_user_fk" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+  </table>
+  <table name="jos_emundus_qualifications">
+    <row constraint_name="jos_emundus_qualifications_fnum_fk" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+    <row constraint_name="jos_emundus_qualifications_user_fk" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+  </table>
+  <table name="jos_emundus_reference_letter">
+    <row constraint_name="jos_emundus_reference_letter_fnum_fk" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+    <row constraint_name="jos_emundus_reference_letter_user_fk" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+  </table>
+  <table name="jos_emundus_references">
+    <row constraint_name="jos_emundus_references_ibfk_1" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_references_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+  </table>
+  <table name="jos_emundus_scholarship">
+    <row constraint_name="jos_emundus_scholarship_ibfk_1" column_name="user" referenced_table_name="jos_users" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_scholarship_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+  </table>
+  <table name="jos_emundus_setup_attachment_profiles">
+    <row constraint_name="jos_emundus_setup_attachment_profiles_ibfk_1" column_name="profile_id" referenced_table_name="jos_emundus_setup_profiles" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_setup_attachment_profiles_ibfk_2" column_name="attachment_id" referenced_table_name="jos_emundus_setup_attachments" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_setup_attachment_profiles_ibfk_3" column_name="campaign_id" referenced_table_name="jos_emundus_setup_campaigns" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_setup_campaigns">
+    <row constraint_name="jos_emundus_setup_campaigns_ibfk_1" column_name="training" referenced_table_name="jos_emundus_setup_programmes" referenced_column_name="code"/>
+    <row constraint_name="jos_emundus_setup_campaigns_ibfk_2" column_name="profile_id" referenced_table_name="jos_emundus_setup_profiles" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_setup_dashboard">
+    <row constraint_name="jos_emundus_setup_dashboard_jos_emundus_setup_profiles_id_fk" column_name="profile" referenced_table_name="jos_emundus_setup_profiles" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_setup_dashboard_jos_emundus_users_user_id_fk" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+  </table>
+  <table name="jos_emundus_setup_dashbord_repeat_widgets">
+    <row constraint_name="jos_emundus_setup_dashbord_repeat_dashboard_id_fk" column_name="parent_id" referenced_table_name="jos_emundus_setup_dashboard" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_setup_dashbord_repeat_widgets_id_fk" column_name="widget" referenced_table_name="jos_emundus_widgets" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_setup_emails_repeat_receivers">
+    <row constraint_name="receivers_fk" column_name="parent_id" referenced_table_name="jos_emundus_setup_emails" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_setup_emails_trigger">
+    <row constraint_name="jos_emundus_setup_emails_trigger_ibfk_1" column_name="step" referenced_table_name="jos_emundus_setup_status" referenced_column_name="step"/>
+    <row constraint_name="jos_emundus_setup_emails_trigger_ibfk_2" column_name="programme_id" referenced_table_name="jos_emundus_setup_programmes" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_setup_emails_trigger_ibfk_3" column_name="email_id" referenced_table_name="jos_emundus_setup_emails" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_setup_emails_trigger_repeat_group_id">
+    <row constraint_name="jos_emundus_setup_emails_trigger_repeat_group_id_ibfk_1" column_name="parent_id" referenced_table_name="jos_emundus_setup_emails_trigger" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_setup_emails_trigger_repeat_profile_id">
+    <row constraint_name="jos_emundus_setup_emails_trigger_repeat_profile_id_ibfk_1" column_name="parent_id" referenced_table_name="jos_emundus_setup_emails_trigger" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_setup_emails_trigger_repeat_programme_id">
+    <row constraint_name="jos_emundus_setup_emails_trigger_repeat_programme_id_ibfk_1" column_name="programme_id" referenced_table_name="jos_emundus_setup_programmes" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_setup_emails_trigger_repeat_programme_id_ibfk_2" column_name="parent_id" referenced_table_name="jos_emundus_setup_emails_trigger" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_setup_emails_trigger_repeat_user_id">
+    <row constraint_name="jos_emundus_setup_emails_trigger_repeat_user_id_ibfk_1" column_name="parent_id" referenced_table_name="jos_emundus_setup_emails_trigger" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_setup_groups_repeat_attachment_id_link">
+    <row constraint_name="jos_emundus_attachment_id_groups_fk" column_name="parent_id" referenced_table_name="jos_emundus_setup_groups" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_groups_attachment_id_fk" column_name="attachment_id_link" referenced_table_name="jos_emundus_setup_attachments" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_setup_groups_repeat_course">
+    <row constraint_name="jos_emundus_setup_groups_repeat_course_ibfk_1" column_name="parent_id" referenced_table_name="jos_emundus_setup_groups" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_setup_groups_repeat_course_ibfk_2" column_name="course" referenced_table_name="jos_emundus_setup_programmes" referenced_column_name="code"/>
+  </table>
+  <table name="jos_emundus_setup_groups_repeat_fabrik_group_link">
+    <row constraint_name="jos_emundus_groups_fabrik_group_id_fk" column_name="fabrik_group_link" referenced_table_name="jos_fabrik_groups" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_groups_group_id_fk" column_name="parent_id" referenced_table_name="jos_emundus_setup_groups" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_setup_teaching_unity">
+    <row constraint_name="jos_emundus_setup_teaching_unity_ibfk_1" column_name="code" referenced_table_name="jos_emundus_setup_programmes" referenced_column_name="code"/>
+  </table>
+  <table name="jos_emundus_survey">
+    <row constraint_name="jos_emundus_survey_ibfk_1" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_survey_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+  </table>
+  <table name="jos_emundus_tag_assoc">
+    <row constraint_name="jos_emundus_tag_assoc_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+    <row constraint_name="jos_emundus_tag_assoc_ibfk_3" column_name="user_id" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+  </table>
+  <table name="jos_emundus_template_evaluation">
+    <row constraint_name="fk_form_evaluation_id" column_name="form_id" referenced_table_name="jos_fabrik_forms" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_template_form">
+    <row constraint_name="fk_form_template_id" column_name="form_id" referenced_table_name="jos_fabrik_forms" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_template_profile">
+    <row constraint_name="fk_profile_id" column_name="profile_id" referenced_table_name="jos_emundus_setup_profiles" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_univpref">
+    <row constraint_name="jos_emundus_univpref_ibfk_1" column_name="user" referenced_table_name="jos_users" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_univpref_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+  </table>
+  <table name="jos_emundus_uploads">
+    <row constraint_name="jos_emundus_uploads_ibfk_1" column_name="user_id" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_uploads_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+    <row constraint_name="jos_emundus_uploads_ibfk_3" column_name="attachment_id" referenced_table_name="jos_emundus_setup_attachments" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_uploads_ibfk_4" column_name="modified_by" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+  </table>
+  <table name="jos_emundus_uploads_sync">
+    <row constraint_name="jos_emundus_uploads_sync_jos_emundus_setup_sync_id_fk" column_name="sync_id" referenced_table_name="jos_emundus_setup_sync" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_uploads_sync_jos_emundus_uploads_id_fk" column_name="upload_id" referenced_table_name="jos_emundus_uploads" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_users">
+    <row constraint_name="jos_emundus_users_ibfk_1" column_name="user_id" referenced_table_name="jos_users" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_users_ibfk_2" column_name="profile" referenced_table_name="jos_emundus_setup_profiles" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_users_assoc">
+    <row constraint_name="jos_emundus_users_assoc_ibfk_1" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+    <row constraint_name="jos_emundus_users_assoc_ibfk_2" column_name="user_id" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_users_assoc_ibfk_3" column_name="action_id" referenced_table_name="jos_emundus_setup_actions" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_users_attachments">
+    <row constraint_name="jos_emundus_users_attachments_fk_attachment_id" column_name="attachment_id" referenced_table_name="jos_emundus_setup_attachments" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_users_attachments_jos_emundus_users_user_id_fk" column_name="user_id" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+  </table>
+  <table name="jos_emundus_users_profiles">
+    <row constraint_name="jos_emundus_users_profiles_ibfk_1" column_name="user_id" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_users_profiles_ibfk_2" column_name="profile_id" referenced_table_name="jos_emundus_setup_profiles" referenced_column_name="id"/>
+  </table>
+  <table name="jos_emundus_widgets_repeat_access">
+    <row constraint_name="jos_emundus_widgets_access_setup_profiles_id_fk" column_name="profile" referenced_table_name="jos_emundus_setup_profiles" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_widgets_repeat_access_jos_emundus_widgets_id_fk" column_name="parent_id" referenced_table_name="jos_emundus_widgets" referenced_column_name="id"/>
+  </table>
+  <table name="jos_jcrm_group_contact">
+    <row constraint_name="jos_jcrm_group_contact_ibfk_1" column_name="group_id" referenced_table_name="jos_jcrm_groups" referenced_column_name="id"/>
+    <row constraint_name="jos_jcrm_group_contact_ibfk_2" column_name="contact_id" referenced_table_name="jos_jcrm_contacts" referenced_column_name="id"/>
+  </table>
+  <table name="jos_messages">
+    <row constraint_name="user_id_from" column_name="user_id_from" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+  </table>
+</tables>
