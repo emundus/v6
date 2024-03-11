@@ -32,6 +32,15 @@
             <field name="emundusrsaauhtentication_attributes_email" type="text" default="email"
                    label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_EMAIL"/>
 
+            <field name="emundusrsaauhtentication_attributes_delete_at_login"
+                   type="list"
+                   default="0"
+                   description="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_DELETE_DESC"
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_DELETE_LABEL">
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+
             <field name="emundusrsaauhtentication_attributes_other"
                    type="fabrikmodalrepeat"
                    repeat="true"

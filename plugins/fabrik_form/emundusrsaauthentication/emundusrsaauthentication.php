@@ -116,7 +116,7 @@ class PlgFabrik_FormEmundusRsaauthentication extends plgFabrik_Form
 						$decrypted = array();
 						throw new Exception('PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_DECRYPT_DATAS_ERROR', 500);
 					}
-
+					
 					$username         = (string) $decrypted[$this->getParam('emundusrsaauhtentication_attributes_id', 'id')];
 					$firstname        = $decrypted[$this->getParam('emundusrsaauhtentication_attributes_firstname', 'firstname')];
 					$lastname         = $decrypted[$this->getParam('emundusrsaauhtentication_attributes_lastname', 'lastname')];
@@ -237,6 +237,8 @@ class PlgFabrik_FormEmundusRsaauthentication extends plgFabrik_Form
 
 					if (!empty($other_attributes) && !empty($other_attributes['emundusrsaauhtentication_attributes_other_table']))
 					{
+						$delete_at_login = $this->getParam('emundusrsaauhtentication_attributes_delete_at_login', 0);
+
 						foreach ($other_attributes['emundusrsaauhtentication_attributes_other_table'] as $key => $table)
 						{
 							$column        = $other_attributes['emundusrsaauhtentication_attributes_other_column'][$key];
@@ -247,6 +249,31 @@ class PlgFabrik_FormEmundusRsaauthentication extends plgFabrik_Form
 							$values = $decrypted[$attribute];
 
 							$values = is_array($values) ? $values : [$values];
+
+							$uid_attribute = $user_key_type == '1' ? $emundus_user_id : $user->id;
+
+							if($delete_at_login == 1)
+							{
+								$query->clear()
+									->select($column)
+									->from($db->quoteName($table))
+									->where($db->quoteName($user_key) . ' = ' . $db->quote($uid_attribute));
+								$db->setQuery($query);
+								$existing_values = $db->loadColumn();
+
+								foreach ($existing_values as $value)
+								{
+									if (!in_array($value, $values))
+									{
+										$query->clear()
+											->delete($db->quoteName($table))
+											->where($db->quoteName($column) . ' = ' . $db->quote($value))
+											->where($db->quoteName($user_key) . ' = ' . $db->quote($uid_attribute));
+										$db->setQuery($query);
+										$db->execute();
+									}
+								}
+							}
 
 							foreach ($values as $value)
 							{
@@ -260,7 +287,7 @@ class PlgFabrik_FormEmundusRsaauthentication extends plgFabrik_Form
 								if (empty($existing))
 								{
 									$insert = [
-										$user_key => $user_key_type == '1' ? $emundus_user_id : $user->id,
+										$user_key => $uid_attribute,
 										$column   => $value
 									];
 									$insert = (object) $insert;
