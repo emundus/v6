@@ -72,28 +72,48 @@ endif;
 	?>
 
 
-    <div class="mod_emundus_campaign__content em-w-100 <?php if ($this->showFilters) : ?>catalogue_cards_container<?php endif; ?>">
+    <div class="mod_emundus_campaign__content em-w-100 tabs" id="<?php if ($this->showFilters) : ?>catalogue_container<?php endif; ?>">
         <div id="current_1" class="mod_emundus_campaign__list">
             <div class="fabrikDataContainer">
 	            <?php if ($this->showFilters) : ?>
-                    <h1 class="em-mb-24"><?php echo $this->table->label; ?></h1>
+                <div class="em-flex-row em-flex-space-between em-mb-24">
+                    <h1><?php echo $this->table->label; ?></h1>
+                    <div class="em-flex-row-justify-end em-gap-8 fabrik-switch-view-buttons">
+                        <span onclick="switchView('list')" class="em-pointer material-icons-outlined fabrik-switch-view-icon active" id="fabrik_switch_view_list_icon">menu</span>
+                        <span onclick="switchView('grid')" class="em-pointer material-icons-outlined fabrik-switch-view-icon" id="fabrik_switch_view_grid_icon">grid_view</span>
+                    </div>
+                </div>
 	            <?php endif; ?>
 
 				<?php foreach ($this->pluginBeforeList as $c) :
 					echo $c;
 				endforeach;
 				?>
+	            <?php if ($this->showFilters) : ?>
+                <div class="mod_emundus_campaign__list_items_tabs" id="list_<?php echo $this->table->renderid; ?>">
+		            <?php
+		            foreach ($this->rows as $groupedBy => $group)
+		            {
+			            foreach ($group as $this->_row)
+			            {
+				            echo $this->loadTemplate('tabs');
+			            }
+		            }
+		            ?>
+                </div>
+	            <?php endif; ?>
                 <div class="mod_emundus_campaign__list_items" id="list_<?php echo $this->table->renderid; ?>">
 					<?php
 					foreach ($this->rows as $groupedBy => $group)
 					{
 						foreach ($group as $this->_row)
 						{
-							echo $this->loadTemplate('row');
+                            echo $this->loadTemplate('row');
 						}
 					}
 					?>
                 </div>
+
 				<?php print_r($this->hiddenFields); ?>
             </div>
         </div>
@@ -105,3 +125,23 @@ if ($pageClass !== '') :
 	echo '</div>';
 endif;
 ?>
+
+<script>
+    function switchView(view) {
+        switch (view){
+            case 'list':
+                document.getElementById("catalogue_container").classList.add("tabs");
+                document.getElementById("catalogue_container").classList.remove("cards");
+                document.getElementById("fabrik_switch_view_list_icon").classList.add("active");
+                document.getElementById("fabrik_switch_view_grid_icon").classList.remove("active");
+                break;
+            case 'grid':
+                document.getElementById("catalogue_container").classList.remove("tabs");
+                document.getElementById("catalogue_container").classList.add("cards");
+                document.getElementById("fabrik_switch_view_list_icon").classList.remove("active");
+                document.getElementById("fabrik_switch_view_grid_icon").classList.add("active");
+                break;
+
+        }
+    }
+</script>
