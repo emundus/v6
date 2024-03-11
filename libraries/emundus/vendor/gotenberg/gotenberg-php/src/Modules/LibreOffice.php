@@ -14,8 +14,8 @@ class LibreOffice
 {
     use MultipartFormDataModule;
 
-    private ?Index $index = null;
-    private bool $merge   = false;
+    private Index|null $index = null;
+    private bool $merge       = false;
 
     /**
      * Overrides the default index generator for ordering
@@ -47,44 +47,6 @@ class LibreOffice
     public function nativePageRanges(string $ranges): self
     {
         $this->formValue('nativePageRanges', $ranges);
-
-        return $this;
-    }
-
-    /**
-     * Tells Gotenberg to use unoconv for converting the resulting PDF(s) to
-     * the "PDF/A-1a" format.
-     *
-     * @deprecated
-     */
-    public function nativePdfA1aFormat(): self
-    {
-        $this->formValue('nativePdfA1aFormat', true);
-
-        return $this;
-    }
-
-    /**
-     * Tells Gotenberg to use unoconv for converting the resulting PDF to a PDF
-     * format.
-     *
-     * @deprecated
-     */
-    public function nativePdfFormat(string $format): self
-    {
-        $this->formValue('nativePdfFormat', $format);
-
-        return $this;
-    }
-
-    /**
-     * Sets the PDF format of the resulting PDF.
-     *
-     * @deprecated
-     */
-    public function pdfFormat(string $format): self
-    {
-        $this->formValue('pdfFormat', $format);
 
         return $this;
     }

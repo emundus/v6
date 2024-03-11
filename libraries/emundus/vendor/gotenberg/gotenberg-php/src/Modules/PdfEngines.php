@@ -14,7 +14,7 @@ class PdfEngines
 {
     use MultipartFormDataModule;
 
-    private ?Index $index = null;
+    private Index|null $index = null;
 
     /**
      * Overrides the default index generator for ordering
@@ -23,18 +23,6 @@ class PdfEngines
     public function index(Index $index): self
     {
         $this->index = $index;
-
-        return $this;
-    }
-
-    /**
-     * Sets the PDF format of the resulting PDF.
-     *
-     * @deprecated
-     */
-    public function pdfFormat(string $format): self
-    {
-        $this->formValue('pdfFormat', $format);
 
         return $this;
     }
@@ -86,7 +74,6 @@ class PdfEngines
      */
     public function convert(string $pdfa, Stream $pdf, Stream ...$pdfs): RequestInterface
     {
-        $this->pdfFormat($pdfa); // TODO: remove in v2.
         $this->pdfa($pdfa);
         $this->formFile($pdf->getFilename(), $pdf->getStream());
 

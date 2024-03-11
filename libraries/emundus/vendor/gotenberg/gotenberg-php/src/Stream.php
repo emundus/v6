@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Gotenberg;
 
-use Gotenberg\Exceptions\NativeFunctionErroed;
+use Gotenberg\Exceptions\NativeFunctionErrored;
 use GuzzleHttp\Psr7\LazyOpenStream;
 use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Message\StreamInterface;
@@ -15,10 +15,7 @@ use function fwrite;
 
 class Stream
 {
-    private string $filename;
-    private StreamInterface $stream;
-
-    public static function path(string $path, ?string $filename = null): self
+    public static function path(string $path, string|null $filename = null): self
     {
         $filename ??= basename($path);
 
@@ -30,20 +27,18 @@ class Stream
         $inmemory = fopen('php://memory', 'rb+');
 
         if ($inmemory === false) {
-            throw NativeFunctionErroed::createFromLastPhpError();
+            throw NativeFunctionErrored::createFromLastPhpError();
         }
 
         if (fwrite($inmemory, $str) === false) {
-            throw NativeFunctionErroed::createFromLastPhpError();
+            throw NativeFunctionErrored::createFromLastPhpError();
         }
 
         return new self($filename, Utils::streamFor($inmemory));
     }
 
-    public function __construct(string $filename, StreamInterface $stream)
+    public function __construct(private string $filename, private StreamInterface $stream)
     {
-        $this->filename = $filename;
-        $this->stream   = $stream;
     }
 
     public function getFilename(): string
