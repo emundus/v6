@@ -10,6 +10,8 @@
 
 // No direct access
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 
 defined('_JEXEC') or die('Restricted access');
 /*
@@ -1346,21 +1348,33 @@ class EmundusModelFiles extends JModelLegacy
      * @return mixed
      * @throws Exception
      */
-    public function getAllStatus()
-    {
-        $query = 'select * from #__emundus_setup_status order by ordering';
-        $db = $this->getDbo();
+	public function getAllStatus($uid = null)
+	{
+		if(empty($uid)) {
+			$uid = Factory::getUser()->id;
+		}
 
-        try
-        {
-            $db->setQuery($query);
-            return $db->loadAssocList();
-        }
-        catch(Exception $e)
-        {
-            throw $e;
-        }
-    }
+		$db = Factory::getDbo();
+		$query = $db->getQuery(true);
+		
+		$status_by_groups = $this->getStatusByGroup($uid);
+
+		try
+		{
+			$query->select('*')
+				->from($db->quoteName('#__emundus_setup_status'))
+				->order('ordering');
+			if(!empty($status_by_groups)) {
+				$query->where($db->quoteName('step'). ' IN ('.implode(',', $db->quote($status_by_groups)).')');
+			}
+			$db->setQuery($query);
+			return $db->loadAssocList();
+		}
+		catch(Exception $e)
+		{
+			Log::add('Failed to get all status with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+	}
 
     /**
      * @param $id
@@ -4796,5 +4810,50 @@ class EmundusModelFiles extends JModelLegacy
 		}
 
 		return $updated;
+	}
+	
+	public function getStatusByGroup($uid = null)
+	{
+		$status = array();
+
+		if(empty($uid)) {
+			$uid = Factory::getUser()->id;
+		}
+
+		try
+		{
+			require_once JPATH_ROOT . '/components/com_emundus/models/users.php';
+			$m_users = new EmundusModelUsers();
+			$groups = $m_users->getUserGroups($uid, 'Column');
+
+			if(!empty($groups)) {
+				$db = Factory::getDbo();
+				$query = $db->getQuery(true);
+
+				$query->clear()
+					->select('COUNT(id)')
+					->from($db->quoteName('#__emundus_setup_groups'))
+					->where($db->quoteName('id') . ' IN (' . implode(',',$db->quote($groups)) . ')')
+					->where($db->quoteName('filter_status') . ' = 0');
+				$db->setQuery($query);
+				$is_filter = $db->loadResult();
+
+				if($is_filter == 0)
+				{
+					$query->clear()
+						->select('DISTINCT status')
+						->from($db->quoteName('#__emundus_setup_groups_repeat_status'))
+						->where($db->quoteName('parent_id') . ' IN (' . implode(',', $db->quote($groups)) . ')');
+					$db->setQuery($query);
+					$status = $db->loadColumn();
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error when get status by group ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+		}
+
+		return $status;
 	}
 }
