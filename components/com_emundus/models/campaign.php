@@ -1143,32 +1143,39 @@ class EmundusModelCampaign extends JModelList {
 						$new_category_id = $this->getCampaignCategory($new_campaign_id);
 
 						if (!empty($new_category_id)) {
-							$old_category_id = $this->getCampaignCategory($id);
-							$old_campaign_documents = $this->getCampaignDropfilesDocuments($old_category_id);
+                            if (mkdir(JPATH_ROOT.'/media/com_dropfiles/' . $new_category_id, 0755)) {
+                                $old_category_id = $this->getCampaignCategory($id);
+                                $old_campaign_documents = $this->getCampaignDropfilesDocuments($old_category_id);
 
-							if (!empty($old_campaign_documents)) {
-								foreach($old_campaign_documents as $document) {
-									$document->catid = $new_category_id;
-									$document->author = $this->_user->id;
+                                if (!empty($old_campaign_documents)) {
+                                    foreach($old_campaign_documents as $document) {
+                                        $document->catid = $new_category_id;
+                                        $document->author = $this->_user->id;
 
-									$columns = array_keys($this->_db->getTableColumns('#__dropfiles_files'));
-									$columns = array_filter($columns, function ($k) {return $k != 'id';});
+                                        $columns = array_keys($this->_db->getTableColumns('#__dropfiles_files'));
+                                        $columns = array_filter($columns, function ($k) {return $k != 'id';});
 
-									$values = '';
-									foreach ($columns as $column) {
-										$values .= $this->_db->quote($document->$column) . ', ';
-									}
-									$values = rtrim($values, ', ');
+                                        $values = '';
+                                        foreach ($columns as $column) {
+                                            $values .= $this->_db->quote($document->$column) . ', ';
+                                        }
+                                        $values = rtrim($values, ', ');
 
-									$query->clear()
-										->insert($this->_db->quoteName('#__dropfiles_files'))
-										->columns(implode(',', $this->_db->quoteName($columns)))
-										->values($values);
+                                        $query->clear()
+                                            ->insert($this->_db->quoteName('#__dropfiles_files'))
+                                            ->columns(implode(',', $this->_db->quoteName($columns)))
+                                            ->values($values);
 
-									$this->_db->setQuery($query);
-									$this->_db->execute();
-								}
-							}
+                                        $this->_db->setQuery($query);
+                                        $this->_db->execute();
+
+                                        // Copy documents on server
+                                        $old_path = JPATH_ROOT.'/media/com_dropfiles/' . $old_category_id . '/' . $document->file;
+                                        $new_path = JPATH_ROOT.'/media/com_dropfiles/' . $new_category_id . '/' . $document->file;
+                                        copy($old_path, $new_path);
+                                    }
+                                }
+                            }
 						}
 					}
 				}
