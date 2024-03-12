@@ -50,19 +50,27 @@ echo <<<EOT
     grid-template-columns: 64% 30%;
 }
 
-.mod_emundus_campaign__tabs a.current-tab {
-    border-bottom: solid 1px var(--em-profile-color);
+.catalogue-description {
+    margin-top: var(--m-24);
 }
 
-.mod_emundus_campaign__tabs a {
+.catalogue-description .fabrikElementReadOnly {
+    margin-top: var(--m-16) !important;
+    color: var(--neutral-900) !important;
+}
+ 
+.catalogue-description .fabrikElementReadOnly * {
+    color: var(--neutral-900) !important;
+}
+ 
+.catalogue-description .fabrikLabel {
     height: 35px;
     cursor: pointer;
-}
-
-.mod_emundus_campaign__tabs a.current-tab span {
-    color: var(--neutral-900);
+    width: min-content;
+     border-bottom: solid 1px var(--em-profile-color);
+         color: var(--neutral-900) !important;
     font-weight: 500;
-    font-family: var(--em-applicant-font);
+    font-family: var(--em-applicant-font) !important;
 }
 
 .tchooz-single-campaign #campaign * {
@@ -81,7 +89,7 @@ echo <<<EOT
     color: var(--neutral-700);
     border-radius: 25px;
     padding: 4px 12px;
-    width: min-content;
+    width: min-content !important;
     text-align: center;
     font-size: 14px;
     margin: 16px 0;
@@ -114,5 +122,38 @@ a.btn.btn-default .icon-print {
 	color: var(--neutral-700);
 }
 
+.catalogue_tag .fabrikLabel {
+	display: none;
+}
+
+.catalogue-title .fabrikLabel {
+	display: none;
+}
+
+.catalogue-title .fabrikElementReadOnly {
+    font-size: var(--em-applicant-h1);
+    font-style: normal;
+    line-height: 28.8px;
+    font-weight: var(--em-font-weight-500);
+	color: var(--em-default-title-color-1) !important;
+    font-family: var(--em-applicant-font-title) !important;
+}
+
+.row-fluid .catalogue-fields {
+	display: flex !important; 
+	flex-direction: row;
+	align-items: center;
+	margin-top: var(--m-8);
+}
+
+.catalogue-fields .fabrikLabel {
+	display: flex !important; 
+	flex-direction: row;
+	align-items: center;
+}
+
+.catalogue-fields .fabrikElementReadOnly {
+	margin-left: 4px;
+}
 
 EOT;

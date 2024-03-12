@@ -15,7 +15,14 @@ defined('_JEXEC') or die('Restricted access');
 $element = $this->element;?>
 <div class=" <?php echo $element->containerClass .' '. $element->span; ?>">
 	<div class="fabrikLabel">
-		<?php echo $element->label_raw;?>
+       <?php
+        $icon = '';
+        if (preg_match('/material_icons-([a-z_]+)/', $element->containerClass, $matches)) {
+          $icon = $matches[1];
+        }
+	    echo '<span class="material-icons-outlined em-mr-8">'. $icon . '</span>'. $element->label_raw;
+
+        ?>
 	</div>
 
 	<?php if ($this->tipLocation == 'above') : ?>

@@ -13,7 +13,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 ?>
-<div class="row-striped em-border-radius-6">
+<div class="em-border-radius-6">
 <?php
 
 $rowStarted = false;
@@ -30,7 +30,7 @@ foreach ($this->elements as $element) :
 	$style = $element->hidden ? 'style="display:none"' : '';
 
 	if ($element->startRow) : ?>
-			<div class="em-border-unset row-fluid <?php echo $single ? 'fabrikElementContainer ' : ''; echo $single && $element->dataEmpty ? 'fabrikDataEmpty ' : ''; ?>" <?php echo $style?>><!-- start element row -->
+			<div class="row-fluid <?php echo $single ? 'fabrikElementContainer ' : ''; echo $single && $element->dataEmpty ? 'fabrikDataEmpty ' : ''; ?>" <?php echo $style?>><!-- start element row -->
 	<?php
 		$rowStarted = true;
 	endif;
