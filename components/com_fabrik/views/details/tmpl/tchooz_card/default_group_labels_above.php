@@ -19,8 +19,11 @@ $element = $this->element;?>
         $icon = '';
         if (preg_match('/material_icons-([a-z_]+)/', $element->containerClass, $matches)) {
           $icon = $matches[1];
+	        echo '<span class="material-icons-outlined em-mr-8">'. $icon . '</span>'. $element->label_raw;
+        } else {
+	      echo $element->label_raw;
         }
-	    echo '<span class="material-icons-outlined em-mr-8">'. $icon . '</span>'. $element->label_raw;
+
 
         ?>
 	</div>
