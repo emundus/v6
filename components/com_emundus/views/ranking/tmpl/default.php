@@ -114,7 +114,6 @@ Text::script('COM_EMUNDUS_RANKING_RANKER');
 <script>
     const leftPanelOpener = document.querySelector('.em-left-panel-opener');
     const leftPanel = document.querySelector('.em-left-panel.filters');
-    console.log(leftPanelOpener);
 
     leftPanelOpener.addEventListener('click', function () {
         console.log('click');
@@ -127,10 +126,13 @@ Text::script('COM_EMUNDUS_RANKING_RANKER');
         position: relative;
         width: 0;
         height: calc(100vh - 112px);
+        transition: 0.3s;
+        box-shadow: 10px 0px 10px -9px #aaa;
     }
 
     .em-left-panel-opened {
         width: 33% !important;
+        padding: 16px;
     }
 
     .em-left-panel .content {
@@ -150,5 +152,9 @@ Text::script('COM_EMUNDUS_RANKING_RANKER');
         color: #fff;
         padding: 4px 34px;
         border-radius:0 0 8px 8px;
+    }
+
+    .em-left-panel-opened .em-left-panel-opener {
+        right: -80px;
     }
 </style>
