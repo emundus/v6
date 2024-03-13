@@ -57,7 +57,7 @@ foreach ($this->headings as $heading => $label) {
         <div id="background-shapes" alt="Fond formes"
              style="mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');"></div>
         <div class="mod_emundus_campaign__list_content_container">
-            <div class="em-flex-row em-flex-space-between">
+            <div class="em-flex-row em-flex-space-between em-flex-align-start">
                 <a href="<?= $this->_row->data->fabrik_view_url; ?>"><h4><?php echo $title; ?></h4></a>
                 <p class="catalogue_tag"><?php echo implode(', ', $tags); ?></p>
             </div>

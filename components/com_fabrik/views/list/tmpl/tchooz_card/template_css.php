@@ -92,7 +92,7 @@ list-style: none;
     width: min-content;
 	text-align: center;
 	font-size: 14px;
-	margin: 16px 0;
+	margin: 10px 0;
 }
 
 .view-list.catalogue #g-container-main {

@@ -82,9 +82,11 @@ endif;
                         <span onclick="switchView('grid')" class="em-pointer material-icons-outlined fabrik-switch-view-icon" id="fabrik_switch_view_grid_icon">grid_view</span>
                     </div>
                 </div>
+	            <?php if ($this->showFilters) : ?>
                 <div class="em-w-100 em-mb-16">
-		                <?php echo $this->nav;?>
+                        <?php echo $this->nav;?>
                 </div>
+                <?php endif; ?>
 
 	            <?php endif; ?>
 
