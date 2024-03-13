@@ -19,9 +19,9 @@ if ($d->showNav) :
             <span class="em-text-neutral-600">
                 <?php echo $d->pagesCounter; ?>
 			</span>
-            <div>
+            <div class="em-flex-row em-flex-space-between em-flex-gap-8">
                 <span class="add-on">
-                    <label for="<?php echo $d->listName;?>">
+                    <label class="em-mb-0" for="<?php echo $d->listName;?>">
                         <small>
                         <?php echo $d->label; ?>
                         </small>

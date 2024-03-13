@@ -18,7 +18,6 @@ use Joomla\CMS\Factory;
 $app = Factory::getApplication();
 $document = $app->getDocument();
 $document->addStyleSheet('modules/mod_emundus_campaign/css/mod_emundus_campaign_tchooz.css');
-
 $pageClass = $this->params->get('pageclass_sfx', '');
 
 if ($pageClass !== '') :
@@ -76,13 +75,17 @@ endif;
         <div id="current_1" class="mod_emundus_campaign__list">
             <div class="fabrikDataContainer">
 	            <?php if ($this->showFilters) : ?>
-                <div class="em-flex-row em-flex-space-between em-mb-24">
+                <div class="em-flex-row em-flex-space-between em-mb-16">
                     <h1><?php echo $this->table->label; ?></h1>
                     <div class="em-flex-row-justify-end em-gap-8 fabrik-switch-view-buttons">
                         <span onclick="switchView('list')" class="em-pointer material-icons-outlined fabrik-switch-view-icon active" id="fabrik_switch_view_list_icon">menu</span>
                         <span onclick="switchView('grid')" class="em-pointer material-icons-outlined fabrik-switch-view-icon" id="fabrik_switch_view_grid_icon">grid_view</span>
                     </div>
                 </div>
+                <div class="em-w-100 em-mb-16">
+		                <?php echo $this->nav;?>
+                </div>
+
 	            <?php endif; ?>
 
 				<?php foreach ($this->pluginBeforeList as $c) :
@@ -94,6 +97,7 @@ endif;
 		            <?php
 		            foreach ($this->rows as $groupedBy => $group)
 		            {
+
 			            foreach ($group as $this->_row)
 			            {
 				            echo $this->loadTemplate('tabs');

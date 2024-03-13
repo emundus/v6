@@ -303,4 +303,25 @@ list-style: none;
 	color: var(--em-primary-color);
 	border: 1px solid var(--em-primary-color);
 }
+
+.catalogue_filters_container input:not(.fabrik_filter_submit), 
+.catalogue_filters_container select {
+	color: var(--neutral-900) !important;
+}
+
+#catalogue_container span.add-on {
+	background: transparent;
+}
+
+#catalogue_container .inputbox  {
+	color: var(--neutral-600);
+}
+
+#catalogue_container span.add-on small {
+	color: var(--neutral-600);
+	font-weight: 400;
+	font-size: var(--em-applicant-font-size);
+	font-family: var(--em-applicant-font);
+}
+
 "; ?>
