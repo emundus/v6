@@ -23,8 +23,6 @@ $element = $this->element;?>
         } else {
 	      echo $element->label_raw;
         }
-
-
         ?>
 	</div>
 

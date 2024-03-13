@@ -50,6 +50,11 @@ echo <<<EOT
     grid-template-columns: 64% 30%;
 }
 
+.mod_emundus_campaign__flex {
+    display: flex !important;
+}
+
+
 .catalogue-description {
     margin-top: var(--m-24);
 }

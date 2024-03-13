@@ -14,12 +14,14 @@ defined('_JEXEC') or die('Restricted access');
 
 $form  = $this->form;
 $model = $this->getModel();
+$notes = $this->params->get('note', '');
+
 
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 
 ?>
 
-<div class="mod_emundus_campaign__grid em-mt-24 em-mb-64" style="grid-gap: 64px;">
+<div class="mod_emundus_campaign__grid em-mt-24 em-mb-64<?php if (!preg_match('/show_details_content/', $notes, $matches)) : echo ' mod_emundus_campaign__flex'; endif;?>" style="grid-gap: 64px;">
     <div>
         <div class="em-flex-row em-flex-space-between em-w-100 em-mb-12 em-pointer" onclick="history.go(-1)">
             <div class="em-flex-row"><span class="material-icons em-neutral-700-color">arrow_back</span><span class="em-ml-8 em-text-neutral-900"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span></div>
@@ -41,13 +43,15 @@ require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'acces
         </div>
     </div>
 
+  <?php if (preg_match('/show_details_content/', $notes, $matches)) :?>
     <div>
         <div class="mod_emundus_campaign__details_content em-border-neutral-300 em-mb-24">
             <div id="background-shapes" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
             <h4 class="em-mb-24"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_APPLY') ?></h4>
-            <a class="btn btn-primary em-w-100 em-applicant-default-font" role="button" href='#' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+            <a class="btn btn-primary em-w-100 em-applicant-default-font" role="button" href="<?php if (preg_match('/edit_url="(.*)"/', $notes, $matches)) :  echo $matches[1]; endif;?>" data-toggle="sc-modal"><?php echo JText::_('COM_FABRIK_EDITLABEL'); ?></a>
         </div>
     </div>
+    <?php endif; ?>
 </div>
 
 <div id="fabrikDetailsContainer_<?php echo $form->id ?>">
