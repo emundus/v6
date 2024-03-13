@@ -15,9 +15,22 @@ require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
 
 class EmundusModelRanking extends JModelList
 {
+
+    public $filters = [];
+    private $h_files = null;
+
     public function __construct($config = array())
     {
         parent::__construct($config);
+
+        $session = Factory::getSession();
+        $this->filters = $session->get('em-applied-filters', []);
+        if (!empty($this->filters)) {
+            if (!class_exists('EmundusHelperFiles')) {
+                require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+            }
+            $this->h_files = new EmundusHelperFiles();
+        }
 
         JLog::addLogger(['text_file' => 'com_emundus.ranking.php'], JLog::ALL);
     }
@@ -209,7 +222,8 @@ class EmundusModelRanking extends JModelList
      * @param $user_id
      * @return array
      */
-    public function getOtherRankingsRankerCanSee($user_id) {
+    public function getOtherRankingsRankerCanSee($user_id)
+    {
         $rankings = [];
 
         if (!empty($user_id)) {
@@ -234,14 +248,34 @@ class EmundusModelRanking extends JModelList
                         ->leftJoin($db->quoteName('#__emundus_users', 'applicant') . ' ON ' . $db->quoteName('cc.applicant_id') . ' = ' . $db->quoteName('applicant.id'))
                         ->leftJoin($db->quoteName('#__emundus_ranking', 'cr') . ' ON ' . $db->quoteName('cc.id') . ' = ' . $db->quoteName('cr.ccid'))
                         ->where('cc.id IN (' . implode(',', $ids) . ')')
-                        ->andWhere($db->quoteName('cr.hierarchy_id') . ' = ' .$hierarchy['id']);
+                        ->andWhere($db->quoteName('cr.hierarchy_id') . ' = ' . $hierarchy['id']);
+
+                    // handle session filters
+                    if (!empty($this->filters)) {
+                        $already_joined = [
+                            'cc' => 'jos_emundus_campaign_candidature',
+                            'applicant' => 'jos_emundus_users',
+                            'cr' => 'jos_emundus_ranking'
+                        ];
+                        $wheres = $this->h_files->_moduleBuildWhere($already_joined, 'ranking');
+
+                        if (!empty($wheres['q'])) {
+                            $query_string = $query->__toString();
+                            $query_string .= $wheres['q'];
+                        }
+                    }
 
                     try {
-                        $db->setQuery($query);
+                        if (!empty($query_string)) {
+                            $db->setQuery($query_string);
+                        } else {
+                            $db->setQuery($query);
+                        }
+
                         $data['files'] = $db->loadAssocList();
                     } catch (Exception $e) {
                         JLog::add('getOtherRankingsRankerCanSee ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
-                        throw new Exception('An error occurred while fetching the files.');
+                        throw new Exception('An error occurred while fetching the files.' . $e->getMessage());
                     }
 
                     $query->clear()
@@ -249,7 +283,7 @@ class EmundusModelRanking extends JModelList
                         ->from($db->quoteName('#__emundus_ranking', 'r'))
                         ->leftJoin($db->quoteName('#__emundus_users', 'u') . ' ON ' . $db->quoteName('r.user_id') . ' = ' . $db->quoteName('u.id'))
                         ->where('r.ccid IN (' . implode(',', $ids) . ')')
-                        ->andWhere($db->quoteName('r.hierarchy_id') . ' = ' .$hierarchy['id']);
+                        ->andWhere($db->quoteName('r.hierarchy_id') . ' = ' . $hierarchy['id']);
 
                     try {
                         $db->setQuery($query);
@@ -281,14 +315,37 @@ class EmundusModelRanking extends JModelList
             $query = $db->getQuery(true);
 
             $query->clear()
-                ->select('erh.id, erh.label')
+                ->select('DISTINCT erh.id, erh.label')
                 ->from($db->quoteName('#__emundus_ranking_hierarchy_view', 'erhv'))
                 ->leftJoin($db->quoteName('#__emundus_ranking_hierarchy', 'erh') . ' ON ' . $db->quoteName('erhv.visible_hierarchy_id') . ' = ' . $db->quoteName('erh.id'))
                 ->where('erhv.hierarchy_id = ' . $db->quote($user_hierarchy))
                 ->orderBy('erh.parent_id, erh.id ASC');
 
-            $db->setQuery($query);
-            $hierarchies = $db->loadAssocList();
+            if (!empty($this->filters)) {
+                // check if there is a filter on hierarchy_id and if so, add it to the query
+                $subquery = $db->getQuery(true);
+                foreach($this->filters as $filter) {
+                    $subquery->clear()
+                        ->select('name')
+                        ->from($db->quoteName('#__fabrik_elements'))
+                        ->where($db->quoteName('id') . ' = ' . $db->quote($filter['id']));
+
+                    $db->setQuery($subquery);
+                    $element = $db->loadResult();
+
+                    if ($element == 'hierarchy_id') {
+                        $query->where($this->h_files->writeQueryWithOperator('erh.id', $filter['value'], $filter['operator']));
+                    }
+                }
+            }
+
+            try {
+                $db->setQuery($query);
+                $hierarchies = $db->loadAssocList();
+            } catch (Exception $e) {
+                JLog::add('getHierarchiesUserCanSee ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
+                throw new Exception('An error occurred while fetching the hierarchies.');
+            }
         }
 
         return $hierarchies;

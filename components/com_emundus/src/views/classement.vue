@@ -200,14 +200,27 @@ export default {
       defaultFile: null,
       selectedOtherFile: null,
       locked: false,
-      subRankingKey: 0
+      subRankingKey: 0,
+      loading: false
     }
   },
   created() {
     this.getRankings();
     this.getOtherHierarchyRankings();
+    this.addFilterEventListener();
   },
   methods: {
+    addFilterEventListener() {
+      window.addEventListener('emundus-start-apply-filters', () => {
+        this.loading = true;
+      });
+
+      window.addEventListener('emundus-apply-filters-success', () => {
+        this.getRankings();
+        this.getOtherHierarchyRankings();
+        this.loading = false;
+      });
+    },
     async getRankings() {
       return await rankingService.getMyRanking().then(response => {
         if (response.status) {
