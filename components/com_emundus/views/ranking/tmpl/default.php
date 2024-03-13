@@ -79,12 +79,19 @@ Text::script('COM_EMUNDUS_RANKING_LOCK_RANKING_CONFIRM_NO');
 Text::script('COM_EMUNDUS_RANKING_RANKER');
 
 ?>
-<div class="em-flex-row">
-    <div>
-        <?php echo JHtml::_('content.prepare', '{loadposition emundus_filters}'); ?>
-    </div>
+<div class="em-flex-row em-w-100 em-h-100 em-flex-align-start">
+    <aside class="em-left-panel filters em-h-100">
+        <div class="content">
+            <h3>Filtres</h3>
+            <?php echo JHtml::_('content.prepare', '{loadposition emundus_filters}'); ?>
+        </div>
+        <div class="em-left-panel-opener em-pointer em-flex-row">
+            <span>Filtres</span>
+            <span class="material-icons-outlined">arrow_drop_down</span>
+        </div>
+    </aside>
 
-    <div class="em-p-0-12">
+    <div class="em-p-0-12 em-w-100 em-h-100">
         <h2><?= Text::_('COM_EMUNDUS_CLASSEMENT_TITLE') ?></h2>
         <p class="em-neutral-600-color em-mt-8 em-mb-8"><?= Text::_('COM_EMUNDUS_CLASSEMENT_HIERARCHY_LEVEL') . $this->hierarchy_id . ' - ' . Text::_('COM_EMUNDUS_CLASSEMENT_RANKER') . ' ' . $this->user->name ?></p>
         <div id="em-component-vue"
@@ -103,3 +110,45 @@ Text::script('COM_EMUNDUS_RANKING_RANKER');
 </div>
 
 <script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+
+<script>
+    const leftPanelOpener = document.querySelector('.em-left-panel-opener');
+    const leftPanel = document.querySelector('.em-left-panel.filters');
+    console.log(leftPanelOpener);
+
+    leftPanelOpener.addEventListener('click', function () {
+        console.log('click');
+        leftPanel.classList.toggle('em-left-panel-opened');
+    });
+</script>
+
+<style>
+    .em-left-panel.filters {
+        position: relative;
+        width: 0;
+        height: calc(100vh - 112px);
+    }
+
+    .em-left-panel-opened {
+        width: 33% !important;
+    }
+
+    .em-left-panel .content {
+        display: none;
+    }
+
+    .em-left-panel-opened .content {
+        display: block;
+    }
+
+    .em-left-panel-opener {
+        position: absolute;
+        top: 50%;
+        right: -75px;
+        transform: rotate(-90deg);
+        background-color: #353544;
+        color: #fff;
+        padding: 4px 34px;
+        border-radius:0 0 8px 8px;
+    }
+</style>
