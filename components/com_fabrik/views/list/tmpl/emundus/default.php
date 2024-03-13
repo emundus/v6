@@ -27,7 +27,7 @@ if ($this->params->get('show_page_heading')) :
 	echo '<h1>' . $this->params->get('page_heading') . '</h1>';
 endif;
 
-if ($this->showTitle == 1) : ?>
+if ($this->params->get('show_page_heading')) : ?>
 	<div class="page-header em-flex-row em-flex-space-between emundus-list-page-header">
 		<h1><?php echo $this->table->label;?></h1>
 		<?php if ($this->showAdd) :?>
