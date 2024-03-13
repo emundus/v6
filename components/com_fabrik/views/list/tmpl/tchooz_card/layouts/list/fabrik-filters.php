@@ -180,5 +180,6 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
                 filterIntro.classList.add('em-filter-intro__close');
             }
         });
+
     }
 </script>

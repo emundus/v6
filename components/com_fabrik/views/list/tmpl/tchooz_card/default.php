@@ -150,4 +150,12 @@ endif;
 
         }
     }
+
+    if(screen.width < 768) {
+        document.getElementById("catalogue_container").classList.remove("tabs");
+        document.getElementById("catalogue_container").classList.add("cards");
+        document.getElementById("fabrik_switch_view_list_icon").classList.remove("active");
+        document.getElementById("fabrik_switch_view_list_icon").classList.add("hidden");
+        document.getElementById("fabrik_switch_view_grid_icon").classList.add("active");
+    }
 </script>
