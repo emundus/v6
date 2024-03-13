@@ -28,48 +28,80 @@
           <th>{{ translate('COM_EMUNDUS_CLASSEMENT_FILE') }}</th>
           <th>{{ translate('COM_EMUNDUS_CLASSEMENT_YOUR_RANKING') }}</th>
           </thead>
-          <tbody name="my_ranking" is="transition-group">
           <!-- only ranked files -->
-          <tr v-for="file in rankedFiles" :key="file.id" class="ranked-file">
-            <td>
-              <span class="material-icons-outlined" v-if="file.locked == 1">lock</span>
+          <draggable
+              name="my_ranking"
+              tag="tbody"
+              v-model="rankedFiles"
+              group="ranked-files-list"
+              :sort="true"
+              class="draggables-list"
+              :class="{'dragging': dragging}"
+              @start="dragging = true"
+              @end="onDragEnd"
+              handle=".handle"
+          >
+            <tr v-for="file in rankedFiles" :key="file.id" :data-file-id="file.id" class="ranked-file">
+              <td>
+                <span class="material-icons-outlined" v-if="file.locked == 1">lock</span>
+                <span class="material-icons-outlined" v-else>lock_open</span>
+                <span class="material-icons-outlined handle">drag_indicator</span>
+              </td>
+              <td class="em-flex-column file-identifier em-pointer" @click="openClickOpenFile(file)">
+                <span>{{ file.applicant }}</span>
+                <span class="em-neutral-600-color em-font-size-14">{{ file.fnum }}</span>
+              </td>
+              <td v-if="!ismyRankingLocked">
+                <select v-model="file.rank" @change="onChangeRankValue(file)">
+                  <option value="-1">{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</option>
+                  <option v-for="i in maxRankValueAvailable" :key="i">{{ i }}</option>
+                </select>
+              </td>
+              <td v-else>
+                <span>{{ file.rank }}</span>
+              </td>
+            </tr>
+          </draggable>
+        </table>
+        <!-- non ranked files -->
+        <table>
+          <thead style="height: 0;">
+            <th>
+              <span class="material-icons-outlined" v-if="ismyRankingLocked">lock</span>
               <span class="material-icons-outlined" v-else>lock_open</span>
-            </td>
-            <td class="em-flex-column file-identifier em-pointer" @click="openClickOpenFile(file)">
-              <span>{{ file.applicant }}</span>
-              <span class="em-neutral-600-color em-font-size-14">{{ file.fnum }}</span>
-            </td>
-            <td v-if="!ismyRankingLocked">
-              <select v-model="file.rank" @change="onChangeRankValue(file)">
-                <option value="-1">{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</option>
-                <option v-for="i in maxRankValueAvailable" :key="i">{{ i }}</option>
-              </select>
-            </td>
-            <td v-else>
-              <span>{{ file.rank }}</span>
-            </td>
-          </tr>
-          <!-- non ranked files -->
-          <tr v-for="file in unrankedFiles" :key="file.id" class="unranked-file">
-            <td>
-              <span class="material-icons-outlined" v-if="file.locked">lock</span>
-              <span class="material-icons-outlined" v-else>lock_open</span>
-            </td>
-            <td class="em-flex-column file-identifier em-pointer" @click="openClickOpenFile(file)">
-              <span>{{ file.applicant }}</span>
-              <span class="em-neutral-600-color em-font-size-14">{{ file.fnum }}</span>
-            </td>
-            <td v-if="!ismyRankingLocked">
-              <select v-model="file.rank" @change="onChangeRankValue(file)">
-                <option value="-1">{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</option>
-                <option v-for="i in (maxRankValueAvailableForNotRanked)" :key="i">{{ i }}</option>
-              </select>
-            </td>
-            <td v-else>
-              {{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}
-            </td>
-          </tr>
-          </tbody>
+            </th>
+            <th>{{ translate('COM_EMUNDUS_CLASSEMENT_FILE') }}</th>
+            <th>{{ translate('COM_EMUNDUS_CLASSEMENT_YOUR_RANKING') }}</th>
+          </thead>
+          <draggable
+              v-model="unrankedFiles"
+              tag="tbody"
+              class="draggables-list"
+              :group="{name: 'ranked-files-list', pull: true, put: false}"
+              :sort="false"
+              @end="onDragEnd"
+          >
+            <tr v-for="file in unrankedFiles" :key="file.id" :data-file-id="file.id" class="unranked-file">
+              <td>
+                <span class="material-icons-outlined" v-if="file.locked">lock</span>
+                <span class="material-icons-outlined" v-else>lock_open</span>
+                <span class="material-icons-outlined handle">drag_indicator</span>
+              </td>
+              <td class="em-flex-column file-identifier em-pointer" @click="openClickOpenFile(file)">
+                <span>{{ file.applicant }}</span>
+                <span class="em-neutral-600-color em-font-size-14">{{ file.fnum }}</span>
+              </td>
+              <td v-if="!ismyRankingLocked">
+                <select v-model="file.rank" @change="onChangeRankValue(file)">
+                  <option value="-1">{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</option>
+                  <option v-for="i in (maxRankValueAvailableForNotRanked)" :key="i">{{ i }}</option>
+                </select>
+              </td>
+              <td v-else>
+                {{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}
+              </td>
+            </tr>
+          </draggable>
         </table>
       </div>
       <div v-if="rankings.otherRankings.length > 0" id="other-ranking-lists" class="em-w-100 em-border-neutral-300">
@@ -171,10 +203,11 @@
 import translate from "../mixins/translate";
 import rankingService from "../services/ranking.js";
 import CompareFiles from "../components/Files/CompareFiles.vue";
+import draggable from "vuedraggable";
 
 export default {
   name: 'Classement',
-  components: {CompareFiles},
+  components: {CompareFiles, draggable},
   props: {
     user: {
       type: Number,
@@ -201,7 +234,8 @@ export default {
       selectedOtherFile: null,
       locked: false,
       subRankingKey: 0,
-      loading: false
+      loading: false,
+      dragging: false
     }
   },
   created() {
@@ -317,6 +351,36 @@ export default {
     onComparisonFileChanged(defaultFile, selectedFileToCompareWith) {
       this.defaultFile = defaultFile;
       this.selectedOtherFile = selectedFileToCompareWith;
+    },
+    /**
+     * Drag & drop functions
+     */
+    onDragEnd(e) {
+      this.dragging = false;
+      const itemId = e.item.dataset.fileId;
+
+      if (itemId) {
+
+        // find the file in the list
+        let file = this.rankings.myRanking.find(f => f.id == itemId);
+
+        if (file) {
+          // get rank value at the new index
+          // index can be inside of rankedFiles or unrankedFiles
+          let newIndex = e.newIndex;
+          let newRank = -1;
+
+          if (newIndex < this.rankedFiles.length) {
+            newRank = this.rankedFiles[newIndex].rank;
+          } else {
+            // if the new index is in the unranked files, then the rank is the max rank value available for not ranked files
+            newRank = this.maxRankValueAvailableForNotRanked;
+          }
+
+          file.rank = newRank;
+          this.onChangeRankValue(file);
+        }
+      }
     }
   },
   computed: {
@@ -355,7 +419,7 @@ export default {
       return this.rankings.myRanking.filter(file => file.rank == -1);
     },
     rankedFiles() {
-      return this.rankings.myRanking.filter(file => file.rank != -1);
+      return this.rankings.myRanking.filter(file => file.rank != -1).sort((a, b) => a.rank - b.rank);
     },
     orderedRankings() {
       // rankedFiles first, then unrankedFiles
@@ -452,6 +516,14 @@ button.em-secondary-button {
       color: var(--neutral-0);
     }
   }
+}
+
+.handle:hover {
+  cursor: grab;
+}
+
+.dragging {
+  cursor: grabbing;
 }
 
 </style>
