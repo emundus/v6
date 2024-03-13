@@ -85,9 +85,10 @@ class EmundusModelFiles extends JModelLegacy
         $h_files = new EmundusHelperFiles;
         $m_users = new EmundusModelUsers;
 
-        $groupAssoc = array_filter($m_users->getUserGroupsProgrammeAssoc($current_user->id));
+        $groupProg = array_filter($m_users->getUserGroupsProgrammeAssoc($current_user->id));
+        $groupAssoc = array_filter($this->getGroupsAssociatedProgrammes($current_user->id));
         $progAssoc = array_filter($this->getAssociatedProgrammes($current_user->id));
-        $this->code = array_merge($groupAssoc, $progAssoc);
+        $this->code = array_merge($groupProg, $groupAssoc, $progAssoc);
 
         $this->locales = substr(JFactory::getLanguage()->getTag(), 0 , 2);
 
@@ -3105,14 +3106,44 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function getAssociatedProgrammes($user)
     {
-        $query = 'select DISTINCT sc.training
-                  from #__emundus_users_assoc as ua
-                  LEFT JOIN #__emundus_campaign_candidature as cc ON cc.fnum=ua.fnum
-                  left join #__emundus_setup_campaigns as sc on sc.id = cc.campaign_id
-                  where ua.user_id='.$user;
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('DISTINCT sc.training')
+            ->from('#__emundus_users_assoc AS ua')
+            ->leftJoin('#__emundus_campaign_candidature AS cc ON cc.fnum = ua.fnum')
+            ->leftJoin('#__emundus_setup_campaigns AS sc ON sc.id = cc.campaign_id')
+            ->where('ua.user_id = '.$db->quote($user));
         try
         {
-            $db = $this->getDbo();
+            $db->setQuery($query);
+            return $db->loadColumn();
+        }
+        catch(Exception $e)
+        {
+            error_log($e->getMessage(), 0);
+            return false;
+        }
+    }
+
+    /**
+     * @param $user
+     * @return array|false
+     * get list of programmes for groups associated files
+     */
+    public function getGroupsAssociatedProgrammes($user)
+    {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('DISTINCT sc.training')
+            ->from('#__emundus_groups AS g')
+            ->leftJoin('#__emundus_group_assoc AS ga ON ga.group_id = g.group_id AND ga.action_id = 1 AND ga.r = 1')
+            ->leftJoin('#__emundus_campaign_candidature AS cc ON cc.fnum = ga.fnum')
+            ->leftJoin('#__emundus_setup_campaigns AS sc ON sc.id = cc.campaign_id')
+            ->where('g.user_id = '.$db->quote($user));
+        try
+        {
             $db->setQuery($query);
             return $db->loadColumn();
         }
