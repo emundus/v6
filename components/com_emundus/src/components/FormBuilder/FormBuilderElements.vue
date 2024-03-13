@@ -38,7 +38,13 @@
       </draggable>
     </div>
 
-    <div v-if="selected === 2">
+    <div v-if="selected === 2" class="mt-2">
+      <input
+          v-model="keywords"
+          type="text"
+          class="formbuilder-searchbar"
+          :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_SEARCH_SECTION')"
+      />
       <div
           v-for="group in publishedGroups"
           :key="group.id"
@@ -185,7 +191,11 @@ export default {
       }
     },
     publishedGroups() {
-      return this.groups.filter(group => group.published);
+      if (this.keywords) {
+        return this.groups.filter(group => group.published && this.translate(group.name).toLowerCase().includes(this.keywords.toLowerCase()));
+      } else {
+        return this.groups.filter(group => group.published);
+      }
     }
   }
 }
@@ -205,7 +215,7 @@ export default {
     background-color: var(--neutral-200);
   }
 }
-#form-builder-elements input.formbuilder-searchbar {
+#form-builder-elements input.formbuilder-searchbar, #form-builder-document-formats input.formbuilder-searchbar, #form-builder-rules-list input.formbuilder-searchbar {
   border-width: 0 0 1px 0;
   border-radius: 0;
   border-color: var(--neutral-400);

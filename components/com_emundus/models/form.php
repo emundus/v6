@@ -11,6 +11,7 @@
 
 // No direct access
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 
 defined('_JEXEC') or die('Restricted access');
@@ -2281,7 +2282,7 @@ class EmundusModelForm extends JModelList {
         return $data;
     }
 
-	public function getJSConditionsByForm($form_id)
+	public function getJSConditionsByForm($form_id, $format = 'raw')
 	{
 		$js_conditions = [];
 
@@ -2306,6 +2307,51 @@ class EmundusModelForm extends JModelList {
 				$db->setQuery($query);
 				$js_condition->conditions = $db->loadObjectList();
 
+				if($format == 'view')
+				{
+					foreach ($js_condition->conditions as $condition)
+					{
+						$query->clear()
+							->select('label,plugin,params')
+							->from($db->quoteName('#__fabrik_elements'))
+							->where($db->quoteName('name') . ' = ' . $db->quote($condition->field));
+						$db->setQuery($query);
+						$elt = $db->loadObject();
+						$condition->label = Text::_($elt->label);
+
+						$choices_plugin = ['checkbox','dropdown','radiobutton'];
+						$params = json_decode($elt->params);
+
+						if(in_array($elt->plugin,$choices_plugin)) {
+							// Get values
+							foreach ($params->sub_options->sub_labels as $key => $sub_label) {
+								$params->sub_options->sub_labels[$key] = Text::_($sub_label);
+							}
+
+							$condition->options = $params->sub_options;
+						} elseif ($elt->plugin == 'yesno') {
+							$condition->options = new stdClass();
+							$condition->options->sub_values = [
+								0,
+								1
+							];
+							$condition->options->sub_labels = [
+								Text::_('JNO'),
+								Text::_('JYES')
+							];
+						} elseif ($elt->plugin == 'databasejoin') {
+							$condition->options = new stdClass();
+							$condition->options->sub_values = [];
+							$condition->options->sub_labels = [];
+							$databasejoin_options = $this->getDatabaseJoinOptions($params->join_db_name, $params->join_key_column, $params->join_val_column, $params->join_val_column_concat);
+							foreach ($databasejoin_options as $databasejoin_option) {
+								$condition->options->sub_values[] = $databasejoin_option->primary_key;
+								$condition->options->sub_labels[] = $databasejoin_option->value;
+							}
+						}
+					}
+				}
+
 				$query->clear()
 					->select('esfrr.action,group_concat(esfrr_fields.fields) as fields')
 					->from($db->quoteName('#__emundus_setup_form_rules_820_repeat','esfrr'))
@@ -2313,6 +2359,26 @@ class EmundusModelForm extends JModelList {
 					->where($db->quoteName('esfrr.parent_id') . ' = ' . $db->quote($js_condition->id));
 				$db->setQuery($query);
 				$js_condition->actions = $db->loadObjectList();
+
+				if($format == 'view')
+				{
+					foreach ($js_condition->actions as $action)
+					{
+						$action->fields = explode(',',$action->fields);
+
+						$query->clear()
+							->select('group_concat(label)')
+							->from($db->quoteName('#__fabrik_elements'))
+							->where($db->quoteName('name') . ' IN (' . implode(',',$db->quote($action->fields)) . ')');
+						$db->setQuery($query);
+						$labels = $db->loadResult();
+						$labels = explode(',',$labels);
+						foreach ($labels as $label)
+						{
+							$action->labels[] = Text::_($label);
+						}
+					}
+				}
 			}
 		}
 		catch (Exception $e)

@@ -876,9 +876,10 @@ class EmundusControllerForm extends JControllerLegacy {
 
 		$jinput = Factory::getApplication()->input;
 		$formId = $jinput->getInt('form_id');
+		$format = $jinput->getString('format', 'raw');
 
 		if (!empty($formId)) {
-			$conditions = $this->m_form->getJSConditionsByForm($formId);
+			$conditions = $this->m_form->getJSConditionsByForm($formId, $format);
 
 			$response['msg'] = Text::_('SUCCESS');
 			$response['status'] = true;

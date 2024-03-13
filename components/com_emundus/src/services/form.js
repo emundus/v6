@@ -295,5 +295,21 @@ export default {
                 error:error
             };
         }
+    },
+
+    async getConditions(formId)
+    {
+        try {
+            const response = await client().get(
+                baseUrl + '&task=getjsconditions&form_id=' + formId + '&format=view'
+            );
+
+            return response.data;
+        } catch (error) {
+            return {
+                status: false,
+                error:error
+            };
+        }
     }
 };

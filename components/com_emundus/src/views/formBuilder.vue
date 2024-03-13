@@ -40,23 +40,23 @@
           <span class="text-white material-icons-outlined">
             remove_red_eye
           </span>
-          <label class="mb-0" for="previewform">Prévisualiser le formulaire</label>
+          <label class="mb-0" for="previewform">{{ translate('COM_EMUNDUS_FORMBUILDER_GO_TO_PREVIEW') }}</label>
         </button>
         <button class="em-primary-button px-6 py-3 gap-3 em-w-auto" v-if="previewForm" @click="previewForm = false">
           <span class="text-white material-icons-outlined">
             handyman
           </span>
-          <label class="mb-0" for="previewform">Revenir au form-builder</label>
+          <label class="mb-0" for="previewform">{{ translate('COM_EMUNDUS_FORMBUILDER_GO_BACK_FORMBUILDER') }}</label>
         </button>
       </header>
 
       <div v-if="principalContainer === 'default'" class="body em-flex-row em-flex-space-between">
-        <aside class="left-panel em-flex-row em-flex-start em-h-100">
+        <aside class="left-panel em-flex-row em-flex-start em-h-100" v-show="!previewForm">
           <div class="tabs em-flex-column em-flex-start em-h-100">
             <div class="tab" v-for="(tab,i) in displayedLeftPanels" :key="title + '_' + i" :class="{ active: tab.active }" :title="tab.title">
               <span
                   class="material-icons-outlined em-p-16"
-                  @click="tab.url ? goTo(tab.url, 'blank') : selectTab(tab.title)"
+                  @click="tab.url ? goTo(tab.url, 'blank') : setSectionShown(tab.code)"
               >
                 {{ tab.icon }}
               </span>
@@ -72,6 +72,10 @@
                 @open-create-document="onEditDocument"
             >
             </form-builder-document-formats>
+            <form-builder-rules-list
+                v-else-if="leftPanelActiveTab === 'Rules'"
+                :form="currentPage"
+                />
           </div>
         </aside>
 
@@ -79,7 +83,7 @@
           <transition name="fade" mode="out-in">
             <form-builder-page
               ref="formBuilderPage"
-              v-if="currentPage && showInSection === 'page' && leftPanelActiveTab === 'Elements'"
+              v-if="currentPage && showInSection === 'page'"
               :key="currentPage.id"
               :profile_id="parseInt(profile_id)"
               :page="currentPage"
@@ -98,12 +102,19 @@
               @edit-document="onEditDocument"
               @delete-document="onDeleteDocument"
             ></form-builder-document-list>
+            <form-builder-rules
+              v-else-if="currentPage && showInSection === 'rules'"
+              :key="currentPage.id"
+              :profile_id="parseInt(profile_id)"
+              :page="currentPage"
+              :mode="mode"
+              />
           </transition>
         </section>
 
         <div v-if="previewForm" class="w-full h-full" style="background: #fafafb">
-          <h2 style="padding: 1.5rem">Aperçu du formulaire</h2>
-          <iframe width="100%" height="100%" frameborder="0" style="min-height: 100vh;" id="preview_iframe" name="preview_iframe" :src="'index.php?option=com_fabrik&view=form&formid='+selectedPage+'&tmpl=component'"></iframe>
+          <h2 style="padding: 1.5rem">{{ translate('') }}</h2>
+          <iframe width="100%" height="100%" frameborder="0" style="min-height: 100vh;" id="preview_iframe" name="preview_iframe" :src="'index.php?option=com_fabrik&view=form&formid='+selectedPage+'&tmpl=component'" @load="loading = false" v-show="!loading"></iframe>
         </div>
 
 	      <transition name="slide-fade" mode="out-in">
@@ -188,10 +199,14 @@ import FormBuilderDocumentFormats from "../components/FormBuilder/FormBuilderDoc
 // services
 import formService from '../services/form.js';
 import FormBuilderCreateModel from "../components/FormBuilder/FormBuilderCreateModel";
+import FormBuilderRules from "../components/FormBuilder/FormBuilderRules";
+import FormBuilderRulesList from "@/components/FormBuilder/FormBuilderRulesList.vue";
 
 export default {
   name: 'FormBuilder',
   components: {
+    FormBuilderRulesList,
+    FormBuilderRules,
 	  FormBuilderCreateModel,
     FormBuilderSectionProperties,
 	  FormBuilderCreatePage,
@@ -235,18 +250,21 @@ export default {
         tabs: [
           {
             title: 'Elements',
+            code: 'page',
             icon: 'edit_note',
             active: true,
             displayed: true
           },
           {
             title: 'Documents',
-            icon: 'edit_note',
+            code: 'documents',
+            icon: 'attach_file',
             active: false,
-            displayed: false
+            displayed: true
           },
           {
             title: 'Translations',
+            code: 'translations',
             icon: 'translate',
             active: false,
             displayed: true,
@@ -254,8 +272,9 @@ export default {
           },
           {
             title: 'Rules',
+            code: 'rules',
             icon: 'alt_route',
-            active: true,
+            active: false,
             displayed: true
           }
         ],
@@ -440,36 +459,27 @@ export default {
       this.showInRightPanel = 'hierarchy';
       this.setSectionShown('documents');
     },
-    selectTab(title) {
+    selectTab(section) {
       this.leftPanel.tabs.forEach((tab) => {
-        tab.active = tab.title === title;
+        tab.active = tab.code === section;
       });
-
-      if(title === 'Preview') {
-        this.previewForm = true;
-      } else {
-        this.previewForm = false;
-      }
     },
     selectPage(page_id) {
       this.selectedPage = page_id;
-      this.setSectionShown('page');
+      if(this.showInSection === 'documents'){
+        this.setSectionShown('page');
+      }
+      this.setSectionShown(this.showInSection);
     },
     setSectionShown(section) {
+      this.selectTab(section)
+
       if (section === 'documents') {
-        this.leftPanel.tabs.forEach((tab, i) => {
-          this.leftPanel.tabs[i].displayed = tab.title !== 'Elements';
-        });
-        this.selectTab('Documents');
         this.selectedPage = null;
-      } else {
-        this.leftPanel.tabs.forEach((tab, i) => {
-          this.leftPanel.tabs[i].displayed = tab.title !== 'Documents';
-        });
-        if(!this.previewForm) {
-          this.selectTab('Elements');
-        }
+      } else if(this.selectedPage == null) {
+        this.selectedPage = this.pages[0].id;
       }
+
       this.showInSection = section;
     },
     goTo(url, blank = false) {
@@ -494,7 +504,13 @@ export default {
       return this.pages.find(page => page.id === this.selectedPage);
     },
     leftPanelActiveTab() {
-      return this.leftPanel.tabs.find(tab => tab.active).title;
+      let find = this.leftPanel.tabs.find(tab => tab.active);
+      if (find) {
+        return find.title;
+      } else {
+        this.leftPanel.tabs[0].active = true;
+        return this.leftPanel.tabs[0].title;
+      }
     },
     displayedLeftPanels() {
       return this.leftPanel.tabs.filter((tab) => {
@@ -510,8 +526,8 @@ export default {
       deep: true
     },
     previewForm(newValue) {
+      this.loading = true;
       if (newValue) {
-        this.loading = true;
         setTimeout(() => {
           var myIframe = document.getElementById('preview_iframe');
           myIframe.addEventListener("load", () => {
@@ -531,6 +547,7 @@ export default {
         }, 500);
       } else {
         this.selectTab('Elements');
+        this.loading = false;
       }
     }
   }
