@@ -94,12 +94,12 @@ foreach ($this->headings as $heading => $label) {
                     <span class="em-mb-8"><?php echo $detail_label; ?></span>
                 </a>
 			<?php endif; ?>
-			<?php if (!empty($this->_row->data->fabrik_edit_url && !empty($edit_url))) : ?>
+			<?php  if(!$this->showFilters) : if (!empty($this->_row->data->fabrik_edit_url && !empty($edit_url))) : ?>
                 <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
                    href="<?php echo $this->_row->data->fabrik_edit_url ?>">
                     <span class="em-mb-8"><?php echo $edit_label; ?></span>
                 </a>
-			<?php endif; ?>
+			<?php endif; endif; ?>
         </div>
     </div>
     <div id="actions-<?= $this->_row->id; ?>"
