@@ -46,7 +46,7 @@ JText::script('MOD_EMUNDUS_FILTERS_MORE_VALUES');
   data-filters='<?= base64_encode(json_encode($filters)); ?>'
   data-quick-search-filters='<?= base64_encode(json_encode($quick_search_filters)); ?>'
   data-count-filter-values='<?= $params->get('count_filter_values'); ?>'
-  data-allow_add_filter="<?= $params->get('allow_add_filter', 1) ?>"
+  data-allow-add-filter="<?= $params->get('allow_add_filter', 1); ?>"
 ></div>
 
 <script src="media/mod_emundus_filters/app.js"></script>

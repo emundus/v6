@@ -25,12 +25,10 @@ class EmundusModelRanking extends JModelList
 
         $session = Factory::getSession();
         $this->filters = $session->get('em-applied-filters', []);
-        if (!empty($this->filters)) {
-            if (!class_exists('EmundusHelperFiles')) {
-                require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
-            }
-            $this->h_files = new EmundusHelperFiles();
+        if (!class_exists('EmundusHelperFiles')) {
+            require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
         }
+        $this->h_files = new EmundusHelperFiles();
 
         JLog::addLogger(['text_file' => 'com_emundus.ranking.php'], JLog::ALL);
     }
@@ -250,28 +248,8 @@ class EmundusModelRanking extends JModelList
                         ->where('cc.id IN (' . implode(',', $ids) . ')')
                         ->andWhere($db->quoteName('cr.hierarchy_id') . ' = ' . $hierarchy['id']);
 
-                    // handle session filters
-                    if (!empty($this->filters)) {
-                        $already_joined = [
-                            'cc' => 'jos_emundus_campaign_candidature',
-                            'applicant' => 'jos_emundus_users',
-                            'cr' => 'jos_emundus_ranking'
-                        ];
-                        $wheres = $this->h_files->_moduleBuildWhere($already_joined, 'ranking');
-
-                        if (!empty($wheres['q'])) {
-                            $query_string = $query->__toString();
-                            $query_string .= $wheres['q'];
-                        }
-                    }
-
                     try {
-                        if (!empty($query_string)) {
-                            $db->setQuery($query_string);
-                        } else {
-                            $db->setQuery($query);
-                        }
-
+                        $db->setQuery($query);
                         $data['files'] = $db->loadAssocList();
                     } catch (Exception $e) {
                         JLog::add('getOtherRankingsRankerCanSee ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
@@ -333,7 +311,7 @@ class EmundusModelRanking extends JModelList
                     $db->setQuery($subquery);
                     $element = $db->loadResult();
 
-                    if ($element == 'hierarchy_id') {
+                    if ($element == 'hierarchy_id' && !empty($filter['value']) && $filter['value'] != 'all' && $filter['value'] != ['all']) {
                         $query->where($this->h_files->writeQueryWithOperator('erh.id', $filter['value'], $filter['operator']));
                     }
                 }

@@ -218,6 +218,7 @@ export default {
       window.addEventListener('emundus-apply-filters-success', () => {
         this.getRankings();
         this.getOtherHierarchyRankings();
+        document.querySelector('.em-page-loader').classList.add('hidden');
         this.loading = false;
       });
     },

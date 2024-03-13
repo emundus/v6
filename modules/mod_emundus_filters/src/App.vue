@@ -255,7 +255,6 @@ export default {
         }
 
         filtersService.getFiltersAvailable(this.moduleId).then((filters) => {
-          console.log(filters);
           this.filters = filters;
         }).catch((error) => {
           console.error(error);
