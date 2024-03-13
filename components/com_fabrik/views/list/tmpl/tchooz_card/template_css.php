@@ -216,6 +216,10 @@ list-style: none;
     min-height: 46px;
 }
 
+#catalogue_container h4 {
+   color: var(--neutral-900);
+}
+
 #catalogue_container.cards .em-text-neutral-600 {
     display: flex;
     flex-direction: column;
