@@ -156,6 +156,14 @@ list-style: none;
     border: 1px solid var(--em-primary-color);
 }
 
+.gantry:not(.view-list) .catalogue_filters_container .fabrik_filter_submit.button {
+    padding: 0px !important; 
+}
+
+.gantry.catalogue #g-container-main .g-container .page-header {
+	margin-top: 0 !important;
+}
+
 .catalogue_filters_container .fabrik_filter_submit.button:hover, 
 .catalogue_filters_container .fabrik_filter_submit.button:focus, 
 .catalogue_filters_container .fabrik_filter_submit.button:active {
