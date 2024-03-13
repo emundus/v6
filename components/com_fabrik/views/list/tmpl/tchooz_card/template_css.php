@@ -101,7 +101,7 @@ list-style: none;
 
 .view-list.catalogue #g-container-main .g-container {
     padding: 0 !important;
-	width: 75vw !important;
+	width: 75rem !important;
     margin: auto;
 }
     
