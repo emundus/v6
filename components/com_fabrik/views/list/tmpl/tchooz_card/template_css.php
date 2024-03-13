@@ -145,28 +145,20 @@ list-style: none;
 }
 
 .catalogue_filters_container .fabrik_filter_submit.button {
-	background: var(--em-primary-color);
-    border: 1px solid var(--em-primary-color);
-    border-radius: var(--em-applicant-br) !important;
-    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal) !important;
-    color: var(--neutral-0);
-    line-height: normal !important;
-    letter-spacing: normal;
-    font-size: var(--em-applicant-font-size);
-}
-
-.view-list .catalogue_filters_container .fabrik_filter_submit.button {
     border-radius: var(--em-applicant-br) !important;
     padding: var(--em-spacing-vertical) var(--em-spacing-horizontal) !important;
     color: var(--neutral-0);
     line-height: normal !important;
     letter-spacing: normal;
     font-size: var(--em-applicant-font-size) !important;
+    font-weight: 400;
+    background: var(--em-primary-color);
+    border: 1px solid var(--em-primary-color);
 }
 
-.view-list .catalogue_filters_container .fabrik_filter_submit.button:hover, 
-.view-list .catalogue_filters_container .fabrik_filter_submit.button:focus, 
-.view-list .catalogue_filters_container .fabrik_filter_submit.button:active {
+.catalogue_filters_container .fabrik_filter_submit.button:hover, 
+.catalogue_filters_container .fabrik_filter_submit.button:focus, 
+.catalogue_filters_container .fabrik_filter_submit.button:active {
     color: var(--em-primary-color);
     background: var(--neutral-0) !important;
     border: 1px solid var(--em-primary-color);
