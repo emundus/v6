@@ -12,7 +12,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\CMS\Factory;
+use Joomla\CMS\Factory;use Joomla\CMS\Language\Text;
 
 $form  = $this->form;
 $model = $this->getModel();
@@ -135,6 +135,7 @@ endif;
                 <div class="fabrikImageBackground" style="background-image: url('<?php echo $filename; ?>')"></div>
 			<?php } ?>
 		<?php endif; ?>
+        <a class="em-back-button em-pointer" onclick="history.go(-1)"><span class="material-icons em-mr-4" aria-hidden="true">navigate_before</span><?php echo Text::_('COM_FABRIK_VOTE_GO_BACK'); ?></a>
 
         <div class="p-8">
             <?php if (!empty($gallery->title)) : ?>
@@ -153,9 +154,9 @@ endif;
                 $elt = explode('___', $gallery->resume)[1];
                 ?>
                 <?php if (isset($this->elements[$elt])) : ?>
-                    <h2 class="mb-6">
+                    <p class="mb-6">
                         <?php echo $this->elements[$elt]->element_ro; ?>
-                    </h2>
+                    </p>
                 <?php endif; ?>
             <?php endif; ?>
 
@@ -258,7 +259,7 @@ endif;
 						<?php if (isset($this->elements[$elt])) : ?>
                             <p class="em-caption mb-5 mt-2 flex items-center" style="min-height: 15px">
 								<?php if (!empty($gallery->subtitle_icon)) : ?>
-                                    <span class="material-icons-outlined mr-2"><?php echo $gallery->subtitle_icon; ?></span>
+                                    <span class="material-icons-outlined mr-2" aria-hidden="true"><?php echo $gallery->subtitle_icon; ?></span>
 								<?php endif; ?>
 	                            <?php echo $this->elements[$elt]->element_ro; ?>
                             </p>

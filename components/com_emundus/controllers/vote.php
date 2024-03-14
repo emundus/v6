@@ -97,6 +97,8 @@ class EmundusControllerVote extends JControllerLegacy
 
 				if(($gallery->voting_access != 1 && $this->_user->guest != 1) || $gallery->voting_access == 1) {
 					$result['access'] = true;
+				} else {
+					Factory::getSession()->set('vote_redirect', $gallery_url);
 				}
 			}
 		}

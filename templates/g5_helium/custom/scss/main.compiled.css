@@ -1992,6 +1992,17 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
       margin-left: -10px;
       font-size: 16px;
     }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
 .visible {
   visibility: visible;
 }
@@ -4543,7 +4554,7 @@ button.swal2-confirm.save-btn.sauvegarder.save_continue {
         font-family: var(--em-coordinator-font);
         background: var(--em-primary-color) !important;
         border: 1px solid var(--em-primary-color) !important;
-        border-radius: var(--em-coordinator-br);
+        border-radius: var(--em-coordinator-br) !important;
         color: var(--neutral-0) !important;
         font-weight: inherit;
     }

@@ -272,7 +272,7 @@ class com_emundusInstallerScript
 					$datas    = [
 						'title'    => 'eMundus - Back button',
 						'note'     => 'Back button available on login and register views',
-						'content'  => '<p><a class="em-back-button em-pointer" href="/"><span class="material-icons em-mr-4">navigate_before</span>Retour à la page d\'accueil</a></p>',
+						'content'  => '<p><a class="em-back-button em-pointer" href="/"><span class="material-icons em-mr-4" aria-hidden="true">navigate_before</span>Retour à la page d\'accueil</a></p>',
 						'position' => 'header-a',
 						'module'   => 'mod_custom',
 						'access'   => 9,
@@ -4301,6 +4301,9 @@ structure:
 
 				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTING_GO_DETAILS', 'Ce projet m\'intéresse');
 				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTING_GO_DETAILS', 'This project interests me', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_HEART', 'Mon coup de coeur');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_HEART', 'My favourite', 'override', null, null, null, 'en-GB');
 
 				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE', 'Je donne mon coup de coeur !');
 				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE', 'I give my favourite!', 'override', null, null, null, 'en-GB');

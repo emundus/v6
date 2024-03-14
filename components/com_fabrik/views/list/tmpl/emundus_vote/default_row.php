@@ -72,7 +72,8 @@ foreach ($votes as $vote) {
 
         <?php if($voted) : ?>
             <div class="heart-voted-icon">
-                <span class="material-icons-outlined">favorite</span>
+                <span aria-hidden="true" class="material-icons-outlined">favorite</span>
+                <span class="sr-only"><?php echo JText::_('COM_FABRIK_HEART') ?></span>
             </div>
         <?php endif; ?>
         <div class="fabrikImageBackground" style="background-image: url('<?php echo $filename; ?>')"></div>
@@ -86,9 +87,9 @@ foreach ($votes as $vote) {
                 </h2>
             <?php endif; ?>
             <?php if (!empty($gallery->subtitle)) : ?>
-                    <p class="em-caption mb-3 flex items-center" style="min-height: 15px">
+                    <p class="em-caption mb-3 flex items-center">
                         <?php if (!empty($gallery->subtitle_icon)) : ?>
-                            <span class="material-icons-outlined mr-2"><?php echo $gallery->subtitle_icon; ?></span>
+                            <span class="material-icons-outlined mr-2" aria-hidden="true"><?php echo $gallery->subtitle_icon; ?></span>
                         <?php endif; ?>
                         <?php echo isset($this->_row->data) ? $this->_row->data->{$gallery->subtitle} : ''; ?>
                     </p>

@@ -15,27 +15,28 @@ $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.
     <div class="em-container-profile-view-pict em-flex-row em-flex-space-between em-small-flex-column em-small-align-items-start em-mb-16">
         <div class="em-flex-row em-small-flex-column em-small-align-items-start em-w-100">
             <?php if ($show_profile_picture == 1) : ?>
-                <div id="pp_profile_background"
+                <button title="<?php echo JText::_('MOD_EMUNDUS_PROFILE_EDIT_TITLE') ?>" id="pp_profile_background" tabindex="0"
                      <?php if($update_profile_picture == 1) : ?>onclick="openBrowser()" onmouseover="displayEdit('flex')" onmouseleave="displayEdit('none')"<?php endif; ?>
                      class="em-profile-picture-big em-pointer"
                      style="background-image:url('<?php echo $profile_picture ?>')">
-                    <span class="em-flex-row" style="display: none" id="pp_edit_icon">
-                        <span class="material-icons-outlined em-mr-8">edit</span>
+                    <span class="em-flex-row" style="display: none" id="pp_edit_icon" tabindex="0">
+                        <span aria-hidden="true" class="material-icons-outlined em-mr-8">edit</span>
                         <?php echo JText::_('MOD_EMUNDUS_PROFILE_EDIT') ?>
                     </span>
-                </div>
+                </button>
             <?php endif; ?>
 
             <div class="em-flex-row <?php if ($show_name == 1) : ?>em-flex-space-between<?php else : ?>em-flex-row-justify-end<?php endif; ?> em-w-100">
                 <?php if ($show_name == 1) : ?>
                     <div class="em-ml-16 em-m-xs-0 em-flex-column em-flex-col-start em-mt-xs-8">
-                        <h2><?php echo $user_fullname ?></h2>
+                        <h1><?php echo $user_fullname ?></h1>
                     </div>
                 <?php endif; ?>
 
                 <?php if ($show_account_edit_button == 1 && !$external) : ?>
                     <a class="em-w-auto btn manage-account-icon" href="/index.php?option=com_users&view=profile&layout=edit" title="<?php echo JText::_('MOD_EMUNDUS_PROFILE_EDIT_PROFILE_PASSWORD_TITLE') ?>">
-                        <span class="material-icons-outlined">manage_accounts</span>
+                        <span aria-hidden="true" class="material-icons-outlined">manage_accounts</span>
+                        <span class="sr-only"><?php echo JText::_('MOD_EMUNDUS_PROFILE_EDIT_PROFILE_PASSWORD_TITLE') ?></span>
                     </a>
                 <?php endif; ?>
 

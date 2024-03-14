@@ -51,6 +51,10 @@ class EmundusModelVote extends JModelList
 			$user = $this->_user;
 		}
 
+		if($user->guest) {
+			return [];
+        }
+
 		if(empty($ip)) {
 			$ip = $_SERVER['REMOTE_ADDR'];
 		}

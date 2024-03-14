@@ -84,7 +84,7 @@ if ($user != null) {
             border-bottom: 1px solid #fff;
         }
 
-        #userDropdownMenu li>a:hover,
+        #userDropdownMenu div>a:hover,
         #userDropdownMenu .active>a {
             background: #<?= $secondary_color; ?>;
         }
@@ -163,7 +163,7 @@ if ($user != null) {
             border: solid 3px var(--transparent);
         }
 
-        .em-profile-container p:nth-child(2) {
+        .em-profile-container p:last-child {
             overflow: hidden;
             max-width: 140px;
             max-height: 30px;
@@ -173,7 +173,7 @@ if ($user != null) {
             font-weight: 400;
             line-height: 15px;
             letter-spacing: 0.004em;
-            overflow: hidden;
+            text-align: left;
             white-space: nowrap;
             text-overflow: ellipsis;
         }
@@ -182,46 +182,48 @@ if ($user != null) {
     <?= $intro; ?>
 
 <!-- Button which opens up the dropdown menu. -->
-<div class='dropdown' tabindex="0" id="userDropdown" style="float: right;">
+<div class='dropdown' id="userDropdown" style="float: right;">
 	<?php if ($display_svg == 1) : ?>
     <div id="background-shapes"></div>
 	<?php endif; ?>
     <?php if(!empty($profile_picture)): ?>
-    <div id="userDropdownLabel">
-        <div class="em-flex-row em-flex-end em-profile-container" onclick="manageHeight()">
+    <button id="userDropdownLabel" tabindex="0" aria-expanded="false" aria-haspopup="true" onclick="manageHeight()">
+        <div class="em-flex-row em-flex-end em-profile-container">
             <div class="mr-4">
 		        <?php if(!empty($user)) : ?>
                     <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0]. '.'; ?></p>
+                    <p class="sr-only"><?php echo JText::_('PROFILE_TITLE')?></p>
 		        <?php endif; ?>
 		        <?php if(!empty($profile_label)) : ?>
                     <p class="em-profile-color em-text-italic" title="<?= $profile_label; ?>"><?= $profile_label; ?></p>
 		        <?php endif; ?>
             </div>
-            <div class="em-profile-picture em-pointer em-user-dropdown-button"
+            <div class="em-profile-picture em-pointer em-user-dropdown-button" aria-hidden="true"
                  style="background-image:url('<?php echo $profile_picture ?>');">
             </div>
         </div>
-    </div>
+    </button>
     <?php else : ?>
-    <div  id="userDropdownLabel" onclick="manageHeight()">
+    <button  id="userDropdownLabel" onclick="manageHeight()" tabindex="0" aria-expanded="false" aria-haspopup="true">
         <div class="em-flex-row em-flex-end em-profile-container">
             <div class="mr-4">
                 <?php if(!empty($user)) : ?>
                 <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0]. '.'; ?></p>
+                <p class="sr-only"><?php echo JText::_('PROFILE_TITLE')?></p>
                 <?php endif; ?>
                 <?php if(!empty($profile_label)) : ?>
                 <p class="em-profile-color em-text-italic"><?= $profile_label; ?></p>
                 <?php endif; ?>
             </div>
-            <div class="em-user-dropdown-button" aria-haspopup="true" aria-expanded="false">
-                <span class="material-icons-outlined em-user-dropdown-icon" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">account_circle</span>
+            <div class="em-user-dropdown-button">
+                <span class="material-icons-outlined em-user-dropdown-icon" aria-hidden="true ">account_circle</span>
             </div>
 
         </div>
-    </div>
+    </button>
     <?php endif; ?>
     <input type="hidden" value="<?= $switch_profile_redirect; ?>" id="switch_profile_redirect">
-    <ul class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">
+    <div class="dropdown-menu dropdown-menu-right" id="userDropdownMenu">
 	    <?php if ($is_anonym_user): ?>
             <p><?= JText::_('ANONYM_SESSION') ?></p>
             <div class=" em-w-100">
@@ -231,17 +233,17 @@ if ($user != null) {
 	    <?php else: ?>
         <div class="em-flex-column-default em-w-100">
 	        <?php if(!empty($profile_picture)): ?>
-            <div class="em-profile-picture-modal" style="background-image:url('<?php echo $profile_picture ?>');">
+            <div class="em-profile-picture-modal" aria-hidden="true" style="background-image:url('<?php echo $profile_picture ?>');">
             </div>
 	        <?php else : ?>
-            <span class="material-icons-outlined em-profile-picture-modal-icon" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">account_circle</span>
+            <span aria-hidden="true" class="material-icons-outlined em-profile-picture-modal-icon" alt="<?php echo JText::_('PROFILE_ICON_TITLE')?>">account_circle</span>
 	        <?php endif; ?>
-            <li class="dropdown-header em-text-align-center em-font-weight-500 em-text-neutral-900"><?= $user->firstname . ' ' . $user->lastname; ?></li>
-            <li class="dropdown-header em-text-align-center em-text-neutral-600" title="<?= $user->email; ?>"><?= $user->email; ?></li>
+            <p class="dropdown-header em-text-align-center em-font-weight-500 em-text-neutral-900"><?= $user->firstname . ' ' . $user->lastname; ?></p>
+            <p class="dropdown-header em-text-align-center em-text-neutral-600" title="<?= $user->email; ?>"><?= $user->email; ?></p>
         </div>
 	    <?php endif; ?>
 
-        <hr style="width: 100%">
+        <hr style="width: 100%"  aria-hidden="true">
 
         <?php
             $ids_array = array();
@@ -268,13 +270,13 @@ if ($user != null) {
             ?>
 
             <?php if ($show_update == '1' && !$is_anonym_user) :?>
-                <li><a class="edit-button-user em-flex-row em-flex-important em-flex-center" href="<?= $link_edit_profile ?>" style="margin-top: 0"><span class="material-icons-outlined mr-2">person_outline</span><?=JText::_('COM_EMUNDUS_USER_MENU_PROFILE_LABEL') ?></a></li>
+                <div><a class="edit-button-user em-flex-row em-flex-important em-flex-center" href="<?= $link_edit_profile ?>" style="margin-top: 0"><span aria-hidden="true" class="material-icons-outlined mr-2">person_outline</span><?=JText::_('COM_EMUNDUS_USER_MENU_PROFILE_LABEL') ?></a></div>
             <?php endif; ?>
             <?php if (!empty($custom_actions)) {
                 foreach($custom_actions as $custom_action) {
                     if (!empty($custom_action->link) || !empty($custom_action->onclick)) {
                         ?>
-                        <li>
+                        <div>
                             <?php
                             switch($custom_action->type) {
                                 case 'button':
@@ -286,19 +288,19 @@ if ($user != null) {
                                     break;
                             }
                             ?>
-                        </li>
+                        </div>
                         <?php
                     }
                 }
             } ?>
 
-        <hr style="width: 100%">
+        <hr style="width: 100%" aria-hidden="true">
 
         <?php if ($show_logout == '1') :?>
-                <?= '<li><a class="logout-button-user em-flex-important em-flex-row em-flex-center" href="'.JURI::base().'index.php?option=com_users&task=user.logout&'.JSession::getFormToken().'=1"><span class="material-icons-outlined mr-2">logout</span>'.JText::_('COM_EMUNDUS_USER_MENU_LOGOUT_ACTION').'</a></li>'; ?>
+                <?= '<div><a class="logout-button-user em-flex-important em-flex-row em-flex-center" href="'.JURI::base().'index.php?option=com_users&task=user.logout&'.JSession::getFormToken().'=1"><span aria-hidden="true" class="material-icons-outlined mr-2">logout</span>'.JText::_('COM_EMUNDUS_USER_MENU_LOGOUT_ACTION').'</a></li>'; ?>
             <?php endif; ?>
 
-        </ul>
+        </div>
     </div>
 
     <script>
@@ -411,6 +413,7 @@ if ($user != null) {
                 jQuery("#userDropdownMenu").css("transform","translate(300px)")
                 setTimeout(() => {
                     dropdown.classList.remove('open');
+                    document.getElementById("userDropdownLabel").setAttribute("aria-expanded", false);
                     jQuery("#userDropdownMenu").css("transform","unset")
                     if(icon !== null) {
                         icon.classList.remove('active');
@@ -424,6 +427,7 @@ if ($user != null) {
                     messageIcon.classList.remove('open');
                 }
                 dropdown.classList.add('open');
+                document.getElementById("userDropdownLabel").setAttribute("aria-expanded", true);
                 if(icon !== null) {
                     icon.classList.add('open');
                 }

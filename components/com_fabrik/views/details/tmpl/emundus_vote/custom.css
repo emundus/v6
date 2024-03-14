@@ -58,6 +58,15 @@
     font-size: var(--em-applicant-font-size) !important;
 }
 
+.view-details .voting-details-group p.mb-6 {
+    color: var(--em-default-title-color-1);
+    font-family: var(--em-applicant-font-title);
+    font-size: var(--em-applicant-h2) !important;
+    font-style: normal;
+    line-height: 26.4px;
+    font-weight: var(--em-font-weight-500);
+}
+
 .voting-pop {
     position: absolute;
     top: 25vh;

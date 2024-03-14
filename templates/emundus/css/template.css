@@ -869,12 +869,12 @@ div.moduletable-b ul li a:hover {
   outline-offset: 15px;
 }
 
-#userDropdownMenu li > a:hover, #userDropdownMenu .active > a {
+#userDropdownMenu div > a:hover, #userDropdownMenu .active > a {
   background: #1b1f3c !important;
   color: #fff;
 }
 
-#userDropdownMenu li {
+#userDropdownMenu div {
   width: auto !important;
 }
 
