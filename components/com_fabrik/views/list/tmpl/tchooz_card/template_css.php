@@ -284,7 +284,7 @@ list-style: none;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    width: 214px;
+    width: 200px;
 }
 
 #catalogue_container.tabs .mod_emundus_campaign__list_content #background-shapes {
