@@ -75,6 +75,7 @@
             <form-builder-rules-list
                 v-else-if="leftPanelActiveTab === 'Rules'"
                 :form="currentPage"
+                @add-rule="addRule"
                 />
           </div>
         </aside>
@@ -105,9 +106,16 @@
             <form-builder-rules
               v-else-if="currentPage && showInSection === 'rules'"
               :key="currentPage.id"
-              :profile_id="parseInt(profile_id)"
               :page="currentPage"
               :mode="mode"
+              />
+            <form-builder-rules-add
+              v-else-if="currentPage && showInSection === 'rules-add'"
+              :key="currentPage.id"
+              :page="currentPage"
+              :mode="mode"
+              :rule="currentRule"
+              @close-rule-add="showInSection = 'rules'"
               />
           </transition>
         </section>
@@ -199,12 +207,14 @@ import FormBuilderDocumentFormats from "../components/FormBuilder/FormBuilderDoc
 // services
 import formService from '../services/form.js';
 import FormBuilderCreateModel from "../components/FormBuilder/FormBuilderCreateModel";
-import FormBuilderRules from "../components/FormBuilder/FormBuilderRules";
-import FormBuilderRulesList from "@/components/FormBuilder/FormBuilderRulesList.vue";
+import FormBuilderRules from "../components/FormBuilder/FormBuilderRules/FormBuilderRules";
+import FormBuilderRulesList from "../components/FormBuilder/FormBuilderRules/FormBuilderRulesList.vue";
+import FormBuilderRulesAdd from "@/components/FormBuilder/FormBuilderRules/FormBuilderRulesAdd.vue";
 
 export default {
   name: 'FormBuilder',
   components: {
+    FormBuilderRulesAdd,
     FormBuilderRulesList,
     FormBuilderRules,
 	  FormBuilderCreateModel,
@@ -281,6 +291,9 @@ export default {
       },
 	    formBuilderCreateDocumentKey: 0,
 	    createDocumentMode: 'create',
+
+      currentRule: null,
+
       previewForm: false,
       loading: false
     }
@@ -497,7 +510,11 @@ export default {
       } else {
         window.history.go(-1);
       }
-    }
+    },
+    addRule(rule) {
+      this.currentRule = rule;
+      this.showInSection = 'rules-add';
+    },
   },
   computed: {
     currentPage() {
