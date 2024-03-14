@@ -1,7 +1,13 @@
 <template>
   <div id="form-builder-rules-js" class="self-start w-full">
     <h2>{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_ADD_JS') }}</h2>
-    <div class="mt-2 rounded-lg bg-white px-3 py-4 flex flex-col gap-6">
+
+    <div v-for="condition in conditions" class="mt-2 rounded-lg bg-white px-3 py-4 flex flex-col gap-6">
+      <form-builder-rules-js-condition :key="condition.id" :condition="condition" @remove-condition="removeCondition" :page="page" />
+    </div>
+
+    <div class="flex justify-end">
+      <button type="button" @click="addCondition()" class="em-tertiary-button mt-2 w-auto">{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE') }}</button>
     </div>
   </div>
 </template>
@@ -13,9 +19,11 @@ import formBuilderMixin from '../../../../mixins/formbuilder';
 import globalMixin from '../../../../mixins/mixin';
 import errorMixin from '../../../../mixins/errors';
 import Swal from 'sweetalert2';
+import FormBuilderRulesJsCondition
+  from "@/components/FormBuilder/FormBuilderRules/FormBuilderRulesType/FormBuilderRulesJsCondition.vue";
 
 export default {
-  components: {},
+  components: {FormBuilderRulesJsCondition},
   props: {
     page: {
       type: Object,
@@ -25,13 +33,28 @@ export default {
   mixins: [formBuilderMixin, globalMixin, errorMixin],
   data() {
     return {
+      conditions: [],
       loading: false,
     };
   },
   mounted() {
-    if (this.page.id) {}
+    if (this.page.id) {
+      this.conditions.push({
+        id: 1,
+        label: 'Condition n°1',
+        field: '',
+        values: ''
+      });
+    }
   },
-  methods: {},
+  methods: {
+    addCondition() {
+      console.log('addCondition');
+    },
+    removeCondition() {
+      console.log('removeCondition');
+    }
+  },
 }
 </script>
 
