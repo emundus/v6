@@ -1944,8 +1944,8 @@ button.em-swal-delete-button:hover{
 }
 
 .em-no-profile-picture-big:before{
-  background-color: hsl(from var(--em-profile-color) h s 90%);
-  color: var(--em-profile-color);
+  background-color: var(--em-profile-color);
+  color: white;
   opacity: 1;
   content: attr(data-initials);
   display: inline-block;
@@ -1958,6 +1958,13 @@ button.em-swal-delete-button:hover{
   text-align: center;
   transition: all 0.3s ease-in-out;
   font-size: 28px;
+}
+
+@supports (background-color: hsl(from white h s 90%)) {
+  .em-no-profile-picture-big:before {
+    background-color: hsl(from var(--em-profile-color) h s 90%);
+    color: var(--em-profile-color);
+  }
 }
 
 /** PROGRAMME **/
