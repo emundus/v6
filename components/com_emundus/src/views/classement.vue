@@ -65,7 +65,7 @@
         </table>
         <!-- non ranked files -->
         <table>
-          <thead style="height: 0;">
+          <thead class="hidden">
             <th>
               <span class="material-icons-outlined" v-if="ismyRankingLocked">lock</span>
               <span class="material-icons-outlined" v-else>lock_open</span>
