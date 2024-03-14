@@ -50,10 +50,13 @@ echo <<<EOT
     grid-template-columns: 64% 30%;
 }
 
+.mod_emundus_campaign__grid {
+     grid-gap: 48px !important;
+}
+
 .mod_emundus_campaign__flex {
     display: flex !important;
 }
-
 
 .catalogue-description {
     margin-top: var(--m-24);
@@ -149,6 +152,7 @@ a.btn.btn-default .icon-print {
 	flex-direction: row;
 	align-items: center;
 	margin-top: var(--m-8);
+	flex-wrap: wrap;
 }
 
 .catalogue-fields .fabrikLabel {
@@ -166,5 +170,16 @@ a.btn.btn-default .icon-print {
 	display: none !important;
 }
 
+@media screen and (max-width: 767px) {
+	.mod_emundus_campaign__grid {
+         grid-template-columns: 100%;
+	}
+}
+
+@media screen and (min-width: 768px) and (max-width: 959px) {
+	.mod_emundus_campaign__grid {
+         grid-gap: 8px !important;
+	}
+}
 
 EOT;
