@@ -18,8 +18,11 @@
       </div>
     </header>
     <div v-if="rankings.myRanking.length > 0" id="ranking-lists-container" class="em-flex-row em-flex-space-between">
-      <div id="my-ranking-list" class="em-w-100 em-mr-4">
-        <table class="em-w-100">
+      <div id="my-ranking-list"
+           class="em-w-100 em-mr-4"
+           :class="{'dragging': dragging}"
+      >
+        <table id="ranked-files" class="em-w-100">
           <thead>
           <th>
             <span class="material-icons-outlined" v-if="ismyRankingLocked">lock</span>
@@ -33,10 +36,10 @@
               name="my_ranking"
               tag="tbody"
               v-model="rankedFiles"
+              id="ranked-files-list"
               group="ranked-files-list"
               :sort="true"
               class="draggables-list"
-              :class="{'dragging': dragging}"
               @start="dragging = true"
               @end="onDragEnd"
               handle=".handle"
@@ -64,7 +67,7 @@
           </draggable>
         </table>
         <!-- non ranked files -->
-        <table>
+        <table id="unranked-files">
           <thead class="hidden">
             <th>
               <span class="material-icons-outlined" v-if="ismyRankingLocked">lock</span>
@@ -76,9 +79,11 @@
           <draggable
               v-model="unrankedFiles"
               tag="tbody"
+              id="unranked-files-list"
               class="draggables-list"
               :group="{name: 'ranked-files-list', pull: true, put: false}"
               :sort="false"
+              @start="dragging = true"
               @end="onDragEnd"
           >
             <tr v-for="file in unrankedFiles" :key="file.id" :data-file-id="file.id" class="unranked-file">
@@ -357,6 +362,10 @@ export default {
      */
     onDragEnd(e) {
       this.dragging = false;
+      if (e.to.id != 'ranked-files-list') {
+        return;
+      }
+
       const itemId = e.item.dataset.fileId;
 
       if (itemId) {
@@ -373,12 +382,15 @@ export default {
           if (newIndex < this.rankedFiles.length) {
             newRank = this.rankedFiles[newIndex].rank;
           } else {
-            // if the new index is in the unranked files, then the rank is the max rank value available for not ranked files
+            // if new index is superior to the number of ranked files by 1, then the new rank is the max rank value available for not ranked files
+            // else do not change the rank value
             newRank = this.maxRankValueAvailableForNotRanked;
           }
 
-          file.rank = newRank;
-          this.onChangeRankValue(file);
+          if (file.rank != newRank) {
+            file.rank = newRank;
+            this.onChangeRankValue(file);
+          }
         }
       }
     }
@@ -480,6 +492,14 @@ export default {
     border-collapse: separate;
   }
 
+  table#ranked-files {
+    border-bottom: 0;
+  }
+
+  table#unranked-files {
+    border-top: 0;
+  }
+
   #my-ranking-list {
     border: solid var(--main-200);
 
@@ -524,6 +544,14 @@ button.em-secondary-button {
 
 .dragging {
   cursor: grabbing;
+}
+
+.dragging #ranked-files tbody {
+  border: 4px dashed var(--main-200);
+}
+
+.dragging #unranked-files td {
+  background-color: unset;
 }
 
 </style>
