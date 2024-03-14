@@ -105,7 +105,7 @@ input.fabrik_filter_submit.button {
 
 .view-list form[id^="listform_"].fabrikForm{
 	height: 100%;
-	overflow: hidden;
+	overflow: visible;
 	margin-bottom: 32px !important;
 }
 /* */
