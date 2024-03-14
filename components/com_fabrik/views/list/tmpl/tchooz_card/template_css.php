@@ -111,7 +111,6 @@ list-style: none;
 
 .catalogue_content_container {
     overflow: auto;
-    height: 100vh !important;
     display: flex;
     flex-direction: row !important;
 	flex-wrap: wrap;
