@@ -161,4 +161,10 @@ a.btn.btn-default .icon-print {
 	margin-left: 4px;
 }
 
+
+.hidden {
+	display: none !important;
+}
+
+
 EOT;

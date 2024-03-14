@@ -61,7 +61,7 @@ foreach ($this->headings as $heading => $label) {
             <p class="em-programme-tag" style="color: #0A53CC;"> <?php echo implode(', ', $tags); ?></p>
 	        <?php endif; ?>
             <div class="em-flex-row em-flex-space-between em-mb-12">
-                <a href="<?= $this->_row->data->fabrik_view_url; ?>"><h4><?php echo $title; ?></h4></a>
+                <a title="<?php echo $title; ?>" href="<?= $this->_row->data->fabrik_view_url; ?>"><h4><?php echo $title; ?></h4></a>
 
 	            <?php if(!$this->showFilters) : ?>
                 <div class="all-actions-container">
@@ -72,7 +72,7 @@ foreach ($this->headings as $heading => $label) {
             </div>
 
 	        <?php if($this->showFilters) : ?>
-                    <p class="catalogue_tag"><?php echo implode(', ', $tags); ?></p>
+                    <p title="<?php echo implode(', ', $tags); ?>" class="catalogue_tag"><?php echo implode(', ', $tags); ?></p>
 	        <?php endif; ?>
 
             <?php if(!$this->showFilters) : if (!empty($tags) || !empty($title)) : ?>

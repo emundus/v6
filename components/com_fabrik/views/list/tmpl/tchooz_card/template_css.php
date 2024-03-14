@@ -89,10 +89,13 @@ list-style: none;
 	color: var(--neutral-700);
 	border-radius: 25px;
     padding: 4px 12px;
-    width: min-content;
+    width: 140px;
 	text-align: center;
 	font-size: 14px;
 	margin: 10px 0;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 .catalogue #g-container-main {
