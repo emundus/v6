@@ -199,9 +199,9 @@ list-style: none;
 }
 
 #catalogue_container.cards .mod_emundus_campaign__list_content #background-shapes {
-    width: 126% !important;
+    width: 100% !important;
     height: 76% !important;
-    transform: scale(1.3) !important;
+    transform: scale(1.4) !important;
 }
 
 .catalogue.gantry #g-container-main .g-container .page-header {
@@ -346,8 +346,10 @@ list-style: none;
 	}
 	
 	.fabrikDataContainer > .em-mb-16 {
-		flex-wrap: wrap;
 	    gap: 16px; 
+        display: flex;
+	    flex-direction: column;
+	    align-items: stretch;
     }
     
     .fabrik-switch-view-buttons {
@@ -371,6 +373,7 @@ list-style: none;
 	  
 	  #catalogue_container.mod_emundus_campaign__content {
 		    width: 100% !important;
+		    flex: 0 0 100%;
 	 }
  
 	#catalogue_container.cards .mod_emundus_campaign__list_items {
@@ -402,13 +405,20 @@ list-style: none;
 	}
  
    #catalogue_container .mod_emundus_campaign__list_items {
-	    grid-template-columns: repeat(2, 1fr) !important;
+	    grid-template-columns: 1fr !important;
 	} 
 	
 	#catalogue_container.cards #background-shapes {
 		display: none;
 	}
 }
+
+@media screen and (min-width: 908px) and (max-width: 959px) {
+   #catalogue_container .mod_emundus_campaign__list_items {
+		   grid-template-columns: repeat(2, minmax(200px, 1fr)) !important;
+	} 
+}
+
 
 @media screen and (min-width: 768px) and (max-width: 1622px) {
 	.catalogue #g-container-main .g-container {
