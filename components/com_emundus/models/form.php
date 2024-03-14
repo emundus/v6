@@ -2302,7 +2302,7 @@ class EmundusModelForm extends JModelList {
 			{
 				$query->clear()
 					->select($db->quoteName(['field','state','values']))
-					->from($db->quoteName('#__emundus_setup_form_rules_819_repeat'))
+					->from($db->quoteName('#__emundus_setup_form_rules_js_conditions'))
 					->where($db->quoteName('parent_id') . ' = ' . $db->quote($js_condition->id));
 				$db->setQuery($query);
 				$js_condition->conditions = $db->loadObjectList();
@@ -2354,8 +2354,8 @@ class EmundusModelForm extends JModelList {
 
 				$query->clear()
 					->select('esfrr.action,group_concat(esfrr_fields.fields) as fields')
-					->from($db->quoteName('#__emundus_setup_form_rules_820_repeat','esfrr'))
-					->leftJoin($db->quoteName('#__emundus_setup_form_rules_820_repeat_repeat_fields','esfrr_fields').' ON '.$db->quoteName('esfrr_fields.parent_id').' = '.$db->quoteName('esfrr.id'))
+					->from($db->quoteName('#__emundus_setup_form_rules_js_actions','esfrr'))
+					->leftJoin($db->quoteName('#__emundus_setup_form_rules_js_actions_fields','esfrr_fields').' ON '.$db->quoteName('esfrr_fields.parent_id').' = '.$db->quoteName('esfrr.id'))
 					->where($db->quoteName('esfrr.parent_id') . ' = ' . $db->quote($js_condition->id));
 				$db->setQuery($query);
 				$js_condition->actions = $db->loadObjectList();
