@@ -61,7 +61,7 @@ foreach ($this->headings as $heading => $label) {
             <p class="em-programme-tag" style="color: #0A53CC;"> <?php echo implode(', ', $tags); ?></p>
 	        <?php endif; ?>
             <div class="em-flex-row em-flex-space-between em-mb-12">
-                <a title="<?php echo $title; ?>" href="<?= $this->_row->data->fabrik_view_url; ?>"><h4><?php echo $title; ?></h4></a>
+                <button type="button" title="<?php echo $title; ?>" href="<?= $this->_row->data->fabrik_view_url; ?>"><h4><?php echo $title; ?></h4></button>
 
 	            <?php if(!$this->showFilters) : ?>
                 <div class="all-actions-container">
@@ -106,10 +106,10 @@ foreach ($this->headings as $heading => $label) {
         </div>
         <div class="container-actions em-w-100">
             <?php if (!empty($this->_row->data->fabrik_view_url && !empty($detail_url))) : ?>
-                <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
+                <button type="button" class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
                    href="<?php echo $this->_row->data->fabrik_view_url ?>">
                     <span class="em-mb-8"><?php echo $detail_label; ?></span>
-                </a>
+                </button>
             <?php endif; ?>
 
             <?php if(!$this->showFilters) : if (!empty($this->_row->data->fabrik_edit_url && !empty($edit_url))) : ?>

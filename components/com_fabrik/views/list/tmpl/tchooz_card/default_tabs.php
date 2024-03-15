@@ -58,7 +58,7 @@ foreach ($this->headings as $heading => $label) {
              style="mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');"></div>
         <div class="mod_emundus_campaign__list_content_container">
             <div class="em-flex-row em-flex-space-between em-flex-align-start">
-                <a title="<?php echo $title; ?>" href="<?= $this->_row->data->fabrik_view_url; ?>"><h4><?php echo $title; ?></h4></a>
+                <button type="button" title="<?php echo $title; ?>" href="<?= $this->_row->data->fabrik_view_url; ?>"><h4><?php echo $title; ?></h4></button>
                 <p title="<?php echo implode(', ', $tags); ?>" class="catalogue_tag"><?php echo implode(', ', $tags); ?></p>
             </div>
 
@@ -89,10 +89,10 @@ foreach ($this->headings as $heading => $label) {
         </div>
         <div class="container-actions">
 			<?php if (!empty($this->_row->data->fabrik_view_url && !empty($detail_url))) : ?>
-                <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
+                <button type="button" class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
                    href="<?php echo $this->_row->data->fabrik_view_url ?>">
                     <span class="em-mb-8"><?php echo $detail_label; ?></span>
-                </a>
+                </button>
 			<?php endif; ?>
 			<?php  if(!$this->showFilters) : if (!empty($this->_row->data->fabrik_edit_url && !empty($edit_url))) : ?>
                 <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"

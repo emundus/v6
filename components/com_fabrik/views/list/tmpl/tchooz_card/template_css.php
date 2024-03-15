@@ -156,6 +156,7 @@ list-style: none;
     font-weight: 400;
     background: var(--em-primary-color);
     border: 1px solid var(--em-primary-color);
+     width: -moz-available;
 }
 
 .gantry:not(.view-list) .catalogue_filters_container .fabrik_filter_submit.button {
@@ -182,9 +183,12 @@ list-style: none;
 	margin-bottom: 0;
 }
 
-#catalogue_container.cards .container-actions .btn {
+#catalogue_container.cards .container-actions button {
 	height: auto;
 	margin-top: 16px;
+    font-weight: 400;
+    letter-spacing: normal;
+    font-style: normal;
 }
 
 #catalogue_container.cards .mod_emundus_campaign__list_content {
@@ -268,10 +272,13 @@ list-style: none;
     flex-wrap: wrap;
 }
 
-#catalogue_container.tabs .container-actions a {
+#catalogue_container.tabs .container-actions button {
 	height: auto;
 	margin-top: 0;
 	width: max-content;
+    font-weight: 400;
+    letter-spacing: normal;
+    font-style: normal;
 }
 
 #catalogue_container.tabs .container-actions  {
@@ -308,7 +315,7 @@ list-style: none;
 	border: 1px solid var(--neutral-500);
 	padding: 6px;
 	border-radius: 4px;
-	background-color: var(--neutral-0);
+	background-color: var(--neutral-0) !important;
 }
 
 .fabrik-switch-view-icon.active {

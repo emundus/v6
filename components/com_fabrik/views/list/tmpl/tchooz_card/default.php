@@ -78,8 +78,8 @@ endif;
                 <div class="em-flex-row em-flex-space-between em-mb-16">
                     <h1><?php echo $this->table->label; ?></h1>
                     <div class="em-flex-row-justify-end em-gap-8 fabrik-switch-view-buttons">
-                        <span onclick="switchView('list')" class="em-pointer material-icons-outlined fabrik-switch-view-icon active" id="fabrik_switch_view_list_icon">menu</span>
-                        <span onclick="switchView('grid')" class="em-pointer material-icons-outlined fabrik-switch-view-icon" id="fabrik_switch_view_grid_icon">grid_view</span>
+                        <button type="button" onclick="switchView('list')" class="em-pointer material-icons-outlined fabrik-switch-view-icon active" id="fabrik_switch_view_list_icon">menu</button>
+                        <button type="button" onclick="switchView('grid')" class="em-pointer material-icons-outlined fabrik-switch-view-icon" id="fabrik_switch_view_grid_icon">grid_view</button>
                     </div>
                 </div>
 	            <?php if ($this->showFilters) : ?>

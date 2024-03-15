@@ -125,6 +125,13 @@ a.btn.btn-default .icon-print {
     border: 1px solid var(--em-primary-color);
 }
 
+.mod_emundus_campaign__details_content button.btn-primary  {
+    font-weight: 400;
+    letter-spacing: normal;
+    font-style: normal;
+    font-size: var(--em-applicant-font-size);
+}
+
 .mod_emundus_campaign__grid .fabrikElementReadOnly {
 	margin-top: 0; 
 	color: var(--neutral-700);
