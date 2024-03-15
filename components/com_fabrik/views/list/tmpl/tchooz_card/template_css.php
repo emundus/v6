@@ -213,17 +213,21 @@ list-style: none;
 }
 
 #catalogue_container.cards h4 {
-    -webkit-line-clamp: 2;
     overflow: hidden;
-    -webkit-box-orient: vertical;
-    max-height: 48px;
-    display: -webkit-box;
-    line-height: 140%;
-    min-height: 46px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 235px;
+    text-align: left;
+    margin-bottom: 16px;
 }
 
 #catalogue_container h4 {
    color: var(--neutral-900);
+   overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 580px;
+    text-align: left;
 }
 
 #catalogue_container.cards .em-text-neutral-600 {
