@@ -2,8 +2,8 @@
   <div id="form-builder-rules-js" class="self-start w-full">
     <h2>{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_ADD_JS') }}</h2>
 
-    <div v-for="condition in conditions" class="mt-2 rounded-lg bg-white px-3 py-4 flex flex-col gap-6">
-      <form-builder-rules-js-condition :key="condition.id" :condition="condition" @remove-condition="removeCondition" :page="page" />
+    <div v-for="(condition, index) in conditions" class="mt-2 rounded-lg bg-white px-3 py-4 flex flex-col gap-6">
+      <form-builder-rules-js-condition :index="index" :condition="condition" @remove-condition="removeCondition" :page="page" />
     </div>
 
     <div class="flex justify-end">
@@ -40,8 +40,7 @@ export default {
   mounted() {
     if (this.page.id) {
       this.conditions.push({
-        id: 1,
-        label: 'Condition n°1',
+        label: '',
         field: '',
         values: ''
       });
@@ -49,10 +48,14 @@ export default {
   },
   methods: {
     addCondition() {
-      console.log('addCondition');
+      this.conditions.push({
+        label: '',
+        field: '',
+        values: ''
+      });
     },
-    removeCondition() {
-      console.log('removeCondition');
+    removeCondition(index) {
+      this.conditions = this.conditions.filter((condition, i) => i !== index);
     }
   },
 }

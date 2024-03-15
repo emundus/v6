@@ -1,8 +1,8 @@
 <template>
   <div id="form-builder-rules-js-condition" class="self-start w-full">
     <div class="flex justify-between items-center">
-      <h2>Condition n°1</h2>
-      <button type="button" @click="$emit('remove-condition')" class="w-auto">
+      <h2>{{ conditionLabel }}</h2>
+      <button v-if="index !== 0" type="button" @click="$emit('remove-condition', index)" class="w-auto">
         <span class="material-icons-outlined text-red-500">close</span>
       </button>
     </div>
@@ -25,6 +25,14 @@ export default {
       type: Object,
       default: {}
     },
+    condition: {
+      type: Object,
+      default: {}
+    },
+    index: {
+      type: Number,
+      default: 0
+    }
   },
   mixins: [formBuilderMixin, globalMixin, errorMixin],
   data() {
@@ -36,6 +44,11 @@ export default {
     if (this.page.id) {}
   },
   methods: {},
+  computed: {
+    conditionLabel() {
+      return this.condition.label !== '' ? this.condition.label : `Condition n°${this.index + 1}`;
+    }
+  }
 }
 </script>
 
