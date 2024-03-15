@@ -408,9 +408,24 @@ form.fabrikForm select {
 	}
 }
 
-@media screen and (max-width: 1352px) {
-	#catalogue_container.tabs #background-shapes {
-		display: none;
+@media screen and (min-width: 768px) and (max-width: 959px) {
+	#catalogue_container.cards h4 {
+	    max-width: 300px;
+	}
+		#catalogue_container.tabs .mod_emundus_campaign__list_content_container .em-flex-row {
+	    gap: 8px;
+	}
+}
+
+@media screen and (min-width: 768px) and (max-width: 1290px) {
+	#catalogue_container.tabs h4 {
+	  max-width: 300px;
+	}
+}
+
+@media screen and (min-width: 768px) and (max-width: 1622px) {
+	.catalogue #g-container-main .g-container {
+		width: 90% !important;
 	}
 }
 
@@ -438,22 +453,9 @@ form.fabrikForm select {
 	} 
 }
 
-
-@media screen and (min-width: 768px) and (max-width: 1622px) {
-	.catalogue #g-container-main .g-container {
-		width: 90% !important;
-	}
-}
-
-@media screen and (min-width: 768px) and (max-width: 1290px) {
-	#catalogue_container.tabs h4 {
-	  max-width: 300px;
-	}
-}
-
-@media screen and (min-width: 768px) and (max-width: 959px) {
-	#catalogue_container.cards h4 {
-	    max-width: 300px;
+@media screen and (max-width: 1352px) {
+	#catalogue_container.tabs #background-shapes {
+		display: none;
 	}
 }
 
