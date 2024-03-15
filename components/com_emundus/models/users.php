@@ -1144,7 +1144,7 @@ class EmundusModelUsers extends JModelList {
 	 * @return bool|JException
 	 * @throws Exception
 	 */
-    public function plainLogin($credentials, $redirect = 1) {
+    public function plainLogin($credentials, $redirect = 'index.php') {
         // Get the application object.
         $app = JFactory::getApplication();
 
@@ -1154,6 +1154,7 @@ class EmundusModelUsers extends JModelList {
         $credentials['password'] = $this->_passw;*/
 
         $options = array();
+	    $options['action'] = 'core.login.site';
         $options['redirect'] = $redirect;
         return $app->login($credentials, $options);
 
