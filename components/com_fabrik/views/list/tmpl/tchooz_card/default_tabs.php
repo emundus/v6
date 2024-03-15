@@ -53,7 +53,7 @@ foreach ($this->headings as $heading => $label) {
 <div class="hover-and-tile-container">
 
     <div id="<?php echo $this->_row->id; ?>"
-         class="mod_emundus_campaign__list_content em-border-neutral-300 em-pointer em-flex-space-between">
+         class="mod_emundus_campaign__list_content em-border-neutral-300 em-pointer em-flex-space-between" onclick="window.location.href='<?= $this->_row->data->fabrik_view_url; ?>'">
         <div id="background-shapes" alt="Fond formes"
              style="mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');"></div>
         <div class="mod_emundus_campaign__list_content_container">
