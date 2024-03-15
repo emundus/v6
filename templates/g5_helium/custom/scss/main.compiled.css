@@ -4537,11 +4537,30 @@ legend {
     .swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:hover {
         border: none !important;
     }*/
+.swal2-title {
+        color: var(--neutral-900);
+        margin: 10px 0 20px 0;
+        font-family: var(--em-coordinator-font-title);
+    }
 button.swal2-styled.swal2-confirm {
         background: var(--blue-500);
         border-radius: var(--em-coordinator-br);
         padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
         color: var(--neutral-0);
+    }
+button.swal2-styled.swal2-cancel {
+        background: #FFFFFF;
+        border: 1px solid var(--blue-500);
+        border-radius: var(--em-coordinator-br);
+        color: var(--blue-500);
+        padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
+    }
+button.swal2-styled.swal2-cancel:hover,
+    button.swal2-styled.swal2-cancel:active,
+    button.swal2-styled.swal2-cancel:focus {
+        background: var(--blue-500);
+        color: #FFFFFF;
+        background-image: none !important;
     }
 button.swal2-confirm.save-btn.sauvegarder.save_continue {
         font-family: var(--em-coordinator-font);

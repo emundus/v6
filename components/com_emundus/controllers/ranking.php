@@ -42,14 +42,7 @@ class EmundusControllerRanking extends JControllerLegacy
             $response['code'] = 200;
         }
 
-        if ($response['code'] === 403) {
-            header('HTTP/1.1 403 Forbidden');
-            echo $response['msg'];
-            exit;
-        }
-
-        echo json_encode($response);
-        exit;
+        $this->sendJSONResponse($response);
     }
 
     public function getOtherRankingsICanSee()
@@ -69,14 +62,7 @@ class EmundusControllerRanking extends JControllerLegacy
             }
         }
 
-        if ($response['code'] === 403) {
-            header('HTTP/1.1 403 Forbidden');
-            echo $response['msg'];
-            exit;
-        }
-
-        echo json_encode($response);
-        exit;
+        $this->sendJSONResponse($response);
     }
 
     public function updateFileRanking()
@@ -112,18 +98,7 @@ class EmundusControllerRanking extends JControllerLegacy
             }
         }
 
-        if ($response['code'] === 403) {
-            header('HTTP/1.1 403 Forbidden');
-            echo $response['msg'];
-            exit;
-        } else if ($response['code'] === 500) {
-            header('HTTP/1.1 500 Internal Server Error');
-            echo $response['msg'];
-            exit;
-        }
-
-        echo json_encode($response);
-        exit;
+        $this->sendJSONResponse($response);
     }
 
     /**
@@ -148,8 +123,50 @@ class EmundusControllerRanking extends JControllerLegacy
             }
         }
 
+        $this->sendJSONResponse($response);
+    }
+
+    public function askToLockRankings()
+    {
+        $response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => [], 'code' => 403];
+        $user = Factory::getUser();
+
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+            $response['code'] = 500;
+            $response['msg'] = Text::_('MISSING_PARAMS');
+
+            $jinput = $this->app->input;
+            $users = $jinput->getString('users', '');
+            $hierarchies = $jinput->getString('hierarchies', '');
+
+            if (!empty($users) || !empty($hierarchies)) {
+                $users = json_decode($users, true);
+                $hierarchies = json_decode($hierarchies, true);
+
+                try {
+                    $result = $this->model->askUsersToLockRankings($user->id, $users, $hierarchies);
+
+                    $response['status'] = $result['asked'];
+                    $response['code'] = 200;
+                    $response['data'] = $result['asked_to'];
+                    $response['msg'] = Text::_('SUCCESS');
+                } catch (Exception $e) {
+                    $response['code'] = 500;
+                    $response['msg'] = $e->getMessage();
+                }
+            }
+        }
+
+        $this->sendJSONResponse($response);
+    }
+
+    private function sendJSONResponse($response) {
         if ($response['code'] === 403) {
             header('HTTP/1.1 403 Forbidden');
+            echo $response['msg'];
+            exit;
+        } else if ($response['code'] === 500) {
+            header('HTTP/1.1 500 Internal Server Error');
             echo $response['msg'];
             exit;
         }

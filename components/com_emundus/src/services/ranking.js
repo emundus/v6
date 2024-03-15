@@ -66,5 +66,26 @@ export default {
                 msg: e.message
             };
         }
+    },
+    async askToLockRankings(users, hierarchies) {
+        try {
+            const Form = new FormData();
+            Form.append('users', JSON.stringify(users));
+            Form.append('hierarchies', JSON.stringify(hierarchies));
+
+            const response = await client().post('index.php?option=com_emundus&controller=ranking&task=askToLockRankings',
+                Form,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+            return response.data;
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
     }
 };

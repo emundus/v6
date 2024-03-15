@@ -69,12 +69,12 @@
         <!-- non ranked files -->
         <table id="unranked-files">
           <thead>
-            <th>
-              <span class="material-icons-outlined" v-if="ismyRankingLocked">lock</span>
-              <span class="material-icons-outlined" v-else>lock_open</span>
-            </th>
-            <th>{{ translate('COM_EMUNDUS_CLASSEMENT_FILE') }}</th>
-            <th>{{ translate('COM_EMUNDUS_CLASSEMENT_YOUR_RANKING') }}</th>
+          <th>
+            <span class="material-icons-outlined" v-if="ismyRankingLocked">lock</span>
+            <span class="material-icons-outlined" v-else>lock_open</span>
+          </th>
+          <th>{{ translate('COM_EMUNDUS_CLASSEMENT_FILE') }}</th>
+          <th>{{ translate('COM_EMUNDUS_CLASSEMENT_YOUR_RANKING') }}</th>
           </thead>
           <draggable
               v-model="unrankedFiles"
@@ -113,7 +113,9 @@
         <table class="em-w-100">
           <thead>
           <template v-for="hierarchy in rankings.otherRankings" :key="hierarchy.hierarchy_id">
-            <th :title="hierarchy.label"><div><span>{{ hierarchy.label }}</span></div></th>
+            <th :title="hierarchy.label">
+              <div><span>{{ hierarchy.label }}</span></div>
+            </th>
             <th :title="translate('COM_EMUNDUS_RANKING_RANKER') + ' ' + hierarchy.label">
               <div><span>{{ translate('COM_EMUNDUS_RANKING_RANKER') + ' ' + hierarchy.label }}</span></div>
             </th>
@@ -191,16 +193,45 @@
         </template>
       </compare-files>
     </transition>
-    <modal name="askToLockRankings">
-      <div class="em-flex-column">
-        <h2>{{ translate('COM_EMUNDUS_CLASSEMENT_ASK_LOCK_RANKING') }}</h2>
-        <p>{{ translate('COM_EMUNDUS_CLASSEMENT_ASK_LOCK_RANKING_TEXT') }}</p>
-        <select>
-          <option v-for="hierarchy in rankings.otherRankings" :key="hierarchy.hierarchy_id">
-            {{ hierarchy.label }}
-          </option>
-        </select>
-        <button id="confirmAskLockRanking">{{ translate('COM_EMUNDUS_CLASSEMENT_CONFIRM_ASK_LOCK_RANKING') }}</button>
+    <modal name="askToLockRankings" id="ask-to-lock-rankings-modal">
+      <div class="em-flex-column em-p-16">
+        <div class="swal2-header em-mb-16">
+          <h2 id="swal2-title" class="swal2-title em-swal-title">{{ translate('COM_EMUNDUS_CLASSEMENT_ASK_LOCK_RANKING') }}</h2>
+        </div>
+        <div class="swal2-content em-mt-16" style="z-index: 2;">
+          <label>{{ translate('COM_EMUNDUS_CLASSEMENT_ASK_HIERARCHIES_LOCK_RANKING') }}</label>
+          <multiselect
+              v-model="askedHierarchiesToLockRanking"
+              label="label"
+              track-by="hierarchy_id"
+              :options="rankings.otherRankings"
+              :multiple="true"
+              :searchable="true"
+              :close-on-select="true"
+              :clear-on-select="true"
+          ></multiselect>
+
+          <label class="em-mt-16">{{ translate('COM_EMUNDUS_CLASSEMENT_ASK_USERS_LOCK_RANKING') }}</label>
+          <multiselect
+              v-model="askedUsersToLockRanking"
+              label="name"
+              track-by="user_id"
+              :options="otherRankingsRankers"
+              :multiple="true"
+              :searchable="true"
+              :close-on-select="true"
+              :clear-on-select="true"
+          ></multiselect>
+        </div>
+        <div class="swal2-actions">
+          <button id="cancelAskLockRanking" class="swal2-cancel em-swal-cancel-button swal2-styled"
+                  @click="closeAskRanking">
+            {{ translate('COM_EMUNDUS_CLASSEMENT_CANCEL_ASK_LOCK_RANKING') }}
+          </button>
+          <button id="confirmAskLockRanking" class="swal2-confirm em-swal-confirm-button swal2-styled"
+                  @click="confirmAskLockRanking">{{ translate('COM_EMUNDUS_CLASSEMENT_CONFIRM_ASK_LOCK_RANKING') }}
+          </button>
+        </div>
       </div>
     </modal>
   </div>
@@ -211,10 +242,11 @@ import translate from "../mixins/translate";
 import rankingService from "../services/ranking.js";
 import CompareFiles from "../components/Files/CompareFiles.vue";
 import draggable from "vuedraggable";
+import Multiselect from "vue-multiselect";
 
 export default {
   name: 'Classement',
-  components: {CompareFiles, draggable},
+  components: {Multiselect, CompareFiles, draggable},
   props: {
     user: {
       type: Number,
@@ -241,6 +273,8 @@ export default {
       selectedOtherFile: null,
       locked: false,
       subRankingKey: 0,
+      askedHierarchiesToLockRanking: [],
+      askedUsersToLockRanking: [],
       loading: false,
       dragging: false
     }
@@ -312,6 +346,45 @@ export default {
       this.$modal.show('askToLockRankings', {
         rankingsToLock: this.rankingsToLock
       });
+    },
+    confirmAskLockRanking() {
+      if (this.askedUsersToLockRanking.length > 0 || this.askedHierarchiesToLockRanking) {
+        let userIds = this.askedUsersToLockRanking.map((user) => {
+          return user.user_id
+        });
+
+        let hierarchyIds = this.askedHierarchiesToLockRanking.map((hierarchy) => {
+          return hierarchy.hierarchy_id
+        });
+
+        rankingService.askToLockRankings(userIds, hierarchyIds).then((response) => {
+          if (response.status) {
+            this.$modal.hide('askToLockRankings');
+
+            // response data contains the list of emails that have been asked to lock the ranking
+            if (response.data.length > 0) {
+              const emails_html = response.data.map(email => `<li>${email}</li>`).join('');
+              Swal.fire({
+                title: this.translate('COM_EMUNDUS_RANKING_LOCK_RANKING_ASK_CONFIRM_SUCCESS_TITLE'),
+                html: `<ul>${emails_html}</ul>`,
+                icon: 'success',
+                delay: 5000,
+                customClass: {
+                  title: 'em-swal-title',
+                  confirmButton: 'em-swal-confirm-button',
+                },
+              });
+            }
+          }
+        });
+
+        this.closeAskRanking();
+      }
+    },
+    closeAskRanking() {
+      this.$modal.hide('askToLockRankings');
+      this.askedUsersToLockRanking = [];
+      this.askedHierarchiesToLockRanking = [];
     },
     lockRanking() {
       Swal.fire({
@@ -454,122 +527,131 @@ export default {
       });
 
       return rankings;
+    },
+    otherRankingsRankers() {
+      let rankers = [];
+      let ranker_ids = [];
+
+      this.rankings.otherRankings.forEach((ranking) => {
+        Object.keys(ranking.rankers).forEach(ranker_id => {
+          if (!ranker_ids.includes(ranker_id)) {
+            ranker_ids.push(ranker_id);
+            rankers.push(ranking.rankers[ranker_id]);
+          }
+        });
+      });
+
+      return rankers;
     }
   }
 }
 </script>
 
-<style scoped>
-.my_ranking-enter-active, .my_ranking-leave-active {
-  transition: all 1s;
-}
-
-.my_ranking-enter, .my_ranking-leave-to {
-  opacity: 0;
-  transform: translateX(30px);
-}
-
-.my_ranking-move {
-  transition: transform 1s;
-}
-
-#ranking-lists-container {
-  align-items: flex-start;
-
-  .file-identifier {
+<style lang="scss">
+#ranking-list {
+  #ranking-lists-container {
     align-items: flex-start;
-  }
 
-  tr, td {
-    height: 64px;
-  }
+    .file-identifier {
+      align-items: flex-start;
+    }
 
-  table:not(#unranked-files) th {
-    height: 98px;
+    tr, td {
+      height: 64px;
+    }
 
-  }
+    table:not(#unranked-files) th {
+      height: 98px;
 
-  table#unranked-files {
-    border-top: 0;
+    }
 
-    thead {
-      display: none;
+    table#unranked-files {
+      border-top: 0;
+
+      thead {
+        display: none;
+      }
+    }
+
+    #my-ranking-list, #other-ranking-lists {
+      border-radius: 4px;
+      border-spacing: 0;
+      border-collapse: separate;
+    }
+
+    #other-ranking-lists {
+      overflow: auto;
+
+      th div {
+        max-height: 2.5em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: bold;
+      }
+    }
+
+    table#ranked-files {
+      border-bottom: 0;
+    }
+
+    #my-ranking-list {
+      border: solid var(--main-200);
+
+      thead th {
+        background-color: var(--main-100) !important;
+      }
+
+      tbody td, tbody tr {
+        background-color: var(--main-50);
+        border: 0;
+      }
     }
   }
 
-  #my-ranking-list, #other-ranking-lists {
-    border-radius: 4px;
-    border-spacing: 0;
-    border-collapse: separate;
-  }
-
-  #other-ranking-lists {
-    overflow: auto;
-
-    th div {
-      max-height: 2.5em;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      font-weight: bold;
-    }
-  }
-
-  table#ranked-files {
-    border-bottom: 0;
-  }
-
-  #my-ranking-list {
-    border: solid var(--main-200);
-
-    thead th {
-      background-color: var(--main-100) !important;
-    }
-
-    tbody td, tbody tr {
-      background-color: var(--main-50);
-      border: 0;
-    }
-  }
-}
-
-button.em-primary-button {
-  span {
-    color: var(--neutral-0);
-  }
-
-  &:hover {
-    span {
-      color: var(--main-500);
-    }
-  }
-}
-
-button.em-secondary-button {
-  span {
-    color: var(--em-coordinator-secondary-color);
-  }
-
-  &:hover {
+  button.em-primary-button {
     span {
       color: var(--neutral-0);
     }
+
+    &:hover {
+      span {
+        color: var(--main-500);
+      }
+    }
+  }
+
+  button.em-secondary-button {
+    span {
+      color: var(--em-coordinator-secondary-color);
+    }
+
+    &:hover {
+      span {
+        color: var(--neutral-0);
+      }
+    }
+  }
+
+  .handle:hover {
+    cursor: grab;
+  }
+
+  .dragging {
+    cursor: grabbing;
+  }
+
+  .dragging #ranked-files tbody {
+    border: 4px dashed var(--main-200);
+  }
+
+  .dragging #unranked-files td {
+    background-color: var(--grey-bg-color) !important;
   }
 }
 
-.handle:hover {
-  cursor: grab;
+#ask-to-lock-rankings-modal .v--modal {
+  overflow: unset !important;
+  border-radius: .3125em !important;
+  height: fit-content !important;
 }
-
-.dragging {
-  cursor: grabbing;
-}
-
-.dragging #ranked-files tbody {
-  border: 4px dashed var(--main-200);
-}
-
-.dragging #unranked-files td {
-  background-color: var(--grey-bg-color) !important;
-}
-
 </style>

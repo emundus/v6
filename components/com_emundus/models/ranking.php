@@ -510,7 +510,7 @@ class EmundusModelRanking extends JModelList
             throw new Exception(Text::_('USER_ASKING_TO_LOCK_FILES_BUT_HAS_NO_ACCESS'));
         }
 
-        if (!empty($users) && !empty($hierarchies)) {
+        if (!empty($users) || !empty($hierarchies)) {
             $query = $this->db->getQuery(true);
 
             if (!empty($hierarchies)) {
