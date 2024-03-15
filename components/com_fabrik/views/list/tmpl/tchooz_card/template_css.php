@@ -355,6 +355,10 @@ list-style: none;
 	height: 32px;
 }
 
+form.fabrikForm select {
+	background-position-x: 86% !important;
+}
+
 @media screen and (max-width: 768px) {
 	.catalogue_filters_container .em-filter-intro h4::after {
 	    left: 20px;
