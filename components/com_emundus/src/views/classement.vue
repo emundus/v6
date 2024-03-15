@@ -68,7 +68,7 @@
         </table>
         <!-- non ranked files -->
         <table id="unranked-files">
-          <thead class="hidden">
+          <thead>
             <th>
               <span class="material-icons-outlined" v-if="ismyRankingLocked">lock</span>
               <span class="material-icons-outlined" v-else>lock_open</span>
@@ -113,8 +113,10 @@
         <table class="em-w-100">
           <thead>
           <template v-for="hierarchy in rankings.otherRankings" :key="hierarchy.hierarchy_id">
-            <th> {{ hierarchy.label }}</th>
-            <th> {{ translate('COM_EMUNDUS_RANKING_RANKER') + ' ' + hierarchy.label }}</th>
+            <th :title="hierarchy.label"><div><span>{{ hierarchy.label }}</span></div></th>
+            <th :title="translate('COM_EMUNDUS_RANKING_RANKER') + ' ' + hierarchy.label">
+              <div><span>{{ translate('COM_EMUNDUS_RANKING_RANKER') + ' ' + hierarchy.label }}</span></div>
+            </th>
           </template>
           </thead>
           <tbody>
@@ -482,8 +484,17 @@ export default {
     height: 64px;
   }
 
-  th {
+  table:not(#unranked-files) th {
     height: 98px;
+
+  }
+
+  table#unranked-files {
+    border-top: 0;
+
+    thead {
+      display: none;
+    }
   }
 
   #my-ranking-list, #other-ranking-lists {
@@ -492,12 +503,19 @@ export default {
     border-collapse: separate;
   }
 
-  table#ranked-files {
-    border-bottom: 0;
+  #other-ranking-lists {
+    overflow: auto;
+
+    th div {
+      max-height: 2.5em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: bold;
+    }
   }
 
-  table#unranked-files {
-    border-top: 0;
+  table#ranked-files {
+    border-bottom: 0;
   }
 
   #my-ranking-list {
@@ -551,7 +569,7 @@ button.em-secondary-button {
 }
 
 .dragging #unranked-files td {
-  background-color: unset;
+  background-color: var(--grey-bg-color) !important;
 }
 
 </style>
