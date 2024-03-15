@@ -133,7 +133,16 @@ endif;
 ?>
 
 <script>
+
+  window.addEventListener('DOMContentLoaded', (event) => {
+	  let selected_view = sessionStorage.getItem('catalogue___selected_view');
+	  if (selected_view !== null) {
+		  this.switchView(selected_view);
+	  }
+  });
+
     function switchView(view) {
+        sessionStorage.setItem("catalogue___selected_view", view);
         switch (view){
             case 'list':
                 document.getElementById("catalogue_container").classList.add("tabs");
