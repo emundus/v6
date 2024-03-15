@@ -78,4 +78,39 @@ class EmundusModelRankingTest extends TestCase
         $this->expectException(Exception::class);
         $this->m_ranking->updateFileRanking($id, $ranker_user, 1, 1);
     }
+
+    public function testAskUsersToLockRankings()
+    {
+        $current_user_id = 95;
+        $users = [];
+        $hierarchies = [];
+
+        $response = $this->m_ranking->askUsersToLockRankings($current_user_id, $users, $hierarchies);
+        $this->assertFalse($response['asked'], "I should not be able to ask users to lock rankings if there are no users or rankings.");
+
+        $hierarchies = [9999];
+        $response = $this->m_ranking->askUsersToLockRankings($current_user_id, [], $hierarchies);
+        $this->assertFalse($response['asked'], "I should not be able to ask users to lock rankings if I am not allowed to view this ranking.");
+
+        $users = [9999];
+        $response = $this->m_ranking->askUsersToLockRankings($current_user_id, $users, []);
+        $this->assertFalse($response['asked'], "I should not be able to ask users to lock rankings if user does not exist.");
+
+        $hierarchies = [2];
+        $response = $this->m_ranking->askUsersToLockRankings($current_user_id, $users, $hierarchies);
+        $this->assertTrue($response['asked'], "I should be able to ask users to lock rankings.");
+
+        /*
+         * Cannot assert on that because mail functions are not supported in tests
+        $this->assertEquals(1, sizeof($response['asked_to']), "1 person should have been asked to");
+        $hierarchies = [2, 3];
+        $response = $this->m_ranking->askUsersToLockRankings($current_user_id, $users, $hierarchies);
+        $this->assertEquals(2, sizeof($response['asked_to']), "2 people should have been asked to");
+        */
+
+
+        // if i pass no user expect exception
+        $this->expectException(Exception::class);
+        $this->m_ranking->askUsersToLockRankings(0, $users, $hierarchies);
+    }
 }
