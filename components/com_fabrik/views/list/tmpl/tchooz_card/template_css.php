@@ -213,21 +213,25 @@ list-style: none;
 }
 
 #catalogue_container.cards h4 {
-    overflow: hidden;
+  overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    width: 235px;
-    text-align: left;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: horizontal;
     margin-bottom: 16px;
+    max-width: 500px;
+    min-width: 150px;
 }
 
 #catalogue_container h4 {
    color: var(--neutral-900);
-   overflow: hidden;
+    overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    width: 580px;
-    text-align: left;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: horizontal;
+    max-width: 560px;
+    min-width: 200px;
 }
 
 #catalogue_container.cards .em-text-neutral-600 {
@@ -434,6 +438,18 @@ list-style: none;
 @media screen and (min-width: 768px) and (max-width: 1622px) {
 	.catalogue #g-container-main .g-container {
 		width: 90% !important;
+	}
+}
+
+@media screen and (min-width: 768px) and (max-width: 1290px) {
+	#catalogue_container.tabs h4 {
+	  max-width: 300px;
+	}
+}
+
+@media screen and (min-width: 768px) and (max-width: 959px) {
+	#catalogue_container.cards h4 {
+	    max-width: 300px;
 	}
 }
 
