@@ -24,7 +24,7 @@ require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'acces
 <div class="mod_emundus_campaign__grid em-mb-64<?php if (!preg_match('/show_details_content/', $notes, $matches)) : echo ' mod_emundus_campaign__flex'; endif;?>" style="grid-gap: 64px;">
     <div>
         <div class="em-flex-row em-flex-space-between em-w-100 em-mb-12 em-pointer">
-            <button type="button" class="em-flex-row" onclick="history.go(-1)"><span class="material-icons em-neutral-700-color">arrow_back</span><span class="em-ml-8 em-text-neutral-900"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span></button>
+            <button type="button" class="em-flex-row" onclick="window.location.href = document.referrer"><span class="material-icons em-neutral-700-color">arrow_back</span><span class="em-ml-8 em-text-neutral-900"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span></button>
             <?php  if ($this->showPrint):
 	            echo $this->printLink;
              endif;?>
