@@ -116,6 +116,7 @@ list-style: none;
 	flex-wrap: wrap;
 	align-items: flex-start !important;
     gap: 24px;
+    min-height: 50vh;
 }
 
 .catalogue_filters_container  {
