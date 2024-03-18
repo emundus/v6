@@ -46,6 +46,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $home_link = EmundusHelperMenu::getHomepageLink($params->get('home_link', 'index.php'));
     $add_to_cart_icon = $params->get('add_to_cart_icon', 'large add to cart icon');
     $scholarship_icon = $params->get('scholarship_icon', 'large student icon');
+	$title_override = JText::_($params->get('title_override', ''));
     $file_tags = JText::_($params->get('tags', ''));
 
     // eMundus parameters
@@ -95,7 +96,30 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
     $campaign_name = $current_application->label;
 
-    if($layout != '_:tchooz') {
+	if(!empty($title_override)) {
+
+		$m_email = new EmundusModelEmails();
+		$emundusUser = JFactory::getSession()->get('emundusUser');
+
+		$post = array(
+			'APPLICANT_ID'   => $user->id,
+			'DEADLINE'       => strftime("%A %d %B %Y %H:%M", strtotime($emundusUser->end_date)),
+			'CAMPAIGN_LABEL' => $emundusUser->label,
+			'CAMPAIGN_YEAR'  => $emundusUser->year,
+			'CAMPAIGN_START' => $emundusUser->start_date,
+			'CAMPAIGN_END'   => $emundusUser->end_date,
+			'CAMPAIGN_CODE'  => $emundusUser->training,
+			'FNUM'           => $emundusUser->fnum
+		);
+
+		$tags                   = $m_email->setTags($user->id, $post, $emundusUser->fnum, '', $title_override);
+		$title_override_display = preg_replace($tags['patterns'], $tags['replacements'], $title_override);
+		$title_override_display = $m_email->setTagsFabrik($title_override_display, array($emundusUser->fnum));
+
+		$campaign_name = strip_tags($title_override_display);
+	}
+
+	if($layout != '_:tchooz') {
         $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
         $paid = null;
 

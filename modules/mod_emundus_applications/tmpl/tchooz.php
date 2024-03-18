@@ -108,6 +108,32 @@ array_unshift($tabs, [
 ksort($applications);
 
 $current_tab = 0;
+
+
+$campaign_name = $application->label;
+
+if(!empty($title_override)) {
+
+	$m_email = new EmundusModelEmails();
+
+	$post = array(
+		'APPLICANT_ID'   => $user->id,
+		'DEADLINE'       => strftime("%A %d %B %Y %H:%M", strtotime($application->end_date)),
+		'CAMPAIGN_LABEL' => $application->label,
+		'CAMPAIGN_YEAR'  => $application->year,
+		'CAMPAIGN_START' => $application->start_date,
+		'CAMPAIGN_END'   => $application->end_date,
+		'CAMPAIGN_CODE'  => $application->training,
+		'FNUM'           => $application->fnum
+	);
+
+	$tags                   = $m_email->setTags($user->id, $post, $application->fnum, '', $title_override);
+	$title_override_display = preg_replace($tags['patterns'], $tags['replacements'], $title_override);
+	$title_override_display = $m_email->setTagsFabrik($title_override_display, array($application->fnum));
+
+	$campaign_name = strip_tags($title_override_display);
+}
+
 ?>
 <div class="mod_emundus_applications___header mod_emundus_applications___tmp_tchooz">
 	<?php if ($mod_em_applications_show_hello_text == 1 && !$is_anonym_user) : ?>
@@ -410,7 +436,7 @@ $current_tab = 0;
                                                             <a href="<?= JRoute::_($first_page_url); ?>"
                                                                class="mod_emundus_applications___title"
                                                                id="application_title_<?php echo $application->fnum ?>">
-                                                                <h5><?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?></h5>
+                                                                <h5><?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $campaign_name; ?></h5>
                                                             </a>
                                                         <?php else : ?>
                                                             <a href="<?= JRoute::_($first_page_url); ?>"
@@ -710,7 +736,7 @@ $current_tab = 0;
                                                         <a href="<?= JRoute::_($first_page_url); ?>"
                                                            class="mod_emundus_applications___title em-font-size-14"
                                                            id="application_title_<?php echo $application->fnum ?>">
-                                                            <span><?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?></span>
+                                                            <span><?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $campaign_name; ?></span>
                                                         </a>
 													<?php else : ?>
                                                         <a href="<?= JRoute::_($first_page_url); ?>"
