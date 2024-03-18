@@ -112,7 +112,7 @@ $current_tab = 0;
 
 $campaign_name = $application->label;
 
-if(!empty($title_override)) {
+if(!empty(trim(strip_tags($title_override))))  {
 
 	$m_email = new EmundusModelEmails();
 
@@ -131,7 +131,7 @@ if(!empty($title_override)) {
 	$title_override_display = preg_replace($tags['patterns'], $tags['replacements'], $title_override);
 	$title_override_display = $m_email->setTagsFabrik($title_override_display, array($application->fnum));
 
-	$campaign_name = strip_tags($title_override_display);
+	$campaign_name = $title_override_display;
 }
 
 ?>
