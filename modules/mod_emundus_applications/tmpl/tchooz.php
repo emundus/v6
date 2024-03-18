@@ -112,7 +112,7 @@ $current_tab = 0;
 
 $campaign_name = $application->label;
 
-if(!empty(trim(strip_tags($title_override))))  {
+if (!empty($title_override) && !empty(str_replace(array(' ', "\t", "\n", "\r", "&nbsp;"), '', htmlentities(strip_tags($title_override))))) {
 
 	$m_email = new EmundusModelEmails();
 
