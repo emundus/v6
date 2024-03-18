@@ -96,8 +96,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
     $campaign_name = $current_application->label;
 
-	if(!empty(trim(strip_tags($title_override)))) {
-
+	if (!empty($title_override) && !empty(str_replace(array(' ', "\t", "\n", "\r", "&nbsp;"), '', htmlentities(strip_tags($title_override))))) {
 		$m_email = new EmundusModelEmails();
 		$emundusUser = JFactory::getSession()->get('emundusUser');
 
@@ -116,8 +115,10 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 		$title_override_display = preg_replace($tags['patterns'], $tags['replacements'], $title_override);
 		$title_override_display = $m_email->setTagsFabrik($title_override_display, array($emundusUser->fnum));
 
-		$campaign_name = $title_override_display;
-	}
+        if (!empty($title_override_display)) {
+            $campaign_name = $title_override_display;
+        }
+    }
 
 	if($layout != '_:tchooz') {
         $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
