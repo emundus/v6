@@ -474,6 +474,7 @@ Text::script('COM_EMUNDUS_ONBOARD_RULES_JS');
 Text::script('COM_EMUNDUS_FORM_BUILDER_SEARCH_RULE');
 Text::script('COM_EMUNDUS_FORM_BUILDER_RULE_GO_BACK');
 Text::script('COM_EMUNDUS_FORM_BUILDER_RULE_ADD_JS');
+Text::script('COM_EMUNDUS_FORM_BUILDER_RULE_SELECT_FIELD');
 
 $vue = 'em-formBuilder-vue';
 if ($this->eval != 0) {

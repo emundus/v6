@@ -2351,6 +2351,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .ml-4 {
   margin-left: var(--em-spacing-4);
 }
+.ml-6 {
+  margin-left: var(--em-spacing-6);
+}
 .ml-8 {
   margin-left: var(--em-spacing-8);
 }

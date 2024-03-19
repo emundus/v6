@@ -102,24 +102,26 @@ requirejs(['fab/fabrik'], function () {
     });
 
     Fabrik.addEvent('fabrik.form.elements.added', function (form, event) {
-        fetch('/index.php?option=com_emundus&controller=form&task=getjsconditions&form_id=' + form.id).then(response => response.json()).then(data => {
-            if (data.status) {
-                js_rules = data.data.conditions;
+        setTimeout(() => {
+            fetch('/index.php?option=com_emundus&controller=form&task=getjsconditions&form_id=' + form.id).then(response => response.json()).then(data => {
+                if (data.status) {
+                    js_rules = data.data.conditions;
 
-                form.elements.forEach(function (element) {
-                    manageRules(form, element, false);
+                    form.elements.forEach(function (element) {
+                        manageRules(form, element, false);
 
-                    var $el = jQuery(element.element);
-                    $el.on(element.getChangeEvent(), function (e) {
-                        manageRules(form, element);
+                        var $el = jQuery(element.element);
+                        $el.on(element.getChangeEvent(), function (e) {
+                            manageRules(form, element);
+                        });
                     });
-                });
-            }
+                }
 
-            if (!removedFabrikFormSkeleton) {
-                removeFabrikFormSkeleton();
-            }
-        });
+                if (!removedFabrikFormSkeleton) {
+                    removeFabrikFormSkeleton();
+                }
+            });
+        },500);
     });
 
     window.setInterval(function () {

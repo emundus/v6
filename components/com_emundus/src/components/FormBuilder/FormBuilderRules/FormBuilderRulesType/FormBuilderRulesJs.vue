@@ -3,7 +3,7 @@
     <h2>{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_ADD_JS') }}</h2>
 
     <div v-for="(condition, index) in conditions" class="mt-2 rounded-lg bg-white px-3 py-4 flex flex-col gap-6">
-      <form-builder-rules-js-condition :index="index" :condition="condition" @remove-condition="removeCondition" :page="page" />
+      <form-builder-rules-js-condition :elements="elements" :index="index" :condition="condition" @remove-condition="removeCondition" :page="page" />
     </div>
 
     <div class="flex justify-end">
@@ -29,6 +29,10 @@ export default {
       type: Object,
       default: {}
     },
+    elements: {
+      type: Array,
+      default: []
+    }
   },
   mixins: [formBuilderMixin, globalMixin, errorMixin],
   data() {

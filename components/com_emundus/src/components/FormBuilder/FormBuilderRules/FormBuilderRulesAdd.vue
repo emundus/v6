@@ -10,6 +10,7 @@
         <form-builder-rules-js
           v-if="rule.value === 'js'"
           :page="page"
+          :elements="elements"
           />
       </div>
     </div>
@@ -45,11 +46,32 @@ export default {
   mixins: [formBuilderMixin, globalMixin, errorMixin],
   data() {
     return {
+      fabrikPage: {},
+      elements: [],
+
       loading: false,
     };
   },
   mounted() {
-    if (this.page.id) {}
+    if (this.page.id) {
+      this.loading = true;
+
+      formService.getPageObject(this.page.id).then(response => {
+        if (response.status && response.data != '') {
+          this.fabrikPage = response.data;
+        } else {
+          this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
+        }
+
+        Object.entries(this.fabrikPage.Groups).forEach(([key, group]) => {
+          Object.entries(group.elements).forEach(([key,element]) => {
+            this.elements.push(element);
+          });
+        });
+
+        this.loading = false;
+      });
+    }
   },
   methods: {},
 }
