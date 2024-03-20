@@ -109,31 +109,27 @@ ksort($applications);
 
 $current_tab = 0;
 
-if (!empty($title_override) && !empty(str_replace(array(' ', "\t", "\n", "\r", "&nbsp;"), '', htmlentities(strip_tags($title_override))))) {
+if (!empty($applications) && !empty($title_override) && !empty(str_replace(array(' ', "\t", "\n", "\r", "&nbsp;"), '', htmlentities(strip_tags($title_override))))) {
     $m_email = new EmundusModelEmails();
 
-    foreach($applications as $application) {
+    foreach($applications as $key =>  $application) {
         $title_override_display = $title_override;
+        $post = array(
+            'APPLICANT_ID'   => $user->id,
+            'DEADLINE'       => strftime("%A %d %B %Y %H:%M", strtotime($application->end_date)),
+            'CAMPAIGN_LABEL' => $application->label,
+            'CAMPAIGN_YEAR'  => $application->year,
+            'CAMPAIGN_START' => $application->start_date,
+            'CAMPAIGN_END'   => $application->end_date,
+            'CAMPAIGN_CODE'  => $application->training,
+            'FNUM'           => $application->fnum
+        );
 
-        // if there are ${fabrik_element_id} or [TAGS_ID] in the title_override, we replace them with the correct values
-        if (preg_match('/\$\{[0-9]+\}/', $title_override) || preg_match('/\[[a-zA-Z_]+\]/', $title_override)) {
-            $post = array(
-                'APPLICANT_ID'   => $user->id,
-                'DEADLINE'       => strftime("%A %d %B %Y %H:%M", strtotime($application->end_date)),
-                'CAMPAIGN_LABEL' => $application->label,
-                'CAMPAIGN_YEAR'  => $application->year,
-                'CAMPAIGN_START' => $application->start_date,
-                'CAMPAIGN_END'   => $application->end_date,
-                'CAMPAIGN_CODE'  => $application->training,
-                'FNUM'           => $application->fnum
-            );
+        $tags                   = $m_email->setTags($user->id, $post, $application->fnum, '', $title_override_display);
+        $title_override_display = preg_replace($tags['patterns'], $tags['replacements'], $title_override_display);
+        $title_override_display = $m_email->setTagsFabrik($title_override_display, array($application->fnum));
 
-            $tags                   = $m_email->setTags($user->id, $post, $application->fnum, '', $title_override);
-            $title_override_display = preg_replace($tags['patterns'], $tags['replacements'], $title_override);
-            $title_override_display = $m_email->setTagsFabrik($title_override_display, array($application->fnum));
-        }
-
-        $application->label = $title_override_display;
+        $applications[$key]->label = $title_override_display;
     }
 }
 
