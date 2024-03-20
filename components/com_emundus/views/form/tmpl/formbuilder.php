@@ -479,6 +479,8 @@ Text::script('COM_EMUNDUS_FORMBUILDER_NO');
 Text::script('COM_EMUNDUS_FORMBUILDER_YES');
 Text::script('COM_EMUNDUS_FORMBUILDER_RULE_THEN');
 Text::script('COM_EMUNDUS_FORM_BUILDER_RULE_SELECT_FIELDS');
+Text::script('COM_EMUNDUS_FORM_BUILDER_RULE_SAVE');
+Text::script('COM_EMUNDUS_FORM_BUILDER_RULE_SUCCESS');
 
 $vue = 'em-formBuilder-vue';
 if ($this->eval != 0) {

@@ -892,5 +892,34 @@ class EmundusControllerForm extends JControllerLegacy {
 		exit;
 
 	}
+
+	public function addRule()
+	{
+		$user = Factory::getApplication()->getIdentity();
+		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+			$jinput = Factory::getApplication()->input;
+			$form_id = $jinput->getInt('form_id');
+			$conditions = $jinput->getString('conditions');
+			$actions = $jinput->getString('actions');
+
+			if (!empty($form_id) && !empty($conditions) && !empty($actions)) {
+				$rule_added = $this->m_form->addRule($form_id,$conditions,$actions);
+
+				if ($rule_added !== false) {
+					$response['msg'] = Text::_('SUCCESS');
+					$response['status'] = true;
+				} else {
+					$response['msg'] = Text::_('FAILED');
+				}
+			} else {
+				$response['msg'] = Text::_('MISSING_PARAMS');
+			}
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
 }
 

@@ -311,5 +311,24 @@ export default {
                 error:error
             };
         }
+    },
+
+    async addRule(formId, conditions, actions)
+    {
+        const formData = new FormData();
+        formData.append('conditions', JSON.stringify(conditions));
+        formData.append('actions', JSON.stringify(actions));
+        formData.append('form_id', formId);
+
+        try {
+            const response = await client().post(baseUrl + '&task=addRule', formData);
+
+            return response;
+        } catch (error) {
+            return {
+                status: false,
+                error:error
+            };
+        }
     }
 };

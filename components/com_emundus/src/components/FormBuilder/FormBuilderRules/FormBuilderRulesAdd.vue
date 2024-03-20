@@ -11,6 +11,7 @@
           v-if="rule.value === 'js'"
           :page="page"
           :elements="elements"
+          @close-rule-add-js="$emit('close-rule-add')"
           />
       </div>
     </div>

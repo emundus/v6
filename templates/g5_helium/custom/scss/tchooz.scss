@@ -99,6 +99,9 @@
   border: unset;
   background: transparent;
   color: var(--em-coordinator-tiertiary-color);
+  &:focus {
+    outline: none;
+  }
 }
 
 .em-disabled-button {

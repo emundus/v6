@@ -2470,4 +2470,75 @@ class EmundusModelForm extends JModelList {
 
 		return $js_conditions;
 	}
+
+	public function addRule($form_id, $conditions, $actions, $type = 'js', $group = 'OR')
+	{
+		$rule_inserted = false;
+
+		$conditions = json_decode($conditions);
+		$actions = json_decode($actions);
+
+		$db = Factory::getDbo();
+
+		try
+		{
+			$insert = [
+				'date_time' => date('Y-m-d H:i:s'),
+				'form_id' => $form_id,
+				'type' => $type,
+				'group' => $group,
+				'published' => 1
+			];
+			$insert = (object) $insert;
+			$db->insertObject('#__emundus_setup_form_rules', $insert);
+
+			$rule_id = $db->insertid();
+
+			if(!empty($rule_id))
+			{
+				foreach ($conditions as $condition)
+				{
+					$insert = [
+						'parent_id' => $rule_id,
+						'field'     => $condition->field,
+						'state'     => $condition->state,
+						'values'    => $condition->values,
+						'label'     => $condition->label,
+					];
+					$insert = (object) $insert;
+					$db->insertObject('#__emundus_setup_form_rules_js_conditions', $insert);
+				}
+
+				foreach ($actions as $action)
+				{
+					$insert = [
+						'parent_id' => $rule_id,
+						'action'    => $action->action
+					];
+					$insert = (object) $insert;
+					$db->insertObject('#__emundus_setup_form_rules_js_actions', $insert);
+
+					$action_id = $db->insertid();
+
+					foreach ($action->fields as $field)
+					{
+						$insert = [
+							'parent_id' => $action_id,
+							'fields'    => $field
+						];
+						$insert = (object) $insert;
+						$db->insertObject('#__emundus_setup_form_rules_js_actions_fields', $insert);
+					}
+				}
+
+				$rule_inserted = true;
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/form | Error at addRule : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $rule_inserted;
+	}
 }

@@ -22,6 +22,9 @@
       </div>
     </div>
 
+    <hr/>
+    <button class="mt-4 em-primary-button w-auto float-right" @click="saveRule">{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_SAVE') }}</button>
+
   </div>
 </template>
 
@@ -92,6 +95,59 @@ export default {
     },
     removeAction(index) {
       this.actions = this.actions.filter((condition, i) => i !== index);
+    },
+
+    saveRule() {
+      let conditions_post = [];
+      let actions_post = [];
+
+      this.conditions.forEach((condition) => {
+        if(condition.field && condition.values) {
+          conditions_post.push({
+            label: condition.label,
+            field: condition.field.name,
+            values: typeof condition.values === 'object' ? condition.values.primary_key : condition.values,
+            state: condition.state
+          });
+        }
+      });
+
+      this.actions.forEach((action) => {
+        if(action.fields.length > 0) {
+          let fields = [];
+          action.fields.forEach((field) => {
+            fields.push(field.name);
+          });
+
+          actions_post.push({
+            action: action.action,
+            fields: fields
+          });
+        }
+      });
+
+      if(conditions_post.length == 0) {
+        this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_ERROR'), this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_ERROR_EMPTY'));
+        return;
+      }
+
+      if(actions_post.length == 0) {
+        this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_ERROR'), this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_ERROR_EMPTY'));
+        return;
+      }
+
+      formService.addRule(this.page.id, conditions_post, actions_post).then(response => {
+        if (response.status) {
+          Swal.fire({
+            title: this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_SUCCESS'),
+            icon: 'success',
+          }).then(() => {
+            this.$emit('close-rule-add-js')
+          });
+        } else {
+          this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_ERROR'), this.translate(response.msg));
+        }
+      });
     }
   },
 }

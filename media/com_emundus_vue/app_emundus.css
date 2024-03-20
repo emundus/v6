@@ -2649,7 +2649,7 @@ div.forms-emails-editor .menubar[data-v-18686cfd] {
 #form-builder-create-model .em-primary-button:disabled:hover {
   color: white;
 }
-#form-builder-rules .label-darkblue, #form-builder-rules * .label-darkblue {
+#form-builder-rules .label-darkblue, #form-builder-rules-js-condition .label-darkblue {
   background-color: var(--neutral-300) !important;
   border: 1px solid var(--neutral-800);
   color: var(--neutral-900);
