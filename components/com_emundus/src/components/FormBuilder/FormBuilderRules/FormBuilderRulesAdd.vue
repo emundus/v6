@@ -65,7 +65,9 @@ export default {
 
         Object.entries(this.fabrikPage.Groups).forEach(([key, group]) => {
           Object.entries(group.elements).forEach(([key,element]) => {
-            this.elements.push(element);
+            if(!element.hidden) {
+              this.elements.push(element);
+            }
           });
         });
 

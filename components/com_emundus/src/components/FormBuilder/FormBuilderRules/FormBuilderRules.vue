@@ -110,7 +110,7 @@ export default {
 </script>
 
 <style lang="scss">
-#form-builder-rules, #form-builder-rules * {
+#form-builder-rules, #form-builder-rules-js-condition {
   .label-darkblue {
     background-color: var(--neutral-300) !important;
     border: 1px solid var(--neutral-800);

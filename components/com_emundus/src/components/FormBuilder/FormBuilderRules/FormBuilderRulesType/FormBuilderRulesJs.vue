@@ -2,13 +2,26 @@
   <div id="form-builder-rules-js" class="self-start w-full">
     <h2>{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_ADD_JS') }}</h2>
 
-    <div v-for="(condition, index) in conditions" class="mt-2 rounded-lg bg-white px-3 py-4 flex flex-col gap-6">
-      <form-builder-rules-js-condition :elements="elements" :index="index" :condition="condition" @remove-condition="removeCondition" :page="page" />
+    <div id="form-builder-rules-js-conditions-block">
+      <div v-for="(condition, index) in conditions" class="mt-2 rounded-lg bg-white px-3 py-4 flex flex-col gap-6">
+        <form-builder-rules-js-condition :elements="elements" :index="index" :condition="condition" @remove-condition="removeCondition" :page="page" />
+      </div>
+
+      <div class="flex justify-end">
+        <button type="button" @click="addCondition()" class="em-tertiary-button mt-2 w-auto">{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE') }}</button>
+      </div>
     </div>
 
-    <div class="flex justify-end">
-      <button type="button" @click="addCondition()" class="em-tertiary-button mt-2 w-auto">{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE') }}</button>
+    <div id="form-builder-rules-js-actions-block">
+      <div v-for="(action, index) in actions" class="mt-2 rounded-lg bg-white px-3 py-4 flex flex-col gap-6">
+        <form-builder-rules-js-action :elements="elements" :index="index" :action="action" @remove-action="removeAction" :page="page" />
+      </div>
+
+      <div class="flex justify-end">
+        <button type="button" @click="addAction()" class="em-tertiary-button mt-2 w-auto">{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE') }}</button>
+      </div>
     </div>
+
   </div>
 </template>
 
@@ -21,9 +34,11 @@ import errorMixin from '../../../../mixins/errors';
 import Swal from 'sweetalert2';
 import FormBuilderRulesJsCondition
   from "@/components/FormBuilder/FormBuilderRules/FormBuilderRulesType/FormBuilderRulesJsCondition.vue";
+import FormBuilderRulesJsAction
+  from "@/components/FormBuilder/FormBuilderRules/FormBuilderRulesType/FormBuilderRulesJsAction.vue";
 
 export default {
-  components: {FormBuilderRulesJsCondition},
+  components: {FormBuilderRulesJsAction, FormBuilderRulesJsCondition},
   props: {
     page: {
       type: Object,
@@ -38,6 +53,7 @@ export default {
   data() {
     return {
       conditions: [],
+      actions: [],
       loading: false,
     };
   },
@@ -46,7 +62,13 @@ export default {
       this.conditions.push({
         label: '',
         field: '',
-        values: ''
+        values: '',
+        state: '='
+      });
+
+      this.actions.push({
+        action: 'show',
+        fields: []
       });
     }
   },
@@ -55,11 +77,21 @@ export default {
       this.conditions.push({
         label: '',
         field: '',
-        values: ''
+        values: '',
+        state: '='
+      });
+    },
+    addAction() {
+      this.actions.push({
+        action: 'show',
+        fields: []
       });
     },
     removeCondition(index) {
       this.conditions = this.conditions.filter((condition, i) => i !== index);
+    },
+    removeAction(index) {
+      this.actions = this.actions.filter((condition, i) => i !== index);
     }
   },
 }
