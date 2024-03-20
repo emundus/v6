@@ -109,29 +109,35 @@ ksort($applications);
 
 $current_tab = 0;
 
+if (!empty($applications) && !empty($title_override) && !empty(str_replace(array(' ', "\t", "\n", "\r", "&nbsp;"), '', htmlentities(strip_tags($title_override))))) {
+    if (!isset($m_email)) {
+        if (!class_exists('EmundusModelEmails')) {
+            require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
+        }
+        $m_email = new EmundusModelEmails();
+    }
 
-$campaign_name = $application->label;
+    foreach ($applications[0]['all']['applications'] as $key => $sub_applications) {
+        foreach ($sub_applications as $a_key => $application) {
+            $title_override_display = $title_override;
+            $post = array(
+                'APPLICANT_ID' => $user->id,
+                'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($application->end_date)),
+                'CAMPAIGN_LABEL' => $application->label,
+                'CAMPAIGN_YEAR' => $application->year,
+                'CAMPAIGN_START' => $application->start_date,
+                'CAMPAIGN_END' => $application->end_date,
+                'CAMPAIGN_CODE' => $application->training,
+                'FNUM' => $application->fnum
+            );
 
-if (!empty($title_override) && !empty(str_replace(array(' ', "\t", "\n", "\r", "&nbsp;"), '', htmlentities(strip_tags($title_override))))) {
+            $tags = $m_email->setTags($user->id, $post, $application->fnum, '', $title_override_display);
+            $title_override_display = preg_replace($tags['patterns'], $tags['replacements'], $title_override_display);
+            $title_override_display = $m_email->setTagsFabrik($title_override_display, array($application->fnum));
 
-	$m_email = new EmundusModelEmails();
-
-	$post = array(
-		'APPLICANT_ID'   => $user->id,
-		'DEADLINE'       => strftime("%A %d %B %Y %H:%M", strtotime($application->end_date)),
-		'CAMPAIGN_LABEL' => $application->label,
-		'CAMPAIGN_YEAR'  => $application->year,
-		'CAMPAIGN_START' => $application->start_date,
-		'CAMPAIGN_END'   => $application->end_date,
-		'CAMPAIGN_CODE'  => $application->training,
-		'FNUM'           => $application->fnum
-	);
-
-	$tags                   = $m_email->setTags($user->id, $post, $application->fnum, '', $title_override);
-	$title_override_display = preg_replace($tags['patterns'], $tags['replacements'], $title_override);
-	$title_override_display = $m_email->setTagsFabrik($title_override_display, array($application->fnum));
-
-	$campaign_name = $title_override_display;
+            $applications[0]['all']['applications'][$key][$a_key]->label = $title_override_display;
+        }
+    }
 }
 
 ?>
@@ -436,7 +442,7 @@ if (!empty($title_override) && !empty(str_replace(array(' ', "\t", "\n", "\r", "
                                                             <a href="<?= JRoute::_($first_page_url); ?>"
                                                                class="mod_emundus_applications___title"
                                                                id="application_title_<?php echo $application->fnum ?>">
-                                                                <h5><?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $campaign_name; ?></h5>
+                                                                <h5><?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?></h5>
                                                             </a>
                                                         <?php else : ?>
                                                             <a href="<?= JRoute::_($first_page_url); ?>"
@@ -736,7 +742,7 @@ if (!empty($title_override) && !empty(str_replace(array(' ', "\t", "\n", "\r", "
                                                         <a href="<?= JRoute::_($first_page_url); ?>"
                                                            class="mod_emundus_applications___title em-font-size-14"
                                                            id="application_title_<?php echo $application->fnum ?>">
-                                                            <span><?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $campaign_name; ?></span>
+                                                            <span><?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?></span>
                                                         </a>
 													<?php else : ?>
                                                         <a href="<?= JRoute::_($first_page_url); ?>"
