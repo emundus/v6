@@ -1,0 +1,6 @@
+enable: '1'
+version: fa4
+fa4_compatibility: '1'
+content_compatibility: '1'
+html_css_import: ''
+html_js_import: ''

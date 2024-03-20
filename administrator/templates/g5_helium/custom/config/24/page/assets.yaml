@@ -1,0 +1,7 @@
+css:
+  -
+    location: 'gantry-assets://custom/scss/global.scss'
+    inline: ''
+    extra: {  }
+    priority: '0'
+    name: Global

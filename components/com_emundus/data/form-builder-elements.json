@@ -110,6 +110,6 @@
     "value": "emundus_fileupload",
     "icon": "file_upload",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_FILE",
-    "published": false
+    "published": true
   }
 ]

@@ -1,6 +1,7 @@
 <?php
 
-    defined('JPATH_BASE') or die;
+global $displayData;
+defined('JPATH_BASE') or die;
 
     // Add span with id so that element fxs work.
     $d = $displayData;
@@ -12,6 +13,9 @@
     $attachId = $d->attributes['attachmentId'];
     $size = $d->attributes['size'];
     $encrypt = $d->attributes['encrypted'];
+
+
+
 
 
     $db = JFactory::getDBO();

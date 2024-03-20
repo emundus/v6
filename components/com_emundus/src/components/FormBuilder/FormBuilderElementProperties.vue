@@ -104,16 +104,16 @@ export default {
       required: true
     },
   },
-	mixins: [formBuilderMixin],
+  mixins: [formBuilderMixin],
   data() {
     return {
       databases: [],
       params: [],
       elementsNeedingDb: [
-          "dropdown",
-          "checkbox",
-          "radiobutton",
-          "databasejoin"
+        "dropdown",
+        "checkbox",
+        "radiobutton",
+        "databasejoin"
       ],
       tabs: [
         {
@@ -150,32 +150,32 @@ export default {
     saveProperties() {
       this.loading = true;
       formBuilderService.updateTranslation({value: this.element.id, key: 'element'}, this.element.label_tag, this.element.label);
+      if (['radiobutton', 'checkbox', 'dropdown'].includes(this.element.plugin)) {
+        formBuilderService.getJTEXTA(this.element.params.sub_options.sub_labels).then(response => {
+          if (response) {
+            this.element.params.sub_options.sub_labels.forEach((label, index) => {
+              this.element.params.sub_options.sub_labels[index] = Object.values(response.data)[index];
+            });
 
-	    if (['radiobutton', 'checkbox', 'dropdown'].includes(this.element.plugin)) {
-		    formBuilderService.getJTEXTA(this.element.params.sub_options.sub_labels).then(response => {
-					if (response) {
-						this.element.params.sub_options.sub_labels.forEach((label, index) => {
-							this.element.params.sub_options.sub_labels[index] = Object.values(response.data)[index];
-						});
-
-						formBuilderService.updateParams(this.element).then(response => {
-							if (response.status) {
-								this.loading = false;
-								this.updateLastSave();
-								this.$emit('close');
-							}
-						});
-					}
-				});
-	    } else {
-		    formBuilderService.updateParams(this.element).then(response => {
-			    if (response.status) {
-				    this.loading = false;
-				    this.updateLastSave();
-				    this.$emit('close');
-			    }
-		    });
-	    }
+            formBuilderService.updateParams(this.element).then(response => {
+              if (response.status) {
+                this.loading = false;
+                this.updateLastSave();
+                this.$emit('close');
+              }
+            });
+          }
+        });
+      } else {
+        formBuilderService.updateParams(this.element).then(response => {
+          if (response.status) {
+            this.loading = false;
+            this.updateLastSave();
+            this.$emit('close');
+          }
+        }
+        );
+      }
     },
     togglePublish() {
       this.element.publish = !this.element.publish;
@@ -202,6 +202,7 @@ export default {
       tab.active = true;
     },
     paramsAvailable(){
+      console.log(elementParams[this.element.plugin]);
       if(typeof elementParams[this.element.plugin] !== 'undefined'){
         this.tabs[1].published = true;
         this.params = elementParams[this.element.plugin];
@@ -216,17 +217,17 @@ export default {
     componentType() {
       let type = '';
       switch (this.element.plugin) {
-        case 'databasejoin':
-          type = this.element.params.database_join_display_type =='radio' ?  'radiobutton' : this.element.params.database_join_display_type;
-          break;
-        case 'years':
-        case 'date':
-        case 'birthday':
-          type = 'birthday';
-          break;
-        default:
-          type = this.element.plugin;
-          break;
+      case 'databasejoin':
+        type = this.element.params.database_join_display_type =='radio' ?  'radiobutton' : this.element.params.database_join_display_type;
+        break;
+      case 'years':
+      case 'date':
+      case 'birthday':
+        type = 'birthday';
+        break;
+      default:
+        type = this.element.plugin;
+        break;
       }
 
       return type;
@@ -240,11 +241,12 @@ export default {
     sysadmin: function(){
       return parseInt(this.$store.state.global.sysadminAccess);
     },
+    // eslint-disable-next-line no-mixed-spaces-and-tabs
 	  publishedTabs() {
-			return this.tabs.filter((tab) => {
-				return tab.published;
-			});
-	  }
+      return this.tabs.filter((tab) => {
+        return tab.published;
+      });
+    }
   },
   watch: {
     'element.eval': function(value){
