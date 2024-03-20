@@ -357,7 +357,8 @@ list-style: none;
 }
 
 form.fabrikForm select {
-	background-position-x: 86% !important;
+	background-position-x: 94% !important;
+    padding-right: 24px !important;
 }
 
 @media screen and (max-width: 768px) {
