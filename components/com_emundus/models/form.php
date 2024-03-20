@@ -594,7 +594,7 @@ class EmundusModelForm extends JModelList {
     }
 
 
-    public function duplicateForm($data) {
+    public function duplicateForm($data, $duplicate_condition = true) {
 		$duplicated = false;
         if (!is_array($data)) {
             $data = array($data);
@@ -764,7 +764,88 @@ class EmundusModelForm extends JModelList {
 											}
 										}
 
-										$formbuilder->createMenuFromTemplate($label, $intro, $formid, $newprofile, true);
+										$new_form = $formbuilder->createMenuFromTemplate($label, $intro, $formid, $newprofile, true);
+
+										if($duplicate_condition) {
+											$query->clear()
+												->select('*')
+												->from($db->quoteName('#__emundus_setup_form_rules'))
+												->where($db->quoteName('form_id') . ' = ' . $db->quote($formid));
+											$db->setQuery($query);
+											$rules = $db->loadObjectList();
+
+											foreach ($rules as $rule) {
+												$insert = [
+													'date_time' => date('Y-m-d H:i:s'),
+													'type' => $rule->type,
+													'group' => $rule->group,
+													'published' => $rule->published,
+													'form_id' => $new_form['id']
+												];
+												$insert = (object) $insert;
+												$db->insertObject('#__emundus_setup_form_rules', $insert);
+												$new_rule_id = $db->insertid();
+
+												if(!empty($new_rule_id))
+												{
+													$query->clear()
+														->select('*')
+														->from($db->quoteName('#__emundus_setup_form_rules_js_actions'))
+														->where($db->quoteName('parent_id') . ' = ' . $db->quote($rule->id));
+													$db->setQuery($query);
+													$actions = $db->loadObjectList();
+
+													foreach ($actions as $action)
+													{
+														$insert = [
+															'parent_id' => $new_rule_id,
+															'action' => $action->action,
+														];
+														$insert = (object) $insert;
+														$db->insertObject('#__emundus_setup_form_rules_js_actions', $insert);
+														$new_action_id = $db->insertid();
+
+														if(!empty($new_action_id))
+														{
+															$query->clear()
+																->select('*')
+																->from($db->quoteName('#__emundus_setup_form_rules_js_actions_fields'))
+																->where($db->quoteName('parent_id') . ' = ' . $db->quote($action->id));
+															$db->setQuery($query);
+															$fields = $db->loadObjectList();
+
+															foreach ($fields as $field) {
+																$insert = [
+																	'parent_id' => $new_action_id,
+																	'fields' => $field->fields
+																];
+																$insert = (object) $insert;
+																$db->insertObject('#__emundus_setup_form_rules_js_actions_fields', $insert);
+															}
+														}
+													}
+
+													$query->clear()
+														->select('*')
+														->from($db->quoteName('#__emundus_setup_form_rules_js_conditions'))
+														->where($db->quoteName('parent_id') . ' = ' . $db->quote($rule->id));
+													$db->setQuery($query);
+													$conditions = $db->loadObjectList();
+
+													foreach ($conditions as $condition) {
+														$insert = [
+															'parent_id' => $new_rule_id,
+															'field' => $condition->field,
+															'state' => $condition->state,
+															'values' => $condition->values,
+															'label' => $condition->label
+														];
+														$insert = (object) $insert;
+														$db->insertObject('#__emundus_setup_form_rules_js_conditions', $insert);
+													}
+												}
+											}
+										}
 									}
 
 									// Copy attachments
