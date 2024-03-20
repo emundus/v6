@@ -2448,10 +2448,11 @@ class EmundusModelForm extends JModelList {
 						$action->fields = explode(',',$action->fields);
 
 						$query->clear()
-							->select('label')
-							->from($db->quoteName('#__fabrik_elements'))
-							->where($db->quoteName('name') . ' IN (' . implode(',',$db->quote($action->fields)) . ')')
-							->group('name');
+							->select('fe.label')
+							->from($db->quoteName('#__fabrik_elements','fe'))
+							->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
+							->where($db->quoteName('fe.name') . ' IN (' . implode(',',$db->quote($action->fields)) . ')')
+							->where($db->quoteName('ffg.form_id') . ' = ' . $db->quote($form_id));
 						$db->setQuery($query);
 						$labels = $db->loadColumn();
 						foreach ($labels as $label)
