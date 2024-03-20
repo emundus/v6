@@ -2448,12 +2448,12 @@ class EmundusModelForm extends JModelList {
 						$action->fields = explode(',',$action->fields);
 
 						$query->clear()
-							->select('group_concat(label)')
+							->select('label')
 							->from($db->quoteName('#__fabrik_elements'))
-							->where($db->quoteName('name') . ' IN (' . implode(',',$db->quote($action->fields)) . ')');
+							->where($db->quoteName('name') . ' IN (' . implode(',',$db->quote($action->fields)) . ')')
+							->group('name');
 						$db->setQuery($query);
-						$labels = $db->loadResult();
-						$labels = explode(',',$labels);
+						$labels = $db->loadColumn();
 						foreach ($labels as $label)
 						{
 							$action->labels[] = Text::_($label);
