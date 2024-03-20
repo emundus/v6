@@ -109,29 +109,32 @@ ksort($applications);
 
 $current_tab = 0;
 
-
-$campaign_name = $application->label;
-
 if (!empty($title_override) && !empty(str_replace(array(' ', "\t", "\n", "\r", "&nbsp;"), '', htmlentities(strip_tags($title_override))))) {
+    $m_email = new EmundusModelEmails();
 
-	$m_email = new EmundusModelEmails();
+    foreach($applications as $application) {
+        $title_override_display = $title_override;
 
-	$post = array(
-		'APPLICANT_ID'   => $user->id,
-		'DEADLINE'       => strftime("%A %d %B %Y %H:%M", strtotime($application->end_date)),
-		'CAMPAIGN_LABEL' => $application->label,
-		'CAMPAIGN_YEAR'  => $application->year,
-		'CAMPAIGN_START' => $application->start_date,
-		'CAMPAIGN_END'   => $application->end_date,
-		'CAMPAIGN_CODE'  => $application->training,
-		'FNUM'           => $application->fnum
-	);
+        // if there are ${fabrik_element_id} or [TAGS_ID] in the title_override, we replace them with the correct values
+        if (preg_match('/\$\{[0-9]+\}/', $title_override) || preg_match('/\[[a-zA-Z_]+\]/', $title_override)) {
+            $post = array(
+                'APPLICANT_ID'   => $user->id,
+                'DEADLINE'       => strftime("%A %d %B %Y %H:%M", strtotime($application->end_date)),
+                'CAMPAIGN_LABEL' => $application->label,
+                'CAMPAIGN_YEAR'  => $application->year,
+                'CAMPAIGN_START' => $application->start_date,
+                'CAMPAIGN_END'   => $application->end_date,
+                'CAMPAIGN_CODE'  => $application->training,
+                'FNUM'           => $application->fnum
+            );
 
-	$tags                   = $m_email->setTags($user->id, $post, $application->fnum, '', $title_override);
-	$title_override_display = preg_replace($tags['patterns'], $tags['replacements'], $title_override);
-	$title_override_display = $m_email->setTagsFabrik($title_override_display, array($application->fnum));
+            $tags                   = $m_email->setTags($user->id, $post, $application->fnum, '', $title_override);
+            $title_override_display = preg_replace($tags['patterns'], $tags['replacements'], $title_override);
+            $title_override_display = $m_email->setTagsFabrik($title_override_display, array($application->fnum));
+        }
 
-	$campaign_name = $title_override_display;
+        $application->label = $title_override_display;
+    }
 }
 
 ?>
@@ -436,7 +439,7 @@ if (!empty($title_override) && !empty(str_replace(array(' ', "\t", "\n", "\r", "
                                                             <a href="<?= JRoute::_($first_page_url); ?>"
                                                                class="mod_emundus_applications___title"
                                                                id="application_title_<?php echo $application->fnum ?>">
-                                                                <h5><?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $campaign_name; ?></h5>
+                                                                <h5><?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?></h5>
                                                             </a>
                                                         <?php else : ?>
                                                             <a href="<?= JRoute::_($first_page_url); ?>"
@@ -736,7 +739,7 @@ if (!empty($title_override) && !empty(str_replace(array(' ', "\t", "\n", "\r", "
                                                         <a href="<?= JRoute::_($first_page_url); ?>"
                                                            class="mod_emundus_applications___title em-font-size-14"
                                                            id="application_title_<?php echo $application->fnum ?>">
-                                                            <span><?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $campaign_name; ?></span>
+                                                            <span><?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?></span>
                                                         </a>
 													<?php else : ?>
                                                         <a href="<?= JRoute::_($first_page_url); ?>"
