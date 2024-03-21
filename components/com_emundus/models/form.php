@@ -817,7 +817,8 @@ class EmundusModelForm extends JModelList {
 															foreach ($fields as $field) {
 																$insert = [
 																	'parent_id' => $new_action_id,
-																	'fields' => $field->fields
+																	'fields' => $field->fields,
+																	'params' => $field->params
 																];
 																$insert = (object) $insert;
 																$db->insertObject('#__emundus_setup_form_rules_js_actions_fields', $insert);
@@ -2448,8 +2449,9 @@ class EmundusModelForm extends JModelList {
 				{
 					foreach ($js_condition->actions as $action)
 					{
+						$action->labels = [];
 						$action->fields = explode(',',$action->fields);
-						$action->params = explode('|',$action->params);
+						$action->params = !empty($action->params) ? explode('|',$action->params) : [];
 
 						$query->clear()
 							->select('fe.label')

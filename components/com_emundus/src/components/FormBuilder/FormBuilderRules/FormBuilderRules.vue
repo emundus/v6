@@ -152,15 +152,26 @@ export default {
 
     elementOptions(action) {
       let options = [];
-      if(action.params) {
-        let action_params = JSON.parse(action.params);
 
-        action_params.forEach(param => {
-          options.push(param.value);
-        });
+      if(action.params) {
+        try {
+          let action_params = JSON.parse(action.params);
+
+          action_params.forEach(param => {
+            options.push(param.value);
+          });
+        } catch (e) {
+          return console.error(e); // error in the above string (in this case, yes)!
+        }
       }
 
-      return options.join(', ');
+      if(options.length > 0) {
+        options = options.join(', ');
+      } else {
+        options = '';
+      }
+
+      return options;
     },
 
     deleteRule(rule) {

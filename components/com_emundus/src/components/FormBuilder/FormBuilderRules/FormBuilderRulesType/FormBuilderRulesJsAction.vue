@@ -116,11 +116,12 @@ export default {
   },
   created() {
     if (this.page.id) {
-      /*if(this.$props.action.params) {
+      if(this.$props.action.params) {
         this.$props.action.params.forEach((param, index) => {
-          this.$props.action.params[index] = JSON.parse(param)[0];
+          let params = JSON.parse(param);
+          this.$props.action.params = JSON.parse(param);
         });
-      }*/
+      }
 
       this.$props.action.fields.forEach((field, index) => {
         this.$props.action.fields[index] = this.elements.find(element => element.name === field);

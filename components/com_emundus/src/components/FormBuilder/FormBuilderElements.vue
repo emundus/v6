@@ -166,7 +166,6 @@ export default {
         fid: this.form.id,
         mode: mode
       }).then(response => {
-        console.log(response);
         if (response.status && response.data.data.length > 0) {
           this.$emit('element-created');
           this.updateLastSave();

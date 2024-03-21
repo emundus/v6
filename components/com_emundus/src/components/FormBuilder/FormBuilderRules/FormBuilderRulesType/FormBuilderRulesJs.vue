@@ -133,7 +133,11 @@ export default {
               fields.push(field.name);
             });
           } else {
-            fields.push(action.fields.name);
+            if(typeof action.fields[0] !== 'undefined') {
+              fields.push(action.fields[0].name);
+            } else {
+              fields.push(action.fields.name);
+            }
           }
 
           actions_post.push({
@@ -160,6 +164,11 @@ export default {
             Swal.fire({
               title: this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_EDIT_SUCCESS'),
               icon: 'success',
+              customClass: {
+                title: 'em-swal-title',
+                confirmButton: 'em-swal-confirm-button',
+                actions: "em-swal-single-action",
+              },
             }).then(() => {
               this.$emit('close-rule-add-js')
             });
@@ -176,6 +185,7 @@ export default {
               customClass: {
                 title: 'em-swal-title',
                 confirmButton: 'em-swal-confirm-button',
+                actions: "em-swal-single-action",
               },
             }).then(() => {
               this.$emit('close-rule-add-js')

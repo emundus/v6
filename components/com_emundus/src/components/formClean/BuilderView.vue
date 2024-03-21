@@ -534,7 +534,6 @@ export default {
       this.repeat = false;
       //this.$emit('modalOpen')
       this.$modal.show('modalEditElement' + element.id)
-      console.log('here');
     },
     retrieveAssociateElementDoc(docid){
       axios({

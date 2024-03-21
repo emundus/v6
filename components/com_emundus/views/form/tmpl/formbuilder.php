@@ -11,6 +11,7 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
 
@@ -536,6 +537,8 @@ foreach ($items as $item) {
 	}
 }
 
+$condition_builder = ComponentHelper::getParams('com_emundus')->get('condition_builder', 0);
+
 JHTML::script('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js');
 ?>
 
@@ -550,6 +553,7 @@ JHTML::script('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js');
      coordinatorAccess="<?= $coordinator_access ?>"
      sysadminAccess="<?= $sysadmin_access ?>"
      settingsMenuAlias="<?= $settings_menu_alias ?>"
+     enableConditionBuilder="<?= $condition_builder ?>"
 	<?php if (!empty($mode)) : ?>
         mode="<?= $mode ?>"
 	<?php endif; ?>

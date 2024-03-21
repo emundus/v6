@@ -64,19 +64,21 @@
           </div>
 
           <div class="tab-content em-flex-start" v-if="!previewForm">
-            <form-builder-elements v-if="leftPanelActiveTab === 'Elements'" @element-created="onElementCreated" :form="currentPage">
-            </form-builder-elements>
-            <form-builder-document-formats
-                v-else-if="leftPanelActiveTab === 'Documents'"
-                :profile_id="profile_id"
-                @open-create-document="onEditDocument"
-            >
-            </form-builder-document-formats>
-            <form-builder-rules-list
-                v-else-if="leftPanelActiveTab === 'Rules'"
-                :form="currentPage"
-                @add-rule="addRule"
-                />
+            <transition name="slide-right" mode="out-in">
+              <form-builder-elements v-if="leftPanelActiveTab === 'Elements'" @element-created="onElementCreated" :form="currentPage">
+              </form-builder-elements>
+              <form-builder-document-formats
+                  v-else-if="leftPanelActiveTab === 'Documents'"
+                  :profile_id="profile_id"
+                  @open-create-document="onEditDocument"
+              >
+              </form-builder-document-formats>
+              <form-builder-rules-list
+                  v-else-if="leftPanelActiveTab === 'Rules' && this.showInSection !== 'rules-add'"
+                  :form="currentPage"
+                  @add-rule="addRule"
+                  />
+            </transition>
           </div>
         </aside>
 
@@ -117,7 +119,7 @@
               :mode="mode"
               :type="ruleType"
               :rule="currentRule"
-              @close-rule-add="showInSection = 'rules'"
+              @close-rule-add="showInSection = 'rules';showInRightPanel = 'hierarchy';"
               />
           </transition>
         </section>
@@ -287,13 +289,14 @@ export default {
             code: 'rules',
             icon: 'alt_route',
             active: false,
-            displayed: true
+            displayed: false
           }
         ],
       },
 	    formBuilderCreateDocumentKey: 0,
 	    createDocumentMode: 'create',
 
+      showConditionBuilder: false,
       currentRule: null,
       ruleType: 'js',
 
@@ -312,6 +315,10 @@ export default {
 	  if (data && data.settingsmenualias && data.settingsmenualias.value) {
 		  this.leftPanel.tabs[2].url = '/' + data.settingsmenualias.value + '?layout=translation&default_menu=2&object=emundus_setup_profiles';
 	  }
+
+    if(data && data.enableconditionbuilder && data.enableconditionbuilder.value == 1) {
+      this.leftPanel.tabs[3].displayed = true;
+    }
 
 	  if (data && data.mode && data.mode.value) {
 			this.mode = data.mode.value;
@@ -488,7 +495,11 @@ export default {
       this.setSectionShown(this.showInSection);
     },
     setSectionShown(section) {
-      this.selectTab(section)
+      if(section == 'rules-add') {
+        this.selectTab('rules')
+      } else {
+        this.selectTab(section)
+      }
 
       if (section === 'documents') {
         this.selectedPage = null;
@@ -517,6 +528,9 @@ export default {
     addRule(rule_type, rule = null) {
       this.ruleType = rule_type;
       this.currentRule = rule;
+      if(rule !== null) {
+        this.showInRightPanel = null;
+      }
       this.showInSection = 'rules-add';
     },
   },
