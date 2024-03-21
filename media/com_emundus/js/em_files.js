@@ -1096,8 +1096,8 @@ function runAction(action, url = '', option = '') {
                                 removeLoader();
 
                                 Swal.fire({
-                                    title: Joomla.JText._('WARNING_CHANGE_STATUS'),
-                                    text: nbFiles,
+                                    title: Joomla.JText._('COM_EMUNDUS_APPLICATION_WARNING_CHANGE_STATUS'),
+                                    text: Joomla.JText._('COM_EMUNDUS_APPLICATION_WARNING_CHANGE_STATUS_OF_NB_FILES') + ' ' + nbFiles + ' ' + Joomla.JText._('COM_EMUNDUS_APPLICATION_WARNING_CHANGE_STATUS_OF_NB_FILES_2'),
                                     type: 'warning',
                                     showCancelButton: true,
                                     confirmButtonText: Joomla.JText._('COM_EMUNDUS_APPLICATION_VALIDATE_CHANGE_STATUT'),
@@ -1429,29 +1429,20 @@ function setProgram(progCode) {
  * @param fnums
  */
 async function countFilesBeforeAction(fnums, action, verb) {
-    let nb_files = 0;
+    let form = new FormData();
+    form.append('fnums', fnums);
+    form.append('action_id', action);
+    form.append('verb', verb);
 
-    if (fnums === 'all') {
-        let form = new FormData();
-        form.append('fnums', fnums);
-        form.append('action_id', action);
-        form.append('verb', verb);
-
-        return fetch('index.php?option=com_emundus&controller=files&task=countfilesbeforeaction',
+    return fetch('index.php?option=com_emundus&controller=files&task=countfilesbeforeaction',
         {
             body: form,
             method: 'POST'
         }).then((response) => {
-            return response.json();
-        }).then((json) => {
-            return json.data;
-        });
-    } else {
-        const arrayFnums = JSON.parse(fnums);
-        nb_files = arrayFnums.length;
-    }
-
-    return nb_files;
+        return response.json();
+    }).then((json) => {
+        return json.data;
+    });
 }
 
 function updateState(fnums, state)
