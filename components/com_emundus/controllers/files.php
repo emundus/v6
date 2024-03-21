@@ -4325,4 +4325,45 @@ class EmundusControllerFiles extends JControllerLegacy
 		echo json_encode($response);
 		exit;
 	}
+
+    public function countfilesbeforeaction()
+    {
+        $response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
+
+        if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+            $app    = JFactory::getApplication();
+            $jinput = $app->input;
+            $fnums  = $jinput->getString('fnums', null);
+            $action = $jinput->getInt('action_id', 0);
+            $verb = $jinput->getString('verb', '');
+
+            if (!empty($fnums)) {
+                $m_files = new EmundusModelFiles();
+
+                if ($fnums === 'all') {
+                    $fnums = $m_files->getAllFnums();
+                } else if (!is_array($fnums)) {
+                    $fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
+                }
+
+                $validFnums = [];
+                foreach ($fnums as $fnum) {
+                    if (EmundusHelperAccess::asAccessAction($action, $verb, $this->_user->id, $fnum)) {
+                        $validFnums[] = $fnum;
+                    }
+                }
+
+                $response['status'] = true;
+                $response['code'] = 200;
+                $response['msg'] = JText::_('SUCCESS');
+                $response['data'] = sizeof($validFnums);
+            } else {
+                $response['msg'] = JText::_('MISSING_PARAMS');
+                $response['code'] = 400;
+            }
+        }
+
+        echo json_encode($response);
+        exit;
+    }
 }

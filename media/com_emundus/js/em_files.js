@@ -1059,7 +1059,6 @@ function runAction(action, url = '', option = '') {
                 }),
                 success: function(result) {
                     $('.modal-body').empty();
-                    url = 'index.php?option=com_emundus&controller=files&task=updatestate';
 
                     if(result.status) {
                         Swal.fire({
@@ -1078,50 +1077,7 @@ function runAction(action, url = '', option = '') {
                         }).then(function(result) {
                             if (result.value) {
                                 addLoader();
-                                $.ajax({
-                                    type:'POST',
-                                    url:url,
-                                    dataType:'json',
-                                    data:({fnums:checkInput, state: state}),
-                                    success: function(result) {
-                                        $('.modal-footer').hide();
-                                        if (result.status) {
-                                            $('.modal-body').empty();
-                                            removeLoader();
-                                            Swal.fire({
-                                                position: 'center',
-                                                type: 'success',
-                                                title: result.msg,
-                                                showConfirmButton: false,
-                                                timer: 1500
-                                            });
-                                        } else {
-                                            $('.modal-body').empty();
-                                            removeLoader();
-                                            Swal.fire({
-                                                position: 'center',
-                                                type: 'warning',
-                                                title: result.msg,
-                                                showConfirmButton: true,
-                                                reverseButtons: true,
-                                                customClass: {
-                                                    title: 'em-swal-title',
-                                                    confirmButton: 'em-swal-confirm-button',
-                                                },
-                                            });
-                                        }
-
-                                        $('#em-modal-actions').modal('hide');
-
-                                        reloadData($('#view').val());
-                                        reloadActions($('#view').val(), undefined, false);
-                                        $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
-                                        $('body').removeClass('modal-open');
-                                    },
-                                    error: function (jqXHR) {
-                                        console.log(jqXHR.responseText);
-                                    }
-                                });
+                                updateState(checkInput, state);
                             } else {
                                 $('.modal-body').empty();
                                 removeLoader();
@@ -1132,49 +1088,49 @@ function runAction(action, url = '', option = '') {
                         })
                     } else {
                         addLoader();
-                        $.ajax({
-                            type:'POST',
-                            url:url,
-                            dataType:'json',
-                            data:({fnums:checkInput, state: state}),
-                            success: function(result) {
+                        const nbFiles = countFilesBeforeAction(checkInput, 13, 'u');
 
-                                $('.modal-footer').hide();
-                                if (result.status) {
-                                    $('.modal-body').empty();
-                                    removeLoader();
-                                    Swal.fire({
-                                        position: 'center',
-                                        type: 'success',
-                                        title: result.msg,
-                                        showConfirmButton: false,
-                                        timer: 1500
-                                    });
-                                } else {
-                                    $('.modal-body').empty();
-                                    removeLoader();
-                                    Swal.fire({
-                                        position: 'center',
-                                        type: 'warning',
-                                        title: result.msg,
-                                        showConfirmButton: true,
-                                        reverseButtons: true,
-                                        customClass: {
-                                            title: 'em-swal-title',
-                                            confirmButton: 'em-swal-confirm-button',
-                                        },
-                                    });
-                                }
+                        // wait for nbFiles promise to resolve
+                        nbFiles.then(function(nbFiles) {
+                            if (nbFiles > 0) {
+                                removeLoader();
 
-                                $('#em-modal-actions').modal('hide');
-
-                                reloadData($('#view').val());
-                                reloadActions($('#view').val(), undefined, false);
-                                $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
-                                $('body').removeClass('modal-open');
-                            },
-                            error: function (jqXHR) {
-                                console.log(jqXHR.responseText);
+                                Swal.fire({
+                                    title: Joomla.JText._('WARNING_CHANGE_STATUS'),
+                                    text: nbFiles,
+                                    type: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonText: Joomla.JText._('COM_EMUNDUS_APPLICATION_VALIDATE_CHANGE_STATUT'),
+                                    cancelButtonText: Joomla.JText._('COM_EMUNDUS_APPLICATION_CANCEL_CHANGE_STATUT'),
+                                    reverseButtons: true,
+                                    customClass: {
+                                        title: 'em-swal-title',
+                                        cancelButton: 'em-swal-cancel-button',
+                                        confirmButton: 'em-swal-confirm-button',
+                                    },
+                                }).then(function(result) {
+                                    if (result.value) {
+                                        updateState(checkInput, state);
+                                    } else {
+                                        removeLoader();
+                                        $('#em-modal-actions').modal('hide');
+                                        $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+                                        $('body').removeClass('modal-open');
+                                    }
+                                });
+                            } else {
+                                removeLoader();
+                                Swal.fire({
+                                    title: Joomla.JText._('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE'),
+                                    text: '',
+                                    type: 'error',
+                                    showCancelButton: false,
+                                    showConfirmButton: false,
+                                    reverseButtons: true,
+                                    customClass: {
+                                        title: 'em-swal-title'
+                                    },
+                                });
                             }
                         });
                     }
@@ -1465,6 +1421,88 @@ function setModel(json) {
 function setProgram(progCode) {
     $('#em-export-prg').val(progCode);
     $('#em-export-prg').trigger("chosen:updated");
+}
+
+/**
+ * Function to be executed before updating the state of the files
+ * It will show how many files will be impacted by the action
+ * @param fnums
+ */
+async function countFilesBeforeAction(fnums, action, verb) {
+    let nb_files = 0;
+
+    if (fnums === 'all') {
+        let form = new FormData();
+        form.append('fnums', fnums);
+        form.append('action_id', action);
+        form.append('verb', verb);
+
+        return fetch('index.php?option=com_emundus&controller=files&task=countfilesbeforeaction',
+        {
+            body: form,
+            method: 'POST'
+        }).then((response) => {
+            return response.json();
+        }).then((json) => {
+            return json.data;
+        });
+    } else {
+        const arrayFnums = JSON.parse(fnums);
+        nb_files = arrayFnums.length;
+    }
+
+    return nb_files;
+}
+
+function updateState(fnums, state)
+{
+    $.ajax({
+        type:'POST',
+        url: 'index.php?option=com_emundus&controller=files&task=updatestate',
+        dataType:'json',
+        data:({
+            fnums: fnums,
+            state: state
+        }),
+        success: function(result) {
+            $('.modal-footer').hide();
+            if (result.status) {
+                $('.modal-body').empty();
+                removeLoader();
+                Swal.fire({
+                    position: 'center',
+                    type: 'success',
+                    title: result.msg,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            } else {
+                $('.modal-body').empty();
+                removeLoader();
+                Swal.fire({
+                    position: 'center',
+                    type: 'warning',
+                    title: result.msg,
+                    showConfirmButton: true,
+                    reverseButtons: true,
+                    customClass: {
+                        title: 'em-swal-title',
+                        confirmButton: 'em-swal-confirm-button',
+                    },
+                });
+            }
+
+            $('#em-modal-actions').modal('hide');
+
+            reloadData($('#view').val());
+            reloadActions($('#view').val(), undefined, false);
+            $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+            $('body').removeClass('modal-open');
+        },
+        error: function (jqXHR) {
+            console.log(jqXHR.responseText);
+        }
+    });
 }
 
 async function setCampaign(progCode,campCode, campLabel, headers) {
