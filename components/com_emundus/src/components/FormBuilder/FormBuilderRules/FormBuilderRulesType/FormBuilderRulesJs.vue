@@ -50,6 +50,10 @@ export default {
     elements: {
       type: Array,
       default: []
+    },
+    rule: {
+      type: Object,
+      default: {}
     }
   },
   mixins: [formBuilderMixin, globalMixin, errorMixin],
@@ -62,17 +66,25 @@ export default {
   },
   mounted() {
     if (this.page.id) {
-      this.conditions.push({
-        label: '',
-        field: '',
-        values: '',
-        state: '='
-      });
+      if(this.rule !== null && this.rule.conditions.length > 0) {
+        this.conditions = this.rule.conditions;
+      } else {
+        this.conditions.push({
+          label: '',
+          field: '',
+          values: '',
+          state: '='
+        });
+      }
 
-      this.actions.push({
-        action: 'show',
-        fields: []
-      });
+      if (this.rule !== null && this.rule.actions.length > 0) {
+        this.actions = this.rule.actions;
+      } else {
+        this.actions.push({
+          action: 'show',
+          fields: []
+        });
+      }
     }
   },
   methods: {
@@ -127,27 +139,46 @@ export default {
       });
 
       if(conditions_post.length == 0) {
-        this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_ERROR'), this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_ERROR_EMPTY'));
+        this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_ERROR'), this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_ERROR_CONDITION_EMPTY'));
         return;
       }
 
       if(actions_post.length == 0) {
-        this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_ERROR'), this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_ERROR_EMPTY'));
+        this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_ERROR'), this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_ERROR_ACTION_EMPTY'));
         return;
       }
 
-      formService.addRule(this.page.id, conditions_post, actions_post).then(response => {
-        if (response.status) {
-          Swal.fire({
-            title: this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_SUCCESS'),
-            icon: 'success',
-          }).then(() => {
-            this.$emit('close-rule-add-js')
-          });
-        } else {
-          this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_ERROR'), this.translate(response.msg));
-        }
-      });
+      if(this.rule !== null ) {
+        formService.editRule(this.rule.id, conditions_post, actions_post).then(response => {
+          if (response.status) {
+            Swal.fire({
+              title: this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_EDIT_SUCCESS'),
+              icon: 'success',
+            }).then(() => {
+              this.$emit('close-rule-add-js')
+            });
+          } else {
+            this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_ERROR'), this.translate(response.msg));
+          }
+        });
+      } else {
+        formService.addRule(this.page.id, conditions_post, actions_post).then(response => {
+          if (response.status) {
+            Swal.fire({
+              title: this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_SUCCESS'),
+              icon: 'success',
+              customClass: {
+                title: 'em-swal-title',
+                confirmButton: 'em-swal-confirm-button',
+              },
+            }).then(() => {
+              this.$emit('close-rule-add-js')
+            });
+          } else {
+            this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_ERROR'), this.translate(response.msg));
+          }
+        });
+      }
     }
   },
 }

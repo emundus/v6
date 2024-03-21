@@ -33,14 +33,17 @@
 
         <div class="mt-4">
           <div class="flex items-center gap-3">
-          <span v-for="operator in operators" :key="operator.id" class="cursor-pointer p-2 rounded-lg ml-1 border border-neutral-500" @click="condition.state = operator.value" :class="{ 'label-darkblue': condition.state == operator.value }">
+          <span v-for="operator in operators" :key="operator.id"
+                class="cursor-pointer p-2 rounded-lg ml-1 border border-neutral-500"
+                @click="condition.state = operator.value"
+                :class="{ 'label-darkblue': condition.state == operator.value }">
             {{ translate(operator.label) }}
           </span>
           </div>
 
           <div class="mt-6">
             <multiselect
-                v-if="options_plugins.includes(condition.field.plugin) || condition.field.plugin == 'yesno'"
+                v-if="condition.field && (options_plugins.includes(condition.field.plugin) || condition.field.plugin == 'yesno')"
                 v-model="condition.values"
                 label="value"
                 track-by="primary_key"
@@ -56,7 +59,7 @@
                 :searchable="true"
                 :allow-empty="true"
             ></multiselect>
-            <input v-else v-model="condition.values" />
+            <input v-else-if="condition.field" v-model="condition.values"/>
           </div>
         </div>
       </div>
@@ -103,71 +106,93 @@ export default {
       loading: false,
 
       operators: [
-        { id: 1, label: 'COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_EQUALS', value: '=' },
-        { id: 2, label: 'COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_NOT_EQUALS', value: '!=' }
+        {id: 1, label: 'COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_EQUALS', value: '='},
+        {id: 2, label: 'COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_NOT_EQUALS', value: '!='}
       ],
       options: [],
-      options_plugins : ['dropdown','databasejoin','radiobutton','checkbox']
+      options_plugins: ['dropdown', 'databasejoin', 'radiobutton', 'checkbox']
     };
   },
   mounted() {
-    if (this.page.id) {}
+    if (this.page.id) {
+      this.condition.field = this.elements.find(element => element.name === this.condition.field);
+    }
   },
   methods: {
-    labelTranslate({ label }) {
-      return label.fr;
+    labelTranslate({label}) {
+      return label ? label.fr : '';
     },
   },
   computed: {
     conditionLabel() {
-      return this.condition.label !== '' ? this.condition.label : `Condition n°${this.index + 1}`;
+      return (this.condition.label !== '' && this.condition.label !== null) ? this.condition.label : `Condition n°${this.index + 1}`;
     }
   },
   watch: {
     'condition.field': {
-      handler: function (val) {
-        this.condition.values = '';
+      handler: function (val, oldVal) {
+        if(typeof oldVal === 'object') {
+          this.condition.values = '';
+        }
         this.options = [];
 
-        if(this.options_plugins.includes(val.plugin)) {
-          if(val.plugin == 'databasejoin') {
-            this.loading = true;
+        if(val) {
+          if (this.options_plugins.includes(val.plugin)) {
+            if (val.plugin == 'databasejoin') {
+              this.loading = true;
 
-            this.getDatabasejoinOptions(val.params.join_db_name,val.params.join_key_column,val.params.join_val_column,val.params.join_val_column_concat).then(response => {
-              if (response.status && response.data != '') {
-                this.options = response.options;
-              } else {
-                this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
-              }
-              this.loading = false;
-            });
-          } else {
-            formBuilderService.getJTEXTA(val.params.sub_options.sub_labels).then(response => {
-              if (response) {
-                val.params.sub_options.sub_labels.forEach((label, index) => {
-                  val.params.sub_options.sub_labels[index] = Object.values(response.data)[index];
-                });
-              }
+              this.getDatabasejoinOptions(val.params.join_db_name, val.params.join_key_column, val.params.join_val_column, val.params.join_val_column_concat).then(response => {
+                if (response.status && response.data != '') {
+                  this.options = response.options;
 
-              Object.entries(val.params.sub_options).forEach((option, key) => {
-                let new_option = {
-                  primary_key: option,
-                  value: val.params.sub_options.sub_labels[key]
-                };
-
-                this.options.push(new_option);
+                  if (this.condition.values) {
+                    this.condition.values = this.options.find(option => option.primary_key == this.condition.values);
+                  }
+                } else {
+                  this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
+                }
+                this.loading = false;
               });
+            } else {
+              formBuilderService.getJTEXTA(val.params.sub_options.sub_labels).then(response => {
+                if (response) {
+                  val.params.sub_options.sub_labels.forEach((label, index) => {
+                    val.params.sub_options.sub_labels[index] = Object.values(response.data)[index];
+                  });
+                }
 
-              this.loading = false;
-            });
+                var ctr = 0;
+                Object.values(val.params.sub_options.sub_values).forEach((option, key) => {
+                  let new_option = {
+                    primary_key: option,
+                    value: val.params.sub_options.sub_labels[key]
+                  };
+
+                  this.options.push(new_option);
+
+                  ctr++;
+                  if (ctr === Object.entries(val.params.sub_options).length) {
+                    if (this.condition.values) {
+                      this.condition.values = this.options.find(option => option.primary_key == this.condition.values);
+                    }
+                  }
+                });
+
+                this.loading = false;
+              });
+            }
           }
-        }
 
-        if(val.plugin == 'yesno') {
-          this.options = [
-            { primary_key: 0, value: this.translate('COM_EMUNDUS_FORMBUILDER_NO') },
-            { primary_key: 1, value: this.translate('COM_EMUNDUS_FORMBUILDER_YES') }
-          ];
+          if (val.plugin == 'yesno') {
+            this.options = [
+              {primary_key: 0, value: this.translate('COM_EMUNDUS_FORMBUILDER_NO')},
+              {primary_key: 1, value: this.translate('COM_EMUNDUS_FORMBUILDER_YES')}
+            ];
+
+            if (this.condition.values) {
+              this.condition.values = this.options.find(option => option.primary_key == this.condition.values);
+            }
+          }
         }
       },
       deep: true

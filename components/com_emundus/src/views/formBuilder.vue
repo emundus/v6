@@ -108,12 +108,14 @@
               :key="currentPage.id"
               :page="currentPage"
               :mode="mode"
+              @add-rule="addRule"
               />
             <form-builder-rules-add
               v-else-if="currentPage && showInSection === 'rules-add'"
               :key="currentPage.id"
               :page="currentPage"
               :mode="mode"
+              :type="ruleType"
               :rule="currentRule"
               @close-rule-add="showInSection = 'rules'"
               />
@@ -293,6 +295,7 @@ export default {
 	    createDocumentMode: 'create',
 
       currentRule: null,
+      ruleType: 'js',
 
       previewForm: false,
       loading: false
@@ -511,7 +514,8 @@ export default {
         window.history.go(-1);
       }
     },
-    addRule(rule) {
+    addRule(rule_type, rule = null) {
+      this.ruleType = rule_type;
       this.currentRule = rule;
       this.showInSection = 'rules-add';
     },

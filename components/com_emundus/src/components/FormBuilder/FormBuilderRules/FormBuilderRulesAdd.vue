@@ -8,9 +8,10 @@
         </div>
 
         <form-builder-rules-js
-          v-if="rule.value === 'js'"
+          v-if="type === 'js' && elements.length > 0"
           :page="page"
           :elements="elements"
+          :rule="rule"
           @close-rule-add-js="$emit('close-rule-add')"
           />
       </div>
@@ -39,6 +40,10 @@ export default {
 		  type: String,
 		  default: 'forms'
 	  },
+    type: {
+      type: String,
+      default: 'js'
+    },
     rule: {
       type: Object,
       default: {}

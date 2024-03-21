@@ -330,5 +330,38 @@ export default {
                 error:error
             };
         }
+    },
+
+    async editRule(ruleId, conditions, actions)
+    {
+        const formData = new FormData();
+        formData.append('conditions', JSON.stringify(conditions));
+        formData.append('actions', JSON.stringify(actions));
+        formData.append('rule_id', ruleId);
+
+        try {
+            const response = await client().post(baseUrl + '&task=editRule', formData);
+
+            return response;
+        } catch (error) {
+            return {
+                status: false,
+                error:error
+            };
+        }
+    },
+
+    async deleteRule(ruleId)
+    {
+        try {
+            const response = await client().get(baseUrl + '&task=deleteRule&rule_id=' + ruleId);
+
+            return response;
+        } catch (error) {
+            return {
+                status: false,
+                error:error
+            };
+        }
     }
 };

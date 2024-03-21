@@ -7,7 +7,7 @@
       </button>
     </div>
 
-    <div class="mt-4 flex ml-4">
+    <div class="mt-4 flex ml-4" v-if="!loading">
       <p class="mr-4 mt-3 font-bold">{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_THEN') }}</p>
 
       <div class="flex flex-col w-full ml-2">
@@ -89,8 +89,12 @@ export default {
       ],
     };
   },
-  mounted() {
-    if (this.page.id) {}
+  created() {
+    if (this.page.id) {
+      this.$props.action.fields.forEach((field, index) => {
+        this.$props.action.fields[index] = this.elements.find(element => element.name === field);
+      });
+    }
   },
   methods: {
     labelTranslate({ label }) {

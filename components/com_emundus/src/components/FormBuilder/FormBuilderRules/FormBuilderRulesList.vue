@@ -12,7 +12,7 @@
           v-for="rule in publishedRules"
           :key="rule.id"
           class="draggables-list"
-          @click="$emit('add-rule', rule)"
+          @click="$emit('add-rule', rule.value)"
       >
           <div
               class="form-builder-element flex items-center justify-between cursor-pointer gap-3 p-3"

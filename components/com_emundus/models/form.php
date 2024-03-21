@@ -2382,7 +2382,7 @@ class EmundusModelForm extends JModelList {
 			foreach ($js_conditions as $js_condition)
 			{
 				$query->clear()
-					->select($db->quoteName(['field','state','values']))
+					->select($db->quoteName(['field','state','values','label']))
 					->from($db->quoteName('#__emundus_setup_form_rules_js_conditions'))
 					->where($db->quoteName('parent_id') . ' = ' . $db->quote($js_condition->id));
 				$db->setQuery($query);
@@ -2398,7 +2398,7 @@ class EmundusModelForm extends JModelList {
 							->where($db->quoteName('name') . ' = ' . $db->quote($condition->field));
 						$db->setQuery($query);
 						$elt = $db->loadObject();
-						$condition->label = Text::_($elt->label);
+						$condition->elt_label = Text::_($elt->label);
 
 						$choices_plugin = ['checkbox','dropdown','radiobutton'];
 						$params = json_decode($elt->params);
@@ -2498,37 +2498,12 @@ class EmundusModelForm extends JModelList {
 			{
 				foreach ($conditions as $condition)
 				{
-					$insert = [
-						'parent_id' => $rule_id,
-						'field'     => $condition->field,
-						'state'     => $condition->state,
-						'values'    => $condition->values,
-						'label'     => $condition->label,
-					];
-					$insert = (object) $insert;
-					$db->insertObject('#__emundus_setup_form_rules_js_conditions', $insert);
+					$this->addCondition($rule_id, $condition);
 				}
 
 				foreach ($actions as $action)
 				{
-					$insert = [
-						'parent_id' => $rule_id,
-						'action'    => $action->action
-					];
-					$insert = (object) $insert;
-					$db->insertObject('#__emundus_setup_form_rules_js_actions', $insert);
-
-					$action_id = $db->insertid();
-
-					foreach ($action->fields as $field)
-					{
-						$insert = [
-							'parent_id' => $action_id,
-							'fields'    => $field
-						];
-						$insert = (object) $insert;
-						$db->insertObject('#__emundus_setup_form_rules_js_actions_fields', $insert);
-					}
+					$this->addAction($rule_id, $action);
 				}
 
 				$rule_inserted = true;
@@ -2540,5 +2515,150 @@ class EmundusModelForm extends JModelList {
 		}
 
 		return $rule_inserted;
+	}
+
+	public function editRule($rule_id, $conditions, $actions, $group = 'OR')
+	{
+		$rule_edited = false;
+
+		$conditions = json_decode($conditions);
+		$actions = json_decode($actions);
+
+		$db = Factory::getDbo();
+		$query = $db->getQuery(true);
+
+		try
+		{
+			if(!empty($rule_id))
+			{
+				$query->delete($db->quoteName('#__emundus_setup_form_rules_js_conditions'))
+					->where($db->quoteName('parent_id') . ' = ' . $db->quote($rule_id));
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->delete($db->quoteName('#__emundus_setup_form_rules_js_actions'))
+					->where($db->quoteName('parent_id') . ' = ' . $db->quote($rule_id));
+				$db->setQuery($query);
+				$db->execute();
+
+				foreach ($conditions as $condition)
+				{
+					$this->addCondition($rule_id, $condition);
+				}
+
+				foreach ($actions as $action)
+				{
+					$this->addAction($rule_id, $action);
+				}
+
+				$update = [
+					'id' => $rule_id,
+					'group' => $group
+				];
+				$update = (object) $update;
+				$db->updateObject('#__emundus_setup_form_rules', $update, 'id');
+
+				$rule_edited = true;
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/form | Error at editRule : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $rule_edited;
+	}
+
+	public function deleteRule($rule_id)
+	{
+		$rule_deleted = false;
+
+		$db = Factory::getDbo();
+		$query = $db->getQuery(true);
+
+		try
+		{
+			if(!empty($rule_id))
+			{
+				$query->delete($db->quoteName('#__emundus_setup_form_rules_js_conditions'))
+					->where($db->quoteName('parent_id') . ' = ' . $db->quote($rule_id));
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->delete($db->quoteName('#__emundus_setup_form_rules_js_actions'))
+					->where($db->quoteName('parent_id') . ' = ' . $db->quote($rule_id));
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->delete($db->quoteName('#__emundus_setup_form_rules'))
+					->where($db->quoteName('id') . ' = ' . $db->quote($rule_id));
+				$db->setQuery($query);
+				$db->execute();
+
+				$rule_deleted = true;
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/form | Error at deleteRule : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $rule_deleted;
+	}
+
+	private function addCondition($rule_id, $condition)
+	{
+		$db = Factory::getDbo();
+
+		try
+		{
+			$insert = [
+				'parent_id' => $rule_id,
+				'field'     => $condition->field,
+				'state'     => $condition->state,
+				'values'    => $condition->values,
+				'label'     => $condition->label,
+			];
+			$insert = (object) $insert;
+			$db->insertObject('#__emundus_setup_form_rules_js_conditions', $insert);
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/form | Error at addCondition : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+	}
+
+	private function addAction($rule_id, $action)
+	{
+		$db = Factory::getDbo();
+
+		try
+		{
+			$insert = [
+				'parent_id' => $rule_id,
+				'action'    => $action->action
+			];
+			$insert = (object) $insert;
+			$db->insertObject('#__emundus_setup_form_rules_js_actions', $insert);
+
+			$action_id = $db->insertid();
+
+			foreach ($action->fields as $field)
+			{
+				$insert = [
+					'parent_id' => $action_id,
+					'fields'    => $field
+				];
+				$insert = (object) $insert;
+				$db->insertObject('#__emundus_setup_form_rules_js_actions_fields', $insert);
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/form | Error at addAction : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), Log::ERROR, 'com_emundus');
+		}
 	}
 }

@@ -6,28 +6,63 @@
         <div v-for="rule in rules" :key="rule.id">
           <div class="rounded-lg bg-white px-3 py-4 flex flex-col gap-6">
 
-            <div :id="'condition_'+rule.id" class="flex flex-col gap-2">
-              <div v-for="condition in rule.conditions" class="flex items-center">
-                <span class="material-icons-outlined !text-2xl !font-medium mr-3 text-black">alt_route</span>
-                <div class="leading-8">
-                  <span class="font-medium mr-1">{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_IF') }}</span>
-                  <span>{{ condition.label }}</span>
-                  <span class="p-2 rounded-lg label-darkblue ml-2 mr-2">{{ operator(condition.state) }}</span>
-                  <span>{{ getvalues(condition) }}</span>
+            <div class="flex justify-between items-start">
+              <div :id="'condition_'+rule.id" class="flex flex-col gap-2">
+                <div v-for="condition in rule.conditions" class="flex items-center">
+                  <span class="material-icons-outlined !text-2xl !font-medium mr-3 text-black">alt_route</span>
+                  <div class="leading-8">
+                    <span class="font-medium mr-1">{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_IF') }}</span>
+                    <span>{{ condition.elt_label }}</span>
+                    <span class="p-2 rounded-lg label-darkblue ml-2 mr-2">{{ operator(condition.state) }}</span>
+                    <span>{{ getvalues(condition) }}</span>
+                  </div>
                 </div>
+              </div>
+
+              <div class="cursor-pointer">
+                <v-popover :popoverArrowClass="'custom-popover-arraow'" :open-class="'form-builder-pages-popover'"
+                           :placement="'left'">
+                  <span class="material-icons font-bold	!text-xl">more_vert</span>
+
+                  <template slot="popover">
+                    <transition :name="'slide-down'" type="transition">
+                      <div>
+                        <nav aria-label="action" class="em-flex-col-start">
+                          <p @click="$emit('add-rule','js',rule)" class="py-3 px-4 w-full">
+                            {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_EDIT') }}
+                          </p>
+                          <p @click="unpublishRule(rule)" class="py-3 px-4 w-full">
+                            {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_UNPUBLISH') }}
+                          </p>
+                          <p @click="cloneRule(rule)" class="py-3 px-4 w-full">
+                            {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_DUPLICATE') }}
+                          </p>
+                          <p @click="deleteRule(rule)" class="py-3 px-4 w-full text-red-500">
+                            {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_DELETE') }}
+                          </p>
+                        </nav>
+                      </div>
+                    </transition>
+                  </template>
+                </v-popover>
               </div>
             </div>
 
+
             <div v-if="rule.conditions.length > 1">
-              <p class="font-medium">{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_GROUP_'+rule.group) }}</p>
+              <p class="font-medium">{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_GROUP_' + rule.group) }}</p>
             </div>
 
             <div :id="'action_'+rule.id" class="flex flex-col gap-2">
               <div v-for="action in rule.actions" class="flex items-center">
-                <span class="material-icons-outlined !text-2xl !font-medium mr-3 text-black" v-if="action.action == 'show'">visibility</span>
-                <span class="material-icons-outlined !text-2xl !font-medium mr-3 text-black" v-if="action.action == 'hide'">visibility_off</span>
+                <span class="material-icons-outlined !text-2xl !font-medium mr-3 text-black"
+                      v-if="action.action == 'show'">visibility</span>
+                <span class="material-icons-outlined !text-2xl !font-medium mr-3 text-black"
+                      v-if="action.action == 'hide'">visibility_off</span>
                 <div>
-                  <span class="font-medium mr-1">{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_ACTION_'+action.action.toUpperCase()) }}</span>
+                  <span class="font-medium mr-1">{{
+                      translate('COM_EMUNDUS_FORMBUILDER_RULE_ACTION_' + action.action.toUpperCase())
+                    }}</span>
                   <span>{{ action.labels.join(', ') }}</span>
                 </div>
               </div>
@@ -56,10 +91,10 @@ export default {
       type: Object,
       default: {}
     },
-	  mode: {
-		  type: String,
-		  default: 'forms'
-	  }
+    mode: {
+      type: String,
+      default: 'forms'
+    }
   },
   mixins: [formBuilderMixin, globalMixin, errorMixin],
   data() {
@@ -81,10 +116,10 @@ export default {
         if (response.status && response.data != '') {
           this.rules = response.data.conditions;
         } else {
-					this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
+          this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
         }
 
-	      this.loading = false;
+        this.loading = false;
       });
     },
 
@@ -98,12 +133,40 @@ export default {
     },
 
     getvalues(condition) {
-      if(condition.options) {
+      if (condition.options) {
         let index = condition.options.sub_values.findIndex(option => option == condition.values);
         return condition.options.sub_labels[index];
       } else {
         return condition.values;
       }
+    },
+
+    deleteRule(rule) {
+      Swal.fire({
+        title: this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_DELETE'),
+        text: this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_DELETE_CONFIRM'),
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_RULE'),
+        cancelButtonText: this.translate('COM_EMUNDUS_FORM_BUILDER_CANCEL'),
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          cancelButton: 'em-swal-cancel-button',
+          confirmButton: 'em-swal-confirm-button',
+        },
+      }).then((result) => {
+        if (result.value) {
+          this.loading = true;
+          formService.deleteRule(rule.id).then(response => {
+            if (response.status) {
+              this.getConditions();
+            } else {
+              this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
+            }
+          });
+        }
+      });
     },
   },
 }
