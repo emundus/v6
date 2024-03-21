@@ -8,10 +8,16 @@
         <select v-if="repeat_name !== '' && param.options.length > 0" v-model="element.params[repeat_name][index_name][param.name]" class="em-w-100">
           <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
         </select>
-
         <select v-else-if="param.options.length > 0" v-model="element.params[param.name]" class="em-w-100">
           <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
         </select>
+        <div  v-if="param.special === 'fileupload'">
+          <label>{{translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT_NAME')}}</label>
+          <incremental-select>
+          </incremental-select>
+
+        </div>
+
       </div>
 
       <!-- TEXTAREA -->
@@ -79,10 +85,11 @@
 
 /* IMPORT YOUR SERVICES */
 import formBuilderService from '../../../services/formbuilder';
+import IncrementalSelect from "@/components/IncrementalSelect.vue";
 
 export default {
   name: "FormBuilderElementParams",
-  components: {},
+  components: {IncrementalSelect},
   props: {
     element: {
       type: Object,

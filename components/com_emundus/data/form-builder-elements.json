@@ -73,6 +73,12 @@
     "published": true
   },
   {
+    "value": "emundus_fileupload",
+    "icon": "file_upload",
+    "name": "COM_EMUNDUS_ONBOARD_TYPE_FILE",
+    "published": true
+  },
+  {
     "value": "display",
     "icon": "wysiwyg",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_DISPLAY",
@@ -105,11 +111,5 @@
     "icon": "palette",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_COLOR",
     "published": false
-  },
-  {
-    "value": "emundus_fileupload",
-    "icon": "file_upload",
-    "name": "COM_EMUNDUS_ONBOARD_TYPE_FILE",
-    "published": true
   }
 ]

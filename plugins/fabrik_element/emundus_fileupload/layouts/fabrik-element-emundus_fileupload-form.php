@@ -1,6 +1,6 @@
 <?php
 
-global $displayData;
+
 defined('JPATH_BASE') or die;
 
     // Add span with id so that element fxs work.
@@ -24,8 +24,6 @@ defined('JPATH_BASE') or die;
     $query->select($db->quoteName('allowed_types'))
         ->from($db->quoteName('#__emundus_setup_attachments'))
         ->where($db->quoteName('id') . ' = ' . $db->quote($attachId));
-
-    $allowed_types = '';
     try {
         $db->setQuery($query);
         $allowed_types = $db->loadResult();
@@ -38,12 +36,12 @@ defined('JPATH_BASE') or die;
 
 <div id="div_<?php echo $d->attributes['name']; ?>" class="fabrik_element___emundus_file_upload_parent">
     <span class="fabrik_element___file_upload_formats">
-        <?= JText::_('PLG_ELEMENT_FILEUPLOAD_ALLOWED_TYPES')  . ' : ' . $allowed_types ?>. <?= JText::_('PLG_ELEMENT_FIELD_MAXSIZE_TIP') . $d->attributes['max_size_txt']; ?>
+        <?= JText::_('PLG_ELEMENT_FILEUPLOAD_ALLOWED_TYPES')  . ' : ' . $allowed_types ?>
     </span>
     <div class="btn-upload em-pointer">
         <p class="em-flex-row"><?php echo JText::_('PLG_ELEMENT_FILEUPLOAD_DROP') ?><u class="em-ml-4"><?php echo JText::_('PLG_ELEMENT_FILEUPLOAD_DROP_CLICK') ?></u><span class="material-icons-outlined em-ml-12">cloud_upload</span></p>
     </div>
-    <input type="file" id="<?= $d->attributes['name']; ?>" name="<?= $d->attributes['name']; ?>" multiple <?php foreach ($d->attributes as $key => $value) { echo $key . '="' . $value . '" '; } ?>/>
+    <input type="file"  id="<?= $d->attributes['name']; ?>" name="<?= $d->attributes['name']; ?>" multiple <?php foreach ($d->attributes as $key => $value) { echo $key . '="' . $value . '" '; } ?>/>
 </div>
 
 <script>
