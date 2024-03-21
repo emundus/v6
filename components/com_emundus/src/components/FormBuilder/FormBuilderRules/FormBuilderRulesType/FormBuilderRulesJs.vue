@@ -82,7 +82,8 @@ export default {
       } else {
         this.actions.push({
           action: 'show',
-          fields: []
+          fields: [],
+          params: []
         });
       }
     }
@@ -125,15 +126,20 @@ export default {
       });
 
       this.actions.forEach((action) => {
-        if(action.fields.length > 0) {
+        if(action.fields) {
           let fields = [];
-          action.fields.forEach((field) => {
-            fields.push(field.name);
-          });
+          if(typeof action.fields == 'Array') {
+            action.fields.forEach((field) => {
+              fields.push(field.name);
+            });
+          } else {
+            fields.push(action.fields.name);
+          }
 
           actions_post.push({
             action: action.action,
-            fields: fields
+            fields: fields,
+            params: action.params
           });
         }
       });

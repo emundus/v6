@@ -363,5 +363,19 @@ export default {
                 error:error
             };
         }
+    },
+
+    async publishRule(ruleId, state)
+    {
+        try {
+            const response = await client().get(baseUrl + '&task=publishRule&rule_id=' + ruleId + '&state=' + state);
+
+            return response;
+        } catch (error) {
+            return {
+                status: false,
+                error:error
+            };
+        }
     }
 };

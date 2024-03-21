@@ -5532,7 +5532,10 @@ screen and (max-height: 769px) {
   display: flex !important;
   align-items: center;
   justify-content: space-between !important;
-  width: max-content;
+  width: auto;
+  span {
+    white-space: normal;
+  }
 }
 
 fieldset[disabled] .multiselect {

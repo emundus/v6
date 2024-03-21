@@ -2372,10 +2372,13 @@ class EmundusModelForm extends JModelList {
 
 		try
 		{
-			$query->select($db->quoteName(['id','group']))
+			$query->select($db->quoteName(['id','group', 'published']))
 				->from($db->quoteName('#__emundus_setup_form_rules'))
 				->where($db->quoteName('form_id') . ' = ' . $db->quote($form_id))
 				->where($db->quoteName('type') . ' = ' . $db->quote('js'));
+			if($format == 'raw') {
+				$query->where($db->quoteName('published') . ' = 1');
+			}
 			$db->setQuery($query);
 			$js_conditions = $db->loadObjectList();
 
@@ -2434,7 +2437,7 @@ class EmundusModelForm extends JModelList {
 				}
 
 				$query->clear()
-					->select('esfrr.action,group_concat(esfrr_fields.fields) as fields')
+					->select('esfrr.action,group_concat(esfrr_fields.fields) as fields,group_concat(esfrr_fields.params SEPARATOR "|") as params')
 					->from($db->quoteName('#__emundus_setup_form_rules_js_actions','esfrr'))
 					->leftJoin($db->quoteName('#__emundus_setup_form_rules_js_actions_fields','esfrr_fields').' ON '.$db->quoteName('esfrr_fields.parent_id').' = '.$db->quoteName('esfrr.id'))
 					->where($db->quoteName('esfrr.parent_id') . ' = ' . $db->quote($js_condition->id));
@@ -2446,6 +2449,7 @@ class EmundusModelForm extends JModelList {
 					foreach ($js_condition->actions as $action)
 					{
 						$action->fields = explode(',',$action->fields);
+						$action->params = explode('|',$action->params);
 
 						$query->clear()
 							->select('fe.label')
@@ -2471,9 +2475,13 @@ class EmundusModelForm extends JModelList {
 		return $js_conditions;
 	}
 
-	public function addRule($form_id, $conditions, $actions, $type = 'js', $group = 'OR')
+	public function addRule($form_id, $conditions, $actions, $type = 'js', $group = 'OR', $user = null)
 	{
 		$rule_inserted = false;
+
+		if(empty($user)) {
+			$user = Factory::getApplication()->getIdentity();
+		}
 
 		$conditions = json_decode($conditions);
 		$actions = json_decode($actions);
@@ -2484,6 +2492,7 @@ class EmundusModelForm extends JModelList {
 		{
 			$insert = [
 				'date_time' => date('Y-m-d H:i:s'),
+				'created_by' => $user->id,
 				'form_id' => $form_id,
 				'type' => $type,
 				'group' => $group,
@@ -2517,9 +2526,13 @@ class EmundusModelForm extends JModelList {
 		return $rule_inserted;
 	}
 
-	public function editRule($rule_id, $conditions, $actions, $group = 'OR')
+	public function editRule($rule_id, $conditions, $actions, $group = 'OR', $user = null)
 	{
 		$rule_edited = false;
+
+		if(empty($user)) {
+			$user = Factory::getApplication()->getIdentity();
+		}
 
 		$conditions = json_decode($conditions);
 		$actions = json_decode($actions);
@@ -2554,7 +2567,9 @@ class EmundusModelForm extends JModelList {
 
 				$update = [
 					'id' => $rule_id,
-					'group' => $group
+					'group' => $group,
+					'updated_by' => $user->id,
+					'updated_at' => date('Y-m-d H:i:s')
 				];
 				$update = (object) $update;
 				$db->updateObject('#__emundus_setup_form_rules', $update, 'id');
@@ -2609,6 +2624,40 @@ class EmundusModelForm extends JModelList {
 		return $rule_deleted;
 	}
 
+	public function publishRule($rule_id, $state, $user = null)
+	{
+		$rule_published = false;
+
+		if(empty($user)) {
+			$user = Factory::getApplication()->getIdentity();
+		}
+
+		$db = Factory::getDbo();
+
+		try
+		{
+			if(!empty($rule_id))
+			{
+				$update = [
+					'id' => $rule_id,
+					'published' => $state,
+					'updated_by' => $user->id,
+					'updated' => date('Y-m-d H:i:s')
+				];
+				$update = (object) $update;
+				$db->updateObject('#__emundus_setup_form_rules', $update, 'id');
+
+				$rule_published = true;
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/form | Error at publishRule : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $rule_published;
+	}
+
 	private function addCondition($rule_id, $condition)
 	{
 		$db = Factory::getDbo();
@@ -2650,7 +2699,8 @@ class EmundusModelForm extends JModelList {
 			{
 				$insert = [
 					'parent_id' => $action_id,
-					'fields'    => $field
+					'fields'    => $field,
+					'params'    => !empty($action->params) ? json_encode($action->params) : null
 				];
 				$insert = (object) $insert;
 				$db->insertObject('#__emundus_setup_form_rules_js_actions_fields', $insert);

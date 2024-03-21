@@ -260,14 +260,25 @@ requirejs(['fab/fabrik'], function () {
                         form.elements.forEach((elt) => {
                             let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
                             if(fields.includes(name)) {
-                                form.doElementFX('element_'+elt.strElement, action.action, elt);
+                                if(['show', 'hide'].includes(action.action)) {
+                                    form.doElementFX('element_' + elt.strElement, action.action, elt);
 
-                                if(action.action == 'hide') {
-                                    if(clear) {
-                                        elt.clear();
+                                    if (action.action == 'hide') {
+                                        if (clear) {
+                                            elt.clear();
+                                        }
+                                        let event = new Event(elt.getChangeEvent());
+                                        elt.element.dispatchEvent(event);
                                     }
-                                    let event = new Event(elt.getChangeEvent());
-                                    elt.element.dispatchEvent(event);
+                                } else if(['show_options', 'hide_options'].includes(action.action)) {
+                                    switch(action.action) {
+                                        case 'show_options':
+                                            addOption(elt, action.params);
+                                            break;
+                                        case 'hide_options':
+                                            removeOption(elt, action.params);
+                                            break;
+                                    }
                                 }
                             }
                         });
@@ -283,6 +294,12 @@ requirejs(['fab/fabrik'], function () {
                             case 'hide':
                                 opposite_action = 'show';
                                 break;
+                            case 'show_options':
+                                opposite_action = 'hide_options';
+                                break;
+                            case 'hide_options':
+                                opposite_action = 'show_options';
+                                break;
                         }
 
                         let fields = action.fields.split(',');
@@ -290,14 +307,25 @@ requirejs(['fab/fabrik'], function () {
                         form.elements.forEach((elt) => {
                             let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
                             if(fields.includes(name)) {
-                                form.doElementFX('element_'+elt.strElement, opposite_action, elt);
+                                if(['show', 'hide'].includes(action.action)) {
+                                    form.doElementFX('element_' + elt.strElement, opposite_action, elt);
 
-                                if(opposite_action == 'hide') {
-                                    if(clear) {
-                                        elt.clear();
+                                    if (opposite_action == 'hide') {
+                                        if (clear) {
+                                            elt.clear();
+                                        }
+                                        let event = new Event(elt.getChangeEvent());
+                                        elt.element.dispatchEvent(event);
                                     }
-                                    let event = new Event(elt.getChangeEvent());
-                                    elt.element.dispatchEvent(event);
+                                } else if(['show_options', 'hide_options'].includes(action.action)) {
+                                    switch(opposite_action) {
+                                        case 'show_options':
+                                            addOption(elt, action.params);
+                                            break;
+                                        case 'hide_options':
+                                            removeOption(elt, action.params);
+                                            break;
+                                    }
                                 }
                             }
                         });
@@ -305,5 +333,66 @@ requirejs(['fab/fabrik'], function () {
                 }
             });
         }
+    }
+
+    function addOption(field,params) {
+        var params = JSON.parse(params);
+        var options = field.element.options;
+
+        params.forEach((p) => {
+            // Check if option already exists
+            var exists = false;
+            [...options].map((o) => {
+                if(o.value == p.primary_key){
+                    exists = true;
+                }
+            });
+
+            if(!exists) {
+                var option = document.createElement("option");
+                option.text = p.value;
+                option.value = p.primary_key;
+                field.element.add(option);
+            }
+        });
+
+        sortSelect(field.element)
+    }
+
+    function removeOption(field,params) {
+        var options = field.element.options;
+        var params = JSON.parse(params);
+        var values = [];
+
+        params.forEach((p) => {
+            values.push(p.primary_key);
+        });
+
+        [...options].map((p) => {
+            if(values.includes(p.value)){
+                options.remove(p.index);
+            }
+        });
+    }
+
+    function sortSelect(selElem) {
+        var tmpAry = new Array();
+        for (var i=0;i<selElem.options.length;i++) {
+            tmpAry[i] = new Array();
+            tmpAry[i][0] = selElem.options[i].text;
+            tmpAry[i][1] = selElem.options[i].value;
+        }
+        tmpAry.sort((a,b) => {
+            // Sort by value
+            return a[1].localeCompare(b[1]);
+        });
+        while (selElem.options.length > 0) {
+            selElem.options[0] = null;
+        }
+        for (var i=0;i<tmpAry.length;i++) {
+            var op = new Option(tmpAry[i][0], tmpAry[i][1]);
+            selElem.options[i] = op;
+        }
+        return;
     }
 });
