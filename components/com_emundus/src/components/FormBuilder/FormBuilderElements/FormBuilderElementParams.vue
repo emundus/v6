@@ -12,9 +12,11 @@
           <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
         </select>
         <div  v-if="param.special === 'fileupload'">
-          <label>{{translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT_NAME')}}</label>
-          <incremental-select>
-          </incremental-select>
+          <button type="button" class="collapsible" v-on:click="toggleContent"><label>{{translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT_NAME')}}</label></button>
+          <div class="content">
+            <FormBuilderCreateDocument profile_id="1" :element="element" :params="param.fields" :repeat_name="repeat_name" :index="index" :databases="databases"></FormBuilderCreateDocument>
+          </div>
+
 
         </div>
 
@@ -86,10 +88,11 @@
 /* IMPORT YOUR SERVICES */
 import formBuilderService from '../../../services/formbuilder';
 import IncrementalSelect from "@/components/IncrementalSelect.vue";
+import FormBuilderCreateDocument from "@/components/FormBuilder/FormBuilderCreateDocument.vue";
 
 export default {
   name: "FormBuilderElementParams",
-  components: {IncrementalSelect},
+  components: {FormBuilderCreateDocument, IncrementalSelect},
   props: {
     element: {
       type: Object,
@@ -121,6 +124,8 @@ export default {
 
     idElement: 0,
     loading: false,
+    //for adding fileupload type
+    isActive: false
   }),
   created() {
     this.params.forEach((param) => {
@@ -208,6 +213,14 @@ export default {
     removeRepeatableField(param,key) {
       delete this.element.params[param][param+key];
       this.$forceUpdate();
+    },
+    toggleContent() {
+      this.isActive = !this.isActive;
+      if (this.isActive) {
+        document.querySelector('.content').style.display = "block";
+      } else {
+        document.querySelector('.content').style.display = "none";
+      }
     }
   },
   computed: {
@@ -220,3 +233,33 @@ export default {
   }
 }
 </script>
+
+
+<style scoped>
+.collapsible {
+  background-color: #eee;
+  color: #444;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.collapsible.active, .collapsible:hover {
+  background-color: #ccc;
+}
+
+.content {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+  background-color: #f1f1f1;
+}
+
+.content[style*="display: block"] {
+  display: block !important ;
+}
+</style>

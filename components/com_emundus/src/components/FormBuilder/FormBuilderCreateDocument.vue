@@ -123,7 +123,7 @@
     </div>
 
     <div class="em-p-16">
-      <button class="em-primary-button" @click="saveDocument">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_SAVE') }}</button>
+      <button class="em-primary-button" id="saveFormCreateDoc" @click="saveDocument">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_SAVE') }}</button>
     </div>
   </div>
 </template>
@@ -315,8 +315,7 @@ export default {
 				this.hasPDFFormat();
 			}
     },
-	  saveDocument()
-    {
+	  saveDocument() {
 	    let empty_names = true;
 			Object.values(this.document.name).forEach((name) => {
 				if (name != "") {
@@ -413,11 +412,14 @@ export default {
 						}
 					});
 	      } else {
+          let buttonSave =document.getElementById('saveFormCreateDoc')
+          buttonSave.classList.add('em-disabled');
 		      formBuilderService.updateDocument(data).then(response => {
 			      this.$emit('documents-updated');
 		      });
 				}
       }
+
     },
     updateDocumentSelectedValue(document)
     {
