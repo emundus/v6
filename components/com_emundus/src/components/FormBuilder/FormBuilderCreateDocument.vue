@@ -27,7 +27,7 @@
           </div>
         </div>
 
-        <div class="em-mb-16">
+        <div class="em-mb-16" id="selectDoc" >
           <label for="title" class="em-font-weight-500">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_NAME") }}</label>
           <incremental-select
               v-if="models.length > 0"
@@ -41,12 +41,12 @@
 
         <div class="em-mb-16">
           <label class="em-font-weight-500">{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_DESCRIPTION') }}</label>
-          <textarea id="" name="" rows="5" v-model="document.description[shortDefaultLang]">{{ document.description[shortDefaultLang] }}</textarea>
+          <textarea id="descDoc" name="" rows="5" v-model="document.description[shortDefaultLang]">{{ document.description[shortDefaultLang] }}</textarea>
         </div>
 
-        <div class="em-mb-16">
+        <div class="em-mb-16" >
           <label class="em-font-weight-500">{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_TYPES') }}</label>
-          <div v-for="(filetype, index) in fileTypes" :key="filetype.value" class="em-flex-row em-mb-4 em-flex-align-start">
+          <div v-for="(filetype, index) in fileTypes" :key="filetype.value" class="em-flex-row em-mb-4 em-flex-align-start" name="formatDocCheckbox">
             <input
               type="checkbox"
               name="filetypes"
@@ -315,6 +315,18 @@ export default {
 				this.hasPDFFormat();
 			}
     },
+    disabledAllFieldWhenSaved(){
+      document.getElementById('selectDoc').style.pointerEvents = 'none';
+      document.getElementById('descDoc').setAttribute('readonly', 'readonly');
+      let elements = document.getElementsByName("formatDocCheckbox");
+      for(let i = 0; i < elements.length; i++) {
+        elements[i].style.pointerEvents = 'none';
+      }
+      document.getElementById('nbmax').setAttribute('readonly', 'readonly');
+      let buttonSave =document.getElementById('saveFormCreateDoc')
+      buttonSave.classList.add('em-disabled');
+      buttonSave.disabled = true;
+    },
 	  saveDocument() {
 	    let empty_names = true;
 			Object.values(this.document.name).forEach((name) => {
@@ -408,12 +420,11 @@ export default {
 						if (response) {
 							formBuilderService.updateDocument(data).then(response => {
 								this.$emit('documents-updated');
+                this.disabledAllFieldWhenSaved();
 							});
 						}
 					});
 	      } else {
-          let buttonSave =document.getElementById('saveFormCreateDoc')
-          buttonSave.classList.add('em-disabled');
 		      formBuilderService.updateDocument(data).then(response => {
 			      this.$emit('documents-updated');
 		      });

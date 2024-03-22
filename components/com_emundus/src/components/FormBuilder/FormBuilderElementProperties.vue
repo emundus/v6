@@ -176,6 +176,7 @@ export default {
         }
         );
       }
+      location.reload();
     },
     togglePublish() {
       this.element.publish = !this.element.publish;
