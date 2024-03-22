@@ -98,7 +98,7 @@ button.em-applicant-primary-button[disabled] {
     margin-top: -40px;
 }
 .fabrikImageBackgroundLogo{
-    background-size: cover;
+    background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
     height: 200px;
