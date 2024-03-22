@@ -156,7 +156,11 @@ export default {
 		mode: {
 			type: String,
 			default: "create"
-		}
+		},
+    param: {
+      type: String,
+      default: null
+    }
   },
   components: {
     IncrementalSelect,
@@ -391,7 +395,9 @@ export default {
 	      }
 
         campaignService.updateDocument(data, true).then(response => {
-          this.$emit('documents-updated');
+          this.document.id = response.data.status;
+          this.$emit('documents-updated', this.document, this.$props.param);
+          this.disabledAllFieldWhenSaved()
         });
       } else {
 	      const data = {

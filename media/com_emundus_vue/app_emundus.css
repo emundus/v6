@@ -1855,64 +1855,6 @@ a.em-pointer:nth-child(2):hover .material-icons[data-v-220c8cc4] {
 .form-builder-element:hover {
   background-color: var(--neutral-200);
 }
-#properties-tabs {
-  list-style-type: none;
-  margin: auto;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-}
-#properties-tabs li {
-  text-align: center;
-  border-bottom: 2px solid #EDEDED;
-  -webkit-transition: all 0.3s;
-  transition: all 0.3s;
-}
-#properties-tabs li.is-active {
-  border-bottom: 2px solid black;
-}
-#properties-tabs {
-  list-style-type: none;
-  margin: auto;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-}
-#properties-tabs li {
-  text-align: center;
-  border-bottom: 2px solid #EDEDED;
-  -webkit-transition: all 0.3s;
-  transition: all 0.3s;
-}
-#properties-tabs li.is-active {
-  border-bottom: 2px solid black;
-}
-.editable-data-input {
-  padding: 0 !important;
-  height: auto !important;
-  border: unset !important;
-  border-bottom: solid 2px transparent !important;
-  border-radius: 0 !important;
-}
-.editable-data-input:focus {
-  outline: none !important;
-  -webkit-box-shadow: unset !important;
-          box-shadow: unset !important;
-  border-bottom: solid 2px #20835F !important;
-  border-radius: 0 !important;
-}
-.editable-data-input:hover {
-  -webkit-box-shadow: unset !important;
-          box-shadow: unset !important;
-  border-bottom: solid 2px rgba(32, 131, 95, 0.87) !important;
-  border-radius: 0 !important;
-}
-.element-option .icon-handle, #add-option .icon-handle {
-  height: 18px;
-  width: 18px;
-  -webkit-transition: all 0.3s;
-  transition: all 0.3s;
-}
 
 .menubar[data-v-18686cfd],
 .editor__content[data-v-18686cfd] {
@@ -2005,6 +1947,103 @@ div.forms-emails-editor .menubar[data-v-18686cfd] {
   color: #1B1F3C !important;
 }
 
+
+#formbuilder_attachments_sample_upload{
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  color: black;
+  padding: 6px;
+  border: dashed 1px #E3E3E3;
+  border-radius: 8px;
+}
+
+
+.collapsible[data-v-64b6aed8] {
+  background-color: #eee;
+  color: #444;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+.collapsible.active[data-v-64b6aed8], .collapsible[data-v-64b6aed8]:hover {
+  background-color: #ccc;
+}
+.content[data-v-64b6aed8] {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+  background-color: #f1f1f1;
+}
+.content[style*="display: block"][data-v-64b6aed8] {
+  display: block !important ;
+}
+
+#properties-tabs {
+  list-style-type: none;
+  margin: auto;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+#properties-tabs li {
+  text-align: center;
+  border-bottom: 2px solid #EDEDED;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+}
+#properties-tabs li.is-active {
+  border-bottom: 2px solid black;
+}
+#properties-tabs {
+  list-style-type: none;
+  margin: auto;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+#properties-tabs li {
+  text-align: center;
+  border-bottom: 2px solid #EDEDED;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+}
+#properties-tabs li.is-active {
+  border-bottom: 2px solid black;
+}
+.editable-data-input {
+  padding: 0 !important;
+  height: auto !important;
+  border: unset !important;
+  border-bottom: solid 2px transparent !important;
+  border-radius: 0 !important;
+}
+.editable-data-input:focus {
+  outline: none !important;
+  -webkit-box-shadow: unset !important;
+          box-shadow: unset !important;
+  border-bottom: solid 2px #20835F !important;
+  border-radius: 0 !important;
+}
+.editable-data-input:hover {
+  -webkit-box-shadow: unset !important;
+          box-shadow: unset !important;
+  border-bottom: solid 2px rgba(32, 131, 95, 0.87) !important;
+  border-radius: 0 !important;
+}
+.element-option .icon-handle, #add-option .icon-handle {
+  height: 18px;
+  width: 18px;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+}
 #form-builder-phone-number .country-select {
   height: 42px;
   width: 80px;
@@ -2595,20 +2634,6 @@ div.forms-emails-editor .menubar[data-v-18686cfd] {
   border: 1px dashed black;
   opacity: 0.2;
 }
-
-#formbuilder_attachments_sample_upload{
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  color: black;
-  padding: 6px;
-  border: dashed 1px #E3E3E3;
-  border-radius: 8px;
-}
-
 #form-builder-document-formats #form-builder-document-title {
   border-bottom: 1px solid black;
 }

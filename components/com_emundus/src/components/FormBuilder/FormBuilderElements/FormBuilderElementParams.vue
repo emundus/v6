@@ -12,12 +12,8 @@
           <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
         </select>
         <div  v-if="param.special === 'fileupload'">
-          <button type="button" class="collapsible" v-on:click="toggleContent"><label>{{translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT_NAME')}}</label></button>
-          <div class="content">
-            <FormBuilderCreateDocument profile_id="1" :element="element" :params="param.fields" :repeat_name="repeat_name" :index="index" :databases="databases"></FormBuilderCreateDocument>
-          </div>
-
-
+          <button type="button" class="collapsible" @click="isActive = true"><label>{{translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT_NAME')}}</label></button>
+            <FormBuilderCreateDocument v-if="isActive" profile_id="1" @documents-updated="reloadComponent" :param="param.name"></FormBuilderCreateDocument>
         </div>
 
       </div>
@@ -92,7 +88,7 @@ import FormBuilderCreateDocument from "@/components/FormBuilder/FormBuilderCreat
 
 export default {
   name: "FormBuilderElementParams",
-  components: {FormBuilderCreateDocument, IncrementalSelect},
+  components: {FormBuilderCreateDocument},
   props: {
     element: {
       type: Object,
@@ -203,6 +199,17 @@ export default {
         });
       }
     },
+    reloadComponent(document,param) {
+      if (document) {
+        this.elements.params.find(e => e.name === param).options.push({label: document.name, value: document.id});
+        formBuilderService.getSqlDropdownOptions(param.table,param.key,param.value,param.translate).then((response) => {
+          param.options = response.data;
+          this.loading = false;
+        });
+        this.element.params[param] = document;
+        this.isActive = false;
+      }
+    },
     addRepeatableField(param) {
       let index = Object.entries(this.element.params[param]).length;
       this.element.params[param][param+index] = {};
@@ -232,6 +239,7 @@ export default {
     }
   }
 }
+
 </script>
 
 
