@@ -2571,7 +2571,7 @@ class EmundusModelForm extends JModelList {
 					'id' => $rule_id,
 					'group' => $group,
 					'updated_by' => $user->id,
-					'updated_at' => date('Y-m-d H:i:s')
+					'updated' => date('Y-m-d H:i:s')
 				];
 				$update = (object) $update;
 				$db->updateObject('#__emundus_setup_form_rules', $update, 'id');

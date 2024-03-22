@@ -12,6 +12,14 @@
       </div>
     </div>
 
+    <div v-if="conditions.length > 1" class="flex items-center gap-2">
+      <p class="font-bold">{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_IF') }}</p>
+      <select class="w-full" v-model="group">
+        <option value="OR">{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_GROUP_OR') }}</option>
+        <option value="AND">{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_GROUP_AND') }}</option>
+      </select>
+    </div>
+
     <div id="form-builder-rules-js-actions-block">
       <div v-for="(action, index) in actions" class="mt-2 rounded-lg bg-white px-3 py-4 flex flex-col gap-6">
         <form-builder-rules-js-action :elements="elements" :index="index" :action="action" @remove-action="removeAction" :page="page" />
@@ -61,6 +69,7 @@ export default {
     return {
       conditions: [],
       actions: [],
+      group: 'OR',
       loading: false,
     };
   },
@@ -85,6 +94,10 @@ export default {
           fields: [],
           params: []
         });
+      }
+
+      if (this.rule !== null) {
+        this.group = this.rule.group;
       }
     }
   },
@@ -159,7 +172,7 @@ export default {
       }
 
       if(this.rule !== null ) {
-        formService.editRule(this.rule.id, conditions_post, actions_post).then(response => {
+        formService.editRule(this.rule.id, conditions_post, actions_post, this.group).then(response => {
           if (response.status) {
             Swal.fire({
               title: this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_EDIT_SUCCESS'),
@@ -177,7 +190,7 @@ export default {
           }
         });
       } else {
-        formService.addRule(this.page.id, conditions_post, actions_post).then(response => {
+        formService.addRule(this.page.id, conditions_post, actions_post, this.group).then(response => {
           if (response.status) {
             Swal.fire({
               title: this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_SUCCESS'),
