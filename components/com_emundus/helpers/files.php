@@ -3884,7 +3884,16 @@ class EmundusHelperFiles
                                     $where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.published', $filter['value'], $filter['operator']);
                                     break;
                                 case 'tags':
-                                    $where['q'] .= ' AND ( ' . $this->writeQueryWithOperator('eta.id_tag', $filter['value'], $filter['operator']) . ' )';
+                                    if ($filter['operator'] === 'NOT IN') {
+                                        $where['q'] .= ' AND jecc.fnum NOT IN (
+                                            SELECT DISTINCT jos_emundus_campaign_candidature.fnum
+                                            FROM jos_emundus_campaign_candidature
+                                            LEFT JOIN jos_emundus_tag_assoc ON jos_emundus_tag_assoc.fnum = jos_emundus_campaign_candidature.fnum
+                                            WHERE ' . $this->writeQueryWithOperator('jos_emundus_tag_assoc.id_tag', $filter['value'], 'IN') . '
+                                        )';
+                                    } else {
+                                        $where['q'] .= ' AND ( ' . $this->writeQueryWithOperator('eta.id_tag', $filter['value'], $filter['operator']) . ' )';
+                                    }
                                     break;
                                 case 'group_assoc':
                                     if (!in_array('jos_emundus_group_assoc', $already_joined)) {
