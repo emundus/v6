@@ -13,6 +13,8 @@
  */
 
 // No direct access
+use Joomla\CMS\Component\ComponentHelper;
+
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
@@ -3621,23 +3623,30 @@ class EmundusModelUsers extends JModelList {
     }
 
 	public function getIdentityPhoto($fnum,$applicant_id){
-		try {
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+		$attachment_id = ComponentHelper::getParams('com_emundus')->get('photo_attachment', '');
 
-			$query->select('filename')
-				->from($db->quoteName('#__emundus_uploads'))
-				->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
-				->andWhere($db->quoteName('attachment_id') . ' = 10');
-			$db->setQuery($query);
-			$filename = $db->loadResult();
+		if(!empty($attachment_id)) {
+			try {
+				$db    = JFactory::getDbo();
+				$query = $db->getQuery(true);
 
-			if(!empty($filename)){
-				return EMUNDUS_PATH_REL . $applicant_id . '/' . $filename;
+				$query->select('filename')
+					->from($db->quoteName('#__emundus_uploads'))
+					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
+					->andWhere($db->quoteName('attachment_id') . ' = ' . $attachment_id);
+				$db->setQuery($query);
+				$filename = $db->loadResult();
+
+				if (!empty($filename)) {
+					return EMUNDUS_PATH_REL . $applicant_id . '/' . $filename;
+				}
 			}
-		}
-		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Failed to get identity photo : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			catch (Exception $e) {
+				JLog::add(' com_emundus/models/users.php | Failed to get identity photo : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+
+				return '';
+			}
+		} else {
 			return '';
 		}
 	}

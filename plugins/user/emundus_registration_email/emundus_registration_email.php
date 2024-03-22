@@ -8,6 +8,8 @@
  */
 
 // Protect from unauthorized access
+use Joomla\CMS\Uri\Uri;
+
 defined('_JEXEC') or die('Restricted access');
 defined('DS') or define('DS', DIRECTORY_SEPARATOR);
 
@@ -49,7 +51,8 @@ class plgUserEmundus_registration_email extends JPlugin {
                 $token = $params->get('emailactivation_token');
                 $token = md5($token);
 
-                $redirect = $this->params->get('activation_redirect','index.php');
+				require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+                $redirect = EmundusHelperMenu::getHomepageLink($this->params->get('activation_redirect','index.php'));
 
                 // Check that the token is in a valid format.
                 if (!empty($token) && strlen($token) === 32 && JRequest::getInt($token, 0, 'get') === 1) {
@@ -139,6 +142,30 @@ class plgUserEmundus_registration_email extends JPlugin {
                 return;
             }
         }
+
+
+	    if (JPluginHelper::getPlugin('system','emundusproxyredirect')) {
+		    $params = json_decode(JPluginHelper::getPlugin('system','emundusproxyredirect')->params, true);
+			$http_headers = $_SERVER;
+
+		    if($params['test_mode'] == 1) {
+			    $http_headers = [
+				    'username' => 'developer',
+				    'email'    => 'dev@emundus.io'
+			    ];
+
+			    $login_route = Uri::root().'connexion';
+			    $current_route = Uri::getInstance()->toString();
+
+			    if($current_route != $login_route) {
+				    return false;
+			    }
+		    }
+
+			if(!empty($http_headers[$params['username']]) && !empty($http_headers[$params['email']])) {
+				return;
+			}
+	    }
 
         // if saving user's data was successful
         if ($result && !$error) {

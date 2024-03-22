@@ -9,6 +9,8 @@
  */
 
 // No direct access
+use Joomla\CMS\Component\ComponentHelper;
+
 defined('_JEXEC') or die('Restricted access');
 /*
 if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
@@ -272,8 +274,7 @@ class EmundusModelFiles extends JModelLegacy
                         $element_attribs = json_decode($def_elmt->element_attribs);
                         $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
                         foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-                            $select = 'REPLACE(' . $select . ', "' . $value . '", "' .
-                                JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+                            $select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
                         }
                         $this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
                     }
@@ -575,7 +576,10 @@ class EmundusModelFiles extends JModelLegacy
     private function _buildWhere($already_joined_tables = array()) {
         $h_files = new EmundusHelperFiles();
 
-		if ($this->use_module_filters) {
+        $session = JFactory::getSession();
+        $last_filters_use_advanced = $session->get('last-filters-use-adavanced', false);
+
+		if ($this->use_module_filters || $last_filters_use_advanced) {
 			return $h_files->_moduleBuildWhere($already_joined_tables, 'files', array(
 				'fnum_assoc' => $this->fnum_assoc,
 				'code' => $this->code
@@ -1723,24 +1727,32 @@ class EmundusModelFiles extends JModelLegacy
      * @return mixed|null
      */
     public function getPhotos($fnums = array()) {
-        try {
-            $db = $this->getDbo();
-            $query = 'select emu.id, emu.user_id, c.fnum, emu.filename
+		$attachment_id = ComponentHelper::getParams('com_emundus')->get('photo_attachment', '');
+
+		if(!empty($attachment_id)) {
+			try {
+				$db    = $this->getDbo();
+				$query = 'select emu.id, emu.user_id, c.fnum, emu.filename
                         from #__emundus_uploads as emu
                         left join #__emundus_campaign_candidature as c on c.applicant_id = emu.user_id
-                        where attachment_id = 10';
-            if (count($fnums) > 0) {
-                $query .= ' AND emu.fnum IN ('.implode(',', $db->quote($fnums)).') GROUP BY emu.fnum';
-            }
-            $db->setQuery($query);
-            return $db->loadAssocList('fnum');
+                        where attachment_id = ' . $attachment_id;
+				if (count($fnums) > 0) {
+					$query .= ' AND emu.fnum IN (' . implode(',', $db->quote($fnums)) . ') GROUP BY emu.fnum';
+				}
+				$db->setQuery($query);
 
-        } catch(Exception $e) {
-            echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-            return null;
-        }
+				return $db->loadAssocList('fnum');
 
+			}
+			catch (Exception $e) {
+				echo $e->getMessage();
+				JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+
+				return null;
+			}
+		} else {
+			return [];
+		}
     }
 
     /**
@@ -2720,7 +2732,7 @@ class EmundusModelFiles extends JModelLegacy
                                 $sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
                                 $sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
                                 $sub_value = str_replace("'", "\'", $sub_value);
-
+	                            $sub_value = str_replace("*", "\\\*", $sub_value); // escape asterisk for SQL query, rare case but possible
 
                                 if ($sub_key === 0) {
                                     $regexp_sub_query = 'regexp_replace(' . $element_table_alias . '.' . $element->element_name . ', \'"' . $sub_value . '"\', \'' . $sub_label . '\')';
@@ -2777,6 +2789,7 @@ class EmundusModelFiles extends JModelLegacy
                                     $sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
                                     $sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
                                     $sub_value = str_replace("'", "\'", $sub_value);
+	                                $sub_value = str_replace("*", "\\\*", $sub_value); // escape asterisk for SQL query, rare case but possible
 
                                     if ($sub_key === 0) {
                                         if ($is_repeat) {
@@ -2804,18 +2817,18 @@ class EmundusModelFiles extends JModelLegacy
                         break;
                     case 'birthday':
                         if ($is_repeat) {
-                            $query .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y\') AS ' . $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
+                            $query .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%Y-%m-%d\') AS ' . $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
 	                        $saved_element_as = $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
                         } else {
-                            $query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y\') AS ' . $element->tab_name . '___' . $element->element_name;
+                            $query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%Y-%m-%d\') AS ' . $element->tab_name . '___' . $element->element_name;
                         }
                         break;
                     case 'date':
                         if ($is_repeat) {
-                            $query .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y %H:%i:%s\') AS ' . $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
+                            $query .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%Y-%m-%d %H:%i:%s\') AS ' . $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
 							$saved_element_as = $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
                         } else {
-                            $query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y %H:%i:%s\') AS ' . $element->tab_name . '___' . $element->element_name;
+                            $query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%Y-%m-%d %H:%i:%s\') AS ' . $element->tab_name . '___' . $element->element_name;
                         }
                         break;
                     case 'yesno':

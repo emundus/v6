@@ -243,7 +243,11 @@ export default {
 	  this.profile_id = data.prid.value;
 	  this.campaign_id = data.cid.value;
 
-		if (data && data.mode && data.mode.value) {
+	  if (data && data.settingsmenualias && data.settingsmenualias.value) {
+		  this.leftPanel.tabs[2].url = '/' + data.settingsmenualias.value + '?layout=translation&default_menu=2&object=emundus_setup_profiles';
+	  }
+
+	  if (data && data.mode && data.mode.value) {
 			this.mode = data.mode.value;
 
 			if (this.mode === 'eval' || this.mode == 'models') {
@@ -252,11 +256,13 @@ export default {
 				this.form_id = this.profile_id;
 				this.profile_id = 0;
 			}
-		} else {
-			this.leftPanel.tabs[2].url += '&data=' + this.profile_id;
 		}
 
-    this.getFormTitle();
+	  if (this.profile_id > 0) {
+		  this.leftPanel.tabs[2].url += '&data=' + this.profile_id;
+	  }
+
+	  this.getFormTitle();
     this.getPages();
   },
   mounted() {
@@ -472,6 +478,10 @@ export default {
 #formBuilder {
   background: white;
 
+  ul {
+    list-style-position: inside;
+  }
+
   header {
     box-shadow: inset 0px -1px 0px #E3E5E8;
 
@@ -557,7 +567,6 @@ export default {
     padding: 4px 8px !important;
     border-radius: 4px;
     margin-bottom: 0;
-    height: 30px;
 
     &:focus {
       background-color: #DFF5E9;

@@ -14,8 +14,11 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
+require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+
 $document = JFactory::getDocument();
-$document->addStyleSheet('modules/mod_emundus_checklist/style/emundus_checklist.css');
+$document->addStyleSheet('modules/mod_emundus_checklist/style/emundus_checklist.css?'.$hash);
 
 $user = JFactory::getSession()->get('emundusUser');
 
@@ -233,7 +236,9 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     if (!empty($current_phase)) {
         $is_app_sent = !in_array($user->status, $current_phase->entry_status);
         $status_for_send = array_merge($status_for_send, $current_phase->entry_status);
-		$show_preliminary_documents = $show_preliminary_documents && $current_phase->display_preliminary_documents;
+        if (!$show_preliminary_documents) {
+            $show_preliminary_documents = $show_preliminary_documents && $current_phase->display_preliminary_documents;
+        }
     } elseif (!empty($user->status)) {
         $is_app_sent = $user->status != 0;
     }

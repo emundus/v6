@@ -1106,9 +1106,17 @@ class EmundusModelTranslations extends JModelList
 				if (empty($labels->default_lang))
 				{
 					$query->clear()
+						->select('tablepkID')
+						->from($this->_db->quoteName('#__falang_tableinfo'))
+						->where($this->_db->quoteName('joomlatablename') . ' = ' . $this->_db->quote($reference_table));
+
+					$this->_db->setQuery($query);
+					$tablepkID = $this->_db->loadResult();
+
+					$query->clear()
 						->select($field)
 						->from($this->_db->quoteName('#__' . $reference_table))
-						->where($this->_db->quoteName('id') . ' = ' . $reference_id);
+						->where($this->_db->quoteName($tablepkID) . ' = ' . $reference_id);
 					$this->_db->setQuery($query);
 					$labels->default_lang = $this->_db->loadResult();
 				}
@@ -1148,12 +1156,14 @@ class EmundusModelTranslations extends JModelList
 	 *
 	 * @since version
 	 */
-	public function updateFalangTranslation($value, $lang_to, $reference_table, $reference_id, $field)
+	public function updateFalangTranslation($value, $lang_to, $reference_table, $reference_id, $field, $user_id = null)
 	{
 		$updated = false;
 		$query   = $this->_db->getQuery(true);
 
-		$user = JFactory::getUser()->id;
+		if (empty($user_id)) {
+			$user_id = JFactory::getUser()->id;
+		}
 
 		try
 		{
@@ -1175,14 +1185,16 @@ class EmundusModelTranslations extends JModelList
 
 			if (!empty($falang_translation))
 			{
-				$query->update($this->_db->quoteName('#__falang_content'))
+				$query->clear()
+					->update($this->_db->quoteName('#__falang_content'))
 					->set($this->_db->quoteName('value') . ' = ' . $this->_db->quote($value))
 					->set($this->_db->quoteName('modified_by') . ' = ' . $this->_db->quote($user))
 					->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($falang_translation));
 			}
 			else
 			{
-				$query->insert($this->_db->quoteName('#__falang_content'))
+				$query->clear()
+					->insert($this->_db->quoteName('#__falang_content'))
 					->set($this->_db->quoteName('language_id') . ' = ' . $this->_db->quote($lang_to_id))
 					->set($this->_db->quoteName('reference_id') . ' = ' . $this->_db->quote($reference_id))
 					->set($this->_db->quoteName('reference_table') . ' = ' . $this->_db->quote($reference_table))

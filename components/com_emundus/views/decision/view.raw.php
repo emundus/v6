@@ -135,8 +135,12 @@ class EmundusViewDecision extends JViewLegacy
 				// Do not display photos unless specified in params
 				$displayPhoto = false;
 
-				// get applications files
-				$users = $m_decision->getUsers($cfnum);
+                if(!empty($m_decision->fnum_assoc) || !empty($m_decision->code)) {
+                    // get applications files
+                    $users = $m_decision->getUsers($cfnum);
+                } else {
+                    $users = array();
+                }
 
 			    // get evaluation form ID
 			    $formid = $m_decision->getDecisionFormByProgramme();

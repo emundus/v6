@@ -205,9 +205,9 @@ class Column
         return $this;
     }
 
-    public static function updateStructuredReferences(?Worksheet $workSheet, ?string $oldTitle, ?string $newTitle): void
+    public static function updateStructuredReferences(?Worksheet $workSheet, ?string $oldTitle, string $newTitle): void
     {
-        if ($workSheet === null || $oldTitle === null || $oldTitle === '' || $newTitle === null) {
+        if ($workSheet === null || $oldTitle === null || $oldTitle === '') {
             return;
         }
 
@@ -215,7 +215,7 @@ class Column
         if (StringHelper::strToLower($oldTitle) !== StringHelper::strToLower($newTitle)) {
             // We need to check all formula cells that might contain Structured References that refer
             //    to this column, and update those formulae to reference the new column text
-            $spreadsheet = $workSheet->getParentOrThrow();
+            $spreadsheet = $workSheet->getParent();
             foreach ($spreadsheet->getWorksheetIterator() as $sheet) {
                 self::updateStructuredReferencesInCells($sheet, $oldTitle, $newTitle);
             }
@@ -225,7 +225,7 @@ class Column
 
     private static function updateStructuredReferencesInCells(Worksheet $worksheet, string $oldTitle, string $newTitle): void
     {
-        $pattern = '/\[(@?)' . preg_quote($oldTitle, '/') . '\]/mui';
+        $pattern = '/\[(@?)' . preg_quote($oldTitle) . '\]/mui';
 
         foreach ($worksheet->getCoordinates(false) as $coordinate) {
             $cell = $worksheet->getCell($coordinate);
@@ -241,7 +241,7 @@ class Column
 
     private static function updateStructuredReferencesInNamedFormulae(Spreadsheet $spreadsheet, string $oldTitle, string $newTitle): void
     {
-        $pattern = '/\[(@?)' . preg_quote($oldTitle, '/') . '\]/mui';
+        $pattern = '/\[(@?)' . preg_quote($oldTitle) . '\]/mui';
 
         foreach ($spreadsheet->getNamedFormulae() as $namedFormula) {
             $formula = $namedFormula->getValue();

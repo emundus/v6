@@ -14,12 +14,14 @@ $layout = $params->get('layout', 'default');
 require_once dirname(__FILE__).'/helper.php';
 include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
 include_once(JPATH_BASE.'/components/com_emundus/models/users.php');
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
 $user = JFactory::getSession()->get('emundusUser');
 
 // Here we get the menu which is defined in the params
 $jooomla_menu_name = $params->get('menu_name', 0);
-$switch_profile_redirect = $params->get('switch_profile_redirect', 'index.php');
+
+$switch_profile_redirect = EmundusHelperMenu::getHomepageLink($params->get('switch_profile_redirect', 'index.php'));
 
 $primary_color = $params->get('primary_color', 'ECF0F1');
 $secondary_color = $params->get('secondary_color', 'F89406');

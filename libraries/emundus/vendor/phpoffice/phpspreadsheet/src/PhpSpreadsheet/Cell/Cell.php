@@ -71,9 +71,6 @@ class Cell
      */
     private $formulaAttributes;
 
-    /** @var IgnoredErrors */
-    private $ignoredErrors;
-
     /**
      * Update the cell into the cell collection.
      *
@@ -122,7 +119,6 @@ class Cell
         } elseif (self::getValueBinder()->bindValue($this, $value) === false) {
             throw new Exception('Value could not be bound to cell.');
         }
-        $this->ignoredErrors = new IgnoredErrors();
     }
 
     /**
@@ -200,9 +196,9 @@ class Cell
      * @param mixed $oldValue
      * @param mixed $newValue
      */
-    protected static function updateIfCellIsTableHeader(?Worksheet $workSheet, self $cell, $oldValue, $newValue): void
+    protected static function updateIfCellIsTableHeader(Worksheet $workSheet, self $cell, $oldValue, $newValue): void
     {
-        if (StringHelper::strToLower($oldValue ?? '') === StringHelper::strToLower($newValue ?? '') || $workSheet === null) {
+        if (StringHelper::strToLower($oldValue ?? '') === StringHelper::strToLower($newValue ?? '')) {
             return;
         }
 
@@ -225,16 +221,12 @@ class Cell
      *    Sets the value for a cell, automatically determining the datatype using the value binder
      *
      * @param mixed $value Value
-     * @param null|IValueBinder $binder Value Binder to override the currently set Value Binder
-     *
-     * @throws Exception
      *
      * @return $this
      */
-    public function setValue($value, ?IValueBinder $binder = null): self
+    public function setValue($value): self
     {
-        $binder ??= self::getValueBinder();
-        if (!$binder->bindValue($this, $value)) {
+        if (!self::getValueBinder()->bindValue($this, $value)) {
             throw new Exception('Value could not be bound to cell.');
         }
 
@@ -373,14 +365,14 @@ class Cell
     {
         if ($this->dataType === DataType::TYPE_FORMULA) {
             try {
-                $index = $this->getWorksheet()->getParentOrThrow()->getActiveSheetIndex();
+                $index = $this->getWorksheet()->getParent()->getActiveSheetIndex();
                 $selected = $this->getWorksheet()->getSelectedCells();
                 $result = Calculation::getInstance(
                     $this->getWorksheet()->getParent()
                 )->calculateCellValue($this, $resetLog);
                 $result = $this->convertDateTimeInt($result);
                 $this->getWorksheet()->setSelectedCells($selected);
-                $this->getWorksheet()->getParentOrThrow()->setActiveSheetIndex($index);
+                $this->getWorksheet()->getParent()->setActiveSheetIndex($index);
                 //    We don't yet handle array returns
                 if (is_array($result)) {
                     while (is_array($result)) {
@@ -395,9 +387,7 @@ class Cell
                 }
 
                 throw new \PhpOffice\PhpSpreadsheet\Calculation\Exception(
-                    $this->getWorksheet()->getTitle() . '!' . $this->getCoordinate() . ' -> ' . $ex->getMessage(),
-                    $ex->getCode(),
-                    $ex
+                    $this->getWorksheet()->getTitle() . '!' . $this->getCoordinate() . ' -> ' . $ex->getMessage()
                 );
             }
 
@@ -799,10 +789,5 @@ class Cell
     public function __toString()
     {
         return (string) $this->getValue();
-    }
-
-    public function getIgnoredErrors(): IgnoredErrors
-    {
-        return $this->ignoredErrors;
     }
 }

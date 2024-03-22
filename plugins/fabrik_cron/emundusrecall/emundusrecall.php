@@ -70,24 +70,24 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
         // Get list of applicants to notify
         $db = FabrikWorker::getDbo();
         if($reminder_choice == 1){
-            $query = 'SELECT u.id, u.email, eu.firstname, eu.lastname, ecc.fnum, ecc.status, esc.start_date as start_date_campaign, esc.end_date as end_date_campaign, ecw.start_date as start_date_phase, ecw.end_date as end_date_phase, esc.label
+            $query = 'SELECT DISTINCT u.id, u.email, eu.firstname, eu.lastname, ecc.fnum, ecc.status, esc.start_date as start_date_campaign, esc.end_date as end_date_campaign, ecw.start_date as start_date_phase, ecw.end_date as end_date_phase, esc.label
                     FROM #__emundus_campaign_candidature as ecc
-                    LEFT JOIN #__users as u ON u.id=ecc.applicant_id
-                    LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
-                    LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id
-                    LEFT JOIN #__emundus_campaign_workflow_repeat_campaign ecwrc on ecwrc.campaign = ecc.campaign_id
-                    LEFT JOIN #__emundus_campaign_workflow_repeat_entry_status ecwres on ecwres.parent_id = ecwrc.parent_id AND ecwres.entry_status = ecc.status
+                    LEFT JOIN #__users as u ON u.id = ecc.applicant_id
+                    LEFT JOIN #__emundus_users as eu ON eu.user_id = u.id
+                    LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id = ecc.campaign_id
+                    LEFT JOIN #__emundus_campaign_workflow_repeat_entry_status ecwres on ecwres.entry_status = ecc.status
+                    LEFT JOIN #__emundus_campaign_workflow_repeat_campaign ecwrc on ecwrc.campaign = ecc.campaign_id AND ecwrc.parent_id = ecwres.parent_id
                     LEFT JOIN #__emundus_campaign_workflow ecw ON ecw.id = ecwres.parent_id
 					WHERE ecc.published = 1 AND u.block = 0 AND esc.published = 1 AND ecc.status in ('.$status_for_send.') AND IF((ecw.end_date IS NULL OR ecw.end_date = \'0000-00-00 00:00:00\'), DATEDIFF(esc.end_date, now()) IN ('.$reminder_deadline.'), DATEDIFF(ecw.end_date, now()) IN ('.$reminder_deadline.'))';
         }
         else{
-            $query = 'SELECT u.id, u.email, eu.firstname, eu.lastname, ecc.fnum, ecc.status, esc.start_date as start_date_campaign, esc.end_date as end_date_campaign, ecw.start_date as start_date_phase, ecw.end_date as end_date_phase, esc.label
+            $query = 'SELECT DISTINCT u.id, u.email, eu.firstname, eu.lastname, ecc.fnum, ecc.status, esc.start_date as start_date_campaign, esc.end_date as end_date_campaign, ecw.start_date as start_date_phase, ecw.end_date as end_date_phase, esc.label
                     FROM #__emundus_campaign_candidature as ecc
-                    LEFT JOIN #__users as u ON u.id=ecc.applicant_id
-                    LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
-                    LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id
-                    LEFT JOIN #__emundus_campaign_workflow_repeat_campaign ecwrc on ecwrc.campaign = ecc.campaign_id
-                    LEFT JOIN #__emundus_campaign_workflow_repeat_entry_status ecwres on ecwres.parent_id = ecwrc.parent_id AND ecwres.entry_status = ecc.status
+                    LEFT JOIN #__users as u ON u.id = ecc.applicant_id
+                    LEFT JOIN #__emundus_users as eu ON eu.user_id = u.id
+                    LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id = ecc.campaign_id
+                    LEFT JOIN #__emundus_campaign_workflow_repeat_entry_status ecwres on ecwres.entry_status = ecc.status
+                    LEFT JOIN #__emundus_campaign_workflow_repeat_campaign ecwrc on ecwrc.campaign = ecc.campaign_id AND ecwrc.parent_id = ecwres.parent_id
                     LEFT JOIN #__emundus_campaign_workflow ecw ON ecw.id = ecwres.parent_id
 					WHERE ecc.published = 1 AND u.block = 0 AND esc.published = 1 AND ecc.status in ('.$status_for_send.') AND DAY(now()) IN ('.$reminder_deadline.') AND IF((ecw.end_date IS NULL OR ecw.end_date = \'0000-00-00 00:00:00\'), esc.end_date > now(), ecw.end_date > now())';
         }
@@ -183,7 +183,7 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
                         'user_id_to' => $to_id,
                         'subject' => $subject,
                         'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body,
-	                    'email_id' => $reminder_mail_id,
+                        'email_id' => $reminder_mail_id,
                     );
                     $m_emails->logEmail($message, $applicant->fnum);
                     $this->log .= '\n' . JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.' :: '.$body;

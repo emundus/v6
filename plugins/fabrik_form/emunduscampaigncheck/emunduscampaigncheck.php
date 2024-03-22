@@ -74,6 +74,7 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
      */
     public function onBeforeStore() {
 
+	    require_once (JPATH_SITE . '/components/com_emundus/helpers/menu.php');
 	    require_once (JPATH_SITE . '/components/com_emundus/helpers/access.php');
 
         jimport('joomla.log.log');
@@ -82,6 +83,8 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
         $user = JFactory::getSession()->get('emundusUser');
         $app = JFactory::getApplication();
         $jinput = $app->input;
+
+		$homepage_link = EmundusHelperMenu::getHomepageLink();
 
 	    $eMConfig = JComponentHelper::getParams('com_emundus');
 	    $id_profiles = $eMConfig->get('id_profiles', '0');
@@ -144,7 +147,7 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
                     JLog::add('User: '.$user->id.' already has a file.', JLog::INFO, 'com_emundus.campaign-check');
                     $this->getModel()->formErrorMsg = '';
                     $this->getModel()->getForm()->error = JText::_('CANNOT_HAVE_MULTI_FILE');
-                    $app->redirect('index.php', JText::_('CANNOT_HAVE_MULTI_FILE'));
+                    $app->redirect($homepage_link, JText::_('CANNOT_HAVE_MULTI_FILE'));
                 }
 
                 break;
@@ -175,7 +178,7 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
                         JLog::add('User: '.$user->id.' already has a file for campaign id: '.$campaign_id, JLog::INFO, 'com_emundus.campaign-check');
                         $this->getModel()->formErrorMsg = '';
                         $this->getModel()->getForm()->error = JText::_('USER_HAS_FILE_FOR_CAMPAIGN');
-                        $app->redirect('index.php', JText::_('USER_HAS_FILE_FOR_CAMPAIGN'));
+                        $app->redirect($homepage_link, JText::_('USER_HAS_FILE_FOR_CAMPAIGN'));
                     }
 
                 } catch (Exception $e) {
@@ -215,7 +218,7 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
                         JLog::add('User: '.$user->id.' already has a file for year belong to campaign: '.$campaign_id, JLog::ERROR, 'com_emundus.campaign-check');
                         $this->getModel()->formErrorMsg = '';
                         $this->getModel()->getForm()->error = JText::_('USER_HAS_FILE_FOR_YEAR');
-	                    $app->redirect('index.php', JText::_('USER_HAS_FILE_FOR_YEAR'));
+	                    $app->redirect($homepage_link, JText::_('USER_HAS_FILE_FOR_YEAR'));
                     }
 
                 } catch (Exception $e) {

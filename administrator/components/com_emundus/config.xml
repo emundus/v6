@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
 	<fieldset label="COM_EMUNDUS_GENERAL" name="general" description="COM_EMUNDUS_GENERAL_DESC">
+		<field name="logged_homepage_link"
+			   type="sql"
+			   default=""
+			   label="COM_EMUNDUS_LOGGED_HOMEPAGE_LINK"
+			   description=""
+			   query="SELECT id, title as label FROM jos_menu WHERE published = 1"
+			   key_field="id"
+			   value_field="label"
+		/>
+
 		<field name="logs" label="LOGS_ACTIVE" type="radio" default="0" description="LOGS_ACTIVE_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
@@ -82,6 +92,18 @@
 		</field>
 
 		<field name="repeat_icon" type="text" label="COM_EMUNDUS_REPEAT_GROUP_ICON" default="clear" description="COM_EMUNDUS_REPEAT_GROUP_ICON_DESC" size="60"/>
+
+		<field name="photo_attachment"
+			   type="sql"
+			   default=""
+			   label="COM_EMUNDUS_PHOTO_ATTACHMENT"
+			   description="COM_EMUNDUS_PHOTO_ATTACHMENT_DESC"
+			   query="SELECT id, value as label FROM jos_emundus_setup_attachments"
+			   key_field="id"
+			   value_field="label"
+		>
+			<option value="">Please select your option</option>
+		</field>
 
 		<field
 				name="spacer0"
@@ -169,6 +191,15 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+		<field name="attachment_to_keep_non_deletable"
+			   type="sql"
+			   query="SELECT id, CONCAT(id,' - ',value) as value FROM jos_emundus_setup_attachments"
+			   key_field="id"
+			   value_field="value"
+			   multiple="true"
+			   default='["4", "6", "21"]'
+			   label="COM_EMUNDUS_ATTACHCHMENT_NON_DELETABLE"
+		/>
 		<field name="referent_can_edit_after_deadline" menu="hide" type="list" default="1" label="COM_EMUNDUS_REFERENT_CAN_EDIT_AFTER_DEADLINE" description="COM_EMUNDUS_REFERENT_CAN_EDIT_AFTER_DEADLINE_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>

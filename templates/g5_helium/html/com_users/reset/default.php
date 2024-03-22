@@ -12,8 +12,11 @@ defined('_JEXEC') or die;
 JHtml::_('behavior.keepalive');
 JHtml::_('behavior.formvalidator');
 
+require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+
 $document = JFactory::getDocument();
-$document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_users_reset.css");
+$document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_users_reset.css?".$hash);
 
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'settings.php');
 $m_settings = new EmundusModelsettings();

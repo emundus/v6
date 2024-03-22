@@ -274,7 +274,7 @@ class EmundusHelperEmails {
 						<input name="mail_type" type="hidden" class="inputbox" id="mail_type" value="expert" />
 						<p>
 							<div>
-								<input class="btn btn-large btn-success" style="margin-top: 16px" type="submit" name="expert" value="'.JText::_( 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL' ).'" >
+								<button class="btn btn-primary absolute" style="bottom: 32px;right: 32px" type="submit" name="expert">'.JText::_( 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL' ).'</button>
 							</div>
 						</p>
 						

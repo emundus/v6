@@ -11,10 +11,13 @@ if(in_array(JFactory::getSession()->get('emundusUser')->profile, $profiles)) {
     JHtml::script('media/com_emundus/js/jquery.cookie.js');
     JHtml::script('media/jui/js/bootstrap.min.js');
 
+	require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+	$hash = EmundusHelperCache::getCurrentGitHash();
+
     $document = JFactory::getDocument();
-    $document->addStyleSheet("modules/mod_emundus_dashboard_vue/src/assets/mod_emundus_dashbord_vue.css" );
-    $document->addScript('media/mod_emundus_dashboard_vue/chunk-vendors.js');
-    $document->addStyleSheet('media/mod_emundus_dashboard_vue/app.css');
+    $document->addStyleSheet("modules/mod_emundus_dashboard_vue/src/assets/mod_emundus_dashbord_vue.css?".$hash );
+    $document->addScript('media/mod_emundus_dashboard_vue/chunk-vendors.js?'.$hash);
+    $document->addStyleSheet('media/mod_emundus_dashboard_vue/app.css?'.$hash);
 
     $programme_filter = $params->get('filter_programmes', 0);
 

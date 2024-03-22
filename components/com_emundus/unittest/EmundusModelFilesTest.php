@@ -267,7 +267,10 @@ class EmundusModelFilesTest extends TestCase{
 			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with date element');
 			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
 			$this->assertArrayHasKey($date_element->tab_name . '___' . $date_element->element_name, $data[$fnum], 'the data contains the date element');
-			$this->assertStringMatchesFormat('%d/%d/%d %d:%d:%d', $data[$fnum][$date_element->tab_name . '___' . $date_element->element_name], 'the date element contains a date in the correct format');
+
+			// remove escape characters from the date format
+			$data[$fnum][$date_element->tab_name . '___' . $date_element->element_name] = str_replace('\\', '', $data[$fnum][$date_element->tab_name . '___' . $date_element->element_name]);
+			$this->assertStringMatchesFormat('%d-%d-%d %d:%d:%d', $data[$fnum][$date_element->tab_name . '___' . $date_element->element_name], 'the date element contains a date in the correct format');
 		}
 
 		$birthday_element = null;
@@ -282,7 +285,8 @@ class EmundusModelFilesTest extends TestCase{
 			$this->assertNotEmpty($data, 'getFnumArray returns an array of data with birthday element');
 			$this->assertNotEmpty($data[$fnum], 'getFnumArray returns an array of data containing the fnum passed as parameter');
 			$this->assertArrayHasKey($birthday_element->tab_name . '___' . $birthday_element->element_name, $data[$fnum], 'the data contains the birthday element');
-			$this->assertStringMatchesFormat('%d/%d/%d', $data[$fnum][$birthday_element->tab_name . '___' . $birthday_element->element_name], 'the date element contains a birthday in the correct format');
+			$data[$fnum][$birthday_element->tab_name . '___' . $birthday_element->element_name] = str_replace('\\', '', $data[$fnum][$birthday_element->tab_name . '___' . $birthday_element->element_name]);
+			$this->assertStringMatchesFormat('%d-%d-%d', $data[$fnum][$birthday_element->tab_name . '___' . $birthday_element->element_name], 'the date element contains a birthday in the correct format');
 		}
 
 		$databasejoin_element = null;

@@ -215,11 +215,16 @@
 
 .profile_widget #background-shapes {
   mask-image: url('/modules/mod_emundus_campaign/assets/fond-fonce.svg');
+  -webkit-mask-image: url('/modules/mod_emundus_campaign/assets/fond-fonce.svg');
   background: var(--neutral-0);
   mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
   mask-size: 500px;
+  -webkit-mask-size: 500px;
   mask-origin: border-box;
+  -webkit-mask-origin: border-box;
   mask-position: center;
+  -webkit-mask-position: center;
   z-index: 3;
   transform: rotate(180deg);
   position: absolute;
@@ -236,11 +241,16 @@
 
 .profile_widget-text-container #background-tchoozy {
   mask-image: url('/media/com_emundus/images/tchoozy/complex-illustrations/tchoozy-gestionnaire.svg');
+  -webkit-mask-image: url('/media/com_emundus/images/tchoozy/complex-illustrations/tchoozy-gestionnaire.svg');
   background: var(--neutral-0);
   mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
   mask-size: 160px;
+  -webkit-mask-size: 160px;
   mask-position: center;
+  -webkit-mask-position: center;
   mask-origin: border-box;
+  -webkit-mask-origin: border-box;
   z-index: 3;
   position: absolute;
   height: 100%;

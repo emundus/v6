@@ -162,7 +162,7 @@ class EmundusModelCampaign extends JModelList {
 								select sc.year
 								from #__emundus_campaign_candidature as cc
 								LEFT JOIN #__emundus_setup_campaigns as sc ON sc.id = cc.campaign_id
-								where applicant_id=' . $uid . ' and published <> -1
+								where cc.applicant_id=' . $uid . ' and cc.published <> -1
 							)';
                     break;
             }
@@ -2017,7 +2017,8 @@ class EmundusModelCampaign extends JModelList {
 			try {
 				$query->select('id')
 					->from($this->_db->quoteName('#__categories'))
-					->where('json_extract(`params`, "$.idCampaign") LIKE ' . $this->_db->quote('"'.$cid.'"'))
+                    ->where('json_valid(`params`)')
+                    ->andWhere('json_extract(`params`, "$.idCampaign") LIKE ' . $this->_db->quote('"'.$cid.'"'))
 					->andWhere($this->_db->quoteName('extension') . ' = ' . $this->_db->quote('com_dropfiles'));
 				$this->_db->setQuery($query);
 				$campaign_dropfile_cat = $this->_db->loadResult();

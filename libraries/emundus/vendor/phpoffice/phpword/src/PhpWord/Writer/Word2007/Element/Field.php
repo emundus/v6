@@ -11,14 +11,14 @@
  * contributors, visit https://github.com/PHPOffice/PHPWord/contributors.
  *
  * @see         https://github.com/PHPOffice/PHPWord
- * @copyright   2010-2018 PHPWord contributors
+ *
  * @license     http://www.gnu.org/licenses/lgpl.txt LGPL version 3
  */
 
 namespace PhpOffice\PhpWord\Writer\Word2007\Element;
 
 /**
- * Field element writer
+ * Field element writer.
  *
  * @since 0.11.0
  */
@@ -27,7 +27,7 @@ class Field extends Text
     /**
      * Write field element.
      */
-    public function write()
+    public function write(): void
     {
         $element = $this->getElement();
         if (!$element instanceof \PhpOffice\PhpWord\Element\Field) {
@@ -42,7 +42,7 @@ class Field extends Text
         }
     }
 
-    private function writeDefault(\PhpOffice\PhpWord\Element\Field $element)
+    private function writeDefault(\PhpOffice\PhpWord\Element\Field $element): void
     {
         $xmlWriter = $this->getXmlWriter();
         $this->startElementP();
@@ -116,12 +116,11 @@ class Field extends Text
     }
 
     /**
-     * Writes a macrobutton field
+     * Writes a macrobutton field.
      *
      * //TODO A lot of code duplication with general method, should maybe be refactored
-     * @param \PhpOffice\PhpWord\Element\Field $element
      */
-    protected function writeMacrobutton(\PhpOffice\PhpWord\Element\Field $element)
+    protected function writeMacrobutton(\PhpOffice\PhpWord\Element\Field $element): void
     {
         $xmlWriter = $this->getXmlWriter();
         $this->startElementP();
@@ -167,19 +166,24 @@ class Field extends Text
         foreach ($properties as $propkey => $propval) {
             switch ($propkey) {
                 case 'format':
-                    $propertiesAndOptions .= '\* ' . $propval . ' ';
+                    $propertiesAndOptions .= '\\* ' . $propval . ' ';
+
                     break;
                 case 'numformat':
-                    $propertiesAndOptions .= '\# ' . $propval . ' ';
+                    $propertiesAndOptions .= '\\# ' . $propval . ' ';
+
                     break;
                 case 'dateformat':
-                    $propertiesAndOptions .= '\@ "' . $propval . '" ';
+                    $propertiesAndOptions .= '\\@ "' . $propval . '" ';
+
                     break;
                 case 'macroname':
                     $propertiesAndOptions .= $propval . ' ';
+
                     break;
                 default:
                     $propertiesAndOptions .= '"' . $propval . '" ';
+
                     break;
             }
         }
@@ -188,22 +192,32 @@ class Field extends Text
         foreach ($options as $option) {
             switch ($option) {
                 case 'PreserveFormat':
-                    $propertiesAndOptions .= '\* MERGEFORMAT ';
+                    $propertiesAndOptions .= '\\* MERGEFORMAT ';
+
                     break;
                 case 'LunarCalendar':
-                    $propertiesAndOptions .= '\h ';
+                    $propertiesAndOptions .= '\\h ';
+
                     break;
                 case 'SakaEraCalendar':
-                    $propertiesAndOptions .= '\s ';
+                    $propertiesAndOptions .= '\\s ';
+
                     break;
                 case 'LastUsedFormat':
-                    $propertiesAndOptions .= '\l ';
+                    $propertiesAndOptions .= '\\l ';
+
                     break;
                 case 'Bold':
-                    $propertiesAndOptions .= '\b ';
+                    $propertiesAndOptions .= '\\b ';
+
                     break;
                 case 'Italic':
-                    $propertiesAndOptions .= '\i ';
+                    $propertiesAndOptions .= '\\i ';
+
+                    break;
+                case 'Path':
+                    $propertiesAndOptions .= '\\p ';
+
                     break;
                 default:
                     $propertiesAndOptions .= $option . ' ';
