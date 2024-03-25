@@ -119,7 +119,7 @@ phpunit-job:
       alias: database
     - redis:7
   before_script:
-    - cp -p configuration.php configuration.php
+    - cp -p configuration.php.dist configuration.php
     - cp -p media/com_emundus_vanilla/v6/.htaccess .htaccess
     - cp -pr media/com_emundus_vanilla/v6/language/overrides/* language/overrides/
     - cp -pr media/com_emundus_vanilla/v6/templates/g5_helium/* templates/g5_helium/
@@ -139,7 +139,7 @@ jest-job:
       alias: database
     - redis:7
   before_script:
-    - cp -p configuration.php configuration.php
+    - cp -p configuration.php.dist configuration.php
     - cp -p media/com_emundus_vanilla/v6/.htaccess .htaccess
     - cp -pr media/com_emundus_vanilla/v6/language/overrides/* language/overrides/
     - cp -pr media/com_emundus_vanilla/v6/templates/g5_helium/* templates/g5_helium/
