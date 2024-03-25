@@ -107,7 +107,9 @@ export default {
         {id: 1, label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_SHOW', value: 'show', multiple: true},
         {id: 2, label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_HIDE', value: 'hide', multiple: true},
         {id: 3, label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_SHOW_OPTIONS', value: 'show_options', multiple: false},
-        {id: 4, label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_HIDE_OPTIONS', value: 'hide_options', multiple: false}
+        {id: 4, label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_HIDE_OPTIONS', value: 'hide_options', multiple: false},
+        {id: 5, label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_MANDATORY', value: 'set_mandatory', multiple: true},
+        {id: 6, label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_OPTIONAL', value: 'set_optional', multiple: true}
       ],
 
       options: [],

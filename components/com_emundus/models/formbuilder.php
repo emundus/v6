@@ -1937,7 +1937,46 @@ class EmundusModelFormbuilder extends JModelList {
                     if($element['params']['database_join_show_please_select'] == 1) {
                         $element['params']['database_join_noselectionlabel'] = 'PLEASE_SELECT';
                     }
-                } else {
+
+					if(!empty($element['params']['database_join_exclude'])) {
+						preg_match_all("/\border by\b(.*)/i", $element['params']['database_join_where_sql'], $order_by, PREG_SET_ORDER, 0);
+						if(!empty($order_by)) {
+							$order_by = $order_by[0][0];
+						}
+						$element['params']['database_join_where_sql'] = str_replace($order_by, '', $element['params']['database_join_where_sql']);
+
+						$ids_to_exclude = [];
+						foreach ($element['params']['database_join_exclude'] as $exclude) {
+							$ids_to_exclude[] = $exclude['value'];
+						}
+
+						if(stripos($element['params']['database_join_where_sql'], 'where') !== false)
+						{
+							$element['params']['database_join_where_sql'] = preg_replace('/\bwhere(.*) not in\b(.*)/ig', '', $element['params']['database_join_where_sql']);
+							if(empty($element['params']['database_join_where_sql'])) {
+								$element['params']['database_join_where_sql'] = 'WHERE {thistable}.' . $element['params']['join_key_column'] . ' NOT IN (' . implode(',',$db->quote($ids_to_exclude)) . ')';
+							} else {
+								$element['params']['database_join_where_sql'] .= ' AND {thistable}.' . $element['params']['join_key_column'] . ' NOT IN (' . implode(',',$db->quote($ids_to_exclude)) . ')';
+							}
+						} else {
+							$element['params']['database_join_where_sql'] .= 'WHERE {thistable}.' . $element['params']['join_key_column'] . ' NOT IN (' . implode(',',$db->quote($ids_to_exclude)) . ')';
+						}
+					} else {
+						$element['params']['database_join_where_sql'] = preg_replace('/\bwhere(.*) not in\b(.*)/ig', '', $element['params']['database_join_where_sql']);
+					}
+
+	                if(strpos($element['params']['database_join_where_sql'], 'order by') !== false)
+	                {
+		                preg_replace('/\border by\b(.*)/i', 'order by {thistable}.' . $element['params']['join_key_column'], $element['params']['database_join_where_sql']);
+	                } else {
+						if(!empty($element['params']['database_join_where_sql']))
+						{
+							$element['params']['database_join_where_sql'] .= ' order by {thistable}.' . $element['params']['join_key_column'];
+						} else {
+							$element['params']['database_join_where_sql'] .= 'order by {thistable}.' . $element['params']['join_key_column'];
+						}
+	                }
+				} else {
                     $sub_values = $old_params['sub_options']['sub_values'];
                     $sub_labels = $old_params['sub_options']['sub_labels'];
                     $sub_initial_selection = [];
@@ -4259,18 +4298,10 @@ class EmundusModelFormbuilder extends JModelList {
 		$query = $db->getQuery(true);
 
 		$tables_allowed = [];
-		$elements_params = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/form-builder-elements-params.json');
-		if(!empty($elements_params)) {
-			$elements_params = json_decode($elements_params, true);
-
-			foreach ($elements_params as $params) {
-				foreach ($params as $param) {
-					if($param['type'] == 'sqldropdown') {
-						$tables_allowed[] = $param['table'];
-					}
-				}
-			}
-		}
+		$query->select('database_name')
+			->from($db->quoteName('#__emundus_datas_library'));
+		$db->setQuery($query);
+		$tables_allowed = $db->loadColumn();
 
 		if(!in_array($table, $tables_allowed)) {
 			return $datas;
@@ -4278,7 +4309,8 @@ class EmundusModelFormbuilder extends JModelList {
 
 		try {
 			if($translate) {
-				$query->select('sef')
+				$query->clear()
+					->select('sef')
 					->from($db->quoteName('#__languages'))
 					->where($db->quoteName('lang_code') . ' = ' . $db->quote(JFactory::getLanguage()->getTag()));
 				$db->setQuery($query);
@@ -4287,7 +4319,8 @@ class EmundusModelFormbuilder extends JModelList {
 				$query->clear()
 					->select($key . ' as value, ' . $value . '_' . $language . ' as label');
 			} else {
-				$query->select($key . ' as value, ' . $value . ' as label');
+				$query->clear()
+					->select($key . ' as value, ' . $value . ' as label');
 			}
 			
 			$query->from($db->quoteName($table));

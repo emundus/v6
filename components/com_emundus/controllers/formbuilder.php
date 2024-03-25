@@ -1332,7 +1332,8 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 			$table = $jinput->getString('table', '');
 			$key  = $jinput->getString('key', '');
 			$value  = $jinput->getString('value', '');
-			$translate  = $jinput->getBool('translate', false);
+			$translate  = $jinput->getString('translate', false);
+			$translate = filter_var($translate, FILTER_VALIDATE_BOOLEAN);
 
 
 			if(!empty($table) && !empty($key) && !empty($value)) {

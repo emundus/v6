@@ -1,6 +1,10 @@
 <template>
   <div id="form-builder-rules" class="self-start w-full">
     <div class="p-8">
+      <button id="add-section" class="em-primary-button px-6 py-3 mb-4" @click="$emit('add-rule','js')">
+        {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_ADD_CONDITION') }}
+      </button>
+
       <h2 class="mb-3" v-if="rules.length > 0">{{ translate('COM_EMUNDUS_FORMBUILDER_RULES') }}</h2>
       <div class="flex flex-col gap-3">
         <div v-for="rule in rules" :key="rule.id">

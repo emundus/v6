@@ -63,7 +63,7 @@
             </div>
           </div>
 
-          <div class="tab-content em-flex-start" v-if="!previewForm">
+          <div class="tab-content em-flex-start" v-if="!previewForm && leftPanelActiveTab !== 'Rules'">
             <transition name="slide-right" mode="out-in">
               <form-builder-elements v-if="leftPanelActiveTab === 'Elements'" @element-created="onElementCreated" :form="currentPage">
               </form-builder-elements>
@@ -73,11 +73,11 @@
                   @open-create-document="onEditDocument"
               >
               </form-builder-document-formats>
-              <form-builder-rules-list
+<!--              <form-builder-rules-list
                   v-else-if="leftPanelActiveTab === 'Rules' && this.showInSection !== 'rules-add'"
                   :form="currentPage"
                   @add-rule="addRule"
-                  />
+                  />-->
             </transition>
           </div>
         </aside>
