@@ -279,6 +279,7 @@ list-style: none;
    display: flex;
     gap: 16px;
     flex-wrap: wrap;
+    justify-content: space-between;
 }
 
 #catalogue_container.tabs .container-actions button {
@@ -362,6 +363,11 @@ form.fabrikForm select {
 }
 
 @media screen and (max-width: 768px) {
+
+	#catalogue_container.cards h4 {
+		max-width: 250px;
+	}
+	
 	.catalogue_filters_container .em-filter-intro h4::after {
 	    left: 20px;
 	}
@@ -422,6 +428,9 @@ form.fabrikForm select {
 @media screen and (min-width: 768px) and (max-width: 1290px) {
 	#catalogue_container.tabs h4 {
 	  max-width: 300px;
+	}
+	#catalogue_container.tabs .mod_emundus_campaign__list_items_tabs .mod_emundus_campaign__list_content_container .em-text-neutral-600 {
+	  justify-content: unset;
 	}
 }
 
