@@ -3604,19 +3604,44 @@ class EmundusModelApplication extends JModelList
         }
     }
 
-    public function deleteUserAccess($fnum, $uid)
+    public function deleteUserAccess($fnum, $uid, $current_user = null)
     {
-        $dbo = $this->getDbo();
-        try
-        {
-            $query = "delete from #__emundus_users_assoc where `user_id` = $uid and `fnum` like ".$dbo->quote($fnum);
-            $dbo->setQuery($query);
-            return $dbo->execute();
+        $deleted = false;
+
+        if (!empty($fnum) && !empty($uid)) {
+            if (empty($current_user)) {
+                $current_user = JFactory::getUser()->id;
+            }
+
+            $dbo = $this->getDbo();
+            $query = $dbo->getQuery(true);
+
+            $query->delete('#__emundus_users_assoc')
+                ->where($dbo->quoteName('user_id') . ' = '. $uid)
+                ->andWhere($dbo->quoteName('fnum') . ' = '. $dbo->quote($fnum));
+
+            try {
+                $dbo->setQuery($query);
+                $deleted = $dbo->execute();
+            } catch(Exception $e) {
+                JLog::add('Error in model/application at query: ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+            }
+
+            if ($deleted) {
+                $query->clear()
+                    ->select('name')
+                    ->from('#__users')
+                    ->where('id = '. $uid);
+
+                $dbo->setQuery($query);
+                $user_name = $dbo->loadResult();
+
+                $logsParams = ['deleted' => ['details' => $user_name]];
+                EmundusModelLogs::log($current_user, '', $fnum, 11, 'd', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams,JSON_UNESCAPED_UNICODE));
+            }
         }
-        catch(Exception $e)
-        {
-            throw $e;
-        }
+
+        return $deleted;
     }
 
     public function getApplications($uid)
