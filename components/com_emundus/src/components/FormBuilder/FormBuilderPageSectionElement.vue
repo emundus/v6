@@ -38,6 +38,7 @@
       <form-builder-element-phone-number v-else-if="element.plugin === 'emundus_phonenumber'" type="phonenumber" :element="element"></form-builder-element-phone-number>
       <form-builder-element-currency v-else-if="element.plugin === 'currency'" type="currency" :element="element"></form-builder-element-currency>
       <form-builder-element-geolocation v-else-if="element.plugin === 'emundus_geolocalisation'" type="geolocation" :element="element"></form-builder-element-geolocation>
+      <form-builder-element-emundus-file-upload v-else-if="element.plugin === 'emundus_fileupload'" type="fileupload" :element="element"></form-builder-element-emundus-file-upload>
       <div v-else v-html="element.element" class="fabrikElement"></div>
     </div>
   </div>
@@ -55,9 +56,12 @@ import FormBuilderElementCurrency
   from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementCurrency.vue";
 import FormBuilderElementGeolocation
   from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementGeolocation.vue";
+import FormBuilderElementEmundusFileUpload
+  from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementEmundusFileUpload.vue";
 
 export default {
   components: {
+    FormBuilderElementEmundusFileUpload,
     FormBuilderElementGeolocation,
     FormBuilderElementCurrency,
     FormBuilderElementPhoneNumber,

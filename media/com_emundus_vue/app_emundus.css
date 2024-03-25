@@ -2075,6 +2075,16 @@ div.forms-emails-editor .menubar[data-v-18686cfd] {
 #form-builder-geolocation .fabrikEmundusGeolocalisation {
   height: 150px;
 }
+#form-builder-currency .currency-icon {
+  position: absolute;
+  right: 0;
+  width: auto !important;
+  padding-right: var(--em-spacing-4);
+}
+#form-builder-currency .currency-block {
+  height: var(--em-form-height);
+  font-size: var(--em-form-font-size);
+}
 .form-builder-page-section-element {
   display: -webkit-box;
   display: -ms-flexbox;
