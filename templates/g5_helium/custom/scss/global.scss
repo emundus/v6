@@ -6871,3 +6871,8 @@ tbody .el-table__row:nth-child(odd){
   width: 60px !important;
   height: 20px !important;
 }
+
+/* SUPPRESSION POPOVER FORM EVAL */
+.popover.fade.top.in {
+  display: none !important;
+}
