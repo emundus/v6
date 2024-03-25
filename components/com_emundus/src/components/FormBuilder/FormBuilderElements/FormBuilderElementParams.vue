@@ -1,19 +1,19 @@
 <template>
   <div>
-    <div v-for="param in params" v-if="(param.published && !param.sysadmin_only) || (sysadmin && param.sysadmin_only && param.published)" class="form-group mb-4">
+    <div v-for="param in params"  v-if="(param.published && !param.sysadmin_only) || (sysadmin && param.sysadmin_only && param.published)" class="form-group mb-4">
       <label :class="param.type === 'repeatable' ? 'font-bold' : ''">{{ translate(param.label) }}</label>
 
       <!-- DROPDOWN -->
       <div v-if="param.type === 'dropdown' || param.type === 'sqldropdown'">
-        <select v-if="repeat_name !== '' && param.options.length > 0" v-model="element.params[repeat_name][index_name][param.name]" class="em-w-100">
+        <select v-if="!isActive && repeat_name !== '' && param.options.length > 0" v-model="element.params[repeat_name][index_name][param.name]" class="em-w-100">
           <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
         </select>
-        <select v-else-if="param.options.length > 0" v-model="element.params[param.name]" class="em-w-100">
+        <select v-else-if="!isActive && param.options.length > 0"  v-model="element.params[param.name]" class="em-w-100">
           <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
         </select>
         <div  v-if="param.special === 'fileupload'">
-          <button type="button" class="collapsible" @click="isActive = true"><label>{{translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT_NAME')}}</label></button>
-            <FormBuilderCreateDocument v-if="isActive" profile_id="1" @documents-updated="reloadComponent" :param="param.name"></FormBuilderCreateDocument>
+          <button type="button" class="collapsible" @click="openingNewDocForm"><label>{{translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT_NAME')}}</label></button>
+            <FormBuilderCreateDocument v-if="isActive" profile_id="1" @documents-updated="reloadComponent"></FormBuilderCreateDocument>
         </div>
 
       </div>
@@ -144,16 +144,17 @@ export default {
         }
       }
 
-      if (param.type === 'sqldropdown') {
-        this.loading = true;
-        formBuilderService.getSqlDropdownOptions(param.table,param.key,param.value,param.translate).then((response) => {
-          param.options = response.data;
-          this.loading = false;
-        });
-      }
+      this.updateSqlDropdownOptions(param);
     })
   },
   methods: {
+    updateSqlDropdownOptions(param) {
+      this.loading = true;
+      formBuilderService.getSqlDropdownOptions(param.table,param.key,param.value,param.translate).then((response) => {
+        param.options = response.data;
+        this.loading = false;
+      });
+    },
     updateDatabasejoinParams(){
       if (!this.sysadmin) {
         const index = this.databases.map(e => e.database_name).indexOf(this.element.params['join_db_name']);
@@ -199,14 +200,16 @@ export default {
         });
       }
     },
-    reloadComponent(document,param) {
+    openingNewDocForm() {
+      this.isActive = !this.isActive;
+      this.$emit('openNewDocForm');
+    },
+
+    reloadComponent(document) {
       if (document) {
-        this.elements.params.find(e => e.name === param).options.push({label: document.name, value: document.id});
-        formBuilderService.getSqlDropdownOptions(param.table,param.key,param.value,param.translate).then((response) => {
-          param.options = response.data;
-          this.loading = false;
+        this.params.forEach((param) => {
+          this.updateSqlDropdownOptions(param);
         });
-        this.element.params[param] = document;
         this.isActive = false;
       }
     },
@@ -221,14 +224,6 @@ export default {
       delete this.element.params[param][param+key];
       this.$forceUpdate();
     },
-    toggleContent() {
-      this.isActive = !this.isActive;
-      if (this.isActive) {
-        document.querySelector('.content').style.display = "block";
-      } else {
-        document.querySelector('.content').style.display = "none";
-      }
-    }
   },
   computed: {
     sysadmin: function(){

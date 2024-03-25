@@ -123,7 +123,7 @@
     </div>
 
     <div class="em-p-16">
-      <button class="em-primary-button" id="saveFormCreateDoc" @click="saveDocument">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_SAVE') }}</button>
+      <button class="em-primary-button" id="saveFormCreateDoc" @click="saveDocument">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT_SAVE') }}</button>
     </div>
   </div>
 </template>
@@ -157,10 +157,6 @@ export default {
 			type: String,
 			default: "create"
 		},
-    param: {
-      type: String,
-      default: null
-    }
   },
   components: {
     IncrementalSelect,
@@ -396,7 +392,7 @@ export default {
 
         campaignService.updateDocument(data, true).then(response => {
           this.document.id = response.data.status;
-          this.$emit('documents-updated', this.document, this.$props.param);
+          this.$emit('documents-updated', this.document);
           this.disabledAllFieldWhenSaved()
         });
       } else {

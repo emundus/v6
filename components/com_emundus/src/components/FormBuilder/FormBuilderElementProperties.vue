@@ -67,11 +67,11 @@
 
       </div>
       <div v-if="tabs[1].active" class="em-p-16">
-        <FormBuilderElementParams :element="element" :params="params" :key="element.id" :databases="databases" />
+        <FormBuilderElementParams :element="element" :params="params" :key="element.id" :databases="databases" @openNewDocForm="isActive=!isActive"/>
       </div>
     </div>
     <div class="em-flex-row em-flex-space-between actions em-m-16">
-      <button class="em-primary-button" @click="saveProperties()">
+      <button v-if="!isActive" class="em-primary-button" @click="saveProperties()">
         {{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_SAVE") }}
       </button>
     </div>
@@ -133,7 +133,9 @@ export default {
       advancedFormatting: false,
 
       loading: false,
+      isActive: false,
     };
+
   },
   mounted() {
     this.getDatabases();
