@@ -259,6 +259,7 @@ requirejs(['fab/fabrik'], function () {
 
                         form.elements.forEach((elt) => {
                             let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
+                            let id = elt.baseElementId ? elt.baseElementId : elt.strElement;
                             if(fields.includes(name)) {
                                 if(['show', 'hide'].includes(action.action)) {
                                     form.doElementFX('element_' + elt.strElement, action.action, elt);
@@ -278,6 +279,15 @@ requirejs(['fab/fabrik'], function () {
                                         case 'hide_options':
                                             removeOption(elt, action.params);
                                             break;
+                                    }
+                                } else if(['set_optional','set_mandatory']) {
+                                    let required_icon = document.querySelector('div#' + id).parentElement.parentElement.querySelector('label span.material-icons');
+                                    if(required_icon) {
+                                        if(action.action == 'set_optional') {
+                                            required_icon.style.display = 'none';
+                                        } else {
+                                            required_icon.style.display = 'inline-block';
+                                        }
                                     }
                                 }
                             }
@@ -300,12 +310,19 @@ requirejs(['fab/fabrik'], function () {
                             case 'hide_options':
                                 opposite_action = 'show_options';
                                 break;
+                            case 'set_optional':
+                                opposite_action = 'set_mandatory';
+                                break;
+                            case 'set_mandatory':
+                                opposite_action = 'set_optional';
+                                break;
                         }
 
                         let fields = action.fields.split(',');
 
                         form.elements.forEach((elt) => {
                             let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
+                            let id = elt.baseElementId ? elt.baseElementId : elt.strElement;
                             if(fields.includes(name)) {
                                 if(['show', 'hide'].includes(action.action)) {
                                     form.doElementFX('element_' + elt.strElement, opposite_action, elt);
@@ -325,6 +342,15 @@ requirejs(['fab/fabrik'], function () {
                                         case 'hide_options':
                                             removeOption(elt, action.params);
                                             break;
+                                    }
+                                } else if(['set_optional','set_mandatory']) {
+                                    let required_icon = document.querySelector('div#' + id).parentElement.parentElement.querySelector('label span.material-icons');
+                                    if(required_icon) {
+                                        if(opposite_action == 'set_optional') {
+                                            required_icon.style.display = 'none';
+                                        } else {
+                                            required_icon.style.display = 'inline-block';
+                                        }
                                     }
                                 }
                             }
