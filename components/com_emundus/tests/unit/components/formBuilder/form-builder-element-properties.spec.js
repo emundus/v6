@@ -2,6 +2,7 @@ import { mount, createLocalVue } from '@vue/test-utils';
 import FormBuilderElementProperties from '../../../../src/components/FormBuilder/FormBuilderElementProperties';
 import translate from '../../../mocks/mixins/translate';
 import store from '../../../../src/store/index';
+import '../../../mocks/matchMedia.mock';
 
 const localVue = createLocalVue();
 localVue.mixin(translate);
