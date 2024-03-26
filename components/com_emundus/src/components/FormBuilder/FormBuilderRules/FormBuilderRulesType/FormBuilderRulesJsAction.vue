@@ -25,7 +25,7 @@
                 v-model="action.fields"
                 label="label_tag"
                 :custom-label="labelTranslate"
-                track-by="name"
+                :track-by="multiselectTrackBy"
                 :options="availableElements"
                 :multiple="actionMultiple"
                 :taggable="false"
@@ -59,6 +59,19 @@
                 :allow-empty="true"
             ></multiselect>
           </div>
+
+          <div v-if="action.action == 'define_repeat_group'">
+            <div class="mt-4" >
+              <label>{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_GROUP_MIN') }}</label>
+              <input type="text" v-model="minRepeat" />
+            </div>
+
+            <div class="mt-4">
+              <label>{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_GROUP_MAX') }}</label>
+              <input type="text" v-model="maxRepeat" />
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -109,11 +122,15 @@ export default {
         {id: 3, label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_SHOW_OPTIONS', value: 'show_options', multiple: false},
         {id: 4, label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_HIDE_OPTIONS', value: 'hide_options', multiple: false},
         {id: 5, label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_MANDATORY', value: 'set_mandatory', multiple: true},
-        {id: 6, label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_OPTIONAL', value: 'set_optional', multiple: true}
+        {id: 6, label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_OPTIONAL', value: 'set_optional', multiple: true},
+        {id: 7, label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_GROUP', value: 'define_repeat_group', multiple: false}
       ],
 
       options: [],
-      options_plugins: ['dropdown', 'databasejoin', 'radiobutton', 'checkbox']
+      options_plugins: ['dropdown', 'databasejoin', 'radiobutton', 'checkbox'],
+
+      minRepeat: 1,
+      maxRepeat: 0,
     };
   },
   created() {
@@ -183,10 +200,17 @@ export default {
     },
     availableElements() {
       if (!this.actionMultiple) {
-        return this.elements.filter(element => ['databasejoin', 'dropdown', 'radiobutton', 'checkbox'].includes(element.plugin));
+        if(this.action.action == 'define_repeat_group') {
+          return Object.values(this.page.Groups).filter(group => group.repeat_group == true);
+        } else {
+          return this.elements.filter(element => ['databasejoin', 'dropdown', 'radiobutton', 'checkbox'].includes(element.plugin));
+        }
       } else {
         return this.elements;
       }
+    },
+    multiselectTrackBy() {
+      return this.action.action == 'define_repeat_group' ? 'group_id' : 'name';
     }
   },
   watch: {
@@ -208,7 +232,21 @@ export default {
         }
       },
       deep: true
-    }
+    },
+
+    minRepeat: function (val) {
+      if(this.$props.action.params[0] == undefined) {
+        this.$props.action.params[0] = {};
+      }
+      this.$props.action.params[0].minRepeat = val;
+    },
+
+    maxRepeat: function (val) {
+      if(this.$props.action.params[0] == undefined) {
+        this.$props.action.params[0] = {};
+      }
+      this.$props.action.params[0].maxRepeat = val;
+    },
   }
 }
 </script>

@@ -3,6 +3,7 @@ requirejs(['fab/fabrik'], function () {
     var formDataChanged = false;
     var js_rules = [];
     var table_name = '';
+    var form_loaded = false;
 
     let check_condition = arr => arr.every(v => v === true);
     var operators = {
@@ -95,6 +96,20 @@ requirejs(['fab/fabrik'], function () {
 
     Fabrik.addEvent('fabrik.form.group.duplicate.end', function (form, event) {
         manageRepeatGroup(form);
+
+        setTimeout(() => {
+            let last_index_added = form.addedGroups.length;
+            form.elements.forEach(function (element) {
+                if(element.getRepeatNum() == last_index_added) {
+                    manageRules(form, element, true);
+
+                    var $el = jQuery(element.element);
+                    $el.on(element.getChangeEvent(), function (e) {
+                        manageRules(form, element);
+                    });
+                }
+            });
+        },200);
     });
 
     Fabrik.addEvent('fabrik.form.group.delete.end', function (form, event) {
@@ -102,26 +117,30 @@ requirejs(['fab/fabrik'], function () {
     });
 
     Fabrik.addEvent('fabrik.form.elements.added', function (form, event) {
-        setTimeout(() => {
-            fetch('/index.php?option=com_emundus&controller=form&task=getjsconditions&form_id=' + form.id).then(response => response.json()).then(data => {
-                if (data.status) {
-                    js_rules = data.data.conditions;
+        if(!form_loaded) {
+            setTimeout(() => {
+                fetch('/index.php?option=com_emundus&controller=form&task=getjsconditions&form_id=' + form.id).then(response => response.json()).then(data => {
+                    if (data.status) {
+                        js_rules = data.data.conditions;
 
-                    form.elements.forEach(function (element) {
-                        manageRules(form, element, false);
+                        form.elements.forEach(function (element) {
+                            manageRules(form, element, false);
 
-                        var $el = jQuery(element.element);
-                        $el.on(element.getChangeEvent(), function (e) {
-                            manageRules(form, element);
+                            var $el = jQuery(element.element);
+                            $el.on(element.getChangeEvent(), function (e) {
+                                manageRules(form, element);
+                            });
                         });
-                    });
-                }
+                    }
 
-                if (!removedFabrikFormSkeleton) {
-                    removeFabrikFormSkeleton();
-                }
-            });
-        },500);
+                    if (!removedFabrikFormSkeleton) {
+                        removeFabrikFormSkeleton();
+                    }
+
+                    form_loaded = true;
+                });
+            }, 500);
+        }
     });
 
     window.setInterval(function () {
@@ -224,7 +243,6 @@ requirejs(['fab/fabrik'], function () {
     }
 
     function manageRules(form, element, clear = true) {
-        let repeat_num = element.getRepeatNum();
         let elt_name = element.origId ? element.origId.split('___')[1] : element.baseElementId.split('___')[1];
 
         let elt_rules = [];
@@ -243,7 +261,7 @@ requirejs(['fab/fabrik'], function () {
                 rule.conditions.forEach((condition) => {
                     form.elements.forEach((elt) => {
                         let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
-                        if (name == condition.field && elt.getRepeatNum() == repeat_num) {
+                        if (name == condition.field && elt.getRepeatNum() == element.getRepeatNum()) {
                             if(operators[condition.state](elt.get('value'), condition.values, elt.plugin)) {
                                 condition_state.push(true);
                             } else if(rule.group == 'AND') {
@@ -258,104 +276,127 @@ requirejs(['fab/fabrik'], function () {
 
                         let fields = action.fields.split(',');
 
-                        form.elements.forEach((elt) => {
-                            let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
-                            let id = elt.baseElementId ? elt.baseElementId : elt.strElement;
-                            if(fields.includes(name) && elt.getRepeatNum() == repeat_num) {
-                                if(['show', 'hide'].includes(action.action)) {
-                                    form.doElementFX('element_' + elt.strElement, action.action, elt);
+                        if(action.action == 'define_repeat_group') {
+                            let params = JSON.parse(action.params);
+                            form.options.maxRepeat[action.fields] = params[0].maxRepeat;
+                            form.options.minRepeat[action.fields] = params[0].minRepeat;
+                            manageRepeatGroup(form);
+                        } else {
+                            form.elements.forEach((elt) => {
+                                let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
+                                let id = elt.baseElementId ? elt.baseElementId : elt.strElement;
+                                if (fields.includes(name) && ((element.options.inRepeatGroup && elt.getRepeatNum() == element.getRepeatNum()) || !element.options.inRepeatGroup)) {
+                                    if (['show', 'hide'].includes(action.action)) {
+                                        form.doElementFX('element_' + elt.strElement, action.action, elt);
 
-                                    if (action.action == 'hide') {
-                                        if (clear) {
-                                            elt.clear();
+                                        if (action.action == 'hide') {
+                                            if (clear) {
+                                                elt.clear();
+                                            }
                                         }
+
                                         let event = new Event(elt.getChangeEvent());
                                         elt.element.dispatchEvent(event);
-                                    }
-                                } else if(['show_options', 'hide_options'].includes(action.action)) {
-                                    switch(action.action) {
-                                        case 'show_options':
-                                            addOption(elt, action.params);
-                                            break;
-                                        case 'hide_options':
-                                            removeOption(elt, action.params);
-                                            break;
-                                    }
-                                } else if(['set_optional','set_mandatory']) {
-                                    let required_icon = document.querySelector('label[for="' + id + '"] span.material-icons');
-                                    if(required_icon) {
-                                        if(action.action == 'set_optional') {
-                                            required_icon.style.display = 'none';
-                                        } else {
-                                            required_icon.style.display = 'inline-block';
+                                    } else if (['show_options', 'hide_options'].includes(action.action)) {
+                                        switch (action.action) {
+                                            case 'show_options':
+                                                addOption(elt, action.params);
+                                                break;
+                                            case 'hide_options':
+                                                removeOption(elt, action.params);
+                                                break;
+                                        }
+
+                                        let event = new Event(elt.getChangeEvent());
+                                        elt.element.dispatchEvent(event);
+                                    } else if (['set_optional', 'set_mandatory']) {
+                                        let required_icon = document.querySelector('label[for="' + id + '"] span.material-icons');
+                                        if (required_icon) {
+                                            if (action.action == 'set_optional') {
+                                                required_icon.style.display = 'none';
+                                            } else {
+                                                required_icon.style.display = 'inline-block';
+                                            }
                                         }
                                     }
                                 }
-                            }
-                        });
+                            });
+                        }
                     });
                 } else {
                     let opposite_action = 'hide';
 
                     rule.actions.forEach((action) => {
-                        switch (action.action) {
-                            case 'show':
-                                opposite_action = 'hide';
-                                break;
-                            case 'hide':
-                                opposite_action = 'show';
-                                break;
-                            case 'show_options':
-                                opposite_action = 'hide_options';
-                                break;
-                            case 'hide_options':
-                                opposite_action = 'show_options';
-                                break;
-                            case 'set_optional':
-                                opposite_action = 'set_mandatory';
-                                break;
-                            case 'set_mandatory':
-                                opposite_action = 'set_optional';
-                                break;
-                        }
 
-                        let fields = action.fields.split(',');
+                        if(action.action == 'define_repeat_group') {
+                            form.options.maxRepeat[action.fields] = 0;
+                            form.options.minRepeat[action.fields] = 1;
+                            manageRepeatGroup(form);
+                        } else {
 
-                        form.elements.forEach((elt) => {
-                            let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
-                            let id = elt.baseElementId ? elt.baseElementId : elt.strElement;
-                            if(fields.includes(name) && elt.getRepeatNum() == repeat_num) {
-                                if(['show', 'hide'].includes(action.action)) {
-                                    form.doElementFX('element_' + elt.strElement, opposite_action, elt);
+                            switch (action.action) {
+                                case 'show':
+                                    opposite_action = 'hide';
+                                    break;
+                                case 'hide':
+                                    opposite_action = 'show';
+                                    break;
+                                case 'show_options':
+                                    opposite_action = 'hide_options';
+                                    break;
+                                case 'hide_options':
+                                    opposite_action = 'show_options';
+                                    break;
+                                case 'set_optional':
+                                    opposite_action = 'set_mandatory';
+                                    break;
+                                case 'set_mandatory':
+                                    opposite_action = 'set_optional';
+                                    break;
+                            }
 
-                                    if (opposite_action == 'hide') {
-                                        if (clear) {
-                                            elt.clear();
+                            let fields = action.fields.split(',');
+
+                            form.elements.forEach((elt) => {
+                                let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
+                                let id = elt.baseElementId ? elt.baseElementId : elt.strElement;
+                                if (fields.includes(name) && ((element.options.inRepeatGroup && elt.getRepeatNum() == element.getRepeatNum()) || !element.options.inRepeatGroup)) {
+                                    if (['show', 'hide'].includes(opposite_action)) {
+                                        form.doElementFX('element_' + elt.strElement, opposite_action, elt);
+
+                                        if (opposite_action == 'hide') {
+                                            if (clear) {
+                                                elt.clear();
+                                            }
                                         }
+
                                         let event = new Event(elt.getChangeEvent());
                                         elt.element.dispatchEvent(event);
-                                    }
-                                } else if(['show_options', 'hide_options'].includes(action.action)) {
-                                    switch(opposite_action) {
-                                        case 'show_options':
-                                            addOption(elt, action.params);
-                                            break;
-                                        case 'hide_options':
-                                            removeOption(elt, action.params);
-                                            break;
-                                    }
-                                } else if(['set_optional','set_mandatory']) {
-                                    let required_icon = document.querySelector('label[for="' + id + '"] span.material-icons');
-                                    if(required_icon) {
-                                        if(opposite_action == 'set_optional') {
-                                            required_icon.style.display = 'none';
-                                        } else {
-                                            required_icon.style.display = 'inline-block';
+                                    } else if (['show_options', 'hide_options'].includes(action.action)) {
+                                        switch (opposite_action) {
+                                            case 'show_options':
+                                                addOption(elt, action.params);
+                                                break;
+                                            case 'hide_options':
+                                                removeOption(elt, action.params);
+                                                break;
+                                        }
+
+                                        let event = new Event(elt.getChangeEvent());
+                                        elt.element.dispatchEvent(event);
+                                    } else if (['set_optional', 'set_mandatory']) {
+                                        let required_icon = document.querySelector('label[for="' + id + '"] span.material-icons');
+                                        if (required_icon) {
+                                            if (opposite_action == 'set_optional') {
+                                                required_icon.style.display = 'none';
+                                            } else {
+                                                required_icon.style.display = 'inline-block';
+                                            }
                                         }
                                     }
                                 }
-                            }
-                        });
+                            });
+                        }
                     });
                 }
             });

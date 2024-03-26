@@ -9,7 +9,7 @@
 
         <form-builder-rules-js
           v-if="type === 'js' && elements.length > 0"
-          :page="page"
+          :page="fabrikPage"
           :elements="elements"
           :rule="rule"
           @close-rule-add-js="$emit('close-rule-add')"
