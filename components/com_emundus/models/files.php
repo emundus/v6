@@ -4670,7 +4670,6 @@ class EmundusModelFiles extends JModelLegacy
                                 );
 	                            $logged = $m_email->logEmail($message, $file['fnum']);
                                 $msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$to.'<br>';
-                                JLog::add($to.' '.$body, JLog::INFO, 'com_emundus.email');
                             }
                         }
                     }
@@ -4752,7 +4751,6 @@ class EmundusModelFiles extends JModelLegacy
                             );
                             $m_email->logEmail($message, $file['fnum']);
                             $msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$to.'<br>';
-                            JLog::add($to.' '.$body, JLog::INFO, 'com_emundus.email');
                         }
                     }
                 }
