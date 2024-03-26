@@ -1,18 +1,21 @@
 <template>
-  <div id="form-builder-currency">
+  <div id="form-builder-emundus-file-upload">
     <div v-if="loading" class="em-loader"></div>
-    <div v-else class="w-full relative flex items-center currency-block">
-      <input class="currency" readonly type="text" value="test">
-      <span class="currency-icon">
-        {{ currencyIcon }}
-      </span>
+    <div v-else class="w-full relative flex items-center ">
+      <div id="div_jos_emundus_1001_00___e_805_8014" class="fabrik_element___emundus_file_upload_parent">
+    <span v-if="allowedTypes!=null" class="fabrik_element___file_upload_formats">
+        {{ translate("PLG_ELEMENT_FILEUPLOAD_ALLOWED_TYPES") }} : {{this.allowedTypes}}
+    </span>
+        <div class="btn-upload em-pointer">
+          <p class="em-flex-row">{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_PREVIEW_DROPZONE')}}<span class="material-icons-outlined em-ml-12">cloud_upload</span></p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import formBuilderService from '../../../services/formbuilder';
-import Editor from "../../editor";
+import fileGet from '../../../services/form';
 
 export default {
   props: {
@@ -26,51 +29,35 @@ export default {
     }
   },
   components: {
-    Editor
   },
   data() {
     return {
       loading: false,
-
       editable: false,
-      dynamicComponent: 0,
+      allowedTypes: null,
+      attachId: this.element.params.attachmentId,
     };
   },
-  created () {},
+  created () {
+    console.log('test de fin');
+    this.getAllowedFile(this.attachId);
+  },
   methods: {
+    getAllowedFile(aid){
+      fileGet.getDocumentModels(aid).then((response) => {
+         this.allowedTypes =  response.data.allowed_types;
+      }).catch((error) => {
+        this.loading = false;
+        console.error(error);
+      });
+    }
   },
   watch: {},
   computed: {
-    currencyIcon() {
-      switch (this.element.params['all_currencies_options']['all_currencies_options0'].iso3) {
-        case 'USD':
-          return '$';
-        case 'EUR':
-          return '€';
-        case 'GBP':
-          return '£';
-        case 'JPY':
-          return '¥';
-        default:
-          return '€';
-      }
-    }
   }
 }
 </script>
 
 <style lang="scss">
-#form-builder-currency {
-  .currency-icon {
-    position: absolute;
-    right: 0;
-    width: auto !important;
-    padding-right: var(--em-spacing-4);
-  }
 
-  .currency-block {
-    height: var(--em-form-height);
-    font-size: var(--em-form-font-size);
-  }
-}
 </style>

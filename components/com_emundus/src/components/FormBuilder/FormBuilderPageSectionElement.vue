@@ -80,6 +80,9 @@ export default {
       keysPressed: [],
       options_enabled: false,
     }
+  },created() {
+    console.log('jojo');
+    console.log(this.element);
   },
   methods: {
     updateLabel()

@@ -67,7 +67,7 @@
 
       </div>
       <div v-if="tabs[1].active" class="em-p-16">
-        <FormBuilderElementParams :element="element" :params="params" :key="element.id" :databases="databases" @openNewDocForm="isActive=!isActive"/>
+        <FormBuilderElementParams :element="element" :params="params" :key="element.id" :databases="databases" @openNewDocForm="openFormCreateDocument" />
       </div>
     </div>
     <div class="em-flex-row em-flex-space-between actions em-m-16">
@@ -148,6 +148,9 @@ export default {
           this.databases = response.data.data;
         }
       });
+    },
+    openFormCreateDocument() {
+      this.isActive = !this.isActive;
     },
     saveProperties() {
       this.loading = true;

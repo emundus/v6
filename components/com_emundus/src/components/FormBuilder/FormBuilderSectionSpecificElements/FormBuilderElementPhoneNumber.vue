@@ -8,7 +8,7 @@
           <img v-else src="images/emundus/flags/fr.png">
         </div>
         <div class="w-full">
-          <input class="phonenumber" readonly type="text" value="+33 6 12 34 56 78">
+          <input class="phonenumber" readonly type="text" value="+33 5 17 81 10 42">
         </div>
       </div>
     </div>

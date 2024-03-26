@@ -5,14 +5,14 @@
 
       <!-- DROPDOWN -->
       <div v-if="param.type === 'dropdown' || param.type === 'sqldropdown'">
-        <select v-if="!isActive && repeat_name !== '' && param.options.length > 0" v-model="element.params[repeat_name][index_name][param.name]" class="em-w-100">
+        <select v-if="(param.special === 'fileupload' && !isActive) && repeat_name !== '' && param.options.length > 0" v-model="element.params[repeat_name][index_name][param.name]" class="em-w-100">
           <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
         </select>
-        <select v-else-if="!isActive && param.options.length > 0"  v-model="element.params[param.name]" class="em-w-100">
+        <select v-else-if="(param.special === 'fileupload' && !isActive) && param.options.length > 0"  v-model="element.params[param.name]" class="em-w-100">
           <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
         </select>
         <div  v-if="param.special === 'fileupload'">
-          <button type="button" class="collapsible" @click="openingNewDocForm"><label>{{translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT_NAME')}}</label></button>
+          <button type="button" class="collapsible" @click="EventNewDocForm"><label>{{translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT_NAME')}}</label></button>
             <FormBuilderCreateDocument v-if="isActive" profile_id="1" @documents-updated="reloadComponent"></FormBuilderCreateDocument>
         </div>
 
@@ -200,7 +200,7 @@ export default {
         });
       }
     },
-    openingNewDocForm() {
+    EventNewDocForm() {
       this.isActive = !this.isActive;
       this.$emit('openNewDocForm');
     },
@@ -210,8 +210,8 @@ export default {
         this.params.forEach((param) => {
           this.updateSqlDropdownOptions(param);
         });
-        this.isActive = false;
       }
+      this.EventNewDocForm();
     },
     addRepeatableField(param) {
       let index = Object.entries(this.element.params[param]).length;
