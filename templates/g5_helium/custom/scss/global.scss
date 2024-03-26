@@ -4222,6 +4222,18 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
     color: var(--neutral-700);
     font-family: var(--em-coordinator-font);
   }
+
+  ul {
+    padding-left: 20px;
+  }
+
+  a {
+    text-decoration: underline;
+    &:hover {
+        text-decoration: none;
+
+    }
+  }
 }
 
 /* EVAL / DECISION */
