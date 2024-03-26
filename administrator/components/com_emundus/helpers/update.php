@@ -1593,6 +1593,10 @@ class EmundusHelperUpdate
             return $result;
         }
 
+		if(empty($params['params'])) {
+			$params['params'] = [];
+		}
+
         try {
             // Initialize again Joomla database to fix problem with Falang (or other plugins) that override default mysql driver
             JFactory::$database = null;
@@ -3617,7 +3621,7 @@ class EmundusHelperUpdate
 			$storage_value['actions_failed_login'] = 1;
 			$storage_value['email_on_admin_login'] = 0;
 			$storage_value['forbid_admin_frontend_login'] = 0;
-			$storage_value['forbid_new_admins'] = 1;
+			$storage_value['forbid_new_admins'] = 0;
 
 			// Upload scanner
 			$storage_value['upload_scanner_enabled'] = 1;

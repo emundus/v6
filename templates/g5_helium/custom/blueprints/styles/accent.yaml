@@ -8,87 +8,109 @@ form:
       type: input.colorpicker
       label: Red 1
       default: "#eb0000"
+      rgaa: true
     red-2:
       type: input.colorpicker
       label: Red 2
       default: "#c00016"
+      rgaa: true
     pink-1:
       type: input.colorpicker
       label: Pink 1
       default: "#ff78d1"
+      rgaa: false
     pink-2:
       type: input.colorpicker
       label: Pink 2
       default: "#e0008a"
+      rgaa: true
     purple-1:
       type: input.colorpicker
       label: Purple 1
       default: "#d292ef"
+      rgaa: false
     purple-2:
       type: input.colorpicker
       label: Purple 2
       default: "#9600c7"
+      rgaa: true
     light-blue-1:
       type: input.colorpicker
       label: Light blue 1
       default: "#35d7d2"
+      rgaa: false
     light-blue-2:
       type: input.colorpicker
       label: Light blue 2
       default: "#308281"
+      rgaa: true
     blue-1:
       type: input.colorpicker
       label: Blue 1
       default: "#64d8ff"
+      rgaa: false
     blue-2:
       type: input.colorpicker
       label: Blue 2
       default: "#0073e5"
+      rgaa: true
     blue-3:
       type: input.colorpicker
       label: Blue 3
       default: "#0644ae"
+      rgaa: true
     green-1:
       type: input.colorpicker
       label: Green 1
       default: "#98d432"
+      rgaa: false
     green-2:
       type: input.colorpicker
       label: Green 2
       default: "#015822"
+      rgaa: true
     yellow-1:
       type: input.colorpicker
       label: Yellow 1
       default: "#ffe014"
+      rgaa: false
     yellow-2:
       type: input.colorpicker
       label: Yellow 2
       default: "#ffae00"
+      rgaa: false
     orange-1:
       type: input.colorpicker
       label: Orange 1
       default: "#ff6900"
+      rgaa: false
     orange-2:
       type: input.colorpicker
       label: Orange 2
       default: "#cc4b00"
+      rgaa: true
     beige:
       type: input.colorpicker
       label: Beige
       default: "#ffc285"
+      rgaa: false
     brown:
       type: input.colorpicker
       label: Brown
       default: "#8b511f"
+      rgaa: true
     grey-1:
       type: input.colorpicker
       label: Grey 1
       default: "#b4b4b4"
+      rgaa: false
     grey-2:
       type: input.colorpicker
       label: Grey 2
       default: "#757575"
+      rgaa: true
     black:
       type: input.colorpicker
       label: Black
       default: "#1e1e1e"
+      rgaa: true

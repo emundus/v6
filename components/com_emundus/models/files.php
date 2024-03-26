@@ -274,8 +274,7 @@ class EmundusModelFiles extends JModelLegacy
                         $element_attribs = json_decode($def_elmt->element_attribs);
                         $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
                         foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-                            $select = 'REPLACE(' . $select . ', "' . $value . '", "' .
-                                JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+                            $select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
                         }
                         $this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
                     }
@@ -577,7 +576,10 @@ class EmundusModelFiles extends JModelLegacy
     private function _buildWhere($already_joined_tables = array()) {
         $h_files = new EmundusHelperFiles();
 
-		if ($this->use_module_filters) {
+        $session = JFactory::getSession();
+        $last_filters_use_advanced = $session->get('last-filters-use-adavanced', false);
+
+		if ($this->use_module_filters || $last_filters_use_advanced) {
 			return $h_files->_moduleBuildWhere($already_joined_tables, 'files', array(
 				'fnum_assoc' => $this->fnum_assoc,
 				'code' => $this->code
@@ -2815,18 +2817,18 @@ class EmundusModelFiles extends JModelLegacy
                         break;
                     case 'birthday':
                         if ($is_repeat) {
-                            $query .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y\') AS ' . $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
+                            $query .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%Y-%m-%d\') AS ' . $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
 	                        $saved_element_as = $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
                         } else {
-                            $query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y\') AS ' . $element->tab_name . '___' . $element->element_name;
+                            $query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%Y-%m-%d\') AS ' . $element->tab_name . '___' . $element->element_name;
                         }
                         break;
                     case 'date':
                         if ($is_repeat) {
-                            $query .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y %H:%i:%s\') AS ' . $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
+                            $query .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%Y-%m-%d %H:%i:%s\') AS ' . $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
 							$saved_element_as = $already_joined[$child_element_table_alias]  . '___' . $element->element_name;
                         } else {
-                            $query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%d/%m/%Y %H:%i:%s\') AS ' . $element->tab_name . '___' . $element->element_name;
+                            $query .= ', DATE_FORMAT(' . $element_table_alias . '.' . $element->element_name . ', \'%Y-%m-%d %H:%i:%s\') AS ' . $element->tab_name . '___' . $element->element_name;
                         }
                         break;
                     case 'yesno':

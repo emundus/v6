@@ -10,6 +10,8 @@
 
 // No direct access
 
+use PhpOffice\PhpWord\TemplateProcessor;
+
 defined('_JEXEC') or die('Restricted access');
 define('R_MD5_MATCH', '/^[a-f0-9]{32}$/i');
 
@@ -239,8 +241,7 @@ class EmundusModelEvaluation extends JModelList {
 					    $element_attribs = json_decode($def_elmt->element_attribs);
 					    $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
 					    foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-						    $select = 'REPLACE(' . $select . ', "' . $value . '", "' .
-							    JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+                            $select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
 					    }
 					    $this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
 				    }
@@ -406,7 +407,7 @@ class EmundusModelEvaluation extends JModelList {
         $h_list = new EmundusHelperList;
 
         $elements = array();
-        if ($session->has('filt_params') ||!empty($all)) {
+        if ($session->has('filt_params') || !empty($all)) {
 
             $filt_params = $session->get('filt_params');
 
@@ -453,6 +454,7 @@ class EmundusModelEvaluation extends JModelList {
 
         $jinput = JFactory::getApplication()->input;
         $fnums = $jinput->getString('cfnums', null);
+		$get_all = false;
 
         if ($session->has('filt_params')) {
             $elements_id = array();
@@ -473,17 +475,23 @@ class EmundusModelEvaluation extends JModelList {
                     }
                 }
             } else {
-                $groups = $this->getGroupsEvalByProgramme($programme_code);
-                if (!empty($groups)) {
-                    $eval_elt_list = $this->getAllElementsByGroups($groups); // $show_in_list_summary
-                    if (count($eval_elt_list)>0) {
-                        foreach ($eval_elt_list as $eel) {
-                            $elements_id[] = $eel->element_id;
-                        }
-                    }
-                }
+				$get_all = true;
             }
+        } else {
+			$get_all = true;
         }
+
+		if ($get_all) {
+			$groups = $this->getGroupsEvalByProgramme($programme_code);
+			if (!empty($groups)) {
+				$eval_elt_list = $this->getAllElementsByGroups($groups); // $show_in_list_summary
+				if (count($eval_elt_list)>0) {
+					foreach ($eval_elt_list as $eel) {
+						$elements_id[] = $eel->element_id;
+					}
+				}
+			}
+		}
 
         return @$elements_id;
     }
@@ -1137,7 +1145,7 @@ class EmundusModelEvaluation extends JModelList {
     // get string of fabrik group ID use for evaluation form
     public function getGroupsEvalByProgramme($code) {
         $db = $this->getDbo();
-        $query = 'select fabrik_group_id from #__emundus_setup_programmes where code like '.$db->Quote($code);
+        $query = 'select fabrik_group_id from #__emundus_setup_programmes where code like '.$db->Quote($code).' order by id desc';
         try {
             if (!empty($code)) {
                 $db->setQuery($query);
@@ -2095,7 +2103,7 @@ class EmundusModelEvaluation extends JModelList {
 								{
 									\PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(true);
 								}
-			                    $preprocess = $phpWord->loadTemplate($letter_file);
+			                    $preprocess = new TemplateProcessor($letter_file);
 			                    $tags       = $preprocess->getVariables();
 
 			                    $idFabrik  = [];
@@ -2194,13 +2202,23 @@ class EmundusModelEvaluation extends JModelList {
 				                    elseif($elt['plugin'] == 'emundus_phonenumber'){
 					                    $fabrikValues[$elt['id']][$fnum]['val'] = substr($fabrikValues[$elt['id']][$fnum]['val'], 2, strlen($fabrikValues[$elt['id']][$fnum]['val']));
 				                    }
+                                    elseif($elt['plugin'] == 'cascadingdropdown') {
+                                        foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+                                            $fabrikValues[$elt['id']][$fnum]['val'] = $_mEmail->getCddLabel($elt, $val['val']);
+                                        }
+                                    }
 				                    else {
 					                    if (@$groupParams->repeat_group_button == 1 || $elt['plugin'] === 'databasejoin') {
 						                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
 					                    }
-					                    else {
-						                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
-					                    }
+                                        else {
+                                            if ($elt['plugin'] == 'date') {
+                                                $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->date_form_format);
+                                            }
+                                            else {
+                                                $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
+                                            }
+                                        }
 				                    }
 
 				                    if(!isset($fabrikValues[$elt['id']][$fnum]['complex_data'])){

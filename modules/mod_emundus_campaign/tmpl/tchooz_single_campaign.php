@@ -187,10 +187,14 @@ if($currentCampaign->apply_online == 0){
                     if(!isset($redirect_url) || empty($redirect_url)) {
                         $redirect_url = "index.php?option=com_users&view=registration";
                     }
-                    $register_url = $redirect_url."&course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
-                } else {
-                    $register_url = $redirect_url."?course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
                 }
+
+	            if (strpos($redirect_url, '?') !== false) {
+		            $register_url = $redirect_url."&course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
+	            } else {
+		            $register_url = $redirect_url."?course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
+	            }
+
                 if(!$user->guest) {
                     $register_url .= "&redirect=" . $formUrl;
                 }
@@ -238,11 +242,17 @@ if($currentCampaign->apply_online == 0){
     window.onload = function() {
         document.getElementById('campaign_tab').classList.add('current-tab');
         <?php if (in_array('faq', $modules_tabs)) : ?>
-        document.getElementById('faq').style.display = 'none';
+        const faq = document.getElementById('faq');
+        if (faq) {
+            document.getElementById('faq').style.display = 'none';
+        }
         <?php endif; ?>
 
         <?php if (in_array('documents', $modules_tabs)) : ?>
-        document.getElementById('documents').style.display = 'none';
+        const documents = document.getElementById('documents');
+        if (documents) {
+            documents.style.display = 'none';
+        }
         if(typeof document.getElementsByClassName('campaign-documents')[0] != 'undefined') {
             document.getElementsByClassName('campaign-documents')[0].parentElement.style.display = 'none';
         }

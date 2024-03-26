@@ -900,10 +900,6 @@ circle.circle {
 /* Téléphone */
 @media screen and (max-width: 767px) {
 
-    #applications_list_view table tbody tr td {
-        position: inherit !important;
-    }
-
     .moduletable.list-group.candidacy-files-list > div.em-flex-row.em-flex-space-between.em-mt-16 {
         flex-wrap: wrap;
         gap: 9px;

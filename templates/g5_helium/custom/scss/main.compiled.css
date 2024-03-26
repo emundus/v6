@@ -977,6 +977,9 @@ form.fabrikForm .fabrikElement {
       margin-top: var(--em-form-label-margin-bottom);
       position: relative;
     }
+form.fabrikForm .fabrikElement div li {
+        list-style-position: inside;
+      }
 form.fabrikForm .fabrikElementContainer:not(.fabrikHide) {
       margin-bottom: var(--em-form-field-margin-bottom);
     }
@@ -1563,6 +1566,7 @@ form.fabrikForm .plg-fileupload .fabrikSubElementContainer {
         flex-direction: column-reverse;
         padding: var(--em-form-fileupload-padding);
         background-color: var(--em-form-fileupload-bgc);
+        border-radius: var(--em-form-br);
       }
 form.fabrikForm .plg-fileupload .fabrikSubElementContainer input[type='file'] {
           height: auto;
@@ -1657,9 +1661,16 @@ form.fabrikForm .currencyElement input:focus + select,form.fabrikForm .currencyE
 form.fabrikForm .control-group.error label {
         color: var(--em-form-label-color-error);
       }
+form.fabrikForm .control-group.\!error label {
+        color: var(--em-form-label-color-error) !important;
+      }
 form.fabrikForm .control-group.error input,form.fabrikForm .control-group.error textarea,form.fabrikForm .control-group.error select {
         border-color: var(--em-form-bc-error);
         color: var(--em-default-text-color-1);
+      }
+form.fabrikForm .control-group.\!error input,form.fabrikForm .control-group.\!error textarea,form.fabrikForm .control-group.\!error select {
+        border-color: var(--em-form-bc-error) !important;
+        color: var(--em-default-text-color-1) !important;
       }
 form.fabrikForm .fabrikError.plg-checkbox .fabrikElement .fabrikSubElementContainer {
           border-color: var(--em-form-checkbox-bc-error);
@@ -1979,6 +1990,17 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
       margin-left: -10px;
       font-size: 16px;
     }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
 .visible {
   visibility: visible;
 }
@@ -2258,6 +2280,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .top-px {
   top: 1px;
 }
+.isolate {
+  isolation: isolate;
+}
 .float-right {
   float: right;
 }
@@ -2293,6 +2318,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .mb-8 {
   margin-bottom: var(--em-spacing-8);
+}
+.mb-9 {
+  margin-bottom: var(--em-spacing-9);
 }
 .me-1 {
   -webkit-margin-end: var(--em-spacing-1);
@@ -2360,6 +2388,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .mt-8 {
   margin-top: var(--em-spacing-8);
+}
+.mt-9 {
+  margin-top: var(--em-spacing-9);
 }
 .line-clamp-1 {
   overflow: hidden;
@@ -2457,6 +2488,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .w-11\/12 {
   width: 91.666667%;
+}
+.w-auto {
+  width: auto;
 }
 .w-fit {
   width: -moz-fit-content;
@@ -3318,6 +3352,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .gap-y-px {
   row-gap: 1px;
 }
+.self-center {
+  align-self: center;
+}
 .overflow-hidden {
   overflow: hidden;
 }
@@ -3344,6 +3381,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .border-neutral-300 {
   --tw-border-opacity: 1;
   border-color: rgb(212 212 212 / var(--tw-border-opacity));
+}
+.bg-red-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(239 68 68 / var(--tw-bg-opacity));
 }
 .bg-transparent {
   background-color: transparent;
@@ -3760,6 +3801,13 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   font-size: 0.875rem;
   line-height: 1.25rem;
 }
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+.font-bold {
+  font-weight: 700;
+}
 .font-normal {
   font-weight: 400;
 }
@@ -3777,6 +3825,14 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .italic {
   font-style: italic;
+}
+.text-gray-500 {
+  --tw-text-opacity: 1;
+  color: rgb(107 114 128 / var(--tw-text-opacity));
+}
+.text-gray-700 {
+  --tw-text-opacity: 1;
+  color: rgb(55 65 81 / var(--tw-text-opacity));
 }
 .text-green-500 {
   color: var(--main-500);
@@ -4622,7 +4678,7 @@ button.swal2-cancel.goback-btn:hover,
 .alert a:hover {
         font-weight: normal;
         text-decoration: underline;
-        color: var(--blue-500);
+        color: inherit;
     }
 .has-error .help-block,
     .has-error .control-label,
@@ -5172,4 +5228,13 @@ small {
 .after\:bg-red-800::after {
   content: var(--tw-content);
   background-color: var(--red-800);
+}
+@media (min-width: 1024px) {
+  .lg\:mb-3 {
+    margin-bottom: var(--em-spacing-3);
+  }
+  .lg\:text-base {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
 }

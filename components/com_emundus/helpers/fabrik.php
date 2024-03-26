@@ -689,6 +689,7 @@ die("<script>
 		    $params['type'] = '1';
 		    $params['accordion'] = '0';
 		    $params['title'] = '';
+		    $params['store_in_db'] = 0;
 	    }
 
         return $params;
