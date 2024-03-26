@@ -224,6 +224,7 @@ requirejs(['fab/fabrik'], function () {
     }
 
     function manageRules(form, element, clear = true) {
+        let repeat_num = element.getRepeatNum();
         let elt_name = element.origId ? element.origId.split('___')[1] : element.baseElementId.split('___')[1];
 
         let elt_rules = [];
@@ -242,7 +243,7 @@ requirejs(['fab/fabrik'], function () {
                 rule.conditions.forEach((condition) => {
                     form.elements.forEach((elt) => {
                         let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
-                        if (name == condition.field) {
+                        if (name == condition.field && elt.getRepeatNum() == repeat_num) {
                             if(operators[condition.state](elt.get('value'), condition.values, elt.plugin)) {
                                 condition_state.push(true);
                             } else if(rule.group == 'AND') {
@@ -260,7 +261,7 @@ requirejs(['fab/fabrik'], function () {
                         form.elements.forEach((elt) => {
                             let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
                             let id = elt.baseElementId ? elt.baseElementId : elt.strElement;
-                            if(fields.includes(name)) {
+                            if(fields.includes(name) && elt.getRepeatNum() == repeat_num) {
                                 if(['show', 'hide'].includes(action.action)) {
                                     form.doElementFX('element_' + elt.strElement, action.action, elt);
 
@@ -281,7 +282,7 @@ requirejs(['fab/fabrik'], function () {
                                             break;
                                     }
                                 } else if(['set_optional','set_mandatory']) {
-                                    let required_icon = document.querySelector('div#' + id).parentElement.parentElement.querySelector('label span.material-icons');
+                                    let required_icon = document.querySelector('label[for="' + id + '"] span.material-icons');
                                     if(required_icon) {
                                         if(action.action == 'set_optional') {
                                             required_icon.style.display = 'none';
@@ -323,7 +324,7 @@ requirejs(['fab/fabrik'], function () {
                         form.elements.forEach((elt) => {
                             let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
                             let id = elt.baseElementId ? elt.baseElementId : elt.strElement;
-                            if(fields.includes(name)) {
+                            if(fields.includes(name) && elt.getRepeatNum() == repeat_num) {
                                 if(['show', 'hide'].includes(action.action)) {
                                     form.doElementFX('element_' + elt.strElement, opposite_action, elt);
 
@@ -344,7 +345,7 @@ requirejs(['fab/fabrik'], function () {
                                             break;
                                     }
                                 } else if(['set_optional','set_mandatory']) {
-                                    let required_icon = document.querySelector('div#' + id).parentElement.parentElement.querySelector('label span.material-icons');
+                                    let required_icon = document.querySelector('label[for="' + id + '"] span.material-icons');
                                     if(required_icon) {
                                         if(opposite_action == 'set_optional') {
                                             required_icon.style.display = 'none';

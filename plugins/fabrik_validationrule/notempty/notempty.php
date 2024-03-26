@@ -47,9 +47,8 @@ class PlgFabrik_ValidationruleNotempty extends PlgFabrik_Validationrule
 
 		$shouldValidate = parent::shouldValidate($data, $repeatCounter);
 
-		//TODO: Manage repeat groups
 		if($shouldValidate) {
-			return $this->checkEmundusCondition($elt_name, $formData, $this->formModel->id);
+			return $this->checkEmundusCondition($elt_name, $formData, $this->formModel->id, $repeatCounter);
 		}
 	}
 
@@ -75,7 +74,7 @@ class PlgFabrik_ValidationruleNotempty extends PlgFabrik_Validationrule
 		return !$ok;
 	}
 
-	private function checkEmundusCondition($elt,$formData,$form_id)
+	private function checkEmundusCondition($elt,$formData,$form_id, $repeatCounter = 0)
 	{
 		$db = Factory::getDbo();
 		$query = $db->getQuery(true);
@@ -94,7 +93,8 @@ class PlgFabrik_ValidationruleNotempty extends PlgFabrik_Validationrule
 				->select($db->quoteName(['esfrjc.field','esfrjc.state','esfrjc.values','esfr.group']))
 				->from($db->quoteName('#__emundus_setup_form_rules_js_conditions','esfrjc'))
 				->leftJoin($db->quoteName('#__emundus_setup_form_rules','esfr').' ON '.$db->quoteName('esfr.id').' = '.$db->quoteName('esfrjc.parent_id'))
-				->where($db->quoteName('esfrjc.parent_id') . ' = '. $db->quote($rule->parent_id));
+				->where($db->quoteName('esfrjc.parent_id') . ' = '. $db->quote($rule->parent_id))
+				->where($db->quoteName('esfr.form_id') . ' = '. $db->quote($form_id));
 			$db->setQuery($query);
 			$conditions = $db->loadObjectList();
 
@@ -102,19 +102,24 @@ class PlgFabrik_ValidationruleNotempty extends PlgFabrik_Validationrule
 			foreach ($conditions as $condition) {
 				foreach($formData as $key => $data) {
 					if (strpos($key,$condition->field.'_raw')) {
+						$value = $data;
+						if(strpos($key, 'repeat')) {
+							$value = $data[$repeatCounter];
+						}
+
 						switch ($condition->state) {
 							case '=': // Equal
-								if(is_array($data)) {
-									$condition_state[] = in_array($condition->values, $data);
+								if(is_array($value)) {
+									$condition_state[] = in_array($condition->values, $value);
 								} else {
-									$condition_state[] = $data == $condition->values;
+									$condition_state[] = $value == $condition->values;
 								}
 								break;
 							case '!=': // Not equal
-								if(is_array($data)) {
-									$condition_state[] = !in_array($condition->values, $data);
+								if(is_array($value)) {
+									$condition_state[] = !in_array($condition->values, $value);
 								} else {
-									$condition_state[] = $data != $condition->values;
+									$condition_state[] = $value != $condition->values;
 								}
 								break;
 						}
