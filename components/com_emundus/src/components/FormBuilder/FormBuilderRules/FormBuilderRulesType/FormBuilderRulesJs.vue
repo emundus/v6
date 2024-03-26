@@ -141,7 +141,7 @@ export default {
       this.actions.forEach((action) => {
         if(action.fields) {
           let fields = [];
-          if(typeof action.fields == 'Array') {
+          if(action.fields.length > 1) {
             action.fields.forEach((field) => {
               fields.push(field.name);
             });
