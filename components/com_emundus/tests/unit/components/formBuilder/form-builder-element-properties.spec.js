@@ -7,6 +7,14 @@ import '../../../mocks/matchMedia.mock';
 const localVue = createLocalVue();
 localVue.mixin(translate);
 
+window.matchMedia = window.matchMedia || function() {
+    return {
+        matches: false,
+        addListener: function() {},
+        removeListener: function() {}
+    };
+};
+
 describe('FormBuilderElementProperties.vue', () => {
     const wrapper = mount(FormBuilderElementProperties, {
         propsData: {
