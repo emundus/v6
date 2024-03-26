@@ -2441,7 +2441,8 @@ class EmundusModelForm extends JModelList {
 					->select('esfrr.action,group_concat(esfrr_fields.fields) as fields,group_concat(esfrr_fields.params SEPARATOR "|") as params')
 					->from($db->quoteName('#__emundus_setup_form_rules_js_actions','esfrr'))
 					->leftJoin($db->quoteName('#__emundus_setup_form_rules_js_actions_fields','esfrr_fields').' ON '.$db->quoteName('esfrr_fields.parent_id').' = '.$db->quoteName('esfrr.id'))
-					->where($db->quoteName('esfrr.parent_id') . ' = ' . $db->quote($js_condition->id));
+					->where($db->quoteName('esfrr.parent_id') . ' = ' . $db->quote($js_condition->id))
+					->group('esfrr.id');
 				$db->setQuery($query);
 				$js_condition->actions = $db->loadObjectList();
 
