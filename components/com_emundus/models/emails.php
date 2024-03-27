@@ -1616,7 +1616,7 @@ class EmundusModelEmails extends JModelList {
                 $this->_db->setQuery($query);
                 $messages = $this->_db->loadObjectList();
             } catch (Exception $e) {
-                JLog::add('Error getting messages sent to or from user: '.$user_id.' at query: '.$query, JLog::ERROR, 'com_emundus.error');
+                JLog::add('Error getting messages sent to or from user: '.$user_id.' at query: '.$query->__toString(), JLog::ERROR, 'com_emundus.error');
             }
         }
 

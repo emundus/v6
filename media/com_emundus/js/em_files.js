@@ -6908,5 +6908,10 @@ window.addEventListener('emundus-start-apply-filters', () => {
 });
 
 window.addEventListener('emundus-apply-filters-success', () => {
-     reloadData(document.getElementById('view').getAttribute('value'), false);
+    let view = document.getElementById('view');
+    if (view) {
+        reloadData(view.getAttribute('value'), false);
+    } else {
+        removeLoader();
+    }
 });

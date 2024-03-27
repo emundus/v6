@@ -15,6 +15,7 @@ if (modFilters) {
         defaultFilters: filters,
         defaultQuickSearchFilters: JSON.parse(atob(modFilters.getAttribute('data-quick-search-filters'))),
         countFilterValues: modFilters.getAttribute('data-count-filter-values') === '1',
+        allowAddFilter: modFilters.getAttribute('data-allow-add-filter') === '1',
     }).use(Vuex).mixin(translate);
 
     app.config.productionTip = true;

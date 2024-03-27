@@ -1,6 +1,5 @@
 /* jshint esversion: 8 */
 import client from './axiosClient';
-
 export default {
     async getAllCampaigns(filter = '',sort = 'DESC',recherche = '',lim = 9999,page = 0,program = 'all') {
         try {

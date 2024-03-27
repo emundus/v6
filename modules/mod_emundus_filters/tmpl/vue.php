@@ -40,12 +40,13 @@ JText::script('MOD_EMUNDUS_FILTERS_MORE_VALUES');
 
 ?>
 <div
-        id="em-filters-vue"
-        data-module-id="<?= $module->id ?>"
-        data-applied-filters='<?= base64_encode(json_encode($applied_filters)) ?>'
-        data-filters='<?= base64_encode(json_encode($filters)) ?>'
-        data-quick-search-filters='<?= base64_encode(json_encode($quick_search_filters)) ?>'
-        data-count-filter-values='<?= $params->get('count_filter_values')  ?>'
+  id="em-filters-vue"
+  data-module-id="<?= $module->id ?>"
+  data-applied-filters='<?= base64_encode(json_encode($applied_filters)); ?>'
+  data-filters='<?= base64_encode(json_encode($filters)); ?>'
+  data-quick-search-filters='<?= base64_encode(json_encode($quick_search_filters)); ?>'
+  data-count-filter-values='<?= $params->get('count_filter_values'); ?>'
+  data-allow-add-filter="<?= $params->get('allow_add_filter', 1); ?>"
 ></div>
 
 <script src="media/mod_emundus_filters/app.js"></script>

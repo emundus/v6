@@ -21,26 +21,11 @@
     <div class="modal-grid" :style="'grid-template-columns:' + this.ratioStyle" v-if="access">
       <div id="modal-applicationform">
         <div class="scrollable">
-          <div class="em-flex-row em-flex-center em-gap-16 em-border-bottom-neutral-300 sticky-tab">
-            <div v-for="tab in tabs" v-if="access[tab.access].r" class="em-light-tabs em-pointer" @click="selected = tab.name" :class="selected === tab.name ? 'em-light-selected-tab' : ''">
-              <span class="em-font-size-14">{{ translate(tab.label) }}</span>
-            </div>
-          </div>
-
-          <div v-if="selected === 'application'" v-html="applicationform"></div>
-          <Attachments
-              v-if="selected === 'attachments'"
-              :fnum="file.fnum"
-              :user="$props.user"
-              :columns="['name','date','category','status']"
-              :displayEdit="false"
-          />
-          <Comments
-              v-if="selected === 'comments'"
-              :fnum="file.fnum"
-              :user="$props.user"
-              :access="access['10']"
-            />
+          <application-tabs
+              :user="user"
+              :file="file"
+              :access="access"
+          ></application-tabs>
         </div>
       </div>
 
@@ -61,15 +46,13 @@
 
 <script>
 import axios from "axios";
-import Attachments from "@/views/Attachments";
 import filesService from 'com_emundus/src/services/files';
 import errors from "@/mixins/errors";
-import Comments from "@/components/Files/Comments";
-
+import ApplicationTabs from "./ApplicationTabs.vue";
 
 export default {
   name: "ApplicationSingle",
-  components: {Comments, Attachments},
+  components: {ApplicationTabs},
   props: {
     file: Object|String,
     type: String,

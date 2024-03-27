@@ -16,7 +16,7 @@ export default {
                 confirmButtonText: confirm,
                 cancelButtonText: cancel,
                 reverseButtons: true,
-                customClass: {
+                custoswalmClass: {
                     title: 'em-swal-title',
                     cancelButton: 'em-swal-cancel-button',
                     confirmButton: 'em-swal-confirm-button',

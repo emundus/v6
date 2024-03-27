@@ -3653,6 +3653,10 @@ class EmundusHelperFiles
 			$where['q'] .= ' AND (' . $programme_where_cond . $fnum_assoc_where_cond . ') ';
 		}
 
+        if ($caller == 'files') {
+            $where['q'] .= ' AND esc.published > 0';
+        }
+
 	    $menu = JFactory::getApplication()->getMenu();
 		if (!empty($menu)) {
 			$active = $menu->getActive();
@@ -3709,25 +3713,49 @@ class EmundusHelperFiles
 
 			    $at_least_one = false;
 
-			    $scopes = ['jecc.applicant_id', 'jecc.fnum', 'u.username', 'eu.firstname', 'eu.lastname', 'u.email', 'u.username'];
+                $campaign_candidature_alias = array_search('jos_emundus_campaign_candidature', $already_joined);
+                $emundus_users_alias = array_search('jos_emundus_users', $already_joined);
+                if (empty($emundus_users_alias)) {
+                    $emundus_users_alias = 'eu';
+                    $where['join'] .= ' LEFT JOIN ' . $db->quoteName('jos_emundus_users', $emundus_users_alias) . ' ON ' . $db->quoteName($emundus_users_alias.'.id') . ' = ' . $db->quoteName($campaign_candidature_alias.'.applicant_id');
+                    $already_joined[$emundus_users_alias] = 'jos_emundus_users';
+                }
+
+                $users_alias = array_search('jos_users', $already_joined);
+                if (empty($users_alias)) {
+                    $users_alias = 'u';
+                    $where['join'] .= ' LEFT JOIN ' . $db->quoteName('jos_users', $users_alias) . ' ON ' . $db->quoteName($users_alias.'.id') . ' = ' . $db->quoteName($emundus_users_alias.'.user_id');
+                    $already_joined['u'] = 'jos_users';
+                }
+
+			    $scopes = [
+                    $campaign_candidature_alias . '.applicant_id' => 'eu.applicant_id',
+                    $campaign_candidature_alias . '.fnum' => 'jecc.fnum',
+                    $users_alias . '.username' => 'u.username',
+                    $emundus_users_alias . '.firstname' =>  'eu.firstname',
+                    $emundus_users_alias . '.lastname' => 'eu.lastname',
+                    $users_alias . '.email' => 'u.email',
+                ];
 			    foreach ($quick_search_filters as $index => $filter) {
 				    if (!empty($filter['scope'])) {
 					    if ($filter['scope'] === 'everywhere') {
 						    $at_least_one = true;
 
-						    foreach ($scopes as $scope_index => $scope) {
+                            $scope_index = 0;
+						    foreach ($scopes as $scope_alias => $scope) {
 							    if ($index > 0 || $scope_index > 0) {
 								    $quick_search_where .= ' OR ';
 							    }
-
-							    $quick_search_where .= $this->writeQueryWithOperator($scope, $filter['value'], 'LIKE');
+							    $quick_search_where .= $this->writeQueryWithOperator($scope_alias, $filter['value'], 'LIKE');
+                                $scope_index++;
 						    }
 					    } else if (in_array($filter['scope'], $scopes)) {
+                            $scope_alias = array_search($filter['scope'], $scopes);
 						    $at_least_one = true;
 						    if ($index > 0) {
 							    $quick_search_where .= ' OR ';
 						    }
-						    $quick_search_where .= $this->writeQueryWithOperator($filter['scope'], $filter['value'], '=');
+						    $quick_search_where .= $this->writeQueryWithOperator($scope_alias, $filter['value'], '=');
 					    }
 				    }
 			    }
