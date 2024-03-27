@@ -281,6 +281,22 @@ requirejs(['fab/fabrik'], function () {
                             let params = JSON.parse(action.params);
                             form.options.maxRepeat[action.fields] = params[0].maxRepeat;
                             form.options.minRepeat[action.fields] = params[0].minRepeat;
+                            var repeat_counter = document.getElementById('fabrik_repeat_group_' + action.fields + '_counter');
+                            var repeat_rows = repeat_counter.value.toInt();
+
+                            if (params[0].maxRepeat > 0 && repeat_rows > params[0].maxRepeat) {
+                                var group = document.getElementById('group' + action.fields);
+                                // Delete groups
+                                for (i = repeat_rows; i > params[0].maxRepeat; i--) {
+                                    var del_btn = jQuery(document.querySelector('#group' + action.fields + ' .deleteGroup')).last()[0];
+                                    subGroup = jQuery(group.getElements('.fabrikSubGroup')).last()[0];
+                                    if (typeOf(del_btn) !== 'null') {
+                                        var del_e = new Event.Mock(del_btn, 'click');
+                                        form.deleteGroup(del_e, group, subGroup);
+                                    }
+                                }
+                            }
+
                             manageRepeatGroup(form);
                         } else {
                             form.elements.forEach((elt) => {
@@ -302,14 +318,19 @@ requirejs(['fab/fabrik'], function () {
                                         switch (action.action) {
                                             case 'show_options':
                                                 addOption(elt, action.params);
+                                                if(clear) {
+                                                    sortSelect(elt.element);
+                                                }
                                                 break;
                                             case 'hide_options':
                                                 removeOption(elt, action.params);
                                                 break;
                                         }
 
-                                        let event = new Event(elt.getChangeEvent());
-                                        elt.element.dispatchEvent(event);
+                                        if(clear) {
+                                            let event = new Event(elt.getChangeEvent());
+                                            elt.element.dispatchEvent(event);
+                                        }
                                     } else if (['set_optional', 'set_mandatory']) {
                                         let required_icon = document.querySelector('label[for="' + id + '"] span.material-icons');
                                         if (required_icon) {
@@ -377,14 +398,19 @@ requirejs(['fab/fabrik'], function () {
                                         switch (opposite_action) {
                                             case 'show_options':
                                                 addOption(elt, action.params);
+                                                if(clear) {
+                                                    sortSelect(elt.element);
+                                                }
                                                 break;
                                             case 'hide_options':
                                                 removeOption(elt, action.params);
                                                 break;
                                         }
 
-                                        let event = new Event(elt.getChangeEvent());
-                                        elt.element.dispatchEvent(event);
+                                        if(clear) {
+                                            let event = new Event(elt.getChangeEvent());
+                                            elt.element.dispatchEvent(event);
+                                        }
                                     } else if (['set_optional', 'set_mandatory']) {
                                         let required_icon = document.querySelector('label[for="' + id + '"] span.material-icons');
                                         if (required_icon) {
@@ -416,7 +442,6 @@ requirejs(['fab/fabrik'], function () {
                     exists = true;
                 }
             });
-
             if(!exists) {
                 var option = document.createElement("option");
                 option.text = p.value;
@@ -424,8 +449,6 @@ requirejs(['fab/fabrik'], function () {
                 field.element.add(option);
             }
         });
-
-        sortSelect(field.element);
     }
 
     function removeOption(field,params) {
