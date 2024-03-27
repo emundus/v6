@@ -6867,7 +6867,12 @@ tbody .el-table__row:nth-child(odd){
 .mce-container-body.mce-abs-layout {
   overflow: visible !important;
 }
+
+.mce-container.mce-panel .mce-combobox input {
+  width: fit-content !important;
+}
+
 .mce-container .mce-textbox.mce-abs-layout-item.mce-last {
-  width: 60px !important;
+  width: fit-content !important;
   height: 20px !important;
 }
