@@ -161,7 +161,6 @@ export default {
         let key = param.key;
         let value = param.value;
 
-        console.log(param);
         if(param.table.includes('{')) {
           let param_name = param.table.match(/\{(.*?)\}/g)[0].replace('{','').replace('}','');
           table = this.element.params[param_name];
