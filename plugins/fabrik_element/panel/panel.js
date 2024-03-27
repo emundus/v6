@@ -9,6 +9,8 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
     window.FbPanel = new Class({
         Extends   : FbElement,
         initialize: function (element, options) {
+            this.setPlugin('panel');
+
             this.parent(element, options);
         },
 

@@ -4,6 +4,7 @@ requirejs(['fab/fabrik'], function () {
     var js_rules = [];
     var table_name = '';
     var form_loaded = false;
+    var elt_to_not_clear = ['panel','calc'];
 
     let check_condition = arr => arr.every(v => v === true);
     var operators = {
@@ -290,7 +291,7 @@ requirejs(['fab/fabrik'], function () {
                                         form.doElementFX('element_' + elt.strElement, action.action, elt);
 
                                         if (action.action == 'hide') {
-                                            if (clear) {
+                                            if (clear && !elt_to_not_clear.includes(elt.plugin)) {
                                                 elt.clear();
                                             }
                                         }
@@ -365,7 +366,7 @@ requirejs(['fab/fabrik'], function () {
                                         form.doElementFX('element_' + elt.strElement, opposite_action, elt);
 
                                         if (opposite_action == 'hide') {
-                                            if (clear) {
+                                            if (clear && !elt_to_not_clear.includes(elt.plugin)) {
                                                 elt.clear();
                                             }
                                         }
@@ -424,7 +425,7 @@ requirejs(['fab/fabrik'], function () {
             }
         });
 
-        sortSelect(field.element)
+        sortSelect(field.element);
     }
 
     function removeOption(field,params) {
