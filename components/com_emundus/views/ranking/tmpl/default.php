@@ -25,6 +25,7 @@ if (count($languages) > 1) {
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id);
 $sysadmin_access = EmundusHelperAccess::isAdministrator($this->user->id);
 
+Text::script('COM_EMUNDUS_RANKING_NO_FILES');
 Text::script('COM_EMUNDUS_CLASSEMENT_ASK_LOCK_RANKING');
 Text::script('COM_EMUNDUS_CLASSEMENT_LOCK_RANKING');
 Text::script('COM_EMUNDUS_NB_FILES');
