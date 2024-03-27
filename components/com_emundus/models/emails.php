@@ -867,6 +867,12 @@ class EmundusModelEmails extends JModelList {
 	                    $fabrikValues[$elt['id']][$fnum]['val'] = substr($val['val'], 2, strlen($val['val']));
                     }
                 }
+                if ($elt['plugin'] == 'yesno'){
+                    foreach ($fabrikValues[$elt['id']] as $fnum => $val)
+                    {
+                        $fabrikValues[$elt['id']][$fnum]['val'] = $val['val'] ? JText::_('JYES') : JText::_('JNO');
+                    }
+                }
             }
             $preg = array('patterns' => array(), 'replacements' => array());
             foreach ($fnumsArray as $fnum) {
