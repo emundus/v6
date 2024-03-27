@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
-class EmundusModelRanking extends JModelList
+class EmundusAdministrationModelRanking extends JModelList
 {
 
     function __construct()
@@ -25,9 +25,10 @@ class EmundusModelRanking extends JModelList
     }
 
     /**
+     * Install tables and add sysadmin default menu
      * @return bool
      */
-    public function install()
+    public function install(): bool
     {
         $installed = false;
         $tasks = [];
