@@ -4159,6 +4159,13 @@ if(in_array($applicant,$exceptions)){
 				$db->setQuery($query);
 				$db->execute();
 			}
+
+            if (version_compare($cache_version, '1.39.0', '<=') || $firstrun) {
+                // install ranking new view and tables
+                require_once(JPATH_ROOT . '/administrator/components/com_emundus/models/ranking.php');
+                $admin_ranking_model = new EmundusModelRanking();
+                $succeed['install_ranking'] = $admin_ranking_model->install();
+            }
 		}
 
 		return $succeed;
