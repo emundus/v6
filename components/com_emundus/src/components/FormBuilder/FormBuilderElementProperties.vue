@@ -154,6 +154,7 @@ export default {
     },
     saveProperties() {
       this.loading = true;
+      this.$root.$emit('updateFormBuilder');
       formBuilderService.updateTranslation({value: this.element.id, key: 'element'}, this.element.label_tag, this.element.label);
       if (['radiobutton', 'checkbox', 'dropdown'].includes(this.element.plugin)) {
         formBuilderService.getJTEXTA(this.element.params.sub_options.sub_labels).then(response => {
@@ -181,7 +182,6 @@ export default {
         }
         );
       }
-      //location.reload();
     },
     togglePublish() {
       this.element.publish = !this.element.publish;
@@ -208,7 +208,7 @@ export default {
       tab.active = true;
     },
     paramsAvailable(){
-      console.log(elementParams[this.element.plugin]);
+      //console.log(elementParams[this.element.plugin]);
       if(typeof elementParams[this.element.plugin] !== 'undefined'){
         this.tabs[1].published = true;
         this.params = elementParams[this.element.plugin];

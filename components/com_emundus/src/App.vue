@@ -49,29 +49,29 @@ import ApplicationSingle from "@/components/Files/ApplicationSingle.vue";
 import TranslationTool from "./components/Settings/TranslationTool/TranslationTool.vue";
 
 export default {
-	props: {
+  props: {
     datas: NamedNodeMap,
     currentLanguage: String,
     shortLang: String,
     manyLanguages: String,
     coordinatorAccess: String,
     sysadminAccess: String,
-		defaultLang: {
-			type: String,
-			default: 'fr'
-		},
-		component: {
-			type: String,
-			required: true
-		},
-		data: {
-			type: Object,
+    defaultLang: {
+      type: String,
+      default: 'fr'
+    },
+    component: {
+      type: String,
+      required: true
+    },
+    data: {
+      type: Object,
       default: () => ({})
-		},
-	},
-	components: {
+    },
+  },
+  components: {
     ApplicationSingle,
-		Attachments,
+    Attachments,
     addcampaign,
     addformnextcampaign,
     addemail,
@@ -80,9 +80,9 @@ export default {
     messagescoordinator,
     messages,
     Files,
-		list_v2,
-		TranslationTool
-	},
+    list_v2,
+    TranslationTool
+  },
 
   created() {
     if (this.$props.component === 'attachments') {

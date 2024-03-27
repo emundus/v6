@@ -184,474 +184,474 @@ import client from '../services/axiosClient';
 import Swal from 'sweetalert2';
 
 export default {
-	name: 'list_v2',
-	components: {
-		Skeleton
-	},
-	props: {
-		defaultLists: {
-			type: String,
-			default: null
-		},
-		defaultType: {
-			type: String,
-			default: null
-		}
-	},
-	data() {
-		return {
-			loading: {
-				'lists': false,
-				'tabs': false,
-				'items': false,
-			},
-			numberOfItemsToDisplay: 25,
-			lists: {},
-			type: 'forms',
-			params: {},
-			currentList: {'title': '', 'tabs': []},
-			selectedListTab: 0,
-			items: {},
-			title: '',
-			viewType: 'table',
-			viewTypeOptions: [{value: 'table', icon: 'dehaze'}, {value: 'blocs', icon: 'grid_view'}],
-			searches: {},
-			filters: {}
-		}
-	},
-	created() {
-		this.loading.lists = true;
-		this.loading.tabs = true;
+  name: 'list_v2',
+  components: {
+    Skeleton
+  },
+  props: {
+    defaultLists: {
+      type: String,
+      default: null
+    },
+    defaultType: {
+      type: String,
+      default: null
+    }
+  },
+  data() {
+    return {
+      loading: {
+        'lists': false,
+        'tabs': false,
+        'items': false,
+      },
+      numberOfItemsToDisplay: 25,
+      lists: {},
+      type: 'forms',
+      params: {},
+      currentList: {'title': '', 'tabs': []},
+      selectedListTab: 0,
+      items: {},
+      title: '',
+      viewType: 'table',
+      viewTypeOptions: [{value: 'table', icon: 'dehaze'}, {value: 'blocs', icon: 'grid_view'}],
+      searches: {},
+      filters: {}
+    }
+  },
+  created() {
+    this.loading.lists = true;
+    this.loading.tabs = true;
 
-		if (this.defaultType !== null) {
-			this.params = {
-				'type': this.defaultType
-			};
-		} else {
-			const data = this.$store.getters['global/datas'];
-			this.params = Object.assign({}, ...Array.from(data).map(({name, value}) => ({[name]: value})));
-		}
-		this.type = this.params.type;
+    if (this.defaultType !== null) {
+      this.params = {
+        'type': this.defaultType
+      };
+    } else {
+      const data = this.$store.getters['global/datas'];
+      this.params = Object.assign({}, ...Array.from(data).map(({name, value}) => ({[name]: value})));
+    }
+    this.type = this.params.type;
 
-		this.viewType = localStorage.getItem('tchooz_view_type/' + document.location.hostname)
-		if (this.viewType === null || typeof this.viewType === 'undefined' || (this.viewType !== 'blocs' && this.viewType !== 'table')) {
-			this.viewType = 'blocs';
-			localStorage.setItem('tchooz_view_type/' + document.location.hostname,'blocs');
-		}
-		const storageNbItemsDisplay = localStorage.getItem('tchooz_number_of_items_to_display/' + document.location.hostname);
-		if (storageNbItemsDisplay !== null) {
+    this.viewType = localStorage.getItem('tchooz_view_type/' + document.location.hostname)
+    if (this.viewType === null || typeof this.viewType === 'undefined' || (this.viewType !== 'blocs' && this.viewType !== 'table')) {
+      this.viewType = 'blocs';
+      localStorage.setItem('tchooz_view_type/' + document.location.hostname,'blocs');
+    }
+    const storageNbItemsDisplay = localStorage.getItem('tchooz_number_of_items_to_display/' + document.location.hostname);
+    if (storageNbItemsDisplay !== null) {
       if(storageNbItemsDisplay !== 'all') {
         this.numberOfItemsToDisplay = parseInt(storageNbItemsDisplay);
       } else {
         this.numberOfItemsToDisplay = storageNbItemsDisplay;
       }
-		}
+    }
 
-		this.initList();
-	},
-	methods: {
-		initList() {
-			if (this.defaultLists !== null) {
-				this.lists = JSON.parse(atob(this.defaultLists));
-				if (typeof this.lists[this.type] === 'undefined') {
-					console.error('List type ' + this.type + ' does not exist');
-					window.location.href = '/';
-				}
+    this.initList();
+  },
+  methods: {
+    initList() {
+      if (this.defaultLists !== null) {
+        this.lists = JSON.parse(atob(this.defaultLists));
+        if (typeof this.lists[this.type] === 'undefined') {
+          console.error('List type ' + this.type + ' does not exist');
+          window.location.href = '/';
+        }
 
-				this.currentList = this.lists[this.type];
-				if (this.params.hasOwnProperty('tab')) {
-					this.onSelectTab(this.params.tab);
-				} else {
-					const sessionTab = sessionStorage.getItem('tchooz_selected_tab/' + document.location.hostname);
-					if (sessionTab !== null && typeof this.currentList.tabs.find(tab => tab.key === sessionTab) !== 'undefined') {
-						this.onSelectTab(sessionTab)
-					} else {
-						this.onSelectTab(this.currentList.tabs[0].key)
-					}
-				}
+        this.currentList = this.lists[this.type];
+        if (this.params.hasOwnProperty('tab')) {
+          this.onSelectTab(this.params.tab);
+        } else {
+          const sessionTab = sessionStorage.getItem('tchooz_selected_tab/' + document.location.hostname);
+          if (sessionTab !== null && typeof this.currentList.tabs.find(tab => tab.key === sessionTab) !== 'undefined') {
+            this.onSelectTab(sessionTab)
+          } else {
+            this.onSelectTab(this.currentList.tabs[0].key)
+          }
+        }
 
-				this.loading.lists = false;
-				this.getListItems();
-			} else {
-				this.getLists();
-			}
-		},
-		getLists() {
-			settingsService.getOnboardingLists().then(response => {
-				if (response.data.status) {
-					this.lists = response.data.data;
+        this.loading.lists = false;
+        this.getListItems();
+      } else {
+        this.getLists();
+      }
+    },
+    getLists() {
+      settingsService.getOnboardingLists().then(response => {
+        if (response.data.status) {
+          this.lists = response.data.data;
 
-					if (typeof this.lists[this.type] === 'undefined') {
-						console.error('List type ' + this.type + ' does not exist');
-						window.location.href = '/';
-					}
+          if (typeof this.lists[this.type] === 'undefined') {
+            console.error('List type ' + this.type + ' does not exist');
+            window.location.href = '/';
+          }
 
-					this.currentList = this.lists[this.type];
-					if (this.params.hasOwnProperty('tab')) {
-						this.onSelectTab(this.params.tab);
-					} else {
-						const sessionTab = sessionStorage.getItem('tchooz_selected_tab/' + document.location.hostname);
-						if (sessionTab !== null && typeof this.currentList.tabs.find(tab => tab.key === sessionTab) !== 'undefined') {
-							this.onSelectTab(sessionTab)
-						} else {
-							this.onSelectTab(this.currentList.tabs[0].key)
-						}
-					}
+          this.currentList = this.lists[this.type];
+          if (this.params.hasOwnProperty('tab')) {
+            this.onSelectTab(this.params.tab);
+          } else {
+            const sessionTab = sessionStorage.getItem('tchooz_selected_tab/' + document.location.hostname);
+            if (sessionTab !== null && typeof this.currentList.tabs.find(tab => tab.key === sessionTab) !== 'undefined') {
+              this.onSelectTab(sessionTab)
+            } else {
+              this.onSelectTab(this.currentList.tabs[0].key)
+            }
+          }
 
-					this.loading.lists = false;
+          this.loading.lists = false;
 
-					this.getListItems();
-				} else {
-					console.error('Error while getting onboarding lists');
-					this.loading.lists = false;
-				}
-			});
-		},
-		getListItems(page = 1, tab = null) {
-			if (tab === null) {
-				this.loading.tabs = true;
-				this.items = Vue.observable(Object.assign({}, ...this.currentList.tabs.map(tab => ({[tab.key]: []}))));
-			} else {
-				this.loading.items = true;
-			}
+          this.getListItems();
+        } else {
+          console.error('Error while getting onboarding lists');
+          this.loading.lists = false;
+        }
+      });
+    },
+    getListItems(page = 1, tab = null) {
+      if (tab === null) {
+        this.loading.tabs = true;
+        this.items = Vue.observable(Object.assign({}, ...this.currentList.tabs.map(tab => ({[tab.key]: []}))));
+      } else {
+        this.loading.items = true;
+      }
 
-			const tabs = tab === null ? this.currentList.tabs : [this.currentTab];
-			if (tabs.length > 0) {
-				tabs.forEach(tab => {
-					if (typeof this.searches[tab.key] === 'undefined') {
-						this.searches[tab.key] = {
-							search: '',
-							lastSearch: '',
-							debounce: null
-						};
-					}
-					this.setTabFilters(tab);
-					if (typeof tab.getter !== 'undefined') {
-						let url = 'index.php?option=com_emundus&controller=' + tab.controller + '&task=' + tab.getter + '&lim=' + this.numberOfItemsToDisplay + '&page=' + page;
-						if (this.searches[tab.key].search !== '') {
-							url += '&recherche=' + this.searches[tab.key].search;
-						}
-						if (typeof this.filters[tab.key] !== 'undefined') {
-							this.filters[tab.key].forEach(filter => {
-								if (filter.value !== '' && filter.value !== 'all') {
-									url += '&' + filter.key + '=' + filter.value;
-								}
-							});
-						}
+      const tabs = tab === null ? this.currentList.tabs : [this.currentTab];
+      if (tabs.length > 0) {
+        tabs.forEach(tab => {
+          if (typeof this.searches[tab.key] === 'undefined') {
+            this.searches[tab.key] = {
+              search: '',
+              lastSearch: '',
+              debounce: null
+            };
+          }
+          this.setTabFilters(tab);
+          if (typeof tab.getter !== 'undefined') {
+            let url = 'index.php?option=com_emundus&controller=' + tab.controller + '&task=' + tab.getter + '&lim=' + this.numberOfItemsToDisplay + '&page=' + page;
+            if (this.searches[tab.key].search !== '') {
+              url += '&recherche=' + this.searches[tab.key].search;
+            }
+            if (typeof this.filters[tab.key] !== 'undefined') {
+              this.filters[tab.key].forEach(filter => {
+                if (filter.value !== '' && filter.value !== 'all') {
+                  url += '&' + filter.key + '=' + filter.value;
+                }
+              });
+            }
 
-						try {
-							client().get(url)
-									.then(response => {
-										if (response.data.status === true) {
-											if (typeof response.data.data.datas !== 'undefined') {
-												this.items[tab.key] = response.data.data.datas;
-												tab.pagination = {
-													current: page,
-													total: Math.ceil(response.data.data.count / this.numberOfItemsToDisplay)
-												}
-											}
-										} else {
-											console.error('Failed to get data : ' + response.data.data.msg);
-										}
-										this.loading.tabs = false;
-										this.loading.items = false;
-									})
-									.catch(error => {
-										console.error(error);
-										this.loading.tabs = false;
-										this.loading.items = false;
-									});
-						} catch (e) {
-							console.error(e);
-							this.loading.tabs = false;
-							this.loading.items = false;
-						}
-					} else {
-						this.loading.tabs = false;
-						this.loading.items = false;
-					}
-				});
-			} else {
-				this.loading.tabs = false;
-				this.loading.items = false;
-			}
-		},
-		setTabFilters(tab) {
-			if (typeof tab.filters !== 'undefined' && tab.filters.length > 0) {
-				if (typeof this.filters[tab.key] === 'undefined') {
-					this.filters[tab.key] = [];
+            try {
+              client().get(url)
+                .then(response => {
+                  if (response.data.status === true) {
+                    if (typeof response.data.data.datas !== 'undefined') {
+                      this.items[tab.key] = response.data.data.datas;
+                      tab.pagination = {
+                        current: page,
+                        total: Math.ceil(response.data.data.count / this.numberOfItemsToDisplay)
+                      }
+                    }
+                  } else {
+                    console.error('Failed to get data : ' + response.data.data.msg);
+                  }
+                  this.loading.tabs = false;
+                  this.loading.items = false;
+                })
+                .catch(error => {
+                  console.error(error);
+                  this.loading.tabs = false;
+                  this.loading.items = false;
+                });
+            } catch (e) {
+              console.error(e);
+              this.loading.tabs = false;
+              this.loading.items = false;
+            }
+          } else {
+            this.loading.tabs = false;
+            this.loading.items = false;
+          }
+        });
+      } else {
+        this.loading.tabs = false;
+        this.loading.items = false;
+      }
+    },
+    setTabFilters(tab) {
+      if (typeof tab.filters !== 'undefined' && tab.filters.length > 0) {
+        if (typeof this.filters[tab.key] === 'undefined') {
+          this.filters[tab.key] = [];
 
-					tab.filters.forEach(filter => {
-						if (filter.values === null) {
-							if (filter.getter) {
-								const controller = typeof filter.controller !== 'undefined' ? filter.controller : tab.controller;
-								client().get('index.php?option=com_emundus&controller=' + controller + '&task=' + filter.getter)
-										.then(response => {
-											if (response.data.status === true) {
-												let options = response.data.data;
+          tab.filters.forEach(filter => {
+            if (filter.values === null) {
+              if (filter.getter) {
+                const controller = typeof filter.controller !== 'undefined' ? filter.controller : tab.controller;
+                client().get('index.php?option=com_emundus&controller=' + controller + '&task=' + filter.getter)
+                  .then(response => {
+                    if (response.data.status === true) {
+                      let options = response.data.data;
 
-												// if options is an array of strings, convert it to an array of objects
-												if (typeof options[0] === 'string') {
-													options = options.map(option => ({value: option, label: option}));
-												}
+                      // if options is an array of strings, convert it to an array of objects
+                      if (typeof options[0] === 'string') {
+                        options = options.map(option => ({value: option, label: option}));
+                      }
 
-												options.unshift({value: 'all', label: this.translate(filter.label)});
+                      options.unshift({value: 'all', label: this.translate(filter.label)});
 
-												this.filters[tab.key].push({
-													key: filter.key,
-													value: filter.default ? filter.default : 'all',
-													options: options
-												});
-											}
-										});
-							}
-						} else {
-							this.filters[tab.key].push({
-								key: filter.key,
-								value: filter.default ? filter.default : 'all',
-								options: filter.values
-							});
-						}
-					});
-				}
-			}
-		},
-		searchItems() {
-			if (this.searches[this.selectedListTab].searchDebounce !== null) {
-				clearTimeout(this.searches[this.selectedListTab].searchDebounce);
-			}
+                      this.filters[tab.key].push({
+                        key: filter.key,
+                        value: filter.default ? filter.default : 'all',
+                        options: options
+                      });
+                    }
+                  });
+              }
+            } else {
+              this.filters[tab.key].push({
+                key: filter.key,
+                value: filter.default ? filter.default : 'all',
+                options: filter.values
+              });
+            }
+          });
+        }
+      }
+    },
+    searchItems() {
+      if (this.searches[this.selectedListTab].searchDebounce !== null) {
+        clearTimeout(this.searches[this.selectedListTab].searchDebounce);
+      }
 
-			this.searches[this.selectedListTab].searchDebounce = setTimeout(() => {
-				if (this.searches[this.selectedListTab].search !== this.searches[this.selectedListTab].lastSearch) {
-					this.searches[this.selectedListTab].lastSearch = this.searches[this.selectedListTab].search;
+      this.searches[this.selectedListTab].searchDebounce = setTimeout(() => {
+        if (this.searches[this.selectedListTab].search !== this.searches[this.selectedListTab].lastSearch) {
+          this.searches[this.selectedListTab].lastSearch = this.searches[this.selectedListTab].search;
 
-					// when we are searching through the list, we reset the pagination
-					this.getListItems(1, this.selectedListTab);
-				}
-			}, 500);
-		},
-		onClickAction(action, itemId = null) {
-			if (action === null || typeof action !== 'object') {
-				return false;
-			}
+          // when we are searching through the list, we reset the pagination
+          this.getListItems(1, this.selectedListTab);
+        }
+      }, 500);
+    },
+    onClickAction(action, itemId = null) {
+      if (action === null || typeof action !== 'object') {
+        return false;
+      }
 
-			let item = null;
-			if (itemId !== null) {
-				item = this.items[this.selectedListTab].find(item => item.id === itemId);
-			}
+      let item = null;
+      if (itemId !== null) {
+        item = this.items[this.selectedListTab].find(item => item.id === itemId);
+      }
 
-			if (action.type === 'redirect') {
-				let url = action.action;
-				if (item !== null) {
-					Object.keys(item).forEach(key => {
-						url = url.replace('%' + key + '%', item[key]);
-					});
-				}
+      if (action.type === 'redirect') {
+        let url = action.action;
+        if (item !== null) {
+          Object.keys(item).forEach(key => {
+            url = url.replace('%' + key + '%', item[key]);
+          });
+        }
 
-				window.location.href = url;
-			} else {
-				let url = 'index.php?option=com_emundus&controller=' + action.controller + '&task=' + action.action;
+        window.location.href = url;
+      } else {
+        let url = 'index.php?option=com_emundus&controller=' + action.controller + '&task=' + action.action;
 
-				if (itemId !== null) {
-					if (action.parameters) {
-						let url_parameters = action.parameters;
-						if (item !== null) {
-							Object.keys(item).forEach(key => {
-								url_parameters = url_parameters.replace('%' + key + '%', item[key]);
-							});
-						}
+        if (itemId !== null) {
+          if (action.parameters) {
+            let url_parameters = action.parameters;
+            if (item !== null) {
+              Object.keys(item).forEach(key => {
+                url_parameters = url_parameters.replace('%' + key + '%', item[key]);
+              });
+            }
 
-						url += url_parameters;
-					} else {
-						url += '&id=' + itemId;
-					}
-				}
+            url += url_parameters;
+          } else {
+            url += '&id=' + itemId;
+          }
+        }
 
-				if (action.hasOwnProperty('confirm')) {
-					Swal.fire({
-						type: 'warning',
-						title: action.label,
-						text: action.confirm,
-						showCancelButton: true,
-						confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
-						cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
-						reverseButtons: true,
-						customClass: {
-							title: 'em-swal-title',
-							confirmButton: 'em-swal-confirm-button',
-							cancelButton: 'em-swal-cancel-button',
-							actions: 'em-swal-double-action'
-						}
-					}).then((result) => {
-						if (result.value) {
-							this.executeAction(url);
-						}
-					});
-				} else {
-					this.executeAction(url);
-				}
-			}
-		},
-		executeAction (url) {
+        if (action.hasOwnProperty('confirm')) {
+          Swal.fire({
+            type: 'warning',
+            title: action.label,
+            text: action.confirm,
+            showCancelButton: true,
+            confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
+            cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
+            reverseButtons: true,
+            customClass: {
+              title: 'em-swal-title',
+              confirmButton: 'em-swal-confirm-button',
+              cancelButton: 'em-swal-cancel-button',
+              actions: 'em-swal-double-action'
+            }
+          }).then((result) => {
+            if (result.value) {
+              this.executeAction(url);
+            }
+          });
+        } else {
+          this.executeAction(url);
+        }
+      }
+    },
+    executeAction (url) {
       this.loading.items = true;
 
-			client().get(url)
-					.then(response => {
-						if (response.data.status === true || response.data.status === 1) {
-							if (response.data.redirect) {
-								window.location.href = response.data.redirect;
-							}
+      client().get(url)
+        .then(response => {
+          if (response.data.status === true || response.data.status === 1) {
+            if (response.data.redirect) {
+              window.location.href = response.data.redirect;
+            }
 
-							this.getListItems();
-						} else {
-							if (response.data.msg) {
-								Swal.fire({
-									type: 'error',
-									title: this.translate(response.data.msg),
-									reverseButtons: true,
-									customClass: {
-										title: 'em-swal-title',
-										confirmButton: 'em-swal-confirm-button',
-										actions: 'em-swal-single-action'
-									}
-								});
-							}
-						}
+            this.getListItems();
+          } else {
+            if (response.data.msg) {
+              Swal.fire({
+                type: 'error',
+                title: this.translate(response.data.msg),
+                reverseButtons: true,
+                customClass: {
+                  title: 'em-swal-title',
+                  confirmButton: 'em-swal-confirm-button',
+                  actions: 'em-swal-single-action'
+                }
+              });
+            }
+          }
 
-						this.loading.items = false;
-					})
-					.catch(error => {
-						console.error(error);
-						this.loading.items = false;
-					});
-		},
-		onClickPreview(item) {
-			if (this.previewAction && (this.previewAction.title || this.previewAction.content)) {
-				Swal.fire({
-					title: item[this.previewAction.title],
-					html: '<div style="text-align: left;">' + item[this.previewAction.content] + '</div>',
-					reverseButtons: true,
-					customClass: {
-						title: 'em-swal-title',
-						confirmButton: 'em-swal-confirm-button',
-						actions: 'em-swal-single-action',
-					}
-				});
-			}
-		},
-		onChangeFilter() {
-			// when we change a filter, we reset the pagination
-			this.getListItems(1, this.selectedListTab);
-		},
-		onSelectTab(tabKey) {
-			let selected = false;
+          this.loading.items = false;
+        })
+        .catch(error => {
+          console.error(error);
+          this.loading.items = false;
+        });
+    },
+    onClickPreview(item) {
+      if (this.previewAction && (this.previewAction.title || this.previewAction.content)) {
+        Swal.fire({
+          title: item[this.previewAction.title],
+          html: '<div style="text-align: left;">' + item[this.previewAction.content] + '</div>',
+          reverseButtons: true,
+          customClass: {
+            title: 'em-swal-title',
+            confirmButton: 'em-swal-confirm-button',
+            actions: 'em-swal-single-action',
+          }
+        });
+      }
+    },
+    onChangeFilter() {
+      // when we change a filter, we reset the pagination
+      this.getListItems(1, this.selectedListTab);
+    },
+    onSelectTab(tabKey) {
+      let selected = false;
 
-			if (this.selectedListTab !== tabKey) {
-				// check if the tab exists
-				if (typeof this.currentList.tabs.find(tab => tab.key === tabKey) !== 'undefined') {
-					this.selectedListTab = tabKey;
-					sessionStorage.setItem('tchooz_selected_tab/' + document.location.hostname, tabKey);
-					selected = true;
-				}
-			}
+      if (this.selectedListTab !== tabKey) {
+        // check if the tab exists
+        if (typeof this.currentList.tabs.find(tab => tab.key === tabKey) !== 'undefined') {
+          this.selectedListTab = tabKey;
+          sessionStorage.setItem('tchooz_selected_tab/' + document.location.hostname, tabKey);
+          selected = true;
+        }
+      }
 
-			return selected;
-		},
-		changeViewType(viewType) {
-			this.viewType = viewType.value;
-			localStorage.setItem('tchooz_view_type/' + document.location.hostname,viewType.value);
-		},
-		filterShowOnActions(actions, item) {
-			return actions.filter(action => {
-				if (action.hasOwnProperty('showon')) {
-					return this.evaluateShowOn(item, action.showon);
-				}
+      return selected;
+    },
+    changeViewType(viewType) {
+      this.viewType = viewType.value;
+      localStorage.setItem('tchooz_view_type/' + document.location.hostname,viewType.value);
+    },
+    filterShowOnActions(actions, item) {
+      return actions.filter(action => {
+        if (action.hasOwnProperty('showon')) {
+          return this.evaluateShowOn(item, action.showon);
+        }
 
-				return true;
-			});
-		},
-		evaluateShowOn(item, showon) {
-			let show = true;
-			switch (showon.operator) {
-				case '==':
-				case '=':
-					show = item[showon.key] == showon.value;
-					break;
-				case '!=':
-					show = item[showon.key] != showon.value;
-					break;
-				case '>':
-					show = item[showon.key] > showon.value;
-					break;
-				case '<':
-					show = item[showon.key] < showon.value;
-					break;
-				case '>=':
-					show = item[showon.key] >= showon.value;
-					break;
-				case '<=':
-					show = item[showon.key] <= showon.value;
-					break;
-				default:
-					show = true;
-			}
+        return true;
+      });
+    },
+    evaluateShowOn(item, showon) {
+      let show = true;
+      switch (showon.operator) {
+      case '==':
+      case '=':
+        show = item[showon.key] == showon.value;
+        break;
+      case '!=':
+        show = item[showon.key] != showon.value;
+        break;
+      case '>':
+        show = item[showon.key] > showon.value;
+        break;
+      case '<':
+        show = item[showon.key] < showon.value;
+        break;
+      case '>=':
+        show = item[showon.key] >= showon.value;
+        break;
+      case '<=':
+        show = item[showon.key] <= showon.value;
+        break;
+      default:
+        show = true;
+      }
 
-			return show;
-		}
-},
-	computed: {
-		currentTab() {
-			return this.currentList.tabs.find((tab) => {
-				return tab.key === this.selectedListTab;
-			});
-		},
-		tabActionsPopover() {
-			return typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.filter((action) => {
-				return !(['add', 'edit', 'preview'].includes(action.name)) && !action.hasOwnProperty('icon');
-			}): [];
-		},
-		editAction() {
-			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.find((action) => {
-				return action.name === 'edit';
-			}): false;
-		},
-		addAction() {
-			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.find((action) => {
-				return action.name === 'add';
-			}): false;
-		},
-		previewAction() {
-			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.find((action) => {
-				return action.name === 'preview';
-			}): false;
-		},
-		iconActions() {
-			return typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.filter((action) => {
-				return !(['add', 'edit', 'preview'].includes(action.name)) && action.hasOwnProperty('icon');
-			}): [];
-		},
-		displayedItems() {
-			let items = typeof this.items[this.selectedListTab] !== 'undefined' ? this.items[this.selectedListTab] : [];
-			return items.filter((item) => {
-				return item.label[this.params.shortlang].toLowerCase().includes(this.searches[this.selectedListTab].search.toLowerCase());
-			});
-		},
-		additionalColumns() {
-			let columns = [];
-			let items = typeof this.items[this.selectedListTab] !== 'undefined' ? this.items[this.selectedListTab] : [];
+      return show;
+    }
+  },
+  computed: {
+    currentTab() {
+      return this.currentList.tabs.find((tab) => {
+        return tab.key === this.selectedListTab;
+      });
+    },
+    tabActionsPopover() {
+      return typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.filter((action) => {
+        return !(['add', 'edit', 'preview'].includes(action.name)) && !action.hasOwnProperty('icon');
+      }): [];
+    },
+    editAction() {
+      return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.find((action) => {
+        return action.name === 'edit';
+      }): false;
+    },
+    addAction() {
+      return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.find((action) => {
+        return action.name === 'add';
+      }): false;
+    },
+    previewAction() {
+      return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.find((action) => {
+        return action.name === 'preview';
+      }): false;
+    },
+    iconActions() {
+      return typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.filter((action) => {
+        return !(['add', 'edit', 'preview'].includes(action.name)) && action.hasOwnProperty('icon');
+      }): [];
+    },
+    displayedItems() {
+      let items = typeof this.items[this.selectedListTab] !== 'undefined' ? this.items[this.selectedListTab] : [];
+      return items.filter((item) => {
+        return item.label[this.params.shortlang].toLowerCase().includes(this.searches[this.selectedListTab].search.toLowerCase());
+      });
+    },
+    additionalColumns() {
+      let columns = [];
+      let items = typeof this.items[this.selectedListTab] !== 'undefined' ? this.items[this.selectedListTab] : [];
 
-			if (items.length > 0 && typeof items[0].additional_columns !== 'undefined') {
-				items[0].additional_columns.forEach((column) => {
-					if (column.display === 'all' || (column.display === this.viewType)) {
-						columns.push(column.key);
-					}
-				});
-			}
+      if (items.length > 0 && typeof items[0].additional_columns !== 'undefined') {
+        items[0].additional_columns.forEach((column) => {
+          if (column.display === 'all' || (column.display === this.viewType)) {
+            columns.push(column.key);
+          }
+        });
+      }
 
-			return columns;
-		},
+      return columns;
+    },
     noneDiscoverTranslation() {
-			// todo: translation should be in the lists data. That way, adding a new list type would be easier,
+      // todo: translation should be in the lists data. That way, adding a new list type would be easier,
 	    // we should just update the database data and not the code
 
       if (this.type === "campaigns") {
@@ -666,12 +666,12 @@ export default {
         return this.translate('COM_EMUNDUS_ONBOARD_NOFORM');
       }
     },
-	},
-	watch: {
-		numberOfItemsToDisplay() {
-			localStorage.setItem('tchooz_number_of_items_to_display/' + document.location.hostname, this.numberOfItemsToDisplay);
-		},
-	}
+  },
+  watch: {
+    numberOfItemsToDisplay() {
+      localStorage.setItem('tchooz_number_of_items_to_display/' + document.location.hostname, this.numberOfItemsToDisplay);
+    },
+  }
 }
 </script>
 

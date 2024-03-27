@@ -39,21 +39,24 @@ export default {
     };
   },
   created () {
-    console.log('test de fin');
     this.getAllowedFile(this.attachId);
+    this.$root.$on('updateFormBuilder', this.reloadInfo);
+
   },
   methods: {
+    reloadInfo(){
+      this.allowedTypes='';
+      //get the new id when recall
+      this.getAllowedFile(this.element.params.attachmentId);
+    },
     getAllowedFile(aid){
       fileGet.getDocumentModels(aid).then((response) => {
-         this.allowedTypes =  response.data.allowed_types;
+        this.allowedTypes =  response.data.allowed_types;
       }).catch((error) => {
         this.loading = false;
         console.error(error);
       });
     }
-  },
-  watch: {},
-  computed: {
   }
 }
 </script>
