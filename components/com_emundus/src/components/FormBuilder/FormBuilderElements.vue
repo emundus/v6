@@ -214,7 +214,9 @@ export default {
     background-color: var(--neutral-200);
   }
 }
-#form-builder-elements input.formbuilder-searchbar, #form-builder-document-formats input.formbuilder-searchbar, #form-builder-rules-list input.formbuilder-searchbar {
+#form-builder-elements input.formbuilder-searchbar,
+#form-builder-document-formats input.formbuilder-searchbar,
+#form-builder-rules-list input.formbuilder-searchbar {
   border-width: 0 0 1px 0;
   border-radius: 0;
   border-color: var(--neutral-400);

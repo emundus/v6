@@ -1,6 +1,7 @@
 <template>
   <div id="form-builder-rules-js" class="self-start w-full">
-    <h2>{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_ADD_JS') }}</h2>
+    <h2>{{ titleLabel }}</h2>
+    <input class="mt-2 mb-4" v-model="label" :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_RULE_NAME')" />
 
     <div id="form-builder-rules-js-conditions-block">
       <div v-for="(condition, index) in conditions" class="mt-2 rounded-lg bg-white px-3 py-4 flex flex-col gap-6">
@@ -70,6 +71,7 @@ export default {
       conditions: [],
       actions: [],
       group: 'OR',
+      label: '',
       loading: false,
     };
   },
@@ -79,7 +81,6 @@ export default {
         this.conditions = this.rule.conditions;
       } else {
         this.conditions.push({
-          label: '',
           field: '',
           values: '',
           state: '='
@@ -98,13 +99,13 @@ export default {
 
       if (this.rule !== null) {
         this.group = this.rule.group;
+        this.label = this.rule.label;
       }
     }
   },
   methods: {
     addCondition() {
       this.conditions.push({
-        label: '',
         field: '',
         values: '',
         state: '='
@@ -130,7 +131,6 @@ export default {
       this.conditions.forEach((condition) => {
         if(condition.field && condition.values) {
           conditions_post.push({
-            label: condition.label,
             field: condition.field.name,
             values: typeof condition.values === 'object' ? condition.values.primary_key : condition.values,
             state: condition.state
@@ -172,7 +172,7 @@ export default {
       }
 
       if(this.rule !== null ) {
-        formService.editRule(this.rule.id, conditions_post, actions_post, this.group).then(response => {
+        formService.editRule(this.rule.id, conditions_post, actions_post, this.group, this.label).then(response => {
           if (response.status) {
             Swal.fire({
               title: this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_EDIT_SUCCESS'),
@@ -190,7 +190,7 @@ export default {
           }
         });
       } else {
-        formService.addRule(this.page.id, conditions_post, actions_post, this.group).then(response => {
+        formService.addRule(this.page.id, conditions_post, actions_post, this.group, this.label).then(response => {
           if (response.status) {
             Swal.fire({
               title: this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_SUCCESS'),
@@ -210,6 +210,11 @@ export default {
       }
     }
   },
+  computed: {
+    titleLabel() {
+      return this.rule ? this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_EDIT_JS') : this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_ADD_JS');
+    }
+  }
 }
 </script>
 

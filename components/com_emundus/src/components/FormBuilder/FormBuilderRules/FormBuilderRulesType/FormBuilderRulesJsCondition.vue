@@ -1,7 +1,7 @@
 <template>
   <div id="form-builder-rules-js-condition" class="self-start w-full">
     <div class="flex justify-between items-center">
-      <h2>{{ conditionLabel }}</h2>
+      <h3>{{ conditionLabel }}</h3>
       <button v-if="index !== 0" type="button" @click="$emit('remove-condition', index)" class="w-auto">
         <span class="material-icons-outlined text-red-500">close</span>
       </button>
@@ -125,7 +125,7 @@ export default {
   },
   computed: {
     conditionLabel() {
-      return (this.condition.label !== '' && this.condition.label !== null) ? this.condition.label : `Condition n°${this.index + 1}`;
+      return `-- ${this.index + 1} --`;
     }
   },
   watch: {

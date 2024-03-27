@@ -2373,7 +2373,7 @@ class EmundusModelForm extends JModelList {
 
 		try
 		{
-			$query->select($db->quoteName(['id','group', 'published']))
+			$query->select($db->quoteName(['id','group', 'published', 'label']))
 				->from($db->quoteName('#__emundus_setup_form_rules'))
 				->where($db->quoteName('form_id') . ' = ' . $db->quote($form_id))
 				->where($db->quoteName('type') . ' = ' . $db->quote('js'));
@@ -2386,7 +2386,7 @@ class EmundusModelForm extends JModelList {
 			foreach ($js_conditions as $js_condition)
 			{
 				$query->clear()
-					->select($db->quoteName(['field','state','values','label']))
+					->select($db->quoteName(['field','state','values']))
 					->from($db->quoteName('#__emundus_setup_form_rules_js_conditions'))
 					->where($db->quoteName('parent_id') . ' = ' . $db->quote($js_condition->id));
 				$db->setQuery($query);
@@ -2478,7 +2478,7 @@ class EmundusModelForm extends JModelList {
 		return $js_conditions;
 	}
 
-	public function addRule($form_id, $conditions, $actions, $type = 'js', $group = 'OR', $user = null)
+	public function addRule($form_id, $conditions, $actions, $type = 'js', $group = 'OR', $label = '', $user = null)
 	{
 		$rule_inserted = false;
 
@@ -2499,6 +2499,7 @@ class EmundusModelForm extends JModelList {
 				'form_id' => $form_id,
 				'type' => $type,
 				'group' => $group,
+				'label' => $label,
 				'published' => 1
 			];
 			$insert = (object) $insert;
@@ -2529,7 +2530,7 @@ class EmundusModelForm extends JModelList {
 		return $rule_inserted;
 	}
 
-	public function editRule($rule_id, $conditions, $actions, $group = 'OR', $user = null)
+	public function editRule($rule_id, $conditions, $actions, $group = 'OR', $label = '', $user = null)
 	{
 		$rule_edited = false;
 
@@ -2571,6 +2572,7 @@ class EmundusModelForm extends JModelList {
 				$update = [
 					'id' => $rule_id,
 					'group' => $group,
+					'label' => $label,
 					'updated_by' => $user->id,
 					'updated' => date('Y-m-d H:i:s')
 				];

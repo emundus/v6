@@ -313,13 +313,14 @@ export default {
         }
     },
 
-    async addRule(formId, conditions, actions, group)
+    async addRule(formId, conditions, actions, group, label)
     {
         const formData = new FormData();
         formData.append('conditions', JSON.stringify(conditions));
         formData.append('actions', JSON.stringify(actions));
         formData.append('form_id', formId);
         formData.append('group', group);
+        formData.append('label', label);
 
         try {
             const response = await client().post(baseUrl + '&task=addRule', formData);
@@ -333,13 +334,14 @@ export default {
         }
     },
 
-    async editRule(ruleId, conditions, actions, group)
+    async editRule(ruleId, conditions, actions, group, label)
     {
         const formData = new FormData();
         formData.append('conditions', JSON.stringify(conditions));
         formData.append('actions', JSON.stringify(actions));
         formData.append('rule_id', ruleId);
         formData.append('group', group);
+        formData.append('label', label);
 
         try {
             const response = await client().post(baseUrl + '&task=editRule', formData);

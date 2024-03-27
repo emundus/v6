@@ -904,9 +904,10 @@ class EmundusControllerForm extends JControllerLegacy {
 			$conditions = $jinput->getString('conditions');
 			$actions = $jinput->getString('actions');
 			$group = $jinput->getString('group');
+			$label = $jinput->getString('label');
 
 			if (!empty($form_id) && !empty($conditions) && !empty($actions)) {
-				$rule_added = $this->m_form->addRule($form_id,$conditions,$actions,'js',$group);
+				$rule_added = $this->m_form->addRule($form_id,$conditions,$actions,'js',$group,$label);
 
 				if ($rule_added !== false) {
 					$response['msg'] = Text::_('SUCCESS');
@@ -934,9 +935,10 @@ class EmundusControllerForm extends JControllerLegacy {
 			$conditions = $jinput->getString('conditions');
 			$actions = $jinput->getString('actions');
 			$group = $jinput->getString('group');
+			$label = $jinput->getString('label');
 
 			if (!empty($rule_id) && !empty($conditions) && !empty($actions)) {
-				$rule_edited = $this->m_form->editRule($rule_id,$conditions,$actions,$group);
+				$rule_edited = $this->m_form->editRule($rule_id,$conditions,$actions,$group,$label);
 
 				if ($rule_edited !== false) {
 					$response['msg'] = Text::_('SUCCESS');

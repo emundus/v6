@@ -16520,10 +16520,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   font-size: 3.75rem !important;
   line-height: 1 !important;
 }
-.\!text-xl {
-  font-size: 1.25rem !important;
-  line-height: 1.75rem !important;
-}
 .text-sm {
   font-size: 0.875rem;
   line-height: 1.25rem;
@@ -16531,6 +16527,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
+}
+.\!font-bold {
+  font-weight: 700 !important;
 }
 .\!font-medium {
   font-weight: 500 !important;
