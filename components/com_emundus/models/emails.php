@@ -1598,17 +1598,39 @@ class EmundusModelEmails extends JModelList {
         if (!empty($user_id)) {
             $query = $this->_db->getQuery(true);
 
+            $query->select('m.*')
+                ->from($this->_db->quoteName('#__messages', 'm'))
+                ->where('m.user_id_to = '.$this->_db->quote($user_id))
+                ->order('m.date_time DESC');
+
             try {
-                $query->select('m.*,el.fnum_to')
-                    ->from('#__messages AS m')
-                    ->leftJoin('#__emundus_logs AS el ON m.message_id = JSON_EXTRACT(el.params,'.$this->_db->quote('$.message_id'). ') AND JSON_VALID(el.params)')
-                    ->where(array('el.user_id_to = '.$this->_db->quote($user_id), 'el.action_id = 9', 'el.message = '.$this->_db->quote('COM_EMUNDUS_LOGS_EMAIL_SENT')))
-                    ->extendWhere('OR', 'm.user_id_to = '.$this->_db->quote($user_id))
-                    ->order('m.date_time DESC');
                 $this->_db->setQuery($query);
                 $messages = $this->_db->loadObjectList();
             } catch (Exception $e) {
+
                 JLog::add('Error getting messages sent to or from user: '.$user_id.' at query: '.$query, JLog::ERROR, 'com_emundus.error');
+            }
+
+            if (!empty($messages)) {
+                $query->clear()
+                    ->select('el.fnum_to, JSON_EXTRACT(el.params, \'$.message_id\') as message_id')
+                    ->from($this->_db->quoteName('#__emundus_logs', 'el'))
+                    ->where('(el.user_id_to = '.$this->_db->quote($user_id).' AND el.action_id = 9 AND el.message = '.$this->_db->quote('COM_EMUNDUS_LOGS_EMAIL_SENT').')');
+
+                try {
+                    $this->_db->setQuery($query);
+                    $logs = $this->_db->loadAssocList('message_id');
+                } catch (Exception $e) {
+                    JLog::add('Error getting logs for messages sent to or from user: '.$user_id.' at query: '.$query, JLog::ERROR, 'com_emundus.error');
+                }
+
+                if (!empty($logs)) {
+                    foreach($messages as $key => $message) {
+                        if (isset($logs[$message->message_id])) {
+                            $messages[$key]->fnum_to = $logs[$message->message_id]['fnum_to'];
+                        }
+                    }
+                }
             }
         }
 
