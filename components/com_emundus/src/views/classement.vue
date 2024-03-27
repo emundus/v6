@@ -6,12 +6,11 @@
         <div id="pagination"></div>
       </div>
       <div id="header-left" class="em-flex-row">
-        <button v-if="rankingsToLock.length > 0" id="ask-to-lock-ranking" class="em-secondary-button"
-                @click="askToLockRankings">
+        <button v-if="rankingsToLock" id="ask-to-lock-ranking" class="em-secondary-button" @click="askToLockRankings">
           <span class="material-icons-outlined em-mr-4">lock</span>
           {{ translate('COM_EMUNDUS_CLASSEMENT_ASK_LOCK_RANKING') }}
         </button>
-        <button v-if="!ismyRankingLocked" id="lock-ranking" class="em-primary-button em-ml-4" @click="lockRanking">
+        <button v-if="!ismyRankingLocked && rankings.myRanking.length > 0" id="lock-ranking" class="em-primary-button em-ml-4" @click="lockRanking">
           <span class="material-icons-outlined em-mr-4">check_circle_outline</span>
           {{ translate('COM_EMUNDUS_CLASSEMENT_LOCK_RANKING') }}
         </button>
@@ -156,7 +155,7 @@
       </div>
     </div>
     <div v-else id="empty-lists">
-      <p>{{ translate('COM_EMUNDUS_CLASSEMENT_NO_FILES') }}</p>
+      <p>{{ translate('COM_EMUNDUS_RANKING_NO_FILES') }}</p>
     </div>
     <transition name="fade">
       <compare-files
@@ -343,9 +342,11 @@ export default {
       });
     },
     askToLockRankings() {
-      this.$modal.show('askToLockRankings', {
-        rankingsToLock: this.rankingsToLock
-      });
+      if(this.rankingsToLock && this.rankings.myRanking.length > 0) {
+        this.$modal.show('askToLockRankings', {
+          rankingsToLock: this.rankingsToLock
+        });
+      }
     },
     confirmAskLockRanking() {
       if (this.askedUsersToLockRanking.length > 0 || this.askedHierarchiesToLockRanking) {
@@ -516,17 +517,21 @@ export default {
       return this.rankings.myRanking.length > 0 ? this.rankings.myRanking.every(file => file.locked == 1) : false;
     },
     rankingsToLock() {
-      let rankings = [];
+      let rankingToLock = false;
 
       this.rankings.otherRankings.forEach(hierarchy => {
-        hierarchy.files.forEach(file => {
-          if (file.locked == 0) {
-            rankings.push(file);
+        if (hierarchy && hierarchy.files) {
+          const found = hierarchy.files.find(file => {
+            return file.locked == 0;
+          });
+
+          if (found) {
+            rankingToLock = true;
           }
-        });
+        }
       });
 
-      return rankings;
+      return rankingToLock;
     },
     otherRankingsRankers() {
       let rankers = [];

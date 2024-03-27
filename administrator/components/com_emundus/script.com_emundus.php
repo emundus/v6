@@ -4160,37 +4160,12 @@ if(in_array($applicant,$exceptions)){
 				$db->execute();
 			}
 
-			if (version_compare($cache_version, '1.39.0', '<=') || $firstrun) {
-				$succeed['get_attachments_for_profile_event_added'] = EmundusHelperUpdate::addCustomEvents([
-					['label' => 'onAfterGetAttachmentsForProfile', 'category' => 'Files']
-				]);
-
-                EmundusHelperUpdate::addColumn('jos_fabrik_form_sessions', 'fnum', 'VARCHAR', 28);
-
-                $query = 'ALTER TABLE `jos_fabrik_form_sessions` MODIFY `referring_url` VARCHAR(255) NULL';
-                $db->setQuery($query);
-                $db->execute();
-
-                $query = 'ALTER TABLE `jos_fabrik_form_sessions` MODIFY `last_page` INT(11) NULL';
-                $db->setQuery($query);
-                $db->execute();
-
-                $query = 'ALTER TABLE `jos_fabrik_form_sessions` MODIFY `hash` VARCHAR(255) NULL';
-                $db->setQuery($query);
-                $db->execute();
-
-                // Sharing files feature
-                require_once JPATH_ADMINISTRATOR . '/components/com_emundus/scripts/SharingFilesInstall.php';
-                $sharing_files_install   = new scripts\SharingFilesInstall();
-                $sharing_files_installed = $sharing_files_install->install();
-                if ($sharing_files_installed['status']) {
-                    EmundusHelperUpdate::displayMessage('La fonctionnalité de partage de dossier a été installée avec succès', 'success');
-                }
-                else {
-                    EmundusHelperUpdate::displayMessage($sharing_files_installed['message'], 'error');
-                    $succeed = false;
-                }
-			}
+            if (version_compare($cache_version, '1.39.0', '<=') || $firstrun) {
+                // install ranking new view and tables
+                require_once(JPATH_ROOT . '/administrator/components/com_emundus/models/ranking.php');
+                $admin_ranking_model = new EmundusAdministrationModelRanking();
+                $succeed['install_ranking'] = $admin_ranking_model->install();
+            }
 		}
 
 		return $succeed;
