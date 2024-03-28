@@ -37,20 +37,25 @@
             </div>
           </div>
 
-          <div v-if="selected === 'application'" v-html="applicationform"></div>
-          <Attachments
-              v-if="selected === 'attachments'"
-              :fnum="selectedFile.fnum"
-              :user="$props.user"
-              :columns="['name','date','category','status']"
-              :displayEdit="false"
-          />
-          <Comments
-              v-if="selected === 'comments'"
-              :fnum="selectedFile.fnum"
-              :user="$props.user"
-              :access="access['10']"
-          />
+          <div v-if="!loading">
+            <div v-if="selected === 'application'" v-html="applicationform"></div>
+            <Attachments
+                v-if="selected === 'attachments'"
+                :fnum="selectedFile.fnum"
+                :user="$props.user"
+                :columns="['name','date','category','status']"
+                :displayEdit="false"
+                :key="selectedFile.fnum"
+            />
+            <Comments
+                v-if="selected === 'comments'"
+                :fnum="selectedFile.fnum"
+                :user="$props.user"
+                :access="access['10']"
+                :key="selectedFile.fnum"
+            />
+          </div>
+
         </div>
       </div>
 
@@ -177,7 +182,6 @@ export default {
       if (typeof this.selectedFile == 'string') {
         filesService.getFile(fnum, this.$props.type).then((result) => {
           if (result.status == 1) {
-            console.log(result.data);
             this.selectedFile = result.data;
             this.access = result.rights;
             this.updateURL(this.selectedFile.fnum)
