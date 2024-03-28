@@ -83,6 +83,7 @@ Text::script('COM_EMUNDUS_CLASSEMENT_ASK_HIERARCHIES_LOCK_RANKING');
 Text::script('COM_EMUNDUS_CLASSEMENT_CANCEL_ASK_LOCK_RANKING');
 Text::script('COM_EMUNDUS_CLASSEMENT_CONFIRM_ASK_LOCK_RANKING');
 Text::script('COM_EMUNDUS_RANKING_LOCK_RANKING_ASK_CONFIRM_SUCCESS_TITLE');
+Text::script('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_TITLE');
 
 ?>
 <div class="em-flex-row em-w-100 em-h-100 em-flex-align-start">
@@ -122,12 +123,14 @@ Text::script('COM_EMUNDUS_RANKING_LOCK_RANKING_ASK_CONFIRM_SUCCESS_TITLE');
 
 <script>
     const leftPanelOpener = document.querySelector('.em-left-panel-opener');
-    const leftPanel = document.querySelector('.em-left-panel.filters');
+    if (leftPanelOpener) {
+        const leftPanel = document.querySelector('.em-left-panel.filters');
 
-    leftPanelOpener.addEventListener('click', function () {
-        console.log('click');
-        leftPanel.classList.toggle('em-left-panel-opened');
-    });
+        leftPanelOpener.addEventListener('click', function () {
+            console.log('click');
+            leftPanel.classList.toggle('em-left-panel-opened');
+        });
+    }
 </script>
 
 <style>
