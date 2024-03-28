@@ -1708,7 +1708,7 @@ class EmundusModelUsers extends JModelList {
         try {
             $user = JFactory::getSession()->get('emundusUser');
             if (is_null($uid)) {
-            	$uid = $user->id;
+                $uid = $user->id;
             }
             $acl = array();
             if ($fnum === null) {

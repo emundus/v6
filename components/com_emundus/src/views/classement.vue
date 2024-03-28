@@ -324,6 +324,13 @@ export default {
               access: '5'
             });
             break;
+          case 'decision':
+            this.fileTabs.push({
+              label: this.translate('COM_EMUNDUS_FILES_DECISION'),
+              name: 'decision',
+              access: '29'
+            });
+            break;
         }
       });
     }

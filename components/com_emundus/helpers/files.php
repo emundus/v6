@@ -2551,6 +2551,45 @@ class EmundusHelperFiles
         return $data;
     }
 
+    function getDecisionFormUrl($fnum, $user_id)
+    {
+        $url_form = '';
+
+        if (!empty($fnum)) {
+            require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+            require_once(JPATH_SITE . '/components/com_emundus/models/evaluation.php');
+            $m_files = new EmundusModelFiles;
+            $m_evaluation = new EmundusModelEvaluation();
+
+            $fnumInfos = $m_files->getFnumInfos($fnum);
+            $my_decision = $m_evaluation->getDecisionFnum($fnum);
+            $formid = $m_evaluation->getDecisionFormByProgramme($fnumInfos['training']);
+
+            $url_form = '';
+            if (!empty($formid)) {
+                $url_form = 'index.php?option=com_fabrik&c=form';
+
+                if (!empty($my_decision)) {
+                    if (EmundusHelperAccess::asAccessAction(29, 'u', $user_id, $fnum)) {
+                        $url_form .= '&view=form&formid=' . $formid . '&rowid=' . $my_decision[0]->id;
+                    } elseif (EmundusHelperAccess::asAccessAction(29, 'r', $user_id, $fnum)) {
+                        $url_form .= '&view=details&formid=' . $formid . '&rowid=' . $my_decision[0]->id;
+                    }
+                } else {
+                    if (EmundusHelperAccess::asAccessAction(29, 'c', $user_id, $fnum)) {
+                        $url_form .= '&view=form&formid=' . $formid;
+                    } elseif (EmundusHelperAccess::asAccessAction(29, 'r', $user_id, $fnum)) {
+                        $url_form .= '&view=details&formid=' . $formid . '&rowid=' . $my_decision[0]->id;
+                    }
+                }
+
+                $url_form .= '&jos_emundus_final_grade___student_id[value]=' . $fnumInfos['applicant_id'] . '&jos_emundus_final_grade___campaign_id[value]=' . $fnumInfos['campaign_id'] . '&jos_emundus_final_grade___fnum[value]=' . $fnum . '&student_id=' . $fnumInfos['applicant_id'] . '&tmpl=component&iframe=1';
+            }
+        }
+
+        return $url_form;
+    }
+
     // Get Admission
     function getAdmission($format='html', $fnums = [], $name = null) {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'admission.php');

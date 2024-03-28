@@ -1293,4 +1293,20 @@ class EmundusControllerUsers extends JControllerLegacy {
 		exit;
 	}
 
+    function getuseraccessrights()
+    {
+        $response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+        $user = JFactory::getUser();
+
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+            $m_users = $this->getModel('Users');
+            $response['data'] = $m_users->getUserACL($user->id);
+            $response['status'] = true;
+            $response['msg'] = JText::_('COM_EMUNDUS_SUCCESS');
+        }
+
+        echo json_encode((object)$response);
+        exit;
+    }
+
 }

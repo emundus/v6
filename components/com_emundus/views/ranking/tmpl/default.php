@@ -40,6 +40,7 @@ Text::script('COM_EMUNDUS_MODAL_COMPARISON_BACK_BUTTON');
 
 // Translation for the file view
 Text::script('COM_EMUNDUS_FILES_EVALUATION');
+Text::script('COM_EMUNDUS_FILES_DECISION');
 Text::script('COM_EMUNDUS_FILES_TO_EVALUATE');
 Text::script('COM_EMUNDUS_FILES_EVALUATED');
 Text::script('COM_EMUNDUS_ONBOARD_FILE');

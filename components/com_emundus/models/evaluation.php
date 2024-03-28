@@ -1477,7 +1477,6 @@ class EmundusModelEvaluation extends JModelList {
             $query = 'SELECT *
 					FROM #__emundus_final_grade efg
 					WHERE efg.fnum like ' . $this->_db->Quote($fnum);
-//die(str_replace('#_', 'jos', $query));
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
 

@@ -1218,4 +1218,22 @@ class EmundusControllerDecision extends JControllerLegacy
 
         return $nom;
     }
+
+    public function getDecisionFormUrl()
+    {
+        $response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
+        $current_user = JFactory::getUser();
+
+        if (EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+            $response = ['status' => true, 'code' => 200];
+            $jinput = JFactory::getApplication()->input;
+            $fnum = $jinput->getString('fnum', null);
+
+            $h_files = new EmundusHelperFiles();
+            $response['url'] = $h_files->getDecisionFormUrl($fnum, $current_user->id);
+        }
+
+        echo json_encode((object)$response);
+        exit;
+    }
 }

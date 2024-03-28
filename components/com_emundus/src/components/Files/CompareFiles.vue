@@ -74,6 +74,7 @@
 </template>
 
 <script>
+import usersService from "../../services/user";
 import ApplicationTabs from "./ApplicationTabs.vue";
 
 export default {
@@ -127,35 +128,13 @@ export default {
       files: this.files,
       selectedFileToCompareWith: null,
       // TODO: get access from the server
-      access: {
-        1: {
-          'c': true,
-          'r': true,
-          'u': true,
-          'd': false
-        },
-        4: {
-          'c': true,
-          'r': true,
-          'u': true,
-          'd': false
-        },
-        5: {
-          'c': true,
-          'r': true,
-          'u': true,
-          'd': false
-        },
-        10: {
-          'c': true,
-          'r': true,
-          'u': true,
-          'd': false
-        }
-      }
+      access: null
     }
   },
   created() {
+    usersService.getAllAccessRights().then((response) => {
+      this.access = response.data;
+    });
     this.addEventListeners();
 
     if (this.defaultComparisonFile) {
