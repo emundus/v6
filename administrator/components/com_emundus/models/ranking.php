@@ -33,6 +33,9 @@ class EmundusAdministrationModelRanking extends JModelList
         $installed = false;
         $tasks = [];
 
+        require_once (JPATH_ROOT . '/administrator/components/com_emundus/helpers/update.php');
+        $db = JFactory::getDbo();
+
         /**
          * Tables that must exists
          * jos_emundus_ranking_hierarchy
@@ -148,7 +151,7 @@ class EmundusAdministrationModelRanking extends JModelList
                 'default' => 0,
             ],
             [
-                'name' => 'rank',
+                'name' => $db->quoteName('rank'),
                 'type' => 'int',
                 'null' => 0,
             ],
