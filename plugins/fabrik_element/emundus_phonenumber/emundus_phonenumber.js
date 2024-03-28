@@ -127,6 +127,9 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             return selectedCountryIndex;
         },
 
+        getValue: function () {
+            return this.element.getElementById('renderCountryCode').value + this.element.getElementById('inputValue').value;
+        }
     });
     return window.FbPhoneNumber;
 });

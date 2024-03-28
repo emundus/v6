@@ -392,3 +392,194 @@ function checkPasswordSymbols(element) {
         element.set('');
     }
 }
+
+/**
+ * Return the showed value in the form
+ * <div> element from attachment for fileupload
+ * @param element
+ * @returns {string|HTMLElement}
+ */
+function getElementShowedValue(element) {
+
+    if (element) {
+
+
+    }
+
+    let value = '';
+    const html = element.element;
+
+    if (html.tagName === 'INPUT' && html.type === 'file') { // only for emundus_fileupload
+        console.log(element);
+
+        const attachment_div = document.getElementById(html.id + '_attachment').deepCopy();
+        const aElements = attachment_div.getElementsByTagName('a');
+
+        for (let i = 0; i < aElements.length; i++) {
+            if (aElements[i].href === undefined || aElements[i].href === '') {
+                aElements[i].remove();
+            }
+        }
+        value = attachment_div;
+
+    } else if (html.tagName === 'SELECT') { // only for select
+        value = html.options[html.selectedIndex].text;
+    } else {
+
+        value = Array.isArray(element.get('value')) ? element.get('value').join('-'): element.get('value');
+
+        if (element.plugin === 'currency') { // only for currency
+            const select = html.getElementsByTagName('select');
+            value += ' ' + select[0].options[select[0].selectedIndex].text;
+        }
+
+        const inputs = html.getElementsByTagName('input');
+
+        for (let i = 0; i < inputs.length; i++) {
+            if (inputs[i].type === 'radio' || inputs[i].type === 'checkbox') {
+                if (inputs[i].id.includes(html.id)) { // only for databasejoin, yesno, radio, checkbox
+                    if (inputs[i].checked) {
+                        value = inputs[i].nextElementSibling.textContent; // the span value
+                    }
+                }
+            }
+        }
+    }
+    return value;
+}
+
+
+/**
+ * Return the showed value in the form
+ * <div> element from attachment for fileupload
+ * @param element
+ * @returns {void}
+ */
+function readOnlyElt(element, flag = true) {
+
+    if (element) {
+        //if (!Array.isArray(elements)) elements = [elements];
+        const elementHTML = element.element;
+        const prefix = 'span ';
+
+        if (flag) { // on rajoute le span s'il n'existe pas
+
+            if (document.getElementById(prefix + elementHTML.id) === null) {
+                const span = document.createElement('span');
+                span.id = prefix + elementHTML.id;
+
+                const spanValue = getElementShowedValue(element);
+                let parent = document.getElementById(elementHTML.id).parentNode;
+                if (spanValue instanceof HTMLElement) { // only for file_upload
+
+                    span.appendChild(spanValue);
+                    parent.classList.add('fabrikHide'); // hide span's sibling
+                    parent = parent.parentNode; // parent of element
+                } else {
+                    span.textContent = spanValue;
+                    elementHTML.classList.add('fabrikHide');
+                }
+                parent.appendChild(span);
+            }
+
+        } else { // on retire le span s'il existe
+            const span = document.getElementById(prefix + elementHTML.id);
+
+            if (span != null) {
+                if (span.getChildren().length !== 0) {
+                    document.getElementById('div_' + elementHTML.id).classList.remove('fabrikHide'); // show span's sibling
+
+                } else {
+                    elementHTML.classList.remove('fabrikHide');
+                }
+                document.getElementById(prefix + elementHTML.id).remove();
+            }
+        }
+    }
+}
+
+
+
+// =====================================================================================================================
+// version light
+
+
+/**
+ * Return the showed value in the form
+ * <div> element from attachment for fileupload
+ * @param element
+ * @returns {string}
+ */
+function getElementShowedValue(element) {
+    let value = '';
+
+    if (element) {
+        const html = element.element;
+
+        if (html.tagName === 'SELECT') { // only for select
+            value = html.options[html.selectedIndex].text;
+        } else {
+
+            value = element.get('value');
+            const inputs = html.getElementsByTagName('input');
+
+            for (let i = 0; i < inputs.length; i++) {
+                if (inputs[i].type === 'radio' || inputs[i].type === 'checkbox') {
+                    if (inputs[i].id.includes(html.id)) { // only for databasejoin, yesno, radio, checkbox
+                        if (inputs[i].checked) {
+                            value = inputs[i].nextElementSibling.textContent; // the span value
+                        }
+                    }
+                }
+            }
+        }
+    } else {
+        console.log(`getElementShowedValue: Element is undefined`)
+    }
+
+    return value;
+}
+
+
+/**
+ * Put elements in readonly mode
+ * @param elements
+ * @param flag
+ * @returns {void}
+ */
+function readOnlyElt(elements, flag = true) {
+
+    if (!Array.isArray(elements)) elements = [elements];
+
+    elements.forEach((element, index) => {
+        if (element) {
+            const elementHTML = element.element;
+            const prefix = 'span ';
+            let span = document.getElementById(prefix + elementHTML.id);
+
+            if (flag) { // on rajoute le span s'il n'existe pas
+                if (span === null) {
+                    span = document.createElement('span');
+                    span.id = prefix + elementHTML.id;
+
+                    let parent = document.getElementById(elementHTML.id).parentNode;
+
+                    elementHTML.classList.add('fabrikHide');
+                    parent.appendChild(span);
+                }
+
+                span.textContent = getElementShowedValue(element);
+
+            } else { // on retire le span s'il existe
+                if (span != null) {
+                    elementHTML.classList.remove('fabrikHide');
+                    span.remove();
+                }
+            }
+        } else {
+            console.log(`readOnlyElt: Element at index ${index} is undefined`);
+        }
+    });
+}
+
+
