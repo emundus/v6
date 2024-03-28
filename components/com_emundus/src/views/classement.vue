@@ -47,7 +47,7 @@
               <td>
                 <span class="material-icons-outlined" v-if="file.locked == 1">lock</span>
                 <span class="material-icons-outlined" v-else>lock_open</span>
-                <span class="material-icons-outlined handle">drag_indicator</span>
+                <span class="material-icons-outlined handle" v-if="file.locked != 1">drag_indicator</span>
               </td>
               <td class="em-flex-column file-identifier em-pointer" @click="openClickOpenFile(file)">
                 <span>{{ file.applicant }}</span>
@@ -89,7 +89,7 @@
               <td>
                 <span class="material-icons-outlined" v-if="file.locked">lock</span>
                 <span class="material-icons-outlined" v-else>lock_open</span>
-                <span class="material-icons-outlined handle">drag_indicator</span>
+                <span class="material-icons-outlined handle" v-if="file.locked != 1">drag_indicator</span>
               </td>
               <td class="em-flex-column file-identifier em-pointer" @click="openClickOpenFile(file)">
                 <span>{{ file.applicant }}</span>
