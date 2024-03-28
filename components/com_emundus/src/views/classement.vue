@@ -574,6 +574,7 @@ export default {
 
     tr, td {
       height: 64px;
+      white-space: nowrap;
     }
 
     table:not(#unranked-files) th {
