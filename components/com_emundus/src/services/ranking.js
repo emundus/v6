@@ -42,7 +42,7 @@ export default {
         } catch (e) {
             return {
                 status: false,
-                msg: e.message
+                msg: e.response.data
             };
         }
     },

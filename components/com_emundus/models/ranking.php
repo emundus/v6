@@ -377,7 +377,7 @@ class EmundusModelRanking extends JModelList
             $locked_row = $this->db->loadResult();
 
             if (!empty($locked_row)) {
-                throw new Exception('You cannot rank files because your ranking is locked');
+                throw new Exception(Text::_('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_LOCKED'));
             }
 
             $query->clear()

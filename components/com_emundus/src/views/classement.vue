@@ -242,6 +242,7 @@ import rankingService from "../services/ranking.js";
 import CompareFiles from "../components/Files/CompareFiles.vue";
 import draggable from "vuedraggable";
 import Multiselect from "vue-multiselect";
+import Swal from "sweetalert2";
 
 export default {
   name: 'Classement',
@@ -328,17 +329,27 @@ export default {
     onChangeRankValue(file) {
       this.subRankingKey++;
       rankingService.updateRanking(file.id, file.rank, this.hierarchy_id).then(response => {
-        if (response.status) {
-          this.getRankings().then(() => {
-            if (this.defaultFile && this.defaultFile.id) {
-              this.defaultFile = this.rankings.myRanking.find(f => f.id === this.defaultFile.id);
-            }
-
-            if (this.selectedOtherFile && this.selectedOtherFile.id) {
-              this.selectedOtherFile = this.rankings.myRanking.find(f => f.id === this.selectedOtherFile.id);
-            }
+        if (!response.status) {
+          Swal.fire({
+            title: this.translate('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_TITLE'),
+            text: this.translate(response.msg),
+            icon: 'error',
+            customClass: {
+              title: 'em-swal-title',
+              confirmButton: 'em-swal-confirm-button',
+            },
           });
         }
+
+        this.getRankings().then(() => {
+          if (this.defaultFile && this.defaultFile.id) {
+            this.defaultFile = this.rankings.myRanking.find(f => f.id === this.defaultFile.id);
+          }
+
+          if (this.selectedOtherFile && this.selectedOtherFile.id) {
+            this.selectedOtherFile = this.rankings.myRanking.find(f => f.id === this.selectedOtherFile.id);
+          }
+        });
       });
     },
     askToLockRankings() {
