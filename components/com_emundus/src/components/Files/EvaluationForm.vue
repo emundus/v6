@@ -1,5 +1,5 @@
 <template>
-  <div id="modal-evaluationgrid">
+  <div :id="'modal-evaluationgrid-' + uniqueID">
     <iframe v-if="url" :src="url" class="iframe-evaluation" id="iframe-evaluation" @load="loading = false"
             title="Evaluation form"/>
     <div class="em-page-loader" v-if="loading"></div>
@@ -28,6 +28,7 @@ export default {
   },
   data() {
     return {
+      uniqueID: Math.random().toString(36).substring(2, 9),
       campaign_id: 0,
       applicant_id: 0,
       rowid: '',
@@ -40,7 +41,7 @@ export default {
     this.getEvaluationForm();
 
     // get #modal-evaluationgrid top position
-    let modal = document.getElementById('modal-evaluationgrid');
+    let modal = document.getElementById('modal-evaluationgrid-' + this.uniqueID);
     this.top = modal.getBoundingClientRect().top;
     modal.style.height = 'calc(100vh - ' + this.top + 'px)';
   },
@@ -71,5 +72,7 @@ export default {
 </script>
 
 <style scoped>
-
+#iframe-evaluation {
+  height: 100%;
+}
 </style>
