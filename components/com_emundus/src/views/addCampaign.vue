@@ -1,7 +1,7 @@
 <template>
   <div class="campaigns__add-campaign">
     <div v-if="typeof campaignId == 'undefined' || campaignId == 0">
-      <div class="flex items-center mt-4 cursor-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
+      <div class="flex items-center cursor-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
         <span class="material-icons-outlined">navigate_before</span>
         <span class="em-ml-8 em-text-neutral-900">{{ translate('BACK') }}</span>
       </div>

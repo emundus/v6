@@ -7,7 +7,7 @@
 					:cid="campaignId"
 			/>
 			<div>
-				<div class="em-flex-row em-mt-16 em-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
+				<div class="em-flex-row em-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
           <span class="material-icons-outlined">navigate_before</span>
           <span class="em-ml-8 em-text-neutral-900">{{ translate('BACK') }}</span>
 				</div>
