@@ -118,7 +118,11 @@ class EmundusControllerFile extends JControllerLegacy
 		$fnum = JFactory::getApplication()->input->getString('fnum',null);
 
 		if (!empty($fnum)) {
-			if(EmundusHelperAccess::asAccessAction(5,'r',JFactory::getUser()->id,$fnum) || EmundusHelperAccess::asAccessAction(5,'c', JFactory::getUser()->id,$fnum)){
+			if (EmundusHelperAccess::asAccessAction(5,'r',JFactory::getUser()->id,$fnum) || EmundusHelperAccess::asAccessAction(5,'c', JFactory::getUser()->id,$fnum)) {
+                if (!method_exists($this->files, 'getEvaluationFormByFnum')) {
+                    $this->files = new Evaluations();
+                }
+
 				$results['data'] = $this->files->getEvaluationFormByFnum($fnum);
 			} else {
 				$results['status'] = 0;
@@ -138,6 +142,9 @@ class EmundusControllerFile extends JControllerLegacy
 
 		if(EmundusHelperAccess::asAccessAction(5,'r',JFactory::getUser()->id) || EmundusHelperAccess::asAccessAction(5,'c', JFactory::getUser()->id)){
 			$fnum = JFactory::getApplication()->input->getString('fnum',null);
+            if (!method_exists($this->files, 'getMyEvaluation')) {
+                $this->files = new Evaluations();
+            }
 
 			$results['data'] = $this->files->getMyEvaluation($fnum);
 		} else {

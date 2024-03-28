@@ -31,7 +31,7 @@
             <div class="scrollable">
               <slot name="before-default-file-tabs">
               </slot>
-              <application-tabs :key="defaultFile.id" :user="user" :file="defaultFile" :access="access"></application-tabs>
+              <application-tabs :key="defaultFile.id" :user="user" :file="defaultFile" :access="access" :tabs="tabs"></application-tabs>
             </div>
           </div>
           <div v-if="selectedFileToCompareWith == null" id="files-to-compare-with-container" class="right-view em-w-50">
@@ -64,7 +64,7 @@
             <div class="scrollable">
               <slot name="before-compare-file-tabs">
               </slot>
-              <application-tabs :key="selectedFileToCompareWith.id" :user="user" :file="selectedFileToCompareWith" :access="access"></application-tabs>
+              <application-tabs :key="selectedFileToCompareWith.id" :user="user" :file="selectedFileToCompareWith" :access="access" :tabs="tabs"></application-tabs>
             </div>
         </div>
       </div>
@@ -100,12 +100,33 @@ export default {
       type: String,
       default: 'COM_EMUNDUS_MODAL_COMPARISON_HEADER_TITLE'
     },
+    tabs: {
+      type: Array,
+      default: () => ([
+        {
+          label: 'COM_EMUNDUS_FILES_APPLICANT_FILE',
+          name: 'application',
+          access: '1'
+        },
+        {
+          label: 'COM_EMUNDUS_FILES_ATTACHMENTS',
+          name: 'attachments',
+          access: '4'
+        },
+        {
+          label: 'COM_EMUNDUS_FILES_COMMENTS',
+          name: 'comments',
+          access: '10'
+        },
+      ])
+    }
   },
   data() {
     return {
       defaultFile: this.defaultFile,
       files: this.files,
       selectedFileToCompareWith: null,
+      // TODO: get access from the server
       access: {
         1: {
           'c': true,
@@ -114,6 +135,12 @@ export default {
           'd': false
         },
         4: {
+          'c': true,
+          'r': true,
+          'u': true,
+          'd': false
+        },
+        5: {
           'c': true,
           'r': true,
           'u': true,

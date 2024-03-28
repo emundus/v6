@@ -6,8 +6,22 @@
         </message>
     </layout>
     <fields name="params">
-        <fieldset>
-
+        <fieldset name="basic">
+            <field name="comparison_modal_tabs"
+                   type="list"
+                   label="COM_EMUNDUS_COMPARISON_MODAL_TABS"
+                   description="COM_EMUNDUS_COMPARISON_MODAL_TABS_DESC"
+                   multiple="true"
+                   size="5"
+                   default='["forms", "attachments", "comments"]'
+            >
+                <option value="forms">Formulaires</option>
+                <option value="attachments">Documents</option>
+                <option value="comments">Commentaire</option>
+                <option value="evaluation">Évaluation</option>
+                <option value="admission">Admission</option>
+                <option value="decision">Décision</option>
+            </field>
         </fieldset>
     </fields>
 </metadata>

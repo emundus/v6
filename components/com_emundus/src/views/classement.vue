@@ -164,6 +164,7 @@
           :default-file="defaultFile"
           :default-comparison-file="selectedOtherFile"
           :files="rankings.myRanking"
+          :tabs="fileTabs"
           title="COM_EMUNDUS_CLASSEMENT_MODAL_COMPARISON_HEADER_TITLE"
           @comparison-file-changed="onComparisonFileChanged"
       >
@@ -259,6 +260,10 @@ export default {
     context: {
       type: String,
       default: 'page'
+    },
+    fileTabsStr: {
+      type: String,
+      default: ''
     }
   },
   mixins: [translate],
@@ -275,6 +280,7 @@ export default {
       subRankingKey: 0,
       askedHierarchiesToLockRanking: [],
       askedUsersToLockRanking: [],
+      fileTabs: [],
       loading: false,
       dragging: false
     }
@@ -283,6 +289,44 @@ export default {
     this.getRankings();
     this.getOtherHierarchyRankings();
     this.addFilterEventListener();
+
+    if (this.fileTabsStr.length > 0) {
+      // explode the string to get the tabs
+      let tmpTabs = this.fileTabsStr.split(',');
+
+      tmpTabs.forEach(tab => {
+        switch(tab) {
+          case 'forms':
+            this.fileTabs.push({
+              label: this.translate('COM_EMUNDUS_FILES_APPLICANT_FILE'),
+              name: 'application',
+              access: '1'
+            });
+            break;
+          case 'attachments':
+            this.fileTabs.push({
+              label: this.translate('COM_EMUNDUS_FILES_ATTACHMENTS'),
+              name: 'attachments',
+              access: '4'
+            });
+            break;
+          case 'comments':
+            this.fileTabs.push({
+              label: this.translate('COM_EMUNDUS_FILES_COMMENTS'),
+              name: 'comments',
+              access: '10'
+            });
+            break;
+          case 'evaluation':
+            this.fileTabs.push({
+              label: this.translate('COM_EMUNDUS_FILES_EVALUATION'),
+              name: 'evaluation',
+              access: '5'
+            });
+            break;
+        }
+      });
+    }
   },
   methods: {
     addFilterEventListener() {

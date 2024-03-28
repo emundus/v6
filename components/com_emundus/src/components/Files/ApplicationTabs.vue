@@ -20,6 +20,13 @@
         :user="user"
         :access="access['10']"
     />
+    <EvaluationForm
+        v-if="selected === 'evaluation'"
+        :access="access['5']"
+        :fnum="file.fnum"
+        :user="user"
+    >
+    </EvaluationForm>
   </div>
 </template>
 
@@ -27,10 +34,11 @@
 import Attachments from "@/views/Attachments";
 import Comments from "@/components/Files/Comments";
 import axios from "axios";
+import EvaluationForm from "@/components/Files/EvaluationForm.vue";
 
 export default {
   name: 'ApplicationTabs',
-  components: {Attachments, Comments},
+  components: {EvaluationForm, Attachments, Comments},
   props: {
     tabs: {
       type: Array,
@@ -84,6 +92,11 @@ export default {
       }).then(response => {
         this.applicationform = response.data;
       });
+    },
+  },
+  computed: {
+    selectedTab() {
+      return this.tabs.find(tab => tab.name === this.selected);
     },
   }
 }
