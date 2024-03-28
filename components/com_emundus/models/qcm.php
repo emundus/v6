@@ -157,6 +157,7 @@ class EmundusModelQcm extends JModelList {
         try {
             $qcm = $this->getQcm($formid);
             $count = $qcm->count;
+
             // Get table and group_repeat table
             $query->clear()
                 ->select('db_table_name')
@@ -165,8 +166,14 @@ class EmundusModelQcm extends JModelList {
             $db->setQuery($query);
             $table = $db->loadResult();
 
-            $qcm = $this->getQcm($formid);
-            $group_table = $table . '_' . $qcm->group_id . '_repeat';
+	        $query->clear()
+		        ->select('table_join')
+		        ->from($db->quoteName('#__fabrik_joins'))
+		        ->where($db->quoteName('group_id') . ' = ' . $db->quote($qcm->group_id))
+		        ->where($db->quoteName('join_from_table') . ' = ' . $db->quote($table))
+		        ->where($db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'));
+	        $db->setQuery($query);
+	        $group_table = $db->loadResult();
             //
 
             // Get answers
