@@ -141,7 +141,8 @@
                 </field>
                 <field name="enable-current-id" type="toggle" default="0" label="ENABLE_ID" description="ENABLE_ID_DESC"/>
                 <field name="module_cache" label="MODULE_CACHE" description="MODULE_CACHE_DESC" type="toggle" default="1"/>
-            </fields>        </fields>
+            </fields>
+           </fields>
     </fieldset>
     <fieldset name="layouts" label="LAYOUTS">
 
