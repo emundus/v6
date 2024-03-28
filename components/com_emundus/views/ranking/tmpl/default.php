@@ -86,6 +86,8 @@ Text::script('COM_EMUNDUS_RANKING_LOCK_RANKING_ASK_CONFIRM_SUCCESS_TITLE');
 
 ?>
 <div class="em-flex-row em-w-100 em-h-100 em-flex-align-start">
+
+    <?php if ($this->display_filters): ?>
     <aside class="em-left-panel filters em-h-100">
         <div class="content">
             <h3>Filtres</h3>
@@ -96,6 +98,7 @@ Text::script('COM_EMUNDUS_RANKING_LOCK_RANKING_ASK_CONFIRM_SUCCESS_TITLE');
             <span class="material-icons-outlined">arrow_drop_down</span>
         </div>
     </aside>
+    <?php endif; ?>
 
     <div class="em-p-0-12 em-w-100 em-h-100">
         <h2><?= Text::_('COM_EMUNDUS_CLASSEMENT_TITLE') ?></h2>
