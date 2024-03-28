@@ -44,12 +44,12 @@ class EmundusModelRanking extends JModelList
         $status = $this->getStatusUserCanRank($user_id, $hierarchy);
 
         if ($status !== null) {
-            $ids = $this->getAllFilesRankerCanAccessTo($user_id, $status);
+            $ids = $this->getAllFilesRankerCanAccessTo($user_id);
 
             if (!empty($ids)) {
                 $query = $this->db->getQuery(true);
 
-                $query->select('CONCAT(applicant.firstname, " ", applicant.lastname) AS applicant, cc.id, cc.fnum, cr.rank, cr.locked')
+                $query->select('CONCAT(applicant.firstname, " ", applicant.lastname) AS applicant, cc.id, cc.fnum, cr.rank, cr.locked, cc.status')
                     ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
                     ->leftJoin($this->db->quoteName('#__emundus_users', 'applicant') . ' ON ' . $this->db->quoteName('cc.applicant_id') . ' = ' . $this->db->quoteName('applicant.id'))
                     ->leftJoin($this->db->quoteName('#__emundus_ranking', 'cr') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('cr.ccid'))
@@ -66,6 +66,10 @@ class EmundusModelRanking extends JModelList
                 foreach ($files as $key => $file) {
                     if (empty($file['locked']) && $file['locked'] != '0') {
                         $files[$key]['locked'] = 0;
+                    }
+
+                    if ($file['status'] != $status) {
+                        $files[$key]['locked'] = 1;
                     }
 
                     if (empty($file['rank'])) {
