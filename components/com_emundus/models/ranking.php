@@ -54,7 +54,7 @@ class EmundusModelRanking extends JModelList
                     ->leftJoin($this->db->quoteName('#__emundus_users', 'applicant') . ' ON ' . $this->db->quoteName('cc.applicant_id') . ' = ' . $this->db->quoteName('applicant.user_id'))
                     ->leftJoin($this->db->quoteName('#__emundus_ranking', 'cr') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('cr.ccid'))
                     ->where($this->db->quoteName('cc.id') . ' IN (' . implode(',', $ids) . ')')
-                    ->andWhere('(cr.user_id = ' . $this->db->quote($user_id) . ' AND cr.hierarchy_id = ' . $this->db->quote($hierarchy) . ') OR cr.id IS NULL');
+                    ->andWhere('(cr.hierarchy_id = ' . $this->db->quote($hierarchy) . ') OR cr.id IS NULL');
 
                 try {
                     $this->db->setQuery($query);
