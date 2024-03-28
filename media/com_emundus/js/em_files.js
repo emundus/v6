@@ -1947,6 +1947,10 @@ $(document).ready(function() {
                                     $('#em-export').empty();
                                     $('#elements_detail').hide();
                                     $('#elements-popup').hide();
+
+                                    document.getElementById('list-element-export').style.display = 'none';
+                                    document.getElementById('oelts').style.display = 'none';
+                                    document.getElementById('methode').style.display = 'none';
                                 }
                             });
 
@@ -1977,6 +1981,10 @@ $(document).ready(function() {
                                                     $('#th-adm').show();
                                                     $('#admelement').show();
                                                 }
+
+                                                document.getElementById('list-element-export').style.display = 'block';
+                                                document.getElementById('oelts').style.display = 'block';
+                                                document.getElementById('methode').style.display = 'block';
 
                                                 document.getElementsByClassName('em-swal-confirm-button')[0].style.opacity = 1;
 
@@ -2177,10 +2185,14 @@ $(document).ready(function() {
                                     $('.btn-success').hide();
                                     $('#elements_detail').hide();
                                     $('#elements-popup').hide();
+
+                                    document.getElementById('list-element-export').style.display = 'none';
+                                    document.getElementById('oelts').style.display = 'none';
+                                    document.getElementById('methode').style.display = 'none';
                                 }
                             });
 
-                            $('#data').append('<div id="main" class="em-grid-2 em-mt-16"><div id="list-element-export"></div><div id="oelts"></div></div>');
+                            $('#data').append('<div id="main" class="em-grid-2 em-mt-16"><div id="list-element-export" style="display: none"></div><div id="oelts" style="display:none;"></div></div>');
 
                             var defaults = '<div class="em-flex-row em-pointer em-mb-8" id="list-element-export-button"><p>'+Joomla.JText._('COM_EMUNDUS_CHOOSEN_FORM_ELEM')+'</p></div>' +
                                 '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16" id="em-export-elts">' +
@@ -2216,7 +2228,7 @@ $(document).ready(function() {
                             // TODO: fix upper-case options
                             // '<div class="em-flex-row em-mb-4"><input class="em-ex-check0" type="checkbox" value="upper-case" name="upper-case" id="upper-case" style="max-height: 20px;"/>' +
                             // '<label for="upper-case" class="em-mb-0-important">'+Joomla.JText._('COM_EMUNDUS_TO_UPPER_CASE')+'</label></div>' +
-                            $('#data').append( '<div id="methode" class="em-grid-2 em-mt-16">'+
+                            $('#data').append( '<div id="methode" style="display: none" class="em-grid-2 em-mt-16">'+
                                 '<div><p>' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_OPTION')+ '</p>' +
                                 '<div id="exp" class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16">'+
                                 '<div id="exp1"><form style="margin-left:15px; margin-bottom:6px">'+
