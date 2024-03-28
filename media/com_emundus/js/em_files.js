@@ -6324,6 +6324,7 @@ function createScrollbarForElement(element, id) {
     new_scrollbar.firstChild.style.width = element.scrollWidth + 'px';
     new_scrollbar.firstChild.appendChild(document.createTextNode('\xA0'));
     new_scrollbar.id = id;
+    new_scrollbar.classList.add('em-double-scroll-bar')
     let running = false;
     new_scrollbar.onscroll = function () {
         if (running) {
