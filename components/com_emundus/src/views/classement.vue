@@ -53,7 +53,7 @@
                 <span>{{ file.applicant }}</span>
                 <span class="em-neutral-600-color em-font-size-14">{{ file.fnum }}</span>
               </td>
-              <td v-if="!ismyRankingLocked">
+              <td v-if="!ismyRankingLocked && file.locked != 1">
                 <select v-model="file.rank" @change="onChangeRankValue(file)">
                   <option value="-1">{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</option>
                   <option v-for="i in maxRankValueAvailable" :key="i">{{ i }}</option>
