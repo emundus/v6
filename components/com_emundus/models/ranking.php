@@ -395,6 +395,10 @@ class EmundusModelRanking extends JModelList
                 if ($old_rank == $new_rank) {
                     return true;
                 } else {
+                    if ($old_rank == 0) { // 0 is not a possible value
+                        $old_rank = -1;
+                    }
+
                     if ($new_rank == -1) {
                         // all ranks superior or equal to old rank should be decreased by 1
                         $query->clear()
