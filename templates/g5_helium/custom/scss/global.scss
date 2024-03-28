@@ -1470,6 +1470,10 @@ footer#g-footer > .g-container {
   background: var(--neutral-200) !important;
 }
 
+.table-hover tbody tr:nth-child(2n) > td .sticker .circle {
+    background-color: var(--neutral-200);
+}
+
 .table-hover tbody tr,
 .table-hover tbody tr {
   a {
