@@ -2985,6 +2985,46 @@ div.em-grid-3[data-v-2fcc0280] {
     padding: var(--p-24);
 }
 }
+.container[data-v-2fcc0280] {
+  width: 80%;
+  max-width: 600px;
+  margin: 50px auto;
+}
+button.accordion[data-v-2fcc0280] {
+  width: 100%;
+  background-color: whitesmoke;
+  border: none;
+  outline: none;
+  text-align: left;
+  padding: 15px 20px;
+  font-size: 18px;
+  color: #444;
+  cursor: pointer;
+  -webkit-transition: background-color 0.2s linear;
+  transition: background-color 0.2s linear;
+}
+button.accordion[data-v-2fcc0280]:after {
+  content: '\f055';
+  font-family: "fontawesome";
+  font-size: 14px;
+  float: right;
+}
+button.accordion.is-open[data-v-2fcc0280]:after {
+  content: '\f056';
+}
+button.accordion[data-v-2fcc0280]:hover, button.accordion.is-open[data-v-2fcc0280] {
+  background-color: #ddd;
+}
+.accordion-content[data-v-2fcc0280] {
+  background-color: white;
+  border-left: 1px solid whitesmoke;
+  border-right: 1px solid whitesmoke;
+  padding: 0 20px;
+  max-height: 0;
+  overflow: hidden;
+  -webkit-transition: max-height 0.2s ease-in-out;
+  transition: max-height 0.2s ease-in-out;
+}
 
 @media all and (max-width: 479px) {
   #messenger_app_1_wpb .messenger_messages__vue_wc18U .messenger_vm--container_1-Y1-.messenger_scrollable_1lv4s .messenger_vm--modal_YInqZ {

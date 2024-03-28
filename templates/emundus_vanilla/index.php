@@ -59,6 +59,7 @@ $showcolumn= $this->countModules('header-a');
 $showcolumn= $this->countModules('header-b');
 ?>
 <?php if($showcolumn): ?>
+
 <jdoc:include type="modules" name="header-b" style="<?php if(($this->params->get('header-b') == 'block') || ($this->params->get('header-b') == Null)): echo "block"; else: echo "xhtml"; endif;?>"/>
 <?php endif; ?>
               </div>

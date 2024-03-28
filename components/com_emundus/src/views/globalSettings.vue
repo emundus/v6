@@ -1,8 +1,7 @@
 <template>
   <div class="em-w-100">
-    <div>
-
-      <!--- MENU --->
+    <div name="old version">
+      <!--- MENU
       <transition name="slide-right">
         <div class="em-grid-3" v-if="menuHighlight === 0">
           <div style="background: var(--neutral-0);" v-for="(menu,index) in displayedMenus" :key="'menu_' + menu.index" class="em-shadow-cards col-md-3 em-hover-s-scale" v-wave @click="changeMenu(menu)">
@@ -13,7 +12,7 @@
         </div>
       </transition>
 
-      <!-- COMPONENTS -->
+       COMPONENTS
       <transition name="fade">
         <StyleTool
             v-if="menuHighlight === 1"
@@ -28,24 +27,50 @@
         />
 
         <FilesTool
-		        v-else-if="menuHighlight === 3"
+            v-else-if="menuHighlight === 3"
             v-show="modal_ready"
             @resetMenuIndex="menuHighlight = 0"
         />
 
         <TranslationTool
-		        v-else-if="menuHighlight === 9"
+            v-else-if="menuHighlight === 9"
             v-show="modal_ready"
             @resetMenuIndex="menuHighlight = 0"
             ref="translations"
         />
 
         <AttachmentStorage
-		        v-else-if="menuHighlight === 5"
+            v-else-if="menuHighlight === 5"
             v-show="modal_ready"
             @resetMenuIndex="menuHighlight = 0"
         />
       </transition>
+      --->
+    </div>
+
+    <div class="container">
+      <button class="accordion">Accordian #1</button>
+      <div class="accordion-content">
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quas deleniti molestias necessitatibus quaerat quos incidunt! Quas officiis repellat dolore omnis nihil quo, ratione cupiditate! Sed, deleniti, recusandae! Animi, sapiente, nostrum?
+        </p>
+      </div>
+
+
+      <button class="accordion">Accordian #2</button>
+      <div class="accordion-content">
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quas deleniti molestias necessitatibus quaerat quos incidunt! Quas officiis repellat dolore omnis nihil quo, ratione cupiditate! Sed, deleniti, recusandae! Animi, sapiente, nostrum?
+        </p>
+      </div>
+
+
+      <button class="accordion">Accordian #3</button>
+      <div class="accordion-content">
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quas deleniti molestias necessitatibus quaerat quos incidunt! Quas officiis repellat dolore omnis nihil quo, ratione cupiditate! Sed, deleniti, recusandae! Animi, sapiente, nostrum?
+        </p>
+      </div>
     </div>
 
     <div class="em-page-loader" v-if="loading"></div>
@@ -62,6 +87,8 @@ import StyleTool from '../components/Settings/Style/StyleTool';
 import AttachmentStorage from '../components/Settings/AttachmentStorage/AttachmentStorage';
 
 import settingsService from '../services/settings';
+
+import SettingParam from '../../data/settings-global-group-params.json';
 
 export default {
   name: "globalSettings",
@@ -135,11 +162,18 @@ export default {
         access: 0,
       },
     ],
-    modal_ready: false
+    modal_ready: false,
+
+    Menus : [],
+    SubMenus : [],
+    SubSubMenus : [],
+
   }),
 
   created() {
     this.loading = true;
+    this.changeCSS();
+    this.test();
     settingsService.getEmundusParams().then((params) => {
       this.em_params = params.data.emundus;
 
@@ -156,6 +190,32 @@ export default {
   },
 
   methods: {
+    changeCSS() {
+      let navbarDisplay = document.getElementById("header-b");
+      navbarDisplay.style.display = "none";
+
+      console.log(SettingParam);
+
+
+    },
+    test(){
+      var accordions = document.getElementsByClassName("accordion");
+
+      for (var i = 0; i < accordions.length; i++) {
+        accordions[i].onclick = function() {
+          this.classList.toggle('is-open');
+
+          var content = this.nextElementSibling;
+          if (content.style.maxHeight) {
+            // accordion is currently open, so close it
+            content.style.maxHeight = null;
+          } else {
+            // accordion is currently closed, so open it
+            content.style.maxHeight = content.scrollHeight + "px";
+          }
+        }
+      }
+    },
     changeMenu(menu){
       setTimeout(() => {
         this.menuHighlight = menu.index;
@@ -204,6 +264,7 @@ export default {
     }
   }
 };
+
 </script>
 
 <style scoped>
@@ -221,5 +282,49 @@ export default {
   div.em-grid-3 {
     padding: var(--p-24);
   }
+}
+
+.container {
+  width: 80%;
+  max-width: 600px;
+  margin: 50px auto;
+}
+
+button.accordion {
+  width: 100%;
+  background-color: whitesmoke;
+  border: none;
+  outline: none;
+  text-align: left;
+  padding: 15px 20px;
+  font-size: 18px;
+  color: #444;
+  cursor: pointer;
+  transition: background-color 0.2s linear;
+}
+
+button.accordion:after {
+  content: '\f055';
+  font-family: "fontawesome";
+  font-size: 14px;
+  float: right;
+}
+
+button.accordion.is-open:after {
+  content: '\f056';
+}
+
+button.accordion:hover, button.accordion.is-open {
+  background-color: #ddd;
+}
+
+.accordion-content {
+  background-color: white;
+  border-left: 1px solid whitesmoke;
+  border-right: 1px solid whitesmoke;
+  padding: 0 20px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-in-out;
 }
 </style>

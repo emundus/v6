@@ -1,0 +1,163 @@
+[
+  {
+    "label": "Général",
+    "icon": "dashboard",
+    "published": true,
+    "sections": [
+      {
+        "label": "Paramètres du site",
+        "type": "section",
+        "helptext": "cela permet de d'affimer l'identité visuel de votre campagne",
+        "fields": [
+          {
+            "name": "sitename",
+            "label": "Nom du site",
+            "type": "input",
+            "helptext": "",
+            "placeholder": "tchooz"
+          },
+          {
+            "name": "default_language",
+            "label": "Langue principale du site",
+            "type": "sqldropdown",
+            "table": "jos_languages",
+            "primary_key": "lang_id",
+            "display_key": "lang_title",
+            "filter": "lang_published = 1",
+            "helptext": "",
+            "placeholder": ""
+          },
+          {
+            "name": "other_languages",
+            "label": "Autres langues du site",
+            "type": "sqldropdown",
+            "table": "jos_languages",
+            "primary_key": "lang_id",
+            "display_key": "lang_title",
+            "filter": "lang_id != {default_language}",
+            "helptext": "",
+            "placeholder": "",
+            "multiple": true
+          },
+          {
+            "name": "site_desc",
+            "label": "Description du site",
+            "type": "textarea",
+            "helptext": "",
+            "placeholder": ""
+          },
+          {
+            "name": "offset",
+            "label": "Fuseau horaire",
+            "type": "sqldropdown",
+            "helptext": "",
+            "placeholder": ""
+          },
+          {
+            "label": "Format de la date",
+            "type": "dropdown",
+            "helptext": "",
+            "placeholder": ""
+          },
+          {
+            "name": "keywords",
+            "label": "Mots clés",
+            "type": "input",
+            "helptext": "",
+            "placeholder": "",
+            "multiple": true
+          },
+          {
+            "label": "Nombre de lignes affichées par défaut dans les listes",
+            "type": "input",
+            "helptext": "",
+            "placeholder": "10"
+          }
+        ]
+      },
+      {
+        "label": "Images du site",
+        "type": "section",
+        "helptext": "",
+        "options": [
+          {
+            "label": "Logo",
+            "type": "image",
+            "maxsize": "1000",
+            "allowed_extensions": "jpg,png,gif",
+            "helptext": "Conseil : évitez les fonds de couleurs",
+            "placeholder": ""
+          },
+          {
+            "label": "Favicon",
+            "type": "image",
+            "maxsize": "500",
+            "allowed_extensions": "jpg,png,gif,svg",
+            "helptext": "Conseil : format 48x48 pixels",
+            "placeholder": ""
+          },
+          {
+            "label": "Bannière",
+            "type": "Image",
+            "helptext": "Conseil : format 1440x310 pixels",
+            "placeholder": ""
+          }
+        ]
+      },
+      {
+        "label": "Thème du site",
+        "type": "Dropdown",
+        "helptext": "",
+        "options": [
+          {
+            "label": "Thème prédéfinie",
+            "type": "sqldropdown",
+            "helptext": "",
+            "placeholder": ""
+          },
+          {
+            "label": "Couleur principale",
+            "type": "colorPicker",
+            "helptext": "",
+            "placeholder": ""
+          },
+          {
+            "label": "Couleur secondaire",
+            "type": "colorPicker",
+            "helptext": "",
+            "placeholder": ""
+          },
+          {
+            "label": "paramtrage avancé ",
+            "type": "variables",
+            "helptext": "",
+            "placeholder": ""
+          }
+        ]
+      },
+      {
+        "label": "Analytics",
+        "type": "section",
+        "helptext": "wesh c'est quoi",
+        "options": [
+          {
+            "label": "google analytics ID",
+            "type": "Input",
+            "helptext": "",
+            "placeholder": ""
+          },
+          {
+            "label": "Matomo analytics ID",
+            "type": "Input",
+            "helptext": "",
+            "placeholder": ""
+          }
+        ]
+      }
+    ]
+  }
+]
+
+
+
+
