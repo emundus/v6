@@ -51,7 +51,7 @@ class EmundusModelRanking extends JModelList
 
                 $query->select('cr.id as rank_id, CONCAT(applicant.firstname, " ", applicant.lastname) AS applicant, cc.id, cc.fnum, cr.rank, cr.locked, cc.status')
                     ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
-                    ->leftJoin($this->db->quoteName('#__emundus_users', 'applicant') . ' ON ' . $this->db->quoteName('cc.applicant_id') . ' = ' . $this->db->quoteName('applicant.id'))
+                    ->leftJoin($this->db->quoteName('#__emundus_users', 'applicant') . ' ON ' . $this->db->quoteName('cc.applicant_id') . ' = ' . $this->db->quoteName('applicant.user_id'))
                     ->leftJoin($this->db->quoteName('#__emundus_ranking', 'cr') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('cr.ccid'))
                     ->where($this->db->quoteName('cc.id') . ' IN (' . implode(',', $ids) . ')')
                     ->andWhere('(cr.user_id = ' . $this->db->quote($user_id) . ' AND cr.hierarchy_id = ' . $this->db->quote($hierarchy) . ') OR cr.id IS NULL');
@@ -395,6 +395,10 @@ class EmundusModelRanking extends JModelList
                 if ($old_rank == $new_rank) {
                     return true;
                 } else {
+                    if ($old_rank == 0) { // 0 is not a possible value
+                        $old_rank = -1;
+                    }
+
                     if ($new_rank == -1) {
                         // all ranks superior or equal to old rank should be decreased by 1
                         $query->clear()
