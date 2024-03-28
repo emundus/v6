@@ -8,8 +8,8 @@
 			/>
 			<div>
 				<div class="em-flex-row em-mt-16 em-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
-					<span class="material-icons-outlined">arrow_back</span>
-					<p class="em-ml-8">{{ translate('BACK') }}</p>
+          <span class="material-icons-outlined">navigate_before</span>
+          <span class="em-ml-8 em-text-neutral-900">{{ translate('BACK') }}</span>
 				</div>
 				<div class="em-flex-row em-mt-16">
 					<h1 v-if="menuHighlight != -1">{{this.translate(formCategories[menuHighlight])}}</h1>

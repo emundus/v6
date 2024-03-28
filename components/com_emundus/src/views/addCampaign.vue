@@ -2,8 +2,8 @@
   <div class="campaigns__add-campaign">
     <div v-if="typeof campaignId == 'undefined' || campaignId == 0">
       <div class="flex items-center mt-4 cursor-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
-        <span class="material-icons-outlined">arrow_back</span>
-        <p class="ml-2">{{ translate('BACK') }}</p>
+        <span class="material-icons-outlined">navigate_before</span>
+        <span class="em-ml-8 em-text-neutral-900">{{ translate('BACK') }}</span>
       </div>
 
       <h1 class="mt-4">{{ translate('COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN') }}</h1>
