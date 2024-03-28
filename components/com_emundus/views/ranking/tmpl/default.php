@@ -115,6 +115,7 @@ Text::script('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_TITLE');
              manyLanguages="<?= $many_languages ?>"
              coordinatorAccess="<?= $coordinator_access ?>"
              sysadminAccess="<?= $sysadmin_access ?>"
+             fileTabsStr="<?= $this->comparison_modal_tabs ?>"
         ></div>
     </div>
 </div>
