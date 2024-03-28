@@ -70,16 +70,6 @@ class EmundusModelRanking extends JModelList
 
                     if ($file['status'] != $status && $file['locked'] != 1) {
                         $files[$key]['locked'] = 1;
-
-                        if (!empty($file['rank_id'])) {
-                            $query->clear()
-                                ->update($this->db->quoteName('#__emundus_ranking'))
-                                ->set($this->db->quoteName('locked') . ' = 1')
-                                ->where($this->db->quoteName('id') . ' = ' . $this->db->quote($file['rank_id']));
-
-                            $this->db->setQuery($query);
-                            $this->db->execute();
-                        }
                     }
 
                     if (empty($file['rank'])) {
