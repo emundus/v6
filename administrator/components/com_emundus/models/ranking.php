@@ -154,6 +154,7 @@ class EmundusAdministrationModelRanking extends JModelList
                 'name' => $db->quoteName('rank'),
                 'type' => 'int',
                 'null' => 0,
+                'default' => -1,
             ],
         ];
         $foreign_keys = [

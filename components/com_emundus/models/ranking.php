@@ -44,12 +44,12 @@ class EmundusModelRanking extends JModelList
         $status = $this->getStatusUserCanRank($user_id, $hierarchy);
 
         if ($status !== null) {
-            $ids = $this->getAllFilesRankerCanAccessTo($user_id, $status);
+            $ids = $this->getAllFilesRankerCanAccessTo($user_id);
 
             if (!empty($ids)) {
                 $query = $this->db->getQuery(true);
 
-                $query->select('CONCAT(applicant.firstname, " ", applicant.lastname) AS applicant, cc.id, cc.fnum, cr.rank, cr.locked')
+                $query->select('cr.id as rank_id, CONCAT(applicant.firstname, " ", applicant.lastname) AS applicant, cc.id, cc.fnum, cr.rank, cr.locked, cc.status')
                     ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
                     ->leftJoin($this->db->quoteName('#__emundus_users', 'applicant') . ' ON ' . $this->db->quoteName('cc.applicant_id') . ' = ' . $this->db->quoteName('applicant.id'))
                     ->leftJoin($this->db->quoteName('#__emundus_ranking', 'cr') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('cr.ccid'))
@@ -66,6 +66,20 @@ class EmundusModelRanking extends JModelList
                 foreach ($files as $key => $file) {
                     if (empty($file['locked']) && $file['locked'] != '0') {
                         $files[$key]['locked'] = 0;
+                    }
+
+                    if ($file['status'] != $status && $file['locked'] != 1) {
+                        $files[$key]['locked'] = 1;
+
+                        if (!empty($file['rank_id'])) {
+                            $query->clear()
+                                ->update($this->db->quoteName('#__emundus_ranking'))
+                                ->set($this->db->quoteName('locked') . ' = 1')
+                                ->where($this->db->quoteName('id') . ' = ' . $this->db->quote($file['rank_id']));
+
+                            $this->db->setQuery($query);
+                            $this->db->execute();
+                        }
                     }
 
                     if (empty($file['rank'])) {
