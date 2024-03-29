@@ -23,7 +23,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
     .em-double-scroll-bar {
         position: sticky;
         padding: 0 !important;
-        z-index: 999;
+        z-index: 2;
     }
     div.top-scrollbars::-webkit-scrollbar, .em-double-scroll-bar::-webkit-scrollbar {
         -webkit-appearance: none;
@@ -449,7 +449,12 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
         if(window.scrollY > document.querySelector('.em-data-container table thead').offsetHeight) {
             document.querySelector('.em-data-container table thead').style.position = 'relative';
             let containerResult = document.querySelector('.container-result').offsetHeight;
-            document.querySelector('.em-data-container table thead').style.top = (window.scrollY - containerResult - 4) + 'px';
+            let countBlock = document.getElementById('countCheckedCheckbox');
+            if(countBlock.style.display === 'block') {
+                document.querySelector('.em-data-container table thead').style.top = (window.scrollY - containerResult - 8 + countBlock.offsetHeight) + 'px';
+            } else {
+                document.querySelector('.em-data-container table thead').style.top = (window.scrollY - containerResult - 4) + 'px';
+            }
         } else {
             document.querySelector('.em-data-container table thead').style.position = 'static';
             document.querySelector('.em-data-container table thead').style.top = '0px';

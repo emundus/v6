@@ -1926,6 +1926,7 @@ $(document).ready(function() {
                                                         $('#em-export-camp').empty();
                                                         $('#em-export-camp').append('<option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option>');
                                                         $('#em-export-camp').append(result.html);
+                                                        $("#em-export-camp").val(0);
                                                         $('#em-export-camp').chosen('destroy').chosen({width: "100%"});
 
                                                         $('#loadingimg-campaign').remove();
@@ -1957,9 +1958,10 @@ $(document).ready(function() {
                             $('#em-export-camp').on('change', function() {
 
                                 var code = $('#em-export-prg').val();
+                                var camp = $("#em-export-camp").val();
 
-                                if (code != 0) {
-                                    var camp = $("#em-export-camp").val();
+                                if (code != 0 && camp != 0) {
+
 
                                     $.ajax({
                                         type:'get',

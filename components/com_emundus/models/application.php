@@ -2644,7 +2644,7 @@ class EmundusModelApplication extends JModelList
                                                         $forms .= '</table>';
                                                         $forms .= '<div style="width: 93.5%;padding: 8px 16px;">';
                                                         $forms .= '<div style="width: 100%; padding: 4px 8px;background-color: #F3F3F3;color: #000000;border: solid 1px #A4A4A4;border-bottom: unset;font-size: 12px">' .  (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '')  . '</div>';
-                                                        if (json_decode($element->params)->use_wysiwyg == 1) {
+                                                        if (json_decode($elements[$j]->params)->use_wysiwyg == 1) {
                                                             $forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px">' . preg_replace('/<br\s*\/?>/','',JText::_($elt)) . '</div>';
                                                         } else {
                                                             $forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px">' . JText::_($elt) . '</div>';
