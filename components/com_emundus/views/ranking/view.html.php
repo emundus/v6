@@ -30,6 +30,7 @@ class EmundusViewRanking extends JViewLegacy
     var $db = null;
     var $hierarchy_id = null;
     var $display_filters = false;
+    var $params = null;
     var $comparison_modal_tabs = array();
 
     function __construct($config = array())
@@ -56,7 +57,8 @@ class EmundusViewRanking extends JViewLegacy
             $this->display_filters = true;
         }
 
-        $comparison_modal_tabs = $active->getParams()->get('comparison_modal_tabs', []);
+        $this->params = $active->getParams();
+        $comparison_modal_tabs = $this->params->get('comparison_modal_tabs', []);
         $this->comparison_modal_tabs = implode(',', $comparison_modal_tabs);
 
         parent::__construct($config);

@@ -1,12 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <metadata>
-    <layout title="COM_EMUNDUS_CLASSEMENT_VIEW_DEFAULT_TITLE">
+    <layout title="COM_EMUNDUS_RANKING_VIEW_DEFAULT_TITLE">
         <message>
-            <![CDATA[COM_EMUNDUS_CLASSEMENT_VIEW_DEFAULT_TITLE_DESC]]>
+            <![CDATA[COM_EMUNDUS_RANKING_VIEW_DEFAULT_TITLE_DESC]]>
         </message>
     </layout>
     <fields name="params">
         <fieldset name="basic">
+            <field
+                name="introduction"
+                type="editor"
+                label="COM_EMUNDUS_RANKING_INTRODUCTION"
+                description="COM_EMUNDUS_RANKING_INTRODUCTION_DESC"
+                filter="safehtml"
+                size="20"
+            />
             <field name="comparison_modal_tabs"
                    type="list"
                    label="COM_EMUNDUS_COMPARISON_MODAL_TABS"
