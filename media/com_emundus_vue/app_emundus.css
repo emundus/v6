@@ -2967,63 +2967,31 @@ td[data-v-db0e1b70]{
 }
 
 
-.em-hover-s-scale[data-v-2fcc0280]{
-  -webkit-transition: -webkit-transform 0.2s ease-in-out;
-  transition: -webkit-transform 0.2s ease-in-out;
-  transition: transform 0.2s ease-in-out;
-  transition: transform 0.2s ease-in-out, -webkit-transform 0.2s ease-in-out;
+.outlined-button[data-v-2fcc0280] {
+  border: 1px solid #333; /* Border color */
+  background-color: transparent; /* Remove background color */
+  padding: 8px 16px; /* Add padding for better spacing */
+  margin: 4px; /* Add margin for better spacing */
+  cursor: pointer; /* Show pointer cursor on hover */
+  outline: none; /* Remove default outline */
 }
-.em-hover-s-scale[data-v-2fcc0280]:hover{
-  -webkit-transform: scale(1.03);
-          transform: scale(1.03);
+.outlined-button[data-v-2fcc0280]:hover {
+  background-color: #00ff00; /* Change background color on hover */
+  color: white; /* Change text color to white */
 }
-.em-shadow-cards[data-v-2fcc0280]{
-  margin: unset;
+.green-button[data-v-2fcc0280] {
+  background-color: green; /* Change background color to green when clicked */
+  color: white; /* Change text color to white */
 }
-@media all and (max-width: 959px) {
-div.em-grid-3[data-v-2fcc0280] {
-    padding: var(--p-24);
-}
-}
-.container[data-v-2fcc0280] {
-  width: 80%;
-  max-width: 600px;
-  margin: 50px auto;
-}
-button.accordion[data-v-2fcc0280] {
-  width: 100%;
-  background-color: whitesmoke;
-  border: none;
-  outline: none;
-  text-align: left;
-  padding: 15px 20px;
-  font-size: 18px;
-  color: #444;
-  cursor: pointer;
-  -webkit-transition: background-color 0.2s linear;
-  transition: background-color 0.2s linear;
-}
-button.accordion[data-v-2fcc0280]:after {
-  content: '\f055';
-  font-family: "fontawesome";
-  font-size: 14px;
-  float: right;
-}
-button.accordion.is-open[data-v-2fcc0280]:after {
-  content: '\f056';
-}
-button.accordion[data-v-2fcc0280]:hover, button.accordion.is-open[data-v-2fcc0280] {
-  background-color: #ddd;
-}
-.accordion-content[data-v-2fcc0280] {
-  background-color: white;
-  border-left: 1px solid whitesmoke;
-  border-right: 1px solid whitesmoke;
-  padding: 0 20px;
-  max-height: 0;
-  overflow: hidden;
-  -webkit-transition: max-height 0.2s ease-in-out;
-  transition: max-height 0.2s ease-in-out;
+.submenu-div[data-v-2fcc0280] {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  margin-left: 20px;
 }
 
 @media all and (max-width: 479px) {

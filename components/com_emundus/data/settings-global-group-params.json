@@ -8,7 +8,7 @@
         "label": "Paramètres du site",
         "type": "section",
         "helptext": "cela permet de d'affimer l'identité visuel de votre campagne",
-        "fields": [
+        "options": [
           {
             "name": "sitename",
             "label": "Nom du site",
@@ -106,7 +106,7 @@
       },
       {
         "label": "Thème du site",
-        "type": "Dropdown",
+        "type": "section",
         "helptext": "",
         "options": [
           {
@@ -128,7 +128,7 @@
             "placeholder": ""
           },
           {
-            "label": "paramtrage avancé ",
+            "label": "parametrage avancé ",
             "type": "variables",
             "helptext": "",
             "placeholder": ""
@@ -155,6 +155,48 @@
         ]
       }
     ]
+  },
+  {
+    "label": "Email",
+    "icon": "email",
+    "published": true,
+    "sections": [
+      {
+        "label": "Gestion du serveur de mail",
+        "type": "section",
+        "helptext": "cela permet de pouvoir envoyer des mails au candidats",
+        "options": [
+          {
+            "name": "site_email",
+            "label": "eMail du site",
+            "type": "input",
+            "helptext": "",
+            "placeholder": "test.user@mail.fr"
+          },
+          {
+            "name": "sender_name",
+            "label": "Nom de l'expéditeur",
+            "type": "input",
+            "helptext": "",
+            "placeholder": "User"
+          },
+          {
+            "name": "config_server_mail",
+            "label": "Configuration du serveur de mail (SMTP)",
+            "type": "variables",
+            "helptext": "",
+            "placeholder": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "Contenu",
+    "icon": "content",
+    "published": true,
+    "sections": []
+
   }
 ]
 
