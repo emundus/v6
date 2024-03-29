@@ -28,12 +28,13 @@ class EmundusAdministrationModelRanking extends JModelList
      * Install tables and add sysadmin default menu
      * @return bool
      */
-    public function install(): bool
+    public function install($debug = false): bool
     {
         $installed = false;
         $tasks = [];
 
         require_once (JPATH_ROOT . '/administrator/components/com_emundus/helpers/update.php');
+        $app = $debug ? JFactory::getApplication() : null;
         $db = JFactory::getDbo();
 
         /**
@@ -93,6 +94,13 @@ class EmundusAdministrationModelRanking extends JModelList
         $response = EmundusHelperUpdate::createTable('jos_emundus_ranking_hierarchy', $columns, $foreign_keys);
         $tasks[] = $response['status'];
 
+        if ($debug) {
+            if ($response['status']) {
+                $app->enqueueMessage('Table jos_emundus_ranking_hierarchy exists or has been created');
+            } else {
+                $app->enqueueMessage('Table jos_emundus_ranking_hierarchy not created', 'error');
+            }
+        }
 
         $columns = [
             [
@@ -127,6 +135,14 @@ class EmundusAdministrationModelRanking extends JModelList
 
         $response = EmundusHelperUpdate::createTable('jos_emundus_ranking_hierarchy_view', $columns, $foreign_keys);
         $tasks[] = $response['status'];
+
+        if ($debug) {
+            if ($response['status']) {
+                $app->enqueueMessage('Table jos_emundus_ranking_hierarchy_view exists or has been created');
+            } else {
+                $app->enqueueMessage('Table jos_emundus_ranking_hierarchy_view not created', 'error');
+            }
+        }
 
         $columns = [
             [
@@ -193,6 +209,13 @@ class EmundusAdministrationModelRanking extends JModelList
         $response = EmundusHelperUpdate::createTable('jos_emundus_ranking', $columns, $foreign_keys, 'Table de classement', $unique_keys);
         $tasks[] = $response['status'];
 
+        if ($debug) {
+            if ($response['status']) {
+                $app->enqueueMessage('Table jos_emundus_ranking exists or has been created');
+            } else {
+                $app->enqueueMessage('Table jos_emundus_ranking not created', 'error');
+            }
+        }
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -221,6 +244,47 @@ class EmundusAdministrationModelRanking extends JModelList
         ];
         $response = EmundusHelperUpdate::addJoomlaMenu($datas);
         $tasks[] = $response['status'];
+
+        if ($debug) {
+            if ($response['status']) {
+                $app->enqueueMessage('Menu Classement exists or has been created');
+            } else {
+                $app->enqueueMessage('Menu Classement not created', 'error');
+            }
+        }
+
+        $query = $db->getQuery(true);
+        $query->select('id')
+            ->from('#__emundus_setup_emails')
+            ->where('lbl = ' . $db->quote('ask_lock_ranking'));
+
+        $db->setQuery($query);
+        $email_id = $db->loadResult();
+        $email_insert = false;
+        if (empty($email_id)) {
+            $default_message = 'Bonjour [NAME], <br /><br /><p>Une demande de verrouillage du classement a été effectuée.</p> <br /><br />Cordialement,';
+
+            $query = $db->getQuery(true);
+            $query->insert('#__emundus_setup_emails')
+                ->columns('lbl, subject, message, type, category')
+                ->values($db->quote('ask_lock_ranking') . ', ' . $db->quote('Demande de verrouillage du classement') . ', ' . $db->quote($default_message) . ', 1, ' . $db->quote('Système'));
+
+            try {
+                $db->setQuery($query);
+                $email_insert = $db->execute();
+                $tasks[] = $email_insert;
+            } catch (Exception $e) {
+                $tasks[] = false;
+            }
+        }
+
+        if ($debug) {
+            if ($email_insert || !empty($email_id)) {
+                $app->enqueueMessage('Email ask_lock_ranking exists or has been created');
+            } else {
+                $app->enqueueMessage('Email ask_lock_ranking not created', 'error');
+            }
+        }
 
         if (!in_array(false, $tasks)) {
             $installed = true;
