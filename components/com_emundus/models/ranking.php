@@ -517,7 +517,7 @@ class EmundusModelRanking extends JModelList
                         ->leftJoin($this->db->quoteName('#__emundus_users_profiles', 'eup') . ' ON ' . $this->db->quoteName('erh.profile_id') . ' = ' . $this->db->quoteName('eup.profile_id'))
                         ->leftJoin($this->db->quoteName('#__users', 'u') . ' ON ' . $this->db->quoteName('u.id') . ' = ' . $this->db->quoteName('eup.user_id'))
                         ->where($this->db->quoteName('erh.id') . ' = ' . $this->db->quote($hierarchy_infos['parent_id']))
-                        ->andWhere($this->db->quoteName('u.block = 0'))
+                        ->andWhere($this->db->quoteName('u.block') . ' = 0')
                         ->andWhere($this->db->quoteName('u.activation') . ' = 1');
 
                     $this->db->setQuery($query);
