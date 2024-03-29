@@ -55,6 +55,11 @@ class EmundusViewModules extends JViewLegacy
                 'title' => 'Remplacer les modules des formulaires candidats',
                 'desc' => '',
                 'install_button' => 'Installer'
+            ],
+            'ranking' => [
+                'title' => 'Classement',
+                'desc' => 'Installation des tables de classement, d\'un menu administrateur et d\'un email Système.',
+                'install_button' => 'Installer'
             ]
         ];
         $this->assignRef('modules', $modules);
