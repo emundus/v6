@@ -36,9 +36,19 @@ class EmundusModelRanking extends JModelList
         JLog::addLogger(['text_file' => 'com_emundus.ranking.php'], JLog::ALL);
     }
 
-    public function getFilesUserCanRank($user_id)
+    /**
+     * @param $user_id
+     * @param $page
+     * @param $limit
+     * @return array|mixed
+     */
+    public function getFilesUserCanRank($user_id, $page = 1, $limit = 10, $sort = 'ASC')
     {
-        $files = [];
+        $files = [
+            'total' => 0,
+            'data' => [],
+            'maxRankValue' => -1,
+        ];
 
         $hierarchy = $this->getUserHierarchy($user_id);
         $status = $this->getStatusUserCanRank($user_id, $hierarchy);
@@ -47,8 +57,9 @@ class EmundusModelRanking extends JModelList
             $ids = $this->getAllFilesRankerCanAccessTo($user_id);
 
             if (!empty($ids)) {
-                $query = $this->db->getQuery(true);
+                $files['total'] = count($ids);
 
+                $query = $this->db->getQuery(true);
                 $query->select('cr.id as rank_id, CONCAT(applicant.firstname, " ", applicant.lastname) AS applicant, cc.id, cc.fnum, cr.rank, cr.locked, cc.status')
                     ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
                     ->leftJoin($this->db->quoteName('#__emundus_users', 'applicant') . ' ON ' . $this->db->quoteName('cc.applicant_id') . ' = ' . $this->db->quoteName('applicant.user_id'))
@@ -56,34 +67,58 @@ class EmundusModelRanking extends JModelList
                     ->where($this->db->quoteName('cc.id') . ' IN (' . implode(',', $ids) . ')')
                     ->andWhere('(cr.hierarchy_id = ' . $this->db->quote($hierarchy) . ') OR cr.id IS NULL');
 
+                $offset = ($page - 1) * $limit;
+                $query->setLimit($limit, $offset);
+                $query->order('cr.rank ' . $sort);
+
                 try {
                     $this->db->setQuery($query);
-                    $files = $this->db->loadAssocList();
+                    $files['data'] = $this->db->loadAssocList();
                 } catch (Exception $e) {
-                    $files = [];
+                    JLog::add('getFilesUserCanRank ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
+                    throw new Exception('An error occurred while fetching the files.');
                 }
 
-                foreach ($files as $key => $file) {
+                foreach ($files['data'] as $key => $file) {
                     if (empty($file['locked']) && $file['locked'] != '0') {
-                        $files[$key]['locked'] = 0;
+                        $files['data'][$key]['locked'] = 0;
                     }
 
                     if ($file['status'] != $status && $file['locked'] != 1) {
-                        $files[$key]['locked'] = 1;
+                        $files['data'][$key]['locked'] = 1;
                     }
 
                     if (empty($file['rank'])) {
-                        $files[$key]['rank'] = -1; // -1 means not ranked
+                        $files['data'][$key]['rank'] = -1; // -1 means not ranked
                     }
                 }
 
                 // order by rank
-                usort($files, function ($a, $b) {
+                usort($files['data'], function ($a, $b) {
                     if ($a['rank'] == $b['rank']) {
                         return 0;
                     }
                     return ($a['rank'] < $b['rank']) ? -1 : 1;
                 });
+
+                $query->clear()
+                    ->select('MAX(' . $this->db->quoteName('rank') . ')')
+                    ->from($this->db->quoteName('#__emundus_ranking'))
+                    ->where($this->db->quoteName('ccid') . ' IN (' . implode(',', $ids) . ')')
+                    ->andWhere($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id))
+                    ->andWhere($this->db->quoteName('hierarchy_id') . ' = ' . $this->db->quote($hierarchy));
+
+                try {
+                    $this->db->setQuery($query);
+                    $max = $this->db->loadResult();
+
+                    if (!empty($max)) {
+                        $files['maxRankValue'] = (int)$max;
+                    }
+                } catch (Exception $e) {
+                    JLog::add('getFilesUserCanRank ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
+                    throw new Exception('An error occurred while fetching the files.' . $query->__toString());
+                }
             }
         }
 

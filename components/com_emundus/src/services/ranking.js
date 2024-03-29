@@ -1,9 +1,9 @@
 import client from './axiosClient';
 
 export default {
-    async getMyRanking() {
+    async getMyRanking(pagination) {
         try {
-            const response = await client().get('index.php?option=com_emundus&controller=ranking&task=getMyFilesToRank');
+            const response = await client().get('index.php?option=com_emundus&controller=ranking&task=getMyFilesToRank&page=' + pagination.page + '&limit=' + pagination.perPage);
             return response.data;
         } catch (e) {
             return {

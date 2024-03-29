@@ -1,27 +1,38 @@
 <template>
   <div id="ranking-list">
-    <header class="em-flex-space-between em-flex-row em-mb-32">
-      <div id="header-left">
-        <div id="nb-files">{{ translate('COM_EMUNDUS_NB_FILES') + ' ' }} {{ rankings.nbFiles }}</div>
-        <div id="pagination"></div>
+    <header class="em-flex-space-between flex flex-row mt-4 mb-2">
+      <div id="header-left" class="flex flex-row items-center">
+        <div id="nb-files" class="mr-2">{{ translate('COM_EMUNDUS_NB_FILES') + ' ' }} {{ rankings.nbFiles }}</div>
+
+        <div id="pagination" class="ml-2 flex flex-row items-center">
+          <select v-model="pagination.perPage" @change="getRankings">
+            <option v-for="option in pagination.perPageOptions" :key="option" :value="option">{{ translate('DISPLAY') }} {{ option }}</option>
+          </select>
+        </div>
       </div>
-      <div id="header-left" class="em-flex-row">
-        <button v-if="rankingsToLock" id="ask-to-lock-ranking" class="em-secondary-button" @click="askToLockRankings">
-          <span class="material-icons-outlined em-mr-4">lock</span>
-          {{ translate('COM_EMUNDUS_CLASSEMENT_ASK_LOCK_RANKING') }}
-        </button>
-        <button v-if="!ismyRankingLocked && rankings.myRanking.length > 0" id="lock-ranking" class="em-primary-button em-ml-4" @click="lockRanking">
-          <span class="material-icons-outlined em-mr-4">check_circle_outline</span>
-          {{ translate('COM_EMUNDUS_CLASSEMENT_LOCK_RANKING') }}
-        </button>
+      <div id="header-right" class="flex flex-row">
+        <!-- pagination navigation -->
+        <span id="prev" class="material-icons-outlined cursor-pointer" @click="changePage('-1')">keyboard_arrow_left</span>
+        <span id="position"> {{ pagination.page }} / {{ nbPagesMax }}</span>
+        <span id="next" class="material-icons-outlined cursor-pointer" @click="changePage('1')">keyboard_arrow_right</span>
       </div>
     </header>
+    <div id="btns-section" class="flex flex-row justify-end mb-8">
+      <button v-if="rankingsToLock" id="ask-to-lock-ranking" class="em-secondary-button w-fit cursor-pointer" @click="askToLockRankings">
+        <span class="material-icons-outlined em-mr-4">lock</span>
+        {{ translate('COM_EMUNDUS_CLASSEMENT_ASK_LOCK_RANKING') }}
+      </button>
+      <button v-if="!ismyRankingLocked && rankings.myRanking.length > 0" id="lock-ranking" class="em-primary-button em-ml-4 w-fit cursor-pointer" @click="lockRanking">
+        <span class="material-icons-outlined em-mr-4">check_circle_outline</span>
+        {{ translate('COM_EMUNDUS_CLASSEMENT_LOCK_RANKING') }}
+      </button>
+    </div>
     <div v-if="rankings.myRanking.length > 0" id="ranking-lists-container" class="em-flex-row em-flex-space-between">
       <div id="my-ranking-list"
-           class="em-w-100 em-mr-4"
+           class="w-full mr-2"
            :class="{'dragging': dragging}"
       >
-        <table id="ranked-files" class="em-w-100">
+        <table id="ranked-files" class="w-full">
           <thead>
           <th>
             <span class="material-icons-outlined" v-if="ismyRankingLocked">lock</span>
@@ -108,8 +119,8 @@
           </draggable>
         </table>
       </div>
-      <div v-if="rankings.otherRankings.length > 0" id="other-ranking-lists" class="em-w-100 em-border-neutral-300">
-        <table class="em-w-100">
+      <div v-if="rankings.otherRankings.length > 0" id="other-ranking-lists" class="w-full em-border-neutral-300">
+        <table class="w-full">
           <thead>
           <template v-for="hierarchy in rankings.otherRankings" :key="hierarchy.hierarchy_id">
             <th :title="hierarchy.label">
@@ -282,7 +293,12 @@ export default {
       askedUsersToLockRanking: [],
       fileTabs: [],
       loading: false,
-      dragging: false
+      dragging: false,
+      pagination: {
+        page: 1,
+        perPage: 10,
+        perPageOptions: [1, 5, 10, 25, 50, 100]
+      }
     }
   },
   created() {
@@ -355,11 +371,25 @@ export default {
         this.loading = false;
       });
     },
+    changePage(direction) {
+      const oldPage = this.pagination.page;
+
+      if (direction === '-1' && this.pagination.page > 1) {
+        this.pagination.page--;
+      } else if (direction === '1' && this.pagination.page < this.nbPagesMax) {
+        this.pagination.page++;
+      }
+
+      if (oldPage !== this.pagination.page) {
+        this.getRankings();
+      }
+    },
     async getRankings() {
-      return await rankingService.getMyRanking().then(response => {
+      return await rankingService.getMyRanking(this.pagination).then(response => {
         if (response.status) {
-          this.rankings.myRanking = response.data;
-          this.rankings.nbFiles = response.data.length;
+          this.rankings.myRanking = response.data.data;
+          this.rankings.nbFiles = response.data.total;
+          this.rankings.maxRankValue = response.data.maxRankValue;
         }
       });
     },
@@ -541,16 +571,11 @@ export default {
     }
   },
   computed: {
+    nbPagesMax() {
+      return Math.ceil(this.rankings.nbFiles / this.pagination.perPage);
+    },
     maxRankValue() {
-      let maxRank = 0;
-
-      this.rankings.myRanking.forEach(file => {
-        if (file.rank > maxRank) {
-          maxRank = Number(file.rank);
-        }
-      });
-
-      return maxRank;
+      return this.rankings.maxRankValue;
     },
     maxRankValueAvailable() {
       // max rank value available is the max rank in the list + 1, if all of them are at -1, then it's 1
