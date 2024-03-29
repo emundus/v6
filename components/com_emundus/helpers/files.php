@@ -2743,6 +2743,36 @@ class EmundusHelperFiles
         return $data;
     }
 
+    function getAdmissionFormUrl($fnum, $user_id)
+    {
+        $url_form = '';
+
+        if (!empty($fnum)) {
+            require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+            require_once(JPATH_SITE . '/components/com_emundus/models/admission.php');
+            $m_admission = new EmundusModelAdmission();
+            $m_files = new EmundusModelFiles();
+            $fnumInfos = $m_files->getFnumInfos($fnum);
+            $admission_form = $m_admission->getAdmissionFormByProgramme($fnumInfos['training']);
+
+            if (!empty($admission_form)) {
+                $admission_row_id = $m_admission->getAdmissionId($admission_form->db_table_name,$fnum);
+            }
+
+            if (!empty($admission_form->form_id)) {
+                if (EmundusHelperAccess::asAccessAction(32, 'u', $user_id, $fnum)) {
+                    $url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$admission_form->form_id.'&rowid='.$admission_row_id.'&'.$admission_form->db_table_name.'___student_id[value]='.$fnumInfos['applicant_id'].'&'.$admission_form->db_table_name.'___campaign_id[value]='.$fnumInfos['campaign_id'].'&'.$admission_form->db_table_name.'___fnum[value]='.$fnum.'&student_id='.$fnumInfos['applicant_id'].'&tmpl=component&iframe=1';
+                } elseif (EmundusHelperAccess::asAccessAction(32, 'r', $user_id, $fnum)) {
+                    $url_form = 'index.php?option=com_fabrik&c=form&view=details&formid='.$admission_form->form_id.'&rowid='.$admission_row_id.'&'.$admission_form->db_table_name.'___student_id[value]='.$fnumInfos['applicant_id'].'&'.$admission_form->db_table_name.'___campaign_id[value]='.$fnumInfos['campaign_id'].'&'.$admission_form->db_table_name.'___fnum[value]='.$fnum.'&student_id='.$fnumInfos['applicant_id'].'&tmpl=component&iframe=1';
+                } elseif (EmundusHelperAccess::asAccessAction(32, 'c', $user_id, $fnum)) {
+                    $url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$admission_form->form_id.'&rowid=&'.$admission_form->db_table_name.'___student_id[value]='.$fnumInfos['applicant_id'].'&'.$admission_form->db_table_name.'___campaign_id[value]='.$fnumInfos['campaign_id'].'&'.$admission_form->db_table_name.'___fnum[value]='.$fnum.'&student_id='.$fnumInfos['applicant_id'].'&tmpl=component&iframe=1';
+                }
+            }
+        }
+
+        return $url_form;
+    }
+
     // getInterview
     function getInterview($format='html', $fnums = []) {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'interview.php');

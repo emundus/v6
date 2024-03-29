@@ -34,6 +34,13 @@
         :user="user"
         >
     </DecisionForm>
+    <AdmissionForm
+        v-if="selected === 'admission'"
+        :access="access['32']"
+        :fnum="file.fnum"
+        :user="user"
+    >
+    </AdmissionForm>
   </div>
 </template>
 
@@ -43,10 +50,11 @@ import Comments from "@/components/Files/Comments";
 import axios from "axios";
 import EvaluationForm from "@/components/Files/EvaluationForm.vue";
 import DecisionForm from "@/components/Files/DecisionForm.vue";
+import AdmissionForm from "@/components/Files/AdmissionForm.vue";
 
 export default {
   name: 'ApplicationTabs',
-  components: {DecisionForm, EvaluationForm, Attachments, Comments},
+  components: {DecisionForm, EvaluationForm, AdmissionForm, Attachments, Comments},
   props: {
     tabs: {
       type: Array,
