@@ -103,9 +103,9 @@ Text::script('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_TITLE');
     <?php endif; ?>
 
     <div class="em-p-0-12 em-w-100 em-h-100">
-        <h2><?= Text::_('COM_EMUNDUS_CLASSEMENT_TITLE') ?></h2>
+        <h2><?= Text::_($this->params->get('title', 'COM_EMUNDUS_CLASSEMENT_TITLE')) ?></h2>
         <section id="ranking-introduction">
-            <?= $this->params->get('introduction', '') ?>
+            <?= Text::_($this->params->get('introduction', '')) ?>
         </section>
 
         <p class="em-neutral-600-color em-mt-8 em-mb-8"><?= Text::_('COM_EMUNDUS_CLASSEMENT_HIERARCHY_LEVEL') . $this->hierarchy_id . ' - ' . Text::_('COM_EMUNDUS_CLASSEMENT_RANKER') . ' ' . $this->user->name ?></p>

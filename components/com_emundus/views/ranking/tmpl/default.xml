@@ -8,6 +8,13 @@
     <fields name="params">
         <fieldset name="basic">
             <field
+                    name="title"
+                    type="text"
+                    label="COM_EMUNDUS_RANKING_TITLE"
+                    description="COM_EMUNDUS_RANKING_TITLE_DESC"
+                    default="COM_EMUNDUS_CLASSEMENT_TITLE"
+            />
+            <field
                 name="introduction"
                 type="editor"
                 label="COM_EMUNDUS_RANKING_INTRODUCTION"
