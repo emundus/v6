@@ -474,7 +474,13 @@ class EmundusModelRanking extends JModelList
         return $updated;
     }
 
-    public function toggleLockFilesOfHierarchyRanking($hierarchy_id, $user_id, $locked = 1)
+    /**
+     * @param $hierarchy_id
+     * @param $user_id
+     * @param $locked
+     * @return boolean
+     */
+    public function toggleLockFilesOfHierarchyRanking($hierarchy_id, $user_id, $locked = 1): bool
     {
         $toggled = false;
 
@@ -490,6 +496,56 @@ class EmundusModelRanking extends JModelList
 
             $this->db->setQuery($query);
             $toggled = $this->db->execute();
+
+            if ($locked == 1 && $toggled) {
+                /**
+                 * Send email to parent id hierarchy to inform that the ranking has been locked
+                 */
+                $query->clear()
+                    ->select('erh.parent_id, erh.label')
+                    ->from($this->db->quoteName('#__emundus_ranking_hierarchy', 'erh'))
+                    ->where($this->db->quoteName('erh.id') . ' = ' . $this->db->quote($hierarchy_id));
+
+                $this->db->setQuery($query);
+                $hierarchy_infos = $this->db->loadAssoc();
+
+                if (!empty($hierarchy_infos['parent_id'])) {
+                    // get all users of this hierarchy
+                    $query->clear()
+                        ->select('DISTINCT u.email')
+                        ->from($this->db->quoteName('#__emundus_ranking_hierarchy', 'erh'))
+                        ->leftJoin($this->db->quoteName('#__emundus_users_profiles', 'eup') . ' ON ' . $this->db->quoteName('erh.profile_id') . ' = ' . $this->db->quoteName('eup.profile_id'))
+                        ->leftJoin($this->db->quoteName('#__users', 'u') . ' ON ' . $this->db->quoteName('u.id') . ' = ' . $this->db->quoteName('eup.user_id'))
+                        ->where($this->db->quoteName('erh.id') . ' = ' . $this->db->quote($hierarchy_infos['parent_id']))
+                        ->andWhere($this->db->quoteName('u.block = 0'))
+                        ->andWhere($this->db->quoteName('u.activation') . ' = 1');
+
+                    $this->db->setQuery($query);
+                    $emails = $this->db->loadColumn();
+
+                    if (!empty($emails)) {
+                        require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
+                        $m_emails = new EmundusModelEmails();
+                        $email_to_send = 'ranking_locked';
+
+                        $query->clear()
+                            ->select('firstname, lastname')
+                            ->from($this->db->quoteName('#__emundus_users'))
+                            ->where($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id));
+
+                        $this->db->setQuery($query);
+                        $user = $this->db->loadAssoc();
+
+                        $post = [
+                            'RANKER_NAME' => $user['firstname'] . ' ' . $user['lastname'],
+                            'RANKER_HIERARCHY' => $hierarchy_infos['label'],
+                        ];
+                        foreach($emails as $email) {
+                            $m_emails->sendEmailNoFnum($email, $email_to_send, $post, $user_id);
+                        }
+                    }
+                }
+            }
         }
 
         return $toggled;
@@ -498,7 +554,7 @@ class EmundusModelRanking extends JModelList
     /**
      * @param $user_asking,
      * @param $users, I can specify the users to ask to lock their rankings
-     * @param $hierarchies I can specify all users of a hierarchy to lock their rankings
+     * @param $hierarchies, I can specify all users of a hierarchy to lock their rankings
      * @throws Exception if I try to ask rankings to be locked for a user or a hierarchy I am not allowed to
      * @return array
      */

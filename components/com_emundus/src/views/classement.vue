@@ -464,7 +464,7 @@ export default {
           confirmButton: 'em-swal-confirm-button',
         },
       }).then((result) => {
-        if (result.isConfirmed) {
+        if (result.value) {
           this.lockRankingConfirmed();
         }
       });
