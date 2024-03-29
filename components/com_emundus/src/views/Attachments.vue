@@ -677,8 +677,7 @@ export default {
 	  },
     addAttachment() {
       Swal.fire({
-        html: '<iframe style="width:' + window.getWidth()*0.8 +'px; height:'+window.getHeight()*0.8+'px;" src="/component/fabrik/form/67/?jos_emundus_uploads___user_id[value]=' +  this.fnumInfos.applicant_id + '&jos_emundus_uploads___fnum[value]=' + this.displayedFnum + '&student_id=' + this.fnumInfos.applicant_id+ '&jos_emundus_uploads___campaign_id[value]=' + this.fnumInfos.campaign_id + '&tmpl=component&iframe=1&action_id=4"></iframe>',
-        width: '80vw !important',
+        html: '<iframe style="width:' + window.innerWidth*0.8 +'px; height:'+window.innerHeight*0.8+'px;" src="/component/fabrik/form/67/?jos_emundus_uploads___user_id[value]=' +  this.fnumInfos.applicant_id + '&jos_emundus_uploads___fnum[value]=' + this.displayedFnum + '&student_id=' + this.fnumInfos.applicant_id+ '&jos_emundus_uploads___campaign_id[value]=' + this.fnumInfos.campaign_id + '&tmpl=component&iframe=1&action_id=4"></iframe>',
         showCancelButton: true,
         showCloseButton: true,
         reverseButtons: true,
