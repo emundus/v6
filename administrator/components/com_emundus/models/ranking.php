@@ -286,6 +286,39 @@ class EmundusAdministrationModelRanking extends JModelList
             }
         }
 
+        $query->clear()
+            ->select('id')
+            ->from('#__emundus_setup_emails')
+            ->where('lbl = ' . $db->quote('ranking_locked'));
+
+        $db->setQuery($query);
+        $email_id = $db->loadResult();
+        $email_insert = false;
+        if (empty($email_id)) {
+            $default_message = 'Bonjour [NAME], <br /><br /><p>[RANKER_NAME], du niveau [RANKER_HIERARCHY],  a verrouillé le classement des ses dossiers.</p> <br /><br />Cordialement,';
+
+            $query = $db->getQuery(true);
+            $query->insert('#__emundus_setup_emails')
+                ->columns('lbl, subject, message, type, category')
+                ->values($db->quote('ranking_locked') . ', ' . $db->quote('Classement vérouillé') . ', ' . $db->quote($default_message) . ', 1, ' . $db->quote('Système'));
+
+            try {
+                $db->setQuery($query);
+                $email_insert = $db->execute();
+                $tasks[] = $email_insert;
+            } catch (Exception $e) {
+                $tasks[] = false;
+            }
+        }
+
+        if ($debug) {
+            if ($email_insert || !empty($email_id)) {
+                $app->enqueueMessage('Email ranking_locked exists or has been created');
+            } else {
+                $app->enqueueMessage('Email ranking_locked not created', 'error');
+            }
+        }
+
         if (!in_array(false, $tasks)) {
             $installed = true;
         }
