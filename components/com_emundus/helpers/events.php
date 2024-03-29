@@ -400,99 +400,100 @@ class EmundusHelperEvents {
 	                    $db->setQuery($query);
 	                    $already_cloned = $db->loadResult();
 
-						if($already_cloned == 0) {
+                        if ($already_cloned == 0) {
+                            if ($params['plugin_options']->get('trigger_confirmpost_data_mode')) { // "1" so data from profile
 
-							// Check if we can fill a value with our profile
-							$profile_elements = array_keys(get_object_vars($profile_details));
-							foreach ($elements as $element){
-								$elt_name = explode('.',$element)[1];
-								if(in_array($elt_name,$profile_elements)) {
-									if(!empty($profile_details->{$elt_name})) {
-										$formModel->data[$table->db_table_name . '___' . $elt_name]          = $profile_details->{$elt_name};
-										$formModel->data[$table->db_table_name . '___' . $elt_name . '_raw'] = $profile_details->{$elt_name};
-									}
-								}
-							}
+                                // Check if we can fill a value with our profile
+                                $profile_elements = array_keys(get_object_vars($profile_details));
+                                foreach ($elements as $element) {
+                                    $elt_name = explode('.', $element)[1];
+                                    if (in_array($elt_name, $profile_elements)) {
+                                        if (!empty($profile_details->{$elt_name})) {
+                                            $formModel->data[$table->db_table_name . '___' . $elt_name] = $profile_details->{$elt_name};
+                                            $formModel->data[$table->db_table_name . '___' . $elt_name . '_raw'] = $profile_details->{$elt_name};
+                                        }
+                                    }
+                                }
+                            } else { // "0" so data from old form or linked form
+                                // then we check if we find a form by applicant or via linked fnum
+                                $query->clear()
+                                    ->select(implode(',', $db->quoteName($elements)))
+                                    ->from($db->quoteName($table->db_table_name))
+                                    ->where($db->quoteName('user') . ' = ' . $user->id);
+                                if (!empty($fnum_linked)) {
+                                    $query->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum_linked));
+                                }
+                                $query->order('id DESC');
+                                $db->setQuery($query);
+                                $stored = $db->loadAssoc();
 
-							// Next we check if we find a form by applicant or via linked fnum
-							$query->clear()
-								->select(implode(',', $db->quoteName($elements)))
-								->from($db->quoteName($table->db_table_name))
-								->where($db->quoteName('user') . ' = ' . $user->id);
-							if (!empty($fnum_linked)) {
-								$query->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum_linked));
-							}
-                            $query->order('id DESC');
-							$db->setQuery($query);
-							$stored = $db->loadAssoc();
+                                if (!empty($stored)) {
+                                    // update form data
+                                    $parent_id = $stored['id'];
+                                    unset($stored['id']);
+                                    unset($stored['fnum']);
 
-							if (!empty($stored)) {
-								// update form data
-								$parent_id = $stored['id'];
-								unset($stored['id']);
-								unset($stored['fnum']);
+                                    foreach ($stored as $key => $store) {
+                                        if (empty($formModel->data[$table->db_table_name . '___' . $key]) || empty($formModel->data[$table->db_table_name . '___' . $key . '_raw'])) {
+                                            // get the element plugin, and params
+                                            $query->clear()
+                                                ->select('fe.plugin,fe.params')
+                                                ->from($db->quoteName('#__fabrik_elements', 'fe'))
+                                                ->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
+                                                ->where($db->quoteName('ffg.form_id') . ' = ' . $form_id)
+                                                ->where($db->quoteName('fe.name') . ' = ' . $db->quote($key))
+                                                ->where($db->quoteName('fe.published') . ' = 1');
+                                            $db->setQuery($query);
+                                            $elt = $db->loadObject();
 
-								foreach ($stored as $key => $store) {
-									if(empty($formModel->data[$table->db_table_name . '___' . $key]) || empty($formModel->data[$table->db_table_name . '___' . $key . '_raw'])) {
-										// get the element plugin, and params
-										$query->clear()
-											->select('fe.plugin,fe.params')
-											->from($db->quoteName('#__fabrik_elements', 'fe'))
-											->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
-											->where($db->quoteName('ffg.form_id') . ' = ' . $form_id)
-											->where($db->quoteName('fe.name') . ' = ' . $db->quote($key))
-											->where($db->quoteName('fe.published') . ' = 1');
-										$db->setQuery($query);
-										$elt = $db->loadObject();
+                                            // if this element is date plugin, we need to check the time storage format (UTC of Local time)
+                                            if ($elt->plugin === 'date') {
+                                                // storage format (UTC [0], Local [1])
+                                                $timeStorageFormat = json_decode($elt->params)->date_store_as_local;
 
-										// if this element is date plugin, we need to check the time storage format (UTC of Local time)
-										if ($elt->plugin === 'date') {
-											// storage format (UTC [0], Local [1])
-											$timeStorageFormat = json_decode($elt->params)->date_store_as_local;
-
-											$store = EmundusHelperDate::displayDate($store, 'Y-m-d H:i:s', $timeStorageFormat);
-										}
+                                                $store = EmundusHelperDate::displayDate($store, 'Y-m-d H:i:s', $timeStorageFormat);
+                                            }
 
 
-										$formModel->data[$table->db_table_name . '___' . $key]          = $store;
-										$formModel->data[$table->db_table_name . '___' . $key . '_raw'] = $store;
-									}
-								}
+                                            $formModel->data[$table->db_table_name . '___' . $key] = $store;
+                                            $formModel->data[$table->db_table_name . '___' . $key . '_raw'] = $store;
+                                        }
+                                    }
 
-								$groups = $formModel->getFormGroups(true);
-								if (count($groups) > 0) {
-									foreach ($groups as $group) {
-										$group_params = json_decode($group->gparams);
-										if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1 && !in_array($group->name, ['id', 'parent_id', 'fnum', 'user', 'date_time'])) {
-											$query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id = ' . $group->group_id . ' AND table_key LIKE "id" AND table_join_key LIKE "parent_id"';
-											$db->setQuery($query);
-											try {
-												$repeat_table = $db->loadResult();
-											}
-											catch (Exception $e) {
-												$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $e->getMessage();
-												JLog::add($error, JLog::ERROR, 'com_emundus');
-												$repeat_table = $table->db_table_name . '_' . $group->group_id . '_repeat';
-											}
+                                    $groups = $formModel->getFormGroups(true);
+                                    if (count($groups) > 0) {
+                                        foreach ($groups as $group) {
+                                            $group_params = json_decode($group->gparams);
+                                            if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1 && !in_array($group->name, ['id', 'parent_id', 'fnum', 'user', 'date_time'])) {
+                                                $query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id = ' . $group->group_id . ' AND table_key LIKE "id" AND table_join_key LIKE "parent_id"';
+                                                $db->setQuery($query);
+                                                try {
+                                                    $repeat_table = $db->loadResult();
+                                                } catch (Exception $e) {
+                                                    $error = JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $e->getMessage();
+                                                    JLog::add($error, JLog::ERROR, 'com_emundus');
+                                                    $repeat_table = $table->db_table_name . '_' . $group->group_id . '_repeat';
+                                                }
 
-											$query = 'SELECT ' . $db->quoteName($group->name) . ' FROM ' . $repeat_table . ' WHERE parent_id=' . $parent_id;
-											$db->setQuery($query);
-											$stored = $db->loadColumn();
+                                                $query = 'SELECT ' . $db->quoteName($group->name) . ' FROM ' . $repeat_table . ' WHERE parent_id=' . $parent_id;
+                                                $db->setQuery($query);
+                                                $stored = $db->loadColumn();
 
-											if (!empty($stored)) {
-												foreach ($stored as $store) {
-													if (count($formModel->data[$repeat_table . '___id']) < count($stored)) {
-														$formModel->data[$repeat_table . '___id'][]            = "";
-														$formModel->data[$repeat_table . '___id_raw'][]        = "";
-														$formModel->data[$repeat_table . '___parent_id'][]     = "";
-														$formModel->data[$repeat_table . '___parent_id_raw'][] = "";
-													}
+                                                if (!empty($stored)) {
+                                                    foreach ($stored as $store) {
+                                                        if (count($formModel->data[$repeat_table . '___id']) < count($stored)) {
+                                                            $formModel->data[$repeat_table . '___id'][] = "";
+                                                            $formModel->data[$repeat_table . '___id_raw'][] = "";
+                                                            $formModel->data[$repeat_table . '___parent_id'][] = "";
+                                                            $formModel->data[$repeat_table . '___parent_id_raw'][] = "";
+                                                        }
 
-													$formModel->data[$repeat_table . '___' . $group->name][]          = $store;
-													$formModel->data[$repeat_table . '___' . $group->name . '_raw'][] = $store;
-												}
-											}
-										}
+                                                        $formModel->data[$repeat_table . '___' . $group->name][] = $store;
+                                                        $formModel->data[$repeat_table . '___' . $group->name . '_raw'][] = $store;
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -590,7 +591,7 @@ class EmundusHelperEvents {
                 }
             }
         }
-		
+
         return true;
     }
 
