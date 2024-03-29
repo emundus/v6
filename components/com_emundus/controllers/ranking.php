@@ -36,10 +36,20 @@ class EmundusControllerRanking extends JControllerLegacy
         $user = Factory::getUser();
 
         if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            $response['data'] = $this->model->getFilesUserCanRank($user->id);
-            $response['status'] = true;
-            $response['msg'] = Text::_('SUCCESS');
-            $response['code'] = 200;
+            $jingput = $this->app->input;
+            $page = $jingput->getInt('page', 1);
+            $limit = $jingput->getInt('limit', 10);
+            $sort = $jingput->getInt('sort', 'ASC');
+
+            try {
+                $response['data'] = $this->model->getFilesUserCanRank($user->id, $page, $limit, $sort);
+                $response['status'] = true;
+                $response['msg'] = Text::_('SUCCESS');
+                $response['code'] = 200;
+            } catch(Exception $e) {
+                $response['msg'] = $e->getMessage();
+                $response['code'] = 500;
+            }
         }
 
         $this->sendJSONResponse($response);
