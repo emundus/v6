@@ -115,7 +115,7 @@
             <th :title="hierarchy.label">
               <div><span>{{ hierarchy.label }}</span></div>
             </th>
-            <th :title="translate('COM_EMUNDUS_RANKING_RANKER') + ' ' + hierarchy.label">
+            <th :title="translate('COM_EMUNDUS_RANKING_RANKER') + ' ' + hierarchy.label" class="border-right">
               <div><span>{{ translate('COM_EMUNDUS_RANKING_RANKER') + ' ' + hierarchy.label }}</span></div>
             </th>
           </template>
@@ -139,7 +139,7 @@
                   </span>
                 <span v-else>{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</span>
               </td>
-              <td>
+              <td class="border-right">
                   <span
                       v-if="rankings.otherRankings.groupedByFiles[file.id] && rankings.otherRankings.groupedByFiles[file.id][hierarchy.hierarchy_id]">
                     {{
@@ -655,6 +655,10 @@ export default {
         overflow: hidden;
         text-overflow: ellipsis;
         font-weight: bold;
+      }
+
+      th.border-right, td.border-right {
+        border-right: 1px solid var(--neutral-300);
       }
     }
 
