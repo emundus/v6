@@ -510,15 +510,20 @@ class EmundusModelRanking extends JModelList
                 $hierarchy_infos = $this->db->loadAssoc();
 
                 if (!empty($hierarchy_infos['parent_id'])) {
-                    // get all users of this hierarchy
+                    $query->clear()
+                        ->select('profile_id')
+                        ->from($this->db->quoteName('#__emundus_ranking_hierarchy', 'erh'))
+                        ->where($this->db->quoteName('erh.id') . ' = ' . $this->db->quote($hierarchy_infos['parent_id']));
+                    $this->db->setQuery($query);
+                    $profile_id = $this->db->loadResult();
+
                     $query->clear()
                         ->select('DISTINCT u.email')
-                        ->from($this->db->quoteName('#__emundus_ranking_hierarchy', 'erh'))
-                        ->leftJoin($this->db->quoteName('#__emundus_users_profiles', 'eup') . ' ON ' . $this->db->quoteName('erh.profile_id') . ' = ' . $this->db->quoteName('eup.profile_id'))
-                        ->leftJoin($this->db->quoteName('#__users', 'u') . ' ON ' . $this->db->quoteName('u.id') . ' = ' . $this->db->quoteName('eup.user_id'))
-                        ->where($this->db->quoteName('erh.id') . ' = ' . $this->db->quote($hierarchy_infos['parent_id']))
-                        ->andWhere($this->db->quoteName('u.block') . ' = 0')
-                        ->andWhere($this->db->quoteName('u.activation') . ' = 1');
+                        ->from($this->db->quoteName('#__users', 'u'))
+                        ->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->db->quoteName('u.id') . ' = ' . $this->db->quoteName('eu.user_id'))
+                        ->leftJoin($this->db->quoteName('#__emundus_users_profiles', 'eup') . ' ON ' . $this->db->quoteName('eup.user_id') . ' = ' . $this->db->quoteName('eu.user_id'))
+                        ->where('(' . $this->db->quoteName('eu.profile') . ' = ' . $this->db->quote($profile_id) . ' OR ' . $this->db->quoteName('eup.profile_id') . ' = ' . $this->db->quote($profile_id) . ')')
+                        ->andWhere('u.block = 0');
 
                     $this->db->setQuery($query);
                     $emails = $this->db->loadColumn();
