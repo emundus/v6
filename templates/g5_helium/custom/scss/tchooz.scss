@@ -1938,7 +1938,6 @@ button.em-swal-delete-button:hover{
   width: 100px;
   height: 100px;
   min-width: 100px;
-  display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 50%;
@@ -1948,6 +1947,35 @@ button.em-swal-delete-button:hover{
   transition: all 0.3s ease-in-out;
   &:hover:not(.no-hover){
     filter: brightness(80%);
+  }
+}
+
+.em-no-profile-picture-big {
+  color: var(--em-profile-color);
+  border: solid 3px var(--transparent);
+}
+
+.em-no-profile-picture-big:before{
+  background-color: var(--em-profile-color);
+  color: white;
+  opacity: 1;
+  content: attr(data-initials);
+  display: inline-block;
+  font-weight: bold;
+  border-radius: 50%;
+  vertical-align: middle;
+  width: 100px;
+  height: 100px;
+  line-height: 100px;
+  text-align: center;
+  transition: all 0.3s ease-in-out;
+  font-size: 28px;
+}
+
+@supports (background-color: hsl(from white h s 90%)) {
+  .em-no-profile-picture-big:before {
+    background-color: hsl(from var(--em-profile-color) h s 90%);
+    color: var(--em-profile-color);
   }
 }
 
