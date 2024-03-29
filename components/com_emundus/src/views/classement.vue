@@ -331,6 +331,13 @@ export default {
               access: '29'
             });
             break;
+          case 'admission':
+            this.fileTabs.push({
+              label: this.translate('COM_EMUNDUS_FILES_ADMISSION'),
+              name: 'admission',
+              access: '32'
+            });
+            break;
         }
       });
     }

@@ -1588,4 +1588,22 @@ class EmundusControllerAdmission extends JControllerLegacy {
         echo json_encode( $data );
         JFactory::getApplication()->close();
     }
+
+    public function getAdmissionFormUrl()
+    {
+        $response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
+        $current_user = JFactory::getUser();
+
+        $jinput = JFactory::getApplication()->input;
+        $fnum = $jinput->getString('fnum', '');
+
+        if (!empty($fnum) && EmundusHelperAccess::asPartnerAccessLevel($current_user->id) && EmundusHelperAccess::asAccessAction(32, 'r', $current_user->id, $fnum)) {
+            $response = ['status' => true, 'code' => 200];
+            $h_files = new EmundusHelperFiles();
+            $response['url'] = $h_files->getAdmissionFormUrl($fnum, $current_user->id);
+        }
+
+        echo json_encode((object)$response);
+        exit;
+    }
 }
