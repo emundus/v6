@@ -248,7 +248,7 @@ class EmundusModelRanking extends JModelList
                     $query->clear()
                         ->select('CONCAT(applicant.firstname, " ", applicant.lastname) AS applicant, cc.id, cc.fnum, cr.rank, cr.locked, cr.user_id as ranker_id')
                         ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
-                        ->leftJoin($this->db->quoteName('#__emundus_users', 'applicant') . ' ON ' . $this->db->quoteName('cc.applicant_id') . ' = ' . $this->db->quoteName('applicant.id'))
+                        ->leftJoin($this->db->quoteName('#__emundus_users', 'applicant') . ' ON ' . $this->db->quoteName('cc.applicant_id') . ' = ' . $this->db->quoteName('applicant.user_id'))
                         ->leftJoin($this->db->quoteName('#__emundus_ranking', 'cr') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('cr.ccid'))
                         ->where('cc.id IN (' . implode(',', $ids) . ')')
                         ->andWhere($this->db->quoteName('cr.hierarchy_id') . ' = ' . $hierarchy['id']);
@@ -264,7 +264,7 @@ class EmundusModelRanking extends JModelList
                     $query->clear()
                         ->select('CONCAT(u.firstname, " ", u.lastname) AS name, r.user_id')
                         ->from($this->db->quoteName('#__emundus_ranking', 'r'))
-                        ->leftJoin($this->db->quoteName('#__emundus_users', 'u') . ' ON ' . $this->db->quoteName('r.user_id') . ' = ' . $this->db->quoteName('u.id'))
+                        ->leftJoin($this->db->quoteName('#__emundus_users', 'u') . ' ON ' . $this->db->quoteName('r.user_id') . ' = ' . $this->db->quoteName('u.user_id'))
                         ->where('r.ccid IN (' . implode(',', $ids) . ')')
                         ->andWhere($this->db->quoteName('r.hierarchy_id') . ' = ' . $hierarchy['id']);
 
