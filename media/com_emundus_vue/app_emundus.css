@@ -2993,6 +2993,18 @@ td[data-v-db0e1b70]{
           flex-direction: column;
   margin-left: 20px;
 }
+.button-container[data-v-2fcc0280] {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+}
 
 @media all and (max-width: 479px) {
   #messenger_app_1_wpb .messenger_messages__vue_wc18U .messenger_vm--container_1-Y1-.messenger_scrollable_1lv4s .messenger_vm--modal_YInqZ {

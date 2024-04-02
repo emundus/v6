@@ -81,7 +81,7 @@
         "helptext": "",
         "options": [
           {
-            "component": "Global",
+            "component": "General",
             "props": []
           }
         ]
@@ -184,11 +184,14 @@
         "helptext": "cela permet de d'avoir un contenu global pour tout vos campagnes",
         "options": [
           {
-            "name": "champagne_page_description",
-            "label": "Texte de la page",
-            "type": "textarea",
-            "helptext": "",
-            "placeholder": "Bienvenue sur la page des campagnes lié a votre compte"
+            "component":"EditArticle",
+            "props":{
+              "key":1,
+              "article_id":52, 
+              "article_alias": "", 
+              "category":"homepage",
+              "published":true
+            }
           },
           {
             "name": "champagne_view",
@@ -233,18 +236,8 @@
         "helptext": "",
         "options": [
           {
-            "name": "footer_zones",
-            "label": "Zones du pied de page",
-            "type": "dropdown",
-            "helptext": "",
-            "placeholder": ""
-          },
-          {
-            "name": "footer_text",
-            "label": "Contenu",
-            "type": "textarea",
-            "helptext": "",
-            "placeholder": ""
+            "component":"EditFooter",
+            "props":[]
           }
         ]
       },
@@ -261,25 +254,14 @@
             "placeholder": "",
             "elements": [
               {
-                "name": "primary_language",
-                "label": "Langue",
-                "type": "sqldropdown",
-                "helptext": "",
-                "placeholder": ""
-              },
-              {
-                "name": "published_article",
-                "label": "Publier l'article",
-                "type": "yesno",
-                "helptext": "",
-                "placeholder": ""
-              },
-              {
-                "name": "legal_notice_text",
-                "label": "Texte de mention légale",
-                "type": "textarea",
-                "helptext": "",
-                "placeholder": ""
+                "component":"EditArticle",
+                "props":{
+                  "key":2,
+                  "article_id":null, 
+                  "article_alias": "mentions-legales", 
+                  "category":"rgpd",
+                  "published":true
+                }
               }
             ]
           },
@@ -291,25 +273,14 @@
             "placeholder": "",
             "elements": [
               {
-                "name": "primary_language",
-                "label": "Langue",
-                "type": "sqldropdown",
-                "helptext": "",
-                "placeholder": ""
-              },
-              {
-                "name": "published_article",
-                "label": "Publier l'article",
-                "type": "yesno",
-                "helptext": "",
-                "placeholder": ""
-              },
-              {
-                "name": "privacy_policy_text",
-                "label": "Texte de la politique de confidentialité",
-                "type": "textarea",
-                "helptext": "",
-                "placeholder": ""
+                "component":"EditArticle",
+                "props":{
+                  "key":3,
+              "article_id":null, 
+              "article_alias": "politique-de-confidentialite-des-donnees", 
+              "category":"rgpd",
+              "published":true
+                }
               }
             ]
           },
@@ -321,25 +292,14 @@
             "placeholder": "",
             "elements": [
               {
-                "name": "primary_language",
-                "label": "Langue",
-                "type": "sqldropdown",
-                "helptext": "",
-                "placeholder": ""
-              },
-              {
-                "name": "published_article",
-                "label": "Publier l'article",
-                "type": "yesno",
-                "helptext": "",
-                "placeholder": ""
-              },
-              {
-                "name": "rights_management_text",
-                "label": "Texte de gestion de vos droits",
-                "type": "textarea",
-                "helptext": "",
-                "placeholder": ""
+                "component":"EditArticle",
+                "props":{
+                  "key":4,
+                  "article_id":null, 
+                  "article_alias": "gestion-des-droits", 
+                  "category":"rgpd",
+                  "published":true
+                }
               }
             ]
           },
@@ -351,27 +311,33 @@
             "placeholder": "cookie : petit fichier qui conserve les informations sur votre navigation pour une futur connexion",
             "elements": [
               {
-                "name": "primary_language",
-                "label": "Langue",
-                "type": "sqldropdown",
-                "helptext": "",
-                "placeholder": ""
-              },
-              {
-                "name": "published_article",
-                "label": "Publier l'article",
-                "type": "yesno",
-                "helptext": "",
-                "placeholder": ""
-              },
-              {
-                "name": "cookies_management_text",
-                "label": "Texte de gestion des cookies",
-                "type": "textarea",
-                "helptext": "",
-                "placeholder": ""
+                "component":"EditArticle",
+                "props":{
+                  "key":5,
+                  "article_id":null, 
+                  "article_alias": "gestion-des-cookies", 
+                  "category":"rgpd",
+                  "published":true
+                }
               }
             ]
+          }
+        ]
+      },
+      {
+        "label": "Accessibilité",
+        "type": "section",
+        "helptext": "",
+        "options": [
+          {
+            "component":"EditArticle",
+            "props":{
+              "key":6,
+                  "article_id":null, 
+                  "article_alias": "accessibilite", 
+                  "category":"rgpd",
+                  "published":false
+            }
           }
         ]
       }
@@ -389,7 +355,7 @@
         "options": [
           {
             "component": "EditStatus",
-            "props": []
+            "props": {"key":1}
           }
         ]
       },
@@ -399,7 +365,7 @@
         "helptext": "",
         "options": [
           {"component": "EditTags",
-          "props": []
+          "props": {"key":2}
           }
         ]
       },
