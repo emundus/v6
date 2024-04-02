@@ -105,6 +105,11 @@
 			<option value="">Please select your option</option>
 		</field>
 
+		<field name="fix_file_header" label="COM_EMUNDUS_FIX_FILE_HEADER" type="list" default="0" description="">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
 		<field
 				name="spacer0"
 				type="spacer"

@@ -56,9 +56,9 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$preliminary_documents_title = $params->get('preliminary_documents_title', JText::_('PRELIMINARY_DOCUMENTS'));
 	$admission = $params->get('admission', 0);
     $show_send = $params->get('showsend', 1);
-    $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
+    $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
     $id_applicants = $eMConfig->get('id_applicants', '0');
     $exceptions = explode(',',$id_applicants);
     $applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');

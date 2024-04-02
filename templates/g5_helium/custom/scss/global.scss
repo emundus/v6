@@ -1470,6 +1470,10 @@ footer#g-footer > .g-container {
   background: var(--neutral-200) !important;
 }
 
+.table-hover tbody tr:nth-child(2n) > td .sticker .circle {
+    background-color: var(--neutral-200);
+}
+
 .table-hover tbody tr,
 .table-hover tbody tr {
   a {
@@ -4221,6 +4225,18 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
   .fabrikLabel {
     color: var(--neutral-700);
     font-family: var(--em-coordinator-font);
+  }
+
+  ul {
+    padding-left: 20px;
+  }
+
+  a {
+    text-decoration: underline;
+    &:hover {
+        text-decoration: none;
+
+    }
   }
 }
 
