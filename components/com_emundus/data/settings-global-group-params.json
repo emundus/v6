@@ -1,7 +1,7 @@
 [
   {
     "label": "Général",
-    "icon": "dashboard",
+    "icon": "display_settings",
     "published": true,
     "sections": [
       {
@@ -81,26 +81,8 @@
         "helptext": "",
         "options": [
           {
-            "label": "Logo",
-            "type": "image",
-            "maxsize": "1000",
-            "allowed_extensions": "jpg,png,gif",
-            "helptext": "Conseil : évitez les fonds de couleurs",
-            "placeholder": ""
-          },
-          {
-            "label": "Favicon",
-            "type": "image",
-            "maxsize": "500",
-            "allowed_extensions": "jpg,png,gif,svg",
-            "helptext": "Conseil : format 48x48 pixels",
-            "placeholder": ""
-          },
-          {
-            "label": "Bannière",
-            "type": "Image",
-            "helptext": "Conseil : format 1440x310 pixels",
-            "placeholder": ""
+            "component": "Global",
+            "props": []
           }
         ]
       },
@@ -193,7 +175,7 @@
   },
   {
     "label": "Contenu",
-    "icon": "content",
+    "icon": "notes",
     "published": true,
     "sections": [
       {
@@ -397,15 +379,18 @@
   },
   {
     "label": "Gestion des dossiers",
-    "icon": "File",
+    "icon": "source",
     "published": true,
     "sections": [
       {
         "label": "Status",
         "type": "section",
         "helptext": "",
-        "options": [{"comment_implement": "//mettre module EditStatus Vue JS"}
-
+        "options": [
+          {
+            "component": "EditStatus",
+            "props": []
+          }
         ]
       },
       {
@@ -413,7 +398,9 @@
         "type": "section",
         "helptext": "",
         "options": [
-          {"comment_implement": "//mettre module EditTags Vue JS"}
+          {"component": "EditTags",
+          "props": []
+          }
         ]
       },
       {
@@ -490,7 +477,7 @@
   },
   {
     "label": "Modules supplémentaires",
-    "icon": "add-ons",
+    "icon": "dashboard_customize",
     "published": true,
     "sections": [
       {
@@ -517,7 +504,7 @@
   },
   {
     "label": "Intégrations",
-    "icon": "",
+    "icon": "lan",
     "published": true,
     "sections": [
       {
@@ -549,22 +536,27 @@
   },
   {
     "label": "Traduction",
-    "icon": "",
+    "icon": "translate",
     "published": true,
     "sections": [
       {
         "label": "Traductions",
         "type": "section",
         "helptext": "",
-        "options": [{"comment_implement": "//mettre module Translations Vue JS"}
-
+        "options": [
+          {"component": "Translations",
+          "props": []
+          }
         ]
       },
       {
         "label": "Orphelins",
         "type": "section",
         "helptext": "",
-        "options": [{"comment_implement": "//mettre module Orphans Vue JS"}
+        "options": [
+          {"component": "Orphans",
+          "props": []
+        }
         ]
       }
 
