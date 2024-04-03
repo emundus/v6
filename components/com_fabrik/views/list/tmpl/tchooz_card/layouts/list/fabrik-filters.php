@@ -36,7 +36,7 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
                 <div class="em-flex-row em-flex-space-between em-mb-24 em-filter-intro">
                     <h4><?php echo Text::_('COM_FABRIK_FILTER') ?></h4>
 	                <?php if ($d->showClearFilters) : ?>
-                        <button type="button" class="<?php echo $clearFiltersClass; ?>" href="#">
+                        <button type="button" class="<?php echo $clearFiltersClass; ?>" href="/">
                             <span class="material-icons-outlined">filter_alt_off</span>
                         </button>
 	                <?php endif ?>
