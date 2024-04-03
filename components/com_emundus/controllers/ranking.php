@@ -39,7 +39,7 @@ class EmundusControllerRanking extends JControllerLegacy
             $jingput = $this->app->input;
             $page = $jingput->getInt('page', 1);
             $limit = $jingput->getInt('limit', 10);
-            $sort = $jingput->getInt('order', 'ASC');
+            $sort = $jingput->getString('order', 'ASC');
             $order_by = $jingput->getString('order_by', 'default');
 
             try {

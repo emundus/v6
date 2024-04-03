@@ -60,13 +60,6 @@ class EmundusModelRanking extends JModelList
             $sort = 'ASC';
         }
 
-        switch ($hierarchy_order_by) {
-            case 'default':
-            default:
-                $order_by = 'er.rank';
-                break;
-        }
-
         $hierarchy = $this->getUserHierarchy($user_id);
         $status = $this->getStatusUserCanRank($user_id, $hierarchy);
 
@@ -74,19 +67,50 @@ class EmundusModelRanking extends JModelList
             $ids = $this->getAllFilesRankerCanAccessTo($user_id);
 
             if (!empty($ids)) {
-                $files['total'] = count($ids);
-
                 $query = $this->db->getQuery(true);
-                $query->select('er.id as rank_id, CONCAT(applicant.firstname, " ", applicant.lastname) AS applicant, cc.id, cc.fnum, er.rank, er.locked, cc.status')
+                $offset = ($page - 1) * $limit;
+                $files['total'] = count($ids);
+                $query->clear()
+                    ->select('MAX(' . $this->db->quoteName('rank') . ')')
+                    ->from($this->db->quoteName('#__emundus_ranking'))
+                    ->where($this->db->quoteName('ccid') . ' IN (' . implode(',', $ids) . ')')
+                    ->andWhere($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id))
+                    ->andWhere($this->db->quoteName('hierarchy_id') . ' = ' . $this->db->quote($hierarchy));
+
+                try {
+                    $this->db->setQuery($query);
+                    $max = $this->db->loadResult();
+                    if (!empty($max)) {
+                        $files['maxRankValue'] = (int)$max;
+                    }
+                } catch (Exception $e) {
+                    JLog::add('getFilesUserCanRank ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
+                    throw new Exception('An error occurred while fetching the files.' . $query->__toString());
+                }
+
+                if (!empty($hierarchy_order_by) && $hierarchy_order_by !== 'default' && $hierarchy_order_by != $hierarchy) {
+                    $query->clear()
+                        ->select('er.rank, er.ccid')
+                        ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
+                        ->leftJoin($this->db->quoteName('#__emundus_ranking', 'er') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid'))
+                        ->where($this->db->quoteName('cc.id') . ' IN (' . implode(',', $ids) . ')')
+                        ->andWhere($this->db->quoteName('er.hierarchy_id') . ' = ' . $this->db->quote($hierarchy_order_by))
+                        ->setLimit($limit, $offset);
+                    $this->db->setQuery($query);
+                    $ranks = $this->db->loadAssocList('ccid');
+                    $ids = array_keys($ranks);
+                }
+
+                $query->clear()
+                    ->select('er.id as rank_id, CONCAT(applicant.firstname, " ", applicant.lastname) AS applicant, cc.id, cc.fnum, er.rank, er.locked, cc.status')
                     ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
                     ->leftJoin($this->db->quoteName('#__emundus_users', 'applicant') . ' ON ' . $this->db->quoteName('cc.applicant_id') . ' = ' . $this->db->quoteName('applicant.user_id'))
                     ->leftJoin($this->db->quoteName('#__emundus_ranking', 'er') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid') . ' AND er.user_id = ' . $this->db->quote($user_id))
                     ->where($this->db->quoteName('cc.id') . ' IN (' . implode(',', $ids) . ')')
                     ->andWhere('(er.hierarchy_id = ' . $this->db->quote($hierarchy) . ') OR er.id IS NULL');
 
-                $offset = ($page - 1) * $limit;
                 $query->setLimit($limit, $offset);
-                $query->order($order_by . ' ' . $sort);
+                $query->order('er.rank ' . $sort);
 
                 try {
                     $this->db->setQuery($query);
@@ -110,31 +134,33 @@ class EmundusModelRanking extends JModelList
                     }
                 }
 
-                // order by rank
-                usort($files['data'], function ($a, $b) {
-                    if ($a['rank'] == $b['rank']) {
-                        return 0;
+                if (!empty($hierarchy_order_by) && $hierarchy_order_by !== 'default' && $hierarchy_order_by != $hierarchy) {
+                    foreach ($files['data'] as $key => $file) {
+                        if (isset($ranks[$file['id']])) {
+                            $files['data'][$key]['sort_rank'] = !empty($ranks[$file['id']]['rank']) ? $ranks[$file['id']]['rank'] : -1;
+                        } else {
+                            $files['data'][$key]['sort_rank'] = -1;
+                        }
                     }
-                    return ($a['rank'] < $b['rank']) ? -1 : 1;
-                });
 
-                $query->clear()
-                    ->select('MAX(' . $this->db->quoteName('rank') . ')')
-                    ->from($this->db->quoteName('#__emundus_ranking'))
-                    ->where($this->db->quoteName('ccid') . ' IN (' . implode(',', $ids) . ')')
-                    ->andWhere($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id))
-                    ->andWhere($this->db->quoteName('hierarchy_id') . ' = ' . $this->db->quote($hierarchy));
-
-                try {
-                    $this->db->setQuery($query);
-                    $max = $this->db->loadResult();
-
-                    if (!empty($max)) {
-                        $files['maxRankValue'] = (int)$max;
+                    // sort the files by rank
+                    if ($sort == 'ASC') {
+                        usort($files['data'], function ($a, $b) {
+                            return $a['sort_rank'] <=> $b['sort_rank'];
+                        });
+                    } else {
+                        usort($files['data'], function ($a, $b) {
+                            return $b['sort_rank'] <=> $a['sort_rank'];
+                        });
                     }
-                } catch (Exception $e) {
-                    JLog::add('getFilesUserCanRank ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
-                    throw new Exception('An error occurred while fetching the files.' . $query->__toString());
+                } else {
+                    usort($files['data'], function ($a, $b) use ($sort) {
+                        if ($sort == 'ASC') {
+                            return $a['rank'] <=> $b['rank'];
+                        } else {
+                            return $b['rank'] <=> $a['rank'];
+                        }
+                    });
                 }
             }
         }

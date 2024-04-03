@@ -34,12 +34,22 @@
       >
         <table id="ranked-files" class="w-full">
           <thead>
-          <th>
-            <span class="material-icons-outlined" v-if="ismyRankingLocked">lock</span>
-            <span class="material-icons-outlined" v-else>lock_open</span>
-          </th>
-          <th>{{ translate('COM_EMUNDUS_CLASSEMENT_FILE') }}</th>
-          <th>{{ translate('COM_EMUNDUS_CLASSEMENT_YOUR_RANKING') }}</th>
+            <tr>
+              <th>
+                <span class="material-icons-outlined" v-if="ismyRankingLocked">lock</span>
+                <span class="material-icons-outlined" v-else>lock_open</span>
+              </th>
+              <th>{{ translate('COM_EMUNDUS_CLASSEMENT_FILE') }}</th>
+              <th @click="reorder('default')">
+                <div class="flex flex-row items-center">
+                  <span>{{ translate('COM_EMUNDUS_CLASSEMENT_YOUR_RANKING') }}</span>
+                  <div v-if="ordering.orderBy == 'default'">
+                    <span class="material-icons-outlined" v-if="ordering.order == 'ASC'">arrow_drop_up</span>
+                    <span class="material-icons-outlined" v-else>arrow_drop_down</span>
+                  </div>
+                </div>
+              </th>
+            </tr>
           </thead>
           <!-- only ranked files -->
           <draggable
@@ -79,12 +89,14 @@
         <!-- non ranked files -->
         <table id="unranked-files">
           <thead>
-          <th>
-            <span class="material-icons-outlined" v-if="ismyRankingLocked">lock</span>
-            <span class="material-icons-outlined" v-else>lock_open</span>
-          </th>
-          <th>{{ translate('COM_EMUNDUS_CLASSEMENT_FILE') }}</th>
-          <th>{{ translate('COM_EMUNDUS_CLASSEMENT_YOUR_RANKING') }}</th>
+            <tr>
+              <th>
+                <span class="material-icons-outlined" v-if="ismyRankingLocked">lock</span>
+                <span class="material-icons-outlined" v-else>lock_open</span>
+              </th>
+              <th>{{ translate('COM_EMUNDUS_CLASSEMENT_FILE') }}</th>
+              <th>{{ translate('COM_EMUNDUS_CLASSEMENT_YOUR_RANKING') }}</th>
+            </tr>
           </thead>
           <draggable
               v-model="unrankedFiles"
@@ -300,8 +312,8 @@ export default {
         perPageOptions: [5, 10, 25, 50, 100]
       },
       ordering: {
-        orderBy: '',
-        order: 'asc'
+        orderBy: 'default',
+        order: 'ASC'
       }
     }
   },
@@ -387,6 +399,15 @@ export default {
       if (oldPage !== this.pagination.page) {
         this.getRankings();
       }
+    },
+    /**
+     * @param orderBy
+     */
+    reorder(orderBy) {
+      this.ordering.orderBy = orderBy;
+      this.ordering.order = this.ordering.order === 'ASC' ? 'DESC' : 'ASC';
+
+      this.getRankings();
     },
     /**
      * @param resetPage {boolean} - if true, reset the page to 1, needed when changing the number of files per page
@@ -613,7 +634,7 @@ export default {
       return this.rankings.myRanking.filter(file => file.rank == -1);
     },
     rankedFiles() {
-      return this.rankings.myRanking.filter(file => file.rank != -1).sort((a, b) => a.rank - b.rank);
+      return this.rankings.myRanking.filter(file => file.rank != -1);
     },
     orderedRankings() {
       // rankedFiles first, then unrankedFiles
