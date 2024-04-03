@@ -303,6 +303,15 @@ export default {
               }
             });
           }
+          if(!found) {
+            rule.actions.forEach(action => {
+              action.fields.forEach(field => {
+                if (elements_found.find(element => element.name == field)) {
+                  found = true;
+                }
+              });
+            });
+          }
 
           return found;
         });
