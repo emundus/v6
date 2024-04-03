@@ -128,7 +128,8 @@ class EmundusModelQcm extends JModelList {
 				->from($db->quoteName('#__emundus_qcm_questions','qq'))
 				->leftJoin($db->quoteName('jos_emundus_qcm_questions_765_repeat','qqr').' ON '.$db->quoteName('qq.id').' = '.$db->quoteName('qqr.parent_id'))
 				->where($db->quoteName('qq.id') . ' IN (' . $question_ids . ')')
-				->group('qq.id');
+                ->group('qq.id')
+                ->order('FIELD(qq.id,'.$question_ids.')');
 
 			try {
 				$db->setQuery($query);
