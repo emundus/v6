@@ -42,13 +42,30 @@ class EmundusModelRanking extends JModelList
      * @param $limit
      * @return array|mixed
      */
-    public function getFilesUserCanRank($user_id, $page = 1, $limit = 10, $sort = 'ASC')
+    public function getFilesUserCanRank($user_id, $page = 1, $limit = 10, $sort = 'ASC', $hierarchy_order_by = 'default')
     {
         $files = [
             'total' => 0,
             'data' => [],
             'maxRankValue' => -1,
         ];
+
+        /**
+         * Avoid SQL injections
+         */
+        if (!is_numeric($page) || !is_numeric($limit)) {
+            throw new Exception('Invalid page or limit value');
+        }
+        if ($sort !== 'ASC' && $sort !== 'DESC') {
+            $sort = 'ASC';
+        }
+
+        switch ($hierarchy_order_by) {
+            case 'default':
+            default:
+                $order_by = 'er.rank';
+                break;
+        }
 
         $hierarchy = $this->getUserHierarchy($user_id);
         $status = $this->getStatusUserCanRank($user_id, $hierarchy);
@@ -60,23 +77,23 @@ class EmundusModelRanking extends JModelList
                 $files['total'] = count($ids);
 
                 $query = $this->db->getQuery(true);
-                $query->select('cr.id as rank_id, CONCAT(applicant.firstname, " ", applicant.lastname) AS applicant, cc.id, cc.fnum, cr.rank, cr.locked, cc.status')
+                $query->select('er.id as rank_id, CONCAT(applicant.firstname, " ", applicant.lastname) AS applicant, cc.id, cc.fnum, er.rank, er.locked, cc.status')
                     ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
                     ->leftJoin($this->db->quoteName('#__emundus_users', 'applicant') . ' ON ' . $this->db->quoteName('cc.applicant_id') . ' = ' . $this->db->quoteName('applicant.user_id'))
-                    ->leftJoin($this->db->quoteName('#__emundus_ranking', 'cr') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('cr.ccid') . ' AND cr.user_id = ' . $this->db->quote($user_id))
+                    ->leftJoin($this->db->quoteName('#__emundus_ranking', 'er') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid') . ' AND er.user_id = ' . $this->db->quote($user_id))
                     ->where($this->db->quoteName('cc.id') . ' IN (' . implode(',', $ids) . ')')
-                    ->andWhere('(cr.hierarchy_id = ' . $this->db->quote($hierarchy) . ') OR cr.id IS NULL');
+                    ->andWhere('(er.hierarchy_id = ' . $this->db->quote($hierarchy) . ') OR er.id IS NULL');
 
                 $offset = ($page - 1) * $limit;
                 $query->setLimit($limit, $offset);
-                $query->order('cr.rank ' . $sort);
+                $query->order($order_by . ' ' . $sort);
 
                 try {
                     $this->db->setQuery($query);
                     $files['data'] = $this->db->loadAssocList();
                 } catch (Exception $e) {
                     JLog::add('getFilesUserCanRank ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
-                    throw new Exception('An error occurred while fetching the files.');
+                    throw new Exception('An error occurred while fetching the files.' . $e->getMessage());
                 }
 
                 foreach ($files['data'] as $key => $file) {
@@ -153,7 +170,6 @@ class EmundusModelRanking extends JModelList
         $hierarchy = 0;
 
         if (!empty($user_id)) {
-            
             $query = $this->db->getQuery(true);
 
             $query->clear()
@@ -174,7 +190,7 @@ class EmundusModelRanking extends JModelList
         $file_ids = [];
 
         if (!empty($user_id)) {
-            
+
             $query = $this->db->getQuery(true);
 
             $query->select('DISTINCT cc.id')
@@ -269,7 +285,7 @@ class EmundusModelRanking extends JModelList
             $ids = $this->getAllFilesRankerCanAccessTo($user_id);
 
             if (!empty($hierarchies) && !empty($ids)) {
-                
+
                 $query = $this->db->getQuery(true);
 
                 foreach ($hierarchies as $hierarchy) {
@@ -329,7 +345,7 @@ class EmundusModelRanking extends JModelList
         $user_hierarchy = $this->getUserHierarchy($user_id);
 
         if (!empty($user_hierarchy)) {
-            
+
             $query = $this->db->getQuery(true);
 
             $query->clear()
@@ -337,12 +353,12 @@ class EmundusModelRanking extends JModelList
                 ->from($this->db->quoteName('#__emundus_ranking_hierarchy_view', 'erhv'))
                 ->leftJoin($this->db->quoteName('#__emundus_ranking_hierarchy', 'erh') . ' ON ' . $this->db->quoteName('erhv.visible_hierarchy_id') . ' = ' . $this->db->quoteName('erh.id'))
                 ->where('erhv.hierarchy_id = ' . $this->db->quote($user_hierarchy))
-                ->orderBy('erh.parent_id, erh.id ASC');
+                ->order('erhv.ordering, erh.parent_id, erh.id ASC');
 
             if (!empty($this->filters)) {
                 // check if there is a filter on hierarchy_id and if so, add it to the query
                 $subquery = $this->db->getQuery(true);
-                foreach($this->filters as $filter) {
+                foreach ($this->filters as $filter) {
                     $subquery->clear()
                         ->select('name')
                         ->from($this->db->quoteName('#__fabrik_elements'))
@@ -375,7 +391,7 @@ class EmundusModelRanking extends JModelList
 
         if (!empty($id) && !empty($user_id) && !empty($new_rank) && !empty($hierarchy_id)) {
             // make sure ccid id not one of the user's file as applicant
-            
+
             $query = $this->db->getQuery(true);
 
             $query->clear()
@@ -520,7 +536,7 @@ class EmundusModelRanking extends JModelList
         $toggled = false;
 
         if (!empty($hierarchy_id) && !empty($user_id)) {
-            
+
             $query = $this->db->getQuery(true);
 
             $query->clear()
@@ -580,7 +596,7 @@ class EmundusModelRanking extends JModelList
                             'RANKER_NAME' => $user['firstname'] . ' ' . $user['lastname'],
                             'RANKER_HIERARCHY' => $hierarchy_infos['label'],
                         ];
-                        foreach($emails as $email) {
+                        foreach ($emails as $email) {
                             $m_emails->sendEmailNoFnum($email, $email_to_send, $post, $user_id);
                         }
                     }
@@ -592,11 +608,11 @@ class EmundusModelRanking extends JModelList
     }
 
     /**
-     * @param $user_asking,
-     * @param $users, I can specify the users to ask to lock their rankings
-     * @param $hierarchies, I can specify all users of a hierarchy to lock their rankings
-     * @throws Exception if I try to ask rankings to be locked for a user or a hierarchy I am not allowed to
+     * @param $user_asking ,
+     * @param $users , I can specify the users to ask to lock their rankings
+     * @param $hierarchies , I can specify all users of a hierarchy to lock their rankings
      * @return array
+     * @throws Exception if I try to ask rankings to be locked for a user or a hierarchy I am not allowed to
      */
     public function askUsersToLockRankings($user_asking, $users, $hierarchies): array
     {
@@ -619,11 +635,11 @@ class EmundusModelRanking extends JModelList
 
             if (!empty($hierarchies)) {
                 $hierarchies_user_as_access_to = $this->getHierarchiesUserCanSee($user_asking);
-                $hierarchy_ids_user_as_access_to = array_map(function($hierarchy) {
+                $hierarchy_ids_user_as_access_to = array_map(function ($hierarchy) {
                     return $hierarchy['id'];
                 }, $hierarchies_user_as_access_to);
 
-                foreach($hierarchies as $key => $hierarchy) {
+                foreach ($hierarchies as $key => $hierarchy) {
                     if (!in_array($hierarchy, $hierarchy_ids_user_as_access_to)) {
                         unset($hierarchies[$key]);
                         // could log attempt to ask wrong hierarchy
@@ -635,7 +651,7 @@ class EmundusModelRanking extends JModelList
                         ->select('DISTINCT user_id')
                         ->from($this->db->quoteName('#__emundus_ranking'))
                         ->where($this->db->quoteName('ccid') . ' IN (' . implode(',', $ccids) . ')')
-                        ->andWhere($this->db->quoteName('hierarchy_id') .  ' IN (' . implode(',', $hierarchies) . ')')
+                        ->andWhere($this->db->quoteName('hierarchy_id') . ' IN (' . implode(',', $hierarchies) . ')')
                         ->andWhere($this->db->quoteName('user_id') . ' != ' . $user_asking);
 
                     try {
@@ -655,9 +671,9 @@ class EmundusModelRanking extends JModelList
                 $query->clear()
                     ->select('DISTINCT u.email, u.id')
                     ->from($this->db->quoteName('#__emundus_ranking', 'er'))
-                    ->leftJoin($this->db->quoteName('#__users', 'u') .  ' ON ' . $this->db->quoteName('u.id') . ' = ' . $this->db->quoteName('er.user_id'))
+                    ->leftJoin($this->db->quoteName('#__users', 'u') . ' ON ' . $this->db->quoteName('u.id') . ' = ' . $this->db->quoteName('er.user_id'))
                     ->where($this->db->quoteName('er.ccid') . ' IN (' . implode(',', $ccids) . ')')
-                    ->andWhere($this->db->quoteName('er.user_id') . ' IN (' . implode(',', $users) .  ')')
+                    ->andWhere($this->db->quoteName('er.user_id') . ' IN (' . implode(',', $users) . ')')
                     ->andWhere($this->db->quoteName('er.locked') . ' = 0');
 
                 try {
@@ -673,7 +689,7 @@ class EmundusModelRanking extends JModelList
                     $email_to_send = 'ask_lock_ranking';
                     $response['asked'] = true;
 
-                    foreach($user_emails as $user) {
+                    foreach ($user_emails as $user) {
                         $sent = $m_emails->sendEmailNoFnum($user['email'], $email_to_send, null, $user['id']);
 
                         if ($sent) {
