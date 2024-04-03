@@ -70,7 +70,20 @@ echo <<<EOT
 .catalogue-description .fabrikElementReadOnly * {
     color: var(--neutral-900) !important;
 }
+
+.catalogue-description .fabrikElementReadOnly ul, 
+.catalogue-description .fabrikElementReadOnly ol {
+    padding-left: 18px;
+}
  
+.catalogue-description .fabrikElementReadOnly a {
+    text-decoration: underline;
+}
+
+.catalogue-description .fabrikElementReadOnly a:hover {
+    text-decoration: none;
+}
+
 .catalogue-description .fabrikLabel {
     height: 35px;
     cursor: pointer;
