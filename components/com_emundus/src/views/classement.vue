@@ -5,8 +5,8 @@
         <div id="nb-files" class="mr-2">{{ translate('COM_EMUNDUS_NB_FILES') + ' ' }} {{ rankings.nbFiles }}</div>
 
         <div id="pagination" class="ml-2 flex flex-row items-center">
-          <select v-model="pagination.perPage" @change="getRankings">
-            <option v-for="option in pagination.perPageOptions" :key="option" :value="option">{{ translate('DISPLAY') }} {{ option }}</option>
+          <select v-model="pagination.perPage" @change="getRankings(true)">
+            <option v-for="option in pagination.perPageOptions" :key="option" :value="option">{{ translate('COM_EMUNDUS_DISPLAY') }} {{ option }}</option>
           </select>
         </div>
       </div>
@@ -297,7 +297,7 @@ export default {
       pagination: {
         page: 1,
         perPage: 10,
-        perPageOptions: [1, 5, 10, 25, 50, 100]
+        perPageOptions: [5, 10, 25, 50, 100]
       }
     }
   },
@@ -384,7 +384,15 @@ export default {
         this.getRankings();
       }
     },
-    async getRankings() {
+    /**
+     * @param resetPage {boolean} - if true, reset the page to 1, needed when changing the number of files per page
+     * @returns {Promise<void>}
+     */
+    async getRankings(resetPage = false) {
+      if (resetPage) {
+        this.pagination.page = 1;
+      }
+
       return await rankingService.getMyRanking(this.pagination).then(response => {
         if (response.status) {
           this.rankings.myRanking = response.data.data;
