@@ -6,7 +6,6 @@ requirejs(['fab/fabrik'], function () {
     var form_loaded = false;
     var elt_to_not_clear = ['panel','calc'];
 
-    let check_condition = arr => arr.every(v => v === true);
     var operators = {
         '=': function(a, b, plugin) { if(!Array.isArray(a)) { return a == b; } else { return a.includes(b); } },
         '!=': function(a, b, plugin) { if(!Array.isArray(a)) { return a != b; } else { return !a.includes(b); } },
@@ -260,19 +259,35 @@ requirejs(['fab/fabrik'], function () {
                 let condition_state = [];
 
                 rule.conditions.forEach((condition) => {
+                    if(condition.group && !condition_state[condition.group]) {
+                        condition_state[condition.group] = {
+                            'type': condition.group_type,
+                            'states': []
+                        };
+                    }
+
                     form.elements.forEach((elt) => {
                         let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
+
                         if (name == condition.field && elt.getRepeatNum() == element.getRepeatNum()) {
                             if(operators[condition.state](elt.get('value'), condition.values, elt.plugin)) {
-                                condition_state.push(true);
-                            } else if(rule.group == 'AND') {
-                                condition_state.push(false);
+                                if(condition.group) {
+                                    condition_state[condition.group].states.push(true);
+                                } else {
+                                    condition_state.push(true);
+                                }
+                            } else {
+                                if(condition.group) {
+                                    condition_state[condition.group].states.push(false);
+                                } else {
+                                    condition_state.push(false);
+                                }
                             }
                         }
                     });
                 });
 
-                if (condition_state.length > 0 && check_condition(condition_state)) {
+                if (condition_state.length > 0 && check_condition(condition_state, rule.group)) {
                     rule.actions.forEach((action) => {
 
                         let fields = action.fields.split(',');
@@ -427,6 +442,46 @@ requirejs(['fab/fabrik'], function () {
                     });
                 }
             });
+        }
+    }
+
+    function check_condition(condition_states, group) {
+        let is_group = false;
+        let grouped_conditions = [];
+
+        for(var i = 0; i < condition_states.length; i++) {
+            if(typeof condition_states[i] === 'object') {
+                is_group = true;
+                break;
+            }
+        }
+
+        if(is_group) {
+            for(var i = 0; i < condition_states.length; i++) {
+                if(condition_states[i] !== undefined) {
+                    if(condition_states[i].type === 'AND') {
+                        if(condition_states[i].states.every(v => v === true)) {
+                            grouped_conditions.push(true);
+                        } else {
+                            grouped_conditions.push(false);
+                        }
+                    } else {
+                        if(condition_states[i].states.some(v => v === true)) {
+                            grouped_conditions.push(true);
+                        } else {
+                            grouped_conditions.push(false);
+                        }
+                    }
+                }
+            }
+        } else {
+            grouped_conditions = condition_states;
+        }
+
+        if(group === 'AND') {
+            return grouped_conditions.every(v => v === true);
+        } else {
+            return grouped_conditions.some(v => v === true);
         }
     }
 

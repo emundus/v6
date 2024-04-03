@@ -2386,8 +2386,9 @@ class EmundusModelForm extends JModelList {
 			foreach ($js_conditions as $js_condition)
 			{
 				$query->clear()
-					->select($db->quoteName(['field','state','values']))
-					->from($db->quoteName('#__emundus_setup_form_rules_js_conditions'))
+					->select($db->quoteName(['esfrjc.id','esfrjc.parent_id','esfrjc.field','esfrjc.state','esfrjc.values','esfrjc.group','esfrjcg.group_type']))
+					->from($db->quoteName('#__emundus_setup_form_rules_js_conditions','esfrjc'))
+					->leftJoin($db->quoteName('#__emundus_setup_form_rules_js_conditions_group','esfrjcg').' ON '.$db->quoteName('esfrjcg.id').' = '.$db->quoteName('esfrjc.group'))
 					->where($db->quoteName('parent_id') . ' = ' . $db->quote($js_condition->id));
 				$db->setQuery($query);
 				$js_condition->conditions = $db->loadObjectList();
