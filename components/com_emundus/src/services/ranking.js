@@ -3,7 +3,7 @@ import client from './axiosClient';
 export default {
     async getMyRanking(pagination, ordering) {
         try {
-            const response = await client().get('index.php?option=com_emundus&controller=ranking&task=getMyFilesToRank&page=' + pagination.page + '&limit=' + pagination.perPage + '&orderby=' + ordering.orderBy + '&order=' + ordering.order);
+            const response = await client().get('index.php?option=com_emundus&controller=ranking&task=getMyFilesToRank&page=' + pagination.page + '&limit=' + pagination.perPage + '&order_by=' + ordering.orderBy + '&order=' + ordering.order);
             return response.data;
         } catch (e) {
             return {

@@ -135,8 +135,14 @@
         <table class="w-full">
           <thead>
           <template v-for="hierarchy in rankings.otherRankings" :key="hierarchy.hierarchy_id">
-            <th :title="hierarchy.label">
-              <div><span>{{ hierarchy.label }}</span></div>
+            <th @click="reorder(hierarchy.hierarchy_id)" :title="hierarchy.label">
+              <div class="flex flex-row items-center">
+                <span>{{ hierarchy.label }}</span>
+                <div v-if="ordering.orderBy === hierarchy.hierarchy_id">
+                  <span class="material-icons-outlined" v-if="ordering.order == 'ASC'">arrow_drop_up</span>
+                  <span class="material-icons-outlined" v-else>arrow_drop_down</span>
+                </div>
+              </div>
             </th>
             <th :title="translate('COM_EMUNDUS_RANKING_RANKER') + ' ' + hierarchy.label" class="border-right">
               <div><span>{{ translate('COM_EMUNDUS_RANKING_RANKER') + ' ' + hierarchy.label }}</span></div>
@@ -404,8 +410,11 @@ export default {
      * @param orderBy
      */
     reorder(orderBy) {
+      if (this.ordering.orderBy === orderBy) {
+        this.ordering.order = this.ordering.order === 'ASC' ? 'DESC' : 'ASC';
+      }
+
       this.ordering.orderBy = orderBy;
-      this.ordering.order = this.ordering.order === 'ASC' ? 'DESC' : 'ASC';
 
       this.getRankings();
     },
