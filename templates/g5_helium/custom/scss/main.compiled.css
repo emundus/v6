@@ -6233,6 +6233,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .gap-3 {
   gap: var(--em-spacing-3);
 }
+.gap-4 {
+  gap: var(--em-spacing-4);
+}
 .gap-6 {
   gap: var(--em-spacing-6);
 }
@@ -12622,6 +12625,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .bg-yellow-950\/95 {
   background-color: rgb(66 32 6 / 0.95);
+}
+.bg-neutral-300 {
+  background-color: var(--neutral-300);
 }
 .from-yellow-100 {
   --tw-gradient-from: #fef9c3 var(--tw-gradient-from-position);

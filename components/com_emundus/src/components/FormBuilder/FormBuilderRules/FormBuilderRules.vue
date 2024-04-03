@@ -56,20 +56,23 @@
             </div>
 
             <div :id="'condition_'+rule.id" class="flex flex-col gap-2">
-              <div v-for="condition in rule.conditions" class="flex items-center">
-                <span class="material-icons-outlined !text-2xl !font-medium mr-3 text-black">alt_route</span>
-                <div class="leading-8">
-                  <span class="font-medium mr-1">{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_IF') }}</span>
-                  <span>{{ condition.elt_label }}</span>
-                  <span class="p-2 rounded-lg label-darkblue ml-2 mr-2">{{ operator(condition.state) }}</span>
-                  <span>{{ getvalues(condition) }}</span>
+              <div v-for="(grouped_condition,key) in Object.values(rule.conditions)">
+                <p v-if="groupedType(rule.conditions) && key != 0" class="font-medium ml-1 mr-2 mb-2">{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_CONDITION_'+rule.group) }}</p>
+
+                <div class="flex flex-col gap-4" :class="{ 'bg-neutral-300 rounded p-2': groupedType(rule.conditions) !== null}">
+                  <div v-for="(condition,index) in grouped_condition" class="flex items-center">
+                    <span v-if="(index == 0 && grouped_condition.length > 1) || (key == 0 && grouped_condition.length == 1)" class="material-icons-outlined !text-2xl !font-medium mr-1 text-black">alt_route</span>
+                    <span v-if="(index != 0 && grouped_condition.length > 1) || (key != 0 && grouped_condition.length == 1)" class="font-medium ml-1 mr-2">{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_CONDITION_'+rule.group) }}</span>
+
+                    <div class="leading-8">
+                      <span class="font-medium mr-1" v-if="(index == 0  && grouped_condition.length > 1) || (key == 0 && grouped_condition.length == 1)">{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_IF') }}</span>
+                      <span>{{ condition.elt_label }}</span>
+                      <span class="p-2 rounded-lg label-darkblue ml-1 mr-2">{{ operator(condition.state) }}</span>
+                      <span>{{ getvalues(condition) }}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-
-
-            <div v-if="rule.conditions.length > 1">
-              <p class="font-medium">{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_IF') + ' ' + translate('COM_EMUNDUS_FORMBUILDER_RULE_GROUP_' + rule.group) }}</p>
             </div>
 
             <hr class="m-0"/>
@@ -275,6 +278,17 @@ export default {
       return rule.label ? rule.label : this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_CONDITION') + (index + 1);
     },
 
+    groupedType(conditions) {
+      let type = 'AND';
+      Object.values(conditions).forEach(condition => {
+        condition.forEach(cond => {
+          type =  cond.group_type;
+        });
+      });
+
+      return type;
+    }
+
     /*cloneRule(rule)
     {
       this.loading = true;
@@ -297,10 +311,12 @@ export default {
             found = rule.label.toLowerCase().includes(this.keywords.toLowerCase())
           }
           if(!found) {
-            rule.conditions.forEach(condition => {
-              if (elements_found.find(element => element.name == condition.field)) {
-                found = true;
-              }
+            Object.values(rule.conditions).forEach(grouped_conditions => {
+              grouped_conditions.forEach((condition) => {
+                if (elements_found.find(element => element.name == condition.field)) {
+                  found = true;
+                }
+              })
             });
           }
           if(!found) {
@@ -324,7 +340,7 @@ export default {
 </script>
 
 <style lang="scss">
-#form-builder-rules, #form-builder-rules-js-condition {
+#form-builder-rules, #form-builder-rules-js-conditions {
   .label-darkblue {
     background-color: var(--neutral-300) !important;
     border: 1px solid var(--neutral-800);

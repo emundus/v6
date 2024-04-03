@@ -2395,6 +2395,7 @@ class EmundusModelForm extends JModelList {
 
 				if($format == 'view')
 				{
+					$tmp_conditions = [];
 					foreach ($js_condition->conditions as $condition)
 					{
 						$query->clear()
@@ -2415,7 +2416,8 @@ class EmundusModelForm extends JModelList {
 							}
 
 							$condition->options = $params->sub_options;
-						} elseif ($elt->plugin == 'yesno') {
+						}
+						elseif ($elt->plugin == 'yesno') {
 							$condition->options = new stdClass();
 							$condition->options->sub_values = [
 								0,
@@ -2425,7 +2427,8 @@ class EmundusModelForm extends JModelList {
 								Text::_('JNO'),
 								Text::_('JYES')
 							];
-						} elseif ($elt->plugin == 'databasejoin') {
+						}
+						elseif ($elt->plugin == 'databasejoin') {
 							$condition->options = new stdClass();
 							$condition->options->sub_values = [];
 							$condition->options->sub_labels = [];
@@ -2435,7 +2438,14 @@ class EmundusModelForm extends JModelList {
 								$condition->options->sub_labels[] = $databasejoin_option->value;
 							}
 						}
+
+						if(!empty($condition->group)) {
+							$tmp_conditions[$condition->group][] = $condition;
+						} else {
+							$tmp_conditions[][] = $condition;
+						}
 					}
+					$js_condition->conditions = $tmp_conditions;
 				}
 
 				$query->clear()
@@ -2500,7 +2510,7 @@ class EmundusModelForm extends JModelList {
 				'form_id' => $form_id,
 				'type' => $type,
 				'group' => $group,
-				'label' => $label,
+				'label' => !empty($label) ? $label : ' ',
 				'published' => 1
 			];
 			$insert = (object) $insert;
@@ -2573,7 +2583,7 @@ class EmundusModelForm extends JModelList {
 				$update = [
 					'id' => $rule_id,
 					'group' => $group,
-					'label' => $label,
+					'label' => !empty($label) ? $label : '',
 					'updated_by' => $user->id,
 					'updated' => date('Y-m-d H:i:s')
 				];

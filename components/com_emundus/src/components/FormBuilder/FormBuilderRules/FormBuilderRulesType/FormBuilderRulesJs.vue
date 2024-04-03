@@ -4,12 +4,12 @@
     <input class="mt-2 mb-4" v-model="label" :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_RULE_NAME')" />
 
     <div id="form-builder-rules-js-conditions-block">
-      <div v-for="(condition, index) in conditions" class="mt-2 rounded-lg bg-white px-3 py-4 flex flex-col gap-6">
-        <form-builder-rules-js-condition :elements="elements" :index="index" :condition="condition" @remove-condition="removeCondition" :page="page" />
+      <div v-for="(grouped_condition, index) in Object.values(conditions)" class="mt-2 rounded-lg bg-white px-3 py-4 flex flex-col gap-6">
+        <form-builder-rules-js-conditions :elements="elements" :index="index" :conditions="grouped_condition" @remove-condition="removeCondition" :page="page" />
       </div>
 
       <div class="flex justify-end">
-        <button type="button" @click="addCondition()" class="em-tertiary-button mt-2 w-auto">{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE') }}</button>
+        <button type="button" @click="addCondition()" class="em-tertiary-button mt-2 w-auto">{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE_CONDITION_GROUP') }}</button>
       </div>
     </div>
 
@@ -27,7 +27,7 @@
       </div>
 
       <div class="flex justify-end">
-        <button type="button" @click="addAction()" class="em-tertiary-button mt-2 w-auto">{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE') }}</button>
+        <button type="button" @click="addAction()" class="em-tertiary-button mt-2 w-auto">{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE_ACTION') }}</button>
       </div>
     </div>
 
@@ -44,13 +44,13 @@ import formBuilderMixin from '../../../../mixins/formbuilder';
 import globalMixin from '../../../../mixins/mixin';
 import errorMixin from '../../../../mixins/errors';
 import Swal from 'sweetalert2';
-import FormBuilderRulesJsCondition
-  from "@/components/FormBuilder/FormBuilderRules/FormBuilderRulesType/FormBuilderRulesJsCondition.vue";
+import FormBuilderRulesJsConditions
+  from "@/components/FormBuilder/FormBuilderRules/FormBuilderRulesType/FormBuilderRulesJsConditions.vue";
 import FormBuilderRulesJsAction
   from "@/components/FormBuilder/FormBuilderRules/FormBuilderRulesType/FormBuilderRulesJsAction.vue";
 
 export default {
-  components: {FormBuilderRulesJsAction, FormBuilderRulesJsCondition},
+  components: {FormBuilderRulesJsAction, FormBuilderRulesJsConditions},
   props: {
     page: {
       type: Object,
@@ -77,7 +77,7 @@ export default {
   },
   mounted() {
     if (this.page.id) {
-      if(this.rule !== null && this.rule.conditions.length > 0) {
+      if(this.rule !== null && Object.values(this.rule.conditions).length > 0) {
         this.conditions = this.rule.conditions;
       } else {
         this.conditions.push({
@@ -128,14 +128,16 @@ export default {
       let conditions_post = [];
       let actions_post = [];
 
-      this.conditions.forEach((condition) => {
-        if(condition.field && condition.values) {
-          conditions_post.push({
-            field: condition.field.name,
-            values: typeof condition.values === 'object' ? condition.values.primary_key : condition.values,
-            state: condition.state
-          });
-        }
+      this.conditions.forEach((grouped_condition) => {
+        grouped_condition.forEach((condition) => {
+          if (condition.field && condition.values) {
+            conditions_post.push({
+              field: condition.field.name,
+              values: typeof condition.values === 'object' ? condition.values.primary_key : condition.values,
+              state: condition.state
+            });
+          }
+        });
       });
 
       this.actions.forEach((action) => {
