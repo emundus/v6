@@ -90,12 +90,12 @@ class EmundusModelRanking extends JModelList
 
                 if (!empty($hierarchy_order_by) && $hierarchy_order_by !== 'default' && $hierarchy_order_by != $hierarchy) {
                     $query->clear()
-                        ->select('er.rank, er.ccid')
+                        ->select('er.rank, cc.id as ccid')
                         ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
-                        ->leftJoin($this->db->quoteName('#__emundus_ranking', 'er') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid'))
+                        ->leftJoin($this->db->quoteName('#__emundus_ranking', 'er') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid') . ' AND ' .$this->db->quoteName('er.hierarchy_id') . ' = ' . $this->db->quote($hierarchy_order_by))
                         ->where($this->db->quoteName('cc.id') . ' IN (' . implode(',', $ids) . ')')
-                        ->andWhere($this->db->quoteName('er.hierarchy_id') . ' = ' . $this->db->quote($hierarchy_order_by))
                         ->setLimit($limit, $offset);
+
                     $this->db->setQuery($query);
                     $ranks = $this->db->loadAssocList('ccid');
                     $ids = array_keys($ranks);
