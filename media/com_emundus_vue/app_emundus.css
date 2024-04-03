@@ -2967,43 +2967,11 @@ td[data-v-db0e1b70]{
 }
 
 
-.outlined-button[data-v-2fcc0280] {
-  border: 1px solid #333; /* Border color */
-  background-color: transparent; /* Remove background color */
-  padding: 8px 16px; /* Add padding for better spacing */
-  margin: 4px; /* Add margin for better spacing */
-  cursor: pointer; /* Show pointer cursor on hover */
-  outline: none; /* Remove default outline */
-}
-.outlined-button[data-v-2fcc0280]:hover {
-  background-color: #00ff00; /* Change background color on hover */
-  color: white; /* Change text color to white */
-}
 .green-button[data-v-2fcc0280] {
-  background-color: green; /* Change background color to green when clicked */
-  color: white; /* Change text color to white */
-}
-.submenu-div[data-v-2fcc0280] {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  margin-left: 20px;
-}
-.button-container[data-v-2fcc0280] {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  -webkit-box-align: start;
-      -ms-flex-align: start;
-          align-items: flex-start;
+  weight: bold;
+  background-color: #008A351A; /* Change background color to green when clicked */
+  background-color-opacity: 0.1;
+  color: #008A35; /* Change text color to green */
 }
 
 @media all and (max-width: 479px) {
