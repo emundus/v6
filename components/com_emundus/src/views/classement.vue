@@ -27,6 +27,7 @@
         {{ translate('COM_EMUNDUS_CLASSEMENT_LOCK_RANKING') }}
       </button>
     </div>
+    <p class="w-full alert mb-2" v-if="ordering.orderBy !== 'default'">{{ translate('COM_EMUNDUS_RANKING_CANNOT_DRAG_AND_DROP') }}</p>
     <div v-if="rankings.myRanking.length > 0" id="ranking-lists-container" class="em-flex-row em-flex-space-between">
       <div id="my-ranking-list"
            class="w-full mr-2"
@@ -68,7 +69,7 @@
               <td>
                 <span class="material-icons-outlined" v-if="file.locked == 1">lock</span>
                 <span class="material-icons-outlined" v-else>lock_open</span>
-                <span class="material-icons-outlined handle" v-if="file.locked != 1">drag_indicator</span>
+                <span class="material-icons-outlined handle" v-if="file.locked != 1 && ordering.orderBy === 'default'">drag_indicator</span>
               </td>
               <td class="em-flex-column file-identifier em-pointer" @click="openClickOpenFile(file)">
                 <span>{{ file.applicant }}</span>
@@ -112,7 +113,7 @@
               <td>
                 <span class="material-icons-outlined" v-if="file.locked">lock</span>
                 <span class="material-icons-outlined" v-else>lock_open</span>
-                <span class="material-icons-outlined handle" v-if="file.locked != 1">drag_indicator</span>
+                <span class="material-icons-outlined handle" v-if="file.locked != 1 && ordering.orderBy === 'default'">drag_indicator</span>
               </td>
               <td class="em-flex-column file-identifier em-pointer" @click="openClickOpenFile(file)">
                 <span>{{ file.applicant }}</span>
@@ -640,10 +641,10 @@ export default {
       }
     },
     unrankedFiles() {
-      return this.rankings.myRanking.filter(file => file.rank == -1);
+      return this.ordering.orderBy === 'default' ? this.rankings.myRanking.filter(file => file.rank == -1) : [];
     },
     rankedFiles() {
-      return this.rankings.myRanking.filter(file => file.rank != -1);
+      return this.ordering.orderBy === 'default' ? this.rankings.myRanking.filter(file => file.rank != -1) : this.rankings.myRanking;
     },
     orderedRankings() {
       // rankedFiles first, then unrankedFiles
@@ -689,6 +690,10 @@ export default {
 </script>
 
 <style lang="scss">
+.alert.mb-2 {
+  margin-bottom: var(--em-spacing-2) !important;
+}
+
 #ranking-list {
   #ranking-lists-container {
     align-items: flex-start;
