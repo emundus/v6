@@ -298,6 +298,10 @@ export default {
         page: 1,
         perPage: 10,
         perPageOptions: [5, 10, 25, 50, 100]
+      },
+      ordering: {
+        orderBy: '',
+        order: 'asc'
       }
     }
   },
@@ -393,7 +397,7 @@ export default {
         this.pagination.page = 1;
       }
 
-      return await rankingService.getMyRanking(this.pagination).then(response => {
+      return await rankingService.getMyRanking(this.pagination, this.ordering).then(response => {
         if (response.status) {
           this.rankings.myRanking = response.data.data;
           this.rankings.nbFiles = response.data.total;
