@@ -81,7 +81,8 @@
         "helptext": "",
         "options": [
           {
-            "component": "General",
+            "type": "component",
+            "component": "Global",
             "props": []
           }
         ]
@@ -184,13 +185,14 @@
         "helptext": "cela permet de d'avoir un contenu global pour tout vos campagnes",
         "options": [
           {
-            "component":"EditArticle",
-            "props":{
+            "type": "component",
+            "component": "EditArticle",
+            "props": {
               "key":1,
-              "article_id":52, 
-              "article_alias": "", 
-              "category":"homepage",
-              "published":true
+              "article_id":52,
+              "article_alias": "",
+              "category": "homepage",
+              "published": true
             }
           },
           {
@@ -236,8 +238,9 @@
         "helptext": "",
         "options": [
           {
-            "component":"EditFooter",
-            "props":[]
+            "type": "component",
+            "component": "EditFooter",
+            "props": []
           }
         ]
       },
@@ -254,13 +257,14 @@
             "placeholder": "",
             "elements": [
               {
-                "component":"EditArticle",
-                "props":{
-                  "key":2,
-                  "article_id":null, 
-                  "article_alias": "mentions-legales", 
-                  "category":"rgpd",
-                  "published":true
+                "type": "component",
+                "component": "EditArticle",
+                "props": {
+                  "key": 2,
+                  "article_id": null,
+                  "article_alias": "mentions-legales",
+                  "category": "rgpd",
+                  "published": true
                 }
               }
             ]
@@ -273,13 +277,14 @@
             "placeholder": "",
             "elements": [
               {
-                "component":"EditArticle",
-                "props":{
-                  "key":3,
-              "article_id":null, 
-              "article_alias": "politique-de-confidentialite-des-donnees", 
-              "category":"rgpd",
-              "published":true
+                "type": "component",
+                "component": "EditArticle",
+                "props": {
+                  "key": 3,
+                  "article_id": null,
+                  "article_alias": "politique-de-confidentialite-des-donnees",
+                  "category": "rgpd",
+                  "published": true
                 }
               }
             ]
@@ -292,13 +297,14 @@
             "placeholder": "",
             "elements": [
               {
-                "component":"EditArticle",
-                "props":{
-                  "key":4,
-                  "article_id":null, 
-                  "article_alias": "gestion-des-droits", 
-                  "category":"rgpd",
-                  "published":true
+                "type": "component",
+                "component": "EditArticle",
+                "props": {
+                  "key": 4,
+                  "article_id": null,
+                  "article_alias": "gestion-des-droits",
+                  "category": "rgpd",
+                  "published": true
                 }
               }
             ]
@@ -311,13 +317,14 @@
             "placeholder": "cookie : petit fichier qui conserve les informations sur votre navigation pour une futur connexion",
             "elements": [
               {
-                "component":"EditArticle",
-                "props":{
-                  "key":5,
-                  "article_id":null, 
-                  "article_alias": "gestion-des-cookies", 
-                  "category":"rgpd",
-                  "published":true
+                "type": "component",
+                "component": "EditArticle",
+                "props": {
+                  "key": 5,
+                  "article_id": null,
+                  "article_alias": "gestion-des-cookies",
+                  "category": "rgpd",
+                  "published": true
                 }
               }
             ]
@@ -330,13 +337,14 @@
         "helptext": "",
         "options": [
           {
-            "component":"EditArticle",
-            "props":{
-              "key":6,
-                  "article_id":null, 
-                  "article_alias": "accessibilite", 
-                  "category":"rgpd",
-                  "published":false
+            "type": "component",
+            "component": "EditArticle",
+            "props": {
+              "key": 6,
+              "article_id": null,
+              "article_alias": "accessibilite",
+              "category": "rgpd",
+              "published": false
             }
           }
         ]
@@ -354,8 +362,11 @@
         "helptext": "",
         "options": [
           {
+            "type": "component",
             "component": "EditStatus",
-            "props": {"key":1}
+            "props": {
+              "key": 1
+            }
           }
         ]
       },
@@ -364,8 +375,12 @@
         "type": "section",
         "helptext": "",
         "options": [
-          {"component": "EditTags",
-          "props": {"key":2}
+          {
+            "type": "component",
+            "component": "EditTags",
+            "props": {
+              "key": 2
+            }
           }
         ]
       },
@@ -510,8 +525,10 @@
         "type": "section",
         "helptext": "",
         "options": [
-          {"component": "Translations",
-          "props": []
+          {
+            "type": "component",
+            "component": "Translations",
+            "props": []
           }
         ]
       },
@@ -520,12 +537,13 @@
         "type": "section",
         "helptext": "",
         "options": [
-          {"component": "Orphans",
-          "props": []
-        }
+          {
+            "type": "component",
+            "component": "Orphelins",
+            "props": []
+          }
         ]
       }
-
     ]
   }
 ]

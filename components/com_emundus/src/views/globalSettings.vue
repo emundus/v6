@@ -22,33 +22,38 @@
       </div>
     </aside>
 
-    <div class="p-4 sm:ml-40" style="user-select: none" v-if="indexMenu != null">
+    <div class="p-4 sm:ml-40" style="user-select: none" v-if="indexMenuClick != null">
       <h1 class="text-2xl font-semibold" style="user-select: none; color: #008A35;">
-        <i class="material-icons-outlined" style="scale: 1.5; color:#008A35;  padding-right: 0.5em">{{
-            this.aMenu.icon
-          }}</i>
+        <i class="material-icons-outlined" style="scale: 1.5; color:#008A35;  padding-right: 0.5em">{{this.aMenu.icon }}</i>
         {{ this.aMenu.label }}
       </h1>
-      <div id="accordion-collapse" v-for="(x, index1) in SubMenus[indexMenu]"
-           v-if="SubMenus[indexMenu][index1].type!=='Tile'"
-           @click="handleSubMenuclick(index1)"
+      <div id="accordion-collapse" v-for="(x, index1) in SubMenus[indexMenuClick]"
+           v-if="SubMenus[indexMenuClick][index1].type!=='Tile'"
+
            class="flex flex-col justify-between w-full p-5 font-medium rtl:text-right text-black border border-gray-200 rounded bg-white mb-3 hover:bg-gray-100 gap-3 "
            data-accordion-target="#accordion-collapse-body-1" aria-expanded="true"
            aria-controls="accordion-collapse-body-1"
            style="box-shadow:0.1em 0.05em 0.05em grey;">
-        <h2 id="accordion-collapse-heading-1" class="flex flex-row justify-between">
-          <span :id="'Subtile'+index1">{{ SubMenus[indexMenu][index1].label }}</span>
-          <span class="material-icons-outlined scale-150" :id="'SubtitleArrow'+index1" name="SubtitleArrows" >expand_more</span>
-        </h2>
+          <div @click="handleSubMenuclick(index1)" >
+            <h2  id="accordion-collapse-heading-1" class="flex flex-row justify-between">
+            <span :id="'Subtile'+index1">{{ SubMenus[indexMenuClick][index1].label }}</span>
+            <span class="material-icons-outlined scale-150" :id="'SubtitleArrow'+index1" name="SubtitleArrows" >expand_more</span>
+            </h2>
+          </div>
 
-        <div :id="'SubMenu-'+index1" name="SubMenuContent" style="display: none">
-          {{ SubMenus[indexMenu][index1].options }}
+
+        <div :id="'SubMenu-'+index1" name="SubMenuContent" style="display: none" >
+
+          <div v-for="(x,index2) in SubMenus[indexMenuClick][index1].options" >
+            {{SubMenus[indexMenuClick][index1].options[index2]}}
+            <div v-if="SubMenus[indexMenuClick][index1].options[index2].type ==='component'"> <component :is="SubMenus[indexMenuClick][index1].options[index2].component"></component> </div>
+          </div>
         </div>
-
+      </div>
+      <div v-for="(item, index1) in SubMenus[indexMenuClick]" v-if="SubMenus[indexMenuClick][index1].type==='Tile'"
+           class="flex items-center mb-3"><p>Tile for: {{ SubMenus[indexMenuClick][index1].label }} is comming soon</p>
       </div>
 
-      <div v-for="(item, index1) in SubMenus[indexMenu]" v-if="SubMenus[indexMenu][index1].type==='Tile'"
-           class="flex items-center mb-3"><p>Tile for: {{ SubMenus[indexMenu][index1].label }} is comming soon</p></div>
     </div>
 
 
@@ -66,14 +71,22 @@ import FilesTool from '../components/Settings/FilesTool/FilesTool';
 import StyleTool from '../components/Settings/Style/StyleTool';
 import AttachmentStorage from '../components/Settings/AttachmentStorage/AttachmentStorage';
 
-//import settingsService from '../services/settings';
-
 import SettingParam from '../../data/settings-global-group-params.json';
+import Global from "@/components/Settings/Style/General.vue";
+import EditFooter from "@/components/Settings/Content/EditFooter.vue";
+import Translations from "@/components/Settings/TranslationTool/Translations.vue";
+import Orphelins from "@/components/Settings/TranslationTool/Orphelins.vue";
+import EditArticle from "@/components/Settings/Content/EditArticle.vue";
 
 
 export default {
   name: "globalSettings",
   components: {
+    EditArticle,
+    Orphelins,
+    Translations,
+    EditFooter,
+    Global,
     StyleTool,
     AttachmentStorage,
     FilesTool,
@@ -98,21 +111,17 @@ export default {
   },
 
   data: () => ({
-    menuHighlight: 0,
-    currentTitle: '',
     langue: 0,
     saving: false,
     endSaving: false,
     loading: null,
 
-    isOutlined: true, // Boolean flag to determine if buttons should be outlined
     MenuisClicked: [],
     SubMenuisClicked: [],
-    indexMenu: null,
+    indexMenuClick: null,
     aMenu: [],
     Menus: [],
     SubMenus: [],
-    SubSubMenus: [],
 
   }),
 
@@ -126,22 +135,15 @@ export default {
 
   methods: {
     changeCSS() {
-      let navbarDisplay = document.getElementById("header-b");
-      navbarDisplay.style.display = "none";
-      let headerDisplay = document.getElementById("g-navigation");
-      headerDisplay.style.display = "none";
+      document.getElementById("header-b").style.display = "none";
+      document.getElementById("g-navigation").style.display = "none";
     },
     getParamFromjson() {
       return new Promise((resolve) => {
-        for (let i of SettingParam) {
+        SettingParam.forEach(i => {
           this.Menus.push(i);
-          this.SubMenus.push(i.sections); // Use spread operator to flatten the array
-        }
-        for (let j of this.SubMenus) {
-          for (let k of j) {
-            this.SubSubMenus.push(k.options);
-          }
-        }
+          this.SubMenus.push(i.sections);
+        });
         resolve();
       });
 
@@ -177,11 +179,11 @@ export default {
 
       if (this.MenuisClicked[index]) {
         // If the button is clicked, add 'green-button' class and set indexMenu
-        this.indexMenu = index;
+        this.indexMenuClick = index;
         document.getElementById('Menu-' + index).classList.add('green-button');
         document.getElementById('icon-' + index).style.color = '#008A35';
       } else {
-        this.indexMenu = null;
+        this.indexMenuClick = null;
       }
     },
 
