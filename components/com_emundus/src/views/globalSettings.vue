@@ -34,20 +34,42 @@
            data-accordion-target="#accordion-collapse-body-1" aria-expanded="true"
            aria-controls="accordion-collapse-body-1"
            style="box-shadow:0.1em 0.05em 0.05em grey;">
-          <div @click="handleSubMenuclick(index1)" >
-            <h2  id="accordion-collapse-heading-1" class="flex flex-row justify-between">
-            <span :id="'Subtile'+index1">{{ SubMenus[indexMenuClick][index1].label }}</span>
-            <span class="material-icons-outlined scale-150" :id="'SubtitleArrow'+index1" name="SubtitleArrows" >expand_more</span>
-            </h2>
+        <div @click="handleSubMenuClick(index1)">
+          <h2 id="accordion-collapse-heading-1" class="flex flex-row justify-between">
+            <span :id="'Subtile'+index1" class="em-font-size-24 ">{{ SubMenus[indexMenuClick][index1].label }}</span>
+            <span class="material-icons-outlined scale-150" :id="'SubtitleArrow'+index1" name="SubtitleArrows">expand_more</span>
+          </h2>
+        </div>
+
+
+        <div :id="'SubMenu-'+index1" name="SubMenuContent" style="display: none" class="flex flex-col ">
+          <div  v-for="option in SubMenus[indexMenuClick][index1].options">
+            <label class="block text em-font-size-18">{{option.label}}</label>
+            <div class="flex flex-col" v-if="option.type === 'Input'">
+              <input :placeholder="option.placeholder" class="w-full p-2 border border-gray-200 rounded"
+                     v-model="option.value">
+            </div>
+            <div class="flex flex-col" v-if="option.type === 'sqldropdown'">
+              <p>dropDown</p>
+            </div>
+            <div class="flex flex-col" v-if="option.type === 'textarea'">
+              <editor-quill :height="'30em'" :text="''" :enable_variables="false" :id="'editor'" :key="0" v-model="form.content" ></editor-quill>
+            </div>
+            <div class="flex flex-col" v-if="option.type === 'component'">
+              <component :is="option.component" v-bind="option.props"></component>
+            </div>
+            <div class="flex flex-col" v-if="option.type === 'dropdown'">
+              <select><option v-for="choice in option.choices" >{{choice.label}}</option></select>
+            </div>
+            <div class="flex flex-col" v-if="option.type === 'checkbox'">
+              <div v-for="choice in option.choices">
+                <input type="checkbox" name="'myCheck'" :value="choice.value" @change="test()">
+                <label>{{ choice.label }}</label>
+              </div>
+            </div>
           </div>
 
 
-        <div :id="'SubMenu-'+index1" name="SubMenuContent" style="display: none" >
-
-          <div v-for="(x,index2) in SubMenus[indexMenuClick][index1].options" >
-            {{SubMenus[indexMenuClick][index1].options[index2]}}
-            <div v-if="SubMenus[indexMenuClick][index1].options[index2].type ==='component'"> <component :is="SubMenus[indexMenuClick][index1].options[index2].component"></component> </div>
-          </div>
         </div>
       </div>
       <div v-for="(item, index1) in SubMenus[indexMenuClick]" v-if="SubMenus[indexMenuClick][index1].type==='Tile'"
@@ -77,11 +99,13 @@ import EditFooter from "@/components/Settings/Content/EditFooter.vue";
 import Translations from "@/components/Settings/TranslationTool/Translations.vue";
 import Orphelins from "@/components/Settings/TranslationTool/Orphelins.vue";
 import EditArticle from "@/components/Settings/Content/EditArticle.vue";
+import EditorQuill from "@/components/editorQuill.vue";
 
 
 export default {
   name: "globalSettings",
   components: {
+    EditorQuill,
     EditArticle,
     Orphelins,
     Translations,
@@ -123,6 +147,10 @@ export default {
     Menus: [],
     SubMenus: [],
 
+    form: {
+      content: ''
+    },
+
   }),
 
   created() {
@@ -130,7 +158,6 @@ export default {
     this.changeCSS();
     this.getParamFromjson();
     this.loading = false;
-
   },
 
   methods: {
@@ -149,59 +176,71 @@ export default {
 
     },
     handleMenuButtonClick(index, item) {
-  this.resetMenuButtons();
-  this.toggleMenuButton(index, item);
-},
+      console.log(item);
+      this.resetMenuButtons();
+      this.toggleMenuButton(index, item);
+    },
 
-resetMenuButtons() {
-  this.MenuisClicked.fill(false);
-  this.SubMenuisClicked.fill(false);
-  this.resetStyles();
-},
+    resetMenuButtons() {
+      this.MenuisClicked.fill(false);
+      this.SubMenuisClicked.fill(false);
+      this.resetStyles();
+    },
 
-resetStyles() {
-  document.getElementsByName("SubtitleArrows").forEach(element => element.style.rotate = '0deg');
-  document.getElementsByName("bouton-Menu").forEach(element => element.classList.remove('green-button'));
-  document.getElementsByName("SubMenuContent").forEach(element => element.style.display = 'none');
-  document.getElementsByName("icon-Menu").forEach(element => element.style.color = '#000000');
-},
+    resetStyles() {
+      document.getElementsByName("SubtitleArrows").forEach(element => element.style.rotate = '0deg');
+      document.getElementsByName("bouton-Menu").forEach(element => element.classList.remove('green-button'));
+      document.getElementsByName("SubMenuContent").forEach(element => element.style.display = 'none');
+      document.getElementsByName("icon-Menu").forEach(element => element.style.color = '#000000');
+    },
 
-toggleMenuButton(index, item) {
-  this.aMenu = item;
-  this.MenuisClicked[index] = !this.MenuisClicked[index];
-  if (this.MenuisClicked[index]) {
-    this.indexMenuClick = index;
-    document.getElementById('Menu-' + index).classList.add('green-button');
-    document.getElementById('icon-' + index).style.color = '#008A35';
-  } else {
-    this.indexMenuClick = null;
-  }
-},
+    toggleMenuButton(index, item) {
+      this.aMenu = item;
+      this.MenuisClicked[index] = !this.MenuisClicked[index];
+      if (this.MenuisClicked[index]) {
+        this.indexMenuClick = index;
+        document.getElementById('Menu-' + index).classList.add('green-button');
+        document.getElementById('icon-' + index).style.color = '#008A35';
+      } else {
+        this.indexMenuClick = null;
+      }
+    },
 
 
     handleSubMenuClick(index) {
-  this.resetSubMenuButtons();
-  this.toggleSubMenuButton(index);
-},
 
-resetSubMenuButtons() {
-  this.SubMenuisClicked.fill(false);
-  this.resetSubMenuStyles();
-},
+      this.resetSubMenuButtons(index);
+      this.toggleSubMenuButton(index);
+    },
 
-resetSubMenuStyles() {
-  document.getElementsByName("SubtitleArrows").forEach(element => element.style.rotate = '0deg');
-  document.getElementsByName("SubMenuContent").forEach(element => element.style.display = 'none');
-},
+    resetSubMenuButtons(index) {
+      if (this.SubMenuisClicked[index]) {
+        this.SubMenuisClicked.fill(false);
+        this.SubMenuisClicked[index] = true;
+      } else {
+        this.SubMenuisClicked.fill(false);
+      }
+      this.resetSubMenuStyles();
+    },
 
-toggleSubMenuButton(index) {
-  this.SubMenuisClicked[index] = !this.SubMenuisClicked[index];
-  if (this.SubMenuisClicked[index]) {
-    document.getElementById('SubtitleArrow' + index).style.rotate = '-180deg';
-    document.getElementById('SubMenu-' + index).style.display = 'flex';
-  }
-},
+    resetSubMenuStyles() {
+      document.getElementsByName("SubtitleArrows").forEach(element => element.style.rotate = '0deg');
+      document.getElementsByName("SubMenuContent").forEach(element => element.style.display = 'none');
+    },
 
+    toggleSubMenuButton(index) {
+      this.SubMenuisClicked[index] = !this.SubMenuisClicked[index];
+      if (this.SubMenuisClicked[index]) {
+        document.getElementById('SubtitleArrow' + index).style.rotate = '-180deg';
+        document.getElementById('SubMenu-' + index).style.display = 'flex';
+      }
+    },
+    test(){
+      console.log(document.getElementById("'myCheck'+choice.id"))  ;
+      console.log(document.getElementById("myCheck2"))  ;
+      console.log(document.getElementById("myCheck3"))  ;
+
+    }
   },
   computed: {},
   watch: {}

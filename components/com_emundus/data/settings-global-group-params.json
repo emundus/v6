@@ -12,7 +12,7 @@
           {
             "name": "sitename",
             "label": "Nom du site",
-            "type": "input",
+            "type": "Input",
             "helptext": "",
             "placeholder": "tchooz"
           },
@@ -57,19 +57,33 @@
             "label": "Format de la date",
             "type": "dropdown",
             "helptext": "",
-            "placeholder": ""
+            "placeholder": "",
+            "choices": [
+              {
+                "label": "En cours",
+                "value": "1"
+              },
+              {
+                "label": "A venir",
+                "value": "2"
+              },
+              {
+                "label": "Clôturées",
+                "value": "0"
+              }
+            ]
           },
           {
             "name": "keywords",
             "label": "Mots clés",
-            "type": "input",
+            "type": "Input",
             "helptext": "",
             "placeholder": "",
             "multiple": true
           },
           {
             "label": "Nombre de lignes affichées par défaut dans les listes",
-            "type": "input",
+            "type": "Input",
             "helptext": "",
             "placeholder": "10"
           }
@@ -152,14 +166,14 @@
           {
             "name": "site_email",
             "label": "eMail du site",
-            "type": "input",
+            "type": "Input",
             "helptext": "",
             "placeholder": "test.user@mail.fr"
           },
           {
             "name": "sender_name",
             "label": "Nom de l'expéditeur",
-            "type": "input",
+            "type": "Input",
             "helptext": "",
             "placeholder": "User"
           },
@@ -221,14 +235,35 @@
             "label": "Grouper les campagnes par",
             "type": "dropdown",
             "helptext": "",
-            "placeholder": ""
+            "placeholder": "",
+            "choices": [
+              {
+                "label": "Mois",
+                "value": "month"
+              },
+              {
+                "label": "Année",
+                "value": "year"
+              }
+            ]
           },
           {
             "name": "champagne_organize_by",
             "label": "Trier les campagnes par",
             "type": "dropdown",
             "helptext": "",
-            "placeholder": ""
+            "placeholder": "",
+            "choices": [
+              {
+                "label": "Date de lancement",
+                "value": "LaunchDate"
+              },
+              {
+                "label": "Date de cloture",
+                "value": "CloseDate"
+              }
+
+            ]
           }
         ]
       },
@@ -401,7 +436,21 @@
             "label": "Nombre de dossiers à afficher par defaut",
             "type": "dropdown",
             "helptext": "",
-            "placeholder": ""
+            "placeholder": "",
+            "choices": [
+              {
+                "label": "En cours",
+                "value": "1"
+              },
+              {
+                "label": "A venir",
+                "value": "2"
+              },
+              {
+                "label": "Clôturées",
+                "value": "0"
+              }
+            ]
           },
           {
             "name": "alert_folder_modification",
