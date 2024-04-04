@@ -8,6 +8,14 @@
 
     <fields name="params">
         <fieldset name="basic" label="Options">
+            <field name="com_emundus_programme_campaign_id"
+                   query="SELECT `id`,`label` FROM #__emundus_setup_campaigns"
+                   type="sql"
+                   key_field="id"
+                   value_field="label"
+                   label="COM_EMUNDUS_PROGRAMME_CAMPAIGN_ID"
+                   default=""
+            />
             <field name="com_emundus_programme_showprogramme" type="checkbox" label="COM_EMUNDUS_PROGRAMME_SHOWPROG" description="COM_EMUNDUS_PROGRAMME_SHOWPROG_DESC" default="1"/>
             <field name="com_emundus_programme_showcampaign" type="checkbox" label="COM_EMUNDUS_PROGRAMME_SHOWCAMP" description="COM_EMUNDUS_PROGRAMME_SHOWCAMP_DESC" />
             <field type="text" name="com_emundus_programme_progdesc_class" label="COM_EMUNDUS_PROGRAMME_PROGDESC_CLASS" description="COM_EMUNDUS_PROGRAMME_PROGDESC_CLASS_DESC" />

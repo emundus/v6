@@ -1000,5 +1000,21 @@ class EmundusControllerCampaign extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+
+    public function getallitemsalias()
+    {
+        $tab = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+        $result = $this->m_campaign->getAllItemsAlias();
+
+        if ($result) {
+            $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_UNPINNED'), 'data' => $result);
+        } else {
+            $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UNPIN_CAMPAIGN'), 'data' => $result);
+        }
+
+        echo json_encode((object)$tab);
+        exit;
+    }
 }
 ?>

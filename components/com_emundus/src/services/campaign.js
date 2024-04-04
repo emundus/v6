@@ -135,5 +135,17 @@ export default {
                 msg: e.message
             };
         }
+    },
+
+    async getAllItemsAlias() {
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=campaign&task=getallitemsalias');
+            return response.data;
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
     }
 };

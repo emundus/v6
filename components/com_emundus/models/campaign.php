@@ -2942,4 +2942,26 @@ class EmundusModelCampaign extends JModelList {
 
         return $incoherences;
     }
+
+	public function getAllItemsAlias()
+	{
+		$items = [];
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try
+		{
+			$query->select('alias')
+				->from($db->quoteName('#__menu'))
+				->where($db->quoteName('client_id') . ' = 0');
+			$db->setQuery($query);
+			$items = $db->loadColumn();
+		}
+		catch (Exception $e)
+		{
+			JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $items;
+	}
 }
