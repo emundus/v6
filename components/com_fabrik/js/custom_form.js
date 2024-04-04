@@ -458,7 +458,7 @@ requirejs(['fab/fabrik'], function () {
 
         if(is_group) {
             for(var i = 0; i < condition_states.length; i++) {
-                if(condition_states[i] !== undefined) {
+                if(condition_states[i] !== undefined && typeof condition_states[i] === 'object') {
                     if(condition_states[i].type === 'AND') {
                         if(condition_states[i].states.every(v => v === true)) {
                             grouped_conditions.push(true);
@@ -472,6 +472,8 @@ requirejs(['fab/fabrik'], function () {
                             grouped_conditions.push(false);
                         }
                     }
+                } else if (condition_states[i] !== undefined && typeof condition_states[i] === 'boolean') {
+                    grouped_conditions.push(condition_states[i]);
                 }
             }
         } else {

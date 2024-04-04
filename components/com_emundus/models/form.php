@@ -2489,7 +2489,7 @@ class EmundusModelForm extends JModelList {
 		return $js_conditions;
 	}
 
-	public function addRule($form_id, $conditions, $actions, $type = 'js', $group = 'OR', $label = '', $user = null)
+	public function addRule($form_id, $grouped_conditions, $actions, $type = 'js', $group = 'OR', $label = '', $user = null)
 	{
 		$rule_inserted = false;
 
@@ -2497,7 +2497,7 @@ class EmundusModelForm extends JModelList {
 			$user = Factory::getApplication()->getIdentity();
 		}
 
-		$conditions = json_decode($conditions);
+		$grouped_conditions = json_decode($grouped_conditions);
 		$actions = json_decode($actions);
 
 		$db = Factory::getDbo();
@@ -2520,9 +2520,22 @@ class EmundusModelForm extends JModelList {
 
 			if(!empty($rule_id))
 			{
-				foreach ($conditions as $condition)
+				foreach ($grouped_conditions as $grouped_condition)
 				{
-					$this->addCondition($rule_id, $condition);
+					if(count($grouped_condition) > 1) {
+						$group_type = $grouped_condition[0]->group_type;
+						$group_id = $this->createConditionGroup($group_type);
+						foreach ($grouped_condition as $condition)
+						{
+							$condition->group = $group_id;
+							$this->addCondition($rule_id, $condition);
+						}
+					} else {
+						foreach ($grouped_condition as $condition)
+						{
+							$this->addCondition($rule_id, $condition);
+						}
+					}
 				}
 
 				foreach ($actions as $action)
@@ -2541,7 +2554,7 @@ class EmundusModelForm extends JModelList {
 		return $rule_inserted;
 	}
 
-	public function editRule($rule_id, $conditions, $actions, $group = 'OR', $label = '', $user = null)
+	public function editRule($rule_id, $grouped_conditions, $actions, $group = 'OR', $label = '', $user = null)
 	{
 		$rule_edited = false;
 
@@ -2549,7 +2562,7 @@ class EmundusModelForm extends JModelList {
 			$user = Factory::getApplication()->getIdentity();
 		}
 
-		$conditions = json_decode($conditions);
+		$grouped_conditions = json_decode($grouped_conditions);
 		$actions = json_decode($actions);
 
 		$db = Factory::getDbo();
@@ -2559,7 +2572,24 @@ class EmundusModelForm extends JModelList {
 		{
 			if(!empty($rule_id))
 			{
-				$query->delete($db->quoteName('#__emundus_setup_form_rules_js_conditions'))
+				$query->select('DISTINCT '.$db->quoteName('group'))
+					->from($db->quoteName('#__emundus_setup_form_rules_js_conditions'))
+					->where($db->quoteName('parent_id') . ' = ' . $db->quote($rule_id))
+					->where($db->quoteName('group') . ' IS NOT NULL');
+				$db->setQuery($query);
+				$condition_groups = $db->loadColumn();
+
+				if(!empty($condition_groups))
+				{
+					$query->clear()
+						->delete($db->quoteName('#__emundus_setup_form_rules_js_conditions_group'))
+						->where($db->quoteName('id') . ' IN (' . implode(',', $db->quote($condition_groups)) . ')');
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				$query->clear()
+					->delete($db->quoteName('#__emundus_setup_form_rules_js_conditions'))
 					->where($db->quoteName('parent_id') . ' = ' . $db->quote($rule_id));
 				$db->setQuery($query);
 				$db->execute();
@@ -2570,9 +2600,22 @@ class EmundusModelForm extends JModelList {
 				$db->setQuery($query);
 				$db->execute();
 
-				foreach ($conditions as $condition)
+				foreach ($grouped_conditions as $grouped_condition)
 				{
-					$this->addCondition($rule_id, $condition);
+					if(count($grouped_condition) > 1) {
+						$group_type = $grouped_condition[0]->group_type;
+						$group_id = $this->createConditionGroup($group_type);
+						foreach ($grouped_condition as $condition)
+						{
+							$condition->group = $group_id;
+							$this->addCondition($rule_id, $condition);
+						}
+					} else {
+						foreach ($grouped_condition as $condition)
+						{
+							$this->addCondition($rule_id, $condition);
+						}
+					}
 				}
 
 				foreach ($actions as $action)
@@ -2685,7 +2728,7 @@ class EmundusModelForm extends JModelList {
 				'field'     => $condition->field,
 				'state'     => $condition->state,
 				'values'    => $condition->values,
-				'label'     => $condition->label,
+				'group'     => !empty($condition->group) ? $condition->group : null
 			];
 			$insert = (object) $insert;
 			$db->insertObject('#__emundus_setup_form_rules_js_conditions', $insert);
@@ -2694,6 +2737,29 @@ class EmundusModelForm extends JModelList {
 		{
 			Log::add('component/com_emundus/models/form | Error at addCondition : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), Log::ERROR, 'com_emundus');
 		}
+	}
+
+	private function createConditionGroup($group_type)
+	{
+		$group_id = 0;
+		$db = Factory::getDbo();
+
+		try
+		{
+			$insert = [
+				'group_type' => $group_type,
+			];
+			$insert = (object) $insert;
+			$db->insertObject('#__emundus_setup_form_rules_js_conditions_group', $insert);
+
+			$group_id = $db->insertid();
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/form | Error at addCondition : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $group_id;
 	}
 
 	private function addAction($rule_id, $action)

@@ -1,45 +1,23 @@
 <template>
-  <div id="form-builder-rules-js-condition" class="self-start w-full flex" :class="{ 'bg-neutral-300 rounded p-2': multiple}">
-    <p class="mr-4 mt-3 font-bold">{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_IF') }}</p>
+  <div id="form-builder-rules-js-condition" class="self-start w-full"
+       :class="{ 'bg-neutral-300 rounded p-2': multiple}">
+    <div class="flex justify-end items-center">
+      <button v-if="index !== 0" type="button" @click="$emit('remove-condition', index)" class="w-auto">
+        <span class="material-icons-outlined text-red-500">close</span>
+      </button>
+    </div>
 
-    <div class="flex flex-col ml-2 w-full">
-      <div class="flex items-center">
-        <multiselect
-            v-model="condition.field"
-            label="label_tag"
-            :custom-label="labelTranslate"
-            track-by="name"
-            :options="elements"
-            :multiple="false"
-            :taggable="false"
-            select-label=""
-            selected-label=""
-            deselect-label=""
-            :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_RULE_SELECT_FIELD')"
-            :close-on-select="true"
-            :clear-on-select="false"
-            :searchable="true"
-            :allow-empty="true"
-        ></multiselect>
-      </div>
+    <div class="flex">
+      <p class="mr-2 mt-3 font-bold">{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_IF') }}</p>
 
-      <div class="mt-4">
-        <div class="flex items-center gap-3">
-          <span v-for="operator in operators" :key="operator.id"
-                class="cursor-pointer p-2 rounded-lg ml-1 border border-neutral-500"
-                @click="condition.state = operator.value"
-                :class="{ 'label-darkblue': condition.state == operator.value }">
-            {{ translate(operator.label) }}
-          </span>
-        </div>
-
-        <div class="mt-6">
+      <div class="flex flex-col ml-2 w-full">
+        <div class="flex items-center">
           <multiselect
-              v-if="condition.field && (options_plugins.includes(condition.field.plugin) || condition.field.plugin == 'yesno')"
-              v-model="condition.values"
-              label="value"
-              track-by="primary_key"
-              :options="options"
+              v-model="condition.field"
+              label="label_tag"
+              :custom-label="labelTranslate"
+              track-by="name"
+              :options="elements"
               :multiple="false"
               :taggable="false"
               select-label=""
@@ -51,7 +29,38 @@
               :searchable="true"
               :allow-empty="true"
           ></multiselect>
-          <input v-else-if="condition.field" v-model="condition.values"/>
+        </div>
+
+        <div class="mt-4">
+          <div class="flex items-center gap-3">
+          <span v-for="operator in operators" :key="operator.id"
+                class="cursor-pointer p-2 rounded-lg ml-1 border border-neutral-500"
+                @click="condition.state = operator.value"
+                :class="{ 'label-darkblue': condition.state == operator.value }">
+            {{ translate(operator.label) }}
+          </span>
+          </div>
+
+          <div class="mt-6">
+            <multiselect
+                v-if="condition.field && (options_plugins.includes(condition.field.plugin) || condition.field.plugin == 'yesno')"
+                v-model="condition.values"
+                label="value"
+                track-by="primary_key"
+                :options="options"
+                :multiple="false"
+                :taggable="false"
+                select-label=""
+                selected-label=""
+                deselect-label=""
+                :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_RULE_SELECT_FIELD')"
+                :close-on-select="true"
+                :clear-on-select="false"
+                :searchable="true"
+                :allow-empty="true"
+            ></multiselect>
+            <input v-else-if="condition.field" v-model="condition.values"/>
+          </div>
         </div>
       </div>
     </div>

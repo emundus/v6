@@ -4,12 +4,12 @@
     <input class="mt-2 mb-4" v-model="label" :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_RULE_NAME')" />
 
     <div id="form-builder-rules-js-conditions-block">
-      <div v-for="(grouped_condition, index) in Object.values(conditions)" class="mt-2 rounded-lg bg-white px-3 py-4 flex flex-col gap-6">
-        <form-builder-rules-js-conditions :elements="elements" :index="index" :conditions="grouped_condition" @remove-condition="removeCondition" :page="page" />
+      <div v-for="(grouped_condition, index) in conditions" class="mt-2 rounded-lg bg-white px-3 py-4 flex flex-col gap-6">
+        <form-builder-rules-js-conditions @add-condition="addCondition" :elements="elements" :index="index" :conditions="grouped_condition" @remove-condition="removeCondition" :page="page" />
       </div>
 
       <div class="flex justify-end">
-        <button type="button" @click="addCondition()" class="em-tertiary-button mt-2 w-auto">{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE_CONDITION_GROUP') }}</button>
+        <button type="button" @click="addGroupedCondition()" class="em-tertiary-button mt-2 w-auto">{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE_CONDITION_GROUP') }}</button>
       </div>
     </div>
 
@@ -78,13 +78,17 @@ export default {
   mounted() {
     if (this.page.id) {
       if(this.rule !== null && Object.values(this.rule.conditions).length > 0) {
-        this.conditions = this.rule.conditions;
+        this.conditions = Object.values(this.rule.conditions);
       } else {
-        this.conditions.push({
+        let first_condition = [];
+        first_condition.push({
           field: '',
           values: '',
-          state: '='
+          state: '=',
+          group_type: 'OR'
         });
+
+        this.conditions.push(first_condition);
       }
 
       if (this.rule !== null && this.rule.actions.length > 0) {
@@ -104,12 +108,24 @@ export default {
     }
   },
   methods: {
-    addCondition() {
-      this.conditions.push({
+    addCondition(index) {
+      this.conditions[index].push({
         field: '',
         values: '',
-        state: '='
+        state: '=',
+        group_type: 'OR'
       });
+    },
+    addGroupedCondition() {
+      let grouped_condition = [];
+      grouped_condition.push({
+        field: '',
+        values: '',
+        state: '=',
+        group_type: 'OR'
+      });
+
+      this.conditions.push(grouped_condition);
     },
     addAction() {
       this.actions.push({
@@ -129,15 +145,18 @@ export default {
       let actions_post = [];
 
       this.conditions.forEach((grouped_condition) => {
+        let tmp_conditions = [];
         grouped_condition.forEach((condition) => {
           if (condition.field && condition.values) {
-            conditions_post.push({
+            tmp_conditions.push({
               field: condition.field.name,
               values: typeof condition.values === 'object' ? condition.values.primary_key : condition.values,
-              state: condition.state
+              state: condition.state,
+              group_type: condition.group_type
             });
           }
         });
+        conditions_post.push(tmp_conditions);
       });
 
       this.actions.forEach((action) => {
@@ -178,12 +197,13 @@ export default {
           if (response.status) {
             Swal.fire({
               title: this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_EDIT_SUCCESS'),
-              icon: 'success',
+              type: 'success',
+              showConfirmButton: false,
               customClass: {
                 title: 'em-swal-title',
-                confirmButton: 'em-swal-confirm-button',
                 actions: "em-swal-single-action",
               },
+              timer: 2000,
             }).then(() => {
               this.$emit('close-rule-add-js')
             });
@@ -196,12 +216,13 @@ export default {
           if (response.status) {
             Swal.fire({
               title: this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_SUCCESS'),
-              icon: 'success',
+              type: 'success',
+              showConfirmButton: false,
               customClass: {
                 title: 'em-swal-title',
-                confirmButton: 'em-swal-confirm-button',
                 actions: "em-swal-single-action",
               },
+              timer: 2000,
             }).then(() => {
               this.$emit('close-rule-add-js')
             });

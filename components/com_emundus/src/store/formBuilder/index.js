@@ -2,12 +2,14 @@ const state = {
     lastSave: null,
     pages: null,
     documentModels: [],
+    rulesKeywords: ''
 };
 
 const getters = {
     getLastSave: state => state.lastSave,
     getPages: state => state.pages,
     getDocumentModels: state => state.documentModels,
+    getRulesKeywords: state => state.rulesKeywords
 };
 
 const actions = {
@@ -17,6 +19,9 @@ const actions = {
     updateDocumentModels({ commit }, payload) {
         commit('updateDocumentModels', payload);
     },
+    updateRulesKeywords({ commit }, payload) {
+        commit('updateRulesKeywords', payload);
+    },
 };
 
 const mutations = {
@@ -25,6 +30,9 @@ const mutations = {
     },
     updateDocumentModels(state, payload) {
         state.documentModels = payload;
+    },
+    updateRulesKeywords(state, payload) {
+        state.rulesKeywords = payload;
     },
 };
 
