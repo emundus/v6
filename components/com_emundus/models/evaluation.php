@@ -2202,6 +2202,9 @@ class EmundusModelEvaluation extends JModelList {
 				                    elseif($elt['plugin'] == 'emundus_phonenumber'){
 					                    $fabrikValues[$elt['id']][$fnum]['val'] = substr($fabrikValues[$elt['id']][$fnum]['val'], 2, strlen($fabrikValues[$elt['id']][$fnum]['val']));
 				                    }
+                                    elseif ($elt['plugin'] == 'yesno') {
+                                        $fabrikValues[$elt['id']][$fnum]['val'] = $fabrikValues[$elt['id']][$fnum]['val'] == '1' ? JText::_('JYES') : JText::_('JNO');
+                                    }
                                     elseif($elt['plugin'] == 'cascadingdropdown') {
                                         foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                                             $fabrikValues[$elt['id']][$fnum]['val'] = $_mEmail->getCddLabel($elt, $val['val']);
