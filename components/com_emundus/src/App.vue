@@ -29,6 +29,7 @@
         :hierarchy_id="datas.hierarchy_id.value"
         :user="datas.user.value"
         :fileTabsStr="datas.fileTabsStr.value"
+        :specificTabs="datas.specificTabs.value"
     ></classement>
 
     <transition v-else name="slide-right">

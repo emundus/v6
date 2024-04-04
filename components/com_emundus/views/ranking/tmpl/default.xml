@@ -15,12 +15,12 @@
                     default="COM_EMUNDUS_CLASSEMENT_TITLE"
             />
             <field
-                name="introduction"
-                type="editor"
-                label="COM_EMUNDUS_RANKING_INTRODUCTION"
-                description="COM_EMUNDUS_RANKING_INTRODUCTION_DESC"
-                filter="safehtml"
-                size="20"
+                    name="introduction"
+                    type="editor"
+                    label="COM_EMUNDUS_RANKING_INTRODUCTION"
+                    description="COM_EMUNDUS_RANKING_INTRODUCTION_DESC"
+                    filter="safehtml"
+                    size="20"
             />
             <field name="comparison_modal_tabs"
                    type="list"
@@ -36,6 +36,18 @@
                 <option value="evaluation">Évaluation</option>
                 <option value="admission">Admission</option>
                 <option value="decision">Décision</option>
+            </field>
+            <field
+                    name="comparison_modal_specific_tabs"
+                    type="subform"
+                    multiple="true"
+                    label="COM_EMUNDUS_COMPARISON_MODAL_SPECIFIC_TABS"
+                    description="COM_EMUNDUS_COMPARISON_MODAL_SPECIFIC_TABS_DESC"
+            >
+                <form>
+                    <field name="specific_tab_label" type="text" label="SPECIFIC_TAB_LABEL"/>
+                    <field name="specific_tab_iframe_url" type="text" label="SPECIFIC_TAB_IFRAME_URL"/>
+                </form>
             </field>
         </fieldset>
     </fields>

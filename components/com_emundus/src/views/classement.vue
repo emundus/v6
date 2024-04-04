@@ -294,6 +294,10 @@ export default {
     fileTabsStr: {
       type: String,
       default: ''
+    },
+    specificTabs: {
+      type: String,
+      default: ''
     }
   },
   mixins: [translate],
@@ -378,6 +382,20 @@ export default {
             });
             break;
         }
+      });
+    }
+
+    if (this.specificTabs.length > 0) {
+      let tmpTabs = JSON.parse(this.specificTabs);
+      tmpTabs.forEach(tab => {
+        const uniqueName = tab.label.toLowerCase().replace(/ /g, '-');
+
+        this.fileTabs.push({
+          label: tab.label,
+          name: uniqueName,
+          access: 1,
+          url: tab.url
+        });
       });
     }
   },

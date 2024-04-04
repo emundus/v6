@@ -364,6 +364,7 @@ class EmundusModelRanking extends JModelList
     /**
      * @param $user_id
      * @return array
+     * @throws Exception
      */
     public function getHierarchiesUserCanSee($user_id)
     {
@@ -375,11 +376,11 @@ class EmundusModelRanking extends JModelList
             $query = $this->db->getQuery(true);
 
             $query->clear()
-                ->select('DISTINCT erh.id, erh.label')
+                ->select('DISTINCT ' . $this->db->quoteName('erh.id') . ', ' . $this->db->quoteName('erh.label'))
                 ->from($this->db->quoteName('#__emundus_ranking_hierarchy_view', 'erhv'))
                 ->leftJoin($this->db->quoteName('#__emundus_ranking_hierarchy', 'erh') . ' ON ' . $this->db->quoteName('erhv.visible_hierarchy_id') . ' = ' . $this->db->quoteName('erh.id'))
-                ->where('erhv.hierarchy_id = ' . $this->db->quote($user_hierarchy))
-                ->order('erhv.ordering, erh.parent_id, erh.id ASC');
+                ->where($this->db->quoteName('erhv.hierarchy_id') . ' = ' . $this->db->quote($user_hierarchy))
+                ->order($this->db->quoteName('erhv.ordering'));
 
             if (!empty($this->filters)) {
                 // check if there is a filter on hierarchy_id and if so, add it to the query

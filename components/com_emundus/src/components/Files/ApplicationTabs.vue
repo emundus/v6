@@ -41,6 +41,13 @@
         :user="user"
     >
     </AdmissionForm>
+    <IframeTab
+      v-if="selectedTab.url"
+      :url="selectedTab.url"
+      :fnum="file.fnum"
+    >
+
+    </IframeTab>
   </div>
 </template>
 
@@ -51,10 +58,11 @@ import axios from "axios";
 import EvaluationForm from "@/components/Files/EvaluationForm.vue";
 import DecisionForm from "@/components/Files/DecisionForm.vue";
 import AdmissionForm from "@/components/Files/AdmissionForm.vue";
+import IframeTab from "@/components/Files/IframeTab.vue";
 
 export default {
   name: 'ApplicationTabs',
-  components: {DecisionForm, EvaluationForm, AdmissionForm, Attachments, Comments},
+  components: {DecisionForm, EvaluationForm, AdmissionForm, Attachments, Comments, IframeTab},
   props: {
     tabs: {
       type: Array,
@@ -114,11 +122,19 @@ export default {
     selectedTab() {
       return this.tabs.find(tab => tab.name === this.selected);
     },
+    urlTabs() {
+      return this.tabs.filter((tab) => {
+        return tab.url;
+      });
+    }
   }
 }
 
 </script>
 
 <style scoped>
-
+#application-tabs > div {
+  width: 100%;
+  overflow: scroll;
+}
 </style>
