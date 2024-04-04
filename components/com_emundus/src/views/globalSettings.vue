@@ -149,67 +149,58 @@ export default {
 
     },
     handleMenuButtonClick(index, item) {
-      this.aMenu = item;
-      let bool = this.MenuisClicked[index]
-      // set all buttons to false
-      for (let key in this.MenuisClicked) {
-        this.MenuisClicked[key] = false;
-      }
-      for (let key in this.SubMenuisClicked) {
-        this.SubMenuisClicked[key] = false;
-      }
-      document.getElementsByName("SubtitleArrows").forEach(element => {
-        element.style.rotate = '0deg';
-      });
-      //toggle the clicked button
-      this.MenuisClicked[index] = !bool;
+  this.resetMenuButtons();
+  this.toggleMenuButton(index, item);
+},
 
-      // Remove 'green-button' class from all buttons
-      document.getElementsByName("bouton-Menu").forEach(element => {
-        element.classList.remove('green-button');
+resetMenuButtons() {
+  this.MenuisClicked.fill(false);
+  this.SubMenuisClicked.fill(false);
+  this.resetStyles();
+},
 
-        document.getElementsByName("SubMenuContent").forEach(element => {
-          element.style.display = 'none';
-        });
+resetStyles() {
+  document.getElementsByName("SubtitleArrows").forEach(element => element.style.rotate = '0deg');
+  document.getElementsByName("bouton-Menu").forEach(element => element.classList.remove('green-button'));
+  document.getElementsByName("SubMenuContent").forEach(element => element.style.display = 'none');
+  document.getElementsByName("icon-Menu").forEach(element => element.style.color = '#000000');
+},
 
-        document.getElementsByName("icon-Menu").forEach(element => {
-          element.style.color = '#000000';
-        });
-      });
-
-      if (this.MenuisClicked[index]) {
-        // If the button is clicked, add 'green-button' class and set indexMenu
-        this.indexMenuClick = index;
-        document.getElementById('Menu-' + index).classList.add('green-button');
-        document.getElementById('icon-' + index).style.color = '#008A35';
-      } else {
-        this.indexMenuClick = null;
-      }
-    },
+toggleMenuButton(index, item) {
+  this.aMenu = item;
+  this.MenuisClicked[index] = !this.MenuisClicked[index];
+  if (this.MenuisClicked[index]) {
+    this.indexMenuClick = index;
+    document.getElementById('Menu-' + index).classList.add('green-button');
+    document.getElementById('icon-' + index).style.color = '#008A35';
+  } else {
+    this.indexMenuClick = null;
+  }
+},
 
 
-    handleSubMenuclick(index) {
-      let bool = this.SubMenuisClicked[index]
-      // set all buttons to false
-      for (let key in this.SubMenuisClicked) {
-        this.SubMenuisClicked[key] = false;
-      }
-      document.getElementsByName("SubtitleArrows").forEach(element => {
-        element.style.rotate = '0deg';
-      });
-      //toggle the clicked button
-      this.SubMenuisClicked[index] = !bool;
+    handleSubMenuClick(index) {
+  this.resetSubMenuButtons();
+  this.toggleSubMenuButton(index);
+},
 
+resetSubMenuButtons() {
+  this.SubMenuisClicked.fill(false);
+  this.resetSubMenuStyles();
+},
 
-      document.getElementsByName("SubMenuContent").forEach(element => {
-        element.style.display = 'none';
-      });
-      if (this.SubMenuisClicked[index]) {
-        document.getElementById('SubtitleArrow' + index).style.rotate = '-180deg';
-        document.getElementById('SubMenu-' + index).style.display = 'flex';
-        console.log(document.getElementById('SubMenu-' + index));
-      }
-    },
+resetSubMenuStyles() {
+  document.getElementsByName("SubtitleArrows").forEach(element => element.style.rotate = '0deg');
+  document.getElementsByName("SubMenuContent").forEach(element => element.style.display = 'none');
+},
+
+toggleSubMenuButton(index) {
+  this.SubMenuisClicked[index] = !this.SubMenuisClicked[index];
+  if (this.SubMenuisClicked[index]) {
+    document.getElementById('SubtitleArrow' + index).style.rotate = '-180deg';
+    document.getElementById('SubMenu-' + index).style.display = 'flex';
+  }
+},
 
   },
   computed: {},
