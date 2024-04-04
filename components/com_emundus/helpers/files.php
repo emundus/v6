@@ -2378,9 +2378,12 @@ class EmundusHelperFiles
 		foreach ($evaluations as $eval)
 		{
 
-			$str = '<br><hr>';
+            // If the name was already retrieved (dropdown label for exemple), show it directly instead of getting user
+            $evaluator_name = (int)$eval['jos_emundus_evaluations___user'] == 0 ? $eval['jos_emundus_evaluations___user'] : JFactory::getUser($eval['jos_emundus_evaluations___user'])->name;
+
+            $str = '<br><hr>';
 			$str .= '<p><em style="font-size: 14px">' . JText::_('COM_EMUNDUS_EVALUATION_EVALUATED_ON') . ' : ' . JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')) . ' - ' . $fnumInfo['name'] . '</em></p>';
-			$str .= '<h2>' . JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR') . ': ' . JFactory::getUser($eval['jos_emundus_evaluations___user'])->name . '</h2>';
+            $str .= '<h2>' . JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR') . ': ' . $evaluator_name . '</h2>';
 			$str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
 
 			foreach ($elements as $element)
