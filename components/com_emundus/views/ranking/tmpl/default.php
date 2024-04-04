@@ -123,6 +123,7 @@ Text::script('COM_EMUNDUS_FILES_FILTER_NO_ELEMENTS_FOUND');
              coordinatorAccess="<?= $coordinator_access ?>"
              sysadminAccess="<?= $sysadmin_access ?>"
              fileTabsStr="<?= $this->comparison_modal_tabs ?>"
+             specificTabs='<?= $this->comparison_modal_specific_tabs ?>'
         ></div>
     </div>
 </div>
@@ -135,7 +136,6 @@ Text::script('COM_EMUNDUS_FILES_FILTER_NO_ELEMENTS_FOUND');
         const leftPanel = document.querySelector('.em-left-panel.filters');
 
         leftPanelOpener.addEventListener('click', function () {
-            console.log('click');
             leftPanel.classList.toggle('em-left-panel-opened');
         });
     }

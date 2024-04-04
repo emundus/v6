@@ -13,7 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 
-require_once (JPATH_ROOT . '/components/com_emundus/models/ranking.php');
+require_once(JPATH_ROOT . '/components/com_emundus/models/ranking.php');
 
 jimport('joomla.application.component.view');
 
@@ -31,7 +31,8 @@ class EmundusViewRanking extends JViewLegacy
     var $hierarchy_id = null;
     var $display_filters = false;
     var $params = null;
-    var $comparison_modal_tabs = array();
+    var $comparison_modal_tabs = '';
+    var $comparison_modal_specific_tabs = '';
 
     function __construct($config = array())
     {
@@ -61,6 +62,21 @@ class EmundusViewRanking extends JViewLegacy
         $comparison_modal_tabs = $this->params->get('comparison_modal_tabs', []);
         $this->comparison_modal_tabs = implode(',', $comparison_modal_tabs);
 
+        $comparison_modal_specific_tabs = $this->params->get('comparison_modal_specific_tabs', null);
+        if (!empty($comparison_modal_specific_tabs)) {
+            $this->comparison_modal_specific_tabs = [];
+
+            foreach ($comparison_modal_specific_tabs as $value) {
+                if (!empty($value->specific_tab_iframe_url)) {
+                    $this->comparison_modal_specific_tabs[] = [
+                        'label' => Text::_($value->specific_tab_label),
+                        'url' => $value->specific_tab_iframe_url
+                    ];
+                }
+            }
+
+            $this->comparison_modal_specific_tabs = json_encode($this->comparison_modal_specific_tabs);
+        }
         parent::__construct($config);
     }
 
