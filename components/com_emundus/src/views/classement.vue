@@ -659,11 +659,11 @@ export default {
       }
     },
     unrankedFiles() {
-      return this.ordering.orderBy === 'default' ? this.rankings.myRanking.filter(file => file.rank === -1) : [];
+      return this.ordering.orderBy === 'default' ? this.rankings.myRanking.filter(file => file.rank == -1) : [];
 
     },
     rankedFiles() {
-      return this.ordering.orderBy === 'default' ? this.rankings.myRanking.filter(file => file.rank !== -1) : this.rankings.myRanking;
+      return this.ordering.orderBy === 'default' ? this.rankings.myRanking.filter(file => file.rank != -1) : this.rankings.myRanking;
     },
     orderedRankings() {
       // rankedFiles first, then unrankedFiles
