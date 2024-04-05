@@ -46,6 +46,7 @@
                   :class="{ 'is-invalid': errors.alias }"
                   class="form-control fabrikinput w-full"
                   @focusout="onFormChange()"
+                  @keyup="form.alias !== '' ? aliasUpdated = true : aliasUpdated = false"
               />
               <span class="material-icons-outlined cursor-pointer" @click="copyAliasToClipboard();">content_copy</span>
             </div>
@@ -409,7 +410,7 @@ export default {
       this.getCampaignById();
     });
 
-    campaignService.getAllItemsAlias().then((response) => {
+    campaignService.getAllItemsAlias(this.campaignId).then((response) => {
       this.aliases = response.data;
     });
   },
@@ -795,7 +796,8 @@ export default {
 
     updateAlias() {
       if (!this.aliasUpdated) {
-        this.form.alias = this.form.label[this.actualLanguage].replace(/[^a-zA-Z0-9_-]+/g, '-').toLowerCase();
+        let alias = this.form.label[this.actualLanguage].normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        this.form.alias = alias.replace(/[^a-zA-Z0-9_-]+/g, '-').toLowerCase();
       }
     },
 
@@ -822,6 +824,7 @@ export default {
 
   watch: {
     'form.alias': function (val) {
+      this.form.alias = val.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9_-]+/g, '-').toLowerCase();
       // Check if alias already exists
       if (this.aliases.includes(val)) {
         this.form.alias = val + '-1';

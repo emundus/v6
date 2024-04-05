@@ -1005,7 +1005,10 @@ class EmundusControllerCampaign extends JControllerLegacy {
     {
         $tab = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
-        $result = $this->m_campaign->getAllItemsAlias();
+        $jinput = JFactory::getApplication()->input;
+        $cid = $jinput->getInt('campaign_id', 0);
+
+        $result = $this->m_campaign->getAllItemsAlias($cid);
 
         if ($result) {
             $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_UNPINNED'), 'data' => $result);
