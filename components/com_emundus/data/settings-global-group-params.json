@@ -208,6 +208,7 @@
               "key":1,
               "article_id":52,
               "article_alias": "",
+              "field": "introtext",
               "category": "homepage",
               "published": 1
             }
@@ -301,6 +302,7 @@
                   "key": 2,
                   "article_id": null,
                   "article_alias": "mentions-legales",
+                  "field": "introtext",
                   "category": "rgpd",
                   "published": 1
                 }
@@ -322,6 +324,7 @@
                   "article_id": null,
                   "article_alias": "politique-de-confidentialite-des-donnees",
                   "category": "rgpd",
+                  "field": "introtext",
                   "published": 1
                 }
               }
@@ -341,6 +344,7 @@
                   "key": 4,
                   "article_id": null,
                   "article_alias": "gestion-des-droits",
+                  "field": "introtext",
                   "category": "rgpd",
                   "published": 1
                 }
@@ -361,6 +365,7 @@
                   "key": 5,
                   "article_id": null,
                   "article_alias": "gestion-des-cookies",
+                  "field": "introtext",
                   "category": "rgpd",
                   "published": 1
                 }
@@ -382,6 +387,7 @@
               "article_id": null,
               "article_alias": "accessibilite",
               "category": "rgpd",
+              "field": "introtext",
               "published": 1
             }
           }
