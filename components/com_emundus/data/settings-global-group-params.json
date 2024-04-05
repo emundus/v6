@@ -60,16 +60,16 @@
             "placeholder": "",
             "choices": [
               {
-                "label": "En cours",
-                "value": "1"
+                "label": "mois/jour/année",
+                "value": "MM/dd/yyyy"
               },
               {
-                "label": "A venir",
-                "value": "2"
+                "label": "jour/mois/année",
+                "value": "dd/MM/yyyy"
               },
               {
-                "label": "Clôturées",
-                "value": "0"
+                "label": "année/mois/jour",
+                "value": "yyyy/MM/dd"
               }
             ]
           },
@@ -209,7 +209,7 @@
               "article_id":52,
               "article_alias": "",
               "category": "homepage",
-              "published": true
+              "published": 1
             }
           },
           {
@@ -302,7 +302,7 @@
                   "article_id": null,
                   "article_alias": "mentions-legales",
                   "category": "rgpd",
-                  "published": true
+                  "published": 1
                 }
               }
             ]
@@ -322,7 +322,7 @@
                   "article_id": null,
                   "article_alias": "politique-de-confidentialite-des-donnees",
                   "category": "rgpd",
-                  "published": true
+                  "published": 1
                 }
               }
             ]
@@ -342,7 +342,7 @@
                   "article_id": null,
                   "article_alias": "gestion-des-droits",
                   "category": "rgpd",
-                  "published": true
+                  "published": 1
                 }
               }
             ]
@@ -362,7 +362,7 @@
                   "article_id": null,
                   "article_alias": "gestion-des-cookies",
                   "category": "rgpd",
-                  "published": true
+                  "published": 1
                 }
               }
             ]
@@ -382,7 +382,7 @@
               "article_id": null,
               "article_alias": "accessibilite",
               "category": "rgpd",
-              "published": false
+              "published": 1
             }
           }
         ]
@@ -472,13 +472,10 @@
             "helptext": "",
             "placeholder": "",
             "choices": [
+
               {
-                "label": "5",
-                "value": "5"
-              },
-              {
-                "label": "15",
-                "value": "15"
+                "label": "10",
+                "value": "10"
               },
               {
                 "label": "25",
@@ -487,6 +484,10 @@
               {
                 "label": "50",
                 "value": "50"
+              },
+              {
+                "label": "Tout",
+                "value": "all"
               }
             ]
           },
@@ -523,21 +524,33 @@
       {
         "label": "Partage de dossier",
         "type": "Tile",
+        "color": "#F04437",
+        "icon": "share",
+        "link": "",
         "helptext": ""
       },
       {
         "label": "Génération de courrier/Publipostage",
         "type": "Tile",
+        "color": "#D292EF",
+        "icon": "mail",
+        "link": "",
         "helptext": ""
       },
       {
         "label": "Invitation d'experts",
         "type": "Tile",
+        "color": "#2E90FA",
+        "icon": "person_add",
+        "link": "",
         "helptext": ""
       },
       {
         "label": "règles de tarification et produits",
         "type": "Tile",
+        "color": "#FFE014",
+        "icon": "monetization_on",
+        "link": "",
         "helptext": ""
       }
     ]
@@ -550,26 +563,41 @@
       {
         "label": "Sauvegarde de fichiers distants",
         "type": "Tile",
+        "color": "#98D432",
+        "icon": "cloud_upload",
+        "link": "",
         "helptext": ""
       },
       {
         "label": "Signature électronique",
         "type": "Tile",
+        "color": "#64D8FF",
+        "icon": "history_edu",
+        "link": "",
         "helptext": ""
       },
       {
         "label": "API INSEE",
         "type": "Tile",
+        "color": "#FF78D1",
+        "icon": "api",
+        "link": "",
         "helptext": ""
       },
       {
         "label": "AddPipe",
         "type": "Tile",
+        "color": "#35D7D2",
+        "icon": "webhook",
+        "link": "",
         "helptext": ""
       },
       {
         "label": "Paiement",
         "type": "Tile",
+        "color": "#FFAE00",
+        "icon": "payments",
+        "link": "",
         "helptext": ""
       }
     ]

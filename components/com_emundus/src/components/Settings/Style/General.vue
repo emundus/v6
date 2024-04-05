@@ -92,6 +92,7 @@
       </div>
 
       <!-- COLORS -->
+      <!--
       <div class="em-style-options em-mb-32">
         <div>
           <h4 class="em-text-neutral-800 em-flex-row em-mb-8">
@@ -111,6 +112,7 @@
           <span>{{ translate("COM_EMUNDUS_ONBOARD_UPDATE_COLORS") }}</span>
         </button>
       </div>
+      -->
 
       <!-- BANNER -->
       <div v-if="bannerLink" class="em-h-auto em-flex-col em-mb-32" style="align-items: start">

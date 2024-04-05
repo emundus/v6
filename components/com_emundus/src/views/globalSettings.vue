@@ -24,9 +24,9 @@
 
     <div class="p-4 sm:ml-40" style="user-select: none" v-if="indexMenuClick != null">
       <h1 class="text-2xl font-semibold" style="user-select: none; color: #008A35;">
-        <i class="material-icons-outlined" style="scale: 1.5; color:#008A35;  padding-right: 0.5em">{{
-            this.aMenu.icon
-          }}</i>
+        <i class="material-icons-outlined" style="scale: 1.5; color:#008A35;  padding-right: 0.5em">
+          {{ this.aMenu.icon }}
+        </i>
         {{ this.aMenu.label }}
       </h1>
       <div id="accordion-collapse" v-for="(x, index1) in SubMenus[indexMenuClick]"
@@ -71,8 +71,16 @@
 
             <div class="flex flex-col" v-if="option.type_field === 'yesno'">
               <div class="flex-row flex items-center">
-                <button type="button" :id="'BtN'+index2"  @click="clickYN(false, index2)" :class="{'red-YesNobutton': true, 'active': option.defaultVal === '0'}"  class="red-YesNobutton  focus:ring-neutral-50 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Non</button>
-                <button type="button" :id="'BtY'+index2"  @click="clickYN(true, index2)" :class="{'green-YesNobutton': true, 'active': option.defaultVal === '1'}" class="focus:ring-neutral-50 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Oui</button>
+                <button type="button" :id="'BtN'+index2" @click="clickYN(false, index2)"
+                        :class="{'red-YesNobutton': true, 'active': option.defaultVal === '0'}"
+                        class="red-YesNobutton  focus:ring-neutral-50 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+                  Non
+                </button>
+                <button type="button" :id="'BtY'+index2" @click="clickYN(true, index2)"
+                        :class="{'green-YesNobutton': true, 'active': option.defaultVal === '1'}"
+                        class="focus:ring-neutral-50 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+                  Oui
+                </button>
               </div>
             </div>
 
@@ -84,7 +92,8 @@
             </div>
 
             <div class="flex flex-col" v-if="option.type_field === 'textarea'">
-              <editor-quill :height="'30em'" :text="''" :enable_variables="false" :id="'editor'" :key="0" v-model="form.content"></editor-quill>
+              <editor-quill :height="'30em'" :text="''" :enable_variables="false" :id="'editor'" :key="0"
+                            v-model="form.content"></editor-quill>
             </div>
 
             <div class="flex flex-col" v-if="option.type_field === 'component'">
@@ -94,9 +103,19 @@
           </div>
         </div>
       </div>
-      <div v-for="(item, index1) in SubMenus[indexMenuClick]"
-           v-if="SubMenus[indexMenuClick][index1].type_field==='Tile'"
-           class="flex items-center mb-3"><p>Tile for: {{ SubMenus[indexMenuClick][index1].label }} is comming soon</p>
+
+      <div class="flex flex-row flex-wrap">
+        <div v-for="tile in SubMenus[indexMenuClick]" v-if="tile.type==='Tile'" class="flex flex-col flex-wrap mr-3" :key="tile.id">
+          <div :style="{'width': '20em', 'height':'14em' ,'margin-bottom':'2em', 'box-shadow':'rgba(255, 255, 255, 0.1) 0px 1px 1px 0px inset, rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px'}" class="flex bg-white justify-center items-center rounded" name="tilebutton">
+            <button type="button" @click="redirect(tile.link)" class="rounded flex flex-col justify-center items-center">
+              <div class="rounded" :style="{ 'background-color': tile.color, 'width': '16em', 'height':'10em' }">
+                <i class="material-icons-outlined mt-16 " :style="{'transform': 'scale(7)' ,'margin-top': '4em', 'color':'white'}">{{ tile.icon }}</i>
+              </div>
+              {{ tile.label }}
+            </button>
+
+          </div>
+        </div>
       </div>
 
     </div>
@@ -259,15 +278,24 @@ export default {
       }
     },
 
-    clickYN(bool, index){
+    clickYN(bool, index) {
       this.YNButtons[index] = bool;
-      if (bool){
-        document.getElementById('BtY'+index).classList.add('active');
-        document.getElementById('BtN'+index).classList.remove('active');
+      if (bool) {
+        document.getElementById('BtY' + index).classList.add('active');
+        document.getElementById('BtN' + index).classList.remove('active');
       } else {
-        document.getElementById('BtN'+index).classList.add('active');
-        document.getElementById('BtY'+index).classList.remove('active');
+        document.getElementById('BtN' + index).classList.add('active');
+        document.getElementById('BtY' + index).classList.remove('active');
       }
+    },
+
+    redirect(link) {
+      /*
+      [https://google.com] in the json link to the exterior
+      [link] in the json link from the base to the internal
+      emails -> localhost/emails
+       */
+      window.location.href = link;
     }
   },
   computed: {},
@@ -285,7 +313,7 @@ export default {
 }
 
 
-.green-YesNobutton{
+.green-YesNobutton {
   border: 1px solid #008A35;
   background-color: white;
   color: #008A35;
@@ -293,15 +321,15 @@ export default {
 
 .green-YesNobutton:hover {
   background-color: #008A35;
-  color: white;
+  color: black;
 }
 
-.green-YesNobutton.active{
+.green-YesNobutton.active {
   background-color: #008A35;
   color: white;
 }
 
-.red-YesNobutton{
+.red-YesNobutton {
   border: 1px solid #FF0000;
   background-color: white;
   color: #FF0000;
@@ -312,7 +340,7 @@ export default {
   color: white;
 }
 
-.red-YesNobutton.active{
+.red-YesNobutton.active {
   background-color: #FF0000;
   color: white;
 }
