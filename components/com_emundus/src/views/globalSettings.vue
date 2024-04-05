@@ -24,7 +24,9 @@
 
     <div class="p-4 sm:ml-40" style="user-select: none" v-if="indexMenuClick != null">
       <h1 class="text-2xl font-semibold" style="user-select: none; color: #008A35;">
-        <i class="material-icons-outlined" style="scale: 1.5; color:#008A35;  padding-right: 0.5em">{{this.aMenu.icon }}</i>
+        <i class="material-icons-outlined" style="scale: 1.5; color:#008A35;  padding-right: 0.5em">{{
+            this.aMenu.icon
+          }}</i>
         {{ this.aMenu.label }}
       </h1>
       <div id="accordion-collapse" v-for="(x, index1) in SubMenus[indexMenuClick]"
@@ -35,44 +37,65 @@
            aria-controls="accordion-collapse-body-1"
            style="box-shadow:0.1em 0.05em 0.05em grey;">
         <div @click="handleSubMenuClick(index1)">
-          <h2 id="accordion-collapse-heading-1" class="flex flex-row justify-between">
+          <h1 id="accordion-collapse-heading-1" class="flex flex-row justify-between">
             <span :id="'Subtile'+index1" class="em-font-size-24 ">{{ SubMenus[indexMenuClick][index1].label }}</span>
             <span class="material-icons-outlined scale-150" :id="'SubtitleArrow'+index1" name="SubtitleArrows">expand_more</span>
-          </h2>
+          </h1>
         </div>
 
 
         <div :id="'SubMenu-'+index1" name="SubMenuContent" style="display: none" class="flex flex-col ">
-          <div  v-for="option in SubMenus[indexMenuClick][index1].options">
-            <label class="block text em-font-size-18">{{option.label}}</label>
-            <div class="flex flex-col" v-if="option.type === 'Input'">
+          <div v-for="(option,index2) in SubMenus[indexMenuClick][index1].options">
+            <div class="flex flex-col" v-if="option.type_field === 'Title'">
+              <h2>{{ option.label }}</h2>
+              <hr>
+            </div>
+            <div v-else class="block text-xl ">
+              {{ option.label }}
+            </div>
+
+            <div class="flex flex-col" v-if="option.type_field === 'Input'">
               <input :placeholder="option.placeholder" class="w-full p-2 border border-gray-200 rounded"
                      v-model="option.value">
             </div>
-            <div class="flex flex-col" v-if="option.type === 'sqldropdown'">
+
+            <div class="flex flex-col" v-if="option.type_field === 'dropdown'">
+              <select>
+                <option v-for="choice in option.choices">{{ choice.label }}</option>
+              </select>
+            </div>
+
+            <div class="flex flex-col" v-if="option.type_field === 'sqldropdown'">
               <p>dropDown</p>
             </div>
-            <div class="flex flex-col" v-if="option.type === 'textarea'">
-              <editor-quill :height="'30em'" :text="''" :enable_variables="false" :id="'editor'" :key="0" v-model="form.content" ></editor-quill>
-            </div>
-            <div class="flex flex-col" v-if="option.type === 'component'">
-              <component :is="option.component" v-bind="option.props"></component>
-            </div>
-            <div class="flex flex-col" v-if="option.type === 'dropdown'">
-              <select><option v-for="choice in option.choices" >{{choice.label}}</option></select>
-            </div>
-            <div class="flex flex-col" v-if="option.type === 'checkbox'">
-              <div v-for="choice in option.choices">
-                <input type="checkbox" name="'myCheck'" :value="choice.value" @change="test()">
-                <label>{{ choice.label }}</label>
+
+            <div class="flex flex-col" v-if="option.type_field === 'yesno'">
+              <div class="flex-row flex items-center">
+                <button type="button" :id="'BtN'+index2"  @click="clickYN(false, index2)" :class="{'red-YesNobutton': true, 'active': option.defaultVal === '0'}"  class="red-YesNobutton  focus:ring-neutral-50 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Non</button>
+                <button type="button" :id="'BtY'+index2"  @click="clickYN(true, index2)" :class="{'green-YesNobutton': true, 'active': option.defaultVal === '1'}" class="focus:ring-neutral-50 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Oui</button>
               </div>
             </div>
+
+            <div class="flex flex-col" v-if="option.type_field === 'checkbox'">
+              <div class="flex items-center " v-for="(x,choice) in option.choices">
+                <input type="checkbox" :id="'myCheck'+ choice" :value="x.value">
+                <label class="mt-2.5 ml-1">{{ x.label }}</label>
+              </div>
+            </div>
+
+            <div class="flex flex-col" v-if="option.type_field === 'textarea'">
+              <editor-quill :height="'30em'" :text="''" :enable_variables="false" :id="'editor'" :key="0" v-model="form.content"></editor-quill>
+            </div>
+
+            <div class="flex flex-col" v-if="option.type_field === 'component'">
+              <component :is="option.component" v-bind="option.props"></component>
+            </div>
+
           </div>
-
-
         </div>
       </div>
-      <div v-for="(item, index1) in SubMenus[indexMenuClick]" v-if="SubMenus[indexMenuClick][index1].type==='Tile'"
+      <div v-for="(item, index1) in SubMenus[indexMenuClick]"
+           v-if="SubMenus[indexMenuClick][index1].type_field==='Tile'"
            class="flex items-center mb-3"><p>Tile for: {{ SubMenus[indexMenuClick][index1].label }} is comming soon</p>
       </div>
 
@@ -146,6 +169,7 @@ export default {
     aMenu: [],
     Menus: [],
     SubMenus: [],
+    YNButtons: [],
 
     form: {
       content: ''
@@ -176,7 +200,6 @@ export default {
 
     },
     handleMenuButtonClick(index, item) {
-      console.log(item);
       this.resetMenuButtons();
       this.toggleMenuButton(index, item);
     },
@@ -189,7 +212,7 @@ export default {
 
     resetStyles() {
       document.getElementsByName("SubtitleArrows").forEach(element => element.style.rotate = '0deg');
-      document.getElementsByName("bouton-Menu").forEach(element => element.classList.remove('green-button'));
+      document.getElementsByName("bouton-Menu").forEach(element => element.classList.remove('green-Menubutton'));
       document.getElementsByName("SubMenuContent").forEach(element => element.style.display = 'none');
       document.getElementsByName("icon-Menu").forEach(element => element.style.color = '#000000');
     },
@@ -199,7 +222,7 @@ export default {
       this.MenuisClicked[index] = !this.MenuisClicked[index];
       if (this.MenuisClicked[index]) {
         this.indexMenuClick = index;
-        document.getElementById('Menu-' + index).classList.add('green-button');
+        document.getElementById('Menu-' + index).classList.add('green-Menubutton');
         document.getElementById('icon-' + index).style.color = '#008A35';
       } else {
         this.indexMenuClick = null;
@@ -235,11 +258,16 @@ export default {
         document.getElementById('SubMenu-' + index).style.display = 'flex';
       }
     },
-    test(){
-      console.log(document.getElementById("'myCheck'+choice.id"))  ;
-      console.log(document.getElementById("myCheck2"))  ;
-      console.log(document.getElementById("myCheck3"))  ;
 
+    clickYN(bool, index){
+      this.YNButtons[index] = bool;
+      if (bool){
+        document.getElementById('BtY'+index).classList.add('active');
+        document.getElementById('BtN'+index).classList.remove('active');
+      } else {
+        document.getElementById('BtN'+index).classList.add('active');
+        document.getElementById('BtY'+index).classList.remove('active');
+      }
     }
   },
   computed: {},
@@ -249,10 +277,44 @@ export default {
 </script>
 
 <style scoped>
-.green-button {
+.green-Menubutton {
   weight: bold;
   background-color: #008A351A; /* Change background color to green when clicked */
   background-color-opacity: 0.1;
   color: #008A35; /* Change text color to green */
 }
+
+
+.green-YesNobutton{
+  border: 1px solid #008A35;
+  background-color: white;
+  color: #008A35;
+}
+
+.green-YesNobutton:hover {
+  background-color: #008A35;
+  color: white;
+}
+
+.green-YesNobutton.active{
+  background-color: #008A35;
+  color: white;
+}
+
+.red-YesNobutton{
+  border: 1px solid #FF0000;
+  background-color: white;
+  color: #FF0000;
+}
+
+.red-YesNobutton:hover {
+  background-color: #FF0000;
+  color: white;
+}
+
+.red-YesNobutton.active{
+  background-color: #FF0000;
+  color: white;
+}
+
 </style>

@@ -12,14 +12,14 @@
           {
             "name": "sitename",
             "label": "Nom du site",
-            "type": "Input",
+            "type_field": "Input",
             "helptext": "",
-            "placeholder": "tchooz"
+            "value": "tchooz"
           },
           {
             "name": "default_language",
             "label": "Langue principale du site",
-            "type": "sqldropdown",
+            "type_field": "sqldropdown",
             "table": "jos_languages",
             "primary_key": "lang_id",
             "display_key": "lang_title",
@@ -30,7 +30,7 @@
           {
             "name": "other_languages",
             "label": "Autres langues du site",
-            "type": "sqldropdown",
+            "type_field": "sqldropdown",
             "table": "jos_languages",
             "primary_key": "lang_id",
             "display_key": "lang_title",
@@ -42,20 +42,20 @@
           {
             "name": "site_desc",
             "label": "Description du site",
-            "type": "textarea",
+            "type_field": "textarea",
             "helptext": "",
             "placeholder": ""
           },
           {
             "name": "offset",
             "label": "Fuseau horaire",
-            "type": "sqldropdown",
+            "type_field": "sqldropdown",
             "helptext": "",
             "placeholder": ""
           },
           {
             "label": "Format de la date",
-            "type": "dropdown",
+            "type_field": "dropdown",
             "helptext": "",
             "placeholder": "",
             "choices": [
@@ -76,16 +76,17 @@
           {
             "name": "keywords",
             "label": "Mots clés",
-            "type": "Input",
+            "type_field": "Input",
             "helptext": "",
             "placeholder": "",
             "multiple": true
           },
           {
             "label": "Nombre de lignes affichées par défaut dans les listes",
-            "type": "Input",
+            "type_field": "Input",
+            "type": "number",
             "helptext": "",
-            "placeholder": "10"
+            "value": "10"
           }
         ]
       },
@@ -95,7 +96,7 @@
         "helptext": "",
         "options": [
           {
-            "type": "component",
+            "type_field": "component",
             "component": "Global",
             "props": []
           }
@@ -108,25 +109,25 @@
         "options": [
           {
             "label": "Thème prédéfinie",
-            "type": "sqldropdown",
+            "type_field": "sqldropdown",
             "helptext": "",
             "placeholder": ""
           },
           {
             "label": "Couleur principale",
-            "type": "colorPicker",
+            "type_field": "colorPicker",
             "helptext": "",
             "placeholder": ""
           },
           {
             "label": "Couleur secondaire",
-            "type": "colorPicker",
+            "type_field": "colorPicker",
             "helptext": "",
             "placeholder": ""
           },
           {
             "label": "parametrage avancé ",
-            "type": "variables",
+            "type_field": "variables",
             "helptext": "",
             "placeholder": ""
           }
@@ -139,13 +140,13 @@
         "options": [
           {
             "label": "google analytics ID",
-            "type": "Input",
+            "type_field": "Input",
             "helptext": "",
             "placeholder": ""
           },
           {
             "label": "Matomo analytics ID",
-            "type": "Input",
+            "type_field": "Input",
             "helptext": "",
             "placeholder": ""
           }
@@ -166,21 +167,22 @@
           {
             "name": "site_email",
             "label": "eMail du site",
-            "type": "Input",
+            "type_field": "Input",
+            "type": "email",
             "helptext": "",
             "placeholder": "test.user@mail.fr"
           },
           {
             "name": "sender_name",
             "label": "Nom de l'expéditeur",
-            "type": "Input",
+            "type_field": "Input",
             "helptext": "",
             "placeholder": "User"
           },
           {
             "name": "config_server_mail",
             "label": "Configuration du serveur de mail (SMTP)",
-            "type": "variables",
+            "type_field": "variables",
             "helptext": "",
             "placeholder": ""
           }
@@ -198,8 +200,9 @@
         "type": "section",
         "helptext": "cela permet de d'avoir un contenu global pour tout vos campagnes",
         "options": [
+          {"type_field": "Title", "label": "Texte de la page"},
           {
-            "type": "component",
+            "type_field": "component",
             "component": "EditArticle",
             "props": {
               "key":1,
@@ -212,7 +215,7 @@
           {
             "name": "champagne_view",
             "label": "Afficher les campagnes",
-            "type": "checkbox",
+            "type_field": "checkbox",
             "helptext": "",
             "placeholder": "",
             "choices": [
@@ -233,7 +236,7 @@
           {
             "name": "champagne_group_by",
             "label": "Grouper les campagnes par",
-            "type": "dropdown",
+            "type_field": "dropdown",
             "helptext": "",
             "placeholder": "",
             "choices": [
@@ -250,7 +253,7 @@
           {
             "name": "champagne_organize_by",
             "label": "Trier les campagnes par",
-            "type": "dropdown",
+            "type_field": "dropdown",
             "helptext": "",
             "placeholder": "",
             "choices": [
@@ -273,7 +276,7 @@
         "helptext": "",
         "options": [
           {
-            "type": "component",
+            "type_field": "component",
             "component": "EditFooter",
             "props": []
           }
@@ -397,7 +400,7 @@
         "helptext": "",
         "options": [
           {
-            "type": "component",
+            "type_field": "component",
             "component": "EditStatus",
             "props": {
               "key": 1
@@ -411,7 +414,7 @@
         "helptext": "",
         "options": [
           {
-            "type": "component",
+            "type_field": "component",
             "component": "EditTags",
             "props": {
               "key": 2
@@ -424,82 +427,89 @@
         "type": "section",
         "helptext": "",
         "options": [
+          {"type_field": "Title","label": "Partie candidats"},
           {
             "name": "intro_text_for_candidate",
             "label": "Texte d'introduction des dossiers de candidature",
-            "type": "textarea",
-            "helptext": "",
-            "placeholder": ""
-          },
-          {
-            "name": "number_of_folders",
-            "label": "Nombre de dossiers à afficher par defaut",
-            "type": "dropdown",
-            "helptext": "",
-            "placeholder": "",
-            "choices": [
-              {
-                "label": "En cours",
-                "value": "1"
-              },
-              {
-                "label": "A venir",
-                "value": "2"
-              },
-              {
-                "label": "Clôturées",
-                "value": "0"
-              }
-            ]
-          },
-          {
-            "name": "alert_folder_modification",
-            "label": "Alterte de modification simultanée d'un dossier",
-            "type": "yesno",
+            "type_field": "textarea",
             "helptext": "",
             "placeholder": ""
           },
           {
             "name": "multiple_folder_per_candidate",
             "label": "Les candidats peuvent-ils créer plusieurs dossiers ?",
-            "type": "yesno",
+            "type_field": "yesno",
             "helptext": "",
-            "placeholder": ""
+            "defaultVal": "1"
           },
           {
             "name": "modify_folder_by_candidate",
             "label": "Un candidat peut-il modifier un dossier après l'avoir soumis (jusuq'à la fin de la campagne) ?",
-            "type": "yesno",
+            "type_field": "yesno",
             "helptext": "",
-            "placeholder": ""
-          },
-          {
-            "name": "lock_pdf",
-            "label": "Autiser les PDF verrouillés ?",
-            "type": "yesno",
-            "helptext": "",
-            "placeholder": ""
+            "defaultVal": "0"
           },
           {
             "name": "history_folder_for_candidate",
             "label": "Afficher l'historique du dossier pour le candidat ?",
-            "type": "yesno",
+            "type_field": "yesno",
             "helptext": "",
-            "placeholder": ""
+            "defaultVal": "1"
+          },
+          {"type_field": "Title","label": "Partie gestionnaire"},
+          {
+            "name": "alert_folder_modification",
+            "label": "Alterte de modification simultanée d'un dossier",
+            "type_field": "yesno",
+            "defaultVal": "0",
+            "helptext": ""
+          },
+
+          {
+            "name": "number_of_folders",
+            "label": "Nombre de dossiers à afficher par defaut",
+            "type_field": "dropdown",
+            "helptext": "",
+            "placeholder": "",
+            "choices": [
+              {
+                "label": "5",
+                "value": "5"
+              },
+              {
+                "label": "15",
+                "value": "15"
+              },
+              {
+                "label": "25",
+                "value": "25"
+              },
+              {
+                "label": "50",
+                "value": "50"
+              }
+            ]
           },
           {
             "name": "view_deleted_folder",
             "label": "Afficher les dossiers supprimer ?",
-            "type": "yesno",
+            "type_field": "yesno",
             "helptext": "",
-            "placeholder": ""
+            "defaultVal": "1"
+          },
+          {
+            "name": "lock_pdf",
+            "label": "Autoriser les PDF verrouillés ?",
+            "type_field": "yesno",
+            "helptext": "",
+            "defaultVal": "1"
           },
           {
             "name": "copy_folder",
             "label": "Autoriser la copie de dossier ?",
-            "type": "yesno",
+            "type_field": "yesno",
             "helptext": "",
-            "placeholder": ""
+            "defaultVal": "1"
           }
         ]
       }
@@ -575,7 +585,7 @@
         "helptext": "",
         "options": [
           {
-            "type": "component",
+            "type_field": "component",
             "component": "Translations",
             "props": []
           }
@@ -587,7 +597,7 @@
         "helptext": "",
         "options": [
           {
-            "type": "component",
+            "type_field": "component",
             "component": "Orphelins",
             "props": []
           }

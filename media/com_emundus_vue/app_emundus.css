@@ -2967,12 +2967,39 @@ td[data-v-db0e1b70]{
 }
 
 
-.green-button[data-v-2fcc0280] {
+.green-Menubutton[data-v-2fcc0280] {
   weight: bold;
   background-color: #008A351A; /* Change background color to green when clicked */
   background-color-opacity: 0.1;
   color: #008A35; /* Change text color to green */
 }
+.green-YesNobutton[data-v-2fcc0280]{
+  border: 1px solid #008A35;
+  background-color: white;
+  color: #008A35;
+}
+.green-YesNobutton[data-v-2fcc0280]:hover {
+  background-color: #008A35;
+  color: white;
+}
+.green-YesNobutton.active[data-v-2fcc0280]{
+  background-color: #008A35;
+  color: white;
+}
+.red-YesNobutton[data-v-2fcc0280]{
+  border: 1px solid #FF0000;
+  background-color: white;
+  color: #FF0000;
+}
+.red-YesNobutton[data-v-2fcc0280]:hover {
+  background-color: #FF0000;
+  color: white;
+}
+.red-YesNobutton.active[data-v-2fcc0280]{
+  background-color: #FF0000;
+  color: white;
+}
+
 
 @media all and (max-width: 479px) {
   #messenger_app_1_wpb .messenger_messages__vue_wc18U .messenger_vm--container_1-Y1-.messenger_scrollable_1lv4s .messenger_vm--modal_YInqZ {
