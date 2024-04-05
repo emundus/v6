@@ -425,5 +425,9 @@ function cleanNumberInput(element, maxDecimals) {
         }
     }
 
+    if (maxDecimals === 0 && value.indexOf(".") !== -1) {
+        value = value.replace(".", "");
+    }
+
     return value;
 }
