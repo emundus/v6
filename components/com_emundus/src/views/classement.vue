@@ -306,7 +306,8 @@ export default {
       rankings: {
         nbFiles: 0,
         myRanking: [],
-        otherRankings: []
+        otherRankings: [],
+        maxRankValue: 0,
       },
       defaultFile: null,
       selectedOtherFile: null,
@@ -448,9 +449,9 @@ export default {
 
       return await rankingService.getMyRanking(this.pagination, this.ordering).then(response => {
         if (response.status) {
+          this.rankings.myRanking = response.data.data;
           this.rankings.nbFiles = response.data.total;
           this.rankings.maxRankValue = response.data.maxRankValue == -1 ? 0 : response.data.maxRankValue;
-          this.rankings.myRanking = response.data.data;
         }
       });
     },
