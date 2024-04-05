@@ -10,7 +10,7 @@
           </select>
         </div>
       </div>
-      <div id="header-right" class="flex flex-row">
+      <div id="header-right" class="flex flex-row" v-show="nbPagesMax > 1">
         <!-- pagination navigation -->
         <span id="prev" class="material-icons-outlined cursor-pointer" @click="changePage('-1')">keyboard_arrow_left</span>
         <span id="position"> {{ pagination.page }} / {{ nbPagesMax }}</span>
@@ -28,7 +28,7 @@
       </button>
     </div>
     <p class="w-full alert mb-2" v-if="ordering.orderBy !== 'default'">{{ translate('COM_EMUNDUS_RANKING_CANNOT_DRAG_AND_DROP') }}</p>
-    <div v-if="rankings.myRanking.length > 0" id="ranking-lists-container" class="em-flex-row em-flex-space-between">
+    <div v-if="rankings.myRanking && rankings.myRanking.length > 0" id="ranking-lists-container" class="em-flex-row em-flex-space-between">
       <div id="my-ranking-list"
            class="w-full mr-2"
            :class="{'dragging': dragging}"
@@ -448,9 +448,9 @@ export default {
 
       return await rankingService.getMyRanking(this.pagination, this.ordering).then(response => {
         if (response.status) {
-          this.rankings.myRanking = response.data.data;
           this.rankings.nbFiles = response.data.total;
-          this.rankings.maxRankValue = response.data.maxRankValue;
+          this.rankings.maxRankValue = response.data.maxRankValue == -1 ? 0 : response.data.maxRankValue;
+          this.rankings.myRanking = response.data.data;
         }
       });
     },
@@ -633,7 +633,7 @@ export default {
   },
   computed: {
     nbPagesMax() {
-      return Math.ceil(this.rankings.nbFiles / this.pagination.perPage);
+      return this.rankings.nbFiles > 0 ? Math.ceil(this.rankings.nbFiles / this.pagination.perPage) : 1;
     },
     maxRankValue() {
       return this.rankings.maxRankValue;
@@ -659,10 +659,11 @@ export default {
       }
     },
     unrankedFiles() {
-      return this.ordering.orderBy === 'default' ? this.rankings.myRanking.filter(file => file.rank == -1) : [];
+      return this.ordering.orderBy === 'default' ? this.rankings.myRanking.filter(file => file.rank === -1) : [];
+
     },
     rankedFiles() {
-      return this.ordering.orderBy === 'default' ? this.rankings.myRanking.filter(file => file.rank != -1) : this.rankings.myRanking;
+      return this.ordering.orderBy === 'default' ? this.rankings.myRanking.filter(file => file.rank !== -1) : this.rankings.myRanking;
     },
     orderedRankings() {
       // rankedFiles first, then unrankedFiles
