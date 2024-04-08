@@ -5,15 +5,17 @@
 
       <!-- DROPDOWN -->
       <div v-if="param.type === 'dropdown' || param.type === 'sqldropdown'">
-        <select v-if="(param.special === 'fileupload' && !isActive) && repeat_name !== '' && param.options.length > 0" v-model="element.params[repeat_name][index_name][param.name]" class="em-w-100">
+        <select v-if="repeat_name !== '' && param.options.length > 0" v-model="element.params[repeat_name][index_name][param.name]" class="em-w-100">
           <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
         </select>
-        <select v-else-if="(param.special === 'fileupload' && !isActive) && param.options.length > 0"  v-model="element.params[param.name]" class="em-w-100">
+        <select v-else-if="param.options.length > 0"  v-model="element.params[param.name]" class="em-w-100">
           <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
         </select>
-        <div  v-if="param.special === 'fileupload'">
-          <button type="button" class="collapsible" @click="EventNewDocForm"><label>{{translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT_NAME')}}</label></button>
-            <FormBuilderCreateDocument v-if="isActive" profile_id="1" @documents-updated="reloadComponent"></FormBuilderCreateDocument>
+        <div  v-if="element.plugin === 'emundus_fileupload'">
+          <button type="button" class="mt-2 underline text-profile-color" @click="EventNewDocForm">
+            <label>{{translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT_NAME')}}</label>
+          </button>
+          <FormBuilderCreateDocument v-if="isActive" profile_id="1" @documents-updated="reloadComponent"></FormBuilderCreateDocument>
         </div>
 
       </div>

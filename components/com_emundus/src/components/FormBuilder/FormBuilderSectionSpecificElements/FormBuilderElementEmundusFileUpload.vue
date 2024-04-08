@@ -4,10 +4,10 @@
     <div v-else class="w-full relative flex items-center ">
       <div id="div_jos_emundus_1001_00___e_805_8014" class="fabrik_element___emundus_file_upload_parent">
     <span v-if="allowedTypes!=null" class="fabrik_element___file_upload_formats">
-        {{ translate("PLG_ELEMENT_FILEUPLOAD_ALLOWED_TYPES") }} : {{this.allowedTypes}}
+        {{ translate("PLG_ELEMENT_FILEUPLOAD_ALLOWED_TYPES") }} {{this.allowedTypes}}
     </span>
         <div class="btn-upload em-pointer">
-          <p class="em-flex-row">{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_PREVIEW_DROPZONE')}}<span class="material-icons-outlined em-ml-12">cloud_upload</span></p>
+          <span class="material-icons-outlined em-ml-12">cloud_upload</span>
         </div>
       </div>
     </div>
@@ -52,6 +52,7 @@ export default {
     getAllowedFile(aid){
       fileGet.getDocumentModels(aid).then((response) => {
         this.allowedTypes =  response.data.allowed_types;
+        this.allowedTypes = this.allowedTypes.replace(/;/g, ',');
       }).catch((error) => {
         this.loading = false;
         console.error(error);

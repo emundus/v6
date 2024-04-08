@@ -1,4 +1,0 @@
-enabled: '1'
-content: "<div class=\"logo\">\n<a href=\"fr/index.php\"><img class=\"logo\" style=\"object-fit: contain; min-height: 35px;\" src=\"/images/emundus/tchooz_black.png\" alt=\"Logo\" width=\"180\" height=\"auto\" /></a>\n<div class=\"credits-emundus\">\n<p>Logiciel <a title=\"Logiciel de gestion des appel à projets et dépôt de candidature en ligne\" href=\"https://www.emundus.fr\" target=\"_blank\" rel=\"noopener noreferrer\">eMundus</a></p>\n</div>\n</div>\n</div>\n</div>"
-css:
-  class: g-branding

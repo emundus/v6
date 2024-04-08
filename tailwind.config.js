@@ -32,7 +32,8 @@ module.exports = {
                 },
                 green: {
                     500: 'var(--main-500)',
-                }
+                },
+                'profile-color': 'var(--em-profile-color)',
             },
             spacing: {
                 1: 'var(--em-spacing-1)',
