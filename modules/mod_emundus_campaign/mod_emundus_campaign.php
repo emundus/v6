@@ -222,6 +222,11 @@ if($user->guest || in_array($e_user->profile,$app_prof))
 
     // Get single campaign
     $cid = $app->input->getInt('cid', 0);
+    if(empty($cid)) {
+        $menu_params = $app->getMenu()->getActive()->params;
+        $cid = $menu_params->get('com_emundus_programme_campaign_id', 0);
+    }
+
     if (!empty($cid))
     {
         $condition = ' AND ca.id = ' . $cid;

@@ -6,6 +6,7 @@ header('Content-Type: text/html; charset=utf-8');
 $user      = JFactory::getUser();
 $lang      = JFactory::getLanguage();
 $locallang = $lang->getTag();
+$menu = JFactory::getApplication()->getMenu();
 
 if ($locallang == "fr-FR")
 {
@@ -85,6 +86,11 @@ if (sizeof($tmp_campaigns) > 0)
 
 	foreach ($tmp_campaigns as $campaign)
 	{
+		$item = $menu->getItems('alias', $campaign->alias, true);
+        if(!empty($item))
+        {
+            $campaign->link = $campaign->alias;
+        }
 		if ($campaign->pinned == 1)
 		{
 			$campaigns_pinned[] = $campaign;
