@@ -18,6 +18,7 @@ jimport( 'joomla.application.component.model' );
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
@@ -955,6 +956,7 @@ class EmundusModelCampaign extends JModelList {
                     $falang->deleteFalang($id, 'emundus_setup_campaigns','label');
                 }
 
+				// TODO: Add reporting
 				if ($force_delete === true) {
 					$query->delete($this->_db->quoteName('#__emundus_campaign_candidature'))
 						->where($this->_db->quoteName('campaign_id').' IN ('.implode(", ", array_values($data)).')');
@@ -968,9 +970,23 @@ class EmundusModelCampaign extends JModelList {
 
 					$this->_db->setQuery($query);
 					$deleted = $this->_db->execute();
+
+					if($deleted) {
+						foreach ($data as $key => $val) {
+							$details_menu = $this->getCampaignDetailsMenu($val);
+							if(!empty($details_menu)) {
+								$query->clear()
+									->delete($this->_db->quoteName('#__menu'))
+									->where($this->_db->quoteName('id').' = '.$details_menu->id);
+								$this->_db->setQuery($query);
+								$this->_db->execute();
+							}
+						}
+					}
 					JLog::add('User ' . JFactory::getUser()->id . ' deleted campaign(s) ' . implode(", ", array_values($data)) . ' ' . date('d/m/Y H:i:s'), JLog::INFO, 'com_emundus');
 				} else {
 					// delete only if there are no files attached to the campaign
+					//TODO: foreach campaigns, check if there are files attached to it
 					$query->clear()
 						->select('count(*)')
 						->from($this->_db->quoteName('#__emundus_campaign_candidature'))
@@ -1043,6 +1059,19 @@ class EmundusModelCampaign extends JModelList {
                 $unpublished = $this->_db->execute();
 
                 if ($unpublished) {
+					foreach ($data as $key => $val) {
+						$details_menu = $this->getCampaignDetailsMenu($val);
+
+						if(!empty($details_menu)) {
+							$update = [
+								'id' => $details_menu->id,
+								'published' => 0
+							];
+							$update = (object) $update;
+							$this->_db->updateObject('#__menu', $update, 'id');
+						}
+					}
+
                     $dispatcher->trigger('onAfterCampaignUnpublish', $data);
                     $dispatcher->trigger('callEventHandler', ['onAfterCampaignUnpublish', ['campaign' => $data]]);
                 }
@@ -1090,6 +1119,19 @@ class EmundusModelCampaign extends JModelList {
                 $published = $this->_db->execute();
 
                 if ($published) {
+	                foreach ($data as $key => $val) {
+		                $details_menu = $this->getCampaignDetailsMenu($val);
+
+		                if(!empty($details_menu)) {
+			                $update = [
+				                'id' => $details_menu->id,
+				                'published' => 1
+			                ];
+			                $update = (object) $update;
+			                $this->_db->updateObject('#__menu', $update, 'id');
+		                }
+	                }
+
                     $dispatcher->trigger('onAfterCampaignPublish', $data);
                     $dispatcher->trigger('callEventHandler', ['onAfterCampaignPublish', ['campaign' => $data]]);
                 }
@@ -1341,50 +1383,7 @@ class EmundusModelCampaign extends JModelList {
 	                    // Create menu item with alias
 	                    if(!empty($data['alias']))
 	                    {
-		                    require_once (JPATH_SITE.DS.'administrator/components/com_emundus/helpers/update.php');
-
-		                    $modules_id =  [];
-
-							$query->clear()
-								->select('id,params')
-								->from($this->_db->quoteName('#__modules'))
-								->where($this->_db->quoteName('module') . ' LIKE ' . $this->_db->quote('mod_emundus_campaign'));
-							$this->_db->setQuery($query);
-							$modules = $this->_db->loadObjectList();
-							foreach ($modules as $module) {
-								$params = json_decode($module->params);
-								if (!empty($params->mod_em_campaign_layout) && $params->mod_em_campaign_layout == 'tchooz_single_campaign') {
-									$modules_id[] = $module->id;
-								}
-							}
-
-							// Check again if alias already exists
-							$query->clear()
-								->select('id')
-								->from($this->_db->quoteName('#__menu'))
-								->where($this->_db->quoteName('alias') . ' LIKE ' . $this->_db->quote($data['alias']));
-							$this->_db->setQuery($query);
-							$menu_id = $this->_db->loadResult();
-
-							if(!empty($menu_id)) {
-								$data['alias'] = $data['alias'].'-'.$campaign_id;
-							}
-
-		                    $params = [
-			                    'menutype' => 'campaigns',
-			                    'title'    => $data['label'],
-			                    'alias'    => $data['alias'],
-			                    'path'     => $data['alias'],
-			                    'type' => 'component',
-			                    'link' => 'index.php?option=com_emundus&view=programme',
-			                    'component_id' => ComponentHelper::getComponent('com_emundus')->id,
-			                    'params'   => [
-				                    'com_emundus_programme_campaign_id' => $campaign_id,
-				                    'com_emundus_programme_candidate_link' => 'index.php?option=com_fabrik&view=form&formid=307&Itemid=2700'
-			                    ]
-		                    ];
-
-		                    EmundusHelperUpdate::addJoomlaMenu($params, 1, 1, 'last-child', $modules_id);
+		                    $this->createCampaignAlias($campaign_id, $data['alias'], $data['label']);
 	                    }
 
 
@@ -1463,25 +1462,17 @@ class EmundusModelCampaign extends JModelList {
                         // do nothing
                         break;
 	                case 'alias':
-						$query->clear()
-							->select('id,params')
-							->from($this->_db->quoteName('#__menu'))
-							->where($this->_db->quoteName('menutype') . ' LIKE ' . $this->_db->quote('campaigns'));
-						$this->_db->setQuery($query);
-						$menus = $this->_db->loadObjectList();
-
-						//TODO: Create menu if not exists
-						foreach ($menus as $menu) {
-							$params = json_decode($menu->params);
-							if (!empty($params->com_emundus_programme_campaign_id) && $params->com_emundus_programme_campaign_id == $cid) {
-								$query->clear()
-									->update($this->_db->quoteName('#__menu'))
-									->set($this->_db->quoteName('alias') . ' = ' . $this->_db->quote($val))
-									->set($this->_db->quoteName('path') . ' = ' . $this->_db->quote($val))
-									->where($this->_db->quoteName('id') . ' = ' . $menu->id);
-								$this->_db->setQuery($query);
-								$this->_db->execute();
-							}
+						$details_menu = $this->getCampaignDetailsMenu($cid);
+						if(!empty($details_menu)) {
+							$query->clear()
+								->update($this->_db->quoteName('#__menu'))
+								->set($this->_db->quoteName('alias') . ' = ' . $this->_db->quote($val))
+								->set($this->_db->quoteName('path') . ' = ' . $this->_db->quote($val))
+								->where($this->_db->quoteName('id') . ' = ' . $details_menu->id);
+							$this->_db->setQuery($query);
+							$this->_db->execute();
+						} else {
+							$this->createCampaignAlias($cid, $val, $data['label']);
 						}
 
 		                $fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
@@ -3064,5 +3055,96 @@ class EmundusModelCampaign extends JModelList {
 		}
 
 		return $items;
+	}
+
+	public function createCampaignAlias($cid, $alias, $label)
+	{
+		$alias_created = false;
+
+		try
+		{
+			$query = $this->_db->getQuery(true);
+			require_once (JPATH_SITE.DS.'administrator/components/com_emundus/helpers/update.php');
+
+			$modules_id =  [];
+
+			$query->clear()
+				->select('id,params')
+				->from($this->_db->quoteName('#__modules'))
+				->where($this->_db->quoteName('module') . ' LIKE ' . $this->_db->quote('mod_emundus_campaign'));
+			$this->_db->setQuery($query);
+			$modules = $this->_db->loadObjectList();
+			foreach ($modules as $module) {
+				$params = json_decode($module->params);
+				if (!empty($params->mod_em_campaign_layout) && $params->mod_em_campaign_layout == 'tchooz_single_campaign') {
+					$modules_id[] = $module->id;
+				}
+			}
+
+			// Check again if alias already exists
+			$query->clear()
+				->select('id')
+				->from($this->_db->quoteName('#__menu'))
+				->where($this->_db->quoteName('alias') . ' LIKE ' . $this->_db->quote($alias));
+			$this->_db->setQuery($query);
+			$menu_id = $this->_db->loadResult();
+
+			if(!empty($menu_id)) {
+				$alias = $alias.'-'.$cid;
+			}
+
+			$params = [
+				'menutype' => 'campaigns',
+				'title'    => $label,
+				'alias'    => $alias,
+				'path'     => $alias,
+				'type' => 'component',
+				'link' => 'index.php?option=com_emundus&view=programme',
+				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+				'params'   => [
+					'com_emundus_programme_campaign_id' => $cid,
+					'com_emundus_programme_candidate_link' => 'index.php?option=com_fabrik&view=form&formid=307&Itemid=2700'
+				]
+			];
+
+			$alias_created = EmundusHelperUpdate::addJoomlaMenu($params, 1, 1, 'last-child', $modules_id)['status'];
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $alias_created;
+	}
+
+	public function getCampaignDetailsMenu($cid)
+	{
+		$details_menu = null;
+
+		try
+		{
+			$query = $this->_db->getQuery(true);
+
+			$query->clear()
+				->select('id,alias,path,published,params')
+				->from($this->_db->quoteName('#__menu'))
+				->where($this->_db->quoteName('menutype') . ' LIKE ' . $this->_db->quote('campaigns'));
+			$this->_db->setQuery($query);
+			$menus = $this->_db->loadObjectList();
+
+			foreach ($menus as $menu) {
+				$params = json_decode($menu->params);
+				if (!empty($params->com_emundus_programme_campaign_id) && $params->com_emundus_programme_campaign_id == $cid) {
+					$details_menu = $menu;
+					break;
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $details_menu;
 	}
 }
