@@ -3101,57 +3101,68 @@ class EmundusModelFiles extends JModelLegacy
 
     /**
      * @param $user
-     * @return array|false
+     * @return array
      * get list of programmes for associated files
      */
     public function getAssociatedProgrammes($user)
     {
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $associated_programmes = [];
 
-        $query->select('DISTINCT sc.training')
-            ->from('#__emundus_users_assoc AS ua')
-            ->leftJoin('#__emundus_campaign_candidature AS cc ON cc.fnum = ua.fnum')
-            ->leftJoin('#__emundus_setup_campaigns AS sc ON sc.id = cc.campaign_id')
-            ->where('ua.user_id = '.$db->quote($user));
-        try
-        {
-            $db->setQuery($query);
-            return $db->loadColumn();
+        if (!empty($user)) {
+            $db = $this->getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('DISTINCT sc.training')
+                ->from('#__emundus_users_assoc AS ua')
+                ->leftJoin('#__emundus_campaign_candidature AS cc ON cc.fnum = ua.fnum')
+                ->leftJoin('#__emundus_setup_campaigns AS sc ON sc.id = cc.campaign_id')
+                ->where('ua.user_id = '.$db->quote($user));
+            try
+            {
+                $db->setQuery($query);
+                $associated_programmes = $db->loadColumn();
+            }
+            catch(Exception $e)
+            {
+                error_log($e->getMessage(), 0);
+            }
         }
-        catch(Exception $e)
-        {
-            error_log($e->getMessage(), 0);
-            return false;
-        }
+
+        return $associated_programmes;
     }
 
     /**
      * @param $user
-     * @return array|false
+     * @return array
      * get list of programmes for groups associated files
      */
     public function getGroupsAssociatedProgrammes($user)
     {
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $groups_associated_programmes = [];
 
-        $query->select('DISTINCT sc.training')
-            ->from('#__emundus_groups AS g')
-            ->leftJoin('#__emundus_group_assoc AS ga ON ga.group_id = g.group_id AND ga.action_id = 1 AND ga.r = 1')
-            ->leftJoin('#__emundus_campaign_candidature AS cc ON cc.fnum = ga.fnum')
-            ->leftJoin('#__emundus_setup_campaigns AS sc ON sc.id = cc.campaign_id')
-            ->where('g.user_id = '.$db->quote($user));
-        try
-        {
-            $db->setQuery($query);
-            return $db->loadColumn();
+        if (!empty($user)) {
+            $db = $this->getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('DISTINCT sc.training')
+                ->from('#__emundus_groups AS g')
+                ->leftJoin('#__emundus_group_assoc AS ga ON ga.group_id = g.group_id AND ga.action_id = 1 AND ga.r = 1')
+                ->leftJoin('#__emundus_campaign_candidature AS cc ON cc.fnum = ga.fnum')
+                ->leftJoin('#__emundus_setup_campaigns AS sc ON sc.id = cc.campaign_id')
+                ->where('g.user_id = '.$db->quote($user));
+
+            try
+            {
+                $db->setQuery($query);
+                $groups_associated_programmes = $db->loadColumn();
+            }
+            catch(Exception $e)
+            {
+                error_log($e->getMessage(), 0);
+            }
         }
-        catch(Exception $e)
-        {
-            error_log($e->getMessage(), 0);
-            return false;
-        }
+
+        return $groups_associated_programmes;
     }
 
     /**
