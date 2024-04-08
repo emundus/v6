@@ -200,7 +200,7 @@ export default {
 
 				newFilter.uid = new Date().getTime();
 				newFilter.default = false;
-				newFilter.operator = '=';
+				newFilter.operator = newFilter.hasOwnProperty('operator') && newFilter.operator != '' ? newFilter.operator : '=';
 				newFilter.andorOperator = 'OR';
 
 				switch (newFilter.type) {
