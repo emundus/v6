@@ -15,7 +15,7 @@
             <a :id="'Menu-'+index" name="bouton-Menu" @click="handleMenuButtonClick(index , item)"
                style="user-select: none" class="flex items-center p-2  rounded-lg  group">
               <i class="material-icons-outlined" name="icon-Menu" :id="'icon-'+index">{{ item.icon }}</i>
-              <span class="ms-1">{{ item.label }}</span>
+              <span class="ms-1">{{ translate(item.label) }}</span>
             </a>
           </li>
         </ul>
@@ -24,10 +24,10 @@
 
     <div class="p-4 sm:ml-40" style="user-select: none" v-if="indexMenuClick != null">
       <h1 class="text-2xl font-semibold" style="user-select: none; color: #008A35;">
-        <i class="material-icons-outlined" style="scale: 1.5; color:#008A35;  padding-right: 0.5em">
+        <i class="material-icons-outlined scale-150 " style=" color:#008A35; padding-right: 0.5em">
           {{ this.aMenu.icon }}
         </i>
-        {{ this.aMenu.label }}
+        {{ translate(this.aMenu.label) }}
       </h1>
       <div id="accordion-collapse" v-for="(x, index1) in SubMenus[indexMenuClick]"
            v-if="SubMenus[indexMenuClick][index1].type!=='Tile'"
@@ -38,8 +38,8 @@
            style="box-shadow:0.1em 0.05em 0.05em grey;">
         <div @click="handleSubMenuClick(index1)">
           <h1 id="accordion-collapse-heading-1" class="flex flex-row justify-between">
-            <span :id="'Subtile'+index1" class="em-font-size-24 ">{{ SubMenus[indexMenuClick][index1].label }}</span>
-            <span class="material-icons-outlined scale-150" :id="'SubtitleArrow'+index1" name="SubtitleArrows">expand_more</span>
+            <span :id="'Subtile'+index1" class="em-font-size-24 ">{{ translate (SubMenus[indexMenuClick][index1].label) }}</span>
+            <i class="material-icons-outlined scale-150" :id="'SubtitleArrow'+index1" name="SubtitleArrows" style="transform-origin: unset">expand_more</i>
           </h1>
         </div>
 
@@ -47,11 +47,14 @@
         <div :id="'SubMenu-'+index1" name="SubMenuContent" style="display: none" class="flex flex-col ">
           <div v-for="(option,index2) in SubMenus[indexMenuClick][index1].options">
             <div class="flex flex-col" v-if="option.type_field === 'Title'">
-              <h2>{{ option.label }}</h2>
+              <h2>{{ translate(option.label) }}</h2>
               <hr>
             </div>
+            <div v-else-if="option.type ==='subSection'" >
+              <a>test </a>
+            </div>
             <div v-else class="block text-xl ">
-              {{ option.label }}
+              {{ translate(option.label) }}
             </div>
 
             <div class="flex flex-col" v-if="option.type_field === 'Input'">
@@ -61,7 +64,7 @@
 
             <div class="flex flex-col" v-if="option.type_field === 'dropdown'">
               <select>
-                <option v-for="choice in option.choices">{{ choice.label }}</option>
+                <option v-for="choice in option.choices">{{ translate(choice.label) }}</option>
               </select>
             </div>
 
@@ -87,7 +90,7 @@
             <div class="flex flex-col" v-if="option.type_field === 'checkbox'">
               <div class="flex items-center " v-for="(x,choice) in option.choices">
                 <input type="checkbox" :id="'myCheck'+ choice" :value="x.value">
-                <label class="mt-2.5 ml-1">{{ x.label }}</label>
+                <label class="mt-2.5 ml-1">{{ translate(x.label) }}</label>
               </div>
             </div>
 
@@ -111,7 +114,7 @@
               <div class="rounded" :style="{ 'background-color': tile.color, 'width': '16em', 'height':'10em' }">
                 <i class="material-icons-outlined mt-16 " :style="{'transform': 'scale(7)' ,'margin-top': '4em', 'color':'white'}">{{ tile.icon }}</i>
               </div>
-              {{ tile.label }}
+              {{ translate(tile.label)  }}
             </button>
 
           </div>

@@ -1,13 +1,13 @@
 [
   {
-    "label": "Général",
+    "label": "COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_GENERAL",
     "icon": "display_settings",
     "published": true,
     "sections": [
       {
-        "label": "Paramètres du site",
+        "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_PARAM_SITE",
         "type": "section",
-        "helptext": "cela permet de d'affimer l'identité visuel de votre campagne",
+        "helptext": "",
         "options": [
           {
             "name": "sitename",
@@ -91,7 +91,7 @@
         ]
       },
       {
-        "label": "Images du site",
+        "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_IMG_SITE",
         "type": "section",
         "helptext": "",
         "options": [
@@ -103,7 +103,7 @@
         ]
       },
       {
-        "label": "Thème du site",
+        "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_THEME_SITE",
         "type": "section",
         "helptext": "",
         "options": [
@@ -134,9 +134,9 @@
         ]
       },
       {
-        "label": "Analytics",
+        "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_ANALATICS",
         "type": "section",
-        "helptext": "c'est quoi",
+        "helptext": "",
         "options": [
           {
             "label": "google analytics ID",
@@ -155,12 +155,12 @@
     ]
   },
   {
-    "label": "Email",
+    "label": "COM_EMUNDUS_GLOBAL_PARMAS_MENUS_EMAIL",
     "icon": "email",
     "published": true,
     "sections": [
       {
-        "label": "Gestion du serveur de mail",
+        "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MANAG_SERVER_MAIL",
         "type": "section",
         "helptext": "cela permet de pouvoir envoyer des mails au candidats",
         "options": [
@@ -191,23 +191,23 @@
     ]
   },
   {
-    "label": "Contenu",
+    "label": "COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_CONTENT",
     "icon": "notes",
     "published": true,
     "sections": [
       {
-        "label": "Pages des campagnes",
+        "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CAMPAIGN_PAGE",
         "type": "section",
-        "helptext": "cela permet de d'avoir un contenu global pour tout vos campagnes",
+        "helptext": "",
         "options": [
           {"type_field": "Title", "label": "Texte de la page"},
           {
             "type_field": "component",
             "component": "EditArticle",
             "props": {
-              "key":1,
+              "name": "text_campaign",
               "article_id":52,
-              "article_alias": "",
+              "article_alias": "bienvenue-sur-votre-espace-de-candidature",
               "field": "introtext",
               "category": "homepage",
               "published": 1
@@ -272,7 +272,7 @@
         ]
       },
       {
-        "label": "Pied de page",
+        "label": "OM_EMUNDUS_ONBOARD_CONTENT_TOOL_FOOTER",
         "type": "section",
         "helptext": "",
         "options": [
@@ -284,7 +284,7 @@
         ]
       },
       {
-        "label": "RGPD",
+        "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_RGPD",
         "type": "section",
         "helptext": "Veuillez compléter les différentes sections ci-dessous afin de respecter le reglement général sur la protection des données. Pour en savoir plus sur les mentions obligatoires qui doivent figurer sur votre compagne, consultez le site de la CNIL.",
         "options": [
@@ -296,11 +296,11 @@
             "placeholder": "",
             "elements": [
               {
-                "type": "component",
+                "type_field": "component",
                 "component": "EditArticle",
                 "props": {
-                  "key": 2,
-                  "article_id": null,
+                  "name": "text_legal_notice",
+                  "article_id": 1035,
                   "article_alias": "mentions-legales",
                   "field": "introtext",
                   "category": "rgpd",
@@ -317,11 +317,11 @@
             "placeholder": "",
             "elements": [
               {
-                "type": "component",
+                "type_field": "component",
                 "component": "EditArticle",
                 "props": {
-                  "key": 3,
-                  "article_id": null,
+                  "name": "text_privacy_policy",
+                  "article_id": 1038,
                   "article_alias": "politique-de-confidentialite-des-donnees",
                   "category": "rgpd",
                   "field": "introtext",
@@ -338,11 +338,11 @@
             "placeholder": "",
             "elements": [
               {
-                "type": "component",
+                "type_field": "component",
                 "component": "EditArticle",
                 "props": {
-                  "key": 4,
-                  "article_id": null,
+                  "name": "text_rights_management",
+                  "article_id": 1037,
                   "article_alias": "gestion-des-droits",
                   "field": "introtext",
                   "category": "rgpd",
@@ -359,11 +359,11 @@
             "placeholder": "cookie : petit fichier qui conserve les informations sur votre navigation pour une futur connexion",
             "elements": [
               {
-                "type": "component",
+                "type_field": "component",
                 "component": "EditArticle",
                 "props": {
-                  "key": 5,
-                  "article_id": null,
+                  "name": "text_cookies_management",
+                  "article_id": 1036,
                   "article_alias": "gestion-des-cookies",
                   "field": "introtext",
                   "category": "rgpd",
@@ -375,19 +375,19 @@
         ]
       },
       {
-        "label": "Accessibilité",
+        "label": "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_ACCESSIBILITY",
         "type": "section",
         "helptext": "",
         "options": [
           {
-            "type": "component",
+            "type_field": "component",
             "component": "EditArticle",
             "props": {
-              "key": 6,
-              "article_id": null,
+              "name": "text_accessibility",
+              "article_id": 1044,
               "article_alias": "accessibilite",
-              "category": "rgpd",
               "field": "introtext",
+              "category": "RGPD",
               "published": 1
             }
           }
@@ -396,12 +396,12 @@
     ]
   },
   {
-    "label": "Gestion des dossiers",
+    "label": "COM_EMUNDUS_GLOBAL_PARMAS_MENUS_MANAGE_FOLDER",
     "icon": "source",
     "published": true,
     "sections": [
       {
-        "label": "Status",
+        "label": "COM_EMUNDUS_STATUS",
         "type": "section",
         "helptext": "",
         "options": [
@@ -415,7 +415,7 @@
         ]
       },
       {
-        "label": "Etiquettes",
+        "label": "COM_EMUNDUS_TAGS",
         "type": "section",
         "helptext": "",
         "options": [
@@ -429,7 +429,7 @@
         ]
       },
       {
-        "label": "Gestion des dossiers",
+        "label": "COM_EMUNDUS_ONBOARD_SETTINGS_FILES_TOOL",
         "type": "section",
         "helptext": "",
         "options": [
@@ -523,12 +523,12 @@
     ]
   },
   {
-    "label": "Modules supplémentaires",
+    "label": "COM_EMUNDUS_GLOBAL_PARMAS_MENUS_SUPPL_MOD",
     "icon": "dashboard_customize",
     "published": true,
     "sections": [
       {
-        "label": "Partage de dossier",
+        "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_SHARE_FILE",
         "type": "Tile",
         "color": "#F04437",
         "icon": "share",
@@ -536,7 +536,7 @@
         "helptext": ""
       },
       {
-        "label": "Génération de courrier/Publipostage",
+        "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_GENERATION/PUBLISHING",
         "type": "Tile",
         "color": "#D292EF",
         "icon": "mail",
@@ -544,7 +544,7 @@
         "helptext": ""
       },
       {
-        "label": "Invitation d'experts",
+        "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_EXPERT_INVITE",
         "type": "Tile",
         "color": "#2E90FA",
         "icon": "person_add",
@@ -552,7 +552,7 @@
         "helptext": ""
       },
       {
-        "label": "règles de tarification et produits",
+        "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_RULES_OF_PAY_PRODUCT",
         "type": "Tile",
         "color": "#FFE014",
         "icon": "monetization_on",
@@ -562,12 +562,12 @@
     ]
   },
   {
-    "label": "Intégrations",
+    "label": "COM_EMUNDUS_GLOBAL_PARMAS_MENUS_INTEG",
     "icon": "lan",
     "published": true,
     "sections": [
       {
-        "label": "Sauvegarde de fichiers distants",
+        "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_SAVE_CLOUD_FILE",
         "type": "Tile",
         "color": "#98D432",
         "icon": "cloud_upload",
@@ -575,7 +575,7 @@
         "helptext": ""
       },
       {
-        "label": "Signature électronique",
+        "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_ELECTRONIC_VERIF",
         "type": "Tile",
         "color": "#64D8FF",
         "icon": "history_edu",
@@ -583,7 +583,7 @@
         "helptext": ""
       },
       {
-        "label": "API INSEE",
+        "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_API_INSEE",
         "type": "Tile",
         "color": "#FF78D1",
         "icon": "api",
@@ -591,7 +591,7 @@
         "helptext": ""
       },
       {
-        "label": "AddPipe",
+        "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_ADD_PIPE",
         "type": "Tile",
         "color": "#35D7D2",
         "icon": "webhook",
@@ -599,7 +599,7 @@
         "helptext": ""
       },
       {
-        "label": "Paiement",
+        "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_PAYMENT",
         "type": "Tile",
         "color": "#FFAE00",
         "icon": "payments",
@@ -609,12 +609,12 @@
     ]
   },
   {
-    "label": "Traduction",
+    "label": "COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS",
     "icon": "translate",
     "published": true,
     "sections": [
       {
-        "label": "Traductions",
+        "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_TRANSLATIONS",
         "type": "section",
         "helptext": "",
         "options": [

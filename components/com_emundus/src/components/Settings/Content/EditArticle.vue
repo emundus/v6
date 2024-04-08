@@ -39,7 +39,7 @@
       </div>
 
       <div class="form-group controls">
-        <editor-quill :height="'30em'" :text="form.content" :enable_variables="false" :id="'editor'" :key="dynamicComponent" v-model="form.content" @focusout="saveContent"></editor-quill>
+        <editor-quill :height="'30em'" :text="form.content" :enable_variables="false" :id="'editor_'+this.name" :key="dynamicComponent" v-model="form.content" @focusout="saveContent"></editor-quill>
       </div>
     </div>
 
@@ -87,6 +87,10 @@ export default {
     published: {
       type: Number,
       default: 1
+    },
+    name: {
+      type: Number,
+      default: null
     }
   },
 
