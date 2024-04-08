@@ -1143,6 +1143,7 @@ class EmundusModelCampaign extends JModelList {
 						$new_category_id = $this->getCampaignCategory($new_campaign_id);
 
 						if (!empty($new_category_id)) {
+                            // TODO: add message if copy of dropfiles documents failed
                             if (mkdir(JPATH_ROOT.'/media/com_dropfiles/' . $new_category_id, 0755)) {
                                 $old_category_id = $this->getCampaignCategory($id);
                                 $old_campaign_documents = $this->getCampaignDropfilesDocuments($old_category_id);
