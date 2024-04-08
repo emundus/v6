@@ -168,14 +168,12 @@ class EmundusModelEvaluation extends JModelList {
                                   ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
 				    } else {
 					    if ($attribs->database_join_display_type == "checkbox") {
-
-						    $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
-						    $query = '(
+                            $query = '(
                                 SELECT GROUP_CONCAT('.$def_elmt->table_join.'.'.$def_elmt->element_name.' SEPARATOR ", ")
                                 FROM '.$def_elmt->table_join.'
                                 WHERE '.$def_elmt->table_join.'.parent_id='.$def_elmt->tab_name.'.id
                                 '.$publish_query.'
-                              ) AS `'.$t.'`';
+                              ) AS `'.$def_elmt->tab_name.'_repeat_'.$def_elmt->element_name.'`';
 					    } else if( $attribs->database_join_display_type == 'multilist' ) {
 						    $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
 						    $query = '(
