@@ -251,7 +251,8 @@ JText::script('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_UPLOAD_ADD');
 JText::script('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_UPLOAD_ADD_FROM_FILE');
 JText::script('COM_EMUNDUS_ATTACHMENT_STORAGE_DEFAULT_ASPECTS_MAPPING');
 Jtext::script('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_MISSING_ASPECT_FILE');
-
+#-----------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------
 ## GLOBAL PARAMETERS ##
 Jtext::script('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_GENERAL');
 Jtext::script('COM_EMUNDUS_GLOBAL_PARMAS_MENUS_EMAIL');
@@ -299,6 +300,38 @@ JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SITE_TIMEZONE'); // Fuseau horaire
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT'); // Format de date
 JText::script('COM_EMUNDUS_ATTACHMENTS_KEYWORDS'); // Mots clés
 JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SITE_NUMBER_LINES_LISTES'); // Nombre de lignes dans les listes
+
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_THEME_SITE_ADV_PARA'); // Paramètres avancés
+
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CAMP_SHOW'); // Afficher les campagnes
+JText::script('COM_EMUNDUS_CAMPAIGN_ONGOING'); // Campagnes en cours
+JText::script('COM_EMUNDUS_CAMPAIGN_YET_TO_COME'); // Campagnes à venir
+JText::script('COM_EMUNDUS_CAMPAIGN_CLOSED'); // Campagnes cloturées
+
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CAMP_GROUP_BY'); // campagne Regrouper par
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CAMP_GROUP_BY_MONTH'); // mois
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CAMP_GROUP_BY_YEAR'); // année
+
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CAMP_ORGANIZE_BY'); // Organiser par
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CAMP_ORGANIZE_BY_LAUCH_DATE'); // date de lancement
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CAMP_ORGANIZE_BY_CLOSE_DATE'); // date de fin
+
+#JText::script('COM_EMUNDUS_ONBOARD_CONTENT_TOOL_LEGAL_MENTION'); // Mentions légales --- déjà fait plus haut
+#JText::script('COM_EMUNDUS_ONBOARD_CONTENT_TOOL_DATAS'); // Données personnelles --- déjà fait plus haut
+#JText::script('COM_EMUNDUS_ONBOARD_CONTENT_TOOL_RIGHTS'); // Gestion de vos droits --- déjà fait plus haut
+#JText::script('COM_EMUNDUS_ONBOARD_CONTENT_TOOL_COOKIES'); // Gestion des cookies --- déjà fait plus haut
+
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_CANDIDATE_INTRO'); // Introduction pour le candidat
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_CANDIDATE_MULTIPLE_FILES'); // candidat a droit a Plusieurs dossiers
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_CANDIDATE_EDIT_UNTIL_DEADLINE'); // candidat peut modifier jusqu'à la date limite
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_CANDIDATE_SHOW_HISTORY'); // Afficher l'historique des candidatures
+
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_ALERT_MOD_SIMUL'); // Alerte de modification simultanée
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_NUM_FILES_IN_LIST'); // Nombre de fichiers dans la liste
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_SHOW_DELETED_FILES'); // Afficher les fichiers supprimés
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_ALLOW_LOCK_PDF'); // Autoriser les PDF verrouillés
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_ALLOW_COPY_OF_FILES'); // Autoriser la copie des fichiers
+
 
 
 ## END ##

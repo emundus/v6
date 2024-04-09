@@ -113,7 +113,7 @@
             "props": []
           },
           {
-            "label": "parametrage avancé ",
+            "label": "COM_EMUNDUS_GLOBAL_PARMAS_THEME_SITE_ADV_PARA",
             "type_field": "variables",
             "helptext": "",
             "placeholder": ""
@@ -152,6 +152,7 @@
         "helptext": "cela permet de pouvoir envoyer des mails au candidats",
         "options": [
           {
+            "TODO": "faire un composant pour la gestion des mails",
             "name": "site_email",
             "label": "eMail du site",
             "type_field": "Input",
@@ -202,55 +203,55 @@
           },
           {
             "name": "champagne_view",
-            "label": "Afficher les campagnes",
+            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CAMP_SHOW",
             "type_field": "checkbox",
             "helptext": "",
             "placeholder": "",
             "choices": [
               {
-                "label": "En cours",
+                "label": "COM_EMUNDUS_CAMPAIGN_ONGOING",
                 "value": "1"
               },
               {
-                "label": "A venir",
+                "label": "COM_EMUNDUS_CAMPAIGN_YET_TO_COME",
                 "value": "2"
               },
               {
-                "label": "Clôturées",
+                "label": "COM_EMUNDUS_CAMPAIGN_CLOSED",
                 "value": "0"
               }
             ]
           },
           {
             "name": "champagne_group_by",
-            "label": "Grouper les campagnes par",
+            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CAMP_GROUP_BY",
             "type_field": "dropdown",
             "helptext": "",
             "placeholder": "",
             "choices": [
               {
-                "label": "Mois",
+                "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CAMP_GROUP_BY_MONTH",
                 "value": "month"
               },
               {
-                "label": "Année",
+                "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CAMP_GROUP_BY_YEAR",
                 "value": "year"
               }
             ]
           },
           {
             "name": "champagne_organize_by",
-            "label": "Trier les campagnes par",
+            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CAMP_ORGANIZE_BY",
             "type_field": "dropdown",
             "helptext": "",
             "placeholder": "",
             "choices": [
               {
-                "label": "Date de lancement",
+                "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CAMP_ORGANIZE_BY_LAUCH_DATE",
                 "value": "LaunchDate"
               },
               {
-                "label": "Date de cloture",
+                "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CAMP_ORGANIZE_BY_CLOSE_DATE",
                 "value": "CloseDate"
               }
 
@@ -259,7 +260,7 @@
         ]
       },
       {
-        "label": "OM_EMUNDUS_ONBOARD_CONTENT_TOOL_FOOTER",
+        "label": "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_FOOTER",
         "type": "section",
         "helptext": "",
         "options": [
@@ -277,7 +278,7 @@
         "options": [
           {
             "name": "legal_notice",
-            "label": "Mentions légales",
+            "label": "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_LEGAL_MENTION",
             "type": "subSection",
             "helptext": "",
             "placeholder": "",
@@ -298,7 +299,7 @@
           },
           {
             "name": "Privacy_policy",
-            "label": "Politique de confidentialité",
+            "label": "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_DATAS",
             "type": "subSection",
             "helptext": "",
             "placeholder": "",
@@ -319,7 +320,7 @@
           },
           {
             "name": "rights_management",
-            "label": "Gestion de vos droits",
+            "label": "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_RIGHTS",
             "type": "subSection",
             "helptext": "",
             "placeholder": "",
@@ -340,7 +341,7 @@
           },
           {
             "name": "cookies_management",
-            "label": "Gestion des cookies",
+            "label": "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_COOKIES",
             "type": "subSection",
             "helptext": "",
             "placeholder": "cookie : petit fichier qui conserve les informations sur votre navigation pour une futur connexion",
@@ -423,28 +424,28 @@
           {"type_field": "Title","label": "Partie candidats"},
           {
             "name": "intro_text_for_candidate",
-            "label": "Texte d'introduction des dossiers de candidature",
+            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_CANDIDATE_INTRO",
             "type_field": "textarea",
             "helptext": "",
             "placeholder": ""
           },
           {
             "name": "multiple_folder_per_candidate",
-            "label": "Les candidats peuvent-ils créer plusieurs dossiers ?",
+            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_CANDIDATE_MULTIPLE_FILES",
             "type_field": "yesno",
             "helptext": "",
             "defaultVal": "1"
           },
           {
             "name": "modify_folder_by_candidate",
-            "label": "Un candidat peut-il modifier un dossier après l'avoir soumis (jusuq'à la fin de la campagne) ?",
+            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_CANDIDATE_EDIT_UNTIL_DEADLINE",
             "type_field": "yesno",
             "helptext": "",
             "defaultVal": "0"
           },
           {
             "name": "history_folder_for_candidate",
-            "label": "Afficher l'historique du dossier pour le candidat ?",
+            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_CANDIDATE_SHOW_HISTORY",
             "type_field": "yesno",
             "helptext": "",
             "defaultVal": "1"
@@ -452,7 +453,7 @@
           {"type_field": "Title","label": "Partie gestionnaire"},
           {
             "name": "alert_folder_modification",
-            "label": "Alterte de modification simultanée d'un dossier",
+            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_ALERT_MOD_SIMUL",
             "type_field": "yesno",
             "defaultVal": "0",
             "helptext": ""
@@ -460,7 +461,7 @@
 
           {
             "name": "number_of_folders",
-            "label": "Nombre de dossiers à afficher par defaut",
+            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_NUM_FILES_IN_LIST",
             "type_field": "dropdown",
             "helptext": "",
             "placeholder": "",
@@ -486,21 +487,21 @@
           },
           {
             "name": "view_deleted_folder",
-            "label": "Afficher les dossiers supprimer ?",
+            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_SHOW_DELETED_FILES",
             "type_field": "yesno",
             "helptext": "",
             "defaultVal": "1"
           },
           {
             "name": "lock_pdf",
-            "label": "Autoriser les PDF verrouillés ?",
+            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_ALLOW_LOCK_PDF",
             "type_field": "yesno",
             "helptext": "",
             "defaultVal": "1"
           },
           {
             "name": "copy_folder",
-            "label": "Autoriser la copie de dossier ?",
+            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_ALLOW_COPY_OF_FILES",
             "type_field": "yesno",
             "helptext": "",
             "defaultVal": "1"
