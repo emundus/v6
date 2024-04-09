@@ -442,6 +442,10 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
             hideCount();
             countFiles.innerHTML = '';
         }
+
+	    <?php if($fix_header == 1): ?>
+            document.querySelector('.em-data-container table thead').style.top = (window.scrollY - 16) + 'px';
+        <?php endif; ?>
     });
 
     <?php if($fix_header == 1): ?>
@@ -451,9 +455,9 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
             let containerResult = document.querySelector('.container-result').offsetHeight;
             let countBlock = document.getElementById('countCheckedCheckbox');
             if(countBlock.style.display === 'block') {
-                document.querySelector('.em-data-container table thead').style.top = (window.scrollY - containerResult - 8 + countBlock.offsetHeight) + 'px';
+                document.querySelector('.em-data-container table thead').style.top = (window.scrollY - 16) + 'px';
             } else {
-                document.querySelector('.em-data-container table thead').style.top = (window.scrollY - containerResult - 4) + 'px';
+                document.querySelector('.em-data-container table thead').style.top = (window.scrollY - 4) + 'px';
             }
         } else {
             document.querySelector('.em-data-container table thead').style.position = 'static';
