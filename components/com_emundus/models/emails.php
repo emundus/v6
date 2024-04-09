@@ -1598,7 +1598,8 @@ class EmundusModelEmails extends JModelList {
      * @return Mixed Array
      * @since v6
      */
-    public function get_messages_to_from_user($user_id) {
+    public function get_messages_to_from_user($user_id)
+    {
         $messages = [];
 
         if (!empty($user_id)) {
@@ -1613,9 +1614,7 @@ class EmundusModelEmails extends JModelList {
                 $this->_db->setquery($query);
                 $messages = $this->_db->loadObjectList();
 
-                if(!empty($messages))
-                {
-
+                if (!empty($messages)) {
                     // Then we get all messages from emundus_logs
                     $query->clear()
                         ->select('el.params,el.fnum_to')
@@ -1627,24 +1626,25 @@ class EmundusModelEmails extends JModelList {
                     $messages_fnums = $this->_db->loadObjectList();
 
                     $messages_fnums_by_id = [];
-                    foreach ($messages_fnums as $message)
-                    {
-                        $params                                    = json_decode($message->params);
-                        $messages_fnums_by_id[$params->message_id] = $message;
+                    foreach ($messages_fnums as $message) {
+                        $params = json_decode($message->params);
+
+                        if (!empty($params) && !empty($params->message_id)) {
+                            $messages_fnums_by_id[$params->message_id] = $message->fnum_to;
+                        }
                     }
 
                     // Finally we filter the messages to add the fnum_to field
-                    foreach ($messages as $message)
-                    {
+                    $messages_fnums_by_id_keys = array_keys($messages_fnums_by_id);
+                    foreach ($messages as $message) {
                         $message->fnum_to = '';
-                        if (in_array($message->message_id, array_keys($messages_fnums_by_id)))
-                        {
-                            $message->fnum_to = $messages_fnums_by_id[$message->message_id]->fnum_to;
+                        if (in_array($message->message_id, $messages_fnums_by_id_keys)) {
+                            $message->fnum_to = $messages_fnums_by_id[$message->message_id];
                         }
                     }
                 }
             } catch (Exception $e) {
-                JLog::add('Error getting messages sent to or from user: '.$user_id.' at query: '.$query, JLog::ERROR, 'com_emundus.error');
+                JLog::add('Error getting messages sent to or from user: ' . $user_id . ' at query: ' . $query, JLog::ERROR, 'com_emundus.error');
             }
         }
 
