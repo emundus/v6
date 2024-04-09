@@ -3943,6 +3943,18 @@ class EmundusHelperFiles
                                     }
 
                                     break;
+                                case 'users_assoc':
+                                    if (!in_array('jos_emundus_users_assoc', $already_joined)) {
+                                        $jecc_alias = array_search('jos_emundus_campaign_candidature', $already_joined);
+                                        $already_joined['jeua'] = 'jos_emundus_users_assoc';
+                                        $users_assoc_alias = 'jeua';
+                                        $where['join'] .= ' LEFT JOIN #__emundus_users_assoc as jeua on jeua.fnum = ' . $jecc_alias . '.fnum AND action_id = 1';
+                                    } else {
+                                        $users_assoc_alias = array_search('jos_emundus_group_assoc', $already_joined);
+                                    }
+
+                                    $where['q'] .= ' AND ' . $this->writeQueryWithOperator($users_assoc_alias . '.user_id', $filter['value'], $filter['operator']);
+                                    break;
                                 default:
                                     break;
                             }
