@@ -138,8 +138,6 @@ export default {
                     filters = data.data;
                 }
 
-                console.log(filters);
-
                 return filters;
             }).catch(error => {
                 throw new Error('Error occured while getting filters : ' . error.message);

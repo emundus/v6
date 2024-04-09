@@ -14,9 +14,13 @@
     padding-top: 10px;
     align-items: center;
 }
-.em-fileAttachment-link > a {
+.em-fileAttachment-link > a:not(.em-deleteFile) {
     display: flex;
     align-items: center;
     min-height: 20px;
+    text-decoration: underline;
 }
 
+.em-fileAttachment-link > a:not(.em-deleteFile):hover {
+    text-decoration: none;
+}
