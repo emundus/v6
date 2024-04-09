@@ -1803,7 +1803,7 @@ $(document).ready(function() {
                                 '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16">' +
 
                                 '<div>' +
-                                '<h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5>' +
+                                '<h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'<span class="material-icons text-xxs text-red-500 mr-0" style="top: -5px;position: relative">emergency</span></h5>' +
                                 '</div>' +
 
                                 '<div class="em-mt-8">' +
