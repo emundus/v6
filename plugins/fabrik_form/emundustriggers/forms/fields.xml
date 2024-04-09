@@ -12,9 +12,10 @@
 				<option value="0">Non</option>
 				<option value="1">Oui</option>
 			</field>
-			<field type="radio" name="trigger_confirmpost_data_mode" label="PLG_FABRIK_FORM_EMUNDUSTRIGGERS_CONFIRMPOST_DATA_MODE" default="1">
+			<field type="radio" name="trigger_confirmpost_data_mode" label="PLG_FABRIK_FORM_EMUNDUSTRIGGERS_CONFIRMPOST_DATA_MODE" default="2">
 				<option value="0">PLG_FABRIK_FORM_EMUNDUSTRIGGERS_CONFIRMPOST_DATA_OLD_FORM</option>
 				<option value="1">PLG_FABRIK_FORM_EMUNDUSTRIGGERS_CONFIRMPOST_DATA_USER_PROFILE</option>
+				<option value="2">PLG_FABRIK_FORM_EMUNDUSTRIGGERS_CONFIRMPOST_DATA_BOTH</option>
 			</field>
 		</fieldset>
 	</fields>
