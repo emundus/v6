@@ -587,19 +587,20 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
         if (!$this->isEditable()) {
             $attachmentId = $params['attachmentId'];
             $attachmentResult = $this->getAttachment($attachmentId);
-            $label = $attachmentResult->value;
             $jinput = JFactory::getApplication()->input;
             $fnum = $jinput->get('rowid');
             $user = JFactory::getUser()->id;
 
             $files = $this->getUploads($attachmentId, $user, $this->getCampaignId($fnum), $fnum);
             if (!empty($files)) {
-                foreach ($files as $file) {
+                foreach ($files as $key => $file) {
+                    $label = !empty($file->local_filename) ? $file->local_filename : $attachmentResult->value . ' n°' . ($key + 1);
+
                     $text .= '<ul>';
                     if ($file->can_be_viewed == 1) {
-                        $text .= '<li><a href="images/emundus/files/' . $user . '/' . $file->filename . '" target="_blank">' . $file->local_filename . '</a></li>';
+                        $text .= '<li><a href="images/emundus/files/' . $user . '/' . $file->filename . '" target="_blank">' . $label . '</a></li>';
                     } else {
-                        $text .= '<li>' . $file->local_filename . '</li>';
+                        $text .= '<li>' . $label . '</li>';
                     }
                     $text .= '</ul>';
                 }
