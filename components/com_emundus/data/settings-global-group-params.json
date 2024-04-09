@@ -11,14 +11,14 @@
         "options": [
           {
             "name": "sitename",
-            "label": "Nom du site",
+            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SITE_FIELD_NAME",
             "type_field": "Input",
             "helptext": "",
             "value": "tchooz"
           },
           {
             "name": "default_language",
-            "label": "Langue principale du site",
+            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SITE_LANG_PRIM",
             "type_field": "sqldropdown",
             "table": "jos_languages",
             "primary_key": "lang_id",
@@ -29,7 +29,7 @@
           },
           {
             "name": "other_languages",
-            "label": "Autres langues du site",
+            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SITE_OTHER_LANG",
             "type_field": "sqldropdown",
             "table": "jos_languages",
             "primary_key": "lang_id",
@@ -41,20 +41,20 @@
           },
           {
             "name": "site_desc",
-            "label": "Description du site",
+            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SITE_DESC",
             "type_field": "textarea",
             "helptext": "",
             "placeholder": ""
           },
           {
             "name": "offset",
-            "label": "Fuseau horaire",
+            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SITE_TIMEZONE",
             "type_field": "sqldropdown",
             "helptext": "",
             "placeholder": ""
           },
           {
-            "label": "Format de la date",
+            "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT",
             "type_field": "dropdown",
             "helptext": "",
             "placeholder": "",
@@ -75,14 +75,14 @@
           },
           {
             "name": "keywords",
-            "label": "Mots clés",
+            "label": "COM_EMUNDUS_ATTACHMENTS_KEYWORDS",
             "type_field": "Input",
             "helptext": "",
             "placeholder": "",
             "multiple": true
           },
           {
-            "label": "Nombre de lignes affichées par défaut dans les listes",
+            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SITE_NUMBER_LINES_LISTES",
             "type_field": "Input",
             "type": "number",
             "helptext": "",
@@ -108,22 +108,9 @@
         "helptext": "",
         "options": [
           {
-            "label": "Thème prédéfinie",
-            "type_field": "sqldropdown",
-            "helptext": "",
-            "placeholder": ""
-          },
-          {
-            "label": "Couleur principale",
-            "type_field": "colorPicker",
-            "helptext": "",
-            "placeholder": ""
-          },
-          {
-            "label": "Couleur secondaire",
-            "type_field": "colorPicker",
-            "helptext": "",
-            "placeholder": ""
+            "type_field": "component",
+            "component": "EditTheme",
+            "props": []
           },
           {
             "label": "parametrage avancé ",
@@ -396,7 +383,7 @@
     ]
   },
   {
-    "label": "COM_EMUNDUS_GLOBAL_PARMAS_MENUS_MANAGE_FOLDER",
+    "label": "COM_EMUNDUS_GLOBAL_PARMAS_MENUS_MANAGE_FILES",
     "icon": "source",
     "published": true,
     "sections": [
@@ -492,7 +479,7 @@
                 "value": "50"
               },
               {
-                "label": "Tout",
+                "label": "ALL",
                 "value": "all"
               }
             ]
@@ -640,7 +627,3 @@
     ]
   }
 ]
-
-
-
-

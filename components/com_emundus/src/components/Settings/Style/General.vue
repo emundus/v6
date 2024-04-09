@@ -1,13 +1,5 @@
 <template>
   <div>
-    <ModalUpdateColors
-        :key="primary + secondary"
-        v-if="primary && secondary"
-        :primary="primary"
-        :secondary="secondary"
-        @UpdateColors="updateColors"
-    />
-
     <!-- LOGO -->
     <div class="em-grid-2" v-if="!loading">
       <div class="em-style-options em-mb-32">
@@ -23,7 +15,7 @@
         </div>
 
         <div class="em-logo-box pointer em-mt-16" v-if="!logo_updating">
-          <img id="logo-img" class="logo-settings" v-if="!hideLogo" :src="imageLink" :srcset="'/'+imageLink"  @error="hideLogo = true">
+          <img alt="" id="logo-img" class="logo-settings" v-if="!hideLogo" :src="imageLink" :srcset="'/'+imageLink"  @error="hideLogo = true">
           <p v-if="hideLogo">{{ translate('COM_EMUNDUS_ONBOARD_INSERT_LOGO') }}</p>
         </div>
         <div class="em-mt-16" v-if="logo_updating">
@@ -64,7 +56,7 @@
         </div>
 
         <div class="em-logo-box pointer em-mt-16" v-if="!favicon_updating">
-          <img class="logo-settings" v-if="!hideIcon" :src="iconLink" :srcset="iconLink" @error="hideIcon = true">
+          <img alt="" class="logo-settings" v-if="!hideIcon" :src="iconLink" :srcset="iconLink" @error="hideIcon = true">
           <p v-if="hideIcon">{{ translate('COM_EMUNDUS_ONBOARD_INSERT_ICON') }}</p>
         </div>
         <div class="em-mt-16" v-if="favicon_updating">
@@ -90,29 +82,6 @@
           <span v-else>{{ translate('COM_EMUNDUS_ONBOARD_CANCEL') }}</span>
         </button>
       </div>
-
-      <!-- COLORS -->
-      <!--
-      <div class="em-style-options em-mb-32">
-        <div>
-          <h4 class="em-text-neutral-800 em-flex-row em-mb-8">
-            {{ translate("COM_EMUNDUS_ONBOARD_COLORS") }}
-            <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayColorsTip">help_outline</span>
-          </h4>
-          <span style="opacity: 0">Colors</span><br/>
-          <span style="opacity: 0">Colors</span>
-        </div>
-
-        <div class="em-logo-box pointer em-mt-16">
-          <div class="color-preset" :style="'background-color:' + primary + ';border-right: 25px solid' + secondary">
-          </div>
-        </div>
-
-        <button class="em-mt-8 em-primary-button" @click="$modal.show('modalUpdateColors')">
-          <span>{{ translate("COM_EMUNDUS_ONBOARD_UPDATE_COLORS") }}</span>
-        </button>
-      </div>
-      -->
 
       <!-- BANNER -->
       <div v-if="bannerLink" class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
@@ -166,7 +135,7 @@ import vueDropzone from 'vue2-dropzone';
 import Multiselect from 'vue-multiselect';
 import Swal from "sweetalert2";
 import axios from "axios";
-import ModalUpdateColors from "../../AdvancedModals/ModalUpdateColors";
+
 
 const getTemplate = () => `
 <div class="dz-preview dz-file-preview">
@@ -183,7 +152,6 @@ export default {
   name: "global",
   props: { },
   components: {
-    ModalUpdateColors,
     Multiselect,
     vueDropzone
   },
@@ -197,8 +165,6 @@ export default {
       imageLink: null,
       iconLink: null,
       bannerLink: null,
-      primary: '',
-      secondary: '',
       changes: false,
       hideIcon: false,
       hideLogo: false,
@@ -269,13 +235,12 @@ export default {
     await this.getLogo();
     await this.getFavicon();
     await this.getBanner();
-    await this.getAppColors();
 
     this.changes = true;
     this.loading = false;
   },
 
-  methods:{
+  methods: {
     getLogo() {
       return new Promise((resolve) => {
         axios({
@@ -325,25 +290,11 @@ export default {
       });
     },
 
-    getAppColors() {
-      return new Promise((resolve) => {
-        axios({
-          method: "get",
-          url: 'index.php?option=com_emundus&controller=settings&task=getappcolors',
-        }).then((rep) => {
-          this.primary = rep.data.primary;
-          this.secondary = rep.data.secondary;
-
-          resolve(true);
-        });
-      });
-    },
-
     updateView(response) {
       this.hideLogo = false;
       this.imageLink = 'images/custom/' + response.filename + '?' + new Date().getTime();
 
-      const oldLogo = document.querySelector('img[src="/images/custom/'+response.old_logo+'"]');
+      const oldLogo = document.querySelector('img[src="/images/custom/' + response.old_logo + '"]');
       if (oldLogo) {
         oldLogo.src = '/' + this.imageLink;
       }
@@ -352,21 +303,17 @@ export default {
 
     updateIcon(response) {
       this.hideIcon = false;
-      this.iconLink = window.location.origin + '//images/custom/'+response.filename+'?' + new Date().getTime();
-      document.querySelector('link[type="image/x-icon"]').href = window.location.origin + '//images/custom/'+response.filename+'?' + new Date().getTime();
-      document.querySelector('.tchooz-vertical-logo a img').src = window.location.origin + '//images/custom/'+response.filename+'?' + new Date().getTime();
+      this.iconLink = window.location.origin + '//images/custom/' + response.filename + '?' + new Date().getTime();
+      document.querySelector('link[type="image/x-icon"]').href = window.location.origin + '//images/custom/' + response.filename + '?' + new Date().getTime();
+      document.querySelector('.tchooz-vertical-logo a img').src = window.location.origin + '//images/custom/' + response.filename + '?' + new Date().getTime();
       this.$forceUpdate();
     },
 
     updateBanner(ext = 'png') {
-      this.bannerLink = 'images/custom/default_banner.'+ext+'?' + new Date().getTime();
+      this.bannerLink = 'images/custom/default_banner.' + ext + '?' + new Date().getTime();
       this.$forceUpdate();
     },
 
-    updateColors(colors){
-      this.primary = colors.primary;
-      this.secondary = colors.secondary;
-    },
 
     beforeClose(event) {
     },
@@ -379,36 +326,36 @@ export default {
     },
 
     afterRemoved() {
-      if(this.$refs.dropzone.getAcceptedFiles().length === 0){
-        if(this.banner_updating || this.logo_updating || this.favicon_updating) {
+      if (this.$refs.dropzone.getAcceptedFiles().length === 0) {
+        if (this.banner_updating || this.logo_updating || this.favicon_updating) {
           document.getElementById('dropzone-message').style.display = 'block';
         }
       }
     },
 
-    onComplete: function(response){
+    onComplete: function (response) {
       const ext = response.name.split('.').pop();
-      if(response.status == 'success'){
-        if(this.logo_updating) {
+      if (response.status === 'success') {
+        if (this.logo_updating) {
           this.logo_updating = false;
           this.updateView(JSON.parse(response.xhr.response));
         }
-        if(this.favicon_updating) {
+        if (this.favicon_updating) {
           this.favicon_updating = false;
           this.updateIcon(JSON.parse(response.xhr.response));
         }
-        if(this.banner_updating) {
+        if (this.banner_updating) {
           this.banner_updating = false;
           this.updateBanner(ext);
         }
-        if(this.banner_updating) {
+        if (this.banner_updating) {
           this.banner_updating = false;
           this.updateBanner();
         }
       }
     },
 
-    catchError: function(file, message, xhr){
+    catchError: function (file, message) {
       Swal.fire({
         title: this.translate("COM_EMUNDUS_ONBOARD_ERROR"),
         text: message,
@@ -421,7 +368,7 @@ export default {
     },
 
     thumbnail: function (file, dataUrl) {
-      var j, len, ref, thumbnailElement;
+      let j, len, ref, thumbnailElement;
       if (file.previewElement) {
         file.previewElement.classList.remove("dz-file-preview");
         ref = file.previewElement.querySelectorAll("[data-dz-thumbnail-bg]");
@@ -455,7 +402,6 @@ export default {
           actions: "em-swal-single-action",
         },
       }).then(result => {
-
       });
     },
 
@@ -504,29 +450,29 @@ export default {
       });
     },
 
-    openFileInput(){
+    openFileInput() {
       setTimeout(() => {
         document.getElementsByClassName('dz-clickable')[0].click();
       }, 300);
     }
   },
   watch: {
-    logo_updating: function(value){
-      if(value){
+    logo_updating: function (value) {
+      if (value) {
         this.favicon_updating = false;
         this.banner_updating = false;
         this.openFileInput();
       }
     },
-    favicon_updating: function(value){
-      if(value){
+    favicon_updating: function (value) {
+      if (value) {
         this.logo_updating = false;
         this.banner_updating = false;
         this.openFileInput();
       }
     },
-    banner_updating: function(value){
-      if(value){
+    banner_updating: function (value) {
+      if (value) {
         this.favicon_updating = false;
         this.logo_updating = false;
         this.openFileInput();
@@ -537,11 +483,6 @@ export default {
 </script>
 
 <style scoped>
-.color-preset{
-  height: 50px;
-  border-radius: 50%;
-  width: 50px;
-}
 
 .em-style-options {
   display: flex;

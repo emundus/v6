@@ -140,6 +140,7 @@ import AttachmentStorage from '../components/Settings/AttachmentStorage/Attachme
 
 import SettingParam from '../../data/settings-global-group-params.json';
 import Global from "@/components/Settings/Style/General.vue";
+import EditTheme from "@/components/Settings/Style/EditTheme.vue";
 import EditFooter from "@/components/Settings/Content/EditFooter.vue";
 import Translations from "@/components/Settings/TranslationTool/Translations.vue";
 import Orphelins from "@/components/Settings/TranslationTool/Orphelins.vue";
@@ -156,6 +157,7 @@ export default {
     Translations,
     EditFooter,
     Global,
+    EditTheme,
     StyleTool,
     AttachmentStorage,
     FilesTool,

@@ -2797,44 +2797,6 @@ div.forms-emails-editor .menubar[data-v-18686cfd] {
 }
 
 
-.fa-file-image {
-  font-size: 25px;
-  margin-right: 20px;
-}
-.preset-presentation {
-  height: 150px;
-  margin: 24px 0;
-  border-radius: 10px;
-  cursor: pointer;
-  -webkit-transition: all 0.3s ease-in-out;
-  transition: all 0.3s ease-in-out;
-  outline: solid 6px var(--neutral-400);
-}
-.preset-presentation:hover {
-  -webkit-transform: scale(1.02);
-          transform: scale(1.02);
-}
-.custom-color-picker {
-  width: 48px !important;
-  height: 52px !important;
-  border: none !important;
-  padding: 0 !important;
-  outline: none;
-  cursor: pointer;
-}
-.custom-color-picker::-webkit-color-swatch {
-  border-radius: 100%;
-}
-.modalC-content {
-  margin-top: 20%;
-}
-
-
-.color-preset[data-v-5900c88e]{
-  height: 50px;
-  border-radius: 50%;
-  width: 50px;
-}
 .em-style-options[data-v-5900c88e] {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -2964,6 +2926,58 @@ td[data-v-db0e1b70]{
 .em-clear-dropdown[data-v-db0e1b70]:focus{
   outline: unset;
   background: #E3E5E8;
+}
+
+
+.fa-file-image {
+  font-size: 25px;
+  margin-right: 20px;
+}
+.preset-presentation {
+  height: 150px;
+  margin: 24px 0;
+  border-radius: 10px;
+  cursor: pointer;
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+  outline: solid 6px var(--neutral-400);
+}
+.preset-presentation:hover {
+  -webkit-transform: scale(1.02);
+          transform: scale(1.02);
+}
+.custom-color-picker {
+  width: 48px !important;
+  height: 52px !important;
+  border: none !important;
+  padding: 0 !important;
+  outline: none;
+  cursor: pointer;
+}
+.custom-color-picker::-webkit-color-swatch {
+  border-radius: 100%;
+}
+.modalC-content {
+  margin-top: 20%;
+}
+
+
+.color-preset[data-v-0e58ae85]{
+  height: 50px;
+  border-radius: 50%;
+  width: 50px;
+}
+.em-style-options[data-v-0e58ae85] {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
 }
 
 

@@ -290,7 +290,15 @@ Jtext::script('COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_PAYMENT');
 
 Jtext::script('COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_TRANSLATIONS');
 #JText::script('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_ORPHELINS'); --- déjà fait plus haut
-Jtext::script('');
+
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SITE_FIELD_NAME'); // Nom du site
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SITE_LANG_PRIM'); // Langue principale
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SITE_OTHER_LANG'); // Autres Langues
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SITE_DESC'); // Description du site
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SITE_TIMEZONE'); // Fuseau horaire
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT'); // Format de date
+JText::script('COM_EMUNDUS_ATTACHMENTS_KEYWORDS'); // Mots clés
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SITE_NUMBER_LINES_LISTES'); // Nombre de lignes dans les listes
 
 
 ## END ##
