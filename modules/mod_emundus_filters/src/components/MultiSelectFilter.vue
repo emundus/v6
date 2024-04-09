@@ -216,6 +216,8 @@ export default {
       }
     },
     onCloseCard() {
+      this.search = '';
+      this.onSearchChange();
       const valueDifferences = this.filter.value && Array.isArray(this.filter.value) ? this.filter.value.filter((x) => !this.originalFilterValue.includes(x)).concat(this.originalFilterValue.filter(x => !this.filter.value.includes(x))) : [];
       const operatorDifferences = this.filter.operator !== this.originalFilterOperator;
 
