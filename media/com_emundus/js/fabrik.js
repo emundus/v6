@@ -394,7 +394,7 @@ function checkPasswordSymbols(element) {
 }
 
 function cleanNumberInput(element, maxDecimals) {
-    var value = element.get('value');
+    let value = element.get('value');
     const input = document.getElementById(element.strElement);
 
     const nonDigitExceptCommaDot = /[^0-9.,]/;
