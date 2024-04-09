@@ -590,6 +590,7 @@ class EmundusHelperEvents {
                 }
             }
         }
+		
         return true;
     }
 
@@ -618,28 +619,45 @@ class EmundusHelperEvents {
             $application_fee = (!empty($application_fee) && !empty($mProfile->getHikashopMenu($user->profile)));
 
             //$validations = $mApplication->checkFabrikValidations($user->fnum, true, $itemid);
-            $attachments = $mApplication->getAttachmentsProgress($user->fnum);
-            $forms = $mApplication->getFormsProgress($user->fnum);
+            $attachments_progress = $mApplication->getAttachmentsProgress($user->fnum);
+            $forms_progress = $mApplication->getFormsProgress($user->fnum);
 
-	        if ($attachments < 100 || $forms < 100) {
-		        $db    = JFactory::getDbo();
-		        $query = $db->getQuery(true);
+	        $db    = JFactory::getDbo();
+	        $query = $db->getQuery(true);
 
-		        $profile_by_status = $mProfile->getProfileByStatus($user->fnum);
+	        $profile_by_status = $mProfile->getProfileByStatus($user->fnum);
 
-		        if (empty($profile_by_status['profile'])) {
-			        $query->select('esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id')
-				        ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
-				        ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ecc.campaign_id') . ' = ' . $db->quoteName('esc.id'))
-				        ->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($user->fnum));
-			        $db->setQuery($query);
-			        $profile_by_status = $db->loadAssoc();
-		        }
+	        if (empty($profile_by_status['profile'])) {
+		        $query->select('esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id')
+			        ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
+			        ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ecc.campaign_id') . ' = ' . $db->quoteName('esc.id'))
+			        ->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($user->fnum));
+		        $db->setQuery($query);
+		        $profile_by_status = $db->loadAssoc();
+	        }
 
-		        $profile    = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
-		        $profile_id = (!empty($user->fnums[$user->fnum]) && $user->profile != $profile && $user->applicant === 1) ? $user->profile : $profile;
+	        $profile    = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
+	        $profile_id = (!empty($user->fnums[$user->fnum]) && $user->profile != $profile && $user->applicant === 1) ? $user->profile : $profile;
 
-		        $forms    = @EmundusHelperMenu::getUserApplicationMenu($profile_id);
+	        $forms    = EmundusHelperMenu::getUserApplicationMenu($profile_id);
+
+			// Check if we have qcm forms
+	        $forms_ids = array_column($forms, 'form_id');
+	        $items_ids = [];
+	        foreach($forms as $form) {
+		        $items_ids[$form->form_id] = $form->id;
+	        }
+			if(!empty($forms_ids) && !empty($items_ids))
+			{
+				$qcm_complete = $this->checkQcmCompleted($user->fnum, $forms_ids, $items_ids);
+				if ($qcm_complete['status'] === false)
+				{
+					$mainframe->enqueueMessage(JText::sprintf($qcm_complete['msg']));
+					$mainframe->redirect($qcm_complete['link']);
+				}
+			}
+
+	        if ($attachments_progress < 100 || $forms_progress < 100) {
 
 		        foreach ($forms as $form) {
 			        $query->clear()
@@ -725,7 +743,7 @@ class EmundusHelperEvents {
                             $checkout_url = $mEmails->setTagsFabrik($checkout_url, [$user->fnum], true);
                         }
                         // If $accept_other_payments is 2 : that means we do not redirect to the payment page.
-                        if ($accept_other_payments != 2 && empty($mApplication->getHikashopOrder($fnumInfos)) && $attachments >= 100 && $forms >= 100) {
+                        if ($accept_other_payments != 2 && empty($mApplication->getHikashopOrder($fnumInfos)) && $attachments_progress >= 100 && $forms_progress >= 100) {
                             // Profile number and document ID are concatenated, this is equal to the menu corresponding to the free option (or the paid option in the case of document_id = NULL)
 	                        $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($checkout_url));
                             $mainframe->redirect($checkout_url);
@@ -1375,6 +1393,103 @@ class EmundusHelperEvents {
 		}
 		catch (Exception $e) {
 			JLog::add('Error when try to log update of application: ' . __LINE__ . ' in file: ' . __FILE__ . ' with message: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+		}
+
+		return $result;
+	}
+
+	private function checkQcmCompleted($fnum,$forms_ids,$items_ids)
+	{
+		$result = ['status' => true, 'msg' => '', 'link' => ''];
+
+		try
+		{
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->clear()
+				->select('distinct sq.id,sq.form_id,sq.group_id')
+				->from($db->quoteName('#__emundus_setup_qcm','sq'))
+				->where($db->quoteName('sq.form_id') . ' IN (' . implode(',',$db->quote($forms_ids)) . ')');
+			$db->setQuery($query);
+			$qcms = $db->loadObjectList();
+			$qcms_ids = array_column($qcms, 'id');
+
+			if(!empty($qcms)) {
+				$query->clear()
+					->select('count(id)')
+					->from($db->quoteName('#__emundus_qcm_applicants','qa'))
+					->where($db->quoteName('qa.fnum') . ' LIKE ' . $db->quote($fnum))
+					->where($db->quoteName('qa.qcmid') . ' IN (' . implode(',',$db->quote($qcms_ids)) . ')');
+				$db->setQuery($query);
+				$applicants_qcms = $db->loadResult();
+
+				if(sizeof($qcms) == $applicants_qcms)
+				{
+					foreach ($qcms as $qcm)
+					{
+						$query->clear()
+							->select('questions')
+							->from($db->quoteName('#__emundus_qcm_applicants'))
+							->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
+							->andWhere($db->quoteName('qcmid') . ' = ' . $db->quote($qcm->id));
+						$db->setQuery($query);
+						$q_numbers = sizeof(explode(',', $db->loadResult()));
+
+						$query->clear()
+							->select('db_table_name')
+							->from($db->quoteName('#__fabrik_lists'))
+							->where($db->quoteName('form_id') . ' = ' . $db->quote($qcm->form_id));
+						$db->setQuery($query);
+						$table = $db->loadResult();
+
+						$query->clear()
+							->select('table_join')
+							->from($db->quoteName('#__fabrik_joins'))
+							->where($db->quoteName('group_id') . ' = ' . $db->quote($qcm->group_id))
+							->where($db->quoteName('join_from_table') . ' = ' . $db->quote($table))
+							->where($db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'));
+						$db->setQuery($query);
+						$repeat_table = $db->loadResult();
+
+						if(!empty($repeat_table))
+						{
+							$query->clear()
+								->select('count(rt.id) as answers')
+								->from($db->quoteName($repeat_table, 'rt'))
+								->leftJoin($db->quoteName($table, 't') . ' ON ' . $db->quoteName('t.id') . ' = ' . $db->quoteName('rt.parent_id'))
+								->where($db->quoteName('t.fnum') . ' LIKE ' . $db->quote($fnum));
+							$db->setQuery($query);
+							$answers_given = $db->loadResult();
+
+							if ((int) $answers_given != $q_numbers)
+							{
+								$result['status'] = false;
+								$result['msg']    = 'PLEASE_COMPLETE_QCM_BEFORE_SEND';
+								$result['link']   = "index.php?option=com_fabrik&view=form&formid=" . $qcm->form_id . "&Itemid=" . $items_ids[$qcm->form_id] . "&usekey=fnum&rowid=" . $fnum . "&r=1";
+
+								// We break the loop because we have found a qcm that is not completed
+								return $result;
+							}
+						} else {
+							$result['status'] = false;
+							$result['msg'] = 'PLEASE_COMPLETE_QCM_BEFORE_SEND';
+							$result['link'] = "index.php?option=com_fabrik&view=form&formid=" . $qcm->form_id . "&Itemid=" . $items_ids[$qcm->form_id] . "&usekey=fnum&rowid=" . $fnum . "&r=1";
+						}
+					}
+				} else {
+					$result['status'] = false;
+					$result['msg'] = 'PLEASE_COMPLETE_QCM_BEFORE_SEND';
+					$result['link'] = "index.php?option=com_fabrik&view=form&formid=" . $qcms[0]->form_id . "&Itemid=" . $items_ids[$qcms[0]->form_id] . "&usekey=fnum&rowid=" . $fnum . "&r=1";
+
+					// We break the loop because we have found a qcm that is not completed
+					return $result;
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			JLog::add('Error when try to check if qcm is completed: ' . __LINE__ . ' in file: ' . __FILE__ . ' with message: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
 
 		return $result;

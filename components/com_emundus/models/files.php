@@ -274,8 +274,7 @@ class EmundusModelFiles extends JModelLegacy
                         $element_attribs = json_decode($def_elmt->element_attribs);
                         $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
                         foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-                            $select = 'REPLACE(' . $select . ', "' . $value . '", "' .
-                                JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+                            $select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
                         }
                         $this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
                     }
@@ -577,7 +576,10 @@ class EmundusModelFiles extends JModelLegacy
     private function _buildWhere($already_joined_tables = array()) {
         $h_files = new EmundusHelperFiles();
 
-		if ($this->use_module_filters) {
+        $session = JFactory::getSession();
+        $last_filters_use_advanced = $session->get('last-filters-use-adavanced', false);
+
+		if ($this->use_module_filters || $last_filters_use_advanced) {
 			return $h_files->_moduleBuildWhere($already_joined_tables, 'files', array(
 				'fnum_assoc' => $this->fnum_assoc,
 				'code' => $this->code

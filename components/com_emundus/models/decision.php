@@ -225,8 +225,7 @@ class EmundusModelDecision extends JModelList
 						$element_attribs = json_decode($def_elmt->element_attribs);
 						$select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
 						foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-							$select = 'REPLACE(' . $select . ', "' . $value . '", "' .
-								JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+							$select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
 						}
 						$this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
 					}

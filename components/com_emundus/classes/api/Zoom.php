@@ -54,10 +54,26 @@ class Zoom
 		}
 	}
 
+	private function generateToken() {
+		$config = JComponentHelper::getParams('com_emundus');
+
+		$this->client = new GuzzleClient([
+			'base_uri' => 'https://zoom.us',
+			'headers' => ['Authorization' => 'Basic ' . base64_encode($config->get('zoom_client_id') . ':' . $config->get('zoom_client_secret')),]
+		]);
+
+		$response = $this->post('/oauth/token?grant_type=account_credentials&account_id='.$config->get('zoom_account_id'));
+
+		if (!empty($response->access_token)) {
+			return $response->access_token;
+		} else {
+			return '';
+		}
+	}
+
 	private function setAuth()
 	{
-		$config = JComponentHelper::getParams('com_emundus');
-		$this->auth['token'] = $config->get('zoom_jwt', '');
+		$this->auth['token'] = $this->generateToken();
 	}
 
 	private function getAuth(): array
@@ -106,12 +122,17 @@ class Zoom
 		}
 	}
 
-	private function post($url, $json)
+	private function post($url, $json = null)
 	{
 		$response = '';
 
 		try {
-			$response = $this->client->post($url, ['body' => $json]);
+			if ($json !== null) {
+				$response = $this->client->post($url, ['body' => $json]);
+			} else {
+				$response = $this->client->post($url);
+			}
+
 			$response = json_decode($response->getBody());
 		} catch (\Exception $e) {
 			JLog::add('[POST] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.zoom');
@@ -147,62 +168,103 @@ class Zoom
 		return $meeting;
 	}
 
-	public function createMeeting($host_id, $body)
+    public function createMeeting($host_id = 'me', $body)
+    {
+        $meeting = null;
+
+        if (!empty($host_id) && !empty($body)) {
+            if (is_array($body)) {
+                $body = json_encode($body);
+            }
+
+            $host = $this->getUserById($host_id);
+
+            if (!empty($host->id)) {
+                $meeting = $this->post("users/$host_id/meetings", $body);
+            } else {
+                JLog::add('[CREATE MEETING] Host not found', JLog::ERROR, 'com_emundus.zoom');
+            }
+        }
+
+        return $meeting;
+    }
+
+    public function getUserById($user_id)
+    {
+        $user = null;
+
+        if (!empty($user_id)) {
+            $user = $this->get('users/' . $user_id);
+
+            if (is_string($user)) {
+                $user = null;
+            }
+        }
+
+        return $user;
+    }
+
+    public function createUser($user)
+    {
+        $response = null;
+
+        if (!empty($user['email'])) {
+            $existing_user = $this->getUserById($user['email']);
+
+            if (empty($existing_user)) {
+                $response = $this->post('users', json_encode([
+                    'action' => 'create',
+                    'user_info' => [
+                        'email' => $user['email'],
+                        'type' => !empty($user['type']) ? $user['type'] : 2,
+                        'first_name' => $user['first_name'],
+                        'last_name' => $user['last_name']
+                    ]
+                ]));
+            } else {
+                $response = $existing_user;
+            }
+        }
+
+        return $response;
+    }
+
+	public function updateMeeting($meeting_id, $body)
 	{
-		$meeting = null;
+		$response = null;
 
-		if (!empty($host_id) && !empty($body)) {
-			$host = $this->getUserById($host_id);
-
-			if (!empty($host->id)) {
-				$meeting = $this->post("users/$host_id/meetings", json_encode($body));
-			} else {
-				JLog::add('[CREATE MEETING] Host not found', JLog::ERROR, 'com_emundus.zoom');
-			}
+		if (!empty($meeting_id) && !empty($body)) {
+			$response = $this->patch('meetings/' . $meeting_id, $body);
 		}
 
-		return $meeting;
-	}
-
-	public function getUserById($user_id)
-	{
-		$user = null;
-
-		if (!empty($user_id)) {
-			$user = $this->get('users/' . $user_id);
-		}
-
-		return $user;
-	}
-
-	public function createUser($user)
-	{
-		$user = null;
-
-		if (!empty($user['eamil'])) {
-			$user = $this->post('users', [
-				'action' => 'custCreate',
-				'user_info' => [
-					'email' => $user['email'],
-					'type' => 2,
-					'first_name' => $user['first_name'],
-					'last_name' => $user['last_name']
-				]
-			]);
-		}
-
-		return $user;
+		return $response;
 	}
 
 	public function updateMeetingDuration($meeting_id, $duration = 60) {
 		$response = null;
 
-		if (!empty($meeting_id) && $duration >= 60) {
+		if (!empty($meeting_id) && $duration > 0) {
 			$response = $this->patch('meetings/' . $meeting_id, [
 				'duration' => $duration
 			]);
 		}
 
 		return $response;
+	}
+
+	public function getUsers()
+	{
+		return $this->get('users?page_number=1&page_size=10');
+	}
+
+	public function getUserMeetings($zoom_user_id)
+	{
+		$meetings = null;
+
+		if (!empty($zoom_user_id)) {
+			$meetings = $this->get('users/' . $zoom_user_id . '/meetings');
+		}
+
+		return $meetings;
 	}
 }

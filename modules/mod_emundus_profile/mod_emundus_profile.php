@@ -29,7 +29,7 @@ $intro = $params->get('intro', '');
 $user_fullname = $e_user->lastname.' '.$e_user->firstname;
 $external = $user->password == '' ? true : false;
 
-$profile_picture = '/media/com_emundus/images/profile/default-profile.jpg';
+$profile_picture = '';
 if($show_profile_picture == 1) {
     $profile_picture = modEmundusProfileHelper::getProfilePicture();
 }
