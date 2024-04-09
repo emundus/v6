@@ -380,7 +380,7 @@ class Files
         }
 
 	    if(isset($params->display_filter_campaigns) && $params->display_filter_campaigns == 1){
-		    $select[] = 'CONCAT(esc.label, "(", esc.year, ")") as campaign_label';
+		    $select[] = 'CONCAT(esc.label, " (", esc.year, ")") as campaign_label';
 	    }
 
         if (isset($params->display_group_assoc) && $params->display_group_assoc == 1) {
