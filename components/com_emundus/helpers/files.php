@@ -2062,9 +2062,9 @@ class EmundusHelperFiles
             $fnum = $tag['fnum'];
 			$class = str_replace('label-','',$tag['class']);
             if (!isset($tagsList[$fnum])) {
-                $tagsList[$fnum] = '<div class="flex items-center gap-2 sticker label-'.$class.'"><span class="circle"></span><span class="text-white truncate font-semibold max-w-[100px] text-sm">'.$tag['label'].'</span></div>';
+                $tagsList[$fnum] = '<div class="flex items-center gap-2 sticker label-'.$class.'" title="' . $tag['label'] . '"><span class="circle"></span><span class="text-white truncate font-semibold max-w-[100px] text-sm">'.$tag['label'].'</span></div>';
             } else {
-                $tagsList[$fnum] .= '<div class="flex items-center gap-2 sticker label-'.$class.'"><span class="circle"></span><span class="text-white truncate font-semibold max-w-[100px] text-sm">'.$tag['label'].'</span></div>';
+                $tagsList[$fnum] .= '<div class="flex items-center gap-2 sticker label-'.$class.'" title="' . $tag['label'] . '"><span class="circle"></span><span class="text-white truncate font-semibold max-w-[100px] text-sm">'.$tag['label'].'</span></div>';
             }
         }
         return $tagsList;
