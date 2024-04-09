@@ -152,8 +152,8 @@ class EmundusModelEvaluation extends JModelList {
 				    $column = (!empty($join_val_column_concat) && $join_val_column_concat!='')?'CONCAT('.$join_val_column_concat.')':$attribs->join_val_column;
 
 				    // Check if the db table has a published column. So we don't get the unpublished value
-				    $db->setQuery("SHOW COLUMNS FROM $attribs->join_db_name LIKE 'published'");
-				    $publish_query = ($db->loadResult()) ? " AND $attribs->join_db_name.published = 1 " : '';
+				    //$db->setQuery("SHOW COLUMNS FROM $attribs->join_db_name LIKE 'published'");
+				    $publish_query = '';
 
 				    if (@$group_params->repeat_group_button == 1) {
 					    $query = '(
@@ -168,14 +168,13 @@ class EmundusModelEvaluation extends JModelList {
                                   ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
 				    } else {
 					    if ($attribs->database_join_display_type == "checkbox") {
-
-						    $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
-						    $query = '(
-                                SELECT GROUP_CONCAT('.$t.'.'.$def_elmt->element_name.' SEPARATOR ", ")
-                                FROM '.$t.'
-                                WHERE '.$t.'.parent_id='.$def_elmt->tab_name.'.id
+                            $query = '(
+                                SELECT GROUP_CONCAT('.$column.' SEPARATOR ", ")
+                                FROM '.$def_elmt->table_join.'
+                                LEFT JOIN '.$attribs->join_db_name.' ON '.$attribs->join_db_name.'.'.$attribs->join_key_column.'='.$def_elmt->table_join.'.'.$def_elmt->element_name.'
+                                WHERE '.$def_elmt->table_join.'.parent_id='.$def_elmt->tab_name.'.id
                                 '.$publish_query.'
-                              ) AS `'.$t.'`';
+                              ) AS `'.$def_elmt->tab_name.'_repeat_'.$def_elmt->element_name.'`';
 					    } else if( $attribs->database_join_display_type == 'multilist' ) {
 						    $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
 						    $query = '(
@@ -356,15 +355,17 @@ class EmundusModelEvaluation extends JModelList {
 
             if (is_array($filt_params['programme']) && count(@$filt_params['programme']) > 0) {
                 foreach ($filt_params['programme'] as $value) {
-                    $groups = $this->getGroupsEvalByProgramme($value);
-                    if (empty($groups)) {
-                        $eval_elt_list = array();
-                    } else {
-                        $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-                        if (count($eval_elt_list)>0) {
-                            foreach ($eval_elt_list as $eel) {
-                                if(isset($eel->element_id) && !empty($eel->element_id))
-                                    $elements_id[] = $eel->element_id;
+                    if ($value !== '%') {
+                        $groups = $this->getGroupsEvalByProgramme($value);
+                        if (empty($groups)) {
+                            $eval_elt_list = array();
+                        } else {
+                            $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
+                            if (count($eval_elt_list)>0) {
+                                foreach ($eval_elt_list as $eel) {
+                                    if(isset($eel->element_id) && !empty($eel->element_id))
+                                        $elements_id[] = $eel->element_id;
+                                }
                             }
                         }
                     }
@@ -372,16 +373,18 @@ class EmundusModelEvaluation extends JModelList {
             }
             if (!empty($filt_params['campaign']) && is_array($filt_params['campaign']) && count(@$filt_params['campaign']) > 0) {
                 foreach ($filt_params['campaign'] as $value) {
-                    $campaign = $h_files->getCampaignByID($value);
-                    $groups = $this->getGroupsEvalByProgramme($campaign['training']);
-                    if (empty($groups)) {
-                        $eval_elt_list = array();
-                    } else {
-                        $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-                        if (is_array($eval_elt_list) && count($eval_elt_list) > 0) {
-                            foreach ($eval_elt_list as $eel) {
-                                if (isset($eel->element_id) && !empty($eel->element_id))
-                                    $elements_id[] = $eel->element_id;
+                    if ($value !== '%') {
+                        $campaign = $h_files->getCampaignByID($value);
+                        $groups = $this->getGroupsEvalByProgramme($campaign['training']);
+                        if (empty($groups)) {
+                            $eval_elt_list = array();
+                        } else {
+                            $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
+                            if (is_array($eval_elt_list) && count($eval_elt_list) > 0) {
+                                foreach ($eval_elt_list as $eel) {
+                                    if (isset($eel->element_id) && !empty($eel->element_id))
+                                        $elements_id[] = $eel->element_id;
+                                }
                             }
                         }
                     }
