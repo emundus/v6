@@ -379,9 +379,9 @@ class Files
             $select[] = 'ess.value as status,ess.class as status_color';
         }
 
-		if(isset($params->display_filter_campaigns) && $params->display_filter_campaigns == 1){
-			$select[] = 'esc.label as campaign_label';
-		}
+	    if(isset($params->display_filter_campaigns) && $params->display_filter_campaigns == 1){
+		    $select[] = 'CONCAT(esc.label, "(", esc.year, ")") as campaign_label';
+	    }
 
         if (isset($params->display_group_assoc) && $params->display_group_assoc == 1) {
             $select[] = 'group_concat(distinct esgrc.parent_id) as programs_groups';
