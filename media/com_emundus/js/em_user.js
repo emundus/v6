@@ -883,8 +883,20 @@ $(document).ready(function () {
 				break;
 
 			case 6:
+				var checkboxesHTML = `
+        <input type="checkbox" id="checkbox-nom" name="checkbox-nom" value="nom">
+        <label for="checkbox-nom">Nom Prénom</label><br>
+        
+        <input type="checkbox" id="checkbox-mail" name="checkbox-mail" value="mail">
+        <label for="checkbox-mail">Mail</label><br>
+        
+        <input type="checkbox" id="checkbox-id" name="checkbox-id" value="id">
+        <label for="checkbox-id">ID</label><br>
+    `;
+
 				Swal.fire({
 					title: $(this).children('a').text(),
+					html: checkboxesHTML,
 					showCancelButton: true,
 					showCloseButton: true,
 					confirmButtonText: Joomla.JText._('COM_EMUNDUS_EXPORTS_GENERATE_EXCEL'),
@@ -899,11 +911,26 @@ $(document).ready(function () {
 					if (result.value) {
 						addLoader();
 
+						// Récupération des valeurs des cases à cocher
+						var tcheckInput = {
+							nom: $('#checkbox-nom').prop('checked'),
+							mail: $('#checkbox-mail').prop('checked'),
+							id: $('#checkbox-id').prop('checked')
+						};
+
+						var checkedBoxes = {};
+						for (var key in tcheckInput) {
+							if (tcheckInput.hasOwnProperty(key) && tcheckInput[key]) {
+								checkedBoxes[key] = true;
+							}
+						}
+
 						$.ajax({
 							type: 'POST',
 							url: 'index.php?option=com_emundus&controller=users&task=exportusers&Itemid=' + itemId,
 							data: {
-								users: checkInput
+								users: checkInput,
+								checkboxes: checkedBoxes // Envoyer les valeurs des cases à cocher au serveur
 							},
 							success: (result) => {
 								removeLoader();
@@ -928,6 +955,7 @@ $(document).ready(function () {
 					}
 				});
 				break;
+
 			case 26:
 				Swal.fire({
 					title: $(this).children('a').text(),

@@ -1289,15 +1289,19 @@ class EmundusControllerUsers extends JControllerLegacy {
 	}
 
     public function exportusers() {
-        // Vérification des autorisations d'accès
+        // Récupération des valeurs des cases à cocher
+        $jinput = JFactory::getApplication()->input;
+        $checkboxes = $jinput->get('checkboxes', array(), 'ARRAY');
 
+        var_dump($checkboxes);
+
+        // Vérification des autorisations d'accès
         if (!EmundusHelperAccess::asAccessAction(12, 'd') && !EmundusHelperAccess::asAccessAction(20, 'd')) {
             $this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
             return;
         }
 
         // Récupération des identifiants d'utilisateurs à extraire
-        $jinput = JFactory::getApplication()->input;
         $users = $jinput->getString('users', null);
         $userIds = [];
 
@@ -1314,36 +1318,51 @@ class EmundusControllerUsers extends JControllerLegacy {
             $userIds = (array) json_decode(stripslashes($users));
         }
 
-        echo JPATH_SITE;
-
         // Création du fichier CSV
         $csvFileName = 'user_data.csv';
-        $path = JPATH_SITE.'/tmp/'.$csvFileName;
+        $path = JPATH_SITE . '/tmp/' . $csvFileName;
         $csvFile = fopen($path, 'w');
 
         fputs($csvFile, $bom = (chr(0xEF) . chr(0xBB) . chr(0xBF)));
 
         // Entête du fichier CSV
-        fputcsv($csvFile, array('ID', 'Email' /* Ajoutez d'autres colonnes au besoin */));
+        if ($checkboxes['id']){
+            $headers[] = 'Id';
+        }
+        if ($checkboxes['nom']) {
+            $headers[] = 'Nom';
+        }
+        if ($checkboxes['mail']) {
+            $headers[] = 'Email';
+        }
+        // Ajoutez d'autres en-têtes en fonction des cases à cocher supplémentaires
+
+        fputcsv($csvFile, $headers);
 
         // Récupération des données des utilisateurs et écriture dans le fichier CSV
         foreach ($userIds as $userId) {
             $user = JFactory::getUser($userId);
-            $userData = array(
-                $user->id,
-                $user->email,
-                // Ajoutez d'autres données utilisateur nécessaires ici
-            );
+            if ($checkboxes['id']) {
+                $userData[] = $user->id;
+            }
+            if ($checkboxes['nom']) {
+                $userData[] = $user->name;
+            }
+            if ($checkboxes['mail']) {
+                $userData[] = $user->email;
+            }
+            // Ajoutez d'autres données utilisateur nécessaires ici
+
             fputcsv($csvFile, $userData);
         }
-        fseek($csvFile, 0);
 
+        fseek($csvFile, 0);
         fclose($csvFile);
 
         // Envoi du fichier CSV à l'utilisateur
         header('Content-type: text/csv');
-        header('Content-Disposition: attachment; filename='.$csvFileName);
-        header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Content-Disposition: attachment; filename=' . $csvFileName);
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
         header('Cache-Control: no-store, no-cache, must-revalidate');
         header('Cache-Control: pre-check=0, post-check=0, max-age=0');
         header('Pragma: anytextexeptno-cache', true);
@@ -1356,6 +1375,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
         exit;
     }
+
 
 
 }
