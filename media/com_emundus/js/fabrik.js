@@ -429,5 +429,16 @@ function cleanNumberInput(element, maxDecimals) {
         value = value.replace(".", "");
     }
 
+    if (maxDecimals > 0) {
+        // remove all characters after dot + maxdecimals
+        const dotIndex = value.indexOf(".");
+        if (dotIndex !== -1) {
+            value = value.substring(0, dotIndex + maxDecimals + 1);
+        }
+    }
+
+    // remove all non numeric characters
+    value = value.replace(/[^0-9.,]/g, '');
+
     return value;
 }
