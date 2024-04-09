@@ -3722,4 +3722,20 @@ class EmundusHelperUpdate
 
 		return true;
 	}
+
+    public static function checkTypeDocumentAttachement(){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->clear()
+            ->select('id')
+            ->from($db->quoteName('#__emundus_setup_attachments'))
+            ->where($db->quoteName('lbl') . ' = ' . $db->quote('_OtherDocument'));
+        $db->setQuery($query);
+        return $db->loadResult();
+    }
+
+    public static function createTypeDocumentAttachement(){
+        //todo create type document attachement
+    }
 }

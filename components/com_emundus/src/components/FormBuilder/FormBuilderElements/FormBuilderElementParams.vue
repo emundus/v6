@@ -160,7 +160,7 @@ export default {
   methods: {
     updateSqlDropdownOptions(param) {
       this.loading = true;
-      formBuilderService.getSqlDropdownOptions(param.table,param.key,param.value,param.translate).then((response) => {
+      formBuilderService.getSqlDropdownOptions(param.table,param.key,param.value,param.translate,param.where).then((response) => {
         param.options = response.data;
         this.loading = false;
       });

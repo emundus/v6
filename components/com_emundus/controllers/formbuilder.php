@@ -1324,7 +1324,6 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 	public function getsqldropdownoptions() {
 		$user     = JFactory::getUser();
 		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'), 'code' => 403, 'data' => []);
-
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$response = array('status' => false, 'msg' => JText::_('MISSING_PARAMS'));
 
@@ -1333,10 +1332,11 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 			$key  = $jinput->getString('key', '');
 			$value  = $jinput->getString('value', '');
 			$translate  = $jinput->getBool('translate', false);
+            $where = $jinput->getString('where', '');
 
 
 			if(!empty($table) && !empty($key) && !empty($value)) {
-				$options = $this->m_formbuilder->getSqlDropdownOptions($table, $key, $value, $translate);
+				$options = $this->m_formbuilder->getSqlDropdownOptions($table, $key, $value, $translate , $where);
 				$response = array('status' => true, 'msg' => JText::_('SUCCESS'), 'code' => 200, 'data' => $options);
 			}
 		}

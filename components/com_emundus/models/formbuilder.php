@@ -4252,7 +4252,7 @@ class EmundusModelFormbuilder extends JModelList {
 		return $document;
 	}
 
-	public function getSqlDropdownOptions($table,$key,$value,$translate)
+	public function getSqlDropdownOptions($table,$key,$value,$translate, $where = '')
 	{
 		$datas = [];
 
@@ -4290,7 +4290,10 @@ class EmundusModelFormbuilder extends JModelList {
 			} else {
 				$query->select($key . ' as value, ' . $value . ' as label');
 			}
-			
+
+            if($where != '')
+            {$query->where($where); }
+
 			$query->from($db->quoteName($table));
 			$db->setQuery($query);
 			$datas = $db->loadAssocList();
