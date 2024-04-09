@@ -2489,8 +2489,8 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .w-full {
   width: 100%;
 }
-.max-w-\[100px\] {
-  max-width: 100px;
+.max-w-\[150px\] {
+  max-width: 150px;
 }
 .max-w-\[200px\] {
   max-width: 200px;
@@ -4728,7 +4728,6 @@ button.swal2-cancel.goback-btn:hover,
         padding: 4px 8px;
         margin: 4px 0;
         font-size: 14px;
-        max-width: 250px;
         white-space: break-spaces;
     }
 .label-default, .label-null, .label- {
