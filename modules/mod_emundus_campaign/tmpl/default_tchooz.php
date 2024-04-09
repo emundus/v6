@@ -39,9 +39,9 @@ if (sizeof($tmp_campaigns) > 0)
 {
 	if ($group_by == 'program')
 	{
-		usort($tmp_campaigns, function ($a, $b) {
+		/*usort($tmp_campaigns, function ($a, $b) {
 			return strcmp($a->programme, $b->programme);
-		});
+		});*/
 
 		foreach ($tmp_campaigns as $campaign)
 		{
