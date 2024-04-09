@@ -4159,6 +4159,30 @@ if(in_array($applicant,$exceptions)){
 				$db->setQuery($query);
 				$db->execute();
 			}
+
+			if (version_compare($cache_version, '1.38.10', '<=') || $firstrun) {
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__menu'))
+					->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_emundus&view=checklist'));
+				$db->setQuery($query);
+				$menus = $db->loadObjectList();
+
+				foreach ($menus as $menu) {
+					$params = json_decode($menu->params);
+					$params->show_info_panel = 0;
+					$params->show_info_legend = 1;
+					$params->show_browse_button = 0;
+					$params->show_nb_column = 1;
+
+					$update = [
+						'id' => $menu->id,
+						'params' => json_encode($params)
+					];
+					$update = (object) $update;
+					$db->updateObject('#__menu', $update, 'id');
+				}
+			}
 		}
 
 		return $succeed;
